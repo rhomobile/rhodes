@@ -62,12 +62,14 @@ struct headers {
 #define _FLAG_HEADERS_PARSED 0x01
 struct __HttpRequest {
     int                 _flags;
-	unsigned long       _major_version;	/* Major HTTP version number    */
-	unsigned long       _minor_version;	/* Minor HTTP version number    */
+	unsigned long       _major_version;	/* Major HTTP version number */
+	unsigned long       _minor_version;	/* Minor HTTP version number */
     int                 _method;
     char*               _uri;
+	char*				_query;
     char*               _headers;
-    struct headers      _cheaders;		/* Parsed client headers	*/;
+	struct vec			_mime_type;		/* Mime type */
+    struct headers      _cheaders;		/* Parsed client headers */;
 };
 typedef struct __HttpRequest* HttpRequestRef;
     
@@ -86,6 +88,8 @@ struct __HttpContext {
     HttpRequestRef      _request;
 };
 typedef struct __HttpContext* HttpContextRef;
+	
+char* HttpGetSiteRoot();	
 
 void HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason);
     
@@ -99,7 +103,8 @@ Boolean HttpContextOpen(HttpContextRef context);
 
 void HttpContextClose(HttpContextRef context);
 
-
+void _dbg_print_data(UInt8* buffer, CFIndex size);
+	
 #if defined(__cplusplus)
 }
 #endif

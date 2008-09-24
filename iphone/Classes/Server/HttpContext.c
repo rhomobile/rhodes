@@ -1,7 +1,11 @@
 
 
 #pragma mark Includes
-#include <CoreServices/CoreServices.h>
+#if TARGET_IPHONE_SIMULATOR
+#import <CoreServices/CoreServices.h>
+#else
+#import <CFNetwork/CFNetwork.h>
+#endif
 
 #include "defs.h"
 #include "HttpContext.h"
@@ -27,8 +31,6 @@ static const CFOptionFlags kWriteEvents = kCFStreamEventCanAcceptBytes |
 
 #pragma mark -
 #pragma mark Static Function Declarations
-
-static void _dbg_print_data(UInt8* buffer, CFIndex size);
 
 static int _HttpGetHeadersLen(const char *buf, size_t buflen);
 
@@ -284,7 +286,8 @@ HttpContextClose(HttpContextRef context) {
     }
 }
 
-void HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason) {
+void 
+HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason) {
     
     // Allocate tem buffer on the stack
     char buffer[1024];
@@ -293,18 +296,26 @@ void HttpSendErrorToTheServer(HttpContextRef context, int status, const char *re
     sprintf(buffer,"HTTP/1.1 %d %s\r\n"
             "Content-Type: text/plain\r\n"
             "Content-Length: %d\r\n"
+			"Connection: close\r\n"
             "\r\n"
             "Error: %03d - %s\r\n",
             status, reason, 15 + strlen(reason), status, reason);
     
+	DBG(("Error %d - %s\n", status, reason));
+		 
     // Add the bytes of data to the send buffer.
     CFDataAppendBytes(context->_sendBytes, (UInt8*)buffer, (CFIndex)strlen(buffer));
+}
+
+char* 
+HttpGetSiteRoot() {
+	return ROOT_FOLDER;
 }
 
 #pragma mark -
 #pragma mark Static Function Definitions
 
-/*static*/ void 
+void 
 _dbg_print_data(UInt8* buffer, CFIndex size) {
     
     for(CFIndex i = 0; i < size; i++) {

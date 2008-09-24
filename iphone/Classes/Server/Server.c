@@ -1,7 +1,11 @@
 
 #pragma mark Includes
 
-#include <CoreServices/CoreServices.h>
+#if TARGET_IPHONE_SIMULATOR
+#import <CoreServices/CoreServices.h>
+#else
+#import <CFNetwork/CFNetwork.h>
+#endif
 
 #include <assert.h>
 

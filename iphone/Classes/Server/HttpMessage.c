@@ -6,12 +6,28 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  *  Some bits of code here borrowed from Sergey Lyubka's shttpd
+ *  under "THE BEER-WARE LICENSE"
  */
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <errno.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#if !defined (_WIN32)
+#define	O_BINARY 0
+#include <unistd.h>
+#endif
 
 #include "defs.h"
 #include "HttpContext.h"
 #include "HttpMessage.h"
 
+enum {METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD};
 const struct vec _known_http_methods[] = {
 {"GET",		3},
 {"POST",	4},
@@ -215,7 +231,7 @@ _HTTPParseMessage(HttpContextRef context) {
     int buflen = CFDataGetLength(context->_rcvdBytes);
     
     int req_len = _HttpGetHeadersLen(buffer, buflen);
-    DBG(("Headers len = %d\n", req_len));
+    DBG(("\n\nParsing new request\nHeaders len = %d\n", req_len));
     
     if (req_len == 0) {
         if (buflen > 2048) {
@@ -327,7 +343,370 @@ int HTTPParseRequest(HttpContextRef context) {
     return ret;
 }
 
-int HTTPProcessMessage(HttpContextRef context) {
+static int
+_HTTPUrlDecode(const char *src, int src_len, char *dst, int dst_len)
+{
+	int	i, j, a, b;
+#define	HEXTOI(x)  (isdigit(x) ? x - '0' : x - 'W')
+	
+	for (i = j = 0; i < src_len && j < dst_len - 1; i++, j++)
+		switch (src[i]) {
+			case '%':
+				if (isxdigit(((unsigned char *) src)[i + 1]) &&
+					isxdigit(((unsigned char *) src)[i + 2])) {
+					a = tolower(((unsigned char *)src)[i + 1]);
+					b = tolower(((unsigned char *)src)[i + 2]);
+					dst[j] = (HEXTOI(a) << 4) | HEXTOI(b);
+					i += 2;
+				} else {
+					dst[j] = '%';
+				}
+				break;
+			default:
+				dst[j] = src[i];
+				break;
+		}
+	
+	dst[j] = '\0';	/* Null-terminate the destination */
+	
+	return (j);
+}
+
+/*
+ * Sane snprintf(). Acts like snprintf(), but never return -1 or the
+ * value bigger than supplied buffer.
+ * Thanks Adam Zeldis to pointing snprintf()-caused vulnerability
+ * in his audit report.
+ */
+int
+_HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...)
+{
+	va_list		ap;
+	int		n;
+	
+	if (buflen == 0)
+		return (0);
+	
+	va_start(ap, fmt);
+	n = vsnprintf(buf, buflen, fmt, ap);
+	va_end(ap);
+	
+	if (n < 0 || (size_t) n >= buflen)
+		n = buflen - 1;
+	buf[n] = '\0';
+	
+	return (n);
+}
+
+static int
+_HTTPServeDirectoryListing(HttpContextRef context, char* dir) {
+
+	static const char footer[] = "</table></body></html>\n";
+	
+	DIR *dp;
+	struct dirent *dirp;
+	struct stat	st;
+	char file[FILENAME_MAX], line[FILENAME_MAX + 512], size[64], mod[64];
+	const char* slash = dir[strlen(dir)-1] == '/' ? "" : "/";
+	
+	if((dp  = opendir(dir)) == NULL) {
+		HttpSendErrorToTheServer(context, 500, "Cannot open directory");
+		return -1;
+	}
+	
+	CFMutableDataRef message_body = CFDataCreateMutable(context->_alloc, 0);
+	
+	int n = _HttpSnprintf(line, sizeof(line),
+						  "<html><head><title>Index of %s</title>"
+						  "<style>th {text-align: left;} * {font-size: 30px; font-weight: bold;}</style></head>"
+						  "<body><h1>Index of %s</h1><pre><table cellpadding=\"0\">"
+						  "<tr><th>Name</th><th>Modified</th><th>Size</th></tr>"
+						  "<tr><td colspan=\"3\"><hr></td></tr>",
+						  context->_request->_uri, context->_request->_uri);
+	CFDataAppendBytes(message_body, (UInt8*)line, (CFIndex)n);
+	
+	while ((dirp = readdir(dp)) != NULL) {
+		/* Do not show current dir */
+		if ( strcmp(dirp->d_name, ".") == 0 )
+			continue;
+
+		_HttpSnprintf(file, sizeof(file), "%s%s", dir, dirp->d_name);
+		stat(file, &st);
+		
+		if (S_ISDIR(st.st_mode)) {
+			_HttpSnprintf(size,sizeof(size),"%s","&lt;DIR&gt;");
+		} else {
+			if (st.st_size < 1024)
+				_HttpSnprintf(size, sizeof(size),
+							  "%lu", (unsigned long) st.st_size);
+			else if (st.st_size < 1024 * 1024)
+				_HttpSnprintf(size, sizeof(size), "%luk",
+							  (unsigned long) (st.st_size >> 10)  + 1);
+			else
+				_HttpSnprintf(size, sizeof(size),
+							  "%.1fM", (float) st.st_size / 1048576);
+		}
+		strftime(mod, sizeof(mod), "%d-%b-%Y %H:%M", localtime(&st.st_mtime));
+		
+		n = _HttpSnprintf(line, sizeof(line),
+						  "<tr><td><a href=\"%s%s%s\">%s%s</a></td>"
+						  "<td>&nbsp;%s</td><td>&nbsp;&nbsp;%s</td></tr>\n",
+						  context->_request->_uri, slash, dirp->d_name, dirp->d_name,
+						  S_ISDIR(st.st_mode) ? "/" : "", mod, size);
+		
+		CFDataAppendBytes(message_body, (UInt8*)line, (CFIndex)n);
+	}
+	
+	CFDataAppendBytes(message_body, (UInt8*)footer, (CFIndex)strlen(footer));
+	
+	n = _HttpSnprintf(line, sizeof(line),
+					  "HTTP/1.1 200 OK\r\n"
+					  "Content-Length: %u\r\n"
+					  "Connection: close\r\n"
+					  "Content-Type: text/html; charset=utf-8\r\n\r\n",
+					   CFDataGetLength(message_body));
+
+	CFDataAppendBytes(context->_sendBytes, (UInt8*)line, (CFIndex)n);
+	CFDataAppendBytes(context->_sendBytes, CFDataGetBytePtr(message_body), 
+					  CFDataGetLength(message_body));
+	
+	DBG(("Message to send:\n"));
+	_dbg_print_data((UInt8*)CFDataGetBytePtr(context->_sendBytes), 
+					CFDataGetLength(context->_sendBytes));
+	DBG(("-- eof --\n"));
+
+	CFRelease(message_body);
+
+	closedir(dp);
+	return 0;
+}
+
+static const struct {
+	const char	*extension;
+	int		ext_len;
+	const char	*mime_type;
+} builtin_mime_types[] = {
+{"html",	4,	"text/html"			},
+{"htm",		3,	"text/html"			},
+{"txt",		3,	"text/plain"			},
+{"css",		3,	"text/css"			},
+{"ico",		3,	"image/x-icon"			},
+{"gif",		3,	"image/gif"			},
+{"jpg",		3,	"image/jpeg"			},
+{"jpeg",	4,	"image/jpeg"			},
+{"png",		3,	"image/png"			},
+{"svg",		3,	"image/svg+xml"			},
+{"torrent",	7,	"application/x-bittorrent"	},
+{"wav",		3,	"audio/x-wav"			},
+{"mp3",		3,	"audio/x-mp3"			},
+{"mid",		3,	"audio/mid"			},
+{"m3u",		3,	"audio/x-mpegurl"		},
+{"ram",		3,	"audio/x-pn-realaudio"		},
+{"ra",		2,	"audio/x-pn-realaudio"		},
+{"doc",		3,	"application/msword",		},
+{"exe",		3,	"application/octet-stream"	},
+{"zip",		3,	"application/x-zip-compressed"	},
+{"xls",		3,	"application/excel"		},
+{"tgz",		3,	"application/x-tar-gz"		},
+{"tar.gz",	6,	"application/x-tar-gz"		},
+{"tar",		3,	"application/x-tar"		},
+{"gz",		2,	"application/x-gunzip"		},
+{"arj",		3,	"application/x-arj-compressed"	},
+{"rar",		3,	"application/x-arj-compressed"	},
+{"rtf",		3,	"application/rtf"		},
+{"pdf",		3,	"application/pdf"		},
+{"swf",		3,	"application/x-shockwave-flash"	},
+{"mpg",		3,	"video/mpeg"			},
+{"mpeg",	4,	"video/mpeg"			},
+{"asf",		3,	"video/x-ms-asf"		},
+{"avi",		3,	"video/x-msvideo"		},
+{"bmp",		3,	"image/bmp"			},
+{NULL,		0,	NULL				}
+};
+
+void
+_HttpGetMimeType(HttpContextRef context, const char *uri, int len, struct vec *vec)
+{
+	int		i, ext_len;
+	
+	/* Loop through built-in mime types */
+	for (i = 0; builtin_mime_types[i].extension != NULL; i++) {
+		ext_len = builtin_mime_types[i].ext_len;
+		if (len > ext_len && uri[len - ext_len - 1] == '.' &&
+		    !_strncasecmp(builtin_mime_types[i].extension,
+								 &uri[len - ext_len], ext_len)) {
+			vec->ptr = builtin_mime_types[i].mime_type;
+			vec->len = strlen(vec->ptr);
+			return;
+		}
+	}
+	
+	/* Oops. This extension is unknown to us. Fallback to text/plain */
+	vec->ptr = "text/plain";
+	vec->len = strlen(vec->ptr);
+}
+
+//TBD - loading whole file in the memory is not efficient, it is better to 
+//just open file here and provide filestream to HttpContext so 
+//it can read file in small chunks as there is space in the send buffer 
+static int
+_HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
+
+	char			headers[512], date[64], lm[64], etag[64], range[64] = "";
+	size_t			n, status = 200, ret = 1;
+	unsigned long	r1, r2;
+	const char		*fmt = "%a, %d %b %Y %H:%M:%S GMT", *msg = "OK";
+	big_int_t		cl = (big_int_t) st->st_size;
+	int				fd;
+
+	if ((fd = open(file, O_RDONLY | O_BINARY, 0644)) != -1) {
+
+		/* If Range: header specified, act accordingly */
+		if (context->_request->_cheaders.range.v_vec.len > 0 &&
+			(n = sscanf(context->_request->_cheaders.range.v_vec.ptr,
+						"bytes=%lu-%lu",&r1, &r2)) > 0) {
+			status = 206;
+			lseek(fd, r1, SEEK_SET);
+			cl = n == 2 ? r2 - r1 + 1: cl - r1;
+			_HttpSnprintf(range, sizeof(range),
+						  "Content-Range: bytes %lu-%lu/%lu\r\n",
+						  r1, r1 + cl - 1, (unsigned long) st->st_size);
+			msg = "Partial Content";
+		}
+				
+		char* buf = CFAllocatorAllocate(context->_alloc, cl, 0);
+		if ( read(fd, buf, st->st_size) > 0) {
+			
+			/* Get mime type */
+			_HttpGetMimeType(context, file, strlen(file), &context->_request->_mime_type);
+					
+			/* Prepare Etag, Date, Last-Modified headers */
+			time_t	_current_time = time(0);
+			strftime(date, sizeof(date), fmt, localtime(&_current_time));
+			strftime(lm, sizeof(lm), fmt, localtime(&st->st_mtime));
+			_HttpSnprintf(etag, sizeof(etag), "%lx.%lx",
+						  (unsigned long) st->st_mtime, (unsigned long) st->st_size);
+			
+			/* Format reply headers */
+			int headers_len = _HttpSnprintf(headers,
+											sizeof(headers),
+											"HTTP/1.1 %d %s\r\n"
+											"Date: %s\r\n"
+											"Last-Modified: %s\r\n"
+											"Etag: \"%s\"\r\n"
+											"Connection: close\r\n"
+											"Content-Type: %.*s\r\n"
+											"Content-Length: %lu\r\n"
+											"Accept-Ranges: bytes\r\n"
+											"%s\r\n",
+											status, msg, date, lm, etag,
+											context->_request->_mime_type.len, 
+											context->_request->_mime_type.ptr, 
+											cl, range);
+			
+			/* Add reply headers to the send buffer */
+			CFDataAppendBytes(context->_sendBytes, (UInt8*)headers, (CFIndex)headers_len);
+			
+			DBG(("File to send:\n"));
+			_dbg_print_data((UInt8*)headers, headers_len);
+			DBG(("-- eof --\n"));
+			
+			/* Add file to the send buffer */
+			CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)cl);			
+		
+		} else {
+			HttpSendErrorToTheServer(context, 500, "Internal Server Error - Can't read requested file");
+			ret = -1;
+		}
+		CFAllocatorDeallocate(context->_alloc,buf);
+		close(fd);
+		return ret;
+	} else {
+		HttpSendErrorToTheServer(context, 500, "Internal Server Error - Can't open requested file");
+		return -1;
+	}
+}
+
+static int 
+_HTTPGetIndexFile(HttpContextRef context, char* path) {
+	const char *index[] = { "index.html", "index.htm" };
+	
+	char file[FILENAME_MAX];
+	struct stat	st;
+	const char* slash = path[strlen(path)-1] == '/' ? "" : "/";
+	
+	for (int i = 0; i < sizeof(index) / sizeof(index[0]); i++) {
+		_HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, index[i]);
+		if ( (stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
+			slash = context->_request->_uri[strlen(context->_request->_uri)-1] == '/' ? "" : "/";
+			char buf[512+URI_MAX];
+			int msg_len = _HttpSnprintf(buf,sizeof(buf),
+						  "HTTP/1.1 301 Moved Permanently\r\n"
+						  "Location: %s%s%s\r\n"
+						  "Content-Type: text/plain\r\n"
+						  "Content-Length: 0\r\n"
+						  "Connection: close\r\n"
+						  "\r\n", 
+						  context->_request->_uri, slash, index[i]);	
+
+
+			DBG(("Message to send:\n"));
+			_dbg_print_data((UInt8*)buf, msg_len);
+			DBG(("-- eof --\n"));
+			
+			CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)msg_len);
+			
+			return 1;						  
+		}
+	}
+	return 0;
+}
+
+static int
+_HTTPGetFile(HttpContextRef context, char* path)
+{
+	struct stat	st;
+	int ret;
+	
+	if ( stat(path, &st) == -1 ) {
+        HttpSendErrorToTheServer(context, 404, "Not Found");
+        return -1;				
+	} else if ( S_ISDIR(st.st_mode) ) {
+		if ( (ret = _HTTPGetIndexFile(context, path)) == 0) {
+			return _HTTPServeDirectoryListing(context, path);
+		} 
+		return ret;
+	} else {
+		return _HTTPServeFile(context, &st, path);
+	}
+}
+
+int 
+HTTPProcessMessage(HttpContextRef context) {
+	char		path[URI_MAX], *root;
+	
+	if ((context->_request->_query = strchr(context->_request->_uri, '?')) != NULL)
+		*context->_request->_query++ = '\0';
+	
+	_HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
+				   context->_request->_uri, strlen(context->_request->_uri) + 1);
+	
+	root = HttpGetSiteRoot();
+	if (strlen(context->_request->_uri) + strlen(root) >= sizeof(path)) {
+		HttpSendErrorToTheServer(context, 400, "URI is too long");
+		return -1;
+	}
+	
+	_HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
+	DBG(("Path = %s\n", path));
+		 
+	if (context->_request->_method == METHOD_GET) {
+		return _HTTPGetFile(context, path);		
+	} else {
+        HttpSendErrorToTheServer(context, 501, "Method Not Implemented");
+        return -1;
+	}
+						  
     HttpSendErrorToTheServer(context, 500, "Under construction");
     return -1;        
 }

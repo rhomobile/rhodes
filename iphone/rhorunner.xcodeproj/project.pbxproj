@@ -11,7 +11,6 @@
 		05377CEC0E74D6C0003B8BD1 /* HttpContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CE80E74D6C0003B8BD1 /* HttpContext.c */; };
 		05377CED0E74D6C0003B8BD1 /* Server.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CEA0E74D6C0003B8BD1 /* Server.c */; };
 		05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
-		05377D180E74D7FC003B8BD1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D170E74D7FC003B8BD1 /* CoreServices.framework */; };
 		05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 05CF70EA0E78B14D00D41986 /* ServerHost.m */; };
 		05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 05CF724E0E7B16F800D41986 /* HttpMessage.c */; };
 		1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
@@ -29,7 +28,6 @@
 		05377CEA0E74D6C0003B8BD1 /* Server.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Server.c; path = Server/Server.c; sourceTree = "<group>"; };
 		05377CEB0E74D6C0003B8BD1 /* Server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Server.h; path = Server/Server.h; sourceTree = "<group>"; };
 		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		05377D170E74D7FC003B8BD1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		05CF70E90E78B14D00D41986 /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
 		05CF70EA0E78B14D00D41986 /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
 		05CF724E0E7B16F800D41986 /* HttpMessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HttpMessage.c; path = Server/HttpMessage.c; sourceTree = "<group>"; };
@@ -54,7 +52,6 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
-				05377D180E74D7FC003B8BD1 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +127,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				05377D170E74D7FC003B8BD1 /* CoreServices.framework */,
 				05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -214,6 +210,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+				);
 				PRODUCT_NAME = rhorunner;
 			};
 			name = Debug;
@@ -239,6 +243,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+				);
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.0;
 			};
