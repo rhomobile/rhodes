@@ -1,4 +1,5 @@
 
+#include <unistd.h>
 
 #pragma mark Includes
 #if TARGET_IPHONE_SIMULATOR
@@ -10,6 +11,8 @@
 #include "defs.h"
 #include "HttpContext.h"
 #include "HttpMessage.h"
+#include "Dispatcher.h"
+#include "AppManagerI.h"
 
 #pragma mark -
 #pragma mark Type Declarations
@@ -307,9 +310,10 @@ HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason)
     CFDataAppendBytes(context->_sendBytes, (UInt8*)buffer, (CFIndex)strlen(buffer));
 }
 
-char* 
+
+const char* 
 HttpGetSiteRoot() {
-	return ROOT_FOLDER;
+	return GetApplicationsRootPath();
 }
 
 #pragma mark -
@@ -347,6 +351,9 @@ _HttpContextHandleHasBytesAvailable(HttpContextRef context) {
         if ( result == 1 ) {
             // HTTP message is fully loaded, process it
             HTTPProcessMessage(context);
+			
+			// Reset the timeout.
+			CFRunLoopTimerSetNextFireDate(context->_timer, CFAbsoluteTimeGetCurrent() + kTimeOutInSeconds);
         }
         
         // If the ouput stream can write, try sending the bytes.
@@ -358,7 +365,7 @@ _HttpContextHandleHasBytesAvailable(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleEndEncountered(HttpContextRef context) {
-
+    DBG(("Handle End Encountered 0x%X\n",context));
 	// End was hit, so destroy the context.
     HttpContextClose(context);
     HttpContextRelease(context);
@@ -366,7 +373,8 @@ _HttpContextHandleEndEncountered(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
-		
+	DBG(("Sending data to the view\n"));
+	
 	// Get the start of the buffer to send.
 	const UInt8* start = CFDataGetBytePtr(context->_sendBytes);
 	
@@ -376,12 +384,13 @@ _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
 	// Writing resets the timer.
 	CFRunLoopTimerSetNextFireDate(context->_timer, CFAbsoluteTimeGetCurrent() + kTimeOutInSeconds);
 	
-	// If there was a linefeed, take care of sending the data.
+	// If there data in the buffer to send, take care of sending the data.
 	if (size != 0) {
 		
 		// Write all of the bytes redy to be sent
 		CFIndex bytesWritten = CFWriteStreamWrite(context->_outStream, start, size);
-		
+		DBG(("%d bytes sent\n", bytesWritten));
+			 
 		// If successfully sent the data, remove the bytes from the buffer.
 		if (bytesWritten > 0)
 			CFDataDeleteBytes(context->_sendBytes, CFRangeMake(0, bytesWritten));
@@ -391,7 +400,7 @@ _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleErrorOccurred(HttpContextRef context) {
-
+    DBG(("Handle Error Occurred 0x%X\n",context));
 	// Hit an error, so destroy the context which will close the streams.
     HttpContextClose(context);
 	HttpContextRelease(context);
@@ -400,7 +409,7 @@ _HttpContextHandleErrorOccurred(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleTimeOut(HttpContextRef context) {
-
+    DBG(("Handle Timeout 0x%X\n",context));
 	// Haven't heard from the client so kill everything.
     HttpContextClose(context);
     HttpContextRelease(context);

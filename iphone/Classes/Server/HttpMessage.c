@@ -26,6 +26,7 @@
 #include "defs.h"
 #include "HttpContext.h"
 #include "HttpMessage.h"
+#include "Dispatcher.h"
 
 enum {METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD};
 const struct vec _known_http_methods[] = {
@@ -231,7 +232,8 @@ _HTTPParseMessage(HttpContextRef context) {
     int buflen = CFDataGetLength(context->_rcvdBytes);
     
     int req_len = _HttpGetHeadersLen(buffer, buflen);
-    DBG(("\n\nParsing new request\nHeaders len = %d\n", req_len));
+    DBG(("\n\nParsing new request (context 0x%X (%d - 0x%x))\nHeaders len = %d\n", 
+		 context, sizeof(context[0]), context+sizeof(context[0]), req_len));
     
     if (req_len == 0) {
         if (buflen > 2048) {
@@ -295,7 +297,7 @@ _HTTPParseMessage(HttpContextRef context) {
     int headers_len = req_len - (p - buffer);
    
     // Allocate space for a copy of headers 
-    context->_request->_headers = CFAllocatorAllocate(context->_alloc, headers_len, 0);
+    context->_request->_headers = CFAllocatorAllocate(context->_alloc, headers_len+2, 0);
     if ( context->_request->_headers == NULL ) {
 		HttpSendErrorToTheServer(context, 500, "Internal server error - can't allocate headers");
         return -1;
@@ -379,7 +381,7 @@ _HTTPUrlDecode(const char *src, int src_len, char *dst, int dst_len)
  * in his audit report.
  */
 int
-_HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...)
+HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...)
 {
 	va_list		ap;
 	int		n;
@@ -416,7 +418,7 @@ _HTTPServeDirectoryListing(HttpContextRef context, char* dir) {
 	
 	CFMutableDataRef message_body = CFDataCreateMutable(context->_alloc, 0);
 	
-	int n = _HttpSnprintf(line, sizeof(line),
+	int n = HttpSnprintf(line, sizeof(line),
 						  "<html><head><title>Index of %s</title>"
 						  "<style>th {text-align: left;} * {font-size: 30px; font-weight: bold;}</style></head>"
 						  "<body><h1>Index of %s</h1><pre><table cellpadding=\"0\">"
@@ -430,25 +432,25 @@ _HTTPServeDirectoryListing(HttpContextRef context, char* dir) {
 		if ( strcmp(dirp->d_name, ".") == 0 )
 			continue;
 
-		_HttpSnprintf(file, sizeof(file), "%s%s", dir, dirp->d_name);
+		HttpSnprintf(file, sizeof(file), "%s%s", dir, dirp->d_name);
 		stat(file, &st);
 		
 		if (S_ISDIR(st.st_mode)) {
-			_HttpSnprintf(size,sizeof(size),"%s","&lt;DIR&gt;");
+			HttpSnprintf(size,sizeof(size),"%s","&lt;DIR&gt;");
 		} else {
 			if (st.st_size < 1024)
-				_HttpSnprintf(size, sizeof(size),
+				HttpSnprintf(size, sizeof(size),
 							  "%lu", (unsigned long) st.st_size);
 			else if (st.st_size < 1024 * 1024)
-				_HttpSnprintf(size, sizeof(size), "%luk",
+				HttpSnprintf(size, sizeof(size), "%luk",
 							  (unsigned long) (st.st_size >> 10)  + 1);
 			else
-				_HttpSnprintf(size, sizeof(size),
+				HttpSnprintf(size, sizeof(size),
 							  "%.1fM", (float) st.st_size / 1048576);
 		}
 		strftime(mod, sizeof(mod), "%d-%b-%Y %H:%M", localtime(&st.st_mtime));
 		
-		n = _HttpSnprintf(line, sizeof(line),
+		n = HttpSnprintf(line, sizeof(line),
 						  "<tr><td><a href=\"%s%s%s\">%s%s</a></td>"
 						  "<td>&nbsp;%s</td><td>&nbsp;&nbsp;%s</td></tr>\n",
 						  context->_request->_uri, slash, dirp->d_name, dirp->d_name,
@@ -459,7 +461,7 @@ _HTTPServeDirectoryListing(HttpContextRef context, char* dir) {
 	
 	CFDataAppendBytes(message_body, (UInt8*)footer, (CFIndex)strlen(footer));
 	
-	n = _HttpSnprintf(line, sizeof(line),
+	n = HttpSnprintf(line, sizeof(line),
 					  "HTTP/1.1 200 OK\r\n"
 					  "Content-Length: %u\r\n"
 					  "Connection: close\r\n"
@@ -568,14 +570,14 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 			status = 206;
 			lseek(fd, r1, SEEK_SET);
 			cl = n == 2 ? r2 - r1 + 1: cl - r1;
-			_HttpSnprintf(range, sizeof(range),
+			HttpSnprintf(range, sizeof(range),
 						  "Content-Range: bytes %lu-%lu/%lu\r\n",
 						  r1, r1 + cl - 1, (unsigned long) st->st_size);
 			msg = "Partial Content";
 		}
 				
 		char* buf = CFAllocatorAllocate(context->_alloc, cl, 0);
-		if ( read(fd, buf, st->st_size) > 0) {
+		if ( read(fd, buf, cl) > 0) {
 			
 			/* Get mime type */
 			_HttpGetMimeType(context, file, strlen(file), &context->_request->_mime_type);
@@ -584,11 +586,11 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 			time_t	_current_time = time(0);
 			strftime(date, sizeof(date), fmt, localtime(&_current_time));
 			strftime(lm, sizeof(lm), fmt, localtime(&st->st_mtime));
-			_HttpSnprintf(etag, sizeof(etag), "%lx.%lx",
+			HttpSnprintf(etag, sizeof(etag), "%lx.%lx",
 						  (unsigned long) st->st_mtime, (unsigned long) st->st_size);
 			
 			/* Format reply headers */
-			int headers_len = _HttpSnprintf(headers,
+			int headers_len = HttpSnprintf(headers,
 											sizeof(headers),
 											"HTTP/1.1 %d %s\r\n"
 											"Date: %s\r\n"
@@ -627,6 +629,29 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 	}
 }
 
+int 
+HTTPRedirect(HttpContextRef context, char* location) {
+
+	char buf[256+strlen(location)];
+	int msg_len = HttpSnprintf(buf,sizeof(buf),
+								"HTTP/1.1 301 Moved Permanently\r\n"
+								"Location: %s\r\n"
+								"Content-Type: text/plain\r\n"
+								"Content-Length: 0\r\n"
+								"Connection: close\r\n"
+								"\r\n", 
+								location);	
+	
+	
+	DBG(("Message to send:\n"));
+	_dbg_print_data((UInt8*)buf, msg_len);
+	DBG(("-- eof --\n"));
+	
+	CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)msg_len);
+	
+	return 1;
+}
+
 static int 
 _HTTPGetIndexFile(HttpContextRef context, char* path) {
 	const char *index[] = { "index.html", "index.htm" };
@@ -636,27 +661,16 @@ _HTTPGetIndexFile(HttpContextRef context, char* path) {
 	const char* slash = path[strlen(path)-1] == '/' ? "" : "/";
 	
 	for (int i = 0; i < sizeof(index) / sizeof(index[0]); i++) {
-		_HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, index[i]);
+		HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, index[i]);
 		if ( (stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
+
 			slash = context->_request->_uri[strlen(context->_request->_uri)-1] == '/' ? "" : "/";
-			char buf[512+URI_MAX];
-			int msg_len = _HttpSnprintf(buf,sizeof(buf),
-						  "HTTP/1.1 301 Moved Permanently\r\n"
-						  "Location: %s%s%s\r\n"
-						  "Content-Type: text/plain\r\n"
-						  "Content-Length: 0\r\n"
-						  "Connection: close\r\n"
-						  "\r\n", 
+			char location[URI_MAX];
+			HttpSnprintf(location, sizeof(location), "%s%s%s", 
 						  context->_request->_uri, slash, index[i]);	
 
+			return HTTPRedirect(context, location);
 
-			DBG(("Message to send:\n"));
-			_dbg_print_data((UInt8*)buf, msg_len);
-			DBG(("-- eof --\n"));
-			
-			CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)msg_len);
-			
-			return 1;						  
 		}
 	}
 	return 0;
@@ -683,7 +697,8 @@ _HTTPGetFile(HttpContextRef context, char* path)
 
 int 
 HTTPProcessMessage(HttpContextRef context) {
-	char		path[URI_MAX], *root;
+	const char *root;
+	char		path[URI_MAX];
 	
 	if ((context->_request->_query = strchr(context->_request->_uri, '?')) != NULL)
 		*context->_request->_query++ = '\0';
@@ -691,13 +706,18 @@ HTTPProcessMessage(HttpContextRef context) {
 	_HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
 				   context->_request->_uri, strlen(context->_request->_uri) + 1);
 	
+	int res = Dispatch(context);
+	if (res!=0) {
+		return res;
+	}
+	
 	root = HttpGetSiteRoot();
 	if (strlen(context->_request->_uri) + strlen(root) >= sizeof(path)) {
 		HttpSendErrorToTheServer(context, 400, "URI is too long");
 		return -1;
 	}
 	
-	_HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
+	HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
 	DBG(("Path = %s\n", path));
 		 
 	if (context->_request->_method == METHOD_GET) {

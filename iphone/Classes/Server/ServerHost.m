@@ -74,6 +74,11 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 }
 
 -(void) start {
+	//Create and configure AppManager
+	appManager = [AppManager instance]; 
+	[appManager configure];
+	
+	// Start server thread	
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
 }
@@ -84,6 +89,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 - (void)dealloc 
 {
+    [appManager release];
 	[super dealloc];
 }
 

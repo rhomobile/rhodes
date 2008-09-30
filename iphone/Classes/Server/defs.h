@@ -17,6 +17,4 @@
 
 #define	URI_MAX		16384			/* Default max request size	*/
 
-#define ROOT_FOLDER "Users/vlad"	/* Server root folder */
-
 

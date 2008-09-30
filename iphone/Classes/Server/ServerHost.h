@@ -6,8 +6,11 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
+#import "AppManager.h"
+
 @interface ServerHost : NSObject
 {
+	AppManager * appManager;
     CFRunLoopRef runLoop;
 }
 

@@ -18,6 +18,12 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		F56893F60E92F181004DBB2D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F56893F50E92F181004DBB2D /* index.html */; };
+		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
+		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
+		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
+		F57917CB0E8B184100BBC54D /* AppManager in Resources */ = {isa = PBXBuildFile; fileRef = F57917C80E8B184100BBC54D /* AppManager */; };
+		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +48,17 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F56893F50E92F181004DBB2D /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = Resources/index.html; sourceTree = "<group>"; };
+		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
+		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
+		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
+		F56DF8D60E8D81FD00F6CBE8 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		F57917130E8ACA9E00BBC54D /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = AppManager/AppManager.h; sourceTree = "<group>"; };
+		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
+		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
+		F57917C80E8B184100BBC54D /* AppManager */ = {isa = PBXFileReference; explicitFileType = folder; name = AppManager; path = Resources/AppManager; sourceTree = "<group>"; };
+		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
+		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,11 +94,14 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F5C106510E917D4A0049A94A /* Dispatcher */,
+				F579170F0E8AB2A200BBC54D /* AppManager */,
 				05377CEE0E74D6CB003B8BD1 /* Server */,
 				05377B3E0E709170003B8BD1 /* WebViewController.h */,
 				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
 				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
+				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -118,6 +138,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F56893F50E92F181004DBB2D /* index.html */,
+				F57917C80E8B184100BBC54D /* AppManager */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 			);
@@ -132,6 +154,36 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
+				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		F579170F0E8AB2A200BBC54D /* AppManager */ = {
+			isa = PBXGroup;
+			children = (
+				F56DF7260E8C373800F6CBE8 /* AppLoader.h */,
+				F56DF7270E8C373800F6CBE8 /* AppLoader.m */,
+				F57917130E8ACA9E00BBC54D /* AppManager.h */,
+				F57917140E8ACA9E00BBC54D /* AppManager.m */,
+				F579171F0E8AE1DE00BBC54D /* AppManagerI.h */,
+			);
+			name = AppManager;
+			sourceTree = "<group>";
+		};
+		F5C106510E917D4A0049A94A /* Dispatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F5C1064E0E917D2A0049A94A /* Dispatcher.h */,
+				F5C1064F0E917D2A0049A94A /* Dispatcher.c */,
+			);
+			name = Dispatcher;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,6 +229,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
+				F57917CB0E8B184100BBC54D /* AppManager in Resources */,
+				F56893F60E92F181004DBB2D /* index.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +248,10 @@
 				05377CED0E74D6C0003B8BD1 /* Server.c in Sources */,
 				05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */,
 				05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */,
+				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
+				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
+				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
+				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +300,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IBC_FLATTEN_NIBS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
@@ -264,6 +323,14 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+				);
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.0;
 			};

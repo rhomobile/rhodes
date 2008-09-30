@@ -89,7 +89,7 @@ struct __HttpContext {
 };
 typedef struct __HttpContext* HttpContextRef;
 	
-char* HttpGetSiteRoot();	
+const char* HttpGetSiteRoot();	
 
 void HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason);
     

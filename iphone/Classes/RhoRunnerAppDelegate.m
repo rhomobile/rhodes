@@ -15,7 +15,7 @@
 @synthesize webViewController;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
-
+	
     //Create local server and start it
     [serverHost = [[ServerHost alloc] init] start];
     
@@ -30,7 +30,6 @@
 }
 
 - (void)dealloc {
-    
     [serverHost release];
 	[webViewController release];
 	[window release];

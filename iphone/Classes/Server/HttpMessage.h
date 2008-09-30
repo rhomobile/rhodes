@@ -15,10 +15,12 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
-    
+
+int HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...);    
     
 int HTTPParseRequest(HttpContextRef context);
 int HTTPProcessMessage(HttpContextRef context);
+int HTTPRedirect(HttpContextRef context, char* location);
     
                       
 #if defined(__cplusplus)
