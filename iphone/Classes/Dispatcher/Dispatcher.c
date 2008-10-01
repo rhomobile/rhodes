@@ -6,6 +6,7 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
+
 #include "defs.h"
 #include "HttpContext.h"
 #include "Dispatcher.h"
@@ -33,8 +34,7 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	if (route->application && !strcmp(route->application,"AppManager")) {
 		DBG(("Executing AppManager\n"));
 		return ExecuteAppManager(context,route);
-	}
-	return 0;
+	}	return 0;
 }
 
 /*

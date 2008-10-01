@@ -22,7 +22,7 @@ struct __Server {
 	CFAllocatorRef		_alloc;			// Allocator used to allocate this
 	UInt32				_rc;			// Number of times retained.
 	
-	CFSocketRef			_sockets[2];	// Server sockets listening for connections
+	CFSocketRef			_sockets[1];	// Server sockets listening for connections
 	
 	CFStringRef			_name;			// Name that is being registered
 	CFStringRef			_type;			// Service type that is being registered
@@ -69,7 +69,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 									  (void(*)(const void*))&ServerRelease,
 									  (CFStringRef(*)(const void *))&_ServerCopyDescription};
 			
-		// Allocate the buffer for the server.
+		DBG(("Allocate the buffer for the server.\n"));
 		server = CFAllocatorAllocate(alloc, sizeof(server[0]), 0);
 		
 		// Fail if unable to create the server
@@ -78,7 +78,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		
 		memset(server, 0, sizeof(server[0]));
 		
-		// Save the allocator for deallocating later.
+		DBG(("Save the allocator for deallocating later.\n"));
 		server->_alloc = alloc ? CFRetain(alloc) : NULL;
 		
         // Bump the retain count.
@@ -87,7 +87,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		// Make sure the server is saved for the callback.
 		socketCtxt.info = server;
 		
-		// Create the IPv4 server socket.
+		DBG(("Create the IPv4 server socket.\n"));
 		server->_sockets[0] = CFSocketCreate(alloc,
 										 PF_INET,
 										 SOCK_STREAM,
@@ -100,7 +100,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		if (server->_sockets[0] == NULL)
 			break;
 
-		// Create the IPv6 server socket.
+		/*DBG(("Create the IPv6 server socket.\n"));
 		server->_sockets[1] = CFSocketCreate(alloc,
 										 PF_INET6,
 										 SOCK_STREAM,
@@ -111,27 +111,29 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		
 		// If the socket couldn't create, bail.
 		if (server->_sockets[1] == NULL)
-			break;
+			break;*/
 		
 		// In order to accomadate stopping and starting the process without closing the socket,
 		// set the addr for resuse on the native socket.  This is not required if the port is
 		// being supplied by the OS opposed to being specified by the user.
+		DBG(("Set socket options as SO_REUSEADDR\n"));
 		setsockopt(CFSocketGetNative(server->_sockets[0]), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
-		setsockopt(CFSocketGetNative(server->_sockets[1]), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
+		//setsockopt(CFSocketGetNative(server->_sockets[1]), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
         
-		// Save the user's callback in context.
+		DBG(("Save the user's callback in context.\n"));
 		server->_callback = callback;
 		memcpy(&(server->_ctxt), context, sizeof(server->_ctxt));
 		
-		// If there is info and a retain function, retain the info.
+		DBG(("If there is info and a retain function, retain the info.\n"));
 		if (server->_ctxt.info && server->_ctxt.retain)
 			server->_ctxt.info = server->_ctxt.retain(server->_ctxt.info);
 		
+		DBG(("Server created\n"));
 		return server;
 			
 	} while (0);
 	
-	// Something failed, so clean up.
+	DBG(("Something failed in ServerCreate, so clean up.\n"));
 	if (server) {
 		ServerInvalidate((ServerRef)server);
 		ServerRelease((ServerRef)server);
@@ -201,7 +203,7 @@ ServerConnect(ServerRef s, CFStringRef name, CFStringRef type, UInt32 port) {
         CFAllocatorRef alloc = s->_alloc;
 
         struct sockaddr_in addr4;
-        struct sockaddr_in6 addr6;
+        //struct sockaddr_in6 addr6;
 
         // Make sure the port is valid (0 - 65535).
         if ((port & 0xFFFF0000U) != 0)
@@ -251,7 +253,7 @@ ServerConnect(ServerRef s, CFStringRef name, CFStringRef type, UInt32 port) {
 
         CFRelease(address);
 
-        memset(&addr6, 0, sizeof(addr6));
+        /*memset(&addr6, 0, sizeof(addr6));
 
         // Put the local port and address into the native address.
         addr6.sin6_family = AF_INET6;
@@ -265,7 +267,7 @@ ServerConnect(ServerRef s, CFStringRef name, CFStringRef type, UInt32 port) {
         // Set the local binding which causes the socket to start listening.
         if (CFSocketSetAddress(s->_sockets[1], address) != kCFSocketSuccess)
             break;
-
+		*/
         // Save the name, service type and port.
         s->_name = CFRetain(name);
         s->_type = type ? CFRetain(type) : NULL;

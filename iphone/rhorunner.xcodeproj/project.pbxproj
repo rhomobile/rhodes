@@ -94,6 +94,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F568940B0E92FC1A004DBB2D /* Shared */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				05377CEE0E74D6CB003B8BD1 /* Server */,
@@ -154,6 +155,13 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F568940B0E92FC1A004DBB2D /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Shared;
 			sourceTree = "<group>";
 		};
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
@@ -284,11 +292,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = rhorunner;
+				SDKROOT = iphoneos2.1;
 			};
 			name = Release;
 		};
@@ -296,7 +306,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -311,7 +321,8 @@
 					CoreServices,
 				);
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.0;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "62B75FDE-2C46-4410-9225-D1EBF7D05131";
+				SDKROOT = iphoneos2.1;
 			};
 			name = Debug;
 		};
@@ -319,7 +330,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
