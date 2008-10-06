@@ -21,6 +21,7 @@ int HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...);
 int HTTPParseRequest(HttpContextRef context);
 int HTTPProcessMessage(HttpContextRef context);
 int HTTPRedirect(HttpContextRef context, char* location);
+int HTTPSendReply(HttpContextRef context, char* body);
     
                       
 #if defined(__cplusplus)

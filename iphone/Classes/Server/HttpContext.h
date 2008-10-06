@@ -62,6 +62,7 @@ struct headers {
 #define _FLAG_HEADERS_PARSED 0x01
 struct __HttpRequest {
     int                 _flags;
+	int					_headers_len;
 	unsigned long       _major_version;	/* Major HTTP version number */
 	unsigned long       _minor_version;	/* Minor HTTP version number */
     int                 _method;

@@ -5,4 +5,6 @@
 	IBOutlet UIWebView *webView;
 }
 
+-(void)navigate:(NSString*)url;
+
 @end

@@ -12,7 +12,16 @@
 {
 	AppManager * appManager;
     CFRunLoopRef runLoop;
+@public
+	id  actionTarget;
+	SEL onStartSuccess;
+	SEL onStartFailure;
 }
+
+// callbacks
+@property (assign) id  actionTarget;
+@property (assign) SEL onStartSuccess;
+@property (assign) SEL onStartFailure;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...

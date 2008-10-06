@@ -6,9 +6,11 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
+#include "rhoruby.h"
 
 #include "defs.h"
 #include "HttpContext.h"
+#include "HttpMessage.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 
@@ -29,12 +31,33 @@ bool _GetRoute(char* url, RouteRef route) {
 	return ((route->application != NULL) && (route->controller != NULL) && (route->action != NULL));
 }
 
+int 
+_CallRubyCntroller(HttpContextRef context)
+{
+	DBG(("Calling ruby test\n"));
+	char* body = RhoProcessRequest("");
+	if (body) {
+		DBG(("BODY:\n"));
+		_dbg_print_data((UInt8*)body, strlen(body));
+		DBG(("-- eof --\n"));
+		
+		DBG(("Sending reply\n"));
+		return HTTPSendReply(context, body);
+	}
+	
+	return 0;
+}
+
 int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	
 	if (route->application && !strcmp(route->application,"AppManager")) {
 		DBG(("Executing AppManager\n"));
 		return ExecuteAppManager(context,route);
-	}	return 0;
+	} else if (route->application && !strcmp(route->application,"Test")) {
+		DBG(("Executing Ruby Test\n"));
+		return _CallRubyCntroller(context);
+	}
+	return 0;
 }
 
 /*

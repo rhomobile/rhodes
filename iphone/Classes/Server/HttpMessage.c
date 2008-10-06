@@ -314,8 +314,9 @@ _HTTPParseMessage(HttpContextRef context) {
     context->_request->_flags |= _FLAG_HEADERS_PARSED;
     
     // Remove headers from the buffer.
-    CFDataDeleteBytes(context->_rcvdBytes, CFRangeMake(0, req_len));
-    
+    //CFDataDeleteBytes(context->_rcvdBytes, CFRangeMake(0, req_len));
+    context->_request->_headers_len = req_len;
+	
     return 1;
 }
 
@@ -334,7 +335,7 @@ int HTTPParseRequest(HttpContextRef context) {
     }
     
     if ( (ret == 1) && (context->_request->_flags & _FLAG_HEADERS_PARSED) ) {
-        int buflen = CFDataGetLength(context->_rcvdBytes);
+        int buflen = CFDataGetLength(context->_rcvdBytes) - context->_request->_headers_len;
         if ( context->_request->_cheaders.cl.v_big_int <= buflen ) {
             return 1; 
         } else {
@@ -548,9 +549,51 @@ _HttpGetMimeType(HttpContextRef context, const char *uri, int len, struct vec *v
 	vec->len = strlen(vec->ptr);
 }
 
+int 
+HTTPSendReply(HttpContextRef context, char* body) {
+	char headers[512], date[64], lm[64], etag[64];
+	size_t status = 200;
+	const char *fmt = "%a, %d %b %Y %H:%M:%S GMT", *msg = "OK";
+	int cl = strlen(body);
+	
+	/* Prepare Etag, Date, Last-Modified headers */
+	time_t	_current_time = time(0);
+	strftime(date, sizeof(date), fmt, localtime(&_current_time));
+	strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
+	HttpSnprintf(etag, sizeof(etag), "%lx.%lx",
+				 (unsigned long) _current_time, (unsigned long) cl);
+	
+	/* Format reply headers */
+	int headers_len = HttpSnprintf(headers,
+								   sizeof(headers),
+								   "HTTP/1.1 %d %s\r\n"
+								   "Date: %s\r\n"
+								   "Last-Modified: %s\r\n"
+								   "Etag: \"%s\"\r\n"
+								   "Connection: close\r\n"
+								   "Content-Type: text/html\r\n"
+								   "Content-Length: %lu\r\n"
+								   "\r\n",
+								   status, msg, date, lm, etag, cl);
+	
+	/* Add reply headers to the send buffer */
+	CFDataAppendBytes(context->_sendBytes, (UInt8*)headers, (CFIndex)headers_len);
+	
+	DBG(("Reply send:\n"));
+	_dbg_print_data((UInt8*)headers, headers_len);
+	DBG(("-- eof --\n"));
+	
+	/* Add file to the send buffer */
+	CFDataAppendBytes(context->_sendBytes, (UInt8*)body, (CFIndex)cl);			
+	
+	return 1;
+	
+}
+
 //TBD - loading whole file in the memory is not efficient, it is better to 
 //just open file here and provide filestream to HttpContext so 
-//it can read file in small chunks as there is space in the send buffer 
+//it can read file in small chunks and add these chunks directly to the output 
+//stream
 static int
 _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 

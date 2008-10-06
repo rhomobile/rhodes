@@ -24,7 +24,26 @@
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F57917CB0E8B184100BBC54D /* AppManager in Resources */ = {isa = PBXBuildFile; fileRef = F57917C80E8B184100BBC54D /* AppManager */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
+		F5DA572F0E9562D70062A28B /* lib in Resources */ = {isa = PBXBuildFile; fileRef = F5DA57280E9562D70062A28B /* lib */; };
+		F5DA59030E9696F50062A28B /* Test in Resources */ = {isa = PBXBuildFile; fileRef = F5DA58FF0E9696F50062A28B /* Test */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F59F15FF0E9449B8004103B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		F59F16030E9449E5004103B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		05377B3D0E709170003B8BD1 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
@@ -57,8 +76,12 @@
 		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
 		F57917C80E8B184100BBC54D /* AppManager */ = {isa = PBXFileReference; explicitFileType = folder; name = AppManager; path = Resources/AppManager; sourceTree = "<group>"; };
+		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = rhorubylib/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
 		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
+		F5DA57280E9562D70062A28B /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = "<group>"; };
+		F5DA58FF0E9696F50062A28B /* Test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Test; path = Resources/Test; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,8 +101,8 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
-				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
+				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
 				05CF70EA0E78B14D00D41986 /* ServerHost.m */,
 				05377CE90E74D6C0003B8BD1 /* HttpContext.h */,
@@ -94,7 +117,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				F568940B0E92FC1A004DBB2D /* Shared */,
+				F568940B0E92FC1A004DBB2D /* Rhoruby */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				05377CEE0E74D6CB003B8BD1 /* Server */,
@@ -118,6 +141,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -139,6 +163,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F5DA58FF0E9696F50062A28B /* Test */,
+				F5DA57280E9562D70062A28B /* lib */,
 				F56893F50E92F181004DBB2D /* index.html */,
 				F57917C80E8B184100BBC54D /* AppManager */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
@@ -157,11 +183,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F568940B0E92FC1A004DBB2D /* Shared */ = {
+		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
 			isa = PBXGroup;
 			children = (
+				F59F16660E9455B0004103B4 /* rhoruby.h */,
 			);
-			name = Shared;
+			name = Rhoruby;
 			sourceTree = "<group>";
 		};
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
@@ -183,6 +210,14 @@
 				F579171F0E8AE1DE00BBC54D /* AppManagerI.h */,
 			);
 			name = AppManager;
+			sourceTree = "<group>";
+		};
+		F59F15FC0E9449B8004103B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F59F16000E9449B8004103B4 /* librhorubylib.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F5C106510E917D4A0049A94A /* Dispatcher */ = {
@@ -208,6 +243,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F59F16040E9449E5004103B4 /* PBXTargetDependency */,
 			);
 			name = rhorunner;
 			productName = rhorunner;
@@ -224,12 +260,28 @@
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F59F15FC0E9449B8004103B4 /* Products */;
+					ProjectRef = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* rhorunner */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F59F16000E9449B8004103B4 /* librhorubylib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhorubylib.a;
+			remoteRef = F59F15FF0E9449B8004103B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -239,6 +291,8 @@
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				F57917CB0E8B184100BBC54D /* AppManager in Resources */,
 				F56893F60E92F181004DBB2D /* index.html in Resources */,
+				F5DA572F0E9562D70062A28B /* lib in Resources */,
+				F5DA59030E9696F50062A28B /* Test in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +319,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		F59F16040E9449E5004103B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhorubylib;
+			targetProxy = F59F16030E9449E5004103B4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -279,10 +341,12 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
+					"-lrhorubylib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
+					"-lrhorubylib",
 				);
 				PRODUCT_NAME = rhorunner;
 			};
@@ -297,6 +361,18 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-l",
+					rhorubylib,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+					"-l",
+					librhorubylib,
+				);
 				PRODUCT_NAME = rhorunner;
 				SDKROOT = iphoneos2.1;
 			};

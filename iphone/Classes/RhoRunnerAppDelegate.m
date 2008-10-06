@@ -14,11 +14,19 @@
 @synthesize window;
 @synthesize webViewController;
 
+- (void)onServerStarted {
+	printf("Server Started notification is recived\n");
+	[webViewController navigate:@"http://localhost:8080/"];
+}
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
 	
     //Create local server and start it
-    [serverHost = [[ServerHost alloc] init] start];
-    
+    serverHost = [[ServerHost alloc] init];
+	serverHost->actionTarget = self;
+	serverHost->onStartSuccess = @selector(onServerStarted);
+    [serverHost start];
+	
     //Create View
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];

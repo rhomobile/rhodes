@@ -11,10 +11,14 @@
 #include <assert.h>
 #include <unistd.h>
 
+#include "rhoruby.h"
+
 #include "defs.h"
 #include "Server.h"
 #include "HttpContext.h"
 #include "ServerHost.h"
+#include "Dispatcher.h"
+#include "AppManagerI.h"
 
 #pragma mark -
 #pragma mark Constant Definitions
@@ -53,22 +57,47 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 @implementation ServerHost
 
+@synthesize actionTarget, onStartSuccess, onStartFailure;
+
+- (void)serverStarted:(void*)data {
+	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
+		[actionTarget performSelector:onStartSuccess];
+	}
+	
+}
+
+- (void)serverFailed:(void*)data {
+	if(actionTarget && [actionTarget respondsToSelector:onStartFailure]) {
+		[actionTarget performSelector:onStartFailure];
+	}
+}
+
+
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
+	DBG(("Initializing ruby\n"));
+	RhoRubyStart( GetApplicationsRootPath() );
+	
     runLoop = CFRunLoopGetCurrent();
-    
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
-        DBG(("HTTP Server started and ready\n"));
+		DBG(("HTTP Server started and ready\n"));
+		[self performSelectorOnMainThread:@selector(serverStarted:) 
+							   withObject:NULL waitUntilDone:NO];
         [[NSRunLoop currentRunLoop] run];
         DBG(("Invalidating local server\n"));
         ServerInvalidate(server);
     } else {
         DBG(("Failed to start HTTP Server\n"));
+		[self performSelectorOnMainThread:@selector(serverFailed:) 
+							   withObject:NULL waitUntilDone:NO];
     }
     
+	DBG(("Stopping ruby"));
+	RhoRubyStop();
+	
     DBG(("Server host thread routine is completed\n"));
     [pool release];
 }
