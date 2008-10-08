@@ -27,6 +27,5 @@
 - (void)syncClicked:(id)sender;
 - (void)createClicked:(id)sender;
 - (void)refreshClicked:(id)sender;
-- (void)refreshDbClicked:(id)sender;
 
 @end

@@ -20,6 +20,7 @@
 
 #import "rhosynctestappdelegate.h"
 #import "RootViewController.h"
+#include "SyncManagerI.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <Foundation/Foundation.h>
 
@@ -91,32 +92,6 @@
 
 	return sqlite3_open([path UTF8String], &database);
 }
-	
-- (void)fetchRecordsFromDatabase {
-	[list release];
-	self.list = [[NSMutableArray alloc] init];
-	// Get the primary key for all objects.
-	const char *sql = "SELECT id FROM object_values where update_type = 'query'";
-	sqlite3_stmt *statement;
-	pSyncObject *db_list;
-	SyncObjectWrapper *newWrapper;
-	int size = MAX_SYNC_OBJECTS;
-	db_list = malloc(size*sizeof(pSyncObject));
-	if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK) {
-		for (int i = 0; sqlite3_step(statement) == SQLITE_ROW; i++) {
-			newWrapper = [[SyncObjectWrapper alloc] init];
-			int primary_key = sqlite3_column_int(statement, 0);
-			newWrapper.wrappedObject->_primary_key = primary_key;
-			newWrapper.wrappedObject->_hydrated = 0;
-			newWrapper.wrappedObject->_database = database;
-			hydrate(newWrapper.wrappedObject);
-			[list addObject:newWrapper];
-				
-		}
-		sqlite3_finalize(statement);
-	}
-}
-
 
 - (void)reloadTable
 {
@@ -159,7 +134,7 @@
 	// Initialize database connection and list of records
 	[self createEditableCopyOfDatabaseIfNeeded];
 	[self initializeDatabaseConn];
-	[self fetchRecordsFromDatabase];
+	populate_list(database);
 	[self reloadTable];
 	
 	// Startup the sync engine thread
@@ -185,21 +160,11 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-	
-    finalize_statements();
-	finalize_op_statements();
-	
 	// Stop the sync engine
 	stop_sync_engine();
-	
-    // Close the database.
-    if (sqlite3_close(database) != SQLITE_OK) {
-        NSAssert1(0, @"Error: failed to close database with message '%s'.", sqlite3_errmsg(database));
-    }
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
-    //[self performDehydrateOperations];
 }
 
 - (void)dealloc {

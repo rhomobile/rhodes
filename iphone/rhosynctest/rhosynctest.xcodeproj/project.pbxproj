@@ -105,12 +105,11 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				46E60C290E9D2E960016AA6F /* SyncManager */,
 				4679190F0E9C199800C57826 /* SyncViewController.m */,
 				467919100E9C199800C57826 /* SyncViewController.h */,
 				467919110E9C199800C57826 /* SyncObjectWrapper.m */,
 				467919120E9C199800C57826 /* SyncObjectWrapper.h */,
-				467919130E9C199800C57826 /* SyncManager.m */,
-				467919140E9C199800C57826 /* SyncManager.h */,
 				467919150E9C199800C57826 /* RootViewController.m */,
 				467919160E9C199800C57826 /* RootViewController.h */,
 				467919170E9C199800C57826 /* rhosynctestappdelegate.m */,
@@ -193,6 +192,15 @@
 				4679195A0E9C1A2200C57826 /* librhosynclib.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		46E60C290E9D2E960016AA6F /* SyncManager */ = {
+			isa = PBXGroup;
+			children = (
+				467919130E9C199800C57826 /* SyncManager.m */,
+				467919140E9C199800C57826 /* SyncManager.h */,
+			);
+			name = SyncManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

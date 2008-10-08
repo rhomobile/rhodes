@@ -37,6 +37,7 @@
 }
 
 - (void)setWrappedObject:(pSyncObject)newWrappedObject {
+	if (_wrappedObject) { SyncObjectRelease(_wrappedObject); }
 	_wrappedObject = newWrappedObject;
 }
 

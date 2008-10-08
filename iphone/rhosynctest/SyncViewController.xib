@@ -58,7 +58,7 @@
 					<object class="IBUIButton" id="629147227">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{93, 138}, {131, 37}}</string>
+						<string key="NSFrame">{{93, 94}, {131, 37}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -79,7 +79,7 @@
 					<object class="IBUIButton" id="321933046">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{93, 190}, {131, 37}}</string>
+						<string key="NSFrame">{{93, 156}, {131, 37}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -91,27 +91,6 @@
 						<string key="IBUIDisabledTitle">Create Object</string>
 						<string key="IBUISelectedTitle">Create Object</string>
 						<string key="IBUINormalTitle">Create Object</string>
-						<reference key="IBUIHighlightedTitleColor" ref="930183359"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
-						</object>
-					</object>
-					<object class="IBUIButton" id="426889698">
-						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{93, 86}, {131, 37}}</string>
-						<reference key="NSSuperview" ref="191373211"/>
-						<bool key="IBUIOpaque">NO</bool>
-						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-						<int key="IBUIContentHorizontalAlignment">0</int>
-						<int key="IBUIContentVerticalAlignment">0</int>
-						<reference key="IBUIFont" ref="1036179238"/>
-						<int key="IBUIButtonType">1</int>
-						<string key="IBUIHighlightedTitle">DB Refresh</string>
-						<string key="IBUIDisabledTitle">DB Refresh</string>
-						<string key="IBUISelectedTitle">DB Refresh</string>
-						<string key="IBUINormalTitle">DB Refresh</string>
 						<reference key="IBUIHighlightedTitleColor" ref="930183359"/>
 						<object class="NSColor" key="IBUINormalTitleColor">
 							<int key="NSColorSpace">1</int>
@@ -168,15 +147,6 @@
 					</object>
 					<int key="connectionID">11</int>
 				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">refreshDbClicked:</string>
-						<reference key="source" ref="426889698"/>
-						<reference key="destination" ref="372490531"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">13</int>
-				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -197,7 +167,6 @@
 							<reference ref="850632193"/>
 							<reference ref="629147227"/>
 							<reference ref="321933046"/>
-							<reference ref="426889698"/>
 						</object>
 						<reference key="parent" ref="360949347"/>
 					</object>
@@ -227,11 +196,6 @@
 						<reference key="object" ref="629147227"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">12</int>
-						<reference key="object" ref="426889698"/>
-						<reference key="parent" ref="191373211"/>
-					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -243,7 +207,6 @@
 					<string>1.IBEditorWindowLastContentRect</string>
 					<string>1.IBPluginDependency</string>
 					<string>10.IBPluginDependency</string>
-					<string>12.IBPluginDependency</string>
 					<string>3.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
 				</object>
@@ -252,7 +215,6 @@
 					<string>SyncViewController</string>
 					<string>UIResponder</string>
 					<string>{{355, 148}, {320, 480}}</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>

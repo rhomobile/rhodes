@@ -30,7 +30,6 @@
 }
 
 + (EditingViewController *)editingViewController;
-- (void)updateTitle;
 - (rhosynctestappdelegate *) appDelegate;
 
 @property (nonatomic, retain) DetailViewController *detailView;

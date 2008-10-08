@@ -26,7 +26,7 @@ int stop_running = 0;
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
-static sqlite3 *database;
+sqlite3 *database;
 
 /*
  * The main routine for the sync engine thread.
@@ -56,6 +56,11 @@ void* sync_engine_main_routine(void* data) {
 				/* Continue with remote fetch */
 				pSyncObject *ob_list;
 				ob_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
+				
+				/* first, flush local database */
+				delete_all_from_database(database);
+				
+				/* fetch new list from sync source */
 				int available_remote = fetch_remote_changes(ob_list);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
@@ -64,15 +69,26 @@ void* sync_engine_main_routine(void* data) {
 						insert_into_database(ob_list[i]);
 						dehydrate(ob_list[i]);
 					}
+					/* free the in-memory list after populating the database */
+					free_ob_list(ob_list, available_remote);
 				}
+				/* update the in-memory list */
+				populate_list(database);
 			}
 		} else {
+			finalize_statements();
+			finalize_op_statements();
+			
+			// Close the database.
+			if (sqlite3_close(database) != SQLITE_OK) {
+				printf("Error: failed to close database with message '%s'.\n", sqlite3_errmsg(database));
+			}
 			printf("Sync engine is shutdown...\n");
 			break;
 		}
 	}
 	pthread_mutex_unlock(&sync_mutex);
-
+	
     return NULL;
 }
 
@@ -87,15 +103,15 @@ int process_op_list(char *type) {
 		
 		remove_op_list_from_database(op_list, database, type);
 	} else {
-		free_list(op_list, available);
+		free_op_list(op_list, available);
 		return 1;
 	}
 	
-	free_list(op_list, available);
+	free_op_list(op_list, available);
 	return 0;
 }
 
-void free_list(pSyncOperation *list, int available) {
+void free_op_list(pSyncOperation *list, int available) {
 	/* Free up our op_list */
 	for(int j = 0; j < available; j++) {
 		SyncOperationRelease(list[j]);

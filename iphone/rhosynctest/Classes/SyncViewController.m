@@ -27,7 +27,6 @@
 
 @implementation SyncViewController
 
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
@@ -54,15 +53,6 @@
 	}
 	UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:nil message:message
 													delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[myAlertView show];
-	[myAlertView release];
-}
-
-- (void)refreshDbClicked:(id)sender {
-	rhosynctestappdelegate *appDelegate = (rhosynctestappdelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate fetchRecordsFromDatabase];
-	UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:nil message:@"Refreshed database records."
-														 delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[myAlertView show];
 	[myAlertView release];
 }

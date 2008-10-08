@@ -63,10 +63,12 @@ pSyncObject SyncObjectCopy(pSyncObject new_object);
 void cleanup_placeholders(sqlite3* db);
 /* Check if object exists in database already */
 int exists_in_database(pSyncObject ref);
+/* Fetch the current list of query objects from the database */
+int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list);
 /* Initialize the row with a placeholder object (to be used by dehydrate later) */
 int insert_into_database(pSyncObject ref);
-/* Remove the object complete from the database. In memory deletion to follow... */
-void delete_from_database(pSyncObject ref);
+/* Remove the object list from the database */
+int delete_all_from_database(sqlite3 *db);
 
 /* Process update types */
 void add_delete_type_to_database(pSyncObject ref);
@@ -79,6 +81,8 @@ pSyncObject hydrate(pSyncObject ref);
 /* Flushes all but the primary key and title out to the database. */
 void dehydrate(pSyncObject ref);
 
+void free_ob_list(pSyncObject *list, int available);
+	
 /* Free object */
 void SyncObjectRelease(pSyncObject ref);
 

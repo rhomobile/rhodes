@@ -29,7 +29,6 @@ static EditingViewController *__editingViewController = nil;
 @implementation RootViewController
 
 @synthesize detailView;
-//@synthesize addView;
 
 + (EditingViewController *)editingViewController {
     // Instantiate the editing view controller if necessary.
@@ -41,7 +40,7 @@ static EditingViewController *__editingViewController = nil;
 
 - (id)initWithStyle:(UITableViewStyle)style {
 	if (self = [super initWithStyle:style]) {
-		[self updateTitle];
+		self.title = @"Accounts";
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.tableView.rowHeight = 48.0;
@@ -96,8 +95,6 @@ static EditingViewController *__editingViewController = nil;
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    // Uncomment the following line to add the Edit button to the navigation bar.
 	UIBarButtonItem *menuButton = [[[UIBarButtonItem alloc]
 								    initWithTitle:@"Menu"
 								    style:UIBarButtonItemStyleBordered
@@ -105,6 +102,7 @@ static EditingViewController *__editingViewController = nil;
 									action:@selector(loadMenu:)] autorelease];
 	self.navigationItem.leftBarButtonItem = menuButton;
 	self.navigationItem.rightBarButtonItem = self.editButtonItem;
+	[super viewDidLoad];
 }
 
 - (void)loadMenu:(id)sender {
@@ -127,14 +125,9 @@ static EditingViewController *__editingViewController = nil;
   return appDelegate;
 }
 
-- (void)updateTitle {
-	int count = [[self appDelegate] countOfList];
-	self.title = [NSString stringWithFormat:@"Accounts (%i)", count];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 	[self.tableView reloadData];
-	[self updateTitle];
 }
 
 
