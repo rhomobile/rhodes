@@ -42,6 +42,15 @@
 }
 
 - (IBAction)save:(id)sender {
+	int max_size = 50;
+	unsigned int tmp_obj_id;
+	NSMutableString *tmp_obj_seed_holder = [[NSMutableString alloc] init];
+	[tmp_obj_seed_holder appendString:newValue.text];
+	[tmp_obj_seed_holder appendString:newIndustry.text];
+	tmp_obj_id = DJBHash((char *)[tmp_obj_seed_holder UTF8String], max_size);
+	char tmp_obj[max_size + 1];
+	snprintf(tmp_obj, max_size, "%d", tmp_obj_id);
+	printf("Object ID: %s\n", tmp_obj);
 	rhosynctestappdelegate *appDelegate = (rhosynctestappdelegate *)[[UIApplication sharedApplication] delegate];
 	newObjectValue = [[SyncObjectWrapper alloc] init];
 	newObjectIndustry = [[SyncObjectWrapper alloc] init];
@@ -49,10 +58,12 @@
 	newObjectValue.wrappedObject->_attrib = str_assign("name");
 	newObjectValue.wrappedObject->_database = [appDelegate getDatabase];
 	newObjectValue.wrappedObject->_source_id = 1;
+	newObjectValue.wrappedObject->_object = str_assign(tmp_obj);
 	newObjectIndustry.wrappedObject->_value = str_assign((char *)[newIndustry.text UTF8String]);
 	newObjectIndustry.wrappedObject->_attrib = str_assign("industry");
 	newObjectIndustry.wrappedObject->_database = [appDelegate getDatabase];
 	newObjectIndustry.wrappedObject->_source_id = 1;
+	newObjectIndustry.wrappedObject->_object = str_assign(tmp_obj);
     [newObjectValue wrappedAdd];
 	[newObjectIndustry wrappedAdd];
 	[newObjectValue dealloc];
