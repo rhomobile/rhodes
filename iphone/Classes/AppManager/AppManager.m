@@ -80,6 +80,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 - (void) configure {
 	[self copyFromMainBundle:@"index.html"];
+	[self copyFromMainBundle:@"form.html"];	
 	[self copyFromMainBundle:@"AppManager"];
 	[self copyFromMainBundle:@"lib"];
 	[self copyFromMainBundle:@"Test"];

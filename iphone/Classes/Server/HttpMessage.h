@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 int HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...);    
+const char* HTTPGetMethod(int m);
     
 int HTTPParseRequest(HttpContextRef context);
 int HTTPProcessMessage(HttpContextRef context);

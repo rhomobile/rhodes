@@ -42,7 +42,6 @@ const struct vec _known_http_methods[] = {
  * This structure tells how HTTP headers must be parsed.
  * Used by _HTTPParseHeaders() function.
  */
-enum {HDR_DATE, HDR_INT, HDR_STRING};	/* HTTP header types */
 #define	OFFSET(x)	offsetof(struct headers, x)
 static const struct http_header http_headers[] = {
 {16, HDR_INT,	 OFFSET(cl),		"Content-Length: "	},
@@ -57,6 +56,10 @@ static const struct http_header http_headers[] = {
 {7,  HDR_STRING, OFFSET(range),		"Range: "		},
 {12, HDR_STRING, OFFSET(connection),"Connection: "		},
 {19, HDR_STRING, OFFSET(transenc),	"Transfer-Encoding: "	},
+{8,  HDR_STRING, OFFSET(accept),	"Accept: "		},
+{17, HDR_STRING, OFFSET(accept_encoding), "Accept-Encoding: " },
+{17, HDR_STRING, OFFSET(accept_language), "Accept-Language: " },
+{6,  HDR_STRING, OFFSET(host),		"Host: "	},
 {0,  HDR_INT,	 0,			NULL			}
 };
 
@@ -172,12 +175,18 @@ _HTTPGetRequestMethod(HttpContextRef context, const char *buf)
 	return (v->ptr == NULL);
 }
 
+const char*
+HTTPGetMethod(int m) {
+	if ( m < (sizeof(_known_http_methods)/sizeof(struct vec)-1) )
+		return _known_http_methods[m].ptr;
+	return "Unknown";
+}
 
 void
 _HTTPParseHeaders(const char *s, int len, struct headers *parsed)
 {
 	const struct http_header    *h;
-	union variant               *v;
+	struct parsed_header        *v;
 	const char                  *p, *e = s + len;
     
 	DBG(("parsing headers (len %d): [%.*s]\n", len, len, s));
@@ -201,18 +210,22 @@ _HTTPParseHeaders(const char *s, int len, struct headers *parsed)
 			s += h->len;
             
 			/* Find place to store the value */
-			v = (union variant *) ((char *) parsed + h->offset);
+			v = (struct parsed_header *) ((char *) parsed + h->offset);
             
+			/* Store name and type of the header */
+			v->_name = h->name;
+			v->_type = h->type;
+			
 			/* Fetch header value into the connection structure */
 			if (h->type == HDR_STRING) {
-				v->v_vec.ptr = s;
-				v->v_vec.len = p - s;
-				if (p[-1] == '\r' && v->v_vec.len > 0)
-					v->v_vec.len--;
+				v->_v.v_vec.ptr = s;
+				v->_v.v_vec.len = p - s;
+				if (p[-1] == '\r' && v->_v.v_vec.len > 0)
+					v->_v.v_vec.len--;
 			} else if (h->type == HDR_INT) {
-				v->v_big_int = strtoul(s, NULL, 10);
+				v->_v.v_big_int = strtoul(s, NULL, 10);
 			} else if (h->type == HDR_DATE) {
-				v->v_time = date_to_epoch(s);
+				v->_v.v_time = date_to_epoch(s);
 			}
 		}
         
@@ -308,15 +321,14 @@ _HTTPParseMessage(HttpContextRef context) {
     
     // Parse headers
     _HTTPParseHeaders(context->_request->_headers, headers_len, &context->_request->_cheaders);
-    DBG(("Content-Length: %d\n",context->_request->_cheaders.cl.v_big_int));
+    DBG(("Content-Length: %d\n",context->_request->_cheaders.cl._v.v_big_int));
         
     // Done with headers
     context->_request->_flags |= _FLAG_HEADERS_PARSED;
     
     // Remove headers from the buffer.
-    //CFDataDeleteBytes(context->_rcvdBytes, CFRangeMake(0, req_len));
-    context->_request->_headers_len = req_len;
-	
+    CFDataDeleteBytes(context->_rcvdBytes, CFRangeMake(0, req_len));
+
     return 1;
 }
 
@@ -335,8 +347,8 @@ int HTTPParseRequest(HttpContextRef context) {
     }
     
     if ( (ret == 1) && (context->_request->_flags & _FLAG_HEADERS_PARSED) ) {
-        int buflen = CFDataGetLength(context->_rcvdBytes) - context->_request->_headers_len;
-        if ( context->_request->_cheaders.cl.v_big_int <= buflen ) {
+        int buflen = CFDataGetLength(context->_rcvdBytes);
+        if ( context->_request->_cheaders.cl._v.v_big_int <= buflen ) {
             return 1; 
         } else {
             return 0;
@@ -607,8 +619,8 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 	if ((fd = open(file, O_RDONLY | O_BINARY, 0644)) != -1) {
 
 		/* If Range: header specified, act accordingly */
-		if (context->_request->_cheaders.range.v_vec.len > 0 &&
-			(n = sscanf(context->_request->_cheaders.range.v_vec.ptr,
+		if (context->_request->_cheaders.range._v.v_vec.len > 0 &&
+			(n = sscanf(context->_request->_cheaders.range._v.v_vec.ptr,
 						"bytes=%lu-%lu",&r1, &r2)) > 0) {
 			status = 206;
 			lseek(fd, r1, SEEK_SET);

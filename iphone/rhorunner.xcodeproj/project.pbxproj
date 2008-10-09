@@ -23,8 +23,9 @@
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F57917CB0E8B184100BBC54D /* AppManager in Resources */ = {isa = PBXBuildFile; fileRef = F57917C80E8B184100BBC54D /* AppManager */; };
+		F58B96C80E9D837D008D655D /* form.html in Resources */ = {isa = PBXBuildFile; fileRef = F58B96C70E9D837D008D655D /* form.html */; };
+		F58B97120E9E7612008D655D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = F58B970E0E9E7612008D655D /* lib */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
-		F5DA572F0E9562D70062A28B /* lib in Resources */ = {isa = PBXBuildFile; fileRef = F5DA57280E9562D70062A28B /* lib */; };
 		F5DA59030E9696F50062A28B /* Test in Resources */ = {isa = PBXBuildFile; fileRef = F5DA58FF0E9696F50062A28B /* Test */; };
 /* End PBXBuildFile section */
 
@@ -76,11 +77,12 @@
 		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
 		F57917C80E8B184100BBC54D /* AppManager */ = {isa = PBXFileReference; explicitFileType = folder; name = AppManager; path = Resources/AppManager; sourceTree = "<group>"; };
+		F58B96C70E9D837D008D655D /* form.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = form.html; path = Resources/form.html; sourceTree = "<group>"; };
+		F58B970E0E9E7612008D655D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = SOURCE_ROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = rhorubylib/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
 		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
-		F5DA57280E9562D70062A28B /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = "<group>"; };
 		F5DA58FF0E9696F50062A28B /* Test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Test; path = Resources/Test; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,12 +165,13 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F58B970E0E9E7612008D655D /* lib */,
 				F5DA58FF0E9696F50062A28B /* Test */,
-				F5DA57280E9562D70062A28B /* lib */,
 				F56893F50E92F181004DBB2D /* index.html */,
 				F57917C80E8B184100BBC54D /* AppManager */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
+				F58B96C70E9D837D008D655D /* form.html */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -291,8 +294,9 @@
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				F57917CB0E8B184100BBC54D /* AppManager in Resources */,
 				F56893F60E92F181004DBB2D /* index.html in Resources */,
-				F5DA572F0E9562D70062A28B /* lib in Resources */,
 				F5DA59030E9696F50062A28B /* Test in Resources */,
+				F58B96C80E9D837D008D655D /* form.html in Resources */,
+				F58B97120E9E7612008D655D /* lib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
