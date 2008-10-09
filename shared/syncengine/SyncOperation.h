@@ -72,7 +72,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 /* remove the operations from the database after processing */
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type);
 
-void free_list(pSyncOperation *list, int available);
+void free_op_list(pSyncOperation *list, int available);
 	
 /* 
  * Releases the current SyncManager instance

@@ -133,7 +133,7 @@ int exists_in_database(pSyncObject ref) {
 		return 0;
 	}
     if (select_statement == NULL) {
-        static char *sql = "SELECT value FROM object_values where id=?";
+        const char *sql = "SELECT value FROM object_values where id=?";
         if (sqlite3_prepare_v2(ref->_database, sql, -1, &select_statement, NULL) != SQLITE_OK) {
             printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
         }
@@ -152,6 +152,31 @@ int exists_in_database(pSyncObject ref) {
 	return 0;
 }
 
+int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
+	int count = 0;
+	sqlite3_stmt *fetch_statement = NULL;
+	if (fetch_statement == NULL) {
+		const char *sql = "SELECT id FROM object_values where update_type = 'query'";	
+		if (sqlite3_prepare_v2(database, sql, -1, &fetch_statement, NULL) != SQLITE_OK) {
+			printf("Error: failed to prepare statement with message '%s'.\n", sqlite3_errmsg(database));
+		} else {
+			for (int i = 0; sqlite3_step(fetch_statement) == SQLITE_ROW; i++) {
+				pSyncObject new_object = SyncObjectCreate();
+				int	primary_key = sqlite3_column_int(fetch_statement, 0);
+				new_object->_primary_key = primary_key;
+				new_object->_hydrated = 0;
+				new_object->_database = database;
+				hydrate(new_object);
+				db_list[i] = new_object;
+				count++;
+			}
+		}
+	}
+	sqlite3_reset(fetch_statement);
+	sqlite3_finalize(fetch_statement);
+	return count;
+}
+
 /* insert object into database, returns SYNC_OBJECT_DUPLICATE, SYNC_OBJECT_ERROR, or SYNC_OBJECT_SUCCESS */
 int insert_into_database(pSyncObject ref) {
 	if (exists_in_database(ref)) {
@@ -161,9 +186,10 @@ int insert_into_database(pSyncObject ref) {
 		return SYNC_OBJECT_DUPLICATE;
 	} else {
 		if (insert_statement == NULL) {
-			static char *sql = "INSERT INTO object_values (id, attrib, source_id, object, value, created_at, updated_at, update_type) VALUES(?,?,?,?,?,?,?,?)";
+			const char *sql = "INSERT INTO object_values (id, attrib, source_id, object, value, created_at, updated_at, update_type) VALUES(?,?,?,?,?,?,?,?)";
 			if (sqlite3_prepare_v2(ref->_database, sql, -1, &insert_statement, NULL) != SQLITE_OK) {
 				printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
+				sqlite3_reset(insert_statement);
 				return SYNC_OBJECT_ERROR;
 			}
 		}
@@ -186,20 +212,21 @@ int insert_into_database(pSyncObject ref) {
 	}
 }
 
-/* Remove object from database */
-void delete_from_database(pSyncObject ref) {
+/* Remove all objects from database */
+int delete_all_from_database(sqlite3 *db) {
     if (delete_statement == NULL) {
-        const char *sql = "DELETE FROM object_values WHERE id=?";
-        if (sqlite3_prepare_v2(ref->_database, sql, -1, &delete_statement, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
+        const char *sql = "DELETE FROM object_values";
+        if (sqlite3_prepare_v2(db, sql, -1, &delete_statement, NULL) != SQLITE_OK) {
+            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
         }
     }
-    sqlite3_bind_int(delete_statement, 1, ref->_primary_key);
     int success = sqlite3_step(delete_statement);
     sqlite3_reset(delete_statement);
     if (success != SQLITE_DONE) {
-        printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
+        printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
+		return 1;
     }
+	return 0;
 }
 
 /* Commit "delete" update type to database */
@@ -304,6 +331,13 @@ void dehydrate(pSyncObject ref) {
     }
     ref->_hydrated = 0;
 } 
+
+void free_ob_list(pSyncObject *list, int available) {
+	/* Free up our ob_list */
+	for(int k = 0; k < available; k++) {
+		SyncObjectRelease(list[k]);
+	}
+}
 
 void SyncObjectRelease(pSyncObject ref) {
 	if (ref != NULL) {

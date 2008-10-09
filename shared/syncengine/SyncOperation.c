@@ -164,7 +164,6 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
  */
 void SyncOperationRelease(pSyncOperation sync) {
 	if (sync != NULL) {
-		finalize_op_statements();
 		if (sync->_sync_object != NULL) {
 			SyncObjectRelease(sync->_sync_object);
 		}

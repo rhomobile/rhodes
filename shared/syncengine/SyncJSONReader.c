@@ -58,8 +58,8 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 			
 			
 			if (strcmp(key, "object_value") == 0) {
-				printf("object_value: %s\n",
-					   json_object_get_string(val));
+				//printf("object_value: %s\n",
+				//	   json_object_get_string(val));
 				/* Initialize a new SyncObject for each object_value found */
 				current_parse_object = (pSyncObject)SyncObjectCreate();
 				sub_entry = json_object_get_object(val)->head;

@@ -51,7 +51,6 @@
 - (void)reloadTable;
 - (id)objectInListAtIndex:(NSUInteger)theIndex;
 - (void)getList:(id *)objsPtr range:(NSRange)range;
-- (void)fetchRecordsFromDatabase;
 
 @end
 

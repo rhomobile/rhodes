@@ -21,6 +21,7 @@
 #import "SyncManager.h"
 #include "Constants.h"
 #include "SyncJSONReader.h"
+#import "rhosynctestappdelegate.h"
 
 /* 
  * Pulls the latest object_values list 
@@ -55,7 +56,6 @@ int fetch_remote_changes(pSyncObject *list) {
 	}
 	[pool release];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-	free(url_string);
 	return available;
 }
 
@@ -89,4 +89,17 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	}
 	[pool release];
 	return SYNC_PUSH_CHANGES_OK;
+}
+
+void populate_list(sqlite3 *database) {
+	rhosynctestappdelegate *appDelegate = (rhosynctestappdelegate *)[[UIApplication sharedApplication] delegate];
+	[appDelegate.list release];
+	appDelegate.list = [[NSMutableArray alloc] init];
+	pSyncObject *db_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
+	int available = fetch_objects_from_database(database, db_list);
+	for (int i = 0; i < available; i++) {
+		SyncObjectWrapper *newWrapper = [[SyncObjectWrapper alloc] init];
+		newWrapper.wrappedObject = db_list[i];
+		[appDelegate.list addObject:newWrapper];
+	}
 }
