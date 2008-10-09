@@ -58,16 +58,11 @@ void set_sync_uri(pSyncOperation sync) {
 	
 	/* construct the uri */
 	strcpy(temp, SYNC_SOURCE);
-	//strcat(temp, delim);
-//	strcat(temp, sync->_controller);
-//	strcat(temp, delim);
-//	strcat(temp, itoa(sync->_sync_object->_source_id));
 	strcat(temp, delim);
 	strcat(temp, sync->_operation);
 	strcat(temp, SYNC_SOURCE_FORMAT);
 	
 	strcpy((void *)sync->_uri, temp);
-	free(temp);
 }
 
 /*
