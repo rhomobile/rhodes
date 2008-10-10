@@ -24,7 +24,8 @@
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F57917CB0E8B184100BBC54D /* AppManager in Resources */ = {isa = PBXBuildFile; fileRef = F57917C80E8B184100BBC54D /* AppManager */; };
 		F58B96C80E9D837D008D655D /* form.html in Resources */ = {isa = PBXBuildFile; fileRef = F58B96C70E9D837D008D655D /* form.html */; };
-		F58B97120E9E7612008D655D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = F58B970E0E9E7612008D655D /* lib */; };
+		F58B97FE0E9ECB13008D655D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = F58B97DC0E9ECB13008D655D /* lib */; };
+		F58B99D80E9EF23C008D655D /* syncdb.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F58B99D70E9EF23C008D655D /* syncdb.sqlite */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 		F5DA59030E9696F50062A28B /* Test in Resources */ = {isa = PBXBuildFile; fileRef = F5DA58FF0E9696F50062A28B /* Test */; };
 /* End PBXBuildFile section */
@@ -78,7 +79,8 @@
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
 		F57917C80E8B184100BBC54D /* AppManager */ = {isa = PBXFileReference; explicitFileType = folder; name = AppManager; path = Resources/AppManager; sourceTree = "<group>"; };
 		F58B96C70E9D837D008D655D /* form.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = form.html; path = Resources/form.html; sourceTree = "<group>"; };
-		F58B970E0E9E7612008D655D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = SOURCE_ROOT; };
+		F58B97DC0E9ECB13008D655D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = SOURCE_ROOT; };
+		F58B99D70E9EF23C008D655D /* syncdb.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = syncdb.sqlite; path = Resources/lib/syncdb.sqlite; sourceTree = SOURCE_ROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = rhorubylib/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
@@ -165,7 +167,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F58B970E0E9E7612008D655D /* lib */,
+				F58B99D70E9EF23C008D655D /* syncdb.sqlite */,
+				F58B97DC0E9ECB13008D655D /* lib */,
 				F5DA58FF0E9696F50062A28B /* Test */,
 				F56893F50E92F181004DBB2D /* index.html */,
 				F57917C80E8B184100BBC54D /* AppManager */,
@@ -296,7 +299,8 @@
 				F56893F60E92F181004DBB2D /* index.html in Resources */,
 				F5DA59030E9696F50062A28B /* Test in Resources */,
 				F58B96C80E9D837D008D655D /* form.html in Resources */,
-				F58B97120E9E7612008D655D /* lib in Resources */,
+				F58B97FE0E9ECB13008D655D /* lib in Resources */,
+				F58B99D80E9EF23C008D655D /* syncdb.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

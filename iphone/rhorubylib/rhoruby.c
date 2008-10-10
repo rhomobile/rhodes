@@ -36,7 +36,12 @@ void RhoRubyStart(const char* szAppPath)
 		Init_strscan();
 		
 		static const char* szFramework = 
-		"require 'RHO'\r\nRHO.new\r\n";
+		"begin\r\n"
+		"require 'RHO'\r\n"
+		"RHO.new\r\n"
+		"rescue Exception => e\r\n"
+		"puts e.message\r\n"
+		"end\r\n";
 
 		VALUE iseq  = rb_iseq_compile(rb_str_new2(szFramework), rb_str_new2(""), INT2FIX(0));
 		framework = rb_iseq_eval(iseq);
@@ -93,6 +98,8 @@ char* callFramework(VALUE hashReq) {
 	}
 	
 	//TBD: need to cleanup memory
+	rb_gc();
+	
 	char* szRes = RSTRING_PTR(callres);
 	return szRes;
 }

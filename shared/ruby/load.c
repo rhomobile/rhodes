@@ -417,6 +417,11 @@ search_required(VALUE fname, volatile VALUE *path)
     int type, ft = 0;
     const char *loading;
 
+	//trv
+	{
+		printf("Serching required %s\n", RSTRING_PTR(fname) );
+	}
+	
     *path = 0;
     ext = strrchr(ftptr = RSTRING_PTR(fname), '.');
     if (ext && !strchr(ext, '/')) {
@@ -518,9 +523,6 @@ load_ext(VALUE path)
 VALUE
 rb_require_safe(VALUE fname, int safe)
 {
-	//trv-dbg
-	char* chr = RSTRING_PTR(fname);
-	//-trv-dbg
     VALUE result = Qnil;
     rb_thread_t *th = GET_THREAD();
     volatile VALUE errinfo = th->errinfo;
