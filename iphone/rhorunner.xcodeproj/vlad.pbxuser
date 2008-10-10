@@ -196,7 +196,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					746,
+					705,
 					60,
 					20,
 					48,
@@ -494,6 +494,7 @@
 			F58B99F30E9FC3CE008D655D = F58B99F30E9FC3CE008D655D /* PBXTextBookmark */;
 			F58B9A0F0E9FC59E008D655D /* PBXTextBookmark */ = F58B9A0F0E9FC59E008D655D /* PBXTextBookmark */;
 			F58B9A110E9FC59E008D655D /* PBXTextBookmark */ = F58B9A110E9FC59E008D655D /* PBXTextBookmark */;
+			F58B9A3B0E9FDCC6008D655D /* PBXTextBookmark */ = F58B9A3B0E9FDCC6008D655D /* PBXTextBookmark */;
 			F59F115B0E94124E004103B4 = F59F115B0E94124E004103B4 /* PlistBookmark */;
 			F59F116D0E9415F9004103B4 = F59F116D0E9415F9004103B4 /* PBXTextBookmark */;
 			F59F160E0E9449F7004103B4 = F59F160E0E9449F7004103B4 /* PBXTextBookmark */;
@@ -859,7 +860,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		location = libSystem.B.dylib;
-		modificationTime = 245351713.401516;
+		modificationTime = 245357939.135841;
 		state = 1;
 		symbolName = malloc_error_break;
 	};
@@ -990,7 +991,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 134";
 		rLen = 0;
-		rLoc = 1850;
+		rLoc = 3285;
 		rType = 0;
 		vrLen = 879;
 		vrLoc = 2044;
@@ -1020,7 +1021,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 136";
 		rLen = 0;
-		rLoc = 1862;
+		rLoc = 3297;
 		rType = 0;
 		vrLen = 939;
 		vrLoc = 2044;
@@ -1040,7 +1041,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 134";
 		rLen = 0;
-		rLoc = 1790;
+		rLoc = 3225;
 		rType = 0;
 		vrLen = 922;
 		vrLoc = 2088;
@@ -1170,7 +1171,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 76";
 		rLen = 0;
-		rLoc = 1790;
+		rLoc = 3225;
 		rType = 0;
 		vrLen = 837;
 		vrLoc = 980;
@@ -1560,7 +1561,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 68";
 		rLen = 11;
-		rLoc = 1310;
+		rLoc = 2745;
 		rType = 0;
 		vrLen = 833;
 		vrLoc = 799;
@@ -2189,7 +2190,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 76";
 		rLen = 0;
-		rLoc = 1532;
+		rLoc = 2967;
 		rType = 0;
 		vrLen = 880;
 		vrLoc = 765;
@@ -2310,7 +2311,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 36";
 		rLen = 0;
-		rLoc = 577;
+		rLoc = 1048;
 		rType = 0;
 		vrLen = 969;
 		vrLoc = 1516;
@@ -2364,7 +2365,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 88";
 		rLen = 0;
-		rLoc = 1790;
+		rLoc = 3225;
 		rType = 0;
 		vrLen = 934;
 		vrLoc = 1516;
@@ -3415,7 +3416,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 44";
 		rLen = 0;
-		rLoc = 739;
+		rLoc = 2180;
 		rType = 0;
 		vrLen = 743;
 		vrLoc = 458;
@@ -3475,7 +3476,7 @@
 		fRef = F58B94230E9C102F008D655D /* rhoruby.c */;
 		name = "rhoruby.c: 44";
 		rLen = 0;
-		rLoc = 739;
+		rLoc = 2180;
 		rType = 0;
 		vrLen = 743;
 		vrLoc = 458;
@@ -3767,7 +3768,7 @@
 		path = /Users/vlad/Documents/rhorunner/iphone/Resources/lib/sqlite3/driver/dl/driver.rb;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {923, 4396}}";
+			sepNavIntBoundsRect = "{{0, 0}, {923, 4410}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1061}";
 		};
@@ -3777,7 +3778,7 @@
 		fRef = F58B99F40E9FC3CE008D655D /* api.rb */;
 		name = "api.rb: 8";
 		rLen = 0;
-		rLoc = 211;
+		rLoc = 174;
 		rType = 0;
 		vrLen = 1148;
 		vrLoc = 0;
@@ -3789,9 +3790,9 @@
 		path = /Users/vlad/Documents/rhorunner/iphone/Resources/lib/sqlite3/driver/dl/api.rb;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {923, 2408}}";
-			sepNavSelRange = "{55, 0}";
-			sepNavVisRange = "{0, 1087}";
+			sepNavIntBoundsRect = "{{0, 0}, {923, 2338}}";
+			sepNavSelRange = "{392, 0}";
+			sepNavVisRange = "{0, 1163}";
 		};
 	};
 	F58B9A0F0E9FC59E008D655D /* PBXTextBookmark */ = {
@@ -3808,14 +3809,24 @@
 		path = /Users/vlad/Documents/rhorunner/iphone/Resources/lib/sqlite3/database.rb;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {923, 10010}}";
+			sepNavIntBoundsRect = "{{0, 0}, {941, 9982}}";
 			sepNavSelRange = "{21783, 27}";
-			sepNavVisRange = "{20638, 1259}";
+			sepNavVisRange = "{21752, 14}";
 		};
 	};
 	F58B9A110E9FC59E008D655D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = F58B99E40E9EF385008D655D /* database.rb */;
+		name = "database.rb: 621";
+		rLen = 27;
+		rLoc = 21783;
+		rType = 0;
+		vrLen = 84;
+		vrLoc = 21752;
+	};
+	F58B9A3B0E9FDCC6008D655D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F58B9A100E9FC59E008D655D /* database.rb */;
 		name = "database.rb: 621";
 		rLen = 27;
 		rLoc = 21783;

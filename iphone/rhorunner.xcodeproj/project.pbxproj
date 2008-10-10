@@ -346,15 +346,18 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_LDFLAGS = "";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
+					"-lsqlite3",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
 					"-lrhorubylib",
+					"-lsqlite3",
 				);
 				PRODUCT_NAME = rhorunner;
 			};

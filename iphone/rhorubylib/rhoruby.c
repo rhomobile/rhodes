@@ -34,6 +34,7 @@ void RhoRubyStart(const char* szAppPath)
 		
 		ruby_init_loadpath(szAppPath);
 		Init_strscan();
+		Init_sqlite3_api();
 		
 		static const char* szFramework = 
 		"begin\r\n"
