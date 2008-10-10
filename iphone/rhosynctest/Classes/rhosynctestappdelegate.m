@@ -80,7 +80,6 @@
 		}
 	}
 	[pool release];
-	free(url_string);
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	return status;
 }
