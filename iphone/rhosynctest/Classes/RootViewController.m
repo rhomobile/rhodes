@@ -73,7 +73,13 @@ static EditingViewController *__editingViewController = nil;
 	
 	SyncObjectWrapper *syncObjectForRow = [[SyncObjectWrapper alloc] init];
 	syncObjectForRow = [[self appDelegate] objectInListAtIndex:indexPath.row];
-    cell.text = [[NSString alloc] initWithUTF8String:syncObjectForRow.wrappedObject->_value];
+	NSString *text;
+	if (syncObjectForRow.wrappedObject->_value) {
+		text = [[[NSString alloc] initWithUTF8String:syncObjectForRow.wrappedObject->_value] autorelease];
+	} else {
+		text = @"";
+	}
+    cell.text = text;
 	[cell setNeedsDisplay];
 	
     return cell;
