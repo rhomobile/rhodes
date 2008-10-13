@@ -59,15 +59,18 @@ void set_sync_uri(pSyncOperation sync) {
 	/* construct the uri */
 	strcpy(temp, SYNC_SOURCE);
 	strcat(temp, delim);
-	strcat(temp, sync->_operation);
+	strcat(temp, sync->_operation);	
 	strcat(temp, SYNC_SOURCE_FORMAT);
-	
 	strcpy((void *)sync->_uri, temp);
 }
 
 /*
  * Construct the body of the request by filtering 
- * the attr_filter string.
+ * the attr_filter string. The body format should
+ * look like the following:
+ * create: attrvals[][attrib]=<name|industry>&attrvals[][object]=<locallygeneratedid>&attrvals[][value]=<some value>
+ * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
+ * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
 void set_sync_post_body(pSyncOperation op) {
 	char buffer[POST_BODY_SIZE] = "";
@@ -75,18 +78,24 @@ void set_sync_post_body(pSyncOperation op) {
  	strcpy(buffer, attr_format);
 	sprintf(buffer, attr_format, 
 			"attrib", (char *)op->_sync_object->_attrib);
-	strcat(buffer, "&");
 	strcpy(target, buffer);
-	sprintf(buffer, attr_format,
-			"value", (char *)op->_sync_object->_value);
-	strcat(target, buffer);
+	
 	/* check if object exists */
-	if (op->_sync_object->_object != NULL) {
+	if (op->_sync_object->_object) {
 		strcat(target, "&");
 		sprintf(buffer, attr_format,
 				"object", (char *)op->_sync_object->_object);
 		strcat(target, buffer);
 	} 
+	
+	/* check if value exists */
+	if (op->_sync_object->_value) {
+		strcat(target, "&");
+		sprintf(buffer, attr_format,
+				"value", (char *)op->_sync_object->_value);
+		strcat(target, buffer);
+	}
+	
 	printf("Formatted post string: %s\n", target);
 	strcpy((char *)op->_post_body, target);
 }
