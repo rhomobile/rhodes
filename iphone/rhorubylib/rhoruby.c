@@ -15,6 +15,9 @@
 #include "vm_core.h"
 
 extern void Init_strscan();
+extern void Init_sqlite3_api();
+extern void print_profile_report();
+extern void enable_gc_profile(void);
 
 static VALUE  framework;
 static ID framework_mid;
@@ -31,14 +34,15 @@ void RhoRubyStart(const char* szAppPath)
     {
 		RUBY_INIT_STACK;
 		ruby_init();
+		enable_gc_profile();
 		
 		ruby_init_loadpath(szAppPath);
 		Init_strscan();
 		Init_sqlite3_api();
-		
+				
 		static const char* szFramework = 
 		"begin\r\n"
-		"require 'RHO'\r\n"
+		"require 'rho'\r\n"
 		"RHO.new\r\n"
 		"rescue Exception => e\r\n"
 		"puts e.message\r\n"
@@ -46,7 +50,8 @@ void RhoRubyStart(const char* szAppPath)
 
 		VALUE iseq  = rb_iseq_compile(rb_str_new2(szFramework), rb_str_new2(""), INT2FIX(0));
 		framework = rb_iseq_eval(iseq);
-
+		rb_gc_register_mark_object(framework);
+		
 		CONST_ID(framework_mid, "serve");
 	}	
 }
@@ -86,11 +91,9 @@ VALUE addHashToHash(VALUE hash, const char* key, VALUE val) {
 	return rb_hash_aset(hash, rb_str_new2(key), val);	
 }
 
-void freeHash(VALUE hash) {
-}
-
 char* callFramework(VALUE hashReq) {
 	
+	printf("Calling RHO.serve method\n");
     VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
 	
 	if (TYPE(callres)!=T_STRING) {
@@ -100,6 +103,7 @@ char* callFramework(VALUE hashReq) {
 	
 	//TBD: need to cleanup memory
 	rb_gc();
+	print_profile_report();
 	
 	char* szRes = RSTRING_PTR(callres);
 	return szRes;

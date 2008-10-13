@@ -59,13 +59,20 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	return UnzipApplication( appRoot, [appData bytes], [appData length]);
 }
 
-- (void) copyFromMainBundle:(NSString *)item {
+- (void) copyFromMainBundle:(NSString *)item replace:(bool)replaceFiles {
 	//Check if item was copied already 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray	 *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *itemPath = [documentsDirectory stringByAppendingPathComponent:item];
-    if ([fileManager fileExistsAtPath:itemPath]) return;
+    if ([fileManager fileExistsAtPath:itemPath]) {
+		if (replaceFiles) {
+			NSError *err;
+			[fileManager removeItemAtPath:itemPath error:&err];
+		} else {
+			return;
+		}
+	}
 	
     // The item does not exist, so copy it from resources to the appropriate location.
     NSError *error;
@@ -79,11 +86,12 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  * Configures AppManager
  */
 - (void) configure {
-	[self copyFromMainBundle:@"index.html"];
-	[self copyFromMainBundle:@"form.html"];	
-	[self copyFromMainBundle:@"AppManager"];
-	[self copyFromMainBundle:@"lib"];
-	[self copyFromMainBundle:@"Test"];
+	[self copyFromMainBundle:@"index.html" replace:YES];
+	[self copyFromMainBundle:@"form.html" replace:YES];	
+	[self copyFromMainBundle:@"AppManager" replace:YES];
+	[self copyFromMainBundle:@"lib" replace:YES];
+	[self copyFromMainBundle:@"Test" replace:YES];
+	[self copyFromMainBundle:@"Sugar" replace:YES];
 }
 
 @end
@@ -167,35 +175,35 @@ const static struct {
 int ExecuteAppManager(HttpContextRef context, RouteRef route) {
 	char err[512];
 	
-	if (!route->controller) {
+	if (!route->_model) {
 		HttpSendErrorToTheServer(context, 404, "Controller is not specifyed for the App Manager");
 		return -1;
 	}
 	
 	for (int i = 0; controllers[i]._name != NULL; i++ ) {
-		if (!strcmp(route->controller, controllers[i]._name)) {
+		if (!strcmp(route->_model, controllers[i]._name)) {
 
-			if (!route->action) {
-				sprintf(err,"No action specifyed for the controller [%s]", route->controller); 
+			if (!route->_action) {
+				sprintf(err,"No action specifyed for the controller [%s]", route->_model); 
 				HttpSendErrorToTheServer(context, 404, err);
 				return -1;	
 			}
 			
 			for (int n = 0; controllers[i]._actions[n]._name; n++) {
-				if (!strcmp(controllers[i]._actions[n]._name, route->action)) {
+				if (!strcmp(controllers[i]._actions[n]._name, route->_action)) {
 					return (controllers[i]._actions[n]._process)(context);
 				}
 			}
 
 			sprintf(err,"No action [%s] found for the App Manager controller [%s]", 
-					route->action, route->controller); 
+					route->_action, route->_model); 
 			HttpSendErrorToTheServer(context, 404, err);
 			return -1;	
 			
 		}
 	}
 	
-	sprintf(err,"No [%s] controller found for App Manager", route->controller); 
+	sprintf(err,"No [%s] controller found for App Manager", route->_model); 
 	HttpSendErrorToTheServer(context, 404, err);
 	return -1;
 }

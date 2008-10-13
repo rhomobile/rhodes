@@ -498,6 +498,11 @@ gc_profile_enable(void)
     return Qnil;
 }
 
+//trv-dbg
+void enable_gc_profile(void) {
+	gc_profile_enable();
+}
+
 /*
  *  call-seq:
  *    GC::Profiler.disable          => nil
@@ -2796,6 +2801,11 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+//trv-dbg
+void print_profile_report() {
+	char* report = RSTRING_PTR(gc_profile_result());
+	printf("Profile report:\n%s", report);
+}
 
 /*
  *  The <code>GC</code> module provides an interface to Ruby's mark and

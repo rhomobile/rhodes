@@ -709,7 +709,7 @@ HTTPRedirect(HttpContextRef context, char* location) {
 
 static int 
 _HTTPGetIndexFile(HttpContextRef context, char* path) {
-	const char *index[] = { "index.html", "index.htm" };
+	const char *index[] = { "controller.rb", "index.html", "index.htm" };
 	
 	char file[FILENAME_MAX];
 	struct stat	st;
@@ -718,7 +718,11 @@ _HTTPGetIndexFile(HttpContextRef context, char* path) {
 	for (int i = 0; i < sizeof(index) / sizeof(index[0]); i++) {
 		HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, index[i]);
 		if ( (stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
-
+			
+			if ( i == 0 ) {// there is a controller in this folder
+				return -2;
+			}
+			
 			slash = context->_request->_uri[strlen(context->_request->_uri)-1] == '/' ? "" : "/";
 			char location[URI_MAX];
 			HttpSnprintf(location, sizeof(location), "%s%s%s", 
@@ -738,13 +742,13 @@ _HTTPGetFile(HttpContextRef context, char* path)
 	int ret;
 	
 	if ( stat(path, &st) == -1 ) {
-        HttpSendErrorToTheServer(context, 404, "Not Found");
-        return -1;				
+        //HttpSendErrorToTheServer(context, 404, "Not Found");
+        return 0;				
 	} else if ( S_ISDIR(st.st_mode) ) {
 		if ( (ret = _HTTPGetIndexFile(context, path)) == 0) {
 			return _HTTPServeDirectoryListing(context, path);
 		} 
-		return ret;
+		return ret == -2 ? 0 : ret;
 	} else {
 		return _HTTPServeFile(context, &st, path);
 	}
@@ -754,17 +758,13 @@ int
 HTTPProcessMessage(HttpContextRef context) {
 	const char *root;
 	char		path[URI_MAX];
+	int			res;
 	
 	if ((context->_request->_query = strchr(context->_request->_uri, '?')) != NULL)
 		*context->_request->_query++ = '\0';
 	
 	_HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
 				   context->_request->_uri, strlen(context->_request->_uri) + 1);
-	
-	int res = Dispatch(context);
-	if (res!=0) {
-		return res;
-	}
 	
 	root = HttpGetSiteRoot();
 	if (strlen(context->_request->_uri) + strlen(root) >= sizeof(path)) {
@@ -776,12 +776,16 @@ HTTPProcessMessage(HttpContextRef context) {
 	DBG(("Path = %s\n", path));
 		 
 	if (context->_request->_method == METHOD_GET) {
-		return _HTTPGetFile(context, path);		
-	} else {
-        HttpSendErrorToTheServer(context, 501, "Method Not Implemented");
-        return -1;
+		if ((res = _HTTPGetFile(context, path))!=0) {
+			return res;
+		}
+	} 
+	
+	if ((res = Dispatch(context))!=0) {
+		return res;
 	}
-						  
-    HttpSendErrorToTheServer(context, 500, "Under construction");
+	
+	HttpSendErrorToTheServer(context, 404, "Not Found");
+	//HttpSendErrorToTheServer(context, 500, "Under construction");
     return -1;        
 }

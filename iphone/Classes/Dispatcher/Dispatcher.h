@@ -8,9 +8,10 @@
  */
 
 typedef struct __Route {
-	char* application;
-	char* controller;
-	char* action;
+	char* _application;
+	char* _model;
+	char* _id;
+	char* _action;
 } Route, * RouteRef;
 
 int Dispatch(HttpContextRef context); 

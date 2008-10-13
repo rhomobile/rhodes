@@ -24,7 +24,6 @@ VALUE addTimeToHash(VALUE hash, const char* key, time_t val);
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
 VALUE addStrToHash(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
-void freeHash(VALUE hash);	
 
 char* callFramework(VALUE hashReq);
 
