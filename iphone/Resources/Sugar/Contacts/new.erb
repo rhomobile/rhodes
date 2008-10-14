@@ -5,7 +5,7 @@
 	</head>
 	<body>
 	
-	<form action="/Sugar/Contacts" method="post">
+	<form action="<%= url_for(:create)%>" method="post">
 		First name: 
 		<input type="text" name="contact[fname]" value="John" />
 		<br/>
@@ -15,9 +15,8 @@
 		<input type="submit" value="Submit" />
 	</form> 
 
-	<p>
-		Click "Submit" button to create new contact.
-	</p>
-	
+	<p>Click "Submit" button to create new contact.</p>
+	<p>Params: <%= @params%></p>
+	<p>Url for create: <%= url_for(:create)%></p>
 	</body>
 </html>	

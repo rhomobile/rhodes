@@ -48,6 +48,7 @@ static bool _isid(char* str) {
 }
 
 static char* _tok(char* t) {
+	if (!t) return NULL;
 	char* s = strchr(t,'/');
 	if ( s != NULL ) {
 		s[0] = '\0'; s++;
@@ -57,7 +58,7 @@ static char* _tok(char* t) {
 
 static bool 
 _GetRoute(char* url, RouteRef route) {
-	char *actionorid,*e;
+	char *actionorid,*next;
 	
 	memset(route, 0, sizeof(route[0]));
 	if (url[0]=='/') url++;	
@@ -69,16 +70,16 @@ _GetRoute(char* url, RouteRef route) {
 	if ((actionorid = _tok(route->_model)) == NULL)
 		return true;
 	
-	if ((e = _tok(actionorid)) != NULL) {
-		if (_isid(actionorid)) {
-			route->_id = actionorid;
-			route->_action = e;
-			_tok(e);
-			return true;
-		} 
-	}
+	next = _tok(actionorid);
 	
-	route->_action = actionorid;
+	if (_isid(actionorid)) {
+		route->_id = actionorid;
+		route->_action = next;
+	} else {
+		route->_id = next;
+		route->_action = actionorid;
+	}
+	_tok(next);
 	
 	return true;
 }
