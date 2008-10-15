@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F563D0210EA53DBD0062DA57 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D0200EA53DBD0062DA57 /* geolocation_wrap.c */; };
 		F58B9A230E9FDAE4008D655D /* sqlite3_api_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58B9A220E9FDAE4008D655D /* sqlite3_api_wrap.c */; };
 		F59F14CE0E9436C8004103B4 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C00E9436C7004103B4 /* array.c */; };
 		F59F14CF0E9436C8004103B4 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C10E9436C7004103B4 /* bignum.c */; };
@@ -122,6 +123,7 @@
 
 /* Begin PBXFileReference section */
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F563D0200EA53DBD0062DA57 /* geolocation_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_wrap.c; path = ../../shared/ruby/ext/geolocation/geolocation_wrap.c; sourceTree = SOURCE_ROOT; };
 		F58B9A220E9FDAE4008D655D /* sqlite3_api_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_api_wrap.c; path = ../../shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c; sourceTree = SOURCE_ROOT; };
 		F59F13C00E9436C7004103B4 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = array.c; path = ../../shared/ruby/array.c; sourceTree = SOURCE_ROOT; };
 		F59F13C10E9436C7004103B4 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bignum.c; path = ../../shared/ruby/bignum.c; sourceTree = SOURCE_ROOT; };
@@ -274,6 +276,14 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
+		F563D01E0EA53D8A0062DA57 /* geolocation */ = {
+			isa = PBXGroup;
+			children = (
+				F563D0200EA53DBD0062DA57 /* geolocation_wrap.c */,
+			);
+			name = geolocation;
+			sourceTree = "<group>";
+		};
 		F58B9A210E9FDAC5008D655D /* sqlite3_api */ = {
 			isa = PBXGroup;
 			children = (
@@ -393,6 +403,7 @@
 		F59F143A0E9436C7004103B4 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				F563D01E0EA53D8A0062DA57 /* geolocation */,
 				F58B9A210E9FDAC5008D655D /* sqlite3_api */,
 				F59F143B0E9436C7004103B4 /* strscan */,
 			);
@@ -644,6 +655,7 @@
 				F5DA58890E959D5B0062A28B /* insns.inc in Sources */,
 				F5DA588A0E959D5B0062A28B /* insns_info.inc in Sources */,
 				F58B9A230E9FDAE4008D655D /* sqlite3_api_wrap.c in Sources */,
+				F563D0210EA53DBD0062DA57 /* geolocation_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

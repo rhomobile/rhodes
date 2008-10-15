@@ -16,6 +16,7 @@
 
 extern void Init_strscan();
 extern void Init_sqlite3_api();
+extern void Init_GeoLocation(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
 
@@ -39,7 +40,8 @@ void RhoRubyStart(const char* szAppPath)
 		ruby_init_loadpath(szAppPath);
 		Init_strscan();
 		Init_sqlite3_api();
-				
+		Init_GeoLocation();
+		
 		static const char* szFramework = 
 		"begin\r\n"
 		"require 'rho'\r\n"
