@@ -1,26 +1,34 @@
 #require 'erb'
 #require 'sqlite3'
 require 'time'
+require 'rhoapplication'
 
 class RHO
+	APPLICATIONS = {}
+	
+	def initialize
+		puts "Calling RHO.initialize"
+ 	end
+	
+	def get_app(appname)
+		if (APPLICATIONS[appname].nil?)
+			require RhoApplication::get_app_path(appname)+'application'
+			APPLICATIONS[appname] = Object.const_get(appname+'Application').new
+		end
+		APPLICATIONS[appname]
+	end
 	
 	def serve(req)
 		begin
 			puts "Request: " + req.to_s
 			res = init_response
-			req[:modelpath] = get_model_path req['application'], req['model']
-			require req[:modelpath]+'controller'
-			res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, req, res
+			get_app(req['application']).send :serve, req, res
 			return send_response(res)
 		rescue Exception => e
 			return send_error(e.message)
 		end	
 	end
-	
-	def get_model_path(appname, modelname)
-		File.join(File.dirname(File.expand_path(__FILE__)), '../'+appname+'/'+modelname+'/')
-	end
-	
+		
 	def init_response(status=200,message="OK",body="")
 		res = Hash.new
 		res['status'] = status

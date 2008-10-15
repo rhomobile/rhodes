@@ -18,6 +18,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		F563D0340EA541710062DA57 /* geolocation.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D0330EA541710062DA57 /* geolocation.c */; };
 		F5685D010EA2D9C8001939BF /* Sugar in Resources */ = {isa = PBXBuildFile; fileRef = F5685CF90EA2D9C8001939BF /* Sugar */; };
 		F56893F60E92F181004DBB2D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F56893F50E92F181004DBB2D /* index.html */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
@@ -69,6 +70,8 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F563D0320EA541710062DA57 /* geolocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = geolocation.h; path = GeoLocation/geolocation.h; sourceTree = "<group>"; };
+		F563D0330EA541710062DA57 /* geolocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation.c; path = GeoLocation/geolocation.c; sourceTree = "<group>"; };
 		F5685CF90EA2D9C8001939BF /* Sugar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sugar; path = Resources/Sugar; sourceTree = SOURCE_ROOT; };
 		F56893F50E92F181004DBB2D /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = Resources/index.html; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
@@ -121,6 +124,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F568940B0E92FC1A004DBB2D /* Rhoruby */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
@@ -187,6 +191,15 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F563D0310EA5408C0062DA57 /* GeoLocation */ = {
+			isa = PBXGroup;
+			children = (
+				F563D0320EA541710062DA57 /* geolocation.h */,
+				F563D0330EA541710062DA57 /* geolocation.c */,
+			);
+			name = GeoLocation;
 			sourceTree = "<group>";
 		};
 		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
@@ -322,6 +335,7 @@
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
 				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
 				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
+				F563D0340EA541710062DA57 /* geolocation.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
