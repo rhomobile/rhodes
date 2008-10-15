@@ -1,5 +1,6 @@
 require 'erb'
 require 'rhosupport'
+require 'rhom'
 
 class RhoController
 	
