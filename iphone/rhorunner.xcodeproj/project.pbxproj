@@ -19,6 +19,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		F563D0340EA541710062DA57 /* geolocation.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D0330EA541710062DA57 /* geolocation.c */; };
+		F563D1C80EA65C580062DA57 /* shared in Resources */ = {isa = PBXBuildFile; fileRef = F563D19C0EA65C580062DA57 /* shared */; };
 		F5685D010EA2D9C8001939BF /* Sugar in Resources */ = {isa = PBXBuildFile; fileRef = F5685CF90EA2D9C8001939BF /* Sugar */; };
 		F56893F60E92F181004DBB2D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F56893F50E92F181004DBB2D /* index.html */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
@@ -72,6 +73,7 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F563D0320EA541710062DA57 /* geolocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = geolocation.h; path = GeoLocation/geolocation.h; sourceTree = "<group>"; };
 		F563D0330EA541710062DA57 /* geolocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation.c; path = GeoLocation/geolocation.c; sourceTree = "<group>"; };
+		F563D19C0EA65C580062DA57 /* shared */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shared; path = Resources/shared; sourceTree = SOURCE_ROOT; };
 		F5685CF90EA2D9C8001939BF /* Sugar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sugar; path = Resources/Sugar; sourceTree = SOURCE_ROOT; };
 		F56893F50E92F181004DBB2D /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = Resources/index.html; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F563D19C0EA65C580062DA57 /* shared */,
 				F5685CF90EA2D9C8001939BF /* Sugar */,
 				F58B97DC0E9ECB13008D655D /* lib */,
 				F5DA58FF0E9696F50062A28B /* Test */,
@@ -314,6 +317,7 @@
 				F58B96C80E9D837D008D655D /* form.html in Resources */,
 				F58B97FE0E9ECB13008D655D /* lib in Resources */,
 				F5685D010EA2D9C8001939BF /* Sugar in Resources */,
+				F563D1C80EA65C580062DA57 /* shared in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

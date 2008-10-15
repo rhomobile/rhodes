@@ -167,6 +167,8 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	if (route->_application && !strcmp(route->_application,"AppManager")) {
 		DBG(("Executing AppManager\n"));
 		return ExecuteAppManager(context,route);
+	} else if (route->_application && !strcmp(route->_application,"shared")) {
+		return 0; 
 	} else {
 		DBG(("Executing %s\n",route->_application));
 		return _CallApplication(context, route);
