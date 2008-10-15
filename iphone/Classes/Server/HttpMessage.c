@@ -654,6 +654,7 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 											"Connection: close\r\n"
 											"Content-Type: %.*s\r\n"
 											"Content-Length: %lu\r\n"
+										    "Cache-Control: max-age=2592000\r\n"
 											"Accept-Ranges: bytes\r\n"
 											"%s\r\n",
 											status, msg, date, lm, etag,
