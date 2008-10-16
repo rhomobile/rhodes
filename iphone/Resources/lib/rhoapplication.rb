@@ -1,4 +1,13 @@
+require 'rhom'
+
 class RhoApplication
+	attr_accessor :rhom
+	
+	def initialize(modelname)
+		puts 'in rhoapplication initialize ' + modelname
+		@rhom = Rhom.new(modelname)
+	end
+	
 	class << self
 	
 		def get_app_path(appname)
