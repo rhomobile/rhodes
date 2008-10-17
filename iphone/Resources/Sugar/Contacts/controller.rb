@@ -10,6 +10,10 @@ class ContactsController < RhoController
     #    p 'source id: ' + result[0].source_id.to_s
     # End test code
     @message = "List of contacts"
+
+	puts "Triggering syncronization w/ remote DB"
+	SyncEngine::dosync
+	
     render :index
   end
 
@@ -40,4 +44,5 @@ class ContactsController < RhoController
     puts "Deleted record: " + @params['id']
     redirect :index
   end
+  
 end
