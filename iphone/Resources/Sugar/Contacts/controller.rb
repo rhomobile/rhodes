@@ -1,5 +1,4 @@
 require 'rhocontroller'
-require 'rhom'
 
 class ContactsController < RhoController
 
@@ -13,7 +12,12 @@ class ContactsController < RhoController
 
 	puts "Triggering syncronization w/ remote DB"
 	SyncEngine::dosync
-	
+
+    account = Account.new
+    account.name = 'Vlad'
+    puts 'Account name: ' + account.name
+    #@message = "List of contacts"
+
     render :index
   end
 

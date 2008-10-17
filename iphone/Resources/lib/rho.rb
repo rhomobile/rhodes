@@ -6,6 +6,9 @@ require 'rhoapplication'
 class RHO
 	APPLICATIONS = {}
 	
+	MODEL = "Account"
+	SOURCE_ID = "1"
+	
 	def initialize
 		puts "Calling RHO.initialize"
  	end
@@ -13,7 +16,7 @@ class RHO
 	def get_app(appname)
 		if (APPLICATIONS[appname].nil?)
 			require RhoApplication::get_app_path(appname)+'application'
-			APPLICATIONS[appname] = Object.const_get(appname+'Application').new
+			APPLICATIONS[appname] = Object.const_get(appname+'Application').new(MODEL, SOURCE_ID)
 		end
 		APPLICATIONS[appname]
 	end

@@ -587,6 +587,16 @@
 			F563D6AE0EA935E50062DA57 /* PBXTextBookmark */ = F563D6AE0EA935E50062DA57 /* PBXTextBookmark */;
 			F563D6AF0EA935E50062DA57 /* PBXTextBookmark */ = F563D6AF0EA935E50062DA57 /* PBXTextBookmark */;
 			F563D6B00EA935E50062DA57 /* PBXTextBookmark */ = F563D6B00EA935E50062DA57 /* PBXTextBookmark */;
+			F563D6C10EA945010062DA57 /* PBXTextBookmark */ = F563D6C10EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C20EA945010062DA57 /* PBXTextBookmark */ = F563D6C20EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C30EA945010062DA57 /* PBXTextBookmark */ = F563D6C30EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C40EA945010062DA57 /* PBXTextBookmark */ = F563D6C40EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C50EA945010062DA57 /* PBXTextBookmark */ = F563D6C50EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C60EA945010062DA57 /* PBXTextBookmark */ = F563D6C60EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C70EA945010062DA57 /* PBXTextBookmark */ = F563D6C70EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C80EA945010062DA57 /* PBXTextBookmark */ = F563D6C80EA945010062DA57 /* PBXTextBookmark */;
+			F563D6C90EA945010062DA57 /* PBXTextBookmark */ = F563D6C90EA945010062DA57 /* PBXTextBookmark */;
+			F563D6CA0EA945010062DA57 /* PBXTextBookmark */ = F563D6CA0EA945010062DA57 /* PBXTextBookmark */;
 			F5685BF50EA2B91A001939BF = F5685BF50EA2B91A001939BF /* PBXTextBookmark */;
 			F5685BF60EA2B91A001939BF = F5685BF60EA2B91A001939BF /* PBXTextBookmark */;
 			F5685BF70EA2B91A001939BF = F5685BF70EA2B91A001939BF /* PBXTextBookmark */;
@@ -748,7 +758,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 20";
 		rLen = 0;
-		rLoc = 411;
+		rLoc = 341;
 		rType = 0;
 		vrLen = 295;
 		vrLoc = 0;
@@ -785,7 +795,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 16";
 		rLen = 0;
-		rLoc = 256;
+		rLoc = 197;
 		rType = 0;
 		vrLen = 355;
 		vrLoc = 0;
@@ -825,7 +835,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 25";
 		rLen = 0;
-		rLoc = 428;
+		rLoc = 358;
 		rType = 0;
 		vrLen = 549;
 		vrLoc = 0;
@@ -919,7 +929,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 35";
 		rLen = 0;
-		rLoc = 600;
+		rLoc = 463;
 		rType = 0;
 		vrLen = 546;
 		vrLoc = 0;
@@ -989,7 +999,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 35";
 		rLen = 0;
-		rLoc = 600;
+		rLoc = 463;
 		rType = 0;
 		vrLen = 546;
 		vrLoc = 0;
@@ -1089,7 +1099,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 25";
 		rLen = 0;
-		rLoc = 439;
+		rLoc = 369;
 		rType = 0;
 		vrLen = 544;
 		vrLoc = 0;
@@ -1139,7 +1149,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 25";
 		rLen = 0;
-		rLoc = 439;
+		rLoc = 369;
 		rType = 0;
 		vrLen = 544;
 		vrLoc = 0;
@@ -1189,7 +1199,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 34";
 		rLen = 0;
-		rLoc = 558;
+		rLoc = 463;
 		rType = 0;
 		vrLen = 555;
 		vrLoc = 0;
@@ -1229,7 +1239,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 34";
 		rLen = 0;
-		rLoc = 558;
+		rLoc = 463;
 		rType = 0;
 		vrLen = 555;
 		vrLoc = 0;
@@ -1539,7 +1549,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 34";
 		rLen = 0;
-		rLoc = 558;
+		rLoc = 463;
 		rType = 0;
 		vrLen = 555;
 		vrLoc = 0;
@@ -1719,7 +1729,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 20";
 		rLen = 0;
-		rLoc = 361;
+		rLoc = 302;
 		rType = 0;
 		vrLen = 555;
 		vrLoc = 0;
@@ -3045,7 +3055,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 18";
 		rLen = 0;
-		rLoc = 378;
+		rLoc = 319;
 		rType = 0;
 		vrLen = 701;
 		vrLoc = 0;
@@ -3315,7 +3325,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 19";
 		rLen = 0;
-		rLoc = 397;
+		rLoc = 334;
 		rType = 0;
 		vrLen = 647;
 		vrLoc = 0;
@@ -3639,7 +3649,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 17";
 		rLen = 0;
-		rLoc = 397;
+		rLoc = 334;
 		rType = 0;
 		vrLen = 687;
 		vrLoc = 0;
@@ -3659,7 +3669,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 17";
 		rLen = 0;
-		rLoc = 397;
+		rLoc = 334;
 		rType = 0;
 		vrLen = 687;
 		vrLoc = 0;
@@ -3961,7 +3971,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 44";
 		rLen = 0;
-		rLoc = 830;
+		rLoc = 666;
 		rType = 0;
 		vrLen = 684;
 		vrLoc = 175;
@@ -4081,7 +4091,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 46";
 		rLen = 0;
-		rLoc = 830;
+		rLoc = 666;
 		rType = 0;
 		vrLen = 632;
 		vrLoc = 227;
@@ -4121,7 +4131,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 44";
 		rLen = 0;
-		rLoc = 830;
+		rLoc = 666;
 		rType = 0;
 		vrLen = 684;
 		vrLoc = 175;
@@ -4548,7 +4558,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 15";
 		rLen = 0;
-		rLoc = 329;
+		rLoc = 270;
 		rType = 0;
 		vrLen = 720;
 		vrLoc = 81;
@@ -4558,7 +4568,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 15";
 		rLen = 0;
-		rLoc = 329;
+		rLoc = 270;
 		rType = 0;
 		vrLen = 740;
 		vrLoc = 81;
@@ -4578,7 +4588,7 @@
 		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
 		name = "controller.rb: 15";
 		rLen = 0;
-		rLoc = 329;
+		rLoc = 270;
 		rType = 0;
 		vrLen = 740;
 		vrLoc = 81;
@@ -4591,6 +4601,106 @@
 		rLoc = 217;
 		rType = 0;
 		vrLen = 242;
+		vrLoc = 0;
+	};
+	F563D6C10EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F563D63B0EA92C160062DA57 /* rubysynci.c */;
+		name = "rubysynci.c: 14";
+		rLen = 0;
+		rLoc = 217;
+		rType = 0;
+		vrLen = 242;
+		vrLoc = 0;
+	};
+	F563D6C20EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685C3D0EA2B91A001939BF /* index.html */;
+		name = "index.html: 11";
+		rLen = 0;
+		rLoc = 297;
+		rType = 0;
+		vrLen = 343;
+		vrLoc = 0;
+	};
+	F563D6C30EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F563D1360EA584E50062DA57 /* application.rb */;
+		name = "application.rb: 8";
+		rLen = 0;
+		rLoc = 150;
+		rType = 0;
+		vrLen = 150;
+		vrLoc = 0;
+	};
+	F563D6C40EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685CC80EA2D695001939BF /* index.erb */;
+		name = "index.erb: 16";
+		rLen = 0;
+		rLoc = 591;
+		rType = 0;
+		vrLen = 591;
+		vrLoc = 0;
+	};
+	F563D6C50EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
+		name = "controller.rb: 56";
+		rLen = 0;
+		rLoc = 947;
+		rType = 0;
+		vrLen = 897;
+		vrLoc = 0;
+	};
+	F563D6C60EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F563D63B0EA92C160062DA57 /* rubysynci.c */;
+		name = "rubysynci.c: 14";
+		rLen = 0;
+		rLoc = 217;
+		rType = 0;
+		vrLen = 242;
+		vrLoc = 0;
+	};
+	F563D6C70EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685C3D0EA2B91A001939BF /* index.html */;
+		name = "index.html: 11";
+		rLen = 0;
+		rLoc = 297;
+		rType = 0;
+		vrLen = 343;
+		vrLoc = 0;
+	};
+	F563D6C80EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F563D1360EA584E50062DA57 /* application.rb */;
+		name = "application.rb: 8";
+		rLen = 0;
+		rLoc = 150;
+		rType = 0;
+		vrLen = 150;
+		vrLoc = 0;
+	};
+	F563D6C90EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685CC80EA2D695001939BF /* index.erb */;
+		name = "index.erb: 16";
+		rLen = 0;
+		rLoc = 591;
+		rType = 0;
+		vrLen = 591;
+		vrLoc = 0;
+	};
+	F563D6CA0EA945010062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F5685C640EA2C8E1001939BF /* controller.rb */;
+		name = "controller.rb: 19";
+		rLen = 0;
+		rLoc = 428;
+		rType = 0;
+		vrLen = 758;
 		vrLoc = 0;
 	};
 	F5685BF50EA2B91A001939BF /* PBXTextBookmark */ = {
@@ -4726,9 +4836,9 @@
 		path = /Users/vlad/Documents/rhorunner/iphone/Resources/Sugar/Contacts/controller.rb;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {923, 686}}";
-			sepNavSelRange = "{350, 0}";
-			sepNavVisRange = "{81, 720}";
+			sepNavIntBoundsRect = "{{0, 0}, {923, 742}}";
+			sepNavSelRange = "{428, 0}";
+			sepNavVisRange = "{0, 758}";
 		};
 	};
 	F5685CC70EA2D695001939BF /* PBXTextBookmark */ = {

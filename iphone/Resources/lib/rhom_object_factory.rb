@@ -21,45 +21,97 @@
 require 'rhom_object'
 
 class RhomObjectFactory
-  attr_accessor :obj_list, :classname, :attrib_count
+  attr_accessor :obj_list, :classname, :attrib_count, :source_id
   
-  def initialize(new_classname)
+  def initialize(new_classname, source_id)
     @classname = new_classname
     puts 'classname: ' + @classname
+    @source_id = source_id
     init_object 
   end
   
   def init_attrib_count(list)
-    puts 'count: ' + list[0]['count']
-    @attrib_count = list[0]['count'].to_i
+    @attrib_count = list[0]['count']
   end
   
-  # Initialize new object with dynamic attributes(
+  # Initialize new object with dynamic attributes
   def init_object
-    Object::const_set(@classname.intern, 
-      Class::new do
-        include RhomObject
-        extend RhomObject
-      end)
+    
+    unless Object::const_defined?(@classname.intern)
+      Object::const_set(@classname.intern, 
+        Class::new do
+          include RhomObject
+          extend RhomObject
+        
+          class << self
+            def find(object)
+              query = nil
+              if object.to_s == :all.to_s
+                query = "select * from #{TABLE_NAME} where source_id=#{@source_id}"
+              else
+                query = "select * from #{TABLE_NAME} where object=#{object}"
+              end
+              Rhom::execute_sql query
+            end
+    
+            def find(condition)
+              Rhom::execute_sql "select * from #{TABLE_NAME} where #{condition}"
+            end
+    
+            def find_by_sql(sql)
+              Rhom::execute_sql sql
+            end
+          end #class methods
+        
+          def save
+            #TODO: Implement save
+            Rhom::execute_sql ""
+          end
+        
+          def update(attributes)
+            #TODO: Inspect attributes and generate sql
+          end
+        end)
+    end
   end
   
   # returns an array of objects based on an existing array
   def get_list(objs)
+    puts ''
+    puts ''
     new_list = nil
     if objs
       new_list = []
-      objs.each do |obj|
-        p 'object: ' + obj.inspect
-        new_obj = Object::const_get(@classname).new
-        
-        obj.each_pair do |key, value|
-          #puts 'key, value: ' + key.to_s + ', ' + value.to_s
-          new_obj.send key.to_sym, value.to_s unless key == 'id'
+      new_obj = nil
+      # initialize previous object id to the first in the array
+      objs.each_with_index do |obj, i| 
+        if i == 0
+          new_obj = get_new_obj(obj)
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
+          
+        elsif obj['object'] != objs[i-1]['object']
+          new_list << new_obj
+          new_obj = get_new_obj(obj)
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
+          
+        elsif obj['object'] == objs[i-1]['object']
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
+          if i == objs.length - 1
+            new_list << new_obj
+          end
+          
+        elsif i == objs.length - 1
+          new_list << new_obj
         end
-        new_list << new_obj
-      end
-      
+      end 
     end
     new_list
+  end
+  
+  def get_new_obj(obj)
+    tmp_obj = Object::const_get(@classname).new
+    tmp_obj.send 'object'.to_sym, obj['object'].to_s
+    tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
+    tmp_obj
   end
 end

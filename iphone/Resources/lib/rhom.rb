@@ -27,12 +27,12 @@ class Rhom
   TABLE_NAME='object_values'
   
   def initialize(modelname, source_id)
-    puts 'in rhom initialize'
     @modelname = modelname
     @source_id = source_id
-    @factory = RhomObjectFactory.new(@modelname)
-    @factory.init_attrib_count(execute_sql("select count(distinct attrib) as count from \
-                                           #{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
+    @factory = RhomObjectFactory.new(@modelname, @source_id)
+	puts 'source_id ' + @source_id.to_s
+	@factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
+												#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
   end
   
   class << self
@@ -68,21 +68,5 @@ class Rhom
       end
       return process ? @factory.get_list(result) : result
     end
-	
-    def find(object)
-      execute_sql "select * from #{TABLE_NAME} where object=#{object.to_s}"
-    end
-    
-    def find(condition)
-      execute_sql "select * from #{TABLE_NAME} where #{condition}"
-    end
-    
-    def find_by_sql(sql)
-      execute_sql sql
-    end
   end # class methods
-  
-  def update(attributes)
-    #TODO: Inspect attributes and generate sql
-  end
 end # Rhom
