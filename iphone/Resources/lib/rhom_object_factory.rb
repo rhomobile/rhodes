@@ -21,45 +21,116 @@
 require 'rhom_object'
 
 class RhomObjectFactory
-  attr_accessor :obj_list, :classname, :attrib_count
+  attr_accessor :obj_list, :classname, :attrib_count, :source_id
   
-  def initialize(new_classname)
+  def initialize(new_classname, source_id)
     @classname = new_classname
     puts 'classname: ' + @classname
+    @source_id = source_id
     init_object 
   end
   
   def init_attrib_count(list)
-    puts 'count: ' + list[0]['count']
-    @attrib_count = list[0]['count'].to_i
+    @attrib_count = list[0]['count']
   end
   
-  # Initialize new object with dynamic attributes(
+  # Initialize new object with dynamic attributes
   def init_object
-    Object::const_set(@classname.intern, 
-      Class::new do
-        include RhomObject
-        extend RhomObject
-      end)
+    
+    unless Object::const_defined?(@classname.intern)
+      Object::const_set(@classname.intern, 
+        Class::new do
+          include RhomObject
+          extend RhomObject
+        
+          class << self
+            def find(object)
+              query = nil
+              if object.to_s == :all.to_s
+                query = "select * from #{TABLE_NAME} where source_id=#{@source_id}"
+              else
+                query = "select * from #{TABLE_NAME} where object=#{object}"
+              end
+              Rhom::execute_sql query
+            end
+    
+            def find(condition)
+              Rhom::execute_sql "select * from #{TABLE_NAME} where #{condition}"
+            end
+    
+            def find_by_sql(sql)
+              Rhom::execute_sql sql
+            end
+          end #class methods
+        
+          def save
+            #TODO: Implement save
+            Rhom::execute_sql ""
+          end
+        
+          def update(attributes)
+            #TODO: Inspect attributes and generate sql
+          end
+        end)
+    end
   end
   
   # returns an array of objects based on an existing array
   def get_list(objs)
+    puts ''
+    puts ''
     new_list = nil
     if objs
       new_list = []
-      objs.each do |obj|
-        p 'object: ' + obj.inspect
-        new_obj = Object::const_get(@classname).new
+      new_obj = nil
+      # initialize previous object id to the first in the array
+      previous_object = objs[0]['object']
+      first = true
+      objs.each_with_index do |obj, i| 
+        puts 'beginning loop...'
         
-        obj.each_pair do |key, value|
-          #puts 'key, value: ' + key.to_s + ', ' + value.to_s
-          new_obj.send key.to_sym, value.to_s unless key == 'id'
+        puts 'current object : ' + obj['object']
+        puts 'previous object: ' + previous_object
+        puts 'first ' + first.to_s
+        if obj['object'] == previous_object
+          new_obj = assign_attribute(new_obj, obj, false)
+          previous_object = obj['object']
+          first = false
+          
+          if i == (objs.length - 1)
+            # reached the end of the current object's attributes, need to
+            # add it (this only happens if there is only one unique object
+            new_list << new_obj
+            previous_object = obj['object']
+          end
+        elsif first
+          new_obj = assign_attribute(new_obj, obj, true)
+          previous_object = obj['object']
+          first = false
+        else
+          # if we have more than one unique objects with n attributes,
+          # we will reach a new object id and add the previous 
+          # object to the list
+          new_list << new_obj
+          previous_object = obj['object']
+          first = true
         end
-        new_list << new_obj
-      end
-      
+      end 
     end
     new_list
+  end
+  
+  def assign_attribute(new_obj, obj, create=false)
+    # since we are flattening the list, only
+    # create one new object for the rowset of attributes
+    if create || new_obj.nil?
+      new_obj = Object::const_get(@classname).new
+    end
+    
+    attrib = obj['attrib']
+    val = obj['value']
+    puts "assigning attribute, value: #{attrib}, #{val}"
+    new_obj.send attrib.to_sym, val.to_s
+    new_obj
   end
 end

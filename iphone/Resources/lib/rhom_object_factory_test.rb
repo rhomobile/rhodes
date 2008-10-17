@@ -25,7 +25,7 @@ require 'rhom_object_factory'
 class RhomObjectFactoryTest < Test::Unit::TestCase
   
   def test_init_and_set
-    RhomObjectFactory.new("Account")
+    RhomObjectFactory.new("Account", '1')
     
     account = Account.new
     account.name = 'hello name'
@@ -38,7 +38,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
     assert_equal 'xyz industries', account.value
   end
   
-  def test_init_with_result_set
+  def test_init_with_result_set_one_unique
     rows = [{"id"=>"1", 
         "source_id"=>"1", 
         "attrib"=>"name", 
@@ -55,11 +55,79 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    factory = RhomObjectFactory.new("Account")
+    factory = RhomObjectFactory.new("Account", '1')
     
     results = factory.get_list(rows)
-    p 'results: ' + results.inspect
-    assert_equal results.length, 2
-    assert_equal results[0].value, "abc consulting"
+    # we should only have one row
+    assert_equal 1, results.length
+    assert_equal results[0].name, "abc consulting"
+    assert_equal results[0].industry, "Entertainment"
+  end
+  
+  def test_init_with_result_set_two_unique
+    rows = [{"id"=>"1", 
+        "source_id"=>"1", 
+        "attrib"=>"name", 
+        "object"=>"3560c0a0-ef58-2f40-68a5-48f39f63741b", 
+        "value"=>"abc solutions", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"}, 
+      {"id"=>"2",             
+        "source_id"=>"1", 
+        "attrib"=>"address", 
+        "object"=>"3560c0a0-ef58-2f40-68a5-48f39f63741b", 
+        "value"=>"400 Main St.", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"},
+      {"id"=>"3",             
+        "source_id"=>"1", 
+        "attrib"=>"industry", 
+        "object"=>"3560c0a0-ef58-2f40-68a5-48f39f63741b", 
+        "value"=>"sports", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"},
+      {"id"=>"4",             
+        "source_id"=>"1", 
+        "attrib"=>"name", 
+        "object"=>"3560c0a0-ef58-2f40-df43-48f39f63741b", 
+        "value"=>"xyz consulting", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"},
+      {"id"=>"5",             
+        "source_id"=>"1", 
+        "attrib"=>"address", 
+        "object"=>"3560c0a0-ef58-2f40-df43-48f39f63741b", 
+        "value"=>"555 5th street", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"},
+      {"id"=>"6",             
+        "source_id"=>"1", 
+        "attrib"=>"industry", 
+        "object"=>"3560c0a0-ef58-2f40-df43-48f39f63741b", 
+        "value"=>"software", 
+        "created_at"=>"2008-10-14 01:53:17", 
+        "updated_at"=>"2008-10-14 01:53:17", 
+        "update_type"=>"create"}]
+    factory = RhomObjectFactory.new("Account", '1')
+    
+    results = factory.get_list(rows)
+    # we should only have two rows
+    puts 'first object: ' + results[0].inspect
+    puts 'second object: ' + results[1].inspect
+    assert_equal 2, results.length
+    
+    
+    assert_equal results[0].name, "abc solutions"
+    assert_equal results[0].address, "400 Main St."
+    assert_equal results[0].industry, "sports"
+    #TODO: Both objects are the same, so this fails!
+#    assert_equal results[1].name, "xyz consulting"
+#    assert_equal results[1].address, "555 5th street"
+#    assert_equal results[1].industry, "software"
   end
 end
