@@ -22,6 +22,9 @@
 		F563D1C80EA65C580062DA57 /* shared in Resources */ = {isa = PBXBuildFile; fileRef = F563D19C0EA65C580062DA57 /* shared */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
+		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
+		F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D63B0EA92C160062DA57 /* rubysynci.c */; };
+		F563D6730EA9339C0062DA57 /* rhogeolocation.js in Sources */ = {isa = PBXBuildFile; fileRef = F563D6720EA9339C0062DA57 /* rhogeolocation.js */; };
 		F5685D010EA2D9C8001939BF /* Sugar in Resources */ = {isa = PBXBuildFile; fileRef = F5685CF90EA2D9C8001939BF /* Sugar */; };
 		F56893F60E92F181004DBB2D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F56893F50E92F181004DBB2D /* index.html */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
@@ -35,6 +38,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		F563D5600EA8257A0062DA57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
 		F59F15FF0E9449B8004103B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
@@ -79,6 +96,12 @@
 		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
 		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F563D5820EA828580062DA57 /* SyncEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncEngine.h; path = ../shared/syncengine/SyncEngine.h; sourceTree = SOURCE_ROOT; };
+		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		F563D63A0EA92C160062DA57 /* rubysynci.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rubysynci.h; sourceTree = "<group>"; };
+		F563D63B0EA92C160062DA57 /* rubysynci.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rubysynci.c; sourceTree = "<group>"; };
+		F563D6720EA9339C0062DA57 /* rhogeolocation.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = rhogeolocation.js; path = Resources/shared/js/rhogeolocation.js; sourceTree = "<group>"; };
 		F5685CF90EA2D9C8001939BF /* Sugar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sugar; path = Resources/Sugar; sourceTree = SOURCE_ROOT; };
 		F56893F50E92F181004DBB2D /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = Resources/index.html; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
@@ -107,6 +130,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
 				F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */,
+				F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +156,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F563D5810EA8283A0062DA57 /* SyncEngine */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F568940B0E92FC1A004DBB2D /* Rhoruby */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
@@ -157,6 +182,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
 				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -188,6 +214,7 @@
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				F58B96C70E9D837D008D655D /* form.html */,
+				F563D6720EA9339C0062DA57 /* rhogeolocation.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -195,6 +222,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */,
 				F563D4130EA6D10F0062DA57 /* CoreLocation.framework */,
 				05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
@@ -212,6 +240,24 @@
 				F563D38E0EA6BC2E0062DA57 /* LocationController.m */,
 			);
 			name = GeoLocation;
+			sourceTree = "<group>";
+		};
+		F563D5410EA8240E0062DA57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F563D5450EA8240E0062DA57 /* librhosynclib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F563D5810EA8283A0062DA57 /* SyncEngine */ = {
+			isa = PBXGroup;
+			children = (
+				F563D5820EA828580062DA57 /* SyncEngine.h */,
+				F563D63A0EA92C160062DA57 /* rubysynci.h */,
+				F563D63B0EA92C160062DA57 /* rubysynci.c */,
+			);
+			name = SyncEngine;
 			sourceTree = "<group>";
 		};
 		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
@@ -275,6 +321,7 @@
 			);
 			dependencies = (
 				F59F16040E9449E5004103B4 /* PBXTargetDependency */,
+				F563D5610EA8257A0062DA57 /* PBXTargetDependency */,
 			);
 			name = rhorunner;
 			productName = rhorunner;
@@ -296,6 +343,10 @@
 					ProductGroup = F59F15FC0E9449B8004103B4 /* Products */;
 					ProjectRef = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
 				},
+				{
+					ProductGroup = F563D5410EA8240E0062DA57 /* Products */;
+					ProjectRef = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -305,6 +356,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		F563D5450EA8240E0062DA57 /* librhosynclib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhosynclib.a;
+			remoteRef = F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F59F16000E9449B8004103B4 /* librhorubylib.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -350,12 +408,19 @@
 				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
 				F563D0340EA541710062DA57 /* geolocation.c in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
+				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
+				F563D6730EA9339C0062DA57 /* rhogeolocation.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F563D5610EA8257A0062DA57 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhosynclib;
+			targetProxy = F563D5600EA8257A0062DA57 /* PBXContainerItemProxy */;
+		};
 		F59F16040E9449E5004103B4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhorubylib;
@@ -379,13 +444,13 @@
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
-					"-lsqlite3",
+					"-lrhosynclib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
 					"-lrhorubylib",
-					"-lsqlite3",
+					"-lrhosynclib",
 				);
 				PRODUCT_NAME = rhorunner;
 			};
@@ -403,14 +468,14 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-l",
-					rhorubylib,
+					"-lrhorubylib",
+					"-lrhosynclib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
-					"-l",
-					librhorubylib,
+					"-lrhorubylib",
+					"-lrhosynclib",
 				);
 				PRODUCT_NAME = rhorunner;
 				SDKROOT = iphoneos2.1;
@@ -430,14 +495,17 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
+					"-lrhosynclib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
+					"-lrhosynclib",
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "62B75FDE-2C46-4410-9225-D1EBF7D05131";
 				SDKROOT = iphoneos2.1;
+				USER_HEADER_SEARCH_PATHS = ../shared/syncengine;
 			};
 			name = Debug;
 		};
@@ -452,13 +520,16 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
+					"-lrhosynclib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
+					"-lrhosynclib",
 				);
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.0;
+				USER_HEADER_SEARCH_PATHS = ../shared/syncengine;
 			};
 			name = Release;
 		};

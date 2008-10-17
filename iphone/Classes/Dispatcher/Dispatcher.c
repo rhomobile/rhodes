@@ -17,6 +17,7 @@
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 #include "geolocation.h"
+#include "SyncEngine.h"
 
 char *trim(char *str)
 {
@@ -171,6 +172,9 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 		if (context->_request->_method == METHOD_GET) {
 			if (route->_model && !strcmp(route->_model,"geolocation")) {
 				return HTTPSendReply(context,GeoGetLocation()); 	
+			} else if (route->_model && !strcmp(route->_model,"syncdb")) {
+				wake_up_sync_engine();
+				return HTTPSendReply(context,"OK"); 	
 			}
 		}
 	} else if (route->_application && !strcmp(route->_application,"shared")) {
