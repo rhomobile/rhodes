@@ -90,6 +90,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	[self copyFromMainBundle:@"form.html" replace:YES];	
 	[self copyFromMainBundle:@"AppManager" replace:YES];
 	[self copyFromMainBundle:@"lib" replace:YES];
+	[self copyFromMainBundle:@"shared" replace:YES];
 	[self copyFromMainBundle:@"Test" replace:YES];
 	[self copyFromMainBundle:@"Sugar" replace:YES];
 }

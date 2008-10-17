@@ -16,7 +16,7 @@
 #include "HttpMessage.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
-
+#include "geolocation.h"
 
 char *trim(char *str)
 {
@@ -167,6 +167,14 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	if (route->_application && !strcmp(route->_application,"AppManager")) {
 		DBG(("Executing AppManager\n"));
 		return ExecuteAppManager(context,route);
+	} else if (route->_application && !strcmp(route->_application,"system")) {
+		if (context->_request->_method == METHOD_GET) {
+			if (route->_model && !strcmp(route->_model,"geolocation")) {
+				return HTTPSendReply(context,GeoGetLocation()); 	
+			}
+		}
+	} else if (route->_application && !strcmp(route->_application,"shared")) {
+		return 0;
 	} else {
 		DBG(("Executing %s\n",route->_application));
 		return _CallApplication(context, route);
