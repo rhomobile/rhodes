@@ -84,53 +84,34 @@ class RhomObjectFactory
       new_list = []
       new_obj = nil
       # initialize previous object id to the first in the array
-      previous_object = objs[0]['object']
-      first = true
       objs.each_with_index do |obj, i| 
-        puts 'beginning loop...'
-        
-        puts 'current object : ' + obj['object']
-        puts 'previous object: ' + previous_object
-        puts 'first ' + first.to_s
-        if obj['object'] == previous_object
-          new_obj = assign_attribute(new_obj, obj, false)
-          previous_object = obj['object']
-          first = false
+        if i == 0
+          new_obj = get_new_obj(obj)
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
           
-          if i == (objs.length - 1)
-            # reached the end of the current object's attributes, need to
-            # add it (this only happens if there is only one unique object
-            new_list << new_obj
-            previous_object = obj['object']
-          end
-        elsif first
-          new_obj = assign_attribute(new_obj, obj, true)
-          previous_object = obj['object']
-          first = false
-        else
-          # if we have more than one unique objects with n attributes,
-          # we will reach a new object id and add the previous 
-          # object to the list
+        elsif obj['object'] != objs[i-1]['object']
           new_list << new_obj
-          previous_object = obj['object']
-          first = true
+          new_obj = get_new_obj(obj)
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
+          
+        elsif obj['object'] == objs[i-1]['object']
+          new_obj.send obj['attrib'].to_sym, obj['value'].to_s
+          if i == objs.length - 1
+            new_list << new_obj
+          end
+          
+        elsif i == objs.length - 1
+          new_list << new_obj
         end
       end 
     end
     new_list
   end
   
-  def assign_attribute(new_obj, obj, create=false)
-    # since we are flattening the list, only
-    # create one new object for the rowset of attributes
-    if create || new_obj.nil?
-      new_obj = Object::const_get(@classname).new
-    end
-    
-    attrib = obj['attrib']
-    val = obj['value']
-    puts "assigning attribute, value: #{attrib}, #{val}"
-    new_obj.send attrib.to_sym, val.to_s
-    new_obj
+  def get_new_obj(obj)
+    tmp_obj = Object::const_get(@classname).new
+    tmp_obj.send 'object'.to_sym, obj['object'].to_s
+    tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
+    tmp_obj
   end
 end
