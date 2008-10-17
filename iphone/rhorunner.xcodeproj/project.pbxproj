@@ -20,6 +20,8 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		F563D0340EA541710062DA57 /* geolocation.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D0330EA541710062DA57 /* geolocation.c */; };
 		F563D1C80EA65C580062DA57 /* shared in Resources */ = {isa = PBXBuildFile; fileRef = F563D19C0EA65C580062DA57 /* shared */; };
+		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
+		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F5685D010EA2D9C8001939BF /* Sugar in Resources */ = {isa = PBXBuildFile; fileRef = F5685CF90EA2D9C8001939BF /* Sugar */; };
 		F56893F60E92F181004DBB2D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F56893F50E92F181004DBB2D /* index.html */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
@@ -74,6 +76,9 @@
 		F563D0320EA541710062DA57 /* geolocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = geolocation.h; path = GeoLocation/geolocation.h; sourceTree = "<group>"; };
 		F563D0330EA541710062DA57 /* geolocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation.c; path = GeoLocation/geolocation.c; sourceTree = "<group>"; };
 		F563D19C0EA65C580062DA57 /* shared */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shared; path = Resources/shared; sourceTree = SOURCE_ROOT; };
+		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
+		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
+		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		F5685CF90EA2D9C8001939BF /* Sugar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sugar; path = Resources/Sugar; sourceTree = SOURCE_ROOT; };
 		F56893F50E92F181004DBB2D /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = Resources/index.html; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
@@ -101,6 +106,7 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
+				F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +195,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F563D4130EA6D10F0062DA57 /* CoreLocation.framework */,
 				05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -201,6 +208,8 @@
 			children = (
 				F563D0320EA541710062DA57 /* geolocation.h */,
 				F563D0330EA541710062DA57 /* geolocation.c */,
+				F563D38D0EA6BC2E0062DA57 /* LocationController.h */,
+				F563D38E0EA6BC2E0062DA57 /* LocationController.m */,
 			);
 			name = GeoLocation;
 			sourceTree = "<group>";
@@ -340,6 +349,7 @@
 				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
 				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
 				F563D0340EA541710062DA57 /* geolocation.c in Sources */,
+				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
