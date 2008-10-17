@@ -28,7 +28,6 @@
 #include "HttpMessage.h"
 #include "Dispatcher.h"
 
-enum {METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD};
 const struct vec _known_http_methods[] = {
 {"GET",		3},
 {"POST",	4},
@@ -600,6 +599,27 @@ HTTPSendReply(HttpContextRef context, char* body) {
 	
 	return 1;
 	
+}
+
+void 
+HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason) {
+    
+    // Allocate tem buffer on the stack
+    char buffer[1024];
+    
+    // Format http message
+    sprintf(buffer,"HTTP/1.1 %d %s\r\n"
+            "Content-Type: text/plain\r\n"
+            "Content-Length: %d\r\n"
+			"Connection: close\r\n"
+            "\r\n"
+            "Error: %03d - %s\r\n",
+            status, reason, 15 + strlen(reason), status, reason);
+    
+	DBG(("Error %d - %s\n", status, reason));
+	
+    // Add the bytes of data to the send buffer.
+    CFDataAppendBytes(context->_sendBytes, (UInt8*)buffer, (CFIndex)strlen(buffer));
 }
 
 //TBD - loading whole file in the memory is not efficient, it is better to 

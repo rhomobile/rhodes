@@ -102,8 +102,6 @@ typedef struct __HttpContext* HttpContextRef;
 	
 const char* HttpGetSiteRoot();	
 
-void HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason);
-    
 HttpContextRef HttpContextCreate(CFAllocatorRef alloc, CFSocketNativeHandle nativeSocket);
 
 HttpContextRef HttpContextRetain(HttpContextRef context);

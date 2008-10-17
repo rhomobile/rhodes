@@ -39,7 +39,6 @@ static int _HttpGetHeadersLen(const char *buf, size_t buflen);
 
 static void _HttpContextHandleHasBytesAvailable(HttpContextRef context);
 static void _HttpContextHandleEndEncountered(HttpContextRef context);
-static void _HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason);
 static void _HttpContextHandleCanAcceptBytes(HttpContextRef context);
 static void _HttpContextHandleErrorOccurred(HttpContextRef context);
 static void _HttpContextHandleTimeOut(HttpContextRef context);
@@ -288,28 +287,6 @@ HttpContextClose(HttpContextRef context) {
         context->_timer = NULL;
     }
 }
-
-void 
-HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason) {
-    
-    // Allocate tem buffer on the stack
-    char buffer[1024];
-    
-    // Format http message
-    sprintf(buffer,"HTTP/1.1 %d %s\r\n"
-            "Content-Type: text/plain\r\n"
-            "Content-Length: %d\r\n"
-			"Connection: close\r\n"
-            "\r\n"
-            "Error: %03d - %s\r\n",
-            status, reason, 15 + strlen(reason), status, reason);
-    
-	DBG(("Error %d - %s\n", status, reason));
-		 
-    // Add the bytes of data to the send buffer.
-    CFDataAppendBytes(context->_sendBytes, (UInt8*)buffer, (CFIndex)strlen(buffer));
-}
-
 
 const char* 
 HttpGetSiteRoot() {
