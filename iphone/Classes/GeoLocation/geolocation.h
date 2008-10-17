@@ -7,5 +7,4 @@
  *
  */
 
-double _geo_latitude();
-double _geo_longitude();
+char* GeoGetLocation();
