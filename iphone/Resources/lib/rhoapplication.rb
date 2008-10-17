@@ -1,11 +1,11 @@
 require 'rhom'
 
 class RhoApplication
-	attr_accessor :rhom
 	
-	def initialize(modelname)
-		puts 'in rhoapplication initialize ' + modelname
-		@rhom = Rhom.new(modelname)
+	def initialize(modelname, source_id)
+		if @rhom.nil?
+		  @rhom = Rhom.new(modelname, source_id)
+		end
 	end
 	
 	class << self
@@ -23,7 +23,7 @@ class RhoApplication
 	def serve(req,res)
 		req[:modelpath] = self.class.get_model_path req['application'], req['model']
 		require req[:modelpath]+'controller'
-		res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, req, res		
+		res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, @rhom, req, res
 	end
 
 end	

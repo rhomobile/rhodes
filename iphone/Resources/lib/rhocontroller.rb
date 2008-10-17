@@ -1,5 +1,6 @@
 require 'erb'
 require 'rhosupport'
+require 'rhom'
 
 class RhoController
 	
@@ -9,8 +10,9 @@ class RhoController
 		return Hash['GET','index','POST','create'][@request['request-method']]
 	end 
 	
-	def serve(req,res)
+	def serve(object_mapping,req,res)
 		@request, @response = req, res;
+		@object_mapping = object_mapping
 		@params = RhoSupport::query_params req
 		send req['action'].nil? ? default_action : req['action']
 	end

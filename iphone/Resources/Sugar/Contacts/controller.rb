@@ -1,15 +1,13 @@
 require 'rhocontroller'
-require 'rhom'
 
 class ContactsController < RhoController
 
   def index
-    # Test code for orm
-    #    result = @rhom.find 1
-    #    p result.inspect
-    #    p 'source id: ' + result[0].source_id.to_s
-    # End test code
-    @message = "List of contacts"
+	
+    account = Account.new
+    account.name = 'Vlad'
+    puts 'Account name: ' + account.name
+    #@message = "List of contacts"
     render :index
   end
 
