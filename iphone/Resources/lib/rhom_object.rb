@@ -17,10 +17,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+require 'rhom_object_factory'
 
 module RhomObject
   # defines a method at runtime for the
   # dynamically created class
+  
+  TABLE_NAME = 'object_values'
+
   def method_missing(name, *args)
     unless name == Fixnum
       varname = name.to_s.gsub(/=/,"")

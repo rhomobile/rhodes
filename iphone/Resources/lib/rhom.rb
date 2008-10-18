@@ -20,22 +20,23 @@
 #
 require 'sqlite3'
 require 'rhom_object_factory'
+require 'rhom_object'
   
 class Rhom
+  include RhomObject
   attr_accessor :database, :modelname, :factory, :source_id
-	
-  TABLE_NAME='object_values'
   
   def initialize(modelname, source_id)
     @modelname = modelname
     @source_id = source_id
     @factory = RhomObjectFactory.new(@modelname, @source_id)
-	puts 'source_id ' + @source_id.to_s
-	@factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
-												#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
+    #puts 'source_id ' + Object::const_get("#{modelname}SourceId")
+    @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
+						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
   end
   
   class << self
+    
     def init_db_connection
       dbname =  File.join(File.dirname(File.expand_path(__FILE__)), 'syncdb.sqlite')
       puts "DB name = " + dbname
@@ -55,7 +56,7 @@ class Rhom
     # optionally, disable the factory processing 
     # which returns the result array directly
     def execute_sql(sql=nil, process=true)
-      result = nil
+      result = []
       if sql
         # execute sql statement inside of transaction
         # result is returned as an array of hashes
@@ -66,7 +67,7 @@ class Rhom
         @database.commit
         close_db_connection
       end
-      return process ? @factory.get_list(result) : result
+      result
     end
   end # class methods
 end # Rhom

@@ -3,11 +3,9 @@ require 'rhocontroller'
 class ContactsController < RhoController
 
   def index
-	
-    account = Account.new
-    account.name = 'Vlad'
-    puts 'Account name: ' + account.name
-    #@message = "List of contacts"
+    @accounts = Account.find(:all)
+	puts 'Accounts: ' + @accounts.inspect
+    @message = "List of contacts"
     render :index
   end
 
