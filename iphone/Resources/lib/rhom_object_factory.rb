@@ -67,23 +67,28 @@ class RhomObjectFactory
               if objs
                 new_list = []
                 new_obj = nil
-                # initialize previous object id to the first in the array
+                # iterate over the array and determine object
+                # structure based on attribute/value pairs
                 objs.each_with_index do |obj, i| 
+                  # create new object on first array entry
                   if i == 0
                     new_obj = get_new_obj(obj)
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
           
+                  # initialize new object if the object-id changes
                   elsif obj['object'] != objs[i-1]['object']
                     new_list << new_obj
                     new_obj = get_new_obj(obj)
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
-          
+           
+                  # if we've seen this object id before, only add accessor 
                   elsif obj['object'] == objs[i-1]['object']
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
                     if i == objs.length - 1
                       new_list << new_obj
                     end
           
+                  # end of the list, make sure to add the object
                   elsif i == objs.length - 1
                     new_list << new_obj
                   end
