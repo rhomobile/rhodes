@@ -1,6 +1,6 @@
 require 'rhocontroller'
 # the only and only controller for the account model
-class CasesController < RhoController
+class CaseController < RhoController
 
   # GET /cases
   def index
