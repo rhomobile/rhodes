@@ -76,6 +76,8 @@
 			F563D64F0EA92F3E0062DA57 /* PBXTextBookmark */ = F563D64F0EA92F3E0062DA57 /* PBXTextBookmark */;
 			F563D6500EA92F3E0062DA57 /* PBXTextBookmark */ = F563D6500EA92F3E0062DA57 /* PBXTextBookmark */;
 			F563D6B90EA936C80062DA57 /* PBXTextBookmark */ = F563D6B90EA936C80062DA57 /* PBXTextBookmark */;
+			F563D8180EA960D70062DA57 /* PBXTextBookmark */ = F563D8180EA960D70062DA57 /* PBXTextBookmark */;
+			F563D8190EA960D70062DA57 /* PBXTextBookmark */ = F563D8190EA960D70062DA57 /* PBXTextBookmark */;
 		};
 		sourceControlManager = F563D5480EA824810062DA57 /* Source Control */;
 		userBuildSettings = {
@@ -83,9 +85,9 @@
 	};
 	46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1011, 2366}}";
-			sepNavSelRange = "{921, 0}";
-			sepNavVisRange = "{555, 1408}";
+			sepNavIntBoundsRect = "{{0, 0}, {720, 2450}}";
+			sepNavSelRange = "{2996, 13}";
+			sepNavVisRange = "{1739, 439}";
 		};
 	};
 	46E9210C0E9BF3E700F14AC8 /* SyncEngine.h */ = {
@@ -104,9 +106,9 @@
 	};
 	46E921120E9BF3E700F14AC8 /* SyncObject.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1118, 5096}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{11984, 1995}";
+			sepNavIntBoundsRect = "{{0, 0}, {1118, 4928}}";
+			sepNavSelRange = "{8225, 44}";
+			sepNavVisRange = "{7381, 1747}";
 		};
 	};
 	46E921140E9BF3E700F14AC8 /* SyncOperation.c */ = {
@@ -544,5 +546,25 @@
 		rType = 0;
 		vrLen = 1408;
 		vrLoc = 555;
+	};
+	F563D8180EA960D70062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F563D5C00EA82D820062DA57 /* SyncManager.m */;
+		name = "SyncManager.m: 107";
+		rLen = 1;
+		rLoc = 4100;
+		rType = 0;
+		vrLen = 568;
+		vrLoc = 3533;
+	};
+	F563D8190EA960D70062DA57 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */;
+		name = "SyncEngine.c: 87";
+		rLen = 13;
+		rLoc = 2996;
+		rType = 0;
+		vrLen = 439;
+		vrLoc = 1739;
 	};
 }
