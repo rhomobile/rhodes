@@ -18,10 +18,11 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <sys/time.h>
 #include "SyncEngine.h"
 #include "SyncManagerI.h"
 
+#define WAIT_TIME_SECONDS 90
 int stop_running = 0;
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -40,7 +41,17 @@ void* sync_engine_main_routine(void* data) {
 	printf("Starting sync engine main routine...\n");
 	pthread_mutex_lock(&sync_mutex);
 	while(!stop_running) {
-		pthread_cond_wait(&sync_cond, &sync_mutex);
+		struct timespec   ts;
+		struct timeval    tp;
+		gettimeofday(&tp, NULL);
+		/* Convert from timeval to timespec */
+		ts.tv_sec  = tp.tv_sec;
+		ts.tv_nsec = tp.tv_usec * 1000;
+		ts.tv_sec += WAIT_TIME_SECONDS;
+		
+		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
+		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
+		printf("Sync engine continues w/ current operations...\n");
 		
 		/* List holding operations */
 		if (!stop_running) {
@@ -73,7 +84,7 @@ void* sync_engine_main_routine(void* data) {
 					free_ob_list(ob_list, available_remote);
 				}
 				/* update the in-memory list */
-				populate_list(database);
+				/*populate_list(database);*/
 			}
 		} else {
 			finalize_statements();

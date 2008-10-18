@@ -4,8 +4,10 @@ class ContactsController < RhoController
 
   def index
     @accounts = Account.find(:all)
-	puts 'Accounts: ' + @accounts.inspect
     @message = "List of contacts"
+    puts "Triggering syncronization w/ remote DB"
+    SyncEngine::dosync
+
     render :index
   end
 
@@ -36,4 +38,5 @@ class ContactsController < RhoController
     puts "Deleted record: " + @params['id']
     redirect :index
   end
+  
 end

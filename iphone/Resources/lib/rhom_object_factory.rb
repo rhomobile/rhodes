@@ -26,7 +26,6 @@ class RhomObjectFactory
   def initialize(new_classname, source_id)
     @classname = new_classname
     Object::const_set("SourceId", source_id) unless defined? SourceId
-    puts 'source_id constant: ' + SourceId
     puts 'classname: ' + @classname
     init_object
   end
@@ -45,7 +44,6 @@ class RhomObjectFactory
 		  
           class << self
             def find(*args)
-              puts 'inside find...'
               query = nil
               if args.first == :all
                 query = "select * from #{TABLE_NAME} where source_id=#{SourceId}"
@@ -54,7 +52,7 @@ class RhomObjectFactory
               end
               puts 'query is: ' + query
               result = Rhom::execute_sql(query)
-              puts 'RESULT IS: ' + result.inspect
+              puts 'RESULT IS: ' + result.length.to_s
               get_list(result)
             end
     
@@ -65,9 +63,6 @@ class RhomObjectFactory
             
             # returns an array of objects based on an existing array
             def get_list(objs)
-              puts 'inside get_list...'
-              puts ''
-              puts ''
               new_list = nil
               if objs
                 new_list = []
@@ -79,7 +74,6 @@ class RhomObjectFactory
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
           
                   elsif obj['object'] != objs[i-1]['object']
-                    puts 'adding object to list: ' + new_obj.inspect
                     new_list << new_obj
                     new_obj = get_new_obj(obj)
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
@@ -87,12 +81,10 @@ class RhomObjectFactory
                   elsif obj['object'] == objs[i-1]['object']
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
                     if i == objs.length - 1
-                      puts 'adding object to list: ' + new_obj.inspect
                       new_list << new_obj
                     end
           
                   elsif i == objs.length - 1
-                    puts 'adding object to list: ' + new_obj.inspect
                     new_list << new_obj
                   end
                 end 
@@ -110,19 +102,19 @@ class RhomObjectFactory
             
           end #class methods
 		  
-		  def create(obj)
-			#TODO: Generate query based on attribute list
-		  end
+          def create(obj)
+            #TODO: Generate query based on attribute list
+          end
         
           def update(attributes)
             #TODO: Inspect attributes and generate sql
           end
 		  
-		  def destroy
-			query = "insert into #{TABLE_NAME} (object, update_type) values ('#{self.object}', 'delete')"
-		  end
+          def destroy
+            query = "insert into #{TABLE_NAME} (object, update_type) values ('#{self.object}', 'delete')"
+          end
 		  
-		  def save
+          def save
             #TODO: Implement save
             get_list(Rhom::execute_sql(""))
           end
