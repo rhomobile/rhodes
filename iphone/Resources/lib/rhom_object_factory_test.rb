@@ -57,7 +57,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "update_type"=>"create"}]
     factory = RhomObjectFactory.new("Account", '1')
     
-    results = factory.get_list(rows)
+    results = Account.get_list(rows)
     results.each_with_index do |result,i|
       puts "result[#{i}]: " + result.inspect
     end
@@ -118,7 +118,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "update_type"=>"create"}]
     factory = RhomObjectFactory.new("Account", '1')
     
-    results = factory.get_list(rows)
+    results = Account.get_list(rows)
     results.each_with_index do |result,i|
       puts "result[#{i}]: " + result.inspect
     end
@@ -257,7 +257,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "update_type"=>"create"}]
     factory = RhomObjectFactory.new("Account", '1')
     
-    results = factory.get_list(rows)
+    results = Account.get_list(rows)
     results.each_with_index do |result,i|
       puts "result[#{i}]: " + result.inspect
     end
