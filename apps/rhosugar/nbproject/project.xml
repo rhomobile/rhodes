@@ -5,8 +5,8 @@
         <data xmlns="http://www.netbeans.org/ns/ruby-project/1">
             <name>rhosugar</name>
             <source-roots>
-                <root id="src.dir" name="accounts"/>
-                <root id="cases.dir"/>
+                <root id="src.Account.dir"/>
+                <root id="src.Case.dir"/>
             </source-roots>
             <test-roots/>
         </data>
