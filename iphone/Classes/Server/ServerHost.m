@@ -63,7 +63,8 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
 		[actionTarget performSelector:onStartSuccess];
 	}
-	
+	// Do sync w/ remote DB 
+	wake_up_sync_engine();	
 }
 
 - (void)serverFailed:(void*)data {
@@ -77,7 +78,12 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	DBG(("Initializing ruby\n"));
-	RhoRubyStart( GetApplicationsRootPath() );
+	char* libpath = strdup(GetApplicationsRootPath());
+	char* apps = strrchr (libpath,'/');
+	if (apps!=NULL) *apps = '\0';
+	DBG(("libpath: %s\n", libpath));
+	RhoRubyStart( libpath );
+	free(libpath);
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
@@ -102,10 +108,22 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
     [pool release];
 }
 
+- (int)initializeDatabaseConn {
+    NSString *appRoot = [AppManager getApplicationsRootPath];
+    NSString *path = [appRoot stringByAppendingPathComponent:@"../db/syncdb.sqlite"];
+	return sqlite3_open([path UTF8String], &database);
+}
+
 -(void) start {
 	//Create and configure AppManager
 	appManager = [AppManager instance]; 
 	[appManager configure];
+
+	//Start Sync engine
+	[self initializeDatabaseConn];
+	// Startup the sync engine thread
+	start_sync_engine(database);
+	
 	
 	// Start server thread	
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
@@ -114,6 +132,8 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 -(void) stop {
     CFRunLoopStop(runLoop);
+	// Stop the sync engine
+	stop_sync_engine();	
 }
 
 - (void)dealloc 
