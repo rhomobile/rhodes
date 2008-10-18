@@ -777,8 +777,6 @@ _HTTPGetFile(HttpContextRef context, char* path)
 
 int 
 HTTPProcessMessage(HttpContextRef context) {
-	const char *root;
-	char		path[URI_MAX];
 	int			res;
 	
 	if ((context->_request->_query = strchr(context->_request->_uri, '?')) != NULL)
@@ -786,21 +784,25 @@ HTTPProcessMessage(HttpContextRef context) {
 	
 	_HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
 				   context->_request->_uri, strlen(context->_request->_uri) + 1);
-	
-	root = HttpGetSiteRoot();
-	if (strlen(context->_request->_uri) + strlen(root) >= sizeof(path)) {
-		HttpSendErrorToTheServer(context, 400, "URI is too long");
-		return -1;
-	}
-	
-	HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
-	DBG(("Path = %s\n", path));
-		 
-	if (context->_request->_method == METHOD_GET) {
-		if ((res = _HTTPGetFile(context, path))!=0) {
-			return res;
+
+	{
+		char path[URI_MAX];
+		
+		const char *root = HttpGetSiteRoot();
+		if (strlen(context->_request->_uri) + strlen(root) >= sizeof(path)) {
+			HttpSendErrorToTheServer(context, 400, "URI is too long");
+			return -1;
 		}
-	} 
+	
+		HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
+		DBG(("Path = %s\n", path));
+		 
+		if (context->_request->_method == METHOD_GET) {
+			if ((res = _HTTPGetFile(context, path))!=0) {
+				return res;
+			}
+		} 
+	}
 	
 	if ((res = Dispatch(context))!=0) {
 		return res;

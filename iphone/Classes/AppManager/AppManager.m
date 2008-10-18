@@ -38,7 +38,8 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 + (NSString *) getApplicationsRootPath {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	return [paths objectAtIndex:0];
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+	return [documentsDirectory stringByAppendingPathComponent:@"apps"];
 }
 
 + (NSString *) getApplicationsRosterUrl {
@@ -86,13 +87,9 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  * Configures AppManager
  */
 - (void) configure {
-	[self copyFromMainBundle:@"index.html" replace:YES];
-	[self copyFromMainBundle:@"form.html" replace:YES];	
-	[self copyFromMainBundle:@"AppManager" replace:YES];
+	[self copyFromMainBundle:@"apps" replace:YES];
 	[self copyFromMainBundle:@"lib" replace:YES];
-	[self copyFromMainBundle:@"shared" replace:YES];
-	[self copyFromMainBundle:@"Test" replace:YES];
-	[self copyFromMainBundle:@"Sugar" replace:YES];
+	[self copyFromMainBundle:@"db" replace:YES];
 }
 
 @end
