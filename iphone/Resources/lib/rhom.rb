@@ -30,7 +30,6 @@ class Rhom
     @modelname = modelname
     @source_id = source_id
     @factory = RhomObjectFactory.new(@modelname, @source_id)
-    #puts 'source_id ' + Object::const_get("#{modelname}SourceId")
     @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
 						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
   end

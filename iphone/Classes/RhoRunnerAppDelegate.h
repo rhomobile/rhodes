@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ServerHost.h"
+#import "SyncEngine.h"
 
 @class WebViewController;
 
@@ -15,6 +16,7 @@
 	IBOutlet UIWindow *window;
 	IBOutlet WebViewController *webViewController;
     ServerHost * serverHost;
+	sqlite3 *database;
 }
 
 @property (nonatomic, retain) UIWindow *window;

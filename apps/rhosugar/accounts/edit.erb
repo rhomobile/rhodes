@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Editing Account</title>
+</head>
+<body>
+<form action="<%=url_for(:update) %>">
+<input type="hidden" name="id" value="<%=@account.id%>"/>
+Name <input name="name" value="<%=@account.name%>"/><br/>
+Industry <input name="industry" value="<%=@account.industry%>"/><br/>
+<input type="submit" value="Edit Account"/>
+</form>
+</body>
+</html>
