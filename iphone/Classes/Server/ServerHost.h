@@ -7,11 +7,14 @@
 //
 
 #import "AppManager.h"
+#import "SyncEngine.h"
 
 @interface ServerHost : NSObject
 {
 	AppManager * appManager;
     CFRunLoopRef runLoop;
+	sqlite3 *database;
+	
 @public
 	id  actionTarget;
 	SEL onStartSuccess;

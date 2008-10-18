@@ -11,11 +11,11 @@ class RhoApplication
 	class << self
 	
 		def get_app_path(appname)
-			File.join(File.dirname(File.expand_path(__FILE__)), '../'+appname+'/')
+			File.join(File.dirname(File.expand_path(__FILE__)), '../apps/'+appname+'/')
 		end
 
 		def get_model_path(appname, modelname)
-			File.join(File.dirname(File.expand_path(__FILE__)), '../'+appname+'/'+modelname+'/')
+			File.join(File.dirname(File.expand_path(__FILE__)), '../apps/'+appname+'/'+modelname+'/')
 		end
 	
 	end

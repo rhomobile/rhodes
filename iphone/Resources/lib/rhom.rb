@@ -37,7 +37,7 @@ class Rhom
   
   class << self
     def init_db_connection
-      dbname =  File.join(File.dirname(File.expand_path(__FILE__)), 'syncdb.sqlite')
+      dbname =  File.join(File.dirname(File.expand_path(__FILE__)), '../db/syncdb.sqlite')
       puts "DB name = " + dbname
       @database = SQLite3::Database.new(dbname)
     end
