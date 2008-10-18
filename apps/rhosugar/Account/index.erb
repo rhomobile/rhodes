@@ -3,14 +3,14 @@
 	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<title>Cases</title>
+<title>Accounts</title>
 </head>
 <body>
 <table>
-<%@cases.each do |x|%>
+<%@accounts.each do |x|%>
 <tr>
-  <td><%=x.case_number%></td>
-  <td><%=x.assigned_to%></td>
+  <td><%=link_to x.name,{:action=>"edit",:id=>@account.object}%></td>
+  <td><%=x.industry%></td>
   <td><%=link_to "X","delete"%></td>
 </tr>
 <%end%>
