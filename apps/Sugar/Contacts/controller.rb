@@ -17,7 +17,7 @@ class ContactsController < RhoController
 	
   def create
     @message = "Created new contact w/ params: " + @params.to_s
-    redirect :show, 10
+    redirect :show, '{10}'
   end
 	
   def show
