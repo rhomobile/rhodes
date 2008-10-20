@@ -98,7 +98,6 @@ class RhomObjectFactory
             end
   
             def get_new_obj(obj)
-              
               tmp_obj = self.new
               tmp_obj.send 'object'.to_sym, obj['object'].to_s
               tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
