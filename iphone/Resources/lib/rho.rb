@@ -6,17 +6,16 @@ require 'rhoapplication'
 class RHO
 	APPLICATIONS = {}
 	
-	MODEL = "Account"
 	SOURCE_ID = "1"
 	
 	def initialize
 		puts "Calling RHO.initialize"
  	end
 	
-	def get_app(appname)
+	def get_app(appname, modelname)
 		if (APPLICATIONS[appname].nil?)
 			require RhoApplication::get_app_path(appname)+'application'
-			APPLICATIONS[appname] = Object.const_get(appname+'Application').new(MODEL, SOURCE_ID)
+			APPLICATIONS[appname] = Object.const_get(appname+'Application').new(modelname, SOURCE_ID)
 		end
 		APPLICATIONS[appname]
 	end
@@ -25,7 +24,7 @@ class RHO
 		begin
 			puts "Request: " + req.to_s
 			res = init_response
-			get_app(req['application']).send :serve, req, res
+			get_app(req['application'],req['model']).send :serve, req, res
 			return send_response(res)
 		rescue Exception => e
 			return send_error(e.message)
