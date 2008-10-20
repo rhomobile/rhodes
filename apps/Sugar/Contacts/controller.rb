@@ -3,7 +3,7 @@ require 'rhocontroller'
 class ContactsController < RhoController
 
   def index
-    @accounts = Account.find(:all)
+    @accounts = Contacts.find(:all)
     @message = "List of contacts"
     puts "Triggering syncronization w/ remote DB"
     SyncEngine::dosync

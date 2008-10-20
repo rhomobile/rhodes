@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46C73B970EACF20100CC76F1 /* AttribManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 46C73B950EACF20100CC76F1 /* AttribManager.h */; };
+		46C73B980EACF20100CC76F1 /* AttribManager.c in Sources */ = {isa = PBXBuildFile; fileRef = 46C73B960EACF20100CC76F1 /* AttribManager.c */; };
 		46E921180E9BF3E700F14AC8 /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9210A0E9BF3E700F14AC8 /* Constants.h */; };
 		46E921190E9BF3E700F14AC8 /* SyncEngine.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */; };
 		46E9211A0E9BF3E700F14AC8 /* SyncEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9210C0E9BF3E700F14AC8 /* SyncEngine.h */; };
@@ -42,6 +44,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		46C73B950EACF20100CC76F1 /* AttribManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttribManager.h; sourceTree = "<group>"; };
+		46C73B960EACF20100CC76F1 /* AttribManager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AttribManager.c; sourceTree = "<group>"; };
 		46E9210A0E9BF3E700F14AC8 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = ../../shared/syncengine/Constants.h; sourceTree = SOURCE_ROOT; };
 		46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SyncEngine.c; path = ../../shared/syncengine/SyncEngine.c; sourceTree = SOURCE_ROOT; };
 		46E9210C0E9BF3E700F14AC8 /* SyncEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncEngine.h; path = ../../shared/syncengine/SyncEngine.h; sourceTree = SOURCE_ROOT; };
@@ -135,6 +139,8 @@
 				46E921150E9BF3E700F14AC8 /* SyncOperation.h */,
 				46E921160E9BF3E700F14AC8 /* Utils.c */,
 				46E921170E9BF3E700F14AC8 /* Utils.h */,
+				46C73B950EACF20100CC76F1 /* AttribManager.h */,
+				46C73B960EACF20100CC76F1 /* AttribManager.c */,
 			);
 			name = syncengine;
 			path = ../../shared/syncengine;
@@ -202,6 +208,7 @@
 				46E9214B0E9BF40A00F14AC8 /* linkhash.h in Headers */,
 				46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */,
 				F563D5C10EA82D820062DA57 /* SyncManager.h in Headers */,
+				46C73B970EACF20100CC76F1 /* AttribManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +267,7 @@
 				46E9214A0E9BF40A00F14AC8 /* linkhash.c in Sources */,
 				46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */,
 				F563D5C20EA82D820062DA57 /* SyncManager.m in Sources */,
+				46C73B980EACF20100CC76F1 /* AttribManager.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
