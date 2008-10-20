@@ -36,4 +36,8 @@ module RhomObject
       end
     end
   end
+  
+  def strip_braces(str)
+	str.gsub(/{/,"").gsub(/}/,"")
+  end
 end
