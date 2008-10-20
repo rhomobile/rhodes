@@ -24,7 +24,9 @@ class RHO
 		begin
 			puts "Request: " + req.to_s
 			res = init_response
+			puts 'trying get_app'
 			get_app(req['application'],req['model']).send :serve, req, res
+			puts 'get_app successful: ' + get_app(req['application'],req['model']).inspect
 			return send_response(res)
 		rescue Exception => e
 			return send_error(e.message)

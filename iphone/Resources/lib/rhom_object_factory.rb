@@ -50,9 +50,7 @@ class RhomObjectFactory
               else 
                 query = "select * from #{TABLE_NAME} where object='#{args.first.to_s}'"
               end
-              puts 'query is: ' + query
               result = Rhom::execute_sql(query)
-              puts 'RESULT IS: ' + result.length.to_s
               get_list(result)
             end
     
@@ -75,20 +73,20 @@ class RhomObjectFactory
                     new_obj = get_new_obj(obj)
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
           
-                  # initialize new object if the object-id changes
+                    # initialize new object if the object-id changes
                   elsif obj['object'] != objs[i-1]['object']
                     new_list << new_obj
                     new_obj = get_new_obj(obj)
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
            
-                  # if we've seen this object id before, only add accessor 
+                    # if we've seen this object id before, only add accessor 
                   elsif obj['object'] == objs[i-1]['object']
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
                     if i == objs.length - 1
                       new_list << new_obj
                     end
           
-                  # end of the list, make sure to add the object
+                    # end of the list, make sure to add the object
                   elsif i == objs.length - 1
                     new_list << new_obj
                   end
@@ -99,7 +97,7 @@ class RhomObjectFactory
   
             def get_new_obj(obj)
               tmp_obj = self.new
-              tmp_obj.send 'object'.to_sym, obj['object'].to_s
+              tmp_obj.send 'object'.to_sym, "{#{obj['object'].to_s}}"
               tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
               tmp_obj
             end
@@ -109,18 +107,23 @@ class RhomObjectFactory
           def create(obj)
             #TODO: Generate query based on attribute list
           end
-        
-          def update(attributes)
-            #TODO: Inspect attributes and generate sql
-          end
 		  
           def destroy
-            query = "insert into #{TABLE_NAME} (object, update_type) values ('#{self.object}', 'delete')"
+            object = self.object.gsub("{","").gsub("}","")
+            query = "insert into #{TABLE _NAME} (object, update_type) values ('#{object}', 'delete')"
           end
 		  
           def save
-            #TODO: Implement save
-            get_list(Rhom::execute_sql(""))
+            attrib = nil
+            value = nil
+            self.instance_variables.each do |var| 
+              if var != 'object' and var != ''
+                
+              end
+            end
+            query = "insert into #{TABLE_NAME} (attrib, object, value, update_type) \
+                     values ('#{attrib}','#{self.object}', '#{value}', 'update')"
+            result = Rhom::execute_sql(query)
           end
 
         end)

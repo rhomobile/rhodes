@@ -4,12 +4,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Accounts</title>
+<meta name="viewport" content="width=320"/>
 </head>
 <body>
 <table>
 <%@accounts.each do |x|%>
 <tr>
-  <td><%=link_to x.name,{:action=>"edit",:id=>@account.object}%></td>
+  <td><%=link_to x.name, "edit", x.object%></td>
   <td><%=x.industry%></td>
   <td><%=link_to "X","delete"%></td>
 </tr>

@@ -1,8 +1,10 @@
 require 'rhocontroller'
+
 class AccountController < RhoController
   # GET /cases
   def index
     @accounts = Account.find(:all)
+	render :index
   end
 
   # GET /cases/1
