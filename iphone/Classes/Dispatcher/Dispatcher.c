@@ -41,11 +41,12 @@ char *trim(char *str)
 }
 
 static bool _isid(char* str) {
-	while(*str!=0) {
-		if(!isdigit(*str++)) 
-			return false;
+	if (str!=NULL) {
+		int l = strlen(str);
+		if ( (l>2) && (str[0]=='{') && (str[l-1]=='}') ) 
+			return true;
 	}
-	return true;
+	return false;
 }
 
 static char* _tok(char* t) {

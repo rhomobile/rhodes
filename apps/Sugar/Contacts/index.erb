@@ -22,11 +22,11 @@
 		<%end%>
 		</table>	
 		
-<%= link_to "[Edit Record 888]", :edit, 888%><br/>
-<%= link_to "[Delete Record 888]", :delete, 888, "A you sure you want to delete this contact?"%><br/>
-<a href="<%= url_for(:edit,777)%>">[Edit record 777]</a><br/>
+<%= link_to "[Edit Record 888]", :edit, '{888}'%><br/>
+<%= link_to "[Delete Record 888]", :delete, '{888}', "A you sure you want to delete this contact?"%><br/>
+<a href="<%= url_for(:edit,'{777}')%>">[Edit record 777]</a><br/>
 <a href="<%= url_for(:new)%>">[New]</a><br/>
-<p>Url for edit: <%= url_for(:edit,777)%></p>
+<p>Url for edit: <%= url_for(:edit,'{777}')%></p>
 <p>Url for new: <%= url_for(:new)%></p>
 </body>
 </html>
