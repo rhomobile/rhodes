@@ -4,10 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Editing Account</title>
+<meta name="viewport" content="width=320"/>
 </head>
 <body>
 <form action="<%=url_for(:update) %>">
-<input type="hidden" name="id" value="<%=@account.id%>"/>
+<input type="hidden" name="id" value="<%=@account.object%>"/>
 Name <input name="name" value="<%=@account.name%>"/><br/>
 Industry <input name="industry" value="<%=@account.industry%>"/><br/>
 <input type="submit" value="Edit Account"/>

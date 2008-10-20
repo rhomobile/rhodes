@@ -47,11 +47,16 @@ class RhomObjectFactory
               query = nil
               if args.first == :all
                 query = "select * from #{TABLE_NAME} where source_id=#{SourceId}"
-              else 
-                query = "select * from #{TABLE_NAME} where object='#{args.first.to_s}'"
+              else
+                obj = strip_braces(args.first.to_s)
+                query = "select * from #{TABLE_NAME} where object='#{obj}'"
               end
               result = Rhom::execute_sql(query)
-              get_list(result)
+              list = get_list(result)
+              if list.length == 1
+                return list[0]
+              end
+              list
             end
     
             def find_by_sql(sql)
@@ -101,7 +106,6 @@ class RhomObjectFactory
               tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
               tmp_obj
             end
-            
           end #class methods
 		  
           def create(obj)
@@ -109,8 +113,17 @@ class RhomObjectFactory
           end
 		  
           def destroy
-            object = self.object.gsub("{","").gsub("}","")
-            query = "insert into #{TABLE _NAME} (object, update_type) values ('#{object}', 'delete')"
+            result = nil
+            obj = strip_braces(self.object)
+            if obj
+              # first delete the record from viewable list
+              query = "delete from #{TABLE_NAME} where object='#{obj}'"
+              result = Rhom::execute_sql(query)
+              # now add delete operation
+              query = "insert into #{TABLE_NAME} (object, update_type) values ('#{obj}', 'delete')"
+              result = Rhom::execute_sql(query)
+            end
+            result
           end
 		  
           def save
@@ -125,7 +138,6 @@ class RhomObjectFactory
                      values ('#{attrib}','#{self.object}', '#{value}', 'update')"
             result = Rhom::execute_sql(query)
           end
-
         end)
     end
   end

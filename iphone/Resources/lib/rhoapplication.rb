@@ -24,9 +24,7 @@ class RhoApplication
 
 	def serve(req,res)
 		req[:modelpath] = self.class.get_model_path req['application'], req['model']
-		puts 'trying to require controller...'
 		require req[:modelpath]+'controller'
-		puts 'require controller successful...'
 		res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, @rhom, req, res
 	end
 
