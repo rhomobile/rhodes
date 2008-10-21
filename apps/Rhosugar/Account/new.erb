@@ -8,13 +8,14 @@
 </head>
 <body>
 <form method="POST" action="<%=url_for('create') %>">
-Name <input name="account[name]" value="<%=@account.name%>"/><br/>
+Name <input name="account[name]" value="<%=@account.name.length > 0 ? @account.name : ""%>"/><br/>
 Industry <select name="account[industry]">
 <%@industries.each do |i|%>
 <option value=<%=i%>>
 <%=i%>
 </option>
 <%end%>
+</select>
 <br/>
 <input type="submit" value="Create Account"/>
 </form>

@@ -28,7 +28,6 @@ class AccountController < RhoController
 
   # POST /cases
   def create
-    puts 'inside create: ' + @params['account'].inspect
     @account = Account.new(@params['account'])
     @account.save
     redirect :index
@@ -42,7 +41,6 @@ class AccountController < RhoController
 
   # POST /cases/1/delete
   def delete
-    puts 'params: ' + @params.inspect
     @account = Account.find(@params['id'])
     @account.destroy
     redirect :index

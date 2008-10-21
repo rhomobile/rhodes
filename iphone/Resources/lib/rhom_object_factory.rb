@@ -43,7 +43,6 @@ class RhomObjectFactory
           extend RhomObject
           
           def initialize(obj=nil)
-            'inside initialize for model: ' + obj.inspect
             if obj
               # create a temp id for the create type
               temp_objid = djb_hash(obj.values.to_s, 10).to_s
@@ -121,7 +120,6 @@ class RhomObjectFactory
               tmp_obj.send 'object'.to_sym, "{#{obj['object'].to_s}}"
               tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
               tmp_obj.send 'update_type'.to_sym, type
-              puts 'tmp_obj: ' + tmp_obj.inspect
               tmp_obj
             end
           end #class methods
@@ -137,6 +135,7 @@ class RhomObjectFactory
               query = "insert into #{TABLE_NAME} (object, update_type) values ('#{obj}', 'delete')"
               result = Rhom::execute_sql(query)
             end
+            SyncEngine::dosync
             result
           end
 		  
@@ -149,11 +148,10 @@ class RhomObjectFactory
               unless method =~ /object|source_id|update_type/
                 query = "insert into #{TABLE_NAME} (object, attrib, value, update_type) values \
                           ('#{self.object}', '#{method}', '#{val}', 'create')"
-                puts 'executing query: ' + query
                 result = Rhom::execute_sql(query)
               end
             end
-			SyncEngine::dosync
+            SyncEngine::dosync
             result
           end
         end)
