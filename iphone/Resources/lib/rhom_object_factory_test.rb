@@ -55,7 +55,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    factory = RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new("Account", '1')
     
     results = Account.get_list(rows)
     results.each_with_index do |result,i|
@@ -116,7 +116,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    factory = RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new("Account", '1')
     
     results = Account.get_list(rows)
     results.each_with_index do |result,i|
@@ -255,13 +255,13 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    factory = RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new("Account", '1')
     
     results = Account.get_list(rows)
     results.each_with_index do |result,i|
       puts "result[#{i}]: " + result.inspect
     end
-   
+    
     assert_equal 5, results.length
     
     
@@ -280,5 +280,13 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
     assert_equal results[4].name, "pqr industries"
     assert_equal results[4].address, "333 3rd street"
     assert_equal results[4].industry, "lighting"
+  end
+  
+  def test_djb_hash
+    RhomObjectFactory.new("Account", '1')
+    vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    account = Account.new(vars)
+    puts 'account: ' + account.inspect
+    assert_equal "272128608299468889014", account.object
   end
 end
