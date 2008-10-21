@@ -41,12 +41,28 @@ class RhomObjectFactory
         Class::new do
           include RhomObject
           extend RhomObject
+          
+          def initialize(obj=nil)
+            'inside initialize for model: ' + obj.inspect
+            if obj
+              # create a temp id for the create type
+              temp_objid = djb_hash(obj.values.to_s, 10).to_s
+              self.send 'object'.to_sym, "#{temp_objid}"
+              self.send 'source_id'.to_sym, obj['source_id'].to_s
+              self.send 'update_type'.to_sym, 'create'
+              obj.each do |key,value|
+                self.send key, value
+              end
+            end
+            
+          end
 		  
           class << self
             def find(*args)
               query = nil
               if args.first == :all
-                query = "select * from #{TABLE_NAME} where source_id=#{SourceId}"
+                query = "select * from #{TABLE_NAME} where source_id=#{SourceId} \
+                         and update_type in ('query', 'create')"
               else
                 obj = strip_braces(args.first.to_s)
                 query = "select * from #{TABLE_NAME} where object='#{obj}'"
@@ -81,7 +97,7 @@ class RhomObjectFactory
                     # initialize new object if the object-id changes
                   elsif obj['object'] != objs[i-1]['object']
                     new_list << new_obj
-                    new_obj = get_new_obj(obj)
+                    new_obj = get_new_obj(obj, 'query')
                     new_obj.send obj['attrib'].to_sym, obj['value'].to_s
            
                     # if we've seen this object id before, only add accessor 
@@ -100,17 +116,15 @@ class RhomObjectFactory
               new_list
             end
   
-            def get_new_obj(obj)
+            def get_new_obj(obj, type='query')
               tmp_obj = self.new
               tmp_obj.send 'object'.to_sym, "{#{obj['object'].to_s}}"
               tmp_obj.send 'source_id'.to_sym, obj['source_id'].to_s
+              tmp_obj.send 'update_type'.to_sym, type
+              puts 'tmp_obj: ' + tmp_obj.inspect
               tmp_obj
             end
           end #class methods
-		  
-          def create(obj)
-            #TODO: Generate query based on attribute list
-          end
 		  
           def destroy
             result = nil
@@ -127,16 +141,20 @@ class RhomObjectFactory
           end
 		  
           def save
-            attrib = nil
-            value = nil
-            self.instance_variables.each do |var| 
-              if var != 'object' and var != ''
-                
+            result = nil
+            # iterate over each instance variable and insert create row to table
+            self.instance_variables.each do |method|
+              method = method.to_s.gsub(/@/,"")
+              val = self.send method.to_sym
+              unless method =~ /object|source_id|update_type/
+                query = "insert into #{TABLE_NAME} (object, attrib, value, update_type) values \
+                          ('#{self.object}', '#{method}', '#{val}', 'create')"
+                puts 'executing query: ' + query
+                result = Rhom::execute_sql(query)
               end
             end
-            query = "insert into #{TABLE_NAME} (attrib, object, value, update_type) \
-                     values ('#{attrib}','#{self.object}', '#{value}', 'update')"
-            result = Rhom::execute_sql(query)
+			SyncEngine::dosync
+            result
           end
         end)
     end

@@ -4,7 +4,7 @@ class AccountController < RhoController
   # GET /cases
   def index
     @accounts = Account.find(:all)
-	render :index
+    render :index
   end
 
   # GET /cases/1
@@ -15,18 +15,21 @@ class AccountController < RhoController
   # GET /cases/new
   def new
     @account = Account.new
-	render :new
+    render :new
   end
 
   # GET /cases/1/edit
   def edit
     @account = Account.find(@params['id'])
-	render :edit
+    render :edit
   end
 
   # POST /cases
   def create
-    @account = Account.new(@params[:case])
+    puts 'inside create: ' + @params['account'].inspect
+    @account = Account.new(@params['account'])
+    @account.save
+    redirect :index
   end
 
   # POST /cases/1
@@ -40,6 +43,6 @@ class AccountController < RhoController
     puts 'params: ' + @params.inspect
     @account = Account.find(@params['id'])
     @account.destroy
-	redirect :index
+    redirect :index
   end
 end

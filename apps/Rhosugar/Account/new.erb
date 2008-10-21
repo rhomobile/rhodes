@@ -4,11 +4,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Creating Account</title>
+<meta name="viewport" content="width=320"/>
 </head>
 <body>
-<form action="<%=url_for(:create) %>">
-Name <input name="name" value="<%=@account.name%>"/><br/>
-Industry <input name="industry" value="<%=@account.industry%>"/><br/>
+<form method="POST" action="<%=url_for('create') %>">
+Name <input name="account[name]" value="<%=@account.name%>"/><br/>
+Industry <input name="account[industry]" value="<%=@account.industry%>"/><br/>
 <input type="submit" value="Create Account"/>
 </form>
 </body>
