@@ -30,8 +30,8 @@ class Rhom
     @modelname = modelname
     @source_id = source_id
     @factory = RhomObjectFactory.new(@modelname, @source_id)
-    @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
-						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
+    #    @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
+    #						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
   end
   
   class << self
@@ -54,7 +54,7 @@ class Rhom
     # execute a sql statement
     # optionally, disable the factory processing 
     # which returns the result array directly
-    def execute_sql(sql=nil, process=true)
+    def execute_sql(sql=nil)
       result = []
       if sql
         # execute sql statement inside of transaction

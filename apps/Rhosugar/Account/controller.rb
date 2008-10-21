@@ -36,7 +36,8 @@ class AccountController < RhoController
   # POST /cases/1
   def update
     @account = Account.find(@params['id'])
-    @account.save
+    @account.update_attributes(@params['account'])
+    redirect :index
   end
 
   # POST /cases/1/delete

@@ -30,9 +30,9 @@ class RhomObjectFactory
     init_object
   end
   
-  def init_attrib_count(list)
-    @attrib_count = list[0]['count']
-  end
+  #  def init_attrib_count(list)
+  #    @attrib_count = list[0]['count']
+  #  end
   
   # Initialize new object with dynamic attributes
   def init_object
@@ -45,6 +45,7 @@ class RhomObjectFactory
           def initialize(obj=nil)
             if obj
               # create a temp id for the create type
+              # TODO: This is duplicative of get_new_obj
               temp_objid = djb_hash(obj.values.to_s, 10).to_s
               self.send 'object'.to_sym, "#{temp_objid}"
               self.send 'source_id'.to_sym, obj['source_id'].to_s
@@ -57,6 +58,9 @@ class RhomObjectFactory
           end
 		  
           class << self
+            
+            # retrieve a single record if object id provided, otherwise return
+            # full list corresponding to factory's source id
             def find(*args)
               query = nil
               if args.first == :all
@@ -115,6 +119,7 @@ class RhomObjectFactory
               new_list
             end
   
+            # returns new model instance with a temp object id
             def get_new_obj(obj, type='query')
               tmp_obj = self.new
               tmp_obj.send 'object'.to_sym, "{#{obj['object'].to_s}}"
@@ -123,7 +128,9 @@ class RhomObjectFactory
               tmp_obj
             end
           end #class methods
-		  
+		 
+          # deletes the record from the viewable list as well as
+          # adding a delete record to the list of sync operations
           def destroy
             result = nil
             obj = strip_braces(self.object)
@@ -138,17 +145,47 @@ class RhomObjectFactory
             SyncEngine::dosync
             result
           end
-		  
+		
+          # saves the current object to the database as a create type
           def save
             result = nil
             # iterate over each instance variable and insert create row to table
             self.instance_variables.each do |method|
               method = method.to_s.gsub(/@/,"")
               val = self.send method.to_sym
+              # add rows excluding object, source_id and update_type
               unless method =~ /object|source_id|update_type/
                 query = "insert into #{TABLE_NAME} (object, attrib, value, update_type) values \
                           ('#{self.object}', '#{method}', '#{val}', 'create')"
                 result = Rhom::execute_sql(query)
+              end
+            end
+            SyncEngine::dosync
+            result
+          end
+          
+          # updates the current record in the viewable list and adds
+          # a sync operation to update
+          def update_attributes(attrs)
+            result = nil
+            obj = strip_braces(self.object)
+            self.instance_variables.each do |method|
+              method = method.to_s.gsub(/@/,"")
+              val = self.send method.to_sym
+              new_val = attrs[method]
+              # if the object's value doesn't match the database record
+              # then we procede with update
+              if val != new_val
+                unless method =~ /object|source_id|update_type/
+                  # update viewable list
+                  query = "update #{TABLE_NAME} set value='#{new_val}' where object='#{obj}' \
+			   and attrib='#{method}'"
+                  result = Rhom::execute_sql(query)
+                  # update sync list
+                  query = "insert into #{TABLE_NAME} (object, attrib, value, update_type) values \
+                           ('#{obj}', '#{method}', '#{new_val}', 'update')"
+                  result = Rhom::execute_sql(query)
+                end
               end
             end
             SyncEngine::dosync
