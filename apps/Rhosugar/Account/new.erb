@@ -9,7 +9,13 @@
 <body>
 <form method="POST" action="<%=url_for('create') %>">
 Name <input name="account[name]" value="<%=@account.name%>"/><br/>
-Industry <input name="account[industry]" value="<%=@account.industry%>"/><br/>
+Industry <select name="account[industry]">
+<%@industries.each do |i|%>
+<option value=<%=i%>>
+<%=i%>
+</option>
+<%end%>
+<br/>
 <input type="submit" value="Create Account"/>
 </form>
 </body>
