@@ -10,42 +10,42 @@
 
 <input type="hidden" name="id" value="<%=@case.id%>"/>
 
-Case Number <input name="name" value="<%=@case.case_number%>"/><br/>
-Assigned To <input name="industry" value="<%=@case.assigned_to%>"/><br/>
+Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
+Assigned To <input name="case[industry]" value="<%=@case.assigned_to%>"/><br/>
 
 Account Name
-<select name="account" value="<%=@case.account%>">
+<select name="case[account_name]" value="<%=@case.account%>">
 <%@accounts.each do |a|%>
   <option><%=a.name%></option>
 <%end%>
 </select><br/>
 
 Priority
-<select name="priority" value="<%=@case.priority%>">
+<select name="case[priority]" value="<%=@case.priority%>">
   <option>High</option>
   <option>Medium</option>
   <option>Low</option>
 </select><br/>
 
 Status
-<select name="status" value="<%=@case.status%>">
+<select name="case[status]" value="<%=@case.status%>">
   <option>New</option>
   <option>Assigned</option>
   <option>Closed</option>
 </select><br/>
 
 Type
-<select name="type" value="<%=@case.type%>">
+<select name="case[type]" value="<%=@case.type%>">
   <option>Administration</option>
   <option>Product</option>
   <option>User</option>
 </select><br/>
 
 Description
-<textarea name="description" value="<%=@case.description%>"/><br/>
+<textarea name="case[description]" value="<%=@case.description%>"/><br/>
 
 Resolution
-<textarea name="resolution" value="<%=@case.resolution%>"/><br/>
+<textarea name="case[resolution]" value="<%=@case.resolution%>"/><br/>
 
 <input type="submit" value="Update Case"/>
 </form>

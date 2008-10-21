@@ -15,12 +15,14 @@ class AccountController < RhoController
   # GET /cases/new
   def new
     @account = Account.new
+    @industries=["Electronics","Finance","Technology"]
     render :new
   end
 
   # GET /cases/1/edit
   def edit
     @account = Account.find(@params['id'])
+    @industries=["Electronics","Finance","Technology"]
     render :edit
   end
 
