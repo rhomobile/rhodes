@@ -25,6 +25,8 @@ module RhomObject
   
   TABLE_NAME = 'object_values'
 
+  # we override method_missing here so that instance variables,
+  # when retrieved or set, are added to the object
   def method_missing(name, *args)
     unless name == Fixnum
       varname = name.to_s.gsub(/=/,"")
