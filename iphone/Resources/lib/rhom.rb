@@ -24,12 +24,10 @@ require 'rhom_object'
   
 class Rhom
   include RhomObject
-  attr_accessor :database, :modelname, :factory, :source_id
+  attr_accessor :database, :factory
   
-  def initialize(modelname, source_id)
-    @modelname = modelname
-    @source_id = source_id
-    @factory = RhomObjectFactory.new(@modelname, @source_id)
+  def initialize
+    @factory = RhomObjectFactory.new
     #    @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
     #						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
   end
