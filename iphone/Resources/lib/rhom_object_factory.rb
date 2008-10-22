@@ -74,7 +74,7 @@ class RhomObjectFactory
                 if args.first == :all
                   query = "select * from #{TABLE_NAME} where \
                            source_id=#{get_source_id} \
-                           and update_type in ('query', 'create')"
+                           and update_type='query'"
                 else
                   obj = strip_braces(args.first.to_s)
                   query = "select * from #{TABLE_NAME} where object='#{obj}'"

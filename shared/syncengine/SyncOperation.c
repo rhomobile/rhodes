@@ -146,6 +146,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 				   list[i]->_sync_object->_update_type);
 		}
 		sqlite3_reset(op_list_select_statement);
+		sqlite3_finalize(op_list_select_statement);
 		op_list_select_statement = NULL;
 	}
 	return count;
@@ -161,6 +162,7 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
 		sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
 		sqlite3_step(op_list_delete_statment);
 		sqlite3_reset(op_list_delete_statment);
+		sqlite3_finalize(op_list_delete_statment);
 		op_list_delete_statment = NULL;
     }
 }
@@ -178,6 +180,7 @@ int get_source_ids_from_database(int *list, sqlite3 *database, int max_size) {
 			count++;
 		}
 		sqlite3_reset(op_list_source_ids_statement);
+		sqlite3_finalize(op_list_source_ids_statement);
 		op_list_source_ids_statement = NULL;
 	}
 	return count;
