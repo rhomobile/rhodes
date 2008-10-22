@@ -28,7 +28,7 @@ class Rhom
   
   def initialize
     @factory = RhomObjectFactory.new
-	SyncEngine::dosync
+    SyncEngine::dosync
   end
   
   class << self
@@ -54,6 +54,7 @@ class Rhom
     def execute_sql(sql=nil)
       result = []
       if sql
+        puts 'query is ' + sql
         # execute sql statement inside of transaction
         # result is returned as an array of hashes
         init_db_connection

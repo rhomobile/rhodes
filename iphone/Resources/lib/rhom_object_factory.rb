@@ -25,7 +25,6 @@ class RhomObjectFactory
   
   def initialize
     init_objects unless not defined? RHO_SOURCES
-    puts 'trying init table' + RHO_SOURCES.inspect
     init_sources_table
   end
   
@@ -150,7 +149,7 @@ class RhomObjectFactory
                 result = Rhom::execute_sql(query)
                 # now add delete operation
                 query = "insert into #{TABLE_NAME} (source_id, object, update_type) \
-                         values (#{get_source_id}, '#{obj}', 'delete')"
+                         values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
                 result = Rhom::execute_sql(query)
               end
               SyncEngine::dosync
@@ -167,7 +166,7 @@ class RhomObjectFactory
                 # add rows excluding object, source_id and update_type
                 unless method =~ /object|source_id|update_type/
                   query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                          (#{get_source_id}, '#{self.object}', '#{method}', '#{val}', 'create')"
+                          (#{self.get_inst_source_id}, '#{self.object}', '#{method}', '#{val}', 'create')"
                   result = Rhom::execute_sql(query)
                 end
               end
@@ -194,13 +193,17 @@ class RhomObjectFactory
                     result = Rhom::execute_sql(query)
                     # update sync list
                     query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                           (#{get_source_id}, '#{obj}', '#{method}', '#{new_val}', 'update')"
+                           (#{self.get_inst_source_id}, '#{obj}', '#{method}', '#{new_val}', 'update')"
                     result = Rhom::execute_sql(query)
                   end
                 end
               end
               SyncEngine::dosync
               result
+            end
+			
+            def get_inst_source_id
+              RHO_SOURCES[self.class.name.to_s].to_s
             end
           end)
       end
