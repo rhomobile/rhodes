@@ -15,12 +15,14 @@ class CaseController < RhoController
 
   # GET /cases/new
   def new
+    @accounts = Account.find :all
     @case = Case.new
     render :new
   end
 
   # GET /cases/1/edit
   def edit
+    @accounts = Account.find :all
     @case = Case.find(@params['id'])
     render :edit
   end
