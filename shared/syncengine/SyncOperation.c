@@ -57,12 +57,13 @@ void set_sync_uri(pSyncOperation sync) {
 	static char temp[SYNC_URI_SIZE];
 	
 	/* construct the uri */
-	sprintf(temp, "%s/%i/%s/%s", 
+	sprintf(temp, "%s%i/%s%s", 
 			SYNC_SOURCE, 
 			sync->_source_id, 
 			sync->_operation, 
 			SYNC_SOURCE_FORMAT);
 	strcpy((void *)sync->_uri, temp);
+	printf("Sync Operation URI: %s\n", sync->_uri);
 }
 
 /*
