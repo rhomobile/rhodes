@@ -68,20 +68,11 @@ void* sync_engine_main_routine(void* data) {
 				pSyncObject *ob_list;
 				ob_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
 				
-				/* first, flush local database */
-				delete_all_from_database(database);
-				
 				/* fetch new list from sync source */
-				int available_remote = fetch_remote_changes(ob_list);
+				int available_remote = fetch_remote_changes(ob_list, database);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
-					for(int i = 0; i < available_remote; i++) {
-						ob_list[i]->_database = database;
-						insert_into_database(ob_list[i]);
-						dehydrate(ob_list[i]);
-					}
-					/* free the in-memory list after populating the database */
-					free_ob_list(ob_list, available_remote);
+					
 				}
 				/* update the in-memory list */
 				/*populate_list(database);*/
