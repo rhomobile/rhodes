@@ -9,7 +9,7 @@
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
 		activeBuildConfigurationName = Debug;
 		activeExecutable = 662292D10EA9798800789D3A /* rhorunner */;
-		activeSDKPreference = iphoneos2.1;
+		activeSDKPreference = iphonesimulator2.1;
 		activeTarget = 1D6058900D05DD3D006BFB54 /* rhorunner */;
 		codeSenseManager = 662293B10EA979B600789D3A /* Code sense */;
 		executables = (
@@ -38,8 +38,8 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 246310537;
-			PBXWorkspaceStateSaveDate = 246310537;
+			PBXPerProjectTemplateStateSaveDate = 246401888;
+			PBXWorkspaceStateSaveDate = 246401888;
 		};
 		sourceControlManager = 662293B00EA979B600789D3A /* Source Control */;
 		userBuildSettings = {
@@ -52,12 +52,13 @@
 		argumentStrings = (
 		);
 		autoAttachOnCrash = 1;
-		breakpointsEnabled = 1;
+		breakpointsEnabled = 0;
 		configStateDict = {
 		};
 		customDataFormattersEnabled = 1;
 		debuggerPlugin = GDBDebugging;
 		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
 		enableDebugStr = 1;
 		environmentEntries = (
 		);
@@ -65,6 +66,8 @@
 		executableUserSymbolLevel = 0;
 		libgmallocEnabled = 0;
 		name = rhorunner;
+		savedGlobals = {
+		};
 		sourceDirectories = (
 		);
 	};
