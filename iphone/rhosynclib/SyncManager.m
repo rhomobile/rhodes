@@ -30,34 +30,57 @@
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(pSyncObject *list) {
+int fetch_remote_changes(pSyncObject *list, sqlite3 *database) {
 	
 	char url_string[4096];
-	
-	strcpy(url_string, SYNC_SOURCE);
-	strcat(url_string, SYNC_SOURCE_FORMAT);
-	
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	
-	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-	[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
-	[request setHTTPMethod:@"GET"];
-	
-	NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
+	int max_size = 100;
+	int *source_list;
+	source_list = malloc(max_size*sizeof(int));
+	int source_length = get_source_ids_from_database(source_list, database, max_size);
 	int available = 0;
-	if (conn) {
-		NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-		NSString *logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		char *json_string = (char *)[logData UTF8String];
-		int size = MAX_SYNC_OBJECTS;
+	int offset = 0;
+	printf("Iterating over %i sources...\n", source_length);
+	
+	/* iterate over each source id and do a fetch */
+	for(int i = 0; i < source_length; i++) {
+		sprintf(url_string, "%s%d%s", SYNC_SOURCE, source_list[i], SYNC_SOURCE_FORMAT);
+		printf("url_string: %s\n", url_string);
 		
-		// Initialize parsing list and call json parser
-		available = parse_json_list(list, json_string, size);
-		printf("Parsed %i records from sync source...\n", available);
+		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
+		[request setHTTPMethod:@"GET"];
+		
+		NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		
+		if (conn) {
+			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			NSString *logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+			char *json_string = (char *)[logData UTF8String];
+			int size = MAX_SYNC_OBJECTS;
+			
+			// Initialize parsing list and call json parser
+			available = parse_json_list(list, json_string, size);
+			printf("Parsed %i records from sync source...\n", available);
+			if(available > 0) {
+				delete_from_database_by_source(database, source_list[i]);
+				for(int i = offset; i < available; i++) {
+					list[i]->_database = database;
+					insert_into_database(list[i]);
+					dehydrate(list[i]);
+					offset++;
+				}
+			}
+			
+		}
+		[pool release];
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	}
-	[pool release];
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	/* free the in-memory list after populating the database */
+	free_ob_list(list, available);
+	free(source_list);
 	return available;
 }
 

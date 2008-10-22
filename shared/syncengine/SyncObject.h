@@ -68,7 +68,7 @@ int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list);
 /* Initialize the row with a placeholder object (to be used by dehydrate later) */
 int insert_into_database(pSyncObject ref);
 /* Remove the object list from the database */
-int delete_all_from_database(sqlite3 *db);
+int delete_from_database_by_source(sqlite3 *db, int source);
 
 /* Process update types */
 void add_delete_type_to_database(pSyncObject ref);

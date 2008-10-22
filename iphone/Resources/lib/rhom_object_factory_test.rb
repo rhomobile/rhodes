@@ -24,9 +24,13 @@ require 'rhom_object_factory'
 
 class RhomObjectFactoryTest < Test::Unit::TestCase
   
+  Object::const_set("RHO_SOURCES", {"Account"=>'1', "Case"=>'2'}) unless defined? RHO_SOURCES
+  
   def test_init_and_set
-    RhomObjectFactory.new("Account", '1')
     
+    RhomObjectFactory.new
+    puts 'calling source_id account: ' + Account.get_source_id
+    puts 'calling source_id case: ' + Case.get_source_id
     account = Account.new
     account.name = 'hello name'
     account.industry = 'hello industry'
@@ -55,9 +59,9 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new
     
-    results = Account.get_list(rows)
+    results = Case.get_list(rows)
     results.each_with_index do |result,i|
       puts "result[#{i}]: " + result.inspect
     end
@@ -116,7 +120,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new
     
     results = Account.get_list(rows)
     results.each_with_index do |result,i|
@@ -255,7 +259,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
         "created_at"=>"2008-10-14 01:53:17", 
         "updated_at"=>"2008-10-14 01:53:17", 
         "update_type"=>"create"}]
-    RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new
     
     results = Account.get_list(rows)
     results.each_with_index do |result,i|
@@ -283,7 +287,7 @@ class RhomObjectFactoryTest < Test::Unit::TestCase
   end
   
   def test_djb_hash
-    RhomObjectFactory.new("Account", '1')
+    RhomObjectFactory.new
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
     puts 'account: ' + account.inspect

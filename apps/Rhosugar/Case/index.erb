@@ -4,14 +4,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Cases</title>
+<meta name="viewport" content="width=320"/>
 </head>
 <body>
 <table>
 <%@cases.each do |x|%>
 <tr>
-  <td><%=link_to x.case_number,{:action=>"edit",:id=>@case.object}%></td>
+  <td><%=link_to x.case_number, "edit", x.object%></td>
   <td><%=x.assigned_to%></td>
-  <td><%=link_to "X","delete"%></td>
+  <td><%=link_to "X","delete", x.object%></td>
 </tr>
 <%end%>
 </table>
