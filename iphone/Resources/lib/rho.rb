@@ -6,16 +6,15 @@ require 'rhoapplication'
 class RHO
   APPLICATIONS = {}
 	
-  SOURCE_ID = "1"
-	
   def initialize
     puts "Calling RHO.initialize"
   end
 	
   def get_app(appname, modelname)
     if (APPLICATIONS[appname].nil?)
+      require RhoApplication::get_app_path(appname)+'config'
       require RhoApplication::get_app_path(appname)+'application'
-      APPLICATIONS[appname] = Object.const_get(appname+'Application').new(modelname, SOURCE_ID)
+      APPLICATIONS[appname] = Object.const_get(appname+'Application').new
     end
     APPLICATIONS[appname]
   end
@@ -80,14 +79,5 @@ class RHO
 		
     _HTML_STRING_
     send_response(init_response(status,"Server error",body))
-  end
-
-  # Return a new hash with all keys converted to symbols.
-  def symbolize_keys(hash)
-    hash.inject({}) do |options, (key, value)|
-      options[key.to_sym || key] = value
-      options
-    end
-    hash
   end
 end

@@ -21,6 +21,6 @@
 #include "SyncObject.h"
 #include "SyncOperation.h"
 
-int fetch_remote_changes(pSyncObject *list);
+int fetch_remote_changes(pSyncObject *list, sqlite3 *database);
 int push_remote_changes(pSyncOperation *list, int size);
 void populate_list(sqlite3 *database);
