@@ -32,6 +32,7 @@ static sqlite3_stmt *hydrate_statement = NULL;
 static sqlite3_stmt *dehydrate_statement = NULL;
 static sqlite3_stmt *select_statement = NULL;
 static sqlite3_stmt *cleanup_statement = NULL;
+static sqlite3_stmt *fetch_statement = NULL;
 
 /* Update type database statements */
 static sqlite3_stmt *delete_type_statement = NULL;
@@ -50,6 +51,7 @@ void finalize_statements() {
     if (dehydrate_statement) sqlite3_finalize(dehydrate_statement);
 	if (select_statement) sqlite3_finalize(select_statement);
 	if (cleanup_statement) sqlite3_finalize(cleanup_statement);
+	if (fetch_statement) sqlite3_finalize(fetch_statement);
 	if (delete_type_statement) sqlite3_finalize(delete_type_statement);
 	if (update_type_statement) sqlite3_finalize(update_type_statement);
 	if (create_type_statement) sqlite3_finalize(create_type_statement);
@@ -154,7 +156,7 @@ int exists_in_database(pSyncObject ref) {
 
 int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
 	int count = 0;
-	sqlite3_stmt *fetch_statement = NULL;
+	
 	if (fetch_statement == NULL) {
 		const char *sql = "SELECT id FROM object_values where update_type = 'query'";	
 		if (sqlite3_prepare_v2(database, sql, -1, &fetch_statement, NULL) != SQLITE_OK) {
@@ -171,9 +173,9 @@ int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
 				count++;
 			}
 		}
+		sqlite3_reset(fetch_statement);
+		//fetch_statement = NULL;
 	}
-	sqlite3_reset(fetch_statement);
-	sqlite3_finalize(fetch_statement);
 	return count;
 }
 
@@ -226,7 +228,7 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
 			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
 			return 1;
 		}
-		delete_statement = NULL;
+		//delete_statement = NULL;
     }
 	return 0;
 }
@@ -253,19 +255,21 @@ void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type) 
 		if (sqlite3_prepare_v2(ref->_database, sql, -1, &statement, NULL) != SQLITE_OK) {
 			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
 		}
+		sqlite3_bind_text(statement, 1, ref->_attrib, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_int(statement, 2, ref->_source_id);
+		sqlite3_bind_text(statement, 3, ref->_object, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(statement, 4, ref->_value, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(statement, 5, "", -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(statement, 6, "", -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(statement, 7, type, -1, SQLITE_TRANSIENT);
+		int success = sqlite3_step(statement);
+		sqlite3_reset(statement);
+		if (success != SQLITE_DONE) {
+			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
+		}
+		sqlite3_finalize(statement);
+		statement = NULL;
 	}
-	sqlite3_bind_text(statement, 1, ref->_attrib, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_int(statement, 2, ref->_source_id);
-	sqlite3_bind_text(statement, 3, ref->_object, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(statement, 4, ref->_value, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(statement, 5, "", -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(statement, 6, "", -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(statement, 7, type, -1, SQLITE_TRANSIENT);
-	int success = sqlite3_step(statement);
-    sqlite3_reset(statement);
-    if (success != SQLITE_DONE) {
-        printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
-    }
 }
 			 
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
