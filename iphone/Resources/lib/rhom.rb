@@ -28,8 +28,7 @@ class Rhom
   
   def initialize
     @factory = RhomObjectFactory.new
-    #    @factory.init_attrib_count(Rhom::execute_sql("select count(distinct attrib) as count from \
-    #						#{TABLE_NAME} where source_id = #{@source_id.to_s}", false))
+	SyncEngine::dosync
   end
   
   class << self

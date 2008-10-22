@@ -213,18 +213,20 @@ int insert_into_database(pSyncObject ref) {
 }
 
 /* Remove all objects from database */
-int delete_all_from_database(sqlite3 *db) {
+int delete_from_database_by_source(sqlite3 *db, int source) {
     if (delete_statement == NULL) {
-        const char *sql = "DELETE FROM object_values";
+        const char *sql = "DELETE FROM object_values where source_id=?";
         if (sqlite3_prepare_v2(db, sql, -1, &delete_statement, NULL) != SQLITE_OK) {
             printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
         }
-    }
-    int success = sqlite3_step(delete_statement);
-    sqlite3_reset(delete_statement);
-    if (success != SQLITE_DONE) {
-        printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
-		return 1;
+		sqlite3_bind_int(delete_statement, 1, source);
+		int success = sqlite3_step(delete_statement);
+		sqlite3_reset(delete_statement);
+		if (success != SQLITE_DONE) {
+			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
+			return 1;
+		}
+		delete_statement = NULL;
     }
 	return 0;
 }

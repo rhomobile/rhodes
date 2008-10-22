@@ -25,6 +25,18 @@ class RhomObjectFactory
   
   def initialize
     init_objects unless not defined? RHO_SOURCES
+    puts 'trying init table' + RHO_SOURCES.inspect
+    init_sources_table
+  end
+  
+  # setup the sources table for this application
+  def init_sources_table
+    if defined? RHO_SOURCES
+      Rhom::execute_sql "delete from sources"
+      RHO_SOURCES.each do |source, id|
+        Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
+      end
+    end
   end
   
   # Initialize new object with dynamic attributes

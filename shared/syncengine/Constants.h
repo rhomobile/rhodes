@@ -25,8 +25,8 @@
 extern "C" {
 #endif
 
-/* Define sync source, note there is no trailing '/'! */
-#define SYNC_SOURCE			"http://rhosync.rhomobile.com/sources/1"
+/* Define sync source */
+#define SYNC_SOURCE			"http://rhosync.rhomobile.com/sources/"
 //#define SYNC_SOURCE			"http://localhost:3000/sources/1"
 #define SYNC_SOURCE_FORMAT	"?format=json"
 

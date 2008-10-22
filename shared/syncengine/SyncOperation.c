@@ -26,22 +26,23 @@ static char* attr_format = "attrvals[][%s]=%s";
 
 static sqlite3_stmt *op_list_select_statement = NULL;
 static sqlite3_stmt *op_list_delete_statment = NULL;
+static sqlite3_stmt *op_list_source_ids_statement = NULL;
 
 void finalize_op_statements() {
     if (op_list_select_statement) sqlite3_finalize(op_list_select_statement);
 	if (op_list_delete_statment) sqlite3_finalize(op_list_delete_statment);
+	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
 }
 
 /*
  * Creates an instance of SyncManager and populates the operation information
  */
-pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *operation, char* controller) {
+pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *operation) {
 	pSyncOperation sync = malloc(sizeof(SyncOperation));
 	sync->_sync_object = SyncObjectCopy(new_sync_object);
 	sync->_operation = malloc(sizeof(operation));
 	sync->_operation = operation;
-	sync->_controller = malloc(sizeof(controller));
-	sync->_controller = controller;
+	sync->_source_id = sync->_sync_object->_source_id;
 	sync->_uri = malloc(SYNC_URI_SIZE);
 	sync->_post_body = malloc(POST_BODY_SIZE);
 	set_sync_uri(sync);
@@ -53,14 +54,14 @@ pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *operation,
  * Generate the sync uri based on values in struct
  */
 void set_sync_uri(pSyncOperation sync) {
-	char *delim = "/";
 	static char temp[SYNC_URI_SIZE];
 	
 	/* construct the uri */
-	strcpy(temp, SYNC_SOURCE);
-	strcat(temp, delim);
-	strcat(temp, sync->_operation);	
-	strcat(temp, SYNC_SOURCE_FORMAT);
+	sprintf(temp, "%s/%i/%s/%s", 
+			SYNC_SOURCE, 
+			sync->_source_id, 
+			sync->_operation, 
+			SYNC_SOURCE_FORMAT);
 	strcpy((void *)sync->_uri, temp);
 }
 
@@ -131,7 +132,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 																				  tmp_source_id, tmp_object, 
 																				  tmp_value, type, 0, 0);
 			
-			current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, tmp_operation, SOURCES_CONTROLLER);
+			current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, tmp_operation);
 			list[count] = current_op;
 			count++;
 		} 
@@ -161,6 +162,24 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
 		sqlite3_reset(op_list_delete_statment);
 		op_list_delete_statment = NULL;
     }
+}
+
+int get_source_ids_from_database(int *list, sqlite3 *database, int max_size) {
+	
+	int count = 0;
+	if (op_list_source_ids_statement == NULL) {
+		const char *sql = "SELECT source_id from sources";
+		if (sqlite3_prepare_v2(database, sql, -1, &op_list_source_ids_statement, NULL) != SQLITE_OK) {
+			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
+		}
+		while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
+			list[count] = sqlite3_column_int(op_list_source_ids_statement, 0);
+			count++;
+		}
+		sqlite3_reset(op_list_source_ids_statement);
+		op_list_source_ids_statement = NULL;
+	}
+	return count;
 }
 
 /* 
