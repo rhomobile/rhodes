@@ -74,7 +74,7 @@ class RhomObjectFactory
                 if args.first == :all
                   query = "select * from #{TABLE_NAME} where \
                            source_id=#{get_source_id} \
-                           and update_type='query'"
+                           and update_type in ('create', 'query')"
                 else
                   obj = strip_braces(args.first.to_s)
                   query = "select * from #{TABLE_NAME} where object='#{obj}'"
@@ -152,7 +152,6 @@ class RhomObjectFactory
                          values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
                 result = Rhom::execute_sql(query)
               end
-              SyncEngine::dosync
               result
             end
 		
@@ -170,7 +169,6 @@ class RhomObjectFactory
                   result = Rhom::execute_sql(query)
                 end
               end
-              SyncEngine::dosync
               result
             end
           
@@ -198,7 +196,6 @@ class RhomObjectFactory
                   end
                 end
               end
-              SyncEngine::dosync
               result
             end
 			
