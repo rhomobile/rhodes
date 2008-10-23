@@ -120,12 +120,14 @@ void free_op_list(pSyncOperation *list, int available) {
 	}
 }
 
+/* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
 	printf("called lock_sync_mutex...\n");
 	pthread_mutex_lock(&sync_mutex);
 	printf("sync_mutex locked...\n");
 }
 
+/* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
 	printf("called unlock_sync_mutex...\n");
 	pthread_mutex_unlock(&sync_mutex);
