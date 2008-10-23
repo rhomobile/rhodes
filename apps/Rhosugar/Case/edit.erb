@@ -13,7 +13,7 @@
 
 Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
 
-Subject <inpout name="case[subject]" value="<%=@case.subject%>"/>
+Subject <input name="case[name]" value="<%=@case.name%>"/><br/>
 Assigned To <input name="case[industry]" value="<%=@case.assigned_to%>"/><br/>
 
 Account Name
@@ -45,10 +45,14 @@ Type
 </select><br/>
 
 Description
-<textarea name="case[description]" value="<%=@case.description%>" rows="3" cols="40"/><br/>
+<textarea name="case[description]" rows="3" cols="40">
+<%=@case.description%>
+</textarea><br/>
 
 Resolution
-<textarea name="case[resolution]" value="<%=@case.resolution%>" rows="3" cols="40"/><br/>
+<textarea name="case[resolution]" rows="3" cols="40">
+<%=@case.resolution%>
+</textarea><br/>
 
 <input type="submit" value="Update Case"/>
 </form>
