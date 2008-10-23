@@ -45,6 +45,9 @@ void* sync_engine_main_routine(void* data);
 /* Process operations by type */
 int process_op_list(char *type);
 	
+void lock_sync_mutex();
+void unlock_sync_mutex();
+	
 void wake_up_sync_engine();
 	
 /* Main entry point to the sync engine */

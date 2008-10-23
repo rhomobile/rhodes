@@ -228,7 +228,7 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
 			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
 			return 1;
 		}
-		//delete_statement = NULL;
+		delete_statement = NULL;
     }
 	return 0;
 }
