@@ -105,6 +105,7 @@ int process_op_list(char *type) {
 		
 		remove_op_list_from_database(op_list, database, type);
 	} else {
+		printf("There was an error processing records, not removing from database yet...\n");
 		free_op_list(op_list, available);
 		return 1;
 	}
