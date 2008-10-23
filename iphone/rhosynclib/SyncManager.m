@@ -50,27 +50,34 @@ int fetch_remote_changes(pSyncObject *list, sqlite3 *database) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse* response;
 		[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
 		[request setHTTPMethod:@"GET"];
 		
 		NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		
 		if (conn) {
-			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-			NSString *logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-			char *json_string = (char *)[logData UTF8String];
-			int size = MAX_SYNC_OBJECTS;
-			
-			// Initialize parsing list and call json parser
-			available = parse_json_list(list, json_string, size);
-			printf("Parsed %i records from sync source...\n", available);
-			if(available > 0) {
-				delete_from_database_by_source(database, source_list[i]);
-				for(int i = offset; i < available; i++) {
-					list[i]->_database = database;
-					insert_into_database(list[i]);
-					dehydrate(list[i]);
-					offset++;
+			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+			NSInteger code = [response statusCode];
+			if (error || code != 200) {
+				NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			} else {
+				NSString *logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+				char *json_string = (char *)[logData UTF8String];
+				int size = MAX_SYNC_OBJECTS;
+				
+				// Initialize parsing list and call json parser
+				available = parse_json_list(list, json_string, size);
+				printf("Parsed %i records from sync source...\n", available);
+				if(available > 0) {
+					delete_from_database_by_source(database, source_list[i]);
+					for(int i = offset; i < available; i++) {
+						list[i]->_database = database;
+						insert_into_database(list[i]);
+						dehydrate(list[i]);
+						offset++;
+					}
 				}
 			}
 			
@@ -93,7 +100,8 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	}
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-	NSURLResponse *response;
+	NSError *error = nil;
+	NSHTTPURLResponse *response;
 	//Get the link from the first item in the list
 	NSString *linkString = [[NSString alloc] initWithUTF8String:list[0]->_uri];
 	NSMutableString *postBody = [[NSMutableString alloc] init];
@@ -108,9 +116,16 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
 	NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 	if (conn) {
-		NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: nil ];
-		NSString *output = [NSString stringWithCString:[returnData bytes]];
-		NSLog(@"RESPONSE: %@", output);
+		NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+		NSInteger code = [response statusCode];
+		if (error || code != 200) {
+			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			[pool release];
+			return SYNC_PUSH_CHANGES_ERROR;
+		} else {
+			NSString *output = [NSString stringWithCString:[returnData bytes]];
+			NSLog(@"RESPONSE: %@", output);
+		}
 	}
 	[pool release];
 	return SYNC_PUSH_CHANGES_OK;
