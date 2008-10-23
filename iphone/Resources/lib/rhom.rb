@@ -55,14 +55,24 @@ class Rhom
       result = []
       if sql
         puts 'query is ' + sql
-        # execute sql statement inside of transaction
-        # result is returned as an array of hashes
-        init_db_connection
-        @database.transaction
-        @database.results_as_hash = true
-        result = @database.execute sql
-        @database.commit
-        close_db_connection
+        # Make sure we lock the sync engine's mutex
+        # before we perform a database transaction.
+        # This prevents concurrency issues.
+        begin
+          SyncEngine::lock_sync_mutex
+          # execute sql statement inside of transaction
+          # result is returned as an array of hashes
+          init_db_connection
+          @database.transaction
+          @database.results_as_hash = true
+          result = @database.execute sql
+          @database.commit
+          close_db_connection
+          SyncEngine::unlock_sync_mutex
+        rescue
+          # make sure we unlock even if there's an error!
+          SyncEngine::unlock_sync_mutex
+        end
       end
       result
     end

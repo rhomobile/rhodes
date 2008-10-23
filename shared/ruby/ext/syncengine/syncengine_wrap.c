@@ -1547,6 +1547,8 @@ static VALUE mSyncEngine;
 
 /* Put header files here or function declarations like below */
 extern void dosync();
+extern void lock_sync_mutex();
+extern void unlock_sync_mutex();
 
 SWIGINTERN VALUE
 _wrap_dosync(int argc, VALUE *argv, VALUE self) {
@@ -1554,6 +1556,30 @@ _wrap_dosync(int argc, VALUE *argv, VALUE self) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
   dosync();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_lock_sync_mutex(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  lock_sync_mutex();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_unlock_sync_mutex(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  unlock_sync_mutex();
   return Qnil;
 fail:
   return Qnil;
@@ -1823,5 +1849,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mSyncEngine, "dosync", _wrap_dosync, -1);
+  rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
+  rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
 }
 
