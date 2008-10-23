@@ -375,9 +375,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>662294EA0EAFCB7600789D3A</string>
+				<string>66D343050EB109030020C855</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>662294EB0EAFCB7600789D3A</string>
+				<string>66D343060EB109030020C855</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -511,11 +511,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>662294FA0EAFCD9A00789D3A</string>
-		<string>662294FB0EAFCD9A00789D3A</string>
-		<string>1C78EAAD065D492600B07095</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>662293B20EA979D200789D3A</string>
 		<string>/Users/adam/rhodes/iphone/rhorunner.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
