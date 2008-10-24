@@ -14,10 +14,10 @@
 Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
 
 Subject <input name="case[name]" value="<%=@case.name%>"/><br/>
-Assigned To <input name="case[industry]" value="<%=@case.assigned_to%>"/><br/>
+Assigned To <input name="case[contact_id]" value="<%=@case.contact_id%>"/><br/>
 
 Account Name
-<select name="case[account_name]" value="<%=@case.account%>">
+<select name="case[account_name]" value="<%=@account.name%>">
 <%@accounts.each do |a|%>
   <option><%=a.name%></option>
 <%end%>
