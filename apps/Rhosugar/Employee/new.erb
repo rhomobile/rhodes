@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>New Case</title>
+<meta name="viewport" content="width=320"/>
+</head>
+<body>
+
+<form action="<%=url_for(:create) %>">
+First Name <input name="employee[first_name]" value="<%=@employee.first_name%>"/><br/>
+Last Name <input name="employee[last_name]" value="<%=@employee.last_name%>"/><br/>
+Title <input name="employee[title]" value="<%=@employee.title%>"/><br/>
+Mobile <input name="employee[phone_mobile]" value="<%=@employee.phone_mobile%>"/><br/>
+Login <input name="employee[sugar_login]" value="<%=@employee.sugar_login%>"/><br/>
+<input type="submit" value="Create Employee"/>
+</form>
+
+</body>
+</body>
+</html>
