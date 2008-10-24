@@ -30,8 +30,9 @@
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(pSyncObject *list, sqlite3 *database) {
+int fetch_remote_changes(sqlite3 *database) {
 	
+	pSyncObject *list;
 	char url_string[4096];
 	int max_size = 100;
 	int *source_list;
@@ -68,25 +69,26 @@ int fetch_remote_changes(pSyncObject *list, sqlite3 *database) {
 				int size = MAX_SYNC_OBJECTS;
 				
 				// Initialize parsing list and call json parser
+				list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
 				available = parse_json_list(list, json_string, size);
 				printf("Parsed %i records from sync source...\n", available);
 				if(available > 0) {
 					delete_from_database_by_source(database, source_list[i]);
-					for(int i = offset; i < available; i++) {
-						list[i]->_database = database;
-						insert_into_database(list[i]);
-						dehydrate(list[i]);
-						offset++;
+					for(int j = 0; j < available; j++) {
+						list[j]->_database = database;
+						insert_into_database(list[j]);
+						dehydrate(list[j]);
 					}
 				}
+				/* free the in-memory list after populating the database */
+				free_ob_list(list, available);
 			}
 			
 		}
 		[pool release];
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	}
-	/* free the in-memory list after populating the database */
-	free_ob_list(list, available);
+	
 	free(source_list);
 	return available;
 }

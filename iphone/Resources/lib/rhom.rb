@@ -29,6 +29,7 @@ class Rhom
   def initialize
     @factory = RhomObjectFactory.new
     SyncEngine::dosync
+    @factory.init_sources
   end
   
   class << self
@@ -74,6 +75,7 @@ class Rhom
           SyncEngine::unlock_sync_mutex
         end
       end
+      puts "returned #{result.length.to_s} records..."
       result
     end
   end # class methods

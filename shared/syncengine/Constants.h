@@ -37,7 +37,7 @@ extern "C" {
 	
 #define SOURCES_CONTROLLER "sources"
 
-#define MAX_SYNC_OBJECTS 400
+#define MAX_SYNC_OBJECTS 500
 
 /* Sync Object db codes */
 #define SYNC_OBJECT_SUCCESS 0
@@ -45,7 +45,7 @@ extern "C" {
 #define SYNC_OBJECT_ERROR 2
 	
 /* Sync Engine */
-#define MAX_SINGLE_OP_SIZE 50
+#define MAX_SINGLE_OP_SIZE 200
 #define SYNC_ENGINE_SLEEP 5
 #define SYNC_FETCH_CHANGES_OK 0
 #define SYNC_FETCH_CHANGES_ERROR 1

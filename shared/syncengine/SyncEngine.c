@@ -64,12 +64,8 @@ void* sync_engine_main_routine(void* data) {
 			if (result > 0) {
 				printf("Remote update failed, not continuing with sync...\n");
 			} else {
-				/* Continue with remote fetch */
-				pSyncObject *ob_list;
-				ob_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-				
 				/* fetch new list from sync source */
-				int available_remote = fetch_remote_changes(ob_list, database);
+				int available_remote = fetch_remote_changes(database);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
 					
