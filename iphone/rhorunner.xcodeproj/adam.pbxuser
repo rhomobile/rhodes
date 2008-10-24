@@ -38,8 +38,70 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 246483196;
-			PBXWorkspaceStateSaveDate = 246483196;
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					793,
+					60,
+					20,
+					48.16259765625,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 246561675;
+			PBXWorkspaceStateSaveDate = 246561675;
+		};
+		perUserProjectItems = {
+			663208EC0EB23BCB0040AB39 /* PBXTextBookmark */ = 663208EC0EB23BCB0040AB39 /* PBXTextBookmark */;
+			6632090C0EB240B10040AB39 /* PBXTextBookmark */ = 6632090C0EB240B10040AB39 /* PBXTextBookmark */;
+			6632090D0EB240B10040AB39 /* PBXTextBookmark */ = 6632090D0EB240B10040AB39 /* PBXTextBookmark */;
+			6632090F0EB240B10040AB39 /* PBXTextBookmark */ = 6632090F0EB240B10040AB39 /* PBXTextBookmark */;
+			663209110EB240B10040AB39 /* PBXTextBookmark */ = 663209110EB240B10040AB39 /* PBXTextBookmark */;
+			663209130EB240B10040AB39 /* PBXTextBookmark */ = 663209130EB240B10040AB39 /* PBXTextBookmark */;
+			663209150EB240B10040AB39 /* PBXTextBookmark */ = 663209150EB240B10040AB39 /* PBXTextBookmark */;
+			663209160EB240B10040AB39 /* PBXTextBookmark */ = 663209160EB240B10040AB39 /* PBXTextBookmark */;
+			663209180EB240B10040AB39 /* PBXTextBookmark */ = 663209180EB240B10040AB39 /* PBXTextBookmark */;
+			6632091A0EB240B10040AB39 /* PBXTextBookmark */ = 6632091A0EB240B10040AB39 /* PBXTextBookmark */;
+			6632091C0EB240B10040AB39 /* PBXTextBookmark */ = 6632091C0EB240B10040AB39 /* PBXTextBookmark */;
+			6632091E0EB240B10040AB39 /* PBXTextBookmark */ = 6632091E0EB240B10040AB39 /* PBXTextBookmark */;
+			663209220EB240B10040AB39 /* PBXTextBookmark */ = 663209220EB240B10040AB39 /* PBXTextBookmark */;
+			663209240EB240B10040AB39 /* PBXTextBookmark */ = 663209240EB240B10040AB39 /* PBXTextBookmark */;
+			663209280EB240B10040AB39 /* PBXTextBookmark */ = 663209280EB240B10040AB39 /* PBXTextBookmark */;
+			6632092A0EB240B10040AB39 /* PBXTextBookmark */ = 6632092A0EB240B10040AB39 /* PBXTextBookmark */;
+			6632094C0EB2892E0040AB39 /* PBXTextBookmark */ = 6632094C0EB2892E0040AB39 /* PBXTextBookmark */;
+			6632094D0EB2892E0040AB39 /* PBXTextBookmark */ = 6632094D0EB2892E0040AB39 /* PBXTextBookmark */;
+			6632094E0EB2892E0040AB39 /* PBXTextBookmark */ = 6632094E0EB2892E0040AB39 /* PBXTextBookmark */;
+			6632094F0EB2892E0040AB39 /* PBXTextBookmark */ = 6632094F0EB2892E0040AB39 /* PBXTextBookmark */;
+			663209500EB2892E0040AB39 /* PBXTextBookmark */ = 663209500EB2892E0040AB39 /* PBXTextBookmark */;
+			663209510EB2892E0040AB39 /* PBXTextBookmark */ = 663209510EB2892E0040AB39 /* PBXTextBookmark */;
+			663209520EB289BC0040AB39 /* PBXTextBookmark */ = 663209520EB289BC0040AB39 /* PBXTextBookmark */;
+			6632095B0EB28D090040AB39 /* PBXTextBookmark */ = 6632095B0EB28D090040AB39 /* PBXTextBookmark */;
+			6632095C0EB28D090040AB39 /* PBXTextBookmark */ = 6632095C0EB28D090040AB39 /* PBXTextBookmark */;
+			6632095F0EB28D090040AB39 /* PBXTextBookmark */ = 6632095F0EB28D090040AB39 /* PBXTextBookmark */;
+			663209600EB28D090040AB39 /* PBXTextBookmark */ = 663209600EB28D090040AB39 /* PBXTextBookmark */;
+			66D343200EB18D3B0020C855 = 66D343200EB18D3B0020C855 /* PBXBookmark */;
+			66D343210EB18D3B0020C855 = 66D343210EB18D3B0020C855 /* PBXTextBookmark */;
+			66D343230EB18D3B0020C855 = 66D343230EB18D3B0020C855 /* PBXTextBookmark */;
+			66D343250EB18D3B0020C855 = 66D343250EB18D3B0020C855 /* PBXBookmark */;
+			66D343260EB18D3B0020C855 = 66D343260EB18D3B0020C855 /* PBXBookmark */;
+			66D343270EB18D3B0020C855 = 66D343270EB18D3B0020C855 /* PBXTextBookmark */;
+			66D343290EB18D3B0020C855 = 66D343290EB18D3B0020C855 /* PBXTextBookmark */;
+			66D3432B0EB18D3B0020C855 = 66D3432B0EB18D3B0020C855 /* PBXTextBookmark */;
+			66D3432D0EB18D3B0020C855 = 66D3432D0EB18D3B0020C855 /* PBXTextBookmark */;
+			66D343310EB18D3B0020C855 = 66D343310EB18D3B0020C855 /* PBXTextBookmark */;
+			66D343330EB18D3B0020C855 = 66D343330EB18D3B0020C855 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 662293B00EA979B600789D3A /* Source Control */;
 		userBuildSettings = {
@@ -81,5 +143,538 @@
 	662293B10EA979B600789D3A /* Code sense */ = {
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
+	};
+	663208EC0EB23BCB0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 958;
+		vrLoc = 0;
+	};
+	6632090C0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 958;
+		vrLoc = 0;
+	};
+	6632090D0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6632090E0EB240B10040AB39 /* index.html */;
+		name = "index.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 206;
+		vrLoc = 0;
+	};
+	6632090E0EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/index.html;
+		sourceTree = "<absolute>";
+	};
+	6632090F0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209100EB240B10040AB39 /* index.html */;
+		name = "index.html: 8";
+		rLen = 0;
+		rLoc = 199;
+		rType = 0;
+		vrLen = 532;
+		vrLoc = 0;
+	};
+	663209100EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/Rhosugar/index.html;
+		sourceTree = "<absolute>";
+	};
+	663209110EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209120EB240B10040AB39 /* edit.erb */;
+		name = "edit.erb: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 878;
+		vrLoc = 0;
+	};
+	663209120EB240B10040AB39 /* edit.erb */ = {
+		isa = PBXFileReference;
+		name = edit.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/edit.erb;
+		sourceTree = "<absolute>";
+	};
+	663209130EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209140EB240B10040AB39 /* index.erb */;
+		name = "index.erb: 6";
+		rLen = 0;
+		rLoc = 223;
+		rType = 0;
+		vrLen = 485;
+		vrLoc = 0;
+	};
+	663209140EB240B10040AB39 /* index.erb */ = {
+		isa = PBXFileReference;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/index.erb;
+		sourceTree = "<absolute>";
+	};
+	663209150EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 958;
+		vrLoc = 0;
+	};
+	663209160EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209170EB240B10040AB39 /* index.html */;
+		name = "index.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 206;
+		vrLoc = 0;
+	};
+	663209170EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.html;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/index.html;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1171, 526}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 206}";
+			sepNavWindowFrame = "{{15, 96}, {1230, 677}}";
+		};
+	};
+	663209180EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209190EB240B10040AB39 /* index.html */;
+		name = "index.html: 8";
+		rLen = 0;
+		rLoc = 199;
+		rType = 0;
+		vrLen = 532;
+		vrLoc = 0;
+	};
+	663209190EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/Rhosugar/index.html;
+		sourceTree = "<absolute>";
+	};
+	6632091A0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6632091B0EB240B10040AB39 /* index.erb */;
+		name = "index.erb: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 485;
+		vrLoc = 0;
+	};
+	6632091B0EB240B10040AB39 /* index.erb */ = {
+		isa = PBXFileReference;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/index.erb;
+		sourceTree = "<absolute>";
+	};
+	6632091C0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6632091D0EB240B10040AB39 /* edit.erb */;
+		name = "edit.erb: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 878;
+		vrLoc = 0;
+	};
+	6632091D0EB240B10040AB39 /* edit.erb */ = {
+		isa = PBXFileReference;
+		name = edit.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/edit.erb;
+		sourceTree = "<absolute>";
+	};
+	6632091E0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6632091F0EB240B10040AB39 /* index.erb */;
+		name = "index.erb: 6";
+		rLen = 0;
+		rLoc = 223;
+		rType = 0;
+		vrLen = 485;
+		vrLoc = 0;
+	};
+	6632091F0EB240B10040AB39 /* index.erb */ = {
+		isa = PBXFileReference;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/index.erb;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 776}}";
+			sepNavSelRange = "{223, 0}";
+			sepNavVisRange = "{0, 485}";
+		};
+	};
+	663209220EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209230EB240B10040AB39 /* controller.rb */;
+		name = "controller.rb: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 742;
+		vrLoc = 0;
+	};
+	663209230EB240B10040AB39 /* controller.rb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
+		name = controller.rb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/controller.rb;
+		sourceTree = "<absolute>";
+	};
+	663209240EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209250EB240B10040AB39 /* controller.rb */;
+		name = "controller.rb: 33";
+		rLen = 0;
+		rLoc = 640;
+		rType = 0;
+		vrLen = 742;
+		vrLoc = 0;
+	};
+	663209250EB240B10040AB39 /* controller.rb */ = {
+		isa = PBXFileReference;
+		name = controller.rb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Employee/controller.rb;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1171, 728}}";
+			sepNavSelRange = "{640, 0}";
+			sepNavVisRange = "{244, 764}";
+			sepNavWindowFrame = "{{71, 29}, {1230, 677}}";
+		};
+	};
+	663209280EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209290EB240B10040AB39 /* index.html */;
+		name = "index.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 206;
+		vrLoc = 0;
+	};
+	663209290EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.html;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/index.html;
+		sourceTree = "<absolute>";
+	};
+	6632092A0EB240B10040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6632092B0EB240B10040AB39 /* index.html */;
+		name = "index.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 206;
+		vrLoc = 0;
+	};
+	6632092B0EB240B10040AB39 /* index.html */ = {
+		isa = PBXFileReference;
+		name = index.html;
+		path = /Users/adam/rhodes/apps/index.html;
+		sourceTree = "<absolute>";
+	};
+	6632094C0EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209140EB240B10040AB39 /* index.erb */;
+		name = "index.erb: 6";
+		rLen = 0;
+		rLoc = 223;
+		rType = 0;
+		vrLen = 485;
+		vrLoc = 0;
+	};
+	6632094D0EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 25";
+		rLen = 0;
+		rLoc = 750;
+		rType = 0;
+		vrLen = 1387;
+		vrLoc = 0;
+	};
+	6632094E0EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209140EB240B10040AB39 /* index.erb */;
+		name = "index.erb: 6";
+		rLen = 0;
+		rLoc = 223;
+		rType = 0;
+		vrLen = 485;
+		vrLoc = 0;
+	};
+	6632094F0EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 20";
+		rLen = 0;
+		rLoc = 668;
+		rType = 0;
+		vrLen = 1460;
+		vrLoc = 0;
+	};
+	663209500EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209170EB240B10040AB39 /* index.html */;
+		name = "index.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 206;
+		vrLoc = 0;
+	};
+	663209510EB2892E0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 663209250EB240B10040AB39 /* controller.rb */;
+		name = "controller.rb: 33";
+		rLen = 0;
+		rLoc = 640;
+		rType = 0;
+		vrLen = 764;
+		vrLoc = 244;
+	};
+	663209520EB289BC0040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 20";
+		rLen = 0;
+		rLoc = 668;
+		rType = 0;
+		vrLen = 1460;
+		vrLoc = 0;
+	};
+	6632095B0EB28D090040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 20";
+		rLen = 0;
+		rLoc = 668;
+		rType = 0;
+		vrLen = 1460;
+		vrLoc = 0;
+	};
+	6632095C0EB28D090040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 20";
+		rLen = 0;
+		rLoc = 668;
+		rType = 0;
+		vrLen = 1460;
+		vrLoc = 0;
+	};
+	6632095F0EB28D090040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 690;
+		vrLoc = 268;
+	};
+	663209600EB28D090040AB39 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 24";
+		rLen = 0;
+		rLoc = 408;
+		rType = 0;
+		vrLen = 762;
+		vrLoc = 268;
+	};
+	66D342620EB109010020C855 /* controller.rb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
+		path = controller.rb;
+		sourceTree = "<group>";
+	};
+	66D343200EB18D3B0020C855 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 46C744680EAFA99D00CC76F1 /* icon.png */;
+	};
+	66D343210EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D343220EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 61";
+		rLen = 0;
+		rLoc = 1536;
+		rType = 0;
+		vrLen = 330;
+		vrLoc = 0;
+	};
+	66D343220EB18D3B0020C855 /* edit.erb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.xml;
+		name = edit.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/edit.erb;
+		sourceTree = "<absolute>";
+	};
+	66D343230EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D343240EB18D3B0020C855 /* index.erb */;
+		name = "index.erb: 22";
+		rLen = 0;
+		rLoc = 515;
+		rType = 0;
+		vrLen = 515;
+		vrLoc = 0;
+	};
+	66D343240EB18D3B0020C855 /* index.erb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.xml;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/index.erb;
+		sourceTree = "<absolute>";
+	};
+	66D343250EB18D3B0020C855 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D342620EB109010020C855 /* controller.rb */;
+	};
+	66D343260EB18D3B0020C855 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 46C744680EAFA99D00CC76F1 /* icon.png */;
+	};
+	66D343270EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D343280EB18D3B0020C855 /* index.erb */;
+		name = "index.erb: 22";
+		rLen = 0;
+		rLoc = 514;
+		rType = 0;
+		vrLen = 291;
+		vrLoc = 0;
+	};
+	66D343280EB18D3B0020C855 /* index.erb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.xml;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/index.erb;
+		sourceTree = "<absolute>";
+	};
+	66D343290EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432A0EB18D3B0020C855 /* edit.erb */;
+		name = "edit.erb: 61";
+		rLen = 0;
+		rLoc = 1536;
+		rType = 0;
+		vrLen = 330;
+		vrLoc = 0;
+	};
+	66D3432A0EB18D3B0020C855 /* edit.erb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.xml;
+		name = edit.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/edit.erb;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 882}}";
+			sepNavSelRange = "{668, 0}";
+			sepNavVisRange = "{0, 1460}";
+		};
+	};
+	66D3432B0EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432C0EB18D3B0020C855 /* index.erb */;
+		name = "index.erb: 22";
+		rLen = 0;
+		rLoc = 515;
+		rType = 0;
+		vrLen = 515;
+		vrLoc = 0;
+	};
+	66D3432C0EB18D3B0020C855 /* index.erb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.xml;
+		name = index.erb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/index.erb;
+		sourceTree = "<absolute>";
+	};
+	66D3432D0EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D3432E0EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 740;
+		vrLoc = 24;
+	};
+	66D3432E0EB18D3B0020C855 /* controller.rb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
+		name = controller.rb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/controller.rb;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1171, 770}}";
+			sepNavSelRange = "{408, 0}";
+			sepNavVisRange = "{268, 762}";
+			sepNavWindowFrame = "{{50, 87}, {1230, 677}}";
+		};
+	};
+	66D343310EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D343320EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 666;
+		vrLoc = 0;
+	};
+	66D343320EB18D3B0020C855 /* controller.rb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
+		name = controller.rb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/controller.rb;
+		sourceTree = "<absolute>";
+	};
+	66D343330EB18D3B0020C855 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 66D343340EB18D3B0020C855 /* controller.rb */;
+		name = "controller.rb: 53";
+		rLen = 0;
+		rLoc = 1034;
+		rType = 0;
+		vrLen = 741;
+		vrLoc = 171;
+	};
+	66D343340EB18D3B0020C855 /* controller.rb */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
+		name = controller.rb;
+		path = /Users/adam/rhodes/apps/Rhosugar/Case/controller.rb;
+		sourceTree = "<absolute>";
 	};
 }
