@@ -25,16 +25,29 @@ class RhomObjectFactory
   
   def initialize
     init_objects unless not defined? RHO_SOURCES
-    init_sources_table
   end
   
-  # setup the sources table for this application
-  def init_sources_table
+  # setup the sources table and model attributes for this application
+  def init_sources
     if defined? RHO_SOURCES
+      attribs = {}
       Rhom::execute_sql "delete from sources"
+      src_attribs = []
+      retry_cnt = 0
       RHO_SOURCES.each do |source, id|
         Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
+        until retry_cnt == 3 do
+          src_attribs = Rhom::execute_sql "select count(distinct attrib) as count from object_values \
+                                           where source_id=#{id.to_i}"
+          attribs[source] = src_attribs[0]['count'].to_i
+          if attribs[source] > 0
+            break
+          else
+            retry_cnt+=1
+          end
+        end
       end
+      Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS
     end
   end
   
@@ -70,11 +83,12 @@ class RhomObjectFactory
               # retrieve a single record if object id provided, otherwise return
               # full list corresponding to factory's source id
               def find(*args)
-                query = nil
+                list = []
                 if args.first == :all
                   query = "select * from #{TABLE_NAME} where \
                            source_id=#{get_source_id} \
-                           and update_type in ('create', 'query')"
+                           and update_type in ('create', 'query') \
+                           order by object"
                 else
                   obj = strip_braces(args.first.to_s)
                   query = "select * from #{TABLE_NAME} where object='#{obj}'"
@@ -94,38 +108,30 @@ class RhomObjectFactory
             
               # returns an array of objects based on an existing array
               def get_list(objs)
-                new_list = nil
-                if objs
+                if objs and SOURCE_ATTRIBS[self.name.to_s]
+                  attrib_length = SOURCE_ATTRIBS[self.name.to_s]
+                  list_length = 0
+                  list_length = (objs.length / attrib_length) unless attrib_length == 0
                   new_list = []
                   new_obj = nil
                   # iterate over the array and determine object
                   # structure based on attribute/value pairs
-                  objs.each_with_index do |obj, i| 
-                    # create new object on first array entry
-                    if i == 0
-                      new_obj = get_new_obj(obj)
-                      new_obj.send obj['attrib'].to_sym, obj['value'].to_s
-          
-                      # initialize new object if the object-id changes
-                    elsif obj['object'] != objs[i-1]['object']
-                      new_list << new_obj
-                      new_obj = get_new_obj(obj, 'query')
-                      new_obj.send obj['attrib'].to_sym, obj['value'].to_s
-           
-                      # if we've seen this object id before, only add accessor 
-                    elsif obj['object'] == objs[i-1]['object']
-                      new_obj.send obj['attrib'].to_sym, obj['value'].to_s
-                      if i == objs.length - 1
-                        new_list << new_obj
+                  list_length.times do |i|
+                    new_obj = get_new_obj(objs[i*attrib_length])
+                    attrib_length.times do |j|
+                      idx = i*attrib_length+j
+                      begin
+                        attrib = objs[idx]['attrib'].to_s
+                        value = objs[idx]['value'].to_s
+                        new_obj.send attrib.to_sym, value
+                      rescue
+                        puts 'failed to reference idx: ' + idx.to_s
                       end
-          
-                      # end of the list, make sure to add the object
-                    elsif i == objs.length - 1
-                      new_list << new_obj
                     end
-                  end 
+                    new_list << new_obj
+                  end
+                  new_list
                 end
-                new_list
               end
   
               # returns new model instance with a temp object id
