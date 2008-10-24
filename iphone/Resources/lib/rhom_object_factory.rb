@@ -28,27 +28,24 @@ class RhomObjectFactory
   end
   
   # setup the sources table and model attributes for this application
-  def init_sources
+  def self.init_sources
     if defined? RHO_SOURCES
       attribs = {}
       Rhom::execute_sql "delete from sources"
       src_attribs = []
-      retry_cnt = 0
+      attribs_empty = false
       RHO_SOURCES.each do |source, id|
         Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
-        until retry_cnt == 3 do
-          src_attribs = Rhom::execute_sql "select count(distinct attrib) as count 
+        src_attribs = Rhom::execute_sql "select count(distinct attrib) as count 
                                            from object_values where source_id=#{id.to_i}"
-          attribs[source] = src_attribs[0]['count'].to_i
-          if attribs[source] > 0
-            break
-          else
-            retry_cnt+=1
-          end
+        attribs[source] = src_attribs[0]['count'].to_i
+        # there are no records yet, raise a flag so we don't define the constant
+        if attribs[source] == 0
+          attribs_empty = true
         end
       end
-      Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS
     end
+    Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS or attribs_empty
   end
   
   # Initialize new object with dynamic attributes
@@ -108,11 +105,11 @@ class RhomObjectFactory
             
               # returns an array of objects based on an existing array
               def get_list(objs)
-                if objs and SOURCE_ATTRIBS[self.name.to_s]
+                new_list = []
+                if objs and defined? SOURCE_ATTRIBS
                   attrib_length = SOURCE_ATTRIBS[self.name.to_s]
                   list_length = 0
                   list_length = (objs.length / attrib_length) unless attrib_length == 0
-                  new_list = []
                   new_obj = nil
                   # iterate over the array and determine object
                   # structure based on attribute/value pairs
@@ -131,8 +128,12 @@ class RhomObjectFactory
                     end
                     new_list << new_obj
                   end
-                  new_list
+                else
+                  # source attributes are not initialized, 
+                  # try again
+                  RhomObjectFactory::init_sources
                 end
+                new_list
               end
   
               # returns new model instance with a temp object id

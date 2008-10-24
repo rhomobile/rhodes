@@ -29,7 +29,7 @@ class Rhom
   def initialize
     @factory = RhomObjectFactory.new
     SyncEngine::dosync
-    @factory.init_sources
+    RhomObjectFactory::init_sources
   end
   
   class << self
