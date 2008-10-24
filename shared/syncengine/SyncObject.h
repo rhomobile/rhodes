@@ -71,10 +71,10 @@ int insert_into_database(pSyncObject ref);
 int delete_from_database_by_source(sqlite3 *db, int source);
 
 /* Process update types */
-void add_delete_type_to_database(pSyncObject ref);
-void add_update_type_to_database(pSyncObject ref);
-void add_create_type_to_database(pSyncObject ref);
-void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type);
+/*void add_delete_type_to_database(pSyncObject ref);*/
+/*void add_update_type_to_database(pSyncObject ref);*/
+/*void add_create_type_to_database(pSyncObject ref);*/
+/*void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type);*/
 
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
 pSyncObject hydrate(pSyncObject ref);
