@@ -235,22 +235,22 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
 }
 
 /* Commit "delete" update type to database */
-void add_delete_type_to_database(pSyncObject ref) {
+/*void add_delete_type_to_database(pSyncObject ref) {
 	add_type_to_database(delete_type_statement, ref, "delete");
-}
+}*/
 
 /* Commit "update" update type to database */
-void add_update_type_to_database(pSyncObject ref) {
+/*void add_update_type_to_database(pSyncObject ref) {
 	add_type_to_database(update_type_statement, ref, "update");
-}
+}*/
 
 /* Commit "create" update type to database */
-void add_create_type_to_database(pSyncObject ref) {
+/*void add_create_type_to_database(pSyncObject ref) {
 	add_type_to_database(create_type_statement, ref, "create");
-}
+}*/
 
 /* Process generic update type insert */
-void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type) {
+/*void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type) {
 	if (statement == NULL) {
 		const char *sql = "INSERT INTO object_values (attrib, source_id, object, value, created_at, updated_at, update_type) VALUES (?,?,?,?,?,?,?)";
 		if (sqlite3_prepare_v2(ref->_database, sql, -1, &statement, NULL) != SQLITE_OK) {
@@ -271,7 +271,7 @@ void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type) 
 		sqlite3_finalize(statement);
 		statement = NULL;
 	}
-}
+}*/
 			 
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
 pSyncObject hydrate(pSyncObject ref) {

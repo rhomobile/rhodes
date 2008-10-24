@@ -37,8 +37,8 @@ class RhomObjectFactory
       RHO_SOURCES.each do |source, id|
         Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
         until retry_cnt == 3 do
-          src_attribs = Rhom::execute_sql "select count(distinct attrib) as count from object_values \
-                                           where source_id=#{id.to_i}"
+          src_attribs = Rhom::execute_sql "select count(distinct attrib) as count 
+                                           from object_values where source_id=#{id.to_i}"
           attribs[source] = src_attribs[0]['count'].to_i
           if attribs[source] > 0
             break
@@ -119,13 +119,14 @@ class RhomObjectFactory
                   list_length.times do |i|
                     new_obj = get_new_obj(objs[i*attrib_length])
                     attrib_length.times do |j|
+                      # setup index and assign accessors
                       idx = i*attrib_length+j
                       begin
                         attrib = objs[idx]['attrib'].to_s
                         value = objs[idx]['value'].to_s
                         new_obj.send attrib.to_sym, value
                       rescue
-                        puts 'failed to reference idx: ' + idx.to_s
+                        puts "failed to reference objs[#{idx}]..."
                       end
                     end
                     new_list << new_obj
@@ -143,7 +144,8 @@ class RhomObjectFactory
                 tmp_obj
               end
             end #class methods
-		 
+		
+            public
             # deletes the record from the viewable list as well as
             # adding a delete record to the list of sync operations
             def destroy
@@ -204,7 +206,8 @@ class RhomObjectFactory
               end
               result
             end
-			
+		
+            private
             def get_inst_source_id
               RHO_SOURCES[self.class.name.to_s].to_s
             end
