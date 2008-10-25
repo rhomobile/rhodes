@@ -39,7 +39,6 @@ int fetch_remote_changes(sqlite3 *database) {
 	source_list = malloc(max_size*sizeof(int));
 	int source_length = get_source_ids_from_database(source_list, database, max_size);
 	int available = 0;
-	int offset = 0;
 	printf("Iterating over %i sources...\n", source_length);
 	
 	/* iterate over each source id and do a fetch */
