@@ -145,8 +145,7 @@ class RhomObjectFactory
                 tmp_obj
               end
             end #class methods
-		
-            public
+	
             # deletes the record from the viewable list as well as
             # adding a delete record to the list of sync operations
             def destroy
@@ -207,8 +206,7 @@ class RhomObjectFactory
               end
               result
             end
-		
-            private
+	
             def get_inst_source_id
               RHO_SOURCES[self.class.name.to_s].to_s
             end
