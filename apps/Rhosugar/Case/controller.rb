@@ -25,9 +25,8 @@ class CaseController < RhoController
     @accounts = Account.find :all
     @case = Case.find(@params['id'])
     @account = Account.find @case.account_id
-	p "Userid" + @case.assigned_user_id
+    @employees = Employee.find :all
     @employee = Employee.find @case.assigned_user_id
-	p "Employee" + @employee.inspect.to_s
     render :edit
   end
 

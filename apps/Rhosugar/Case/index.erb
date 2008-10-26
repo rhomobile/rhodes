@@ -10,9 +10,7 @@
 <table>
 <%@cases.each do |x|%>
 <tr>
-  <td><%=link_to x.case_number, "edit", x.object%></td>
-  <td><%=x.name%></td>
-  <td><%=x.assigned_to%></td>
+  <td><%=link_to x.name, "edit", x.object%></td>
   <td><%=link_to "X","destroy", x.object%></td>
 </tr>
 <%end%>
