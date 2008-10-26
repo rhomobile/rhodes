@@ -14,16 +14,25 @@
 Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
 
 Subject <input name="case[name]" value="<%=@case.name%>"/><br/>
-Assigned To <input name="case[assigned_user]" value="<%=@employee.user_name%>"/><br/>
+Assigned To
+<select name="case[assigned_user_id]">
+<%@employees.each do |a|%>
+  <option value="<%=a.object%>" <%if @employee.object==a.object%>
+selected
+<%end%>><%=a.user_name%></option>
+<%end%>
+</select>
+<br/>
 
 Account Name
-<select name="case[account_name]">
+<select name="case[account_id]">
 <%@accounts.each do |a|%>
-  <option <%if @account.name==a.name%>
+  <option value="<%=a.object%>" <%if @account.name==a.name%>
 selected
 <%end%>><%=a.name%></option>
 <%end%>
-</select><br/>
+</select>
+<br/>
 
 Priority
 <select name="case[priority]" value="<%=@case.priority%>">
