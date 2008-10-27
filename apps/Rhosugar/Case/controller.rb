@@ -10,7 +10,7 @@ class CaseController < RhoController
 
   # GET /cases/1
   def show
-    @cases = Case.find(@params['id'])
+    @cases = Case.find(@params['object'])
   end
 
   # GET /cases/new
@@ -38,14 +38,14 @@ class CaseController < RhoController
 
   # POST /cases/1
   def update
-    @case = Case.find(@params['id'])
+    @case = Case.find(@params['object'])
     @case.update_attributes(@params['case'])
     redirect :index
   end
 
   # POST /cases/1/delete
   def destroy
-    @case = Case.find(@params['id'])
+    @case = Case.find(@params['object'])
     @case.destroy
 	redirect :index
   end

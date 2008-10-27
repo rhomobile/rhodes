@@ -8,7 +8,7 @@
 </head>
 <body>
 <form action="<%=url_for('update') %>">
-<input type="hidden" name="id" value="<%=@employee.object%>"/>
+<input type="hidden" name="object" value="<%=@employee.object%>"/>
 First Name <input name="employee[first_name]" value="<%=@employee.first_name%>"/><br/>
 Last Name <input name="employee[last_name]" value="<%=@employee.last_name%>"/><br/>
 Title <input name="employee[title]" value="<%=@employee.title%>"/><br/>
