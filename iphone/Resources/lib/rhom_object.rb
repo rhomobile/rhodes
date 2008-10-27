@@ -39,8 +39,8 @@ module RhomObject
     end
   end
   
-  def strip_braces(str)
-    str.gsub(/\{/,"").gsub(/\}/,"")
+  def strip_braces(str=nil)
+    str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
   end
   
   # use djb hash function to generate temp object id
