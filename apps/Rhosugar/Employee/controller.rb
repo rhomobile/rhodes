@@ -37,7 +37,7 @@ class EmployeeController < RhoController
   # POST /Employees/1
   def update
     @employee = Employee.find(@params['id'])
-    @employee.update_attributes(@params['Employee'])
+    @employee.update_attributes(@params['employee'])
     redirect :index
   end
 

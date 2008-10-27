@@ -97,6 +97,10 @@ class RhomObjectFactory
                 end
                 list
               end
+              
+              def find_by(*args)
+                # TODO: implement
+              end
     
               def find_by_sql(sql)
                 result = Rhom::execute_sql(sql)
@@ -119,9 +123,13 @@ class RhomObjectFactory
                       # setup index and assign accessors
                       idx = i*attrib_length+j
                       begin
-                        attrib = objs[idx]['attrib'].to_s
-                        value = objs[idx]['value'].to_s
-                        new_obj.send attrib.to_sym, value
+                        # only update attributes if they belong
+                        # to the current object
+                        if objs[idx]['object'] == strip_braces((new_obj.send 'object'.to_sym))
+                          attrib = objs[idx]['attrib'].to_s
+                          value = objs[idx]['value'].to_s
+                          new_obj.send attrib.to_sym, value
+                        end
                       rescue
                         puts "failed to reference objs[#{idx}]..."
                       end
@@ -169,9 +177,10 @@ class RhomObjectFactory
               # iterate over each instance variable and insert create row to table
               self.instance_variables.each do |method|
                 method = method.to_s.gsub(/@/,"")
-                val = self.send method.to_sym
+                # Don't save objects with braces to database
+                val = strip_braces(self.send(method.to_sym))
                 # add rows excluding object, source_id and update_type
-                unless method =~ /object|source_id|update_type/
+                unless self.method_name_reserved?(method) or val.nil? or val.length == 0
                   query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
                           (#{self.get_inst_source_id}, '#{self.object}', '#{method}', '#{val}', 'create')"
                   result = Rhom::execute_sql(query)
@@ -188,11 +197,12 @@ class RhomObjectFactory
               self.instance_variables.each do |method|
                 method = method.to_s.gsub(/@/,"")
                 val = self.send method.to_sym
-                new_val = attrs[method]
+                # Don't save objects with braces to database
+                new_val = strip_braces(attrs[method])
                 # if the object's value doesn't match the database record
                 # then we procede with update
-                if val != new_val
-                  unless method =~ /object|source_id|update_type/
+                if new_val and val != new_val
+                  unless self.method_name_reserved?(method) or new_val.length == 0
                     # update viewable list
                     query = "update #{TABLE_NAME} set value='#{new_val}' where object='#{obj}' \
 			   and attrib='#{method}'"
@@ -209,6 +219,10 @@ class RhomObjectFactory
 	
             def get_inst_source_id
               RHO_SOURCES[self.class.name.to_s].to_s
+            end
+            
+            def method_name_reserved?(method)
+              method =~ /id|object|source_id|update_type/
             end
           end)
       end
