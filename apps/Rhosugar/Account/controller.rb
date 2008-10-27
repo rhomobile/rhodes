@@ -9,7 +9,7 @@ class AccountController < RhoController
 
   # GET /cases/1
   def show
-    @accounts = Account.find(@params['id'])
+    @accounts = Account.find(@params['object'])
   end
 
   # GET /cases/new
@@ -35,14 +35,14 @@ class AccountController < RhoController
 
   # POST /cases/1
   def update
-    @account = Account.find(@params['id'])
+    @account = Account.find(@params['object'])
     @account.update_attributes(@params['account'])
     redirect :index
   end
 
   # POST /cases/1/delete
   def delete
-    @account = Account.find(@params['id'])
+    @account = Account.find(@params['object'])
     @account.destroy
     redirect :index
   end

@@ -9,7 +9,7 @@
 <body>
 <form action="<%=url_for('update') %>">
 
-<input type="hidden" name="id" value="<%=@case.object%>"/>
+<input type="hidden" name="object" value="<%=@case.object%>"/>
 
 Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
 
