@@ -6,7 +6,8 @@ rescue LoadError
   require 'spec'
 end
 
-require File.join(File.expand_path(__FILE__), 'stubs')
+$:.unshift(File.join(File.dirname(__FILE__), '..'))
+require 'spec/stubs'
 
 # Use the rubygem for local testing
 require 'rubygems'
