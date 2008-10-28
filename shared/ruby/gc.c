@@ -2,7 +2,7 @@
 
   gc.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Tue Oct  5 09:44:46 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -1471,7 +1471,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
 
       case T_ARRAY:
 	if (FL_TEST(obj, ELTS_SHARED)) {
-	    ptr = obj->as.array.aux.shared;
+	    ptr = obj->as.array.as.heap.aux.shared;
 	    goto again;
 	}
 	else {
@@ -1526,6 +1526,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
 
       case T_FLOAT:
       case T_BIGNUM:
+      case T_ZOMBIE:
 	break;
 
       case T_MATCH:
@@ -1733,6 +1734,15 @@ make_deferred(RVALUE *p)
     p->as.basic.flags = (p->as.basic.flags & ~T_MASK) | T_ZOMBIE;
 }
 
+static inline void
+make_io_deferred(RVALUE *p)
+{
+    rb_io_t *fptr = p->as.file.fptr;
+    make_deferred(p);
+    p->as.data.dfree = (void (*)(void*))rb_io_fptr_finalize;
+    p->as.data.data = fptr;
+}
+
 static int
 obj_free(rb_objspace_t *objspace, VALUE obj)
 {
@@ -1807,10 +1817,7 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
 	break;
       case T_FILE:
 	if (RANY(obj)->as.file.fptr) {
-	    rb_io_t *fptr = RANY(obj)->as.file.fptr;
-	    make_deferred(RANY(obj));
-	    RDATA(obj)->dfree = (void (*)(void*))rb_io_fptr_finalize;
-	    RDATA(obj)->data = fptr;
+	    make_io_deferred(RANY(obj));
 	    return 1;
 	}
 	break;
@@ -1857,41 +1864,6 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
     return 0;
 }
 
-#ifdef __GNUC__
-#if defined(__human68k__) || defined(DJGPP)
-#undef rb_setjmp
-#undef rb_jmp_buf
-#if defined(__human68k__)
-typedef unsigned long rb_jmp_buf[8];
-__asm__ (".even\n\
-_rb_setjmp:\n\
-	move.l	4(sp),a0\n\
-	movem.l	d3-d7/a3-a5,(a0)\n\
-	moveq.l	#0,d0\n\
-	rts");
-#else
-#if defined(DJGPP)
-typedef unsigned long rb_jmp_buf[6];
-__asm__ (".align 4\n\
-_rb_setjmp:\n\
-	pushl	%ebp\n\
-	movl	%esp,%ebp\n\
-	movl	8(%ebp),%ebp\n\
-	movl	%eax,(%ebp)\n\
-	movl	%ebx,4(%ebp)\n\
-	movl	%ecx,8(%ebp)\n\
-	movl	%edx,12(%ebp)\n\
-	movl	%esi,16(%ebp)\n\
-	movl	%edi,20(%ebp)\n\
-	popl	%ebp\n\
-	xorl	%eax,%eax\n\
-	ret");
-#endif
-#endif
-int rb_setjmp (rb_jmp_buf);
-#endif /* __human68k__ or DJGPP */
-#endif /* __GNUC__ */
-
 #define GC_NOTIFY 0
 
 void rb_vm_mark(void *ptr);
@@ -1931,7 +1903,7 @@ mark_current_machine_context(rb_objspace_t *objspace, rb_thread_t *th)
 #ifdef __ia64
     rb_gc_mark_locations(th->machine_register_stack_start, th->machine_register_stack_end);
 #endif
-#if defined(__human68k__) || defined(__mc68000__)
+#if defined(__mc68000__)
     mark_locations_array((VALUE*)((char*)STACK_END + 2),
 			 (STACK_START - STACK_END));
 #endif
@@ -2310,7 +2282,7 @@ run_final(rb_objspace_t *objspace, VALUE obj)
 }
 
 static void
-gc_finalize_deferred(rb_objspace_t *objspace)
+finalize_deferred(rb_objspace_t *objspace)
 {
     RVALUE *p = deferred_final_list;
     deferred_final_list = 0;
@@ -2318,6 +2290,12 @@ gc_finalize_deferred(rb_objspace_t *objspace)
     if (p) {
 	finalize_list(objspace, p);
     }
+}
+
+static void
+gc_finalize_deferred(rb_objspace_t *objspace)
+{
+    finalize_deferred(objspace);
     free_unused_heaps(objspace);
 }
 
@@ -2350,15 +2328,13 @@ rb_gc_call_finalizer_at_exit(void)
 {
     rb_objspace_t *objspace = &rb_objspace;
     RVALUE *p, *pend;
+    RVALUE *final_list = 0;
     size_t i;
 
     /* run finalizers */
     if (finalizer_table) {
-	p = deferred_final_list;
-	deferred_final_list = 0;
-	finalize_list(objspace, p);
+	finalize_deferred(objspace);
 	while (finalizer_table->num_entries > 0) {
-	    RVALUE *final_list = 0;
 	    st_foreach(finalizer_table, chain_finalized_object,
 		       (st_data_t)&final_list);
 	    if (!(p = final_list)) break;
@@ -2384,20 +2360,25 @@ rb_gc_call_finalizer_at_exit(void)
 		    xfree(DATA_PTR(p));
 		}
 		else if (RANY(p)->as.data.dfree) {
-		    (*RANY(p)->as.data.dfree)(DATA_PTR(p));
+		    make_deferred(RANY(p));
+		    RANY(p)->as.free.next = final_list;
+		    final_list = p;
 		}
-                VALGRIND_MAKE_MEM_UNDEFINED((void*)p, sizeof(RVALUE));
 	    }
 	    else if (BUILTIN_TYPE(p) == T_FILE) {
-		if (rb_io_fptr_finalize(RANY(p)->as.file.fptr)) {
-		    p->as.free.flags = 0;
-                    VALGRIND_MAKE_MEM_UNDEFINED((void*)p, sizeof(RVALUE));
+		if (RANY(p)->as.file.fptr) {
+		    make_io_deferred(RANY(p));
+		    RANY(p)->as.free.next = final_list;
+		    final_list = p;
 		}
 	    }
 	    p++;
 	}
     }
     during_gc = 0;
+    if (final_list) {
+	finalize_list(objspace, final_list);
+    }
 }
 
 void
@@ -2803,8 +2784,18 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
 
 //trv-dbg
 void print_profile_report() {
-	char* report = RSTRING_PTR(gc_profile_result());
-	printf("Profile report:\n%s", report);
+  char *report = RSTRING_PTR(gc_profile_result());
+  char *p, *e = report+strlen(report);
+	printf("Profile report:\r\n");
+  while(report < e) {
+    p = strchr(report,'\n');
+    if (p!=NULL) {
+       *p = '\0';
+    }
+    printf("%s\n",report);
+    report+=strlen(report)+1;
+  }
+	printf("--profile eof--\n");
 }
 
 /*

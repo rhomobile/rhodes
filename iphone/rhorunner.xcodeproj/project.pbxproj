@@ -109,7 +109,7 @@
 		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = rhorubylib/rhoruby.h; sourceTree = SOURCE_ROOT; };
+		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
 		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
 		F5DA58FF0E9696F50062A28B /* Test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Test; path = Resources/Test; sourceTree = "<group>"; };

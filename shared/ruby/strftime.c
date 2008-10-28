@@ -57,7 +57,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #endif
-#if defined(TM_IN_SYS_TIME) || !defined(GAWK) && !defined(_WIN32_WCE)
+#if defined(TM_IN_SYS_TIME) || !defined(GAWK)
 #include <sys/types.h>
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -126,10 +126,10 @@ extern char *strchr();
 #ifndef DLL_IMPORT
 #define DLL_IMPORT
 #endif
-#if !defined(OS2) && !defined(MSDOS) && defined(HAVE_TZNAME)
-extern DLL_IMPORT char *tzname[2];
+#if !defined(OS2) && defined(HAVE_TZNAME)
+//extern DLL_IMPORT char *tzname[2];
 #ifdef HAVE_DAYLIGHT
-extern DLL_IMPORT int daylight;
+//extern DLL_IMPORT int daylight;
 #endif
 #ifdef HAVE_VAR_TIMEZONE
 extern DLL_IMPORT TYPEOF_VAR_TIMEZONE timezone;
@@ -195,12 +195,11 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 #endif /* POSIX_SEMANTICS */
 #ifndef HAVE_TM_ZONE
 #ifndef HAVE_TM_NAME
-#if !defined HAVE_VAR_TIMEZONE || defined HAVE_TIMEZONE
+#if ((defined(MAILHEADER_EXT) && !HAVE_VAR_TIMEZONE && HAVE_GETTIMEOFDAY) || \
+     (!HAVE_TZNAME && HAVE_TIMEZONE))
 	struct timeval tv;
-#endif
-#ifdef HAVE_TIMEZONE
 	struct timezone zone;
-#endif /* HAVE_TIMEZONE */
+#endif
 #endif /* HAVE_TM_NAME */
 #endif /* HAVE_TM_ZONE */
 	int precision, flags;
@@ -473,7 +472,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 #else
 				off = -timezone / 60;
 #endif
-#else /* !HAVE_TIMEZONE */
+#else /* !HAVE_VAR_TIMEZONE */
 #ifdef HAVE_GETTIMEOFDAY
 				gettimeofday(&tv, &zone);
 				off = -zone.tz_minuteswest;
@@ -487,7 +486,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 					off = (now - mktime(&utc)) / 60;
 				}
 #endif
-#endif /* !HAVE_TIMEZONE */
+#endif /* !HAVE_VAR_TIMEZONE */
 #endif /* !HAVE_TM_ZONE */
 #endif /* !HAVE_TM_NAME */
 			}

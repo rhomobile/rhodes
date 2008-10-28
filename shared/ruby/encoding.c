@@ -2,7 +2,7 @@
 
   encoding.c -
 
-  $Author: naruse $
+  $Author: nobu $
   created at: Thu May 24 17:23:27 JST 2007
 
   Copyright (C) 2007 Yukihiro Matsumoto
@@ -823,6 +823,38 @@ enc_name(VALUE self)
     return rb_usascii_str_new2(rb_enc_name((rb_encoding*)DATA_PTR(self)));
 }
 
+static int
+enc_names_i(st_data_t name, st_data_t idx, st_data_t args)
+{
+    VALUE *arg = (VALUE *)args;
+
+    if ((int)idx == (int)arg[0]) {
+	VALUE str = rb_usascii_str_new2((char *)name);
+	OBJ_FREEZE(str);
+	rb_ary_push(arg[1], str);
+    }
+    return ST_CONTINUE;
+}
+
+/*
+ * call-seq:
+ *   enc.names => array
+ *
+ * Returns the list of name and aliases of the encoding.
+ *
+ *   Encoding::WINDOWS_31J.names => ["Windows-31J", "CP932", "csWindows31J"]
+ */
+static VALUE
+enc_names(VALUE self)
+{
+    VALUE args[2];
+
+    args[0] = (VALUE)rb_to_encoding_index(self);
+    args[1] = rb_ary_new2(0);
+    st_foreach(enc_table.names, enc_names_i, (st_data_t)args);
+    return args[1];
+}
+
 /*
  * call-seq:
  *   Encoding.list => [enc1, enc2, ...]
@@ -980,7 +1012,7 @@ rb_filesystem_encoding(void)
 #if defined _WIN32
     enc = rb_locale_encoding();
 #elif defined __APPLE__
-    enc = rb_enc_find("UTF-8");
+    enc = rb_enc_find("UTF8-MAC");
 #else
     enc = rb_default_external_encoding();
 #endif
@@ -1025,6 +1057,55 @@ rb_enc_set_default_external(VALUE encoding)
 {
     default_external_index = rb_enc_to_index(rb_to_encoding(encoding));
     default_external = 0;
+}
+
+/* -2 => not yet set, -1 => nil */
+static int default_internal_index = -2;
+static rb_encoding *default_internal;
+
+rb_encoding *
+rb_default_internal_encoding(void)
+{
+    if (!default_internal && default_internal_index >= 0) {
+	default_internal = rb_enc_from_index(default_internal_index);
+    }
+    return default_internal;
+}
+
+VALUE
+rb_enc_default_internal(void)
+{
+    /* Note: These functions cope with default_internal not being set */
+    return rb_enc_from_encoding(rb_default_internal_encoding());
+}
+
+/*
+ * call-seq:
+ *   Encoding.default_internal => enc
+ *
+ * Returns default internal encoding.
+ *
+ * It is initialized by the source internal_encoding or -E option,
+ * and can't be modified after that.
+ */
+static VALUE
+get_default_internal(VALUE klass)
+{
+    return rb_enc_default_internal();
+}
+
+void
+rb_enc_set_default_internal(VALUE encoding)
+{
+    if (default_internal_index != -2)
+	/* Already set */
+	return;
+    default_internal_index = encoding == Qnil ?
+				-1 :rb_enc_to_index(rb_to_encoding(encoding));
+    /* Convert US-ASCII => UTF-8 */
+    if (default_internal_index == rb_usascii_encindex())
+	default_internal_index = rb_utf8_encindex();
+    default_internal = 0;
 }
 
 /*
@@ -1201,6 +1282,7 @@ Init_Encoding(void)
     rb_define_method(rb_cEncoding, "to_s", enc_name, 0);
     rb_define_method(rb_cEncoding, "inspect", enc_inspect, 0);
     rb_define_method(rb_cEncoding, "name", enc_name, 0);
+    rb_define_method(rb_cEncoding, "names", enc_names, 0);
     rb_define_method(rb_cEncoding, "dummy?", enc_dummy_p, 0);
     rb_define_singleton_method(rb_cEncoding, "list", enc_list, 0);
     rb_define_singleton_method(rb_cEncoding, "name_list", rb_enc_name_list, 0);
@@ -1212,6 +1294,7 @@ Init_Encoding(void)
     rb_define_singleton_method(rb_cEncoding, "_load", enc_load, 1);
 
     rb_define_singleton_method(rb_cEncoding, "default_external", get_default_external, 0);
+    rb_define_singleton_method(rb_cEncoding, "default_internal", get_default_internal, 0);
     rb_define_singleton_method(rb_cEncoding, "locale_charmap", rb_locale_charmap, 0);
 
     list = rb_ary_new2(enc_table.count);

@@ -2,7 +2,7 @@
 
   re.c -
 
-  $Author: naruse $
+  $Author: matz $
   created at: Mon Aug  9 18:24:49 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -1967,8 +1967,12 @@ unescape_escaped_nonascii(const char **pp, const char *end, rb_encoding *enc,
 
     l = rb_enc_precise_mbclen(chbuf, chbuf+chlen, enc);
     if (MBCLEN_INVALID_P(l)) {
-        strcpy(err, "invalid multibyte escape");
-        return -1;
+        if (*encp == 0)
+            enc = *encp = rb_ascii8bit_encoding();
+        else if (*encp != rb_ascii8bit_encoding()) {
+	    strcpy(err, "invalid multibyte escape");
+            return -1;
+        }
     }
     if (1 < chlen || (chbuf[0] & 0x80)) {
         rb_str_buf_cat(buf, chbuf, chlen);
@@ -2569,11 +2573,13 @@ reg_match_pos(VALUE re, VALUE *strp, long pos)
  *     p rhs    #=> nil
  *
  *  This assignment is implemented in the Ruby parser.
- *  So a regexp literal is required for the assignment. 
+ *  The parser detects 'regexp-literal =~ expression' for the assignment.
+ *  The regexp must be a literal without interpolation and placed at left hand side.
+ *
  *  The assignment is not occur if the regexp is not a literal.
  *
  *     re = /(?<lhs>\w+)\s*=\s*(?<rhs>\w+)/
- *     re =~ "  x = "
+ *     re =~ "  x = y  "
  *     p lhs    # undefined local variable
  *     p rhs    # undefined local variable
  *
@@ -2583,6 +2589,11 @@ reg_match_pos(VALUE re, VALUE *strp, long pos)
  *     rhs_pat = /(?<rhs>\w+)/
  *     /(?<lhs>\w+)\s*=\s*#{rhs_pat}/ =~ "x = y"
  *     p lhs    # undefined local variable
+ *
+ *  The assignment is not occur if the regexp is placed at right hand side.
+ *
+ *    "  x = y  " =~ /(?<lhs>\w+)\s*=\s*(?<rhs>\w+)/
+ *    p lhs, rhs # undefined local variable
  *
  */
 
@@ -2784,10 +2795,10 @@ rb_reg_initialize_m(int argc, VALUE *argv, VALUE self)
 	    char *kcode = StringValuePtr(argv[2]);
 	    if (kcode[0] == 'n' || kcode[1] == 'N') {
 		enc = rb_ascii8bit_encoding();
-		flags |= ARG_ENCODING_FIXED;
+		flags |= ARG_ENCODING_NONE;
 	    }
 	    else {
-		rb_warning("encoding option is obsolete - %s", kcode);
+		rb_warn("encoding option is ignored - %s", kcode);
 	    }
 	}
 	str = argv[0];

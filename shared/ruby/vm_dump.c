@@ -574,7 +574,7 @@ rb_vm_bugreport(void)
 
     if (GET_THREAD()->vm) {
 	int i;
-	SDR();
+//	SDR();
 
 	bt = rb_make_backtrace();
 	if (TYPE(bt) == T_ARRAY)

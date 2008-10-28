@@ -2,7 +2,7 @@
 
   file.c -
 
-  $Author: akr $
+  $Author: yugui $
   created at: Mon Nov 15 12:24:34 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -1989,7 +1989,7 @@ rb_file_chown(VALUE obj, VALUE owner, VALUE group)
     o = NIL_P(owner) ? -1 : NUM2INT(owner);
     g = NIL_P(group) ? -1 : NUM2INT(group);
     GetOpenFile(obj, fptr);
-#if defined(DJGPP) || defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__)
+#if defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__)
     if (NIL_P(fptr->pathv)) return Qnil;
     if (chown(RSTRING_PTR(fptr->pathv), o, g) == -1)
 	rb_sys_fail_path(fptr->pathv);
@@ -2393,8 +2393,10 @@ rb_file_s_umask(int argc, VALUE *argv)
 #undef DOSISH
 #endif
 #if defined __CYGWIN__ || defined DOSISH
+#ifndef _WIN32_WCE
 #define DOSISH_UNC
 #define DOSISH_DRIVE_LETTER
+#endif //_WIN32_WCE
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 #else
 #define isdirsep(x) ((x) == '/')
@@ -2413,11 +2415,7 @@ rb_file_s_umask(int argc, VALUE *argv)
 #endif
 
 #ifndef CharNext		/* defined as CharNext[AW] on Windows. */
-# if defined(DJGPP)
-#   define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
-# else
-#   define CharNext(p) ((p) + 1)
-# endif
+# define CharNext(p) ((p) + 1)
 #endif
 
 #ifdef DOSISH_DRIVE_LETTER
@@ -2603,6 +2601,37 @@ file_expand_path(VALUE fname, VALUE dname, int abs_mode, VALUE result)
     long buflen, dirlen;
     int tainted;
     rb_encoding *extenc = 0;
+/*
+    if (NIL_P(dname)) {
+        rb_str_set_len(result,0);
+        rb_str_append(result, fname);
+
+        s = RSTRING_PTR(result);
+	    for (p = s; *p; p = CharNext(p)) {
+		    if (*p == '\\') {
+		        *p = '/';
+		    }
+        }
+
+        return result;
+    }else
+    {
+        rb_str_set_len(result,0);
+        rb_str_append(result, dname);
+        rb_str_append(result, rb_str_new2("/"));
+        rb_str_append(result, fname);
+
+        s = RSTRING_PTR(result);
+	    for (p = s; *p; p = CharNext(p)) {
+		    if (*p == '\\') {
+		        *p = '/';
+		    }
+        }
+
+        return result;
+
+    }
+*/
 
     FilePathValue(fname);
     s = StringValuePtr(fname);
@@ -2955,16 +2984,19 @@ rb_file_s_absolute_path(int argc, VALUE *argv)
 static int
 rmext(const char *p, int l1, const char *e)
 {
-    int l2;
+    int l0, l2;
 
     if (!e) return 0;
 
+    for (l0 = 0; l0 < l1; ++l0) {
+	if (p[l0] != '.') break;
+    }
     l2 = strlen(e);
     if (l2 == 2 && e[1] == '*') {
 	unsigned char c = *e;
 	e = p + l1;
 	do {
-	    if (e <= p) return 0;
+	    if (e <= p + l0) return 0;
 	} while (*--e != c);
 	return e - p;
     }
@@ -3141,6 +3173,7 @@ rb_file_s_extname(VALUE klass, VALUE fname)
 	name = ++p;
 
     e = 0;
+    while (*p && *p == '.') p++;
     while (*p) {
 	if (*p == '.' || istrailinggabage(*p)) {
 #if USE_NTFS
@@ -4371,14 +4404,17 @@ is_absolute_path(const char *path)
 {
 #ifdef DOSISH_DRIVE_LETTER
     if (has_drive_letter(path) && isdirsep(path[2])) return 1;
+    else return 0;
 #endif
 #ifdef DOSISH_UNC
     if (isdirsep(path[0]) && isdirsep(path[1])) return 1;
+    else return 0;
 #endif
-#ifndef DOSISH
-    if (path[0] == '/') return 1;
-#endif
-    return 0;
+//#ifndef DOSISH
+//    if (path[0] == '/') return 1;
+//#endif
+
+    return isdirsep(path[0]) ? 1 : 0;
 }
 
 #ifndef ENABLE_PATH_CHECK
@@ -4468,15 +4504,6 @@ rb_path_check(const char *path)
     return 1;
 }
 
-#if defined(__MACOS__) || defined(riscos)
-static int
-is_macos_native_path(const char *path)
-{
-    if (strchr(path, ':')) return 1;
-    return 0;
-}
-#endif
-
 static int
 file_load_ok(const char *path)
 {
@@ -4543,6 +4570,9 @@ rb_find_file_ext(VALUE *filep, const char *const *ext)
 	    FilePathValue(str);
 	    if (RSTRING_LEN(str) == 0) continue;
 	    file_expand_path(fname, str, 0, tmp);
+      {//trv
+        //printf("Looking for: %s\n", RSTRING_PTR(tmp));
+      }
 	    if (file_load_ok(RSTRING_PTR(tmp))) {
 		RBASIC(tmp)->klass = rb_obj_class(*filep);
 		OBJ_FREEZE(tmp);
@@ -4570,16 +4600,6 @@ rb_find_file(VALUE path)
 	OBJ_FREEZE(path);
 	f = StringValueCStr(path);
     }
-
-#if defined(__MACOS__) || defined(riscos)
-    if (is_macos_native_path(f)) {
-	if (rb_safe_level() >= 1 && !fpath_check(f)) {
-	    rb_raise(rb_eSecurityError, "loading from unsafe file %s", f);
-	}
-	if (file_load_ok(f)) return path;
-	return 0;
-    }
-#endif
 
     if (is_absolute_path(f) || is_explicit_relative(f)) {
 	if (rb_safe_level() >= 1 && !fpath_check(f)) {

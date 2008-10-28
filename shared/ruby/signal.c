@@ -2,7 +2,7 @@
 
   signal.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Tue Dec 20 10:13:44 JST 1994
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -44,11 +44,7 @@ typedef int rb_atomic_t;
 #endif
 
 #ifndef NSIG
-# ifdef DJGPP
-#  define NSIG SIGMAX
-# else
-#  define NSIG (_SIGMAX + 1)      /* For QNX */
-# endif
+# define NSIG (_SIGMAX + 1)      /* For QNX */
 #endif
 
 static const struct signals {
@@ -302,10 +298,8 @@ interrupt_init(int argc, VALUE *argv, VALUE self)
 void
 ruby_default_signal(int sig)
 {
-#ifndef MACOS_UNUSE_SIGNAL
     signal(sig, SIG_DFL);
     raise(sig);
-#endif
 }
 
 /*
@@ -1037,7 +1031,6 @@ int ruby_enable_coredump = 0;
 void
 Init_signal(void)
 {
-#ifndef MACOS_UNUSE_SIGNAL
     VALUE mSignal = rb_define_module("Signal");
 
     rb_define_global_function("trap", sig_trap, -1);
@@ -1089,6 +1082,4 @@ Init_signal(void)
 #elif defined(SIGCHLD)
     init_sigchld(SIGCHLD);
 #endif
-
-#endif /* MACOS_UNUSE_SIGNAL */
 }

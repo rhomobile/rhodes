@@ -33,11 +33,6 @@ extern "C" {
 
 #define NT 1			/* deprecated */
 
-#ifdef _WIN32_WCE
-#undef CharNext
-#define CharNext CharNextA
-#endif
-
 //
 // We're not using Microsoft's "extensions" to C for
 // Structured Exception Handling (SEH) so we can nuke these
@@ -120,31 +115,40 @@ extern DWORD rb_w32_osid(void);
 #undef fgetchar
 #undef fputchar
 #undef utime
-#undef lseek
 #undef fstat
 #define getc(_stream)		rb_w32_getc(_stream)
 #define getchar()		rb_w32_getc(stdin)
 #define putc(_c, _stream)	rb_w32_putc(_c, _stream)
 #define putchar(_c)		rb_w32_putc(_c, stdout)
+
+#ifndef _WIN32_WCE
+#define getppid()		rb_w32_getppid()
+#define pipe(p)			rb_w32_pipe(p)
+#endif //_WIN32_WCE
+
 #ifdef RUBY_EXPORT
 #define fgetc(_stream)		getc(_stream)
 #define fputc(_c, _stream)	putc(_c, _stream)
 #define fgetchar()		getchar()
 #define fputchar(_c)		putchar(_c)
 #define utime(_p, _t)		rb_w32_utime(_p, _t)
+#ifndef _WIN32_WCE
+#undef lseek
+
 #define lseek(_f, _o, _w)	_lseeki64(_f, _o, _w)
 
-#define pipe(p)			rb_w32_pipe(p)
 #define open			rb_w32_open
 #define close(h)		rb_w32_close(h)
 #define fclose(f)		rb_w32_fclose(f)
 #define read(f, b, s)		rb_w32_read(f, b, s)
 #define write(f, b, s)		rb_w32_write(f, b, s)
-#define getpid()		rb_w32_getpid()
-#define getppid()		rb_w32_getppid()
 #define sleep(x)		rb_w32_Sleep((x)*1000)
 #define Sleep(msec)		(void)rb_w32_Sleep(msec)
 #define fstat(fd,st)		_fstati64(fd,st)
+
+#define getpid()		rb_w32_getpid()
+#endif //_WIN32_WCE
+
 #ifdef __BORLANDC__
 #define creat(p, m)		_creat(p, m)
 #define eof()			_eof()
@@ -164,11 +168,12 @@ extern DWORD rb_w32_osid(void);
 
 #undef execv
 #define execv(path,argv)	rb_w32_aspawn(P_OVERLAY,path,argv)
-#if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+#if !defined(__BORLANDC__)
 #undef isatty
 #define isatty(h)		rb_w32_isatty(h)
 #endif
 
+#ifndef _WIN32_WCE
 #undef mkdir
 #define mkdir(p, m)		rb_w32_mkdir(p, m)
 #undef rmdir
@@ -176,6 +181,7 @@ extern DWORD rb_w32_osid(void);
 #undef unlink
 #define unlink(p)		rb_w32_unlink(p)
 #endif
+#endif //_WIN32_WCE
 
 #if SIZEOF_OFF_T == 8
 #define off_t __int64
@@ -265,12 +271,14 @@ extern int kill(int, int);
 extern int fcntl(int, int, ...);
 extern rb_pid_t rb_w32_getpid(void);
 extern rb_pid_t rb_w32_getppid(void);
-#if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+#if !defined(__BORLANDC__)
 extern int rb_w32_isatty(int);
 #endif
+#ifndef _WIN32_WCE
 extern int rb_w32_mkdir(const char *, int);
 extern int rb_w32_rmdir(const char *);
 extern int rb_w32_unlink(const char *);
+#endif //_WIN32_WCE
 extern int rb_w32_stati64(const char *, struct stati64 *);
 
 #ifdef __BORLANDC__
@@ -526,9 +534,10 @@ extern char *rb_w32_strerror(int);
 #undef rename
 #define rename(o, n)		rb_w32_rename(o, n)
 
+#endif
+
 #undef times
 #define times(t)		rb_w32_times(t)
-#endif
 
 struct tms {
 	long	tms_utime;
@@ -570,5 +579,13 @@ uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self, int argc
 #endif
 }  /* extern "C" { */
 #endif
+
+#ifdef _WIN32_WCE
+#include "wince.h"
+#endif
+
+#ifndef IS_CLOSED_IO
+#define IS_CLOSED_IO(fd) ((fd) < 0)
+#endif //IS_CLOSED_IO
 
 #endif /* RUBY_WIN32_H */
