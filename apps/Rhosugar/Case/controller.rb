@@ -34,6 +34,7 @@ class CaseController < Rho::RhoController
   # POST /cases
   def create
     @case = Case.new(@params['case'])
+    @case.save
     redirect :index
   end
 
