@@ -2,7 +2,7 @@
 
   string.c -
 
-  $Author: usa $
+  $Author: matz $
   created at: Mon Aug  9 17:12:58 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -395,6 +395,9 @@ str_new(VALUE klass, const char *ptr, long len)
 	RSTRING(str)->as.heap.ptr = ALLOC_N(char,len+1);
 	STR_SET_NOEMBED(str);
     }
+    else if (len == 0) {
+	ENC_CODERANGE_SET(str, ENC_CODERANGE_7BIT);
+    }
     if (ptr) {
 	memcpy(RSTRING_PTR(str), ptr, len);
     }
@@ -468,6 +471,87 @@ rb_tainted_str_new_cstr(const char *ptr)
 
 RUBY_ALIAS_FUNCTION(rb_tainted_str_new2(const char *ptr), rb_tainted_str_new_cstr, (ptr))
 #define rb_tainted_str_new2 rb_tainted_str_new_cstr
+
+static VALUE
+str_conv_enc(VALUE str, rb_encoding *from, rb_encoding *to)
+{
+    rb_econv_t *ec;
+    rb_econv_result_t ret;
+    long len;
+    VALUE newstr;
+    const unsigned char *sp;
+    unsigned char *dp;
+
+    if (!to) return str;
+    if (from == to) return str;
+    if (rb_enc_asciicompat(to) && ENC_CODERANGE(str) == ENC_CODERANGE_7BIT)
+	return str;
+
+    len = RSTRING_LEN(str);
+    newstr = rb_str_new(0, len);
+
+  retry:
+    ec = rb_econv_open_opts(from->name, to->name, 0, Qnil);
+    if (!ec) return str;
+
+    sp = (unsigned char*)RSTRING_PTR(str);
+    dp = (unsigned char*)RSTRING_PTR(newstr);
+    ret = rb_econv_convert(ec, &sp, (unsigned char*)RSTRING_END(str),
+			   &dp, (unsigned char*)RSTRING_END(newstr), 0);
+    rb_econv_close(ec);
+    switch (ret) {
+      case econv_destination_buffer_full:
+	/* destination buffer short */
+	len *= 2;
+	rb_str_resize(newstr, len);
+	goto retry;
+
+      case econv_finished:
+	len = dp - (unsigned char*)RSTRING_PTR(newstr);
+	rb_str_set_len(newstr, len);
+	rb_enc_associate(newstr, to);
+	return newstr;
+
+      default:
+	/* some error, return original */
+	return str;
+    }
+}
+
+VALUE
+rb_external_str_new_with_enc(const char *ptr, long len, rb_encoding *eenc)
+{
+    VALUE str;
+
+    if (len == 0 && !ptr) len = strlen(ptr);
+    str = rb_tainted_str_new(ptr, len);
+    rb_enc_associate(str, eenc);
+    return str_conv_enc(str, eenc, rb_default_internal_encoding());
+}
+
+VALUE
+rb_external_str_new(const char *ptr, long len)
+{
+    return rb_external_str_new_with_enc(ptr, len, rb_default_external_encoding());
+}
+
+VALUE
+rb_locale_str_new(const char *ptr, long len)
+{
+    return rb_external_str_new_with_enc(ptr, len, rb_locale_encoding());
+}
+
+VALUE
+rb_str_export(VALUE str)
+{
+    return str_conv_enc(str, STR_ENC_GET(str), rb_default_external_encoding());
+}
+
+VALUE
+rb_str_export_to_enc(VALUE str, rb_encoding *enc)
+{
+    return str_conv_enc(str, STR_ENC_GET(str), enc);
+}
 
 static VALUE
 str_replace_shared(VALUE str2, VALUE str)
@@ -1280,7 +1364,16 @@ rb_str_sublen(VALUE str, long pos)
 VALUE
 rb_str_subseq(VALUE str, long beg, long len)
 {
-    VALUE str2 = rb_str_new5(str, RSTRING_PTR(str)+beg, len);
+    VALUE str2;
+
+    if (RSTRING_LEN(str) == beg + len &&
+        RSTRING_EMBED_LEN_MAX < len) {
+        str2 = rb_str_new_shared(rb_str_new_frozen(str));
+        rb_str_drop_bytes(str2, beg);
+    }
+    else {
+        str2 = rb_str_new5(str, RSTRING_PTR(str)+beg, len);
+    }
 
     rb_enc_cr_str_copy_for_substr(str2, str);
     OBJ_INFECT(str2, str);
@@ -1926,7 +2019,6 @@ rb_str_comparable(VALUE str1, VALUE str2)
 {
     int idx1, idx2;
     int rc1, rc2;
-    int a8;
 
     if (RSTRING_LEN(str1) == 0) return Qtrue;
     if (RSTRING_LEN(str2) == 0) return Qtrue;
@@ -1944,8 +2036,6 @@ rb_str_comparable(VALUE str1, VALUE str2)
 	if (rb_enc_asciicompat(rb_enc_from_index(idx1)))
 	    return Qtrue;
     }
-    a8 = rb_ascii8bit_encindex();
-    if (idx1 == a8 || idx2 == a8) return Qtrue;
     return Qfalse;
 }
 
@@ -2346,7 +2436,7 @@ rb_str_rindex_m(int argc, VALUE *argv, VALUE str)
       case T_REGEXP:
 	/* enc = rb_get_check(str, sub); */
 	pos = str_offset(RSTRING_PTR(str), RSTRING_END(str), pos,
-		     rb_enc_check(str, sub), single_byte_optimizable(str));
+			 STR_ENC_GET(str), single_byte_optimizable(str));
 
 	if (!RREGEXP(sub)->ptr || RREGEXP_SRC_LEN(sub)) {
 	    pos = rb_reg_adjust_startpos(sub, str, pos, 1);
@@ -3295,7 +3385,11 @@ rb_str_sub_bang(int argc, VALUE *argv, VALUE str)
 	if (OBJ_UNTRUSTED(repl)) untrusted = 1;
 	if (ENC_CODERANGE_UNKNOWN < cr && cr < ENC_CODERANGE_BROKEN) {
 	    int cr2 = ENC_CODERANGE(repl);
-	    if (cr2 == ENC_CODERANGE_UNKNOWN || cr2 > cr) cr = cr2;
+            if (cr2 == ENC_CODERANGE_BROKEN ||
+                (cr == ENC_CODERANGE_VALID && cr2 == ENC_CODERANGE_7BIT))
+                cr = ENC_CODERANGE_UNKNOWN;
+            else
+                cr = cr2;
 	}
 	plen = end0 - beg0;
 	if (RSTRING_LEN(repl) > plen) {
@@ -5136,7 +5230,7 @@ rb_str_split_m(int argc, VALUE *argv, VALUE str)
 		spat = rb_reg_regcomp(spat);
 		split_type = regexp;
 	    }
-	    else if (rb_enc_mbminlen(enc2) == 1) {
+	    else if (rb_enc_asciicompat(enc2) == 1) {
 		if (RSTRING_LEN(spat) == 1 && RSTRING_PTR(spat)[0] == ' '){
 		    split_type = awk;
 		}
@@ -5212,7 +5306,7 @@ rb_str_split_m(int argc, VALUE *argv, VALUE str)
 		ptr = t;
 		continue;
 	    }
-	    rb_ary_push(result, rb_str_substr(str, ptr - RSTRING_PTR(str), end));
+	    rb_ary_push(result, rb_str_subseq(str, ptr - RSTRING_PTR(str), end));
 	    ptr += end + slen;
 	    if (!NIL_P(limit) && lim <= ++i) break;
 	}

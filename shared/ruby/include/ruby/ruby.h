@@ -2,7 +2,7 @@
 
   ruby/ruby.h -
 
-  $Author: tadf $
+  $Author: matz $
   created at: Thu Jun 10 14:26:32 JST 1993
 
   Copyright (C) 1993-2008 Yukihiro Matsumoto
@@ -75,11 +75,6 @@ extern "C" {
 #  ifdef _AIX
 #pragma alloca
 #  endif
-#endif
-
-#if defined(__VMS)
-# pragma builtins
-# define alloca __alloca
 #endif
 
 #if SIZEOF_LONG == SIZEOF_VOIDP
@@ -378,6 +373,12 @@ void rb_check_safe_str(VALUE);
 /* obsolete macro - use SafeStringValue(v) */
 #define Check_SafeStr(v) rb_check_safe_str((VALUE)(v))
 
+VALUE rb_str_export(VALUE);
+#define ExportStringValue(v) do {\
+    SafeStringValue(v);\
+   (v) = rb_str_export(v);\
+} while (0)
+
 VALUE rb_get_path(VALUE);
 #define FilePathValue(v) ((v) = rb_get_path(v))
 
@@ -509,7 +510,7 @@ VALUE rb_newobj(void);
     if (FL_TEST(obj, FL_EXIVAR)) rb_copy_generic_ivar((VALUE)clone,(VALUE)obj);\
 } while (0)
 #define DUPSETUP(dup,obj) do {\
-    OBJSETUP(dup,rb_obj_class(obj),(RBASIC(obj)->flags)&(T_MASK|FL_EXIVAR|FL_TAINT|FL_UNTRUSTED));\
+    OBJSETUP(dup,rb_obj_class(obj), (RBASIC(obj)->flags)&(T_MASK|FL_EXIVAR|FL_TAINT|FL_UNTRUSTED)); \
     if (FL_TEST(obj, FL_EXIVAR)) rb_copy_generic_ivar((VALUE)dup,(VALUE)obj);\
 } while (0)
 
@@ -601,17 +602,34 @@ struct RString {
      RSTRING(str)->as.heap.ptr)
 #define RSTRING_END(str) (RSTRING_PTR(str)+RSTRING_LEN(str))
 
+#define RARRAY_EMBED_LEN_MAX 3
 struct RArray {
     struct RBasic basic;
-    long len;
     union {
-	long capa;
-	VALUE shared;
-    } aux;
-    VALUE *ptr;
+	struct {
+	    long len;
+	    union {
+		long capa;
+		VALUE shared;
+	    } aux;
+	    VALUE *ptr;
+	} heap;
+	VALUE ary[RARRAY_EMBED_LEN_MAX];
+    } as;
 };
-#define RARRAY_LEN(a) RARRAY(a)->len
-#define RARRAY_PTR(a) RARRAY(a)->ptr
+#define RARRAY_EMBED_FLAG FL_USER1
+/* FL_USER2 is for ELTS_SHARED */
+#define RARRAY_EMBED_LEN_MASK (FL_USER4|FL_USER3)
+#define RARRAY_EMBED_LEN_SHIFT (FL_USHIFT+3)
+#define RARRAY_LEN(a) \
+    ((RBASIC(a)->flags & RARRAY_EMBED_FLAG) ? \
+     (long)((RBASIC(a)->flags >> RARRAY_EMBED_LEN_SHIFT) & \
+	 (RARRAY_EMBED_LEN_MASK >> RARRAY_EMBED_LEN_SHIFT)) : \
+     RARRAY(a)->as.heap.len)
+#define RARRAY_PTR(a) \
+    ((RBASIC(a)->flags & RARRAY_EMBED_FLAG) ? \
+     RARRAY(a)->as.ary : \
+     RARRAY(a)->as.heap.ptr)
 
 struct RRegexp {
     struct RBasic basic;
@@ -834,6 +852,26 @@ VALUE rb_define_module_under(VALUE, const char*);
 void rb_include_module(VALUE,VALUE);
 void rb_extend_object(VALUE,VALUE);
 
+struct rb_global_variable;
+
+typedef VALUE rb_gvar_getter_t(ID id, void *data, struct rb_global_variable *gvar);
+typedef void  rb_gvar_setter_t(VALUE val, ID id, void *data, struct rb_global_variable *gvar);
+typedef void  rb_gvar_marker_t(VALUE *var);
+
+VALUE rb_gvar_undef_getter(ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_undef_setter(VALUE val, ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_undef_marker(VALUE *var);
+
+VALUE rb_gvar_val_getter(ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_val_setter(VALUE val, ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_val_marker(VALUE *var);
+
+VALUE rb_gvar_var_getter(ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_var_setter(VALUE val, ID id, void *data, struct rb_global_variable *gvar);
+void  rb_gvar_var_marker(VALUE *var);
+
+void  rb_gvar_readonly_setter(VALUE val, ID id, void *data, struct rb_global_variable *gvar);
+
 void rb_define_variable(const char*,VALUE*);
 void rb_define_virtual_variable(const char*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
 void rb_define_hooked_variable(const char*,VALUE*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
@@ -965,7 +1003,6 @@ int ruby_run_node(void *);
 RUBY_EXTERN VALUE rb_mKernel;
 RUBY_EXTERN VALUE rb_mComparable;
 RUBY_EXTERN VALUE rb_mEnumerable;
-RUBY_EXTERN VALUE rb_mPrecision;
 RUBY_EXTERN VALUE rb_mErrno;
 RUBY_EXTERN VALUE rb_mFileTest;
 RUBY_EXTERN VALUE rb_mGC;
@@ -1036,6 +1073,7 @@ RUBY_EXTERN VALUE rb_eFloatDomainError;
 RUBY_EXTERN VALUE rb_eLocalJumpError;
 RUBY_EXTERN VALUE rb_eSysStackError;
 RUBY_EXTERN VALUE rb_eRegexpError;
+RUBY_EXTERN VALUE rb_eEncodingError;
 RUBY_EXTERN VALUE rb_eEncCompatError;
 
 RUBY_EXTERN VALUE rb_eScriptError;

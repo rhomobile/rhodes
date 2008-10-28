@@ -2,7 +2,7 @@
 
   hash.c -
 
-  $Author: akr $
+  $Author: yugui $
   created at: Mon Nov 22 18:51:18 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -503,7 +503,7 @@ rb_hash_lookup(VALUE hash, VALUE key)
  */
 
 static VALUE
-rb_hash_fetch(int argc, VALUE *argv, VALUE hash)
+rb_hash_fetch_m(int argc, VALUE *argv, VALUE hash)
 {
     VALUE key, if_none;
     VALUE val;
@@ -523,6 +523,12 @@ rb_hash_fetch(int argc, VALUE *argv, VALUE hash)
 	return if_none;
     }
     return val;
+}
+
+VALUE
+rb_hash_fetch(VALUE hash, VALUE key)
+{
+    return rb_hash_fetch_m(1, &key, hash);
 }
 
 /*
@@ -2009,18 +2015,7 @@ ruby_setenv(const char *name, const char *value)
     }
     len = strlen(name) + strlen(value) + 2;
     environ[i] = ALLOC_N(char, len);
-#ifndef MSDOS
     snprintf(environ[i],len,"%s=%s",name,value); /* all that work just for this */
-#else
-    /* MS-DOS requires environment variable names to be in uppercase */
-    /* [Tom Dinger, 27 August 1990: Well, it doesn't _require_ it, but
-     * some utilities and applications may break because they only look
-     * for upper case strings. (Fixed strupr() bug here.)]
-     */
-    strcpy(environ[i],name); strupr(environ[i]);
-    sprintf(environ[i] + strlen(name),"=%s", value);
-#endif /* MSDOS */
-
 #endif /* WIN32 */
 }
 
@@ -2597,7 +2592,7 @@ Init_Hash(void)
     rb_define_method(rb_cHash,"[]", rb_hash_aref, 1);
     rb_define_method(rb_cHash,"hash", rb_hash_hash, 0);
     rb_define_method(rb_cHash,"eql?", rb_hash_eql, 1);
-    rb_define_method(rb_cHash,"fetch", rb_hash_fetch, -1);
+    rb_define_method(rb_cHash,"fetch", rb_hash_fetch_m, -1);
     rb_define_method(rb_cHash,"[]=", rb_hash_aset, 2);
     rb_define_method(rb_cHash,"store", rb_hash_aset, 2);
     rb_define_method(rb_cHash,"default", rb_hash_default, -1);
@@ -2645,7 +2640,6 @@ Init_Hash(void)
     rb_define_method(rb_cHash,"compare_by_identity", rb_hash_compare_by_id, 0);
     rb_define_method(rb_cHash,"compare_by_identity?", rb_hash_compare_by_id_p, 0);
 
-#ifndef __MACOS__ /* environment variables nothing on MacOS. */
     origenviron = environ;
     envtbl = rb_obj_alloc(rb_cObject);
     rb_extend_object(envtbl, rb_mEnumerable);
@@ -2691,8 +2685,4 @@ Init_Hash(void)
     rb_define_singleton_method(envtbl,"rassoc", env_rassoc, 1);
 
     rb_define_global_const("ENV", envtbl);
-#else /* __MACOS__ */
-	envtbl = rb_hash_s_new(0, NULL, rb_cHash);
-    rb_define_global_const("ENV", envtbl);
-#endif  /* ifndef __MACOS__  environment variables nothing on MacOS. */
 }

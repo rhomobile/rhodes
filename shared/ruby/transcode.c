@@ -2,7 +2,7 @@
 
   transcode.c -
 
-  $Author: akr $
+  $Author: duerst $
   created at: Tue Oct 30 16:10:22 JST 2007
 
   Copyright (C) 2007 Martin Duerst
@@ -14,9 +14,9 @@
 #include "transcode_data.h"
 #include <ctype.h>
 
-VALUE rb_eConversionUndefinedError;
+VALUE rb_eUndefinedConversionError;
 VALUE rb_eInvalidByteSequenceError;
-VALUE rb_eNoConverterError;
+VALUE rb_eConverterNotFoundError;
 
 VALUE rb_cEncodingConverter;
 
@@ -277,7 +277,7 @@ transcode_search_path(const char *sname, const char *dname,
     st_data_t val;
     st_table *table2;
     int found;
-    int pathlen;
+    int pathlen = -1;
 
     if (encoding_equal(sname, dname))
         return -1;
@@ -349,10 +349,7 @@ transcode_search_path(const char *sname, const char *dname,
 
     st_free_table(bfs.visited);
 
-    if (found)
-        return pathlen;
-    else
-        return -1;
+    return pathlen; /* is -1 if !found */
 }
 
 static const rb_transcoder *
@@ -436,19 +433,6 @@ transcode_restartable0(const unsigned char **in_pos, unsigned char **out_pos,
     const unsigned char *in_p;
 
     unsigned char *out_p;
-
-    unsigned char empty_buf;
-    unsigned char *empty_ptr = &empty_buf;
-
-    if (!in_pos) {
-        in_pos = (const unsigned char **)&empty_ptr;
-        in_stop = empty_ptr;
-    }
-
-    if (!out_pos) {
-        out_pos = &empty_ptr;
-        out_stop = empty_ptr;
-    }
 
     in_p = inchar_start = *in_pos;
 
@@ -1800,8 +1784,6 @@ rb_econv_add_converter(rb_econv_t *ec, const char *sname, const char *dname, int
         return -1;
 
     tr = load_transcoder_entry(entry);
-    if (!entry)
-        return -1;
 
     return rb_econv_add_transcoder_at(ec, tr, n);
 }
@@ -1960,7 +1942,7 @@ rb_econv_open_exc(const char *sname, const char *dname, int ecflags)
     mesg = rb_str_new_cstr("code converter not found (");
     econv_description(sname, dname, ecflags, mesg);
     rb_str_cat2(mesg, ")");
-    exc = rb_exc_new3(rb_eNoConverterError, mesg);
+    exc = rb_exc_new3(rb_eConverterNotFoundError, mesg);
     return exc;
 }
 
@@ -2023,7 +2005,7 @@ make_econv_exception(rb_econv_t *ec)
                 StringValueCStr(dumped),
                 ec->last_error.source_encoding,
                 ec->last_error.destination_encoding);
-        exc = rb_exc_new3(rb_eConversionUndefinedError, mesg);
+        exc = rb_exc_new3(rb_eUndefinedConversionError, mesg);
         idx = rb_enc_find_index(ec->last_error.source_encoding);
         if (0 <= idx)
             rb_enc_associate_index(bytes, idx);
@@ -2322,28 +2304,27 @@ rb_econv_prepare_opts(VALUE opthash, VALUE *opts)
 {
     int ecflags;
     VALUE newhash = Qnil;
+    VALUE v;
+
     if (NIL_P(opthash)) {
         *opts = Qnil;
         return 0;
     }
     ecflags = econv_opts(opthash);
-
-    if ((ecflags & ECONV_INVALID_MASK) == ECONV_INVALID_REPLACE ||
-        (ecflags & ECONV_UNDEF_MASK) == ECONV_UNDEF_REPLACE) {
-        VALUE v = rb_hash_aref(opthash, sym_replace);
-        if (!NIL_P(v)) {
-            StringValue(v);
-            if (rb_enc_str_coderange(v) == ENC_CODERANGE_BROKEN) {
-                VALUE dumped = rb_str_dump(v);
-                rb_raise(rb_eArgError, "replacement string is broken: %s as %s",
-                        StringValueCStr(dumped),
-                        rb_enc_name(rb_enc_get(v)));
-            }
-            v = rb_str_new_frozen(v);
-            newhash = rb_hash_new();
-            rb_hash_aset(newhash, sym_replace, v);
-        }
+    v = rb_hash_aref(opthash, sym_replace);
+    if (!NIL_P(v)) {
+	StringValue(v);
+	if (rb_enc_str_coderange(v) == ENC_CODERANGE_BROKEN) {
+	    VALUE dumped = rb_str_dump(v);
+	    rb_raise(rb_eArgError, "replacement string is broken: %s as %s",
+		     StringValueCStr(dumped),
+		     rb_enc_name(rb_enc_get(v)));
+	}
+	v = rb_str_new_frozen(v);
+	newhash = rb_hash_new();
+	rb_hash_aset(newhash, sym_replace, v);
     }
+
     if (!NIL_P(newhash))
         rb_hash_freeze(newhash);
     *opts = newhash;
@@ -2450,12 +2431,21 @@ str_transcode0(int argc, VALUE *argv, VALUE *self, int ecflags, VALUE ecopts)
     const char *sname, *dname;
     int dencidx;
 
-    if (argc < 1 || argc > 2) {
-	rb_raise(rb_eArgError, "wrong number of arguments (%d for 1..2)", argc);
+    if (argc <0 || argc > 2) {
+	rb_raise(rb_eArgError, "wrong number of arguments (%d for 0..2)", argc);
     }
 
-    arg1 = argv[0];
-    arg2 = argc==1 ? Qnil : argv[1];
+    if (argc == 0) {
+	arg1 = rb_enc_default_internal();
+	if (NIL_P(arg1)) {
+	    return -1;
+	}
+	ecflags |= ECONV_INVALID_REPLACE | ECONV_UNDEF_REPLACE;
+    }
+    else {
+	arg1 = argv[0];
+    }
+    arg2 = argc<=1 ? Qnil : argv[1];
     dencidx = str_transcode_enc_args(str, &arg1, &arg2, &sname, &senc, &dname, &denc);
 
     if ((ecflags & (ECONV_UNIVERSAL_NEWLINE_DECORATOR|
@@ -2570,6 +2560,7 @@ str_encode_bang(int argc, VALUE *argv, VALUE str)
  *  call-seq:
  *     str.encode(encoding [, options] )   => str
  *     str.encode(dst_encoding, src_encoding [, options] )   => str
+ *     str.encode([options])   => str
  *
  *  The first form returns a copy of <i>str</i> transcoded
  *  to encoding +encoding+.
@@ -2577,6 +2568,8 @@ str_encode_bang(int argc, VALUE *argv, VALUE str)
  *  from src_encoding to dst_encoding.
  *  The options Hash gives details for conversion. Details
  *  to be added.
+ *  The last form returns a copy of <i>str</i> transcoded to
+ *  <code>Encoding.default_internal</code>.
  */
 
 static VALUE
@@ -2596,7 +2589,7 @@ str_encode(int argc, VALUE *argv, VALUE str)
 }
 
 VALUE
-rb_str_transcode(VALUE str, VALUE to, int ecflags, VALUE ecopts)
+rb_str_encode(VALUE str, VALUE to, int ecflags, VALUE ecopts)
 {
     int argc = 1;
     VALUE *argv = &to;
@@ -2839,6 +2832,20 @@ econv_s_search_convpath(int argc, VALUE *argv, VALUE klass)
     return convpath;
 }
 
+/*
+ * check the existance of converter.
+ * returns the count of the converting paths.
+ * result: >=0:success -1:failure
+ */
+int
+rb_econv_has_convpath_p(const char* from_encoding, const char* to_encoding)
+{
+    VALUE convpath = Qnil;
+    transcode_search_path(from_encoding, to_encoding, search_convpath_i,
+			  &convpath);
+    return RTEST(convpath);
+}
+
 struct rb_econv_init_by_convpath_t {
     rb_econv_t *ec;
     int index;
@@ -2868,7 +2875,7 @@ rb_econv_init_by_convpath(VALUE self, VALUE convpath,
     long i;
     int ret, first=1;
     VALUE elt;
-    rb_encoding *senc, *denc;
+    rb_encoding *senc = 0, *denc = 0;
     const char *sname, *dname;
 
     ec = rb_econv_alloc(RARRAY_LEN(convpath));
@@ -2935,17 +2942,20 @@ rb_econv_init_by_convpath(VALUE self, VALUE convpath,
  *
  * possible options elements:
  *   hash form:
- *     :invalid => nil                    # error on invalid byte sequence (default)
- *     :invalid => :replace               # replace invalid byte sequence
- *     :undef => nil                      # error on undefined conversion (default)
- *     :undef => :replace                 # replace undefined conversion
- *     :replace => string                 # replacement string ("?" or "\uFFFD" if not specified)
- *     :universal_newline => true         # decorator for converting CRLF and CR to LF
- *     :crlf_newline => true              # decorator for converting LF to CRLF
- *     :cr_newline => true                # decorator for converting LF to CR
- *     :xml => :text                      # escape as XML CharData (AMPERSAND, LESS-THAN SIGN and GREATER-THAN SIGN are escaped as &amp;, &lt; and &gt;, respectively)
- *     :xml => :attr                      # escape as XML AttValue (AMPERSAND, LESS-THAN SIGN, GREATER-THAN SIGN and QUOTATION MARK are escaped as &amp;, &lt;, &gt; and &quote;.  quoted by QUOTATION MARK.) 
+ *     :invalid => nil            # raise error on invalid byte sequence (default)
+ *     :invalid => :replace       # replace invalid byte sequence
+ *     :undef => nil              # raise error on undefined conversion (default)
+ *     :undef => :replace         # replace undefined conversion
+ *     :replace => string         # replacement string ("?" or "\uFFFD" if not specified)
+ *     :universal_newline => true # decorator for converting CRLF and CR to LF
+ *     :crlf_newline => true      # decorator for converting LF to CRLF
+ *     :cr_newline => true        # decorator for converting LF to CR
+ *     :xml => :text              # escape as XML CharData.
+ *     :xml => :attr              # escape as XML AttValue
  *   integer form:
+ *     Encoding::Converter::INVALID_REPLACE
+ *     Encoding::Converter::UNDEF_REPLACE
+ *     Encoding::Converter::UNDEF_HEX_CHARREF
  *     Encoding::Converter::UNIVERSAL_NEWLINE_DECORATOR
  *     Encoding::Converter::CRLF_NEWLINE_DECORATOR
  *     Encoding::Converter::CR_NEWLINE_DECORATOR
@@ -2964,6 +2974,47 @@ rb_econv_init_by_convpath(VALUE self, VALUE convpath,
  * convpath should contains
  * - two-element array which contains encoding or encoding name, or
  * - a string of decorator name.
+ *
+ * Encoding::Converter.new optionally takes an option.
+ * The option should be a hash or an integer.
+ * The option hash can contain :invalid => nil, etc.
+ * The option integer should be logical-or of constants such as
+ * Encoding::Converter::INVALID_REPLACE, etc.
+ *
+ * [:invalid => nil]
+ *   raise error on invalid byte sequence.  This is a default behavior.
+ * [:invalid => :replace]
+ *   replace invalid byte sequence as a replacement string.
+ * [:undef => nil]
+ *   raise error on conversion failure due to an character in source_encoding is not defined in destination_encoding.
+ *   This is a default behavior.
+ * [:undef => :replace]
+ *   replace undefined character in destination_encoding as a replacement string.
+ * [:replace => string]
+ *   specify the replacement string.
+ *   If not specified, "\uFFFD" is used for Unicode encodings and "?" for others.
+ * [:universal_newline => true]
+ *   convert CRLF and CR to LF.
+ * [:crlf_newline => true]
+ *   convert LF to CRLF.
+ * [:cr_newline => true]
+ *   convert LF to CR.
+ * [:xml => :text]
+ *   escape as XML CharData.
+ *   This form can be used as a HTML 4.0 #PCDATA.
+ *   - '&' -> '&amp;'
+ *   - '<' -> '&lt;'
+ *   - '>' -> '&gt;'
+ *   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+ * [:xml => :attr]
+ *   escape as XML AttValue.
+ *   The converted result is quoted as "...".
+ *   This form can be used as a HTML 4.0 attribute value.
+ *   - '&' -> '&amp;'
+ *   - '<' -> '&lt;'
+ *   - '>' -> '&gt;'
+ *   - '"' -> '&quot;'
+ *   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
  *
  * example:
  *   # UTF-16BE to UTF-8
@@ -3387,7 +3438,7 @@ econv_primitive_convert(int argc, VALUE *argv, VALUE self)
  *   puts ec.finish.dump                #=> "\e(B".force_encoding("ISO-2022-JP")
  *
  * If a conversion error occur,
- * Encoding::ConversionUndefinedError or
+ * Encoding::UndefinedConversionError or
  * Encoding::InvalidByteSequenceError is raised.
  *
  */
@@ -3618,7 +3669,7 @@ econv_insert_output(VALUE self, VALUE string)
 
     StringValue(string);
     insert_enc = rb_econv_encoding_to_insert_output(ec);
-    string = rb_str_transcode(string, rb_enc_from_encoding(rb_enc_find(insert_enc)), 0, Qnil);
+    string = rb_str_encode(string, rb_enc_from_encoding(rb_enc_find(insert_enc)), 0, Qnil);
 
     ret = rb_econv_insert_output(ec, (const unsigned char *)RSTRING_PTR(string), RSTRING_LEN(string), insert_enc);
     if (ret == -1) {
@@ -3689,7 +3740,7 @@ econv_putback(int argc, VALUE *argv, VALUE self)
  * It returns nil if the last conversion is not an error. 
  *
  * "error" means that
- * Encoding::InvalidByteSequenceError and Encoding::ConversionUndefinedError for
+ * Encoding::InvalidByteSequenceError and Encoding::UndefinedConversionError for
  * Encoding::Converter#convert and
  * :invalid_byte_sequence, :incomplete_input and :undefined_conversion for
  * Encoding::Converter#primitive_convert.
@@ -3734,7 +3785,7 @@ econv_get_replacement(VALUE self)
 
     ret = make_replacement(ec);
     if (ret == -1) {
-        rb_raise(rb_eConversionUndefinedError, "replacement character setup failed");
+        rb_raise(rb_eUndefinedConversionError, "replacement character setup failed");
     }
 
     enc = rb_enc_find(ec->replacement_enc);
@@ -3769,7 +3820,7 @@ econv_set_replacement(VALUE self, VALUE arg)
 
     if (ret == -1) {
         /* xxx: rb_eInvalidByteSequenceError? */
-        rb_raise(rb_eConversionUndefinedError, "replacement character setup failed");
+        rb_raise(rb_eUndefinedConversionError, "replacement character setup failed");
     }
 
     return arg;
@@ -3810,7 +3861,7 @@ ecerr_source_encoding_name(VALUE self)
  *  ec = Encoding::Converter.new("ISO-8859-1", "EUC-JP") # ISO-8859-1 -> UTF-8 -> EUC-JP
  *  begin
  *    ec.convert("\xa0") # NO-BREAK SPACE, which is available in UTF-8 but not in EUC-JP.
- *  rescue Encoding::ConversionUndefinedError
+ *  rescue Encoding::UndefinedConversionError
  *    p $!.source_encoding              #=> #<Encoding:UTF-8>
  *    p $!.destination_encoding         #=> #<Encoding:EUC-JP>
  *    p $!.source_encoding_name         #=> "UTF-8"
@@ -3852,12 +3903,12 @@ ecerr_destination_encoding(VALUE self)
  * call-seq:
  *   ecerr.error_char         -> string
  *
- * returns the one-character string which cause Encoding::ConversionUndefinedError.
+ * returns the one-character string which cause Encoding::UndefinedConversionError.
  *
  *  ec = Encoding::Converter.new("ISO-8859-1", "EUC-JP")
  *  begin
  *    ec.convert("\xa0")
- *  rescue Encoding::ConversionUndefinedError
+ *  rescue Encoding::UndefinedConversionError
  *    puts $!.error_char.dump   #=> "\xC2\xA0"
  *    p $!.error_char.encoding  #=> #<Encoding:UTF-8>
  *  end
@@ -3937,9 +3988,9 @@ extern void Init_newline(void);
 void
 Init_transcode(void)
 {
-    rb_eConversionUndefinedError = rb_define_class_under(rb_cEncoding, "ConversionUndefinedError", rb_eStandardError);
-    rb_eInvalidByteSequenceError = rb_define_class_under(rb_cEncoding, "InvalidByteSequenceError", rb_eStandardError);
-    rb_eNoConverterError = rb_define_class_under(rb_cEncoding, "NoConverterError", rb_eStandardError);
+    rb_eUndefinedConversionError = rb_define_class_under(rb_cEncoding, "UndefinedConversionError", rb_eEncodingError);
+    rb_eInvalidByteSequenceError = rb_define_class_under(rb_cEncoding, "InvalidByteSequenceError", rb_eEncodingError);
+    rb_eConverterNotFoundError = rb_define_class_under(rb_cEncoding, "ConverterNotFoundError", rb_eEncodingError);
 
     transcoder_table = st_init_strcasetable();
 
@@ -3999,11 +4050,11 @@ Init_transcode(void)
     rb_define_const(rb_cEncodingConverter, "XML_ATTR_CONTENT_DECORATOR", INT2FIX(ECONV_XML_ATTR_CONTENT_DECORATOR));
     rb_define_const(rb_cEncodingConverter, "XML_ATTR_QUOTE_DECORATOR", INT2FIX(ECONV_XML_ATTR_QUOTE_DECORATOR));
 
-    rb_define_method(rb_eConversionUndefinedError, "source_encoding_name", ecerr_source_encoding_name, 0);
-    rb_define_method(rb_eConversionUndefinedError, "destination_encoding_name", ecerr_destination_encoding_name, 0);
-    rb_define_method(rb_eConversionUndefinedError, "source_encoding", ecerr_source_encoding, 0);
-    rb_define_method(rb_eConversionUndefinedError, "destination_encoding", ecerr_destination_encoding, 0);
-    rb_define_method(rb_eConversionUndefinedError, "error_char", ecerr_error_char, 0);
+    rb_define_method(rb_eUndefinedConversionError, "source_encoding_name", ecerr_source_encoding_name, 0);
+    rb_define_method(rb_eUndefinedConversionError, "destination_encoding_name", ecerr_destination_encoding_name, 0);
+    rb_define_method(rb_eUndefinedConversionError, "source_encoding", ecerr_source_encoding, 0);
+    rb_define_method(rb_eUndefinedConversionError, "destination_encoding", ecerr_destination_encoding, 0);
+    rb_define_method(rb_eUndefinedConversionError, "error_char", ecerr_error_char, 0);
 
     rb_define_method(rb_eInvalidByteSequenceError, "source_encoding_name", ecerr_source_encoding_name, 0);
     rb_define_method(rb_eInvalidByteSequenceError, "destination_encoding_name", ecerr_destination_encoding_name, 0);

@@ -73,7 +73,7 @@ rb_call_inits()
     Init_jump();
     Init_Numeric();
     Init_Bignum();
-    Init_syserr();
+    //Init_syserr();
     Init_Array();
     Init_Hash();
     Init_Struct();
