@@ -34,6 +34,7 @@ class CaseController < Rho::RhoController
   # POST /cases
   def create
     @case = Case.new(@params['case'])
+    @case.save
     redirect :index
   end
 
@@ -48,7 +49,7 @@ class CaseController < Rho::RhoController
   def destroy
     @case = Case.find(@params['object'])
     @case.destroy
-	redirect :index
+    redirect :index
   end
 
 end

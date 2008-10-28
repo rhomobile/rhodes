@@ -181,7 +181,8 @@ module Rhom
                   # Don't save objects with braces to database
                   val = strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
-                  unless self.method_name_reserved?(method) or val.nil? or val.length == 0
+                  puts "method, value: #{method.inspect}, #{value.inspect}"
+                  unless self.method_name_reserved?(method) or val.nil?
                     query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
                           (#{self.get_inst_source_id}, '#{self.object}', '#{method}', '#{val}', 'create')"
                     result = Rhom::execute_sql(query)

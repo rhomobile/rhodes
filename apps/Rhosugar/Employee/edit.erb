@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=320"/>
 </head>
 <body>
-<form action="<%=url_for('update') %>">
+<form method="post" action="<%=url_for('update') %>">
 <input type="hidden" name="object" value="<%=@employee.object%>"/>
 First Name <input name="employee[first_name]" value="<%=@employee.first_name%>"/><br/>
 Last Name <input name="employee[last_name]" value="<%=@employee.last_name%>"/><br/>
