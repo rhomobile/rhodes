@@ -1,6 +1,6 @@
-require 'rhocontroller'
+require 'rho/rhocontroller'
 # the only and only controller for the account model
-class EmployeeController < RhoController
+class EmployeeController < Rho::RhoController
 
   # GET /Employees
   def index
