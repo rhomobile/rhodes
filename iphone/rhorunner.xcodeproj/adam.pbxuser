@@ -220,6 +220,13 @@
 			66D29F130EB6A357007F6639 /* PBXBookmark */ = 66D29F130EB6A357007F6639 /* PBXBookmark */;
 			66D29F140EB6A357007F6639 /* PBXBookmark */ = 66D29F140EB6A357007F6639 /* PBXBookmark */;
 			66D29F160EB6A357007F6639 /* PBXBookmark */ = 66D29F160EB6A357007F6639 /* PBXBookmark */;
+			66D29F180EB6CDBF007F6639 /* PBXBookmark */ = 66D29F180EB6CDBF007F6639 /* PBXBookmark */;
+			66D29F1F0EB77E2A007F6639 /* PBXBookmark */ = 66D29F1F0EB77E2A007F6639 /* PBXBookmark */;
+			66D29F210EB77E2A007F6639 /* PBXBookmark */ = 66D29F210EB77E2A007F6639 /* PBXBookmark */;
+			66D29F230EB77E2A007F6639 /* PBXBookmark */ = 66D29F230EB77E2A007F6639 /* PBXBookmark */;
+			66D29F260EB77E2A007F6639 /* PBXBookmark */ = 66D29F260EB77E2A007F6639 /* PBXBookmark */;
+			66D29F290EB7825A007F6639 /* PBXBookmark */ = 66D29F290EB7825A007F6639 /* PBXBookmark */;
+			66D29F2A0EB7825A007F6639 /* PBXBookmark */ = 66D29F2A0EB7825A007F6639 /* PBXBookmark */;
 			66D343200EB18D3B0020C855 = 66D343200EB18D3B0020C855 /* PBXBookmark */;
 			66D343210EB18D3B0020C855 = 66D343210EB18D3B0020C855 /* PBXTextBookmark */;
 			66D343230EB18D3B0020C855 = 66D343230EB18D3B0020C855 /* PBXTextBookmark */;
@@ -1388,6 +1395,12 @@
 		path = "dialog-e.gif";
 		sourceTree = "<group>";
 	};
+	66D29DE70EB67BAF007F6639 /* dialog-se.gif */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = image.gif;
+		path = "dialog-se.gif";
+		sourceTree = "<group>";
+	};
 	66D29E4E0EB67BBF007F6639 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 66D343340EB18D3B0020C855 /* controller.rb */;
@@ -1806,6 +1819,58 @@
 		isa = PBXFileReference;
 		name = "accordion-middle-over.png";
 		path = "/Users/adam/rhodes/apps/shared/js/jquery.ui-1.5.2/themes/flora/i/accordion-middle-over.png";
+		sourceTree = "<absolute>";
+	};
+	66D29F180EB6CDBF007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29DE70EB67BAF007F6639 /* dialog-se.gif */;
+	};
+	66D29F1F0EB77E2A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F200EB77E2A007F6639 /* accordion-middle-over.png */;
+	};
+	66D29F200EB77E2A007F6639 /* accordion-middle-over.png */ = {
+		isa = PBXFileReference;
+		name = "accordion-middle-over.png";
+		path = "/Users/adam/rhodes/apps/shared/js/jquery.ui-1.5.2/themes/flora/i/accordion-middle-over.png";
+		sourceTree = "<absolute>";
+	};
+	66D29F210EB77E2A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F220EB77E2A007F6639 /* accordion-middle-over.png */;
+	};
+	66D29F220EB77E2A007F6639 /* accordion-middle-over.png */ = {
+		isa = PBXFileReference;
+		name = "accordion-middle-over.png";
+		path = "/Users/adam/rhodes/apps/shared/js/jquery.ui-1.5.2/themes/flora/i/accordion-middle-over.png";
+		sourceTree = "<absolute>";
+	};
+	66D29F230EB77E2A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F120EB6A357007F6639 /* dialog-e.gif */;
+	};
+	66D29F260EB77E2A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F270EB77E2A007F6639 /* dialog-se.gif */;
+	};
+	66D29F270EB77E2A007F6639 /* dialog-se.gif */ = {
+		isa = PBXFileReference;
+		name = "dialog-se.gif";
+		path = "/Users/adam/rhodes/apps/shared/js/jquery.ui-1.5.2/themes/flora/i/dialog-se.gif";
+		sourceTree = "<absolute>";
+	};
+	66D29F290EB7825A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F120EB6A357007F6639 /* dialog-e.gif */;
+	};
+	66D29F2A0EB7825A007F6639 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 66D29F2B0EB7825A007F6639 /* dialog-se.gif */;
+	};
+	66D29F2B0EB7825A007F6639 /* dialog-se.gif */ = {
+		isa = PBXFileReference;
+		name = "dialog-se.gif";
+		path = "/Users/adam/rhodes/apps/shared/js/jquery.ui-1.5.2/themes/flora/i/dialog-se.gif";
 		sourceTree = "<absolute>";
 	};
 	66D342620EB109010020C855 /* controller.rb */ = {
