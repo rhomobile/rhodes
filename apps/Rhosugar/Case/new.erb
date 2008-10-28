@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<form action="<%=url_for(:create) %>">
+<form method="POST" action="<%=url_for("create")%>">
 
 Assigned To
 <select name="case[assigned_user_id]">
@@ -21,7 +21,7 @@ Assigned To
 Account Name
 <select name="case[account_id]">
 <%@accounts.each do |a|%>
-  <option><%=a.name%></option>
+  <option value="<%=a.object%>"><%=a.name%></option>
 <%end%>
 </select><br/>
 
