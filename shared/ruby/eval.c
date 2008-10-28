@@ -2,7 +2,7 @@
 
   eval.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Thu Jun 10 14:22:17 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -31,7 +31,7 @@ VALUE rb_eSysStackError;
 
 #if defined(__APPLE__)
 #define environ (*_NSGetEnviron())
-#elif !defined(_WIN32) && !defined(__MACOS__) || defined(_WIN32_WCE)
+#elif !defined(_WIN32)
 extern char **environ;
 #endif
 char **rb_origenviron;
@@ -54,11 +54,7 @@ ruby_init(void)
 	return;
     initialized = 1;
 
-#ifdef __MACOS__
-    rb_origenviron = 0;
-#else
     rb_origenviron = environ;
-#endif
 
     Init_stack((void *)&state);
     Init_BareVM();
@@ -67,13 +63,6 @@ ruby_init(void)
     PUSH_TAG();
     if ((state = EXEC_TAG()) == 0) {
 	rb_call_inits();
-
-#ifdef __MACOS__
-	_macruby_init();
-#elif defined(__VMS)
-	_vmsruby_init();
-#endif
-
 	ruby_prog_init();
     }
     POP_TAG();
@@ -1132,7 +1121,6 @@ Init_eval(void)
     rb_define_virtual_variable("$@", errat_getter, errat_setter);
     rb_define_virtual_variable("$!", errinfo_getter, 0);
 
-    rb_define_global_function("eval", rb_f_eval, -1);
     rb_define_global_function("iterator?", rb_f_block_given_p, 0);
     rb_define_global_function("block_given?", rb_f_block_given_p, 0);
 
@@ -1148,8 +1136,6 @@ Init_eval(void)
     rb_define_private_method(rb_cModule, "append_features", rb_mod_append_features, 1);
     rb_define_private_method(rb_cModule, "extend_object", rb_mod_extend_object, 1);
     rb_define_private_method(rb_cModule, "include", rb_mod_include, -1);
-    rb_define_method(rb_cModule, "module_eval", rb_mod_module_eval, -1);
-    rb_define_method(rb_cModule, "class_eval", rb_mod_module_eval, -1);
 
     rb_undef_method(rb_cClass, "module_function");
 

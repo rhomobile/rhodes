@@ -2,7 +2,7 @@
 
   intern.h -
 
-  $Author: ko1 $
+  $Author: matz $
   created at: Thu Jun 10 14:22:17 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -358,6 +358,7 @@ VALUE rb_hash_dup(VALUE);
 VALUE rb_hash_freeze(VALUE);
 VALUE rb_hash_aref(VALUE, VALUE);
 VALUE rb_hash_lookup(VALUE, VALUE);
+VALUE rb_hash_fetch(VALUE, VALUE);
 VALUE rb_hash_aset(VALUE, VALUE, VALUE);
 VALUE rb_hash_delete_if(VALUE);
 VALUE rb_hash_delete(VALUE,VALUE);
@@ -511,7 +512,7 @@ void ruby_script(const char*);
 void ruby_prog_init(void);
 void ruby_set_argv(int, char**);
 void *ruby_process_options(int, char**);
-void ruby_init_loadpath(const char*);
+void ruby_init_loadpath(const char* szRoot);
 void ruby_incpush(const char*);
 /* signal.c */
 VALUE rb_f_kill(int, VALUE*);
@@ -545,6 +546,8 @@ VALUE rb_str_new5(VALUE, const char*, long);
 VALUE rb_tainted_str_new_cstr(const char*);
 VALUE rb_tainted_str_new(const char*, long);
 VALUE rb_tainted_str_new2(const char*);
+VALUE rb_external_str_new(const char*, long);
+VALUE rb_locale_str_new(const char*, long);
 VALUE rb_str_buf_new(long);
 VALUE rb_str_buf_new_cstr(const char*);
 VALUE rb_str_buf_new2(const char*);

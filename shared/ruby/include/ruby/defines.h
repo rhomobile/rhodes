@@ -2,7 +2,7 @@
 
   defines.h -
 
-  $Author: matz $
+  $Author: yugui $
   created at: Wed May 18 00:21:44 JST 1994
 
 ************************************************/
@@ -103,11 +103,9 @@ void xfree(void*);
 #undef _WIN32
 #endif
 
-#if defined(MSDOS) || defined(_WIN32) || defined(__human68k__) || defined(__EMX__)
+#if defined(_WIN32) || defined(__EMX__)
 #define DOSISH 1
-#ifndef _WIN32_WCE
 # define DOSISH_DRIVE_LETTER
-#endif
 #endif
 
 #if defined(__NeXT__) || defined(__APPLE__)
@@ -194,10 +192,6 @@ void xfree(void*);
 #include "ruby/win32.h"
 #endif
 
-#if defined(__VMS)
-#include "vms/vms.h"
-#endif
-
 #if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
 #include <net/socket.h> /* intern.h needs fd_set definition */
 #endif
@@ -245,25 +239,19 @@ void rb_ia64_flushrs(void);
 
 #if defined(DOSISH)
 #define PATH_SEP ";"
-#elif defined(riscos)
-#define PATH_SEP ","
 #else
 #define PATH_SEP ":"
 #endif
 #define PATH_SEP_CHAR PATH_SEP[0]
 
-#if defined(__human68k__)
-#define PATH_ENV "path"
-#else
 #define PATH_ENV "PATH"
-#endif
 
-#if defined(DOSISH) && !defined(__human68k__) && !defined(__EMX__)
+#if defined(DOSISH) && !defined(__EMX__)
 #define ENV_IGNORECASE
 #endif
 
 #ifndef CASEFOLD_FILESYSTEM
-# if defined DOSISH || defined __VMS
+# if defined DOSISH
 #   define CASEFOLD_FILESYSTEM 1
 # else
 #   define CASEFOLD_FILESYSTEM 0
@@ -281,6 +269,14 @@ void rb_ia64_flushrs(void);
 #ifndef RUBY_ALIAS_FUNCTION
 #define RUBY_ALIAS_FUNCTION(old_prot, new_name, args) \
     VALUE old_prot {return new_name args;}
+#endif
+
+#ifdef _WIN32
+#define IS_CLOSED_IO(fd) ((fd) == INVALID_HANDLE_VALUE)
+#define IS_STD_FD(fd) ((fd)==fileno(stdout)||(fd)==fileno(stderr))
+#else
+#define IS_CLOSED_IO(fd) ((fd) < 0)
+#define IS_STD_FD(fd) ((fd) < 2)
 #endif
 
 #if defined(__cplusplus)

@@ -92,6 +92,9 @@ char* rb_enc_nth(const char*, const char*, int, rb_encoding*);
 VALUE rb_obj_encoding(VALUE);
 VALUE rb_enc_str_buf_cat(VALUE str, const char *ptr, long len, rb_encoding *enc);
 
+VALUE rb_external_str_new_with_enc(const char *ptr, long len, rb_encoding *);
+VALUE rb_str_export_to_enc(VALUE, rb_encoding *);
+
 /* index -> rb_encoding */
 rb_encoding* rb_enc_from_index(int idx);
 
@@ -168,11 +171,14 @@ rb_encoding *rb_usascii_encoding(void);
 rb_encoding *rb_locale_encoding(void);
 rb_encoding *rb_filesystem_encoding(void);
 rb_encoding *rb_default_external_encoding(void);
+rb_encoding *rb_default_internal_encoding(void);
 int rb_ascii8bit_encindex(void);
 int rb_utf8_encindex(void);
 int rb_usascii_encindex(void);
 VALUE rb_enc_default_external(void);
+VALUE rb_enc_default_internal(void);
 void rb_enc_set_default_external(VALUE encoding);
+void rb_enc_set_default_internal(VALUE encoding);
 VALUE rb_locale_charmap(VALUE klass);
 long rb_memsearch(const void*,long,const void*,long,rb_encoding*);
 
@@ -208,7 +214,8 @@ typedef enum {
 
 typedef struct rb_econv_t rb_econv_t;
 
-VALUE rb_str_transcode(VALUE str, VALUE to, int ecflags, VALUE ecopts);
+VALUE rb_str_encode(VALUE str, VALUE to, int ecflags, VALUE ecopts);
+int rb_econv_has_convpath_p(const char* from_encoding, const char* to_encoding);
 
 int rb_econv_prepare_opts(VALUE opthash, VALUE *ecopts);
 

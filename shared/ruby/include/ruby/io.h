@@ -2,7 +2,7 @@
 
   rubyio.h -
 
-  $Author: akr $
+  $Author: mame $
   created at: Fri Nov 12 16:47:09 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -161,11 +161,6 @@ NORETURN(void rb_eof_error(void));
 void rb_io_read_check(rb_io_t*);
 int rb_io_read_pending(rb_io_t*);
 void rb_read_check(FILE*);
-
-DEPRECATED(int rb_getc(FILE*));
-DEPRECATED(long rb_io_fread(char *, long, FILE *));
-DEPRECATED(long rb_io_fwrite(const char *, long, FILE *));
-DEPRECATED(int rb_read_pending(FILE*));
 
 #if defined(__cplusplus)
 #if 0

@@ -167,7 +167,7 @@ w32_resume_thread(HANDLE handle)
     }
 }
 
-#ifdef _MSC_VER
+#if defined( _MSC_VER ) && !defined(_WIN32_WCE)
 #define HAVE__BEGINTHREADEX 1
 #else
 #undef HAVE__BEGINTHREADEX

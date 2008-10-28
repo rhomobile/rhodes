@@ -37,9 +37,9 @@ module Rhom
         attribs_empty = false
         RHO_SOURCES.each do |source, id|
           Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
-          src_attribs = Rhom::execute_sql "select count(distinct attrib) as count 
-                                           from object_values where source_id=#{id.to_i}"
-          attribs[source] = src_attribs[0]['count'].to_i
+          src_attribs = Rhom::execute_sql "select distinct attrib from object_values \
+                                           where source_id=#{id.to_i}"
+          attribs[source] = src_attribs
           # there are no records yet, raise a flag so we don't define the constant
           if attribs[source] == 0
             attribs_empty = true
@@ -60,6 +60,7 @@ module Rhom
           
               def initialize(obj=nil)
                 if obj
+				          puts "inside new: #{obj.inspect}"
                   # create a temp id for the create type
                   # TODO: This is duplicative of get_new_obj
                   temp_objid = djb_hash(obj.values.to_s, 10).to_s
@@ -67,7 +68,8 @@ module Rhom
                   self.send 'source_id'.to_sym, obj['source_id'].to_s
                   self.send 'update_type'.to_sym, 'create'
                   obj.each do |key,value|
-                    self.send key, value
+					          val =  self.inst_strip_braces(value)
+                    self.send key, val
                   end
                 end
             
@@ -84,9 +86,8 @@ module Rhom
                   list = []
                   if args.first == :all
                     query = "select * from #{TABLE_NAME} where \
-                           source_id=#{get_source_id} \
-                           and update_type in ('create', 'query') \
-                           order by object"
+                             source_id=#{get_source_id} \
+                             and update_type='query' order by object"
                   else
                     obj = strip_braces(args.first.to_s)
                     query = "select * from #{TABLE_NAME} where object='#{obj}'"
@@ -112,7 +113,7 @@ module Rhom
                 def get_list(objs)
                   new_list = []
                   if objs and defined? SOURCE_ATTRIBS
-                    attrib_length = SOURCE_ATTRIBS[self.name.to_s]
+                    attrib_length = SOURCE_ATTRIBS[self.name.to_s].length
                     list_length = 0
                     list_length = (objs.length / attrib_length) unless attrib_length == 0
                     new_obj = nil
@@ -159,14 +160,14 @@ module Rhom
               # adding a delete record to the list of sync operations
               def destroy
                 result = nil
-                obj = strip_braces(self.object)
+                obj = self.inst_strip_braces(self.object)
                 if obj
                   # first delete the record from viewable list
                   query = "delete from #{TABLE_NAME} where object='#{obj}'"
                   result = Rhom::execute_sql(query)
                   # now add delete operation
                   query = "insert into #{TABLE_NAME} (source_id, object, update_type) \
-                         values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
+                           values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
                   result = Rhom::execute_sql(query)
                 end
                 result
@@ -176,16 +177,31 @@ module Rhom
               def save
                 result = nil
                 # iterate over each instance variable and insert create row to table
+				        obj = self.inst_strip_braces(self.object)
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   # Don't save objects with braces to database
-                  val = strip_braces(self.send(method.to_sym))
+                  val = self.send(method.to_sym)
                   # add rows excluding object, source_id and update_type
-                  unless self.method_name_reserved?(method) or val.nil? or val.length == 0
+                  unless self.method_name_reserved?(method) or val.nil?
                     query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                          (#{self.get_inst_source_id}, '#{self.object}', '#{method}', '#{val}', 'create')"
+                             (#{self.get_inst_source_id}, \
+                             '#{obj}', \
+                             '#{method}', \
+                             '#{val}', \
+                             'create')"
                     result = Rhom::execute_sql(query)
                   end
+                end
+                # Create a temporary query record to display in the list
+                SOURCE_ATTRIBS[self.class.name.to_s].each do |attrib|
+                  query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
+                           (#{self.get_inst_source_id}, \
+                           '#{obj}', \
+                           '#{attrib['attrib']}', \
+                           '#{self.send(attrib['attrib'].to_sym)}', \
+                           'query')"
+                  result = Rhom::execute_sql(query)
                 end
                 result
               end
@@ -194,23 +210,27 @@ module Rhom
               # a sync operation to update
               def update_attributes(attrs)
                 result = nil
-                obj = strip_braces(self.object)
+                obj = self.strip_braces(self.object)
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   val = self.send method.to_sym
                   # Don't save objects with braces to database
-                  new_val = strip_braces(attrs[method])
+                  new_val = attrs[method]
                   # if the object's value doesn't match the database record
                   # then we procede with update
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
                       # update viewable list
                       query = "update #{TABLE_NAME} set value='#{new_val}' where object='#{obj}' \
-			   and attrib='#{method}'"
+			                         and attrib='#{method}'"
                       result = Rhom::execute_sql(query)
                       # update sync list
                       query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                           (#{self.get_inst_source_id}, '#{obj}', '#{method}', '#{new_val}', 'update')"
+                               (#{self.get_inst_source_id}, \
+                               '#{obj}', \
+                               '#{method}', \
+                               '#{new_val}', \
+                               'update')"
                       result = Rhom::execute_sql(query)
                     end
                   end
@@ -221,9 +241,13 @@ module Rhom
               def get_inst_source_id
                 RHO_SOURCES[self.class.name.to_s].to_s
               end
+              
+              def inst_strip_braces(str=nil)
+                str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
+              end
             
               def method_name_reserved?(method)
-                method =~ /id|object|source_id|update_type/
+                method =~ /object|source_id|update_type/
               end
             end)
         end

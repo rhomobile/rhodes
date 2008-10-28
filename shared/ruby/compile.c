@@ -2,7 +2,7 @@
 
   compile.c - ruby node tree -> VM instruction sequence
 
-  $Author: ko1 $
+  $Author: mame $
   created at: 04/01/01 03:42:15 JST
 
   Copyright (C) 2004-2007 Koichi Sasada
@@ -1309,6 +1309,8 @@ iseq_set_sequence(rb_iseq_t *iseq, LINK_ANCHOR *anchor)
 		    rb_compile_error(RSTRING_PTR(iseq->filename), iobj->line_no,
 				     "operand size miss! (%d for %d)",
 				     iobj->operand_size, len - 1);
+		    xfree(generated_iseq);
+		    xfree(insn_info_table);
 		    return 0;
 		}
 
@@ -1349,7 +1351,12 @@ iseq_set_sequence(rb_iseq_t *iseq, LINK_ANCHOR *anchor)
 				    rb_compile_error(RSTRING_PTR(iseq->filename), iobj->line_no,
 						     "unknown label");
 				}
-				rb_hash_aset(map, obj, INT2FIX(lobj->position - (pos+len)));
+				if (!st_lookup(rb_hash_tbl(map), obj, 0)) {
+				    rb_hash_aset(map, obj, INT2FIX(lobj->position - (pos+len)));
+				}
+				else {
+				    rb_warning("duplicated when clause is ignored");
+				}
 			    }
 			    generated_iseq[pos + 1 + j] = map;
 			    iseq_add_mark_object(iseq, map);
@@ -1398,6 +1405,8 @@ iseq_set_sequence(rb_iseq_t *iseq, LINK_ANCHOR *anchor)
 		      default:
 			rb_compile_error(RSTRING_PTR(iseq->filename), iobj->line_no,
 					 "unknown operand type: %c", type);
+			xfree(generated_iseq);
+			xfree(insn_info_table);
 			return 0;
 		    }
 		}
@@ -3560,8 +3569,8 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
       }
 
       case NODE_MASGN:{
-	  compile_massign(iseq, ret, node, poped);
-	  break;
+	compile_massign(iseq, ret, node, poped);
+	break;
       }
 
       case NODE_LASGN:{
@@ -3645,45 +3654,45 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
 	break;
       }
       case NODE_OP_ASGN1: {
-	  DECL_ANCHOR(args);
-	  VALUE argc;
-	  unsigned long flag = 0;
-	  ID id = node->nd_mid;
+	DECL_ANCHOR(args);
+	VALUE argc;
+	unsigned long flag = 0;
+	ID id = node->nd_mid;
 
-	  /*
-	   * a[x] (op)= y
-	   *
-	   * eval a    # a
-	   * eval x    # a x
-	   * dupn 2    # a x a x
-	   * send :[]  # a x a[x]
-	   * eval y    # a x a[x] y
-	   * send op   # a x a[x]+y
-	   * send []=  # ret
-	   */
+	/*
+	 * a[x] (op)= y
+	 *
+	 * eval a    # a
+	 * eval x    # a x
+	 * dupn 2    # a x a x
+	 * send :[]  # a x a[x]
+	 * eval y    # a x a[x] y
+	 * send op   # a x a[x]+y
+	 * send []=  # ret
+	 */
 
-	  /*
-	   * nd_recv[nd_args->nd_body] (nd_mid)= nd_args->nd_head;
-	   * NODE_OP_ASGN nd_recv
-	   *              nd_args->nd_head
-	   *              nd_args->nd_body
-	   *              nd_mid
-	   */
+	/*
+	 * nd_recv[nd_args->nd_body] (nd_mid)= nd_args->nd_head;
+	 * NODE_OP_ASGN nd_recv
+	 *              nd_args->nd_head
+	 *              nd_args->nd_body
+	 *              nd_mid
+	 */
 
-	  COMPILE(ret, "NODE_OP_ASGN1 recv", node->nd_recv);
-	  if (nd_type(node->nd_args->nd_body) != NODE_ZARRAY) {
-	      INIT_ANCHOR(args);
-	      argc = setup_args(iseq, args, node->nd_args->nd_body, &flag);
-	      ADD_SEQ(ret, args);
-	  }
-	  else {
-	      argc = INT2FIX(0);
-	  }
-	  ADD_INSN1(ret, nd_line(node), dupn, INT2FIX(FIX2INT(argc)+1));
-	  ADD_SEND_R(ret, nd_line(node), ID2SYM(idAREF), argc, Qfalse, LONG2FIX(flag));
+	COMPILE(ret, "NODE_OP_ASGN1 recv", node->nd_recv);
+	if (nd_type(node->nd_args->nd_body) != NODE_ZARRAY) {
+	    INIT_ANCHOR(args);
+	    argc = setup_args(iseq, args, node->nd_args->nd_body, &flag);
+	    ADD_SEQ(ret, args);
+	}
+	else {
+	    argc = INT2FIX(0);
+	}
+	ADD_INSN1(ret, nd_line(node), dupn, INT2FIX(FIX2INT(argc)+1));
+	ADD_SEND_R(ret, nd_line(node), ID2SYM(idAREF), argc, Qfalse, LONG2FIX(flag));
 
-	  if (id == 0 || id == 1) {
-	      /* 0: or, 1: and
+	if (id == 0 || id == 1) {
+	    /* 0: or, 1: and
 	       a[x] ||= y
 
 	       unless/if a[x]
@@ -3691,64 +3700,64 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
 	       else
 	       nil
 	       end
-	       */
-	      LABEL *label = NEW_LABEL(nd_line(node));
-	      LABEL *lfin = NEW_LABEL(nd_line(node));
+	    */
+	    LABEL *label = NEW_LABEL(nd_line(node));
+	    LABEL *lfin = NEW_LABEL(nd_line(node));
 
-	      if (id == 0) {
-		  /* or */
-		  ADD_INSN(ret, nd_line(node), dup);
-		  ADD_INSNL(ret, nd_line(node), branchif, label);
-		  ADD_INSN(ret, nd_line(node), pop);
-	      }
-	      else {
-		  /* and */
-		  ADD_INSN(ret, nd_line(node), dup);
-		  ADD_INSNL(ret, nd_line(node), branchunless, label);
-		  ADD_INSN(ret, nd_line(node), pop);
-	      }
+	    if (id == 0) {
+		/* or */
+		ADD_INSN(ret, nd_line(node), dup);
+		ADD_INSNL(ret, nd_line(node), branchif, label);
+		ADD_INSN(ret, nd_line(node), pop);
+	    }
+	    else {
+		/* and */
+		ADD_INSN(ret, nd_line(node), dup);
+		ADD_INSNL(ret, nd_line(node), branchunless, label);
+		ADD_INSN(ret, nd_line(node), pop);
+	    }
 
-	      COMPILE(ret, "NODE_OP_ASGN1 args->head: ", node->nd_args->nd_head);
-	      if (flag & VM_CALL_ARGS_SPLAT_BIT) {
-		  ADD_INSN1(ret, nd_line(node), newarray, INT2FIX(1));
-		  ADD_INSN(ret, nd_line(node), concatarray);
-		  ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
-			     argc, Qfalse, LONG2FIX(flag));
-	      }
-	      else {
-		  ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
-			     INT2FIX(FIX2INT(argc) + 1), Qfalse, LONG2FIX(flag));
-	      }
-	      ADD_INSNL(ret, nd_line(node), jump, lfin);
-	      ADD_LABEL(ret, label);
-	      if (id == 0 || id == 1) {	/* 0: or, 1: and */
-		  ADD_INSN(ret, nd_line(node), swap);
-		  ADD_INSN(ret, nd_line(node), pop);
-		  ADD_INSN(ret, nd_line(node), swap);
-		  ADD_INSN(ret, nd_line(node), pop);
-	      }
-	      ADD_LABEL(ret, lfin);
-	  }
-	  else {
-	      COMPILE(ret, "NODE_OP_ASGN1 args->head: ", node->nd_args->nd_head);
-	      ADD_SEND(ret, nd_line(node), ID2SYM(id), INT2FIX(1));
-	      if (flag & VM_CALL_ARGS_SPLAT_BIT) {
-		  ADD_INSN1(ret, nd_line(node), newarray, INT2FIX(1));
-		  ADD_INSN(ret, nd_line(node), concatarray);
-		  ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
-			     argc, Qfalse, LONG2FIX(flag));
-	      }
-	      else {
-		  ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
-			     INT2FIX(FIX2INT(argc) + 1), Qfalse, LONG2FIX(flag));
-	      }
-	  }
+	    COMPILE(ret, "NODE_OP_ASGN1 args->head: ", node->nd_args->nd_head);
+	    if (flag & VM_CALL_ARGS_SPLAT_BIT) {
+		ADD_INSN1(ret, nd_line(node), newarray, INT2FIX(1));
+		ADD_INSN(ret, nd_line(node), concatarray);
+		ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
+			   argc, Qfalse, LONG2FIX(flag));
+	    }
+	    else {
+		ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
+			   INT2FIX(FIX2INT(argc) + 1), Qfalse, LONG2FIX(flag));
+	    }
+	    ADD_INSNL(ret, nd_line(node), jump, lfin);
+	    ADD_LABEL(ret, label);
+	    if (id == 0 || id == 1) {	/* 0: or, 1: and */
+		ADD_INSN(ret, nd_line(node), swap);
+		ADD_INSN(ret, nd_line(node), pop);
+		ADD_INSN(ret, nd_line(node), swap);
+		ADD_INSN(ret, nd_line(node), pop);
+	    }
+	    ADD_LABEL(ret, lfin);
+	}
+	else {
+	    COMPILE(ret, "NODE_OP_ASGN1 args->head: ", node->nd_args->nd_head);
+	    ADD_SEND(ret, nd_line(node), ID2SYM(id), INT2FIX(1));
+	    if (flag & VM_CALL_ARGS_SPLAT_BIT) {
+		ADD_INSN1(ret, nd_line(node), newarray, INT2FIX(1));
+		ADD_INSN(ret, nd_line(node), concatarray);
+		ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
+			   argc, Qfalse, LONG2FIX(flag));
+	    }
+	    else {
+		ADD_SEND_R(ret, nd_line(node), ID2SYM(idASET),
+			   INT2FIX(FIX2INT(argc) + 1), Qfalse, LONG2FIX(flag));
+	    }
+	}
 
-	  if (poped) {
-	      ADD_INSN(ret, nd_line(node), pop);
-	  }
+	if (poped) {
+	    ADD_INSN(ret, nd_line(node), pop);
+	}
 
-	  break;
+	break;
       }
       case NODE_OP_ASGN2:{
 	ID atype = node->nd_next->nd_mid;
@@ -4402,13 +4411,13 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
 	break;
       }
       case NODE_SPLAT:{
-	  COMPILE(ret, "splat", node->nd_head);
-	  ADD_INSN1(ret, nd_line(node), splatarray, Qfalse);
+	COMPILE(ret, "splat", node->nd_head);
+	ADD_INSN1(ret, nd_line(node), splatarray, Qfalse);
 
-	  if (poped) {
-	      ADD_INSN(ret, nd_line(node), pop);
-	  }
-	  break;
+	if (poped) {
+	    ADD_INSN(ret, nd_line(node), pop);
+	}
+	break;
       }
       case NODE_DEFN:{
 	VALUE iseqval = NEW_ISEQVAL(node->nd_defn,

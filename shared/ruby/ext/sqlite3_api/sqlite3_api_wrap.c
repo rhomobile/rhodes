@@ -1055,7 +1055,7 @@ struct timeval rb_time_timeval(VALUE);
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "rubyio.h"
+//trv #include "rubyio.h"
 #ifdef __cplusplus
 }
 #endif

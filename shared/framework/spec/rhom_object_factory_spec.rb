@@ -17,8 +17,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-$:.unshift File.join(File.dirname(__FILE__),'..','lib')
-
+$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'spec/spec_helper'
 
 describe "RhomObjectFactory" do
@@ -26,7 +25,7 @@ describe "RhomObjectFactory" do
   attr_accessor :rhom
   
   Object::const_set("RHO_SOURCES", {"Account"=>1, "Case"=>2, "Employee"=>3}) unless defined? RHO_SOURCES
-  Object::const_set("SYNC_DB_FILE", "../../spec/syncdbtest.sqlite")
+  Object::const_set("SYNC_DB_FILE", "../../spec/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
   @rhom = Rhom::Rhom.new
   
   def array_print(arr)
@@ -54,7 +53,7 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    array_print(results)
+    #array_print(results)
     results.length.should == 7
     "58".should == results[0].case_number
     "hire another engineer".should == results[6].name
@@ -66,7 +65,7 @@ describe "RhomObjectFactory" do
       puts "result[#{i}]: " + result.inspect
     end
     results.length.should == 5
-    array_print(results)
+    #array_print(results)
     
     "Mobio India".should == results[0].name
     "Technology".should == results[0].industry

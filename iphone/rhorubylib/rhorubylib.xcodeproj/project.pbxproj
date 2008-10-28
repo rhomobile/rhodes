@@ -7,235 +7,188 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F563D6350EA92B8F0062DA57 /* syncengine_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D6340EA92B8F0062DA57 /* syncengine_wrap.c */; };
-		F58B9A230E9FDAE4008D655D /* sqlite3_api_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58B9A220E9FDAE4008D655D /* sqlite3_api_wrap.c */; };
-		F59F14CE0E9436C8004103B4 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C00E9436C7004103B4 /* array.c */; };
-		F59F14CF0E9436C8004103B4 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C10E9436C7004103B4 /* bignum.c */; };
-		F59F14D00E9436C8004103B4 /* blockinlining.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C20E9436C7004103B4 /* blockinlining.c */; };
-		F59F14D10E9436C8004103B4 /* class.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C30E9436C7004103B4 /* class.c */; };
-		F59F14D20E9436C8004103B4 /* compar.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C40E9436C7004103B4 /* compar.c */; };
-		F59F14D30E9436C8004103B4 /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C50E9436C7004103B4 /* compile.c */; };
-		F59F14D40E9436C8004103B4 /* complex.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C60E9436C7004103B4 /* complex.c */; };
-		F59F14D50E9436C8004103B4 /* cont.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C70E9436C7004103B4 /* cont.c */; };
-		F59F14D60E9436C8004103B4 /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13C80E9436C7004103B4 /* debug.c */; };
-		F59F14D70E9436C8004103B4 /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F13C90E9436C7004103B4 /* debug.h */; };
-		F59F14D80E9436C8004103B4 /* dir.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13CA0E9436C7004103B4 /* dir.c */; };
-		F59F14D90E9436C8004103B4 /* dln.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13CB0E9436C7004103B4 /* dln.c */; };
-		F59F14DA0E9436C8004103B4 /* dln.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F13CC0E9436C7004103B4 /* dln.h */; };
-		F59F14DB0E9436C8004103B4 /* dmydln.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13CD0E9436C7004103B4 /* dmydln.c */; };
-		F59F14DC0E9436C8004103B4 /* dmyencoding.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13CE0E9436C7004103B4 /* dmyencoding.c */; };
-		F59F14DD0E9436C8004103B4 /* dmyext.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13CF0E9436C7004103B4 /* dmyext.c */; };
-		F59F14DE0E9436C8004103B4 /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F13D10E9436C7004103B4 /* ascii.c */; };
-		F59F14FD0E9436C8004103B4 /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14290E9436C7004103B4 /* unicode.c */; };
-		F59F14FE0E9436C8004103B4 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F142A0E9436C7004103B4 /* us_ascii.c */; };
-		F59F15040E9436C8004103B4 /* utf_8.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14300E9436C7004103B4 /* utf_8.c */; };
-		F59F15050E9436C8004103B4 /* windows_1251.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14310E9436C7004103B4 /* windows_1251.c */; };
-		F59F15070E9436C8004103B4 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14330E9436C7004103B4 /* enum.c */; };
-		F59F15080E9436C8004103B4 /* enumerator.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14340E9436C7004103B4 /* enumerator.c */; };
-		F59F15090E9436C8004103B4 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14350E9436C7004103B4 /* error.c */; };
-		F59F150A0E9436C8004103B4 /* eval.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14360E9436C7004103B4 /* eval.c */; };
-		F59F150E0E9436C8004103B4 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F143C0E9436C7004103B4 /* strscan.c */; };
-		F59F150F0E9436C8004103B4 /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F143D0E9436C7004103B4 /* file.c */; };
-		F59F15100E9436C8004103B4 /* gc.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F143E0E9436C7004103B4 /* gc.c */; };
-		F59F15110E9436C8004103B4 /* gc.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F143F0E9436C7004103B4 /* gc.h */; };
-		F59F15130E9436C8004103B4 /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14410E9436C7004103B4 /* hash.c */; };
-		F59F15150E9436C8004103B4 /* id.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14430E9436C7004103B4 /* id.h */; };
-		F59F15160E9436C8004103B4 /* st.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14470E9436C7004103B4 /* st.h */; };
-		F59F15170E9436C8004103B4 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14480E9436C7004103B4 /* util.h */; };
-		F59F15180E9436C8004103B4 /* defines.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14490E9436C7004103B4 /* defines.h */; };
-		F59F15190E9436C8004103B4 /* encoding.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144A0E9436C7004103B4 /* encoding.h */; };
-		F59F151A0E9436C8004103B4 /* intern.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144B0E9436C7004103B4 /* intern.h */; };
-		F59F151B0E9436C8004103B4 /* io.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144C0E9436C7004103B4 /* io.h */; };
-		F59F151C0E9436C8004103B4 /* missing.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144D0E9436C7004103B4 /* missing.h */; };
-		F59F151D0E9436C8004103B4 /* oniguruma.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144E0E9436C7004103B4 /* oniguruma.h */; };
-		F59F151E0E9436C8004103B4 /* re.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F144F0E9436C7004103B4 /* re.h */; };
-		F59F151F0E9436C8004103B4 /* regex.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14500E9436C7004103B4 /* regex.h */; };
-		F59F15200E9436C8004103B4 /* ruby.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14510E9436C7004103B4 /* ruby.h */; };
-		F59F15210E9436C8004103B4 /* st.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14520E9436C7004103B4 /* st.h */; };
-		F59F15220E9436C8004103B4 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14530E9436C7004103B4 /* util.h */; };
-		F59F15230E9436C8004103B4 /* vm.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14540E9436C7004103B4 /* vm.h */; };
-		F59F15240E9436C8004103B4 /* win32.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14550E9436C7004103B4 /* win32.h */; };
-		F59F15250E9436C8004103B4 /* ruby.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14560E9436C7004103B4 /* ruby.h */; };
-		F59F15260E9436C8004103B4 /* rubyio.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14570E9436C7004103B4 /* rubyio.h */; };
-		F59F15270E9436C8004103B4 /* rubysig.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14580E9436C7004103B4 /* rubysig.h */; };
-		F59F15280E9436C8004103B4 /* inits.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14590E9436C7004103B4 /* inits.c */; };
-		F59F152B0E9436C8004103B4 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F145D0E9436C7004103B4 /* io.c */; };
-		F59F152C0E9436C8004103B4 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14600E9436C7004103B4 /* config.h */; };
-		F59F152D0E9436C8004103B4 /* iseq.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14610E9436C7004103B4 /* iseq.c */; };
-		F59F152E0E9436C8004103B4 /* iseq.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14620E9436C7004103B4 /* iseq.h */; };
-		F59F15300E9436C8004103B4 /* load.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14680E9436C7004103B4 /* load.c */; };
-		F59F15320E9436C8004103B4 /* marshal.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F146A0E9436C7004103B4 /* marshal.c */; };
-		F59F15330E9436C8004103B4 /* math.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F146B0E9436C7004103B4 /* math.c */; };
-		F59F15340E9436C8004103B4 /* miniprelude.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F146C0E9436C7004103B4 /* miniprelude.c */; };
-		F59F15420E9436C8004103B4 /* lgamma_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F147B0E9436C7004103B4 /* lgamma_r.c */; };
-		F59F154F0E9436C8004103B4 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14880E9436C7004103B4 /* newline.c */; };
-		F59F15500E9436C8004103B4 /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14890E9436C7004103B4 /* node.h */; };
-		F59F15520E9436C8004103B4 /* numeric.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F148B0E9436C7004103B4 /* numeric.c */; };
-		F59F15530E9436C8004103B4 /* object.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F148C0E9436C7004103B4 /* object.c */; };
-		F59F15570E9436C8004103B4 /* pack.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14920E9436C7004103B4 /* pack.c */; };
-		F59F15580E9436C8004103B4 /* parse.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14930E9436C7004103B4 /* parse.c */; };
-		F59F15590E9436C8004103B4 /* parse.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14940E9436C7004103B4 /* parse.h */; };
-		F59F155B0E9436C8004103B4 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14970E9436C7004103B4 /* proc.c */; };
-		F59F155C0E9436C8004103B4 /* process.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14980E9436C7004103B4 /* process.c */; };
-		F59F155D0E9436C8004103B4 /* random.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14990E9436C7004103B4 /* random.c */; };
-		F59F155E0E9436C8004103B4 /* range.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F149A0E9436C7004103B4 /* range.c */; };
-		F59F155F0E9436C8004103B4 /* rational.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F149B0E9436C7004103B4 /* rational.c */; };
-		F59F15600E9436C8004103B4 /* re.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F149C0E9436C7004103B4 /* re.c */; };
-		F59F15610E9436C8004103B4 /* regcomp.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A10E9436C7004103B4 /* regcomp.c */; };
-		F59F15620E9436C8004103B4 /* regenc.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A20E9436C7004103B4 /* regenc.c */; };
-		F59F15630E9436C8004103B4 /* regenc.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14A30E9436C7004103B4 /* regenc.h */; };
-		F59F15640E9436C8004103B4 /* regerror.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A40E9436C7004103B4 /* regerror.c */; };
-		F59F15650E9436C8004103B4 /* regexec.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A50E9436C7004103B4 /* regexec.c */; };
-		F59F15660E9436C8004103B4 /* regint.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14A60E9436C7004103B4 /* regint.h */; };
-		F59F15670E9436C8004103B4 /* regparse.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A70E9436C7004103B4 /* regparse.c */; };
-		F59F15680E9436C8004103B4 /* regparse.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14A80E9436C7004103B4 /* regparse.h */; };
-		F59F15690E9436C8004103B4 /* regsyntax.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14A90E9436C7004103B4 /* regsyntax.c */; };
-		F59F156A0E9436C8004103B4 /* revision.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14AA0E9436C7004103B4 /* revision.h */; };
-		F59F156B0E9436C8004103B4 /* ruby.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14AC0E9436C7004103B4 /* ruby.c */; };
-		F59F156C0E9436C8004103B4 /* safe.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14AF0E9436C7004103B4 /* safe.c */; };
-		F59F156D0E9436C8004103B4 /* signal.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B00E9436C7004103B4 /* signal.c */; };
-		F59F156E0E9436C8004103B4 /* sprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B10E9436C7004103B4 /* sprintf.c */; };
-		F59F156F0E9436C8004103B4 /* st.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B20E9436C7004103B4 /* st.c */; };
-		F59F15700E9436C8004103B4 /* strftime.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B30E9436C7004103B4 /* strftime.c */; };
-		F59F15710E9436C8004103B4 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B40E9436C7004103B4 /* string.c */; };
-		F59F15720E9436C8004103B4 /* struct.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B50E9436C7004103B4 /* struct.c */; };
-		F59F15730E9436C8004103B4 /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B60E9436C7004103B4 /* thread.c */; };
-		F59F15740E9436C8004103B4 /* thread_pthread.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14B70E9436C7004103B4 /* thread_pthread.c */; };
-		F59F15750E9436C8004103B4 /* thread_pthread.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14B80E9436C7004103B4 /* thread_pthread.h */; };
-		F59F15780E9436C8004103B4 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14BB0E9436C7004103B4 /* time.c */; };
-		F59F15790E9436C8004103B4 /* transcode.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14BC0E9436C7004103B4 /* transcode.c */; };
-		F59F157A0E9436C8004103B4 /* transcode_data.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14BD0E9436C7004103B4 /* transcode_data.h */; };
-		F59F157B0E9436C8004103B4 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14BE0E9436C7004103B4 /* util.c */; };
-		F59F157C0E9436C8004103B4 /* variable.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14BF0E9436C7004103B4 /* variable.c */; };
-		F59F157D0E9436C8004103B4 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14C00E9436C8004103B4 /* version.c */; };
-		F59F157E0E9436C8004103B4 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14C10E9436C8004103B4 /* version.h */; };
-		F59F157F0E9436C8004103B4 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14C20E9436C8004103B4 /* vm.c */; };
-		F59F15820E9436C8004103B4 /* vm_dump.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F14C50E9436C8004103B4 /* vm_dump.c */; };
-		F59F15870E9436C8004103B4 /* vm_insnhelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14CA0E9436C8004103B4 /* vm_insnhelper.h */; };
-		F59F15890E9436C8004103B4 /* vm_opts.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F14CC0E9436C8004103B4 /* vm_opts.h */; };
-		F59F15AA0E943E01004103B4 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = F59F15A80E943E01004103B4 /* rhoruby.c */; };
-		F59F15AB0E943E01004103B4 /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F15A90E943E01004103B4 /* rhoruby.h */; };
-		F59F15AE0E943E97004103B4 /* vm_core.h in Headers */ = {isa = PBXBuildFile; fileRef = F59F15AD0E943E97004103B4 /* vm_core.h */; };
-		F5DA57330E9563680062A28B /* crt_externs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DA57320E9563680062A28B /* crt_externs.h */; };
-		F5DA58890E959D5B0062A28B /* insns.inc in Sources */ = {isa = PBXBuildFile; fileRef = F5DA58870E959D5B0062A28B /* insns.inc */; };
-		F5DA588A0E959D5B0062A28B /* insns_info.inc in Sources */ = {isa = PBXBuildFile; fileRef = F5DA58880E959D5B0062A28B /* insns_info.inc */; };
+		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
+		F5E3606A0EB6A62A00226287 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360230EB6A62A00226287 /* bignum.c */; };
+		F5E3606B0EB6A62A00226287 /* blockinlining.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360240EB6A62A00226287 /* blockinlining.c */; };
+		F5E3606C0EB6A62A00226287 /* class.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360250EB6A62A00226287 /* class.c */; };
+		F5E3606D0EB6A62A00226287 /* compar.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360260EB6A62A00226287 /* compar.c */; };
+		F5E3606E0EB6A62A00226287 /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360270EB6A62A00226287 /* compile.c */; };
+		F5E3606F0EB6A62A00226287 /* complex.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360280EB6A62A00226287 /* complex.c */; };
+		F5E360700EB6A62A00226287 /* cont.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360290EB6A62A00226287 /* cont.c */; };
+		F5E360710EB6A62A00226287 /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3602A0EB6A62A00226287 /* debug.c */; };
+		F5E360720EB6A62A00226287 /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E3602B0EB6A62A00226287 /* debug.h */; };
+		F5E360730EB6A62A00226287 /* dir.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3602C0EB6A62A00226287 /* dir.c */; };
+		F5E360740EB6A62A00226287 /* dln.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3602D0EB6A62A00226287 /* dln.c */; };
+		F5E360750EB6A62A00226287 /* dln.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E3602E0EB6A62A00226287 /* dln.h */; };
+		F5E360760EB6A62A00226287 /* dmyencoding.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3602F0EB6A62A00226287 /* dmyencoding.c */; };
+		F5E360770EB6A62A00226287 /* dmyext.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360300EB6A62A00226287 /* dmyext.c */; };
+		F5E360780EB6A62A00226287 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360310EB6A62A00226287 /* enum.c */; };
+		F5E360790EB6A62A00226287 /* enumerator.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360320EB6A62A00226287 /* enumerator.c */; };
+		F5E3607A0EB6A62A00226287 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360330EB6A62A00226287 /* error.c */; };
+		F5E3607B0EB6A62A00226287 /* eval.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360340EB6A62A00226287 /* eval.c */; };
+		F5E3607C0EB6A62A00226287 /* eval_intern.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360350EB6A62A00226287 /* eval_intern.h */; };
+		F5E3607D0EB6A62A00226287 /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360360EB6A62A00226287 /* file.c */; };
+		F5E3607E0EB6A62A00226287 /* gc.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360370EB6A62A00226287 /* gc.c */; };
+		F5E3607F0EB6A62A00226287 /* gc.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360380EB6A62A00226287 /* gc.h */; };
+		F5E360800EB6A62A00226287 /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360390EB6A62A00226287 /* hash.c */; };
+		F5E360810EB6A62A00226287 /* id.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E3603A0EB6A62A00226287 /* id.h */; };
+		F5E360820EB6A62A00226287 /* inits.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3603B0EB6A62A00226287 /* inits.c */; };
+		F5E360830EB6A62A00226287 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3603C0EB6A62A00226287 /* io.c */; };
+		F5E360840EB6A62A00226287 /* iseq.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3603D0EB6A62A00226287 /* iseq.c */; };
+		F5E360850EB6A62A00226287 /* iseq.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E3603E0EB6A62A00226287 /* iseq.h */; };
+		F5E360860EB6A62A00226287 /* load.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3603F0EB6A62A00226287 /* load.c */; };
+		F5E360870EB6A62A00226287 /* marshal.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360400EB6A62A00226287 /* marshal.c */; };
+		F5E360880EB6A62A00226287 /* math.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360410EB6A62A00226287 /* math.c */; };
+		F5E360890EB6A62A00226287 /* numeric.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360420EB6A62A00226287 /* numeric.c */; };
+		F5E3608A0EB6A62A00226287 /* object.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360430EB6A62A00226287 /* object.c */; };
+		F5E3608B0EB6A62A00226287 /* pack.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360440EB6A62A00226287 /* pack.c */; };
+		F5E3608C0EB6A62A00226287 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360450EB6A62A00226287 /* proc.c */; };
+		F5E3608D0EB6A62A00226287 /* process.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360460EB6A62A00226287 /* process.c */; };
+		F5E3608E0EB6A62A00226287 /* random.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360470EB6A62A00226287 /* random.c */; };
+		F5E3608F0EB6A62A00226287 /* range.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360480EB6A62A00226287 /* range.c */; };
+		F5E360900EB6A62A00226287 /* rational.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360490EB6A62A00226287 /* rational.c */; };
+		F5E360910EB6A62A00226287 /* re.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3604A0EB6A62A00226287 /* re.c */; };
+		F5E360920EB6A62A00226287 /* regcomp.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3604B0EB6A62A00226287 /* regcomp.c */; };
+		F5E360930EB6A62A00226287 /* regenc.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3604C0EB6A62A00226287 /* regenc.c */; };
+		F5E360940EB6A62A00226287 /* regenc.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E3604D0EB6A62A00226287 /* regenc.h */; };
+		F5E360950EB6A62A00226287 /* regerror.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3604E0EB6A62A00226287 /* regerror.c */; };
+		F5E360960EB6A62A00226287 /* regexec.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3604F0EB6A62A00226287 /* regexec.c */; };
+		F5E360970EB6A62A00226287 /* regint.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360500EB6A62A00226287 /* regint.h */; };
+		F5E360980EB6A62A00226287 /* regparse.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360510EB6A62A00226287 /* regparse.c */; };
+		F5E360990EB6A62A00226287 /* regparse.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360520EB6A62A00226287 /* regparse.h */; };
+		F5E3609A0EB6A62A00226287 /* regsyntax.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360530EB6A62A00226287 /* regsyntax.c */; };
+		F5E3609B0EB6A62A00226287 /* revision.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360540EB6A62A00226287 /* revision.h */; };
+		F5E3609C0EB6A62A00226287 /* ruby.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360550EB6A62A00226287 /* ruby.c */; };
+		F5E3609D0EB6A62A00226287 /* safe.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360560EB6A62A00226287 /* safe.c */; };
+		F5E3609E0EB6A62A00226287 /* signal.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360570EB6A62A00226287 /* signal.c */; };
+		F5E3609F0EB6A62A00226287 /* sprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360580EB6A62A00226287 /* sprintf.c */; };
+		F5E360A00EB6A62A00226287 /* st.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360590EB6A62A00226287 /* st.c */; };
+		F5E360A10EB6A62A00226287 /* strftime.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605A0EB6A62A00226287 /* strftime.c */; };
+		F5E360A20EB6A62A00226287 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605B0EB6A62A00226287 /* string.c */; };
+		F5E360A30EB6A62A00226287 /* struct.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605C0EB6A62A00226287 /* struct.c */; };
+		F5E360A40EB6A62A00226287 /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605D0EB6A62A00226287 /* thread.c */; };
+		F5E360A50EB6A62A00226287 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605E0EB6A62A00226287 /* time.c */; };
+		F5E360A60EB6A62A00226287 /* transcode.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E3605F0EB6A62A00226287 /* transcode.c */; };
+		F5E360A70EB6A62A00226287 /* transcode_data.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360600EB6A62A00226287 /* transcode_data.h */; };
+		F5E360A80EB6A62A00226287 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360610EB6A62A00226287 /* util.c */; };
+		F5E360A90EB6A62A00226287 /* variable.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360620EB6A62A00226287 /* variable.c */; };
+		F5E360AA0EB6A62A00226287 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360630EB6A62A00226287 /* version.c */; };
+		F5E360AB0EB6A62A00226287 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360640EB6A62A00226287 /* version.h */; };
+		F5E360AC0EB6A62A00226287 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360650EB6A62A00226287 /* vm.c */; };
+		F5E360AD0EB6A62A00226287 /* vm_core.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360660EB6A62A00226287 /* vm_core.h */; };
+		F5E360AE0EB6A62A00226287 /* vm_dump.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360670EB6A62A00226287 /* vm_dump.c */; };
+		F5E360AF0EB6A62A00226287 /* vm_opts.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360680EB6A62A00226287 /* vm_opts.h */; };
+		F5E360B60EB6A6B300226287 /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B20EB6A6B300226287 /* ascii.c */; };
+		F5E360B70EB6A6B300226287 /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B30EB6A6B300226287 /* unicode.c */; };
+		F5E360B80EB6A6B300226287 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B40EB6A6B300226287 /* us_ascii.c */; };
+		F5E360B90EB6A6B300226287 /* utf_8.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B50EB6A6B300226287 /* utf_8.c */; };
+		F5E360BC0EB6A6EB00226287 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360BB0EB6A6EB00226287 /* geolocation_wrap.c */; };
+		F5E360BF0EB6A70C00226287 /* sqlite3_api_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360BE0EB6A70C00226287 /* sqlite3_api_wrap.c */; };
+		F5E360C20EB6A74D00226287 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C10EB6A74D00226287 /* strscan.c */; };
+		F5E360C50EB6A77C00226287 /* syncengine_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C40EB6A77C00226287 /* syncengine_wrap.c */; };
+		F5E360C80EB6A7AF00226287 /* parse.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C70EB6A7AF00226287 /* parse.c */; };
+		F5E360CD0EB6A7F900226287 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360CB0EB6A7F900226287 /* rhoruby.c */; };
+		F5E360CE0EB6A7F900226287 /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360CC0EB6A7F900226287 /* rhoruby.h */; };
+		F5E360D40EB6A84600226287 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360D30EB6A84600226287 /* config.h */; };
+		F5E362410EB785C100226287 /* crt_externs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E362400EB785C100226287 /* crt_externs.h */; };
+		F5E362980EB7927100226287 /* thread_pthread.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E362960EB7927100226287 /* thread_pthread.c */; };
+		F5E362990EB7927100226287 /* thread_pthread.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E362970EB7927100226287 /* thread_pthread.h */; };
+		F5E362FF0EB79F0200226287 /* miniprelude.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E362FE0EB79F0200226287 /* miniprelude.c */; };
+		F5E363050EB79F8400226287 /* lgamma_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363040EB79F8400226287 /* lgamma_r.c */; };
+		F5E363080EB7A0DB00226287 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363070EB7A0DB00226287 /* newline.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F563D6340EA92B8F0062DA57 /* syncengine_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = syncengine_wrap.c; path = ../../shared/ruby/ext/syncengine/syncengine_wrap.c; sourceTree = SOURCE_ROOT; };
-		F58B9A220E9FDAE4008D655D /* sqlite3_api_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_api_wrap.c; path = ../../shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c; sourceTree = SOURCE_ROOT; };
-		F59F13C00E9436C7004103B4 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = array.c; path = ../../shared/ruby/array.c; sourceTree = SOURCE_ROOT; };
-		F59F13C10E9436C7004103B4 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bignum.c; path = ../../shared/ruby/bignum.c; sourceTree = SOURCE_ROOT; };
-		F59F13C20E9436C7004103B4 /* blockinlining.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blockinlining.c; path = ../../shared/ruby/blockinlining.c; sourceTree = SOURCE_ROOT; };
-		F59F13C30E9436C7004103B4 /* class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = class.c; path = ../../shared/ruby/class.c; sourceTree = SOURCE_ROOT; };
-		F59F13C40E9436C7004103B4 /* compar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compar.c; path = ../../shared/ruby/compar.c; sourceTree = SOURCE_ROOT; };
-		F59F13C50E9436C7004103B4 /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compile.c; path = ../../shared/ruby/compile.c; sourceTree = SOURCE_ROOT; };
-		F59F13C60E9436C7004103B4 /* complex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = complex.c; path = ../../shared/ruby/complex.c; sourceTree = SOURCE_ROOT; };
-		F59F13C70E9436C7004103B4 /* cont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cont.c; path = ../../shared/ruby/cont.c; sourceTree = SOURCE_ROOT; };
-		F59F13C80E9436C7004103B4 /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = ../../shared/ruby/debug.c; sourceTree = SOURCE_ROOT; };
-		F59F13C90E9436C7004103B4 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = ../../shared/ruby/debug.h; sourceTree = SOURCE_ROOT; };
-		F59F13CA0E9436C7004103B4 /* dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dir.c; path = ../../shared/ruby/dir.c; sourceTree = SOURCE_ROOT; };
-		F59F13CB0E9436C7004103B4 /* dln.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dln.c; path = ../../shared/ruby/dln.c; sourceTree = SOURCE_ROOT; };
-		F59F13CC0E9436C7004103B4 /* dln.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dln.h; path = ../../shared/ruby/dln.h; sourceTree = SOURCE_ROOT; };
-		F59F13CD0E9436C7004103B4 /* dmydln.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmydln.c; path = ../../shared/ruby/dmydln.c; sourceTree = SOURCE_ROOT; };
-		F59F13CE0E9436C7004103B4 /* dmyencoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmyencoding.c; path = ../../shared/ruby/dmyencoding.c; sourceTree = SOURCE_ROOT; };
-		F59F13CF0E9436C7004103B4 /* dmyext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmyext.c; path = ../../shared/ruby/dmyext.c; sourceTree = SOURCE_ROOT; };
-		F59F13D10E9436C7004103B4 /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ascii.c; path = ../../shared/ruby/enc/ascii.c; sourceTree = SOURCE_ROOT; };
-		F59F14290E9436C7004103B4 /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode.c; path = ../../shared/ruby/enc/unicode.c; sourceTree = SOURCE_ROOT; };
-		F59F142A0E9436C7004103B4 /* us_ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = us_ascii.c; path = ../../shared/ruby/enc/us_ascii.c; sourceTree = SOURCE_ROOT; };
-		F59F14300E9436C7004103B4 /* utf_8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_8.c; path = ../../shared/ruby/enc/utf_8.c; sourceTree = SOURCE_ROOT; };
-		F59F14310E9436C7004103B4 /* windows_1251.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = windows_1251.c; path = ../../shared/ruby/enc/windows_1251.c; sourceTree = SOURCE_ROOT; };
-		F59F14330E9436C7004103B4 /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enum.c; path = ../../shared/ruby/enum.c; sourceTree = SOURCE_ROOT; };
-		F59F14340E9436C7004103B4 /* enumerator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enumerator.c; path = ../../shared/ruby/enumerator.c; sourceTree = SOURCE_ROOT; };
-		F59F14350E9436C7004103B4 /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = error.c; path = ../../shared/ruby/error.c; sourceTree = SOURCE_ROOT; };
-		F59F14360E9436C7004103B4 /* eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = eval.c; path = ../../shared/ruby/eval.c; sourceTree = SOURCE_ROOT; };
-		F59F143C0E9436C7004103B4 /* strscan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strscan.c; path = ../../shared/ruby/ext/strscan/strscan.c; sourceTree = SOURCE_ROOT; };
-		F59F143D0E9436C7004103B4 /* file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = file.c; path = ../../shared/ruby/file.c; sourceTree = SOURCE_ROOT; };
-		F59F143E0E9436C7004103B4 /* gc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gc.c; path = ../../shared/ruby/gc.c; sourceTree = SOURCE_ROOT; };
-		F59F143F0E9436C7004103B4 /* gc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gc.h; path = ../../shared/ruby/gc.h; sourceTree = SOURCE_ROOT; };
-		F59F14410E9436C7004103B4 /* hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hash.c; path = ../../shared/ruby/hash.c; sourceTree = SOURCE_ROOT; };
-		F59F14430E9436C7004103B4 /* id.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = id.h; path = ../../shared/ruby/id.h; sourceTree = SOURCE_ROOT; };
-		F59F14470E9436C7004103B4 /* st.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = st.h; path = ../../shared/ruby/include/ruby/backward/st.h; sourceTree = SOURCE_ROOT; };
-		F59F14480E9436C7004103B4 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../shared/ruby/include/ruby/backward/util.h; sourceTree = SOURCE_ROOT; };
-		F59F14490E9436C7004103B4 /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defines.h; path = ../../shared/ruby/include/ruby/defines.h; sourceTree = SOURCE_ROOT; };
-		F59F144A0E9436C7004103B4 /* encoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = encoding.h; path = ../../shared/ruby/include/ruby/encoding.h; sourceTree = SOURCE_ROOT; };
-		F59F144B0E9436C7004103B4 /* intern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intern.h; path = ../../shared/ruby/include/ruby/intern.h; sourceTree = SOURCE_ROOT; };
-		F59F144C0E9436C7004103B4 /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = io.h; path = ../../shared/ruby/include/ruby/io.h; sourceTree = SOURCE_ROOT; };
-		F59F144D0E9436C7004103B4 /* missing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = missing.h; path = ../../shared/ruby/include/ruby/missing.h; sourceTree = SOURCE_ROOT; };
-		F59F144E0E9436C7004103B4 /* oniguruma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oniguruma.h; path = ../../shared/ruby/include/ruby/oniguruma.h; sourceTree = SOURCE_ROOT; };
-		F59F144F0E9436C7004103B4 /* re.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = re.h; path = ../../shared/ruby/include/ruby/re.h; sourceTree = SOURCE_ROOT; };
-		F59F14500E9436C7004103B4 /* regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regex.h; path = ../../shared/ruby/include/ruby/regex.h; sourceTree = SOURCE_ROOT; };
-		F59F14510E9436C7004103B4 /* ruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ruby.h; path = ../../shared/ruby/include/ruby/ruby.h; sourceTree = SOURCE_ROOT; };
-		F59F14520E9436C7004103B4 /* st.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = st.h; path = ../../shared/ruby/include/ruby/st.h; sourceTree = SOURCE_ROOT; };
-		F59F14530E9436C7004103B4 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../shared/ruby/include/ruby/util.h; sourceTree = SOURCE_ROOT; };
-		F59F14540E9436C7004103B4 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm.h; path = ../../shared/ruby/include/ruby/vm.h; sourceTree = SOURCE_ROOT; };
-		F59F14550E9436C7004103B4 /* win32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = win32.h; path = ../../shared/ruby/include/ruby/win32.h; sourceTree = SOURCE_ROOT; };
-		F59F14560E9436C7004103B4 /* ruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ruby.h; path = ../../shared/ruby/include/ruby.h; sourceTree = SOURCE_ROOT; };
-		F59F14570E9436C7004103B4 /* rubyio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rubyio.h; path = ../../shared/ruby/include/rubyio.h; sourceTree = SOURCE_ROOT; };
-		F59F14580E9436C7004103B4 /* rubysig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rubysig.h; path = ../../shared/ruby/include/rubysig.h; sourceTree = SOURCE_ROOT; };
-		F59F14590E9436C7004103B4 /* inits.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inits.c; path = ../../shared/ruby/inits.c; sourceTree = SOURCE_ROOT; };
-		F59F145D0E9436C7004103B4 /* io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = io.c; path = ../../shared/ruby/io.c; sourceTree = SOURCE_ROOT; };
-		F59F14600E9436C7004103B4 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../shared/ruby/iPhone/ruby/config.h; sourceTree = SOURCE_ROOT; };
-		F59F14610E9436C7004103B4 /* iseq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = iseq.c; path = ../../shared/ruby/iseq.c; sourceTree = SOURCE_ROOT; };
-		F59F14620E9436C7004103B4 /* iseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iseq.h; path = ../../shared/ruby/iseq.h; sourceTree = SOURCE_ROOT; };
-		F59F14680E9436C7004103B4 /* load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = load.c; path = ../../shared/ruby/load.c; sourceTree = SOURCE_ROOT; };
-		F59F146A0E9436C7004103B4 /* marshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = marshal.c; path = ../../shared/ruby/marshal.c; sourceTree = SOURCE_ROOT; };
-		F59F146B0E9436C7004103B4 /* math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = math.c; path = ../../shared/ruby/math.c; sourceTree = SOURCE_ROOT; };
-		F59F146C0E9436C7004103B4 /* miniprelude.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = miniprelude.c; path = ../../shared/ruby/miniprelude.c; sourceTree = SOURCE_ROOT; };
-		F59F147B0E9436C7004103B4 /* lgamma_r.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lgamma_r.c; path = ../../shared/ruby/missing/lgamma_r.c; sourceTree = SOURCE_ROOT; };
-		F59F14880E9436C7004103B4 /* newline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newline.c; path = ../../shared/ruby/newline.c; sourceTree = SOURCE_ROOT; };
-		F59F14890E9436C7004103B4 /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node.h; path = ../../shared/ruby/node.h; sourceTree = SOURCE_ROOT; };
-		F59F148B0E9436C7004103B4 /* numeric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numeric.c; path = ../../shared/ruby/numeric.c; sourceTree = SOURCE_ROOT; };
-		F59F148C0E9436C7004103B4 /* object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = object.c; path = ../../shared/ruby/object.c; sourceTree = SOURCE_ROOT; };
-		F59F14920E9436C7004103B4 /* pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack.c; path = ../../shared/ruby/pack.c; sourceTree = SOURCE_ROOT; };
-		F59F14930E9436C7004103B4 /* parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = parse.c; path = ../../shared/ruby/parse.c; sourceTree = SOURCE_ROOT; };
-		F59F14940E9436C7004103B4 /* parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = parse.h; path = ../../shared/ruby/parse.h; sourceTree = SOURCE_ROOT; };
-		F59F14970E9436C7004103B4 /* proc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = proc.c; path = ../../shared/ruby/proc.c; sourceTree = SOURCE_ROOT; };
-		F59F14980E9436C7004103B4 /* process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = process.c; path = ../../shared/ruby/process.c; sourceTree = SOURCE_ROOT; };
-		F59F14990E9436C7004103B4 /* random.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = random.c; path = ../../shared/ruby/random.c; sourceTree = SOURCE_ROOT; };
-		F59F149A0E9436C7004103B4 /* range.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = range.c; path = ../../shared/ruby/range.c; sourceTree = SOURCE_ROOT; };
-		F59F149B0E9436C7004103B4 /* rational.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rational.c; path = ../../shared/ruby/rational.c; sourceTree = SOURCE_ROOT; };
-		F59F149C0E9436C7004103B4 /* re.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = re.c; path = ../../shared/ruby/re.c; sourceTree = SOURCE_ROOT; };
-		F59F14A10E9436C7004103B4 /* regcomp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regcomp.c; path = ../../shared/ruby/regcomp.c; sourceTree = SOURCE_ROOT; };
-		F59F14A20E9436C7004103B4 /* regenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regenc.c; path = ../../shared/ruby/regenc.c; sourceTree = SOURCE_ROOT; };
-		F59F14A30E9436C7004103B4 /* regenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regenc.h; path = ../../shared/ruby/regenc.h; sourceTree = SOURCE_ROOT; };
-		F59F14A40E9436C7004103B4 /* regerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regerror.c; path = ../../shared/ruby/regerror.c; sourceTree = SOURCE_ROOT; };
-		F59F14A50E9436C7004103B4 /* regexec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regexec.c; path = ../../shared/ruby/regexec.c; sourceTree = SOURCE_ROOT; };
-		F59F14A60E9436C7004103B4 /* regint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regint.h; path = ../../shared/ruby/regint.h; sourceTree = SOURCE_ROOT; };
-		F59F14A70E9436C7004103B4 /* regparse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regparse.c; path = ../../shared/ruby/regparse.c; sourceTree = SOURCE_ROOT; };
-		F59F14A80E9436C7004103B4 /* regparse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regparse.h; path = ../../shared/ruby/regparse.h; sourceTree = SOURCE_ROOT; };
-		F59F14A90E9436C7004103B4 /* regsyntax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regsyntax.c; path = ../../shared/ruby/regsyntax.c; sourceTree = SOURCE_ROOT; };
-		F59F14AA0E9436C7004103B4 /* revision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = revision.h; path = ../../shared/ruby/revision.h; sourceTree = SOURCE_ROOT; };
-		F59F14AC0E9436C7004103B4 /* ruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ruby.c; path = ../../shared/ruby/ruby.c; sourceTree = SOURCE_ROOT; };
-		F59F14AF0E9436C7004103B4 /* safe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = safe.c; path = ../../shared/ruby/safe.c; sourceTree = SOURCE_ROOT; };
-		F59F14B00E9436C7004103B4 /* signal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signal.c; path = ../../shared/ruby/signal.c; sourceTree = SOURCE_ROOT; };
-		F59F14B10E9436C7004103B4 /* sprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sprintf.c; path = ../../shared/ruby/sprintf.c; sourceTree = SOURCE_ROOT; };
-		F59F14B20E9436C7004103B4 /* st.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = st.c; path = ../../shared/ruby/st.c; sourceTree = SOURCE_ROOT; };
-		F59F14B30E9436C7004103B4 /* strftime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strftime.c; path = ../../shared/ruby/strftime.c; sourceTree = SOURCE_ROOT; };
-		F59F14B40E9436C7004103B4 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string.c; path = ../../shared/ruby/string.c; sourceTree = SOURCE_ROOT; };
-		F59F14B50E9436C7004103B4 /* struct.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = struct.c; path = ../../shared/ruby/struct.c; sourceTree = SOURCE_ROOT; };
-		F59F14B60E9436C7004103B4 /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread.c; path = ../../shared/ruby/thread.c; sourceTree = SOURCE_ROOT; };
-		F59F14B70E9436C7004103B4 /* thread_pthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread_pthread.c; path = ../../shared/ruby/thread_pthread.c; sourceTree = SOURCE_ROOT; };
-		F59F14B80E9436C7004103B4 /* thread_pthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thread_pthread.h; path = ../../shared/ruby/thread_pthread.h; sourceTree = SOURCE_ROOT; };
-		F59F14BB0E9436C7004103B4 /* time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = time.c; path = ../../shared/ruby/time.c; sourceTree = SOURCE_ROOT; };
-		F59F14BC0E9436C7004103B4 /* transcode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = transcode.c; path = ../../shared/ruby/transcode.c; sourceTree = SOURCE_ROOT; };
-		F59F14BD0E9436C7004103B4 /* transcode_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = transcode_data.h; path = ../../shared/ruby/transcode_data.h; sourceTree = SOURCE_ROOT; };
-		F59F14BE0E9436C7004103B4 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../shared/ruby/util.c; sourceTree = SOURCE_ROOT; };
-		F59F14BF0E9436C7004103B4 /* variable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = variable.c; path = ../../shared/ruby/variable.c; sourceTree = SOURCE_ROOT; };
-		F59F14C00E9436C8004103B4 /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = version.c; path = ../../shared/ruby/version.c; sourceTree = SOURCE_ROOT; };
-		F59F14C10E9436C8004103B4 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../../shared/ruby/version.h; sourceTree = SOURCE_ROOT; };
-		F59F14C20E9436C8004103B4 /* vm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vm.c; path = ../../shared/ruby/vm.c; sourceTree = SOURCE_ROOT; };
-		F59F14C50E9436C8004103B4 /* vm_dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vm_dump.c; path = ../../shared/ruby/vm_dump.c; sourceTree = SOURCE_ROOT; };
-		F59F14CA0E9436C8004103B4 /* vm_insnhelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm_insnhelper.h; path = ../../shared/ruby/vm_insnhelper.h; sourceTree = SOURCE_ROOT; };
-		F59F14CC0E9436C8004103B4 /* vm_opts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm_opts.h; path = ../../shared/ruby/vm_opts.h; sourceTree = SOURCE_ROOT; };
-		F59F15A80E943E01004103B4 /* rhoruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rhoruby.c; sourceTree = SOURCE_ROOT; };
-		F59F15A90E943E01004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhoruby.h; sourceTree = SOURCE_ROOT; };
-		F59F15AD0E943E97004103B4 /* vm_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm_core.h; path = ../../shared/ruby/vm_core.h; sourceTree = SOURCE_ROOT; };
-		F5DA57320E9563680062A28B /* crt_externs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crt_externs.h; sourceTree = "<group>"; };
-		F5DA58860E959D5B0062A28B /* insns.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = insns.def; sourceTree = "<group>"; };
-		F5DA58870E959D5B0062A28B /* insns.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = insns.inc; sourceTree = "<group>"; };
-		F5DA58880E959D5B0062A28B /* insns_info.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = insns_info.inc; sourceTree = "<group>"; };
+		F5E360220EB6A62A00226287 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = array.c; path = ../../shared/ruby/array.c; sourceTree = SOURCE_ROOT; };
+		F5E360230EB6A62A00226287 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bignum.c; path = ../../shared/ruby/bignum.c; sourceTree = SOURCE_ROOT; };
+		F5E360240EB6A62A00226287 /* blockinlining.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blockinlining.c; path = ../../shared/ruby/blockinlining.c; sourceTree = SOURCE_ROOT; };
+		F5E360250EB6A62A00226287 /* class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = class.c; path = ../../shared/ruby/class.c; sourceTree = SOURCE_ROOT; };
+		F5E360260EB6A62A00226287 /* compar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compar.c; path = ../../shared/ruby/compar.c; sourceTree = SOURCE_ROOT; };
+		F5E360270EB6A62A00226287 /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compile.c; path = ../../shared/ruby/compile.c; sourceTree = SOURCE_ROOT; };
+		F5E360280EB6A62A00226287 /* complex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = complex.c; path = ../../shared/ruby/complex.c; sourceTree = SOURCE_ROOT; };
+		F5E360290EB6A62A00226287 /* cont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cont.c; path = ../../shared/ruby/cont.c; sourceTree = SOURCE_ROOT; };
+		F5E3602A0EB6A62A00226287 /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = ../../shared/ruby/debug.c; sourceTree = SOURCE_ROOT; };
+		F5E3602B0EB6A62A00226287 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = ../../shared/ruby/debug.h; sourceTree = SOURCE_ROOT; };
+		F5E3602C0EB6A62A00226287 /* dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dir.c; path = ../../shared/ruby/dir.c; sourceTree = SOURCE_ROOT; };
+		F5E3602D0EB6A62A00226287 /* dln.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dln.c; path = ../../shared/ruby/dln.c; sourceTree = SOURCE_ROOT; };
+		F5E3602E0EB6A62A00226287 /* dln.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dln.h; path = ../../shared/ruby/dln.h; sourceTree = SOURCE_ROOT; };
+		F5E3602F0EB6A62A00226287 /* dmyencoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmyencoding.c; path = ../../shared/ruby/dmyencoding.c; sourceTree = SOURCE_ROOT; };
+		F5E360300EB6A62A00226287 /* dmyext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmyext.c; path = ../../shared/ruby/dmyext.c; sourceTree = SOURCE_ROOT; };
+		F5E360310EB6A62A00226287 /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enum.c; path = ../../shared/ruby/enum.c; sourceTree = SOURCE_ROOT; };
+		F5E360320EB6A62A00226287 /* enumerator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enumerator.c; path = ../../shared/ruby/enumerator.c; sourceTree = SOURCE_ROOT; };
+		F5E360330EB6A62A00226287 /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = error.c; path = ../../shared/ruby/error.c; sourceTree = SOURCE_ROOT; };
+		F5E360340EB6A62A00226287 /* eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = eval.c; path = ../../shared/ruby/eval.c; sourceTree = SOURCE_ROOT; };
+		F5E360350EB6A62A00226287 /* eval_intern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eval_intern.h; path = ../../shared/ruby/eval_intern.h; sourceTree = SOURCE_ROOT; };
+		F5E360360EB6A62A00226287 /* file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = file.c; path = ../../shared/ruby/file.c; sourceTree = SOURCE_ROOT; };
+		F5E360370EB6A62A00226287 /* gc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gc.c; path = ../../shared/ruby/gc.c; sourceTree = SOURCE_ROOT; };
+		F5E360380EB6A62A00226287 /* gc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gc.h; path = ../../shared/ruby/gc.h; sourceTree = SOURCE_ROOT; };
+		F5E360390EB6A62A00226287 /* hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hash.c; path = ../../shared/ruby/hash.c; sourceTree = SOURCE_ROOT; };
+		F5E3603A0EB6A62A00226287 /* id.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = id.h; path = ../../shared/ruby/id.h; sourceTree = SOURCE_ROOT; };
+		F5E3603B0EB6A62A00226287 /* inits.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inits.c; path = ../../shared/ruby/inits.c; sourceTree = SOURCE_ROOT; };
+		F5E3603C0EB6A62A00226287 /* io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = io.c; path = ../../shared/ruby/io.c; sourceTree = SOURCE_ROOT; };
+		F5E3603D0EB6A62A00226287 /* iseq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = iseq.c; path = ../../shared/ruby/iseq.c; sourceTree = SOURCE_ROOT; };
+		F5E3603E0EB6A62A00226287 /* iseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iseq.h; path = ../../shared/ruby/iseq.h; sourceTree = SOURCE_ROOT; };
+		F5E3603F0EB6A62A00226287 /* load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = load.c; path = ../../shared/ruby/load.c; sourceTree = SOURCE_ROOT; };
+		F5E360400EB6A62A00226287 /* marshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = marshal.c; path = ../../shared/ruby/marshal.c; sourceTree = SOURCE_ROOT; };
+		F5E360410EB6A62A00226287 /* math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = math.c; path = ../../shared/ruby/math.c; sourceTree = SOURCE_ROOT; };
+		F5E360420EB6A62A00226287 /* numeric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numeric.c; path = ../../shared/ruby/numeric.c; sourceTree = SOURCE_ROOT; };
+		F5E360430EB6A62A00226287 /* object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = object.c; path = ../../shared/ruby/object.c; sourceTree = SOURCE_ROOT; };
+		F5E360440EB6A62A00226287 /* pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack.c; path = ../../shared/ruby/pack.c; sourceTree = SOURCE_ROOT; };
+		F5E360450EB6A62A00226287 /* proc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = proc.c; path = ../../shared/ruby/proc.c; sourceTree = SOURCE_ROOT; };
+		F5E360460EB6A62A00226287 /* process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = process.c; path = ../../shared/ruby/process.c; sourceTree = SOURCE_ROOT; };
+		F5E360470EB6A62A00226287 /* random.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = random.c; path = ../../shared/ruby/random.c; sourceTree = SOURCE_ROOT; };
+		F5E360480EB6A62A00226287 /* range.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = range.c; path = ../../shared/ruby/range.c; sourceTree = SOURCE_ROOT; };
+		F5E360490EB6A62A00226287 /* rational.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rational.c; path = ../../shared/ruby/rational.c; sourceTree = SOURCE_ROOT; };
+		F5E3604A0EB6A62A00226287 /* re.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = re.c; path = ../../shared/ruby/re.c; sourceTree = SOURCE_ROOT; };
+		F5E3604B0EB6A62A00226287 /* regcomp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regcomp.c; path = ../../shared/ruby/regcomp.c; sourceTree = SOURCE_ROOT; };
+		F5E3604C0EB6A62A00226287 /* regenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regenc.c; path = ../../shared/ruby/regenc.c; sourceTree = SOURCE_ROOT; };
+		F5E3604D0EB6A62A00226287 /* regenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regenc.h; path = ../../shared/ruby/regenc.h; sourceTree = SOURCE_ROOT; };
+		F5E3604E0EB6A62A00226287 /* regerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regerror.c; path = ../../shared/ruby/regerror.c; sourceTree = SOURCE_ROOT; };
+		F5E3604F0EB6A62A00226287 /* regexec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regexec.c; path = ../../shared/ruby/regexec.c; sourceTree = SOURCE_ROOT; };
+		F5E360500EB6A62A00226287 /* regint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regint.h; path = ../../shared/ruby/regint.h; sourceTree = SOURCE_ROOT; };
+		F5E360510EB6A62A00226287 /* regparse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regparse.c; path = ../../shared/ruby/regparse.c; sourceTree = SOURCE_ROOT; };
+		F5E360520EB6A62A00226287 /* regparse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regparse.h; path = ../../shared/ruby/regparse.h; sourceTree = SOURCE_ROOT; };
+		F5E360530EB6A62A00226287 /* regsyntax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regsyntax.c; path = ../../shared/ruby/regsyntax.c; sourceTree = SOURCE_ROOT; };
+		F5E360540EB6A62A00226287 /* revision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = revision.h; path = ../../shared/ruby/revision.h; sourceTree = SOURCE_ROOT; };
+		F5E360550EB6A62A00226287 /* ruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ruby.c; path = ../../shared/ruby/ruby.c; sourceTree = SOURCE_ROOT; };
+		F5E360560EB6A62A00226287 /* safe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = safe.c; path = ../../shared/ruby/safe.c; sourceTree = SOURCE_ROOT; };
+		F5E360570EB6A62A00226287 /* signal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signal.c; path = ../../shared/ruby/signal.c; sourceTree = SOURCE_ROOT; };
+		F5E360580EB6A62A00226287 /* sprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sprintf.c; path = ../../shared/ruby/sprintf.c; sourceTree = SOURCE_ROOT; };
+		F5E360590EB6A62A00226287 /* st.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = st.c; path = ../../shared/ruby/st.c; sourceTree = SOURCE_ROOT; };
+		F5E3605A0EB6A62A00226287 /* strftime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strftime.c; path = ../../shared/ruby/strftime.c; sourceTree = SOURCE_ROOT; };
+		F5E3605B0EB6A62A00226287 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string.c; path = ../../shared/ruby/string.c; sourceTree = SOURCE_ROOT; };
+		F5E3605C0EB6A62A00226287 /* struct.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = struct.c; path = ../../shared/ruby/struct.c; sourceTree = SOURCE_ROOT; };
+		F5E3605D0EB6A62A00226287 /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread.c; path = ../../shared/ruby/thread.c; sourceTree = SOURCE_ROOT; };
+		F5E3605E0EB6A62A00226287 /* time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = time.c; path = ../../shared/ruby/time.c; sourceTree = SOURCE_ROOT; };
+		F5E3605F0EB6A62A00226287 /* transcode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = transcode.c; path = ../../shared/ruby/transcode.c; sourceTree = SOURCE_ROOT; };
+		F5E360600EB6A62A00226287 /* transcode_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = transcode_data.h; path = ../../shared/ruby/transcode_data.h; sourceTree = SOURCE_ROOT; };
+		F5E360610EB6A62A00226287 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../shared/ruby/util.c; sourceTree = SOURCE_ROOT; };
+		F5E360620EB6A62A00226287 /* variable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = variable.c; path = ../../shared/ruby/variable.c; sourceTree = SOURCE_ROOT; };
+		F5E360630EB6A62A00226287 /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = version.c; path = ../../shared/ruby/version.c; sourceTree = SOURCE_ROOT; };
+		F5E360640EB6A62A00226287 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../../shared/ruby/version.h; sourceTree = SOURCE_ROOT; };
+		F5E360650EB6A62A00226287 /* vm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vm.c; path = ../../shared/ruby/vm.c; sourceTree = SOURCE_ROOT; };
+		F5E360660EB6A62A00226287 /* vm_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm_core.h; path = ../../shared/ruby/vm_core.h; sourceTree = SOURCE_ROOT; };
+		F5E360670EB6A62A00226287 /* vm_dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vm_dump.c; path = ../../shared/ruby/vm_dump.c; sourceTree = SOURCE_ROOT; };
+		F5E360680EB6A62A00226287 /* vm_opts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm_opts.h; path = ../../shared/ruby/vm_opts.h; sourceTree = SOURCE_ROOT; };
+		F5E360B20EB6A6B300226287 /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ascii.c; path = ../../shared/ruby/enc/ascii.c; sourceTree = SOURCE_ROOT; };
+		F5E360B30EB6A6B300226287 /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode.c; path = ../../shared/ruby/enc/unicode.c; sourceTree = SOURCE_ROOT; };
+		F5E360B40EB6A6B300226287 /* us_ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = us_ascii.c; path = ../../shared/ruby/enc/us_ascii.c; sourceTree = SOURCE_ROOT; };
+		F5E360B50EB6A6B300226287 /* utf_8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_8.c; path = ../../shared/ruby/enc/utf_8.c; sourceTree = SOURCE_ROOT; };
+		F5E360BB0EB6A6EB00226287 /* geolocation_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_wrap.c; path = ../../shared/ruby/ext/geolocation/geolocation_wrap.c; sourceTree = SOURCE_ROOT; };
+		F5E360BE0EB6A70C00226287 /* sqlite3_api_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_api_wrap.c; path = ../../shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c; sourceTree = SOURCE_ROOT; };
+		F5E360C10EB6A74D00226287 /* strscan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strscan.c; path = ../../shared/ruby/ext/strscan/strscan.c; sourceTree = SOURCE_ROOT; };
+		F5E360C40EB6A77C00226287 /* syncengine_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = syncengine_wrap.c; path = ../../shared/ruby/ext/syncengine/syncengine_wrap.c; sourceTree = SOURCE_ROOT; };
+		F5E360C70EB6A7AF00226287 /* parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = parse.c; path = ../../shared/ruby/generated/parse.c; sourceTree = SOURCE_ROOT; };
+		F5E360CB0EB6A7F900226287 /* rhoruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoruby.c; path = ../../shared/ruby/rhoruby/rhoruby.c; sourceTree = SOURCE_ROOT; };
+		F5E360CC0EB6A7F900226287 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
+		F5E360D30EB6A84600226287 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../shared/ruby/iphone/ruby/config.h; sourceTree = SOURCE_ROOT; };
+		F5E362400EB785C100226287 /* crt_externs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crt_externs.h; path = ../../shared/ruby/iphone/crt_externs.h; sourceTree = SOURCE_ROOT; };
+		F5E362960EB7927100226287 /* thread_pthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread_pthread.c; path = ../../shared/ruby/thread_pthread.c; sourceTree = SOURCE_ROOT; };
+		F5E362970EB7927100226287 /* thread_pthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thread_pthread.h; path = ../../shared/ruby/thread_pthread.h; sourceTree = SOURCE_ROOT; };
+		F5E362FE0EB79F0200226287 /* miniprelude.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = miniprelude.c; path = ../../shared/ruby/miniprelude.c; sourceTree = SOURCE_ROOT; };
+		F5E363040EB79F8400226287 /* lgamma_r.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lgamma_r.c; path = ../../shared/ruby/missing/lgamma_r.c; sourceTree = SOURCE_ROOT; };
+		F5E363070EB7A0DB00226287 /* newline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newline.c; path = ../../shared/ruby/newline.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,9 +205,7 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
-				F59F15A80E943E01004103B4 /* rhoruby.c */,
-				F59F15A90E943E01004103B4 /* rhoruby.h */,
-				F59F13BF0E9436C7004103B4 /* src */,
+				F59F13BF0E9436C7004103B4 /* ruby */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
@@ -276,221 +227,190 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
-		F563D6320EA92B6E0062DA57 /* syncengine */ = {
+		F59F13BF0E9436C7004103B4 /* ruby */ = {
 			isa = PBXGroup;
 			children = (
-				F563D6340EA92B8F0062DA57 /* syncengine_wrap.c */,
+				F5E360CF0EB6A80900226287 /* iphone */,
+				F5E360CA0EB6A7E300226287 /* rhoruby */,
+				F5E360C90EB6A7BC00226287 /* missing */,
+				F5E360C60EB6A79800226287 /* generated */,
+				F5E360B10EB6A67000226287 /* enc */,
+				F5E360B00EB6A63B00226287 /* ext */,
+				F5E360220EB6A62A00226287 /* array.c */,
+				F5E360230EB6A62A00226287 /* bignum.c */,
+				F5E360240EB6A62A00226287 /* blockinlining.c */,
+				F5E360250EB6A62A00226287 /* class.c */,
+				F5E360260EB6A62A00226287 /* compar.c */,
+				F5E360270EB6A62A00226287 /* compile.c */,
+				F5E360280EB6A62A00226287 /* complex.c */,
+				F5E360290EB6A62A00226287 /* cont.c */,
+				F5E3602A0EB6A62A00226287 /* debug.c */,
+				F5E3602B0EB6A62A00226287 /* debug.h */,
+				F5E3602C0EB6A62A00226287 /* dir.c */,
+				F5E3602D0EB6A62A00226287 /* dln.c */,
+				F5E3602E0EB6A62A00226287 /* dln.h */,
+				F5E3602F0EB6A62A00226287 /* dmyencoding.c */,
+				F5E360300EB6A62A00226287 /* dmyext.c */,
+				F5E360310EB6A62A00226287 /* enum.c */,
+				F5E360320EB6A62A00226287 /* enumerator.c */,
+				F5E360330EB6A62A00226287 /* error.c */,
+				F5E360340EB6A62A00226287 /* eval.c */,
+				F5E360350EB6A62A00226287 /* eval_intern.h */,
+				F5E360360EB6A62A00226287 /* file.c */,
+				F5E360370EB6A62A00226287 /* gc.c */,
+				F5E360380EB6A62A00226287 /* gc.h */,
+				F5E360390EB6A62A00226287 /* hash.c */,
+				F5E3603A0EB6A62A00226287 /* id.h */,
+				F5E3603B0EB6A62A00226287 /* inits.c */,
+				F5E3603C0EB6A62A00226287 /* io.c */,
+				F5E3603D0EB6A62A00226287 /* iseq.c */,
+				F5E3603E0EB6A62A00226287 /* iseq.h */,
+				F5E3603F0EB6A62A00226287 /* load.c */,
+				F5E360400EB6A62A00226287 /* marshal.c */,
+				F5E360410EB6A62A00226287 /* math.c */,
+				F5E362FE0EB79F0200226287 /* miniprelude.c */,
+				F5E363070EB7A0DB00226287 /* newline.c */,
+				F5E360420EB6A62A00226287 /* numeric.c */,
+				F5E360430EB6A62A00226287 /* object.c */,
+				F5E360440EB6A62A00226287 /* pack.c */,
+				F5E360450EB6A62A00226287 /* proc.c */,
+				F5E360460EB6A62A00226287 /* process.c */,
+				F5E360470EB6A62A00226287 /* random.c */,
+				F5E360480EB6A62A00226287 /* range.c */,
+				F5E360490EB6A62A00226287 /* rational.c */,
+				F5E3604A0EB6A62A00226287 /* re.c */,
+				F5E3604B0EB6A62A00226287 /* regcomp.c */,
+				F5E3604C0EB6A62A00226287 /* regenc.c */,
+				F5E3604D0EB6A62A00226287 /* regenc.h */,
+				F5E3604E0EB6A62A00226287 /* regerror.c */,
+				F5E3604F0EB6A62A00226287 /* regexec.c */,
+				F5E360500EB6A62A00226287 /* regint.h */,
+				F5E360510EB6A62A00226287 /* regparse.c */,
+				F5E360520EB6A62A00226287 /* regparse.h */,
+				F5E360530EB6A62A00226287 /* regsyntax.c */,
+				F5E360540EB6A62A00226287 /* revision.h */,
+				F5E360550EB6A62A00226287 /* ruby.c */,
+				F5E360560EB6A62A00226287 /* safe.c */,
+				F5E360570EB6A62A00226287 /* signal.c */,
+				F5E360580EB6A62A00226287 /* sprintf.c */,
+				F5E360590EB6A62A00226287 /* st.c */,
+				F5E3605A0EB6A62A00226287 /* strftime.c */,
+				F5E3605B0EB6A62A00226287 /* string.c */,
+				F5E3605C0EB6A62A00226287 /* struct.c */,
+				F5E362960EB7927100226287 /* thread_pthread.c */,
+				F5E362970EB7927100226287 /* thread_pthread.h */,
+				F5E3605D0EB6A62A00226287 /* thread.c */,
+				F5E3605E0EB6A62A00226287 /* time.c */,
+				F5E3605F0EB6A62A00226287 /* transcode.c */,
+				F5E360600EB6A62A00226287 /* transcode_data.h */,
+				F5E360610EB6A62A00226287 /* util.c */,
+				F5E360620EB6A62A00226287 /* variable.c */,
+				F5E360630EB6A62A00226287 /* version.c */,
+				F5E360640EB6A62A00226287 /* version.h */,
+				F5E360650EB6A62A00226287 /* vm.c */,
+				F5E360660EB6A62A00226287 /* vm_core.h */,
+				F5E360670EB6A62A00226287 /* vm_dump.c */,
+				F5E360680EB6A62A00226287 /* vm_opts.h */,
+			);
+			name = ruby;
+			path = ../../shared/ruby;
+			sourceTree = SOURCE_ROOT;
+		};
+		F5E360B00EB6A63B00226287 /* ext */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360C30EB6A76500226287 /* syncengine */,
+				F5E360C00EB6A71100226287 /* strscan */,
+				F5E360BD0EB6A6F000226287 /* sqlite3 */,
+				F5E360BA0EB6A6C400226287 /* geolocation */,
+			);
+			name = ext;
+			sourceTree = "<group>";
+		};
+		F5E360B10EB6A67000226287 /* enc */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360B20EB6A6B300226287 /* ascii.c */,
+				F5E360B30EB6A6B300226287 /* unicode.c */,
+				F5E360B40EB6A6B300226287 /* us_ascii.c */,
+				F5E360B50EB6A6B300226287 /* utf_8.c */,
+			);
+			name = enc;
+			sourceTree = "<group>";
+		};
+		F5E360BA0EB6A6C400226287 /* geolocation */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360BB0EB6A6EB00226287 /* geolocation_wrap.c */,
+			);
+			name = geolocation;
+			sourceTree = "<group>";
+		};
+		F5E360BD0EB6A6F000226287 /* sqlite3 */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360BE0EB6A70C00226287 /* sqlite3_api_wrap.c */,
+			);
+			name = sqlite3;
+			sourceTree = "<group>";
+		};
+		F5E360C00EB6A71100226287 /* strscan */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360C10EB6A74D00226287 /* strscan.c */,
+			);
+			name = strscan;
+			sourceTree = "<group>";
+		};
+		F5E360C30EB6A76500226287 /* syncengine */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360C40EB6A77C00226287 /* syncengine_wrap.c */,
 			);
 			name = syncengine;
 			sourceTree = "<group>";
 		};
-		F58B9A210E9FDAC5008D655D /* sqlite3_api */ = {
+		F5E360C60EB6A79800226287 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				F58B9A220E9FDAE4008D655D /* sqlite3_api_wrap.c */,
+				F5E360C70EB6A7AF00226287 /* parse.c */,
 			);
-			name = sqlite3_api;
+			name = generated;
 			sourceTree = "<group>";
 		};
-		F59F13BF0E9436C7004103B4 /* src */ = {
+		F5E360C90EB6A7BC00226287 /* missing */ = {
 			isa = PBXGroup;
 			children = (
-				F5DA58860E959D5B0062A28B /* insns.def */,
-				F5DA58870E959D5B0062A28B /* insns.inc */,
-				F5DA58880E959D5B0062A28B /* insns_info.inc */,
-				F59F15AD0E943E97004103B4 /* vm_core.h */,
-				F59F14C50E9436C8004103B4 /* vm_dump.c */,
-				F59F13C00E9436C7004103B4 /* array.c */,
-				F59F13C10E9436C7004103B4 /* bignum.c */,
-				F59F13C20E9436C7004103B4 /* blockinlining.c */,
-				F59F13C30E9436C7004103B4 /* class.c */,
-				F59F13C40E9436C7004103B4 /* compar.c */,
-				F59F13C50E9436C7004103B4 /* compile.c */,
-				F59F13C60E9436C7004103B4 /* complex.c */,
-				F59F13C70E9436C7004103B4 /* cont.c */,
-				F59F13C80E9436C7004103B4 /* debug.c */,
-				F59F13C90E9436C7004103B4 /* debug.h */,
-				F59F13CA0E9436C7004103B4 /* dir.c */,
-				F59F13CB0E9436C7004103B4 /* dln.c */,
-				F59F13CC0E9436C7004103B4 /* dln.h */,
-				F59F13CD0E9436C7004103B4 /* dmydln.c */,
-				F59F13CE0E9436C7004103B4 /* dmyencoding.c */,
-				F59F13CF0E9436C7004103B4 /* dmyext.c */,
-				F59F13D00E9436C7004103B4 /* enc */,
-				F59F14330E9436C7004103B4 /* enum.c */,
-				F59F14340E9436C7004103B4 /* enumerator.c */,
-				F59F14350E9436C7004103B4 /* error.c */,
-				F59F14360E9436C7004103B4 /* eval.c */,
-				F59F143A0E9436C7004103B4 /* ext */,
-				F59F143D0E9436C7004103B4 /* file.c */,
-				F59F143E0E9436C7004103B4 /* gc.c */,
-				F59F143F0E9436C7004103B4 /* gc.h */,
-				F59F14410E9436C7004103B4 /* hash.c */,
-				F59F14430E9436C7004103B4 /* id.h */,
-				F59F14440E9436C7004103B4 /* include */,
-				F59F14590E9436C7004103B4 /* inits.c */,
-				F59F145D0E9436C7004103B4 /* io.c */,
-				F59F145E0E9436C7004103B4 /* iPhone */,
-				F59F14610E9436C7004103B4 /* iseq.c */,
-				F59F14620E9436C7004103B4 /* iseq.h */,
-				F59F14680E9436C7004103B4 /* load.c */,
-				F59F146A0E9436C7004103B4 /* marshal.c */,
-				F59F146B0E9436C7004103B4 /* math.c */,
-				F59F146C0E9436C7004103B4 /* miniprelude.c */,
-				F59F146D0E9436C7004103B4 /* missing */,
-				F59F14880E9436C7004103B4 /* newline.c */,
-				F59F14890E9436C7004103B4 /* node.h */,
-				F59F148B0E9436C7004103B4 /* numeric.c */,
-				F59F148C0E9436C7004103B4 /* object.c */,
-				F59F14920E9436C7004103B4 /* pack.c */,
-				F59F14930E9436C7004103B4 /* parse.c */,
-				F59F14940E9436C7004103B4 /* parse.h */,
-				F59F14970E9436C7004103B4 /* proc.c */,
-				F59F14980E9436C7004103B4 /* process.c */,
-				F59F14990E9436C7004103B4 /* random.c */,
-				F59F149A0E9436C7004103B4 /* range.c */,
-				F59F149B0E9436C7004103B4 /* rational.c */,
-				F59F149C0E9436C7004103B4 /* re.c */,
-				F59F14A10E9436C7004103B4 /* regcomp.c */,
-				F59F14A20E9436C7004103B4 /* regenc.c */,
-				F59F14A30E9436C7004103B4 /* regenc.h */,
-				F59F14A40E9436C7004103B4 /* regerror.c */,
-				F59F14A50E9436C7004103B4 /* regexec.c */,
-				F59F14A60E9436C7004103B4 /* regint.h */,
-				F59F14A70E9436C7004103B4 /* regparse.c */,
-				F59F14A80E9436C7004103B4 /* regparse.h */,
-				F59F14A90E9436C7004103B4 /* regsyntax.c */,
-				F59F14AA0E9436C7004103B4 /* revision.h */,
-				F59F14AC0E9436C7004103B4 /* ruby.c */,
-				F59F14AF0E9436C7004103B4 /* safe.c */,
-				F59F14B00E9436C7004103B4 /* signal.c */,
-				F59F14B10E9436C7004103B4 /* sprintf.c */,
-				F59F14B20E9436C7004103B4 /* st.c */,
-				F59F14B30E9436C7004103B4 /* strftime.c */,
-				F59F14B40E9436C7004103B4 /* string.c */,
-				F59F14B50E9436C7004103B4 /* struct.c */,
-				F59F14B60E9436C7004103B4 /* thread.c */,
-				F59F14B70E9436C7004103B4 /* thread_pthread.c */,
-				F59F14B80E9436C7004103B4 /* thread_pthread.h */,
-				F59F14BB0E9436C7004103B4 /* time.c */,
-				F59F14BC0E9436C7004103B4 /* transcode.c */,
-				F59F14BD0E9436C7004103B4 /* transcode_data.h */,
-				F59F14BE0E9436C7004103B4 /* util.c */,
-				F59F14BF0E9436C7004103B4 /* variable.c */,
-				F59F14C00E9436C8004103B4 /* version.c */,
-				F59F14C10E9436C8004103B4 /* version.h */,
-				F59F14C20E9436C8004103B4 /* vm.c */,
-				F59F14CA0E9436C8004103B4 /* vm_insnhelper.h */,
-				F59F14CC0E9436C8004103B4 /* vm_opts.h */,
-			);
-			name = src;
-			path = ../../shared/ruby;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F13D00E9436C7004103B4 /* enc */ = {
-			isa = PBXGroup;
-			children = (
-				F59F13D10E9436C7004103B4 /* ascii.c */,
-				F59F14290E9436C7004103B4 /* unicode.c */,
-				F59F142A0E9436C7004103B4 /* us_ascii.c */,
-				F59F14300E9436C7004103B4 /* utf_8.c */,
-				F59F14310E9436C7004103B4 /* windows_1251.c */,
-			);
-			name = enc;
-			path = ../../shared/ruby/enc;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F143A0E9436C7004103B4 /* ext */ = {
-			isa = PBXGroup;
-			children = (
-				F563D6320EA92B6E0062DA57 /* syncengine */,
-				F58B9A210E9FDAC5008D655D /* sqlite3_api */,
-				F59F143B0E9436C7004103B4 /* strscan */,
-			);
-			name = ext;
-			path = ../../shared/ruby/ext;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F143B0E9436C7004103B4 /* strscan */ = {
-			isa = PBXGroup;
-			children = (
-				F59F143C0E9436C7004103B4 /* strscan.c */,
-			);
-			name = strscan;
-			path = ../../shared/ruby/ext/strscan;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F14440E9436C7004103B4 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				F59F14450E9436C7004103B4 /* ruby */,
-				F59F14560E9436C7004103B4 /* ruby.h */,
-				F59F14570E9436C7004103B4 /* rubyio.h */,
-				F59F14580E9436C7004103B4 /* rubysig.h */,
-			);
-			name = include;
-			path = ../../shared/ruby/include;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F14450E9436C7004103B4 /* ruby */ = {
-			isa = PBXGroup;
-			children = (
-				F59F14460E9436C7004103B4 /* backward */,
-				F59F14490E9436C7004103B4 /* defines.h */,
-				F59F144A0E9436C7004103B4 /* encoding.h */,
-				F59F144B0E9436C7004103B4 /* intern.h */,
-				F59F144C0E9436C7004103B4 /* io.h */,
-				F59F144D0E9436C7004103B4 /* missing.h */,
-				F59F144E0E9436C7004103B4 /* oniguruma.h */,
-				F59F144F0E9436C7004103B4 /* re.h */,
-				F59F14500E9436C7004103B4 /* regex.h */,
-				F59F14510E9436C7004103B4 /* ruby.h */,
-				F59F14520E9436C7004103B4 /* st.h */,
-				F59F14530E9436C7004103B4 /* util.h */,
-				F59F14540E9436C7004103B4 /* vm.h */,
-				F59F14550E9436C7004103B4 /* win32.h */,
-			);
-			name = ruby;
-			path = ../../shared/ruby/include/ruby;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F14460E9436C7004103B4 /* backward */ = {
-			isa = PBXGroup;
-			children = (
-				F59F14470E9436C7004103B4 /* st.h */,
-				F59F14480E9436C7004103B4 /* util.h */,
-			);
-			name = backward;
-			path = ../../shared/ruby/include/ruby/backward;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F145E0E9436C7004103B4 /* iPhone */ = {
-			isa = PBXGroup;
-			children = (
-				F5DA57320E9563680062A28B /* crt_externs.h */,
-				F59F145F0E9436C7004103B4 /* ruby */,
-			);
-			name = iPhone;
-			path = ../../shared/ruby/iPhone;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F145F0E9436C7004103B4 /* ruby */ = {
-			isa = PBXGroup;
-			children = (
-				F59F14600E9436C7004103B4 /* config.h */,
-			);
-			name = ruby;
-			path = ../../shared/ruby/iPhone/ruby;
-			sourceTree = SOURCE_ROOT;
-		};
-		F59F146D0E9436C7004103B4 /* missing */ = {
-			isa = PBXGroup;
-			children = (
-				F59F147B0E9436C7004103B4 /* lgamma_r.c */,
+				F5E363040EB79F8400226287 /* lgamma_r.c */,
 			);
 			name = missing;
-			path = ../../shared/ruby/missing;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
+		};
+		F5E360CA0EB6A7E300226287 /* rhoruby */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360CB0EB6A7F900226287 /* rhoruby.c */,
+				F5E360CC0EB6A7F900226287 /* rhoruby.h */,
+			);
+			name = rhoruby;
+			sourceTree = "<group>";
+		};
+		F5E360CF0EB6A80900226287 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				F5E362400EB785C100226287 /* crt_externs.h */,
+				F5E360D20EB6A82C00226287 /* ruby */,
+			);
+			name = iphone;
+			sourceTree = "<group>";
+		};
+		F5E360D20EB6A82C00226287 /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				F5E360D30EB6A84600226287 /* config.h */,
+			);
+			name = ruby;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -499,44 +419,24 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F59F14D70E9436C8004103B4 /* debug.h in Headers */,
-				F59F14DA0E9436C8004103B4 /* dln.h in Headers */,
-				F59F15110E9436C8004103B4 /* gc.h in Headers */,
-				F59F15150E9436C8004103B4 /* id.h in Headers */,
-				F59F15160E9436C8004103B4 /* st.h in Headers */,
-				F59F15170E9436C8004103B4 /* util.h in Headers */,
-				F59F15180E9436C8004103B4 /* defines.h in Headers */,
-				F59F15190E9436C8004103B4 /* encoding.h in Headers */,
-				F59F151A0E9436C8004103B4 /* intern.h in Headers */,
-				F59F151B0E9436C8004103B4 /* io.h in Headers */,
-				F59F151C0E9436C8004103B4 /* missing.h in Headers */,
-				F59F151D0E9436C8004103B4 /* oniguruma.h in Headers */,
-				F59F151E0E9436C8004103B4 /* re.h in Headers */,
-				F59F151F0E9436C8004103B4 /* regex.h in Headers */,
-				F59F15200E9436C8004103B4 /* ruby.h in Headers */,
-				F59F15210E9436C8004103B4 /* st.h in Headers */,
-				F59F15220E9436C8004103B4 /* util.h in Headers */,
-				F59F15230E9436C8004103B4 /* vm.h in Headers */,
-				F59F15240E9436C8004103B4 /* win32.h in Headers */,
-				F59F15250E9436C8004103B4 /* ruby.h in Headers */,
-				F59F15260E9436C8004103B4 /* rubyio.h in Headers */,
-				F59F15270E9436C8004103B4 /* rubysig.h in Headers */,
-				F59F152C0E9436C8004103B4 /* config.h in Headers */,
-				F59F152E0E9436C8004103B4 /* iseq.h in Headers */,
-				F59F15500E9436C8004103B4 /* node.h in Headers */,
-				F59F15590E9436C8004103B4 /* parse.h in Headers */,
-				F59F15630E9436C8004103B4 /* regenc.h in Headers */,
-				F59F15660E9436C8004103B4 /* regint.h in Headers */,
-				F59F15680E9436C8004103B4 /* regparse.h in Headers */,
-				F59F156A0E9436C8004103B4 /* revision.h in Headers */,
-				F59F15750E9436C8004103B4 /* thread_pthread.h in Headers */,
-				F59F157A0E9436C8004103B4 /* transcode_data.h in Headers */,
-				F59F157E0E9436C8004103B4 /* version.h in Headers */,
-				F59F15870E9436C8004103B4 /* vm_insnhelper.h in Headers */,
-				F59F15890E9436C8004103B4 /* vm_opts.h in Headers */,
-				F59F15AB0E943E01004103B4 /* rhoruby.h in Headers */,
-				F59F15AE0E943E97004103B4 /* vm_core.h in Headers */,
-				F5DA57330E9563680062A28B /* crt_externs.h in Headers */,
+				F5E360720EB6A62A00226287 /* debug.h in Headers */,
+				F5E360750EB6A62A00226287 /* dln.h in Headers */,
+				F5E3607C0EB6A62A00226287 /* eval_intern.h in Headers */,
+				F5E3607F0EB6A62A00226287 /* gc.h in Headers */,
+				F5E360810EB6A62A00226287 /* id.h in Headers */,
+				F5E360850EB6A62A00226287 /* iseq.h in Headers */,
+				F5E360940EB6A62A00226287 /* regenc.h in Headers */,
+				F5E360970EB6A62A00226287 /* regint.h in Headers */,
+				F5E360990EB6A62A00226287 /* regparse.h in Headers */,
+				F5E3609B0EB6A62A00226287 /* revision.h in Headers */,
+				F5E360A70EB6A62A00226287 /* transcode_data.h in Headers */,
+				F5E360AB0EB6A62A00226287 /* version.h in Headers */,
+				F5E360AD0EB6A62A00226287 /* vm_core.h in Headers */,
+				F5E360AF0EB6A62A00226287 /* vm_opts.h in Headers */,
+				F5E360CE0EB6A7F900226287 /* rhoruby.h in Headers */,
+				F5E360D40EB6A84600226287 /* config.h in Headers */,
+				F5E362410EB785C100226287 /* crt_externs.h in Headers */,
+				F5E362990EB7927100226287 /* thread_pthread.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,80 +482,77 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F59F14CE0E9436C8004103B4 /* array.c in Sources */,
-				F59F14CF0E9436C8004103B4 /* bignum.c in Sources */,
-				F59F14D00E9436C8004103B4 /* blockinlining.c in Sources */,
-				F59F14D10E9436C8004103B4 /* class.c in Sources */,
-				F59F14D20E9436C8004103B4 /* compar.c in Sources */,
-				F59F14D30E9436C8004103B4 /* compile.c in Sources */,
-				F59F14D40E9436C8004103B4 /* complex.c in Sources */,
-				F59F14D50E9436C8004103B4 /* cont.c in Sources */,
-				F59F14D60E9436C8004103B4 /* debug.c in Sources */,
-				F59F14D80E9436C8004103B4 /* dir.c in Sources */,
-				F59F14D90E9436C8004103B4 /* dln.c in Sources */,
-				F59F14DB0E9436C8004103B4 /* dmydln.c in Sources */,
-				F59F14DC0E9436C8004103B4 /* dmyencoding.c in Sources */,
-				F59F14DD0E9436C8004103B4 /* dmyext.c in Sources */,
-				F59F14DE0E9436C8004103B4 /* ascii.c in Sources */,
-				F59F14FD0E9436C8004103B4 /* unicode.c in Sources */,
-				F59F14FE0E9436C8004103B4 /* us_ascii.c in Sources */,
-				F59F15040E9436C8004103B4 /* utf_8.c in Sources */,
-				F59F15050E9436C8004103B4 /* windows_1251.c in Sources */,
-				F59F15070E9436C8004103B4 /* enum.c in Sources */,
-				F59F15080E9436C8004103B4 /* enumerator.c in Sources */,
-				F59F15090E9436C8004103B4 /* error.c in Sources */,
-				F59F150A0E9436C8004103B4 /* eval.c in Sources */,
-				F59F150E0E9436C8004103B4 /* strscan.c in Sources */,
-				F59F150F0E9436C8004103B4 /* file.c in Sources */,
-				F59F15100E9436C8004103B4 /* gc.c in Sources */,
-				F59F15130E9436C8004103B4 /* hash.c in Sources */,
-				F59F15280E9436C8004103B4 /* inits.c in Sources */,
-				F59F152B0E9436C8004103B4 /* io.c in Sources */,
-				F59F152D0E9436C8004103B4 /* iseq.c in Sources */,
-				F59F15300E9436C8004103B4 /* load.c in Sources */,
-				F59F15320E9436C8004103B4 /* marshal.c in Sources */,
-				F59F15330E9436C8004103B4 /* math.c in Sources */,
-				F59F15340E9436C8004103B4 /* miniprelude.c in Sources */,
-				F59F15420E9436C8004103B4 /* lgamma_r.c in Sources */,
-				F59F154F0E9436C8004103B4 /* newline.c in Sources */,
-				F59F15520E9436C8004103B4 /* numeric.c in Sources */,
-				F59F15530E9436C8004103B4 /* object.c in Sources */,
-				F59F15570E9436C8004103B4 /* pack.c in Sources */,
-				F59F15580E9436C8004103B4 /* parse.c in Sources */,
-				F59F155B0E9436C8004103B4 /* proc.c in Sources */,
-				F59F155C0E9436C8004103B4 /* process.c in Sources */,
-				F59F155D0E9436C8004103B4 /* random.c in Sources */,
-				F59F155E0E9436C8004103B4 /* range.c in Sources */,
-				F59F155F0E9436C8004103B4 /* rational.c in Sources */,
-				F59F15600E9436C8004103B4 /* re.c in Sources */,
-				F59F15610E9436C8004103B4 /* regcomp.c in Sources */,
-				F59F15620E9436C8004103B4 /* regenc.c in Sources */,
-				F59F15640E9436C8004103B4 /* regerror.c in Sources */,
-				F59F15650E9436C8004103B4 /* regexec.c in Sources */,
-				F59F15670E9436C8004103B4 /* regparse.c in Sources */,
-				F59F15690E9436C8004103B4 /* regsyntax.c in Sources */,
-				F59F156B0E9436C8004103B4 /* ruby.c in Sources */,
-				F59F156C0E9436C8004103B4 /* safe.c in Sources */,
-				F59F156D0E9436C8004103B4 /* signal.c in Sources */,
-				F59F156E0E9436C8004103B4 /* sprintf.c in Sources */,
-				F59F156F0E9436C8004103B4 /* st.c in Sources */,
-				F59F15700E9436C8004103B4 /* strftime.c in Sources */,
-				F59F15710E9436C8004103B4 /* string.c in Sources */,
-				F59F15720E9436C8004103B4 /* struct.c in Sources */,
-				F59F15730E9436C8004103B4 /* thread.c in Sources */,
-				F59F15740E9436C8004103B4 /* thread_pthread.c in Sources */,
-				F59F15780E9436C8004103B4 /* time.c in Sources */,
-				F59F15790E9436C8004103B4 /* transcode.c in Sources */,
-				F59F157B0E9436C8004103B4 /* util.c in Sources */,
-				F59F157C0E9436C8004103B4 /* variable.c in Sources */,
-				F59F157D0E9436C8004103B4 /* version.c in Sources */,
-				F59F157F0E9436C8004103B4 /* vm.c in Sources */,
-				F59F15820E9436C8004103B4 /* vm_dump.c in Sources */,
-				F59F15AA0E943E01004103B4 /* rhoruby.c in Sources */,
-				F5DA58890E959D5B0062A28B /* insns.inc in Sources */,
-				F5DA588A0E959D5B0062A28B /* insns_info.inc in Sources */,
-				F58B9A230E9FDAE4008D655D /* sqlite3_api_wrap.c in Sources */,
-				F563D6350EA92B8F0062DA57 /* syncengine_wrap.c in Sources */,
+				F5E360690EB6A62A00226287 /* array.c in Sources */,
+				F5E3606A0EB6A62A00226287 /* bignum.c in Sources */,
+				F5E3606B0EB6A62A00226287 /* blockinlining.c in Sources */,
+				F5E3606C0EB6A62A00226287 /* class.c in Sources */,
+				F5E3606D0EB6A62A00226287 /* compar.c in Sources */,
+				F5E3606E0EB6A62A00226287 /* compile.c in Sources */,
+				F5E3606F0EB6A62A00226287 /* complex.c in Sources */,
+				F5E360700EB6A62A00226287 /* cont.c in Sources */,
+				F5E360710EB6A62A00226287 /* debug.c in Sources */,
+				F5E360730EB6A62A00226287 /* dir.c in Sources */,
+				F5E360740EB6A62A00226287 /* dln.c in Sources */,
+				F5E360760EB6A62A00226287 /* dmyencoding.c in Sources */,
+				F5E360770EB6A62A00226287 /* dmyext.c in Sources */,
+				F5E360780EB6A62A00226287 /* enum.c in Sources */,
+				F5E360790EB6A62A00226287 /* enumerator.c in Sources */,
+				F5E3607A0EB6A62A00226287 /* error.c in Sources */,
+				F5E3607B0EB6A62A00226287 /* eval.c in Sources */,
+				F5E3607D0EB6A62A00226287 /* file.c in Sources */,
+				F5E3607E0EB6A62A00226287 /* gc.c in Sources */,
+				F5E360800EB6A62A00226287 /* hash.c in Sources */,
+				F5E360820EB6A62A00226287 /* inits.c in Sources */,
+				F5E360830EB6A62A00226287 /* io.c in Sources */,
+				F5E360840EB6A62A00226287 /* iseq.c in Sources */,
+				F5E360860EB6A62A00226287 /* load.c in Sources */,
+				F5E360870EB6A62A00226287 /* marshal.c in Sources */,
+				F5E360880EB6A62A00226287 /* math.c in Sources */,
+				F5E360890EB6A62A00226287 /* numeric.c in Sources */,
+				F5E3608A0EB6A62A00226287 /* object.c in Sources */,
+				F5E3608B0EB6A62A00226287 /* pack.c in Sources */,
+				F5E3608C0EB6A62A00226287 /* proc.c in Sources */,
+				F5E3608D0EB6A62A00226287 /* process.c in Sources */,
+				F5E3608E0EB6A62A00226287 /* random.c in Sources */,
+				F5E3608F0EB6A62A00226287 /* range.c in Sources */,
+				F5E360900EB6A62A00226287 /* rational.c in Sources */,
+				F5E360910EB6A62A00226287 /* re.c in Sources */,
+				F5E360920EB6A62A00226287 /* regcomp.c in Sources */,
+				F5E360930EB6A62A00226287 /* regenc.c in Sources */,
+				F5E360950EB6A62A00226287 /* regerror.c in Sources */,
+				F5E360960EB6A62A00226287 /* regexec.c in Sources */,
+				F5E360980EB6A62A00226287 /* regparse.c in Sources */,
+				F5E3609A0EB6A62A00226287 /* regsyntax.c in Sources */,
+				F5E3609C0EB6A62A00226287 /* ruby.c in Sources */,
+				F5E3609D0EB6A62A00226287 /* safe.c in Sources */,
+				F5E3609E0EB6A62A00226287 /* signal.c in Sources */,
+				F5E3609F0EB6A62A00226287 /* sprintf.c in Sources */,
+				F5E360A00EB6A62A00226287 /* st.c in Sources */,
+				F5E360A10EB6A62A00226287 /* strftime.c in Sources */,
+				F5E360A20EB6A62A00226287 /* string.c in Sources */,
+				F5E360A30EB6A62A00226287 /* struct.c in Sources */,
+				F5E360A40EB6A62A00226287 /* thread.c in Sources */,
+				F5E360A50EB6A62A00226287 /* time.c in Sources */,
+				F5E360A60EB6A62A00226287 /* transcode.c in Sources */,
+				F5E360A80EB6A62A00226287 /* util.c in Sources */,
+				F5E360A90EB6A62A00226287 /* variable.c in Sources */,
+				F5E360AA0EB6A62A00226287 /* version.c in Sources */,
+				F5E360AC0EB6A62A00226287 /* vm.c in Sources */,
+				F5E360AE0EB6A62A00226287 /* vm_dump.c in Sources */,
+				F5E360B60EB6A6B300226287 /* ascii.c in Sources */,
+				F5E360B70EB6A6B300226287 /* unicode.c in Sources */,
+				F5E360B80EB6A6B300226287 /* us_ascii.c in Sources */,
+				F5E360B90EB6A6B300226287 /* utf_8.c in Sources */,
+				F5E360BC0EB6A6EB00226287 /* geolocation_wrap.c in Sources */,
+				F5E360BF0EB6A70C00226287 /* sqlite3_api_wrap.c in Sources */,
+				F5E360C20EB6A74D00226287 /* strscan.c in Sources */,
+				F5E360C50EB6A77C00226287 /* syncengine_wrap.c in Sources */,
+				F5E360C80EB6A7AF00226287 /* parse.c in Sources */,
+				F5E360CD0EB6A7F900226287 /* rhoruby.c in Sources */,
+				F5E362980EB7927100226287 /* thread_pthread.c in Sources */,
+				F5E362FF0EB79F0200226287 /* miniprelude.c in Sources */,
+				F5E363050EB79F8400226287 /* lgamma_r.c in Sources */,
+				F5E363080EB7A0DB00226287 /* newline.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,8 +570,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
+					../../shared/ruby,
 					../../shared/ruby/include,
-					../../shared/ruby/IPhone,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = rhorubylib;
@@ -690,8 +589,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
+					../../shared/ruby,
 					../../shared/ruby/include,
-					../../shared/ruby/IPhone,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = rhorubylib;
