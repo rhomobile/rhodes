@@ -19,7 +19,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require 'sqlite3'
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
   
@@ -77,7 +76,8 @@ module Rhom
             @database.commit
             close_db_connection
             SyncEngine::unlock_sync_mutex
-          rescue
+          rescue Exception => e
+            puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
             SyncEngine::unlock_sync_mutex
           end

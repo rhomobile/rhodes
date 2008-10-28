@@ -1,6 +1,6 @@
 require 'rhocontroller'
 
-class AccountController < RhoController
+class AccountController < Rho::RhoController
   # GET /cases
   def index
     @accounts = Account.find(:all)

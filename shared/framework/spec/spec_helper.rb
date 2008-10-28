@@ -26,5 +26,6 @@ class SyncEngine
   end
 end
 
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-require 'rhom'
+require 'rubygems'
+require 'sqlite3'
+require 'rhom/rhom'
