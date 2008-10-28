@@ -7,7 +7,6 @@ module Rho
       if @rhom.nil?
         @rhom = Rhom::Rhom.new
       end
-      puts 'rhoapplication created rhom: ' + @rhom.inspect
     end
 	
     class << self
@@ -25,7 +24,6 @@ module Rho
     def serve(req,res)
       req[:modelpath] = self.class.get_model_path req['application'], req['model']
       require req[:modelpath]+'controller'
-      puts 'require controller successful...'
       res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, @rhom, req, res
     end
 
