@@ -86,8 +86,8 @@ module Rhom
                   list = []
                   if args.first == :all
                     query = "select * from #{TABLE_NAME} where \
-                           source_id=#{get_source_id} \
-                           and update_type='query' order by object"
+                             source_id=#{get_source_id} \
+                             and update_type='query' order by object"
                   else
                     obj = strip_braces(args.first.to_s)
                     query = "select * from #{TABLE_NAME} where object='#{obj}'"
@@ -167,7 +167,7 @@ module Rhom
                   result = Rhom::execute_sql(query)
                   # now add delete operation
                   query = "insert into #{TABLE_NAME} (source_id, object, update_type) \
-                         values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
+                           values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
                   result = Rhom::execute_sql(query)
                 end
                 result
@@ -177,26 +177,23 @@ module Rhom
               def save
                 result = nil
                 # iterate over each instance variable and insert create row to table
-				        puts "self is: #{self.inspect}"
 				        obj = self.inst_strip_braces(self.object)
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   # Don't save objects with braces to database
                   val = self.send(method.to_sym)
                   # add rows excluding object, source_id and update_type
-                  puts "method, value: #{method.inspect}, #{val.inspect}"
                   unless self.method_name_reserved?(method) or val.nil?
                     query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                            (#{self.get_inst_source_id}, \
-                            '#{obj}', \
-                            '#{method}', \
-                            '#{val}', \
-                            'create')"
+                             (#{self.get_inst_source_id}, \
+                             '#{obj}', \
+                             '#{method}', \
+                             '#{val}', \
+                             'create')"
                     result = Rhom::execute_sql(query)
                   end
                 end
                 # Create a temporary query record to display in the list
-                puts "SOURCE_ATTRIBS: #{SOURCE_ATTRIBS[self.class.name.to_s]}"
                 SOURCE_ATTRIBS[self.class.name.to_s].each do |attrib|
                   query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
                            (#{self.get_inst_source_id}, \
