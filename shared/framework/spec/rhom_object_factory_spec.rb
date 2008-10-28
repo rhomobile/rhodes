@@ -53,7 +53,7 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    array_print(results)
+    #array_print(results)
     results.length.should == 7
     "58".should == results[0].case_number
     "hire another engineer".should == results[6].name
@@ -65,7 +65,7 @@ describe "RhomObjectFactory" do
       puts "result[#{i}]: " + result.inspect
     end
     results.length.should == 5
-    array_print(results)
+    #array_print(results)
     
     "Mobio India".should == results[0].name
     "Technology".should == results[0].industry
