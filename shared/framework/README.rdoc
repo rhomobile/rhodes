@@ -1,4 +1,4 @@
-= rhom
+= rhodes framework
 
 * FIX (url)
 
