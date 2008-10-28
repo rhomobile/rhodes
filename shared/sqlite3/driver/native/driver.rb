@@ -1,4 +1,4 @@
-require 'sqlite3_api'
+require 'sqlite3/sqlite3_api'
 
 module SQLite3 ; module Driver ; module Native
 
