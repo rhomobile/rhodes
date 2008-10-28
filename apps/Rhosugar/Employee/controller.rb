@@ -31,6 +31,7 @@ class EmployeeController < Rho::RhoController
   # POST /Employees
   def create
     @employee = Employee.new(@params['employee'])
+    @case.save
     redirect :index
   end
 
