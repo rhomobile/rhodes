@@ -417,11 +417,6 @@ search_required(VALUE fname, volatile VALUE *path)
     int type, ft = 0;
     const char *loading;
 
-	//trv
-	{
-		printf("Serching required %s\n", RSTRING_PTR(fname) );
-	}
-	
     *path = 0;
     ext = strrchr(ftptr = RSTRING_PTR(fname), '.');
     if (ext && !strchr(ext, '/')) {

@@ -2,7 +2,7 @@
 
   io.c -
 
-  $Author: akr $
+  $Author: matz $
   created at: Fri Oct 15 18:08:59 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -29,11 +29,11 @@
 # include <sys/socket.h>
 #endif
 
-#if defined(MSDOS) || defined(__BOW__) || defined(__CYGWIN__) || defined(_WIN32) || defined(__human68k__) || defined(__EMX__) || defined(__BEOS__)
+#if defined(__BOW__) || defined(__CYGWIN__) || defined(_WIN32) || defined(__EMX__) || defined(__BEOS__)
 # define NO_SAFE_RENAME
 #endif
 
-#if defined(MSDOS) || defined(__CYGWIN__) || defined(_WIN32)
+#if defined(__CYGWIN__) || defined(_WIN32)
 # define NO_LONG_FNAME
 #endif
 
@@ -46,7 +46,7 @@
 #endif
 
 #include <sys/types.h>
-#if defined(HAVE_SYS_IOCTL_H) && !defined(DJGPP) && !defined(_WIN32) && !defined(__human68k__)
+#if defined(HAVE_SYS_IOCTL_H) && !defined(_WIN32)
 #include <sys/ioctl.h>
 #endif
 #if defined(HAVE_FCNTL_H) || defined(_WIN32)
@@ -159,14 +159,8 @@ static int max_file_descriptor = NOFILE;
 #  define STDIO_READ_DATA_PENDING(fp) ((fp)->FILE_READPTR < (fp)->FILE_READEND)
 #elif defined(__BEOS__)
 #  define STDIO_READ_DATA_PENDING(fp) (fp->_state._eof == 0)
-#elif defined(__VMS)
-#  define STDIO_READ_DATA_PENDING(fp) (((unsigned int)(*(fp))->_cnt) > 0)
 #else
 #  define STDIO_READ_DATA_PENDING(fp) (!feof(fp))
-#endif
-
-#if defined(__VMS)
-#define open(file_spec, flags, mode)  open(file_spec, flags, mode, "rfm=stmlf")
 #endif
 
 #define GetWriteIO(io) rb_io_get_write_io(io)
@@ -245,7 +239,7 @@ void
 rb_io_check_closed(rb_io_t *fptr)
 {
     rb_io_check_initialized(fptr);
-    if (fptr->fd < 0) {
+    if (IS_CLOSED_IO(fptr->fd))/* < -2)*/ {
 	rb_raise(rb_eIOError, "closed stream");
     }
 }
@@ -407,12 +401,6 @@ rb_io_check_writable(rb_io_t *fptr)
     if (fptr->rbuf_len) {
         io_unread(fptr);
     }
-}
-
-int
-rb_read_pending(FILE *fp)
-{
-    return STDIO_READ_DATA_PENDING(fp);
 }
 
 int
@@ -681,7 +669,7 @@ rb_io_wait_writable(int f)
 # define NEED_NEWLINE_DECORATOR_ON_WRITE(fptr) 0
 #endif
 #define NEED_READCONV(fptr) (fptr->encs.enc2 != NULL || NEED_NEWLINE_DECORATOR_ON_READ(fptr))
-#define NEED_WRITECONV(fptr) (fptr->encs.enc != NULL || NEED_NEWLINE_DECORATOR_ON_WRITE(fptr) || (fptr->encs.ecflags & (ECONV_DECORATOR_MASK|ECONV_STATEFUL_DECORATOR_MASK)))
+#define NEED_WRITECONV(fptr) ((fptr->encs.enc != NULL && fptr->encs.enc != rb_ascii8bit_encoding()) || NEED_NEWLINE_DECORATOR_ON_WRITE(fptr) || (fptr->encs.ecflags & (ECONV_DECORATOR_MASK|ECONV_STATEFUL_DECORATOR_MASK)))
 
 static void
 make_writeconv(rb_io_t *fptr)
@@ -701,7 +689,7 @@ make_writeconv(rb_io_t *fptr)
             ecflags |= TEXTMODE_NEWLINE_DECORATOR_ON_WRITE;
 #endif
 
-        if (!fptr->encs.enc) {
+        if (!fptr->encs.enc || (fptr->encs.enc == rb_ascii8bit_encoding() && !fptr->encs.enc2)) {
             /* no encoding conversion */
             fptr->writeconv_pre_ecflags = 0;
             fptr->writeconv_pre_ecopts = Qnil;
@@ -751,6 +739,15 @@ io_binwrite(VALUE str, rb_io_t *fptr, int nosync)
 
     len = RSTRING_LEN(str);
     if ((n = len) <= 0) return n;
+
+#if defined(_WIN32_WCE) //TBD: fix this
+    if (fptr->fd==fileno(stdout)||fptr->fd==fileno(stderr)) {
+      _write(fptr->fd,RSTRING_PTR(str),len);
+      fflush(fptr->fd);
+      return len;
+    }
+#endif
+
     if (fptr->wbuf == NULL && !(!nosync && (fptr->mode & FMODE_SYNC))) {
         fptr->wbuf_off = 0;
         fptr->wbuf_len = 0;
@@ -816,6 +813,7 @@ do_writeconv(VALUE str, rb_io_t *fptr)
 {
     if (NEED_WRITECONV(fptr)) {
         VALUE common_encoding = Qnil;
+
         make_writeconv(fptr);
 
         if (fptr->writeconv) {
@@ -829,12 +827,12 @@ do_writeconv(VALUE str, rb_io_t *fptr)
         else {
             if (fptr->encs.enc2)
                 common_encoding = rb_enc_from_encoding(fptr->encs.enc2);
-            else
+            else if (fptr->encs.enc != rb_ascii8bit_encoding())
                 common_encoding = rb_enc_from_encoding(fptr->encs.enc);
         }
 
         if (!NIL_P(common_encoding)) {
-            str = rb_str_transcode(str, common_encoding,
+            str = rb_str_encode(str, common_encoding,
                 fptr->writeconv_pre_ecflags, fptr->writeconv_pre_ecopts);
         }
 
@@ -850,18 +848,6 @@ io_fwrite(VALUE str, rb_io_t *fptr, int nosync)
 {
     str = do_writeconv(str, fptr);
     return io_binwrite(str, fptr, nosync);
-}
-
-long
-rb_io_fwrite(const char *ptr, long len, FILE *f)
-{
-    rb_io_t of;
-
-    of.fd = fileno(f);
-    of.stdio_file = f;
-    of.mode = FMODE_WRITABLE;
-    of.pathv = Qnil;
-    return io_fwrite(rb_str_new(ptr, len), &of, 0);
 }
 
 static VALUE
@@ -1344,7 +1330,7 @@ rb_io_inspect(VALUE obj)
     fptr = RFILE(rb_io_taint_check(obj))->fptr;
     if (!fptr || NIL_P(fptr->pathv)) return rb_any_to_s(obj);
     cname = rb_obj_classname(obj);
-    if (fptr->fd < 0) {
+    if (IS_CLOSED_IO(fptr->fd))/*< 0)*/ {
 	st = " (closed)";
     }
     return rb_sprintf("#<%s:%s%s>", cname, RSTRING_PTR(fptr->pathv), st);
@@ -1412,22 +1398,6 @@ io_fread(VALUE str, long offset, rb_io_t *fptr)
 	}
     }
     return len - n;
-}
-
-long
-rb_io_fread(char *ptr, long len, FILE *f)
-{
-    rb_io_t of;
-    VALUE str;
-    long n;
-
-    of.fd = fileno(f);
-    of.stdio_file = f;
-    of.mode = FMODE_READABLE;
-    str = rb_str_new(ptr, len);
-    n = io_fread(str, 0, &of);
-    MEMCPY(ptr, RSTRING_PTR(str), char, n);
-    return n;
 }
 
 #define SMALLBUF 100
@@ -1766,10 +1736,10 @@ io_getpartial(int argc, VALUE *argv, VALUE io, int nonblock)
  *  Note that readpartial behaves similar to sysread.
  *  The differences are:
  *  * If the buffer is not empty, read from the buffer instead of "sysread for buffered IO (IOError)".
- *  * It doesn't cause Errno::EAGAIN and Errno::EINTR.  When readpartial meets EAGAIN and EINTR by read system call, readpartial retry the system call.
+ *  * It doesn't cause Errno::EWOULDBLOCK and Errno::EINTR.  When readpartial meets EWOULDBLOCK and EINTR by read system call, readpartial retry the system call.
  *
  *  The later means that readpartial is nonblocking-flag insensitive.
- *  It blocks on the situation IO#sysread causes Errno::EAGAIN as if the fd is blocking mode.
+ *  It blocks on the situation IO#sysread causes Errno::EWOULDBLOCK as if the fd is blocking mode.
  *
  */
 
@@ -1791,22 +1761,36 @@ io_readpartial(int argc, VALUE *argv, VALUE io)
  *     ios.read_nonblock(maxlen, outbuf)      => outbuf
  *
  *  Reads at most <i>maxlen</i> bytes from <em>ios</em> using
- *  read(2) system call after O_NONBLOCK is set for
+ *  the read(2) system call after O_NONBLOCK is set for
  *  the underlying file descriptor.
  *
  *  If the optional <i>outbuf</i> argument is present,
  *  it must reference a String, which will receive the data.
  *
- *  read_nonblock just calls read(2).
- *  It causes all errors read(2) causes: EAGAIN, EINTR, etc.
+ *  read_nonblock just calls the read(2) system call.
+ *  It causes all errors the read(2) system call causes: Errno::EWOULDBLOCK, Errno::EINTR, etc.
  *  The caller should care such errors.
  *
  *  read_nonblock causes EOFError on EOF.
  *
  *  If the read buffer is not empty,
  *  read_nonblock reads from the buffer like readpartial.
- *  In this case, read(2) is not called.
+ *  In this case, the read(2) system call is not called.
  *
+ *  When read_nonblock raises EWOULDBLOCK,
+ *  read_nonblock should not be called
+ *  until io is readable for avoiding busy loop.
+ *  This can be done as follows.
+ *
+ *    begin
+ *      result = io.read_nonblock(maxlen)
+ *    rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EINTR
+ *      IO.select([io])
+ *      retry
+ *    end
+ *
+ *  Note that this is identical to readpartial
+ *  except the non-blocking flag is set.
  */
 
 static VALUE
@@ -1826,17 +1810,32 @@ io_read_nonblock(int argc, VALUE *argv, VALUE io)
  *     ios.write_nonblock(string)   => integer
  *
  *  Writes the given string to <em>ios</em> using
- *  write(2) system call after O_NONBLOCK is set for
+ *  the write(2) system call after O_NONBLOCK is set for
  *  the underlying file descriptor.
  *
  *  It returns the number of bytes written.
  *
- *  write_nonblock just calls write(2).
- *  It causes all errors write(2) causes: EAGAIN, EINTR, etc.
+ *  write_nonblock just calls the write(2) system call.
+ *  It causes all errors the write(2) system call causes: Errno::EWOULDBLOCK, Errno::EINTR, etc.
  *  The result may also be smaller than string.length (partial write).
  *  The caller should care such errors and partial write.
  *
  *  If the write buffer is not empty, it is flushed at first.
+ *
+ *  When write_nonblock raises EWOULDBLOCK,
+ *  write_nonblock should not be called
+ *  until io is writable for avoiding busy loop.
+ *  This can be done as follows.
+ *
+ *    begin
+ *      result = io.write_nonblock(string)
+ *    rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EINTR
+ *      IO.select(nil, [io])
+ *      retry
+ *    end
+ *
+ *  Note that this doesn't guarantee to write all data in string.
+ *  The length written is reported as result and it should be checked later.
  *
  */
 
@@ -1925,7 +1924,7 @@ io_read(int argc, VALUE *argv, VALUE io)
     }
     n = io_fread(str, 0, fptr);
     if (n == 0) {
-	if (fptr->fd < 0) return Qnil;
+	if (IS_CLOSED_IO(fptr->fd))/*< 0)*/ return Qnil;
         rb_str_resize(str, 0);
         return Qnil;
     }
@@ -2183,10 +2182,8 @@ rb_io_getline_1(VALUE rs, long limit, VALUE io)
 	}
 	newline = (unsigned char)rsptr[rslen - 1];
 
-        if (fptr->encs.enc2)
-            enc = fptr->encs.enc;
-        else
-            enc = io_input_encoding(fptr);
+	/* MS - Optimisation */
+        enc = io_read_encoding(fptr);
 	while ((c = appendline(fptr, newline, &str, &limit)) != EOF) {
             const char *s, *p, *pp, *e;
 
@@ -2684,16 +2681,6 @@ rb_io_getc(VALUE io)
     READ_CHECK(fptr);
     return io_getc(fptr, enc);
 }
-int
-rb_getc(FILE *f)
-{
-    int c;
-
-    rb_read_check(f);
-    c = getc(f);
-
-    return c;
-}
 
 /*
  *  call-seq:
@@ -3012,7 +2999,7 @@ finish_writeconv(rb_io_t *fptr, int noraise)
                 if (rb_io_wait_writable(fptr->fd)) {
                     if (!noraise)
                         rb_io_check_closed(fptr);
-                    else if (fptr->fd < 0)
+                    else if (IS_CLOSED_IO(fptr->fd))//< 0)
                         return;
                     goto retry;
                 }
@@ -3063,8 +3050,8 @@ fptr_finalize(rb_io_t *fptr, int noraise)
     if (fptr->wbuf_len) {
         io_fflush(fptr);
     }
-    if (IS_PREP_STDIO(fptr) ||
-        fptr->fd <= 2) {
+    if (IS_PREP_STDIO(fptr) || IS_STD_FD(fptr->fd) || IS_CLOSED_IO(fptr->fd)) {
+        //rho comment fptr->fd <= 2) {
 	return;
     }
     if (fptr->stdio_file) {
@@ -3075,7 +3062,7 @@ fptr_finalize(rb_io_t *fptr, int noraise)
             rb_sys_fail_path(fptr->pathv);
         }
     }
-    else if (0 <= fptr->fd) {
+    else if (/*0 <= fptr->fd*/!IS_CLOSED_IO(fptr->fd)) {
         if (close(fptr->fd) < 0 && !noraise) {
             if (errno != EBADF) {
                 /* fptr->fd is still not closed */
@@ -3174,7 +3161,7 @@ rb_io_close(VALUE io)
 
     fptr = RFILE(io)->fptr;
     if (!fptr) return Qnil;
-    if (fptr->fd < 0) return Qnil;
+    if (IS_CLOSED_IO(fptr->fd))/*< 0)*/ return Qnil;
 
     fd = fptr->fd;
     rb_io_fptr_cleanup(fptr, Qfalse);
@@ -3536,13 +3523,43 @@ rb_io_binmode(VALUE io)
     return io;
 }
 
+static VALUE
+rb_io_ascii8bit_binmode(VALUE io)
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (fptr->readconv) {
+        rb_econv_close(fptr->readconv);
+        fptr->readconv = NULL;
+    }
+    if (fptr->writeconv) {
+        rb_econv_close(fptr->writeconv);
+        fptr->writeconv = NULL;
+    }
+    fptr->mode |= FMODE_BINMODE;
+    fptr->mode &= ~FMODE_TEXTMODE;
+
+    fptr->encs.enc = rb_ascii8bit_encoding();
+    fptr->encs.enc2 = NULL;
+    fptr->encs.ecflags = 0;
+    fptr->encs.ecopts = Qnil;
+    clear_codeconv(fptr);
+
+    return io;
+}
+
 /*
  *  call-seq:
  *     ios.binmode    => ios
  *
- *  Puts <em>ios</em> into binary mode. This is useful only in
- *  MS-DOS/Windows environments. Once a stream is in binary mode, it
- *  cannot be reset to nonbinary mode.
+ *  Puts <em>ios</em> into binary mode.
+ *  Once a stream is in binary mode, it cannot be reset to nonbinary mode.
+ *
+ *  - newline conversion disabled
+ *  - encoding conversion disabled
+ *  - content is treated as ASCII-8BIT
+ *
  */
 
 static VALUE
@@ -3550,11 +3567,11 @@ rb_io_binmode_m(VALUE io)
 {
     VALUE write_io;
 
-    rb_io_binmode(io);
+    rb_io_ascii8bit_binmode(io);
 
     write_io = GetWriteIO(io);
     if (write_io != io)
-        rb_io_binmode(write_io);
+        rb_io_ascii8bit_binmode(write_io);
     return io;
 }
 
@@ -3746,52 +3763,87 @@ rb_io_oflags_modestr(int oflags)
     return NULL;		/* not reached */
 }
 
+/*
+ * Convert external/internal encodings to enc/enc2
+ * NULL => use default encoding
+ * Qnil => no encoding specified (internal only)
+ */
+static void
+rb_io_ext_int_to_encs(rb_encoding *ext, rb_encoding *intern, rb_encoding **enc, rb_encoding **enc2)
+{
+    int default_ext = 0;
+
+    if (ext == NULL) {
+	ext = rb_default_external_encoding();
+	default_ext = 1;
+    }
+    if (intern == NULL && ext != rb_ascii8bit_encoding())
+	/* If external is ASCII-8BIT, no default transcoding */
+	intern = rb_default_internal_encoding();
+    if (intern == NULL || intern == (rb_encoding *)Qnil || intern == ext) {
+	/* No internal encoding => use external + no transcoding */
+	*enc = default_ext ? NULL : ext;
+	*enc2 = NULL;
+    }
+    else {
+	*enc = intern;
+	*enc2 = ext;
+    }
+}
+
 static void
 parse_mode_enc(const char *estr, rb_encoding **enc_p, rb_encoding **enc2_p)
 {
-    const char *p0, *p1;
-    char *enc2name;
+    const char *p;
+    char encname[ENCODING_MAXNAMELEN+1];
     int idx, idx2;
+    rb_encoding *ext_enc, *int_enc;
 
-    /* parse estr as "enc" or "enc2:enc" */
+    /* parse estr as "enc" or "enc2:enc" or "enc:-" */
 
-    *enc_p = 0;
-    *enc2_p = 0;
-
-    p0 = strrchr(estr, ':');
-    if (!p0) p1 = estr;
-    else     p1 = p0 + 1;
-    idx = rb_enc_find_index(p1);
-    if (idx >= 0) {
-	*enc_p = rb_enc_from_index(idx);
+    p = strrchr(estr, ':');
+    if (p) {
+	int len = (p++) - estr;
+	if (len == 0 || len > ENCODING_MAXNAMELEN)
+	    idx = -1;
+	else {
+	    memcpy(encname, estr, len);
+	    encname[len] = '\0';
+	    estr = encname;
+	    idx = rb_enc_find_index(encname);
+	}
     }
+    else
+	idx = rb_enc_find_index(estr);
+
+    if (idx >= 0)
+	ext_enc = rb_enc_from_index(idx);
     else {
-	rb_warn("Unsupported encoding %s ignored", p1);
+	if (idx != -2)
+	    rb_warn("Unsupported encoding %s ignored", estr);
+	ext_enc = NULL;
     }
 
-    if (*enc_p && p0) {
-	int n = p0 - estr;
-	if (n > ENCODING_MAXNAMELEN) {
-	    idx2 = -1;
+    int_enc = NULL;
+    if (p) {
+	if (*p == '-' && *(p+1) == '\0') {
+	    /* Special case - "-" => no transcoding */
+	    int_enc = (rb_encoding *)Qnil;
 	}
 	else {
-	    enc2name = ALLOCA_N(char, n+1);
-	    memcpy(enc2name, estr, n);
-	    enc2name[n] = '\0';
-	    estr = enc2name;
-	    idx2 = rb_enc_find_index(enc2name);
-	}
-	if (idx2 < 0) {
-	    rb_warn("Unsupported encoding %.*s ignored", n, estr);
-	}
-	else if (idx2 == idx) {
-	    rb_warn("Ignoring internal encoding %.*s: it is identical to external encoding %s",
-		    n, estr, p1);
-	}
-	else {
-	    *enc2_p = rb_enc_from_index(idx2);
+	    idx2 = rb_enc_find_index(p);
+	    if (idx2 < 0)
+		rb_warn("Unsupported encoding %s ignored", p);
+	    else if (idx2 == idx) {
+		rb_warn("Ignoring internal encoding %s: it is identical to external encoding %s", p, estr);
+		int_enc = (rb_encoding *)Qnil;
+	    }
+	    else
+		int_enc = rb_enc_from_index(idx2);
 	}
     }
+
+    rb_io_ext_int_to_encs(ext_enc, int_enc, enc_p, enc2_p);
 }
 
 static void
@@ -3827,28 +3879,32 @@ io_extract_encoding_option(VALUE opt, rb_encoding **enc_p, rb_encoding **enc2_p)
     }
     if (!NIL_P(extenc)) {
 	rb_encoding *extencoding = rb_to_encoding(extenc);
+	rb_encoding *intencoding = NULL;
         extracted = 1;
-        *enc_p = 0;
-        *enc2_p = 0;
 	if (!NIL_P(encoding)) {
 	    rb_warn("Ignoring encoding parameter '%s': external_encoding is used",
 		    RSTRING_PTR(encoding));
 	}
 	if (!NIL_P(intenc)) {
-	    rb_encoding *intencoding = rb_to_encoding(intenc);
+	    if (!NIL_P(encoding = rb_check_string_type(intenc))) {
+		char *p = StringValueCStr(encoding);
+		if (*p == '-' && *(p+1) == '\0') {
+		    /* Special case - "-" => no transcoding */
+		    intencoding = (rb_encoding *)Qnil;
+		}
+		else
+		    intencoding = rb_to_encoding(intenc);
+	    }
+	    else
+		intencoding = rb_to_encoding(intenc);
 	    if (extencoding == intencoding) {
 		rb_warn("Ignoring internal encoding '%s': it is identical to external encoding '%s'",
 			RSTRING_PTR(rb_inspect(intenc)),
 			RSTRING_PTR(rb_inspect(extenc)));
-	    }
-	    else {
-		*enc_p = intencoding;
-                *enc2_p = extencoding;
+		intencoding = (rb_encoding *)Qnil;
 	    }
 	}
-        else {
-            *enc_p = extencoding;
-        }
+	rb_io_ext_int_to_encs(extencoding, intencoding, enc_p, enc2_p);
     }
     else {
 	if (!NIL_P(intenc)) {
@@ -3888,8 +3944,8 @@ rb_io_extract_modeenc(VALUE *vmode_p, VALUE *vperm_p, VALUE opthash,
 
     vmode = *vmode_p;
 
-    enc = NULL;
-    enc2 = NULL;
+    /* Set to defaults */
+    rb_io_ext_int_to_encs(NULL, NULL, &enc, &enc2);
 
     if (NIL_P(vmode)) {
         fmode = FMODE_READABLE;
@@ -3913,6 +3969,12 @@ rb_io_extract_modeenc(VALUE *vmode_p, VALUE *vperm_p, VALUE opthash,
             has_enc = 1;
             parse_mode_enc(p+1, &enc, &enc2);
         }
+	else {
+	    rb_encoding *e;
+
+	    e = (fmode & FMODE_BINMODE) ? rb_ascii8bit_encoding() : NULL;
+	    rb_io_ext_int_to_encs(e, NULL, &enc, &enc2);
+	}
     }
 
     if (NIL_P(opthash)) {
@@ -3922,10 +3984,10 @@ rb_io_extract_modeenc(VALUE *vmode_p, VALUE *vperm_p, VALUE opthash,
     else {
 	VALUE v;
 	v = rb_hash_aref(opthash, sym_textmode);
-	if (!NIL_P(v))
+	if (!NIL_P(v) && RTEST(v))
             fmode |= FMODE_TEXTMODE;
 	v = rb_hash_aref(opthash, sym_binmode);
-	if (!NIL_P(v)) {
+	if (!NIL_P(v) && RTEST(v)) {
             fmode |= FMODE_BINMODE;
 #ifdef O_BINARY
             oflags |= O_BINARY;
@@ -4011,12 +4073,12 @@ rb_sysopen(const char *fname, int oflags, mode_t perm)
 #endif
 
     fd = rb_sysopen_internal(fname, oflags, perm);
-    if (fd < 0) {
+    if (IS_CLOSED_IO(fd)/* < 0*/) {
 	if (errno == EMFILE || errno == ENFILE) {
 	    rb_gc();
 	    fd = rb_sysopen_internal(fname, oflags, perm);
 	}
-	if (fd < 0) {
+	if (IS_CLOSED_IO(fd) /*< 0*/) {
 	    rb_sys_fail(fname);
 	}
     }
@@ -4076,8 +4138,8 @@ rb_file_open_generic(VALUE io, VALUE filename, int oflags, int fmode, convconfig
     rb_io_t *fptr;
     convconfig_t cc;
     if (!convconfig) {
-        cc.enc = NULL;
-        cc.enc2 = NULL;
+	/* Set to default encodings */
+	rb_io_ext_int_to_encs(NULL, NULL, &cc.enc, &cc.enc2);
         cc.ecflags = 0;
         cc.ecopts = Qnil;
         convconfig = &cc;
@@ -4105,8 +4167,11 @@ rb_file_open_internal(VALUE io, VALUE filename, const char *modestr)
         parse_mode_enc(p+1, &convconfig.enc, &convconfig.enc2);
     }
     else {
-        convconfig.enc = NULL;
-        convconfig.enc2 = NULL;
+	rb_encoding *e;
+	/* Set to default encodings */
+
+	e = (fmode & FMODE_BINMODE) ? rb_ascii8bit_encoding() : NULL;
+	rb_io_ext_int_to_encs(e, NULL, &convconfig.enc, &convconfig.enc2);
         convconfig.ecflags = 0;
         convconfig.ecopts = Qnil;
     }
@@ -4195,9 +4260,6 @@ pipe_finalize(rb_io_t *fptr, int noraise)
     }
     fptr->fd = -1;
     fptr->stdio_file = 0;
-#if defined DJGPP
-    status <<= 8;
-#endif
     rb_last_status_set(status, fptr->pid);
 #else
     fptr_finalize(fptr, noraise);
@@ -4683,7 +4745,7 @@ rb_scan_open_args(int argc, VALUE *argv,
 	    static VALUE fs_enc;
 	    if (!fs_enc)
 		fs_enc = rb_enc_from_encoding(fs_encoding);
-	    fname = rb_str_transcode(fname, fs_enc, 0, Qnil);
+	    fname = rb_str_encode(fname, fs_enc, 0, Qnil);
 	}
     }
 #endif
@@ -5106,7 +5168,7 @@ rb_io_reopen(int argc, VALUE *argv, VALUE file)
 
     fptr->pathv = rb_str_new_frozen(fname);
     oflags = rb_io_fmode_oflags(fptr->mode);
-    if (fptr->fd < 0) {
+    if (IS_CLOSED_IO(fptr->fd))/*< 0)*/ {
         fptr->fd = rb_sysopen(RSTRING_PTR(fptr->pathv), oflags, 0666);
 	fptr->stdio_file = 0;
 	return file;
@@ -5522,7 +5584,7 @@ rb_obj_display(int argc, VALUE *argv, VALUE self)
 void
 rb_write_error2(const char *mesg, long len)
 {
-    if (rb_stderr == orig_stderr || RFILE(orig_stderr)->fptr->fd < 0) {
+    if (rb_stderr == orig_stderr || IS_CLOSED_IO(RFILE(orig_stderr)->fptr->fd))/*< 0)*/ {
 	fwrite(mesg, sizeof(char), len, stderr);
     }
     else {
@@ -6400,7 +6462,6 @@ rb_f_select(int argc, VALUE *argv, VALUE obj)
 
 }
 
-#if !defined(MSDOS) && !defined(__human68k__)
 static int
 io_cntl(int fd, int cmd, long narg, int io_p)
 {
@@ -6420,12 +6481,10 @@ io_cntl(int fd, int cmd, long narg, int io_p)
 #endif
     return retval;
 }
-#endif
 
 static VALUE
 rb_io_ctl(VALUE io, VALUE req, VALUE arg, int io_p)
 {
-#if !defined(MSDOS) && !defined(__human68k__)
     int cmd = NUM2ULONG(req);
     rb_io_t *fptr;
     long len = 0;
@@ -6491,10 +6550,6 @@ rb_io_ctl(VALUE io, VALUE req, VALUE arg, int io_p)
     }
 
     return INT2NUM(retval);
-#else
-    rb_notimplement();
-    return Qnil;		/* not reached */
-#endif
 }
 
 
@@ -6677,29 +6732,40 @@ io_encoding_set(rb_io_t *fptr, VALUE v1, VALUE v2, VALUE opt)
 {
     rb_encoding *enc, *enc2;
     int ecflags;
-    VALUE ecopts;
+    VALUE ecopts, tmp;
 
     if (!NIL_P(v2)) {
 	enc2 = rb_to_encoding(v1);
-	enc = rb_to_encoding(v2);
+	tmp = rb_check_string_type(v2);
+	if (!NIL_P(tmp)) {
+	    char *p = StringValueCStr(tmp);
+	    if (*p == '-' && *(p+1) == '\0') {
+		/* Special case - "-" => no transcoding */
+		enc = enc2;
+		enc2 = NULL;
+	    }
+	    else
+		enc = rb_to_encoding(v2);
+	}
+	else
+	    enc = rb_to_encoding(v2);
         ecflags = rb_econv_prepare_opts(opt, &ecopts);
     }
     else {
 	if (NIL_P(v1)) {
-	    enc = NULL;
-	    enc2 = NULL;
+	    /* Set to default encodings */
+	    rb_io_ext_int_to_encs(NULL, NULL, &enc, &enc2);
             ecflags = 0;
             ecopts = Qnil;
 	}
 	else {
-	    VALUE tmp = rb_check_string_type(v1);
+	    tmp = rb_check_string_type(v1);
 	    if (!NIL_P(tmp)) {
                 parse_mode_enc(StringValueCStr(tmp), &enc, &enc2);
                 ecflags = rb_econv_prepare_opts(opt, &ecopts);
 	    }
 	    else {
-		enc = rb_to_encoding(v1);
-		enc2 = NULL;
+		rb_io_ext_int_to_encs(rb_to_encoding(v1), NULL, &enc, &enc2);
                 ecflags = 0;
                 ecopts = Qnil;
 	    }
@@ -6768,10 +6834,6 @@ io_encoding_set(rb_io_t *fptr, VALUE v1, VALUE v2, VALUE opt)
 static VALUE
 rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
 {
-#ifdef __human68k__
-    rb_notimplement();
-    return Qnil;		/* not reached */
-#else
     int pipes[2], state;
     VALUE r, w, args[3], v1, v2;
     VALUE opt;
@@ -6804,7 +6866,6 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
     rb_io_synchronized(RFILE(w)->fptr);
 
     return rb_assoc_new(r, w);
-#endif
 }
 
 struct foreach_arg {
@@ -8417,13 +8478,13 @@ Init_IO(void)
     rb_define_global_const("ARGF", argf);
 
     rb_define_hooked_variable("$.", &argf, argf_lineno_getter, argf_lineno_setter);
-    rb_define_hooked_variable("$FILENAME", &argf, argf_filename_getter, 0);
+    rb_define_hooked_variable("$FILENAME", &argf, argf_filename_getter, rb_gvar_readonly_setter);
     ARGF.filename = rb_str_new2("-");
 
     rb_define_hooked_variable("$-i", &argf, opt_i_get, opt_i_set);
-    rb_define_hooked_variable("$*", &argf, argf_argv_getter, 0);
+    rb_define_hooked_variable("$*", &argf, argf_argv_getter, rb_gvar_readonly_setter);
 
-#if defined (_WIN32) || defined(DJGPP) || defined(__CYGWIN__) || defined(__human68k__)
+#if defined (_WIN32) || defined(__CYGWIN__)
     atexit(pipe_atexit);
 #endif
 

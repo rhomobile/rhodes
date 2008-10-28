@@ -42,7 +42,7 @@ class AccountController < Rho::RhoController
 
   # POST /cases/1/delete
   def delete
-    @account = Account.find(@params['object'])
+    @account = Account.find(@params['id'])
     @account.destroy
     redirect :index
   end

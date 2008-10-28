@@ -2,7 +2,7 @@
 
   vm_core.h - 
 
-  $Author: shyouhei $
+  $Author: yugui $
   created at: 04/01/01 19:41:38 JST
 
   Copyright (C) 2004-2007 Koichi Sasada
@@ -35,13 +35,7 @@
 #include <signal.h>
 
 #ifndef NSIG
-# ifdef DJGPP
-#  define NSIG SIGMAX
-# elif defined MACOS_UNUSE_SIGNAL
-#  define NSIG 1
-# else
-#  define NSIG (_SIGMAX + 1)      /* For QNX */
-# endif
+# define NSIG (_SIGMAX + 1)      /* For QNX */
 #endif
 
 #define RUBY_NSIG NSIG
@@ -571,7 +565,6 @@ typedef rb_control_frame_t *
   ((rb_control_frame_t *)((VALUE *)(b) - 5))
 
 /* VM related object allocate functions */
-/* TODO: should be static functions */
 VALUE rb_thread_alloc(VALUE klass);
 VALUE rb_proc_alloc(VALUE klass);
 
@@ -624,8 +617,7 @@ extern rb_vm_t *ruby_current_vm;
 void rb_thread_execute_interrupts(rb_thread_t *);
 
 #define RUBY_VM_CHECK_INTS_TH(th) do { \
-  if (th->interrupt_flag) { \
-    /* TODO: trap something event */ \
+  if (UNLIKELY(th->interrupt_flag)) { \
     rb_thread_execute_interrupts(th); \
   } \
 } while (0)

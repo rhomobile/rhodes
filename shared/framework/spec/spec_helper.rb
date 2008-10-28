@@ -6,26 +6,10 @@ rescue LoadError
   require 'spec'
 end
 
-# Stubs for testing
-class Fixnum
-  def fdiv
-  end
-end
+$:.unshift(File.join(File.dirname(__FILE__), '..'))
+require 'spec/stubs'
 
-class Bignum
-  def fdiv
-  end
-end
-
-class SyncEngine
-  def self.dosync
-  end
-  def self.lock_sync_mutex
-  end
-  def self.unlock_sync_mutex
-  end
-end
-
+# Use the rubygem for local testing
 require 'rubygems'
 require 'sqlite3'
 require 'rhom/rhom'

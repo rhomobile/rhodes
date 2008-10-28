@@ -1,4 +1,15 @@
-require 'config/requirements'
-require 'config/hoe' # setup Hoe + all gem configuration
+$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
+require 'rubygems'
+require 'spec/rake/spectask'
+require 'rake/gempackagetask'
 
-Dir['tasks/**/*.rake'].each { |rake| load rake }
+Spec::Rake::SpecTask.new do |t|
+  t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_opts = ['--options', 'spec/spec.opts']
+end
+
+require File.join(File.dirname(__FILE__), 'spec/stubs')
+SPEC = eval(File.read("#{File.dirname(__FILE__)}/rhodes.gemspec"))
+Rake::GemPackageTask.new(SPEC) do |p|
+  p.gem_spec = SPEC
+end

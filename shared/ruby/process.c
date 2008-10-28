@@ -2,7 +2,7 @@
 
   process.c -
 
-  $Author: usa $
+  $Author: mame $
   created at: Tue Aug 10 14:30:50 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -27,9 +27,6 @@
 #endif
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
-#ifdef __DJGPP__
-#include <process.h>
 #endif
 
 #include <time.h>
@@ -1004,17 +1001,9 @@ proc_exec_v(char **argv, const char *prog)
 	return -1;
     }
 
-#if (defined(MSDOS) && !defined(DJGPP)) || defined(__human68k__) || defined(__EMX__) || defined(OS2)
+#if defined(__EMX__) || defined(OS2)
     {
-#if defined(__human68k__)
-#define COMMAND "command.x"
-#endif
-#if defined(__EMX__) || defined(OS2) /* OS/2 emx */
 #define COMMAND "cmd.exe"
-#endif
-#if (defined(MSDOS) && !defined(DJGPP))
-#define COMMAND "command.com"
-#endif
 	char *extension;
 
 	if ((extension = strrchr(prog, '.')) != NULL && STRCASECMP(extension, ".bat") == 0) {
@@ -1040,7 +1029,7 @@ proc_exec_v(char **argv, const char *prog)
 	    }
 	}
     }
-#endif /* MSDOS or __human68k__ or __EMX__ */
+#endif /* __EMX__ */
     before_exec();
     execv(prog, argv);
     preserving_errno(after_exec());
@@ -1091,14 +1080,7 @@ rb_proc_exec(const char *str)
 	    if (nl) s = nl;
 	}
 	if (*s != ' ' && !ISALPHA(*s) && strchr("*?{}[]<>()~&|\\$;'`\"\n",*s)) {
-#if defined(MSDOS)
-	    int status;
-	    before_exec();
-	    status = system(str);
-	    after_exec();
-	    if (status != -1)
-		exit(status);
-#elif defined(__human68k__) || defined(__CYGWIN32__) || defined(__EMX__)
+#if defined(__CYGWIN32__) || defined(__EMX__)
 	    char fbuf[MAXPATHLEN];
 	    char *shell = dln_find_exe_r("sh", 0, fbuf, sizeof(fbuf));
 	    int status = -1;
@@ -1158,30 +1140,6 @@ proc_spawn_v(char **argv, char *prog)
     if (!prog)
 	return -1;
 
-#if defined(__human68k__)
-    if ((extension = strrchr(prog, '.')) != NULL && STRCASECMP(extension, ".bat") == 0) {
-	char **new_argv;
-	char *p;
-	int n;
-
-	for (n = 0; argv[n]; n++)
-	    /* no-op */;
-	new_argv = ALLOCA_N(char*, n + 2);
-	for (; n > 0; n--)
-	    new_argv[n + 1] = argv[n];
-	new_argv[1] = strcpy(ALLOCA_N(char, strlen(argv[0]) + 1), argv[0]);
-	for (p = new_argv[1]; *p != '\0'; p++)
-	    if (*p == '/')
-		*p = '\\';
-	new_argv[0] = COMMAND;
-	argv = new_argv;
-	prog = dln_find_exe_r(argv[0], 0, fbuf, sizeof(fbuf));
-	if (!prog) {
-	    errno = ENOENT;
-	    return -1;
-	}
-    }
-#endif
     before_exec();
     status = spawnv(P_WAIT, prog, argv);
     rb_last_status_set(status == -1 ? 127 : status, 0);
@@ -1334,8 +1292,9 @@ check_exec_redirect(VALUE key, VALUE val, VALUE options)
         index = EXEC_OPTION_OPEN;
         path = val;
         FilePathValue(path);
-        if ((FIXNUM_P(key) && (FIX2INT(key) == 1 || FIX2INT(key) == 2)) ||
-            key == rb_stdout || key == rb_stderr)
+        if (TYPE(key) == T_FILE)
+            key = check_exec_redirect_fd(key);
+        if (FIXNUM_P(key) && (FIX2INT(key) == 1 || FIX2INT(key) == 2))
             flags = INT2NUM(O_WRONLY|O_CREAT|O_TRUNC);
         else
             flags = INT2NUM(O_RDONLY);
@@ -1692,10 +1651,9 @@ rb_exec_arg_fixup(struct rb_exec_arg *e)
  *  expansion. If +command+ is a two-element array, the first
  *  element is the command to be executed, and the second argument is
  *  used as the <code>argv[0]</code> value, which may show up in process
- *  listings. In MSDOS environments, the command is executed in a
- *  subshell; otherwise, one of the <code>exec(2)</code> system calls is
- *  used, so the running command may inherit some of the environment of
- *  the original program (including open file descriptors).
+ *  listings. In order to execute the command, one of the <code>exec(2)</code> 
+ *  system calls is used, so the running command may inherit some of the environment 
+ *  of the original program (including open file descriptors).
  *
  *  The hash arguments, env and options, are same as
  *  <code>system</code> and <code>spawn</code>.
@@ -1896,7 +1854,7 @@ run_exec_dup2(VALUE ary, VALUE save)
         int j = i;
         while (j != -1 && pairs[j].oldfd != -1 && pairs[j].num_newer == 0) {
             if (save_redirect_fd(pairs[j].newfd, save) < 0)
-                return -1;
+                goto fail;
             ret = redirect_dup2(pairs[j].oldfd, pairs[j].newfd);
             if (ret == -1)
                 goto fail;
@@ -2131,6 +2089,7 @@ rb_run_exec_options(const struct rb_exec_arg *e, struct rb_exec_arg *s)
             char *cwd = my_getcwd();
             rb_ary_store(soptions, EXEC_OPTION_CHDIR,
                          hide_obj(rb_str_new2(cwd)));
+            xfree(cwd);
         }
         if (chdir(RSTRING_PTR(obj)) == -1)
             return -1;
@@ -2298,15 +2257,10 @@ rb_fork(int *status, int (*chfunc)(void*), void *charg, VALUE fds)
     int ep[2];
 #endif
 
-#ifndef __VMS
 #define prefork() (		\
 	rb_io_flush(rb_stdout), \
 	rb_io_flush(rb_stderr)	\
 	)
-#else
-#define prefork() ((void)0)
-#endif
-
     prefork();
 
 #ifdef FD_CLOEXEC
@@ -2693,11 +2647,7 @@ rb_spawn_internal(int argc, VALUE *argv, int default_close_others)
 # else
     if (argc) prog = rb_ary_join(rb_ary_new4(argc, argv), rb_str_new2(" "));
     status = system(StringValuePtr(prog));
-#  if defined(__human68k__) || defined(__DJGPP__)
-    rb_last_status_set(status == -1 ? 127 : status, 0);
-#  else
     rb_last_status_set((status & 0xff) << 8, 0);
-#  endif
 # endif
 
     rb_run_exec_options(&sarg, NULL);
