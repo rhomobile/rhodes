@@ -47,7 +47,7 @@ void RhoRubyStart(const char* szAppPath)
 		static const char* szFramework = 
 		"begin\r\n"
 		"require 'rho'\r\n"
-		"RHO.new\r\n"
+		"Rho::RHO.new\r\n"
 		"rescue Exception => e\r\n"
 		"puts e.message\r\n"
 		"end\r\n";

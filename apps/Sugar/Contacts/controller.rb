@@ -1,6 +1,6 @@
-require 'rhocontroller'
+require 'rho/rhocontroller'
 
-class ContactsController < RhoController
+class ContactsController < Rho::RhoController
 
   def index
     @accounts = Contacts.find(:all)

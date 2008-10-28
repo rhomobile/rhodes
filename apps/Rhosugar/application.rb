@@ -1,4 +1,4 @@
-require 'rhoapplication'
+require 'rho/rhoapplication'
 
-class RhosugarApplication < RhoApplication
+class RhosugarApplication < Rho::RhoApplication
 end
