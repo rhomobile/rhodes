@@ -89,7 +89,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 - (void) configure {
 	[self copyFromMainBundle:@"apps" replace:YES];
 	[self copyFromMainBundle:@"lib" replace:YES];
-	[self copyFromMainBundle:@"db" replace:NO];
+	[self copyFromMainBundle:@"db" replace:YES];
 }
 
 @end
