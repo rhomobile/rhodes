@@ -48,7 +48,7 @@ class CaseController < Rho::RhoController
   def destroy
     @case = Case.find(@params['object'])
     @case.destroy
-	redirect :index
+    redirect :index
   end
 
 end

@@ -1,4 +1,4 @@
-require 'rhocontroller'
+require 'rho/rhocontroller'
 
 class AccountController < RhoController
   # GET /cases
