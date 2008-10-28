@@ -47,7 +47,7 @@ class CaseController < Rho::RhoController
 
   # POST /cases/1/delete
   def destroy
-    @case = Case.find(@params['object'])
+    @case = Case.find(@params['id'])
     @case.destroy
     redirect :index
   end
