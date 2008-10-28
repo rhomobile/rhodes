@@ -11,12 +11,19 @@
 <form action="<%=url_for(:create) %>">
 
 
-Case Number <input name="case[name]" value="<%=@case.case_number%>"/><br/>
+Case Number <input name="case[name]" value=""/><br/>
 
-Assigned To <input name="case[industry]" value="<%=@case.assigned_to%>"/><br/>
+Assigned To
+<select name="case[assigned_user_id]">
+<%@employees.each do |a|%>
+  <option value="<%=a.object%>" <%if @employee.object==a.object%>
+<%end%>><%=a.user_name%></option>
+<%end%>
+</select>
+<br/>
 
 Account Name
-<select name="case[account]" value="<%=@case.account%>">
+<select name="case[account_id]">
 <%@accounts.each do |a|%>
   <option><%=a.name%></option>
 <%end%>
