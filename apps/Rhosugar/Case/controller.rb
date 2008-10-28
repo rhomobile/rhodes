@@ -16,6 +16,7 @@ class CaseController < Rho::RhoController
   # GET /cases/new
   def new
     @accounts = Account.find :all
+    @employees = Employee.find :all
     @case = Case.new
     render :new
   end
