@@ -37,7 +37,7 @@ module Rhom
         attribs_empty = false
         RHO_SOURCES.each do |source, id|
           Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
-          src_attribs = Rhom::execute_sql "select distinct attrib from object_values \
+          src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
                                            where source_id=#{id.to_i}"
           attribs[source] = src_attribs
           # there are no records yet, raise a flag so we don't define the constant
@@ -60,7 +60,6 @@ module Rhom
           
               def initialize(obj=nil)
                 if obj
-				          puts "inside new: #{obj.inspect}"
                   # create a temp id for the create type
                   # TODO: This is duplicative of get_new_obj
                   temp_objid = djb_hash(obj.values.to_s, 10).to_s
