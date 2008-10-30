@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Editing Case</title>
+<meta name="viewport" content="width=320"/>
+</head>
+<body>
+<form method="POST" action="<%=url_for('update') %>">
+
+<input type="hidden" name="object" value="<%=@case.object%>"/>
+
+Case Number <input name="case[case_number]" value="<%=@case.case_number%>"/><br/>
+
+Subject <input name="case[name]" value="<%=@case.name%>"/><br/>
+Assigned To
+<select name="case[assigned_user_id]">
+<%@employees.each do |a|%>
+  <option value="<%=a.object%>" <%if @employee.object==a.object%>
+selected
+<%end%>><%=a.user_name%></option>
+<%end%>
+</select>
+<br/>
+
+Account Name
+<select name="case[account_id]">
+<%@accounts.each do |a|%>
+  <option value="<%=a.object%>" <%if @account.name==a.name%>
+selected
+<%end%>><%=a.name%></option>
+<%end%>
+</select>
+<br/>
+
+Priority
+<select name="case[priority]" value="<%=@case.priority%>">
+  <option>High</option>
+  <option>Medium</option>
+  <option>Low</option>
+</select><br/>
+
+Status
+<select name="case[status]" value="<%=@case.status%>">
+  <option>New</option>
+  <option>Assigned</option>
+  <option>Closed</option>
+</select><br/>
+
+Type
+<select name="case[type]" value="<%=@case.type%>">
+  <option>Administration</option>
+  <option>Product</option>
+  <option>User</option>
+</select><br/>
+
+Description
+<textarea name="case[description]" rows="3" cols="40">
+<%=@case.description%>
+</textarea><br/>
+
+Resolution
+<textarea name="case[resolution]" rows="3" cols="40">
+<%=@case.resolution%>
+</textarea><br/>
+
+<input type="submit" value="Update Case"/>
+</form>
+</body>
+</html>

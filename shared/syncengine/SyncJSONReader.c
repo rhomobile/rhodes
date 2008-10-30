@@ -42,14 +42,14 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 	struct lh_entry *sub_entry;
 	char *sub_key;
 	struct json_object *sub_val;
-	int add_to_list = 0;
+	int i, parsed_size, add_to_list = 0;
 	pSyncObject current_parse_object;
 	
 	json = json_tokener_parse(input);
 	json_list = json_object_get_array((struct json_object *)json);
-	int parsed_size = array_list_length(json_list);
+	parsed_size = array_list_length(json_list);
 	if (size < parsed_size) parsed_size = size;
-	for (int i = 0; i < parsed_size; i++) {
+	for (i = 0; i < parsed_size; i++) {
 		struct json_object *jsonSync = (struct json_object *) array_list_get_idx(json_list, i);		
 		
 		for (entry = json_object_get_object(jsonSync)->head; entry; entry = entry->next) {
