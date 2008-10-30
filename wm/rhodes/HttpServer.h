@@ -17,6 +17,8 @@ public:
 	void ResumeThread();
 	void FreezeThread();
 
+  static const char* GetRootPath();
+
 private:
 	HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);
 	HRESULT CloseHandle(HANDLE hHandle);
@@ -26,5 +28,4 @@ private:
 
   bool  m_bRubyInitialized;
   bool  InitRubyFramework();
-  static const char* GetRootPath();
 };

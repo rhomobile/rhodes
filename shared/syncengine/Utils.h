@@ -21,9 +21,9 @@
 #ifndef __UTILS__
 #define __UTILS__
 
-#import <stdio.h>
-#import <string.h>
-#import <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #if defined(__cplusplus)
 extern "C" {
