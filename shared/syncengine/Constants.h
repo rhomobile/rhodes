@@ -26,8 +26,6 @@ extern "C" {
 #endif
 
 /* Define sync source */
-#define SYNC_SOURCE			"http://rhosync.rhomobile.com/sources/"
-//#define SYNC_SOURCE			"http://localhost:3000/sources/1"
 #define SYNC_SOURCE_FORMAT	"?format=json"
 
 /* Sync operation types */

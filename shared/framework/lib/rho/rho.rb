@@ -7,11 +7,31 @@ module Rho
 	
     def initialize
       puts "Calling RHO.initialize"
+      require RhoApplication::get_base_app_path(appname)+'config'
+      # setup the sources table and model attributes for this application
+      def init_sources
+        if defined? RHO_SOURCES
+          attribs = {}
+          Rhom::execute_sql "delete from sources"
+          src_attribs = []
+          attribs_empty = false
+          RHO_SOURCES.each do |source|
+            Rhom::execute_sql "insert into sources (source_id, source_url) values ('#{source['source_id']}','#{source['url']}')"
+            src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
+                                             where source_id=#{id.to_i}"
+            attribs[source] = src_attribs
+            # there are no records yet, raise a flag so we don't define the constant
+            if attribs[source] == 0
+              attribs_empty = true
+            end
+          end
+        end
+        Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS or attribs_empty
+      end
     end
 	
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
-        require RhoApplication::get_app_path(appname)+'config'
         require RhoApplication::get_app_path(appname)+'application'
         APPLICATIONS[appname] = Object.const_get(appname+'Application').new
       end

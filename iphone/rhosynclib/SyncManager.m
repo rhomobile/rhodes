@@ -23,6 +23,7 @@
 #import "SyncManager.h"
 #include "Constants.h"
 #include "SyncJSONReader.h"
+#include "Utils.h"
 //#import "rhosynctestappdelegate.h"
 
 /* 
@@ -35,15 +36,15 @@ int fetch_remote_changes(sqlite3 *database) {
 	pSyncObject *list;
 	char url_string[4096];
 	int max_size = 100;
-	int *source_list;
-	source_list = malloc(max_size*sizeof(int));
-	int source_length = get_source_ids_from_database(source_list, database, max_size);
+	char *source_list;
+	source_list = malloc(max_size*sizeof(char *));
+	int source_length = get_source_urls_from_database(source_list, database, max_size);
 	int available = 0;
 	printf("Iterating over %i sources...\n", source_length);
 	
 	/* iterate over each source id and do a fetch */
 	for(int i = 0; i < source_length; i++) {
-		sprintf(url_string, "%s%d%s", SYNC_SOURCE, source_list[i], SYNC_SOURCE_FORMAT);
+		sprintf(url_string, "%s%s", source_list[i], SYNC_SOURCE_FORMAT);
 		printf("url_string: %s\n", url_string);
 		
 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -81,6 +82,7 @@ int fetch_remote_changes(sqlite3 *database) {
 				}
 				/* free the in-memory list after populating the database */
 				free_ob_list(list, available);
+				free(list);
 			}
 			
 		}
@@ -88,7 +90,7 @@ int fetch_remote_changes(sqlite3 *database) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	}
 	
-	free(source_list);
+	free_str_list(source_list, source_length);
 	return available;
 }
 

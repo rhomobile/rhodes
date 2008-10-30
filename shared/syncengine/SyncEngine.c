@@ -127,14 +127,6 @@ int process_op_list(char *type) {
 	return 0;
 }
 
-void free_op_list(pSyncOperation *list, int available) {
-  int j;
-	/* Free up our op_list */
-	for(j = 0; j < available; j++) {
-		SyncOperationRelease(list[j]);
-	}
-}
-
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {

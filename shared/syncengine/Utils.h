@@ -38,6 +38,8 @@ char* itoa (int n);
 char* str_assign(char* data);
 	
 unsigned int DJBHash(char* str, unsigned int len);
+	
+void free_str_list(char *list, int available);
 
 #if defined(__cplusplus)
 }
