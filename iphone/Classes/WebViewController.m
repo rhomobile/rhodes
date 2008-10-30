@@ -22,18 +22,8 @@
 	// finished loading, hide the activity indicator in the status bar
 	[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
 	
-	//navItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
-	syncBtn = [[[UIBarButtonItem alloc]
-				initWithTitle:@"Sync"
-				style:UIBarButtonItemStyleBordered
-				target:self 
-				action:@selector(runSync:)] autorelease];
-	self.navigationItem.leftBarButtonItem = syncBtn;
-}
-
-- (void)runSync
-{
-	wake_up_sync_engine();
+	navItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
+	backBtn.enabled = webview.canGoBack;
 }
 
 @end

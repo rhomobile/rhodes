@@ -36,7 +36,7 @@
 #define EDOM            33
 #define ERANGE          34
 #define EDEADLK         36
-//#define ENOSYS          37
+#define ENOSYS          37
 #define ENAMETOOLONG    38
 #define ENOLCK          39
 #define ENOSYS          40
