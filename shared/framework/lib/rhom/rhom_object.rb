@@ -23,9 +23,8 @@ module Rhom
   module RhomObject
     # defines a method at runtime for the
     # dynamically created class
-  
-    TABLE_NAME = 'object_values'
-
+    
+    
     # we override method_missing here so that instance variables,
     # when retrieved or set, are added to the object
     def method_missing(name, *args)
