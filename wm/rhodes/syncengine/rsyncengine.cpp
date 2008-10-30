@@ -273,7 +273,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
       break;
     }
 
-    ATLTRACE(L"Connecting to url: %s",(LPWSTR)sBuf);
+    ATLTRACE(L"Connecting to url: %s\n",(LPWSTR)sBuf);
 
     URL_COMPONENTS uri;
     alloc_url_components(&uri,url);
