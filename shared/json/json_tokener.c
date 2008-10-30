@@ -17,6 +17,12 @@
 #include <ctype.h>
 #include <string.h>
 
+#if defined(_WIN32_WCE)
+#define strdup _strdup
+extern int _shttpd_strncasecmp(register const char *,register const char *, size_t);
+#define strncasecmp _shttpd_strncasecmp
+#endif
+
 #include "bits.h"
 #include "debug.h"
 #include "printbuf.h"

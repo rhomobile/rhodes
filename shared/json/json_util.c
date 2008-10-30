@@ -16,7 +16,10 @@
 #include <stddef.h>
 #include <limits.h>
 #include <string.h>
+
+#if !defined(_WIN32_WCE)
 #include <errno.h>
+#endif
 
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -40,10 +43,17 @@
 # include <io.h>
 #endif /* defined(WIN32) */
 
+#if defined(_WIN32_WCE)
+#include <stddef.h>
+#include "errno.h"
+#include "fcntl.h"
+#include "io.h"
+extern char *strerror(int errno);
+#endif
+
 #if !HAVE_OPEN && defined(WIN32)
 # define open _open
 #endif
-
 
 #include "bits.h"
 #include "debug.h"

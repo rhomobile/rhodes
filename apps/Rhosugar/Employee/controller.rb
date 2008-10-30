@@ -10,7 +10,7 @@ class EmployeeController < Rho::RhoController
 
   # GET /Employees/1
   def show
-    @employees = Employee.find(@params['object'])
+    @employees = Employee.find(@params['id'])
   end
 
   # GET /Employees/new
@@ -29,19 +29,19 @@ class EmployeeController < Rho::RhoController
   # POST /Employees
   def create
     @employee = Employee.new(@params['employee'])
-    @case.save
+    @employee.save
     redirect :index
   end
 
   # POST /Employees/1
   def update
-    @employee = Employee.find(@params['object'])
+    @employee = Employee.find(@params['id'])
     @employee.update_attributes(@params['employee'])
     redirect :index
   end
 
   # POST /Employees/1/delete
-  def destroy
+  def delete
     @employee = Employee.find(@params['id'])
     @employee.destroy
     redirect :index
