@@ -35,8 +35,8 @@
 
 #include "json.h"
 #include "SyncObject.h"
-#import <stdio.h>
-#import <string.h>
+#include <stdio.h>
+#include <string.h>
 
 #if defined(__cplusplus)
 extern "C" {
