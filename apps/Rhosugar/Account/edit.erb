@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Editing Account</title>
+<meta name="viewport" content="width=320"/>
+</head>
+<body>
+<form method="POST" action="<%=url_for('update') %>">
+<input type="hidden" name="object" value="<%=@account.object%>"/>
+Name <input name="account[name]" value="<%=@account.name%>"/><br/>
+<%%>
+Industry <select name="account[industry]">
+<%@industries.each do |i|%>
+<option value=<%=i%>
+<%if @account.industry==i%>
+ selected
+<%end%>
+>
+<%=i%>
+</option>
+<%end%>
+</select><br/>
+<input type="submit" value="Edit Account"/>
+</form>
+</body>
+</html>

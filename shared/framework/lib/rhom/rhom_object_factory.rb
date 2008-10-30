@@ -22,33 +22,32 @@ require 'rhom/rhom_object'
 
 module Rhom
   class RhomObjectFactory
+    attr_accessor :obj_list, :classnames, :attrib_count
   
     def initialize
       init_objects unless not defined? RHO_SOURCES
     end
   
-    class << self
-      # setup the sources table and model attributes for this application
-      def init_sources
-        if defined? RHO_SOURCES
-          attribs = {}
-          Rhom::execute_sql "delete from sources"
-          src_attribs = []
-          attribs_empty = false
-          RHO_SOURCES.each do |source, id|
-            Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
-            src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
-                                             where source_id=#{id.to_i}"
-            attribs[source] = src_attribs
-            # there are no records yet, raise a flag so we don't define the constant
-            if attribs[source] == 0
-              attribs_empty = true
-            end
+    # setup the sources table and model attributes for this application
+    def self.init_sources
+      if defined? RHO_SOURCES
+        attribs = {}
+        Rhom::execute_sql "delete from sources"
+        src_attribs = []
+        attribs_empty = false
+        RHO_SOURCES.each do |source, id|
+          Rhom::execute_sql "insert into sources (source_id) values (#{id.to_i})"
+          src_attribs = Rhom::execute_sql "select distinct attrib from object_values \
+                                           where source_id=#{id.to_i}"
+          attribs[source] = src_attribs
+          # there are no records yet, raise a flag so we don't define the constant
+          if attribs[source] == 0
+            attribs_empty = true
           end
         end
-        Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS or attribs_empty
       end
-    end #class methods
+      Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS or attribs_empty
+    end
   
     # Initialize new object with dynamic attributes
     def init_objects
@@ -61,6 +60,7 @@ module Rhom
           
               def initialize(obj=nil)
                 if obj
+				          puts "inside new: #{obj.inspect}"
                   # create a temp id for the create type
                   # TODO: This is duplicative of get_new_obj
                   temp_objid = djb_hash(obj.values.to_s, 10).to_s

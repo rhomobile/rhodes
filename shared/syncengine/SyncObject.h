@@ -22,13 +22,8 @@
 #ifndef __SYNCOBJECT__
 #define __SYNCOBJECT__
 
-#if !defined(_WIN32_WCE)
-#include <sqlite3.h>
-#else
-#include "sqlite3.h"
-#endif
-
-#include <stdlib.h>
+#import <stdlib.h>
+#import <sqlite3.h>
 
 #if defined(__cplusplus)
 extern "C" {

@@ -22,17 +22,11 @@
 #ifndef __SYNCENGINE__
 #define __SYNCENGINE__
 
-#if !defined(_WIN32_WCE)
-#include <sqlite3.h>
-#include <pthread.h>
-#include <unistd.h>
-#else
-#include "sqlite3.h"
-#endif
-
+#import <sqlite3.h>
 #include <assert.h>
+#include <pthread.h>
 #include <stdio.h>
-
+#include <unistd.h>
 #include "SyncObject.h"
 #include "Constants.h"
 #include "SyncOperation.h"
@@ -41,23 +35,19 @@
 extern "C" {
 #endif
 
-#define WAIT_TIME_SECONDS 90
-
-extern int stop_running;
-
-#if !defined(_WIN32_WCE)
+int stop_running;
 pthread_cond_t sync_cond;
 pthread_mutex_t sync_mutex;
-#endif
+
 
 void* sync_engine_main_routine(void* data);
 
 /* Process operations by type */
-int process_local_changes();
 int process_op_list(char *type);
 	
 void lock_sync_mutex();
-void unlock_sync_mutex();	
+void unlock_sync_mutex();
+	
 void wake_up_sync_engine();
 	
 /* Main entry point to the sync engine */

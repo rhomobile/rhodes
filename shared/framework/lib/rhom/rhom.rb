@@ -23,8 +23,6 @@ require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
   
 module Rhom
-  TABLE_NAME = 'object_values'
-  
   class Rhom
     include RhomObject
     attr_accessor :database, :factory
