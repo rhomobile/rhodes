@@ -22,9 +22,7 @@ class EmployeeController < Rho::RhoController
 
   # GET /Employees/1/edit
   def edit
-    @accounts = Account.find :all
     @employee = Employee.find(@params['id'])
-    @account = Account.find @employee.id
     render :edit
   end
 

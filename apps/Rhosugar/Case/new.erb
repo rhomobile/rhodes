@@ -13,7 +13,8 @@
 Assigned To
 <select name="case[assigned_user_id]">
 <%@employees.each do |a|%>
-  <option value="<%=a.object%>"><%=a.user_name%></option>
+  <option value="<%=a.object%>"
+  ><%=a.user_name%></option>
 <%end%>
 </select>
 <br/>
@@ -58,6 +59,5 @@ Resolution
 <input type="submit" value="Create Case"/>
 </form>
 
-</body>
 </body>
 </html>

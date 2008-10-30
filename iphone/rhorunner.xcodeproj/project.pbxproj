@@ -136,6 +136,7 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
+				F563D5810EA8283A0062DA57 /* SyncEngine */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
 				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
@@ -152,7 +153,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				F563D5810EA8283A0062DA57 /* SyncEngine */,
+				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F568940B0E92FC1A004DBB2D /* Rhoruby */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
@@ -178,7 +179,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
 				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
