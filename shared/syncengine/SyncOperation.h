@@ -74,7 +74,9 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
 
 void free_op_list(pSyncOperation *list, int available);
 	
-int get_source_ids_from_database(int *list, sqlite3 *database, int max_size);
+int get_source_urls_from_database(char *list, sqlite3 *database, int max_size);
+	
+void free_source_list(char *list, int available);
 	
 /* 
  * Releases the current SyncManager instance

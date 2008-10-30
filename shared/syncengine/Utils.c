@@ -50,3 +50,10 @@ unsigned int DJBHash(char* str, unsigned int len) {
 	}
 	return hash;
 }
+
+void free_str_list(char *list, int available) {
+	int k;
+	for(k = 0; k < available; k++) {
+		free(list[k]);
+	}
+}

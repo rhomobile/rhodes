@@ -1,1 +1,0 @@
-RHO_SOURCES = {"Account"=>1,"Case"=>2,"Employee"=>3}
