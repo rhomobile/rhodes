@@ -105,10 +105,11 @@ void set_sync_post_body(pSyncOperation op) {
 /* Retrieves the current list of objects for remote processing */
 int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, char *type) {
 	pSyncOperation current_op;
-	int count = 0;
+	int i,count = 0;
 	if (op_list_select_statement == NULL) {
+    const char *sql;
 		printf("Checking for new sync operations...\n");
-		const char *sql = "SELECT attrib, source_id, object, value, update_type FROM object_values \
+		sql = "SELECT attrib, source_id, object, value, update_type FROM object_values \
 						   WHERE update_type =?";
 		if (sqlite3_prepare_v2(database, sql, -1, &op_list_select_statement, NULL) != SQLITE_OK) {
 			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
@@ -116,8 +117,11 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 		sqlite3_bind_text(op_list_select_statement, 1, type, -1, SQLITE_TRANSIENT);
 		/* Step through each row and create the sync operation value */
 		while(sqlite3_step(op_list_select_statement) == SQLITE_ROW) {
+			char *tmp_operation,*tmp_attrib,*tmp_object,*tmp_value;
+      int tmp_source_id;
+      pSyncObject tmp_sync_object;
+
 			if (count >= max_count) { break; }
-			char *tmp_operation;
 			if (strcmp(type, "create") == 0){
 				tmp_operation = UPDATE_TYPE_CREATE;
 			} else if (strcmp(type, "update") == 0) {
@@ -125,11 +129,11 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 			} else if (strcmp(type, "delete") == 0) {
 				tmp_operation = UPDATE_TYPE_DELETE;
 			}
-			char *tmp_attrib = (char *)sqlite3_column_text(op_list_select_statement, 0);
-			int tmp_source_id = (int)sqlite3_column_int(op_list_select_statement, 1);
-			char *tmp_object = (char *)sqlite3_column_text(op_list_select_statement, 2);
-			char *tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
-			pSyncObject tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
+			tmp_attrib = (char *)sqlite3_column_text(op_list_select_statement, 0);
+			tmp_source_id = (int)sqlite3_column_int(op_list_select_statement, 1);
+			tmp_object = (char *)sqlite3_column_text(op_list_select_statement, 2);
+			tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
+			tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
 																				  tmp_source_id, tmp_object, 
 																				  tmp_value, type, 0, 0);
 			
@@ -137,7 +141,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 			list[count] = current_op;
 			count++;
 		} 
-		for (int i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			printf("Adding sync operation (attrib, source_id, object, value, update_type): %s, %i, %s, %s, %s\n", 
 				   list[i]->_sync_object->_attrib, 
 				   list[i]->_sync_object->_source_id, 

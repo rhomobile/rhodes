@@ -24,9 +24,26 @@ describe "RhomObjectFactory" do
   
   attr_accessor :rhom
   
-  Object::const_set("RHO_SOURCES", {"Account"=>1, "Case"=>2, "Employee"=>3}) unless defined? RHO_SOURCES
-  Object::const_set("SYNC_DB_FILE", "../../spec/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-  @rhom = Rhom::Rhom.new
+  before(:all) do
+    Object::const_set("RHO_SOURCES", {"Account"=>1, "Case"=>2, "Employee"=>3}) unless defined? RHO_SOURCES
+    Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
+    FileUtils.mkdir_p(File.join(File.dirname(__FILE__),'../build'))
+  end
+  
+  before(:each) do
+    FileUtils.cp_r(File.join(File.dirname(__FILE__), './syncdbtest.sqlite'), 
+                   File.join(File.dirname(__FILE__),'../build/syncdbtest.sqlite'))
+    @rhom = Rhom::Rhom.new
+  end
+  
+  after(:each) do 
+    FileUtils.rm_rf(File.join(File.dirname(__FILE__), '../build/syncdbtest.sqlite'))
+    @rhom = nil
+  end
+  
+  after(:all) do
+    FileUtils.rm_rf(File.join(File.dirname(__FILE__),'../build'))
+  end
   
   def array_print(arr)
     arr.each_with_index do |x,i|
@@ -53,10 +70,22 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    #array_print(results)
-    results.length.should == 7
-    "58".should == results[0].case_number
-    "hire another engineer".should == results[6].name
+    
+    class Case
+      attr_accessor :address
+      
+      def address
+        @address
+      end
+    end
+    
+    @case = Case.new
+    
+    @case.address
+    array_print(results)
+    results.length.should == 5
+    "60".should == results[0].case_number
+    "hire another engineer".should == results[4].name
   end
   
   it "should retrieve Account models" do
@@ -78,7 +107,52 @@ describe "RhomObjectFactory" do
   it "should calculate same djb_hash" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
-    puts 'account: ' + account.inspect
     account.object.should == "272128608299468889014"
+  end
+  
+  it "should create a record" do
+    vars = {"name"=>"some new record", "industry"=>"electronices"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    @account2 = Account.find(new_id).first
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    @account2.industry.should == vars['industry']
+  end
+  
+  it "should destroy a record" do
+    count = Account.find(:all).size
+    @account = Account.find(:all)[0]
+    destroy_id = @account.object
+    @account.destroy
+    @account_nil = Account.find(destroy_id)
+    
+    @account_nil.size.should == 0
+    new_count = Account.find(:all).size
+    
+    (count - 1).should == new_count
+  end
+  
+  it "should partially update a record" do
+    new_attributes = {"name"=>"Mobio US"}
+    @account = Account.find(:all).first
+    @account.update_attributes(new_attributes)
+    
+    @new_acct = Account.find(:all).first
+    
+    "Mobio US".should == @new_acct.name
+    "Technology".should == @new_acct.industry
+  end
+  
+  it "should fully update a record" do
+    new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
+    @account = Account.find(:all).first
+    @account.update_attributes(new_attributes)
+    
+    @new_acct = Account.find(:all).first
+    
+    "Mobio US".should == @new_acct.name
+    "Electronics".should == @new_acct.industry
   end
 end

@@ -2,4 +2,6 @@
 iphone/build/*
 iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
+wm/bin/*.*
+wm/rhodes.ncb
 
