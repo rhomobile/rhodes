@@ -1,21 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-<title>Accounts</title>
-<meta name="viewport" content="width=320"/>
-</head>
-<body>
-<table>
+<ul id="accounts" title="Accounts">
 <%@accounts.each do |x|%>
-<tr>
-  <td><%=link_to x.name, "edit", x.object%></td>
-  <td><%=x.industry%></td>
-  <td><%=link_to "X","delete", x.object%></td>
-</tr>
+<li><%=link_to "#{x.name} - #{x.industry}", "edit", x.object%></li>
 <%end%>
-</table>
-<%=link_to "New", "new"%>
-</body>
-</html>
+<li><font color="blue"><%=link_to "New Account", "new"%></font></li>
+</ul>

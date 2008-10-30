@@ -70,6 +70,18 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
+    
+    class Case
+      attr_accessor :address
+      
+      def address
+        @address
+      end
+    end
+    
+    @case = Case.new
+    
+    @case.address
     array_print(results)
     results.length.should == 5
     "60".should == results[0].case_number
