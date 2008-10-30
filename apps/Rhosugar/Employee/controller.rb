@@ -41,7 +41,7 @@ class EmployeeController < Rho::RhoController
   end
 
   # POST /Employees/1/delete
-  def destroy
+  def delete
     @employee = Employee.find(@params['id'])
     @employee.destroy
     redirect :index
