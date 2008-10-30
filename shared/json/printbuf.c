@@ -60,7 +60,7 @@ int printbuf_memappend(struct printbuf *p, char *buf, int size)
   return size;
 }
 
-#if !HAVE_VSNPRINTF && defined(WIN32)
+#if !HAVE_VSNPRINTF && (defined(WIN32)||defined(_WIN32_WCE))
 # define vsnprintf _vsnprintf
 #elif !HAVE_VSNPRINTF /* !HAVE_VSNPRINTF */
 # error Need vsnprintf!

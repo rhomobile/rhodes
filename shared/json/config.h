@@ -8,7 +8,9 @@
 /* #undef HAVE_DOPRNT */
 
 /* Define to 1 if you have the <fcntl.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_FCNTL_H 1
+#endif
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -43,7 +45,9 @@
 #define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_STRINGS_H 1
+#endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
@@ -55,31 +59,47 @@
 /* #undef HAVE_STRNDUP */
 
 /* Define to 1 if you have the <syslog.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_SYSLOG_H 1
+#endif
 
 /* Define to 1 if you have the <sys/param.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_SYS_PARAM_H 1
+#endif
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_SYS_STAT_H 1
+#endif
 
 /* Define to 1 if you have the <sys/types.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_SYS_TYPES_H 1
+#endif
 
 /* Define to 1 if you have the <unistd.h> header file. */
+#if !defined(_WIN32_WCE)
 #define HAVE_UNISTD_H 1
+#endif
 
 /* Define to 1 if you have the `vasprintf' function. */
+#if !defined(_WIN32_WCE)
 #define HAVE_VASPRINTF 1
+#endif
 
 /* Define to 1 if you have the `vprintf' function. */
 #define HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
+#if !defined(_WIN32_WCE)
 #define HAVE_VSNPRINTF 1
+#endif
 
 /* Define to 1 if you have the `vsyslog' function. */
+#if !defined(_WIN32_WCE)
 #define HAVE_VSYSLOG 1
+#endif
 
 /* Name of package */
 #define PACKAGE ""

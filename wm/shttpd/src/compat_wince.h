@@ -16,6 +16,7 @@ extern "C" {
 #define tzset _WCE_tzset
 #define fdopen _WCE_fdopen
 #define strerror _WCE_strerror
+#define strftime _WCE_strftime
 
 /*** ANSI C library ***/
 

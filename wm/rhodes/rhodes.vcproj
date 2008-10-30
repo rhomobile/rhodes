@@ -57,7 +57,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../shttpd/src/;../../shared/ruby"
+				AdditionalIncludeDirectories="../shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3"
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -82,7 +82,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -339,7 +339,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../shttpd/src/;../../shared/ruby"
+				AdditionalIncludeDirectories="../shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3"
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				WarningLevel="3"
@@ -363,7 +363,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -707,11 +707,19 @@
 			Name="syncengine"
 			>
 			<File
-				RelativePath=".\syncengine\syncengine.c"
+				RelativePath=".\syncengine\rsyncengine.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\syncengine\syncengine.h"
+				RelativePath=".\syncengine\rsyncengine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\syncengine\syncutil.c"
+				>
+			</File>
+			<File
+				RelativePath=".\syncengine\syncutil.h"
 				>
 			</File>
 		</Filter>

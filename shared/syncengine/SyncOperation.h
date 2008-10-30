@@ -22,7 +22,7 @@
 #ifndef __SYNCOPERATION__
 #define __SYNCOPERATION__
 
-#import <stdlib.h>
+#include <stdlib.h>
 #include "Utils.h"
 #include "SyncObject.h"
 

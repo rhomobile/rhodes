@@ -114,6 +114,7 @@ pSyncObject SyncObjectCopy(pSyncObject new_object) {
  * until we can cleanup the placeholders as we go
  */
 void cleanup_placeholders(sqlite3* db) {
+  int success;
 	if (cleanup_statement == NULL) {
         const char *sql = "DELETE FROM object_values WHERE source_id=?";
         if (sqlite3_prepare_v2(db, sql, -1, &cleanup_statement, NULL) != SQLITE_OK) {
@@ -121,7 +122,7 @@ void cleanup_placeholders(sqlite3* db) {
         }
     }
     sqlite3_bind_int(cleanup_statement, 1, new_source_id);
-    int success = sqlite3_step(cleanup_statement);
+    success = sqlite3_step(cleanup_statement);
     sqlite3_reset(cleanup_statement);
     if (success != SQLITE_DONE) {
         printf("Error: failed to cleanup the database with message '%s'.", sqlite3_errmsg(db));
@@ -131,6 +132,7 @@ void cleanup_placeholders(sqlite3* db) {
 
 /* lookup by id and return 1 if a row exists in the database, otherwise return 0 */
 int exists_in_database(pSyncObject ref) {
+  int success;
 	if (ref->_primary_key == 0) {
 		return 0;
 	}
@@ -141,7 +143,7 @@ int exists_in_database(pSyncObject ref) {
         }
     }
 	sqlite3_bind_int(select_statement, 1, ref->_primary_key);
-	int success = sqlite3_step(select_statement);
+	success = sqlite3_step(select_statement);
 	/* we have a row with the same value, return 1 */
     if (success == SQLITE_ROW) {
 		char *tmp_check = str_assign((char *)sqlite3_column_text(select_statement, 0));
@@ -155,14 +157,14 @@ int exists_in_database(pSyncObject ref) {
 }
 
 int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
-	int count = 0;
+	int i, count = 0;
 	
 	if (fetch_statement == NULL) {
 		const char *sql = "SELECT id FROM object_values where update_type = 'query'";	
 		if (sqlite3_prepare_v2(database, sql, -1, &fetch_statement, NULL) != SQLITE_OK) {
 			printf("Error: failed to prepare statement with message '%s'.\n", sqlite3_errmsg(database));
 		} else {
-			for (int i = 0; sqlite3_step(fetch_statement) == SQLITE_ROW; i++) {
+			for (i = 0; sqlite3_step(fetch_statement) == SQLITE_ROW; i++) {
 				pSyncObject new_object = SyncObjectCreate();
 				int	primary_key = sqlite3_column_int(fetch_statement, 0);
 				new_object->_primary_key = primary_key;
@@ -181,6 +183,7 @@ int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
 
 /* insert object into database, returns SYNC_OBJECT_DUPLICATE, SYNC_OBJECT_ERROR, or SYNC_OBJECT_SUCCESS */
 int insert_into_database(pSyncObject ref) {
+  int success;
 	if (exists_in_database(ref)) {
 		/* Object already exists with that key */
 		/* TODO: implement merge */
@@ -203,7 +206,7 @@ int insert_into_database(pSyncObject ref) {
 		sqlite3_bind_text(insert_statement, 6, new_entry, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_statement, 7, new_entry, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_statement, 8, new_entry, -1, SQLITE_TRANSIENT);
-		int success = sqlite3_step(insert_statement);
+		success = sqlite3_step(insert_statement);
 		sqlite3_reset(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
@@ -216,13 +219,14 @@ int insert_into_database(pSyncObject ref) {
 
 /* Remove all objects from database */
 int delete_from_database_by_source(sqlite3 *db, int source) {
+    int success;
     if (delete_statement == NULL) {
         const char *sql = "DELETE FROM object_values where source_id=?";
         if (sqlite3_prepare_v2(db, sql, -1, &delete_statement, NULL) != SQLITE_OK) {
             printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
         }
 		sqlite3_bind_int(delete_statement, 1, source);
-		int success = sqlite3_step(delete_statement);
+		success = sqlite3_step(delete_statement);
 		sqlite3_reset(delete_statement);
 		if (success != SQLITE_DONE) {
 			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
@@ -275,6 +279,7 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
 			 
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
 pSyncObject hydrate(pSyncObject ref) {
+    int success;
     if (ref->_hydrated) return ref;
     /* Compile the hydration statement, if needed. */
     if (hydrate_statement == NULL) {
@@ -284,7 +289,7 @@ pSyncObject hydrate(pSyncObject ref) {
         }
     }
     sqlite3_bind_int(hydrate_statement, 1, ref->_primary_key);
-    int success =sqlite3_step(hydrate_statement);
+    success =sqlite3_step(hydrate_statement);
 	
     if (success == SQLITE_ROW) {
 		ref->_attrib = str_assign((char *)sqlite3_column_text(hydrate_statement, 0));
@@ -313,6 +318,7 @@ pSyncObject hydrate(pSyncObject ref) {
 
 /* Insert the object to the database */
 void dehydrate(pSyncObject ref) {
+  int success;
     if (ref->_dirty) {		
         /* Write any changes to the database. */
         if (dehydrate_statement == NULL) {
@@ -329,7 +335,7 @@ void dehydrate(pSyncObject ref) {
 		sqlite3_bind_text(dehydrate_statement, 6, ref->_updated_at, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(dehydrate_statement, 7, ref->_update_type, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_int(dehydrate_statement, 8, ref->_primary_key);
-        int success = sqlite3_step(dehydrate_statement);
+        success = sqlite3_step(dehydrate_statement);
         sqlite3_reset(dehydrate_statement);
         if (success == SQLITE_ERROR) {
             printf("Error: failed to dehydrate with message '%s'.", sqlite3_errmsg(ref->_database));
@@ -340,8 +346,9 @@ void dehydrate(pSyncObject ref) {
 } 
 
 void free_ob_list(pSyncObject *list, int available) {
+  int k;
 	/* Free up our ob_list */
-	for(int k = 0; k < available; k++) {
+	for(k = 0; k < available; k++) {
 		SyncObjectRelease(list[k]);
 	}
 }

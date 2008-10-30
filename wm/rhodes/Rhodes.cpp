@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "HttpServer.h"
+#include "syncengine/rsyncengine.h"
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
@@ -38,7 +39,8 @@ public :
         {
             return S_FALSE;
         }
-        
+        //Start sync engine
+        m_syncengine.ResumeThread();
         // Start HTTP server 
         m_httpserver.ResumeThread();
         // Navigate to the home page
@@ -62,11 +64,13 @@ public :
             }
         }
         m_httpserver.FreezeThread();
+        m_syncengine.FreezeThread();
     }
 
 private:
     CMainWindow m_appWindow;
     CHttpServer m_httpserver;
+    CSyncEngine m_syncengine;
 };
 
 CRhodesModule _AtlModule;

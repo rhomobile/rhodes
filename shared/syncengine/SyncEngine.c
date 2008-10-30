@@ -18,16 +18,56 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(_WIN32_WCE)
 #include <sys/time.h>
+#endif
+
 #include "SyncEngine.h"
 #include "SyncManagerI.h"
 
-#define WAIT_TIME_SECONDS 90
 int stop_running = 0;
+#if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
+#endif
 sqlite3 *database;
+
+//
+int process_local_changes() {
+  /* List holding operations */
+  if (!stop_running) {
+	  // Process local changes
+	  int result = 0;
+	  result += process_op_list("update");
+	  result += process_op_list("create");
+	  result += process_op_list("delete");
+  	
+	  if (result > 0) {
+		  printf("Remote update failed, not continuing with sync...\n");
+	  } else {
+		  /* fetch new list from sync source */
+		  int available_remote = fetch_remote_changes(database);
+		  if(available_remote > 0) {
+			  printf("Successfully processed %i records...\n", available_remote);
+  			
+		  }
+		  /* update the in-memory list */
+		  /*populate_list(database);*/
+	  }
+  } else {
+	  finalize_statements();
+	  finalize_op_statements();
+  	
+	  // Close the database.
+	  if (sqlite3_close(database) != SQLITE_OK) {
+		  printf("Error: failed to close database with message '%s'.\n", sqlite3_errmsg(database));
+	  }
+	  printf("Sync engine is shutdown...\n");
+	  return 1;
+  }
+  return 0;
+}
 
 /*
  * The main routine for the sync engine thread.
@@ -36,6 +76,7 @@ sqlite3 *database;
  * found, sync operation is created and executed against the 
  * rhosync service.
  */
+#if !defined(_WIN32_WCE)
 void* sync_engine_main_routine(void* data) {
 	
 	printf("Starting sync engine main routine...\n");
@@ -52,48 +93,24 @@ void* sync_engine_main_routine(void* data) {
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
 		printf("Sync engine continues w/ current operations...\n");
-		
-		/* List holding operations */
-		if (!stop_running) {
-			// Process local changes
-			int result = 0;
-			result += process_op_list("update");
-			result += process_op_list("create");
-			result += process_op_list("delete");
-			
-			if (result > 0) {
-				printf("Remote update failed, not continuing with sync...\n");
-			} else {
-				/* fetch new list from sync source */
-				int available_remote = fetch_remote_changes(database);
-				if(available_remote > 0) {
-					printf("Successfully processed %i records...\n", available_remote);
-					
-				}
-				/* update the in-memory list */
-				/*populate_list(database);*/
-			}
-		} else {
-			finalize_statements();
-			finalize_op_statements();
-			
-			// Close the database.
-			if (sqlite3_close(database) != SQLITE_OK) {
-				printf("Error: failed to close database with message '%s'.\n", sqlite3_errmsg(database));
-			}
-			printf("Sync engine is shutdown...\n");
-			break;
-		}
+	  
+    if(process_local_changes()) {
+      break;
+    }
+
 	}
 	pthread_mutex_unlock(&sync_mutex);
 	
     return NULL;
 }
+#endif
 
 int process_op_list(char *type) {
+  int available;
+
 	pSyncOperation *op_list = NULL;
 	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
-	int available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, type);
+	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, type);
 	printf("Found %i available records for %s processing...\n", available, type);
 	
 	if(push_remote_changes(op_list, available) == SYNC_PUSH_CHANGES_OK) {
@@ -111,12 +128,14 @@ int process_op_list(char *type) {
 }
 
 void free_op_list(pSyncOperation *list, int available) {
+  int j;
 	/* Free up our op_list */
-	for(int j = 0; j < available; j++) {
+	for(j = 0; j < available; j++) {
 		SyncOperationRelease(list[j]);
 	}
 }
 
+#if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
 	printf("called lock_sync_mutex...\n");
@@ -173,3 +192,8 @@ void stop_sync_engine() {
 	pthread_cond_broadcast(&sync_cond);
 	pthread_mutex_unlock(&sync_mutex);
 }
+#else
+void start_sync_engine(sqlite3 *db) {	
+	database = db;
+}
+#endif //!defined(_WIN32_WCE)
