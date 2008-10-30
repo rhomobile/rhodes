@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">352.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="31"/>
+			<integer value="30"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -45,7 +45,7 @@
 						<object class="IBUIWebView" id="1065679150">
 							<reference key="NSNextResponder" ref="540789448"/>
 							<int key="NSvFlags">274</int>
-							<string key="NSFrameSize">{320, 480}</string>
+							<string key="NSFrameSize">{320, 451}</string>
 							<reference key="NSSuperview" ref="540789448"/>
 							<bool key="IBUIOpaque">NO</bool>
 							<bool key="IBUIClipsSubviews">YES</bool>
@@ -55,7 +55,7 @@
 						<object class="IBUINavigationBar" id="626434176">
 							<reference key="NSNextResponder" ref="540789448"/>
 							<int key="NSvFlags">290</int>
-							<string key="NSFrame">{{0, 416}, {320, 44}}</string>
+							<string key="NSFrame">{{0, 421}, {320, 44}}</string>
 							<reference key="NSSuperview" ref="540789448"/>
 							<bool key="IBUIOpaque">NO</bool>
 							<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -76,7 +76,7 @@
 							</object>
 						</object>
 					</object>
-					<string key="NSFrameSize">{320, 480}</string>
+					<string key="NSFrame">{{0, -5}, {320, 490}}</string>
 					<reference key="NSSuperview"/>
 					<object class="NSColor" key="IBUIBackgroundColor">
 						<int key="NSColorSpace">3</int>
@@ -86,7 +86,6 @@
 						</object>
 					</object>
 					<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-					<int key="IBUIContentMode">5</int>
 				</object>
 			</object>
 		</object>
@@ -294,7 +293,7 @@
 					<string>UIApplication</string>
 					<string>UIResponder</string>
 					<string>WebViewController</string>
-					<string>{{322, 101}, {320, 480}}</string>
+					<string>{{399, 104}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSMutableDictionary">
 						<bool key="EncodedWithXMLCoder">YES</bool>
