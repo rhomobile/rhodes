@@ -81,6 +81,7 @@ int fetch_remote_changes(sqlite3 *database) {
 				}
 				/* free the in-memory list after populating the database */
 				free_ob_list(list, available);
+				free(list);
 			}
 			
 		}
