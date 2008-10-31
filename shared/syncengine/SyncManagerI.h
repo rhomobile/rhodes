@@ -18,9 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SyncObject.h"
-#include "SyncOperation.h"
-
-int fetch_remote_changes(sqlite3 *database);
-int push_remote_changes(pSyncOperation *list, int size);
-void populate_list(sqlite3 *database);
+char *fetch_remote_data(char *url_string);
+int push_remote_data(char* url, char* data, size_t data_size);
+//void populate_list(sqlite3 *database);

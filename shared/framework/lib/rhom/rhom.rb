@@ -31,8 +31,6 @@ module Rhom
   
     def initialize
       @factory = RhomObjectFactory.new
-      SyncEngine::dosync
-      RhomObjectFactory::init_sources
     end
   
     class << self

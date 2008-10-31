@@ -35,7 +35,6 @@
 
 #include "SyncObject.h"
 #include "Constants.h"
-#include "SyncOperation.h"
 
 #if defined(__cplusplus)
 extern "C" {

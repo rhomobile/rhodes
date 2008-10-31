@@ -1,5 +1,7 @@
 require 'time'
 require 'rho/rhoapplication'
+require 'find'
+require 'rhom'
 
 module Rho
   class RHO
@@ -7,26 +9,39 @@ module Rho
 	
     def initialize
       puts "Calling RHO.initialize"
-      require RhoApplication::get_base_app_path(appname)+'config'
-      # setup the sources table and model attributes for this application
-      def init_sources
-        if defined? RHO_SOURCES
-          attribs = {}
-          Rhom::execute_sql "delete from sources"
-          src_attribs = []
-          attribs_empty = false
-          RHO_SOURCES.each do |source|
-            Rhom::execute_sql "insert into sources (source_id, source_url) values ('#{source['source_id']}','#{source['url']}')"
-            src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
-                                             where source_id=#{id.to_i}"
-            attribs[source] = src_attribs
-            # there are no records yet, raise a flag so we don't define the constant
-            if attribs[source] == 0
-              attribs_empty = true
-            end
-          end
+      process_model_dirs
+	  puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
+      init_sources
+	  SyncEngine::dosync
+	  puts "Rho::RhoConfig::sources after processing -> #{Rho::RhoConfig::sources.inspect}"
+    end
+    
+    # Return the directories where we need to load configuration files
+    def process_model_dirs
+      Find.find(RhoApplication::get_base_app_path) do |path| 
+        if File.basename(path) == 'config.rb'
+          require path
         end
-        Object::const_set("SOURCE_ATTRIBS", attribs) unless defined? SOURCE_ATTRIBS or attribs_empty
+      end
+    end
+    
+    # setup the sources table and model attributes for all applications
+    def init_sources
+      if defined? Rho::RhoConfig::sources
+        Rhom::Rhom::execute_sql "delete from sources"
+        src_attribs = []
+        attribs_empty = false
+        
+        # quick and dirty way to get unique array of hashes
+        uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| result << h unless result.include?(h); result }
+        
+		puts "uniq_sources: #{uniq_sources.inspect}"
+        # generate unique source list in databse for sync
+        uniq_sources.each do |source|
+          src_id = source['source_id']
+          url = source['url']
+          Rhom::Rhom::execute_sql "insert into sources (source_id, source_url) values (#{src_id.to_s},'#{url}')"
+        end
       end
     end
 	
@@ -101,4 +116,23 @@ module Rho
       send_response(init_response(status,"Server error",body))
     end
   end # RHO
+  
+  # Generic configuration class which accepts hashes with unique keys
+  class RhoConfig
+    @@sources = {}
+    class << self
+      def sources
+        @@sources
+      end
+      
+      def add_source(modelname, new_source=nil)
+        if new_source
+          unless @@sources[new_source]
+            puts "adding @@sources[#{modelname}]: #{new_source.inspect}"
+            @@sources[modelname] = new_source
+          end
+        end
+      end
+    end
+  end # RhoConfig
 end # Rho

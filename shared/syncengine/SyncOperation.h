@@ -53,12 +53,12 @@ void finalize_op_statements();
 /*
  * Creates an instance of SyncOperation and populates the operation information
  */
-pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *operation);
+pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *source, char *operation);
 
 /*
  * Generate the sync uri based on values in struct
  */
-void set_sync_uri(pSyncOperation sync);
+void set_sync_uri(pSyncOperation sync, char *source);
 
 /*
  * Construct the body of the request by filtering 
@@ -73,10 +73,6 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type);
 
 void free_op_list(pSyncOperation *list, int available);
-	
-int get_source_urls_from_database(char *list, sqlite3 *database, int max_size);
-	
-void free_source_list(char *list, int available);
 	
 /* 
  * Releases the current SyncManager instance

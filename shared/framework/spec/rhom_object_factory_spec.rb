@@ -8,7 +8,6 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,30 +18,36 @@
 #
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'spec/spec_helper'
+require 'rho/rho'
 
 describe "RhomObjectFactory" do
   
-  attr_accessor :rhom
+  attr_accessor :rhom, :rho
   
   before(:all) do
-    Object::const_set("RHO_SOURCES", {"Account"=>1, "Case"=>2, "Employee"=>3}) unless defined? RHO_SOURCES
+    FileUtils.mkdir_p('build')
+    FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
+    Rho::RhoConfig.new do |config|
+      config.add_source("Account", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>1})
+      config.add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
+      config.add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
+    end
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-    FileUtils.mkdir_p(File.join(File.dirname(__FILE__),'../build'))
+    @rho = Rho::RHO.new
   end
   
   before(:each) do
-    FileUtils.cp_r(File.join(File.dirname(__FILE__), './syncdbtest.sqlite'), 
-                   File.join(File.dirname(__FILE__),'../build/syncdbtest.sqlite'))
+    FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
     @rhom = Rhom::Rhom.new
   end
   
   after(:each) do 
-    FileUtils.rm_rf(File.join(File.dirname(__FILE__), '../build/syncdbtest.sqlite'))
+    FileUtils.rm_rf('build/syncdbtest.sqlite')
     @rhom = nil
   end
   
   after(:all) do
-    FileUtils.rm_rf(File.join(File.dirname(__FILE__),'../build'))
+    FileUtils.rm_rf('build')
   end
   
   def array_print(arr)
@@ -70,18 +75,6 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    
-    class Case
-      attr_accessor :address
-      
-      def address
-        @address
-      end
-    end
-    
-    @case = Case.new
-    
-    @case.address
     array_print(results)
     results.length.should == 5
     "60".should == results[0].case_number

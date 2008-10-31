@@ -12,4 +12,5 @@ require 'spec/stubs'
 # Use the rubygem for local testing
 require 'rubygems'
 require 'sqlite3'
+require 'rho'
 require 'rhom/rhom'
