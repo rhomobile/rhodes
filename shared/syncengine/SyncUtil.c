@@ -46,7 +46,7 @@ int fetch_remote_changes(sqlite3 *database) {
 		printf("url_string: %s\n", url_string);
 		
 		json_string = fetch_remote_data(url_string);
-		if(json_string) {
+		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
 			// Initialize parsing list and call json parser
 			list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));

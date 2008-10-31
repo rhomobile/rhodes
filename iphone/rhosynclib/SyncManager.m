@@ -48,13 +48,17 @@ char *fetch_remote_data(char *url_string) {
 		NSInteger code = [response statusCode];
 		if (error || code != 200) {
 			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			[pool release];
+			return NULL;
 		} else {
 			logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 		}
-		
 	}
+	char *data = str_assign((char *)[logData UTF8String]);
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-	return (char *)[logData UTF8String];
+	[pool release];
+	return data;
 }
 
 /*
@@ -80,6 +84,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 		NSInteger code = [response statusCode];
 		if (error || code != 200) {
 			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			[pool release];
 			return SYNC_PUSH_CHANGES_ERROR;
 		} else {
@@ -88,6 +93,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 		}
 	}
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	[pool release];
 	return SYNC_PUSH_CHANGES_OK;
 }
 

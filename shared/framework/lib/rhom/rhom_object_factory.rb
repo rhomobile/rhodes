@@ -29,7 +29,6 @@ module Rhom
 	  unless not defined? Rho::RhoConfig::sources
 	    init_source_attribs
 	    init_objects
-		puts "inside RhomObjectFactory.initialize, sources are #{Rho::RhoConfig::sources.inspect}"
 	  end
     end
 	
@@ -37,7 +36,6 @@ module Rhom
 	  # merge source attributes into config hash
 	  # TODO: This shouldn't reference 'source[1]' directly
 	  Rho::RhoConfig::sources.each do |source|
-	    puts "inside merge loop: #{source.inspect}"
 		src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
 										 where source_id=#{source[1]['source_id'].to_s}"
 		# update our source with the proper attributes
