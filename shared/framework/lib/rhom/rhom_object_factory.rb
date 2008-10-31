@@ -18,21 +18,36 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+require 'rhom'
 require 'rhom/rhom_object'
+require 'rho'
 
 module Rhom
   class RhomObjectFactory
   
     def initialize
-      init_objects unless not defined? RHO_SOURCES
+	  unless not defined? Rho::RhoConfig::sources
+	    init_source_attribs
+	    init_objects
+		puts "inside RhomObjectFactory.initialize, sources are #{Rho::RhoConfig::sources.inspect}"
+	  end
     end
-  
-    class << self
-    end #class methods
+	
+	def init_source_attribs
+	  # merge source attributes into config hash
+	  # TODO: This shouldn't reference 'source[1]' directly
+	  Rho::RhoConfig::sources.each do |source|
+	    puts "inside merge loop: #{source.inspect}"
+		src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
+										 where source_id=#{source[1]['source_id'].to_s}"
+		# update our source with the proper attributes
+		source[1].merge!({"attribs"=>src_attribs})
+	  end
+	end
   
     # Initialize new object with dynamic attributes
     def init_objects
-      RHO_SOURCES.each do |classname,source|
+      Rho::RhoConfig::sources.each do |classname,source|
         unless Object::const_defined?(classname.intern)
           Object::const_set(classname.intern, 
             Class::new do
@@ -58,7 +73,7 @@ module Rhom
               class << self
               
                 def get_source_id
-                  RHO_SOURCES[self.name.to_s].to_s
+                  Rho::RhoConfig::sources[self.name.to_s]['source_id'].to_s
                 end
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
@@ -92,8 +107,8 @@ module Rhom
                 # returns an array of objects based on an existing array
                 def get_list(objs)
                   new_list = []
-                  if objs and defined? SOURCE_ATTRIBS
-                    attrib_length = SOURCE_ATTRIBS[self.name.to_s].length
+                  if objs and defined? Rho::RhoConfig::sources[self.name.to_s]
+                    attrib_length = Rho::RhoConfig::sources[self.name.to_s]['attribs'].length
                     list_length = 0
                     list_length = (objs.length / attrib_length) unless attrib_length == 0
                     new_obj = nil
@@ -174,7 +189,7 @@ module Rhom
                   end
                 end
                 # Create a temporary query record to display in the list
-                SOURCE_ATTRIBS[self.class.name.to_s].each do |attrib|
+                Rho::RhoConfig::sources[self.class.name.to_s]['attribs'].each do |attrib|
                   query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
                            (#{self.get_inst_source_id}, \
                            '#{obj}', \
@@ -219,7 +234,7 @@ module Rhom
               end
 	
               def get_inst_source_id
-                RHO_SOURCES[self.class.name.to_s].to_s
+                Rho::RhoConfig::sources[self.class.name.to_s]['source_id'].to_s
               end
               
               def inst_strip_braces(str=nil)

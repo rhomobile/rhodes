@@ -20,7 +20,6 @@
 #import <UIKit/UIKit.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <Foundation/Foundation.h>
-#import "SyncManager.h"
 #include "Constants.h"
 #include "SyncJSONReader.h"
 #include "Utils.h"
@@ -31,89 +30,47 @@
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(sqlite3 *database) {
+char *fetch_remote_data(char *url_string) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	
-	pSyncObject *list;
-	char url_string[4096];
-	int max_size = 100;
-	char *source_list;
-	source_list = malloc(max_size*sizeof(char *));
-	int source_length = get_source_urls_from_database(source_list, database, max_size);
-	int available = 0;
-	printf("Iterating over %i sources...\n", source_length);
+	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+	NSError *error = nil;
+	NSHTTPURLResponse* response;
+	[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
+	[request setHTTPMethod:@"GET"];
+	NSString *logData;
 	
-	/* iterate over each source id and do a fetch */
-	for(int i = 0; i < source_length; i++) {
-		sprintf(url_string, "%s%s", source_list[i], SYNC_SOURCE_FORMAT);
-		printf("url_string: %s\n", url_string);
-		
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-		
-		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-		NSError *error = nil;
-		NSHTTPURLResponse* response;
-		[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
-		[request setHTTPMethod:@"GET"];
-		
-		NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
-		
-		if (conn) {
-			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-			NSInteger code = [response statusCode];
-			if (error || code != 200) {
-				NSLog(@"An error occured connecting to the sync source: %d returned", code);
-			} else {
-				NSString *logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-				char *json_string = (char *)[logData UTF8String];
-				int size = MAX_SYNC_OBJECTS;
-				
-				// Initialize parsing list and call json parser
-				list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-				available = parse_json_list(list, json_string, size);
-				printf("Parsed %i records from sync source...\n", available);
-				if(available > 0) {
-					delete_from_database_by_source(database, source_list[i]);
-					for(int j = 0; j < available; j++) {
-						list[j]->_database = database;
-						insert_into_database(list[j]);
-						dehydrate(list[j]);
-					}
-				}
-				/* free the in-memory list after populating the database */
-				free_ob_list(list, available);
-				free(list);
-			}
-			
+	NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
+	
+	if (conn) {
+		NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+		NSInteger code = [response statusCode];
+		if (error || code != 200) {
+			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+		} else {
+			logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 		}
-		[pool release];
-		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+		
 	}
-	
-	free_str_list(source_list, source_length);
-	return available;
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	return (char *)[logData UTF8String];
 }
 
 /*
  * Pushes changes from list to rhosync server
  */
-int push_remote_changes(pSyncOperation *list, int size) {
-	if (size == 0) {
+int push_remote_data(char* url, char* data, size_t data_size) {
+	if (data_size == 0 || data == NULL) {
 		return SYNC_PUSH_CHANGES_OK;
 	}
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 	NSError *error = nil;
 	NSHTTPURLResponse *response;
-	//Get the link from the first item in the list
-	NSString *linkString = [[NSString alloc] initWithUTF8String:list[0]->_uri];
-	NSMutableString *postBody = [[NSMutableString alloc] init];
-	for (int i = 0; i < size; i++) {
-		[postBody appendString:[[NSString alloc] initWithUTF8String:list[i]->_post_body]];
-		if (i != (size - 1)) {
-			[postBody appendString:@"&"];
-		}
-	}
+	NSString *linkString = [[NSString alloc] initWithUTF8String:url];
+	NSString *postBody = [[[NSString alloc] initWithUTF8String:data] autorelease];
 	[request setURL:[NSURL URLWithString:linkString]];
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
@@ -130,19 +87,19 @@ int push_remote_changes(pSyncOperation *list, int size) {
 			NSLog(@"RESPONSE: %@", output);
 		}
 	}
-	[pool release];
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	return SYNC_PUSH_CHANGES_OK;
 }
 
 void populate_list(sqlite3 *database) {
 	/*rhosynctestappdelegate *appDelegate = (rhosynctestappdelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate.list release];
-	appDelegate.list = [[NSMutableArray alloc] init];
-	pSyncObject *db_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-	int available = fetch_objects_from_database(database, db_list);
-	for (int i = 0; i < available; i++) {
-		SyncObjectWrapper *newWrapper = [[SyncObjectWrapper alloc] init];
-		newWrapper.wrappedObject = db_list[i];
-		[appDelegate.list addObject:newWrapper];
-	}*/
+	 [appDelegate.list release];
+	 appDelegate.list = [[NSMutableArray alloc] init];
+	 pSyncObject *db_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
+	 int available = fetch_objects_from_database(database, db_list);
+	 for (int i = 0; i < available; i++) {
+	 SyncObjectWrapper *newWrapper = [[SyncObjectWrapper alloc] init];
+	 newWrapper.wrappedObject = db_list[i];
+	 [appDelegate.list addObject:newWrapper];
+	 }*/
 }

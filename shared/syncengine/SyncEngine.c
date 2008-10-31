@@ -23,6 +23,7 @@
 #endif
 
 #include "SyncEngine.h"
+#include "SyncUtil.h"
 #include "SyncManagerI.h"
 
 int stop_running = 0;
@@ -58,6 +59,7 @@ int process_local_changes() {
   } else {
 	  finalize_statements();
 	  finalize_op_statements();
+	  finalize_src_statements();
   	
 	  // Close the database.
 	  if (sqlite3_close(database) != SQLITE_OK) {
@@ -106,14 +108,16 @@ void* sync_engine_main_routine(void* data) {
 #endif
 
 int process_op_list(char *type) {
-  int available;
+	int available;
+	int success;
 
 	pSyncOperation *op_list = NULL;
 	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
 	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, type);
 	printf("Found %i available records for %s processing...\n", available, type);
 	
-	if(push_remote_changes(op_list, available) == SYNC_PUSH_CHANGES_OK) {
+	success = push_remote_changes(op_list, available);
+	if(success == SYNC_PUSH_CHANGES_OK) {
 		printf("Successfully processed %i records for %s...\n", available, type);
 		
 		remove_op_list_from_database(op_list, database, type);
