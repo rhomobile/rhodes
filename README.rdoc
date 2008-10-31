@@ -1,56 +1,66 @@
-= Introduction =
+= Introduction 
 
-The Rhodes framework is a platform for building locally executing, device-optimized mobile applications. These applications are optimized for interacting with transactional enterprise application backends. It is also designed to work with synced local data using a local database such as SQLite or DB40 and a generic backend synchronization framework such as RhoSync (another open source component available from Rhomobile). It is initially available for iPhone, Windows Mobile and Research in Motion (Blackberry) smartphones.
+The Rhodes framework is a platform for building locally executing, device-optimized mobile applications for all major smartphone devices. These applications are optimized for interacting with transactional enterprise application backends. It is also designed to work with synced local using "RhoSync":http://github.com/rhomobile/rhosync/tree/master. It is initially available for iPhone, Windows Mobile and Research in Motion (Blackberry) smartphones.  Support for Android and Symbian is planned.  
 
-Rhodes takes much of its inspiration from web-oriented MVC style frameworks such as Ruby on Rails. However it has several simplifications and optimizations for the mobile scenario (described below). Some of these are to make it easier for the developer. Most of them are to keep the framework as lightweight as possible to be able to run on mobile devices with limited memory. 
+Rhodes takes much of its inspiration from web-oriented MVC style frameworks such as Ruby on Rails. However it has several simplifications and optimizations for the mobile scenario. Some of these are to make it easier for the developer. Most of them are to keep the framework as lightweight as possible to be able to run on mobile devices with limited memory. As with developing apps on any good app framework (Rails, Merb, Django), building a Rhodes mobile application consists of building a set of files and putting them into the right directories for the respective models.
 
-As with developing apps on any good app framework, building a Rhodes mobile application will consist of building a set of files and putting them into the right directories for the respective models, controllers and views. Once the app is constructed, typically these directories are delivered to the mobile device by the sync engine on first interaction with the server. But any such directory structure available on the device in Rhodes root directory (which will vary per device operating system: iPhone, Windows Mobile, RIM or Android) will result in this application being available from the Rhodes applications runner.
+= Starting a Rhodes Application
+
+The first step in using Rhodes is to make a clone of Rhodes itself so that you can work in the \apps subdirectory.  
+
+	git	clone git://github.com/rhomobile/rhodes.git rhodes
+	
+Notice that we are using the public clone URL.  We would prefer that you don't check your apps back in to Rhodes (and you won't be able to anyway).  So this is what makes sense for working on apps versus contributing to Rhodes itself. You will then do your work in \apps directory as described below.  
 
 = Directory Structure 
 
-The directory structure is as appears below. Beneath the Rhodes root directory (as determined by doing a git clone of the Rhodes projects) there is an apps subdirectory.  There is an index.html in this that contains the "top level" content, which will generally be a list of available applications.  This may just be a simple link  From there will be a subdirectory for each application name. 
+The directory structure is as appears below. Beneath the Rhodes root directory (as determined by doing a git clone of the Rhodes projects) there is an apps subdirectory.  There is an index.html in this that contains the "top level" content, which will generally be a list of available applications.  It starts out as a link to our sample app for mobilizing SugarCRM called RhoSugar.   You can delete the link to that sample app and provide a link to your own app.
 
-For example \Rhosugar might be the subdirectory for an application that provides mobile access to SugarCRM. Beneath the application subdirectory there will be an index.html file that contains links to controllers for specific models, or whatever content the app developer wishes to appear at the top level of the application. This default landing page will typically have links to the controllers for each of the data models. 
+Below the apps directory will be a subdirectory for each application name. For example \Rhosugar might be the subdirectory for an application that provides mobile access to SugarCRM. Beneath the application subdirectory there will be an index.html file that contains links to controllers for specific models, or whatever content the app developer wishes to appear at the top level of the application. This default landing page will typically have links to the controllers for each of the data models. 
 
 There will also be several subdirectories, one for each model or synced data object. For example, there might be subdirectories called \Accounts, \Employees, and \Cases. The subdirectory contains a controller in the file controller.rb. These subdirectories each contain a set of template files as Embedded Ruby (ERB) files. These control how data from the model is displayed and what links are available to other actions. Note that this structure is reminiscent of Rails and MERB's structure, but is a bit simpler by design..
 
-== Directory Layout 
+=== Directory Layout 
 
-Specifically the structure of the directories is as follows
+Specifically the structure of the directories is as follows:
 
-
- \<Rhodes root> (varies per OS for example, c:\program files\rhodes) 
+\Rhodes (or whatever you call the directory where you do the git clone)
+ index.html (modify this "overall Rhodes index page"  to point to the new app you are building, it ships with a link to our Rhosugar sample app)
+ \apps (there will be other directories below Rhodes but this is what we care about)
    index.html  
-   \<appname>  (directory for a single app, for example \Sugar)
+   \<app_name>  (directory for a single app, for example \RhoSugar)
      index.html (the home page of the app, always generated with links to all synced data models by default, can be edited by user)
      <other HTML and CSS files)
      error.log  (various levels of log files that will be generated, not initially distributed)
      info.log
      debug.log 
-     \<model directory> (for example \TroubleTickets)   
+     \<model directory> (for example \Accounts)   
        index.erb
        new.erb
        edit.erb
        show.erb
        controller.rb  
-     \<model directory> (for example \Contacts)
+     \<model directory> (for example \Cases)
        index.erb
        new.erb
        edit.erb
        show.erb
-       controller.rb (optional and not available in release 0.5)
+       controller.rb 
 
-= Scaffold Generation =
+= Scaffold Generation 
 
-Like Rails, Rhodes features a scaffold generator that generates controllers and view for a given model.  The syntax for running Rhag is:
+Rhodes features a scaffold generator called rhogen that generates controllers and view for a given model.  The syntax for running Rhogen is:
 
-	rhag modelname
+	rhogen modelname
 
-This will generated a controller as the file controller.rb and several views as <action-name>.erb
-	
-== Actions Generated
+This will generate a configuration file to control synchronization, a controller file, and view templates to allow your application to edit model data locally.
 
-Each Rhodes model/controller pair has several actions to perform basic CRUD (create, read, update and delete) on the object generated by default by the scaffold . These actions are:
+=== Config File	
+Rhogen generates a config file.  Currently this is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the RhoSync README.
+
+=== Controller 
+
+Rhogen will generate a controller as the file controller.rb and several views as <action-name>.erb (corresponding to the actions below). Each Rhodes model/controller pair has several actions to perform basic CRUD (create, read, update and delete) on the object generated by default by the scaffold . These actions are:
 
     * index - to list all objects
     * new - to display the editing form for creating a new object
@@ -60,12 +70,12 @@ Each Rhodes model/controller pair has several actions to perform basic CRUD (cre
     * show - to view the object
     * delete - to delete the object 
 
-== Views Generated 
-ERB files for each action are also generated.  This set of actions and the associated URL paths follows the Rails scaffolding pattern for creating CRUD actions for objects and the associated "map resources" convention for routing to those actions.
+=== Views Templates
+ERB template files for the actions which require rendering templates are also generated.  You should edit the resulting files as you see fit.  Joe Hewitt's IUI library is used to generate an iPhone like UI for the iPhone.  
 
-=== Routing/URL Patterns for Builtin Actions ===
+=== Routing/URL Patterns for Builtin Actions 
 
-In the table below we show the URL routes and the code for each of the builtin actions. Note that @object and Object would be replaced by whatever model object is being used in the controller.  The URLs to access these actions are shown below:
+In the table below we show the URL routes and the code for each of the builtin actions. Note that @object and Object would be replaced by whatever model object is being used in the controller.  The URLs to access these actions are shown below. Note that these are slightly different than the Rails conventions due limitations of mobile device browsers.
 
 * GET /model 	Invoke index action on model's default controller 
 * GET /model/new 	Invoke new action 	
@@ -74,4 +84,13 @@ In the table below we show the URL routes and the code for each of the builtin a
 * POST /model/id 	invoke update action on specified (ID) object 	
 * GET /model/id 	invoke show action on specified (ID) object 
 * POST /model/id/delete 	deletes specified (ID) object 	
+
+= Building and Test Your Application
+After you've built your controllers and templates,  the next step to using is to test and execute the application on your device or simulator.  The process for this will vary for each mobile device operating system.  
+
+=== iPhone 
+
+You need to have the iPhone SDK installed and be part of the Apple Developer program.  Rhodes itself is not available in the iPhone App Store. Nor should it be since its not an application but merely a development tool for you to create great iPhone apps (and at the same time run on other smartphones). 
+
+Inside the iPhone directory is an iPhone XCode project.  Load that project (currently called Rhorunner but will be changed to Rhodes later) and do a build.  Once you have tested on your iPhone simular and iPhone devices to your satisfaction, follow Apple's instructions to submit your application for consideration on the App Store.
 

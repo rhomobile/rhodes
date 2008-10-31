@@ -331,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>66A044980EBA58A600606513</string>
+										<string>66A0449C0EBA803A00606513</string>
 										<key>history</key>
 										<array>
 											<string>6632090F0EB240B10040AB39</string>
@@ -598,7 +598,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {920, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>-1143 390 920 404 0 0 1280 778 </string>
+								<string>-1143 390 920 404 -1280 0 1280 1024 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -622,7 +622,7 @@
 								<key>Frame</key>
 								<string>{{0, 5}, {920, 358}}</string>
 								<key>RubberWindowFrame</key>
-								<string>-1143 390 920 404 0 0 1280 778 </string>
+								<string>-1143 390 920 404 -1280 0 1280 1024 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -652,7 +652,7 @@
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.buildV3</string>
 			<key>WindowString</key>
-			<string>-1143 390 920 404 0 0 1280 778 </string>
+			<string>-1143 390 920 404 -1280 0 1280 1024 </string>
 			<key>WindowToolGUID</key>
 			<string>662293B20EA979D200789D3A</string>
 			<key>WindowToolIsVisible</key>
@@ -912,7 +912,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {957, 600}}</string>
 								<key>RubberWindowFrame</key>
-								<string>-1134 299 957 641 0 0 1280 778 </string>
+								<string>-1134 299 957 641 -1280 0 1280 1024 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
@@ -941,7 +941,7 @@
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>-1134 299 957 641 0 0 1280 778 </string>
+			<string>-1134 299 957 641 -1280 0 1280 1024 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
