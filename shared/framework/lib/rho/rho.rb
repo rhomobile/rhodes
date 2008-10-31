@@ -10,10 +10,9 @@ module Rho
     def initialize
       puts "Calling RHO.initialize"
       process_model_dirs
-	  puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
       init_sources
 	  SyncEngine::dosync
-	  puts "Rho::RhoConfig::sources after processing -> #{Rho::RhoConfig::sources.inspect}"
+	  puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
     end
     
     # Return the directories where we need to load configuration files
@@ -34,8 +33,7 @@ module Rho
         
         # quick and dirty way to get unique array of hashes
         uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| result << h unless result.include?(h); result }
-        
-		puts "uniq_sources: #{uniq_sources.inspect}"
+		
         # generate unique source list in databse for sync
         uniq_sources.each do |source|
           src_id = source['source_id']
@@ -128,7 +126,6 @@ module Rho
       def add_source(modelname, new_source=nil)
         if new_source
           unless @@sources[new_source]
-            puts "adding @@sources[#{modelname}]: #{new_source.inspect}"
             @@sources[modelname] = new_source
           end
         end
