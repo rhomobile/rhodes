@@ -13,6 +13,6 @@ public:
   void Stop ();
 
 private:
-    CHttpServer m_httpserver;
-    CSyncEngine m_syncengine;
+    CHttpServer  m_httpserver;
+    CSyncEngine* m_syncengine;
 };
