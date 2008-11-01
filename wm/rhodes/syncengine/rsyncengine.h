@@ -9,15 +9,23 @@ class CSyncEngine : public IWorkerThreadClient
 {
   HANDLE m_hEvent;
   HANDLE m_hDoSyncEvent;
+  CRITICAL_SECTION m_critical_section;
 
 public:
-  CSyncEngine(void);
+  static CSyncEngine* Instance();
   virtual ~CSyncEngine(void);
 
   CWorkerThread<DefaultThreadTraits> m_thread;
 
 	void ResumeThread();
 	void FreezeThread();
+
+  void Lock();
+  void Unlock();
+  void TriggerSync();
+
+private:
+  CSyncEngine(void);
 
 private:
 	HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);

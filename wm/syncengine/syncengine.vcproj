@@ -1037,6 +1037,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\syncengine\SyncUtil.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\syncengine\SyncUtil.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\syncengine\Utils.c"
 				>
 			</File>

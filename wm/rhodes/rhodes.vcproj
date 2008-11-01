@@ -722,14 +722,6 @@
 				RelativePath=".\syncengine\rsyncengine.h"
 				>
 			</File>
-			<File
-				RelativePath=".\syncengine\syncutil.c"
-				>
-			</File>
-			<File
-				RelativePath=".\syncengine\syncutil.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

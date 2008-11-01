@@ -14,22 +14,36 @@ extern "C" {
 #endif
 
 void lock_sync_mutex() {
+  CSyncEngine::Instance()->Lock();
 }
 
 void unlock_sync_mutex() {
+  CSyncEngine::Instance()->Unlock();
 }
 
 void dosync() {
+  CSyncEngine::Instance()->TriggerSync();
 }
 
 #ifdef __cplusplus
 } //extern "C" {
 #endif
 
+// Instance of the sync engine
+static CSyncEngine* m_instance = NULL;
+
 //Sync engine thread
+
+CSyncEngine* CSyncEngine::Instance() {
+  if (m_instance) 
+    return m_instance;
+  m_instance = new CSyncEngine;
+  return m_instance;
+}
 
 CSyncEngine::CSyncEngine(void)
 {
+  InitializeCriticalSection(&m_critical_section);
   m_database = NULL;
   m_bSyncInitialized = false;
   m_hDoSyncEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
@@ -41,10 +55,15 @@ CSyncEngine::CSyncEngine(void)
 CSyncEngine::~CSyncEngine(void)
 {
   //TBD InterlockedDecrement()
+  Lock();
+  stop_running = 1;
   ::SetEvent(m_hDoSyncEvent);
+  Unlock();
+
 	m_thread.RemoveHandle(m_hEvent);
 	m_thread.Shutdown();
   ATLTRACE(_T("Sync engine thread shutdown\n"));
+  DeleteCriticalSection(&m_critical_section);
 }
 
 void CSyncEngine::ResumeThread()
@@ -57,6 +76,22 @@ void CSyncEngine::FreezeThread()
   ::ResetEvent(m_hEvent);
 }
 
+void CSyncEngine::Lock() {
+  EnterCriticalSection(&m_critical_section);
+  ATLTRACE(_T("Sync engine thread locked\n"));
+}
+
+void CSyncEngine::Unlock() {
+  LeaveCriticalSection(&m_critical_section);
+  ATLTRACE(_T("Sync engine thread unlocked\n"));
+}
+
+void CSyncEngine::TriggerSync() {
+  Lock();
+  ::SetEvent(m_hDoSyncEvent);
+  Unlock();
+}
+
 HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bSyncInitialized) {
@@ -64,8 +99,6 @@ HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
   }
   
   WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
-  ::ResetEvent(m_hDoSyncEvent);
-
   PerformSync();
 
   return S_OK;
@@ -85,27 +118,40 @@ HRESULT CSyncEngine::CloseHandle(HANDLE hHandle)
 
 bool CSyncEngine::StartSyncEngine()
 {
+  Lock();
+
   ATLTRACE(_T("Starting sync engine\n"));
   char dbpath[MAX_PATH];
   sprintf(dbpath,"%sdb\\syncdb.sqlite",CHttpServer::GetRootPath());
   sqlite3_open(dbpath,&m_database);
   start_sync_engine(m_database);
   m_bSyncInitialized = true;
+
+  Unlock();
   return true;
 }
 
 bool CSyncEngine::PerformSync()
 {
+  Lock();
+
   ATLTRACE(_T("Performing sync\n"));
+  ::ResetEvent(m_hDoSyncEvent);
   process_local_changes();
+
+  Unlock();
   return true;
 }
 
 bool CSyncEngine::StopSyncEngine()
 {
+  Lock();
+
   ATLTRACE(_T("Stopping sync engine\n"));
   if (m_database)
     sqlite3_close(m_database);
+
+  Unlock();
   return true;
 }
 
