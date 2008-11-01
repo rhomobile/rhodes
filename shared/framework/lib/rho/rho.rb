@@ -11,8 +11,8 @@ module Rho
       puts "Calling RHO.initialize"
       process_model_dirs
       init_sources
-	  SyncEngine::dosync
-	  puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
+	    #SyncEngine::dosync
+	    puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
     end
     
     # Return the directories where we need to load configuration files
