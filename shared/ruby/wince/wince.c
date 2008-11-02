@@ -368,11 +368,25 @@ DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource,
 }
 
 /*---------------- FindFirstFile, FindNextFile ------------------ */
+static void copy_fund_data(WIN32_FIND_DATAA *data,WIN32_FIND_DATAW *wdata) {
+	LPSTR mb;
+
+  data->dwFileAttributes = wdata->dwFileAttributes;
+  data->ftCreationTime = wdata->ftCreationTime;
+  data->ftLastAccessTime = wdata->ftLastAccessTime;
+  data->ftLastWriteTime = wdata->ftLastWriteTime;
+  data->nFileSizeHigh = wdata->nFileSizeHigh;
+  data->nFileSizeLow = wdata->nFileSizeLow;
+
+  mb = wce_wctomb( wdata->cFileName );
+	strcpy( data->cFileName, mb );
+	free(mb);
+}
+
 HANDLE FindFirstFileA(LPCSTR path,
 			WIN32_FIND_DATAA *data)
 {
 	LPWSTR wpath;
-	LPSTR  mb;
 	HANDLE h;
 	WIN32_FIND_DATAW wdata;
 
@@ -380,9 +394,7 @@ HANDLE FindFirstFileA(LPCSTR path,
 	h = FindFirstFileW( wpath, &wdata );
 	free(wpath);
 	
-	mb = wce_wctomb( wdata.cFileName );
-	strcpy( data->cFileName, mb );
-	free(mb);
+  copy_fund_data(data,&wdata);
 
 	return h;
 }
@@ -392,13 +404,10 @@ BOOL FindNextFileA(HANDLE handle,
 {
 	BOOL b;
 	WIN32_FIND_DATAW wdata;
-	LPSTR mb1;
 
 	b = FindNextFileW(handle, &wdata);
 
-	mb1 = wce_wctomb( wdata.cFileName );
-	strcpy( data->cFileName, mb1 );
-	free(mb1);
+  copy_fund_data(data,&wdata);
 
 	return b;
 }

@@ -1,25 +1,29 @@
 #include "ServerHost.h"
 
-CServerHost::CServerHost(void)
+CServerHost::CServerHost()
 {
-  m_syncengine = CSyncEngine::Instance();
+  m_syncengine = CSyncEngine::Create();
+  m_httpserver = new CHttpServer;
 }
 
 CServerHost::~CServerHost(void)
 {
+  if (m_httpserver)
+    delete m_httpserver;
   if (m_syncengine)
     delete m_syncengine;
 }
 
-bool CServerHost::Start() {
-  //Start sync engine
-  m_syncengine->ResumeThread();
+bool CServerHost::Start(HWND hWnd) {
   // Start HTTP server 
-  m_httpserver.ResumeThread();
+  m_httpserver->ResumeThread();
+  //Start sync engine
+  m_syncengine->SetMainWindow(hWnd);
+  m_syncengine->ResumeThread();
   return true;
 }
 
 void CServerHost::Stop() {
-  m_httpserver.FreezeThread();
-  m_syncengine->FreezeThread();
+//  m_httpserver->FreezeThread();
+//  m_syncengine->FreezeThread();
 }

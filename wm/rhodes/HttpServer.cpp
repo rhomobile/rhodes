@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "rhoruby/rhoruby.h"
 #include "HttpServer.h"
+#include "syncengine/rsyncengine.h"
 
 CHttpServer::CHttpServer(void)
 {
@@ -34,8 +35,9 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bRubyInitialized) {
     InitRubyFramework();
+    ATLTRACE(L"Starting SYNC\n");
+    start_sync();
   }
-  //Sleep(5);
 	shttpd_poll(ctx, 1000);
   return S_OK;
 }
@@ -93,5 +95,15 @@ const char* CHttpServer::GetRootPath() {
   }
   _root_loaded = true;
   return _rootpath;
+}
+
+extern "C" wchar_t* wce_mbtowc(const char* a);
+LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
+  if (buffer) {
+    wchar_t* root  = wce_mbtowc(GetRootPath());
+    wsprintf(buffer,L"file://%s%s",root,L"apps\\loading.html");
+    free(root);
+  }
+  return buffer;
 }
 

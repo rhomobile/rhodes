@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include "../resource.h"
 #include "../HttpServer.h"
 #include "SyncEngine.h"
 #include "rsyncengine.h"
@@ -14,15 +15,23 @@ extern "C" {
 #endif
 
 void lock_sync_mutex() {
-  CSyncEngine::Instance()->Lock();
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) sync->Lock();
 }
 
 void unlock_sync_mutex() {
-  CSyncEngine::Instance()->Unlock();
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) sync->Unlock();
 }
 
 void dosync() {
-  CSyncEngine::Instance()->TriggerSync();
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) sync->TriggerSync();
+}
+
+void start_sync() {
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) sync->StartSync();
 }
 
 #ifdef __cplusplus
@@ -33,20 +42,25 @@ void dosync() {
 static CSyncEngine* m_instance = NULL;
 
 //Sync engine thread
-
-CSyncEngine* CSyncEngine::Instance() {
+CSyncEngine* CSyncEngine::Create() {
   if (m_instance) 
     return m_instance;
   m_instance = new CSyncEngine;
   return m_instance;
 }
 
+CSyncEngine* CSyncEngine::Instance() {
+  return m_instance;
+}
+
 CSyncEngine::CSyncEngine(void)
 {
   InitializeCriticalSection(&m_critical_section);
+  m_hMainWindow = NULL;
   m_database = NULL;
+  stop_running = 1;
   m_bSyncInitialized = false;
-  m_hDoSyncEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+  m_hDoSyncEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_thread.Initialize();
   m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   m_thread.AddHandle(m_hEvent, this, NULL);
@@ -54,7 +68,6 @@ CSyncEngine::CSyncEngine(void)
 
 CSyncEngine::~CSyncEngine(void)
 {
-  //TBD InterlockedDecrement()
   Lock();
   stop_running = 1;
   ::SetEvent(m_hDoSyncEvent);
@@ -92,6 +105,13 @@ void CSyncEngine::TriggerSync() {
   Unlock();
 }
 
+void CSyncEngine::StartSync() {
+  Lock();
+  stop_running = 0;
+  ::SetEvent(m_hDoSyncEvent);
+  Unlock();
+}
+
 HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bSyncInitialized) {
@@ -100,6 +120,11 @@ HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
   
   WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
   PerformSync();
+
+  if (m_hMainWindow) {
+    ::SendMessage(m_hMainWindow,WM_COMMAND,IDM_HOME,0);
+    m_hMainWindow = NULL;
+  }
 
   return S_OK;
 }
