@@ -39,9 +39,12 @@ public :
             return S_FALSE;
         }
         // Starting local server
-        m_serverHost.Start();
+        m_serverHost.Start(m_appWindow.m_hWnd);
         // Navigate to the home page
-        m_appWindow.Navigate(HOME_PAGE);
+        TCHAR _laodingpage[MAX_PATH];
+        LPTSTR lp = CHttpServer::GetLoadingPage(_laodingpage);
+        m_appWindow.Navigate(lp);
+        //m_appWindow.Navigate(HOME_PAGE);
 
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);

@@ -16,8 +16,10 @@ public:
 
 	void ResumeThread();
 	void FreezeThread();
-
+  
   static const char* GetRootPath();
+  //returns same buffer filled w/ path to lading page
+  static LPTSTR GetLoadingPage(LPTSTR buffer); 
 
 private:
 	HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);
