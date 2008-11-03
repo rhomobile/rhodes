@@ -26,22 +26,22 @@ module Rhom
   class RhomObjectFactory
   
     def initialize
-	  unless not defined? Rho::RhoConfig::sources
-	    init_source_attribs
-	    init_objects
-	  end
+	    unless not defined? Rho::RhoConfig::sources
+  	    init_source_attribs
+  	    init_objects
+  	  end
     end
 	
-	def init_source_attribs
-	  # merge source attributes into config hash
-	  # TODO: This shouldn't reference 'source[1]' directly
-	  Rho::RhoConfig::sources.each do |source|
-		src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
-										 where source_id=#{source[1]['source_id'].to_s}"
-		# update our source with the proper attributes
-		source[1].merge!({"attribs"=>src_attribs})
-	  end
-	end
+	  def init_source_attribs
+  	  # merge source attributes into config hash
+  	  # TODO: This shouldn't reference 'source[1]' directly
+  	  Rho::RhoConfig::sources.each do |source|
+  		src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
+  										 where source_id=#{source[1]['source_id'].to_s}"
+  		# update our source with the proper attributes
+  		source[1].merge!({"attribs"=>src_attribs})
+  	  end
+  	end
   
     # Initialize new object with dynamic attributes
     def init_objects

@@ -1,7 +1,7 @@
 require 'time'
 require 'rho/rhoapplication'
-require 'find'
 require 'rhom'
+require 'rhofsconnector'
 
 module Rho
   class RHO
@@ -17,10 +17,8 @@ module Rho
     
     # Return the directories where we need to load configuration files
     def process_model_dirs
-      Find.find(RhoApplication::get_base_app_path) do |path| 
-        if File.basename(path) == 'config.rb'
-          require path
-        end
+      Rho::RhoFSConnector::enum_files(RhoApplication::get_base_app_path,'config.rb') do |path|
+        require path
       end
     end
     
