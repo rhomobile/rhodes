@@ -6,7 +6,7 @@
 
 (function() {
 
-var slideSpeed = 20;
+var slideSpeed = 40;
 var slideInterval = 0;
 
 var currentPage = null;
