@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+RIM-COD-Module-Name: RhoRunner
+RIM-COD-Module-Dependencies: net_rim_cldc,TestRuby
+MIDlet-Jar-Size: 0
+MIDlet-1: ,,
+RIM-COD-Creation-Time: 1225763687
+MIDlet-Jar-URL: RhoRunner.jar
+RIM-COD-URL: RhoRunner.cod
+RIM-COD-SHA1: 26 97 fd b6 60 86 e5 e1 8a 79 7a 10 d8 b2 6f 13 82 04 be 8b
+RIM-COD-Size: 1344
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Version: 0.0
+MIDlet-Name: RhoRunner
+MIDlet-Vendor: <unknown>
+MicroEdition-Profile: MIDP-2.0
+RIM-MIDlet-Flags-1: 0

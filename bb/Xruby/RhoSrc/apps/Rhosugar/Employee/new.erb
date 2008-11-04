@@ -1,0 +1,30 @@
+<form title="New Employee" 
+	  class="panel" 
+	  id="employee_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@employee.object%>"/>
+		<div class="row">
+			<label>First Name: </label>
+			<input type="text" name="employee[first_name]"/>
+		</div>
+		<div class="row">
+			<label>Last Name: </label>
+			<input type="text" name="employee[last_name]"/>
+		</div>
+		<div class="row">
+			<label>Title: </label>
+			<input type="text" name="employee[title]"/>
+		</div>
+		<div class="row">
+			<label>Mobile: </label>
+			<input type="text" name="employee[phone_mobile]"/>
+		</div>
+		<div class="row">
+			<label>Login: </label>
+			<input type="text" name="employee[sugar_login]"/>
+		</div>
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>

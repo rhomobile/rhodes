@@ -1,0 +1,9 @@
+MIDlet-Name: RhoRunner
+MIDlet-Version: 1.02
+MIDlet-Vendor: <unknown>
+MIDlet-Jar-URL: RhoRunner.jar
+MIDlet-Jar-Size: 0
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-1: ,,
+RIM-MIDlet-Flags-1: 0

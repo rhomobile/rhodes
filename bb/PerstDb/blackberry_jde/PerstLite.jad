@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+MIDlet-Version: 0.0
+MIDlet-Jar-Size: 249667
+RIM-COD-URL-2: PerstLite-2.cod
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Jar-URL: PerstLite.jar
+RIM-COD-Module-Dependencies: net_rim_cldc
+RIM-COD-URL-1: PerstLite-1.cod
+RIM-COD-SHA1-2: 0b d2 4f 49 1d 37 7f cf a1 f2 86 d8 77 37 25 60 95 24 94 65
+RIM-COD-SHA1-1: 5d b3 b6 9b e9 8f a4 5a 47 0b ee 9d 7e ba c3 e3 e0 65 68 2d
+RIM-COD-Size-2: 10448
+RIM-COD-Size-1: 71832
+RIM-COD-Module-Name: PerstLite
+RIM-COD-Size: 72912
+MIDlet-Name: PerstLite
+RIM-COD-Creation-Time: 1225758297
+RIM-COD-URL: PerstLite.cod
+RIM-Library-Flags: 2
+RIM-COD-SHA1: 49 e4 62 bb de 41 44 3e f9 54 18 45 46 1b 40 09 35 8a ae 5c
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Vendor: <unknown>

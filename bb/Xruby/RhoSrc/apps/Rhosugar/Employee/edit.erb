@@ -1,0 +1,35 @@
+<form title="Edit Employee" 
+	  class="panel" 
+	  id="employee_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@employee.object%>"/>
+		<div class="row">
+			<label>First Name: </label>
+			<input type="text" name="employee[first_name]" value="<%=@employee.first_name%>"/>
+		</div>
+		<div class="row">
+			<label>Last Name: </label>
+			<input type="text" name="employee[last_name]" value="<%=@employee.last_name%>"/>
+		</div>
+		<div class="row">
+			<label>Title: </label>
+			<input type="text" name="employee[title]" value="<%=@employee.title%>"/>
+		</div>
+		<div class="row">
+			<label>Mobile: </label>
+			<input type="text" name="employee[phone_mobile]" value="<%=@employee.phone_mobile%>"/>
+		</div>
+		<div class="row">
+			<label>Login: </label>
+			<input type="text" name="employee[sugar_login]" value="<%=@employee.sugar_login%>"/>
+		</div>
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @employee.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>

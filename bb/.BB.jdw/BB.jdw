@@ -1,0 +1,23 @@
+## RIM Java Development Environment
+# RIM Workspace file
+[BuildConfigurations
+Debug
+]
+[DebugActiveProjects
+..\RhoRunner\RhoRunner.jdp
+..\RubyVM\RubyVM.jdp
+..\TestRuby\TestRuby.jdp
+]
+DependenciesInWorkspace=0
+[ImplicitRules
+]
+[Imports
+<runtime>
+]
+[Projects
+..\PerstDb\blackberry_jde\PerstImplJSR75.jdp
+..\PerstDb\blackberry_jde\PerstLite.jdp
+..\RhoRunner\RhoRunner.jdp
+..\RubyVM\RubyVM.jdp
+..\TestRuby\TestRuby.jdp
+]

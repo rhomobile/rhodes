@@ -1,0 +1,29 @@
+## RIM Java Development Environment
+# RIM Workspace file
+[BuildConfigurations
+Debug
+Release
+]
+DependenciesInWorkspace=0
+[ImplicitRules
+]
+[Imports
+]
+[Projects
+FullText.jdp
+PerstImplJSR75.jdp
+PerstImplRMS.jdp
+PerstLite.jdp
+PerstSampleBasketball.jdp
+PerstSampleGuess.jdp
+PerstSampleTestIndex.jdp
+]
+[ReleaseActiveProjects
+FullText.jdp
+PerstImplJSR75.jdp
+PerstImplRMS.jdp
+PerstLite.jdp
+PerstSampleBasketball.jdp
+PerstSampleGuess.jdp
+PerstSampleTestIndex.jdp
+]
