@@ -21,70 +21,17 @@
 
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
+require 'rhom/rhom_db_adapter'
   
 module Rhom
   TABLE_NAME = 'object_values'
   
   class Rhom
     include RhomObject
-    attr_accessor :database, :factory
+    attr_accessor :factory
   
     def initialize
       @factory = RhomObjectFactory.new
     end
-  
-    class << self
-    
-      def init_db_connection
-        dbname = nil
-        if defined? SYNC_DB_FILE
-          dbname = File.join(File.dirname(File.expand_path(__FILE__)), SYNC_DB_FILE)
-        else
-          dbname = File.join(File.dirname(File.expand_path(__FILE__)), '../../db/syncdb.sqlite')
-        end
-        puts "DB name = " + dbname
-        @database = SQLite3::Database.new(dbname)
-      end
-  
-      def close_db_connection
-        if @database
-          @database.close
-        else
-          return false
-        end
-        return true
-      end
-  
-      # execute a sql statement
-      # optionally, disable the factory processing 
-      # which returns the result array directly
-      def execute_sql(sql=nil)
-        result = []
-        if sql
-          puts 'query is ' + sql
-          # Make sure we lock the sync engine's mutex
-          # before we perform a database transaction.
-          # This prevents concurrency issues.
-          begin
-            SyncEngine::lock_sync_mutex
-            # execute sql statement inside of transaction
-            # result is returned as an array of hashes
-            init_db_connection
-            @database.transaction
-            @database.results_as_hash = true
-            result = @database.execute sql
-            @database.commit
-            close_db_connection
-            SyncEngine::unlock_sync_mutex
-          rescue Exception => e
-            puts "exception when running query: #{e}"
-            # make sure we unlock even if there's an error!
-            SyncEngine::unlock_sync_mutex
-          end
-        end
-        puts "returned #{result.length.to_s} records..."
-        result
-      end
-    end # class methods
   end # Rhom
 end # Rhom
