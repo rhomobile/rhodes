@@ -1,0 +1,31 @@
+<loader version="1.0">
+	<application id="PerstLite">
+		<name >
+			
+		</name>
+		<description >
+			
+		</description>
+		<version >
+			
+		</version>
+		<vendor >
+			MyCompany
+		</vendor>
+		<copyright >
+			Copyright (c) 2008 MyCompany
+		</copyright>
+		<fileset Java="1.35">
+			<directory >
+				
+			</directory>
+			<files >
+				PerstLite.cod
+
+			</files>
+
+		</fileset>
+
+	</application>
+
+</loader>

@@ -1,0 +1,6 @@
+MIDlet-1: Basketball, Basketball.png, UniAR
+MIDlet-Name: Basketball
+MIDlet-Vendor: McObject
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0

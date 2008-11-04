@@ -1,0 +1,8 @@
+MIDlet-Name: TestRuby
+MIDlet-Version: 1.01
+MIDlet-Vendor: <unknown>
+MIDlet-Jar-URL: TestRuby.jar
+MIDlet-Jar-Size: 0
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
+RIM-Library-Flags: 2

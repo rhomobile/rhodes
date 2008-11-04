@@ -1,0 +1,106 @@
+<html>
+<title>
+Getting Started With ProScout - A Sample Java ME Midlet with Perst Lite
+</title>
+<body>
+<h1>
+Getting Started With ProScout - A Sample Java ME Midlet with Perst Lite
+</h1>
+McObject's ProScout midlet demonstrates the Perst Lite object-oriented embedded database for Java ME. It is possible to build and run the midlet on a wide variety of Java ME devices. ProScout has been tested on Blackberry and Nokia devices, as well as with PhoneME, an open source reference software platform that addresses the market and technical requirements of <i>feature phone</i> devices.
+
+<p>
+ProScout is designed as an application supporting professional sports recruiters by enabling them to gather and recall data using a mobile device such as a cell phone. For example, a user sitting in a high school gymnasium's bleachers could discreetly take notes about a recruiting prospect, or recall various teams' win/loss records.
+Please look at <a href="PerstLiteFeatures.html">description of Perst Lite features</a> used in ProScout application.
+
+<h2>
+Step-By-Step: Building and Running ProScout
+</h2>
+<h3>
+Sun Java Wireless Toolkit (WTK)
+</h3>
+
+The ProScout midlet was developed using the <a href="http://java.sun.com/products/sjwtoolkit/">Sun Wireless Toolkit</a>. It is also possible to use another IDE (such as NetBeans, Eclipse with its J2ME support module, JBuilder, the BlackBerry IDE from Research-In-Motion,...) to build and run the application. In all such cases, it is necessary to create a corresponding IDE MIDP2.0/CLDC1.1 project, and import source + resource + library files from the ProScout example (contained in basketball.zip) into this project. In many cases this should be as easy as copying and pasting.
+
+Here are the exact steps for building and running ProScout using the Sun Wireless Toolkit:
+
+<ol>
+<li>Download and install the Sun Wireless Toolkit (the current version 2.5 is fine) and the J2SE SDK (Java 2, Standard Edition Software Development Kit). Both products can be freely downloaded from www.javasoft.com along with full documentation and instructions.</li>
+
+<li>Assuming that you have extracted Sun WTK 2.5 to the home directory (so that it is located in the \WTK25\ directory), then extract Basketball.zip to <code>\WTK25\apps</code> directory.</li>
+
+<li>Using the Wireless Toolkit <code>KToolbar</code>, select <b>Basketball</b> from the <b>Open Project</b> menu.</li>
+
+<li>Build the project by executing the <b>Build</b> command in KToolbar menu.</li>
+
+<li>Run the project in WTK Emulator: command Run in KToolbar menu.</li>
+
+<li>Create package: click on <b>Project/Package/Create</b> Package menu item.</li>
+
+<li>Upload <code>Basketball.jar</code> and <code>Basketball.jad</code> files to the real device (upload procedure depends on the particular device - please refer to the installation of Java applications (midlets) in this device user's guide).</li>
+</ol>
+
+<h3>
+PhoneME Emulator
+</h3>
+
+Following are the steps to run the ProScout midlet in the PhoneME Emulator (command line only):
+
+<ol>
+<li>Extract the PhoneME binary distributive. Let's say that it is extracted in home directory, so path will be 
+<code>C:\phoneme_feature</code></li>
+
+<li>Change directory to
+<code>C:\phoneme_feature\bin\win32_x86_javacall_mvm</code></li>
+
+<li>Install ProScout midlet:
+
+<pre>
+C:\phoneme_feature\bin\win32_x86_javacall_mvm&gt; bin\installMidlet.bat C:\perst\src11\tst\midp\Basketball\bin\Basketball.jar
+<font color="#008000">
+REPORT: &lt;level:3&gt; &lt;channel:1000&gt; JavaTask() &gt;&gt;
+javacall_lifecycle_state_changed() event is JAVACALL_LIFECYCLE_MIDLET_STARTED status is JAVACALL_OK
+The suite was succesfully installed, <b>ID: 2</b>
+javacall_lifecycle_state_changed() event is JAVACALL_LIFECYCLE_MIDLET_SHUTDOWN status is JAVACALL_FAILED
+REPORT: &lt;level:3&gt; &lt;channel:1000&gt; JavaTask() &gt;&gt;
+</font>
+
+Remember <b>ID</b> assigned to the midlet ("ID: 2" in this example).
+</li>
+
+<li>Run the midlet using this ID and midlet class name (do not confuse with the
+midlet name):
+
+<pre>
+C:\phoneme_feature\bin\win32_x86_javacall_mvm&gt; bin\runMidlet 2 UniAR
+</pre></li>
+
+</ol>
+
+
+<h3>
+Other emulators and deployment to real devices
+</h3>
+
+Most mobile phone vendors provides emulators for their own devices, so you can see how the midlet will look running on the real device. Running a midlet in such a device-specific emulator usually simply involves choosing a .jad or  .jar file in the emulator's <code>Open</code> menu item.<p>
+
+For example, Nokia's device emulators can be used with the <b>Nokia Developer's Suite for Java ME</b>. You can download emulators of different Nokia devices from Nokia's Web site, and integrate them in the Nokia Developer's Suite. Starting a midlet in one of these emulators requires the following steps:
+
+<ol>
+<li>Launch  Nokia Developer's Suite</li>
+<li>Click on <b>Start Emulators</b> icon</li>
+<li>Specify the path to the midlet .jad file (.jar file should be located in the same directory)</li>
+<li>Select emulator you want to use from the list of available devices</li>
+<li>Click <b>Emulate</b></li>
+</ol><p>
+
+A similar approach is used for emulators of other mobile phone vendors.<p>
+
+Deployment of the midlet to an actual device also usually requires vendor-specific tools. Let's say the target device is your mobile phone. First, you need to establish a connection between a PC and your mobile phone (you can also install applications
+from the network, but this is not the case in our example). An IRDA, USB or Bluetooth connection can be used. Most of the vendors provide software for connecting from a PC to mobile phone and performing operations (like copying music files, installing applications,etc.).
+With some phones, to install applications it is enough to copy .jad and .jar files to a special directory on the mobile device where midlets are located.<p>
+
+With Nokia phones, the easiest way to install midlets is to use the <b>Nokia PC Suite</b>. When your PC is connected to the target device, within Nokia PC Suite you choose the folder "Install Applications" and specify the path to the .jad or .jar file. You will then have to complete the installation process by answering a few questions.<p>
+
+</body>
+</html>
+
