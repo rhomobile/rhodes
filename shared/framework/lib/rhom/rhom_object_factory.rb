@@ -36,9 +36,9 @@ module Rhom
   	  # TODO: This shouldn't reference 'source[1]' directly
   	  Rho::RhoConfig::sources.each do |source|
   	    src_attribs = RhomDbAdapter::select_from_table(TABLE_NAME,
-  	                                                         'attrib',
-  	                                                         {"source_id"=>source[1]['source_id'].to_s},
-  	                                                         {"distinct"=>true})
+  	                                                   'attrib',
+  	                                                   {"source_id"=>source[1]['source_id'].to_s},
+  	                                                   {"distinct"=>true})
   	    # update our source with the proper attributes
   		  source[1].merge!({"attribs"=>src_attribs})
   	  end
