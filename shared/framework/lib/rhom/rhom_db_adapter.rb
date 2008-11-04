@@ -17,6 +17,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+$:.unshift(File.join(File.dirname(__FILE__), '../../'))
+require 'sqlite3/database'
+
 module Rhom
   class RhomDbAdapter
     
