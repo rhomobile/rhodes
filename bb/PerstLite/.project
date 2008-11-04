@@ -24,17 +24,17 @@
 		<link>
 			<name>PerstLite.jdp</name>
 			<type>1</type>
-			<location>D:/Projects/BB/PerstDb/blackberry_jde/PerstLite.jdp</location>
+			<location>C:/dev/code/rhodes/bb/PerstDb/blackberry_jde/PerstLite.jdp</location>
 		</link>
 		<link>
 			<name>src1</name>
 			<type>2</type>
-			<locationURI>jde:/PerstLite/D$/Projects/BB/PerstDb/src11</locationURI>
+			<locationURI>jde:/PerstLite/C$/dev/code/rhodes/bb/PerstDb/src11</locationURI>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<locationURI>jde:/PerstLite/D$/Projects/BB/PerstDb/src11/weak</locationURI>
+			<locationURI>jde:/PerstLite/C$/dev/code/rhodes/bb/PerstDb/src11/weak</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

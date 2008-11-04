@@ -22,14 +22,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src2</name>
+			<type>2</type>
+			<locationURI>jde:/RubyVM/C$/dev/code/rhodes/bb/RubyVM/J2MELib</locationURI>
+		</link>
+		<link>
 			<name>src1</name>
 			<type>2</type>
-			<locationURI>jde:/RubyVM/D$/Projects/BB/RubyVM/J2MELib</locationURI>
+			<locationURI>jde:/RubyVM/C$/dev/code/rhodes/bb/RubyVM/src</locationURI>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<locationURI>jde:/RubyVM/D$/Projects/BB/RubyVM/src</locationURI>
+			<locationURI>jde:/RubyVM/C$/dev/code/rhodes/bb/RubyVM/src2</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

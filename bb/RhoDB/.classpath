@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="src" path="/.BB.jdw"/>
-	<classpathentry exported="true" kind="src" path="/PerstLite"/>
+	<classpathentry kind="src" path=".tmp"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
