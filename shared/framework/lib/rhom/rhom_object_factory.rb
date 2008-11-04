@@ -173,7 +173,7 @@ module Rhom
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   # Don't save objects with braces to database
-                  val = self.send(method.to_sym)
+                  val = self.inst_strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
                   unless self.method_name_reserved?(method) or val.nil?
                     result = RhomDbAdapter::insert_into_table(TABLE_NAME,
@@ -200,12 +200,12 @@ module Rhom
               # a sync operation to update
               def update_attributes(attrs)
                 result = nil
-                obj = self.strip_braces(self.object)
+                obj = self.inst_strip_braces(self.object)
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   val = self.send method.to_sym
                   # Don't save objects with braces to database
-                  new_val = attrs[method]
+                  new_val = self.inst_strip_braces(attrs[method])
                   # if the object's value doesn't match the database record
                   # then we procede with update
                   if new_val and val != new_val
