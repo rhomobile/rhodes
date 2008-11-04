@@ -24,15 +24,9 @@ module Rhom
     
     class << self
       def open(dbfile=nil)
-        dbname = nil
-        if defined? SYNC_DB_FILE
-          dbname = File.join(File.dirname(File.expand_path(__FILE__)), SYNC_DB_FILE)
-        else
-          dbname = File.join(File.dirname(File.expand_path(__FILE__)), dbfile)
-        end
-        puts "DB name = " + dbname
-        unless @@database
-          @@database = SQLite3::Database.new(dbname)
+        puts "DB name = " + dbfile.inspect
+        unless @@database or dbfile.nil?
+          @@database = SQLite3::Database.new(dbfile)
         end
       end
     
