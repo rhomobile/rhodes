@@ -81,7 +81,7 @@ module Rhom
                   if args.first == :all
                     result = RhomDbAdapter::select_from_table(TABLE_NAME,
                                                               '*',
-                                                              {"source_id"=>'1',"update_type"=>'query'},
+                                                              {"source_id"=>get_source_id,"update_type"=>'query'},
                                                               {"order by"=>'object'})
                   else
                     obj = strip_braces(args.first.to_s)
