@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+RIM-COD-Module-Name: rhodes
+RIM-COD-Module-Dependencies: net_rim_cldc,net_rim_os,net_rim_bb_browser_field_api
+MIDlet-Jar-Size: 0
+MIDlet-1: ,,
+RIM-COD-Creation-Time: 1225763721
+MIDlet-Jar-URL: rhodes.jar
+RIM-COD-URL: rhodes.cod
+RIM-COD-SHA1: aa b4 c2 a1 9d 88 59 e8 b5 0f 4f 30 3a 72 f9 40 b9 be 4f f9
+RIM-COD-Size: 18092
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Version: 0.0
+MIDlet-Name: rhodes
+MIDlet-Vendor: <unknown>
+MicroEdition-Profile: MIDP-2.0
+RIM-MIDlet-Flags-1: 0
