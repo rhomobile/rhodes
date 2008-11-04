@@ -19,22 +19,26 @@ public class PerstLiteAdapter  extends RubyBasic {
 
 	public static class Table_base extends Persistent{
 	    int id = 0;
-	    String source_id="";
+	    int source_id=0;
+	    String url = "";
 	    
 		public static final RubyString ID = ObjectFactory.createString("id");
 		public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
+		public static final RubyString URL = ObjectFactory.createString("url");
 		public static final RubyString ALL = ObjectFactory.createString("*");
 		
 	    // Serialize the object
 	    public void writeObject(IOutputStream out) {
 	    	out.writeInt(id);
-	        out.writeString(source_id);
+	        out.writeInt(source_id);
+	        out.writeString(url);
 	    }
 
 	    // Deserialize the object
 	    public void readObject(IInputStream in) {
 	    	id = in.readInt();
-	    	source_id = in.readString();
+	    	source_id = in.readInt();
+	    	url = in.readString();
 	    }
 		
 	    RubyHash getValueByName(RubyString name){
@@ -42,7 +46,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	boolean bAll = name.equals(ALL);
 	    	
 	    	if ( bAll || name.equals(SOURCE_ID) )
-	    		res.add( SOURCE_ID, ObjectFactory.createString(source_id) );
+	    		res.add( SOURCE_ID, ObjectFactory.createInteger(source_id) );
+	    	if ( bAll || name.equals(URL) )
+	    		res.add( URL, ObjectFactory.createString(url) );
 	    	if ( bAll || name.equals(ID) )
 	    		res.add( ID, ObjectFactory.createInteger(id) );
 	    	
@@ -81,11 +87,15 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public void setValues(RubyHash hash){
 	        RubyValue val = hash.getValue(ID);
 	        if ( val != RubyConstant.QNIL )
-	        	id = ((RubyInteger)val).toInt();
+	        	id = val.toInt();
 	        
 	        val = hash.getValue(SOURCE_ID);
 	        if ( val != RubyConstant.QNIL )
-	        	source_id = val.toStr();
+	        	source_id = val.toInt();
+	        val = hash.getValue(URL);
+	        if ( val != RubyConstant.QNIL )
+	        	url = val.toStr();
+	        
 	    }
 	    
 	    public Table_base(Storage db, RubyHash hash){
@@ -145,7 +155,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        super(db);
 		        
 		        source_idANDupdate_type = db.createIndex(
-		        		new int[]{Types.String,Types.String}, false);
+		        		new int[]{Types.Int,Types.String}, false);
 		        object_idANDattrib = db.createIndex(
 		        		new int[]{Types.String,Types.String}, false);
 		    }
@@ -169,12 +179,12 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    
 		    public void put(Table_base itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
-		    	source_idANDupdate_type.put(new Key( item.source_id, item.update_type), item);
+		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
 		    }
 		    public void remove(Table_base itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
-		    	source_idANDupdate_type.remove(new Key( item.source_id, item.update_type),item);
+		    	source_idANDupdate_type.remove(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
 		    	item.deallocate();
 		    }
@@ -196,11 +206,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	}
 		    	
 		    	if ( valUpdatedType != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL ){
-		    		Key key = new Key(valSourceID.toStr(),valUpdatedType.toStr());
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valUpdatedType.toStr()});
 		    		return source_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
 		    	if ( valSourceID != RubyConstant.QNIL ){
-		    		Key key = new Key(new Object[]{valSourceID.toStr()});
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt())});
 		    		return source_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
 		    	
@@ -301,24 +311,24 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    public TableRoot(Storage db) { 
 		        super(db);
 		        
-		        source_id = db.createIndex(Types.String, true);
+		        source_id = db.createIndex(Types.Int, true);
 		    }
 		    
 		    public void clear(){
 		    	Iterator iter = source_id.iterator();
 		    	while(iter.hasNext()){
 		    		Table_base item = (Table_base)iter.next();
-		    		source_id.remove(item.source_id,item);
+		    		source_id.remove(new Key(item.source_id),item);
 		    		item.deallocate();
 		    	}
 		    	source_id.clear();
 		    }
 		    
 		    public void put(Table_base item){
-		    	source_id.put(item.source_id, item);
+		    	source_id.put(new Key(item.source_id), item);
 		    }
 		    public void remove(Table_base item){
-		    	source_id.remove(item.source_id,item);
+		    	source_id.remove(new Key(item.source_id),item);
 		    	item.deallocate();
 		    }
 		    
@@ -326,7 +336,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	RubyValue val = where.get(Table_sources.SOURCE_ID);
 		    	if ( val == RubyConstant.QNIL )
 		    		return null;
-		    	return source_id.iterator(new Key(val.toStr()), new Key(val.toStr()), Index.ASCENT_ORDER);
+		    	return source_id.iterator(new Key(val.toInt()), new Key(val.toInt()), Index.ASCENT_ORDER);
 		    }
 		}	
 		
@@ -402,7 +412,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 			m_storage.commit();
 		}
 			
-		return RubyConstant.QNIL;
+		return new RubyArray();
 	}
 	
 	//@RubyLevelMethod(name="selectFromTable")
@@ -464,7 +474,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 			}
 			m_storage.commit();
 		}
-		return RubyConstant.QNIL;
+		return new RubyArray();
 	}
 	
 	//@RubyLevelMethod(name="deleteAllFromTable")
@@ -477,7 +487,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.FALSE);
 		}
 			
-		return RubyConstant.QNIL;
+		return new RubyArray();
 	}
 	
 	//@RubyLevelMethod(name="deleteFromTable")
@@ -495,7 +505,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 			m_storage.commit();
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.FALSE);
 		}
-		return RubyConstant.QNIL;
+		return new RubyArray();
 	}
 	
 	//@RubyLevelMethod(name="close")
@@ -506,6 +516,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		}
 		
 		return RubyConstant.QNIL;
+	}
+
+	//@RubyLevelMethod(name="closed?")
+	RubyValue isClosed(){
+		if ( m_storage != null && m_storage.isOpened() )
+			return RubyConstant.QFALSE;
+		
+		return RubyConstant.QTRUE;
 	}
 	
 	public static void initMethods( RubyClass klass){
@@ -538,6 +556,10 @@ public class PerstLiteAdapter  extends RubyBasic {
 		klass.defineMethod( "close", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((PerstLiteAdapter)receiver).close();}
+		});
+		klass.defineMethod( "closed?", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((PerstLiteAdapter)receiver).isClosed();}
 		});
 		
 		klass.defineAllocMethod(new RubyNoArgMethod(){

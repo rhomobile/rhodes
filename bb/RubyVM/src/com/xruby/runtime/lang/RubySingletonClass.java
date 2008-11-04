@@ -53,6 +53,15 @@ public class RubySingletonClass extends RubyClass {
         }
     }
 
+    //RHO_COMMENT : setClassVariable added
+    public RubyValue setClassVariable(RubyValue value, String name) {
+        if (owner_ instanceof RubyModule) {
+            return ((RubyModule)owner_).setClassVariable(value, name);
+        } else {
+            return super.setClassVariable(value, name);
+        }
+    }
+    
     public boolean isSingleton() {
         return true;
     }

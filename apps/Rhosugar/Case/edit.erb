@@ -1,7 +1,7 @@
-<form title="Edit Case" 
-	  class="panel" 
-	  id="case_edit_form" 
-	  method="POST" 
+<form title="Edit Case"
+	  class="panel"
+	  id="case_edit_form"
+	  method="POST"
 	  action="<%=url_for('update')%>">
 	<fieldset>
 		<input type="hidden" name="object" value="<%=@case.object%>"/>
@@ -35,27 +35,63 @@
 		<div class="row">
 			<label>Priority: </label>
 			<select name="case[priority]" value="<%=@case.priority%>">
-				<option>High</option>
-				<option>Medium</option>
-				<option>Low</option>
+				<option
+                                    <%if @case.priority=="High"%>
+                                    selected
+                                    <%end%>
+                                >High</option>
+				<option
+                                    <%if @case.priority=="Medium"%>
+                                    selected
+                                    <%end%>
+                                >Medium</option>
+				<option
+                                    <%if @case.priority=="Low"%>
+                                    selected
+                                    <%end%>
+                                >Low</option>
 			</select>
 		</div>
 		<div class="row">
 			<label>Status: </label>
 			<select name="case[status]" value="<%=@case.status%>">
-				<option>New</option>
-				<option>Assigned</option>
-				<option>Closed</option>
+				<option
+                                    <%if @case.status=="New"%>
+                                    selected
+                                    <%end%>
+                                >New</option>
+				<option
+                                    <%if @case.status=="Assigned"%>
+                                    selected
+                                    <%end%>
+                                >Assigned</option>
+				<option
+                                    <%if @case.status=="Closed"%>
+                                    selected
+                                    <%end%>
+                                >Closed</option>
 			</select>
 		</div>
 		<div class="row">
 			<label>Type: </label>
 			<select name="case[type]" value="<%=@case.type%>">
-				<option>Administration</option>
-				<option>Product</option>
-				<option>User</option>
+				<option
+                                    <%if @case.type=="Administration"%>
+                                    selected
+                                    <%end%>
+                                >Administration</option>
+				<option
+                                    <%if @case.type=="Product"%>
+                                    selected
+                                    <%end%>
+                                >Product</option>
+				<option
+                                    <%if @case.type=="User"%>
+                                    selected
+                                    <%end%>
+                                >User</option>
 			</select>
-		</div>	
+		</div>
 	</fieldset>
 	<div class="row">
 		<label>Description: </label>
