@@ -19,12 +19,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 require 'rhom'
-require 'rhom/rhom_object'
 require 'rho'
 
 module Rhom
   class RhomObjectFactory
-  
+    
     def initialize
 	    unless not defined? Rho::RhoConfig::sources
   	    init_source_attribs
@@ -36,10 +35,12 @@ module Rhom
   	  # merge source attributes into config hash
   	  # TODO: This shouldn't reference 'source[1]' directly
   	  Rho::RhoConfig::sources.each do |source|
-  		src_attribs = Rhom::execute_sql "select distinct attrib from #{TABLE_NAME} \
-  										 where source_id=#{source[1]['source_id'].to_s}"
-  		# update our source with the proper attributes
-  		source[1].merge!({"attribs"=>src_attribs})
+  	    src_attribs = RhomDbAdapter::select_from_table(TABLE_NAME,
+  	                                                         'attrib',
+  	                                                         {"source_id"=>source[1]['source_id'].to_s},
+  	                                                         {"distinct"=>true})
+  	    # update our source with the proper attributes
+  		  source[1].merge!({"attribs"=>src_attribs})
   	  end
   	end
   
@@ -78,14 +79,16 @@ module Rhom
                 def find(*args)
                   list = []
                   if args.first == :all
-                    query = "select * from #{TABLE_NAME} where \
-                             source_id=#{get_source_id} \
-                             and update_type='query' order by object"
+                    result = RhomDbAdapter::select_from_table(TABLE_NAME,
+                                                              '*',
+                                                              {"source_id"=>'1',"update_type"=>'query'},
+                                                              {"order by"=>'object'})
                   else
                     obj = strip_braces(args.first.to_s)
-                    query = "select * from #{TABLE_NAME} where object='#{obj}'"
+                    result = RhomDbAdapter::select_from_table(TABLE_NAME,
+                                                              '*',
+                                                              {"object"=>obj})
                   end
-                  result = Rhom::execute_sql(query)
                   list = get_list(result)
                   if list.length == 1
                     return list[0]
@@ -96,12 +99,7 @@ module Rhom
                 def find_by(*args)
                   # TODO: implement
                 end
-    
-                def find_by_sql(sql)
-                  result = Rhom::execute_sql(sql)
-                  get_list(result)
-                end
-            
+
                 # returns an array of objects based on an existing array
                 def get_list(objs)
                   new_list = []
@@ -156,12 +154,13 @@ module Rhom
                 obj = self.inst_strip_braces(self.object)
                 if obj
                   # first delete the record from viewable list
-                  query = "delete from #{TABLE_NAME} where object='#{obj}'"
-                  result = Rhom::execute_sql(query)
+                  result = RhomDbAdapter::delete_from_table(TABLE_NAME,
+                                                            {"object"=>obj})
                   # now add delete operation
-                  query = "insert into #{TABLE_NAME} (source_id, object, update_type) \
-                           values (#{self.get_inst_source_id}, '#{obj}', 'delete')"
-                  result = Rhom::execute_sql(query)
+                  result = RhomDbAdapter::insert_into_table(TABLE_NAME,
+                                                            {"source_id"=>self.get_inst_source_id,
+                                                             "object"=>obj,
+                                                             "update_type"=>'delete'})
                 end
                 result
               end
@@ -177,24 +176,22 @@ module Rhom
                   val = self.send(method.to_sym)
                   # add rows excluding object, source_id and update_type
                   unless self.method_name_reserved?(method) or val.nil?
-                    query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                             (#{self.get_inst_source_id}, \
-                             '#{obj}', \
-                             '#{method}', \
-                             '#{val}', \
-                             'create')"
-                    result = Rhom::execute_sql(query)
+                    result = RhomDbAdapter::insert_into_table(TABLE_NAME,
+                                                              {"source_id"=>self.get_inst_source_id,
+                                                               "object"=>obj,
+                                                               "attrib"=>method,
+                                                               "value"=>val,
+                                                               "update_type"=>'create'})
                   end
                 end
                 # Create a temporary query record to display in the list
                 Rho::RhoConfig::sources[self.class.name.to_s]['attribs'].each do |attrib|
-                  query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                           (#{self.get_inst_source_id}, \
-                           '#{obj}', \
-                           '#{attrib['attrib']}', \
-                           '#{self.send(attrib['attrib'].to_sym)}', \
-                           'query')"
-                  result = Rhom::execute_sql(query)
+                  result = RhomDbAdapter::insert_into_table(TABLE_NAME,
+                                                            {"source_id"=>self.get_inst_source_id,
+                                                             "object"=>obj,
+                                                             "attrib"=>attrib['attrib'],
+                                                             "value"=>self.send(attrib['attrib'].to_sym),
+                                                             "update_type"=>'query'})
                 end
                 result
               end
@@ -214,17 +211,16 @@ module Rhom
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
                       # update viewable list
-                      query = "update #{TABLE_NAME} set value='#{new_val}' where object='#{obj}' \
-			                         and attrib='#{method}'"
-                      result = Rhom::execute_sql(query)
+                      result = RhomDbAdapter::update_into_table(TABLE_NAME,
+                                                                {"value"=>new_val},
+                                                                {"object"=>obj, "attrib"=>method})
                       # update sync list
-                      query = "insert into #{TABLE_NAME} (source_id, object, attrib, value, update_type) values \
-                               (#{self.get_inst_source_id}, \
-                               '#{obj}', \
-                               '#{method}', \
-                               '#{new_val}', \
-                               'update')"
-                      result = Rhom::execute_sql(query)
+                      result = RhomDbAdapter::insert_into_table(TABLE_NAME,
+                                                                {"source_id"=>self.get_inst_source_id,
+                                                                 "object"=>obj,
+                                                                 "attrib"=>method,
+                                                                 "value"=>new_val,
+                                                                 "update_type"=>'update'})
                     end
                   end
                 end

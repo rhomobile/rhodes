@@ -9,10 +9,15 @@ module Rho
 	
     def initialize
       puts "Calling RHO.initialize"
+      Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
       process_model_dirs
       init_sources
-	    #SyncEngine::dosync
 	    puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
+    end
+    
+    # make sure we close the database file
+    def self.finalize
+      Rhom::RhomDbAdapter::close
     end
     
     # Return the directories where we need to load configuration files
@@ -25,18 +30,21 @@ module Rho
     # setup the sources table and model attributes for all applications
     def init_sources
       if defined? Rho::RhoConfig::sources
-        Rhom::Rhom::execute_sql "delete from sources"
+        Rhom::RhomDbAdapter::delete_all_from_table('sources')
         src_attribs = []
         attribs_empty = false
         
         # quick and dirty way to get unique array of hashes
-        uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| result << h unless result.include?(h); result }
+        uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
+          result << h unless result.include?(h); result
+        }
 		
         # generate unique source list in databse for sync
         uniq_sources.each do |source|
           src_id = source['source_id']
           url = source['url']
-          Rhom::Rhom::execute_sql "insert into sources (source_id, source_url) values (#{src_id.to_s},'#{url}')"
+          Rhom::RhomDbAdapter::insert_into_table('sources',
+                                                 {"source_id"=>src_id,"source_url"=>url})
         end
       end
     end
