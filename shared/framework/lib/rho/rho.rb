@@ -12,7 +12,6 @@ module Rho
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
       process_model_dirs
       init_sources
-	    puts "Rho::RhoConfig::sources -> #{Rho::RhoConfig::sources.inspect}"
     end
     
     # make sure we close the database file

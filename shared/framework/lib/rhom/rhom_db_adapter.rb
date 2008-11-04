@@ -26,6 +26,8 @@ module Rhom
     @@database = nil
     
     class << self
+      
+      # maintains a single database connection
       def open(dbfile=nil)
         puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
@@ -33,6 +35,7 @@ module Rhom
         end
       end
     
+      # closes the database if and only if it is open
       def close
         if @@database and not @@database.closed?
           @@database.close
@@ -72,6 +75,7 @@ module Rhom
         result
       end
     
+      # generates where clause based on hash
       def where_str(condition)
         cond = ""
         condition.each do |key,value|
@@ -81,6 +85,7 @@ module Rhom
         cond[0..cond.length - 5]
       end
     
+      # generates value clause based on hash
       def vals_str(values)
         vals = ""
         values.each do |key,value|
@@ -90,9 +95,15 @@ module Rhom
         vals[0..vals.length - 2]
       end
     
+      # support for select statements
+      # this function takes table name, columns (as a comma-separated list),
+      # condition (as a hash), and params (as a hash)
+      # example usage is the following:
+      # select_from_table('object_values', '*', {"source_id"=>2,"update_type"=>'query'},
+      #                   {"order by"=>'object'})
+      # this would return all columns where source_id = 2 and update_type = 'query' ordered
+      # by the "object" column
       def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
-        puts 'inside select (table, columns, condition, params): '
-        puts "(#{table.inspect}, #{columns.inspect}, #{condition.inspect}, #{params.inspect}"
         query = nil
         if table and columns and condition
           if params and params['distinct']
@@ -109,6 +120,12 @@ module Rhom
         execute_sql query
       end
     
+      # inserts a single row into the database
+      # takes the table name and values (hash) as arguments
+      # exmaple usage is the following:
+      # insert_into_table('object_values, {"source_id"=>1,"object"=>"some-object","update_type"=>'delete'})
+      # this would execute the following sql:
+      # insert into object_values (source_id,object,update_type) values (1,'some-object','delete');
       def insert_into_table(table=nil,values=nil)
         query = nil
         cols = ""
@@ -126,6 +143,11 @@ module Rhom
         execute_sql query
       end
     
+      # deletes rows from a table which satisfy condition (hash)
+      # example usage is the following:
+      # delete_from_table('object_values',{"object"=>"some-object"})
+      # this would execute the following sql:
+      # delete from object_values where object="some-object"
       def delete_from_table(table=nil,condition=nil)
         query = nil
         if table and condition
@@ -134,6 +156,7 @@ module Rhom
         execute_sql query
       end
     
+      # deletes all rows from a given table
       def delete_all_from_table(table=nil)
         query = nil
         if table
@@ -142,6 +165,11 @@ module Rhom
         execute_sql query
       end
     
+      # updates values (hash) in a given table which satisfy condition (hash)
+      # example usage is the following:
+      # update_into_table('object_values',{"value"=>"Electronics"},{"object"=>"some-object", "attrib"=>"industry"})
+      # this executes the following sql:
+      # update table object_values set value='Electronics' where object='some-object' and attrib='industry';
       def update_into_table(table=nil,values=nil,condition=nil)
         query = nil
         vals = values.nil? ? nil : vals_str(values)

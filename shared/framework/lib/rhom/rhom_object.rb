@@ -17,8 +17,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'rhom/rhom_object_factory'
-
 module Rhom
   module RhomObject
     # defines a method at runtime for the
