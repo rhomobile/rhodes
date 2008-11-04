@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="con" path="BlackBerry_Lib/default"/>
+	<classpathentry exported="true" kind="lib" path="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0/lib/net_rim_api.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Program%20Files/Research%20In%20Motion/BlackBerry%20JDE%204.2.0/docs/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
