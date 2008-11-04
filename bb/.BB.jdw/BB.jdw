@@ -17,7 +17,12 @@ DependenciesInWorkspace=0
 [Projects
 ..\PerstDb\blackberry_jde\PerstImplJSR75.jdp
 ..\PerstDb\blackberry_jde\PerstLite.jdp
+..\RhoBundle\RhoBundle.jdp
 ..\RhoRunner\RhoRunner.jdp
 ..\RubyVM\RubyVM.jdp
-..\TestRuby\TestRuby.jdp
+]
+[ReleaseActiveProjects
+..\RhoBundle\RhoBundle.jdp
+..\RhoRunner\RhoRunner.jdp
+..\RubyVM\RubyVM.jdp
 ]

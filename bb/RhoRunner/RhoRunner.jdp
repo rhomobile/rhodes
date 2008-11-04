@@ -14,9 +14,8 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
-PerstLite
+RhoBundle
 RubyVM
-TestRuby
 ]
 ExcludeFromBuildAll=0
 [Files

@@ -1,2 +1,3 @@
-"C:\Program Files\Research In Motion\BlackBerry JDE 4.2.0\bin\preverify.exe" -classpath "C:\Program Files\Research In Motion\BlackBerry JDE 4.2.0\lib\net_rim_api.jar";RubyVM.jar RhoSrc.jar
-REM rapc.exe import="C:\Program Files\Research In Motion\BlackBerry JDE 4.2.0\lib\net_rim_api.jar";RubyVM.jar;testRuby.jar RhoRunner.jar
+java -jar xruby-0.3.3.jar -c RhoSrc
+mv RhoSrc.jar RhoBundle.jar
+"%BB_JDE%\bin\preverify.exe" -classpath "%BB_JDE%\lib\net_rim_api.jar";"..\RubyVM\RubyVM.jar" -d ..\RhoBundle RhoBundle.jar
