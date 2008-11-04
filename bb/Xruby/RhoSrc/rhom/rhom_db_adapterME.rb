@@ -26,8 +26,13 @@ module Rhom
       def open(dbfile=nil)
         puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
-          @@database = DbAdapter.new(dbfile)
+			db = DbAdapter.new(dbfile)
+			@@database = db
+			
+			puts @@database
+			puts db
         end
+		
       end
     
       def close
@@ -50,7 +55,7 @@ module Rhom
 		  # This prevents concurrency issues.
 		  begin
 			SyncEngine::lock_sync_mutex
-			result = yeild
+			result = yield
 			SyncEngine::unlock_sync_mutex
 		  rescue Exception => e
 			puts "exception when running query: #{e}"
@@ -83,3 +88,7 @@ module Rhom
     end # class methods
   end # RhomDbAdapter
 end # Rhom
+
+at_exit do
+	Rhom::RhomDbAdapter::close
+end
