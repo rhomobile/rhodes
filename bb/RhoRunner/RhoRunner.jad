@@ -3,10 +3,10 @@ RIM-COD-Module-Name: RhoRunner
 RIM-COD-Module-Dependencies: net_rim_cldc,RhoBundle
 MIDlet-Jar-Size: 0
 MIDlet-1: ,,
-RIM-COD-Creation-Time: 1225828763
+RIM-COD-Creation-Time: 1225850082
 MIDlet-Jar-URL: RhoRunner.jar
 RIM-COD-URL: RhoRunner.cod
-RIM-COD-SHA1: ea 65 4c f5 35 64 4f f9 ad 19 fd 1d 77 06 f2 b8 99 63 aa c9
+RIM-COD-SHA1: 89 3f 9f c7 4c b4 de b2 98 8c 9d be af 82 51 ef 64 58 7a 3a
 RIM-COD-Size: 1396
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-Version: 0.0
