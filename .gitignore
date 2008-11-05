@@ -20,6 +20,9 @@ bb/.metadata/*
 *.user
 *.pdb
 *.idb
+*.lib
+*.exe
+*.pch
 
 
 
