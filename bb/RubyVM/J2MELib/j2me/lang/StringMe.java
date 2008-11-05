@@ -35,11 +35,24 @@ public class StringMe {
     }
 
     public static String replaceAll(String strThis, String regex, String replacement) {
-    	//TODO: String.replaceAll - find by indexOf and use StringBuffer replace
-    	throw new RuntimeException("Not Implemented");
-    	//return strThis;
+    	//TODO: String.replaceAll - implement regex replace
+    	
+        int i = strThis.indexOf(regex);
+        return (i < 0) ? strThis : // No target sequence found.
+        	strThis.substring(0, i).concat(replacement).concat(
+        			replaceAll( strThis.substring(i+replacement.length()), regex, 
+        					replacement ) );  					
     }
 
+    public static String replaceFirst(String strThis, String regex, String replacement) {
+    	//TODO: String.replaceFirst - implement regex replace
+    	
+        int i = strThis.indexOf(regex);
+        return (i < 0) ? strThis : // No target sequence found.
+        	strThis.substring(0, i).concat(replacement).concat( 
+        			strThis.substring(i+replacement.length()));
+    }
+    
     public static boolean matches(String strThis, String regex) {
     	//TODO: matches
     	throw new RuntimeException("Not Implemented");

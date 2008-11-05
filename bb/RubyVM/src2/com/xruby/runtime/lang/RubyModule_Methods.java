@@ -9,6 +9,11 @@ klass.defineMethod( "const_get", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyModule)receiver).constGet(arg);}
 });
+klass.defineMethod( "const_defined?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyModule)receiver).isConstDefined(arg);}
+});
+
 klass.defineMethod( "===", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyModule)receiver).caseEqual(arg);}

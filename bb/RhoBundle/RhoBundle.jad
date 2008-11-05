@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+MIDlet-Version: 0.0
+MIDlet-Jar-Size: 0
+RIM-COD-URL-5: RhoBundle-5.cod
+RIM-COD-URL-4: RhoBundle-4.cod
+RIM-COD-SHA1-5: 66 cd 33 33 ed f9 cb c2 8f 01 59 55 f6 2b 46 2f 99 b1 f4 c6
+RIM-COD-URL-3: RhoBundle-3.cod
+RIM-COD-SHA1-4: 6c 37 71 7e 50 02 27 c5 2f fc ae 55 5d 08 21 7f 1d b0 21 6b
+RIM-COD-URL-2: RhoBundle-2.cod
+RIM-COD-SHA1-3: a5 29 7f 48 c9 f5 63 20 3b f4 1e f6 d1 f1 f4 07 bb 03 24 10
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Jar-URL: RhoBundle.jar
+RIM-COD-Module-Dependencies: RubyVM,net_rim_cldc
+RIM-COD-Size-5: 55736
+RIM-COD-SHA1-2: 55 cd 2d ea 1e 4a 3e 39 e5 43 e8 2b e9 30 bc ae 82 14 1a d9
+RIM-COD-URL-1: RhoBundle-1.cod
+RIM-COD-Size-4: 54800
+RIM-COD-SHA1-1: 58 f7 7d 02 1d 73 cc bb 12 63 14 9e 0d 83 c1 2e 30 bc c3 01
+RIM-COD-Size-3: 53508
+RIM-COD-Size-2: 54316
+RIM-COD-Size-1: 72352
+RIM-COD-Module-Name: RhoBundle
+RIM-COD-Size: 60804
+MIDlet-Name: RhoBundle
+RIM-COD-Creation-Time: 1225909579
+RIM-COD-URL: RhoBundle.cod
+RIM-Library-Flags: 2
+RIM-COD-SHA1: 37 1d c7 e5 9c f0 bc 25 85 57 99 e9 ec dd 1a d0 9d 49 cb b5
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Vendor: <unknown>

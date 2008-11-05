@@ -8,10 +8,12 @@ wm/cab/cleanup.js
 wm/cab/rhodes.CAB
 wm/cab/rhodes.inf
 bb/.metadata/*
-bb/rhodes/rhodes.jar
-bb/rhodes/rhodes.cod
-bb/rhodes/rhodes.debug
-bb/rhodes/rhodes.rapc
+*.jar
+*.cod
+*.debug
+*.rapc
+*.log
+*.files
 
 
 

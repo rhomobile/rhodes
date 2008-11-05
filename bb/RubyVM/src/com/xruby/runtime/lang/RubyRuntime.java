@@ -10,10 +10,11 @@ import java.io.PrintStream;
 
 import com.xruby.runtime.builtin.*;
 //import com.xruby.runtime.lang.util.RubyTypeFactory;
-import com.xruby.runtime.stdlib.*;
+//import com.xruby.runtime.stdlib.*;
 import com.xruby.GeneratedMethods.*; 
 import com.rho.db.PerstLiteAdapter;
 import com.rho.sync.SyncEngine;
+import com.rho.StringScanner;
 
 public class RubyRuntime {
     public static RubyClass ObjectClass;
@@ -82,6 +83,8 @@ public class RubyRuntime {
     //RHO
     public static RubyClass DBAdapterClass;
     public static RubyClass SyncEngineClass;
+    public static RubyClass StringScannerClass;
+    
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -228,6 +231,9 @@ public class RubyRuntime {
         
         SyncEngineClass = RubyAPI.defineClass("SyncEngine", RubyRuntime.ObjectClass);
         SyncEngine.initMethods(SyncEngineClass);
+
+        StringScannerClass = RubyAPI.defineClass("StringScanner", RubyRuntime.ObjectClass);
+        StringScanner.initMethods(StringScannerClass);
         
 //
         /*RubyTypeFactory.getClass(RubyObject.class);

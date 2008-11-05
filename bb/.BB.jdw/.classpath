@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry exported="true" kind="con" path="BlackBerry_Lib/default"/>
-	<classpathentry exported="true" kind="lib" path="C:/dev/eclipse/plugins/net.rim.eide.componentpack4.3.0_4.3.0.8/components/lib/net_rim_api.jar">
+	<classpathentry exported="true" kind="lib" path="D:/Install/Eclipse/plugins/net.rim.eide.componentpack4.3.0_4.3.0.8/components/lib/net_rim_api.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/dev/eclipse/plugins/net.rim.eide.componentpack4.3.0_4.3.0.8/components/docs/api/"/>
+			<attribute name="javadoc_location" value="file:/D:/Install/Eclipse/plugins/net.rim.eide.componentpack4.3.0_4.3.0.8/components/docs/api/"/>
 		</attributes>
 		<accessrules>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/system/ApplicationManager"/>

@@ -14,7 +14,6 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
-PerstImplJSR75
 PerstLite
 ]
 ExcludeFromBuildAll=0
@@ -241,7 +240,9 @@ J2MELib\org\apache\oro\util\CacheLRU.java
 J2MELib\org\apache\oro\util\GenericCache.java
 J2MELib\org\apache\oro\util\GenericCacheEntry.java
 src2\com\rho\db\PerstLiteAdapter.java
-src2\com\rho\SyncEngine.java
+src2\com\rho\StringScanner.java
+src2\com\rho\sync\SyncEngine.java
+src2\com\rho\sync\SyncThread.java
 src2\com\xruby\GeneratedMethods\ObjectSpace_Methods.java
 src2\com\xruby\GeneratedMethods\RubyArray_Methods.java
 src2\com\xruby\GeneratedMethods\RubyBignum_Methods.java

@@ -3,30 +3,30 @@ MIDlet-Version: 0.0
 MIDlet-Jar-Size: 0
 RIM-COD-URL-5: RubyVM-5.cod
 RIM-COD-URL-4: RubyVM-4.cod
-RIM-COD-SHA1-5: b8 d0 4d ed 0b bb ab 1e 35 a4 50 c9 d2 96 f7 0d 98 43 05 4e
+RIM-COD-SHA1-5: 1c ba 10 0e 34 fc b9 68 8b 06 cd 94 51 d2 6c b1 a1 bd 35 c3
 RIM-COD-URL-3: RubyVM-3.cod
-RIM-COD-SHA1-4: 39 23 aa e4 44 79 c3 45 15 00 f3 aa 45 24 5f 13 e3 b9 40 0a
+RIM-COD-SHA1-4: f8 2f 22 37 3d 2a 4a 6b 96 0b 89 08 a7 28 d8 9a 1c 39 d6 bb
 RIM-COD-URL-2: RubyVM-2.cod
-RIM-COD-SHA1-3: 10 dd 57 bc 81 b9 49 73 11 2e a9 0b ec 3b d4 d9 69 52 86 e8
+RIM-COD-SHA1-3: 82 af 89 47 6a cf 16 88 53 68 46 d5 7f b7 e7 17 c9 db 07 ca
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-Jar-URL: RubyVM.jar
 RIM-COD-Module-Dependencies: net_rim_cldc,PerstLite
-RIM-COD-Size-5: 11840
-RIM-COD-SHA1-2: 48 02 8f 80 81 f9 e2 f1 15 26 76 ba 60 41 7a e7 48 61 15 cd
+RIM-COD-Size-5: 21304
+RIM-COD-SHA1-2: f8 53 2c 02 5a ca b6 61 5b 20 66 71 e5 09 42 6f c3 62 07 12
 RIM-COD-URL-1: RubyVM-1.cod
-RIM-COD-Size-4: 72552
-RIM-COD-SHA1-1: fb 5f b9 9a 25 be 06 48 c8 25 08 e0 bb 64 b3 c6 0c eb 83 11
-RIM-COD-Size-3: 77840
-RIM-COD-Size-2: 72608
+RIM-COD-Size-4: 65360
+RIM-COD-SHA1-1: 68 6d 2e 22 52 fb bf dd 65 eb d1 f1 e6 2a 56 1a 69 43 2f 32
+RIM-COD-Size-3: 77216
+RIM-COD-Size-2: 73008
 RIM-MIDlet-Flags-1: 0
 RIM-COD-Module-Name: RubyVM
-RIM-COD-Size-1: 80580
-RIM-COD-Size: 66908
+RIM-COD-Size-1: 81348
+RIM-COD-Size: 67484
 MIDlet-Name: RubyVM
-RIM-COD-Creation-Time: 1225828737
+RIM-COD-Creation-Time: 1225908260
 MIDlet-1: ,,
 RIM-COD-URL: RubyVM.cod
 RIM-Library-Flags: 2
-RIM-COD-SHA1: 05 77 17 a0 e6 f8 a1 7f 27 41 2b 53 bb 4f 3d 22 d6 2c 06 5a
+RIM-COD-SHA1: 59 c4 e9 05 ea 6f f6 f6 dd 5c 8d 8e 2f ef d2 97 14 cc 4b f6
 MicroEdition-Profile: MIDP-2.0
 MIDlet-Vendor: <unknown>

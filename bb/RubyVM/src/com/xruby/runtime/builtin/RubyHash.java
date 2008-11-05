@@ -278,6 +278,26 @@ public class RubyHash extends RubyBasic {
         return arg1;
     }
 
+    //RHO_COMMENT:
+    //@RubyLevelMethod(name="[]")
+    public static RubyValue create(RubyArray args) {
+        
+        if (args.size() == 1 && args.get(0).isKindOf(RubyRuntime.HashClass) ){
+            return args.get(0).clone();
+        }
+
+        if ((args.size() & 1) != 0) {
+            throw new RubyException(RubyRuntime.ArgumentErrorClass,"odd number of args for Hash");
+        }
+
+        RubyHash res = ObjectFactory.createHash();
+        
+        for (int i=0; i < args.size(); i+=2) 
+        	res.add(args.get(i), args.get(i+1));
+        
+        return res;
+    }
+    
     //@RubyAllocMethod
     public static RubyValue alloc(RubyValue receiver) {
         RubyHash h = ObjectFactory.createHash();

@@ -89,6 +89,11 @@ klass.defineMethod( "[]=", new RubyTwoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
 		return ((RubyHash)receiver).setValue(arg0, arg1);}
 });
+klass.getSingletonClass().defineMethod( "[]", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return RubyHash.create(args);}
+});
+
 klass.defineMethod( "initialize", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyHash)receiver).initialize(args, block);}
