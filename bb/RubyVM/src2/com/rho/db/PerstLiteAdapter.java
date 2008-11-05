@@ -332,7 +332,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	item.deallocate();
 		    }
 		    
-		    public Iterator iterator( RubyHash where){
+		    public Iterator iterator(RubyHash where){
+		    	if(where == null) { return null; }
 		    	RubyValue val = where.get(Table_sources.SOURCE_ID);
 		    	if ( val == RubyConstant.QNIL )
 		    		return null;
@@ -350,29 +351,36 @@ public class PerstLiteAdapter  extends RubyBasic {
 	};
 	
 	Storage m_storage;
+	private static PerstLiteAdapter adapter = null;
+	private static final String DB_FILENAME = "syncdb2.dbs";
 	PerstLiteAdapter(RubyClass c) {
 		super(c);
 	}
 
     //@RubyAllocMethod
     public static PerstLiteAdapter alloc(RubyValue receiver) {
-        return new PerstLiteAdapter(RubyRuntime.DBAdapterClass);
+    	if(adapter == null) {
+    		adapter = new PerstLiteAdapter(RubyRuntime.DBAdapterClass);
+    	} 
+    	return adapter;
     }
 	
     //@RubyLevelMethod(name="initialize")
     public PerstLiteAdapter initialize(RubyValue v) {
-    	createDB(v.toStr());
+    	createDB();
         return this;
     }
 	
-	void createDB(String s) {
+	void createDB() {
+		if (isClosed() == RubyConstant.QFALSE) {
+			return;
+		}
 		m_storage = StorageFactory.getInstance().createStorage();
 		
         try { 
-        	m_storage.open(s);
+        	m_storage.open(DB_FILENAME);
         } catch (StorageError x) { 
-            new RubyException("Failed to create or open database:" + s + ".Error:" + x.getMessage());
-            return;
+            throw new RubyException("Failed to create or open database:" + DB_FILENAME + ".Error:" + x.getMessage());
         }
         Index root = (Index)m_storage.getRoot();
         if (root == null) { // if root object was not specified, then storage is not yet initialized
@@ -509,7 +517,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="close")
-	RubyValue close(){
+	public RubyValue close(){
 		if ( m_storage != null ){
 			m_storage.close();
 			m_storage = null;
