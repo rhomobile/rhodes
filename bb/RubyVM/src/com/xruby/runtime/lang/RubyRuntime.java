@@ -13,7 +13,7 @@ import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.stdlib.*;
 import com.xruby.GeneratedMethods.*; 
 import com.rho.db.PerstLiteAdapter;
-import com.rho.SyncEngine;
+import com.rho.sync.SyncEngine;
 
 public class RubyRuntime {
     public static RubyClass ObjectClass;

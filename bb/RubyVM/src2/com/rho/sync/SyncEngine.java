@@ -1,8 +1,16 @@
-package com.rho;
+package com.rho.sync;
 
-import com.xruby.runtime.lang.*;
+import com.xruby.runtime.lang.RubyBasic;
+import com.xruby.runtime.lang.RubyBlock;
+import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyRuntime;
+import com.xruby.runtime.lang.RubyValue;
 
 public class SyncEngine extends RubyBasic{
+	
+	private static SyncThread sThread = null;
 
 	SyncEngine(RubyClass c) {
 		super(c);
@@ -16,6 +24,19 @@ public class SyncEngine extends RubyBasic{
     //@RubyLevelMethod(name="initialize")
     public SyncEngine initialize() {
         return this;
+    }
+    
+    //@RubyLevelMethod(name="start")
+    public static RubyValue start(RubyValue receiver) {
+    	if(sThread == null) {
+    		sThread = new SyncThread();
+    	}
+    	return RubyConstant.QFALSE;
+    }
+    
+    //@RubyLevelMethod(name="stop")
+    public static RubyValue stop(RubyValue receiver) {
+    	return RubyConstant.QFALSE;
     }
 
     //@RubyLevelMethod(name="dosync")
@@ -39,6 +60,14 @@ public class SyncEngine extends RubyBasic{
 		klass.defineAllocMethod(new RubyNoArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 				return SyncEngine.alloc(receiver);}
+		});
+		klass.getSingletonClass().defineMethod( "start", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver,RubyBlock block ){
+				return SyncEngine.start(receiver);}
+		});
+		klass.getSingletonClass().defineMethod( "stop", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver,RubyBlock block ){
+				return SyncEngine.stop(receiver);}
 		});
 		klass.getSingletonClass().defineMethod( "dosync", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver,RubyBlock block ){

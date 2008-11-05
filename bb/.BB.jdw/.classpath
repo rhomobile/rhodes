@@ -370,6 +370,41 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/ssl30/SSLCipherSuites"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/LabelKeyStoreIndex"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/ssl30/SSL30Connection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECPrivateKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKeyPair"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OAEPFormatterEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ElGamalEncryptorEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CFBDecryptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128EncryptorEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128CryptoToken"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OAEPUnformatterEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECIESDecryptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECKeyPair"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CFBEncryptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAPrivateKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECMQVKeyAgreement"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128Key"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ElGamalDecryptorEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CTRPseudoRandomSource"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECNRSignatureSigner"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAPublicKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128DecryptorEngine"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDSASignatureVerifier"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECIESEncryptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDSASignatureSigner"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEACryptoSystem"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECPublicKey"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECCryptoSystem"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OFBPseudoRandomSource"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEACryptoToken"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CBCMAC"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKeyAgreement"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/MD4Digest"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECNRSignatureVerifier"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECCryptoToken"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDHKeyAgreement"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/DeviceKeyStore"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/encoder/PublicKeyEncoder"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreDataMap"/>
@@ -411,41 +446,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/encoder/PrivateKeyEncoder"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreSyncFields"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/encoder/PublicKeyEncoderFlags"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECPrivateKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKeyPair"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OAEPFormatterEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ElGamalEncryptorEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CFBDecryptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128EncryptorEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128CryptoToken"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OAEPUnformatterEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECIESDecryptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECKeyPair"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CFBEncryptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAPrivateKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECMQVKeyAgreement"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128Key"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ElGamalDecryptorEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CTRPseudoRandomSource"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECNRSignatureSigner"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAPublicKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CAST128DecryptorEngine"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDSASignatureVerifier"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECIESEncryptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDSASignatureSigner"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEACryptoSystem"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECPublicKey"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECCryptoSystem"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/OFBPseudoRandomSource"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEACryptoToken"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CBCMAC"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/KEAKeyAgreement"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/MD4Digest"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECNRSignatureVerifier"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECCryptoToken"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/ECDHKeyAgreement"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CryptoToken"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/CryptoTokenMACKeyData"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/Key"/>
@@ -4061,8 +4061,6 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_english_us_ltrRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_english_us_ltr"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_norwegian_35k_2RIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__enRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v1_2/NodeConstants"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/format/v1_2/PMEInputStream"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v1_2/AnimationViewport"/>
@@ -4104,6 +4102,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v1_2/ContainerNodeImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v1_2/ForeignObjectNodeImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v1_2/Par"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__caRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__enRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/ui/BrowserRenderingApplication$Callback"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/verbs/AttachAddressCardVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/verbs/AddRecipientVerb"/>
@@ -4136,6 +4136,7 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_runtime_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__zh_CNRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_phoneRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/dispatcher/message/InvalidDevice"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/dispatcher/InvalidDeviceException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/message/AbstractMessageReader"/>
@@ -4204,7 +4205,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/dispatcher/message/TimeoutExpiry"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/dispatcher/message/FailureModel"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/contentpreview/dispatcher/message/SessionReady"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_phoneRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="font/FontInj_ChineseCN"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_font_chineseRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_font_systemRIMResources"/>
@@ -4214,15 +4214,15 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_greek_35k_2"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_el_qwerty_el___QR24"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_optionsRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_itRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bis_client__esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/wlan/WLANEnabler"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/wlan/WiFiDiagnosticsReporter"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_apps_apiRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bis_client__esRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__deRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__trRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_es"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__itRIMResources"/>
@@ -4233,8 +4233,8 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_system_smileysRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/smileys/SmileysResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/smileys/StaticBitmapSmileys"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_resource__enRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/plugin/SMILLoaderApp"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_device_apps_internal_browser_smilRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/file/FooterField"/>
@@ -4267,7 +4267,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/Media/verbs/MediaVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/file/ExploreHotkeys"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/file/RootItem"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resourceRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__deRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/crypto/CryptoBlockException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/deviceoptions/Owner"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/i18n/ResourceBundleFetcher"/>
@@ -4333,7 +4333,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/io/file/NetworkFileConnection"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/io/NativeSocketConnectionListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/deviceoptions/OptionsProviderGlobalEventListener"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__deRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/eventLogViewer/EventLoggerApp"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/EventLoggerResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/eventLogViewer/EventLoggerOptions"/>
@@ -4525,18 +4525,15 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_mds_runtime_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_secureemail_help__frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_mds_runtime_resource__esRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__zh_CNRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_zh_CN"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__en_GBRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/pgp/PGPKeyStoreBrowserContext"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/pgp/PGPKeyStoreBrowser"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_keystore_browser_pgpRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/pgp/PGPKeyAttachmentModelFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/pgp/PGPCertificateConverter"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/pgp/PGPKeyAttachmentModel"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_it_qwerty_it___QRED"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_italian_35k_2"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_it_qwerty_it___QR24"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__en_GBRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__zh_CNRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_zh_CN"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/options/MMSClientServiceBook"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/MMSUtilities"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/model/AliasedAttachment"/>
@@ -4558,6 +4555,9 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/plugin/MMSBrowserPlugin"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/MMSPolicy"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/mms/api/MMSAttributeValues"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_it_qwerty_it___QRED"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_italian_35k_2"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_it_qwerty_it___QR24"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/MemoryCleanerResource"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_mc_appRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/memorycleaner/MemoryCleaner"/>
@@ -4641,16 +4641,16 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_timezonesRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_financial_english_10k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_financial_english_10k_2"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_secureemail_help__esRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_locationapiRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_dutch_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_nl_qwerty_default___QR24"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_german_ltr"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_german_ltrRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_passwordkeeper_resource__trRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_theme_bbdimension_zen_240x260_bRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/enterpriseconfig/EnterpriseConfigRecordImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/enterpriseconfig/EnterpriseConfigImpl"/>
@@ -4658,6 +4658,7 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_chinese_CN_wordlistRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_en_GB"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__en_GBRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/codfile/MemberRefLocal"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/util/StringHelper"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/exec/Comparator"/>
@@ -4689,10 +4690,9 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/util/FileHelper"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/util/DuplicateException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tools/compiler/codfile/MemberRef"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__ptRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__pt_BRRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_financial_spanish_10k_2"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_financial_spanish_10k_2RIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__pt_BRRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/utility/general/Copyable"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/utility/framework/VerbToMenuImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/utility/framework/VerbToMenuFactory"/>
@@ -4759,19 +4759,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/videorecorder/VideoRecorderResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/VideoRecorderResource"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_videorecorderRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookOptionsImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookCollection$NoKeyWordsException"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookCollection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardComparator"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardModelImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardUtilities"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddCustomTuneVerb"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/DisplayPictureModelImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookApp"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/BlackBerryAddressBook"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/YomiFieldTextChangeListener"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/YomiField"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_addressbook_appRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/mailingaddress/MailingAddressModelImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/WebPageAddressModel"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_addressbook_modelsRIMResources"/>
@@ -4786,13 +4773,26 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/userfields/UserFieldsModel"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/eventmodel/EventModelImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/eventmodel/EventModelFactory"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookOptionsImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookCollection$NoKeyWordsException"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookCollection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardComparator"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardModelImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddressCardUtilities"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/AddCustomTuneVerb"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/DisplayPictureModelImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/AddressBookApp"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/BlackBerryAddressBook"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/YomiFieldTextChangeListener"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/YomiField"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_addressbook_appRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_theme_bbdimension_icon_240x260_bRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/xml/jaxp/SAXParserFactoryImpl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_xmlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/xml/jaxp/XMLParser$AttributeDefinitions$Value"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/xml/jaxp/DocumentBuilderFactoryImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/xml/jaxp/DOMNodeImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/xml/jaxp/DocumentBuilderImpl"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_theme_bbdimension_icon_240x260_bRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/Debugger"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/compiler/OpcodeStackEffect"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/Value"/>
@@ -4842,7 +4842,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/voicenotesrecorder/VoiceNotesRecorderApplicationVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/voicenotesrecorder/RecordVoiceNoteScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/VoiceNotesRecorderResource"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resourceRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/FavouritesManager"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/ui/ChineseLookup"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/common/SlChineseConstantsDef"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/repository/SlChRepositorySupply"/>
@@ -4867,8 +4868,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/common/ChineseInputHistory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/common/ChineseInputHistory$PinSequencesStruct"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/common/SlChinesePunctuationManager"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__itRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/FavouritesManager"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/HelpResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/help/HelpWizardProvider"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_helpRIMResources"/>
@@ -4882,8 +4882,11 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/service/interaction/DataTypes"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/PhoneVerbManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/RIMPhone"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__esRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__ptRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/FastEuropeanOptionsResource"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/FastEuropean/FastEuropeanOptionsItem"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_options_fastEuropeanRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/udp/GpakUtil"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/ui/Trackball$Stats"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/ui/FontMetrics"/>
@@ -4891,11 +4894,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/udp/MIDletDatagram"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/udp/UdpInternalAddress"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/ui/FontRegistry"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/FastEuropeanOptionsResource"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/FastEuropean/FastEuropeanOptionsItem"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_options_fastEuropeanRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__elRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_vpn_diagnosticsRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__elRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/ota/OTAApptUpdateListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/ota/CICALSlowSyncConverter"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/ota/OTAConfigListener"/>
@@ -4984,6 +4984,14 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/chinese/ChineseOptionsItem$Button"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/chinese/EditShortcutsUnitVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/chinese/ChineseOptionsItem"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemManagementApp"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/HierarchyManager$EntryChangeListener"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/DateTimeFreshness"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/RibbonApiProxy"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/StandbyManagerImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemMonitor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemActions"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/ModuleEntryPointDescriptor"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/BasicWizardPage$WizardVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/WizardExitDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/WizardController$Listener"/>
@@ -5014,14 +5022,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/YesNoField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/WizardDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/setupwizard/WizardTitleBar"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemManagementApp"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/HierarchyManager$EntryChangeListener"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/DateTimeFreshness"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/RibbonApiProxy"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/StandbyManagerImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemMonitor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/system/SystemActions"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/ribbon/launcher/ModuleEntryPointDescriptor"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_prl_upgradeRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/table/TableField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/transport/handshake/VersionNotSupportedException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/transport/message/messageheader/MessageHeaderV1"/>
@@ -5129,13 +5130,13 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/transport/handshake/DefaultClientHello"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/PagedView"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/transport/internal/message/TransportMessageV1_0"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_prl_upgradeRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resource__pt_BRRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_spanish_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_font_european_sffRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/resource/Init_de"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__deRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_qm_peer_resource_pt_BRRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/wlandiagnostics/WLANDiagnosticsResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/resources/WLANOptionsResourcesResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/sitesurvey/SiteSurveyResource"/>
@@ -5151,7 +5152,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/resources/VOIPOptionsResourcesResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/resources/VPNOptionsResourcesResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/voipdiagnostics/VoIPDiagnosticsResource"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_qm_peer_resource_pt_BRRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__zh_CN_WuBiHuaRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__frRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_financial_german_10k_2"/>
@@ -5193,6 +5193,27 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/encodings/smime/SMIMEBodyModel"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/encodings/smime/SMIMESignatureField$SMIMESignatureStatusField"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_greek_35k_2RIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModelFactory"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/SmartDialingOptions"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/WorldPhoneInfo"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberServices"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/SmartPhoneNumberEditField"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberStringPattern"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModel"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberComparator"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/SmartPhoneNumberLabelField"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/CopyPhoneNumberVerb"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PackageManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberConverter$GetAreaCodeDialog"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberRawStringPattern"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberMnemonicStringPattern"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModelEditField"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/AbstractPhoneNumberModel"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberConverter"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/DialPhoneNumberVerb"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberPatternAnalyzer$Logger"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_phone_modelRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/vm/StackOverflowError"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/util/SLActionMessages"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/vm/Persistence"/>
@@ -5229,32 +5250,11 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/util/Utils"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/vm/DebugSupport"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/vm/DirtyBits"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resourceRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModelFactory"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/SmartDialingOptions"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/WorldPhoneInfo"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberServices"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/SmartPhoneNumberEditField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberStringPattern"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModel"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberComparator"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/SmartPhoneNumberLabelField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/CopyPhoneNumberVerb"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PackageManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberConverter$GetAreaCodeDialog"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberRawStringPattern"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberMnemonicStringPattern"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberModelEditField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/AbstractPhoneNumberModel"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/PhoneNumberConverter"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/model/DialPhoneNumberVerb"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/pattern/PhoneNumberPatternAnalyzer$Logger"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_phone_modelRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_3RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/manageconnections/ConnectionsPopupScreen"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_manage_connectionsRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/manageconnections/ManageConnectionsResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/manageconnections/ManageConnectionsApp$PhoneRestoreConnectionsRunnable"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_3RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/management/ClientAdminPolicy"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/persistence/WebResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/lifecycle/RestoreTask"/>
@@ -5278,9 +5278,9 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pdap/MemoListFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pdap/RepeatPatternEnumeration"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_pdapRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bis_client_resRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_spanish_ltr"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_spanish_ltrRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bis_client_resRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/push/BrowserChannelDeleteModel"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/options/WPTCPTransportConfigProperty"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/page/PageConverter"/>
@@ -5398,6 +5398,22 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/ToDoImpl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_todoRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/ToDoListImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothSerialConnection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/Protocol"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXSession"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/Protocol"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXServerSession"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/L2CAPConnectionImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXClientSession"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/Protocol"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/L2CAPConnectionNotifierImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothStreamConnection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/BluetoothResource"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothServerSocketConnection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/BluetoothGOEPServerConnection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/HeaderSetImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothURL"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/BluetoothGOEPClientConnection"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/header/HeaderTypes"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/otasync/OTAFMOptionsScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/header/EmailComposeComboField$ComposeListCallback"/>
@@ -5420,26 +5436,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/email/filters/EmailFilterBodyModelFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/header/EmailComposeComboField$ComposeController"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/header/EmailHeaderModelFactory"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothSerialConnection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXSession"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXServerSession"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/L2CAPConnectionImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/OBEXClientSession"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btl2cap/L2CAPConnectionNotifierImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothStreamConnection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/BluetoothResource"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothServerSocketConnection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/BluetoothGOEPServerConnection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/HeaderSetImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btspp/BluetoothURL"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/btgoep/BluetoothGOEPClientConnection"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_legal_french_10k_2"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_legal_french_10k_2RIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wap_provisioningRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/wapprovisioning/WAPProvisioningService"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/common/debug/protocol/messages/request/DetachRequestMessage"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/common/debug/msgmgt/MessageReceiver"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/common/debug/io/ByteArrayOutputByteStream"/>
@@ -5499,6 +5497,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/common/debug/protocol/messages/response/SessionResetResponseMessage"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_mds_runtime_diagnosticsRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/common/debug/protocol/messages/MessageFactory"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wap_provisioningRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/wapprovisioning/WAPProvisioningService"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/games/brickbreaker/Options$SendingScorePopup"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/games/brickbreaker/Options$StringPopup"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/io/streamdatagram/StreamDatagramTransportBase"/>
@@ -5539,15 +5539,14 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_enRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_help_gprs_wlan_positron__deRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__enRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_en"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/browser/BrowserServices"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/browser/OTAStatusReportService"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/browser/Browser"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_browserRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__enRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_en"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__zhRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resource__nlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/iota/MMCProcessor"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/iota/IOTARequest"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/push/IOTAPushletHelper"/>
@@ -5558,6 +5557,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/IOTAResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/iota/MimeMultipart"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_iotaRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resource__nlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/resource/Init_pt"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pim_res__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__zh_CN_PinyinRIMResources"/>
@@ -5571,13 +5571,13 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/OptionsResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/CustomDictConstants"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__enRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="font/FontInj_Japanese"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vadRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/vad/resource/VSTVersion"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/vad/resource/VADResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/vad/resource/VSTStrings"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/vad/VADApplication"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/vad/VADEventLog"/>
-			<accessrule kind="nonaccessible" pattern="font/FontInj_Japanese"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bis_client__trRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/EScreenResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/EScreens/EngScreenApp"/>
@@ -5601,7 +5601,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/plugin/media/menu/ReplayMenuItem"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/plugin/media/menu/RepeatMenuItem"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/plugin/media/menu/SkipTrackMenuItem"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__trRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/EnhancedAcousticsOption"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/PhoneOptionsOrdering"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/TTYRibbonIndicator"/>
@@ -5613,8 +5612,10 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/PhoneInfoOption"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/HACRibbonIndicator"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/options/DirectConnectOptions"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resource__pt_BRRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_resource__trRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_mds_runtime_resource__enRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_bb_resource__pt_BRRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/Names"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/util/Misc"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/Expr"/>
@@ -5623,23 +5624,12 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/JavaObject"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/RedirectedObject"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/ecmascript/runtime/NativeHash"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_resource_pt_brRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_CP1256RIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/arabic_cp1256/Load_cp1256"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_de_qwertz_de___QR24"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_de_qwertz_de___QRED"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_en_qwertz_default___QR24"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_runtime_resource__ptRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_chinese_wubiRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/SLChWubihuaIMDescriptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SlChWubiComposedText"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLWubihuaData"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/SLChWubihuaInputMethod"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/options/Chinese/Simplified/Wubi/ChineseWubiOptionsResource"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLChWubihuaConverter"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLCnWubihuaCE$WubihuaIMOptionsDataSyncItem"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLCnWubihuaCE"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_CP1256RIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/arabic_cp1256/Load_cp1256"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/eventprovider/ViewByLUID"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/eventprovider/CalendarReportTimeRecord"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/eventdb/CalendarProxyImpl"/>
@@ -5654,13 +5644,23 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/eventprovider/NewEventVerb"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_calendar_libRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/calendar/eventprovider/EditEventVerb"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_chinese_wubiRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/SLChWubihuaIMDescriptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SlChWubiComposedText"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLWubihuaData"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/SLChWubihuaInputMethod"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/options/Chinese/Simplified/Wubi/ChineseWubiOptionsResource"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLChWubihuaConverter"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLCnWubihuaCE$WubihuaIMOptionsDataSyncItem"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/zh/wubi/SLCnWubihuaCE"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_wlan_runtime_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/Tags"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_plazmic_mediaengine_smil_formatRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/Values"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/Attributes"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__deRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_qm_peer_resource_ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_menuitemRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_qm_peer_resource_ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/push/PushSource"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_browser_pushRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/push/PushProcessor"/>
@@ -5695,6 +5695,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/MediaLibrary/VoiceNote"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/MediaLibrary/util/Playlist"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/MediaLibrary/Album"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/render/TextOnPath"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/render/LabelRender"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/resources/LBSResources"/>
@@ -5706,8 +5707,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/verbs/LBSVerbFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/verbs/LBSStringPattern"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/lbs/render/MapRender"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__caRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_crypto_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_optionsRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/OptionsResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/options/SaveableMainScreenOptionsListItem"/>
@@ -5722,6 +5721,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/options/OptionsContext"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/options/OptionsItemVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/options/OptionsOrderingComparator"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_crypto_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__nlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/deviceselftest/ConfigScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/deviceselftest/DeviceSelfTestResources"/>
@@ -5747,6 +5747,8 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_help_gprs_wlan_positron__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_media_240x260_bRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_resource__deRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_application_permissions_proxyRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/applicationcontrol/ApplicationPermissionsProxy"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/tts/TTSManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/transmission/rim/Registration"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/transmission/rim/CMIMEParameters"/>
@@ -5768,20 +5770,21 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/tts/TTSListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/transmission/rim/sendmethods/SendMethod"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/vcal/VCal$AddToDevice"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_application_permissions_proxyRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/applicationcontrol/ApplicationPermissionsProxy"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tidRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/customWordRepository/ja/JapaneseCustomWord"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_memo_appRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/MemoResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/memo/resources/MemoResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/memo/ThemeUtilities"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tidRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/customWordRepository/ja/JapaneseCustomWord"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/resource/PhoneHotlistFieldIds"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/PhoneResource"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_phone_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/resource/PhoneContexts"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/resource/PhoneConstants"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/resource/PhoneResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/jcrmi/Protocol"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_satsaRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/apdu/Protocol"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/util/algorithm/LongVector"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/data/RIMResourceSpec"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/repository/SLDataContainer"/>
@@ -5817,9 +5820,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/data/LearningData"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/io/RMSOutputStream"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/OTAsync/OTASyncableCustomWordsProvider"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/jcrmi/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_satsaRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/apdu/Protocol"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/system/MMS"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/system/SIMCard"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/system/SIMCardSecurityListener"/>
@@ -5936,15 +5936,15 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/html/HTMLImg"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_french_ltr"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_french_ltrRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/chinese_simplified/Load_EUC_CN"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_EUC_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_browser_daemonRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/plugin/media/menu/FullscreenMenuItem"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__pt_BRRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/chinese_simplified/Load_EUC_CN"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_EUC_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/api/ui/cdma/RegisterCDMAServiceUI"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_phone_cdma_serviceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/api/ui/cdma/CDMAStatusScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/phone/api/ui/cdma/ServiceProgramUI"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__pt_BRRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/addressbook/SelectionListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/addressbook/DuplicateAddressBookEntryException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/addressbook/FriendlyNameAddressModel"/>
@@ -5985,6 +5985,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/addressbook/AddressCardSyncFieldIds"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_financial_french_10k_2"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_financial_french_10k_2RIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/spellcheck/SpellCheckAction"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/spellcheck/EditDistance1WordMatchState"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/spellcheck/TokenBounds"/>
@@ -6032,7 +6033,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/spellcheck/Registration"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/spellcheck/PhoneticReplacements"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/SpellCheckRepositoryData"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/SoftTokenImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/SoftTokenManagerImpl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_impl_softtokenRIMResources"/>
@@ -6042,8 +6042,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_ca_qwerty_ca___QRED"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_catalan_35k_2"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/ContextPairsTable_ca_qwerty_ca___QR24"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__enRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/media/control/VideoPositionControl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resource__deRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_passwordkeeper_resource__deRIMResources"/>
@@ -6131,7 +6131,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/multipart/MultipartInputStream"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/options/AdvancedGeneralProperty"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/browser/download/ContentTypeException"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/diagnostics/DebugServices"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/diagnostics/LoggerEvents"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/HandshakeInfo"/>
@@ -6167,6 +6166,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/logging/Logger"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/management/versioning/REVersionUtils"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/HandshakeException"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platformapps_resource__zh_CNRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeystorePassword"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/passwordwizard/Password"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_password_wizardRIMResources"/>
@@ -6210,7 +6210,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/email/api/EmailModifier"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/blackberryemail/email/emailsetting/EmailSettingModelFactory"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_cameraRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__en_GBRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/util/GregorianCalendar"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/bluetooth/BluetoothMEListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/browser/util/TimeLogger"/>
@@ -6251,19 +6250,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/bluetooth/HandsfreeGatewayListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/browser/util/PipeInputDataInputStream"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/browser/util/IdEncryptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/repository/Header"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/IndexTable"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/LocaleSpecific"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/CompoundWordsResultContainer"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/NGramReader"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/EditMode"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastHashWordsBuffer"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/NGramRepository"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_basicFastEuropeanRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastResultContainer"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/HistoryPrefContainer"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/NGramEuropeanConv"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/FastHistory"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__en_GBRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/util/QueueConstants"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/util/DebugUtil"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/util/Tasks"/>
@@ -6277,7 +6264,19 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/AnimationViewport"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/AnimationInteractor"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/intarray/v0_0/AnimationSampler"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__en_USRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/repository/Header"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/IndexTable"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/LocaleSpecific"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/CompoundWordsResultContainer"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/NGramReader"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/EditMode"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastHashWordsBuffer"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/NGramRepository"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_basicFastEuropeanRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastResultContainer"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/HistoryPrefContainer"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/NGramEuropeanConv"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/FastHistory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimWrongFormFactorException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimInvalidParamException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimDatabaseFullException"/>
@@ -6287,6 +6286,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimSecurIDLib"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimDuplicateNameException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/softtoken/rimsecuridlib/RimDuplicateTokenException"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__en_USRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/localeremoval/LocaleRemovalUtility"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/localeremoval/LocaleRemovalStatusListener"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_localeremovalRIMResources"/>
@@ -6389,7 +6389,6 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_font_chinese_hong_kongRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="font/FontInj_ChineseHK"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_crypto_resource__deRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_french_35k_2"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/api/crypto/certificate/CertificateAttachmentModelFactory"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_crypto_keystore_browserRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/api/crypto/certificate/CertificateConverter"/>
@@ -6408,10 +6407,11 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/KeyStoreBrowserHotkeys"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/AssociateAddressesScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/keystore/browser/KeyStoreBrowserData"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_ling_data/Dynamic_ling_data_french_35k_2"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__nlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/AlarmResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/alarm/AlarmStateField"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_alarm_appRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__nlRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/PackageManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/ContactListImpl"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/ToDoListFactory"/>
@@ -6424,10 +6424,10 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/ContactImpl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_pimRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/pim/EventImpl"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_turkish_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_smartcard_pivRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/smartcard/piv/PIVCryptoSmartCard"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/smartcard/piv/PIVCryptoSmartCardSession"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_turkish_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/profiles/ProfilesPopupScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/profiles/AlertConsequence"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/ProfilesResource"/>
@@ -6449,17 +6449,7 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/smartcard/SmartCardTicketDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/smartcard/GenericSmartCardUserAuthenticatorFacade"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_smartcardRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/SimulTcpDatagramBase"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpAddress"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_io_simultcpRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpConstants"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/Transport"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpProcess"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/SimulTcpDatagramProperties"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/Transport"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/Protocol"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__nlRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_elt_resource_esRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/network/PrefNetworkListOptions$StatusScreen"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/network/SimCardStatusHandler"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/network/PrefNetworkItemOptions"/>
@@ -6470,7 +6460,17 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/resources/OptionsResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/network/NetworkOptionsItem"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/options/items/network/PrefNetworkListOptions"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_elt_resource_esRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_resource__nlRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/SimulTcpDatagramBase"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpAddress"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_io_simultcpRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpConstants"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/Protocol"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/Transport"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/SimulTcpProcess"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcpdatagram/SimulTcpDatagramProperties"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/Transport"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/simultcp/Protocol"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_passwordkeeper_resource__ptRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/api/AggregateProfileConstants"/>
@@ -6510,6 +6510,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/network/NetworkInterfaceManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/api/SoftTokenDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/browser/push/Pushlet"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_en_US"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__en_USRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/sendmethods/MessageEncoder"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/cache/CachedField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/StatusFieldPriorities"/>
@@ -6541,8 +6543,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/sendmethods/MessageEncoderLocator"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/sendmethods/ReprocessRecipientsException"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/secureemail/cache/CachedSignatureField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/resource/Init_en_US"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_resource__en_USRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/qm/peer/NotificationMessageQueue"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/qm/peer/PeerComposeVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/qm/peer/PeerAuditManager"/>
@@ -6582,14 +6582,9 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_vad_engine_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_qm_peer_resource_caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_platform_im_resource__nlRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_medical_french_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_ldap_resource__zh_CNRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_medical_french_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_diagnostic_resource__pt_BRRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SLEuropeanCombining"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ui/Lookup"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/RepositoryBasedEuropeanConv"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ui/AdditionalVariantsLookup"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_repositoryBasedEuropeanRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_services_implRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/ui/autotext/Registration"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/gps/Registration"/>
@@ -6600,6 +6595,11 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/firewall/Registration"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/ui/autotext/AutoTextEngine"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/firewall/FirewallImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SLEuropeanCombining"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ui/Lookup"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/RepositoryBasedEuropeanConv"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ui/AdditionalVariantsLookup"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_repositoryBasedEuropeanRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/setupwizard/WizardListField$CategoryMode"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/setupwizard/logging/LogImpl"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_setupwizard_appRIMResources"/>
@@ -6618,6 +6618,23 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/russian_KOI8_R/Load_KOI8_R"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_ecmascript_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_crypto_resource__caRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/LinkClientListener"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/WLANConfigurationData"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_impl_wlanRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/ScanManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/DefaultCarrierErrorCodeTranslator"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/WLANConfigurationManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/ScanManagerListener"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/LinkClient"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/DeleteEntryVerb"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/EditUserDefinedFieldLabelScreen"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/LastUsedHintManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookOptionsScreen"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookListField"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/DisplayPictureVerb"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookListUI"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/PackageManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/PackageManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/ClickAndHoldKey"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/VerbField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/FastInsertVerticalFieldManager"/>
@@ -6667,26 +6684,9 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/SecurityDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/LimitedScrollingMultilineEditField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/api/ui/HintPollingThread"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/DeleteEntryVerb"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/EditUserDefinedFieldLabelScreen"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/LastUsedHintManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookOptionsScreen"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookListField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/DisplayPictureVerb"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/AddressBookListUI"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/ui/PackageManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/addressbook/addresscard/PackageManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/LinkClientListener"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/WLANConfigurationData"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_cldc_impl_wlanRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/ScanManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/DefaultCarrierErrorCodeTranslator"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/WLANConfigurationManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/ScanManagerListener"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/impl/wlan/LinkClient"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_MIDPRootCertsRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_crypto_resource__ptRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__itRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/russian_CP1251/Load_cp1251"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_CP1251RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_runtime_resource__esRIMResources"/>
@@ -6711,19 +6711,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/MMSParser"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/verbs/MMSPrevSlideVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/EventInterceptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SpanishLocaleSpecific"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/FastEuropeanInputMethodDescriptor"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SimpleLocaleSpecific"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/OTAsync/ContextPairsSynchObject"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ArabicLocaleSpecific"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/FastEuropeanConv"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/GermanLocaleSpecific"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/ContextPairsLearningData"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_fastEuropeanRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/OTAsync/ContextPairsSyncCollection"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastWordListRequest"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/ContextLearningRepository"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/FastEuropeanInputMethod"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/DirectEuropeanConv"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/ISLVariantsObserver"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/ui/TextFieldLookup"/>
@@ -6751,6 +6738,19 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/IConversion"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/SLInputMethod"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/MultitapInputMethod"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SpanishLocaleSpecific"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/FastEuropeanInputMethodDescriptor"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/SimpleLocaleSpecific"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/OTAsync/ContextPairsSynchObject"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/ArabicLocaleSpecific"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/FastEuropeanConv"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/GermanLocaleSpecific"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/ContextPairsLearningData"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_fastEuropeanRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/OTAsync/ContextPairsSyncCollection"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/FastWordListRequest"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/conv/europe/repository/ContextLearningRepository"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/im/FastEuropeanInputMethod"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resourceRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_french_35k_2RIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/Media/ArtistListScreen"/>
@@ -6776,6 +6776,41 @@
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_medialibraryplayerRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/explorer/player/RenderScreen"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_ling_data_chinese_Wubizixing_wordlistRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/DecimalFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/CmpFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/ComponentFactory"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/LongFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/service/DefaultComponentAdapter"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/UiServiceImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/IPageScroller"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/FocusManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/internal/SequenceProviderImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/DateFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/EnumFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/Visibility"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/IScrollManager"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/PagingController$CustomBasicEditField"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/ResourceProvider"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/HomeScreenUtilities"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/StringFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/PagingController$WicletPopupDialog"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/ImageUtilities"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/BitmapButton"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/appenv/ESEnum"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/FontAccentsUtil"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/BooleanFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/PageScroller"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/ScientificNumberTextFilter"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/IntegerFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/StyleFactory"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/UIConstants"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/appenv/ESMDSArray"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/ComponentHelper"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/internal/SecurityServiceImpl"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/ArrayFieldHandler"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/WicaScreen"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/ScreenView"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/FieldHandlerFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/verbs/SMILResumeVerb"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/ui/ScalableBitmapField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/Interactor"/>
@@ -6813,45 +6848,14 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/util/DOMUtilities"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/player/PlayerListener"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/plazmic/internal/mediaengine/model/smil/v0_0/player/Player"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/DecimalFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/CmpFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/ComponentFactory"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/LongFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/service/DefaultComponentAdapter"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/UiServiceImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/IPageScroller"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/FocusManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/internal/SequenceProviderImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/DateFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/EnumFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/Visibility"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/IScrollManager"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/PagingController$CustomBasicEditField"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/ResourceProvider"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/HomeScreenUtilities"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/StringFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/PagingController$WicletPopupDialog"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/ImageUtilities"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/BitmapButton"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/appenv/ESEnum"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/FontAccentsUtil"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/BooleanFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/PageScroller"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/ScientificNumberTextFilter"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/IntegerFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/StyleFactory"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/UIConstants"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/appenv/ESMDSArray"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/component/ComponentHelper"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/security/internal/SecurityServiceImpl"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/ArrayFieldHandler"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/internal/WicaScreen"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/ui/ScreenView"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/wica/runtime/script/internal/handler/FieldHandlerFactory"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/CalculatorResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/standardcalculator/DeciFloat"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_standardcalculator_appRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/standardcalculator/AAAmain"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/PackageProxy"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/rim/MailConverter"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_mailv2RIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/rim/MailConverterManager"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/supl/Nibbler"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/supl/SuplEvent"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/supl/ULPPushlet"/>
@@ -6867,23 +6871,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/supl/SETInitiateListener"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_supl_appRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/supl/SUPLMain"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/PackageProxy"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/rim/MailConverter"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bbapi_mailv2RIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/blackberry/api/mail/rim/MailConverterManager"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__caRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_secureemail_resource__pt_BRRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/system/RIMProcessLauncherMain"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_process_launcherRIMResources"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/io/file/FileSystemOptions"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/Universal_Reader"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/tunnel/TunnelFactory"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/SMS_Writer"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/StreamWriter"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/SMS_Reader"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/StreamReader"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/Helper"/>
-			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/Universal_Writer"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/activation/ActivationServiceImpl$ASCollection"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/resource/ActivationResource"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/activation/ActivationEventQueue"/>
@@ -6893,8 +6882,17 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/activation/ActivationEventQueueCallback"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/activation/EmailSetupWizard"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/apps/internal/activation/EmailSetupWizard$EmailSetupPage"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/chinese_hongkong/Load_Big5_HKSCS"/>
-			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_Big5_HKSCSRIMResources"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/io/file/FileSystemOptions"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/Universal_Reader"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/cldc/io/tunnel/TunnelFactory"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/SMS_Writer"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/StreamWriter"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/SMS_Reader"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/StreamReader"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/Helper"/>
+			<accessrule kind="nonaccessible" pattern="com/sun/cldc/i18n/j2me/Universal_Writer"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/internal/system/RIMProcessLauncherMain"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_process_launcherRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/lbs/gps/GPSProvider"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/lbs/LBSapiResource"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_bb_lbs_apiRIMResources"/>
@@ -6910,6 +6908,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/lbs/MapField"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/lbs/gps/GPSDevice"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/lbs/Logger"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/tid/dynamic_transcoding_data/chinese_hongkong/Load_Big5_HKSCS"/>
+			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_dynamic_transcoding_data_Big5_HKSCSRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/tid/mailExtractor/NewWordsExtractor"/>
 			<accessrule kind="nonaccessible" pattern="com/rim/resources/net_rim_tid_newWordsExtractorRIMResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/theme/bbdimension_zen_240x260_b/ThemeFactory"/>
@@ -6991,6 +6991,8 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/HostDialog"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreInitialization2"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/TLSInitialization"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/SafeBag"/>
+			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/Crypto3SelfTestModule"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/TLSBlockFormatterEngine"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreAddressInjector"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/TLSUtilities"/>
@@ -7005,8 +7007,6 @@
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreResources"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/tls/HandshakeProtocolConstants"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/keystore/KeyStoreInitialization1"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/SafeBag"/>
-			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/Crypto3SelfTestModule"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/certificate/pgp/PGPKeyIDKeyStoreIndex"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/pgp/PGPEncryptedInputStream"/>
 			<accessrule kind="nonaccessible" pattern="net/rim/device/api/crypto/certificate/pgp/PGPSubKeyInfoDialog"/>
