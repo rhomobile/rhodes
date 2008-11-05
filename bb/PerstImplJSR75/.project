@@ -24,12 +24,12 @@
 		<link>
 			<name>PerstImplJSR75.jdp</name>
 			<type>1</type>
-			<location>C:/dev/code/rhodes/bb/PerstDb/blackberry_jde/PerstImplJSR75.jdp</location>
+			<location>D:/Projects/rhodes-new/bb/PerstDb/blackberry_jde/PerstImplJSR75.jdp</location>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<locationURI>jde:/PerstImplJSR75/C$/dev/code/rhodes/bb/PerstDb/src11/jsr75</locationURI>
+			<locationURI>jde:/PerstImplJSR75/D$/Projects/rhodes-new/bb/PerstDb/src11/jsr75</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
