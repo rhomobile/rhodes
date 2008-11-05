@@ -5,6 +5,6 @@
 	<classpathentry exported="true" kind="src" path="/RubyVM"/>
 	<classpathentry kind="src" path=".tmp"/>
 	<classpathentry exported="true" kind="src" path="/RhoBundle"/>
-	<classpathentry kind="lib" path="C:/dev/code/rhodes/bb/RhoBundle/RhoBundle.jar"/>
+	<classpathentry kind="lib" path="D:/Projects/rhodes-new/bb/Xruby/RhoBundle.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
