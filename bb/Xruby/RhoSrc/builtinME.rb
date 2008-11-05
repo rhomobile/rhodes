@@ -58,6 +58,18 @@ module Kernel
     end
 end
 
+class Object
+    def to_a
+        [self]
+    end
+	
+    alias type :class 
+    
+    private
+    def initialize
+    end
+end
+
 module Enumerable
     def each_with_index 
         i = 0;
@@ -83,4 +95,140 @@ end
 
 class Array
     alias size length
+end
+
+class Time
+    include Comparable
+end
+
+class Hash
+    def each
+        ks = keys
+        ks.each {|k| yield([k, self[k]])}
+    end
+    
+    def each_key
+        ks = keys
+        ks.each {|k| yield(k)}
+    end
+	
+    def each_value
+        vs = values
+        vs.each {|k| yield(k)}
+    end
+    
+    def empty?
+        length == 0
+    end
+    
+    alias each_pair each
+	
+    def update other
+        other.each {|k, v| self[k] = v}
+        self
+    end
+    
+    alias merge! update
+    
+    def merge other
+        clone.merge!(other)
+    end
+	
+end
+
+class NilClass
+	
+    #Returns false
+    def &(anObject)
+        false
+    end
+	
+    #Returns false if anObject is nil or false, true otherwise
+    def ^(anObject)
+        anObject ? true : false
+    end
+	
+    #Returns false if anObject is nil or false, true otherwise
+    def |(anObject)
+        anObject ? true : false
+    end
+	
+    #Always returns true
+    def nil?
+        true
+    end
+	
+    #Always returns an empty array
+    def to_a
+        []
+    end
+	
+    #Always returns zero
+    def to_i
+        0
+    end
+	
+    def to_f
+        0.0
+    end
+	
+    #Always returns the empty string
+    def to_s
+        ""
+    end
+	
+    def inspect
+        "nil"
+    end
+end
+
+class TrueClass
+    #Returns false if anObject is nil or false, true otherwise
+    def &(anObject)
+        anObject ? true : false
+    end
+	
+    #Returns true if anObject is nil or false, false otherwise
+    def ^(anObject)
+        anObject ? false : true
+    end
+	
+    #Returns true
+    def |(anObject)
+        true
+    end
+	
+    def to_s
+        "true"
+    end
+	
+    def inspect
+        "true"
+    end
+end
+
+class FalseClass
+	
+    #Returns false
+    def &(anObject)
+        false
+    end
+	
+    #If anObject is nil or false, returns false; otherwise, returns true
+    def ^(anObject)
+        anObject ? true : false
+    end
+	
+    #Returns false if anObject is nil or false; true otherwise
+    def |(anObject)
+        anObject ? true : false
+    end
+	
+    def to_s
+        "false"
+    end
+	
+    def inspect
+        "false"
+    end
 end

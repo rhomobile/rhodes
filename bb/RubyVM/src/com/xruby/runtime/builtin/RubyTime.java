@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Date;
 
+import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
@@ -50,6 +51,12 @@ public class RubyTime extends RubyBasic {
         return ObjectFactory.createTime();
     }
 
+    //RHO_COMMENT : initialize
+    //@RubyLevelMethod(name="initialize")
+    public RubyTime initialize() {
+        return this;
+    }
+    
     public final long getTime() {
         //return date_.getTimeInMillis();
     	return date_.getTime().getTime();
@@ -81,7 +88,7 @@ public class RubyTime extends RubyBasic {
         return ObjectFactory.createFixnum(date_.get(Calendar.YEAR));
     }
 
-    //@RubyLevelMethod(name="month")
+    //@RubyLevelMethod(name="month",alias="mon")
     public RubyValue month() {
         return ObjectFactory.createFixnum(date_.get(Calendar.MONTH) + 1);
     }
@@ -91,6 +98,27 @@ public class RubyTime extends RubyBasic {
         return ObjectFactory.createFixnum(date_.get(Calendar.DATE));
     }
 
+    //RHO_COMMENT : wday
+    //@RubyLevelMethod(name="wday")
+    public RubyValue wday() {
+        return ObjectFactory.createFixnum(date_.get(Calendar.DAY_OF_WEEK)-1);
+    }
+
+    //@RubyLevelMethod(name="hour")
+    public RubyValue hour() {
+        return ObjectFactory.createFixnum(date_.get(Calendar.HOUR));
+    }
+
+    //@RubyLevelMethod(name="min")
+    public RubyValue min() {
+        return ObjectFactory.createFixnum(date_.get(Calendar.MINUTE));
+    }
+
+    //@RubyLevelMethod(name="sec")
+    public RubyValue sec() {
+        return ObjectFactory.createFixnum(date_.get(Calendar.SECOND));
+    }
+    
     //@RubyLevelMethod(name="to_f")
     public RubyFloat to_f() {
         return ObjectFactory.createFloat((double)getTime() / 1000);
@@ -162,6 +190,13 @@ public class RubyTime extends RubyBasic {
         return createTime(args, TimeZone.getTimeZone("GMT"));
     }
 
+    //RHO_COMMENT: utc
+    //@RubyLevelMethod(name="utc", alias="gm")
+    public RubyTime utc() {
+    	date_.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return this;
+    }
+    
     //@RubyLevelMethod(name="gmt?")
     public RubyValue gmt_question() {
         return ObjectFactory.createBoolean(

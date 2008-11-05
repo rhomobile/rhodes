@@ -1,7 +1,7 @@
 package com.xruby.GeneratedMethods;
+import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-import com.xruby.runtime.builtin.RubyTime;
 public class RubyTime_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -45,6 +45,30 @@ klass.getSingletonClass().defineMethod( "utc", new RubyVarArgMethod(){
 		return RubyTime.utc(receiver, args);}
 });
 klass.getSingletonClass().aliasMethod("gm","utc");
+
+klass.defineMethod( "utc", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).utc();}
+});
+klass.aliasMethod("gm","utc");
+
+klass.defineMethod( "wday", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).wday();}
+});
+klass.defineMethod( "hour", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).hour();}
+});
+klass.defineMethod( "min", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).min();}
+});
+klass.defineMethod( "sec", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).sec();}
+});
+
 klass.defineMethod( "<=>", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyTime)receiver).cmp(arg);}
@@ -65,6 +89,8 @@ klass.defineMethod( "month", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).month();}
 });
+klass.aliasMethod("mon","month");
+
 klass.defineMethod( "year", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).year();}
@@ -76,6 +102,10 @@ klass.defineMethod( "day", new RubyNoArgMethod(){
 klass.defineMethod( "zone", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).zone();}
+});
+klass.defineMethod( "initialize", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).initialize();}
 });
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{

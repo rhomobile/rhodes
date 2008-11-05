@@ -455,6 +455,18 @@ public class RubyAPI {
         return v;
     }
 
+    //RHO_COMMENT: isConstantDefined
+    public static RubyValue isConstantDefined(RubyValue receiver, String name) {
+        throwTypeErrorIfNotClassModule(receiver);
+
+        RubyModule m = (RubyModule) receiver;
+        RubyValue v = m.getConstant(name);
+        if (null == v)
+            return RubyConstant.QFALSE;
+
+        return RubyConstant.QTRUE;
+    }
+    
     private static void throwUninitializedConstant(RubyModule m, String name) {
         RubyString str = ObjectFactory.createString();
         if (m != RubyRuntime.ObjectClass) {

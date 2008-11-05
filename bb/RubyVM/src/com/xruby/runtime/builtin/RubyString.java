@@ -258,8 +258,7 @@ public class RubyString extends RubyBasic {
             return r.gsub(g, s);
         } else if (args.get(0) instanceof RubyString) {
             RubyString r = (RubyString) args.get(0);
-//            String result = g.toString().replaceAll(r.toString(), s.toString());
-            String result = g.replaceAll(r,s).toString();
+            String result = StringMe.replaceAll(g.toString(), r.toString(), s.toString());
             return ObjectFactory.createString(result);
         } else {
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong argument type " + args.get(0).getRubyClass().getName() + " (expected Regexp)");
@@ -283,8 +282,7 @@ public class RubyString extends RubyBasic {
             return r.sub(g, s);
         } else if (args.get(0) instanceof RubyString) {
             RubyString r = (RubyString) args.get(0);
-            //String result = g.toString().replaceFirst(r.toString(), s.toString());
-            String result = g.replaceFirst(r, s).toString();
+            String result = StringMe.replaceFirst( g.toString(), r.toString(), s.toString());
             return ObjectFactory.createString(result);
         } else {
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong argument type " + args.get(0).getRubyClass().getName() + " (expected Regexp)");
@@ -1276,15 +1274,4 @@ public class RubyString extends RubyBasic {
         return ArrayPacker.unpack(toString(), format.toString());
     }*/
 
-    private RubyString replaceAll(RubyString match, RubyString replacement) {
-    	//TODO: replaceAll
-    	throw new RuntimeException("Not Implemented");
-    	//return this;
-    }
-    private RubyString replaceFirst(RubyString match, RubyString replacement) {
-    	//TODO: replaceFirst
-    	throw new RuntimeException("Not Implemented");
-    	//return this;
-    }
-    
 }

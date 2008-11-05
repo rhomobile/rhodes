@@ -859,6 +859,13 @@ public class RubyModule extends RubyBasic {
         return RubyAPI.setConstant(arg2, this, s.toString());
     }
 
+    //RHO_COMMENT: 
+    //@RubyLevelMethod(name="const_defined?")
+    public RubyValue isConstDefined(RubyValue arg) {
+        RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
+        return RubyAPI.isConstantDefined(this, s.toString());
+    }
+
     private static class RubyVarArgMethodImpl extends RubyVarArgMethod{
     	RubyBlock b_;
     	RubyVarArgMethodImpl(RubyBlock b)

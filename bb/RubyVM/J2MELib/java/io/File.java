@@ -20,8 +20,8 @@ public class File {
 
     public static final char separatorChar = separator.charAt(0);
 
-    public static final String pathSeparator = System
-            .getProperty("path.separator");
+    public static final String pathSeparator = System.getProperty("path.separator") != null ? 
+    		System.getProperty("path.separator") : "/";
 
     public static final char pathSeparatorChar = pathSeparator.charAt(0);
 
