@@ -8,12 +8,13 @@ import com.rho.db.PerstLiteAdapter;
 
 public class SyncThread implements Runnable {
 
-	private boolean quit = false;
-	private String sync = "sync";
-	private static long SYNC_WAIT_INTERVAL = 5000L;
-	private static PerstLiteAdapter adapter = PerstLiteAdapter.alloc(null);
+	private static boolean quit = false;
+	private static String sync = "sync";
+	private static PerstLiteAdapter adapter;
 
+	private static final long SYNC_WAIT_INTERVAL = 5000L;
 	SyncThread() {
+		adapter = PerstLiteAdapter.alloc(null);
 		new Thread(this).start();
 		System.out.println("SyncEngine is started...");
 	}
@@ -24,17 +25,15 @@ public class SyncThread implements Runnable {
 				adapter.initialize(null);
 				System.out.println("SyncEngine is awake..."
 						+ new Date(System.currentTimeMillis()).toString());
-				RubyArray arr = createArray(3);
-				RubyArray cols = createArray(2);
-				cols.insert(0, createString("source_id"));
-				cols.insert(1, createString("source_url"));
-				arr.insert(0, createString("sources"));
-				arr.insert(1, cols);
-				arr.insert(2,null);
-				RubyArray results = (RubyArray)adapter.selectFromTable(arr);
-				
-				for(int i = 0; i < results.size(); i++) {
-					System.out.println("Result: " + results.at(createInteger(i)).asString());
+				RubyArray sources = getSourceList();
+
+				for (int i = 0; i < sources.size(); i++) {
+					RubyHash element = (RubyHash) sources.at(createInteger(i));
+					System.out.println("URL: "
+							+ element.get(PerstLiteAdapter.URL).toString()
+							+ " ID: "
+							+ element.get(PerstLiteAdapter.SOURCE_ID)
+									.toString());
 				}
 				try {
 					sync.wait(SYNC_WAIT_INTERVAL);
@@ -42,6 +41,13 @@ public class SyncThread implements Runnable {
 				}
 			}
 		}
+	}
+
+	private RubyArray getSourceList() {
+		RubyArray arr = createArray();
+		arr.add(createString("sources"));
+		arr.add(createString("*"));
+		return (RubyArray) adapter.selectFromTable(arr);
 	}
 
 	private RubyString createString(String val) {
@@ -55,9 +61,9 @@ public class SyncThread implements Runnable {
 	private RubyHash createHash() {
 		return ObjectFactory.createHash();
 	}
-	
-	private RubyArray createArray(int size) {
-		return ObjectFactory.createArray(size, null);
+
+	private RubyArray createArray() {
+		return new RubyArray();
 	}
 
 	public boolean wakeUpSyncEngine(Object o) {
