@@ -16,16 +16,18 @@ import com.xruby.runtime.lang.*;
 
 //@RubyLevelClass(name="DbAdapter")
 public class PerstLiteAdapter  extends RubyBasic {
+	
+	public static final RubyString ID = ObjectFactory.createString("id");
+	public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
+	public static final RubyString URL = ObjectFactory.createString("source_url");
+	public static final RubyString ALL = ObjectFactory.createString("*");
+	
+	private static final String DB_FILENAME = "syncdb3.dbs";
 
 	public static class Table_base extends Persistent{
 	    int id = 0;
 	    int source_id=0;
 	    String url = "";
-	    
-		public static final RubyString ID = ObjectFactory.createString("id");
-		public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
-		public static final RubyString URL = ObjectFactory.createString("url");
-		public static final RubyString ALL = ObjectFactory.createString("*");
 		
 	    // Serialize the object
 	    public void writeObject(IOutputStream out) {
@@ -190,7 +192,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    }
 		    
 		    public Iterator iterator( RubyHash where){
-		    	RubyValue valSourceID = where.get(Table_sources.SOURCE_ID);
+		    	RubyValue valSourceID = where.get(SOURCE_ID);
 		    	RubyValue valObject = where.get(Table_object_values.OBJECT);
 		    	RubyValue valUpdatedType = where.get(Table_object_values.UPDATE_TYPE);
 		    	RubyValue valAttrib = where.get(Table_object_values.ATTRIB);
@@ -333,8 +335,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    }
 		    
 		    public Iterator iterator(RubyHash where){
-		    	if(where == null) { return null; }
-		    	RubyValue val = where.get(Table_sources.SOURCE_ID);
+		    	if(where == null ) 
+		    	{ 
+		    		return source_id.iterator(); 
+		    	}
+		    	RubyValue val = where.get(SOURCE_ID);
 		    	if ( val == RubyConstant.QNIL )
 		    		return null;
 		    	return source_id.iterator(new Key(val.toInt()), new Key(val.toInt()), Index.ASCENT_ORDER);
@@ -352,7 +357,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	Storage m_storage;
 	private static PerstLiteAdapter adapter = null;
-	private static final String DB_FILENAME = "syncdb2.dbs";
 	PerstLiteAdapter(RubyClass c) {
 		super(c);
 	}
@@ -425,11 +429,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	//@RubyLevelMethod(name="selectFromTable")
 	public RubyValue selectFromTable(RubyArray args ){
-		if ( args.size() < 3 ){
+		if ( args.size() < 2 ){
 			new RubyException("selectFromTable has 3 paramaters: tableName, attrib, where");
 			return RubyConstant.QNIL;
 		}
-		return 	selectFromTable(args.get(0), args.get(1), args.get(2),
+		return 	selectFromTable(args.get(0), args.get(1), (args.size() > 2 ? args.get(2) : null),
 				(args.size() > 3 ? args.get(3) : null ) );
 	}
 	
