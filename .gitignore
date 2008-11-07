@@ -5,7 +5,6 @@ iphone/rhosynclib/build/*
 wm/bin/*.*
 wm/rhodes.ncb
 wm/cab/cleanup.js
-wm/cab/rhodes.CAB
 wm/cab/rhodes.inf
 bb/.metadata/*
 *.jar
@@ -23,9 +22,7 @@ bb/.metadata/*
 *.lib
 *.exe
 *.pch
-
-
-
-
-
-
+*.mode1v3
+*.pbxuser
+*.CAB
+*.cab
