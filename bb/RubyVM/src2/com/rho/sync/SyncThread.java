@@ -1,5 +1,6 @@
 package com.rho.sync;
 
+import java.io.IOException;
 import java.util.Date;
 
 import com.xruby.runtime.builtin.*;
@@ -12,7 +13,8 @@ public class SyncThread implements Runnable {
 	private static String sync = "sync";
 	private static PerstLiteAdapter adapter;
 
-	private static final long SYNC_WAIT_INTERVAL = 5000L;
+	private static final long SYNC_WAIT_INTERVAL = 90000L;
+
 	SyncThread() {
 		adapter = PerstLiteAdapter.alloc(null);
 		new Thread(this).start();
@@ -29,11 +31,11 @@ public class SyncThread implements Runnable {
 
 				for (int i = 0; i < sources.size(); i++) {
 					RubyHash element = (RubyHash) sources.at(createInteger(i));
-					System.out.println("URL: "
-							+ element.get(PerstLiteAdapter.URL).toString()
-							+ " ID: "
-							+ element.get(PerstLiteAdapter.SOURCE_ID)
-									.toString());
+					String url = element.get(PerstLiteAdapter.URL).toString();
+					System.out.println("URL: " + url);
+					int available = SyncUtil.fetchRemoteChanges(url);
+					System.out.println("Successfully processed " + available
+							+ " records...");
 				}
 				try {
 					sync.wait(SYNC_WAIT_INTERVAL);
@@ -46,7 +48,7 @@ public class SyncThread implements Runnable {
 	private RubyArray getSourceList() {
 		RubyArray arr = createArray();
 		arr.add(createString("sources"));
-		arr.add(createString("*"));
+		arr.add(createString("source_url"));
 		return (RubyArray) adapter.selectFromTable(arr);
 	}
 
