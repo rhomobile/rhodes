@@ -14,17 +14,22 @@ public class SyncJSONParser {
 			JSONArray object_array = new JSONArray(input);
 			for (int i = 0; i < object_array.length(); i++) {
 				JSONObject element = (JSONObject) object_array.get(i);
+				if (element == null) {
+					continue;
+				}
 				JSONObject current = (JSONObject) element.get("object_value");
-				String attrib = (String) current.get("attrib");
-				int sourceId = ((Integer) current.get("source_id")).intValue();
-				String object = (String) current.get("object");
-				String value = (String) current.get("value");
-				String updateType = (String) current.get("update_type");
-				SyncObject newObject = new SyncObject(attrib, sourceId, object,
-						value, updateType);
-				if (list.add(newObject)) {
-					System.out
-							.println("Adding object: " + newObject.getValue());
+				if (current != null) {
+					String attrib = (String) current.get("attrib");
+					int sourceId = ((Integer) current.get("source_id"))
+							.intValue();
+					String object = (String) current.get("object");
+					Object obValue = current.get("value");
+					String value = obValue == JSONObject.NULL ? null
+							: (String) obValue;
+					String updateType = (String) current.get("update_type");
+					SyncObject newObject = new SyncObject(attrib, sourceId,
+							object, value, updateType);
+					list.add(newObject);
 				}
 			}
 

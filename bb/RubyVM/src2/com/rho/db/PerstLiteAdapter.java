@@ -503,7 +503,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="deleteFromTable")
-	RubyValue deleteFromTable(RubyValue tableName, RubyValue where){
+	public RubyValue deleteFromTable(RubyValue tableName, RubyValue where){
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);

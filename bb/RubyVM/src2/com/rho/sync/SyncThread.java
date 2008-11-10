@@ -1,22 +1,20 @@
 package com.rho.sync;
 
-import java.io.IOException;
 import java.util.Date;
 
-import com.xruby.runtime.builtin.*;
-
 import com.rho.db.PerstLiteAdapter;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyHash;
 
 public class SyncThread implements Runnable {
 
 	private static boolean quit = false;
 	private static String sync = "sync";
-	private static PerstLiteAdapter adapter;
 
 	private static final long SYNC_WAIT_INTERVAL = 90000L;
 
 	SyncThread() {
-		adapter = PerstLiteAdapter.alloc(null);
+		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
 		new Thread(this).start();
 		System.out.println("SyncEngine is started...");
 	}
@@ -24,18 +22,24 @@ public class SyncThread implements Runnable {
 	public void run() {
 		while (!quit) {
 			synchronized (sync) {
-				adapter.initialize(null);
+				SyncUtil.adapter.initialize(null);
 				System.out.println("SyncEngine is awake..."
 						+ new Date(System.currentTimeMillis()).toString());
-				RubyArray sources = getSourceList();
+				RubyArray sources = SyncUtil.getSourceList();
 
 				for (int i = 0; i < sources.size(); i++) {
-					RubyHash element = (RubyHash) sources.at(createInteger(i));
+					RubyHash element = (RubyHash) sources.at(SyncUtil
+							.createInteger(i));
 					String url = element.get(PerstLiteAdapter.URL).toString();
+					int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 					System.out.println("URL: " + url);
-					int available = SyncUtil.fetchRemoteChanges(url);
+					int available = SyncUtil.fetchRemoteChanges(url, id);
 					System.out.println("Successfully processed " + available
 							+ " records...");
+					if (SyncConstants.DEBUG) {
+						RubyArray objects = SyncUtil.getObjectValueList(id);
+						SyncUtil.printResults(objects);
+					}
 				}
 				try {
 					sync.wait(SYNC_WAIT_INTERVAL);
@@ -43,29 +47,6 @@ public class SyncThread implements Runnable {
 				}
 			}
 		}
-	}
-
-	private RubyArray getSourceList() {
-		RubyArray arr = createArray();
-		arr.add(createString("sources"));
-		arr.add(createString("source_url"));
-		return (RubyArray) adapter.selectFromTable(arr);
-	}
-
-	private RubyString createString(String val) {
-		return ObjectFactory.createString(val);
-	}
-
-	private RubyInteger createInteger(long val) {
-		return ObjectFactory.createInteger(val);
-	}
-
-	private RubyHash createHash() {
-		return ObjectFactory.createHash();
-	}
-
-	private RubyArray createArray() {
-		return new RubyArray();
 	}
 
 	public boolean wakeUpSyncEngine(Object o) {

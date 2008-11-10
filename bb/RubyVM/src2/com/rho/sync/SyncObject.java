@@ -1,5 +1,8 @@
 package com.rho.sync;
 
+import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.lang.RubyValue;
+
 public class SyncObject {
 	private int _primaryKey = -1;
 	private String _attrib;
@@ -52,7 +55,7 @@ public class SyncObject {
 	}
 
 	public String getValue() {
-		return _value;
+		return _value == null ? "" : _value;
 	}
 
 	public void setValue(String value) {
@@ -81,5 +84,41 @@ public class SyncObject {
 
 	public void setUpdateType(String updateType) {
 		this._updateType = updateType;
+	}
+
+	public static void deleteFromDatabaseBySource(int id) {
+		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("source_id"), SyncUtil
+				.createInteger((long) id));
+		SyncUtil.adapter.deleteFromTable(SyncUtil
+				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
+	}
+
+	public int dehydrate() {
+		try {
+			SyncUtil.adapter.insertIntoTable(SyncUtil
+					.createString(SyncConstants.OBJECTS_TABLE), this
+					.getHashFromValues());
+		} catch (Exception e) {
+			System.out.println("There was an error inserting the record: "
+					+ e.getMessage());
+			return SyncConstants.SYNC_OBJECT_ERROR;
+		}
+		return SyncConstants.SYNC_OBJECT_SUCCESS;
+	}
+
+	private RubyHash getHashFromValues() {
+		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("source_id"), SyncUtil
+				.createInteger((long) this.getSourceId()));
+		hash.add(SyncUtil.createString("attrib"), SyncUtil
+				.createString(this.getAttrib()));
+		hash.add(SyncUtil.createString("object"), SyncUtil
+				.createString(this.getObject()));
+		hash.add(SyncUtil.createString("value"), SyncUtil
+				.createString(this.getValue()));
+		hash.add(SyncUtil.createString("update_type"), SyncUtil
+				.createString(this.getUpdateType()));
+		return hash;
 	}
 }
