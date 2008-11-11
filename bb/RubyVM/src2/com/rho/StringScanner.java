@@ -2,11 +2,8 @@ package com.rho;
 
 import org.apache.oro.text.regex.*;
 
-import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-
-import j2me.lang.AssertMe;
 
 //@RubyLevelClass(name="StringScanner")
 public class StringScanner extends RubyBasic {
@@ -83,17 +80,6 @@ public class StringScanner extends RubyBasic {
         setMatched();
         
         return  getstr ? getResult(ObjectFactory.createInteger(0)) : RubyConstant.QTRUE;
-    }
-    
-    private RubyValue extractBegLen(int beg, int len) {
-        assert( len >= 0 );
-        int size = str.length();
-        if (beg > size) 
-        	return RubyConstant.QNIL;
-        if (beg + len > size) 
-        	len = size - beg;
-        //TODO: optimize memory allocation
-        return ObjectFactory.createString(str.toString().substring(beg, len));
     }
     
     private void clearMatched() {
