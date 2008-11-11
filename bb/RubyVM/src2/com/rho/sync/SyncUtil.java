@@ -43,6 +43,25 @@ public class SyncUtil {
 
 	public static int pushRemoteChanges(SyncOperation[] list) {
 		int success = 0;
+		StringBuffer data = new StringBuffer();
+		if (list.length == 0) {
+			return SyncConstants.SYNC_PUSH_CHANGES_OK;
+		}
+
+		for (int i = 0; i < list.length; i++) {
+			data.append(list[i].get_postBody());
+			if (i != (list.length - 1)) {
+				data.append("&");
+			}
+		}
+		try {
+			success = SyncManager.pushRemoteData(list[0].get_source()
+					.get_sourceUrl(), data.toString());
+		} catch (IOException e) {
+			System.out.println("There was an error pushing changes: "
+					+ e.getMessage());
+			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
+		}
 
 		return success == SyncConstants.SYNC_PUSH_CHANGES_OK ? SyncConstants.SYNC_PUSH_CHANGES_OK
 				: SyncConstants.SYNC_PUSH_CHANGES_ERROR;
@@ -88,7 +107,9 @@ public class SyncUtil {
 					.createInteger(j));
 			String value = objectElement.get(SyncUtil.createString("value"))
 					.toString();
-			System.out.println("value[" + j + "]: " + value);
+			String attrib = objectElement.get(SyncUtil.createString("attrib"))
+					.toString();
+			System.out.println("value[" + j + "][" + attrib + "]: " + value);
 		}
 	}
 }
