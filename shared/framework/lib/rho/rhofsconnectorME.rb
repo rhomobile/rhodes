@@ -20,12 +20,14 @@ module Rho
   		  if defined? SYNC_DB_FILE
   			  SYNC_DB_FILE
   		  else
-  			  'syncdb.dbs'
+  			  'syncdb_.dbs'
   		  end
   	  end
 	  
-	    def enum_files(paths, filename) # :yield: path
-  		  get_app_path('Rhosugar') + filename
+      def enum_files(paths, filename) # :yield: path
+		yield get_app_path('Rhosugar/Account') + filename
+		yield get_app_path('Rhosugar/Case') + filename  
+		yield get_app_path('Rhosugar/Employee') + filename  
   	  end
 		  
     end

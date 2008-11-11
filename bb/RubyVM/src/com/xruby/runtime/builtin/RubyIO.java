@@ -25,6 +25,10 @@ import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import javolution.io.UTF8StreamReader;
+
 ////@RubyLevelClass(name="IO")
 public class RubyIO extends RubyBasic {
 	public static RubyIO STDOUT;
@@ -265,14 +269,51 @@ public class RubyIO extends RubyBasic {
         return array;
     }*/
     
+    //RHO_COMMENT
+    private static char[] buffer = new char[1024];
+	public static final RubyValue readFully(InputStream in) throws IOException {
+		int size = in.available();
+		if (size < 0)
+			size = 1024;
+		RubyString str = ObjectFactory.createString();	
+		UTF8StreamReader reader = new UTF8StreamReader();
+		reader.setInput(in);
+		while (true) {
+			synchronized (buffer) {
+				int len = reader.read(buffer);
+				if (len < 0) {
+					break;
+				}
+				str.appendChars(buffer,len);
+			}
+		}
+		return str;
+	}
+    
+    static RubyValue loadFromResources(String fileName){
+    	InputStream stream = fileName.getClass().getResourceAsStream("/"+fileName);
+    	if ( stream == null )
+    		return null;
+    	
+    	try{
+    		return readFully(stream);
+    	}catch( IOException exc ){
+    		throw new RubyException(RubyRuntime.RuntimeErrorClass,exc.getMessage());
+    	}
+    }
+    
     //@RubyLevelMethod(name="read")
     public static RubyValue read(RubyValue receiver, RubyArray args, RubyBlock block) {
-        RubyString fileName = (RubyString) args.get(0);
-        RubyIO io = ObjectFactory.createFile(fileName.toString(), "r");
+        String fileName = ((RubyString) args.get(0)).toStr();
+        //RHO_COMMENT
+        RubyValue r = loadFromResources(fileName);
+        if ( r != null )
+        	return r;
+        
+        RubyIO io = ObjectFactory.createFile(fileName, "r");
         int offset;
         int length;
 
-        RubyValue r;
         if (args.size() == 1) {
             r = buildResult(io.read(), null);
         } else {

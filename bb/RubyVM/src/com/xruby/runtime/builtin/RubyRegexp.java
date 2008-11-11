@@ -425,4 +425,6 @@ public class RubyRegexp extends RubyBasic {
         GlobalVariables.set(RubyConstant.QNIL, "$1");
     }
     
+    //RHO_COMMENT
+    public Pattern getPattern(){ return pattern_; }    
 }

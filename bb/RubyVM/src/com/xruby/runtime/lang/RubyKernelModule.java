@@ -255,7 +255,8 @@ public class RubyKernelModule {
 	
 	private static RubyValue eval(String evalText) {
 		//RHO_COMMENT: eval
-		return RubyConstant.QNIL;
+		throw new RubyException("Not implemented: eval(evalText)");
+		
 /*		RubyCompiler compiler = new RubyCompiler();
         try {
 			CompilationResults codes = compiler.compileString(evalText);
@@ -274,7 +275,7 @@ public class RubyKernelModule {
 	
 	public static RubyValue eval(String evalText, RubyBinding binding) {
 		//RHO_COMMENT: eval
-		return RubyConstant.QNIL;
+		throw new RubyException("Not implemented: eval(evalText,binding)");
 		
 		/*RubyCompiler compiler = new RubyCompiler();
         try {
@@ -292,9 +293,29 @@ public class RubyKernelModule {
         }*/
 	}
 
+	private static RubyValue evalPrecompiledFile( String file_name, RubyBinding binding ){
+		String name = createMainClassName(file_name);
+        try {
+            Class c = Class.forName(name);
+            Object o = c.newInstance();
+            RubyProgram p = (RubyProgram) o;
+
+            if (null != binding) {
+                return p.invoke(binding.getSelf(), binding.getVariables(), binding.getBlock(), binding.getScope());
+            } else {
+                return p.invoke();
+            }
+        } catch (Exception e) {
+            throw new RubyException(e.getMessage());
+        }
+	}
+
 	private static RubyValue eval(String evalText, RubyBinding binding, String file_name) {
 		//RHO_COMMENT: eval
-		return RubyConstant.QNIL;
+		if ( evalText.length() > 0 && file_name == null ){
+			return evalPrecompiledFile( evalText, binding);
+		}
+		throw new RubyException("Not implemented: eval(evalText,binding)");
 		
 		/*RubyCompiler compiler = new RubyCompiler(binding, false);
         try {

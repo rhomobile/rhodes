@@ -108,6 +108,12 @@ public class RubyString extends RubyBasic {
         return this;
     }
 
+    //RHO_COMMENT
+    public RubyString appendChars(char[] bytes, int len) {
+        sb_.append(bytes, 0, len);
+        return this;
+    }
+    
     private RubyString appendString(RubyString v) {
         sb_.append(v.sb_);
         return this;
@@ -1274,4 +1280,15 @@ public class RubyString extends RubyBasic {
         return ArrayPacker.unpack(toString(), format.toString());
     }*/
 
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="encoding")
+    public RubyValue getEncoding() {
+        return ObjectFactory.createString("ASCII-8BIT");//"UTF-8");
+    }
+    //@RubyLevelMethod(name="force_encoding")
+    public RubyValue force_encoding(RubyValue arg) {
+    	//TODO: should we do something ?
+        return this;
+    }
+    
 }
