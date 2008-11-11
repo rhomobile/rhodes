@@ -313,4 +313,5 @@ klass.defineModuleMethod( "Integer", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyKernelModule.toInteger(receiver, arg);}
 });
+
 }}

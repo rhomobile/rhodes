@@ -1,4 +1,9 @@
-require 'erb'
+if defined? RHO_ME
+	require 'rho/renderME'
+else
+	require 'rho/render'
+end
+
 require 'rho/rhosupport'
 
 module Rho
@@ -15,10 +20,6 @@ module Rho
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       send req['action'].nil? ? default_action : req['action']
-    end
-	
-    def render(view)
-      ERB.new(IO.read(@request[:modelpath]+view.to_s+'.erb')).result(binding)
     end
 	
     def link_to(name,action,id=nil,confirm=nil)

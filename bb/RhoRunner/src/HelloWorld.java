@@ -17,7 +17,8 @@ import net.rim.device.api.collection.util.*;
 //import org.apache.oro.text.*;
 //import xruby.rhodbTest3.*;
 //import org.garret.perst.*;
-import xruby.Test1.*;
+import xruby.TestServe.*;
+//import java.io.InputStream;
 
 /**
  * <p>The HelloWorld sample demonstrates some of the most basic features
@@ -29,6 +30,8 @@ public class HelloWorld extends UiApplication
     public static void main(String[] args)
     {
  //   	com.xruby.runtime.lang.RubyRuntime.init(args);
+//    	String str = new String("");
+//    	InputStream stream = str.getClass().getResourceAsStream("/resources/Rhosugar/index.html");
     	
     	main.main(args);
     	

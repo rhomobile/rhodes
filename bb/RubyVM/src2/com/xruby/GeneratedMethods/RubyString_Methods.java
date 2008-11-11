@@ -221,6 +221,15 @@ klass.defineMethod( "chop!", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).chopBang();}
 });
+klass.defineMethod( "encoding", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).getEncoding();}
+});
+klass.defineMethod( "force_encoding", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).force_encoding(arg);}
+});
+
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 		return RubyString.alloc(receiver);	}} );

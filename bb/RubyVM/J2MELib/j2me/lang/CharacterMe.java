@@ -39,6 +39,10 @@ public class CharacterMe {
     }
     public static boolean isWhitespace(int codePoint) {
     	boolean bWhiteSpace = false;
+    	
+    	if ( codePoint == Character.MAX_VALUE )
+    		return false;
+    	
         if (codePoint >= MIN_CODE_POINT && codePoint <= FAST_PATH_MAX) {
             bWhiteSpace =  CharacterDataLatin1.isWhitespace((char)codePoint);
         } else {
@@ -72,6 +76,9 @@ public class CharacterMe {
     public static boolean isLetterOrDigit(int codePoint) {
         boolean bLetterOrDigit = false;
 
+    	if ( codePoint == Character.MAX_VALUE )
+    		return false;
+        
         if (codePoint >= MIN_CODE_POINT && codePoint <= FAST_PATH_MAX) {
             bLetterOrDigit = CharacterDataLatin1.isLetterOrDigit((char)codePoint);
         } else {
@@ -87,6 +94,9 @@ public class CharacterMe {
     public static boolean isLetter(int codePoint) {
         boolean bLetter = false;
 
+    	if ( codePoint == Character.MAX_VALUE )
+    		return false;
+        
         if (codePoint >= MIN_CODE_POINT && codePoint <= FAST_PATH_MAX) {
             bLetter = CharacterDataLatin1.isLetter((char)codePoint);
         } else {
@@ -101,6 +111,9 @@ public class CharacterMe {
     public static boolean isSpaceChar(int codePoint) {
         boolean bSpaceChar = false;
 
+    	if ( codePoint == Character.MAX_VALUE )
+    		return false;
+        
         if (codePoint >= MIN_CODE_POINT && codePoint <=  FAST_PATH_MAX) {
             bSpaceChar =  CharacterDataLatin1.isSpaceChar((char)codePoint);
         } else {
