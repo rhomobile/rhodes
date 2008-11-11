@@ -5,10 +5,36 @@ public class SyncOperation {
 	private SyncSource _source;
 	private String _postBody;
 
-	public SyncOperation(String operation, SyncSource source, String postBody) {
+	public SyncOperation(String operation, SyncSource source, SyncObject object) {
 		_operation = operation;
 		_source = source;
-		_postBody = postBody;
+		_postBody = setSyncPostBody(object);
+		System.out.println("Formatted post strig: " + _postBody);
+	}
+
+	private String setSyncPostBody(SyncObject object) {
+		StringBuffer body = new StringBuffer();
+		this.filterAttrib(body, "attrib", object.getAttrib());
+
+		if (object.getObject() != null) {
+			body.append("&");
+			this.filterAttrib(body, "object", object.getObject());
+		}
+
+		if (object.getValue() != null) {
+			body.append("&");
+			this.filterAttrib(body, "value", object.getValue());
+		}
+		return body.toString();
+	}
+
+	private void filterAttrib(StringBuffer buffer, String attrib, String value) {
+		String attrPrefix = "attrvals[][";
+		String attrSuffix = "]=";
+		buffer.append(attrPrefix);
+		buffer.append(attrib);
+		buffer.append(attrSuffix);
+		buffer.append(value);
 	}
 
 	public String get_operation() {

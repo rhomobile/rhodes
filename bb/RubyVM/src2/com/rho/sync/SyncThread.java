@@ -47,9 +47,10 @@ public class SyncThread implements Runnable {
 				}
 			}
 		}
+		System.out.println("Shutting down SyncEngine...");
 	}
 
-	public boolean wakeUpSyncEngine(Object o) {
+	public boolean wakeUpSyncEngine() {
 		synchronized (sync) {
 			if (!quit) {
 				sync.notify();

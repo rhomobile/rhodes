@@ -1,8 +1,13 @@
 package com.rho;
 
-import com.rho.db.PerstLiteAdapter;
-import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
+import com.xruby.runtime.builtin.RubyString;
+import com.xruby.runtime.lang.RubyBasic;
+import com.xruby.runtime.lang.RubyBlock;
+import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyOneArgMethod;
+import com.xruby.runtime.lang.RubyRuntime;
+import com.xruby.runtime.lang.RubyValue;
 
 //@RubyLevelClass(name="StringScanner")
 public class StringScanner extends RubyBasic {

@@ -2,6 +2,7 @@ package com.rho.sync;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
@@ -36,7 +37,21 @@ public class SyncManager {
 		return buffer.toString();
 	}
 
-	public static int pushRemoteData(String url, String data, int size) {
+	public static int pushRemoteData(String url, String data)
+			throws IOException {
+		OutputStream os = null;
+		HttpConnection connection = null;
+		try {
+			connection = (HttpConnection) Connector.open(url);
+			os = connection.openOutputStream();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Length", String.valueOf(data
+					.length()));
+			os.write(data.getBytes());
+		} finally {
+			os.close();
+			connection.close();
+		}
 
 		return SyncConstants.SYNC_PUSH_CHANGES_OK;
 	}
