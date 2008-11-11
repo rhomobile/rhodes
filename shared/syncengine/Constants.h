@@ -32,8 +32,6 @@ extern "C" {
 #define UPDATE_TYPE_UPDATE "updateobjects"
 #define UPDATE_TYPE_CREATE "createobjects"
 #define UPDATE_TYPE_DELETE "deleteobjects"
-	
-#define SOURCES_CONTROLLER "sources"
 
 #define MAX_SYNC_OBJECTS 500
 
@@ -44,7 +42,6 @@ extern "C" {
 	
 /* Sync Engine */
 #define MAX_SINGLE_OP_SIZE 200
-#define SYNC_ENGINE_SLEEP 5
 #define SYNC_FETCH_CHANGES_OK 0
 #define SYNC_FETCH_CHANGES_ERROR 1
 #define SYNC_PUSH_CHANGES_OK 0
