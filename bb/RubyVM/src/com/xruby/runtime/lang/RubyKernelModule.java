@@ -531,19 +531,23 @@ public class RubyKernelModule {
     //@RubyLevelMethod(name="printf", module=true)
     public static RubyValue printf(RubyValue receiver, RubyArray args) {
         String fmt = args.get(0).toStr();
-        PrintStreamMe.printf(System.out, fmt, RubyKernelModule.buildFormatArg(args, 1));
+    	args.delete_at(0);
+        PrintStreamMe.printf(System.out, fmt, args );//fmt, RubyKernelModule.buildFormatArg(args, 1));
         return RubyConstant.QNIL;
     }
     
     //@RubyLevelMethod(name="sprintf", module=true)
     public static RubyValue sprintf(RubyValue receiver, RubyArray args) {
-        String fmt = args.get(0).toStr();
+        /*String fmt = args.get(0).toStr();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStreamMe.printf(ps, fmt, RubyKernelModule.buildFormatArg(args, 1));
         ps.flush();
         ps.close();
-        return ObjectFactory.createString(baos.toString());
+        return ObjectFactory.createString(baos.toString());*/
+    	String fmt = args.get(0).toStr();
+    	args.delete_at(0);
+    	return ObjectFactory.createString(PrintStreamMe.sprintf(fmt, args));
     }
     
     //@RubyLevelMethod(name="p", module=true)
