@@ -1,3 +1,21 @@
+/*
+ *  rhodes
+ *
+ *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.rho.sync;
 
 import java.util.ArrayList;
@@ -5,11 +23,23 @@ import java.util.ArrayList;
 import org.json.me.JSONArray;
 import org.json.me.JSONObject;
 
+/**
+ * The Class SyncJSONParser.
+ */
 public class SyncJSONParser {
 
+	/**
+	 * Parses the json list.
+	 * 
+	 * @param input the input
+	 * 
+	 * @return the array list
+	 */
 	public static ArrayList parseJSONList(String input) {
 		ArrayList list = new ArrayList();
 
+		// Iterates over a JSONArray provided by input and parses
+		// a SyncObject ArrayList
 		try {
 			JSONArray object_array = new JSONArray(input);
 			for (int i = 0; i < object_array.length(); i++) {
