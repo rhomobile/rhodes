@@ -8,5 +8,17 @@ public class ArrayMe {
     	throw new RuntimeException("Not Implemented");
     	//return arThis;
     }
+    public static byte[] clone(byte[] arThis)
+    {
+    	//TODO: clone
+    	throw new RuntimeException("Not Implemented");
+    	//return arThis;
+    }
+    public static char[] clone(char[] arThis)
+    {
+    	//TODO: clone
+    	throw new RuntimeException("Not Implemented");
+    	//return arThis;
+    }
 	
 }
