@@ -39,10 +39,14 @@ public class SyncTest {
 	}
 
 	public static void testUpdate() {
-
+		SyncObject objIndustry = new SyncObject("industry", 1,
+				"881be9cb-3879-9660-46be-48fceb82ea5f", "Electronics", "update");
+		objIndustry.dehydrate();
 	}
 
 	public static void testDelete() {
-
+		SyncObject obj = new SyncObject(null, 1,
+				"b1495bf5-91a8-dac7-32ce-491b325d8202", null, "delete");
+		obj.dehydrate();
 	}
 }

@@ -24,7 +24,7 @@ package com.rho.sync;
 public class SyncConstants {
 
 	/** The Constant DEBUG. */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public static final boolean RUN_TESTS = false;
 	
