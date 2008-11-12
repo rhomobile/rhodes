@@ -189,6 +189,14 @@ public class SyncUtil {
 		return results;
 	}
 
+	public static void removeOpListFromDatabase(String type, SyncSource source) {
+		RubyHash where = createHash();
+		where.add(createString("update_type"), createString(type));
+		where.add(createString("source_id"), createInteger(source
+				.get_sourceId()));
+		adapter.deleteFromTable(createString("object_values"), where);
+	}
+
 	/**
 	 * Gets the source list.
 	 * 
@@ -300,6 +308,10 @@ public class SyncUtil {
 				+ " available records for processing...");
 		if (pushRemoteChanges(source, list) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
+		} else {
+			// We're done processsing, remove from database so we
+			// don't process again
+			removeOpListFromDatabase(type, source);
 		}
 		return success;
 	}
