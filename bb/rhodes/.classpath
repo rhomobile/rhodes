@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="src" path="/.rhodes.jdw"/>
+	<classpathentry exported="true" kind="src" path="/.bb.jdw"/>
 	<classpathentry kind="src" path=".tmp"/>
+	<classpathentry exported="true" kind="src" path="/RubyVM"/>
+	<classpathentry exported="true" kind="src" path="/RhoBundle"/>
+	<classpathentry exported="true" kind="src" path="/PerstLite"/>
+	<classpathentry exported="true" kind="src" path="/PerstImplJSR75"/>
+	<classpathentry kind="lib" path="/RhoBundle/RhoBundle.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

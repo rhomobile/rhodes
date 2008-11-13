@@ -28,7 +28,7 @@ public class RhoConnection implements HttpConnection {
     /** Request state **/
     protected boolean requestProcessed = false;
     /** Input/Output streams **/
-	private ByteArrayInputStream responseData = null;
+	private /*ByteArray*/InputStream responseData = null;
 	private ByteArrayOutputStream postData = new ByteArrayOutputStream();
 	
 	/** Construct connection using URI **/
@@ -303,15 +303,84 @@ public class RhoConnection implements HttpConnection {
 		return postData;
 	}
 	
+	static private class UrlParser{
+		String strPath;
+		int nStart = 0;
+		UrlParser( String url ){
+			strPath = url;
+			nStart = strPath.charAt(0) == '/' ? 1 : 0;
+		}
+		public boolean isEnd(){ return nStart >= strPath.length(); }
+		public String next(){
+			if (  isEnd() )
+				return "";
+			
+			int nEnd = strPath.indexOf('/',nStart);
+			if ( nEnd < 0 )
+				nEnd = strPath.length();
+			
+			String res = strPath.substring(nStart, nEnd);
+			nStart = nEnd+1;
+			return res;
+		}
+	
+	}
+	
+	void redirectTo( String location ){
+		responseCode = 301;
+		responseMsg = "Moved Permanently";
+		resHeaders.addProperty("Location", location);
+		contentLength = 0;
+	}
+	
+	static String getContentType( String path ){
+		//TODO: support more types
+		return "text/html";
+	}
+	
 	protected void processRequest() throws IOException {
 		if (!requestProcessed) {
-			log("Processing request");
-			String messageText = "<html><head></head><body>"+
-			"<a href=\"http://google.com\">Google</a><br/>"+
-			"This is the message</body>";
-			responseData = new ByteArrayInputStream(messageText.getBytes());
-			contentLength = messageText.length();
-	    	resHeaders.addProperty("content-type", "text/html");
+			log("Processing request : " + uri.toString() );
+			if ( uri.getPath().length() == 0 || uri.getPath() == "/" ){
+				//index page
+				redirectTo("index.html");
+			}else{
+				responseData = RhoRuby.loadFile(uri.getPath());
+				if (responseData!= null){
+					resHeaders.addProperty("content-type", getContentType(uri.getPath()) );
+					resHeaders.addProperty("content-length", Integer.toString( responseData.available() ) );
+				}else{
+					UrlParser up = new UrlParser(uri.getPath());  
+					String application = up.next();
+					String model = up.next();
+					
+					if ( model.length() == 0 ){
+						redirectTo(application+"/index.html");
+					}else{
+						String actionid = up.next();
+						String actionnext = up.next();
+						if ( actionid.length() > 0 ){
+							if ( actionid.length() > 2 && 
+								 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
+								reqHeaders.setProperty( "id", actionid);
+								reqHeaders.setProperty( "action", actionnext);
+							}else{
+								reqHeaders.setProperty( "id", actionnext);
+								reqHeaders.setProperty( "action", actionid);
+							}
+						}
+							
+						reqHeaders.setProperty( "application",application);
+						reqHeaders.setProperty( "model", model);
+						reqHeaders.setProperty("request-method", this.method);
+						
+						responseData = RhoRuby.processRequest( reqHeaders, resHeaders);
+						if ( responseData != null )
+							contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("content-length"));
+					}					
+				}
+			}
+			
 			requestProcessed = true;
 		}
 	}

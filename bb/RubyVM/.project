@@ -20,21 +20,4 @@
 		<nature>net.rim.eide.rimnature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src2</name>
-			<type>2</type>
-			<locationURI>jde:/RubyVM/D$/Projects/rhodes-new/bb/RubyVM/J2MELib</locationURI>
-		</link>
-		<link>
-			<name>src1</name>
-			<type>2</type>
-			<locationURI>jde:/RubyVM/D$/Projects/rhodes-new/bb/RubyVM/src</locationURI>
-		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<locationURI>jde:/RubyVM/D$/Projects/rhodes-new/bb/RubyVM/src2</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

@@ -55,7 +55,7 @@ module Rho
       end
       APPLICATIONS[appname]
     end
-	
+
     def serve(req)
       begin
 	    puts 'inside RHO.serve...'
@@ -66,7 +66,18 @@ module Rho
         return send_error(e.message)
       end	
     end
-		
+
+    def serve_hash(req)
+		begin
+			puts 'inside RHO.serve...'
+			res = init_response
+			get_app(req['application']).send :serve, req, res
+			return send_response_hash(res)
+		rescue Exception => e
+			return send_error(e.message,500,true)
+		end	
+    end
+	
     def init_response(status=200,message="OK",body="")
       res = Hash.new
       res['status'] = status
@@ -97,8 +108,19 @@ module Rho
       data << res['request-body']
       data
     end
+
+    def send_response_hash(res)
+		resp = Hash.new
+		res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
+		res['headers'].each{|key, value|
+			tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
+			resp[tmp] = value
+		}
+        resp['request-body'] = res['request-body']        
+		resp
+    end
 	
-    def send_error(msg="",status=500)
+    def send_error(msg="",status=500,hash=false)
       body=''
       body << <<-_HTML_STRING_
 		<html>
@@ -116,7 +138,11 @@ module Rho
 		</html>
 		
       _HTML_STRING_
-      send_response(init_response(status,"Server error",body))
+      if ( hash )
+        send_response_hash(init_response(status,"Server error",body))
+      else
+        send_response(init_response(status,"Server error",body))
+      end
     end
   end # RHO
   

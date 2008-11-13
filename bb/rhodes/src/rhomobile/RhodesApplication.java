@@ -29,9 +29,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      **************************************************************************/
     public static void main(String[] args) {
     	NetworkAccess.autoConfigure();
+
+        RhoRuby.RhoRubyStart("");
     	
         RhodesApplication app = new RhodesApplication();
         app.enterEventDispatcher();
+        
+        RhoRuby.RhoRubyStop();
     }
     
     private RhodesApplication() {               
@@ -44,7 +48,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread("http://localhost:8080", null, null, null, this);
         thread.start();                       
-             
     }
           
     public void processConnection(HttpConnection connection, Event e) {

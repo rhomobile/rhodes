@@ -13,9 +13,6 @@ AutoRestart=0
 ]
 [DefFiles
 ]
-[DependsOn
-RubyVM
-]
 ExcludeFromBuildAll=0
 [Files
 RhoBundle.jar
