@@ -45,26 +45,37 @@ public class SyncManager {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
 		HttpConnection connection = null;
+		int code = 0;
 		try {
 			long len = 0;
 			int ch = 0;
 			connection = (HttpConnection) Connector.open(url);
 			is = connection.openInputStream();
 			len = connection.getLength();
-			if (len != -1) {
-				for (int i = 0; i < len; i++) {
-					if ((ch = is.read()) != -1) {
+			code = connection.getResponseCode();
+			if (code == HttpConnection.HTTP_OK) {
+				if (len != -1) {
+					for (int i = 0; i < len; i++) {
+						if ((ch = is.read()) != -1) {
+							buffer.append((char) ch);
+						}
+					}
+				} else {
+					while ((ch = is.read()) != -1) {
 						buffer.append((char) ch);
 					}
 				}
 			} else {
-				while ((ch = is.read()) != -1) {
-					buffer.append((char) ch);
-				}
+				System.out.println("Error retrieving data: " + code);
+				return null;
 			}
 		} finally {
-			is.close();
-			connection.close();
+			if (is != null) {
+				is.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
 		}
 		return buffer.toString();
 	}
@@ -102,8 +113,12 @@ public class SyncManager {
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}
 		} finally {
-			os.close();
-			connection.close();
+			if (os != null) {
+				os.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
 		}
 
 		return success;
