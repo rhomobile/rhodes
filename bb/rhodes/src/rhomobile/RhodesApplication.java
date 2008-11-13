@@ -42,7 +42,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         // enable javascript
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);                        
         
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread("http://www.google.com", null, null, null, this);
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread("http://localhost:8080", null, null, null, this);
         thread.start();                       
              
     }

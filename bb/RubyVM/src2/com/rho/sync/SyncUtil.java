@@ -104,6 +104,7 @@ public class SyncUtil {
 			if (count > 0) {
 				SyncObject.deleteFromDatabaseBySource(source.get_sourceId());
 				for (int i = 0; i < count; i++) {
+					// Perform the insert on each record
 					int success = ((SyncObject) list.get(i)).dehydrate();
 					if (success != SyncConstants.SYNC_OBJECT_SUCCESS) {
 						System.out
