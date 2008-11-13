@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="src1"/>
+	<classpathentry kind="src" path="J2MELib"/>
 	<classpathentry kind="src" path="src2"/>
-	<classpathentry exported="true" kind="src" path="/.BB.jdw"/>
+	<classpathentry exported="true" kind="src" path="/.bb.jdw"/>
 	<classpathentry kind="src" path=".tmp"/>
 	<classpathentry exported="true" kind="src" path="/PerstLite"/>
 	<classpathentry kind="output" path="bin"/>

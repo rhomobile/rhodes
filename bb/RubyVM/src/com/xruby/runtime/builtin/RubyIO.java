@@ -289,7 +289,7 @@ public class RubyIO extends RubyBasic {
 		}
 		return str;
 	}
-    
+
     static RubyValue loadFromResources(String fileName){
     	InputStream stream = fileName.getClass().getResourceAsStream("/"+fileName);
     	if ( stream == null )

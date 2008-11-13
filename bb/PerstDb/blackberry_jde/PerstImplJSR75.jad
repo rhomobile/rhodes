@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 RIM-COD-Module-Name: PerstImplJSR75
 RIM-COD-Module-Dependencies: net_rim_cldc,PerstLite
 MIDlet-Jar-Size: 4024
-RIM-COD-Creation-Time: 1225907854
+RIM-COD-Creation-Time: 1226586600
 MIDlet-Jar-URL: PerstImplJSR75.jar
 RIM-COD-URL: PerstImplJSR75.cod
 RIM-Library-Flags: 2
-RIM-COD-SHA1: 52 0d 19 28 c0 2d 9e 94 e6 a3 ab 1a ac 86 0b e7 c3 c3 4d b7
+RIM-COD-SHA1: d9 a2 db ea b5 f4 a6 5b d7 cb 92 bb 7b 9b 4f 88 3e 00 37 7f
 RIM-COD-Size: 2396
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-Version: 0.0
