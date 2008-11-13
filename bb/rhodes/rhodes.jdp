@@ -19,10 +19,14 @@ ExcludeFromBuildAll=0
 [Files
 resources\icon.png
 src\rhomobile\NetworkAccess.java
+src\rhomobile\RhoConnection.java
 src\rhomobile\RhodesApplication.java
 src\rhomobile\RhodesApplication.java
 src\rhomobile\SecondaryResourceFetchThread.java
+src\rhomobile\URI.java
 src\rhomobile\Utilities.java
+src\rhomobile\Properties.java
+src\rhomobile\DateParser.java
 ]
 HaveAlxImports=0
 HaveDefs=0
