@@ -28,9 +28,6 @@ module Rhom
         unless @@database or dbfile.nil?
 			db = DbAdapter.new(dbfile)
 			@@database = db
-			
-			puts @@database
-			puts db
         end
 		
       end
