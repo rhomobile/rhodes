@@ -1,4 +1,6 @@
 .DS_Store
+shared/framework/coverage
+shared/framework/pkg
 iphone/build/*
 iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
