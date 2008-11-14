@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'spec/spec_helper'
+require File.dirname(__FILE__) + "/spec_helper"
 require 'rho/rho'
 
 describe "RhomObjectFactory" do
@@ -27,18 +27,16 @@ describe "RhomObjectFactory" do
   before(:all) do
     FileUtils.mkdir_p('build')
     FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
-    Rho::RhoConfig.new do |config|
-      config.add_source("Account", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>1})
-      config.add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
-      config.add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
-    end
+    Rho::RhoConfig::add_source("Account", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>1})
+    Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
+    Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
     @rho = Rho::RHO.new
+    @rhom = Rhom::RhomObjectFactory.new
   end
   
   before(:each) do
     FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
-    @rhom = Rhom::Rhom.new
   end
   
   after(:each) do 
