@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="src" path="/.BB.jdw"/>
-	<classpathentry kind="src" path=".tmp"/>
-	<classpathentry kind="lib" path="D:/Projects/BB/PerstDb/perst-jsr75.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
