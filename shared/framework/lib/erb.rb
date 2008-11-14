@@ -236,7 +236,7 @@
 # Rails, the web application framework, uses ERB to create views.
 #
 class ERB
-  Revision = '$Date:: 2008-06-27 12:48:24 +0400#$' 	#'
+  Revision = '$Date:: 2008-06-27 17:48:24 +0900#$' 	#'
 
   # Returns revision information for the erb.rb module.
   def self.version
@@ -404,7 +404,7 @@ class ERB
     Scanner.regist_scanner(SimpleScanner, nil, false)
 
     begin
-      # require 'strscan'
+      require 'strscan'
       class SimpleScanner2 < Scanner # :nodoc:
         def scan
           stag_reg = /(.*?)(<%%|<%=|<%#|<%|\n|\z)/

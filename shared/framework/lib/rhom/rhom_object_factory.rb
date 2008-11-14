@@ -35,7 +35,7 @@ module Rhom
   	  # merge source attributes into config hash
   	  # TODO: This shouldn't reference 'source[1]' directly
   	  Rho::RhoConfig::sources.each do |source|
-  	    src_attribs = Rhom::RhomDbAdapter::select_from_table(Rhom::TABLE_NAME,
+  	    src_attribs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
   	                                                         'attrib',
   	                                                         {"source_id"=>source[1]['source_id'].to_s},
   	                                                         {"distinct"=>true})
@@ -50,8 +50,8 @@ module Rhom
         unless Object::const_defined?(classname.intern)
           Object::const_set(classname.intern, 
             Class::new do
-              include Rhom::RhomObject
-              extend Rhom::RhomObject
+              include ::Rhom::RhomObject
+              extend ::Rhom::RhomObject
           
               def initialize(obj=nil)
                 if obj
@@ -79,13 +79,13 @@ module Rhom
                 def find(*args)
                   list = []
                   if args.first == :all
-                    result = Rhom::RhomDbAdapter::select_from_table(Rhom::TABLE_NAME,
+                    result = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
                                                               '*',
                                                               {"source_id"=>get_source_id,"update_type"=>'query'},
                                                               {"order by"=>'object'})
                   else
                     obj = strip_braces(args.first.to_s)
-                    result = Rhom::RhomDbAdapter::select_from_table(Rhom::TABLE_NAME,
+                    result = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
                                                               '*',
                                                               {"object"=>obj})
                   end
@@ -154,10 +154,10 @@ module Rhom
                 obj = self.inst_strip_braces(self.object)
                 if obj
                   # first delete the record from viewable list
-                  result = Rhom::RhomDbAdapter::delete_from_table(Rhom::TABLE_NAME,
+                  result = ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
                                                             {"object"=>obj})
                   # now add delete operation
-                  result = Rhom::RhomDbAdapter::insert_into_table(Rhom::TABLE_NAME,
+                  result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                             {"source_id"=>self.get_inst_source_id,
                                                              "object"=>obj,
                                                              "update_type"=>'delete'})
@@ -176,7 +176,7 @@ module Rhom
                   val = self.inst_strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
                   unless self.method_name_reserved?(method) or val.nil?
-                    result = Rhom::RhomDbAdapter::insert_into_table(Rhom::TABLE_NAME,
+                    result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                               {"source_id"=>self.get_inst_source_id,
                                                                "object"=>obj,
                                                                "attrib"=>method,
@@ -186,7 +186,7 @@ module Rhom
                 end
                 # Create a temporary query record to display in the list
                 Rho::RhoConfig::sources[self.class.name.to_s]['attribs'].each do |attrib|
-                  result = Rhom::RhomDbAdapter::insert_into_table(Rhom::TABLE_NAME,
+                  result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                             {"source_id"=>self.get_inst_source_id,
                                                              "object"=>obj,
                                                              "attrib"=>attrib['attrib'],
@@ -211,11 +211,11 @@ module Rhom
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
                       # update viewable list
-                      result = Rhom::RhomDbAdapter::update_into_table(Rhom::TABLE_NAME,
+                      result = ::Rhom::RhomDbAdapter::update_into_table(::Rhom::TABLE_NAME,
                                                                 {"value"=>new_val},
                                                                 {"object"=>obj, "attrib"=>method})
                       # update sync list
-                      result = Rhom::RhomDbAdapter::insert_into_table(Rhom::TABLE_NAME,
+                      result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
                                                                  "attrib"=>method,

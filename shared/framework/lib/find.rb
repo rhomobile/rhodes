@@ -33,7 +33,9 @@ module Find
   # See the +Find+ module documentation for an example.
   #
   def find(*paths) # :yield: path
-    paths.collect!{|d| d.dup}
+    block_given? or return enum_for(__method__, *paths)
+
+    paths.collect!{|d| raise Errno::ENOENT unless File.exist?(d); d.dup}
     while file = paths.shift
       catch(:prune) do
 	yield file.dup.taint
@@ -57,7 +59,7 @@ module Find
 	      d.close
 	    end
 	  end
-        rescue Errno::ENOENT, Errno::EACCES
+       rescue Errno::ENOENT, Errno::EACCES
 	end
       end
     end
