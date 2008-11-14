@@ -26,10 +26,20 @@ public class RhoRuby {
 		return p.getClass().getResourceAsStream("/apps"+path);		
 	}
 	
-	public static InputStream processRequest(Properties reqHeaders, Properties resHeaders )throws IOException{
+	public static InputStream processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
 		RubyHash rh = ObjectFactory.createHash();
-		for( int i = 0; i < reqHeaders.size(); i++ )
-			addStrToHash(rh, reqHeaders.getKeyAt(i), reqHeaders.getValueAt(i) );
+		for( int i = 0; i < reqHash.size(); i++ ){
+			if ( reqHash.getValueAt(i) != null)
+				addStrToHash(rh, reqHash.getKeyAt(i), reqHash.getValueAt(i) );
+		}
+
+		RubyHash headers = ObjectFactory.createHash();
+		for( int i = 0; i < reqHeaders.size(); i++ ){
+			if ( reqHeaders.getValueAt(i) != null)
+				addStrToHash(headers, reqHeaders.getKeyAt(i), reqHeaders.getValueAt(i) );
+		}
+		
+		addHashToHash( rh, "headers", headers );
 		
 		RubyValue res = callFramework(rh);
 		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){
