@@ -334,7 +334,20 @@ public class RhoConnection implements HttpConnection {
 	}
 	
 	static String getContentType( String path ){
-		//TODO: support more types
+		int nPoint = path.lastIndexOf('.');
+		String strExt = "html";
+		if ( nPoint > 0 )
+			strExt = path.substring(nPoint+1);
+		
+		if ( strExt.equals("png") )
+			return "image/png";
+		else if ( strExt.equals("js") )
+			return "application/javascript";
+		else if ( strExt.equals("css") )
+			return "text/css";
+		else if ( strExt.equals("gif") )
+			return "image/gif";
+		
 		return "text/html";
 	}
 	
@@ -357,24 +370,32 @@ public class RhoConnection implements HttpConnection {
 					if ( model.length() == 0 ){
 						redirectTo(application+"/index.html");
 					}else{
+						Properties reqHash = new Properties();
+						
 						String actionid = up.next();
 						String actionnext = up.next();
 						if ( actionid.length() > 0 ){
 							if ( actionid.length() > 2 && 
 								 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
-								reqHeaders.setProperty( "id", actionid);
-								reqHeaders.setProperty( "action", actionnext);
+								reqHash.setProperty( "id", actionid);
+								reqHash.setProperty( "action", actionnext);
 							}else{
-								reqHeaders.setProperty( "id", actionnext);
-								reqHeaders.setProperty( "action", actionid);
+								reqHash.setProperty( "id", actionnext);
+								reqHash.setProperty( "action", actionid);
 							}
 						}
-							
-						reqHeaders.setProperty( "application",application);
-						reqHeaders.setProperty( "model", model);
-						reqHeaders.setProperty("request-method", this.method);
+						reqHash.setProperty( "application",application);
+						reqHash.setProperty( "model", model);
+
+						reqHash.setProperty("request-method", this.method);
+						reqHash.setProperty("request-uri", uri.toString());
+						reqHash.setProperty("request-query", uri.getQueryString());
 						
-						responseData = RhoRuby.processRequest( reqHeaders, resHeaders);
+						if ( postData != null && postData.size() > 0 ){
+							reqHash.setProperty("request-body", postData.toString());
+						}
+						
+						responseData = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
 						if ( responseData != null )
 							contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("content-length"));
 					}					
