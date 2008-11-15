@@ -11,7 +11,7 @@ Spec::Rake::SpecTask.new(:default) do |t|
   t.rcov_opts = ['--include', 
 		 '"lib/rhom/*,lib/rho/*"',
 		 '--exclude', 
-		 '"spec/*,lib/date*,lib/rational*,lib/time*,lib/pairparser.rb,/Library/Ruby/Gems/*,/usr/lib/ruby"',
+		 '"spec/*,lib/date*,lib/rational*,lib/time*,lib/pairparser.rb,/Library/Ruby/Gems/*,/var/lib/gems/*,/usr/lib/ruby"',
 		 '--text-report',
 		 '--html']	
 end
