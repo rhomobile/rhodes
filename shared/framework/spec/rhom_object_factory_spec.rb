@@ -148,10 +148,7 @@ describe "RhomObjectFactory" do
   end
   
   it "should initialize RHO without app base dir" do
-    begin
-      Rho::RHO.new
-    rescue Errno::ENOENT
-      puts "ENOENT is ok because default base app dir doesn't work for tests!"
-    end
+    lambda { Rho::RHO.new }.should raise_error(Errno::ENOENT)
+    puts "ENOENT is ok because default base app dir doesn't work for tests!"
   end
 end
