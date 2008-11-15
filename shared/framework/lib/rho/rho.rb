@@ -7,10 +7,14 @@ module Rho
   class RHO
     APPLICATIONS = {}
 	
-    def initialize
+    def initialize(app_base_path=nil)
       puts "Calling RHO.initialize"
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
-      process_model_dirs
+      if app_base_path
+        process_model_dirs(app_base_path)
+      else
+        process_model_dirs(RhoApplication::get_base_app_path)
+      end
       init_sources
     end
     
@@ -20,8 +24,9 @@ module Rho
     end
     
     # Return the directories where we need to load configuration files
-    def process_model_dirs
-      Rho::RhoFSConnector::enum_files(RhoApplication::get_base_app_path,'config.rb') do |path|
+    def process_model_dirs(app_base_path=nil)
+      Rho::RhoFSConnector::enum_files(app_base_path,'config.rb') do |path|
+        puts "inside loop: #{path}"
         require path
       end
     end

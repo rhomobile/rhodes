@@ -31,7 +31,7 @@ describe "RhomObjectFactory" do
     Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
     Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-    @rho = Rho::RHO.new
+    @rho = Rho::RHO.new(File.dirname(__FILE__) + "/../../../apps/")
     @rhom = Rhom::RhomObjectFactory.new
   end
   
