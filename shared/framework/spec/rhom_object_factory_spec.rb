@@ -146,4 +146,12 @@ describe "RhomObjectFactory" do
     "Mobio US".should == @new_acct.name
     "Electronics".should == @new_acct.industry
   end
+  
+  it "should initialize RHO without app base dir" do
+    begin
+      Rho::RHO.new
+    rescue Errno::ENOENT
+      puts "ENOENT is ok because default base app dir doesn't work for tests!"
+    end
+  end
 end

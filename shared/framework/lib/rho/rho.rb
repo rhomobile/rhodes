@@ -26,7 +26,6 @@ module Rho
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_base_path=nil)
       Rho::RhoFSConnector::enum_files(app_base_path,'config.rb') do |path|
-        puts "inside loop: #{path}"
         require path
       end
     end
