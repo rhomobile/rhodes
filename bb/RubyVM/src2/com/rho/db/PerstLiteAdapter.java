@@ -443,7 +443,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		
 		RubyValue orderBy = null;
 		boolean distinct = false;
-		if ( params != null ){
+		if ( params != null && params != RubyConstant.QNIL ){
 			orderBy = ((RubyHash)params).get(ObjectFactory.createString("order by"));
 			if ( orderBy == RubyConstant.QNIL )
 				orderBy = null;

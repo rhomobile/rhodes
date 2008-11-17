@@ -135,6 +135,7 @@ klass.defineMethod( "collect!", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).collect_danger(block);}
 });
+klass.aliasMethod("map!","collect!");
 klass.defineMethod( "push", new RubyVarArgMethod(){ 
 	public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyArray)receiver).multiPush(args);}

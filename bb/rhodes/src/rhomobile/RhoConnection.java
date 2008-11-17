@@ -10,6 +10,11 @@ import java.io.OutputStream;
 
 import javax.microedition.io.HttpConnection;
 
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyValue;
+
 public class RhoConnection implements HttpConnection {
 	/** Request URI **/
 	URI uri;
@@ -360,8 +365,8 @@ public class RhoConnection implements HttpConnection {
 			}else{
 				responseData = RhoRuby.loadFile(uri.getPath());
 				if (responseData!= null){
-					resHeaders.addProperty("content-type", getContentType(uri.getPath()) );
-					resHeaders.addProperty("content-length", Integer.toString( responseData.available() ) );
+					resHeaders.addProperty("Content-Type", getContentType(uri.getPath()) );
+					resHeaders.addProperty("Content-Length", Integer.toString( responseData.available() ) );
 				}else{
 					UrlParser up = new UrlParser(uri.getPath());  
 					String application = up.next();
@@ -392,17 +397,47 @@ public class RhoConnection implements HttpConnection {
 						reqHash.setProperty("request-query", uri.getQueryString());
 						
 						if ( postData != null && postData.size() > 0 ){
+							log(postData.toString());
 							reqHash.setProperty("request-body", postData.toString());
 						}
 						
-						responseData = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
-						if ( responseData != null )
-							contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("content-length"));
+						RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
+						processResponse(res);
 					}					
 				}
 			}
 			
 			requestProcessed = true;
+		}
+	}
+
+	private void processResponse(RubyValue res){
+		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){
+			RubyHash resHash = (RubyHash)res;
+			RubyValue resBody = null;
+			
+			RubyArray arKeys = resHash.keys();
+			RubyArray arValues = resHash.values();
+			for( int i = 0; i < arKeys.size(); i++ ){
+				String strKey = arKeys.get(i).toString();
+				if ( strKey.equals("request-body") )
+					resBody = arValues.get(i);
+				else if (strKey.equals("status"))
+					responseCode = arValues.get(i).toInt();
+				else if (strKey.equals("message"))
+					responseMsg = arValues.get(i).toString();
+				else	
+					resHeaders.addProperty( strKey, arValues.get(i).toString() );
+					
+			}
+			if ( resBody != null && resBody != RubyConstant.QNIL ){
+				String strBody = resBody.toRubyString().toString();
+				log(strBody);
+				
+				responseData = new ByteArrayInputStream(strBody.getBytes()); 
+				if ( responseData != null )
+					contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
+			}
 		}
 	}
 	

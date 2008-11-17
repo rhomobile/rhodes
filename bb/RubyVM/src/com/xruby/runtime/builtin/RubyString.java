@@ -8,16 +8,16 @@ package com.xruby.runtime.builtin;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Formatter;
+//import java.util.Formatter;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 //import java.util.StringUtil;
 import j2me.lang.*;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyAllocMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyAllocMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 //@RubyLevelClass(name="String")
 public class RubyString extends RubyBasic {
@@ -336,6 +336,24 @@ public class RubyString extends RubyBasic {
         }
     }
 
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="eql?")
+    public RubyValue opEql(RubyValue v) {
+        if (this == v) {
+            return RubyConstant.QTRUE;
+        }
+
+        if (v instanceof RubyString) {
+            RubyString str = ((RubyString)v);
+            if ((this.sb_.length() == str.sb_.length() && this.cmp(str) == 0)) {
+                return RubyConstant.QTRUE;
+            } else {
+                return RubyConstant.QFALSE;
+            }
+        }
+
+        return RubyConstant.QFALSE;
+    }
 
     //@RubyLevelMethod(name="strip")
     public RubyString strip() {

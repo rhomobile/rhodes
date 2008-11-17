@@ -143,6 +143,11 @@ klass.defineMethod( "==", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).opEqual(arg);}
 });
+klass.defineMethod( "eql?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).opEql(arg);}
+});
+
 klass.defineMethod( "delete", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).delete(args);}
@@ -234,3 +239,4 @@ klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 		return RubyString.alloc(receiver);	}} );
 }}
+
