@@ -845,7 +845,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
 
     //@RubyLevelMethod(name="compact")
     public RubyValue compact() {
-        return copy().compact_danger();
+    	//RHO_COMMENT
+        //return copy().compact_danger();
+    	RubyArray arRes = copy();
+    	arRes.compact_danger();//If No nil inside it return NIL
+    	return arRes;
     }
 
     //@RubyLevelMethod(name="compact!")

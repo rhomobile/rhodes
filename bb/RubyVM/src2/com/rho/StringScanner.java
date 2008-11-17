@@ -8,7 +8,7 @@ import com.xruby.runtime.builtin.*;
 //@RubyLevelClass(name="StringScanner")
 public class StringScanner extends RubyBasic {
 
-	String str;
+	RubyString str;
 	PatternMatcherInput input;
 	PatternMatcher matcher;
 	MatchResult result;
@@ -21,13 +21,13 @@ public class StringScanner extends RubyBasic {
 
     //@RubyAllocMethod
     public static StringScanner alloc(RubyValue receiver) {
-        return new StringScanner(RubyRuntime.StringScannerClass);
+        return new StringScanner((RubyClass)receiver);//RubyRuntime.StringScannerClass);
     }
 	
     //@RubyLevelMethod(name="initialize")
     public StringScanner initialize(RubyValue v) {
-    	str = v.toString();
-    	input = new PatternMatcherInput(str);
+    	str = v.toRubyString();
+    	input = new PatternMatcherInput(str.toString());
     	matcher = new Perl5Matcher();
    	
         return this;
@@ -49,6 +49,23 @@ public class StringScanner extends RubyBasic {
         return scan(regex, true, true, true);
     }
 
+  //@RubyLevelMethod(name = "check")
+    public RubyValue check(RubyValue regex) {
+        return scan(regex, false, true, true);
+    }
+    
+    //@RubyLevelMethod(name = "string")
+    public RubyString string() {
+        return str;
+    }
+
+    //@RubyLevelMethod(name = "string=")
+    public RubyValue set_string(RubyValue str) {
+    	initialize(str);
+        clearMatched();
+        return str;
+    }
+    
     //@RubyLevelMethod(name="[]")
     public RubyValue getResult(RubyValue arg) {
     	int nIndex = arg.toInt();
@@ -73,12 +90,17 @@ public class StringScanner extends RubyBasic {
         clearMatched();
         
         RubyRegexp re = ((RubyRegexp)regex);
-        if ( !matcher.contains(input, re.getPattern() ) )
+        boolean bRes = false;
+        if ( succptr )
+        	bRes = matcher.contains(input, re.getPattern() );
+        else
+        	bRes = matcher.matches(input, re.getPattern() );
+        
+        if ( !bRes )
         	return RubyConstant.QNIL;
         
         result = matcher.getMatch();
         setMatched();
-        
         return  getstr ? getResult(ObjectFactory.createInteger(0)) : RubyConstant.QTRUE;
     }
     
@@ -110,6 +132,18 @@ public class StringScanner extends RubyBasic {
 		klass.defineMethod( "[]", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((StringScanner)receiver).getResult(arg);}
+		});
+		klass.defineMethod( "string", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((StringScanner)receiver).string();}
+		});
+		klass.defineMethod( "string=", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).set_string(arg);}
+		});
+		klass.defineMethod( "check", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).check(arg);}
 		});
 		
 	}

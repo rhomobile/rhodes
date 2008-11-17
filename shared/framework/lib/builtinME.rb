@@ -91,6 +91,14 @@ module Enumerable
         end
     end
 	
+    def collect
+        arr = []
+        each{|obj| arr << yield(obj)}
+        return arr
+    end   
+    
+    alias map :collect
+    
 end
 
 class Array
@@ -106,7 +114,9 @@ class Array
         result += self[length - 1].to_s if length != 0
         result
     end
-	
+
+    alias map! collect!
+  
 end
 
 class Time

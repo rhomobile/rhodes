@@ -116,7 +116,10 @@ module Rho
 			tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
 			resp[tmp] = value
 		}
-        resp['request-body'] = res['request-body']        
+        resp['request-body'] = res['request-body']
+        resp['status'] = res['status']        
+        resp['message'] = res['message']
+        
 		resp
     end
 	

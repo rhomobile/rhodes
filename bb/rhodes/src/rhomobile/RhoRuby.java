@@ -6,27 +6,40 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import com.rho.sync.SyncEngine; 
 
 public class RhoRuby {
 
 	public static final RubyID serveID = RubyID.intern("serve_hash");
+	static RubyValue receiver;
+	static xruby.ServeME.main mainObj;
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
 		
-		com.xruby.runtime.lang.RubyRuntime.init(args);		
+		com.xruby.runtime.lang.RubyRuntime.init(args);
+
+		mainObj = new xruby.ServeME.main();
+		receiver = mainObj.invoke();
+		
+		SyncEngine.start(null);
 	}
 	
 	public static void RhoRubyStop(){
+		
+		SyncEngine.stop(null);
+		
+		receiver = null;
+		mainObj = null;
+		
 		com.xruby.runtime.lang.RubyRuntime.fini();	
 	}
 	
 	static public InputStream loadFile(String path){
-		xruby.ServeME.main p = new xruby.ServeME.main();
-		return p.getClass().getResourceAsStream("/apps"+path);		
+		return mainObj.getClass().getResourceAsStream("/apps"+path);		
 	}
 	
-	public static InputStream processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
+	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
 		RubyHash rh = ObjectFactory.createHash();
 		for( int i = 0; i < reqHash.size(); i++ ){
 			if ( reqHash.getValueAt(i) != null)
@@ -35,38 +48,23 @@ public class RhoRuby {
 
 		RubyHash headers = ObjectFactory.createHash();
 		for( int i = 0; i < reqHeaders.size(); i++ ){
-			if ( reqHeaders.getValueAt(i) != null)
-				addStrToHash(headers, reqHeaders.getKeyAt(i), reqHeaders.getValueAt(i) );
+			if ( reqHeaders.getValueAt(i) != null){
+				String strKey = reqHeaders.getKeyAt(i);
+				if ( strKey.equalsIgnoreCase("content-type"))
+					strKey = "Content-Type";
+				else if ( strKey.equalsIgnoreCase("content-length"))
+					strKey = "Content-Length";
+				
+				addStrToHash(headers, strKey, reqHeaders.getValueAt(i) );
+			}
 		}
 		
 		addHashToHash( rh, "headers", headers );
 		
-		RubyValue res = callFramework(rh);
-		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){
-			RubyHash resHash = (RubyHash)res;
-			RubyValue resBody = null;
-			
-			RubyArray arKeys = resHash.keys();
-			RubyArray arValues = resHash.values();
-			for( int i = 0; i < arKeys.size(); i++ ){
-				String strKey = arKeys.get(i).toString();
-				if ( !strKey.equals("request-body") )
-					resHeaders.addProperty( strKey, arValues.get(i).toString() );
-				else
-					resBody = arValues.get(i);
-			}
-			if ( resBody != null && resBody != RubyConstant.QNIL )
-				return new ByteArrayInputStream(resBody.toRubyString().toString().getBytes());
-			
-			return null;
-		}
-		
-		return null;
+		return callFramework(rh);
 	}
 	
 	static RubyValue callFramework(RubyValue hashReq) {
-		xruby.ServeME.main p = new xruby.ServeME.main();
-		RubyValue receiver = p.invoke();
 		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, hashReq, null, serveID);
 		
 		return value;

@@ -147,6 +147,9 @@ package rhomobile;
       fgLookupTable['('] |= MARK_CHARACTERS;
       fgLookupTable[')'] |= MARK_CHARACTERS;
 
+      fgLookupTable['{'] |= MARK_CHARACTERS;
+      fgLookupTable['}'] |= MARK_CHARACTERS;
+      
       // Add Scheme Characters
 //      fgLookupTable['+'] |= SCHEME_CHARACTERS;
 //      fgLookupTable['-'] |= SCHEME_CHARACTERS;
