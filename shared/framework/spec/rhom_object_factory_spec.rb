@@ -31,7 +31,7 @@ describe "RhomObjectFactory" do
     Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
     Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-    @rho = Rho::RHO.new
+    @rho = Rho::RHO.new(File.dirname(__FILE__) + "/../../../apps/")
     @rhom = Rhom::RhomObjectFactory.new
   end
   
@@ -145,5 +145,10 @@ describe "RhomObjectFactory" do
     
     "Mobio US".should == @new_acct.name
     "Electronics".should == @new_acct.industry
+  end
+  
+  it "should initialize RHO without app base dir" do
+    lambda { Rho::RHO.new }.should raise_error(Errno::ENOENT)
+    puts "ENOENT is ok because default base app dir doesn't work for tests!"
   end
 end
