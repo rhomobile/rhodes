@@ -18,7 +18,6 @@
 #
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.dirname(__FILE__) + "/spec_helper"
-require 'rho/rho'
 
 describe "RhomObjectFactory" do
   
