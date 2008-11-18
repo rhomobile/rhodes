@@ -1,6 +1,8 @@
+require File.dirname(__FILE__) + '/rho'
+
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
-  s.version = "0.1.0"
+  s.version = Rho::VERSION
  
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile dev"]
@@ -10,9 +12,9 @@ Gem::Specification.new do |s|
   s.executables = []
   s.files = FileList['lib/**/*.rb', '[A-Z]*', 'spec/**/*'].to_a
   s.has_rdoc = true
-  s.homepage = %q{http://rhomobile.com/}
-  s.rdoc_options = ["--main", "README.rdoc", "--line-numbers"]
+  s.homepage = %q{http://www.rhomobile.com/}
+  s.rdoc_options = ["--main", "../../README.rdoc", "--line-numbers"]
   s.rubyforge_project = %q{rhodes}
-  s.rubygems_version = %q{0.1.0}
-  s.summary = %q{rhodes 0.1.0}
+  s.rubygems_version = "#{Rho::VERSION}"
+  s.summary = "rhodes #{Rho::VERSION}"
 end
