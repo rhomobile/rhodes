@@ -410,7 +410,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="insertIntoTable")
-	public RubyValue insertIntoTable(RubyValue tableName, RubyValue mapValues) {
+	public synchronized RubyValue insertIntoTable(RubyValue tableName, RubyValue mapValues) {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			String strName = tableName.toStr();
@@ -464,7 +464,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 
 	//@RubyLevelMethod(name="updateIntoTable")
-	public RubyValue updateIntoTable(RubyArray args ){
+	public synchronized RubyValue updateIntoTable(RubyArray args ){
 		if ( args.size() != 3 ){
 			new RubyException("updateIntoTable has 3 paramaters: tableName, mapValues, where");
 			return RubyConstant.QNIL;
@@ -472,7 +472,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		return 	updateIntoTable(args.get(0), args.get(1), args.get(2));
 	}
 	
-	public RubyValue updateIntoTable(RubyValue tableName, RubyValue mapValues, RubyValue where ) {
+	public synchronized RubyValue updateIntoTable(RubyValue tableName, RubyValue mapValues, RubyValue where ) {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			Iterator iter = tblRoot.iterator((RubyHash)where);
@@ -490,7 +490,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="deleteAllFromTable")
-	public RubyValue deleteAllFromTable(RubyValue tableName) {
+	public synchronized RubyValue deleteAllFromTable(RubyValue tableName) {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);
@@ -503,7 +503,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="deleteFromTable")
-	public RubyValue deleteFromTable(RubyValue tableName, RubyValue where){
+	public synchronized RubyValue deleteFromTable(RubyValue tableName, RubyValue where){
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);
