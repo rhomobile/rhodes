@@ -73,6 +73,10 @@ klass.defineMethod( "<=>", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyTime)receiver).cmp(arg);}
 });
+klass.defineMethod( "eql?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyTime)receiver).eql(arg);}
+});
 klass.defineMethod( "to_s", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).to_s();}

@@ -1,5 +1,5 @@
 <loader version="1.0">
-	<application id="PerstImplJSR75">
+	<application id="RubyVM">
 		<name >
 			
 		</name>
@@ -20,7 +20,7 @@
 				
 			</directory>
 			<files >
-				PerstImplJSR75.cod
+				RubyVM.cod
 
 			</files>
 

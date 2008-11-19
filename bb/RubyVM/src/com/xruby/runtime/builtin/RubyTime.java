@@ -172,6 +172,17 @@ public class RubyTime extends RubyBasic {
         return ObjectFactory.FIXNUM0;
     }
 
+    //@RubyLevelMethod(name="eql?")
+    public RubyValue eql(RubyValue v) {
+    	if ( this == v )
+    		return RubyConstant.QTRUE;
+    	
+    	if ( !(v instanceof RubyTime))
+    		return RubyConstant.QFALSE;
+    	
+    	return cmp(v) == ObjectFactory.FIXNUM0 ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+    }
+    
     //@RubyLevelMethod(name="zone")
     public RubyString zone() {
         //String name = date_.getTimeZone().getDisplayName(false, TimeZone.SHORT, Locale.US);

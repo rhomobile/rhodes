@@ -40,7 +40,7 @@ public class RubyProc extends RubyBinding {
         return ObjectFactory.createFixnum(value_.arity());
     }
 
-    //@RubyLevelMethod(name="==")
+    //@RubyLevelMethod(name="==", alias="eql?")
     public RubyValue equal(RubyValue v) {
         return ObjectFactory.createBoolean(equals(v));
     }
@@ -104,7 +104,7 @@ public class RubyProc extends RubyBinding {
         return value_.invoke(value_.getSelf(), arg);
     }
     
-    //@RubyLevelMethod(name="call", alias="[]")
+    //@RubyLevelMethod(name="call", alias="[]", alias="===", alias="yield")
     public static class Invoke extends RubyVarArgMethod {
         protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
             throw new Error("we overided invoke, so this method should never be called");

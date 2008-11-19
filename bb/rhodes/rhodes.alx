@@ -1,0 +1,255 @@
+<loader version="1.0">
+	<application id="rhodes">
+		<name >
+			
+		</name>
+		<description >
+			
+		</description>
+		<version >
+			1.07
+		</version>
+		<vendor >
+			MyCompany
+		</vendor>
+		<copyright >
+			Copyright (c) 2008 MyCompany
+		</copyright>
+		<fileset Java="1.35">
+			<directory >
+				
+			</directory>
+			<files >
+				rhodes.cod
+
+			</files>
+
+		</fileset>
+		<application id="PerstLite">
+			<name >
+				
+			</name>
+			<description >
+				
+			</description>
+			<version >
+				1.07
+			</version>
+			<vendor >
+				MyCompany
+			</vendor>
+			<copyright >
+				Copyright (c) 2008 MyCompany
+			</copyright>
+			<fileset Java="1.35">
+				<directory >
+					
+				</directory>
+				<files >
+					PerstLite.cod
+
+				</files>
+
+			</fileset>
+
+		</application>
+		<application id="PerstImplJSR75">
+			<name >
+				
+			</name>
+			<description >
+				
+			</description>
+			<version >
+				1.07
+			</version>
+			<vendor >
+				MyCompany
+			</vendor>
+			<copyright >
+				Copyright (c) 2008 MyCompany
+			</copyright>
+			<fileset Java="1.35">
+				<directory >
+					
+				</directory>
+				<files >
+					PerstImplJSR75.cod
+
+				</files>
+
+			</fileset>
+			<application id="PerstLite">
+				<name >
+					
+				</name>
+				<description >
+					
+				</description>
+				<version >
+					1.07
+				</version>
+				<vendor >
+					MyCompany
+				</vendor>
+				<copyright >
+					Copyright (c) 2008 MyCompany
+				</copyright>
+				<fileset Java="1.35">
+					<directory >
+						
+					</directory>
+					<files >
+						PerstLite.cod
+
+					</files>
+
+				</fileset>
+
+			</application>
+
+		</application>
+		<application id="RubyVM">
+			<name >
+				
+			</name>
+			<description >
+				
+			</description>
+			<version >
+				1.07
+			</version>
+			<vendor >
+				MyCompany
+			</vendor>
+			<copyright >
+				Copyright (c) 2008 MyCompany
+			</copyright>
+			<fileset Java="1.35">
+				<directory >
+					
+				</directory>
+				<files >
+					RubyVM.cod
+
+				</files>
+
+			</fileset>
+			<application id="PerstLite">
+				<name >
+					
+				</name>
+				<description >
+					
+				</description>
+				<version >
+					1.07
+				</version>
+				<vendor >
+					MyCompany
+				</vendor>
+				<copyright >
+					Copyright (c) 2008 MyCompany
+				</copyright>
+				<fileset Java="1.35">
+					<directory >
+						
+					</directory>
+					<files >
+						PerstLite.cod
+
+					</files>
+
+				</fileset>
+
+			</application>
+
+		</application>
+		<application id="RhoBundle">
+			<name >
+				
+			</name>
+			<description >
+				
+			</description>
+			<version >
+				1.07
+			</version>
+			<vendor >
+				MyCompany
+			</vendor>
+			<copyright >
+				Copyright (c) 2008 MyCompany
+			</copyright>
+			<fileset Java="1.35">
+				<directory >
+					
+				</directory>
+				<files >
+					RhoBundle.cod
+
+				</files>
+
+			</fileset>
+			<application id="RubyVM">
+				<name >
+					
+				</name>
+				<description >
+					
+				</description>
+				<version >
+					1.07
+				</version>
+				<vendor >
+					MyCompany
+				</vendor>
+				<copyright >
+					Copyright (c) 2008 MyCompany
+				</copyright>
+				<fileset Java="1.35">
+					<directory >
+						
+					</directory>
+					<files >
+						RubyVM.cod
+
+					</files>
+
+				</fileset>
+				<application id="PerstLite">
+					<name >
+						
+					</name>
+					<description >
+						
+					</description>
+					<version >
+						1.07
+					</version>
+					<vendor >
+						MyCompany
+					</vendor>
+					<copyright >
+						Copyright (c) 2008 MyCompany
+					</copyright>
+					<fileset Java="1.35">
+						<directory >
+							
+						</directory>
+						<files >
+							PerstLite.cod
+
+						</files>
+
+					</fileset>
+
+				</application>
+
+			</application>
+
+		</application>
+
+	</application>
+
+</loader>

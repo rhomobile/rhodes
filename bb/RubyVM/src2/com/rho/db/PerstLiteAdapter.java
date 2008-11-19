@@ -428,7 +428,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	}
 	
 	//@RubyLevelMethod(name="selectFromTable")
-	public RubyValue selectFromTable(RubyArray args ){
+	public synchronized RubyValue selectFromTable(RubyArray args ){
 		if ( args.size() < 2 ){
 			new RubyException("selectFromTable has 3 paramaters: tableName, attrib, where");
 			return RubyConstant.QNIL;
