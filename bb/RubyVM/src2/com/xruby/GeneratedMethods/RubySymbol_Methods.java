@@ -23,4 +23,10 @@ klass.defineMethod( "to_s", new RubyNoArgMethod(){
 		return ((RubySymbol)receiver).to_s();}
 });
 klass.aliasMethod("id2name","to_s");
+
+klass.defineMethod( "===", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubySymbol)receiver).sym_eqq(arg);}
+});
+
 }}

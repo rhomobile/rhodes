@@ -170,7 +170,10 @@ klass.defineMethod( "==", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyArray)receiver).opEquals(arg);}
 });
-klass.aliasMethod("eql?","==");
+klass.defineMethod( "eql?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyArray)receiver).opEql(arg);}
+});
 klass.defineMethod( "length", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).length();}
