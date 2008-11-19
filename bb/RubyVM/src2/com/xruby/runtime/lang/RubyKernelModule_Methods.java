@@ -50,10 +50,7 @@ klass.defineModuleMethod( "lambda", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.lambda(receiver, block);}
 });
-klass.defineModuleMethod( "lambda", new RubyNoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyBlock block ){
-		return RubyKernelModule.lambda(receiver, block);}
-});
+klass.aliasMethod("proc","lambda");
 klass.defineMethod( "public_methods", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.publicMethods(receiver);}

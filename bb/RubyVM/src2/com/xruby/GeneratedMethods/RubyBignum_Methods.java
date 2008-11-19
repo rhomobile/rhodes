@@ -54,6 +54,14 @@ klass.defineMethod( "<=>", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyBignum)receiver).cmp(arg);}
 });
+klass.defineMethod( "==", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyBignum)receiver).equal(arg);}
+});
+klass.defineMethod( "eql?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyBignum)receiver).eql(arg);}
+});
 klass.defineMethod( "to_s", new RubyNoOrOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyBignum)receiver).to_s();}

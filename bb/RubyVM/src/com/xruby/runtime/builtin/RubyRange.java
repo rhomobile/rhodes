@@ -92,6 +92,21 @@ public class RubyRange extends RubyBasic {
     	return ObjectFactory.createBoolean(this.exclude_end_);
     }
 
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="eql?")
+    public RubyValue eql(RubyValue v) {
+    	if ( !(v instanceof RubyRange))
+    		return RubyConstant.QFALSE;
+    	
+    	RubyRange range = (RubyRange)v;
+    	if ( range.begin_.equals(this.begin_) &&
+    		 range.end_.equals(this.end_) &&
+    		 range.exclude_end_ == this.exclude_end_ )
+    		return RubyConstant.QTRUE;
+    	
+    	return RubyConstant.QFALSE;
+    }
+    
     public boolean isExcludeEnd() {
         return exclude_end_;
     }

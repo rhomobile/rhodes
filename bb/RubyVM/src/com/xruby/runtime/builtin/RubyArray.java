@@ -373,7 +373,8 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         return new RubyArray(array_.subList(begin, begin + length));
     }
 
-    public boolean equals(Object o) {
+    //RHO_COMMENT
+    public boolean equals(Object o, boolean bConvToAry) {
         if (this == o) {
             return true;
         }
@@ -392,7 +393,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
             }
 
             return true;
-        } else if (o instanceof RubyValue) {
+        } else if (o instanceof RubyValue && bConvToAry ) {
             RubyValue v = (RubyValue)o;
             if (!v.respondTo(RubyID.toAryID)) {
                 return false;
@@ -403,7 +404,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
             return false;
         }
     }
-
+    
     private void sort() {
         Collections.sort(array_, new Comparator/*<RubyValue>*/() {
             public int compare(Object/*RubyValue*/ arg0, Object/*RubyValue*/ arg1) {
@@ -708,11 +709,17 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         return this.compare(v.toAry());
     }
 
-    //@RubyLevelMethod(name="==", alias="eql?")
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="==")
     public RubyValue opEquals(RubyValue v) {
-        return ObjectFactory.createBoolean(equals(v));
+        return ObjectFactory.createBoolean(equals(v,true));
     }
 
+    //@RubyLevelMethod(name="eql?")
+    public RubyValue opEql(RubyValue v) {
+        return ObjectFactory.createBoolean(equals(v,false));
+    }
+    
     //@RubyLevelMethod(name="concat")
     public RubyArray concat(RubyValue v) {
         RubyArray ary = v.toAry();

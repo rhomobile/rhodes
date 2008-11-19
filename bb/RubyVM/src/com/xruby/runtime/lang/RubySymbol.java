@@ -71,6 +71,18 @@ public class RubySymbol extends RubySpecialValue {
         return str;
     }
 
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="===")
+    public RubyValue sym_eqq(RubyValue v) {
+    	if ( this == v )
+    		return RubyConstant.QTRUE;
+    	
+    	if ( v.toStr().equals(this.toStr()) )
+    		return RubyConstant.QTRUE;
+    		
+    	return RubyConstant.QFALSE;
+    }
+    
     private boolean isSymname(String name) {
         if (name == null) {
             return false;

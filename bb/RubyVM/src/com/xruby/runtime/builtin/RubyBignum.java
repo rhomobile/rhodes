@@ -395,6 +395,38 @@ public class RubyBignum extends RubyInteger {
     		return ObjectFactory.FIXNUM_NEGATIVE_ONE;
     	}
     }
+
+    //RHO_COMMENT
+    //@RubyLevelMethod(name="==")
+    public RubyValue equal(RubyValue v) {
+    	BigInteger b;
+    	if (v instanceof RubyFixnum) {
+    		b = BigInteger.valueOf(v.toInt());
+    	} else if (v instanceof RubyBignum) {
+    		b = ((RubyBignum)v).value_;
+    	} else if (v instanceof RubyFloat) {
+    		return this.toRubyFloat().cmp(v);
+    	} else {
+    		return coerceCmp(RubyID.unequalID, v);
+    	}
+    	
+    	int result = this.value_.compareTo(b);
+    	if (result == 0)
+    		return RubyConstant.QTRUE;
+		return RubyConstant.QFALSE;
+    }
+
+    //@RubyLevelMethod(name="eql?")
+    public RubyValue eql(RubyValue v) {
+    	if ( !(v instanceof RubyBignum))
+    		return RubyConstant.QFALSE;
+    		
+    	int result = this.value_.compareTo(((RubyBignum)v).value_);
+    	if (result == 0)
+    		return RubyConstant.QTRUE;
+    	
+		return RubyConstant.QFALSE;
+    }
     
     public static RubyValue bignorm(RubyValue v) {
     	if (v instanceof RubyFixnum) {

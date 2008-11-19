@@ -43,6 +43,11 @@ klass.defineMethod( "initialize", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
 });
+klass.defineMethod( "eql?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyRange)receiver).eql(arg);}
+});
+
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 		return RubyRange.alloc(receiver);	}} );
