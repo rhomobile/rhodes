@@ -1,5 +1,3 @@
-require File.dirname(__FILE__) + '/rho'
-
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
   s.version = Rho::VERSION

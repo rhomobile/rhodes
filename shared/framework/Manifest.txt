@@ -10,7 +10,6 @@ lib/date.rb
 lib/date/format.rb
 lib/erb.rb
 lib/find.rb
-lib/framework.rb
 lib/rational.rb
 lib/rho.rb
 lib/rho/render.rb
@@ -21,7 +20,6 @@ lib/rho/rhocontroller.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhofsconnectorME.rb
 lib/rho/rhosupport.rb
-lib/rho/version.rb
 lib/rhofsconnector.rb
 lib/rhom.rb
 lib/rhom/rhom.rb

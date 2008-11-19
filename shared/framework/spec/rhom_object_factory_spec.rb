@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "RhomObjectFactory" do
