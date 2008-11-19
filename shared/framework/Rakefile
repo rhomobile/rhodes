@@ -2,6 +2,8 @@
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'rho'
 
+task :default => [:spec, :features]
+
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('rhodes', Rho::VERSION) do |p|
@@ -22,9 +24,10 @@ $hoe = Hoe.new('rhodes', Rho::VERSION) do |p|
   path = (p.rubyforge_name == p.name) ? p.rubyforge_name : "\#{p.rubyforge_name}/\#{p.name}"
   p.remote_rdoc_dir = File.join(path.gsub(/^#{p.rubyforge_name}\/?/,''), 'rdoc')
   p.rsync_args = '-av --delete --ignore-errors'
+  p.test_globs = ''
 end
 
 require 'newgem/tasks' # load /tasks/*.rake
+# remove test task TODO: why does this run anyway?
+Rake.application.remove_task(:test)
 Dir['tasks/**/*.rake'].each { |t| load t }
-
-task :default => [:spec, :features]

@@ -7,10 +7,8 @@ rescue LoadError
 end
  
 $:.unshift(File.join(File.dirname(__FILE__), '..'))
-require 'spec/stubs'
  
 # Use the rubygem for local testing
-require 'rubygems'
-require 'sqlite3'
+require 'spec/stubs'
 require 'rho/rho'
 require 'rhom/rhom'
