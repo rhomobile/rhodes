@@ -9,12 +9,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import j2me.util.*;
 import j2me.lang.Iterable;
 
 ////@RubyLevelClass(name="Array", modules="Enumerable")

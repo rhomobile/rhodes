@@ -11,7 +11,7 @@ package javolution.text;
 import java.io.IOException;
 import java.io.Writer;
 
-import java.io.Serializable;
+import j2me.io.Serializable;
 import j2me.lang.CharSequence;
 import j2mex.realtime.MemoryArea;
 
@@ -939,10 +939,10 @@ public class TextBuilder implements Appendable,
      * @param writer the destination writer.
      */
     public void print(Writer writer) throws IOException {
-    	for (int i=0; i < _length; i += C0) {
-    		char[] chars = charsAt(i);
-    		writer.write(chars, 0, MathLib.min(C0, _length - i));
-    	}
+        for (int i=0; i < _length; i += C0) {
+                char[] chars = charsAt(i);
+                writer.write(chars, 0, MathLib.min(C0, _length - i));
+        }
     }
 
     /**

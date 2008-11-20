@@ -8,7 +8,7 @@
  */
 package javolution.lang;
 
-import java.io.Serializable;
+import j2me.io.Serializable;
 import j2me.lang.Comparable;
 import j2mex.realtime.MemoryArea;
 

@@ -1,6 +1,6 @@
 package com.xruby.runtime.builtin;
 
-import java.io.File;
+import j2me.io.File;
 
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyValue;

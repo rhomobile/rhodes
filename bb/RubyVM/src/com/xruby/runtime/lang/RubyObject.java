@@ -5,12 +5,12 @@
 
 package com.xruby.runtime.lang;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import j2me.util.HashMap;
+import j2me.util.Iterator;
+import j2me.util.Map;
 
-import com.xruby.runtime.lang.annotation.RubyAllocMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyAllocMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
 
 //@RubyLevelClass(name="Object", superclass="", modules="Kernel")
 public class RubyObject extends RubyBasic {

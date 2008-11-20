@@ -1,7 +1,7 @@
 package com.xruby.runtime.builtin;
 
-import java.util.Iterator;
-import java.util.Map;
+import j2me.util.Iterator;
+import j2me.util.Map;
 import j2me.lang.SystemMe;
 
 import com.xruby.runtime.lang.RubyConstant;

@@ -12,12 +12,12 @@ import java.io.IOException;
 
 import j2me.io.ObjectInputStream;
 import j2me.io.ObjectOutputStream;
-import java.io.Serializable;
+import j2me.io.Serializable;
 import j2me.lang.IllegalStateException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import j2me.util.Collection;
+import j2me.util.Iterator;
+import j2me.util.List;
+import j2me.util.ListIterator;
 import j2mex.realtime.MemoryArea;
 import java.util.NoSuchElementException;
 

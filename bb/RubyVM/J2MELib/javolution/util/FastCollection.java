@@ -8,11 +8,11 @@
  */
 package javolution.util;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import j2me.util.Collection;
+import j2me.util.Iterator;
+import j2me.util.List;
+import j2me.util.ListIterator;
+import j2me.util.Set;
 import j2me.lang.UnsupportedOperationException;
 import j2mex.realtime.MemoryArea;
 import javolution.lang.Realtime;

@@ -10,8 +10,8 @@ import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import j2me.util.HashMap;
+import j2me.util.Iterator;
 
 ////@RubyLevelClass(name="Hash", modules="Enumerable")
 public class RubyHash extends RubyBasic {

@@ -27,10 +27,10 @@
  ***** END LICENSE BLOCK *****/
 package org.jruby.util;
 
-import java.math.BigInteger;
+import j2me.math.BigInteger;
 //import java.text.DecimalFormatSymbols;
-import java.util.List;
-import java.util.Locale;
+import j2me.util.List;
+import j2me.util.Locale;
 
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
@@ -91,54 +91,54 @@ public class Sprintf {
     
     private static class Ruby{};
     private static class ID {
-    	//public static final String AMBIGUOUS_ARGUMENT = "AMBIGUOUS_ARGUMENT";
-/*    	public static final String ACCESSOR_NOT_INITIALIZED("ACCESSOR_NOT_INITIALIZED");
-    	public static final String ARGUMENT_AS_PREFIX("ARGUMENT_AS_PREFIX"),
-    	public static final String ARGUMENT_EXTRA_SPACE("ARGUMENT_EXTRA_SPACE"),
-    	public static final String ASSIGNMENT_IN_CONDITIONAL("ASSIGNMENT_IN_CONDITIONAL"),
-    	public static final String BIGNUM_FROM_FLOAT_RANGE("BIGNUM_FROM_FLOAT_RANGE"),
-    	public static final String BLOCK_BEATS_DEFAULT_VALUE("BLOCK_BEATS_DEFAULT_VALUE"),
-    	public static final String BLOCK_NOT_ACCEPTED("BLOCK_NOT_ACCEPTED"),
-    	public static final String BLOCK_UNUSED("BLOCK_UNUSED"),
-    	public static final String CONSTANT_ALREADY_INITIALIZED("CONSTANT_ALREADY_INITIALIZED"),
-    	public static final String CONSTANT_BAD_REFERENCE("CONSTANT_BAD_REFERENCE"),
-    	public static final String CVAR_FROM_TOPLEVEL_SINGLETON_METHOD("CVAR_FROM_TOPLEVEL_SINGLETON_METHOD"),
-    	public static final String DECLARING_SCLASS_VARIABLE("DECLARING_SCLASS_VARIABLE"),
-    	public static final String DEPRECATED_METHOD("DEPRECATED_METHOD"),
-    	public static final String DUMMY_VALUE_USED("DUMMY_VALUE_USED"),
-    	public static final String END_IN_METHOD("END_IN_METHOD"),
-    	public static final String ELSE_WITHOUT_RESCUE("ELSE_WITHOUT_RESCUE"),
-    	public static final String EMPTY_IMPLEMENTATION("EMPTY_IMPLEMENTATION"),
-    	public static final String ENV_VARS_FROM_CLI_METHOD("ENV_VARS_FROM_CLI_METHOD"),
-    	public static final String FIXNUMS_NOT_SYMBOLS("FIXNUMS_NOT_SYMBOLS"),
-    	public static final String FLOAT_OUT_OF_RANGE("FLOAT_OUT_OF_RANGE"),
-    	public static final String GLOBAL_NOT_INITIALIZED("GLOBAL_NOT_INITIALIZED"),
-    	public static final String GROUPED_EXPRESSION("GROUPED_EXPRESSION"),
-    	public static final String INEFFECTIVE_GLOBAL("INNEFFECTIVE_GLOBAL"),
-    	public static final String INVALID_CHAR_SEQUENCE("INVALID_CHAR_SEQUENCE"),
-    	public static final String IVAR_NOT_INITIALIZED("IVAR_NOT_INITIALIZED"),
-    	public static final String MAY_BE_TOO_BIG("MAY_BE_TOO_BIG"),
-    	public static final String MISCELLANEOUS("MISCELLANEOUS"),
-    	public static final String MULTIPLE_VALUES_FOR_BLOCK("MULTIPLE_VALUES_FOR_BLOCK"),*/
-    	public static final String NEGATIVE_NUMBER_FOR_U = "NEGATIVE_NUMBER_FOR_U";
-/*    	public static final String NO_SUPER_CLASS("NO_SUPER_CLASS"),
-    	public static final String PARENTHISE_ARGUMENTS("PARENTHISE_ARGUMENTS"),
-    	public static final String PROXY_EXTENDED_LATE("PROXY_EXTENDED_LATE"),
-    	public static final String STATEMENT_NOT_REACHED("STATEMENT_NOT_REACHED"), 
-    	public static final String LITERAL_IN_CONDITIONAL_RANGE("LITERAL_IN_CONDITIONAL_RANGE"),
-    	public static final String REDEFINING_DANGEROUS("REDEFINING_DANGEROUS"),
-    	public static final String REGEXP_IGNORED_FLAGS("REGEXP_IGNORED_FLAGS"),
-    	public static final String REGEXP_LITERAL_IN_CONDITION("REGEXP_LITERAL_IN_CONDITION"),
-    	public static final String SAFE_NOT_SUPPORTED("SAFE_NOT_SUPPORTED"),
-    	public static final String STRUCT_CONSTANT_REDEFINED("STRUCT_CONSTANT_REDEFINED"),
-    	public static final String SYMBOL_AS_INTEGER("SYMBOL_AS_INTEGER"),
-    	public static final String SYSSEEK_BUFFERED_IO("SYSSEEK_BUFFERED_IO"),
-    	public static final String SYSWRITE_BUFFERED_IO("SYSWRITE_BUFFERED_IO"),
-    	public static final String SWALLOWED_IO_EXCEPTION("SWALLOWED_IO_EXCEPTION"),
-    	public static final String TOO_MANY_ARGUMENTS("TOO_MANY_ARGUMENTS"),
-    	public static final String UNDEFINING_BAD("UNDEFINING_BAD"),
-    	public static final String USELESS_EXPRESSION("USELESS_EXPRESSION"),
-    	public static final String VOID_VALUE_EXPRESSION("VOID_VALUE_EXPRESSION");*/
+        //public static final String AMBIGUOUS_ARGUMENT = "AMBIGUOUS_ARGUMENT";
+/*      public static final String ACCESSOR_NOT_INITIALIZED("ACCESSOR_NOT_INITIALIZED");
+        public static final String ARGUMENT_AS_PREFIX("ARGUMENT_AS_PREFIX"),
+        public static final String ARGUMENT_EXTRA_SPACE("ARGUMENT_EXTRA_SPACE"),
+        public static final String ASSIGNMENT_IN_CONDITIONAL("ASSIGNMENT_IN_CONDITIONAL"),
+        public static final String BIGNUM_FROM_FLOAT_RANGE("BIGNUM_FROM_FLOAT_RANGE"),
+        public static final String BLOCK_BEATS_DEFAULT_VALUE("BLOCK_BEATS_DEFAULT_VALUE"),
+        public static final String BLOCK_NOT_ACCEPTED("BLOCK_NOT_ACCEPTED"),
+        public static final String BLOCK_UNUSED("BLOCK_UNUSED"),
+        public static final String CONSTANT_ALREADY_INITIALIZED("CONSTANT_ALREADY_INITIALIZED"),
+        public static final String CONSTANT_BAD_REFERENCE("CONSTANT_BAD_REFERENCE"),
+        public static final String CVAR_FROM_TOPLEVEL_SINGLETON_METHOD("CVAR_FROM_TOPLEVEL_SINGLETON_METHOD"),
+        public static final String DECLARING_SCLASS_VARIABLE("DECLARING_SCLASS_VARIABLE"),
+        public static final String DEPRECATED_METHOD("DEPRECATED_METHOD"),
+        public static final String DUMMY_VALUE_USED("DUMMY_VALUE_USED"),
+        public static final String END_IN_METHOD("END_IN_METHOD"),
+        public static final String ELSE_WITHOUT_RESCUE("ELSE_WITHOUT_RESCUE"),
+        public static final String EMPTY_IMPLEMENTATION("EMPTY_IMPLEMENTATION"),
+        public static final String ENV_VARS_FROM_CLI_METHOD("ENV_VARS_FROM_CLI_METHOD"),
+        public static final String FIXNUMS_NOT_SYMBOLS("FIXNUMS_NOT_SYMBOLS"),
+        public static final String FLOAT_OUT_OF_RANGE("FLOAT_OUT_OF_RANGE"),
+        public static final String GLOBAL_NOT_INITIALIZED("GLOBAL_NOT_INITIALIZED"),
+        public static final String GROUPED_EXPRESSION("GROUPED_EXPRESSION"),
+        public static final String INEFFECTIVE_GLOBAL("INNEFFECTIVE_GLOBAL"),
+        public static final String INVALID_CHAR_SEQUENCE("INVALID_CHAR_SEQUENCE"),
+        public static final String IVAR_NOT_INITIALIZED("IVAR_NOT_INITIALIZED"),
+        public static final String MAY_BE_TOO_BIG("MAY_BE_TOO_BIG"),
+        public static final String MISCELLANEOUS("MISCELLANEOUS"),
+        public static final String MULTIPLE_VALUES_FOR_BLOCK("MULTIPLE_VALUES_FOR_BLOCK"),*/
+        public static final String NEGATIVE_NUMBER_FOR_U = "NEGATIVE_NUMBER_FOR_U";
+/*      public static final String NO_SUPER_CLASS("NO_SUPER_CLASS"),
+        public static final String PARENTHISE_ARGUMENTS("PARENTHISE_ARGUMENTS"),
+        public static final String PROXY_EXTENDED_LATE("PROXY_EXTENDED_LATE"),
+        public static final String STATEMENT_NOT_REACHED("STATEMENT_NOT_REACHED"), 
+        public static final String LITERAL_IN_CONDITIONAL_RANGE("LITERAL_IN_CONDITIONAL_RANGE"),
+        public static final String REDEFINING_DANGEROUS("REDEFINING_DANGEROUS"),
+        public static final String REGEXP_IGNORED_FLAGS("REGEXP_IGNORED_FLAGS"),
+        public static final String REGEXP_LITERAL_IN_CONDITION("REGEXP_LITERAL_IN_CONDITION"),
+        public static final String SAFE_NOT_SUPPORTED("SAFE_NOT_SUPPORTED"),
+        public static final String STRUCT_CONSTANT_REDEFINED("STRUCT_CONSTANT_REDEFINED"),
+        public static final String SYMBOL_AS_INTEGER("SYMBOL_AS_INTEGER"),
+        public static final String SYSSEEK_BUFFERED_IO("SYSSEEK_BUFFERED_IO"),
+        public static final String SYSWRITE_BUFFERED_IO("SYSWRITE_BUFFERED_IO"),
+        public static final String SWALLOWED_IO_EXCEPTION("SWALLOWED_IO_EXCEPTION"),
+        public static final String TOO_MANY_ARGUMENTS("TOO_MANY_ARGUMENTS"),
+        public static final String UNDEFINING_BAD("UNDEFINING_BAD"),
+        public static final String USELESS_EXPRESSION("USELESS_EXPRESSION"),
+        public static final String VOID_VALUE_EXPRESSION("VOID_VALUE_EXPRESSION");*/
         
         private final String id;
         
@@ -184,7 +184,7 @@ public class Sprintf {
         // will come up with better solution shortly
         Args(Ruby runtime, long value) {
             //this(RubyFixnum.newFixnum(runtime,value));
-        	this( ObjectFactory.createInteger(value) );
+                this( ObjectFactory.createInteger(value) );
         }
         
         final void raiseArgumentError(String message) {
@@ -254,13 +254,13 @@ public class Sprintf {
             // basically just forcing a TypeError here to match MRI
             obj = TypeConverter.convertToType(obj, obj.getRuntime().getFixnum(), MethodIndex.TO_INT, "to_int", true);
             return (int)((RubyFixnum)obj).getLongValue();*/
-        	return obj.toInt();
+                return obj.toInt();
         }
         
         final byte getDecimalSeparator() {
             // not saving DFS instance, as it will only be used once (at most) per call
             //return (byte)new DecimalFormatSymbols(locale).getDecimalSeparator();
-        	return '.';
+                return '.';
         }
     } // Args
 
@@ -693,15 +693,15 @@ public class Sprintf {
                     String type = arg.getRubyClass().getName(); 
                     if ( !type.equals("Fixnum") && !type.equals("Bignum") )
                     {
-                    	if ( type.equals("Float") )
-                    		arg = ((RubyFloat)arg).to_i();
-                    	else if ( type.equals("String") )
-                    		arg = ((RubyString)arg).to_i();
-                    	else{
-                    		//TODO: call to_int
-                    		throw new RubyException("Not implemented");
-                    	}
-                    	type = arg.getRubyClass().getName();
+                        if ( type.equals("Float") )
+                                arg = ((RubyFloat)arg).to_i();
+                        else if ( type.equals("String") )
+                                arg = ((RubyString)arg).to_i();
+                        else{
+                                //TODO: call to_int
+                                throw new RubyException("Not implemented");
+                        }
+                        type = arg.getRubyClass().getName();
                     }
                     byte[] bytes = null;
                     int first = 0;
@@ -1054,7 +1054,7 @@ public class Sprintf {
                             boolean isSharp = (flags & FLAG_SHARP) != 0;
 
                             // deal with length/width
-			    
+                            
                             len++; // first digit is always printed
 
                             // MRI behavior: Be default, 2 digits
@@ -1062,37 +1062,37 @@ public class Sprintf {
                             // only when necessary.
                             // See comment for writeExp method for more details.
                             if (exponent > 99)
-                            	len += 5; // 5 -> e+nnn / e-nnn
+                                len += 5; // 5 -> e+nnn / e-nnn
                             else
-                            	len += 4; // 4 -> e+nn / e-nn
+                                len += 4; // 4 -> e+nn / e-nn
 
                             if (isSharp) {
-                            	// in this mode, '.' is always printed
-                            	len++;
+                                // in this mode, '.' is always printed
+                                len++;
                             }
 
                             if (precision > 0) {
-                            	if (!isSharp) {
-                            	    // MRI behavior: In this mode
-                            	    // trailing zeroes are removed:
-                            	    // 1.500E+05 -> 1.5E+05 
-                            	    int j = decDigits;
-                            	    for (; j >= 1; j--) {
-                            	        if (digits[j]== '0') {
-                            	            decDigits--;
-                            	        } else {
-                            	            break;
-                            	        }
-                            	    }
+                                if (!isSharp) {
+                                    // MRI behavior: In this mode
+                                    // trailing zeroes are removed:
+                                    // 1.500E+05 -> 1.5E+05 
+                                    int j = decDigits;
+                                    for (; j >= 1; j--) {
+                                        if (digits[j]== '0') {
+                                            decDigits--;
+                                        } else {
+                                            break;
+                                        }
+                                    }
 
-                            	    if (decDigits > 0) {
-                            	        len += 1; // '.' is printed
-                            	        len += decDigits;
-                            	    }
-                            	} else  {
-                            	    // all precision numebers printed
-                            	    len += precision;
-                            	}
+                                    if (decDigits > 0) {
+                                        len += 1; // '.' is printed
+                                        len += decDigits;
+                                    }
+                                } else  {
+                                    // all precision numebers printed
+                                    len += precision;
+                                }
                             }
 
                             width -= len;
@@ -1116,16 +1116,16 @@ public class Sprintf {
                                     || (precision > 0 && decDigits > 0);
 
                             if (dotToPrint) {
-                            	buf.write(args.getDecimalSeparator()); // '.'
+                                buf.write(args.getDecimalSeparator()); // '.'
                             }
 
                             if (precision > 0 && decDigits > 0) {
-                            	buf.write(digits, 1, decDigits);
-                            	precision -= decDigits;
+                                buf.write(digits, 1, decDigits);
+                                precision -= decDigits;
                             }
 
                             if (precision > 0 && isSharp) {
-                            	buf.fill('0', precision);
+                                buf.fill('0', precision);
                             }
 
                             writeExp(buf, exponent, expChar);
@@ -1401,7 +1401,7 @@ public class Sprintf {
             } else if (args.runtime.getVerbose().isTrue()) {
                 args.warn(ID.TOO_MANY_ARGUMENTS, "too many arguments for format string");
             }*/
-        	throw new RubyException(RubyRuntime.ArgumentErrorClass, "too many arguments for format string" );        	
+                throw new RubyException(RubyRuntime.ArgumentErrorClass, "too many arguments for format string" );               
         }
 
         return buf;

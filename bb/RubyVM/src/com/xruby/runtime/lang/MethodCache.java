@@ -5,9 +5,9 @@
 
 package com.xruby.runtime.lang;
 
-import java.util.Iterator;
+//import j2me.util.Iterator;
 
-import com.xruby.runtime.builtin.RubyProc;
+//import com.xruby.runtime.builtin.RubyProc;
 
 class MethodCache {
 	private static int CACHE_SIZE = 0x800;

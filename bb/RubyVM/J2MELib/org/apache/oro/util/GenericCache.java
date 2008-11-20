@@ -20,6 +20,7 @@
 package org.apache.oro.util;
 
 import java.util.*;
+import j2me.util.*;
 
 /**
  * This is the base class for all cache implementations provided in the

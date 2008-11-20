@@ -363,9 +363,14 @@ public class RhoConnection implements HttpConnection {
 				//index page
 				redirectTo("index.html");
 			}else{
-				responseData = RhoRuby.loadFile(uri.getPath());
+				String strContType = getContentType(uri.getPath());
+				if ( strContType.equals("application/javascript"))
+					responseData = new ByteArrayInputStream(new String("").getBytes());
+				else	
+					responseData = RhoRuby.loadFile(uri.getPath());
+				
 				if (responseData!= null){
-					resHeaders.addProperty("Content-Type", getContentType(uri.getPath()) );
+					resHeaders.addProperty("Content-Type", strContType );
 					resHeaders.addProperty("Content-Length", Integer.toString( responseData.available() ) );
 				}else{
 					UrlParser up = new UrlParser(uri.getPath());  

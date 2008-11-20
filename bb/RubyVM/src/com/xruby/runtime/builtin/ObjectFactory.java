@@ -13,7 +13,7 @@ import com.xruby.runtime.lang.RubyMethod;
 import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyValue;
 
-import java.math.BigInteger;
+import j2me.math.BigInteger;
 import org.apache.oro.text.regex.MatchResult;
 
 public class ObjectFactory {

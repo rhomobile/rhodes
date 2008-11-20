@@ -11,6 +11,6 @@ package j2me.lang;
 import java.io.IOException;
 
 public interface Readable {
-    int read(java.nio.CharBuffer cb) throws IOException;
+    int read(j2me.nio.CharBuffer cb) throws IOException;
 
 }
