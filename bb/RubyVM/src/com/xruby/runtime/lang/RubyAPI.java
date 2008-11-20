@@ -5,10 +5,10 @@
 
 package com.xruby.runtime.lang;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Iterator;
+//import j2me.io.BufferedReader;
+//import java.io.IOException;
+//import java.io.InputStreamReader;
+import j2me.util.Iterator;
 import j2me.lang.AssertMe;
 
 import com.xruby.runtime.builtin.ObjectFactory;

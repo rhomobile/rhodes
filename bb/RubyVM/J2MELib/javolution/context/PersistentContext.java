@@ -9,7 +9,7 @@
 package javolution.context;
 
 import j2me.lang.Comparable;
-import java.util.Map;
+import j2me.util.Map;
 import javolution.util.FastMap;
 
 /**

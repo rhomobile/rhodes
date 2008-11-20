@@ -9,7 +9,7 @@
 package javolution.util;
 
 import j2me.lang.IllegalStateException;
-import java.util.Iterator;
+import j2me.util.Iterator;
 import j2me.util.NoSuchElementException;
 import javolution.context.ObjectFactory;
 import javolution.util.FastCollection.Record;

@@ -6,7 +6,7 @@ package j2me.util;
  */
 
 import j2me.util.SortedSet;
-import java.util.Iterator;
+import j2me.util.Iterator;
 
 /**
  * A {@link java.util.SortedSet} extended with navigation methods reporting

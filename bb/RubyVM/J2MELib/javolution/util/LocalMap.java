@@ -1,8 +1,8 @@
 package javolution.util;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import j2me.util.Collection;
+import j2me.util.Map;
+import j2me.util.Set;
 import javolution.context.LocalContext;
 
 /**

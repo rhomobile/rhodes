@@ -10,8 +10,8 @@ import com.xruby.runtime.builtin.RubyFloat;
 import com.xruby.runtime.builtin.RubyInteger;
 import com.xruby.runtime.builtin.RubyString;
 
-import java.util.HashMap;
-import java.util.Map;
+import j2me.util.HashMap;
+import j2me.util.Map;
 
 import j2me.lang.Cloneable;
 //import j2me.lang.CloneNotSupportedException;

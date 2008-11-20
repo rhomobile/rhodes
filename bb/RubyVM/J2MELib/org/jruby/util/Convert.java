@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 package org.jruby.util;
-import java.math.BigInteger;
+import j2me.math.BigInteger;
 import j2me.lang.ArrayMe;
 
 //import org.jruby.RubyNumeric.InvalidIntegerException;
@@ -60,7 +60,7 @@ public class Convert {
     public static final byte[] intToByteArray(int i) {
         if (i == Integer.MIN_VALUE)
             //return (byte[])MIN_INT_BYTE_ARRAY.clone();
-        	return ArrayMe.clone(MIN_INT_BYTE_ARRAY);
+                return ArrayMe.clone(MIN_INT_BYTE_ARRAY);
         int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
         byte[] buf = new byte[size];
         getCharBytes(i, size, buf);
@@ -147,7 +147,7 @@ public class Convert {
     public static final byte[] longToByteArray(long i) {
         if (i == Long.MIN_VALUE)
             //return (byte[])MIN_LONG_BYTE_ARRAY.clone();
-        	return ArrayMe.clone(MIN_LONG_BYTE_ARRAY);
+                return ArrayMe.clone(MIN_LONG_BYTE_ARRAY);
         // int version is slightly faster, use if possible
         if (i <= Integer.MAX_VALUE && i >= Integer.MIN_VALUE)
             return intToByteArray((int)i);
@@ -208,7 +208,7 @@ public class Convert {
     public static final byte[] intToCharBytes(int i) {
         if (i == Integer.MIN_VALUE)
             //return (byte[])MIN_INT_BYTE_ARRAY.clone();
-        	return ArrayMe.clone(MIN_INT_BYTE_ARRAY);
+                return ArrayMe.clone(MIN_INT_BYTE_ARRAY);
         int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
         byte[] buf = new byte[size];
         getCharBytes(i, size, buf);
@@ -218,7 +218,7 @@ public class Convert {
     public static final byte[] longToCharBytes(long i) {
         if (i == Long.MIN_VALUE)
             //return (byte[])MIN_LONG_BYTE_ARRAY.clone();
-        	return ArrayMe.clone(MIN_LONG_BYTE_ARRAY);
+                return ArrayMe.clone(MIN_LONG_BYTE_ARRAY);
         int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
         byte[] buf = new byte[size];
         getCharBytes(i, size, buf);
@@ -227,7 +227,7 @@ public class Convert {
     public static final char[] longToChars(long i) {
         if (i == Long.MIN_VALUE)
             //return (char[])MIN_LONG_CHAR_ARRAY.clone();
-        	return ArrayMe.clone(MIN_LONG_CHAR_ARRAY);
+                return ArrayMe.clone(MIN_LONG_CHAR_ARRAY);
         int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
         char[] buf = new char[size];
         getChars(i, size, buf);

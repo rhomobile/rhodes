@@ -10,8 +10,8 @@ import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import j2me.util.ArrayList;
+import j2me.util.Collection;
 
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.*;

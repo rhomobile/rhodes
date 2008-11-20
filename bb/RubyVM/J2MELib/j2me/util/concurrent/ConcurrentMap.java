@@ -7,7 +7,7 @@
  * freely granted, provided that this notice is preserved.
  */
 package j2me.util.concurrent;
-import java.util.Map;
+import j2me.util.Map;
 
 public interface ConcurrentMap extends Map {
 

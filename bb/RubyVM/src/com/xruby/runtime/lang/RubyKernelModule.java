@@ -5,12 +5,12 @@
 
 package com.xruby.runtime.lang;
 
-import java.io.BufferedReader;
+/*import j2me.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.Iterator;
+import java.io.PrintStream;*/
+import j2me.util.Iterator;
 //import java.util.regex.Pattern;
 
 //import antlr.RecognitionException;
@@ -20,9 +20,9 @@ import java.util.Iterator;
 //import com.xruby.compiler.codegen.CompilationResults;
 //import com.xruby.compiler.codegen.NameFactory;
 //import com.xruby.runtime.javasupport.JavaClass;
-import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelModule;
+//import com.xruby.runtime.lang.*;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelModule;
 
 import j2me.lang.MathEx;
 import j2me.lang.PrintStreamMe;

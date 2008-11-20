@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import javax.microedition.io.HttpConnection;
 
+//import org.garret.perst.Storage;
+//import org.garret.perst.StorageFactory;
+
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
@@ -30,10 +33,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static void main(String[] args) {
     	NetworkAccess.autoConfigure();
 
+    	//Storage storage = StorageFactory.getInstance().createStorage();
+       	//storage.open("MyTest.dbs");
+       	//storage.close();
+       	
         RhoRuby.RhoRubyStart("");
-    	
+    	//String[] args = new String[0];
+		//com.xruby.runtime.lang.RubyRuntime.init(args);
+		
         RhodesApplication app = new RhodesApplication();
         app.enterEventDispatcher();
+        
+        //com.xruby.runtime.lang.RubyRuntime.fini();
         
         RhoRuby.RhoRubyStop();
     }

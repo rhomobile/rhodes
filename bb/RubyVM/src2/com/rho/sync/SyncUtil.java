@@ -19,7 +19,7 @@
 package com.rho.sync;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import j2me.util.ArrayList;
 
 import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.builtin.ObjectFactory;

@@ -9,12 +9,12 @@ import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyIO;
 import com.xruby.runtime.builtin.RubyProc;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import j2me.util.Iterator;
+import j2me.util.List;
+//import j2me.util.Map;
 import j2me.lang.AssertMe;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.ArrayList;
+import j2me.util.concurrent.ConcurrentHashMap;
+import j2me.util.ArrayList;
 
 class MultipleMap/*<T>*/ {
 	

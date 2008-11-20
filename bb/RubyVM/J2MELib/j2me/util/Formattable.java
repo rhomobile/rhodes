@@ -8,7 +8,7 @@
  */
 package j2me.util;
 
-import java.util.Formatter;
+import j2me.util.Formatter;
 
 public interface Formattable {
 

@@ -5,7 +5,7 @@ import javolution.text.Text;
 //import javolution.xml.XMLSerializable;
 import j2me.lang.CharSequence;
 import j2me.lang.Comparable;
-import java.util.Comparator;
+import j2me.util.Comparator;
 
 /**
  * <p> This class represents a comparator to be used for equality as well as 

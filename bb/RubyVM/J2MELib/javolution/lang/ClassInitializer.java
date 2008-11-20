@@ -9,7 +9,7 @@
 package javolution.lang;
 
 import java.util.Enumeration;
-import java.io.File;
+import j2me.io.File;
 import j2me.util.zip.ZipFile;
 import j2me.util.zip.ZipEntry;
 

@@ -5,9 +5,9 @@
 
 package com.xruby.runtime.lang;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import j2me.util.HashMap;
+import j2me.util.Map;
+import j2me.util.concurrent.atomic.AtomicLong;
 
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyFixnum;

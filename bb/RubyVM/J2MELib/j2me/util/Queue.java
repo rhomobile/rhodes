@@ -8,7 +8,7 @@
  */
 package j2me.util;
 
-import java.util.Collection;
+import j2me.util.Collection;
 
 public interface Queue extends Collection {
     boolean offer(Object o);
