@@ -13,6 +13,7 @@ import net.rim.device.api.system.Application;
 import net.rim.device.api.ui.*;
 import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
+import com.rho.NetworkAccess;
 
 /**
  * 

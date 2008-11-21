@@ -1,4 +1,4 @@
-package rhomobile;
+package com.rho;
 
 import java.io.IOException;
 import javax.microedition.io.Connector;
@@ -7,7 +7,7 @@ import javax.microedition.io.HttpConnection;
 import net.rim.device.api.servicebook.ServiceBook;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.system.*;
-import net.rim.device.api.ui.component.Dialog;
+//import net.rim.device.api.ui.component.Dialog;
 
 public class NetworkAccess {
 
@@ -124,6 +124,7 @@ public class NetworkAccess {
 				server = server.substring(0, fragment);
 			}
 
+			System.out.println(server + param);
 			http = (HttpConnection) Connector.open(server + param);
 		} catch (IOException ioe) {
 			System.out.println("Open exception: " + ioe.getMessage());
