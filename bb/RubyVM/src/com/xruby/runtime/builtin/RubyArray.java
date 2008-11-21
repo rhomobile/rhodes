@@ -487,8 +487,9 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         return ObjectFactory.createBoolean(this.array_.isEmpty());
     }
 
+    //RHO_COMMENT
     //@RubyLevelMethod(name="to_s")
-    public RubyValue to_s() {
+    /*public RubyValue to_s() {
         RubyString r = ObjectFactory.createString();
 
 //        for (RubyValue v : array_) {
@@ -501,7 +502,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         }
 
         return r;
-    }
+    }*/
 
     //@RubyLevelMethod(name="length")
     public RubyFixnum length() {
