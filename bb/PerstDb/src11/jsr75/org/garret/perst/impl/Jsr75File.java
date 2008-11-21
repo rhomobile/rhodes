@@ -1,4 +1,6 @@
 package org.garret.perst.impl;
+import net.rim.device.api.system.DeviceInfo;
+
 import org.garret.perst.*;
 
 import java.io.IOException;
@@ -28,11 +30,18 @@ public class Jsr75File implements SimpleFile
 
 	void createDir( String strDir  )throws IOException{
 		log("Dir:"+strDir);
-        fconn = (FileConnection)Connector.open(strDir,Connector.READ_WRITE);
-        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-        if (!fconn.exists()) { 
-            fconn.mkdir();  // create the dir if it doesn't exist
-        }
+		FileConnection fdir = null;
+		try{
+			fdir = (FileConnection)Connector.open(strDir,Connector.READ_WRITE);
+	        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+	        if (!fdir.exists()) { 
+	        	fdir.mkdir();  // create the dir if it doesn't exist
+	        }
+		}catch(IOException exc){
+			if ( fdir != null )
+				fdir.close();
+			throw exc;
+		}
 	}
 
     public void open(String path, boolean readOnly, boolean noFlush) 
@@ -46,47 +55,46 @@ public class Jsr75File implements SimpleFile
             } else { 
             	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
            
-            	try{
-            		createDir( "file:///" + "store/home/user/Rho/" );
-
-            		url = "file:///" + "store/home/user/Rho/" + path;
-            		log(url);
-                    fconn = (FileConnection)Connector.open(url,Connector.READ_WRITE);
-                    // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                    if (!fconn.exists()) { 
-                        fconn.create();  // create the file if it doesn't exist
-                    }
-            	} catch (Exception x) {
-                	log("Error open file: " + x.getMessage());
-                }
-            	
-            	/*                Enumeration e = FileSystemRegistry.listRoots();
-                while (e.hasMoreElements()) {
-                    // choose arbitrary root directory
-                	String strRoot = (String)e.nextElement();
-                    url = "file:///" + strRoot + path;
-                    log(url);
-                    try {
-                    	createDir( "file:///" + strRoot + "/Rho" );
-                    	
-                        fconn = (FileConnection)Connector.open(url);
-                        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                        if (!fconn.exists()) { 
-                            fconn.create();  // create the file if it doesn't exist
-                        }
-                        break;
-                    } catch (Exception x) {
-                    	log("Error open file: " + x.getMessage());
-                        fconn = null;
-                        url = "file:///" + path;
-                        // try next root
-                    }
-                }*/
+            	if (!DeviceInfo.isSimulator()) {            	
+	            	try{
+	            		createDir( "file:///" + "store/home/user/Rho/" );
+	
+	            		url = "file:///" + "store/home/user/Rho/" + path;
+	            		log(url);
+	                    fconn = (FileConnection)Connector.open(url);
+	                    // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+	                    if (!fconn.exists()) { 
+	                        fconn.create();  // create the file if it doesn't exist
+	                    }
+	            	} catch (Exception x) {
+	                	log("Error open file: " + x.getMessage());
+	                	fconn = null;
+	                }
+            	}else{
+	            	Enumeration e = FileSystemRegistry.listRoots();
+	                while (e.hasMoreElements()) {
+	                    // choose arbitrary root directory
+	                	String strRoot = (String)e.nextElement();
+	                    url = "file:///" + strRoot + path;
+	                    try {
+	                        fconn = (FileConnection)Connector.open(url);
+	                        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+	                        if (!fconn.exists()) { 
+	                            fconn.create();  // create the file if it doesn't exist
+	                        }
+	                        break;
+	                    } catch (Exception x) {
+	                    	log("Error open file: " + x.getMessage());
+	                        fconn = null;
+	                        url = "file:///" + path;
+	                        // try next root
+	                    }
+	                }
+            	}
             }
         }
         try { 
             if (fconn == null) {
-            	log("Try to open file: " + url);
                 fconn = (FileConnection)Connector.open(url);
                 // If no exception is thrown, then the URI is valid, but the file may or may not exist.
                 if (!fconn.exists()) { 

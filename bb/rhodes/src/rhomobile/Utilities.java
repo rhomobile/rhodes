@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import com.rho.NetworkAccess;
+
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.io.http.HttpProtocolConstants;
 import net.rim.device.api.util.StringUtilities;
@@ -26,7 +28,8 @@ public class Utilities {
 			if ( "localhost".equals(uri.getHost())) {
 				conn = new RhoConnection(uri);
 			} else {
-				conn = (HttpConnection) Connector.open(url);
+				//conn = (HttpConnection) Connector.open(url);
+				conn = NetworkAccess.connect(url);
 				// conn = NetworkAccess.connect(url);
 			}
 				
