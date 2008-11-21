@@ -1822,9 +1822,11 @@ public final class Perl5Matcher implements PatternMatcher {
     if(matchFound) {
       input.setCurrentOffset(__endMatchOffsets[0]);
       input.setMatchOffsets(__beginMatchOffsets[0], __endMatchOffsets[0]);
-    } else {
-      input.setCurrentOffset(input._endOffset + 1);
     }
+    //RHO_COMMENT
+    //else {
+    //  input.setCurrentOffset(input._endOffset + 1);
+    //}
 
     // Restore so it doesn't interfere with other unrelated matches.
     __lastMatchInputEndOffset = __DEFAULT_LAST_MATCH_END_OFFSET;

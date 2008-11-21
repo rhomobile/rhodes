@@ -117,6 +117,20 @@ class Array
 
     alias map! collect!
   
+    def inspect
+        str = "["
+        is_first = true
+        self.each() { |x|
+            if (!is_first)
+                str << ", "
+            end
+            is_first = false
+            str << x.inspect
+        }
+        str << "]"
+    end
+    alias to_s inspect
+    
 end
 
 class Time
@@ -133,7 +147,7 @@ class Hash
         ks = keys
         ks.each {|k| yield(k)}
     end
-	
+    
     def each_value
         vs = values
         vs.each {|k| yield(k)}
@@ -144,7 +158,30 @@ class Hash
     end
     
     alias each_pair each
-	
+    
+    def inspect
+        r = '{'
+        is_first = true
+        each_pair do |k, v|
+            if !is_first
+                r << ", "
+            end
+            is_first = false
+            r << k.inspect
+            r << '=>'
+            r << v.inspect
+        end
+        r << '}'
+    end
+    
+    alias to_s inspect
+    
+    def invert
+        h = {}
+        each {|k, v| h[v] = k}
+        h
+    end
+    
     def update other
         other.each {|k, v| self[k] = v}
         self
@@ -155,7 +192,175 @@ class Hash
     def merge other
         clone.merge!(other)
     end
-	
+    
+    def index value
+        each {|k, v| return k if value == v }
+        return nil
+    end
+end
+
+class Symbol
+    alias to_s id2name
+end
+
+class << self
+    def to_s
+        return "main"
+    end
+    
+    def public
+        Object.public
+    end
+    
+    def private
+        Object.private
+    end
+    
+    def protected
+        Object.protected
+    end
+end
+
+class Fixnum
+    def is_alpha_numeric
+        return (self>=?0 && self<=?9) || (self>=?a && self<=?z) || (self>=?A && self<=?Z)
+    end
+end
+
+module Comparable
+    def >=(value)
+        compare = (self <=> value)
+        return compare != -1 and compare != nil
+    end
+
+    def ==(value)
+        compare = (self <=> value)
+        return compare == 0
+    end
+
+    def <=(value)
+        compare = (self <=> value)
+        return compare != 1 and compare != nil
+    end
+
+    def >(value)
+        compare = (self <=> value)
+        return compare == 1
+    end
+
+    def <(value)
+        compare = (self <=> value)
+        return compare == -1
+    end
+
+    def between?(a, b)
+        self >= a && self <= b
+    end
+end
+
+class Numeric
+    include Comparable
+
+    def floor
+        self.to_f.floor
+    end
+
+    def abs
+        return -self if (self <=> 0) == -1
+        self
+    end
+    
+    def div value
+        (self/value).floor
+    end
+
+    def divmod(value)
+        [(self/value).floor, self % value]
+    end
+
+    def integer?
+        false
+    end
+
+    alias eql? :==
+
+    def modulo(value)
+        self % value
+    end
+
+    def nonzero?
+        return nil if self == 0
+        self
+    end
+
+    def zero?
+        return true if self == 0
+        false
+    end
+
+    def remainder(value)
+        self_sign = (self < 0)
+        value_sign = (value < 0)
+        return self % value if self_sign == value_sign
+        self % (-value)
+    end
+
+end
+
+class Integer < Numeric
+
+    def to_i
+        return self
+    end
+
+    alias to_int to_i
+
+    #Returns the Integer equal to int + 1
+    def next
+        self + 1
+    end
+
+    #Synonym for Integer#next
+    def succ
+        self + 1
+    end
+
+    #Always returns true
+    def integer?
+        true
+    end
+
+    def upto(to)
+        a = self
+        while a <= to
+            yield a
+            a += 1
+        end
+    end
+
+    def downto(to)
+        a = self
+        while a >= to
+            yield a
+            a -= 1
+        end
+    end
+
+    def size
+        4
+    end
+
+    def integer?
+        true
+    end
+end
+
+class Fixnum < Integer
+    def to_i
+        self
+    end
+
+    alias inspect to_s
 end
 
 class NilClass

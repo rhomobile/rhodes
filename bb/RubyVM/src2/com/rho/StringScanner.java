@@ -91,13 +91,14 @@ public class StringScanner extends RubyBasic {
         
         RubyRegexp re = ((RubyRegexp)regex);
         boolean bRes = false;
-        if ( succptr )
-        	bRes = matcher.contains(input, re.getPattern() );
-        else
-        	bRes = matcher.matches(input, re.getPattern() );
+        int nOffset = input.getCurrentOffset();
+       	bRes = matcher.contains(input, re.getPattern() );
         
         if ( !bRes )
         	return RubyConstant.QNIL;
+
+        if ( !succptr )
+        	input.setCurrentOffset(nOffset);
         
         result = matcher.getMatch();
         setMatched();
