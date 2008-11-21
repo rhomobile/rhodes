@@ -13,6 +13,12 @@ AutoRestart=0
 ]
 [DefFiles
 ]
+[DependsOn
+PerstImplJSR75
+PerstLite
+RhoBundle
+RubyVM
+]
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
