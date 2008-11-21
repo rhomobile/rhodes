@@ -21,6 +21,8 @@ PerstLite
 ..\RubyVM\RubyVM.jdp
 ]
 [ReleaseActiveProjects
+..\PerstDb\blackberry_jde\PerstImplJSR75.jdp
+..\PerstDb\blackberry_jde\PerstLite.jdp
 ..\RhoBundle\RhoBundle.jdp
 ..\rhodes\rhodes.jdp
 ..\RubyVM\RubyVM.jdp
