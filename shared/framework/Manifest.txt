@@ -3,6 +3,10 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
+bin/rhogen
+generators/rhogen.rb
+generators/templates/application.rb
+generators/templates/index.html
 lib/ServeME.rb
 lib/TestServe.rb
 lib/builtinME.rb
@@ -20,6 +24,7 @@ lib/rho/rhocontroller.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhofsconnectorME.rb
 lib/rho/rhosupport.rb
+lib/rhodes.rb
 lib/rhofsconnector.rb
 lib/rhom.rb
 lib/rhom/rhom.rb
@@ -30,9 +35,8 @@ lib/rhom/rhom_object_factory.rb
 lib/singleton.rb
 lib/time.rb
 rhodes.gemspec
-script/console
-script/destroy
-script/generate
+spec/app_generator_spec.rb
+spec/generator_spec_helper.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
 spec/spec.opts

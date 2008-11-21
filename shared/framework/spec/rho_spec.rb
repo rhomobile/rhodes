@@ -22,7 +22,7 @@ require File.dirname(__FILE__) + "/spec_helper"
 
 describe "Rho" do
 
-  it "should populate configuration in sources table" do 
-    
+  it "should populate configuration in sources table" do
+    pending 'somebody should implement this!'
   end
 end

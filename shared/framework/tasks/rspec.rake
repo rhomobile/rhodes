@@ -28,8 +28,7 @@ Spec::Rake::SpecTask.new do |t|
   t.rcov_opts = ['--include',
                  '"lib/rhom/*,lib/rho/*"',
                  '--exclude',
-                 '"spec/*,lib/date*,lib/rational*,lib/time*,lib/find.rb,config.rb, \
-                 lib/pairparser.rb,/Library/Ruby/Gems/*,/var/lib/gems/*,/usr/lib/ruby"',
+                 '"spec/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,config.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb,/Library/Ruby/Gems/*,/var/lib/gems/*,/usr/lib/ruby"',
                  '--text-report',
                  '--html']
 end

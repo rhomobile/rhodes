@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'rhodes'
+require 'templater'
+require File.join(File.dirname(__FILE__), '..', 'generators', 'rhogen')
+
+Rhogen.run_cli(Dir.pwd, 'rhogen', Rhodes::VERSION, ARGV)
