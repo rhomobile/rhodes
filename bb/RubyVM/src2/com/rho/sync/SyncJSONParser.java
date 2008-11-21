@@ -18,7 +18,7 @@
  */
 package com.rho.sync;
 
-import java.util.ArrayList;
+import j2me.util.ArrayList;
 
 import org.json.me.JSONArray;
 import org.json.me.JSONObject;

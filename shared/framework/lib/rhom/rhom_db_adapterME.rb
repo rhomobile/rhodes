@@ -72,7 +72,7 @@ module Rhom
       end
     
       def delete_from_table(table=nil,condition=nil)
-	    execute_sql { @@database.insertIntoTable(table, condition) }
+	    execute_sql { @@database.deleteFromTable(table, condition) }
 	  end
     
       def delete_all_from_table(table=nil)

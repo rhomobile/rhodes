@@ -20,7 +20,7 @@
 package org.apache.oro.text.regex;
 
 import java.util.*;
-
+import j2me.util.*;
 /**
  * The Util class is a holder for useful static utility methods that can
  * be generically applied to Pattern and PatternMatcher instances.
@@ -120,7 +120,7 @@ public final class Util {
    * @since 2.0
    */
   public static void split(Collection results, PatternMatcher matcher,
-			   Pattern pattern, String input, int limit)
+                           Pattern pattern, String input, int limit)
   {
     int beginOffset;
     MatchResult currentResult;
@@ -132,7 +132,7 @@ public final class Util {
     while(--limit != 0 && matcher.contains(pinput, pattern)) {
       currentResult = matcher.getMatch();
       results.add(input.substring(beginOffset,
-				  currentResult.beginOffset(0)));
+                                  currentResult.beginOffset(0)));
       beginOffset = currentResult.endOffset(0);
     }
 
@@ -176,7 +176,7 @@ public final class Util {
    * @since 2.0
    */
   public static void split(Collection results,  PatternMatcher matcher,
-			   Pattern pattern, String input)
+                           Pattern pattern, String input)
   {
     split(results, matcher, pattern, input, SPLIT_ALL);
   }
@@ -227,7 +227,7 @@ public final class Util {
    * @since 1.0
    */
   public static ArrayList split(PatternMatcher matcher, Pattern pattern,
-			     String input, int limit)
+                             String input, int limit)
   {
     ArrayList results = new ArrayList(20); 
 
@@ -273,7 +273,7 @@ public final class Util {
    * @since 1.0
    */
   public static ArrayList split( PatternMatcher matcher, Pattern pattern,
-			      String input)
+                              String input)
   {
     return split(matcher, pattern, input, SPLIT_ALL);
   }
@@ -302,7 +302,7 @@ public final class Util {
    * @since 1.0
    */
   public static String substitute(PatternMatcher matcher, Pattern pattern,
-				  Substitution sub, String input, int numSubs)
+                                  Substitution sub, String input, int numSubs)
   {
     StringBuffer buffer = new StringBuffer(input.length());
     PatternMatcherInput pinput = new PatternMatcherInput(input);
@@ -336,7 +336,7 @@ public final class Util {
    * @since 1.0
    */
   public static String substitute(PatternMatcher matcher, Pattern pattern,
-				  Substitution sub, String input)
+                                  Substitution sub, String input)
   {
     return substitute(matcher, pattern, sub, input, 1);
   }
@@ -365,9 +365,9 @@ public final class Util {
    * @since 2.0.6
    */
   public static int substitute(StringBuffer result,
-			       PatternMatcher matcher, Pattern pattern,
-			       Substitution sub, String input,
-			       int numSubs)
+                               PatternMatcher matcher, Pattern pattern,
+                               Substitution sub, String input,
+                               int numSubs)
   {
     PatternMatcherInput pinput = new PatternMatcherInput(input);
     return substitute(result, matcher, pattern, sub, pinput, numSubs);
@@ -397,9 +397,9 @@ public final class Util {
    * @since 2.0.3
    */
   public static int substitute(StringBuffer result,
-			       PatternMatcher matcher, Pattern pattern,
-			       Substitution sub, PatternMatcherInput input,
-			       int numSubs)
+                               PatternMatcher matcher, Pattern pattern,
+                               Substitution sub, PatternMatcherInput input,
+                               int numSubs)
   {
     int beginOffset, subCount;
     char[] inputBuffer;
@@ -414,9 +414,9 @@ public final class Util {
       --numSubs;
       ++subCount;
       result.append(inputBuffer, beginOffset,
-		    input.getMatchBeginOffset() - beginOffset);
+                    input.getMatchBeginOffset() - beginOffset);
       sub.appendSubstitution(result, matcher.getMatch(), subCount,
-			     input, matcher, pattern);
+                             input, matcher, pattern);
       beginOffset = input.getMatchEndOffset();
     }
 

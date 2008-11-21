@@ -13,8 +13,12 @@ AutoRestart=0
 ]
 [DefFiles
 ]
+[DependsOn
+RubyVM
+]
 ExcludeFromBuildAll=0
 [Files
+RhoBundle.alx
 RhoBundle.jar
 ]
 HaveAlxImports=0
@@ -36,3 +40,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=2
+Version=1.17

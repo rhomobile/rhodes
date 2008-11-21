@@ -20,6 +20,7 @@
 package org.apache.oro.text.regex;
 
 import java.io.*;
+import j2me.io.*;
 import j2me.lang.Cloneable;
 
 /**

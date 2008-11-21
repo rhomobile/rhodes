@@ -20,6 +20,7 @@
 package org.apache.oro.io;
 
 import java.io.*;
+import j2me.io.*;
 
 import org.apache.oro.text.regex.*;
 import org.apache.oro.text.*;

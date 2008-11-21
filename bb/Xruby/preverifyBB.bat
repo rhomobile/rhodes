@@ -10,7 +10,7 @@ java -jar xruby-0.3.3.jar -c RhoBundle
 rmdir apps /S /Q
 xcopy "../../apps/*.html" "./apps" /I /F
 xcopy "../../apps/Rhosugar/*.html" "./apps/Rhosugar" /I /F
-xcopy "../../apps/shared" "apps/shared" /S /I
+REM xcopy "../../apps/shared" "apps/shared" /S /I
 
 jar uf RhoBundle.jar apps/*.*
 

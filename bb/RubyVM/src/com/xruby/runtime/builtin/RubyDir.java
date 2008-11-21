@@ -5,10 +5,10 @@
 
 package com.xruby.runtime.builtin;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import j2me.io.File;
+import j2me.util.ArrayList;
+import j2me.util.Iterator;
+import j2me.util.List;
 import j2me.lang.SystemMe;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import org.apache.oro.io.GlobFilenameFilter;

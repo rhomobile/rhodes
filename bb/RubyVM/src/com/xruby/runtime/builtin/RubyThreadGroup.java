@@ -5,10 +5,10 @@
 
 package com.xruby.runtime.builtin;
 
-import java.util.Iterator;
-import java.util.List;
+import j2me.util.Iterator;
+import j2me.util.List;
 //import java.util.Vector;
-import java.util.ArrayList;
+import j2me.util.ArrayList;
 
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyConstant;
@@ -19,9 +19,9 @@ import com.xruby.runtime.lang.RubyValue;
 //import com.xruby.runtime.lang.annotation.RubyLevelConstant;
 //import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyBlock;
+//import com.xruby.runtime.lang.RubyNoArgMethod;
+//import com.xruby.runtime.lang.RubyClass;
+//import com.xruby.runtime.lang.RubyBlock;
 
 //@RubyLevelClass(name="ThreadGroup")
 public class RubyThreadGroup extends RubyBasic{

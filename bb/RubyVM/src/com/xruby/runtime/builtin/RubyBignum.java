@@ -5,9 +5,9 @@
 
 package com.xruby.runtime.builtin;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
+import j2me.math.BigDecimal;
+import j2me.math.BigInteger;
+import j2me.util.ArrayList;
 
 import j2me.lang.MathEx;
 

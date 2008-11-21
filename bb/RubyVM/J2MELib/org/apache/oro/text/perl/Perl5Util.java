@@ -20,13 +20,14 @@
 package org.apache.oro.text.perl;
 
 import java.util.*;
+import j2me.util.*;
 
 import org.apache.oro.text.*;
 import org.apache.oro.text.regex.*;
 import org.apache.oro.util.*;
 import j2me.lang.CharacterMe;
 import j2me.lang.ThreadLocal;
-import java.util.ArrayList;
+import j2me.util.ArrayList;
 /**
  * This is a utility class implementing the 3 most common Perl5 operations
  * involving regular expressions:
@@ -234,7 +235,7 @@ public final class Perl5Util implements MatchResult {
 
     try {
       __matchPattern = 
-	compiler.compile(__matchExpression, Perl5Compiler.SINGLELINE_MASK);
+        compiler.compile(__matchExpression, Perl5Compiler.SINGLELINE_MASK);
     } catch(MalformedPatternException e) {
       // This should only happen during debugging.
       //e.printStackTrace();
@@ -269,15 +270,15 @@ public final class Perl5Util implements MatchResult {
     // instanceof
     try {
       if(obj != null)
-	return (Pattern)obj;
+        return (Pattern)obj;
     } catch(ClassCastException e) {
       // Fall through and parse expression
     }
 
     if(!__matcher.matches(pattern, __matchPattern))
       throw new
-	MalformedPerl5PatternException("Invalid expression: " +
-				       pattern);
+        MalformedPerl5PatternException("Invalid expression: " +
+                                       pattern);
 
     result = __matcher.getMatch();
 
@@ -290,17 +291,17 @@ public final class Perl5Util implements MatchResult {
       index = options.length();
 
       while(index-- > 0) {
-	switch(options.charAt(index)) {
-	case 'i' :
-	  compileOptions |= Perl5Compiler.CASE_INSENSITIVE_MASK;
-	  break;
-	case 'm' : compileOptions |= Perl5Compiler.MULTILINE_MASK; break;
-	case 's' : compileOptions |= Perl5Compiler.SINGLELINE_MASK; break;
-	case 'x' : compileOptions |= Perl5Compiler.EXTENDED_MASK; break;
-	default  :
-	  throw new
-	    MalformedPerl5PatternException("Invalid options: " + options);
-	}
+        switch(options.charAt(index)) {
+        case 'i' :
+          compileOptions |= Perl5Compiler.CASE_INSENSITIVE_MASK;
+          break;
+        case 'm' : compileOptions |= Perl5Compiler.MULTILINE_MASK; break;
+        case 's' : compileOptions |= Perl5Compiler.SINGLELINE_MASK; break;
+        case 'x' : compileOptions |= Perl5Compiler.EXTENDED_MASK; break;
+        default  :
+          throw new
+            MalformedPerl5PatternException("Invalid options: " + options);
+        }
       }
     }
 
@@ -348,7 +349,7 @@ public final class Perl5Util implements MatchResult {
     __parseMatchExpression(pattern);
 
     result = __matcher.contains(input, __parseMatchExpression(pattern));
-			 
+                         
     if(result) {
       ThreadState state      = __getState();
       state.lastMatch        = __matcher.getMatch();
@@ -551,7 +552,7 @@ public final class Perl5Util implements MatchResult {
   // Expression parsing will have to be moved into a separate method if
   // there are going to be variations of this method.
   public synchronized int substitute(StringBuffer result, String expression,
-				     String input)
+                                     String input)
        throws MalformedPerl5PatternException 
   {
     boolean backslash, finalDelimiter;
@@ -573,15 +574,15 @@ public final class Perl5Util implements MatchResult {
       // instanceof.  We want to go ahead with parsing just in case so
       // we break.
       try {
-	entry = (ParsedSubstitutionEntry)obj;
+        entry = (ParsedSubstitutionEntry)obj;
       } catch(ClassCastException e) {
-	break __nullTest;
+        break __nullTest;
       }
 
 
       subCount =
-	Util.substitute(result, __matcher, entry._pattern, entry._substitution,
-			input, entry._numSubstitutions);
+        Util.substitute(result, __matcher, entry._pattern, entry._substitution,
+                        input, entry._numSubstitutions);
 
       __getState().lastMatch = __matcher.getMatch();
 
@@ -594,7 +595,7 @@ public final class Perl5Util implements MatchResult {
     if(exp.length < 4 || exp[0] != 's' || CharacterMe.isLetterOrDigit(exp[1])
        || exp[1] == '-')
       throw new
-	MalformedPerl5PatternException("Invalid expression: " + expression);
+        MalformedPerl5PatternException("Invalid expression: " + expression);
     delimiter    = exp[1];
     firstOffset  = 2;
     secondOffset = thirdOffset = -1;
@@ -603,17 +604,17 @@ public final class Perl5Util implements MatchResult {
     // Parse pattern
     for(index = firstOffset; index < exp.length; index++) {
       if(exp[index] == '\\')
-	backslash = !backslash;
+        backslash = !backslash;
       else if(exp[index] == delimiter && !backslash) {
-	secondOffset = index;
-	break;
+        secondOffset = index;
+        break;
       } else if(backslash) 
-	backslash = !backslash;
+        backslash = !backslash;
     }
 
     if(secondOffset == -1 || secondOffset == exp.length - 1)
       throw new
-	MalformedPerl5PatternException("Invalid expression: " + expression);
+        MalformedPerl5PatternException("Invalid expression: " + expression);
 
     // Parse replacement string
 
@@ -622,24 +623,24 @@ public final class Perl5Util implements MatchResult {
     replacement = new StringBuffer(exp.length - secondOffset);
     for(index = secondOffset + 1; index < exp.length; index++) {
       if(exp[index] == '\\') {
-	backslash = !backslash;
+        backslash = !backslash;
 
-	// 05/05/99 dfs
-	// We unbackslash backslashed delimiters in the replacement string
-	// only if we're on an odd backslash and there is another occurrence
-	// of a delimiter later in the string.
-	if(backslash && index + 1 < exp.length && exp[index + 1] == delimiter
-	  && expression.lastIndexOf(delimiter, exp.length - 1) != (index + 1))
-	{
-	  finalDelimiter = false;
-	  continue;
-	}
+        // 05/05/99 dfs
+        // We unbackslash backslashed delimiters in the replacement string
+        // only if we're on an odd backslash and there is another occurrence
+        // of a delimiter later in the string.
+        if(backslash && index + 1 < exp.length && exp[index + 1] == delimiter
+          && expression.lastIndexOf(delimiter, exp.length - 1) != (index + 1))
+        {
+          finalDelimiter = false;
+          continue;
+        }
       } else if(exp[index] == delimiter && finalDelimiter) {
-	thirdOffset = index;
-	break;
+        thirdOffset = index;
+        break;
       } else {
-	backslash      = false;
-	finalDelimiter = true;
+        backslash      = false;
+        finalDelimiter = true;
       }
 
       replacement.append(exp[index]);
@@ -647,7 +648,7 @@ public final class Perl5Util implements MatchResult {
 
     if(thirdOffset == -1)
       throw new
-	MalformedPerl5PatternException("Invalid expression: " + expression);
+        MalformedPerl5PatternException("Invalid expression: " + expression);
 
     compileOptions    = Perl5Compiler.DEFAULT_MASK;
     numSubstitutions  = 1;
@@ -662,32 +663,32 @@ public final class Perl5Util implements MatchResult {
     for(index = thirdOffset + 1; index < exp.length; index++) {
       switch(exp[index]) {
       case 'i' :
-	compileOptions |= Perl5Compiler.CASE_INSENSITIVE_MASK;
-	break;
+        compileOptions |= Perl5Compiler.CASE_INSENSITIVE_MASK;
+        break;
       case 'm' : compileOptions |= Perl5Compiler.MULTILINE_MASK; break;
       case 's' : compileOptions |= Perl5Compiler.SINGLELINE_MASK; break;
       case 'x' : compileOptions |= Perl5Compiler.EXTENDED_MASK; break;
       case 'g' : numSubstitutions = Util.SUBSTITUTE_ALL; break;
       case 'o' : numInterpolations = 1; break;
       default  :
-	throw new
-	  MalformedPerl5PatternException("Invalid option: " + exp[index]);
+        throw new
+          MalformedPerl5PatternException("Invalid option: " + exp[index]);
       }
     }
 
     compiledPattern =
       __patternCache.getPattern(new String(exp, firstOffset,
-					   secondOffset - firstOffset),
-				compileOptions);
+                                           secondOffset - firstOffset),
+                                compileOptions);
     substitution =
       new Perl5Substitution(replacement.toString(), numInterpolations);
     entry = new ParsedSubstitutionEntry(compiledPattern, substitution,
-					numSubstitutions);
+                                        numSubstitutions);
     __expressionCache.addElement(expression, entry);
 
     subCount =
       Util.substitute(result, __matcher, compiledPattern, substitution,
-		      input, numSubstitutions);
+                      input, numSubstitutions);
 
     __getState().lastMatch = __matcher.getMatch();
 
@@ -792,7 +793,7 @@ public final class Perl5Util implements MatchResult {
    *            because it is derived from RuntimeException.
    */
   public synchronized void split(Collection results, String pattern,
-				 String input, int limit)
+                                 String input, int limit)
        throws MalformedPerl5PatternException 
   {
     int beginOffset, groups, index;
@@ -810,14 +811,14 @@ public final class Perl5Util implements MatchResult {
       currentResult = __matcher.getMatch();
 
       __splitList.add(input.substring(beginOffset,
-				      currentResult.beginOffset(0)));
+                                      currentResult.beginOffset(0)));
 
       if((groups = currentResult.groups()) > 1) {
-	for(index = 1; index < groups; ++index) {
-	  group = currentResult.group(index);
-	  if(group != null && group.length() > 0)
-	    __splitList.add(group);
-	}
+        for(index = 1; index < groups; ++index) {
+          group = currentResult.group(index);
+          if(group != null && group.length() > 0)
+            __splitList.add(group);
+        }
       }
 
       beginOffset = currentResult.endOffset(0);
@@ -831,9 +832,9 @@ public final class Perl5Util implements MatchResult {
 
       str = (String)__splitList.get(i);
       if(str.length() == 0)
-	__splitList.remove(i);
+        __splitList.remove(i);
       else
-	break;
+        break;
     }
 
     results.addAll(__splitList);
@@ -850,7 +851,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    */
   public synchronized void split(Collection results, String pattern,
-				 String input)
+                                 String input)
        throws MalformedPerl5PatternException 
   {
     split(results, pattern, input, SPLIT_ALL);
@@ -933,7 +934,7 @@ public final class Perl5Util implements MatchResult {
   public synchronized ArrayList split(String pattern, String input, int limit)
        throws MalformedPerl5PatternException 
   {
-	ArrayList results = new ArrayList(20);
+        ArrayList results = new ArrayList(20);
     split(results, pattern, input, limit);
     return results;
   }
@@ -1104,7 +1105,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(begin > input.length)
-	begin = input.length;
+        begin = input.length;
 
       return new String(input, state.inputBeginOffset, begin);
     } else if(state.originalInput instanceof String) {
@@ -1115,7 +1116,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(begin > input.length())
-	begin = input.length();
+        begin = input.length();
 
       return input.substring(state.inputBeginOffset, begin);
     }
@@ -1147,7 +1148,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(end >= input.length)
-	return __nullString;
+        return __nullString;
 
       return new String(input, end, state.inputEndOffset - end);
     } else if(state.originalInput instanceof String) {
@@ -1158,7 +1159,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(end >= input.length())
-	return __nullString;
+        return __nullString;
 
       return input.substring(end, state.inputEndOffset);
     }
@@ -1197,7 +1198,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(begin >= input.length)
-	begin = input.length;
+        begin = input.length;
 
       result = new char[begin - state.inputBeginOffset];
       System.arraycopy(input, state.inputBeginOffset, result, 0,
@@ -1210,7 +1211,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(begin >= input.length())
-	begin = input.length();
+        begin = input.length();
 
       result = new char[begin - state.inputBeginOffset];
       input.getChars(state.inputBeginOffset, begin, result, 0);
@@ -1250,7 +1251,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(end >= input.length)
-	return null;
+        return null;
 
       length = state.inputEndOffset - end;
       result = new char[length];
@@ -1263,7 +1264,7 @@ public final class Perl5Util implements MatchResult {
       // Just in case we make sure begin offset is in bounds.  It should
       // be but we're paranoid.
       if(end >= state.inputEndOffset)
-	return null;
+        return null;
 
       result = new char[state.inputEndOffset - end];
       input.getChars(end, state.inputEndOffset, result, 0);

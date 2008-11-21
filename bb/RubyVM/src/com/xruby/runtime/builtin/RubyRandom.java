@@ -5,17 +5,17 @@
 
 package com.xruby.runtime.builtin;
 
-import java.math.BigInteger;
+import j2me.math.BigInteger;
 import java.util.Random;
-import java.util.RandomMe;
+import j2me.util.RandomMe;
 import j2me.lang.SystemMe;
 
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelModule;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelModule;
 
 //@RubyLevelModule(name="Kernel")
 public class RubyRandom {

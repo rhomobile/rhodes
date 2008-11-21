@@ -5,19 +5,15 @@
 
 package com.xruby.runtime.builtin;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.locks.ReentrantLock;
+import j2me.util.*;
+//import java.util.Vector;
+import j2me.util.concurrent.locks.ReentrantLock;
 import j2me.lang.ThreadLocal;
 import j2me.util.LinkedList;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 /**
  * Implement ruby thread in native thread,not green thread.As you

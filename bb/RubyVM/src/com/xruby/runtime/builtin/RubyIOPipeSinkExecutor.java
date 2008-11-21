@@ -6,8 +6,8 @@
 package com.xruby.runtime.builtin;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Pipe.SinkChannel;
+import j2me.nio.ByteBuffer;
+import j2me.nio.channels.Pipe.SinkChannel;
 
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;

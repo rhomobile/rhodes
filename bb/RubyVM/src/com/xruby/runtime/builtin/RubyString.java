@@ -5,12 +5,12 @@
 
 package com.xruby.runtime.builtin;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
+import j2me.math.BigInteger;
+import j2me.util.ArrayList;
+import j2me.util.Collection;
 //import java.util.Formatter;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import j2me.util.Iterator;
+import j2me.util.StringTokenizer;
 //import java.util.StringUtil;
 import j2me.lang.*;
 

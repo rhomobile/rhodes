@@ -7,7 +7,7 @@ package com.xruby.runtime.builtin;
 
 import java.io.IOException;
 //import java.nio.channels.Pipe;
-import java.util.Iterator;
+import j2me.util.Iterator;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyVarArgMethod;
@@ -22,11 +22,11 @@ import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyID;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
+//import java.io.ByteArrayOutputStream;
 import javolution.io.UTF8StreamReader;
 
 ////@RubyLevelClass(name="IO")

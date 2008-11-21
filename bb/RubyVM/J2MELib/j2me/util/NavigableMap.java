@@ -6,7 +6,7 @@ package j2me.util;
  */
 
 
-import java.util.Map;
+import j2me.util.Map;
 import j2me.util.SortedMap;
 
 /**

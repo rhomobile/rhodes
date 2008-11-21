@@ -8,8 +8,8 @@
  */
 package j2me.util;
 
-import java.util.Set;
-import java.util.Comparator;
+import j2me.util.Set;
+import j2me.util.Comparator;
 
 public interface SortedSet extends Set {
     Comparator comparator();

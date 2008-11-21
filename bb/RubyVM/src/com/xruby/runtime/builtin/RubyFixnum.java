@@ -5,7 +5,7 @@
 
 package com.xruby.runtime.builtin;
 
-import java.math.BigInteger;
+import j2me.math.BigInteger;
 import j2me.lang.MathEx;
 
 import com.xruby.runtime.lang.*;

@@ -5,10 +5,10 @@
 
 package com.xruby.runtime.builtin;
 
-import java.io.FileNotFoundException;
+import j2me.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.File;
-import java.io.RandomAccessFile;
+import j2me.io.File;
+import j2me.io.RandomAccessFile;
 
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
