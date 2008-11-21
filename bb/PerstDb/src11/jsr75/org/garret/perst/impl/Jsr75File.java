@@ -22,19 +22,53 @@ public class Jsr75File implements SimpleFile
 
     private static final int ZERO_BUF_SIZE = 4096;
 
+	private void log(String txt) {
+		System.out.println(txt);
+	}
+
+	void createDir( String strDir  )throws IOException{
+		log("Dir:"+strDir);
+        fconn = (FileConnection)Connector.open(strDir,Connector.READ_WRITE);
+        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+        if (!fconn.exists()) { 
+            fconn.mkdir();  // create the dir if it doesn't exist
+        }
+	}
+
     public void open(String path, boolean readOnly, boolean noFlush) 
     {
         String url = path;
         this.noFlush = noFlush;
+        log(path);
         if (!url.startsWith("file:")) { 
             if (url.startsWith("/")) { 
                 url = "file:///" + path;
             } else { 
-                Enumeration e = FileSystemRegistry.listRoots();
+            	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
+           
+            	try{
+            		createDir( "file:///" + "store/home/user/Rho/" );
+
+            		url = "file:///" + "store/home/user/Rho/" + path;
+            		log(url);
+                    fconn = (FileConnection)Connector.open(url,Connector.READ_WRITE);
+                    // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+                    if (!fconn.exists()) { 
+                        fconn.create();  // create the file if it doesn't exist
+                    }
+            	} catch (Exception x) {
+                	log("Error open file: " + x.getMessage());
+                }
+            	
+            	/*                Enumeration e = FileSystemRegistry.listRoots();
                 while (e.hasMoreElements()) {
                     // choose arbitrary root directory
-                    url = "file:///" + (String)e.nextElement() + path;
-                    try { 
+                	String strRoot = (String)e.nextElement();
+                    url = "file:///" + strRoot + path;
+                    log(url);
+                    try {
+                    	createDir( "file:///" + strRoot + "/Rho" );
+                    	
                         fconn = (FileConnection)Connector.open(url);
                         // If no exception is thrown, then the URI is valid, but the file may or may not exist.
                         if (!fconn.exists()) { 
@@ -42,15 +76,17 @@ public class Jsr75File implements SimpleFile
                         }
                         break;
                     } catch (Exception x) {
+                    	log("Error open file: " + x.getMessage());
                         fconn = null;
                         url = "file:///" + path;
                         // try next root
                     }
-                }
+                }*/
             }
         }
         try { 
-            if (fconn == null) { 
+            if (fconn == null) {
+            	log("Try to open file: " + url);
                 fconn = (FileConnection)Connector.open(url);
                 // If no exception is thrown, then the URI is valid, but the file may or may not exist.
                 if (!fconn.exists()) { 
@@ -63,6 +99,7 @@ public class Jsr75File implements SimpleFile
                 outPos = 0;
             }
         } catch (IOException x) { 
+        	log("Exception: " + x.getMessage());
             throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
         }        
         in = null;
