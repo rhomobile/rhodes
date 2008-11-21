@@ -5,14 +5,14 @@
 
 package com.xruby.runtime.lang;
 
-import java.util.Iterator;
-import java.util.WeakHashMap;
+import j2me.util.Iterator;
+import j2me.util.WeakHashMap;
 
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyFixnum;
-import com.xruby.runtime.builtin.RubyProc;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelModule;
+//import com.xruby.runtime.builtin.RubyProc;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelModule;
 
 //we are using map as list here.
 //@RubyLevelModule(name="ObjectSpace")

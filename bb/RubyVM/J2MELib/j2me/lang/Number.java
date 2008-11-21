@@ -8,7 +8,7 @@
  */
 package j2me.lang;
 
-public abstract class Number implements java.io.Serializable {
+public abstract class Number {//implements java.io.Serializable {
     
     public abstract int intValue();
 

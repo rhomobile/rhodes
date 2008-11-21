@@ -9,8 +9,8 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
-import java.io.File;
-import java.math.BigInteger;
+import j2me.io.File;
+import j2me.math.BigInteger;
 
 import j2me.lang.StringMe;
 

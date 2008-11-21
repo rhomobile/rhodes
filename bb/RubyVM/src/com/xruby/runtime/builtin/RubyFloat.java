@@ -5,18 +5,18 @@
 
 package com.xruby.runtime.builtin;
 
-import java.math.BigDecimal;
+import j2me.math.BigDecimal;
 import j2me.lang.MathEx;
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyBlock;
+//import com.xruby.runtime.lang.RubyOneArgMethod;
+//import com.xruby.runtime.lang.RubyBlock;
 
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyID;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 ////@RubyLevelClass(name="Float", superclass="Numeric")
 public class RubyFloat extends RubyNumeric {

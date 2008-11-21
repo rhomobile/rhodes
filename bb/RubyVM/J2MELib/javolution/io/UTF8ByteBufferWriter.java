@@ -11,7 +11,7 @@ package javolution.io;
 import j2me.lang.CharSequence;
 import j2me.lang.IllegalStateException;
 import j2me.io.CharConversionException;
-import java.nio.ByteBuffer;
+import j2me.nio.ByteBuffer;
 
 import java.io.IOException;
 import java.io.Writer;

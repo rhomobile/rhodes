@@ -9,12 +9,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import j2me.util.*;
 import j2me.lang.Iterable;
 
 ////@RubyLevelClass(name="Array", modules="Enumerable")
@@ -492,8 +487,9 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         return ObjectFactory.createBoolean(this.array_.isEmpty());
     }
 
+    //RHO_COMMENT
     //@RubyLevelMethod(name="to_s")
-    public RubyValue to_s() {
+    /*public RubyValue to_s() {
         RubyString r = ObjectFactory.createString();
 
 //        for (RubyValue v : array_) {
@@ -506,7 +502,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         }
 
         return r;
-    }
+    }*/
 
     //@RubyLevelMethod(name="length")
     public RubyFixnum length() {

@@ -7,8 +7,8 @@ package com.xruby.runtime.lang;
 
 
 //import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Iterator;
+import j2me.util.ArrayList;
+import j2me.util.Iterator;
 
 public class AtExitBlocks {
     private static ArrayList/*<RubyBlock>*/ registgered_blocks_ = new ArrayList/*<RubyBlock>*/();

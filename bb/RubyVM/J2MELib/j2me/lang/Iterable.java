@@ -8,7 +8,7 @@
  */
 package j2me.lang;
 
-import java.util.Iterator;
+import j2me.util.Iterator;
 
 public interface Iterable {
     Iterator iterator();

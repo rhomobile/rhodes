@@ -13,6 +13,12 @@ AutoRestart=0
 ]
 [DefFiles
 ]
+[DependsOn
+PerstImplJSR75
+PerstLite
+RhoBundle
+RubyVM
+]
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
@@ -46,4 +52,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=0
-Version=1.02
+Version=1.18

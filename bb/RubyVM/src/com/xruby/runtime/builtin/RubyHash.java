@@ -10,8 +10,8 @@ import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import j2me.util.HashMap;
+import j2me.util.Iterator;
 
 ////@RubyLevelClass(name="Hash", modules="Enumerable")
 public class RubyHash extends RubyBasic {
@@ -67,8 +67,9 @@ public class RubyHash extends RubyBasic {
         return ObjectFactory.createFixnum(map_.size());
     }
 
+    //RHO_COMMENT
     //@RubyLevelMethod(name="to_s")
-    public RubyString to_s() {
+/*    public RubyString to_s() {
         RubyString r = ObjectFactory.createString();
 
 //        for (RubyValue key : map_.keySet()) {
@@ -79,7 +80,7 @@ public class RubyHash extends RubyBasic {
         }
 
         return r;
-    }
+    }*/
 
     private static RubyID defaultID = RubyID.intern("default");
 

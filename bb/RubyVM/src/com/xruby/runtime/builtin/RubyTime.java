@@ -5,17 +5,17 @@
 
 package com.xruby.runtime.builtin;
 
-import java.text.SimpleDateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
+//import j2me.util.Locale;
 import java.util.TimeZone;
 import java.util.Date;
 
-import com.rho.db.PerstLiteAdapter;
+//import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyAllocMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyAllocMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import j2me.lang.*;
 

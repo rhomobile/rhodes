@@ -28,7 +28,7 @@ package org.apache.oro.util;
  * @version @version@
  * @since 1.0
  */
-final class GenericCacheEntry implements java.io.Serializable {
+final class GenericCacheEntry implements j2me.io.Serializable {
   /** The cache array index of the entry. */
   int _index;
   /** The value stored at this entry. */

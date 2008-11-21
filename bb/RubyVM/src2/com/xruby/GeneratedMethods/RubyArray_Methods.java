@@ -150,10 +150,10 @@ klass.defineMethod( "push", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
 });
-klass.defineMethod( "to_s", new RubyNoArgMethod(){ 
+/*klass.defineMethod( "to_s", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).to_s();}
-});
+});*/
 klass.defineMethod( "clear", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).clear();}

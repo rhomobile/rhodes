@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.microedition.io.Connector;
+//import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import com.rho.NetworkAccess;
 
 /**
  * The Class SyncManager.
@@ -49,7 +50,8 @@ public class SyncManager {
 		try {
 			long len = 0;
 			int ch = 0;
-			connection = (HttpConnection) Connector.open(url);
+			//connection = (HttpConnection) Connector.open(url);
+			connection = NetworkAccess.connect(url);
 			is = connection.openInputStream();
 			len = connection.getLength();
 			code = connection.getResponseCode();
@@ -101,7 +103,8 @@ public class SyncManager {
 		int code = 0;
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		try {
-			connection = (HttpConnection) Connector.open(url);
+			//connection = (HttpConnection) Connector.open(url);
+			connection = NetworkAccess.connect(url);
 			os = connection.openOutputStream();
 			connection.setRequestMethod(HttpConnection.POST);
 			os.write(data.getBytes());

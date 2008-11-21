@@ -6,9 +6,9 @@
 package com.xruby.runtime.lang;
 
 import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.builtin.RubyRegexp;
+//import com.xruby.runtime.builtin.RubyRegexp;
 
-import java.util.*;
+import j2me.util.*;
 
 public class RubyBinding extends RubyBasic {
 	private RubyModule scope_;

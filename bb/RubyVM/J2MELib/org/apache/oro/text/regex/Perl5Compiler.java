@@ -20,6 +20,7 @@
 package org.apache.oro.text.regex;
 
 import java.util.*;
+import j2me.util.*;
 import j2me.lang.CharacterMe;
 
 /**
@@ -200,7 +201,7 @@ public final class Perl5Compiler implements PatternCompiler {
     buffer = new StringBuffer(2*expression.length);
     for(ch = 0; ch < expression.length; ch++) {
       if(!OpCode._isWordCharacter(expression[ch]))
-	buffer.append('\\');
+        buffer.append('\\');
       buffer.append(expression[ch]);
     }
 
@@ -232,7 +233,7 @@ public final class Perl5Compiler implements PatternCompiler {
   private static boolean __isComplexRepetitionOp(char[] ch, int offset) {
     if(offset < ch.length && offset >= 0)
        return (ch[offset] == '*' || ch[offset] == '+' || ch[offset] == '?'
-	       || (ch[offset] == '{' && __parseRepetition(ch, offset)));
+               || (ch[offset] == '{' && __parseRepetition(ch, offset)));
     return false;
   }
 
@@ -261,13 +262,13 @@ public final class Perl5Compiler implements PatternCompiler {
   }
 
   private static int __parseHex(char[] str, int offset, int maxLength,
-				int[] scanned)
+                                int[] scanned)
   {
     int val = 0, index;
 
     scanned[0] = 0;
     while(offset < str.length && maxLength-- > 0 &&
-	  (index = __HEX_DIGIT.indexOf(str[offset])) != -1) {
+          (index = __HEX_DIGIT.indexOf(str[offset])) != -1) {
       val <<= 4;
       val |= (index & 15);
       ++offset;
@@ -278,13 +279,13 @@ public final class Perl5Compiler implements PatternCompiler {
   }
 
   private static int __parseOctal(char[] str, int offset, int maxLength,
-				 int[] scanned)
+                                 int[] scanned)
   {
     int val = 0;
 
     scanned[0] = 0;
     while(offset < str.length && 
-	  maxLength > 0 && str[offset] >= '0' && str[offset] <= '7') {
+          maxLength > 0 && str[offset] >= '0' && str[offset] <= '7') {
       val <<= 3;
       val |= (str[offset] - '0');
       --maxLength;
@@ -395,7 +396,7 @@ public final class Perl5Compiler implements PatternCompiler {
     while(true) {
       temp = OpCode._getNext(__program, scan);
       if(temp == OpCode._NULL_OFFSET)
-	break;
+        break;
       scan = temp;
     }
 
@@ -425,24 +426,24 @@ public final class Perl5Compiler implements PatternCompiler {
       value = __input._getValue();
 
       if(value == '(' && __input._getValueRelative(1) == '?' &&
-	 __input._getValueRelative(2) == '#') {
-	// Skip comments
-	while(value != CharStringPointer._END_OF_STRING && value != ')')
-	  value = __input._increment();
-	__input._increment();
-	continue;
+         __input._getValueRelative(2) == '#') {
+        // Skip comments
+        while(value != CharStringPointer._END_OF_STRING && value != ')')
+          value = __input._increment();
+        __input._increment();
+        continue;
       }
 
       if((__modifierFlags[0] & __EXTENDED) != 0) {
-	if(CharacterMe.isWhitespace(value)) {
-	  __input._increment();
-	  continue;
-	} else if(value == '#') {
-	  while(value != CharStringPointer._END_OF_STRING && value != '\n')
-	    value = __input._increment();
-	  __input._increment();
-	  continue;
-	}
+        if(CharacterMe.isWhitespace(value)) {
+          __input._increment();
+          continue;
+        } else if(value == '#') {
+          while(value != CharStringPointer._END_OF_STRING && value != '\n')
+            value = __input._increment();
+          __input._increment();
+          continue;
+        }
       }
 
       return ret;
@@ -475,25 +476,25 @@ public final class Perl5Compiler implements PatternCompiler {
     value = __input._getValue();
 
     while(value != CharStringPointer._END_OF_STRING &&
-	  value != '|' && value != ')') {
+          value != '|' && value != ')') {
       flags &= ~__TRYAGAIN;
       latest = __parseBranch(retFlags);
 
       if(latest == OpCode._NULL_OFFSET) {
-	if((flags & __TRYAGAIN) != 0){
-	  value = __input._getValue();
-	  continue;
-	}
-	return OpCode._NULL_OFFSET;
+        if((flags & __TRYAGAIN) != 0){
+          value = __input._getValue();
+          continue;
+        }
+        return OpCode._NULL_OFFSET;
       }
 
       retFlags[0] |= (flags & __NONNULL);
 
       if(chain == OpCode._NULL_OFFSET)
-	retFlags[0] |= (flags & __SPSTART);
+        retFlags[0] |= (flags & __SPSTART);
       else {
-	++__cost;
-	__programAddTail(chain, latest);
+        ++__cost;
+        __programAddTail(chain, latest);
       }
       chain = latest;
       value = __input._getValue();
@@ -524,207 +525,207 @@ public final class Perl5Compiler implements PatternCompiler {
 
       switch(value) {
       case '^' :
-	__getNextChar();
-	// The order here is important in order to support /ms.
-	// /m takes precedence over /s for ^ and $, but not for .
-	if((__modifierFlags[0] & __MULTILINE) != 0)
-	  offset = __emitNode(OpCode._MBOL);
-	else if((__modifierFlags[0] & __SINGLELINE) != 0)
-	  offset = __emitNode(OpCode._SBOL);
-	else
-	  offset = __emitNode(OpCode._BOL);
-	break tryAgain;
+        __getNextChar();
+        // The order here is important in order to support /ms.
+        // /m takes precedence over /s for ^ and $, but not for .
+        if((__modifierFlags[0] & __MULTILINE) != 0)
+          offset = __emitNode(OpCode._MBOL);
+        else if((__modifierFlags[0] & __SINGLELINE) != 0)
+          offset = __emitNode(OpCode._SBOL);
+        else
+          offset = __emitNode(OpCode._BOL);
+        break tryAgain;
 
       case '$':
-	__getNextChar();
-	// The order here is important in order to support /ms.
-	// /m takes precedence over /s for ^ and $, but not for .
-	if((__modifierFlags[0] & __MULTILINE) != 0)
-	  offset = __emitNode(OpCode._MEOL);
-	else if((__modifierFlags[0] & __SINGLELINE) != 0)
-	  offset = __emitNode(OpCode._SEOL);
-	else
-	  offset = __emitNode(OpCode._EOL);
-	break tryAgain;
+        __getNextChar();
+        // The order here is important in order to support /ms.
+        // /m takes precedence over /s for ^ and $, but not for .
+        if((__modifierFlags[0] & __MULTILINE) != 0)
+          offset = __emitNode(OpCode._MEOL);
+        else if((__modifierFlags[0] & __SINGLELINE) != 0)
+          offset = __emitNode(OpCode._SEOL);
+        else
+          offset = __emitNode(OpCode._EOL);
+        break tryAgain;
 
       case '.':
-	__getNextChar();
-	// The order here is important in order to support /ms.
-	// /m takes precedence over /s for ^ and $, but not for .
-	if((__modifierFlags[0] & __SINGLELINE) != 0)
-	  offset = __emitNode(OpCode._SANY);
-	else
-	  offset = __emitNode(OpCode._ANY);
-	++__cost;
-	retFlags[0] |= (__NONNULL | __SIMPLE);
-	break tryAgain;
+        __getNextChar();
+        // The order here is important in order to support /ms.
+        // /m takes precedence over /s for ^ and $, but not for .
+        if((__modifierFlags[0] & __SINGLELINE) != 0)
+          offset = __emitNode(OpCode._SANY);
+        else
+          offset = __emitNode(OpCode._ANY);
+        ++__cost;
+        retFlags[0] |= (__NONNULL | __SIMPLE);
+        break tryAgain;
 
       case '[':
-	__input._increment();
-	offset = __parseUnicodeClass();
-	retFlags[0] |= (__NONNULL | __SIMPLE);
-	break tryAgain;
+        __input._increment();
+        offset = __parseUnicodeClass();
+        retFlags[0] |= (__NONNULL | __SIMPLE);
+        break tryAgain;
 
       case '(':
-	__getNextChar();
-	offset = __parseExpression(true, flags);
-	if(offset == OpCode._NULL_OFFSET) {
-	  if((flags[0] & __TRYAGAIN) != 0)
-	    continue tryAgain;
-	  return OpCode._NULL_OFFSET;
-	}
-	retFlags[0] |= (flags[0] & (__NONNULL | __SPSTART));
-	break tryAgain;
+        __getNextChar();
+        offset = __parseExpression(true, flags);
+        if(offset == OpCode._NULL_OFFSET) {
+          if((flags[0] & __TRYAGAIN) != 0)
+            continue tryAgain;
+          return OpCode._NULL_OFFSET;
+        }
+        retFlags[0] |= (flags[0] & (__NONNULL | __SPSTART));
+        break tryAgain;
 
       case '|':
       case ')':
-	if((flags[0] & __TRYAGAIN) != 0) {
-	  retFlags[0] |= __TRYAGAIN;
-	  return OpCode._NULL_OFFSET;
-	}
+        if((flags[0] & __TRYAGAIN) != 0) {
+          retFlags[0] |= __TRYAGAIN;
+          return OpCode._NULL_OFFSET;
+        }
 
-	throw new MalformedPatternException("Error in expression at " +
-				   __input._toString(__input._getOffset()));
-	//break tryAgain;
+        throw new MalformedPatternException("Error in expression at " +
+                                   __input._toString(__input._getOffset()));
+        //break tryAgain;
 
       case '?':
       case '+':
       case '*':
-	throw new MalformedPatternException(
+        throw new MalformedPatternException(
                  "?+* follows nothing in expression");
-	//break tryAgain;
+        //break tryAgain;
 
       case '\\':
-	value = __input._increment();
+        value = __input._increment();
 
-	switch(value) {
-	case 'A' :
-	  offset = __emitNode(OpCode._SBOL);
-	  retFlags[0] |= __SIMPLE;
-	  __getNextChar();
-	  break;
-	case 'G':
-	  offset = __emitNode(OpCode._GBOL);
-	  retFlags[0] |= __SIMPLE;
-	  __getNextChar();
-	  break;
-	case 'Z':
-	  offset = __emitNode(OpCode._SEOL);
-	  retFlags[0] |= __SIMPLE;
-	  __getNextChar();
-	  break;
-	case 'w':
-	  offset = __emitNode(OpCode._ALNUM);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'W':
-	  offset = __emitNode(OpCode._NALNUM);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'b':
-	  offset = __emitNode(OpCode._BOUND);
-	  retFlags[0] |= __SIMPLE;
-	  __getNextChar();
-	  break;
-	case 'B':
-	  offset = __emitNode(OpCode._NBOUND);
-	  retFlags[0] |= __SIMPLE;
-	  __getNextChar();
-	  break;
-	case 's':
-	  offset = __emitNode(OpCode._SPACE);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'S':
-	  offset = __emitNode(OpCode._NSPACE);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'd':
-	  offset = __emitNode(OpCode._DIGIT);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'D':
-	  offset = __emitNode(OpCode._NDIGIT);
-	  retFlags[0] |= (__NONNULL | __SIMPLE);
-	  __getNextChar();
-	  break;
-	case 'n': case 'r': case 't': case 'f': case 'e': case 'a': case 'x':
-	case 'c': case '0':
-	  doDefault = true;
-	  break tryAgain;
-	case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-	case '8': case '9':
-	  int num;
-	  StringBuffer buffer = new StringBuffer(10);
+        switch(value) {
+        case 'A' :
+          offset = __emitNode(OpCode._SBOL);
+          retFlags[0] |= __SIMPLE;
+          __getNextChar();
+          break;
+        case 'G':
+          offset = __emitNode(OpCode._GBOL);
+          retFlags[0] |= __SIMPLE;
+          __getNextChar();
+          break;
+        case 'Z':
+          offset = __emitNode(OpCode._SEOL);
+          retFlags[0] |= __SIMPLE;
+          __getNextChar();
+          break;
+        case 'w':
+          offset = __emitNode(OpCode._ALNUM);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'W':
+          offset = __emitNode(OpCode._NALNUM);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'b':
+          offset = __emitNode(OpCode._BOUND);
+          retFlags[0] |= __SIMPLE;
+          __getNextChar();
+          break;
+        case 'B':
+          offset = __emitNode(OpCode._NBOUND);
+          retFlags[0] |= __SIMPLE;
+          __getNextChar();
+          break;
+        case 's':
+          offset = __emitNode(OpCode._SPACE);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'S':
+          offset = __emitNode(OpCode._NSPACE);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'd':
+          offset = __emitNode(OpCode._DIGIT);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'D':
+          offset = __emitNode(OpCode._NDIGIT);
+          retFlags[0] |= (__NONNULL | __SIMPLE);
+          __getNextChar();
+          break;
+        case 'n': case 'r': case 't': case 'f': case 'e': case 'a': case 'x':
+        case 'c': case '0':
+          doDefault = true;
+          break tryAgain;
+        case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+        case '8': case '9':
+          int num;
+          StringBuffer buffer = new StringBuffer(10);
 
-	  num = 0;
-	  value = __input._getValueRelative(num);
+          num = 0;
+          value = __input._getValueRelative(num);
 
-	  while(Character.isDigit(value)) {
-	    buffer.append(value);
-	    ++num;
-	    value = __input._getValueRelative(num);
-	  }
+          while(Character.isDigit(value)) {
+            buffer.append(value);
+            ++num;
+            value = __input._getValueRelative(num);
+          }
 
-	  try {
-	    num = Integer.parseInt(buffer.toString());
-	  } catch(NumberFormatException e) {
-	    throw new MalformedPatternException(
-	   "Unexpected number format exception.  Please report this bug." +
-	   "NumberFormatException message: " + e.getMessage());
-	  }
+          try {
+            num = Integer.parseInt(buffer.toString());
+          } catch(NumberFormatException e) {
+            throw new MalformedPatternException(
+           "Unexpected number format exception.  Please report this bug." +
+           "NumberFormatException message: " + e.getMessage());
+          }
 
-	  if(num > 9 && num >= __numParentheses) {
-	    doDefault = true;
-	    break tryAgain;
-	  } else {
-	    // A backreference may only occur AFTER its group
-	    if(num >= __numParentheses)
-	      throw new MalformedPatternException("Invalid backreference: \\" +
-						  num);
-	    __sawBackreference = true;
-	    offset = __emitArgNode(OpCode._REF, (char)num);
-	    retFlags[0] |= __NONNULL;
+          if(num > 9 && num >= __numParentheses) {
+            doDefault = true;
+            break tryAgain;
+          } else {
+            // A backreference may only occur AFTER its group
+            if(num >= __numParentheses)
+              throw new MalformedPatternException("Invalid backreference: \\" +
+                                                  num);
+            __sawBackreference = true;
+            offset = __emitArgNode(OpCode._REF, (char)num);
+            retFlags[0] |= __NONNULL;
 
-	    value = __input._getValue();
-	    while(Character.isDigit(value))
-	      value = __input._increment();
+            value = __input._getValue();
+            while(Character.isDigit(value))
+              value = __input._increment();
 
-	    __input._decrement();
-	    __getNextChar();
-	  }
-	  break;
-	case '\0':
-	case CharStringPointer._END_OF_STRING:
-	  if(__input._isAtEnd())
-	    throw new
-	      MalformedPatternException("Trailing \\ in expression.");
+            __input._decrement();
+            __getNextChar();
+          }
+          break;
+        case '\0':
+        case CharStringPointer._END_OF_STRING:
+          if(__input._isAtEnd())
+            throw new
+              MalformedPatternException("Trailing \\ in expression.");
 
-	// fall through to default
-	default:
-	  doDefault = true;
-	  break tryAgain;
-	}
-	break tryAgain;
+        // fall through to default
+        default:
+          doDefault = true;
+          break tryAgain;
+        }
+        break tryAgain;
 
       case '#':
-	// skip over comments
-	if((__modifierFlags[0] & __EXTENDED) != 0) {
-	  while(!__input._isAtEnd() && __input._getValue() != '\n')
-	    __input._increment();
-	  if(!__input._isAtEnd())
-	    continue tryAgain;
-	}
-	// fall through to default
+        // skip over comments
+        if((__modifierFlags[0] & __EXTENDED) != 0) {
+          while(!__input._isAtEnd() && __input._getValue() != '\n')
+            __input._increment();
+          if(!__input._isAtEnd())
+            continue tryAgain;
+        }
+        // fall through to default
       default:
-	__input._increment();
-	doDefault = true;
-	break tryAgain;
+        __input._increment();
+        doDefault = true;
+        break tryAgain;
       }// end master switch
     } // end tryAgain
 
@@ -740,148 +741,148 @@ public final class Perl5Compiler implements PatternCompiler {
 
     forLoop:
       for(length = 0, pOffset = __input._getOffset() - 1,
-	    maxOffset = __input._getLength();
-	  length < 127 && pOffset < maxOffset; ++length) {
+            maxOffset = __input._getLength();
+          length < 127 && pOffset < maxOffset; ++length) {
 
-	lastOffset = pOffset;
-	value = __input._getValue(pOffset);
+        lastOffset = pOffset;
+        value = __input._getValue(pOffset);
 
-	switch(value) {
-	case '^': case '$': case '.': case '[': case '(': case ')':
-	case '|':
-	  break forLoop;
-	case '\\':
-	  value = __input._getValue(++pOffset);
+        switch(value) {
+        case '^': case '$': case '.': case '[': case '(': case ')':
+        case '|':
+          break forLoop;
+        case '\\':
+          value = __input._getValue(++pOffset);
 
-	  switch(value) {
-	  case 'A': case 'G': case 'Z': case 'w': case 'W': case 'b':
-	  case 'B': case 's': case 'S': case 'd': case 'D':
-	    --pOffset;
-	    break forLoop;
-	  case 'n':
-	    ender = '\n';
-	    ++pOffset;
-	    break;
-	  case 'r':
-	    ender = '\r';
-	    ++pOffset;
-	    break;
-	  case 't':
-	    ender = '\t';
-	    ++pOffset;
-	    break;
-	  case 'f':
-	    ender = '\f';
-	    ++pOffset;
-	    break;
-	  case 'e':
-	    ender = '\033';
-	    ++pOffset;
-	    break;
-	  case 'a':
-	    ender = '\007';
-	    ++pOffset;
-	    break;
-	  case 'x':
-	    numLength = new int[1];
-	    ender = (char)__parseHex(__input._array, ++pOffset, 2, numLength);
-	    pOffset+=numLength[0];
-	    break;
-	  case 'c':
-	    ++pOffset;
-	    ender = __input._getValue(pOffset++);
-	    if(Character.isLowerCase(ender))
-	      ender = Character.toUpperCase(ender);
-	    ender ^= 64;
-	    break;
-	  case '0': case '1': case '2': case'3': case '4': case '5':
-	  case '6': case '7': case '8': case '9':
-	    boolean doOctal = false;
-	    value = __input._getValue(pOffset);
+          switch(value) {
+          case 'A': case 'G': case 'Z': case 'w': case 'W': case 'b':
+          case 'B': case 's': case 'S': case 'd': case 'D':
+            --pOffset;
+            break forLoop;
+          case 'n':
+            ender = '\n';
+            ++pOffset;
+            break;
+          case 'r':
+            ender = '\r';
+            ++pOffset;
+            break;
+          case 't':
+            ender = '\t';
+            ++pOffset;
+            break;
+          case 'f':
+            ender = '\f';
+            ++pOffset;
+            break;
+          case 'e':
+            ender = '\033';
+            ++pOffset;
+            break;
+          case 'a':
+            ender = '\007';
+            ++pOffset;
+            break;
+          case 'x':
+            numLength = new int[1];
+            ender = (char)__parseHex(__input._array, ++pOffset, 2, numLength);
+            pOffset+=numLength[0];
+            break;
+          case 'c':
+            ++pOffset;
+            ender = __input._getValue(pOffset++);
+            if(Character.isLowerCase(ender))
+              ender = Character.toUpperCase(ender);
+            ender ^= 64;
+            break;
+          case '0': case '1': case '2': case'3': case '4': case '5':
+          case '6': case '7': case '8': case '9':
+            boolean doOctal = false;
+            value = __input._getValue(pOffset);
 
-	    if(value == '0')
-	      doOctal = true;
-	    value = __input._getValue(pOffset + 1);
+            if(value == '0')
+              doOctal = true;
+            value = __input._getValue(pOffset + 1);
 
-	    if(Character.isDigit(value)) {
-	      int num;
-	      StringBuffer buffer = new StringBuffer(10);
+            if(Character.isDigit(value)) {
+              int num;
+              StringBuffer buffer = new StringBuffer(10);
 
-	      num = pOffset;
-	      value = __input._getValue(num);
+              num = pOffset;
+              value = __input._getValue(num);
 
-	      while(Character.isDigit(value)){
-		buffer.append(value);
-		++num;
-		value = __input._getValue(num);
-	      }
+              while(Character.isDigit(value)){
+                buffer.append(value);
+                ++num;
+                value = __input._getValue(num);
+              }
 
-	      try {
-		num = Integer.parseInt(buffer.toString());
-	      } catch(NumberFormatException e) {
-		throw new MalformedPatternException(
-	     "Unexpected number format exception.  Please report this bug." +
-	     "NumberFormatException message: " + e.getMessage());
-	      }
+              try {
+                num = Integer.parseInt(buffer.toString());
+              } catch(NumberFormatException e) {
+                throw new MalformedPatternException(
+             "Unexpected number format exception.  Please report this bug." +
+             "NumberFormatException message: " + e.getMessage());
+              }
 
-	      if(!doOctal)
-		doOctal = (num >= __numParentheses);
-	    }
+              if(!doOctal)
+                doOctal = (num >= __numParentheses);
+            }
 
-	    if(doOctal) {
-	      numLength = new int[1];
-	      ender = (char)__parseOctal(__input._array, pOffset, 3, numLength);
-	      pOffset+=numLength[0];
-	    } else {
-	      --pOffset;
-	      break forLoop;
-	    }
-	    break;
-	  case CharStringPointer._END_OF_STRING:
-	  case '\0':
-	    if(pOffset >= maxOffset)
-	      throw new
-		MalformedPatternException("Trailing \\ in expression.");
-	    // fall through to default
-	  default:
-	    ender = __input._getValue(pOffset++);
-	    break;
-	  } // end backslash switch
-	  break;
-	case '#':
-	  if((__modifierFlags[0] & __EXTENDED) != 0) {
-	    while(pOffset < maxOffset && __input._getValue(pOffset) != '\n')
-	      ++pOffset;
-	  }
-	  // fall through to whitespace handling
-	case ' ': case '\t': case '\n': case '\r': case '\f': case '\013':
-	  if((__modifierFlags[0] & __EXTENDED) != 0) {
-	    ++pOffset;
-	    --length;
-	    continue;
-	  }
-	  // fall through to default
-	default:
-	  ender = __input._getValue(pOffset++);
-	  break;
+            if(doOctal) {
+              numLength = new int[1];
+              ender = (char)__parseOctal(__input._array, pOffset, 3, numLength);
+              pOffset+=numLength[0];
+            } else {
+              --pOffset;
+              break forLoop;
+            }
+            break;
+          case CharStringPointer._END_OF_STRING:
+          case '\0':
+            if(pOffset >= maxOffset)
+              throw new
+                MalformedPatternException("Trailing \\ in expression.");
+            // fall through to default
+          default:
+            ender = __input._getValue(pOffset++);
+            break;
+          } // end backslash switch
+          break;
+        case '#':
+          if((__modifierFlags[0] & __EXTENDED) != 0) {
+            while(pOffset < maxOffset && __input._getValue(pOffset) != '\n')
+              ++pOffset;
+          }
+          // fall through to whitespace handling
+        case ' ': case '\t': case '\n': case '\r': case '\f': case '\013':
+          if((__modifierFlags[0] & __EXTENDED) != 0) {
+            ++pOffset;
+            --length;
+            continue;
+          }
+          // fall through to default
+        default:
+          ender = __input._getValue(pOffset++);
+          break;
 
-	}   // end master switch
+        }   // end master switch
 
-	if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
-	   Character.isUpperCase(ender))
-	  ender = Character.toLowerCase(ender);
+        if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
+           Character.isUpperCase(ender))
+          ender = Character.toLowerCase(ender);
 
-	if(pOffset < maxOffset && __isComplexRepetitionOp(__input._array, pOffset)) {
-	  if(length > 0)
-	    pOffset = lastOffset;
-	  else {
-	    ++length;
-	    __emitCode(ender);
-	  }
-	  break;
-	}
+        if(pOffset < maxOffset && __isComplexRepetitionOp(__input._array, pOffset)) {
+          if(length > 0)
+            pOffset = lastOffset;
+          else {
+            ++length;
+            __emitCode(ender);
+          }
+          break;
+        }
 
-	__emitCode(ender);
+        __emitCode(ender);
 
 
       } // end for loop
@@ -891,14 +892,14 @@ public final class Perl5Compiler implements PatternCompiler {
       __getNextChar();
 
       if(length < 0)
-	throw new MalformedPatternException(
+        throw new MalformedPatternException(
          "Unexpected compilation failure.  Please report this bug!");
       if(length > 0)
-	retFlags[0] |= __NONNULL;
+        retFlags[0] |= __NONNULL;
       if(length == 1)
-	retFlags[0] |= __SIMPLE;
+        retFlags[0] |= __SIMPLE;
       if(__program!= null)
-	__program[OpCode._getOperand(offset)] = (char)length;
+        __program[OpCode._getOperand(offset)] = (char)length;
       //__emitCode('\0'); // debug
       __emitCode(CharStringPointer._END_OF_STRING);
     }
@@ -912,7 +913,7 @@ public final class Perl5Compiler implements PatternCompiler {
   /*
   // Set the bits in a character class.  Only recognizes ascii.
   private void __setCharacterClassBits(char[] bits, int offset, char deflt,
-				       char ch)
+                                       char ch)
   {
     if(__program== null || ch >= 256)
       return;
@@ -952,116 +953,116 @@ public final class Perl5Compiler implements PatternCompiler {
       skipTest = false;
 
     while((!__input._isAtEnd() && (clss = __input._getValue()) != ']')
-	  || skipTest) {
+          || skipTest) {
       // It sucks, but we have to make this assignment every time
       skipTest = false;
       __input._increment();
       if(clss == '\\') {
-	clss = __input._postIncrement();
+        clss = __input._postIncrement();
 
-	switch(clss){
-	case 'w':
-	  for(clss = 0; clss < 256; clss++)
-	    if(OpCode._isWordCharacter(clss))
-	      __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 'W':
-	  for(clss = 0; clss < 256; clss++)
-	    if(!OpCode._isWordCharacter(clss))
-	      __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 's':
-	  for(clss = 0; clss < 256; clss++)
-	    if(Character.isWhitespace(clss))
-	      __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 'S':
-	  for(clss = 0; clss < 256; clss++)
-	    if(!Character.isWhitespace(clss))
-	      __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 'd':
-	  for(clss = '0'; clss <= '9'; clss++)
-	    __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 'D':
-	  for(clss = 0; clss < '0'; clss++)
-	    __setCharacterClassBits(__program, bits, deflt, clss);
-	  for(clss = (char)('9' + 1); clss < 256; clss++)
-	    __setCharacterClassBits(__program, bits, deflt, clss);
-	  lastclss = Character.MAX_VALUE;
-	  continue;
-	case 'n':
-	  clss = '\n';
-	  break;
-	case 'r':
-	  clss = '\r';
-	  break;
-	case 't':
-	  clss = '\t';
-	  break;
-	case 'f':
-	  clss = '\f';
-	  break;
-	case 'b':
-	  clss = '\b';
-	  break;
-	case 'e':
-	  clss = '\033';
-	  break;
-	case 'a':
-	  clss = '\007';
-	  break;
-	case 'x':
-	  clss = (char)__parseHex(__input._array, __input._getOffset(), 2,
-				  numLength);
-	  __input._increment(numLength[0]);
-	  break;
-	case 'c':
-	  clss = __input._postIncrement();
-	  if(Character.isLowerCase(clss))
-	    clss = Character.toUpperCase(clss);
-	  clss ^= 64;
-	  break;
-	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-	  clss = (char)__parseOctal(__input._array, __input._getOffset() - 1,
-				    3, numLength);
-	  __input._increment(numLength[0] - 1);
-	  break;
-	}
+        switch(clss){
+        case 'w':
+          for(clss = 0; clss < 256; clss++)
+            if(OpCode._isWordCharacter(clss))
+              __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 'W':
+          for(clss = 0; clss < 256; clss++)
+            if(!OpCode._isWordCharacter(clss))
+              __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 's':
+          for(clss = 0; clss < 256; clss++)
+            if(Character.isWhitespace(clss))
+              __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 'S':
+          for(clss = 0; clss < 256; clss++)
+            if(!Character.isWhitespace(clss))
+              __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 'd':
+          for(clss = '0'; clss <= '9'; clss++)
+            __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 'D':
+          for(clss = 0; clss < '0'; clss++)
+            __setCharacterClassBits(__program, bits, deflt, clss);
+          for(clss = (char)('9' + 1); clss < 256; clss++)
+            __setCharacterClassBits(__program, bits, deflt, clss);
+          lastclss = Character.MAX_VALUE;
+          continue;
+        case 'n':
+          clss = '\n';
+          break;
+        case 'r':
+          clss = '\r';
+          break;
+        case 't':
+          clss = '\t';
+          break;
+        case 'f':
+          clss = '\f';
+          break;
+        case 'b':
+          clss = '\b';
+          break;
+        case 'e':
+          clss = '\033';
+          break;
+        case 'a':
+          clss = '\007';
+          break;
+        case 'x':
+          clss = (char)__parseHex(__input._array, __input._getOffset(), 2,
+                                  numLength);
+          __input._increment(numLength[0]);
+          break;
+        case 'c':
+          clss = __input._postIncrement();
+          if(Character.isLowerCase(clss))
+            clss = Character.toUpperCase(clss);
+          clss ^= 64;
+          break;
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9':
+          clss = (char)__parseOctal(__input._array, __input._getOffset() - 1,
+                                    3, numLength);
+          __input._increment(numLength[0] - 1);
+          break;
+        }
       }
 
       if(range) {
-	if(lastclss > clss)
-	  throw new MalformedPatternException(
-			 "Invalid [] range in expression.");
-	range = false;
+        if(lastclss > clss)
+          throw new MalformedPatternException(
+                         "Invalid [] range in expression.");
+        range = false;
       } else {
-	lastclss = clss;
+        lastclss = clss;
 
-	if(__input._getValue() == '-' &&
-	   __input._getOffset() + 1 < __input._getLength() &&
-	   __input._getValueRelative(1) != ']') {
-	  __input._increment();
-	  range = true;
-	  continue;
-	}
+        if(__input._getValue() == '-' &&
+           __input._getOffset() + 1 < __input._getLength() &&
+           __input._getValueRelative(1) != ']') {
+          __input._increment();
+          range = true;
+          continue;
+        }
       }
 
       while(lastclss <= clss) {
-	__setCharacterClassBits(__program, bits, deflt, lastclss);
-	if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
-	   Character.isUpperCase(lastclss))
-	  __setCharacterClassBits(__program, bits, deflt,
-				 Character.toLowerCase(lastclss));
+        __setCharacterClassBits(__program, bits, deflt, lastclss);
+        if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
+           Character.isUpperCase(lastclss))
+          __setCharacterClassBits(__program, bits, deflt,
+                                 Character.toLowerCase(lastclss));
 
-	++lastclss;
+        ++lastclss;
       }
 
       lastclss = clss;
@@ -1099,156 +1100,156 @@ public final class Perl5Compiler implements PatternCompiler {
       skipTest = false;
 
     while((!__input._isAtEnd() && (clss = __input._getValue()) != ']')
-	  || skipTest)
+          || skipTest)
       {
-	// It sucks, but we have to make this assignment every time
-	skipTest = false;
-	opcodeFlag = false;
-	__input._increment();
+        // It sucks, but we have to make this assignment every time
+        skipTest = false;
+        opcodeFlag = false;
+        __input._increment();
 
-	if(clss == '\\' || clss == '[') {
-	  if(clss == '\\') {
-	    /* character is escaped */
-	    clss = __input._postIncrement();
-	  } else {
-	    /* try POSIX expression */
-	    char posixOpCode = __parsePOSIX(negFlag);
-	    if(posixOpCode != 0){
-	      opcodeFlag = true;
-	      clss = posixOpCode;
-	    }
-	  }
-	  if (opcodeFlag != true) {
-	    switch(clss){
-	    case 'w':
-	      opcodeFlag = true;
-	      clss = OpCode._ALNUM;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 'W':
-	      opcodeFlag = true;
-	      clss = OpCode._NALNUM;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 's':
-	      opcodeFlag = true;
-	      clss = OpCode._SPACE;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 'S':
-	      opcodeFlag = true;
-	      clss = OpCode._NSPACE;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 'd':
-	      opcodeFlag = true;
-	      clss = OpCode._DIGIT;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 'D':
-	      opcodeFlag = true;
-	      clss = OpCode._NDIGIT;
-	      lastclss = Character.MAX_VALUE;
-	      break;
-	    case 'n':
-	      clss = '\n';
-	      break;
-	    case 'r':
-	      clss = '\r';
-	      break;
-	    case 't':
-	      clss = '\t';
-	      break;
-	    case 'f':
-	      clss = '\f';
-	      break;
-	    case 'b':
-	      clss = '\b';
-	      break;
-	    case 'e':
-	      clss = '\033';
-	      break;
-	    case 'a':
-	      clss = '\007';
-	      break;
-	    case 'x':
-	      clss = (char)__parseHex(__input._array, __input._getOffset(), 2,
-				      numLength);
-	      __input._increment(numLength[0]);
-	      break;
-	    case 'c':
-	      clss = __input._postIncrement();
-	      if(Character.isLowerCase(clss))
-		clss = Character.toUpperCase(clss);
-	      clss ^= 64;
-	      break;
-	    case '0': case '1': case '2': case '3': case '4':
-	    case '5': case '6': case '7': case '8': case '9':
-	      clss = 
-		(char)__parseOctal(__input._array,
-				   __input._getOffset() - 1, 3, numLength);
-	      __input._increment(numLength[0] - 1);
-	      break;
-	    default:
-	      break;
-	    }
-	  }
-	}
+        if(clss == '\\' || clss == '[') {
+          if(clss == '\\') {
+            /* character is escaped */
+            clss = __input._postIncrement();
+          } else {
+            /* try POSIX expression */
+            char posixOpCode = __parsePOSIX(negFlag);
+            if(posixOpCode != 0){
+              opcodeFlag = true;
+              clss = posixOpCode;
+            }
+          }
+          if (opcodeFlag != true) {
+            switch(clss){
+            case 'w':
+              opcodeFlag = true;
+              clss = OpCode._ALNUM;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 'W':
+              opcodeFlag = true;
+              clss = OpCode._NALNUM;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 's':
+              opcodeFlag = true;
+              clss = OpCode._SPACE;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 'S':
+              opcodeFlag = true;
+              clss = OpCode._NSPACE;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 'd':
+              opcodeFlag = true;
+              clss = OpCode._DIGIT;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 'D':
+              opcodeFlag = true;
+              clss = OpCode._NDIGIT;
+              lastclss = Character.MAX_VALUE;
+              break;
+            case 'n':
+              clss = '\n';
+              break;
+            case 'r':
+              clss = '\r';
+              break;
+            case 't':
+              clss = '\t';
+              break;
+            case 'f':
+              clss = '\f';
+              break;
+            case 'b':
+              clss = '\b';
+              break;
+            case 'e':
+              clss = '\033';
+              break;
+            case 'a':
+              clss = '\007';
+              break;
+            case 'x':
+              clss = (char)__parseHex(__input._array, __input._getOffset(), 2,
+                                      numLength);
+              __input._increment(numLength[0]);
+              break;
+            case 'c':
+              clss = __input._postIncrement();
+              if(Character.isLowerCase(clss))
+                clss = Character.toUpperCase(clss);
+              clss ^= 64;
+              break;
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+              clss = 
+                (char)__parseOctal(__input._array,
+                                   __input._getOffset() - 1, 3, numLength);
+              __input._increment(numLength[0] - 1);
+              break;
+            default:
+              break;
+            }
+          }
+        }
 
-	if(range) {
-	  if(lastclss > clss)
-	    throw new MalformedPatternException(
-					"Invalid [] range in expression.");
-	  range = false;
-	} else {
-	  lastclss = clss;
+        if(range) {
+          if(lastclss > clss)
+            throw new MalformedPatternException(
+                                        "Invalid [] range in expression.");
+          range = false;
+        } else {
+          lastclss = clss;
 
-	  if(opcodeFlag == false &&
+          if(opcodeFlag == false &&
              __input._getValue() == '-' &&
-	     __input._getOffset() + 1 < __input._getLength() &&
-	     __input._getValueRelative(1) != ']') {
-	    __input._increment();
-	    range = true;
-	    continue;
-	  }
-	}
+             __input._getOffset() + 1 < __input._getLength() &&
+             __input._getValueRelative(1) != ']') {
+            __input._increment();
+            range = true;
+            continue;
+          }
+        }
 
-	if(lastclss == clss) {
-	  if(opcodeFlag == true) {
-	    if(negFlag[0] == false)
-	      __emitCode(OpCode._OPCODE);
-	    else 
-	      __emitCode(OpCode._NOPCODE);
-	  } else
-	    __emitCode(OpCode._ONECHAR);
+        if(lastclss == clss) {
+          if(opcodeFlag == true) {
+            if(negFlag[0] == false)
+              __emitCode(OpCode._OPCODE);
+            else 
+              __emitCode(OpCode._NOPCODE);
+          } else
+            __emitCode(OpCode._ONECHAR);
 
-	  __emitCode(clss);
+          __emitCode(clss);
 
-	  if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
-	     Character.isUpperCase(clss) && Character.isUpperCase(lastclss)){
-	    __programSize--;
-	    __emitCode(Character.toLowerCase(clss));
-	  }
-	}
+          if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
+             Character.isUpperCase(clss) && Character.isUpperCase(lastclss)){
+            __programSize--;
+            __emitCode(Character.toLowerCase(clss));
+          }
+        }
 
-	if(lastclss < clss) {
-	  __emitCode(OpCode._RANGE);
-	  __emitCode(lastclss);
-	  __emitCode(clss);
+        if(lastclss < clss) {
+          __emitCode(OpCode._RANGE);
+          __emitCode(lastclss);
+          __emitCode(clss);
 
-	  if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
-	     Character.isUpperCase(clss) && Character.isUpperCase(lastclss)){
-	    __programSize-=2;
-	    __emitCode(Character.toLowerCase(lastclss));
-	    __emitCode(Character.toLowerCase(clss));
+          if((__modifierFlags[0] & __CASE_INSENSITIVE) != 0 &&
+             Character.isUpperCase(clss) && Character.isUpperCase(lastclss)){
+            __programSize-=2;
+            __emitCode(Character.toLowerCase(lastclss));
+            __emitCode(Character.toLowerCase(clss));
 
-	  }
+          }
 
-	  lastclss = Character.MAX_VALUE;
-	  range = false;
-	}
+          lastclss = Character.MAX_VALUE;
+          range = false;
+        }
     
-	lastclss = clss;
+        lastclss = clss;
       }
 
     if(__input._getValue() != ']')
@@ -1288,7 +1289,7 @@ public final class Perl5Compiler implements PatternCompiler {
     
     try { 
       while ( (value = __input._getValue(pos++)) != ':' && pos < len) {
-	buf.append(value);	
+        buf.append(value);      
       }
     } catch (Exception e){
       return 0;
@@ -1320,7 +1321,7 @@ public final class Perl5Compiler implements PatternCompiler {
 
     if(offset == OpCode._NULL_OFFSET) {
       if((flags[0] & __TRYAGAIN) != 0)
-	retFlags[0] |= __TRYAGAIN;
+        retFlags[0] |= __TRYAGAIN;
       return OpCode._NULL_OFFSET;
     }
 
@@ -1329,11 +1330,11 @@ public final class Perl5Compiler implements PatternCompiler {
     if(operator == '(' && __input._getValueRelative(1) == '?' &&
        __input._getValueRelative(2) == '#') {
       while(operator != CharStringPointer._END_OF_STRING && operator != ')')
-	operator = __input._increment();
+        operator = __input._increment();
 
       if(operator != CharStringPointer._END_OF_STRING) {
-	__getNextChar();
-	operator = __input._getValue();
+        __getNextChar();
+        operator = __input._getValue();
       }
     }
 
@@ -1347,74 +1348,74 @@ public final class Perl5Compiler implements PatternCompiler {
       value = __input._getValue(next);
 
       while(Character.isDigit(value) || value == ',') {
-	if(value == ',') {
-	  if(pos != maxOffset)
-	    break;
-	  else
-	    pos = next;
-	}
-	++next;
-	value = __input._getValue(next);
+        if(value == ',') {
+          if(pos != maxOffset)
+            break;
+          else
+            pos = next;
+        }
+        ++next;
+        value = __input._getValue(next);
       }
 
       if(value == '}') {
-	int num;
-	StringBuffer buffer = new StringBuffer(10);
+        int num;
+        StringBuffer buffer = new StringBuffer(10);
 
-	if(pos == maxOffset)
-	  pos = next;
-	__input._increment();
+        if(pos == maxOffset)
+          pos = next;
+        __input._increment();
 
-	num = __input._getOffset();
-	value = __input._getValue(num);
+        num = __input._getOffset();
+        value = __input._getValue(num);
 
-	while(Character.isDigit(value)) {
-	  buffer.append(value);
-	  ++num;
-	  value = __input._getValue(num);
-	}
+        while(Character.isDigit(value)) {
+          buffer.append(value);
+          ++num;
+          value = __input._getValue(num);
+        }
 
-	try {
-	  min = Integer.parseInt(buffer.toString());
-	} catch(NumberFormatException e) {
-	  throw new MalformedPatternException(
-	 "Unexpected number format exception.  Please report this bug." +
-	   "NumberFormatException message: " + e.getMessage());
-	}
+        try {
+          min = Integer.parseInt(buffer.toString());
+        } catch(NumberFormatException e) {
+          throw new MalformedPatternException(
+         "Unexpected number format exception.  Please report this bug." +
+           "NumberFormatException message: " + e.getMessage());
+        }
 
-	value = __input._getValue(pos);
-	if(value == ',')
-	  ++pos;
-	else
-	  pos = __input._getOffset();
+        value = __input._getValue(pos);
+        if(value == ',')
+          ++pos;
+        else
+          pos = __input._getOffset();
 
-	num = pos;
-	buffer = new StringBuffer(10);
+        num = pos;
+        buffer = new StringBuffer(10);
 
-	value = __input._getValue(num);
+        value = __input._getValue(num);
 
-	while(Character.isDigit(value)){
-	  buffer.append(value);
-	  ++num;
-	  value = __input._getValue(num);
-	}
+        while(Character.isDigit(value)){
+          buffer.append(value);
+          ++num;
+          value = __input._getValue(num);
+        }
 
-	try {
-	  if(num != pos)
-	    max = Integer.parseInt(buffer.toString());
-	} catch(NumberFormatException e) {
-	  throw new MalformedPatternException(
-	 "Unexpected number format exception.  Please report this bug." +
-	   "NumberFormatException message: " + e.getMessage());
-	}
+        try {
+          if(num != pos)
+            max = Integer.parseInt(buffer.toString());
+        } catch(NumberFormatException e) {
+          throw new MalformedPatternException(
+         "Unexpected number format exception.  Please report this bug." +
+           "NumberFormatException message: " + e.getMessage());
+        }
 
-	if(max == 0 && __input._getValue(pos) != '0')
-	  max = Character.MAX_VALUE;
-	__input._setOffset(next);
-	__getNextChar();
+        if(max == 0 && __input._getValue(pos) != '0')
+          max = Character.MAX_VALUE;
+        __input._setOffset(next);
+        __getNextChar();
 
-	nestCheck = true;
-	handleRepetition = true;
+        nestCheck = true;
+        handleRepetition = true;
       }
     }
 
@@ -1422,31 +1423,31 @@ public final class Perl5Compiler implements PatternCompiler {
       handleRepetition = false;
 
       if(!__isSimpleRepetitionOp(operator)) {
-	retFlags[0] = flags[0];
-	return offset;
+        retFlags[0] = flags[0];
+        return offset;
       }
 
       __getNextChar();
 
       retFlags[0] = ((operator != '+') ?
-		  (__WORSTCASE | __SPSTART) : (__WORSTCASE | __NONNULL));
+                  (__WORSTCASE | __SPSTART) : (__WORSTCASE | __NONNULL));
 
       if(operator == '*' && ((flags[0] & __SIMPLE) != 0)) {
-	__programInsertOperator(OpCode._STAR, offset);
-	__cost+=4;
+        __programInsertOperator(OpCode._STAR, offset);
+        __cost+=4;
       } else if(operator == '*') {
-	min = 0;
-	handleRepetition = true;
+        min = 0;
+        handleRepetition = true;
       } else if(operator == '+' && (flags[0] & __SIMPLE) != 0) {
-	__programInsertOperator(OpCode._PLUS, offset);
-	__cost+=3;
+        __programInsertOperator(OpCode._PLUS, offset);
+        __cost+=3;
       } else if(operator == '+') {
-	min = 1;
-	handleRepetition = true;
+        min = 1;
+        handleRepetition = true;
       } else if(operator == '?') {
-	min = 0;
-	max = 1;
-	handleRepetition = true;
+        min = 0;
+        max = 1;
+        handleRepetition = true;
       }
     }
 
@@ -1454,25 +1455,25 @@ public final class Perl5Compiler implements PatternCompiler {
 
       // handle repetition
       if((flags[0] & __SIMPLE) != 0){
-	__cost+= ((2 + __cost) / 2);
-	__programInsertOperator(OpCode._CURLY, offset);
+        __cost+= ((2 + __cost) / 2);
+        __programInsertOperator(OpCode._CURLY, offset);
       } else {
-	__cost += (4 + __cost);
-	__programAddTail(offset, __emitNode(OpCode._WHILEM));
-	__programInsertOperator(OpCode._CURLYX, offset);
-	__programAddTail(offset, __emitNode(OpCode._NOTHING));
+        __cost += (4 + __cost);
+        __programAddTail(offset, __emitNode(OpCode._WHILEM));
+        __programInsertOperator(OpCode._CURLYX, offset);
+        __programAddTail(offset, __emitNode(OpCode._NOTHING));
       }
 
       if(min > 0)
-	retFlags[0] = (__WORSTCASE | __NONNULL);
+        retFlags[0] = (__WORSTCASE | __NONNULL);
 
       if(max != 0 && max < min)
-	throw new MalformedPatternException(
+        throw new MalformedPatternException(
        "Invalid interval {" + min + "," + max + "}");
 
       if(__program!= null) {
-	__program[offset + 2] = (char)min;
-	__program[offset + 3] = (char)max;
+        __program[offset + 2] = (char)min;
+        __program[offset + 3] = (char)max;
       }
     }
 
@@ -1506,48 +1507,48 @@ public final class Perl5Compiler implements PatternCompiler {
     if (isParenthesized) {
       paren = 1;
       if(__input._getValue() == '?') {
-	__input._increment();
-	paren = value = __input._postIncrement();
+        __input._increment();
+        paren = value = __input._postIncrement();
 
-	switch(value) {
-	case ':' :
-	case '=' :
-	case '!' : break;
-	case '#' :
-	  value = __input._getValue();
-	  while(value != CharStringPointer._END_OF_STRING && value != ')')
-	    value = __input._increment();
-	  if(value != ')')
-	    throw new MalformedPatternException(
-	       "Sequence (?#... not terminated");
-	  __getNextChar();
-	  hintFlags[0] = __TRYAGAIN;
-	  return OpCode._NULL_OFFSET;
-	default :
-	  __input._decrement();
-	  value = __input._getValue();
-	  while(value != CharStringPointer._END_OF_STRING &&
-		modifiers.indexOf(value) != -1) {
-	    if(value == '-')
-	      modifierFlags = negFlags;
-	    else
-	      __setModifierFlag(modifierFlags, value);
-	    value = __input._increment();
-	  }
-	  __modifierFlags[0] |= posFlags[0];
-	  __modifierFlags[0] &= ~negFlags[0];
+        switch(value) {
+        case ':' :
+        case '=' :
+        case '!' : break;
+        case '#' :
+          value = __input._getValue();
+          while(value != CharStringPointer._END_OF_STRING && value != ')')
+            value = __input._increment();
+          if(value != ')')
+            throw new MalformedPatternException(
+               "Sequence (?#... not terminated");
+          __getNextChar();
+          hintFlags[0] = __TRYAGAIN;
+          return OpCode._NULL_OFFSET;
+        default :
+          __input._decrement();
+          value = __input._getValue();
+          while(value != CharStringPointer._END_OF_STRING &&
+                modifiers.indexOf(value) != -1) {
+            if(value == '-')
+              modifierFlags = negFlags;
+            else
+              __setModifierFlag(modifierFlags, value);
+            value = __input._increment();
+          }
+          __modifierFlags[0] |= posFlags[0];
+          __modifierFlags[0] &= ~negFlags[0];
 
-	  if(value != ')')
-	    throw new MalformedPatternException(
-	       "Sequence (?" + value + "...) not recognized");
-	  __getNextChar();
-	  hintFlags[0] = __TRYAGAIN;
-	  return OpCode._NULL_OFFSET;
-	}
+          if(value != ')')
+            throw new MalformedPatternException(
+               "Sequence (?" + value + "...) not recognized");
+          __getNextChar();
+          hintFlags[0] = __TRYAGAIN;
+          return OpCode._NULL_OFFSET;
+        }
       } else {
-	parenthesisNum = __numParentheses;
-	++__numParentheses;
-	nodeOffset = __emitArgNode(OpCode._OPEN, (char)parenthesisNum);
+        parenthesisNum = __numParentheses;
+        ++__numParentheses;
+        nodeOffset = __emitArgNode(OpCode._OPEN, (char)parenthesisNum);
       }
     } else 
       paren = 0;
@@ -1572,12 +1573,12 @@ public final class Perl5Compiler implements PatternCompiler {
       br = __parseAlternation(flags);
 
       if(br == OpCode._NULL_OFFSET)
-	return OpCode._NULL_OFFSET;
+        return OpCode._NULL_OFFSET;
 
       __programAddTail(nodeOffset, br);
 
       if((flags[0] & __NONNULL) == 0)
-	hintFlags[0] &= ~__NONNULL;
+        hintFlags[0] &= ~__NONNULL;
 
       hintFlags[0] |= (flags[0] & __SPSTART);
     }
@@ -1603,7 +1604,7 @@ public final class Perl5Compiler implements PatternCompiler {
     __programAddTail(nodeOffset, ender);
 
     for(br = nodeOffset; br != OpCode._NULL_OFFSET;
-	br = OpCode._getNext(__program, br))
+        br = OpCode._getNext(__program, br))
       __programAddOperatorTail(br, ender);
 
     if(paren == '=') {
@@ -1618,10 +1619,10 @@ public final class Perl5Compiler implements PatternCompiler {
       throw new MalformedPatternException("Unmatched parentheses.");
     } else if(paren == 0 && !__input._isAtEnd()) { 
       if(__input._getValue() == ')')
-	throw new MalformedPatternException("Unmatched parentheses.");
+        throw new MalformedPatternException("Unmatched parentheses.");
       else
-	// Should never happen.
-	throw new MalformedPatternException(
+        // Should never happen.
+        throw new MalformedPatternException(
        "Unreached characters at end of expression.  Please report this bug!");
     }
 
@@ -1725,58 +1726,58 @@ public final class Perl5Compiler implements PatternCompiler {
       op = __program[first];
 
       while((op == OpCode._OPEN && (sawOpen = true)) ||
-	    (op == OpCode._BRANCH &&
-	     __program[OpCode._getNext(__program, first)] != OpCode._BRANCH) ||
-	    op == OpCode._PLUS || op == OpCode._MINMOD ||
-	    (OpCode._opType[op] == OpCode._CURLY && 
-	     OpCode._getArg1(__program, first) > 0)) {
-	if(op == OpCode._PLUS)
-	  sawPlus = true;
-	else
-	  first+=OpCode._operandLength[op];
+            (op == OpCode._BRANCH &&
+             __program[OpCode._getNext(__program, first)] != OpCode._BRANCH) ||
+            op == OpCode._PLUS || op == OpCode._MINMOD ||
+            (OpCode._opType[op] == OpCode._CURLY && 
+             OpCode._getArg1(__program, first) > 0)) {
+        if(op == OpCode._PLUS)
+          sawPlus = true;
+        else
+          first+=OpCode._operandLength[op];
 
-	first = OpCode._getNextOperator(first);
-	op = __program[first];
+        first = OpCode._getNextOperator(first);
+        op = __program[first];
       }
 
       doItAgain = true;
 
       while(doItAgain) {
-	doItAgain = false;
-	op = __program[first];
+        doItAgain = false;
+        op = __program[first];
 
-	if(op == OpCode._EXACTLY) {
-	  startString =
-	    new String(__program, OpCode._getOperand(first + 1),
-		       __program[OpCode._getOperand(first)]);
+        if(op == OpCode._EXACTLY) {
+          startString =
+            new String(__program, OpCode._getOperand(first + 1),
+                       __program[OpCode._getOperand(first)]);
 
-	} else if(OpCode._isInArray(op, OpCode._opLengthOne, 2))
-	  regexp._startClassOffset = first;
-	else if(op == OpCode._BOUND || op == OpCode._NBOUND)
-	  regexp._startClassOffset = first;
-	else if(OpCode._opType[op] == OpCode._BOL) {
-	  if(op == OpCode._BOL)
-	    regexp._anchor = Perl5Pattern._OPT_ANCH_BOL;
-	  else if(op == OpCode._MBOL)
-	    regexp._anchor = Perl5Pattern._OPT_ANCH_MBOL;
-	  else
-	    regexp._anchor = Perl5Pattern._OPT_ANCH;
-	  first = OpCode._getNextOperator(first);
-	  doItAgain = true;
-	  continue;
-	} else if(op == OpCode._STAR &&
-		  OpCode._opType[__program[OpCode._getNextOperator(first)]] == 
-		  OpCode._ANY && (regexp._anchor & Perl5Pattern._OPT_ANCH) != 0)
-	  {
-	    regexp._anchor = Perl5Pattern._OPT_ANCH | Perl5Pattern._OPT_IMPLICIT;
-	    first = OpCode._getNextOperator(first);
-	    doItAgain = true;
-	    continue;
-	}
+        } else if(OpCode._isInArray(op, OpCode._opLengthOne, 2))
+          regexp._startClassOffset = first;
+        else if(op == OpCode._BOUND || op == OpCode._NBOUND)
+          regexp._startClassOffset = first;
+        else if(OpCode._opType[op] == OpCode._BOL) {
+          if(op == OpCode._BOL)
+            regexp._anchor = Perl5Pattern._OPT_ANCH_BOL;
+          else if(op == OpCode._MBOL)
+            regexp._anchor = Perl5Pattern._OPT_ANCH_MBOL;
+          else
+            regexp._anchor = Perl5Pattern._OPT_ANCH;
+          first = OpCode._getNextOperator(first);
+          doItAgain = true;
+          continue;
+        } else if(op == OpCode._STAR &&
+                  OpCode._opType[__program[OpCode._getNextOperator(first)]] == 
+                  OpCode._ANY && (regexp._anchor & Perl5Pattern._OPT_ANCH) != 0)
+          {
+            regexp._anchor = Perl5Pattern._OPT_ANCH | Perl5Pattern._OPT_IMPLICIT;
+            first = OpCode._getNextOperator(first);
+            doItAgain = true;
+            continue;
+        }
       } // end while do it again
 
       if(sawPlus && (!sawOpen || !__sawBackreference))
-	regexp._anchor |= Perl5Pattern._OPT_SKIP;
+        regexp._anchor |= Perl5Pattern._OPT_SKIP;
 
       lastLongest   = new StringBuffer();
       longest   = new StringBuffer();
@@ -1788,106 +1789,106 @@ public final class Perl5Compiler implements PatternCompiler {
 
       while(scan > 0 && (op = __program[scan]) != OpCode._END) {
 
-	if(op == OpCode._BRANCH) {
-	  if(__program[OpCode._getNext(__program, scan)] == OpCode._BRANCH) {
-	    curBack = -30000;
-	    while(__program[scan] == OpCode._BRANCH)
-	      scan = OpCode._getNext(__program, scan);
-	  } else
-	    scan = OpCode._getNextOperator(scan);
-	  continue;
-	}
+        if(op == OpCode._BRANCH) {
+          if(__program[OpCode._getNext(__program, scan)] == OpCode._BRANCH) {
+            curBack = -30000;
+            while(__program[scan] == OpCode._BRANCH)
+              scan = OpCode._getNext(__program, scan);
+          } else
+            scan = OpCode._getNextOperator(scan);
+          continue;
+        }
 
-	if(op == OpCode._UNLESSM) {
-	  curBack = -30000;
-	  scan = OpCode._getNext(__program, scan);
-	  continue;
-	}
+        if(op == OpCode._UNLESSM) {
+          curBack = -30000;
+          scan = OpCode._getNext(__program, scan);
+          continue;
+        }
 
-	if(op == OpCode._EXACTLY) {
-	  int temp;
+        if(op == OpCode._EXACTLY) {
+          int temp;
 
-	  first = scan;
-	  while(__program[(temp = OpCode._getNext(__program, scan))] == 
-		OpCode._CLOSE)
-	    scan = temp;
+          first = scan;
+          while(__program[(temp = OpCode._getNext(__program, scan))] == 
+                OpCode._CLOSE)
+            scan = temp;
 
-	  minLength += __program[OpCode._getOperand(first)];
+          minLength += __program[OpCode._getOperand(first)];
 
-	  temp = __program[OpCode._getOperand(first)];
+          temp = __program[OpCode._getOperand(first)];
 
-	  if(curBack - back == length) {
-	    lastLongest.append(new String(__program, OpCode._getOperand(first) + 1,
-				      temp));
-	    length  += temp;
-	    curBack += temp;
-	    first = OpCode._getNext(__program, scan);
-	  } else if(temp >= (length + (curBack >= 0 ? 1 : 0))) {
-	    length = temp;
-	    lastLongest =
-	      new StringBuffer(new String(__program,
-					  OpCode._getOperand(first) + 1, temp));
-	    back = curBack;
-	    curBack += length;
-	    first = OpCode._getNext(__program, scan);
-	  } else
-	    curBack += temp;
-	} else if(OpCode._isInArray(op, OpCode._opLengthVaries, 0)) {
-	  curBack = -30000;
-	  length = 0;
+          if(curBack - back == length) {
+            lastLongest.append(new String(__program, OpCode._getOperand(first) + 1,
+                                      temp));
+            length  += temp;
+            curBack += temp;
+            first = OpCode._getNext(__program, scan);
+          } else if(temp >= (length + (curBack >= 0 ? 1 : 0))) {
+            length = temp;
+            lastLongest =
+              new StringBuffer(new String(__program,
+                                          OpCode._getOperand(first) + 1, temp));
+            back = curBack;
+            curBack += length;
+            first = OpCode._getNext(__program, scan);
+          } else
+            curBack += temp;
+        } else if(OpCode._isInArray(op, OpCode._opLengthVaries, 0)) {
+          curBack = -30000;
+          length = 0;
 
-	  if(lastLongest.length() > longest.length()) {
-	    longest = lastLongest;
-	    backmost = back;
-	  }
+          if(lastLongest.length() > longest.length()) {
+            longest = lastLongest;
+            backmost = back;
+          }
 
-	  lastLongest = new StringBuffer();
+          lastLongest = new StringBuffer();
 
-	  if(op == OpCode._PLUS && 
-	     OpCode._isInArray(__program[OpCode._getNextOperator(scan)],
-			    OpCode._opLengthOne, 0))
-	    ++minLength;
-	  else if(OpCode._opType[op] == OpCode._CURLY &&
-		  OpCode._isInArray(__program[OpCode._getNextOperator(scan) + 2],
-				 OpCode._opLengthOne, 0))
-	    minLength += OpCode._getArg1(__program, scan);
-	} else if(OpCode._isInArray(op, OpCode._opLengthOne, 0)) {
-	  ++curBack;
-	  ++minLength;
-	  length = 0;
-	  if(lastLongest.length() > longest.length()) {
-	    longest = lastLongest;
-	    backmost = back;
-	  }
-	  lastLongest = new StringBuffer();
-	}
+          if(op == OpCode._PLUS && 
+             OpCode._isInArray(__program[OpCode._getNextOperator(scan)],
+                            OpCode._opLengthOne, 0))
+            ++minLength;
+          else if(OpCode._opType[op] == OpCode._CURLY &&
+                  OpCode._isInArray(__program[OpCode._getNextOperator(scan) + 2],
+                                 OpCode._opLengthOne, 0))
+            minLength += OpCode._getArg1(__program, scan);
+        } else if(OpCode._isInArray(op, OpCode._opLengthOne, 0)) {
+          ++curBack;
+          ++minLength;
+          length = 0;
+          if(lastLongest.length() > longest.length()) {
+            longest = lastLongest;
+            backmost = back;
+          }
+          lastLongest = new StringBuffer();
+        }
 
-	scan = OpCode._getNext(__program, scan);
+        scan = OpCode._getNext(__program, scan);
       } // end while
 
       if(lastLongest.length() +
-	 ((OpCode._opType[__program[first]] == OpCode._EOL) ? 1 : 0) >
-	 longest.length()) {
-	longest = lastLongest;
-	backmost = back;
+         ((OpCode._opType[__program[first]] == OpCode._EOL) ? 1 : 0) >
+         longest.length()) {
+        longest = lastLongest;
+        backmost = back;
       } else
-	lastLongest = new StringBuffer();
+        lastLongest = new StringBuffer();
 
       if(longest.length() > 0 && startString == null) {
-	mustString = longest.toString();
-	if(backmost < 0)
-	  backmost = -1;
-	regexp._back = backmost;
+        mustString = longest.toString();
+        if(backmost < 0)
+          backmost = -1;
+        regexp._back = backmost;
 
-	/*
+        /*
 
-	  if(longest.length() > 
-	  (((caseInsensitive & __CASE_INSENSITIVE) != 0 ||
-	  OpCode._opType[__program[first]] == OpCode._EOL)
-	  ? 1 : 0))
-	  */	    
+          if(longest.length() > 
+          (((caseInsensitive & __CASE_INSENSITIVE) != 0 ||
+          OpCode._opType[__program[first]] == OpCode._EOL)
+          ? 1 : 0))
+          */        
       } else
-	longest = null;
+        longest = null;
     } // end if
 
 
@@ -1917,7 +1918,7 @@ public final class Perl5Compiler implements PatternCompiler {
    *  is not a valid Perl5 regular expression.
    */
   public Pattern compile(char[] pattern) throws MalformedPatternException {
-	 return compile(pattern, DEFAULT_MASK);
+         return compile(pattern, DEFAULT_MASK);
   }
 
 
@@ -1932,7 +1933,7 @@ public final class Perl5Compiler implements PatternCompiler {
    *  is not a valid Perl5 regular expression.
    */
   public Pattern compile(String pattern) throws MalformedPatternException {
-	 return compile(pattern.toCharArray(), DEFAULT_MASK);
+         return compile(pattern.toCharArray(), DEFAULT_MASK);
   }
 
 
@@ -1964,7 +1965,7 @@ public final class Perl5Compiler implements PatternCompiler {
    */
   public Pattern compile(String pattern, int options)
        throws MalformedPatternException {
-	 return compile(pattern.toCharArray(), options);
+         return compile(pattern.toCharArray(), options);
   }
 
 }

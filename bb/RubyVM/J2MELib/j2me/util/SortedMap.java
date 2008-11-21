@@ -8,8 +8,8 @@
  */
 package j2me.util;
 
-import java.util.Map;
-import java.util.Comparator;
+import j2me.util.Map;
+import j2me.util.Comparator;
 
 public interface SortedMap extends Map {
     Comparator comparator();

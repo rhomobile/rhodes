@@ -51,10 +51,10 @@ klass.defineMethod( "size", new RubyNoArgMethod(){
 		return ((RubyHash)receiver).size();}
 });
 klass.aliasMethod("length","size");
-klass.defineMethod( "to_s", new RubyNoArgMethod(){ 
+/*klass.defineMethod( "to_s", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyHash)receiver).to_s();}
-});
+});*/
 klass.defineMethod( "values", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyHash)receiver).values();}
