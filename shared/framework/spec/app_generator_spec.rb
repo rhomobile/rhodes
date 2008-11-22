@@ -19,4 +19,9 @@ describe Rhogen::AppGenerator do
       @generator.should create("/tmp/#{app_name}/#{template}")
     end
   end
+  
+  it "should generate valid erb templates" do
+    pending "need to figure out how to validate erb"
+  end
+  
 end

@@ -20,4 +20,9 @@ describe Rhogen::ModelGenerator do
       @generator.should create("/tmp/#{model_name.camel_case}/#{template}")
     end
   end
+  
+  it "should generate valid erb templates" do
+    pending "need to figure out how to validate erb"
+  end
+  
 end
