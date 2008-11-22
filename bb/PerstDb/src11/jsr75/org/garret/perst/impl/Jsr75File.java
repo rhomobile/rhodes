@@ -32,15 +32,16 @@ public class Jsr75File implements SimpleFile
 		log("Dir:"+strDir);
 		FileConnection fdir = null;
 		try{
-			fdir = (FileConnection)Connector.open(strDir,Connector.READ_WRITE);
+			fdir = (FileConnection)Connector.open(strDir);//,Connector.READ_WRITE);
 	        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
 	        if (!fdir.exists()) { 
 	        	fdir.mkdir();  // create the dir if it doesn't exist
 	        }
 		}catch(IOException exc){
+			throw exc;
+		}finally{
 			if ( fdir != null )
 				fdir.close();
-			throw exc;
 		}
 	}
 
@@ -55,42 +56,36 @@ public class Jsr75File implements SimpleFile
             } else { 
             	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
            
-            	if (!DeviceInfo.isSimulator()) {            	
-	            	try{
-	            		createDir( "file:///" + "store/home/user/Rho/" );
-	
-	            		url = "file:///" + "store/home/user/Rho/" + path;
-	            		log(url);
-	                    fconn = (FileConnection)Connector.open(url);
-	                    // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-	                    if (!fconn.exists()) { 
-	                        fconn.create();  // create the file if it doesn't exist
-	                    }
-	            	} catch (Exception x) {
-	                	log("Error open file: " + x.getMessage());
-	                	fconn = null;
-	                }
-            	}else{
-	            	Enumeration e = FileSystemRegistry.listRoots();
-	                while (e.hasMoreElements()) {
-	                    // choose arbitrary root directory
-	                	String strRoot = (String)e.nextElement();
-	                    url = "file:///" + strRoot + path;
-	                    try {
-	                        fconn = (FileConnection)Connector.open(url);
-	                        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-	                        if (!fconn.exists()) { 
-	                            fconn.create();  // create the file if it doesn't exist
-	                        }
-	                        break;
-	                    } catch (Exception x) {
-	                    	log("Error open file: " + x.getMessage());
-	                        fconn = null;
-	                        url = "file:///" + path;
-	                        // try next root
-	                    }
-	                }
-            	}
+            	Enumeration e = FileSystemRegistry.listRoots();
+            	url = "file:///" + path;
+                while (e.hasMoreElements()) {
+                    // choose arbitrary root directory
+                	String strRoot = (String)e.nextElement();
+                	if ( !strRoot.equalsIgnoreCase("SDCard/") ){
+                		continue;
+                	}
+                	String strDir = "file:///" + strRoot;
+                	if ( !strRoot.equalsIgnoreCase("SDCard/") )
+                		strDir += "home/user/";
+                	
+                	strDir += "Rho/";
+                	String url2 = strDir + path;
+                    try {
+                    	createDir( strDir );
+                    	log(url2);
+                        fconn = (FileConnection)Connector.open(url2);
+                        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
+                        if (!fconn.exists()) { 
+                            fconn.create();  // create the file if it doesn't exist
+                        }
+                        break;
+                    } catch (Exception x) {
+                    	log("Error open file: " + url2 + "; Msg:" + x.getMessage());
+                        fconn = null;
+                        //url = "file:///" + path;
+                        // try next root
+                    }
+                }
             }
         }
         try { 
@@ -102,7 +97,9 @@ public class Jsr75File implements SimpleFile
                 }
             }
             fileSize = fconn.fileSize();
-            if (!readOnly) { 
+            if (!readOnly) {
+                //fconn.setWritable(true);	                    
+            	
                 out = fconn.openOutputStream();
                 outPos = 0;
             }
@@ -169,6 +166,9 @@ public class Jsr75File implements SimpleFile
                         int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
                         out.write(zeroBuf, 0, size);
                         fileSize += size;
+                        
+                        //BB
+                        fconn.truncate(fileSize);
                     } while (pos != fileSize);
                 }
                 outPos = pos;
@@ -178,12 +178,14 @@ public class Jsr75File implements SimpleFile
             if (outPos > fileSize) { 
                 fileSize = outPos;
             }
+            //BB
+            fconn.truncate(fileSize);
             if (in != null) { 
                 in.close();
                 in = null;
             }
-        } catch(IOException x) { 
-            throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+        }catch(Exception exc){
+        	throw new StorageError(StorageError.FILE_ACCESS_ERROR, exc);
         }
     }
 
@@ -211,7 +213,7 @@ public class Jsr75File implements SimpleFile
         if (!noFlush && out != null) { 
             try { 
                 out.flush();
-            } catch(IOException x) { 
+            } catch(Exception x) { 
                 throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
             }
         }
