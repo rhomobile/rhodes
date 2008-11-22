@@ -5,8 +5,13 @@ README.rdoc
 Rakefile
 bin/rhogen
 generators/rhogen.rb
-generators/templates/application.rb
-generators/templates/index.html
+generators/templates/application/application.rb
+generators/templates/application/index.html
+generators/templates/model/config.rb
+generators/templates/model/controller.rb
+generators/templates/model/edit.erb
+generators/templates/model/index.erb
+generators/templates/model/new.erb
 lib/ServeME.rb
 lib/TestServe.rb
 lib/builtinME.rb
@@ -37,6 +42,7 @@ lib/time.rb
 rhodes.gemspec
 spec/app_generator_spec.rb
 spec/generator_spec_helper.rb
+spec/model_generator_spec.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
 spec/spec.opts

@@ -1,0 +1,13 @@
+<form title="New <%= class_name %>" 
+	  class="panel"
+	  id="<%= name %>_new_form" 
+	  method="POST" 
+	  action="<%%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
+		<div class="row">
+			<label>Some Field: </label>
+		</div>
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>
