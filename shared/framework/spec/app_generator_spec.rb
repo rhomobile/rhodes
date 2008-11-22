@@ -14,9 +14,9 @@ describe Rhogen::AppGenerator do
     @generator = Rhogen::AppGenerator.new('/tmp', {}, app_name)
   end
   
-  it "should create index.html and application.rb files" do
-    puts "#{@generator.inspect}"
-    @generator.should create("/tmp/#{app_name}/index.html")
-    @generator.should create("/tmp/#{app_name}/application.rb")
+  it "should create application.rb and index.html files" do
+    ['application.rb', 'index.html'].each do |template|
+      @generator.should create("/tmp/#{app_name}/#{template}")
+    end
   end
 end

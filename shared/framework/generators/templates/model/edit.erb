@@ -1,0 +1,18 @@
+<form title="Edit <%= class_name %>" 
+	  class="panel" 
+	  id="<%= name %>_edit_form" 
+	  method="POST" 
+	  action="<%%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
+		<div class="row">
+			<label>Some Field: </label>
+		</div>
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%%=url_for('delete', @<%= name %>.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>
