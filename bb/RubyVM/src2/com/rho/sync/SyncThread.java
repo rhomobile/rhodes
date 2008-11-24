@@ -41,7 +41,9 @@ public class SyncThread implements Runnable {
 	 */
 	SyncThread() {
 		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
-		new Thread(this).start();
+		Thread thread = new Thread(this);
+		thread.setPriority(Thread.MIN_PRIORITY);
+		thread.start();
 		System.out.println("SyncEngine is started...");
 	}
 
