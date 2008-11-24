@@ -10,7 +10,7 @@ import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import j2me.io.File;
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 
 import j2me.lang.StringMe;
 
@@ -137,7 +137,7 @@ public class RubyFile extends RubyIO {
         if (!file.isFile() && !file.isDirectory()) {
             throw new RubyException(RubyRuntime.RuntimeErrorClass, "No such file or directory - " + fileName);
         }
-        return RubyBignum.bignorm(BigInteger.valueOf(file.length()));
+        return RubyBignum.bignorm(HugeInt.valueOf(file.length()));
     }
 
     //@RubyLevelMethod(name="rename", singleton=true)

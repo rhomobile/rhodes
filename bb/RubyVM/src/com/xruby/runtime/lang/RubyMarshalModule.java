@@ -1,6 +1,6 @@
 package com.xruby.runtime.lang;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import j2me.util.Iterator;
 
 /*import com.xruby.runtime.lang.RubyAPI;
@@ -74,9 +74,9 @@ class MarshalDumper {
 
     private static void packBignum(RubyBignum v, StringBuffer sb) {
         sb.append('l');
-        BigInteger biginteger = v.getInternal();
+        HugeInt biginteger = v.getInternal();
 
-        if (biginteger.compareTo(BigInteger.ZERO) > 0) {
+        if (biginteger.compareTo(HugeInt.ZERO) > 0) {
             sb.append('+');
         } else {
             sb.append('-');
@@ -210,9 +210,9 @@ class MarshalLoader {
         char sign = v.charAt(current_index_++);
         char length = v.charAt(current_index_++);
 
-        BigInteger biginteger = BigInteger.valueOf(0);
+        HugeInt biginteger = HugeInt.valueOf(0);
         for (int i = 0; i < length; ++i) {
-            BigInteger tmp = BigInteger.valueOf(v.charAt(current_index_ + i));
+            HugeInt tmp = HugeInt.valueOf(v.charAt(current_index_ + i));
             tmp = tmp.shiftLeft(i * 8);
             biginteger = biginteger.add(tmp);
         }

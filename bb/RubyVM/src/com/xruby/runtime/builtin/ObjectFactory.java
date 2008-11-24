@@ -13,7 +13,7 @@ import com.xruby.runtime.lang.RubyMethod;
 import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyValue;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import org.apache.oro.text.regex.MatchResult;
 
 public class ObjectFactory {
@@ -141,12 +141,12 @@ public class ObjectFactory {
         return new RubyMatchData(m);
     }
 
-    public static RubyBignum createBignum(BigInteger value) {
+    public static RubyBignum createBignum(HugeInt value) {
         return new RubyBignum(value);
     }
 
     public static RubyBignum createBignum(String value) {
-        return new RubyBignum(new BigInteger(value));
+        return new RubyBignum(new HugeInt(value));
     }
 
     public static RubyValue createBoolean(boolean is_true) {
