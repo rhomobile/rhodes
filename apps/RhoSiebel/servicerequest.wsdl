@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?Siebel-Property-Set EscapeNames="false"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsdLocal1="urn:/crmondemand/xml/servicerequest" targetNamespace="urn:crmondemand/ws/servicerequest/10/2004" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:crmondemand/ws/servicerequest/10/2004"><types><xsd:schema elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="urn:crmondemand/ws/servicerequest/10/2004" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><xsd:import namespace="urn:/crmondemand/xml/servicerequest"/>
+<xsd:element name="ServiceRequestWS_ServiceRequestUpdate_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestUpdate_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsert_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsert_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestDeleteChild_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestDeleteChild_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestDelete_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestDelete_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestUpdateChild_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestUpdateChild_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestQueryPage_Input"><xsd:complexType><xsd:sequence><xsd:element name="UseChildAnd" type="xsd:string"/>
+<xsd:element name="PageSize" type="xsd:string"/>
+<xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="StartRowNum" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestQueryPage_Output"><xsd:complexType><xsd:sequence><xsd:element name="LastPage" type="xsd:string"/>
+<xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsertChild_Input"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+<xsd:element name="Echo" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServiceRequestWS_ServiceRequestInsertChild_Output"><xsd:complexType><xsd:sequence><xsd:element ref="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:schema>
+<xsd:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xsdLocal1="urn:/crmondemand/xml/servicerequest" targetNamespace="urn:/crmondemand/xml/servicerequest" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><xsd:annotation><xsd:documentation>Copyright (C) 2001-2003 Siebel Systems, Inc. All rights reserved. Siebel XSD Generation</xsd:documentation>
+</xsd:annotation>
+<xsd:element name="ListOfServiceRequest" type="xsdLocal1:ListOfServiceRequest"/>
+<xsd:complexType name="ListOfServiceRequestTopElmt"><xsd:sequence><xsd:element name="ListOfServiceRequest" maxOccurs="1" minOccurs="1" type="xsdLocal1:ListOfServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ListOfServiceRequest"><xsd:sequence><xsd:element name="ServiceRequest" maxOccurs="unbounded" minOccurs="0" type="xsdLocal1:ServiceRequest"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ServiceRequest"><xsd:sequence><xsd:element name="LastUpdated" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ServiceRequestId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedDate" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ModId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Subject" maxOccurs="1" minOccurs="0" type="xsdLocal1:string250"/>
+<xsd:element name="AccountName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="AccountId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="AccountLocation" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="Area" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssetId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ClosedTime" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ServiceRequestConcatField" maxOccurs="1" minOccurs="0" type="xsdLocal1:string315"/>
+<xsd:element name="WorkPhone" maxOccurs="1" minOccurs="0" type="xsdLocal1:string25"/>
+<xsd:element name="ContactEmail" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="ContactFirstName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="ContactFullName" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ContactId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ContactLastName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="CreatedByName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="Description" maxOccurs="1" minOccurs="0" type="xsdLocal1:string2000"/>
+<xsd:element name="ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IntegrationId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ModifiedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedByFullName" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="OpenedTime" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="OwnerId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Owner" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="Priority" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Product" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="ProductId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ReassignOwnerFlag" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="SRNumber" maxOccurs="1" minOccurs="0" type="xsdLocal1:string64"/>
+<xsd:element name="Type" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssetName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="Cause" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Source" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Status" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedById" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="DealerId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string15"/>
+<xsd:element name="Make" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Model" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ServicingDealer" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="Year" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AccountExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssetExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ProductExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssetIntegrationId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ProductIntegrationId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="DealerIntegrationId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="DealerExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssessmentFilter1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssessmentFilter2" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssessmentFilter3" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AssessmentFilter4" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ContactExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedbyEmailAddress" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="LastAssessmentDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="OwnerExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Dealer" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="ModifiedbyEmailAddress" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CustomObject1Id" maxOccurs="1" minOccurs="0" type="xsdLocal1:string15"/>
+<xsd:element name="CustomObject1Name" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="CustomObject2Id" maxOccurs="1" minOccurs="0" type="xsdLocal1:string15"/>
+<xsd:element name="CustomObject2Name" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="CustomObject3Id" maxOccurs="1" minOccurs="0" type="xsdLocal1:string15"/>
+<xsd:element name="CustomObject3Name" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="CustomObject1ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CustomObject2ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CustomObject3ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="LastAssignmentSubmissionDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="AssignmentStatus" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="LastAssignmentCompletionDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CurrencyCode" maxOccurs="1" minOccurs="0" type="xsdLocal1:string20"/>
+<xsd:element name="IndexedBoolean0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedCurrency0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedDate0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedLongText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="IndexedNumber0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedPick0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick2" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick3" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick4" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick5" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedShortText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+<xsd:element name="IndexedShortText1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+<xsd:element name="ListOfActivity" maxOccurs="1" minOccurs="0" type="xsdLocal1:ListOfActivity"/>
+<xsd:element name="ListOfAuditTrail" maxOccurs="1" minOccurs="0" type="xsdLocal1:ListOfAuditTrail"/>
+<xsd:element name="ListOfNote" maxOccurs="1" minOccurs="0" type="xsdLocal1:ListOfNote"/>
+<xsd:element name="ListOfSolution" maxOccurs="1" minOccurs="0" type="xsdLocal1:ListOfSolution"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ListOfActivity"><xsd:sequence><xsd:element name="Activity" maxOccurs="unbounded" minOccurs="0" type="xsdLocal1:Activity"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="Activity"><xsd:sequence><xsd:element name="IntegrationId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Owner" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="Subject" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="DueDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Priority" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Status" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Type" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="AccountId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Account" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="ServiceRequestId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CampaignId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Campaign" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="Description" maxOccurs="1" minOccurs="0" type="xsdLocal1:string1999"/>
+<xsd:element name="Contact" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedByName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="CreatedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CurrencyCode" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Display" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Lead" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="LeadId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Location" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="ModifiedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedBy" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="Opportunity" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="OpportunityId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="OwnerId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ParentActivityId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="StartTime" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="EndTime" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="PrimaryContactId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Private" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ActivityId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedBoolean0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedCurrency0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedDate0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedLongText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="IndexedNumber0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedPick0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick2" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick3" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick4" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick5" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedShortText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+<xsd:element name="IndexedShortText1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+<xsd:element name="AccountExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CampaignExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="OpportunityExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="LeadExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ListOfAuditTrail"><xsd:sequence><xsd:element name="AuditTrail" maxOccurs="unbounded" minOccurs="0" type="xsdLocal1:AuditTrail"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="AuditTrail"><xsd:sequence><xsd:element name="LastUpdated" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Date" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="User" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="FieldModified" maxOccurs="1" minOccurs="0" type="xsdLocal1:string75"/>
+<xsd:element name="NewValue" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="OldValue" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="AuditTrailId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ListOfNote"><xsd:sequence><xsd:element name="Note" maxOccurs="unbounded" minOccurs="0" type="xsdLocal1:Note"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="Note"><xsd:sequence><xsd:element name="LastUpdated" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Subject" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedByName" maxOccurs="1" minOccurs="0" type="xsdLocal1:string50"/>
+<xsd:element name="CreatedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="ModifiedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Description" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Private" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ServiceRequestId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="NoteId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ListOfSolution"><xsd:sequence><xsd:element name="Solution" maxOccurs="unbounded" minOccurs="0" type="xsdLocal1:Solution"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="Solution"><xsd:sequence><xsd:element name="LastUpdated" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ExternalSystemId" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="Title" maxOccurs="1" minOccurs="0" type="xsdLocal1:string100"/>
+<xsd:element name="Published" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="SolutionId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="Status" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="CreatedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CreatedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="FAQ" maxOccurs="1" minOccurs="0" type="xsdLocal1:string250"/>
+<xsd:element name="ModifiedBy" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedById" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="ModifiedDate" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="SolutionDetails" maxOccurs="1" minOccurs="0" type="xsdLocal1:string2000"/>
+<xsd:element name="SolutionRating" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IntegrationId" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="CurrencyCode" maxOccurs="1" minOccurs="0" type="xsdLocal1:string20"/>
+<xsd:element name="IndexedBoolean0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedCurrency0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedDate0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedLongText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string255"/>
+<xsd:element name="IndexedNumber0" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+<xsd:element name="IndexedPick0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick2" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick3" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick4" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedPick5" maxOccurs="1" minOccurs="0" type="xsdLocal1:string30"/>
+<xsd:element name="IndexedShortText0" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+<xsd:element name="IndexedShortText1" maxOccurs="1" minOccurs="0" type="xsdLocal1:string40"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType name="string330"><xsd:restriction base="xsd:string"><xsd:maxLength value="330"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string250"><xsd:restriction base="xsd:string"><xsd:maxLength value="250"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string2000"><xsd:restriction base="xsd:string"><xsd:maxLength value="2000"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string1999"><xsd:restriction base="xsd:string"><xsd:maxLength value="1999"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string50"><xsd:restriction base="xsd:string"><xsd:maxLength value="50"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string255"><xsd:restriction base="xsd:string"><xsd:maxLength value="255"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string64"><xsd:restriction base="xsd:string"><xsd:maxLength value="64"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string75"><xsd:restriction base="xsd:string"><xsd:maxLength value="75"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string15"><xsd:restriction base="xsd:string"><xsd:maxLength value="15"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string40"><xsd:restriction base="xsd:string"><xsd:maxLength value="40"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string30"><xsd:restriction base="xsd:string"><xsd:maxLength value="30"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string315"><xsd:restriction base="xsd:string"><xsd:maxLength value="315"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string25"><xsd:restriction base="xsd:string"><xsd:maxLength value="25"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string1"><xsd:restriction base="xsd:string"><xsd:maxLength value="1"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string100"><xsd:restriction base="xsd:string"><xsd:maxLength value="100"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="string20"><xsd:restriction base="xsd:string"><xsd:maxLength value="20"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>
+</types>
+<message name="ServiceRequestWS_ServiceRequestUpdate_Input"><part name="ServiceRequestWS_ServiceRequestUpdate_Input" element="tns:ServiceRequestWS_ServiceRequestUpdate_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestUpdate_Output"><part name="ServiceRequestWS_ServiceRequestUpdate_Output" element="tns:ServiceRequestWS_ServiceRequestUpdate_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsert_Input"><part name="ServiceRequestWS_ServiceRequestInsert_Input" element="tns:ServiceRequestWS_ServiceRequestInsert_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsert_Output"><part name="ServiceRequestWS_ServiceRequestInsert_Output" element="tns:ServiceRequestWS_ServiceRequestInsert_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestDeleteChild_Input"><part name="ServiceRequestWS_ServiceRequestDeleteChild_Input" element="tns:ServiceRequestWS_ServiceRequestDeleteChild_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestDeleteChild_Output"><part name="ServiceRequestWS_ServiceRequestDeleteChild_Output" element="tns:ServiceRequestWS_ServiceRequestDeleteChild_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestDelete_Input"><part name="ServiceRequestWS_ServiceRequestDelete_Input" element="tns:ServiceRequestWS_ServiceRequestDelete_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestDelete_Output"><part name="ServiceRequestWS_ServiceRequestDelete_Output" element="tns:ServiceRequestWS_ServiceRequestDelete_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestUpdateChild_Input"><part name="ServiceRequestWS_ServiceRequestUpdateChild_Input" element="tns:ServiceRequestWS_ServiceRequestUpdateChild_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestUpdateChild_Output"><part name="ServiceRequestWS_ServiceRequestUpdateChild_Output" element="tns:ServiceRequestWS_ServiceRequestUpdateChild_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestQueryPage_Input"><part name="ServiceRequestWS_ServiceRequestQueryPage_Input" element="tns:ServiceRequestWS_ServiceRequestQueryPage_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestQueryPage_Output"><part name="ServiceRequestWS_ServiceRequestQueryPage_Output" element="tns:ServiceRequestWS_ServiceRequestQueryPage_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Input"><part name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Input" element="tns:ServiceRequestWS_ServiceRequestInsertOrUpdate_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Output"><part name="ServiceRequestWS_ServiceRequestInsertOrUpdate_Output" element="tns:ServiceRequestWS_ServiceRequestInsertOrUpdate_Output"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsertChild_Input"><part name="ServiceRequestWS_ServiceRequestInsertChild_Input" element="tns:ServiceRequestWS_ServiceRequestInsertChild_Input"/>
+</message>
+<message name="ServiceRequestWS_ServiceRequestInsertChild_Output"><part name="ServiceRequestWS_ServiceRequestInsertChild_Output" element="tns:ServiceRequestWS_ServiceRequestInsertChild_Output"/>
+</message>
+<portType name="Default_Binding_ServiceRequest"><operation name="ServiceRequestUpdate"><input message="tns:ServiceRequestWS_ServiceRequestUpdate_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestUpdate_Output"/>
+</operation>
+<operation name="ServiceRequestInsert"><input message="tns:ServiceRequestWS_ServiceRequestInsert_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestInsert_Output"/>
+</operation>
+<operation name="ServiceRequestDeleteChild"><input message="tns:ServiceRequestWS_ServiceRequestDeleteChild_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestDeleteChild_Output"/>
+</operation>
+<operation name="ServiceRequestDelete"><input message="tns:ServiceRequestWS_ServiceRequestDelete_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestDelete_Output"/>
+</operation>
+<operation name="ServiceRequestUpdateChild"><input message="tns:ServiceRequestWS_ServiceRequestUpdateChild_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestUpdateChild_Output"/>
+</operation>
+<operation name="ServiceRequestQueryPage"><input message="tns:ServiceRequestWS_ServiceRequestQueryPage_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestQueryPage_Output"/>
+</operation>
+<operation name="ServiceRequestInsertOrUpdate"><input message="tns:ServiceRequestWS_ServiceRequestInsertOrUpdate_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestInsertOrUpdate_Output"/>
+</operation>
+<operation name="ServiceRequestInsertChild"><input message="tns:ServiceRequestWS_ServiceRequestInsertChild_Input"/>
+<output message="tns:ServiceRequestWS_ServiceRequestInsertChild_Output"/>
+</operation>
+</portType>
+<binding name="Default_Binding" type="tns:Default_Binding_ServiceRequest"><soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="ServiceRequestUpdate"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestUpdate"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestInsert"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestInsert"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestDeleteChild"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestDeleteChild"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestDelete"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestDelete"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestUpdateChild"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestUpdateChild"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestQueryPage"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestQueryPage"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestInsertOrUpdate"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestInsertOrUpdate"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ServiceRequestInsertChild"><soap:operation soapAction="document/urn:crmondemand/ws/servicerequest/10/2004:ServiceRequestInsertChild"/>
+<input><soap:body use="literal"/>
+</input>
+<output><soap:body use="literal"/>
+</output>
+</operation>
+</binding>
+<service name="ServiceRequest"><port binding="tns:Default_Binding" name="Default"><soap:address location="https://secure-ausomxbha.crmondemand.com/Services/Integration"/>
+</port>
+</service>
+</definitions>
