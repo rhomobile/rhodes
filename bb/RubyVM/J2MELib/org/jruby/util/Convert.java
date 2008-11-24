@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 package org.jruby.util;
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import j2me.lang.ArrayMe;
 
 //import org.jruby.RubyNumeric.InvalidIntegerException;
@@ -851,7 +851,7 @@ public class Convert {
      * @return
      * @throws NumberFormatException, IllegalArgumentException
      */
-    public static final BigInteger byteArrayToBigInteger(byte[] bytes, int begin, int buflen, int base, boolean strict) {
+    public static final HugeInt byteArrayToBigInteger(byte[] bytes, int begin, int buflen, int base, boolean strict) {
         final int SCOMPLETE         = 0;
         final int SBEGIN            = 1;
         final int SSIGN             = 2;
@@ -1063,7 +1063,7 @@ public class Convert {
         if (chars == null) { // 0, won't happen if byteArrayToLong called first
             return BIG_INT_ZERO;
         } else {
-            return new BigInteger(new String(chars,0,offset),radix);
+            return new HugeInt(new String(chars,0,offset),radix);
         }
     }
     /**
@@ -2241,7 +2241,7 @@ public class Convert {
       100000000000000000L
     };
     
-    private static final BigInteger BIG_INT_ZERO = BigInteger.valueOf(0L);
+    private static final HugeInt BIG_INT_ZERO = HugeInt.valueOf(0L);
     
     private static final byte[] EMPTY_BYTES = {};
     
