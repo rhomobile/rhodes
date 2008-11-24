@@ -94,3 +94,10 @@ You need to have the iPhone SDK installed and be part of the Apple Developer pro
 
 Inside the iPhone directory is an iPhone XCode project.  Load that project (currently called Rhorunner but will be changed to Rhodes later) and do a build.  Once you have tested on your iPhone simular and iPhone devices to your satisfaction, follow Apple's instructions to submit your application for consideration on the App Store.
 
+= More Resources
+
+There is a "tutorial available:http://rhomobile.com/index.php?option=com_content&view=article&id=49&Itemid=55 on the "Rhomobile site":http://rhomobile.com
+
+The "Rhodes spec":http://rhomobile.com/wiki/index.php?title=Rhodes is also available on the "Rhomobile wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile
+
+For further questions "email us":"mailto:info@rhomobile.com"
