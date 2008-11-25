@@ -129,7 +129,7 @@ public class SyncEngine extends RubyBasic {
 		if (sThread == null) {
 			sThread = new SyncThread();
 		}
-		return RubyConstant.QFALSE;
+		return RubyConstant.QTRUE;
 	}
 
 	// @RubyLevelMethod(name="stop")
@@ -141,7 +141,12 @@ public class SyncEngine extends RubyBasic {
 	 * @return the ruby value
 	 */
 	public static RubyValue stop(RubyValue receiver) {
-		return RubyConstant.QFALSE;
+		/*if ( sThread != null ){
+			sThread.quit();
+			sThread = null;
+		}*/
+		
+		return RubyConstant.QTRUE;
 	}
 
 	// @RubyLevelMethod(name="unlock_sync_mutex")

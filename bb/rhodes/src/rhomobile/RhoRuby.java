@@ -6,7 +6,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import com.rho.sync.SyncEngine; 
+//import com.rho.sync.SyncEngine; 
 
 public class RhoRuby {
 
@@ -21,13 +21,9 @@ public class RhoRuby {
 
 		mainObj = new xruby.ServeME.main();
 		receiver = mainObj.invoke();
-		
-		SyncEngine.start(null);
 	}
 	
 	public static void RhoRubyStop(){
-		
-		SyncEngine.stop(null);
 		
 		receiver = null;
 		mainObj = null;
