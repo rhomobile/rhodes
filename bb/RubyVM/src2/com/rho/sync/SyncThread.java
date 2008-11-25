@@ -28,10 +28,10 @@ import com.rho.db.PerstLiteAdapter;
 public class SyncThread implements Runnable {
 
 	/** The quit. */
-	private static boolean quit = false;
+	private boolean quit = false;
 
 	/** The sync. */
-	private static String sync = "sync";
+	private String sync = "sync";
 
 	/** The Constant SYNC_WAIT_INTERVAL. */
 	private static final long SYNC_WAIT_INTERVAL = 30000L;
@@ -82,13 +82,14 @@ public class SyncThread implements Runnable {
 				}
 
 				try {
-					sync.wait(SYNC_WAIT_INTERVAL);
-				} catch (InterruptedException e) {
+					if ( !quit )
+						sync.wait(SYNC_WAIT_INTERVAL);
+				} catch (Exception e) {
 				}
 			}
 		}
 		System.out.println("Shutting down SyncEngine...");
-		SyncUtil.adapter.close();
+//		SyncUtil.adapter.close();
 		System.out.println("SyncEngine is shutdown...");
 	}
 

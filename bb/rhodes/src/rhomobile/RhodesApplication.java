@@ -17,16 +17,19 @@ import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.TrackwheelListener; 
+import net.rim.device.api.system.SystemListener;
 
 import com.rho.NetworkAccess;
+import com.rho.sync.SyncEngine;
+
 import java.util.Vector;
 
 /**
  * 
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication {
+final public class RhodesApplication extends UiApplication implements RenderingApplication{
     
-    class CKeyListener  implements KeyListener{
+	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
 	        if( key == Characters.ENTER ) {
@@ -43,6 +46,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				back();
 				return true;
 			}
+			
 			return false;
 		}
 
@@ -109,7 +113,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	{
     	    MenuItem item = menu.getItem(i);
     	    String label = item.toString();
-    	    if(label.equals("Get Link")) //TODO: catch by ID?
+    	    if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
     	    {
     	    	item.run();
     	    }			
@@ -125,28 +129,53 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private HttpConnection  _currentConnection;
    
     private Vector _history;
-    //private int    _history_pos = 0;
     
     /***************************************************************************
      * Main.
      **************************************************************************/
     public static void main(String[] args) {
     	NetworkAccess.autoConfigure();
-
-    	//Storage storage = StorageFactory.getInstance().createStorage();
-       	//storage.open("MyTest.dbs");
-       	//storage.close();
-       	
+    	
         RhoRuby.RhoRubyStart("");
-    	//String[] args = new String[0];
-		//com.xruby.runtime.lang.RubyRuntime.init(args);
 		
         RhodesApplication app = new RhodesApplication();
         app.enterEventDispatcher();
-        
-        //com.xruby.runtime.lang.RubyRuntime.fini();
-        
+    }
+    
+    void doClose(){
+		SyncEngine.stop(null);
         RhoRuby.RhoRubyStop();
+    }
+
+	public void activate() {
+		SyncEngine.start(null);
+
+		super.activate();
+	}
+    
+	public void deactivate() {
+		SyncEngine.stop(null);
+
+		super.deactivate();
+	}
+    
+    class CMainScreen extends MainScreen{
+
+		protected void makeMenu(Menu menu, int instance) {
+			// TODO Auto-generated method stub
+			super.makeMenu(menu, instance);
+		}
+
+		public boolean onClose() {
+			doClose();
+			return super.onClose();
+		}
+
+		public boolean onMenu(int instance) {
+			// TODO Auto-generated method stub
+			return super.onMenu(instance);
+		}
+    	
     }
     
     private RhodesApplication() {
@@ -154,9 +183,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
     	
-        _mainScreen = new MainScreen();
+        _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);
         _mainScreen.addTrackwheelListener(wheel);
+        
         pushScreen(_mainScreen);
         _renderingSession = RenderingSession.getNewInstance();
         // enable javascript
@@ -189,7 +219,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             if (browserContent != null) {
                 
                 Field field = browserContent.getDisplayableContent();
-                
                 if (field != null) {
                     synchronized (Application.getEventLock()) {
                         _mainScreen.deleteAll();
@@ -224,7 +253,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
                 addToHistory(absoluteUrl);
                 
-                HttpConnection conn = null;
                 PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(urlRequestedEvent.getURL(),
                                                                                          urlRequestedEvent.getHeaders(), 
                                                                                          urlRequestedEvent.getPostData(),
