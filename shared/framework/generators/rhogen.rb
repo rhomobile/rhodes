@@ -23,6 +23,11 @@ module Rhogen
       File.join(File.dirname(__FILE__), 'templates', 'application')
     end
     
+    desc <<-DESC
+      Generates a new rhodes application.  This will create a new directory with two files:
+      application.rb and index.html
+    DESC
+    
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
     
     first_argument :name, :required => true, :desc => "application name"
@@ -45,11 +50,17 @@ module Rhogen
       File.join(File.dirname(__FILE__), 'templates', 'model')
     end
     
+    desc <<-DESC
+      Generates a new model for a given source.  You must specify name, source_url, and source_id.  
+      You can also specify an optional attribute list in the form: 'attribute1', 'attribute2', 'attribute3'...
+    DESC
+    
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
     
     first_argument :name, :required => true, :desc => "model name"
     second_argument :source_url, :required => true, :desc => "source url"
     third_argument :source_id, :required => true, :desc => "source id"
+    fourth_argument :attributes, :as => :array, :default => [], :required => false, :desc => "array of attributes (only string suppported right now)"
     
     template :config do |template|
       template.source = 'config.rb'
@@ -74,6 +85,10 @@ module Rhogen
     template :controller do |template|
       template.source = 'controller.rb'
       template.destination = "#{name.camel_case}/controller.rb"
+    end
+    
+    def attributes?
+      self.attributes && !self.attributes.empty?
     end
     
   end
