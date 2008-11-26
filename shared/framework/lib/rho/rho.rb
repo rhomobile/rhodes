@@ -32,10 +32,10 @@ module Rho
     
     # setup the sources table and model attributes for all applications
     def init_sources
-      if defined? Rho::RhoConfig::sources
+      puts 'sources initialized? ' + self.sources_initialized?.inspect
+      if defined? Rho::RhoConfig::sources and not self.sources_initialized?
         Rhom::RhomDbAdapter::delete_all_from_table('sources')
         src_attribs = []
-        attribs_empty = false
         
         # quick and dirty way to get unique array of hashes
         uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
@@ -50,6 +50,10 @@ module Rho
                                                  {"source_id"=>src_id,"source_url"=>url})
         end
       end
+    end
+    
+    def sources_initialized?
+      Rhom::RhomDbAdapter::select_from_table('sources','*').size > 0 ? true : false
     end
 	
     def get_app(appname)
