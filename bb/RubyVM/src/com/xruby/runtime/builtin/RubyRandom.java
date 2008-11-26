@@ -5,7 +5,7 @@
 
 package com.xruby.runtime.builtin;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import java.util.Random;
 import j2me.util.RandomMe;
 import j2me.lang.SystemMe;
@@ -102,7 +102,7 @@ public class RubyRandom {
 		if (arg instanceof RubyBignum) {
 			byte[] bytes = new byte[((RubyBignum)arg).getInternal().toByteArray().length-1];
 			RandomMe.nextBytes(random,bytes);
-			return RubyBignum.bignorm(new BigInteger(1, bytes));
+			return RubyBignum.bignorm(new HugeInt(1, bytes));
 		}
 
 		if (max == 0) {

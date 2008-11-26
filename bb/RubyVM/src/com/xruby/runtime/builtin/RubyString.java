@@ -5,12 +5,12 @@
 
 package com.xruby.runtime.builtin;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import j2me.util.ArrayList;
 import j2me.util.Collection;
 //import java.util.Formatter;
 import j2me.util.Iterator;
-import j2me.util.StringTokenizer;
+import j2me.util.StringParser;
 //import java.util.StringUtil;
 import j2me.lang.*;
 
@@ -296,7 +296,7 @@ public class RubyString extends RubyBasic {
     }
 
     private Collection/*<String>*/ split(RubyString s, String delimiter) {
-        StringTokenizer t = new StringTokenizer(s.toString(), delimiter);
+        StringParser t = new StringParser(s.toString(), delimiter);
         int total = t.countTokens();
         Collection/*<String>*/ r = new ArrayList/*<String>*/(total);
         for (int i = 0; i < total; ++i) {
@@ -853,9 +853,9 @@ public class RubyString extends RubyBasic {
         value = value.substring(0, end);
 
         if (radix >= 2 && radix <= 36) {
-            BigInteger bigint;
+            HugeInt bigint;
             try {
-                bigint = new BigInteger(value, radix);
+                bigint = new HugeInt(value, radix);
             } catch (NumberFormatException e) {
                 return ObjectFactory.FIXNUM0;
             }

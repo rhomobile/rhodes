@@ -5,32 +5,32 @@
 
 package com.xruby.runtime.builtin;
 
-import j2me.math.BigDecimal;
-import j2me.math.BigInteger;
-import j2me.util.ArrayList;
+import j2me.math.HugeDigit;
+import j2me.math.HugeInt;
+//import j2me.util.ArrayList;
 
 import j2me.lang.MathEx;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 ////@RubyLevelClass(name="Bignum", superclass="Integer")
 public class RubyBignum extends RubyInteger {
-    private static final BigInteger FIXNUM_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
-    private static final BigInteger FIXNUM_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
-    private BigInteger value_;
+    private static final HugeInt FIXNUM_MAX = HugeInt.valueOf(Integer.MAX_VALUE);
+    private static final HugeInt FIXNUM_MIN = HugeInt.valueOf(Integer.MIN_VALUE);
+    private HugeInt value_;
     private RubyClass klass;
 
     RubyBignum(String value, int radix) {
-        this(new BigInteger(value, radix));
+        this(new HugeInt(value, radix));
     }
 
     RubyBignum(String value) {
-        this(new BigInteger(value));
+        this(new HugeInt(value));
     }
 
-    RubyBignum(BigInteger value) {
+    RubyBignum(HugeInt value) {
         value_ = value;
         this.klass = RubyRuntime.BignumClass;
     }
@@ -77,7 +77,7 @@ public class RubyBignum extends RubyInteger {
 		return ObjectFactory.createFloat(this.value_.doubleValue());
 	}
 
-    public BigInteger getInternal() {
+    public HugeInt getInternal() {
         return value_;
     }
 
@@ -89,7 +89,7 @@ public class RubyBignum extends RubyInteger {
 		return value_.longValue();
 	}
 
-    public void setValue(BigInteger value) {
+    public void setValue(HugeInt value) {
         value_ = value;
     }
     
@@ -106,7 +106,7 @@ public class RubyBignum extends RubyInteger {
     //@RubyLevelMethod(name="coerce")    
 	public RubyArray coerce(RubyValue v) {
 		if (v instanceof RubyFixnum) {
-			return new RubyArray(new RubyBignum(BigInteger.valueOf(v.toInt())), this);
+			return new RubyArray(new RubyBignum(HugeInt.valueOf(v.toInt())), this);
 		} else if (v instanceof RubyBignum) {
 			return new RubyArray(v, this);
 		} 
@@ -131,7 +131,7 @@ public class RubyBignum extends RubyInteger {
         	RubyBignum bigValue = (RubyBignum) value;
         	return bignorm(value_.add(bigValue.value_));
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             return bignorm(value_.add(bigValue));
         } else if (value instanceof RubyFloat) {
             double ret = value_.doubleValue() + value.toFloat();
@@ -147,7 +147,7 @@ public class RubyBignum extends RubyInteger {
             RubyBignum bigValue = (RubyBignum) value;
             return bignorm(value_.subtract(bigValue.value_));
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             return bignorm(value_.subtract(bigValue));
         } else if (value instanceof RubyFloat) {
             double ret = value_.doubleValue() - value.toFloat();
@@ -163,7 +163,7 @@ public class RubyBignum extends RubyInteger {
             RubyBignum bigValue = (RubyBignum) value;
             return bignorm(value_.multiply(bigValue.value_));
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             return bignorm(value_.multiply(bigValue));
         } else if (value instanceof RubyFloat) {
             double ret = value_.doubleValue() * value.toFloat();
@@ -177,7 +177,7 @@ public class RubyBignum extends RubyInteger {
     public RubyValue op_div(RubyValue value) {
         if (value instanceof RubyBignum) {
             RubyBignum bigValue = (RubyBignum) value;
-            if (bigValue.equals(BigInteger.ZERO)) {
+            if (bigValue.equals(HugeInt.ZERO)) {
             	zeroDiv();
             }
             return bignorm(value_.divide(bigValue.value_));
@@ -186,7 +186,7 @@ public class RubyBignum extends RubyInteger {
             if (intValue == 0) {
             	zeroDiv();
             }
-			BigInteger bigValue = BigInteger.valueOf(intValue);
+			HugeInt bigValue = HugeInt.valueOf(intValue);
             return bignorm(value_.divide(bigValue));
         } else if (value instanceof RubyFloat) {
             double ret = value_.doubleValue() / value.toFloat();
@@ -252,20 +252,20 @@ public class RubyBignum extends RubyInteger {
             RubyBignum bigValue = (RubyBignum) value;
             return bignorm(ruby_mod(value_, bigValue.value_));
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             return bignorm(ruby_mod(value_, bigValue));
         } else {
         	return coerceBin(RubyID.modID, value);
         }
     }
     
-    private static BigInteger ruby_mod(BigInteger a, BigInteger b) {
-        BigInteger modValue = a.abs().mod(b.abs());
+    private static HugeInt ruby_mod(HugeInt a, HugeInt b) {
+        HugeInt modValue = a.abs().mod(b.abs());
         if (modValue.signum() == 0) {
             return modValue;
         }
         
-        BigInteger result = modValue;
+        HugeInt result = modValue;
         if (a.signum() > 0) {
             if (b.signum() < 0) {
                 result = b.add(modValue);
@@ -286,16 +286,16 @@ public class RubyBignum extends RubyInteger {
 
     //@RubyLevelMethod(name="&")
     public RubyValue op_band(RubyValue value) {
-        BigInteger result;
+        HugeInt result;
         if (value instanceof RubyBignum) {
             RubyBignum bigValue = (RubyBignum) value;
             result = value_.and(bigValue.value_);
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             result = value_.and(bigValue);
         } else if (value instanceof RubyFloat) {
             double floatValue = ((RubyFloat) value).doubleValue();
-            BigInteger bigValue = BigDecimal.valueOf(floatValue).toBigInteger();
+            HugeInt bigValue = HugeDigit.valueOf(floatValue).toBigInteger();
             result = value_.and(bigValue);
         } else {
             throw new RubyException(RubyRuntime.TypeErrorClass, value
@@ -307,16 +307,16 @@ public class RubyBignum extends RubyInteger {
 
     //@RubyLevelMethod(name="|")
     public RubyValue op_bor(RubyValue value) {
-        BigInteger result;
+        HugeInt result;
         if (value instanceof RubyBignum) {
             RubyBignum bigValue = (RubyBignum) value;
             result = value_.or(bigValue.value_);
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             result = value_.or(bigValue);
         } else if (value instanceof RubyFloat) {
             double floatValue = ((RubyFloat) value).doubleValue();
-            BigInteger bigValue = BigDecimal.valueOf(floatValue).toBigInteger();
+            HugeInt bigValue = HugeDigit.valueOf(floatValue).toBigInteger();
             result = value_.or(bigValue);
         } else {
             throw new RubyException(RubyRuntime.TypeErrorClass, value
@@ -328,16 +328,16 @@ public class RubyBignum extends RubyInteger {
 
     //@RubyLevelMethod(name="^")
     public RubyValue op_bxor(RubyValue value) {
-        BigInteger result;
+        HugeInt result;
         if (value instanceof RubyBignum) {
             RubyBignum bigValue = (RubyBignum) value;
             result = value_.xor(bigValue.value_);
         } else if (value instanceof RubyFixnum) {
-            BigInteger bigValue = BigInteger.valueOf(value.toInt());
+            HugeInt bigValue = HugeInt.valueOf(value.toInt());
             result = value_.xor(bigValue);
         } else if (value instanceof RubyFloat) {
             double floatValue = ((RubyFloat) value).doubleValue();
-            BigInteger bigValue = BigDecimal.valueOf(floatValue).toBigInteger();
+            HugeInt bigValue = HugeDigit.valueOf(floatValue).toBigInteger();
             result = value_.xor(bigValue);
         } else {
             throw new RubyException(RubyRuntime.TypeErrorClass, value
@@ -375,9 +375,9 @@ public class RubyBignum extends RubyInteger {
     
     //@RubyLevelMethod(name="<=>")
     public RubyValue cmp(RubyValue v) {
-    	BigInteger b;
+    	HugeInt b;
     	if (v instanceof RubyFixnum) {
-    		b = BigInteger.valueOf(v.toInt());
+    		b = HugeInt.valueOf(v.toInt());
     	} else if (v instanceof RubyBignum) {
     		b = ((RubyBignum)v).value_;
     	} else if (v instanceof RubyFloat) {
@@ -399,9 +399,9 @@ public class RubyBignum extends RubyInteger {
     //RHO_COMMENT
     //@RubyLevelMethod(name="==")
     public RubyValue equal(RubyValue v) {
-    	BigInteger b;
+    	HugeInt b;
     	if (v instanceof RubyFixnum) {
-    		b = BigInteger.valueOf(v.toInt());
+    		b = HugeInt.valueOf(v.toInt());
     	} else if (v instanceof RubyBignum) {
     		b = ((RubyBignum)v).value_;
     	} else if (v instanceof RubyFloat) {
@@ -440,7 +440,7 @@ public class RubyBignum extends RubyInteger {
     	return v;
     }
 
-    public static RubyInteger bignorm(BigInteger value) {
+    public static RubyInteger bignorm(HugeInt value) {
         if (value.compareTo(FIXNUM_MAX) > 0 || value.compareTo(FIXNUM_MIN) < 0)
             return ObjectFactory.createBignum(value);
         return ObjectFactory.createFixnum(value.intValue());
@@ -448,7 +448,7 @@ public class RubyBignum extends RubyInteger {
 
     public static RubyInteger bignorm(long value) {
         if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)
-            return ObjectFactory.createBignum(BigInteger.valueOf(value));
+            return ObjectFactory.createBignum(HugeInt.valueOf(value));
         return ObjectFactory.createFixnum((int) value);
     }
     

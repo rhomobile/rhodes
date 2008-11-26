@@ -27,7 +27,7 @@
  ***** END LICENSE BLOCK *****/
 package org.jruby.util;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 //import java.text.DecimalFormatSymbols;
 import j2me.util.List;
 import j2me.util.Locale;
@@ -76,10 +76,10 @@ public class Sprintf {
     private static final byte[] NAN_VALUE       = {'N','a','N'};
     private static final byte[] INFINITY_VALUE  = {'I','n','f'};
        
-    private static final BigInteger BIG_32 = BigInteger.valueOf(((long)Integer.MAX_VALUE + 1L) << 1);
-    private static final BigInteger BIG_64 = BIG_32.shiftLeft(32);
-    private static final BigInteger BIG_MINUS_32 = BigInteger.valueOf((long)Integer.MIN_VALUE << 1);
-    private static final BigInteger BIG_MINUS_64 = BIG_MINUS_32.shiftLeft(32);
+    private static final HugeInt BIG_32 = HugeInt.valueOf(((long)Integer.MAX_VALUE + 1L) << 1);
+    private static final HugeInt BIG_64 = BIG_32.shiftLeft(32);
+    private static final HugeInt BIG_MINUS_32 = HugeInt.valueOf((long)Integer.MIN_VALUE << 1);
+    private static final HugeInt BIG_MINUS_64 = BIG_MINUS_32.shiftLeft(32);
 
     private static final int INITIAL_BUFFER_SIZE = 32;
     
@@ -1568,7 +1568,7 @@ public class Sprintf {
     }
     
     private static final byte[] getBignumBytes(RubyBignum arg, int base, boolean sign, boolean upper) {
-        BigInteger val = arg.getInternal();//.getValue();
+        HugeInt val = arg.getInternal();//.getValue();
         if (sign || base == 10 || val.signum() >= 0) {
             return stringToBytes(val.toString(base),upper);
         }
@@ -1590,7 +1590,7 @@ public class Sprintf {
         // for smaller values, BigInteger math is required to conform to MRI's
         // result.
         long longval;
-        BigInteger bigval;
+        HugeInt bigval;
         
         if (arg instanceof RubyFixnum) {
             // relatively cheap test for 32-bit values
@@ -1599,19 +1599,19 @@ public class Sprintf {
                 return Convert.longToCharBytes((((long)Integer.MAX_VALUE + 1L) << 1) + longval);
             }
             // no such luck...
-            bigval = BigInteger.valueOf(longval);
+            bigval = HugeInt.valueOf(longval);
         } else {
             bigval = ((RubyBignum)arg).getInternal();//.getValue();
         }
         // ok, now it gets expensive...
         int shift = 0;
         // go through negated powers of 32 until we find one small enough 
-        for (BigInteger minus = BIG_MINUS_64 ;
+        for (HugeInt minus = BIG_MINUS_64 ;
                 bigval.compareTo(minus) < 0 ;
                 minus = minus.shiftLeft(32), shift++) ;
         // add to the corresponding positive power of 32 for the result.
         // meaningful? no. conformant? yes. I just write the code...
-        BigInteger nPower32 = shift > 0 ? BIG_64.shiftLeft(32 * shift) : BIG_64;
+        HugeInt nPower32 = shift > 0 ? BIG_64.shiftLeft(32 * shift) : BIG_64;
         return stringToBytes(nPower32.add(bigval).toString(),false);
     }
     

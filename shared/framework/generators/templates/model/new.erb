@@ -5,9 +5,12 @@
 	  action="<%%=url_for('create')%>">
 	<fieldset>
 		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
-		<div class="row">
-			<label>Some Field: </label>
-		</div>
+		<% attributes.each do |attribute| %>
+		  <div class="row">
+			  <label><%=attribute%>: </label>
+			  <input type="text" name="<%= name %>[<%= attribute %>]"/>
+		  </div>
+		<% end %>
 	</fieldset>
 	<input type="submit" value="Create"/>
 </form>

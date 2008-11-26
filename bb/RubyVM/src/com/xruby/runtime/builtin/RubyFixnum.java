@@ -5,7 +5,7 @@
 
 package com.xruby.runtime.builtin;
 
-import j2me.math.BigInteger;
+import j2me.math.HugeInt;
 import j2me.lang.MathEx;
 
 import com.xruby.runtime.lang.*;
@@ -90,8 +90,8 @@ public class RubyFixnum extends RubyInteger {
     	}
     	
     	if (v instanceof RubyBignum) {
-    		BigInteger bigValue1 = BigInteger.valueOf(value_);
-    		BigInteger bigValue2 = ((RubyBignum)v).getInternal();
+    		HugeInt bigValue1 = HugeInt.valueOf(value_);
+    		HugeInt bigValue2 = ((RubyBignum)v).getInternal();
     		return RubyBignum.bignorm(bigValue1.add(bigValue2));
     	}
     	
@@ -109,8 +109,8 @@ public class RubyFixnum extends RubyInteger {
     	}
     	
     	if (v instanceof RubyBignum) {
-    		BigInteger bigValue1 = BigInteger.valueOf(this.value_);
-            BigInteger bigValue2 = ((RubyBignum)v).getInternal();
+    		HugeInt bigValue1 = HugeInt.valueOf(this.value_);
+            HugeInt bigValue2 = ((RubyBignum)v).getInternal();
             return RubyBignum.bignorm(bigValue1.subtract(bigValue2));
     	}
     	
@@ -128,8 +128,8 @@ public class RubyFixnum extends RubyInteger {
     	}
     	
     	if (v instanceof RubyBignum) {
-    		BigInteger bigValue1 = BigInteger.valueOf(this.value_);
-            BigInteger bigValue2 = ((RubyBignum)v).getInternal();
+    		HugeInt bigValue1 = HugeInt.valueOf(this.value_);
+            HugeInt bigValue2 = ((RubyBignum)v).getInternal();
             return RubyBignum.bignorm(bigValue1.multiply(bigValue2));
     	}
     	
@@ -153,8 +153,8 @@ public class RubyFixnum extends RubyInteger {
     	} else if (v instanceof RubyFloat) {
     		return ObjectFactory.createFloat(this.value_ / v.toFloat());
     	} else if (v instanceof RubyBignum) {
-    		BigInteger bigValue1 = BigInteger.valueOf(this.value_);
-            BigInteger bigValue2 = ((RubyBignum)v).getInternal();
+    		HugeInt bigValue1 = HugeInt.valueOf(this.value_);
+            HugeInt bigValue2 = ((RubyBignum)v).getInternal();
             return RubyBignum.bignorm(bigValue1.divide(bigValue2));
     	} else {
     		return coerceBin(RubyID.divID, v);
@@ -180,7 +180,7 @@ public class RubyFixnum extends RubyInteger {
     			return this;
     		}
     		if (p > 0) {
-    			BigInteger b = BigInteger.valueOf(this.value_);
+    			HugeInt b = HugeInt.valueOf(this.value_);
     			return RubyBignum.bignorm(b.pow(p));
     		}
     		
@@ -222,7 +222,7 @@ public class RubyFixnum extends RubyInteger {
     		return rshift(-i);
     	}
     	// FIXME: TO BE IMPROVED
-    	BigInteger bigValue1 = BigInteger.valueOf(this.value_);
+    	HugeInt bigValue1 = HugeInt.valueOf(this.value_);
         return RubyBignum.bignorm(bigValue1.shiftLeft(i));
     }
 
@@ -378,7 +378,7 @@ public class RubyFixnum extends RubyInteger {
 		if (idx instanceof RubyBignum) {
 			idx = RubyBignum.bignorm(idx);
 			if (!(idx instanceof RubyFixnum)) {
-				if (this.value_ > 0 || ((RubyBignum)idx).getInternal().compareTo(BigInteger.ZERO) > 0) {
+				if (this.value_ > 0 || ((RubyBignum)idx).getInternal().compareTo(HugeInt.ZERO) > 0) {
 					return ObjectFactory.FIXNUM0;
 				} else {
 					return ObjectFactory.FIXNUM1;
