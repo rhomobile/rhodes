@@ -23,7 +23,6 @@ ExcludeFromBuildAll=0
 [Files
 resources\icon.png
 src\rhomobile\DateParser.java
-src\rhomobile\NetworkAccess.java
 src\rhomobile\Properties.java
 src\rhomobile\RhoConnection.java
 src\rhomobile\RhodesApplication.java
@@ -52,4 +51,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=0
-Version=1.18
+Version=1.40

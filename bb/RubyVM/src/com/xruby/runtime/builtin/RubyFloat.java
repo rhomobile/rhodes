@@ -5,7 +5,7 @@
 
 package com.xruby.runtime.builtin;
 
-import j2me.math.BigDecimal;
+import j2me.math.HugeDigit;
 import j2me.lang.MathEx;
 //import com.xruby.runtime.lang.RubyOneArgMethod;
 //import com.xruby.runtime.lang.RubyBlock;
@@ -214,7 +214,7 @@ public class RubyFloat extends RubyNumeric {
 		if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
 			return ObjectFactory.createFixnum((int) value);
 		}
-		return ObjectFactory.createBignum(BigDecimal.valueOf(value).toBigInteger());
+		return ObjectFactory.createBignum(HugeDigit.valueOf(value).toBigInteger());
 	}
 	
 	//@RubyLevelMethod(name="finite?")

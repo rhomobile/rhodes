@@ -10,56 +10,191 @@ import javax.microedition.io.HttpConnection;
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
+import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.ui.*;
 import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
+import net.rim.device.api.ui.component.Menu;
+import net.rim.device.api.system.Characters;
+import net.rim.device.api.system.TrackwheelListener; 
+import net.rim.device.api.system.SystemListener;
+
 import com.rho.NetworkAccess;
+import com.rho.sync.SyncEngine;
+
+import java.util.Vector;
 
 /**
  * 
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication {
+final public class RhodesApplication extends UiApplication implements RenderingApplication{
     
-    private static final String REFERER = "referer";   
+	class CKeyListener  implements KeyListener{
+
+		public boolean keyChar(char key, int status, int time) {
+	        if( key == Characters.ENTER ) {
+	        	gotoUrl();
+	        	return true;
+	        }
+			return false;
+		}
+
+		public boolean keyDown(int keycode, int time) {
+			int nKey = Keypad.key(keycode);
+			if ( nKey == Keypad.KEY_ESCAPE )
+			{
+				back();
+				return true;
+			}
+			
+			return false;
+		}
+
+		public boolean keyRepeat(int keycode, int time) {return false;}
+		public boolean keyStatus(int keycode, int time) {return false;}
+		public boolean keyUp(int keycode, int time) {return false;}
+    };
+    
+    class CTrackwheelListener implements TrackwheelListener{
+
+		public boolean trackwheelClick(int status, int time) {
+			gotoUrl();
+			return true;
+		}
+
+		public boolean trackwheelRoll(int amount, int status, int time) {return false;}
+		public boolean trackwheelUnclick(int status, int time) {return false;}
+    }
+    
+    void back(){
+    	if ( _history.size() <= 1 )
+    		return;
+    	
+    	int nPos = _history.size()-2;
+    	String url = (String)_history.elementAt(nPos);
+    	_history.removeElementAt(nPos+1);
+    	
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
+        thread.start();                       
+    }
+    
+    void addToHistory(String strUrl ){
+    	int nPos = -1;
+    	for( int i = _history.size()-1; i >= 0; i-- ){
+    		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
+    			nPos = i;
+    			break;
+    		}
+    	}
+    	if ( nPos == -1 ){
+    		boolean bReplace = false;
+    		int nLast = strUrl.lastIndexOf('/');
+    		if( nLast == -1 )
+    			nLast = strUrl.lastIndexOf('\\');
+    		if( nLast > 0 ){
+    			String strPage = strUrl.substring(nLast+1);
+    			if ( strPage.equalsIgnoreCase("index.html") )
+    				bReplace = true;
+    		}
+
+    		if ( bReplace )
+    			_history.setElementAt(strUrl, _history.size()-1 );
+    		else	
+    			_history.addElement(strUrl);
+    	}
+    	else
+    		_history.setSize(nPos+1);
+    }
+    
+    void gotoUrl(){
+        Menu menu = _mainScreen.getMenu(0);
+    	int size = menu.getSize();
+    	for(int i=0; i<size; i++) 
+    	{
+    	    MenuItem item = menu.getItem(i);
+    	    String label = item.toString();
+    	    if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+    	    {
+    	    	item.run();
+    	    }			
+    	}
+    }
+    
+	private static final String REFERER = "referer";   
     
     private RenderingSession _renderingSession;   
 
     private MainScreen _mainScreen;
     
     private HttpConnection  _currentConnection;
+   
+    private Vector _history;
     
     /***************************************************************************
      * Main.
      **************************************************************************/
     public static void main(String[] args) {
     	NetworkAccess.autoConfigure();
-
-    	//Storage storage = StorageFactory.getInstance().createStorage();
-       	//storage.open("MyTest.dbs");
-       	//storage.close();
-       	
+    	
         RhoRuby.RhoRubyStart("");
-    	//String[] args = new String[0];
-		//com.xruby.runtime.lang.RubyRuntime.init(args);
 		
         RhodesApplication app = new RhodesApplication();
         app.enterEventDispatcher();
-        
-        //com.xruby.runtime.lang.RubyRuntime.fini();
-        
-        RhoRuby.RhoRubyStop();
     }
     
-    private RhodesApplication() {               
-        _mainScreen = new MainScreen();        
+    void doClose(){
+		SyncEngine.stop(null);
+        RhoRuby.RhoRubyStop();
+    }
+
+	public void activate() {
+		SyncEngine.start(null);
+
+		super.activate();
+	}
+    
+	public void deactivate() {
+		SyncEngine.stop(null);
+
+		super.deactivate();
+	}
+    
+    class CMainScreen extends MainScreen{
+
+		protected void makeMenu(Menu menu, int instance) {
+			// TODO Auto-generated method stub
+			super.makeMenu(menu, instance);
+		}
+
+		public boolean onClose() {
+			doClose();
+			return super.onClose();
+		}
+
+		public boolean onMenu(int instance) {
+			// TODO Auto-generated method stub
+			return super.onMenu(instance);
+		}
+    	
+    }
+    
+    private RhodesApplication() {
+    	CKeyListener list = new CKeyListener();
+    	CTrackwheelListener wheel = new CTrackwheelListener();
+    	this._history = new Vector();
+    	
+        _mainScreen = new CMainScreen();
+        _mainScreen.addKeyListener(list);
+        _mainScreen.addTrackwheelListener(wheel);
+        
         pushScreen(_mainScreen);
         _renderingSession = RenderingSession.getNewInstance();
-        
         // enable javascript
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);                        
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
+        _history.addElement("http://localhost:8080");
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread("http://localhost:8080", null, null, null, this);
         thread.start();                       
     }
@@ -84,7 +219,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             if (browserContent != null) {
                 
                 Field field = browserContent.getDisplayableContent();
-                
                 if (field != null) {
                     synchronized (Application.getEventLock()) {
                         _mainScreen.deleteAll();
@@ -92,7 +226,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     }
                 }
                 
-                browserContent.finishLoading();
+                synchronized (getAppEventLock()) 
+                { 
+                	browserContent.finishLoading();
+                }
             }
                                                          
         } catch (RenderingException re) {
@@ -117,7 +254,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;    
                 String absoluteUrl = urlRequestedEvent.getURL();
     
-                HttpConnection conn = null;
+                addToHistory(absoluteUrl);
+                
                 PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(urlRequestedEvent.getURL(),
                                                                                          urlRequestedEvent.getHeaders(), 
                                                                                          urlRequestedEvent.getPostData(),
@@ -135,7 +273,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource(); 
                     String newTitle = browserField.getTitle();
                     if (newTitle != null) {
-                        _mainScreen.setTitle(newTitle);
+                        synchronized (getAppEventLock()) 
+                        { 
+                        	_mainScreen.setTitle(newTitle);
+                        }
                     }
                 }                   
 
@@ -168,6 +309,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
+                        	addToHistory(e.getLocation());                        	
                             Object eventSource = e.getSource();
                             if (eventSource instanceof HttpConnection) {
                                 referrer = ((HttpConnection)eventSource).getRequestProperty(REFERER);
@@ -288,7 +430,7 @@ class PrimaryResourceFetchThread extends Thread {
 
     private String _url;
     
-    PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData, 
+    public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData, 
                                   Event event, RhodesApplication application) {
         
         _url = url;
