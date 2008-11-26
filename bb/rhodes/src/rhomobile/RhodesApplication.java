@@ -226,7 +226,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     }
                 }
                 
-                browserContent.finishLoading();
+                synchronized (getAppEventLock()) 
+                { 
+                	browserContent.finishLoading();
+                }
             }
                                                          
         } catch (RenderingException re) {
@@ -270,7 +273,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource(); 
                     String newTitle = browserField.getTitle();
                     if (newTitle != null) {
-                        _mainScreen.setTitle(newTitle);
+                        synchronized (getAppEventLock()) 
+                        { 
+                        	_mainScreen.setTitle(newTitle);
+                        }
                     }
                 }                   
 
