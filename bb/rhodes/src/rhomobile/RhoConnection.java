@@ -371,7 +371,8 @@ public class RhoConnection implements HttpConnection {
 				
 				if (responseData!= null){
 					resHeaders.addProperty("Content-Type", strContType );
-					resHeaders.addProperty("Content-Length", Integer.toString( responseData.available() ) );
+					contentLength = responseData.available(); 
+					resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 				}else{
 					UrlParser up = new UrlParser(uri.getPath());  
 					String application = up.next();
