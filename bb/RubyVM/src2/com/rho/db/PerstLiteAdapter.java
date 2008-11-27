@@ -22,7 +22,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString URL = ObjectFactory.createString("source_url");
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
-	private static final String DB_FILENAME = "syncdb_4.dbs";
+	private static final String DB_FILENAME = "syncdb_5.dbs";
 
 	public static class Table_base extends Persistent{
 	    int id = 0;
