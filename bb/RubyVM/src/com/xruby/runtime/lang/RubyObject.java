@@ -8,6 +8,8 @@ package com.xruby.runtime.lang;
 import j2me.util.HashMap;
 import j2me.util.Iterator;
 import j2me.util.Map;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.ObjectFactory;
 
 //import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 //import com.xruby.runtime.lang.annotation.RubyLevelClass;
@@ -78,4 +80,52 @@ public class RubyObject extends RubyBasic {
         return sb.toString();
 	}
 	
+	//RHO_COMMENT
+    //@RubyLevelMethod(name="instance_variable_set")
+    public RubyValue instance_variable_set(RubyValue arg1, RubyValue arg2){
+		RubyID mid = RubyID.intern(arg1.toStr());
+		return setInstanceVariable(arg2, mid);
+    }
+
+    //@RubyLevelMethod(name="instance_variable_get")
+    public RubyValue instance_variable_get(RubyValue arg1){
+		RubyID mid = RubyID.intern(arg1.toStr());
+		return getInstanceVariable(mid);
+    }
+
+    //@RubyLevelMethod(name="instance_variable_defined?")
+    public RubyValue instance_variable_defined(RubyValue arg1){
+		RubyID mid = RubyID.intern(arg1.toStr());
+		if ( getInstanceVariable(mid) != RubyConstant.QNIL )
+			return RubyConstant.QTRUE;
+		
+		return RubyConstant.QFALSE;
+    }
+
+    //@RubyLevelMethod(name="instance_variable_remove")
+    public RubyValue instance_variable_remove(RubyValue arg1){
+		RubyID mid = RubyID.intern(arg1.toStr());
+		
+		if (this.instance_varibles_ != null) {
+			RubyValue v = (RubyValue)(instance_varibles_.remove(mid));
+			if (v != null) {
+				return v;
+			}
+		}
+		
+		throw new RubyException(RubyRuntime.NameErrorClass, "instance variable '" + mid.toString() + "' not defined");
+    }
+
+    //@RubyLevelMethod(name="instance_variables")
+    public RubyValue instance_variables(){
+    	RubyArray ar = new RubyArray();
+    	
+        for (Iterator iter = instance_varibles_.keySet().iterator(); iter.hasNext();) {
+        	RubyID value = (RubyID)iter.next();
+            ar.add( ObjectFactory.createString(value.toString()) );
+        }
+    	
+    	return ar;
+    }
+    
 }
