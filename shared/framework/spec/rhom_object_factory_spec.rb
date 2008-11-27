@@ -72,6 +72,13 @@ describe "RhomObjectFactory" do
     "Mirapath".should == results[4].name
   end
   
+  it "should have correct number of attributes" do
+    @account = Account.find(:all).first
+    
+    # expecting name, industry, update_type, object, source_id
+    @account.instance_variables.size.should == 5
+  end
+  
   it "should calculate same djb_hash" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
