@@ -22,7 +22,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString URL = ObjectFactory.createString("source_url");
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
-	private static final String DB_FILENAME = "syncdb_5.dbs";
+	private static final String DB_FILENAME = "syncdb_10.dbs";
 
 	public static class Table_base extends Persistent{
 	    int id = 0;
@@ -139,17 +139,20 @@ public class PerstLiteAdapter  extends RubyBasic {
 		public static class TableRoot extends TableRootBase { 
 		    Index source_idANDupdate_type;
 		    Index object_idANDattrib;
-
+		    Index object_idANDupdate_type;
+		    
 		    // Deserialize the object
 		    public void readObject(IInputStream in) {
 		    	source_idANDupdate_type = (Index)in.readObject();
 		    	object_idANDattrib = (Index)in.readObject();
+		    	object_idANDupdate_type = (Index)in.readObject();
 		    }
 
 		    // Serialize the object
 		    public void writeObject(IOutputStream out) { 
 		        out.writeObject(source_idANDupdate_type);
 		        out.writeObject(object_idANDattrib);
+		        out.writeObject(object_idANDupdate_type);
 		    }
 
 		    public TableRoot() {}
@@ -160,6 +163,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        		new int[]{Types.Int,Types.String}, false);
 		        object_idANDattrib = db.createIndex(
 		        		new int[]{Types.String,Types.String}, false);
+		        object_idANDupdate_type = db.createIndex(
+		        		new int[]{Types.String,Types.String}, false);
 		    }
 		    public void clear(){
 		    	Iterator iter = source_idANDupdate_type.iterator();
@@ -169,6 +174,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	}
 		    	source_idANDupdate_type.clear();
 
+		    	iter = object_idANDupdate_type.iterator();
+		    	while(iter.hasNext()){
+		    		
+		    		Table_object_values item = (Table_object_values)iter.next();
+		    		iter.remove();
+		    	}
+		    	object_idANDupdate_type.clear();
+		    	
 		    	iter = object_idANDattrib.iterator();
 		    	while(iter.hasNext()){
 		    		
@@ -183,11 +196,13 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	Table_object_values item = (Table_object_values)itemB;
 		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
+		    	object_idANDupdate_type.put(new Key( item.object, item.update_type),item);
 		    }
 		    public void remove(Table_base itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
 		    	source_idANDupdate_type.remove(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
+		    	object_idANDupdate_type.remove(new Key( item.object, item.update_type),item);
 		    	item.deallocate();
 		    }
 		    
@@ -202,6 +217,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		return object_idANDattrib.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
 
+		    	if ( valUpdatedType != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
+		    		Key key = new Key(valObject.toStr(),valUpdatedType.toStr()); 
+		    		return object_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
+		    	}
+		    	
 		    	if ( valObject != RubyConstant.QNIL ){
 		    		Key key = new Key(new Object[]{valObject.toStr()}); 
 		    		return object_idANDattrib.iterator( key, key, Index.ASCENT_ORDER);
