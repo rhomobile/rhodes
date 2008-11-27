@@ -34,7 +34,7 @@ public class SyncThread implements Runnable {
 	private String sync = "sync";
 
 	/** The Constant SYNC_WAIT_INTERVAL. */
-	private static final long SYNC_WAIT_INTERVAL = 30000L;
+	private static final long SYNC_WAIT_INTERVAL = 90000L;
 
 	/**
 	 * Instantiates a new sync thread.

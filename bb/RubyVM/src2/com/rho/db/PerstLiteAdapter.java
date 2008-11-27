@@ -290,6 +290,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public Table_object_values(){}
 	    public Table_object_values(Storage db, RubyHash hash){
 	        super(db,hash);
+//			System.out.println("New Object Value: ");
+//			System.out.println("attrib, value, update_type: "
+//					+ hash.getValue(ATTRIB).asString() + ", "
+//					+ hash.getValue(VALUE).asString() + ", "
+//					+ hash.getValue(UPDATE_TYPE).asString());
 	        setValues(hash);
 	    }
 	};
@@ -452,7 +457,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		}
 		
 		TableRootBase tblRoot = getTableRoot(tableName);
-		if ( tblRoot != null ){
+		if ( tblRoot != null && where != RubyConstant.QNIL ){
 			Iterator iter = tblRoot.iterator((RubyHash)where);
 			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
 			while(iter != null && iter.hasNext()){
