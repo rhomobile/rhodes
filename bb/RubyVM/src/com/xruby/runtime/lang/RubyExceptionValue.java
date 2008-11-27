@@ -20,7 +20,7 @@ import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 public class RubyExceptionValue extends RubyBasic {
 
     private RubyException exception_;
-    private String message_;
+    private String message_ = "";
     private Throwable throwable_;
 
     public RubyExceptionValue(RubyClass c) {
