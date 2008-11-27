@@ -83,7 +83,7 @@ describe "RhomObjectFactory" do
     @account1 = Account.new(vars)
     new_id = @account1.object
     @account1.save
-    @account2 = Account.find(new_id).first
+    @account2 = Account.find(new_id)
     @account2.object.should =="{#{@account1.object}}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
