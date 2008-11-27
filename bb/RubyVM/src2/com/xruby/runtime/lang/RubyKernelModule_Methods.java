@@ -13,10 +13,6 @@ klass.defineMethod( "methods", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.objMethods(receiver);}
 });
-klass.defineMethod( "instance_variable_get", new RubyOneArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyKernelModule.instance_variable_get(receiver, arg);}
-});
 klass.defineMethod( "===", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyKernelModule.objEqual(receiver, arg);}
@@ -34,10 +30,6 @@ klass.defineMethod( "send", new RubyVarArgMethod(){
     	throw new Error("we overided invoke, so this method should never be called");}
 });
 klass.aliasMethod("__send__","send");
-klass.defineMethod( "instance_variable_defined?", new RubyOneArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyKernelModule.instance_variable_defined(receiver, arg);}
-});
 klass.defineModuleMethod( "sprintf", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyKernelModule.sprintf(receiver, args);}
@@ -279,10 +271,6 @@ klass.defineModuleMethod( "print", new RubyVarArgMethod(){
 		return RubyKernelModule.print(receiver, args);}
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
-});
-klass.defineMethod( "instance_variable_set", new RubyTwoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
-		return RubyKernelModule.instance_variable_set(receiver, arg0, arg1);}
 });
 klass.defineMethod( "freeze", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){

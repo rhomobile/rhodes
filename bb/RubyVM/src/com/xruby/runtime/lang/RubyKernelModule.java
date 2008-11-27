@@ -832,25 +832,4 @@ public class RubyKernelModule {
         return raw_args;
     }
     
-    //@RubyLevelMethod(name="instance_variable_set")
-    public static RubyValue instance_variable_set(RubyValue receiver, RubyValue arg1, RubyValue arg2){
-		RubyID mid = RubyID.intern(arg1.toStr());
-		return receiver.setInstanceVariable(arg2, mid);
-    }
-
-    //@RubyLevelMethod(name="instance_variable_get")
-    public static RubyValue instance_variable_get(RubyValue receiver, RubyValue arg1){
-		RubyID mid = RubyID.intern(arg1.toStr());
-		return receiver.getInstanceVariable(mid);
-    }
-
-    //@RubyLevelMethod(name="instance_variable_defined?")
-    public static RubyValue instance_variable_defined(RubyValue receiver, RubyValue arg1){
-		RubyID mid = RubyID.intern(arg1.toStr());
-		if ( receiver.getInstanceVariable(mid) != RubyConstant.QNIL )
-			return RubyConstant.QTRUE;
-		
-		return RubyConstant.QFALSE;
-    }
-    
 }
