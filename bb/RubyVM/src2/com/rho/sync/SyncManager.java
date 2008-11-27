@@ -111,7 +111,7 @@ public class SyncManager {
 			os.flush();
 
 			code = connection.getResponseCode();
-			if (code != HttpConnection.HTTP_OK) {
+			if (code != HttpConnection.HTTP_OK || code != HttpConnection.HTTP_TEMP_REDIRECT) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}
