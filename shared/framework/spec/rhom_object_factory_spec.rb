@@ -19,19 +19,8 @@
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "RhomObjectFactory" do
-  
-  attr_accessor :rhom, :rho
-  
-  before(:all) do
-    FileUtils.mkdir_p('build')
-    FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
-    Rho::RhoConfig::add_source("Account", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>1})
-    Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>2})
-    Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>3})
-    Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-    @rho = Rho::RHO.new(File.dirname(__FILE__) + "/../../../apps/")
-    @rhom = Rhom::RhomObjectFactory.new
-  end
+
+  it_should_behave_like "rho initializer"
   
   before(:each) do
     FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
@@ -40,16 +29,6 @@ describe "RhomObjectFactory" do
   after(:each) do 
     FileUtils.rm_rf('build/syncdbtest.sqlite')
     @rhom = nil
-  end
-  
-  after(:all) do
-    FileUtils.rm_rf('build')
-  end
-  
-  def array_print(arr)
-    arr.each_with_index do |x,i|
-      puts "arr[#{i}] = #{x.inspect}"
-    end
   end
   
   it "should set source_id attributes" do

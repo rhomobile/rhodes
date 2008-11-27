@@ -145,6 +145,7 @@ public class SyncUtil {
 	 * @return the op list from database
 	 */
 	public static ArrayList getOpListFromDatabase(String type, SyncSource source) {
+		System.out.println("Checking database for " + type + " operations...");
 		RubyArray arr = createArray();
 		RubyHash where = createHash();
 		String operation = null;
@@ -156,6 +157,8 @@ public class SyncUtil {
 		arr.add(where);
 		RubyArray rows = (RubyArray) adapter.selectFromTable(arr);
 		ArrayList objects = getSyncObjectList(rows);
+		System.out.println("Found " + objects.size() + " records for " + type
+				+ " processing...");
 		ArrayList results = new ArrayList();
 
 		if (type != null) {
