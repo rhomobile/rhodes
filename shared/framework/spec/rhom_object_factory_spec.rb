@@ -72,6 +72,13 @@ describe "RhomObjectFactory" do
     "Mirapath".should == results[4].name
   end
   
+  it "should have correct number of attributes" do
+    @account = Account.find(:all).first
+    
+    # expecting name, industry, update_type, object, source_id
+    @account.instance_variables.size.should == 5
+  end
+  
   it "should calculate same djb_hash" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
@@ -83,7 +90,7 @@ describe "RhomObjectFactory" do
     @account1 = Account.new(vars)
     new_id = @account1.object
     @account1.save
-    @account2 = Account.find(new_id).first
+    @account2 = Account.find(new_id)
     @account2.object.should =="{#{@account1.object}}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
