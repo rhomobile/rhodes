@@ -408,5 +408,5 @@ char* fetch_remote_data(char* url) {
 }
 
 int push_remote_data(char* url, char* data, size_t data_size) {
-  return remote_data(L"GET", url, NULL, 0)==NULL ? 0 : 1;
+  return remote_data(L"POST", url, data, data_size)==NULL ? 1 : 0;
 }

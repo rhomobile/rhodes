@@ -21,8 +21,24 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "Rho" do
+  
+  it_should_behave_like "rho initializer"
 
   it "should populate configuration in sources table" do
-    pending 'somebody should implement this!'
+    sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
+    puts 'sources: ' + sources.inspect
+    
+    sources.size.should == 3
+  end
+  
+  it "should initialize configuration only once" do
+    Rhom::RhomDbAdapter::delete_all_from_table('sources')
+    @rho.sources_initialized?.should == false
+    @rho.init_sources
+    @rho.sources_initialized?.should == true
+  end
+  
+  it "should modify configuration at runtime" do
+    pending "implement configure method"
   end
 end
