@@ -68,6 +68,7 @@
             <arg value="${bin.dir}/rhodesApp.cod"/>
         </java>
 
+        <delete dir="${tmp.dir}"/>
 
     </target>
 
