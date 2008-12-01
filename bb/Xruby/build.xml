@@ -64,6 +64,10 @@
             <import location="${jde.home}/lib/net_rim_api.jar" />
         </rapc>
 
+        <copy todir="${bin.dir}">
+            <fileset dir="rhodesApp.alx"/>
+        </copy>
+
         <java jar="${jde.home}\bin\SignatureTool.jar" fork="true">
             <arg value="${bin.dir}/rhodesApp.cod"/>
         </java>
