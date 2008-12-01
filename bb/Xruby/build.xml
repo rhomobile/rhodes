@@ -7,8 +7,8 @@
     <property name="tmp.dir" value="tmp"/>
     <property name="bin.dir" value="bin"/>
 
-    <!--    <property name="jde.home" location="D:/Install/Eclipse/plugins/net.rim.eide.componentpack4.6.0_4.6.0.16/components" /> -->
-    <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" />
+    <property name="jde.home" location="D:/Install/Eclipse/plugins/net.rim.eide.componentpack4.6.0_4.6.0.16/components" />
+    <!-- <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" /> -->
     <property name="javac.home" location="C:/Install/Java/jdk1.6.0_02/bin" />
 
     <target name="clean" description="clean build" >
