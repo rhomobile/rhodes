@@ -7,10 +7,11 @@
 	<property name="tmp.dir" value="tmp" />
 	<property name="bin.dir" value="bin" />
 
-	<property name="jde.home" location="C:\Program Files\Research In Motion\BlackBerry JDE 4.6.0" />
-	<!-- <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" /> -->
-	<property name="javac.home" location="${env.JAVA_HOME}" />
-
+	<property name="jde.home" location="D:\Install\Eclipse\plugins\net.rim.eide.componentpack4.6.0_4.6.0.16\components" />
+	<!-- <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" />
+	<property name="javac.home" location="${env.JAVA_HOME}" /> -->
+    <property name="javac.home" location="C:/Install/Java/jdk1.6.0_02/bin" />
+    
 	<target name="clean" description="clean build">
 		<delete dir="${tmp.dir}" />
 		<mkdir dir="${tmp.dir}" />
@@ -26,12 +27,25 @@
 	</target>
 
 	<target name="compileSrc" depends="RhoBundle">
-		<exec executable="cmd">
-			<arg value="/c" />
-			<arg value="compileSrc.bat" />
-		</exec>
 
-		<copy todir="${tmp.dir}/resources">
+        <exec executable="${javac.home}\javac.exe">
+            <arg value="-g" />
+            <arg value="-d" />
+            <arg value="${tmp.dir}" />
+            <arg value="-classpath" />
+            <arg value="RhoBundle.jar" />
+            <arg value="-bootclasspath" />
+            <arg value="${jde.home}/lib/net_rim_api.jar" />
+            <arg value="-source" />
+            <arg value="1.3" />            
+            <arg value="-target" />
+            <arg value="1.3" />
+            <arg value="@RubyVM_build.files" />
+            <arg value="@PerstLite_build.files"/>
+            <arg value="@rhodes_build.files"/>
+        </exec>
+
+        <copy todir="${tmp.dir}/resources">
 			<fileset dir="../rhodes/resources" />
 		</copy>
 
@@ -39,17 +53,15 @@
 			<fileset dir="${tmp.dir}" />
 			<zipfileset src="RhoBundle.jar" />
 		</jar>
+       
+        <exec executable="${jde.home}/bin/preverify.exe">
+            <arg value="-classpath" />
+            <arg value="${jde.home}/lib/net_rim_api.jar" />
+            <arg value="-d" />
+            <arg value="${bin.dir}" />
+            <arg value="${tmp.dir}\rhodes.jar" />
+        </exec>
 
-		<exec executable="cmd">
-			<arg value="/c" />
-			<arg value="preverify.bat" />
-		</exec>
-
-		<!--
-        <javac srcdir="."  destdir="${tmp.dir}" source="1.3" target="1.3" debug ="true"
-               classpath="RhoBundle.jar" bootclasspath="${jde.home}/lib/net_rim_api.jar" >
-            <compilerarg path="@RubyVM_build.files @PerstLite_build.files"/>
-        </javac> -->
 	</target>
 
 	<target name="rhodes" depends="compileSrc">
