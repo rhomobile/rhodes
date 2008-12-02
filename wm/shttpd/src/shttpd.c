@@ -662,14 +662,18 @@ decide_what_to_do(struct conn *c)
 			_shttpd_do_ssi(c);
 		}
 #endif /* NO_CGI */
+  } else if ( isindex(c,path) ) {
+    union variant callback;
+    callback.v_func = (void (*)(void))rho_serve_index;
+	_shttpd_setup_embedded_stream(c, callback, _shttpd_strdup(path));
   } else if (c->ch.ims._v.v_time && st.st_mtime <= c->ch.ims._v.v_time) {
 		_shttpd_send_server_error(c, 304, "Not Modified");
-	} else if ((c->loc.chan.fd = _shttpd_open(path,
+  } else if ((c->loc.chan.fd = _shttpd_open(path,
 	    O_RDONLY | O_BINARY, 0644)) != -1) {
 		_shttpd_get_file(c, &st);
-	} else {
+  } else {
 		_shttpd_send_server_error(c, 500, "Internal Error");
-	}
+  }
 }
 
 static int
