@@ -5,7 +5,7 @@ del "RhoBundle\rho\rhofsconnector.rb"
 xcopy "../../apps/Rhosugar" "RhoBundle/apps/Rhosugar" /S /I /EXCLUDE:excludeAPPS.txt
 ruby compileERB.rb
 
-java -jar xruby-0.3.3.jar -c RhoBundle
+java -jar lib/xruby-0.3.3.jar -c RhoBundle
 
 rmdir apps /S /Q
 xcopy "../../apps/*.html" "./apps" /I /F
