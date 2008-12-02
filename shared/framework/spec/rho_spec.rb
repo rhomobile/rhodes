@@ -37,4 +37,8 @@ describe "Rho" do
     @rho.init_sources
     @rho.sources_initialized?.should == true
   end
+  
+  it "should modify configuration at runtime" do
+    pending "implement configure method"
+  end
 end

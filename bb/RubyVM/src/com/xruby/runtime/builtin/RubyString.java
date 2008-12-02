@@ -1141,9 +1141,9 @@ public class RubyString extends RubyBasic {
         String format = toString();
         String s;
         if (arg instanceof RubyArray) {
-            s = StringMe.format(format, RubyKernelModule.buildFormatArg((RubyArray)arg, 0));
+            s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg((RubyArray)arg, 0));
         } else {
-            s = StringMe.format(format, RubyKernelModule.buildFormatArg(new RubyArray(arg), 0));
+            s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg(new RubyArray(arg), 0));
         }
         return ObjectFactory.createString(s);
     }

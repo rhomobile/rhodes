@@ -28,16 +28,21 @@ public class Jsr75File implements SimpleFile
 		System.out.println(txt);
 	}
 
-	void createDir( String strDir  )throws IOException{
+	void createDir( String strDir  )throws Exception{
 		log("Dir:"+strDir);
 		FileConnection fdir = null;
 		try{
 			fdir = (FileConnection)Connector.open(strDir);//,Connector.READ_WRITE);
+			log("Dir Connection opened.");
 	        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
 	        if (!fdir.exists()) { 
+	        	log("Create directory.");
 	        	fdir.mkdir();  // create the dir if it doesn't exist
+	        }else{
+	        	log("Dir exists.");	        	
 	        }
-		}catch(IOException exc){
+		}catch(Exception exc){
+			log("Create directory failed." + exc.getMessage());
 			throw exc;
 		}finally{
 			if ( fdir != null )
@@ -75,7 +80,8 @@ public class Jsr75File implements SimpleFile
                     	log(url2);
                         fconn = (FileConnection)Connector.open(url2);
                         // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                        if (!fconn.exists()) { 
+                        if (!fconn.exists()) {
+                        	log("Create file.");
                             fconn.create();  // create the file if it doesn't exist
                         }
                         break;
