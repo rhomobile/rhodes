@@ -87,7 +87,7 @@ module Rhom
                     obj = strip_braces(args.first.to_s)
                     result = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
                                                               '*',
-                                                              {"object"=>obj})
+                                                              {"object"=>obj,"update_type"=>'query'})
                   end
                   list = get_list(result)
                   if list.length == 1

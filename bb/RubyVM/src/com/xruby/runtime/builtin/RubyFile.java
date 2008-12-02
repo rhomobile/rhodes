@@ -6,8 +6,8 @@
 package com.xruby.runtime.builtin;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import j2me.io.File;
 import j2me.math.HugeInt;
@@ -234,7 +234,7 @@ public class RubyFile extends RubyIO {
 
     //@RubyLevelMethod(name="open", singleton=true)
     public static RubyValue open(RubyValue receiver, RubyArray args, RubyBlock block) {
-        return RubyKernelModule.open(receiver, args, block);
+        return com.xruby.runtime.lang.RubyKernelModule.open(receiver, args, block);
     }
 
 }

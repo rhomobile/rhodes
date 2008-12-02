@@ -1,12 +1,15 @@
 package com.rho;
 
 import java.io.IOException;
+
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 import net.rim.device.api.servicebook.ServiceBook;
 import net.rim.device.api.servicebook.ServiceRecord;
-import net.rim.device.api.system.*;
+import net.rim.device.api.system.DeviceInfo;
+import net.rim.device.api.system.RadioInfo;
+
 //import net.rim.device.api.ui.component.Dialog;
 
 public class NetworkAccess {
@@ -15,7 +18,7 @@ public class NetworkAccess {
 	private static String WAPsuffix;
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
-	
+
 	public static String getSuffix() {
 		if (!networkConfigured)
 			autoConfigure();
@@ -54,29 +57,32 @@ public class NetworkAccess {
 				}
 
 				ServiceBook sb = ServiceBook.getSB();
-				ServiceRecord[] srs = sb.getRecords();
-				// search for BES transport
-				for (int i = 0; i < srs.length; i++) {
-					if (srs[i].isDisabled() || !srs[i].isValid())
-						continue;
-					if (srs[i].getCid().equals("IPPP")
-							&& srs[i].getName().equals("Desktop")) {
-						URLsuffix = "";
-						networkConfigured = true;
-						bes = true;
-						break;
-					}
-				}
-				// search for BIS-B transport
-				if (URLsuffix == null) {
+				if (sb != null) {
+					ServiceRecord[] srs = sb.getRecords();
+					// search for BES transport
 					for (int i = 0; i < srs.length; i++) {
 						if (srs[i].isDisabled() || !srs[i].isValid())
 							continue;
 						if (srs[i].getCid().equals("IPPP")
-								&& srs[i].getName().equals("IPPP for BIBS")) {
-							URLsuffix = ";deviceside=false;ConnectionType=mds-public";
+								&& srs[i].getName().equals("Desktop")) {
+							URLsuffix = "";
 							networkConfigured = true;
+							bes = true;
 							break;
+						}
+					}
+					// search for BIS-B transport
+					if (URLsuffix == null) {
+						for (int i = 0; i < srs.length; i++) {
+							if (srs[i].isDisabled() || !srs[i].isValid())
+								continue;
+							if (srs[i].getCid().equals("IPPP")
+									&& srs[i].getName().equals("IPPP for BIBS")) {
+								log("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
+								URLsuffix = ";deviceside=false;ConnectionType=mds-public";
+								networkConfigured = true;
+								break;
+							}
 						}
 					}
 				}
@@ -136,6 +142,10 @@ public class NetworkAccess {
 		return http;
 	}
 
+	private static void log(String txt) {
+		 System.out.println(txt);
+	}
+	
 	private NetworkAccess() {
 	}
 	/*
@@ -167,7 +177,6 @@ public class NetworkAccess {
 	 * ";deviceside=false;ConnectionType=mds-public"; ; networkConfigured =
 	 * true; Dialog .inform("We have configured the network with default" +
 	 * "settings. Please contact your device administrator if the problem" +
-	 * "persists."); } app.networkStateChanged(URLsuffix != null);
-	 *  } }); }
+	 * "persists."); } app.networkStateChanged(URLsuffix != null); } }); }
 	 */
 }

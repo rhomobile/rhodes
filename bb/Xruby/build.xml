@@ -1,0 +1,93 @@
+<project name="rhodesBB" default="rhodes" basedir=".">
+
+	<typedef resource="bb-ant-defs.xml" classpath="lib/bb-ant-tools.jar" />
+	<property name="version" value="0.10" />
+	<property name="vendor" value="RhoMobile" />
+
+	<property name="tmp.dir" value="tmp" />
+	<property name="bin.dir" value="bin" />
+
+	<property name="jde.home" location="D:\Install\Eclipse\plugins\net.rim.eide.componentpack4.6.0_4.6.0.16\components" />
+	<!-- <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" />
+	<property name="javac.home" location="${env.JAVA_HOME}" /> -->
+    <property name="javac.home" location="C:/Install/Java/jdk1.6.0_02/bin" />
+    
+	<target name="clean" description="clean build">
+		<delete dir="${tmp.dir}" />
+		<mkdir dir="${tmp.dir}" />
+		<delete dir="${bin.dir}" />
+		<mkdir dir="${bin.dir}" />
+	</target>
+
+	<target name="RhoBundle" depends="clean">
+		<exec executable="cmd">
+			<arg value="/c" />
+			<arg value="compileApp.bat" />
+		</exec>
+	</target>
+
+	<target name="compileSrc" depends="RhoBundle">
+
+        <exec executable="${javac.home}\javac.exe">
+            <arg value="-g" />
+            <arg value="-d" />
+            <arg value="${tmp.dir}" />
+            <arg value="-classpath" />
+            <arg value="RhoBundle.jar" />
+            <arg value="-bootclasspath" />
+            <arg value="${jde.home}/lib/net_rim_api.jar" />
+            <arg value="-source" />
+            <arg value="1.3" />            
+            <arg value="-target" />
+            <arg value="1.3" />
+            <arg value="@RubyVM_build.files" />
+            <arg value="@PerstLite_build.files"/>
+            <arg value="@rhodes_build.files"/>
+        </exec>
+
+        <copy todir="${tmp.dir}/resources">
+			<fileset dir="../rhodes/resources" />
+		</copy>
+
+		<jar destfile="${tmp.dir}/rhodes.jar" manifest="manifest.mf">
+			<fileset dir="${tmp.dir}" />
+			<zipfileset src="RhoBundle.jar" />
+		</jar>
+       
+        <exec executable="${jde.home}/bin/preverify.exe">
+            <arg value="-classpath" />
+            <arg value="${jde.home}/lib/net_rim_api.jar" />
+            <arg value="-d" />
+            <arg value="${bin.dir}" />
+            <arg value="${tmp.dir}\rhodes.jar" />
+        </exec>
+
+	</target>
+
+	<target name="rhodes" depends="compileSrc">
+
+		<rapc output="rhodesApp" destdir="${bin.dir}">
+			<jdp title="rhodesApp" vendor="${vendor}" version="${version}" icon="resources/icon.png" type="cldc" />
+			<src>
+				<fileset dir="${bin.dir}">
+					<include name="rhodes.jar" />
+				</fileset>
+			</src>
+			<import location="${jde.home}/lib/net_rim_api.jar" />
+		</rapc>
+
+		<copy todir="${bin.dir}">
+			<fileset dir="./">
+				<include name="rhodesApp.alx"/>
+			</fileset>
+		</copy>
+
+		<java jar="${jde.home}\bin\SignatureTool.jar" fork="true">
+			<arg value="${bin.dir}/rhodesApp.cod" />
+		</java>
+
+		<delete dir="${tmp.dir}" />
+
+	</target>
+
+</project>
