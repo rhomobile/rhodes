@@ -146,7 +146,7 @@ _CreateRequestHash(HttpContextRef context, RouteRef route) {
 
 static int 
 _CallApplication(HttpContextRef context, RouteRef route) {
-	DBG(("Calling ruby test\n"));
+	DBG(("Calling ruby framework\n"));
 		
 	char* res = callFramework(_CreateRequestHash(context,route));
 	
@@ -185,6 +185,25 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 		return _CallApplication(context, route);
 	}
 	return 0;
+}
+
+int ServeIndex(HttpContextRef context, char* index_name) {
+	DBG(("Calling ruby framework to serve index\n"));
+	
+	char* res = callServeIndex(index_name);
+	
+	if (res) {
+		DBG(("RESPONSE:\n"));
+		_dbg_print_data((UInt8*)res, strlen(res));
+		DBG(("-- eof --\n"));
+		
+		DBG(("Add response to the send buffer"))
+		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
+		
+		return 1;
+	}
+	
+	return 0;	
 }
 
 /*
