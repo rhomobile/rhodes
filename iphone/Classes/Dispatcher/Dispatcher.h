@@ -14,4 +14,5 @@ typedef struct __Route {
 	char* _action;
 } Route, * RouteRef;
 
+int ServeIndex(HttpContextRef context, char* index_name);
 int Dispatch(HttpContextRef context); 

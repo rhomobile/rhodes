@@ -26,7 +26,8 @@ VALUE addStrToHash(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
 
 char* callFramework(VALUE hashReq);
-
+char* callServeIndex(char* index_name);
+	
 void RhoRubyStop();
 
 #if defined(__cplusplus)

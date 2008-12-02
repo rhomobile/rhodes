@@ -1,4 +1,9 @@
 require 'time'
+if defined? RHO_ME
+	require 'rho/renderME'
+else
+	require 'rho/render'
+end
 require 'rho/rhoapplication'
 require 'rhom'
 require 'rhofsconnector'
@@ -85,6 +90,17 @@ module Rho
 			return send_error(e.message,500,true)
 		end	
     end
+	
+	def serve_index(index_name)
+		begin
+			puts 'inside RHO.serve_index: ' + index_name
+			res = init_response
+			res['request-body'] = RhoController::renderfile(index_name)
+			return send_response(res)
+		rescue Exception => e
+			return send_error(e.message,500,true)
+		end
+	end
 	
     def init_response(status=200,message="OK",body="")
       res = Hash.new

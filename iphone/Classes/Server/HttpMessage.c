@@ -728,16 +728,16 @@ HTTPRedirect(HttpContextRef context, char* location) {
 	return 1;
 }
 
+static const char *indexfile[] = { "controller.rb", "index.html", "index.htm" };
+
 static int 
 _HTTPGetIndexFile(HttpContextRef context, char* path) {
-	const char *index[] = { "controller.rb", "index.html", "index.htm" };
-	
 	char file[FILENAME_MAX];
 	struct stat	st;
 	const char* slash = path[strlen(path)-1] == '/' ? "" : "/";
 	
-	for (int i = 0; i < sizeof(index) / sizeof(index[0]); i++) {
-		HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, index[i]);
+	for (int i = 0; i < sizeof(indexfile) / sizeof(indexfile[0]); i++) {
+		HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, indexfile[i]);
 		if ( (stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
 			
 			if ( i == 0 ) {// there is a controller in this folder
@@ -747,13 +747,25 @@ _HTTPGetIndexFile(HttpContextRef context, char* path) {
 			slash = context->_request->_uri[strlen(context->_request->_uri)-1] == '/' ? "" : "/";
 			char location[URI_MAX];
 			HttpSnprintf(location, sizeof(location), "%s%s%s", 
-						  context->_request->_uri, slash, index[i]);	
+						  context->_request->_uri, slash, indexfile[i]);	
 
 			return HTTPRedirect(context, location);
-
 		}
 	}
 	return 0;
+}
+
+static bool
+_isindex(char* path) {
+	int pathlen = strlen(path);
+	for (int i = 1; i < sizeof(indexfile) / sizeof(indexfile[0]); i++) {
+		int len = strlen(indexfile[i]);
+		if ( len > pathlen )
+			continue;
+		if( strncmp(path+pathlen-len,indexfile[i],len) == 0 )
+			return true;
+	}
+	return false;
 }
 
 static int
@@ -771,6 +783,9 @@ _HTTPGetFile(HttpContextRef context, char* path)
 		} 
 		return ret == -2 ? 0 : ret;
 	} else {
+		if (_isindex(path)) {
+			return ServeIndex(context, path);
+		}
 		return _HTTPServeFile(context, &st, path);
 	}
 }
