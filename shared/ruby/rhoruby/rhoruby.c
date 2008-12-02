@@ -22,6 +22,7 @@ extern void enable_gc_profile(void);
 
 static VALUE  framework;
 static ID framework_mid;
+static ID framework_mid2;
 
 static char* rb_type_to_s(VALUE obj);
 
@@ -59,6 +60,7 @@ void RhoRubyStart(const char* szAppPath)
 		rb_gc_register_mark_object(framework);
     }
 		CONST_ID(framework_mid, "serve");
+		CONST_ID(framework_mid2, "serve_index");
 	}	
 }
 
@@ -105,6 +107,26 @@ char* callFramework(VALUE hashReq) {
 	print_profile_report();
 #endif
 
+	szRes = RSTRING_PTR(callres);
+	return szRes;
+}
+
+char* callServeIndex(char* index_name) {
+	char* szRes;
+	
+	VALUE callres = rb_funcall(framework, framework_mid2, 1, rb_str_new2(index_name));
+	
+	if (TYPE(callres)!=T_STRING) {
+		printf("Method call result type = %s\n", rb_type_to_s(callres));
+		return "Error";//TBD: Supply html description of the error
+	}
+	
+	//TBD: need to cleanup memory
+	rb_gc();
+#if defined(DEBUG)
+	print_profile_report();
+#endif
+	
 	szRes = RSTRING_PTR(callres);
 	return szRes;
 }
