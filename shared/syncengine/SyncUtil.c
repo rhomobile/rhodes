@@ -14,13 +14,6 @@ void finalize_src_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
 }
 
-pSource SourceCreate(char *source_url, int source_id) {
-	pSource source = malloc(sizeof(Source));
-	source->_source_url = str_assign(source_url);
-	source->_source_id = source_id;
-	return source;
-}
-
 /* 
  * Pulls the latest object_values list 
  * for a given source and populates a list
@@ -36,7 +29,7 @@ int fetch_remote_changes(sqlite3 *database) {
 	pSource *source_list;
 	source_list = malloc(max_size*sizeof(pSource));
 	
-	source_length = get_source_urls_from_database(source_list, database, max_size);
+	source_length = get_sources_from_database(source_list, database, max_size);
 	available = 0;
 	printf("Iterating over %i sources...\n", source_length);
 	
@@ -109,7 +102,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	return success == SYNC_PUSH_CHANGES_OK ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
 }
 
-int get_source_urls_from_database(pSource *list, sqlite3 *database, int max_size) {
+int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
 	if (op_list_source_ids_statement == NULL) {
 		const char *sql = "SELECT source_id,source_url from sources";
@@ -127,19 +120,4 @@ int get_source_urls_from_database(pSource *list, sqlite3 *database, int max_size
 		op_list_source_ids_statement = NULL;
 	}
 	return count;
-}
-
-void free_source_list(pSource *list, int length) {
-	int i;
-	for(i = 0; i < length; i++) {
-		SourceRelease(list[i]);
-	}
-	free(list);
-}
-
-void SourceRelease(pSource source) {
-	if(source) {
-		free(source->_source_url);
-		free(source);
-	}
 }

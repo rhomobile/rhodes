@@ -39,10 +39,18 @@ int process_local_changes() {
   /* List holding operations */
   if (!stop_running) {
 	  // Process local changes
-	  int result = 0;
-	  result += process_op_list("update");
-	  result += process_op_list("create");
-	  result += process_op_list("delete");
+	  int i,result,source_length;
+	  int max_size = 100;
+	  pSource *source_list;
+	  source_list = malloc(max_size*sizeof(pSource));
+	  source_length = get_sources_from_database(source_list, database, max_size);
+	  
+	  for(i = 0; i < source_length; i++) {
+		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
+		  result += process_op_list(source_list[i], "update");
+		  result += process_op_list(source_list[i], "create");
+		  result += process_op_list(source_list[i], "delete");
+	  }
   	
 	  if (result > 0) {
 		  printf("Remote update failed, not continuing with sync...\n");
@@ -56,6 +64,7 @@ int process_local_changes() {
 		  /* update the in-memory list */
 		  /*populate_list(database);*/
 	  }
+	  free_source_list(source_list, source_length);
   } else {
 	  finalize_statements();
 	  finalize_op_statements();
@@ -107,13 +116,13 @@ void* sync_engine_main_routine(void* data) {
 }
 #endif
 
-int process_op_list(char *type) {
+int process_op_list(pSource source, char *type) {
 	int available;
 	int success;
 
 	pSyncOperation *op_list = NULL;
 	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
-	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, type);
+	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
 	printf("Found %i available records for %s processing...\n", available, type);
 	
 	success = push_remote_changes(op_list, available);

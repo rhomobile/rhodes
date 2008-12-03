@@ -307,7 +307,7 @@ void dehydrate(pSyncObject ref) {
 } 
 
 void free_ob_list(pSyncObject *list, int available) {
-  int k;
+	int k;
 	/* Free up our ob_list */
 	for(k = 0; k < available; k++) {
 		SyncObjectRelease(list[k]);
