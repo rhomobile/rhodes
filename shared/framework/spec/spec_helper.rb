@@ -11,6 +11,7 @@ $:.unshift(File.join(File.dirname(__FILE__), '..'))
 # Use the rubygem for local testing
 require 'spec/stubs'
 require 'rho/rho'
+require 'rho/settings_controller'
 require 'rhom/rhom'
 
 describe "rho initializer", :shared => true do

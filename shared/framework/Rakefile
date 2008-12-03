@@ -15,6 +15,9 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
     ['sqlite3-ruby','>= 1.2.4'],
     ['rcov'],
     ['rspec'],
+    ['templater'],
+    ['diff-lcs'],
+    ['extlib']
   ]
   p.extra_dev_deps = [
     ['newgem', ">= #{::Newgem::VERSION}"]
