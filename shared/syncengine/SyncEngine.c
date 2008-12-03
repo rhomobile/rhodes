@@ -119,8 +119,9 @@ int process_op_list(char *type) {
 	success = push_remote_changes(op_list, available);
 	if(success == SYNC_PUSH_CHANGES_OK) {
 		printf("Successfully processed %i records for %s...\n", available, type);
-		
-		remove_op_list_from_database(op_list, database, type);
+		if(available > 0) {
+			remove_op_list_from_database(op_list, database, type);
+		}
 	} else {
 		printf("There was an error processing records, not removing from database yet...\n");
 		free_op_list(op_list, available);
