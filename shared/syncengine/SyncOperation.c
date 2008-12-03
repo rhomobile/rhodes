@@ -158,11 +158,12 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 /* remove the operations from the database after processing */
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type) {
 	if (op_list_delete_statment == NULL) {
-        const char *sql = "DELETE FROM object_values WHERE update_type=?";
+        const char *sql = "DELETE FROM object_values WHERE update_type=? and source_id=?";
         if (sqlite3_prepare_v2(database, sql, -1, &op_list_delete_statment, NULL) != SQLITE_OK) {
             printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
         }
 		sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
 		sqlite3_step(op_list_delete_statment);
 		sqlite3_reset(op_list_delete_statment);
 		sqlite3_finalize(op_list_delete_statment);
