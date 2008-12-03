@@ -19,6 +19,7 @@ extern void Init_GeoLocation(void);
 extern void Init_SyncEngine(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
+extern void Init_System(void);
 
 static VALUE  framework;
 static ID framework_mid;
@@ -45,6 +46,7 @@ void RhoRubyStart(const char* szAppPath)
 		Init_sqlite3_api();
 		Init_GeoLocation();
 		Init_SyncEngine();
+		Init_System();
     {
 		const char* szFramework = 
 		"begin\r\n"
