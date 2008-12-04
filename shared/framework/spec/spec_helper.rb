@@ -21,9 +21,9 @@ describe "rho initializer", :shared => true do
   before(:all) do
     FileUtils.mkdir_p('build')
     FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
-    Rho::RhoConfig::add_source("Account", {"url"=>"http://rhosync.rhomobile.com/sources/1", "source_id"=>1})
-    Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhomobile.com/sources/2", "source_id"=>2})
-    Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhomobile.com/sources/3", "source_id"=>3})
+    Rho::RhoConfig::add_source("Account", {"url"=>"http://rhosync.rhohub.com/sources/1", "source_id"=>1})
+    Rho::RhoConfig::add_source("Case", {"url"=>"http://rhosync.rhohub.com/sources/2", "source_id"=>2})
+    Rho::RhoConfig::add_source("Employee", {"url"=>"http://rhosync.rhohub.com/sources/3", "source_id"=>3})
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
     @rho = Rho::RHO.new(File.dirname(__FILE__) + "/../../../apps/")
     @rhom = Rhom::RhomObjectFactory.new
