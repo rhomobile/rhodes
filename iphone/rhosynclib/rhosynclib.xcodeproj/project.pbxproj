@@ -39,6 +39,8 @@
 		46E9214B0E9BF40A00F14AC8 /* linkhash.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E921390E9BF40A00F14AC8 /* linkhash.h */; };
 		46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9213A0E9BF40A00F14AC8 /* printbuf.c */; };
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
+		46F854B60EE9A61F00718F10 /* Source.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F854B40EE9A61F00718F10 /* Source.c */; };
+		46F854B70EE9A61F00718F10 /* Source.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F854B50EE9A61F00718F10 /* Source.h */; };
 		F563D5C10EA82D820062DA57 /* SyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F563D5BF0EA82D820062DA57 /* SyncManager.h */; };
 		F563D5C20EA82D820062DA57 /* SyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D5C00EA82D820062DA57 /* SyncManager.m */; };
 /* End PBXBuildFile section */
@@ -79,6 +81,8 @@
 		46E921390E9BF40A00F14AC8 /* linkhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = linkhash.h; path = ../../shared/json/linkhash.h; sourceTree = SOURCE_ROOT; };
 		46E9213A0E9BF40A00F14AC8 /* printbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = printbuf.c; path = ../../shared/json/printbuf.c; sourceTree = SOURCE_ROOT; };
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
+		46F854B40EE9A61F00718F10 /* Source.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Source.c; sourceTree = "<group>"; };
+		46F854B50EE9A61F00718F10 /* Source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Source.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhosynclib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhosynclib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F563D5BF0EA82D820062DA57 /* SyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncManager.h; sourceTree = SOURCE_ROOT; };
 		F563D5C00EA82D820062DA57 /* SyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncManager.m; sourceTree = SOURCE_ROOT; };
@@ -127,6 +131,8 @@
 		46E921090E9BF3E700F14AC8 /* syncengine */ = {
 			isa = PBXGroup;
 			children = (
+				46F854B40EE9A61F00718F10 /* Source.c */,
+				46F854B50EE9A61F00718F10 /* Source.h */,
 				4672CEF10EBA65D500E028F0 /* SyncUtil.c */,
 				4672CEF20EBA65D500E028F0 /* SyncUtil.h */,
 				46E9210A0E9BF3E700F14AC8 /* Constants.h */,
@@ -209,6 +215,7 @@
 				46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */,
 				F563D5C10EA82D820062DA57 /* SyncManager.h in Headers */,
 				4672CEF40EBA65D500E028F0 /* SyncUtil.h in Headers */,
+				46F854B70EE9A61F00718F10 /* Source.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +275,7 @@
 				46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */,
 				F563D5C20EA82D820062DA57 /* SyncManager.m in Sources */,
 				4672CEF30EBA65D500E028F0 /* SyncUtil.c in Sources */,
+				46F854B60EE9A61F00718F10 /* Source.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,6 +27,7 @@
 #include "SyncManagerI.h"
 
 int stop_running = 0;
+int delay_sync = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -91,6 +92,7 @@ int process_local_changes() {
 void* sync_engine_main_routine(void* data) {
 	
 	printf("Starting sync engine main routine...\n");
+	delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex);
 	while(!stop_running) {
 		struct timespec   ts;
@@ -104,10 +106,14 @@ void* sync_engine_main_routine(void* data) {
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
 		printf("Sync engine continues w/ current operations...\n");
-	  
-    if(process_local_changes()) {
-      break;
-    }
+	
+		if(!delay_sync) {
+			if(process_local_changes()) {
+				break;
+			}
+		} else {
+			delay_sync = 0;
+		}
 
 	}
 	pthread_mutex_unlock(&sync_mutex);
