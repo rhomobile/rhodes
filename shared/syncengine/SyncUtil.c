@@ -125,13 +125,13 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 }
 
 int get_object_count_from_database(sqlite3 *database) {
-	int count = 0;
+	int count,success;
 	if (ob_count_statement == NULL) {
 		const char *sql = "SELECT count(*) from object_values";
 		if (sqlite3_prepare_v2(database, sql, -1, &ob_count_statement, NULL) != SQLITE_OK) {
 			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
 		}
-		int success = sqlite3_step(ob_count_statement);
+		success = sqlite3_step(ob_count_statement);
 		if (success == SQLITE_ROW) {
 			count = sqlite3_column_int(ob_count_statement, 0);
 		}

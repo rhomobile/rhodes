@@ -7,6 +7,7 @@
 #include "../resource.h"
 #include "../HttpServer.h"
 #include "SyncEngine.h"
+#include "SyncUtil.h"
 #include "rsyncengine.h"
 
 // Sync engine ruby extension hooks
@@ -59,6 +60,7 @@ CSyncEngine::CSyncEngine(void)
   m_hMainWindow = NULL;
   m_database = NULL;
   stop_running = 1;
+  m_delaySync = 0;
   m_bSyncInitialized = false;
   m_hDoSyncEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_thread.Initialize();
@@ -149,6 +151,8 @@ bool CSyncEngine::StartSyncEngine()
   char dbpath[MAX_PATH];
   sprintf(dbpath,"%sdb\\syncdb.sqlite",CHttpServer::GetRootPath());
   sqlite3_open(dbpath,&m_database);
+  // Set the delay based on records from the database
+  m_delaySync = get_object_count_from_database(m_database);
   start_sync_engine(m_database);
   m_bSyncInitialized = true;
 
@@ -162,7 +166,11 @@ bool CSyncEngine::PerformSync()
 
   ATLTRACE(_T("Performing sync\n"));
   ::ResetEvent(m_hDoSyncEvent);
-  process_local_changes();
+  if (!m_delaySync) {
+	process_local_changes();
+  } else {
+    m_delaySync = 0;
+  }
 
   Unlock();
   return true;
