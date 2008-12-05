@@ -9,9 +9,11 @@ extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
+static sqlite3_stmt *ob_count_statement = NULL;
 
 void finalize_src_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
+	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
 }
 
 /* 
@@ -118,6 +120,24 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		sqlite3_reset(op_list_source_ids_statement);
 		sqlite3_finalize(op_list_source_ids_statement);
 		op_list_source_ids_statement = NULL;
+	}
+	return count;
+}
+
+int get_object_count_from_database(sqlite3 *database) {
+	int count = 0;
+	if (ob_count_statement == NULL) {
+		const char *sql = "SELECT count(*) from object_values";
+		if (sqlite3_prepare_v2(database, sql, -1, &ob_count_statement, NULL) != SQLITE_OK) {
+			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
+		}
+		int success = sqlite3_step(ob_count_statement);
+		if (success == SQLITE_ROW) {
+			count = sqlite3_column_int(ob_count_statement, 0);
+		}
+		sqlite3_reset(ob_count_statement);
+		sqlite3_finalize(ob_count_statement);
+		ob_count_statement = NULL;
 	}
 	return count;
 }
