@@ -331,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>664113500EC5108E002CF514</string>
+										<string>66BC6C630EEA045100C4F90D</string>
 										<key>history</key>
 										<array>
 											<string>6632090F0EB240B10040AB39</string>
@@ -347,7 +347,7 @@
 											<string>66D29F110EB6A357007F6639</string>
 											<string>66D29F210EB77E2A007F6639</string>
 											<string>66A044920EB7FD3A00606513</string>
-											<string>6656B16F0EC13A7400BD56AD</string>
+											<string>664113500EC5108E002CF514</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -424,9 +424,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>6641133D0EC3EE19002CF514</string>
+				<string>66BC6C640EEA045100C4F90D</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>6641133E0EC3EE19002CF514</string>
+				<string>66BC6C650EEA045100C4F90D</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -560,11 +560,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>664113510EC5108E002CF514</string>
-		<string>664113480EC3EE19002CF514</string>
-		<string>1C78EAAD065D492600B07095</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>662293B20EA979D200789D3A</string>
 		<string>/Users/adam/rhodes/iphone/rhorunner.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
