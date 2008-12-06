@@ -296,3 +296,23 @@ void rho_serve(struct shttpd_arg *arg) {
 		}
 	}
 }
+
+int isindex(struct conn *c, char* path) {
+	int pathlen = strlen(path);
+	const char *s = c->ctx->options[OPT_INDEX_FILES];
+	int	len;
+
+	FOR_EACH_WORD_IN_LIST(s, len) {
+		if ( len > pathlen )
+			continue;
+		if( strncmp(path+pathlen-len,s,len) == 0 )
+			return 1;
+	}
+	return 0;
+}
+
+void rho_serve_index(struct shttpd_arg *arg) {
+	shttpd_printf(arg, "%s", callServeIndex(arg->user_data));
+	free(arg->user_data);
+	arg->flags |= SHTTPD_END_OF_OUTPUT;
+}
