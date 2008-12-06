@@ -33,6 +33,8 @@ public class SyncThread implements Runnable {
 	/** The sync. */
 	private String sync = "sync";
 
+	private static int delaySync = 0;
+
 	/** The Constant SYNC_WAIT_INTERVAL. */
 	private static final long SYNC_WAIT_INTERVAL = 90000L;
 
@@ -41,6 +43,8 @@ public class SyncThread implements Runnable {
 	 */
 	SyncThread() {
 		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
+		//SyncUtil.adapter.initialize(null);
+		delaySync = SyncUtil.getObjectCountFromDatabase();
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
@@ -69,27 +73,27 @@ public class SyncThread implements Runnable {
 				System.out.println("SyncEngine is awake..."
 						+ new Date(System.currentTimeMillis()).toString());
 
-				if (SyncConstants.RUN_TESTS) {
-					SyncTest.runAllTests();
-				}
-
-				// Thread is simple, process local changes and make sure there
-				// are no errors before waiting for SYNC_WAIT_INTERVAL
-				if (SyncUtil.processLocalChanges() != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
-					System.out
-							.println("There was an error processing local changes");
-					break;
+				if (delaySync == 0) {
+					// Thread is simple, process local changes and make sure
+					// there are no errors before waiting for SYNC_WAIT_INTERVAL
+					if (SyncUtil.processLocalChanges() != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
+						System.out
+								.println("There was an error processing local changes");
+						break;
+					}
+				} else {
+					delaySync = 0;
 				}
 
 				try {
-					if ( !quit )
+					if (!quit)
 						sync.wait(SYNC_WAIT_INTERVAL);
 				} catch (Exception e) {
 				}
 			}
 		}
 		System.out.println("Shutting down SyncEngine...");
-//		SyncUtil.adapter.close();
+		// SyncUtil.adapter.close();
 		System.out.println("SyncEngine is shutdown...");
 	}
 
