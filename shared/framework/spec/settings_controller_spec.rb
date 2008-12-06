@@ -29,7 +29,7 @@ describe "Rho" do
   end
   
   it "should get all sources for index" do 
-    @controller.get_all_sources.size.should == 3
+    @controller.get_all_sources.size.should == 4
   end
   
   it "should retrieve source for update" do
