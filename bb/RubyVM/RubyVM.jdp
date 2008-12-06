@@ -14,6 +14,7 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
+PerstImplJSR75
 PerstLite
 ]
 ExcludeFromBuildAll=0
@@ -250,7 +251,6 @@ src2\com\rho\sync\SyncManager.java
 src2\com\rho\sync\SyncObject.java
 src2\com\rho\sync\SyncOperation.java
 src2\com\rho\sync\SyncSource.java
-src2\com\rho\sync\SyncTest.java
 src2\com\rho\sync\SyncThread.java
 src2\com\rho\sync\SyncUtil.java
 src2\com\xruby\GeneratedMethods\ObjectSpace_Methods.java
@@ -411,4 +411,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=2
-Version=1.40
+Version=1.42

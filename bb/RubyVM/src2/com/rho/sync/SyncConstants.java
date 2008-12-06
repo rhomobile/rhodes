@@ -26,8 +26,6 @@ public class SyncConstants {
 	/** The Constant DEBUG. */
 	public static final boolean DEBUG = false;
 	
-	public static final boolean RUN_TESTS = false;
-	
 	/** The Constant SYNC_FORMAT. */
 	public static final String SYNC_FORMAT = "?format=json";
 

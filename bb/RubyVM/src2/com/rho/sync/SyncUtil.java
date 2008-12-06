@@ -27,6 +27,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.builtin.RubyInteger;
 import com.xruby.runtime.builtin.RubyString;
+import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
 
 /**
@@ -357,5 +358,20 @@ public class SyncUtil {
 
 		return success == SyncConstants.SYNC_PUSH_CHANGES_OK ? SyncConstants.SYNC_PUSH_CHANGES_OK
 				: SyncConstants.SYNC_PUSH_CHANGES_ERROR;
+	}
+
+	/**
+	 * 
+	 * @return size of objectValues table
+	 */
+	public static int getObjectCountFromDatabase() {
+		RubyArray arr = createArray();
+		RubyHash where = createHash();
+		arr.add(createString("object_values"));
+		arr.add(createString("*"));
+		where.add(createString("source_id"), RubyConstant.QNIL);
+		arr.add(where);
+		RubyArray results = (RubyArray)adapter.selectFromTable(arr);
+		return results == null ? 0 : results.size();
 	}
 }
