@@ -1,0 +1,31 @@
+<form title="New ServiceRequest" 
+	  class="panel"
+	  id="service_request_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@service_request.object%>"/>
+		
+		  <div class="row">
+			  <label>subject: </label>
+			  <input type="text" name="service_request[subject]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="service_request[description]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>priority: </label>
+			  <input type="text" name="service_request[priority]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>account_name: </label>
+			  <input type="text" name="service_request[account_name]"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>
