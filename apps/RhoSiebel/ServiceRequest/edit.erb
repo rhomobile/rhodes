@@ -1,0 +1,36 @@
+<form title="Edit ServiceRequest" 
+	  class="panel" 
+	  id="service_request_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@service_request.object%>"/>
+		
+		  <div class="row">
+			  <label>subject: </label>
+			  <input type="text" name="service_request[subject]" value="<%=@service_request.subject%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="service_request[description]" value="<%=@service_request.description%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>priority: </label>
+			  <input type="text" name="service_request[priority]" value="<%=@service_request.priority%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>account_name: </label>
+			  <input type="text" name="service_request[account_name]" value="<%=@service_request.account_name%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @service_request.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>
