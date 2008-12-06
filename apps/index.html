@@ -2,12 +2,19 @@
 	<head>
 		<title>Home</title>
 		<meta name="viewport" content="initial-scale=1.0, width=device-width"/>
-	</head>
+		<style type="text/css">
+			#sourcescontainer { position: absolute; bottom: 2em; }
+		</style>
+	</head
 	<body>
 		<div align="center">
 			<h3>Home</h3>
 			<a href="Rhosugar">SugarCRM Demo</a><br/>
 			<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
+			Platform:<%= System::get_property('PLatform')%>
+		</div>
+		<div id="sourcescontainer">
+			<small><a href="/Sources/Source/index">Edit Sources</a><br/></small>
 		</div>
 	</body>
 </html>

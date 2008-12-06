@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "Utils.h"
 #include "SyncObject.h"
+#include "Source.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -67,7 +68,7 @@ void set_sync_uri(pSyncOperation sync, char *source);
 void set_sync_post_body(pSyncOperation op);
 	
 /* Retrieves the current list of objects for remote processing */
-int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, char *type);
+int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *type);
 	
 /* remove the operations from the database after processing */
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type);

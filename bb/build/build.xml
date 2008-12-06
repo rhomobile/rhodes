@@ -1,18 +1,31 @@
 <project name="rhodesBB" default="rhodes" basedir=".">
 
 	<typedef resource="bb-ant-defs.xml" classpath="lib/bb-ant-tools.jar" />
-	<property name="version" value="0.10" />
+
+    <!-- jde.home, javac.home(with bin dir)-->
+    <property file="build.properties"/>
+
+    <property name="version" value="0.10" />
 	<property name="vendor" value="RhoMobile" />
 
 	<property name="tmp.dir" value="tmp" />
-	<property name="bin.dir" value="bin" />
+	<property name="bin.dir" value="target/${BBVer}" />
 
-	<property name="jde.home" location="D:\Install\Eclipse\plugins\net.rim.eide.componentpack4.6.0_4.6.0.16\components" />
-	<!-- <property name="jde.home" location="C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0" />
-	<property name="javac.home" location="${env.JAVA_HOME}" /> -->
-    <property name="javac.home" location="C:/Install/Java/jdk1.6.0_02/bin" />
-    
-	<target name="clean" description="clean build">
+    <condition property="javac.home" value="${javac46.home}">
+        <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+    </condition>
+    <condition property="jde.home" value="${jde46.home}">
+        <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+    </condition>
+
+    <condition property="javac.home" value="${javac42.home}">
+        <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+    </condition>
+    <condition property="jde.home" value="${jde42.home}">
+        <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+    </condition>
+
+    <target name="clean" description="clean build">
 		<delete dir="${tmp.dir}" />
 		<mkdir dir="${tmp.dir}" />
 		<delete dir="${bin.dir}" />
@@ -40,6 +53,7 @@
             <arg value="1.3" />            
             <arg value="-target" />
             <arg value="1.3" />
+            <arg value="-nowarn" />
             <arg value="@RubyVM_build.files" />
             <arg value="@PerstLite_build.files"/>
             <arg value="@rhodes_build.files"/>
@@ -66,7 +80,7 @@
 
 	<target name="rhodes" depends="compileSrc">
 
-		<rapc output="rhodesApp" destdir="${bin.dir}">
+		<rapc output="rhodesApp" destdir="${bin.dir}" nowarn="true" quiet="true">
 			<jdp title="rhodesApp" vendor="${vendor}" version="${version}" icon="resources/icon.png" type="cldc" />
 			<src>
 				<fileset dir="${bin.dir}">
@@ -88,6 +102,11 @@
 
 		<delete dir="${tmp.dir}" />
 
-	</target>
+        <!-- Create web directory -->
+        <copy file="${bin.dir}/rhodesApp.jad" todir="${bin.dir}/web">
+            <zipfileset src="${bin.dir}/rhodesApp.cod" />
+        </copy>
+
+    </target>
 
 </project>

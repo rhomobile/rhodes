@@ -7,6 +7,8 @@ extern "C" {
 
 void* rho_dispatch(struct conn *c, const char* path);
 void  rho_serve(struct shttpd_arg *arg);
+int   isindex(struct conn *c, char* path);
+void  rho_serve_index(struct shttpd_arg *arg);
 
 #ifdef __cplusplus
 }

@@ -9,16 +9,11 @@ extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
+static sqlite3_stmt *ob_count_statement = NULL;
 
 void finalize_src_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
-}
-
-pSource SourceCreate(char *source_url, int source_id) {
-	pSource source = malloc(sizeof(Source));
-	source->_source_url = str_assign(source_url);
-	source->_source_id = source_id;
-	return source;
+	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
 }
 
 /* 
@@ -36,7 +31,7 @@ int fetch_remote_changes(sqlite3 *database) {
 	pSource *source_list;
 	source_list = malloc(max_size*sizeof(pSource));
 	
-	source_length = get_source_urls_from_database(source_list, database, max_size);
+	source_length = get_sources_from_database(source_list, database, max_size);
 	available = 0;
 	printf("Iterating over %i sources...\n", source_length);
 	
@@ -109,7 +104,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	return success == SYNC_PUSH_CHANGES_OK ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
 }
 
-int get_source_urls_from_database(pSource *list, sqlite3 *database, int max_size) {
+int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
 	if (op_list_source_ids_statement == NULL) {
 		const char *sql = "SELECT source_id,source_url from sources";
@@ -129,17 +124,20 @@ int get_source_urls_from_database(pSource *list, sqlite3 *database, int max_size
 	return count;
 }
 
-void free_source_list(pSource *list, int length) {
-	int i;
-	for(i = 0; i < length; i++) {
-		SourceRelease(list[i]);
+int get_object_count_from_database(sqlite3 *database) {
+	int count,success;
+	if (ob_count_statement == NULL) {
+		const char *sql = "SELECT count(*) from object_values";
+		if (sqlite3_prepare_v2(database, sql, -1, &ob_count_statement, NULL) != SQLITE_OK) {
+			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
+		}
+		success = sqlite3_step(ob_count_statement);
+		if (success == SQLITE_ROW) {
+			count = sqlite3_column_int(ob_count_statement, 0);
+		}
+		sqlite3_reset(ob_count_statement);
+		sqlite3_finalize(ob_count_statement);
+		ob_count_statement = NULL;
 	}
-	free(list);
-}
-
-void SourceRelease(pSource source) {
-	if(source) {
-		free(source->_source_url);
-		free(source);
-	}
+	return count;
 }

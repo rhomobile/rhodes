@@ -1,3 +1,6 @@
+== 0.1.1 2008-11-18
+* Fixed template application name
+
 == 0.1.0 2008-11-18
 
 * 1 major enhancement:
