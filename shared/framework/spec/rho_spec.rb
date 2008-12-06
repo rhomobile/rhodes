@@ -28,7 +28,7 @@ describe "Rho" do
     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
     puts 'sources: ' + sources.inspect
     
-    sources.size.should == 3
+    sources.size.should == 4
   end
   
   it "should initialize configuration only once" do
