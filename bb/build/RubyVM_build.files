@@ -225,7 +225,6 @@
 ..\RubyVM\src2\com\rho\sync\SyncObject.java
 ..\RubyVM\src2\com\rho\sync\SyncOperation.java
 ..\RubyVM\src2\com\rho\sync\SyncSource.java
-..\RubyVM\src2\com\rho\sync\SyncTest.java
 ..\RubyVM\src2\com\rho\sync\SyncThread.java
 ..\RubyVM\src2\com\rho\sync\SyncUtil.java
 ..\RubyVM\src2\com\xruby\GeneratedMethods\ObjectSpace_Methods.java
