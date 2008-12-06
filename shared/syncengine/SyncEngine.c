@@ -47,6 +47,7 @@ int process_local_changes() {
 	  source_length = get_sources_from_database(source_list, database, max_size);
 	  
 	  for(i = 0; i < source_length; i++) {
+		  result = 0;
 		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
 		  result += process_op_list(source_list[i], "update");
 		  result += process_op_list(source_list[i], "create");
