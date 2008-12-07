@@ -1,5 +1,5 @@
 #
-#  rho_spec.rb
+#  settings_spec.rb
 #  rhodes
 #
 #  Copyright (C) 2008 Lars Burgess. All rights reserved.
@@ -23,22 +23,25 @@ require File.dirname(__FILE__) + "/spec_helper"
 describe "Rho" do
   
   it_should_behave_like "rho initializer"
-
-  it "should populate configuration in sources table" do
-    sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
-    puts 'sources: ' + sources.inspect
-    
-    sources.size.should == 4
+  
+  before(:all) do
+    @controller = Rho::SettingsController.new
   end
   
-  it "should initialize configuration only once" do
-    Rhom::RhomDbAdapter::delete_all_from_table('sources')
-    @rho.sources_initialized?.should == false
-    @rho.init_sources
-    @rho.sources_initialized?.should == true
+  it "should get all sources for index" do 
+    @controller.get_all_sources.size.should == 4
   end
   
-  it "should serve request" do
-    pending "need to mock request"
+  it "should retrieve source for update" do
+    @controller.get_source('{1}')['source_url'].should == 'http://rhosync.rhohub.com/sources/1'
+  end
+  
+  it "should retrieve source without braces" do
+    @controller.get_source('1')['source_url'].should == 'http://rhosync.rhohub.com/sources/1'
+  end
+  
+  it "should update source" do
+    @controller.update_source({'source_url'=>'http://acme.com/sources/30'},'1')
+    @controller.get_source('1')['source_url'].should == 'http://acme.com/sources/30'
   end
 end

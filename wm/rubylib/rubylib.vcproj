@@ -1353,6 +1353,22 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="system"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\system\system_properties.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\system\system_properties.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\system\system_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

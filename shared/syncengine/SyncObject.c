@@ -237,45 +237,6 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
     }
 	return 0;
 }
-
-/* Commit "delete" update type to database */
-/*void add_delete_type_to_database(pSyncObject ref) {
-	add_type_to_database(delete_type_statement, ref, "delete");
-}*/
-
-/* Commit "update" update type to database */
-/*void add_update_type_to_database(pSyncObject ref) {
-	add_type_to_database(update_type_statement, ref, "update");
-}*/
-
-/* Commit "create" update type to database */
-/*void add_create_type_to_database(pSyncObject ref) {
-	add_type_to_database(create_type_statement, ref, "create");
-}*/
-
-/* Process generic update type insert */
-/*void add_type_to_database(sqlite3_stmt *statement, pSyncObject ref, char *type) {
-	if (statement == NULL) {
-		const char *sql = "INSERT INTO object_values (attrib, source_id, object, value, created_at, updated_at, update_type) VALUES (?,?,?,?,?,?,?)";
-		if (sqlite3_prepare_v2(ref->_database, sql, -1, &statement, NULL) != SQLITE_OK) {
-			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
-		}
-		sqlite3_bind_text(statement, 1, ref->_attrib, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_int(statement, 2, ref->_source_id);
-		sqlite3_bind_text(statement, 3, ref->_object, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(statement, 4, ref->_value, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(statement, 5, "", -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(statement, 6, "", -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(statement, 7, type, -1, SQLITE_TRANSIENT);
-		int success = sqlite3_step(statement);
-		sqlite3_reset(statement);
-		if (success != SQLITE_DONE) {
-			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
-		}
-		sqlite3_finalize(statement);
-		statement = NULL;
-	}
-}*/
 			 
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
 pSyncObject hydrate(pSyncObject ref) {
@@ -346,7 +307,7 @@ void dehydrate(pSyncObject ref) {
 } 
 
 void free_ob_list(pSyncObject *list, int available) {
-  int k;
+	int k;
 	/* Free up our ob_list */
 	for(k = 0; k < available; k++) {
 		SyncObjectRelease(list[k]);

@@ -1,0 +1,14 @@
+<form title="Edit Source" 
+	  class="panel" 
+	  id="source_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@source['source_id']%>"/>
+		<div class="row">
+			<label>URL: </label>
+			<input type="text" maxlength="2048" name="source[source_url]" value="<%=@source['source_url']%>"/>
+		</div>
+	</fieldset>
+	<input type="submit" value="Update"/>
+</form>

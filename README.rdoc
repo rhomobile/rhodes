@@ -101,3 +101,10 @@ There is a "tutorial available:http://rhomobile.com/index.php?option=com_content
 The "Rhodes spec":http://rhomobile.com/wiki/index.php?title=Rhodes is also available on the "Rhomobile wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile
 
 For further questions "email us":"mailto:info@rhomobile.com"
+
+= Known Issues
+
+    * To use rhodes on RIM 4.6 devices, you'll need a micro SD card installed.
+    * Sync is not incremental yet, so you'll see a period when the application starts up where there is no data.
+    * Editable sources are not yet supported (coming in 0.2)
+    * UI is not consistent between RIM, winmo and iPhone
