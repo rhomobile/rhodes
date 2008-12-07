@@ -38,6 +38,7 @@ private:
 	HRESULT CloseHandle(HANDLE hHandle);
 
   sqlite3 *m_database;
+  int	m_delaySync;
   bool  m_bSyncInitialized;
   bool  StartSyncEngine();
   bool  PerformSync();
