@@ -29,6 +29,7 @@ lib/rho/rhocontroller.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhofsconnectorME.rb
 lib/rho/rhosupport.rb
+lib/rho/settings_controller.rb
 lib/rhodes.rb
 lib/rhofsconnector.rb
 lib/rhom.rb
@@ -45,6 +46,7 @@ spec/generator_spec_helper.rb
 spec/model_generator_spec.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
+spec/settings_controller_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/stubs.rb
