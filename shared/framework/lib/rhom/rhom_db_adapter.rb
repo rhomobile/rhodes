@@ -52,7 +52,7 @@ module Rhom
       def execute_sql(sql=nil)
         result = []
         if sql
-          puts 'query is ' + sql
+          #puts 'query is ' + sql
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
