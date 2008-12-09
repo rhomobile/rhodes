@@ -50,7 +50,7 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    array_print(results)
+    #array_print(results)
     results.length.should == 5
     "60".should == results[0].case_number
     "hire another engineer".should == results[4].name
@@ -58,9 +58,6 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Account models" do
     results = Account.find(:all)
-    results.each_with_index do |result,i|
-      puts "result[#{i}]: " + result.inspect
-    end
     results.length.should == 5
     #array_print(results)
     

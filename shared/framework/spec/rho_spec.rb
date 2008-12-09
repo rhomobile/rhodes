@@ -26,8 +26,6 @@ describe "Rho" do
 
   it "should populate configuration in sources table" do
     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
-    puts 'sources: ' + sources.inspect
-    
     sources.size.should == 4
   end
   

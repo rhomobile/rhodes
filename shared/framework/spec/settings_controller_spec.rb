@@ -18,6 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'rho/settings_controller'
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "Rho" do
