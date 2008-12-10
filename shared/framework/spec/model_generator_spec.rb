@@ -12,7 +12,15 @@ describe Rhogen::ModelGenerator do
   end
 
   before do
-    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5)
+    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address")
+  end
+  
+  it "should have attributes" do
+    @generator.attributes?.should == true
+  end
+  
+  it "should have all attributes" do
+    @generator.attributes.should == ['name', 'industry', 'address']
   end
 
   it "should create config.rb, controller.rb, index.erb, edit.erb, and new.erb files" do
