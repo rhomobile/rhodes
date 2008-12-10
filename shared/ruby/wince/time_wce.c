@@ -141,14 +141,17 @@ time_t time( time_t *timer )
 {
 	SYSTEMTIME s;
 	FILETIME   f;
-
-	if( timer==NULL ) return 0;
+	time_t     t;
 
 	GetSystemTime( &s );
 
 	SystemTimeToFileTime( &s, &f );
 
-	*timer = wce_FILETIME2time_t(&f);
+	t = wce_FILETIME2time_t(&f);
+	if( timer==NULL ) 
+		return t;
+	else
+	  *timer = t;
 	return *timer;
 }
 
