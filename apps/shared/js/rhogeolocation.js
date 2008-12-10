@@ -8,3 +8,4 @@ function getGeoLocation() {
 }
 
 $(document).ready(function(){getGeoLocation();});
+
