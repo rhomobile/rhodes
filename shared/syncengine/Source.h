@@ -1,7 +1,6 @@
 /*
- *  SyncEngine.h
- *  RhoSyncClient
- *  Main thread for handling asynchronous sync operations
+ *  Source.h
+ *  rhodes
  *
  *  Copyright (C) 2008 Lars Burgess. All rights reserved.
  *
@@ -19,50 +18,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SYNCENGINE__
-#define __SYNCENGINE__
+#ifndef __SOURCE__
+#define __SOURCE__
 
-#if !defined(_WIN32_WCE)
-#include <sqlite3.h>
-#include <pthread.h>
-#include <unistd.h>
-#else
-#include "sqlite3.h"
-#endif
-
-#include <assert.h>
-#include <stdio.h>
-
-#include "Source.h"
+#include <stdlib.h>
+#include "Utils.h"
 #include "SyncObject.h"
-#include "Constants.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#define WAIT_TIME_SECONDS 90
-
-extern int stop_running;
-
-#if !defined(_WIN32_WCE)
-pthread_cond_t sync_cond;
-pthread_mutex_t sync_mutex;
-#endif
-
-void* sync_engine_main_routine(void* data);
-
-/* Process operations by type */
-int process_local_changes();
-int process_op_list(pSource source, char *type);
+typedef struct {
+	int				_source_id;		/* id corresponding to source */
+	char*			_source_url;	/* url for the source */
+} Source;
 	
-void lock_sync_mutex();
-void unlock_sync_mutex();	
-void wake_up_sync_engine();
+typedef Source* pSource;
 	
-/* Main entry point to the sync engine */
-void start_sync_engine(sqlite3 *db);
-void stop_sync_engine();
+pSource SourceCreate(char *source_url, int source_id);
+	
+void free_source_list(pSource *list, int length);
+	
+void SourceRelease(pSource source);
 
 #if defined(__cplusplus)
 }

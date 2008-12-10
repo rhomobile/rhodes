@@ -18,6 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'rho/settings_controller'
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "Rho" do
@@ -29,7 +30,7 @@ describe "Rho" do
   end
   
   it "should get all sources for index" do 
-    @controller.get_all_sources.size.should == 3
+    @controller.get_all_sources.size.should == 4
   end
   
   it "should retrieve source for update" do
