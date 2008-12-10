@@ -27,6 +27,7 @@
 #include "SyncManagerI.h"
 
 int stop_running = 0;
+int delay_sync = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -39,10 +40,19 @@ int process_local_changes() {
   /* List holding operations */
   if (!stop_running) {
 	  // Process local changes
-	  int result = 0;
-	  result += process_op_list("update");
-	  result += process_op_list("create");
-	  result += process_op_list("delete");
+	  int i,result,source_length;
+	  int max_size = 100;
+	  pSource *source_list;
+	  source_list = malloc(max_size*sizeof(pSource));
+	  source_length = get_sources_from_database(source_list, database, max_size);
+	  
+	  for(i = 0; i < source_length; i++) {
+		  result = 0;
+		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
+		  result += process_op_list(source_list[i], "update");
+		  result += process_op_list(source_list[i], "create");
+		  result += process_op_list(source_list[i], "delete");
+	  }
   	
 	  if (result > 0) {
 		  printf("Remote update failed, not continuing with sync...\n");
@@ -56,6 +66,7 @@ int process_local_changes() {
 		  /* update the in-memory list */
 		  /*populate_list(database);*/
 	  }
+	  free_source_list(source_list, source_length);
   } else {
 	  finalize_statements();
 	  finalize_op_statements();
@@ -82,6 +93,7 @@ int process_local_changes() {
 void* sync_engine_main_routine(void* data) {
 	
 	printf("Starting sync engine main routine...\n");
+	delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex);
 	while(!stop_running) {
 		struct timespec   ts;
@@ -95,10 +107,14 @@ void* sync_engine_main_routine(void* data) {
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
 		printf("Sync engine continues w/ current operations...\n");
-	  
-    if(process_local_changes()) {
-      break;
-    }
+	
+		if(!delay_sync) {
+			if(process_local_changes()) {
+				break;
+			}
+		} else {
+			delay_sync = 0;
+		}
 
 	}
 	pthread_mutex_unlock(&sync_mutex);
@@ -107,20 +123,21 @@ void* sync_engine_main_routine(void* data) {
 }
 #endif
 
-int process_op_list(char *type) {
+int process_op_list(pSource source, char *type) {
 	int available;
 	int success;
 
 	pSyncOperation *op_list = NULL;
 	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
-	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, type);
+	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
 	printf("Found %i available records for %s processing...\n", available, type);
 	
 	success = push_remote_changes(op_list, available);
 	if(success == SYNC_PUSH_CHANGES_OK) {
 		printf("Successfully processed %i records for %s...\n", available, type);
-		
-		remove_op_list_from_database(op_list, database, type);
+		if(available > 0) {
+			remove_op_list_from_database(op_list, database, type);
+		}
 	} else {
 		printf("There was an error processing records, not removing from database yet...\n");
 		free_op_list(op_list, available);

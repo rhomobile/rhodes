@@ -1001,6 +1001,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\syncengine\Source.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\syncengine\Source.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\syncengine\SyncEngine.c"
 				>
 			</File>
