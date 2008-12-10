@@ -93,6 +93,26 @@ module Rhogen
     
   end
   
+  class SourceGenerator < BaseGenerator
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'source')
+    end
+    
+    desc <<-DESC
+      Generates a new source adapter with the given name and attributes.  You must specify name.  
+      You can also specify an optional attribute list in the form: 'attribute1', 'attribute2', 'attribute3'...
+    DESC
+  
+    first_argument :name, :required => true, :desc => "model name"
+    second_argument :attributes, :as => :array, :default => [], :required => false, :desc => "array of attributes (only string suppported right now)"
+    
+    template :config do |template|
+      template.source = 'source_adapter.rb'
+      template.destination = "lib/#{name.snake_case}.rb"
+    end
+    
+  end
+  
   add :app, AppGenerator
   add :model, ModelGenerator
   
