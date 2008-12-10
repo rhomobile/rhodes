@@ -115,5 +115,6 @@ module Rhogen
   
   add :app, AppGenerator
   add :model, ModelGenerator
+  add :source, SourceGenerator
   
 end
