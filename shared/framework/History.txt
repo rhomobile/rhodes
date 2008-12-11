@@ -1,3 +1,6 @@
+== 0.1.2 2008-12-09
+* Added rhogen source <MySourceAdapter>
+
 == 0.1.1 2008-11-18
 * Fixed template application name
 
