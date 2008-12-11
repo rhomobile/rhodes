@@ -19,7 +19,6 @@ lib/builtinME.rb
 lib/date.rb
 lib/date/format.rb
 lib/erb.rb
-lib/find.rb
 lib/rational.rb
 lib/rho.rb
 lib/rho/render.rb
