@@ -71,7 +71,7 @@ module Rhom
             SyncEngine::unlock_sync_mutex
           end
         end
-        #puts "returned #{result.length.to_s} records..."
+        puts "returned #{result.length.to_s} records..."
         result
       end
     
