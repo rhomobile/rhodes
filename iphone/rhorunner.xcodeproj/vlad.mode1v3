@@ -279,14 +279,14 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>59</integer>
-									<integer>56</integer>
-									<integer>36</integer>
+									<integer>22</integer>
+									<integer>19</integer>
+									<integer>5</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 600}, {275, 692}}</string>
+							<string>{{0, 204}, {275, 692}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -323,7 +323,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>index.html</string>
+								<string>HttpMessage.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -331,11 +331,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>index.html</string>
+										<string>HttpMessage.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F5AD50750EE6136F004768A0</string>
+										<string>F588FEEE0EEDD5E4001EFF78</string>
 										<key>history</key>
 										<array>
 											<string>F56DF96E0E8D9B4B00F6CBE8</string>
@@ -368,13 +368,13 @@
 											<string>F5057E150EE4A6D100F251CA</string>
 											<string>F5057E610EE4AC3300F251CA</string>
 											<string>F5A501EB0EE4D36D00D98D1E</string>
-											<string>F5A501ED0EE4D36D00D98D1E</string>
 											<string>F5177F640EE5DF75000EA1A0</string>
 											<string>F5177F650EE5DF75000EA1A0</string>
 											<string>F5177F660EE5DF75000EA1A0</string>
 											<string>F5177F680EE5DF75000EA1A0</string>
 											<string>F5177F6A0EE5DF75000EA1A0</string>
-											<string>F5BC39520EE5EA4E00A6B9DD</string>
+											<string>F588FEEB0EEDD5E4001EFF78</string>
+											<string>F588FEEC0EEDD5E4001EFF78</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -417,6 +417,7 @@
 											<string>F5177F700EE5DF75000EA1A0</string>
 											<string>F5177F720EE5DF75000EA1A0</string>
 											<string>F5177F740EE5DF75000EA1A0</string>
+											<string>F588FEED0EEDD5E4001EFF78</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -474,9 +475,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F5AD50430EE5F83B004768A0</string>
+				<string>F588FEEF0EEDD5E4001EFF78</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F5AD50440EE5F83B004768A0</string>
+				<string>F588FEF00EEDD5E4001EFF78</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -610,11 +611,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>F5AD50770EE6136F004768A0</string>
-		<string>F5AD504E0EE5F83B004768A0</string>
-		<string>F52D210A0E8319D10040AB27</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Volumes/Projects/rhomobile/rhodes/iphone/rhorunner.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

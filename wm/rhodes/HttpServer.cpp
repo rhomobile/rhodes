@@ -4,6 +4,7 @@
 #include "rhoruby/rhoruby.h"
 #include "HttpServer.h"
 #include "syncengine/rsyncengine.h"
+#include "geolocation/LocationController.h"
 
 CHttpServer::CHttpServer(void)
 {
@@ -16,10 +17,13 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
-	m_thread.RemoveHandle(m_hEvent);
-	m_thread.Shutdown();
+  m_thread.RemoveHandle(m_hEvent);
+  m_thread.Shutdown();
   shttpd_fini(ctx);
   ATLTRACE(_T("Http server thread shutdown\n"));
+
+  CGPSController* pGPS = CGPSController::Instance();
+  pGPS->DeleteInstance();
 }
 
 void CHttpServer::ResumeThread()
@@ -38,7 +42,11 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
     ATLTRACE(L"Starting SYNC\n");
     start_sync();
   }
-	shttpd_poll(ctx, 1000);
+  shttpd_poll(ctx, 1000);
+
+  //GPS
+  CGPSController::CheckTimeout();
+
   return S_OK;
 }
 
@@ -62,6 +70,8 @@ bool CHttpServer::InitHttpServer()
   const char *rootpath = GetRootPath();
   sprintf(httproot,"%sapps",rootpath);
   shttpd_set_option(ctx, "root",httproot);
+  //
+  shttpd_register_uri(ctx, "/system/geolocation", &show_geolocation, NULL);
 
   return true;
 }
