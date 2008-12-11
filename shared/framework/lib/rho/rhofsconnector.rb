@@ -1,5 +1,3 @@
-require 'find'
-
 module Rho
   class RhoFSConnector
 
@@ -11,6 +9,10 @@ module Rho
       
       def get_base_app_path
         File.join(File.dirname(File.expand_path(__FILE__)), '../../apps/')
+      end
+      
+      def get_app_manifest_filename
+        File.join(File.dirname(File.expand_path(__FILE__)), '../../apps/app_manifest.txt')
       end
 
       def get_model_path(appname, modelname)
@@ -24,15 +26,6 @@ module Rho
   			  File.join(File.dirname(File.expand_path(__FILE__)), '../../db/syncdb.sqlite')
   		  end
   	  end
-	  
-  	  def enum_files(paths, filename) # :yield: path
-  		  Find.find(paths) do |path| 
-  		    if File.basename(path) == filename
-  		      yield path
-  		    end
-  		  end
-  	  end
-		  
     end
 
   end # RhoApplication

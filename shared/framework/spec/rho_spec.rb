@@ -31,9 +31,13 @@ describe "Rho" do
   
   it "should initialize configuration only once" do
     Rhom::RhomDbAdapter::delete_all_from_table('sources')
-    @rho.sources_initialized?.should == false
+    @rho.source_initialized?(1).should == false
     @rho.init_sources
-    @rho.sources_initialized?.should == true
+    @rho.source_initialized?(1).should == true
+  end
+  
+  it "should return from get_app" do
+    pending "fix relative paths for testing of get_app"
   end
   
   it "should serve request" do

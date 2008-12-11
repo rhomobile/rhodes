@@ -21,7 +21,7 @@ describe "rho initializer", :shared => true do
     FileUtils.mkdir_p('build')
     FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
     Object::const_set("SYNC_DB_FILE", "../../build/syncdbtest.sqlite") unless defined? SYNC_DB_FILE
-    @rho = Rho::RHO.new(File.dirname(__FILE__) + "/../../../apps/")
+    @rho = Rho::RHO.new(File.join(File.dirname(File.expand_path(__FILE__)), '../../../apps/app_manifest.txt'))
     @rhom = Rhom::RhomObjectFactory.new
   end
 
