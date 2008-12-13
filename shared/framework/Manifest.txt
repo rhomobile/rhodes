@@ -12,13 +12,13 @@ generators/templates/model/controller.rb
 generators/templates/model/edit.erb
 generators/templates/model/index.erb
 generators/templates/model/new.erb
+generators/templates/source/source_adapter.rb
 lib/ServeME.rb
 lib/TestServe.rb
 lib/builtinME.rb
 lib/date.rb
 lib/date/format.rb
 lib/erb.rb
-lib/find.rb
 lib/rational.rb
 lib/rho.rb
 lib/rho/render.rb
@@ -47,6 +47,7 @@ spec/model_generator_spec.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
 spec/settings_controller_spec.rb
+spec/source_generator_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/stubs.rb

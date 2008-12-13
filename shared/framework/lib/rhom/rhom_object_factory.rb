@@ -90,7 +90,7 @@ module Rhom
                                                               {"object"=>obj,"update_type"=>'query'})
                   end
                   list = get_list(result)
-                  if list.length == 1
+                  if list.length == 1 and args.first != :all
                     return list[0]
                   end
                   list

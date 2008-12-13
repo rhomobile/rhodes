@@ -11,6 +11,10 @@ module Rho
       def get_base_app_path
 	      'apps/'  
       end
+      
+      def get_app_manifest_filename
+        get_base_app_path+'app_manifest.txt'
+      end
 
       def get_model_path(appname, modelname)
 		    'apps/'+appname+'/'+modelname+'/'  
@@ -23,14 +27,6 @@ module Rho
   			  'syncdb_.dbs'
   		  end
   	  end
-	  
-      def enum_files(paths, filename) # :yield: path
-		yield get_app_path('Rhosugar/Account') + filename
-		yield get_app_path('Rhosugar/Case') + filename  
-		yield get_app_path('Rhosugar/Employee') + filename  
-  	  end
-		  
     end
-
   end # RhoApplication
 end # Rho

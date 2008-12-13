@@ -12,13 +12,13 @@ module Rho
   class RHO
     APPLICATIONS = {}
 	
-    def initialize(app_base_path=nil)
+    def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
-      if app_base_path
-        process_model_dirs(app_base_path)
+      if app_manifest_filename
+        process_model_dirs(app_manifest_filename)
       else
-        process_model_dirs(RhoApplication::get_base_app_path)
+        process_model_dirs(Rho::RhoFSConnector::get_app_manifest_filename)
       end
       init_sources
     end
@@ -29,17 +29,15 @@ module Rho
     end
     
     # Return the directories where we need to load configuration files
-    def process_model_dirs(app_base_path=nil)
-      Rho::RhoFSConnector::enum_files(app_base_path,'config.rb') do |path|
-        require path
+    def process_model_dirs(app_manifest_filename=nil)
+      File.open(app_manifest_filename).each do |line|
+        require File.join(File.dirname(app_manifest_filename), line.chop)
       end
     end
     
     # setup the sources table and model attributes for all applications
     def init_sources
-      puts 'sources initialized? ' + self.sources_initialized?.inspect
-      if defined? Rho::RhoConfig::sources and not self.sources_initialized?
-        Rhom::RhomDbAdapter::delete_all_from_table('sources')
+      if defined? Rho::RhoConfig::sources
         src_attribs = []
         
         # quick and dirty way to get unique array of hashes
@@ -47,22 +45,27 @@ module Rho
           result << h unless result.include?(h); result
         }
 		
-        # generate unique source list in databse for sync
+        # generate unique source list in database for sync
         uniq_sources.each do |source|
+          
           src_id = source['source_id']
           url = source['url']
-          Rhom::RhomDbAdapter::insert_into_table('sources',
-                                                 {"source_id"=>src_id,"source_url"=>url})
+          if !self.source_initialized?(src_id)
+            puts "initializing source #{src_id}..."
+            Rhom::RhomDbAdapter::insert_into_table('sources',
+                                                  {"source_id"=>src_id,"source_url"=>url})
+          end
         end
       end
     end
     
-    def sources_initialized?
-      Rhom::RhomDbAdapter::select_from_table('sources','*').size > 0 ? true : false
+    def source_initialized?(source_id)
+      Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
     end
 	
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
+        puts "app require: #{RhoApplication::get_app_path(appname)+'application'}"
         require RhoApplication::get_app_path(appname)+'application'
         APPLICATIONS[appname] = Object.const_get(appname+'Application').new
       end

@@ -10,6 +10,12 @@ describe Rhogen::AppGenerator do
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
   
+  
+  it "should generate class_name" do
+    @generator = Rhogen::AppGenerator.new('/tmp', {}, 'Class-With-Hyphens')
+    @generator.class_name.should == 'ClassWithHyphens'
+  end
+  
   before do
     @generator = Rhogen::AppGenerator.new('/tmp', {}, app_name)
   end
