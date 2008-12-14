@@ -46,6 +46,8 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 	pSyncObject current_parse_object;
 	
 	json = json_tokener_parse(input);
+  if ( !json )
+    return 0;
 	json_list = json_object_get_array((struct json_object *)json);
 	parsed_size = array_list_length(json_list);
 	if (size < parsed_size) parsed_size = size;

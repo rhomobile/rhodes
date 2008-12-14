@@ -16,11 +16,35 @@
 #include <locale.h>
 #endif
 
+//#define COMPILER 1
+
 RUBY_GLOBAL_SETUP
+
+#ifndef COMPILER
+int
+main(int argc, char **argv)
+{
+//    MessageBox(0,"","",MB_OK);
+    ruby_sysinit(&argc, &argv);
+
+    RhoRubyStart();
+    RhoRubyStop();
+}
+
+const char* RhoGetRootPath()
+{
+    return "D:/Projects/rhodes/rhodes/win32/build/RhoBundle/";
+}
+
+#else 
+#include "vm_core.h"
+static VALUE
+__rho_compile( VALUE obj, VALUE src);
 
 int
 main(int argc, char **argv)
 {
+    int nRes = 0;
 #ifdef RUBY_DEBUG_ENV
     ruby_set_debug_option(getenv("RUBY_DEBUG"));
 #endif
@@ -28,10 +52,56 @@ main(int argc, char **argv)
     setlocale(LC_CTYPE, "");
 #endif
 
+//    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);
     {
 	RUBY_INIT_STACK;
 	ruby_init();
-	return ruby_run_node(ruby_options(argc, argv));
+    Init_strscan();
+	Init_sqlite3_api();
+    Init_SyncEngine();
+    Init_System();
+    //Init_prelude();
+
+    rb_define_global_function("__rho_compile", __rho_compile, 1);
+
+	nRes = ruby_run_node(ruby_options(argc, argv));
+
     }
+
+    return nRes;
+}
+
+static VALUE
+__rho_compile( VALUE obj, VALUE src)
+{
+    VALUE result;
+    rb_thread_t *th = GET_THREAD();
+
+    rb_secure(1);
+
+    th->parse_in_eval++;
+    result = rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1));
+    th->parse_in_eval--;
+
+    return result;
+}
+
+const char* RhoGetRootPath()
+{
+    return 0;
+}
+
+#endif //!COMPILER
+
+void lock_sync_mutex() {
+}
+
+void unlock_sync_mutex() {
+}
+
+void dosync() {
+}
+
+void Init_GeoLocation(){
 }

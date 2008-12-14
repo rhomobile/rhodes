@@ -67,7 +67,7 @@ bool CHttpServer::InitHttpServer()
   ctx = shttpd_init(0,NULL);
   //
   char httproot[MAX_PATH];
-  const char *rootpath = GetRootPath();
+  const char *rootpath = RhoGetRootPath();
   sprintf(httproot,"%sapps",rootpath);
   shttpd_set_option(ctx, "root",httproot);
   //
@@ -78,39 +78,15 @@ bool CHttpServer::InitHttpServer()
 
 bool CHttpServer::InitRubyFramework() {
   ATLTRACE(_T("Init ruby framework\n"));
-  RhoRubyStart(GetRootPath());
+  RhoRubyStart();
   m_bRubyInitialized = true;
   return true;
-}
-
-extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
-static bool _root_loaded = false;
-static char _rootpath[MAX_PATH];
-const char* CHttpServer::GetRootPath() {
-  if (_root_loaded) {
-    return _rootpath;
-  }
-
-  int len;
-  if( (len = GetModuleFileNameA(NULL,_rootpath,MAX_PATH)) == 0 )
-  {
-    strcpy(_rootpath,".");
-  }
-  else
-  {
-    while( !(_rootpath[len] == _T('\\')  || _rootpath[len] == _T('/')) )
-      len--;
-    _rootpath[len]=0;
-    sprintf(_rootpath,"%s\\rho\\",_rootpath);
-  }
-  _root_loaded = true;
-  return _rootpath;
 }
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
   if (buffer) {
-    wchar_t* root  = wce_mbtowc(GetRootPath());
+    wchar_t* root  = wce_mbtowc(RhoGetRootPath());
     wsprintf(buffer,L"file://%s%s",root,L"apps\\loading.html");
     free(root);
   }

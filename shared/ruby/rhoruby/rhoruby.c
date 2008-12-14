@@ -11,7 +11,7 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
-#include "vm_core.h"
+#include "rhoruby.h"
 
 extern void Init_strscan();
 extern void Init_sqlite3_api();
@@ -21,18 +21,21 @@ extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
 
+//RhoSupport extension
+extern void Init_RhoSupport(void);
+extern VALUE require_compiled(VALUE fname, VALUE* result);
+
 static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 
 static char* rb_type_to_s(VALUE obj);
 
-void RhoRubyStart(const char* szAppPath)
+void RhoRubyStart()
 {
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
-    //ruby_sysinit(&argc, &argv);
     {
 		RUBY_INIT_STACK;
 		ruby_init();
@@ -40,31 +43,49 @@ void RhoRubyStart(const char* szAppPath)
 #if defined(DEBUG)
 		enable_gc_profile();
 #endif
-
-		ruby_init_loadpath(szAppPath);
+		ruby_init_loadpath(RhoGetRootPath());
 		Init_strscan();
 		Init_sqlite3_api();
 		Init_GeoLocation();
 		Init_SyncEngine();
 		Init_System();
-    {
-		const char* szFramework = 
-		"begin\r\n"
-		"require 'rho'\r\n"
-		"puts 'RHO loaded'\r\n"
-		"Rho::RHO.new\r\n"
-		"rescue Exception => e\r\n"
-		"puts e.message\r\n"
-		"end\r\n";
-    
-		VALUE iseq  = rb_iseq_compile(rb_str_new2(szFramework), rb_str_new2(""), INT2FIX(0));
-		framework = rb_iseq_eval(iseq);
-		rb_gc_register_mark_object(framework);
-    }
+        
+        Init_RhoSupport();
+
+        require_compiled(rb_str_new2("rhoframework"), &framework );
+
+        rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
 	}	
 }
+
+#ifdef WINCE
+extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
+static int _root_loaded = 0;
+static char _rootpath[MAX_PATH];
+const char* RhoGetRootPath() {
+  int len;
+  if (_root_loaded) {
+    return _rootpath;
+  }
+
+  if( (len = GetModuleFileNameA(NULL,_rootpath,MAX_PATH)) == 0 )
+  {
+    strcpy(_rootpath,".");
+  }
+  else
+  {
+    while( !(_rootpath[len] == _T('\\')  || _rootpath[len] == _T('/')) )
+      len--;
+    _rootpath[len]=0;
+    sprintf(_rootpath,"%s\\rho\\",_rootpath);
+  }
+  _root_loaded = 1;
+  return _rootpath;
+}
+
+#endif// WINCE
 
 void RhoRubyStop()
 {

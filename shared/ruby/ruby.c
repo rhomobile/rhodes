@@ -95,6 +95,9 @@ struct cmdline_options {
 	} enc;
     } src, ext, intern;
     VALUE req_list;
+    //RHO
+    VALUE rootPath;
+    //RHO
 };
 
 static void init_ids(struct cmdline_options *);
@@ -855,7 +858,18 @@ proc_options(int argc, char **argv, struct cmdline_options *opt)
 		argc--, argv++;
 	    }
 	    break;
+    //RHO
+	  case 'R':
+        forbid_setid("-R");
+	      if (*++s)
+	    	  opt->rootPath = rb_str_new(s, strlen(s));//ruby_incpush_expand(s);
+	      else if (argv[1]) {
+    		  opt->rootPath = rb_str_new(argv[1],strlen(s));//ruby_incpush_expand(argv[1]);
 
+		    argc--, argv++;
+	    }
+	    break;
+    //RHO
 	  case '0':
 	    {
 		int numlen;
@@ -1118,7 +1132,13 @@ process_options(VALUE arg)
     safe = rb_safe_level();
     rb_set_safe_level_force(0);
 
-    ruby_init_loadpath(NULL);
+    //RHO
+    if ( opt->rootPath )
+      ruby_init_loadpath(RSTRING_PTR(opt->rootPath));
+    else
+    //RHO
+      ruby_init_loadpath(NULL);
+
     ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
     lenc = rb_locale_encoding();
     rb_enc_associate(rb_progname, lenc);

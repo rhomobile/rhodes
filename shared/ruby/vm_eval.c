@@ -659,7 +659,7 @@ rb_each(VALUE obj)
     return rb_call(CLASS_OF(obj), obj, idEach, 0, 0, CALL_FCALL);
 }
 
-static VALUE
+/*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line)
 {
     int state;
@@ -711,12 +711,19 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char
 	    }
 	}
 
-	/* make eval iseq */
-	th->parse_in_eval++;
-	th->mild_compile_error++;
-	iseqval = rb_iseq_compile(src, rb_str_new2(file), INT2FIX(line));
-	th->mild_compile_error--;
-	th->parse_in_eval--;
+    //RHO
+    if ( TYPE(src) != T_STRING ){
+        iseqval = src;
+    }else
+    //RHO
+    {
+	    /* make eval iseq */
+	    th->parse_in_eval++;
+	    th->mild_compile_error++;
+	    iseqval = rb_iseq_compile(src, rb_str_new2(file), INT2FIX(line));
+	    th->mild_compile_error--;
+	    th->parse_in_eval--;
+    }
 
 	vm_set_eval_stack(th, iseqval, cref);
 	th->base_block = 0;

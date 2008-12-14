@@ -158,6 +158,51 @@ module SQLite3 ; module Driver ; module Native
         context, value )
     end
 
+    def libversion (*args) API.sqlite3_libversion( *args ) ; end
+    def close (*args) API.sqlite3_close( *args ) ; end
+    def last_insert_rowid (*args) API.sqlite3_last_insert_rowid( *args ) ; end
+    def changes (*args) API.sqlite3_changes( *args ) ; end
+    def total_changes (*args) API.sqlite3_total_changes( *args ) ; end
+    def interrupt (*args) API.sqlite3_interrupt( *args ) ; end
+    def busy_timeout (*args) API.sqlite3_busy_timeout( *args ) ; end
+    def errcode (*args) API.sqlite3_errcode( *args ) ; end
+    def bind_blob (*args) API.sqlite3_bind_blob( *args ) ; end
+    def bind_double (*args) API.sqlite3_bind_double( *args ) ; end
+    def bind_int (*args) API.sqlite3_bind_int( *args ) ; end
+    def bind_int64 (*args) API.sqlite3_bind_int64( *args ) ; end
+    def bind_null (*args) API.sqlite3_bind_null( *args ) ; end
+    def bind_parameter_count (*args) API.sqlite3_bind_parameter_count( *args ) ; end
+    def bind_parameter_name (*args) API.sqlite3_bind_parameter_name( *args ) ; end
+    def bind_parameter_index (*args) API.sqlite3_bind_parameter_index( *args ) ; end
+    def column_count (*args) API.sqlite3_column_count( *args ) ; end
+    def step (*args) API.sqlite3_step( *args ) ; end
+    def data_count (*args) API.sqlite3_data_count( *args ) ; end
+    def column_blob (*args) API.sqlite3_column_blob( *args ) ; end
+    def column_bytes (*args) API.sqlite3_column_bytes( *args ) ; end
+    def column_bytes16 (*args) API.sqlite3_column_bytes16( *args ) ; end
+    def column_double (*args) API.sqlite3_column_double( *args ) ; end
+    def column_int (*args) API.sqlite3_column_int( *args ) ; end
+    def column_int64 (*args) API.sqlite3_column_int64( *args ) ; end
+    def column_type (*args) API.sqlite3_column_type( *args ) ; end
+    def finalize (*args) API.sqlite3_finalize( *args ) ; end
+    def reset (*args) API.sqlite3_reset( *args ) ; end
+    def aggregate_count (*args) API.sqlite3_aggregate_count( *args ) ; end
+    def value_blob (*args) API.sqlite3_value_blob( *args ) ; end
+    def value_bytes (*args) API.sqlite3_value_bytes( *args ) ; end
+    def value_bytes16 (*args) API.sqlite3_value_bytes16( *args ) ; end
+    def value_double (*args) API.sqlite3_value_double( *args ) ; end
+    def value_int (*args) API.sqlite3_value_int( *args ) ; end
+    def value_int64 (*args) API.sqlite3_value_int64( *args ) ; end
+    def value_type (*args) API.sqlite3_value_type( *args ) ; end
+    def result_blob (*args) API.sqlite3_result_blob( *args ) ; end
+    def result_double (*args) API.sqlite3_result_double( *args ) ; end
+    def result_int (*args) API.sqlite3_result_int( *args ) ; end
+    def result_int64 (*args) API.sqlite3_result_int64( *args ) ; end
+    def result_null (*args) API.sqlite3_result_null( *args ) ; end
+    def result_value (*args) API.sqlite3_result_value( *args ) ; end
+    def aggregate_context (*args) API.sqlite3_aggregate_context( *args ) ; end
+        
+=begin
     def self.api_delegate( name )
       eval "def #{name} (*args) API.sqlite3_#{name}( *args ) ; end"
     end
@@ -205,6 +250,7 @@ module SQLite3 ; module Driver ; module Native
     api_delegate :result_null
     api_delegate :result_value
     api_delegate :aggregate_context
+=end
 
   end
 
