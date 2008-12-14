@@ -9,6 +9,7 @@
 #include "SyncEngine.h"
 #include "SyncUtil.h"
 #include "rsyncengine.h"
+#include "rhoruby/rhoruby.h"
 
 // Sync engine ruby extension hooks
 #ifdef __cplusplus
@@ -149,7 +150,7 @@ bool CSyncEngine::StartSyncEngine()
 
   ATLTRACE(_T("Starting sync engine\n"));
   char dbpath[MAX_PATH];
-  sprintf(dbpath,"%sdb\\syncdb.sqlite",CHttpServer::GetRootPath());
+  sprintf(dbpath,"%sdb\\syncdb.sqlite",RhoGetRootPath());
   sqlite3_open(dbpath,&m_database);
   // Set the delay based on records from the database
   m_delaySync = get_object_count_from_database(m_database);
@@ -385,6 +386,18 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
 
     //Send data
     if ( HttpSendRequest( hRequest, NULL, 0, body, body_size) ) {
+      wchar_t res[10];
+      DWORD dwLen = 10;
+      DWORD nIndex = 0;
+      bool bOk = false;
+      if( HttpQueryInfo(hRequest,HTTP_QUERY_STATUS_CODE,res,&dwLen,&nIndex) ){
+        if ( wcscmp(res,L"200") == 0 )
+          bOk = true;
+        else
+          bOk = false;
+      }
+
+      if ( bOk ){
       BOOL bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
       while (bRead && (dwBytesRead > 0)) {
         data.append(sBuf, dwBytesRead);
@@ -393,6 +406,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
       //make a copy of recieved data
       cstr = new char [data.size()+1];
       strcpy (cstr, data.c_str());
+      }
     } else {
       pszFunction = L"HttpOpenRequest";
     }

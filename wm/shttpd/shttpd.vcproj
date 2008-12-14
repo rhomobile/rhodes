@@ -624,47 +624,47 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\auth.c"
+				RelativePath="..\..\shared\shttpd\src\auth.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\compat_wince.c"
+				RelativePath="..\..\shared\shttpd\src\compat_wince.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\io_dir.c"
+				RelativePath="..\..\shared\shttpd\src\io_dir.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\io_emb.c"
+				RelativePath="..\..\shared\shttpd\src\io_emb.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\io_file.c"
+				RelativePath="..\..\shared\shttpd\src\io_file.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\io_socket.c"
+				RelativePath="..\..\shared\shttpd\src\io_socket.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\log.c"
+				RelativePath="..\..\shared\shttpd\src\log.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\md5.c"
+				RelativePath="..\..\shared\shttpd\src\md5.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\rdispatcher.c"
+				RelativePath="..\..\shared\shttpd\src\rdispatcher.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\shttpd.c"
+				RelativePath="..\..\shared\shttpd\src\shttpd.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\string.c"
+				RelativePath="..\..\shared\shttpd\src\string.c"
 				>
 			</File>
 		</Filter>
@@ -674,51 +674,51 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\compat_win32.c"
+				RelativePath="..\..\shared\shttpd\src\compat_win32.c"
 				>
 			</File>
 			<File
-				RelativePath=".\src\compat_win32.h"
+				RelativePath="..\..\shared\shttpd\src\compat_win32.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\compat_wince.h"
+				RelativePath="..\..\shared\shttpd\src\compat_wince.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\config.h"
+				RelativePath="..\..\shared\shttpd\src\config.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\defs.h"
+				RelativePath="..\..\shared\shttpd\src\defs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\io.h"
+				RelativePath="..\..\shared\shttpd\src\io.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\llist.h"
+				RelativePath="..\..\shared\shttpd\src\llist.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\md5.h"
+				RelativePath="..\..\shared\shttpd\src\md5.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\rdispatcher.h"
+				RelativePath="..\..\shared\shttpd\src\rdispatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\shttpd.h"
+				RelativePath="..\..\shared\shttpd\src\shttpd.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\ssl.h"
+				RelativePath="..\..\shared\shttpd\src\ssl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\std_includes.h"
+				RelativePath="..\..\shared\shttpd\src\std_includes.h"
 				>
 			</File>
 		</Filter>

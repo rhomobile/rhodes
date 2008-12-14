@@ -4159,7 +4159,7 @@ rb_file_open_generic(VALUE io, VALUE filename, int oflags, int fmode, convconfig
 static VALUE
 rb_file_open_internal(VALUE io, VALUE filename, const char *modestr)
 {
-    int fmode;
+    int fmode = 0;
 
     const char *p = strchr(modestr, ':');
     convconfig_t convconfig;

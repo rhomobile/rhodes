@@ -25,7 +25,7 @@ INSN_ENTRY(nop){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(nop));
 {
-#line 40 "D:/Projects/Ruby/insns.def"
+#line 40 "insns.def"
     /* none */
 
 #line 32 "vm.inc"
@@ -49,7 +49,7 @@ INSN_ENTRY(getlocal){
   USAGE_ANALYSIS_INSN(BIN(getlocal));
   USAGE_ANALYSIS_OPERAND(BIN(getlocal), 0, idx);
 {
-#line 58 "D:/Projects/Ruby/insns.def"
+#line 58 "insns.def"
     val = *(GET_LFP() - idx);
 
 #line 56 "vm.inc"
@@ -74,7 +74,7 @@ INSN_ENTRY(setlocal){
   USAGE_ANALYSIS_INSN(BIN(setlocal));
   USAGE_ANALYSIS_OPERAND(BIN(setlocal), 0, idx);
 {
-#line 72 "D:/Projects/Ruby/insns.def"
+#line 72 "insns.def"
     (*(GET_LFP() - idx)) = val;
 
 #line 81 "vm.inc"
@@ -100,7 +100,7 @@ INSN_ENTRY(getspecial){
   USAGE_ANALYSIS_OPERAND(BIN(getspecial), 0, key);
   USAGE_ANALYSIS_OPERAND(BIN(getspecial), 1, type);
 {
-#line 86 "D:/Projects/Ruby/insns.def"
+#line 86 "insns.def"
     val = vm_getspecial(th, GET_LFP(), key, type);
 
 #line 107 "vm.inc"
@@ -125,7 +125,7 @@ INSN_ENTRY(setspecial){
   USAGE_ANALYSIS_INSN(BIN(setspecial));
   USAGE_ANALYSIS_OPERAND(BIN(setspecial), 0, key);
 {
-#line 100 "D:/Projects/Ruby/insns.def"
+#line 100 "insns.def"
     lfp_svar_set(th, GET_LFP(), key, obj);
 
 #line 132 "vm.inc"
@@ -151,7 +151,7 @@ INSN_ENTRY(getdynamic){
   USAGE_ANALYSIS_OPERAND(BIN(getdynamic), 0, idx);
   USAGE_ANALYSIS_OPERAND(BIN(getdynamic), 1, level);
 {
-#line 116 "D:/Projects/Ruby/insns.def"
+#line 116 "insns.def"
     int i;
     VALUE *dfp2 = GET_DFP();
     for (i = 0; i < level; i++) {
@@ -183,7 +183,7 @@ INSN_ENTRY(setdynamic){
   USAGE_ANALYSIS_OPERAND(BIN(setdynamic), 0, idx);
   USAGE_ANALYSIS_OPERAND(BIN(setdynamic), 1, level);
 {
-#line 137 "D:/Projects/Ruby/insns.def"
+#line 137 "insns.def"
     int i;
     VALUE *dfp2 = GET_DFP();
     for (i = 0; i < level; i++) {
@@ -212,7 +212,7 @@ INSN_ENTRY(getinstancevariable){
   USAGE_ANALYSIS_INSN(BIN(getinstancevariable));
   USAGE_ANALYSIS_OPERAND(BIN(getinstancevariable), 0, id);
 {
-#line 157 "D:/Projects/Ruby/insns.def"
+#line 157 "insns.def"
     val = rb_ivar_get(GET_SELF(), id);
 
 #line 219 "vm.inc"
@@ -237,7 +237,7 @@ INSN_ENTRY(setinstancevariable){
   USAGE_ANALYSIS_INSN(BIN(setinstancevariable));
   USAGE_ANALYSIS_OPERAND(BIN(setinstancevariable), 0, id);
 {
-#line 172 "D:/Projects/Ruby/insns.def"
+#line 172 "insns.def"
     rb_ivar_set(GET_SELF(), id, val);
 
 #line 244 "vm.inc"
@@ -261,7 +261,7 @@ INSN_ENTRY(getclassvariable){
   USAGE_ANALYSIS_INSN(BIN(getclassvariable));
   USAGE_ANALYSIS_OPERAND(BIN(getclassvariable), 0, id);
 {
-#line 186 "D:/Projects/Ruby/insns.def"
+#line 186 "insns.def"
     NODE * const cref = vm_get_cref(GET_ISEQ(), GET_LFP(), GET_DFP());
     val = rb_cvar_get(vm_get_cvar_base(cref), id);
 
@@ -287,7 +287,7 @@ INSN_ENTRY(setclassvariable){
   USAGE_ANALYSIS_INSN(BIN(setclassvariable));
   USAGE_ANALYSIS_OPERAND(BIN(setclassvariable), 0, id);
 {
-#line 201 "D:/Projects/Ruby/insns.def"
+#line 201 "insns.def"
     NODE * const cref = vm_get_cref(GET_ISEQ(), GET_LFP(), GET_DFP());
     rb_cvar_set(vm_get_cvar_base(cref), id, val);
 
@@ -313,7 +313,7 @@ INSN_ENTRY(getconstant){
   USAGE_ANALYSIS_INSN(BIN(getconstant));
   USAGE_ANALYSIS_OPERAND(BIN(getconstant), 0, id);
 {
-#line 223 "D:/Projects/Ruby/insns.def"
+#line 223 "insns.def"
     val = vm_get_ev_const(th, GET_ISEQ(), klass, id, 0);
 
 #line 320 "vm.inc"
@@ -339,7 +339,7 @@ INSN_ENTRY(setconstant){
   USAGE_ANALYSIS_INSN(BIN(setconstant));
   USAGE_ANALYSIS_OPERAND(BIN(setconstant), 0, id);
 {
-#line 245 "D:/Projects/Ruby/insns.def"
+#line 245 "insns.def"
     vm_check_if_namespace(cbase);
     rb_const_set(cbase, id, val);
     INC_VM_STATE_VERSION();
@@ -365,7 +365,7 @@ INSN_ENTRY(getglobal){
   USAGE_ANALYSIS_INSN(BIN(getglobal));
   USAGE_ANALYSIS_OPERAND(BIN(getglobal), 0, entry);
 {
-#line 261 "D:/Projects/Ruby/insns.def"
+#line 261 "insns.def"
     val = GET_GLOBAL(entry);
 
 #line 372 "vm.inc"
@@ -390,7 +390,7 @@ INSN_ENTRY(setglobal){
   USAGE_ANALYSIS_INSN(BIN(setglobal));
   USAGE_ANALYSIS_OPERAND(BIN(setglobal), 0, entry);
 {
-#line 275 "D:/Projects/Ruby/insns.def"
+#line 275 "insns.def"
     SET_GLOBAL(entry, val);
 
 #line 397 "vm.inc"
@@ -413,7 +413,7 @@ INSN_ENTRY(putnil){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(putnil));
 {
-#line 294 "D:/Projects/Ruby/insns.def"
+#line 294 "insns.def"
     val = Qnil;
 
 #line 420 "vm.inc"
@@ -437,7 +437,7 @@ INSN_ENTRY(putself){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(putself));
 {
-#line 308 "D:/Projects/Ruby/insns.def"
+#line 308 "insns.def"
     val = GET_SELF();
 
 #line 444 "vm.inc"
@@ -461,7 +461,7 @@ INSN_ENTRY(putobject){
   USAGE_ANALYSIS_INSN(BIN(putobject));
   USAGE_ANALYSIS_OPERAND(BIN(putobject), 0, val);
 {
-#line 324 "D:/Projects/Ruby/insns.def"
+#line 324 "insns.def"
     /* */
 
 #line 468 "vm.inc"
@@ -486,7 +486,7 @@ INSN_ENTRY(putspecialobject){
   USAGE_ANALYSIS_INSN(BIN(putspecialobject));
   USAGE_ANALYSIS_OPERAND(BIN(putspecialobject), 0, value_type);
 {
-#line 339 "D:/Projects/Ruby/insns.def"
+#line 339 "insns.def"
     switch (value_type) {
       case VM_SPECIAL_OBJECT_VMCORE:
 	val = rb_mRubyVMFrozenCore;
@@ -520,7 +520,7 @@ INSN_ENTRY(putiseq){
   USAGE_ANALYSIS_INSN(BIN(putiseq));
   USAGE_ANALYSIS_OPERAND(BIN(putiseq), 0, iseq);
 {
-#line 362 "D:/Projects/Ruby/insns.def"
+#line 362 "insns.def"
     ret = iseq->self;
 
 #line 527 "vm.inc"
@@ -545,7 +545,7 @@ INSN_ENTRY(putstring){
   USAGE_ANALYSIS_INSN(BIN(putstring));
   USAGE_ANALYSIS_OPERAND(BIN(putstring), 0, str);
 {
-#line 376 "D:/Projects/Ruby/insns.def"
+#line 376 "insns.def"
     val = rb_str_new3(str);
 
 #line 552 "vm.inc"
@@ -570,7 +570,7 @@ INSN_ENTRY(concatstrings){
   USAGE_ANALYSIS_INSN(BIN(concatstrings));
   USAGE_ANALYSIS_OPERAND(BIN(concatstrings), 0, num);
 {
-#line 390 "D:/Projects/Ruby/insns.def"
+#line 390 "insns.def"
     int i;
 
     val = rb_str_new(0, 0);
@@ -601,7 +601,7 @@ INSN_ENTRY(tostring){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(tostring));
 {
-#line 411 "D:/Projects/Ruby/insns.def"
+#line 411 "insns.def"
     val = rb_obj_as_string(val);
 
 #line 608 "vm.inc"
@@ -628,7 +628,7 @@ INSN_ENTRY(toregexp){
   USAGE_ANALYSIS_OPERAND(BIN(toregexp), 0, opt);
   USAGE_ANALYSIS_OPERAND(BIN(toregexp), 1, cnt);
 {
-#line 426 "D:/Projects/Ruby/insns.def"
+#line 426 "insns.def"
     VALUE rb_reg_new_ary(VALUE ary, int options);
     int i;
     const VALUE ary = rb_ary_new2(cnt);
@@ -661,7 +661,7 @@ INSN_ENTRY(newarray){
   USAGE_ANALYSIS_INSN(BIN(newarray));
   USAGE_ANALYSIS_OPERAND(BIN(newarray), 0, num);
 {
-#line 448 "D:/Projects/Ruby/insns.def"
+#line 448 "insns.def"
     val = rb_ary_new4((long)num, STACK_ADDR_FROM_TOP(num));
     POPN(num);
 
@@ -687,7 +687,7 @@ INSN_ENTRY(duparray){
   USAGE_ANALYSIS_INSN(BIN(duparray));
   USAGE_ANALYSIS_OPERAND(BIN(duparray), 0, ary);
 {
-#line 463 "D:/Projects/Ruby/insns.def"
+#line 463 "insns.def"
     val = rb_ary_dup(ary);
 
 #line 694 "vm.inc"
@@ -714,7 +714,7 @@ INSN_ENTRY(expandarray){
   USAGE_ANALYSIS_OPERAND(BIN(expandarray), 0, num);
   USAGE_ANALYSIS_OPERAND(BIN(expandarray), 1, flag);
 {
-#line 484 "D:/Projects/Ruby/insns.def"
+#line 484 "insns.def"
     vm_expandarray(GET_CFP(), ary, num, flag);
 
 #line 721 "vm.inc"
@@ -739,7 +739,7 @@ INSN_ENTRY(concatarray){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(concatarray));
 {
-#line 498 "D:/Projects/Ruby/insns.def"
+#line 498 "insns.def"
     const VALUE ary2 = ary2st;
     VALUE tmp1 = rb_check_convert_type(ary1, T_ARRAY, "Array", "to_a");
     VALUE tmp2 = rb_check_convert_type(ary2, T_ARRAY, "Array", "to_a");
@@ -780,7 +780,7 @@ INSN_ENTRY(splatarray){
   USAGE_ANALYSIS_INSN(BIN(splatarray));
   USAGE_ANALYSIS_OPERAND(BIN(splatarray), 0, flag);
 {
-#line 527 "D:/Projects/Ruby/insns.def"
+#line 527 "insns.def"
     VALUE tmp = rb_check_convert_type(ary, T_ARRAY, "Array", "to_a");
     if (NIL_P(tmp)) {
 	tmp = rb_ary_new3(1, ary);
@@ -811,7 +811,7 @@ INSN_ENTRY(checkincludearray){
   USAGE_ANALYSIS_INSN(BIN(checkincludearray));
   USAGE_ANALYSIS_OPERAND(BIN(checkincludearray), 0, flag);
 {
-#line 545 "D:/Projects/Ruby/insns.def"
+#line 545 "insns.def"
     int i;
     result = Qfalse;
 
@@ -863,7 +863,7 @@ INSN_ENTRY(newhash){
   USAGE_ANALYSIS_INSN(BIN(newhash));
   USAGE_ANALYSIS_OPERAND(BIN(newhash), 0, num);
 {
-#line 586 "D:/Projects/Ruby/insns.def"
+#line 586 "insns.def"
     int i;
     val = rb_hash_new();
 
@@ -898,7 +898,7 @@ INSN_ENTRY(newrange){
   USAGE_ANALYSIS_INSN(BIN(newrange));
   USAGE_ANALYSIS_OPERAND(BIN(newrange), 0, flag);
 {
-#line 608 "D:/Projects/Ruby/insns.def"
+#line 608 "insns.def"
     val = rb_range_new(low, high, flag);
 
 #line 905 "vm.inc"
@@ -922,7 +922,7 @@ INSN_ENTRY(pop){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(pop));
 {
-#line 626 "D:/Projects/Ruby/insns.def"
+#line 626 "insns.def"
     val = val;
     /* none */
 
@@ -948,7 +948,7 @@ INSN_ENTRY(dup){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(dup));
 {
-#line 641 "D:/Projects/Ruby/insns.def"
+#line 641 "insns.def"
     val1 = val2 = val;
 
 #line 955 "vm.inc"
@@ -973,7 +973,7 @@ INSN_ENTRY(dupn){
   USAGE_ANALYSIS_INSN(BIN(dupn));
   USAGE_ANALYSIS_OPERAND(BIN(dupn), 0, n);
 {
-#line 655 "D:/Projects/Ruby/insns.def"
+#line 655 "insns.def"
     int i;
     VALUE *sp = STACK_ADDR_FROM_TOP(n);
     for (i = 0; i < n; i++) {
@@ -1002,7 +1002,7 @@ INSN_ENTRY(swap){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(swap));
 {
-#line 675 "D:/Projects/Ruby/insns.def"
+#line 675 "insns.def"
     /* none */
 
 #line 1009 "vm.inc"
@@ -1027,7 +1027,7 @@ INSN_ENTRY(reput){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(reput));
 {
-#line 689 "D:/Projects/Ruby/insns.def"
+#line 689 "insns.def"
     /* none */
 
 #line 1034 "vm.inc"
@@ -1052,7 +1052,7 @@ INSN_ENTRY(topn){
   USAGE_ANALYSIS_INSN(BIN(topn));
   USAGE_ANALYSIS_OPERAND(BIN(topn), 0, n);
 {
-#line 703 "D:/Projects/Ruby/insns.def"
+#line 703 "insns.def"
     val = TOPN(n);
 
 #line 1059 "vm.inc"
@@ -1077,7 +1077,7 @@ INSN_ENTRY(setn){
   USAGE_ANALYSIS_INSN(BIN(setn));
   USAGE_ANALYSIS_OPERAND(BIN(setn), 0, n);
 {
-#line 717 "D:/Projects/Ruby/insns.def"
+#line 717 "insns.def"
     TOPN(n-1) = val;
 
 #line 1084 "vm.inc"
@@ -1101,7 +1101,7 @@ INSN_ENTRY(adjuststack){
   USAGE_ANALYSIS_INSN(BIN(adjuststack));
   USAGE_ANALYSIS_OPERAND(BIN(adjuststack), 0, n);
 {
-#line 731 "D:/Projects/Ruby/insns.def"
+#line 731 "insns.def"
     DEC_SP(n);
 
 #line 1108 "vm.inc"
@@ -1130,7 +1130,7 @@ INSN_ENTRY(defined){
   USAGE_ANALYSIS_OPERAND(BIN(defined), 1, obj);
   USAGE_ANALYSIS_OPERAND(BIN(defined), 2, needstr);
 {
-#line 750 "D:/Projects/Ruby/insns.def"
+#line 750 "insns.def"
     VALUE klass;
     const char *expr_type = 0;
     val = Qnil;
@@ -1244,7 +1244,7 @@ INSN_ENTRY(trace){
   USAGE_ANALYSIS_INSN(BIN(trace));
   USAGE_ANALYSIS_OPERAND(BIN(trace), 0, nf);
 {
-#line 854 "D:/Projects/Ruby/insns.def"
+#line 854 "insns.def"
     rb_event_flag_t flag = nf;
 
     EXEC_EVENT_HOOK(th, flag, GET_SELF(), 0, 0 /* TODO: id, klass */);
@@ -1276,7 +1276,7 @@ INSN_ENTRY(defineclass){
   USAGE_ANALYSIS_OPERAND(BIN(defineclass), 1, class_iseq);
   USAGE_ANALYSIS_OPERAND(BIN(defineclass), 2, define_type);
 {
-#line 878 "D:/Projects/Ruby/insns.def"
+#line 878 "insns.def"
     VALUE klass;
 
     switch ((int)define_type) {
@@ -1387,7 +1387,7 @@ INSN_ENTRY(send){
   USAGE_ANALYSIS_OPERAND(BIN(send), 3, op_flag);
   USAGE_ANALYSIS_OPERAND(BIN(send), 4, ic);
 {
-#line 981 "D:/Projects/Ruby/insns.def"
+#line 981 "insns.def"
     NODE *mn;
     VALUE recv, klass;
     rb_block_t *blockptr = 0;
@@ -1434,7 +1434,7 @@ INSN_ENTRY(invokesuper){
   USAGE_ANALYSIS_OPERAND(BIN(invokesuper), 1, blockiseq);
   USAGE_ANALYSIS_OPERAND(BIN(invokesuper), 2, op_flag);
 {
-#line 1015 "D:/Projects/Ruby/insns.def"
+#line 1015 "insns.def"
     rb_block_t *blockptr = !(op_flag & VM_CALL_ARGS_BLOCKARG_BIT) ? GET_BLOCK_PTR() : 0;
     int num = caller_setup_args(th, GET_CFP(), op_flag, op_argc, blockiseq, &blockptr);
     VALUE recv, klass;
@@ -1472,7 +1472,7 @@ INSN_ENTRY(invokeblock){
   USAGE_ANALYSIS_OPERAND(BIN(invokeblock), 0, num);
   USAGE_ANALYSIS_OPERAND(BIN(invokeblock), 1, flag);
 {
-#line 1041 "D:/Projects/Ruby/insns.def"
+#line 1041 "insns.def"
     val = vm_invoke_block(th, GET_CFP(), num, flag);
     if (val == Qundef) {
 	RESTORE_REGS();
@@ -1500,7 +1500,7 @@ INSN_ENTRY(leave){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(leave));
 {
-#line 1059 "D:/Projects/Ruby/insns.def"
+#line 1059 "insns.def"
     if (OPT_CHECKED_RUN) {
 	if (reg_cfp->sp != reg_cfp->bp) {
 	    rb_bug("Stack consistency error (sp: %"PRIdPTRDIFF", bp: %"PRIdPTRDIFF")",
@@ -1533,7 +1533,7 @@ INSN_ENTRY(finish){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(finish));
 {
-#line 1082 "D:/Projects/Ruby/insns.def"
+#line 1082 "insns.def"
 #if OPT_CALL_THREADED_CODE
     rb_bug("unused instruction on OPT_CALL_THREADED_CODE");
 #else
@@ -1564,7 +1564,7 @@ INSN_ENTRY(throw){
   USAGE_ANALYSIS_INSN(BIN(throw));
   USAGE_ANALYSIS_OPERAND(BIN(throw), 0, throw_state);
 {
-#line 1105 "D:/Projects/Ruby/insns.def"
+#line 1105 "insns.def"
     RUBY_VM_CHECK_INTS();
     val = vm_throw(th, GET_CFP(), throw_state, throwobj);
     THROW_EXCEPTION(val);
@@ -1591,7 +1591,7 @@ INSN_ENTRY(jump){
   USAGE_ANALYSIS_INSN(BIN(jump));
   USAGE_ANALYSIS_OPERAND(BIN(jump), 0, dst);
 {
-#line 1126 "D:/Projects/Ruby/insns.def"
+#line 1126 "insns.def"
     RUBY_VM_CHECK_INTS();
     JUMP(dst);
 
@@ -1616,7 +1616,7 @@ INSN_ENTRY(branchif){
   USAGE_ANALYSIS_INSN(BIN(branchif));
   USAGE_ANALYSIS_OPERAND(BIN(branchif), 0, dst);
 {
-#line 1141 "D:/Projects/Ruby/insns.def"
+#line 1141 "insns.def"
     if (RTEST(val)) {
 	RUBY_VM_CHECK_INTS();
 	JUMP(dst);
@@ -1643,7 +1643,7 @@ INSN_ENTRY(branchunless){
   USAGE_ANALYSIS_INSN(BIN(branchunless));
   USAGE_ANALYSIS_OPERAND(BIN(branchunless), 0, dst);
 {
-#line 1158 "D:/Projects/Ruby/insns.def"
+#line 1158 "insns.def"
     if (!RTEST(val)) {
 	RUBY_VM_CHECK_INTS();
 	JUMP(dst);
@@ -1672,7 +1672,7 @@ INSN_ENTRY(getinlinecache){
   USAGE_ANALYSIS_OPERAND(BIN(getinlinecache), 0, ic);
   USAGE_ANALYSIS_OPERAND(BIN(getinlinecache), 1, dst);
 {
-#line 1180 "D:/Projects/Ruby/insns.def"
+#line 1180 "insns.def"
     if (ic->ic_vmstat == GET_VM_STATE_VERSION()) {
 	val = ic->ic_value;
 	JUMP(dst);
@@ -1706,7 +1706,7 @@ INSN_ENTRY(onceinlinecache){
   USAGE_ANALYSIS_OPERAND(BIN(onceinlinecache), 0, ic);
   USAGE_ANALYSIS_OPERAND(BIN(onceinlinecache), 1, dst);
 {
-#line 1201 "D:/Projects/Ruby/insns.def"
+#line 1201 "insns.def"
     if (ic->ic_vmstat) {
 	val = ic->ic_value;
 	JUMP(dst);
@@ -1738,7 +1738,7 @@ INSN_ENTRY(setinlinecache){
   USAGE_ANALYSIS_INSN(BIN(setinlinecache));
   USAGE_ANALYSIS_OPERAND(BIN(setinlinecache), 0, dst);
 {
-#line 1222 "D:/Projects/Ruby/insns.def"
+#line 1222 "insns.def"
     IC ic = GET_CONST_INLINE_CACHE(dst);
 
     ic->ic_value = val;
@@ -1768,7 +1768,7 @@ INSN_ENTRY(opt_case_dispatch){
   USAGE_ANALYSIS_OPERAND(BIN(opt_case_dispatch), 0, hash);
   USAGE_ANALYSIS_OPERAND(BIN(opt_case_dispatch), 1, else_offset);
 {
-#line 1239 "D:/Projects/Ruby/insns.def"
+#line 1239 "insns.def"
     if (0) {
 	/* TODO: if some === method is overrided */
     }
@@ -1801,7 +1801,7 @@ INSN_ENTRY(opt_checkenv){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_checkenv));
 {
-#line 1264 "D:/Projects/Ruby/insns.def"
+#line 1264 "insns.def"
     if (GET_CFP()->bp != GET_DFP() + 1) {
 	VALUE *new_dfp = GET_CFP()->bp - 1;
 	/* TODO: copy env and clean stack at creating env? */
@@ -1831,7 +1831,7 @@ INSN_ENTRY(opt_plus){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_plus));
 {
-#line 1286 "D:/Projects/Ruby/insns.def"
+#line 1286 "insns.def"
     if (0) {
 
     }
@@ -1919,7 +1919,7 @@ INSN_ENTRY(opt_minus){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_minus));
 {
-#line 1362 "D:/Projects/Ruby/insns.def"
+#line 1362 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_MINUS)) {
 	long a, b, c;
@@ -1965,7 +1965,7 @@ INSN_ENTRY(opt_mult){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_mult));
 {
-#line 1396 "D:/Projects/Ruby/insns.def"
+#line 1396 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_MULT)) {
 	long a, b, c;
@@ -2030,7 +2030,7 @@ INSN_ENTRY(opt_div){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_div));
 {
-#line 1449 "D:/Projects/Ruby/insns.def"
+#line 1449 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_DIV)) {
 	long x, y, div;
@@ -2106,7 +2106,7 @@ INSN_ENTRY(opt_mod){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_mod));
 {
-#line 1513 "D:/Projects/Ruby/insns.def"
+#line 1513 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_MOD)) {
 	long x, y, mod;
@@ -2198,7 +2198,7 @@ INSN_ENTRY(opt_eq){
   USAGE_ANALYSIS_INSN(BIN(opt_eq));
   USAGE_ANALYSIS_OPERAND(BIN(opt_eq), 0, ic);
 {
-#line 1592 "D:/Projects/Ruby/insns.def"
+#line 1592 "insns.def"
     val = opt_eq_func(recv, obj, ic);
 
     if (val == Qundef) {
@@ -2234,7 +2234,7 @@ INSN_ENTRY(opt_neq){
   USAGE_ANALYSIS_OPERAND(BIN(opt_neq), 0, ic1);
   USAGE_ANALYSIS_OPERAND(BIN(opt_neq), 1, ic2);
 {
-#line 1613 "D:/Projects/Ruby/insns.def"
+#line 1613 "insns.def"
     extern VALUE rb_obj_not_equal(VALUE obj1, VALUE obj2);
     NODE *mn = vm_method_search(idNeq, CLASS_OF(recv), ic1);
     val = Qundef;
@@ -2277,7 +2277,7 @@ INSN_ENTRY(opt_lt){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_lt));
 {
-#line 1644 "D:/Projects/Ruby/insns.def"
+#line 1644 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_LT)) {
 	SIGNED_VALUE a = recv, b = obj;
@@ -2318,7 +2318,7 @@ INSN_ENTRY(opt_le){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_le));
 {
-#line 1673 "D:/Projects/Ruby/insns.def"
+#line 1673 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_LE)) {
 	SIGNED_VALUE a = recv, b = obj;
@@ -2360,7 +2360,7 @@ INSN_ENTRY(opt_gt){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_gt));
 {
-#line 1703 "D:/Projects/Ruby/insns.def"
+#line 1703 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_GT)) {
 	SIGNED_VALUE a = recv, b = obj;
@@ -2401,7 +2401,7 @@ INSN_ENTRY(opt_ge){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_ge));
 {
-#line 1732 "D:/Projects/Ruby/insns.def"
+#line 1732 "insns.def"
     if (FIXNUM_2_P(recv, obj) &&
 	BASIC_OP_UNREDEFINED_P(BOP_GE)) {
 	SIGNED_VALUE a = recv, b = obj;
@@ -2442,7 +2442,7 @@ INSN_ENTRY(opt_ltlt){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_ltlt));
 {
-#line 1761 "D:/Projects/Ruby/insns.def"
+#line 1761 "insns.def"
     if (!SPECIAL_CONST_P(recv)) {
 	if (0) {
 	}
@@ -2488,7 +2488,7 @@ INSN_ENTRY(opt_aref){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_aref));
 {
-#line 1795 "D:/Projects/Ruby/insns.def"
+#line 1795 "insns.def"
     if (!SPECIAL_CONST_P(recv) && BASIC_OP_UNREDEFINED_P(BOP_AREF)) {
 	if (HEAP_CLASS_OF(recv) == rb_cArray && FIXNUM_P(obj)) {
 	    val = rb_ary_entry(recv, FIX2LONG(obj));
@@ -2531,7 +2531,7 @@ INSN_ENTRY(opt_aset){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_aset));
 {
-#line 1825 "D:/Projects/Ruby/insns.def"
+#line 1825 "insns.def"
     if (!SPECIAL_CONST_P(recv) &&
 	BASIC_OP_UNREDEFINED_P(BOP_ASET)) {
 	if (HEAP_CLASS_OF(recv) == rb_cArray && FIXNUM_P(obj)) {
@@ -2576,7 +2576,7 @@ INSN_ENTRY(opt_length){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_length));
 {
-#line 1859 "D:/Projects/Ruby/insns.def"
+#line 1859 "insns.def"
     if (!SPECIAL_CONST_P(recv) &&
 	BASIC_OP_UNREDEFINED_P(BOP_LENGTH)) {
 	if (HEAP_CLASS_OF(recv) == rb_cString) {
@@ -2620,7 +2620,7 @@ INSN_ENTRY(opt_succ){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_succ));
 {
-#line 1892 "D:/Projects/Ruby/insns.def"
+#line 1892 "insns.def"
     if (SPECIAL_CONST_P(recv)) {
 	if (FIXNUM_P(recv) &&
 	    BASIC_OP_UNREDEFINED_P(BOP_SUCC)) {
@@ -2679,7 +2679,7 @@ INSN_ENTRY(opt_not){
   USAGE_ANALYSIS_INSN(BIN(opt_not));
   USAGE_ANALYSIS_OPERAND(BIN(opt_not), 0, ic);
 {
-#line 1939 "D:/Projects/Ruby/insns.def"
+#line 1939 "insns.def"
     extern VALUE rb_obj_not(VALUE obj);
     NODE *mn = vm_method_search(idNot, CLASS_OF(recv), ic);
 
@@ -2714,7 +2714,7 @@ INSN_ENTRY(opt_regexpmatch1){
   USAGE_ANALYSIS_INSN(BIN(opt_regexpmatch1));
   USAGE_ANALYSIS_OPERAND(BIN(opt_regexpmatch1), 0, r);
 {
-#line 1963 "D:/Projects/Ruby/insns.def"
+#line 1963 "insns.def"
     val = rb_reg_match(r, obj);
 
 #line 2721 "vm.inc"
@@ -2740,7 +2740,7 @@ INSN_ENTRY(opt_regexpmatch2){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(opt_regexpmatch2));
 {
-#line 1977 "D:/Projects/Ruby/insns.def"
+#line 1977 "insns.def"
     if (TYPE(obj2) == T_STRING) {
 	val = rb_reg_match(obj1, obj2);
     }
@@ -2769,7 +2769,7 @@ INSN_ENTRY(opt_call_c_function){
   USAGE_ANALYSIS_INSN(BIN(opt_call_c_function));
   USAGE_ANALYSIS_OPERAND(BIN(opt_call_c_function), 0, funcptr);
 {
-#line 1996 "D:/Projects/Ruby/insns.def"
+#line 1996 "insns.def"
     reg_cfp = (funcptr)(th, reg_cfp);
 
     if (reg_cfp == 0) {
@@ -2801,7 +2801,7 @@ INSN_ENTRY(bitblt){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(bitblt));
 {
-#line 2019 "D:/Projects/Ruby/insns.def"
+#line 2019 "insns.def"
     ret = rb_str_new2("a bit of bacon, lettuce and tomato");
 
 #line 2808 "vm.inc"
@@ -2825,7 +2825,7 @@ INSN_ENTRY(answer){
   #define LABEL_IS_SC(lab) LABEL_##lab##_##t
   USAGE_ANALYSIS_INSN(BIN(answer));
 {
-#line 2033 "D:/Projects/Ruby/insns.def"
+#line 2033 "insns.def"
     ret = INT2FIX(42);
 
 #line 2832 "vm.inc"

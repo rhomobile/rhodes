@@ -302,7 +302,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 12 "D:/Projects/Ruby\\parse.y"
+#line 12 "parse.y"
 
 
 #define YYDEBUG 1
@@ -905,7 +905,7 @@ static void token_info_pop(struct parser_params*, const char *token);
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 598 "D:/Projects/Ruby\\parse.y"
+#line 598 "parse.y"
 typedef union YYSTYPE {
     VALUE val;
     NODE *node;
@@ -4762,7 +4762,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 763 "D:/Projects/Ruby\\parse.y"
+#line 763 "parse.y"
     {
 			lex_state = EXPR_BEG;
 		    /*%%%*/
@@ -4773,7 +4773,7 @@ yyreduce:
     break;
 
   case 3:
-#line 771 "D:/Projects/Ruby\\parse.y"
+#line 771 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[0].node) && !compile_for_eval) {
@@ -4797,7 +4797,7 @@ yyreduce:
     break;
 
   case 4:
-#line 797 "D:/Projects/Ruby\\parse.y"
+#line 797 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-3].node);
@@ -4828,7 +4828,7 @@ yyreduce:
     break;
 
   case 5:
-#line 827 "D:/Projects/Ruby\\parse.y"
+#line 827 "parse.y"
     {
 		    /*%%%*/
 			void_stmts((yyvsp[-1].node));
@@ -4840,7 +4840,7 @@ yyreduce:
     break;
 
   case 6:
-#line 838 "D:/Projects/Ruby\\parse.y"
+#line 838 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_BEGIN(0);
@@ -4852,7 +4852,7 @@ yyreduce:
     break;
 
   case 7:
-#line 847 "D:/Projects/Ruby\\parse.y"
+#line 847 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = newline_node((yyvsp[0].node));
@@ -4863,7 +4863,7 @@ yyreduce:
     break;
 
   case 8:
-#line 855 "D:/Projects/Ruby\\parse.y"
+#line 855 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = block_append((yyvsp[-2].node), newline_node((yyvsp[0].node)));
@@ -4874,19 +4874,19 @@ yyreduce:
     break;
 
   case 9:
-#line 863 "D:/Projects/Ruby\\parse.y"
+#line 863 "parse.y"
     {
 			(yyval.node) = remove_begin((yyvsp[0].node));
 		    ;}
     break;
 
   case 10:
-#line 868 "D:/Projects/Ruby\\parse.y"
+#line 868 "parse.y"
     {lex_state = EXPR_FNAME;;}
     break;
 
   case 11:
-#line 869 "D:/Projects/Ruby\\parse.y"
+#line 869 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ALIAS((yyvsp[-2].node), (yyvsp[0].node));
@@ -4897,7 +4897,7 @@ yyreduce:
     break;
 
   case 12:
-#line 877 "D:/Projects/Ruby\\parse.y"
+#line 877 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_VALIAS((yyvsp[-1].id), (yyvsp[0].id));
@@ -4908,7 +4908,7 @@ yyreduce:
     break;
 
   case 13:
-#line 885 "D:/Projects/Ruby\\parse.y"
+#line 885 "parse.y"
     {
 		    /*%%%*/
 			char buf[3];
@@ -4922,7 +4922,7 @@ yyreduce:
     break;
 
   case 14:
-#line 896 "D:/Projects/Ruby\\parse.y"
+#line 896 "parse.y"
     {
 		    /*%%%*/
 			yyerror("can't make alias for the number variables");
@@ -4935,7 +4935,7 @@ yyreduce:
     break;
 
   case 15:
-#line 906 "D:/Projects/Ruby\\parse.y"
+#line 906 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[0].node);
@@ -4946,7 +4946,7 @@ yyreduce:
     break;
 
   case 16:
-#line 914 "D:/Projects/Ruby\\parse.y"
+#line 914 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_IF(cond((yyvsp[0].node)), remove_begin((yyvsp[-2].node)), 0);
@@ -4958,7 +4958,7 @@ yyreduce:
     break;
 
   case 17:
-#line 923 "D:/Projects/Ruby\\parse.y"
+#line 923 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_UNLESS(cond((yyvsp[0].node)), remove_begin((yyvsp[-2].node)), 0);
@@ -4970,7 +4970,7 @@ yyreduce:
     break;
 
   case 18:
-#line 932 "D:/Projects/Ruby\\parse.y"
+#line 932 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-2].node) && nd_type((yyvsp[-2].node)) == NODE_BEGIN) {
@@ -4986,7 +4986,7 @@ yyreduce:
     break;
 
   case 19:
-#line 945 "D:/Projects/Ruby\\parse.y"
+#line 945 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-2].node) && nd_type((yyvsp[-2].node)) == NODE_BEGIN) {
@@ -5002,7 +5002,7 @@ yyreduce:
     break;
 
   case 20:
-#line 958 "D:/Projects/Ruby\\parse.y"
+#line 958 "parse.y"
     {
 		    /*%%%*/
 			NODE *resq = NEW_RESBODY(0, remove_begin((yyvsp[0].node)), 0);
@@ -5014,7 +5014,7 @@ yyreduce:
     break;
 
   case 21:
-#line 967 "D:/Projects/Ruby\\parse.y"
+#line 967 "parse.y"
     {
 			if (in_def || in_single) {
 			    yyerror("BEGIN in method");
@@ -5027,7 +5027,7 @@ yyreduce:
     break;
 
   case 22:
-#line 977 "D:/Projects/Ruby\\parse.y"
+#line 977 "parse.y"
     {
 		    /*%%%*/
 			ruby_eval_tree_begin = block_append(ruby_eval_tree_begin,
@@ -5042,7 +5042,7 @@ yyreduce:
     break;
 
   case 23:
-#line 989 "D:/Projects/Ruby\\parse.y"
+#line 989 "parse.y"
     {
 			if (in_def || in_single) {
 			    rb_warn0("END in method; use at_exit");
@@ -5057,7 +5057,7 @@ yyreduce:
     break;
 
   case 24:
-#line 1001 "D:/Projects/Ruby\\parse.y"
+#line 1001 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5069,7 +5069,7 @@ yyreduce:
     break;
 
   case 25:
-#line 1010 "D:/Projects/Ruby\\parse.y"
+#line 1010 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5082,7 +5082,7 @@ yyreduce:
     break;
 
   case 26:
-#line 1020 "D:/Projects/Ruby\\parse.y"
+#line 1020 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5114,7 +5114,7 @@ yyreduce:
     break;
 
   case 27:
-#line 1049 "D:/Projects/Ruby\\parse.y"
+#line 1049 "parse.y"
     {
 		    /*%%%*/
 			NODE *args;
@@ -5138,7 +5138,7 @@ yyreduce:
     break;
 
   case 28:
-#line 1070 "D:/Projects/Ruby\\parse.y"
+#line 1070 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5158,7 +5158,7 @@ yyreduce:
     break;
 
   case 29:
-#line 1087 "D:/Projects/Ruby\\parse.y"
+#line 1087 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5178,7 +5178,7 @@ yyreduce:
     break;
 
   case 30:
-#line 1104 "D:/Projects/Ruby\\parse.y"
+#line 1104 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5198,7 +5198,7 @@ yyreduce:
     break;
 
   case 31:
-#line 1121 "D:/Projects/Ruby\\parse.y"
+#line 1121 "parse.y"
     {
 		    /*%%%*/
 			rb_backref_error((yyvsp[-2].node));
@@ -5211,7 +5211,7 @@ yyreduce:
     break;
 
   case 32:
-#line 1131 "D:/Projects/Ruby\\parse.y"
+#line 1131 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5223,7 +5223,7 @@ yyreduce:
     break;
 
   case 33:
-#line 1140 "D:/Projects/Ruby\\parse.y"
+#line 1140 "parse.y"
     {
 		    /*%%%*/
 			(yyvsp[-2].node)->nd_value = (yyvsp[0].node);
@@ -5235,7 +5235,7 @@ yyreduce:
     break;
 
   case 34:
-#line 1149 "D:/Projects/Ruby\\parse.y"
+#line 1149 "parse.y"
     {
 		    /*%%%*/
 			(yyvsp[-2].node)->nd_value = (yyvsp[0].node);
@@ -5247,7 +5247,7 @@ yyreduce:
     break;
 
   case 37:
-#line 1162 "D:/Projects/Ruby\\parse.y"
+#line 1162 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = logop(NODE_AND, (yyvsp[-2].node), (yyvsp[0].node));
@@ -5258,7 +5258,7 @@ yyreduce:
     break;
 
   case 38:
-#line 1170 "D:/Projects/Ruby\\parse.y"
+#line 1170 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = logop(NODE_OR, (yyvsp[-2].node), (yyvsp[0].node));
@@ -5269,7 +5269,7 @@ yyreduce:
     break;
 
   case 39:
-#line 1178 "D:/Projects/Ruby\\parse.y"
+#line 1178 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op(cond((yyvsp[0].node)), '!');
@@ -5280,7 +5280,7 @@ yyreduce:
     break;
 
   case 40:
-#line 1186 "D:/Projects/Ruby\\parse.y"
+#line 1186 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op(cond((yyvsp[0].node)), '!');
@@ -5291,7 +5291,7 @@ yyreduce:
     break;
 
   case 42:
-#line 1197 "D:/Projects/Ruby\\parse.y"
+#line 1197 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -5304,7 +5304,7 @@ yyreduce:
     break;
 
   case 45:
-#line 1211 "D:/Projects/Ruby\\parse.y"
+#line 1211 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_RETURN(ret_args((yyvsp[0].node)));
@@ -5315,7 +5315,7 @@ yyreduce:
     break;
 
   case 46:
-#line 1219 "D:/Projects/Ruby\\parse.y"
+#line 1219 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_BREAK(ret_args((yyvsp[0].node)));
@@ -5326,7 +5326,7 @@ yyreduce:
     break;
 
   case 47:
-#line 1227 "D:/Projects/Ruby\\parse.y"
+#line 1227 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_NEXT(ret_args((yyvsp[0].node)));
@@ -5337,7 +5337,7 @@ yyreduce:
     break;
 
   case 49:
-#line 1238 "D:/Projects/Ruby\\parse.y"
+#line 1238 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -5349,7 +5349,7 @@ yyreduce:
     break;
 
   case 50:
-#line 1247 "D:/Projects/Ruby\\parse.y"
+#line 1247 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -5361,7 +5361,7 @@ yyreduce:
     break;
 
   case 51:
-#line 1258 "D:/Projects/Ruby\\parse.y"
+#line 1258 "parse.y"
     {
 		    /*%%%*/
 			dyna_push();
@@ -5372,7 +5372,7 @@ yyreduce:
     break;
 
   case 52:
-#line 1268 "D:/Projects/Ruby\\parse.y"
+#line 1268 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ITER((yyvsp[-2].node),(yyvsp[-1].node));
@@ -5385,7 +5385,7 @@ yyreduce:
     break;
 
   case 53:
-#line 1280 "D:/Projects/Ruby\\parse.y"
+#line 1280 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_FCALL((yyvsp[-1].id), (yyvsp[0].node));
@@ -5397,7 +5397,7 @@ yyreduce:
     break;
 
   case 54:
-#line 1289 "D:/Projects/Ruby\\parse.y"
+#line 1289 "parse.y"
     {
 		    /*%%%*/
 			block_dup_check((yyvsp[-1].node),(yyvsp[0].node));
@@ -5412,7 +5412,7 @@ yyreduce:
     break;
 
   case 55:
-#line 1301 "D:/Projects/Ruby\\parse.y"
+#line 1301 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -5424,7 +5424,7 @@ yyreduce:
     break;
 
   case 56:
-#line 1310 "D:/Projects/Ruby\\parse.y"
+#line 1310 "parse.y"
     {
 		    /*%%%*/
 			block_dup_check((yyvsp[-1].node),(yyvsp[0].node));
@@ -5439,7 +5439,7 @@ yyreduce:
     break;
 
   case 57:
-#line 1322 "D:/Projects/Ruby\\parse.y"
+#line 1322 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -5451,7 +5451,7 @@ yyreduce:
     break;
 
   case 58:
-#line 1331 "D:/Projects/Ruby\\parse.y"
+#line 1331 "parse.y"
     {
 		    /*%%%*/
 			block_dup_check((yyvsp[-1].node),(yyvsp[0].node));
@@ -5466,7 +5466,7 @@ yyreduce:
     break;
 
   case 59:
-#line 1343 "D:/Projects/Ruby\\parse.y"
+#line 1343 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_SUPER((yyvsp[0].node));
@@ -5478,7 +5478,7 @@ yyreduce:
     break;
 
   case 60:
-#line 1352 "D:/Projects/Ruby\\parse.y"
+#line 1352 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_yield((yyvsp[0].node));
@@ -5490,7 +5490,7 @@ yyreduce:
     break;
 
   case 62:
-#line 1364 "D:/Projects/Ruby\\parse.y"
+#line 1364 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -5501,7 +5501,7 @@ yyreduce:
     break;
 
   case 64:
-#line 1375 "D:/Projects/Ruby\\parse.y"
+#line 1375 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(NEW_LIST((yyvsp[-1].node)), 0);
@@ -5512,7 +5512,7 @@ yyreduce:
     break;
 
   case 65:
-#line 1385 "D:/Projects/Ruby\\parse.y"
+#line 1385 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[0].node), 0);
@@ -5523,7 +5523,7 @@ yyreduce:
     break;
 
   case 66:
-#line 1393 "D:/Projects/Ruby\\parse.y"
+#line 1393 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(list_append((yyvsp[-1].node),(yyvsp[0].node)), 0);
@@ -5534,7 +5534,7 @@ yyreduce:
     break;
 
   case 67:
-#line 1401 "D:/Projects/Ruby\\parse.y"
+#line 1401 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-2].node), (yyvsp[0].node));
@@ -5545,7 +5545,7 @@ yyreduce:
     break;
 
   case 68:
-#line 1409 "D:/Projects/Ruby\\parse.y"
+#line 1409 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-4].node), NEW_POSTARG((yyvsp[-2].node),(yyvsp[0].node)));
@@ -5556,7 +5556,7 @@ yyreduce:
     break;
 
   case 69:
-#line 1417 "D:/Projects/Ruby\\parse.y"
+#line 1417 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-1].node), -1);
@@ -5567,7 +5567,7 @@ yyreduce:
     break;
 
   case 70:
-#line 1425 "D:/Projects/Ruby\\parse.y"
+#line 1425 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-3].node), NEW_POSTARG(-1, (yyvsp[0].node)));
@@ -5578,7 +5578,7 @@ yyreduce:
     break;
 
   case 71:
-#line 1433 "D:/Projects/Ruby\\parse.y"
+#line 1433 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, (yyvsp[0].node));
@@ -5589,7 +5589,7 @@ yyreduce:
     break;
 
   case 72:
-#line 1441 "D:/Projects/Ruby\\parse.y"
+#line 1441 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, NEW_POSTARG((yyvsp[-2].node),(yyvsp[0].node)));
@@ -5600,7 +5600,7 @@ yyreduce:
     break;
 
   case 73:
-#line 1449 "D:/Projects/Ruby\\parse.y"
+#line 1449 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, -1);
@@ -5611,7 +5611,7 @@ yyreduce:
     break;
 
   case 74:
-#line 1457 "D:/Projects/Ruby\\parse.y"
+#line 1457 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, NEW_POSTARG(-1, (yyvsp[0].node)));
@@ -5622,7 +5622,7 @@ yyreduce:
     break;
 
   case 76:
-#line 1468 "D:/Projects/Ruby\\parse.y"
+#line 1468 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -5633,7 +5633,7 @@ yyreduce:
     break;
 
   case 77:
-#line 1478 "D:/Projects/Ruby\\parse.y"
+#line 1478 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[-1].node));
@@ -5644,7 +5644,7 @@ yyreduce:
     break;
 
   case 78:
-#line 1486 "D:/Projects/Ruby\\parse.y"
+#line 1486 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append((yyvsp[-2].node), (yyvsp[-1].node));
@@ -5655,7 +5655,7 @@ yyreduce:
     break;
 
   case 79:
-#line 1496 "D:/Projects/Ruby\\parse.y"
+#line 1496 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[0].node));
@@ -5666,7 +5666,7 @@ yyreduce:
     break;
 
   case 80:
-#line 1504 "D:/Projects/Ruby\\parse.y"
+#line 1504 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append((yyvsp[-2].node), (yyvsp[0].node));
@@ -5677,7 +5677,7 @@ yyreduce:
     break;
 
   case 81:
-#line 1514 "D:/Projects/Ruby\\parse.y"
+#line 1514 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = assignable((yyvsp[0].id), 0);
@@ -5688,7 +5688,7 @@ yyreduce:
     break;
 
   case 82:
-#line 1522 "D:/Projects/Ruby\\parse.y"
+#line 1522 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = aryset((yyvsp[-3].node), (yyvsp[-1].node));
@@ -5699,7 +5699,7 @@ yyreduce:
     break;
 
   case 83:
-#line 1530 "D:/Projects/Ruby\\parse.y"
+#line 1530 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5710,7 +5710,7 @@ yyreduce:
     break;
 
   case 84:
-#line 1538 "D:/Projects/Ruby\\parse.y"
+#line 1538 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5721,7 +5721,7 @@ yyreduce:
     break;
 
   case 85:
-#line 1546 "D:/Projects/Ruby\\parse.y"
+#line 1546 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5732,7 +5732,7 @@ yyreduce:
     break;
 
   case 86:
-#line 1554 "D:/Projects/Ruby\\parse.y"
+#line 1554 "parse.y"
     {
 		    /*%%%*/
 			if (in_def || in_single)
@@ -5747,7 +5747,7 @@ yyreduce:
     break;
 
   case 87:
-#line 1566 "D:/Projects/Ruby\\parse.y"
+#line 1566 "parse.y"
     {
 		    /*%%%*/
 			if (in_def || in_single)
@@ -5760,7 +5760,7 @@ yyreduce:
     break;
 
   case 88:
-#line 1576 "D:/Projects/Ruby\\parse.y"
+#line 1576 "parse.y"
     {
 		    /*%%%*/
 			rb_backref_error((yyvsp[0].node));
@@ -5773,7 +5773,7 @@ yyreduce:
     break;
 
   case 89:
-#line 1588 "D:/Projects/Ruby\\parse.y"
+#line 1588 "parse.y"
     {
 		    /*%%%*/
 			if (!((yyval.node) = assignable((yyvsp[0].id), 0))) (yyval.node) = NEW_BEGIN(0);
@@ -5784,7 +5784,7 @@ yyreduce:
     break;
 
   case 90:
-#line 1596 "D:/Projects/Ruby\\parse.y"
+#line 1596 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = aryset((yyvsp[-3].node), (yyvsp[-1].node));
@@ -5795,7 +5795,7 @@ yyreduce:
     break;
 
   case 91:
-#line 1604 "D:/Projects/Ruby\\parse.y"
+#line 1604 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5806,7 +5806,7 @@ yyreduce:
     break;
 
   case 92:
-#line 1612 "D:/Projects/Ruby\\parse.y"
+#line 1612 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5817,7 +5817,7 @@ yyreduce:
     break;
 
   case 93:
-#line 1620 "D:/Projects/Ruby\\parse.y"
+#line 1620 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = attrset((yyvsp[-2].node), (yyvsp[0].id));
@@ -5828,7 +5828,7 @@ yyreduce:
     break;
 
   case 94:
-#line 1628 "D:/Projects/Ruby\\parse.y"
+#line 1628 "parse.y"
     {
 		    /*%%%*/
 			if (in_def || in_single)
@@ -5844,7 +5844,7 @@ yyreduce:
     break;
 
   case 95:
-#line 1641 "D:/Projects/Ruby\\parse.y"
+#line 1641 "parse.y"
     {
 		    /*%%%*/
 			if (in_def || in_single)
@@ -5860,7 +5860,7 @@ yyreduce:
     break;
 
   case 96:
-#line 1654 "D:/Projects/Ruby\\parse.y"
+#line 1654 "parse.y"
     {
 		    /*%%%*/
 			rb_backref_error((yyvsp[0].node));
@@ -5872,7 +5872,7 @@ yyreduce:
     break;
 
   case 97:
-#line 1665 "D:/Projects/Ruby\\parse.y"
+#line 1665 "parse.y"
     {
 		    /*%%%*/
 			yyerror("class/module name must be CONSTANT");
@@ -5883,7 +5883,7 @@ yyreduce:
     break;
 
   case 99:
-#line 1676 "D:/Projects/Ruby\\parse.y"
+#line 1676 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_COLON3((yyvsp[0].id));
@@ -5894,7 +5894,7 @@ yyreduce:
     break;
 
   case 100:
-#line 1684 "D:/Projects/Ruby\\parse.y"
+#line 1684 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_COLON2(0, (yyval.node));
@@ -5905,7 +5905,7 @@ yyreduce:
     break;
 
   case 101:
-#line 1692 "D:/Projects/Ruby\\parse.y"
+#line 1692 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_COLON2((yyvsp[-2].node), (yyvsp[0].id));
@@ -5916,7 +5916,7 @@ yyreduce:
     break;
 
   case 105:
-#line 1705 "D:/Projects/Ruby\\parse.y"
+#line 1705 "parse.y"
     {
 		    /*%%%*/
 			lex_state = EXPR_END;
@@ -5929,7 +5929,7 @@ yyreduce:
     break;
 
   case 106:
-#line 1715 "D:/Projects/Ruby\\parse.y"
+#line 1715 "parse.y"
     {
 		    /*%%%*/
 			lex_state = EXPR_END;
@@ -5942,7 +5942,7 @@ yyreduce:
     break;
 
   case 109:
-#line 1731 "D:/Projects/Ruby\\parse.y"
+#line 1731 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIT(ID2SYM((yyvsp[0].id)));
@@ -5953,7 +5953,7 @@ yyreduce:
     break;
 
   case 111:
-#line 1742 "D:/Projects/Ruby\\parse.y"
+#line 1742 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_UNDEF((yyvsp[0].node));
@@ -5964,12 +5964,12 @@ yyreduce:
     break;
 
   case 112:
-#line 1749 "D:/Projects/Ruby\\parse.y"
+#line 1749 "parse.y"
     {lex_state = EXPR_FNAME;;}
     break;
 
   case 113:
-#line 1750 "D:/Projects/Ruby\\parse.y"
+#line 1750 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = block_append((yyvsp[-3].node), NEW_UNDEF((yyvsp[0].node)));
@@ -5980,152 +5980,152 @@ yyreduce:
     break;
 
   case 114:
-#line 1759 "D:/Projects/Ruby\\parse.y"
+#line 1759 "parse.y"
     { ifndef_ripper((yyval.id) = '|'); ;}
     break;
 
   case 115:
-#line 1760 "D:/Projects/Ruby\\parse.y"
+#line 1760 "parse.y"
     { ifndef_ripper((yyval.id) = '^'); ;}
     break;
 
   case 116:
-#line 1761 "D:/Projects/Ruby\\parse.y"
+#line 1761 "parse.y"
     { ifndef_ripper((yyval.id) = '&'); ;}
     break;
 
   case 117:
-#line 1762 "D:/Projects/Ruby\\parse.y"
+#line 1762 "parse.y"
     { ifndef_ripper((yyval.id) = tCMP); ;}
     break;
 
   case 118:
-#line 1763 "D:/Projects/Ruby\\parse.y"
+#line 1763 "parse.y"
     { ifndef_ripper((yyval.id) = tEQ); ;}
     break;
 
   case 119:
-#line 1764 "D:/Projects/Ruby\\parse.y"
+#line 1764 "parse.y"
     { ifndef_ripper((yyval.id) = tEQQ); ;}
     break;
 
   case 120:
-#line 1765 "D:/Projects/Ruby\\parse.y"
+#line 1765 "parse.y"
     { ifndef_ripper((yyval.id) = tMATCH); ;}
     break;
 
   case 121:
-#line 1766 "D:/Projects/Ruby\\parse.y"
+#line 1766 "parse.y"
     { ifndef_ripper((yyval.id) = tNMATCH); ;}
     break;
 
   case 122:
-#line 1767 "D:/Projects/Ruby\\parse.y"
+#line 1767 "parse.y"
     { ifndef_ripper((yyval.id) = '>'); ;}
     break;
 
   case 123:
-#line 1768 "D:/Projects/Ruby\\parse.y"
+#line 1768 "parse.y"
     { ifndef_ripper((yyval.id) = tGEQ); ;}
     break;
 
   case 124:
-#line 1769 "D:/Projects/Ruby\\parse.y"
+#line 1769 "parse.y"
     { ifndef_ripper((yyval.id) = '<'); ;}
     break;
 
   case 125:
-#line 1770 "D:/Projects/Ruby\\parse.y"
+#line 1770 "parse.y"
     { ifndef_ripper((yyval.id) = tLEQ); ;}
     break;
 
   case 126:
-#line 1771 "D:/Projects/Ruby\\parse.y"
+#line 1771 "parse.y"
     { ifndef_ripper((yyval.id) = tNEQ); ;}
     break;
 
   case 127:
-#line 1772 "D:/Projects/Ruby\\parse.y"
+#line 1772 "parse.y"
     { ifndef_ripper((yyval.id) = tLSHFT); ;}
     break;
 
   case 128:
-#line 1773 "D:/Projects/Ruby\\parse.y"
+#line 1773 "parse.y"
     { ifndef_ripper((yyval.id) = tRSHFT); ;}
     break;
 
   case 129:
-#line 1774 "D:/Projects/Ruby\\parse.y"
+#line 1774 "parse.y"
     { ifndef_ripper((yyval.id) = '+'); ;}
     break;
 
   case 130:
-#line 1775 "D:/Projects/Ruby\\parse.y"
+#line 1775 "parse.y"
     { ifndef_ripper((yyval.id) = '-'); ;}
     break;
 
   case 131:
-#line 1776 "D:/Projects/Ruby\\parse.y"
+#line 1776 "parse.y"
     { ifndef_ripper((yyval.id) = '*'); ;}
     break;
 
   case 132:
-#line 1777 "D:/Projects/Ruby\\parse.y"
+#line 1777 "parse.y"
     { ifndef_ripper((yyval.id) = '*'); ;}
     break;
 
   case 133:
-#line 1778 "D:/Projects/Ruby\\parse.y"
+#line 1778 "parse.y"
     { ifndef_ripper((yyval.id) = '/'); ;}
     break;
 
   case 134:
-#line 1779 "D:/Projects/Ruby\\parse.y"
+#line 1779 "parse.y"
     { ifndef_ripper((yyval.id) = '%'); ;}
     break;
 
   case 135:
-#line 1780 "D:/Projects/Ruby\\parse.y"
+#line 1780 "parse.y"
     { ifndef_ripper((yyval.id) = tPOW); ;}
     break;
 
   case 136:
-#line 1781 "D:/Projects/Ruby\\parse.y"
+#line 1781 "parse.y"
     { ifndef_ripper((yyval.id) = '!'); ;}
     break;
 
   case 137:
-#line 1782 "D:/Projects/Ruby\\parse.y"
+#line 1782 "parse.y"
     { ifndef_ripper((yyval.id) = '~'); ;}
     break;
 
   case 138:
-#line 1783 "D:/Projects/Ruby\\parse.y"
+#line 1783 "parse.y"
     { ifndef_ripper((yyval.id) = tUPLUS); ;}
     break;
 
   case 139:
-#line 1784 "D:/Projects/Ruby\\parse.y"
+#line 1784 "parse.y"
     { ifndef_ripper((yyval.id) = tUMINUS); ;}
     break;
 
   case 140:
-#line 1785 "D:/Projects/Ruby\\parse.y"
+#line 1785 "parse.y"
     { ifndef_ripper((yyval.id) = tAREF); ;}
     break;
 
   case 141:
-#line 1786 "D:/Projects/Ruby\\parse.y"
+#line 1786 "parse.y"
     { ifndef_ripper((yyval.id) = tASET); ;}
     break;
 
   case 142:
-#line 1787 "D:/Projects/Ruby\\parse.y"
+#line 1787 "parse.y"
     { ifndef_ripper((yyval.id) = '`'); ;}
     break;
 
   case 184:
-#line 1805 "D:/Projects/Ruby\\parse.y"
+#line 1805 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6137,7 +6137,7 @@ yyreduce:
     break;
 
   case 185:
-#line 1814 "D:/Projects/Ruby\\parse.y"
+#line 1814 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[-2].node));
@@ -6150,7 +6150,7 @@ yyreduce:
     break;
 
   case 186:
-#line 1824 "D:/Projects/Ruby\\parse.y"
+#line 1824 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6182,7 +6182,7 @@ yyreduce:
     break;
 
   case 187:
-#line 1853 "D:/Projects/Ruby\\parse.y"
+#line 1853 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[-2].node));
@@ -6216,7 +6216,7 @@ yyreduce:
     break;
 
   case 188:
-#line 1884 "D:/Projects/Ruby\\parse.y"
+#line 1884 "parse.y"
     {
 		    /*%%%*/
 			NODE *args;
@@ -6240,7 +6240,7 @@ yyreduce:
     break;
 
   case 189:
-#line 1905 "D:/Projects/Ruby\\parse.y"
+#line 1905 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6260,7 +6260,7 @@ yyreduce:
     break;
 
   case 190:
-#line 1922 "D:/Projects/Ruby\\parse.y"
+#line 1922 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6280,7 +6280,7 @@ yyreduce:
     break;
 
   case 191:
-#line 1939 "D:/Projects/Ruby\\parse.y"
+#line 1939 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6300,7 +6300,7 @@ yyreduce:
     break;
 
   case 192:
-#line 1956 "D:/Projects/Ruby\\parse.y"
+#line 1956 "parse.y"
     {
 		    /*%%%*/
 			yyerror("constant re-assignment");
@@ -6314,7 +6314,7 @@ yyreduce:
     break;
 
   case 193:
-#line 1967 "D:/Projects/Ruby\\parse.y"
+#line 1967 "parse.y"
     {
 		    /*%%%*/
 			yyerror("constant re-assignment");
@@ -6328,7 +6328,7 @@ yyreduce:
     break;
 
   case 194:
-#line 1978 "D:/Projects/Ruby\\parse.y"
+#line 1978 "parse.y"
     {
 		    /*%%%*/
 			rb_backref_error((yyvsp[-2].node));
@@ -6342,7 +6342,7 @@ yyreduce:
     break;
 
   case 195:
-#line 1989 "D:/Projects/Ruby\\parse.y"
+#line 1989 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[-2].node));
@@ -6359,7 +6359,7 @@ yyreduce:
     break;
 
   case 196:
-#line 2003 "D:/Projects/Ruby\\parse.y"
+#line 2003 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[-2].node));
@@ -6376,7 +6376,7 @@ yyreduce:
     break;
 
   case 197:
-#line 2017 "D:/Projects/Ruby\\parse.y"
+#line 2017 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '+', (yyvsp[0].node));
@@ -6387,7 +6387,7 @@ yyreduce:
     break;
 
   case 198:
-#line 2025 "D:/Projects/Ruby\\parse.y"
+#line 2025 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '-', (yyvsp[0].node));
@@ -6398,7 +6398,7 @@ yyreduce:
     break;
 
   case 199:
-#line 2033 "D:/Projects/Ruby\\parse.y"
+#line 2033 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '*', (yyvsp[0].node));
@@ -6409,7 +6409,7 @@ yyreduce:
     break;
 
   case 200:
-#line 2041 "D:/Projects/Ruby\\parse.y"
+#line 2041 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '/', (yyvsp[0].node));
@@ -6420,7 +6420,7 @@ yyreduce:
     break;
 
   case 201:
-#line 2049 "D:/Projects/Ruby\\parse.y"
+#line 2049 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '%', (yyvsp[0].node));
@@ -6431,7 +6431,7 @@ yyreduce:
     break;
 
   case 202:
-#line 2057 "D:/Projects/Ruby\\parse.y"
+#line 2057 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tPOW, (yyvsp[0].node));
@@ -6442,7 +6442,7 @@ yyreduce:
     break;
 
   case 203:
-#line 2065 "D:/Projects/Ruby\\parse.y"
+#line 2065 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL(call_bin_op((yyvsp[-2].node), tPOW, (yyvsp[0].node)), tUMINUS, 0);
@@ -6454,7 +6454,7 @@ yyreduce:
     break;
 
   case 204:
-#line 2074 "D:/Projects/Ruby\\parse.y"
+#line 2074 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL(call_bin_op((yyvsp[-2].node), tPOW, (yyvsp[0].node)), tUMINUS, 0);
@@ -6466,7 +6466,7 @@ yyreduce:
     break;
 
   case 205:
-#line 2083 "D:/Projects/Ruby\\parse.y"
+#line 2083 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op((yyvsp[0].node), tUPLUS);
@@ -6477,7 +6477,7 @@ yyreduce:
     break;
 
   case 206:
-#line 2091 "D:/Projects/Ruby\\parse.y"
+#line 2091 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op((yyvsp[0].node), tUMINUS);
@@ -6488,7 +6488,7 @@ yyreduce:
     break;
 
   case 207:
-#line 2099 "D:/Projects/Ruby\\parse.y"
+#line 2099 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '|', (yyvsp[0].node));
@@ -6499,7 +6499,7 @@ yyreduce:
     break;
 
   case 208:
-#line 2107 "D:/Projects/Ruby\\parse.y"
+#line 2107 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '^', (yyvsp[0].node));
@@ -6510,7 +6510,7 @@ yyreduce:
     break;
 
   case 209:
-#line 2115 "D:/Projects/Ruby\\parse.y"
+#line 2115 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '&', (yyvsp[0].node));
@@ -6521,7 +6521,7 @@ yyreduce:
     break;
 
   case 210:
-#line 2123 "D:/Projects/Ruby\\parse.y"
+#line 2123 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tCMP, (yyvsp[0].node));
@@ -6532,7 +6532,7 @@ yyreduce:
     break;
 
   case 211:
-#line 2131 "D:/Projects/Ruby\\parse.y"
+#line 2131 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '>', (yyvsp[0].node));
@@ -6543,7 +6543,7 @@ yyreduce:
     break;
 
   case 212:
-#line 2139 "D:/Projects/Ruby\\parse.y"
+#line 2139 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tGEQ, (yyvsp[0].node));
@@ -6554,7 +6554,7 @@ yyreduce:
     break;
 
   case 213:
-#line 2147 "D:/Projects/Ruby\\parse.y"
+#line 2147 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), '<', (yyvsp[0].node));
@@ -6565,7 +6565,7 @@ yyreduce:
     break;
 
   case 214:
-#line 2155 "D:/Projects/Ruby\\parse.y"
+#line 2155 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tLEQ, (yyvsp[0].node));
@@ -6576,7 +6576,7 @@ yyreduce:
     break;
 
   case 215:
-#line 2163 "D:/Projects/Ruby\\parse.y"
+#line 2163 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tEQ, (yyvsp[0].node));
@@ -6587,7 +6587,7 @@ yyreduce:
     break;
 
   case 216:
-#line 2171 "D:/Projects/Ruby\\parse.y"
+#line 2171 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tEQQ, (yyvsp[0].node));
@@ -6598,7 +6598,7 @@ yyreduce:
     break;
 
   case 217:
-#line 2179 "D:/Projects/Ruby\\parse.y"
+#line 2179 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tNEQ, (yyvsp[0].node));
@@ -6609,7 +6609,7 @@ yyreduce:
     break;
 
   case 218:
-#line 2187 "D:/Projects/Ruby\\parse.y"
+#line 2187 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = match_op((yyvsp[-2].node), (yyvsp[0].node));
@@ -6623,7 +6623,7 @@ yyreduce:
     break;
 
   case 219:
-#line 2198 "D:/Projects/Ruby\\parse.y"
+#line 2198 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tNMATCH, (yyvsp[0].node));
@@ -6634,7 +6634,7 @@ yyreduce:
     break;
 
   case 220:
-#line 2206 "D:/Projects/Ruby\\parse.y"
+#line 2206 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op(cond((yyvsp[0].node)), '!');
@@ -6645,7 +6645,7 @@ yyreduce:
     break;
 
   case 221:
-#line 2214 "D:/Projects/Ruby\\parse.y"
+#line 2214 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op((yyvsp[0].node), '~');
@@ -6656,7 +6656,7 @@ yyreduce:
     break;
 
   case 222:
-#line 2222 "D:/Projects/Ruby\\parse.y"
+#line 2222 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tLSHFT, (yyvsp[0].node));
@@ -6667,7 +6667,7 @@ yyreduce:
     break;
 
   case 223:
-#line 2230 "D:/Projects/Ruby\\parse.y"
+#line 2230 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_bin_op((yyvsp[-2].node), tRSHFT, (yyvsp[0].node));
@@ -6678,7 +6678,7 @@ yyreduce:
     break;
 
   case 224:
-#line 2238 "D:/Projects/Ruby\\parse.y"
+#line 2238 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = logop(NODE_AND, (yyvsp[-2].node), (yyvsp[0].node));
@@ -6689,7 +6689,7 @@ yyreduce:
     break;
 
   case 225:
-#line 2246 "D:/Projects/Ruby\\parse.y"
+#line 2246 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = logop(NODE_OR, (yyvsp[-2].node), (yyvsp[0].node));
@@ -6700,12 +6700,12 @@ yyreduce:
     break;
 
   case 226:
-#line 2253 "D:/Projects/Ruby\\parse.y"
+#line 2253 "parse.y"
     {in_defined = 1;;}
     break;
 
   case 227:
-#line 2254 "D:/Projects/Ruby\\parse.y"
+#line 2254 "parse.y"
     {
 		    /*%%%*/
 			in_defined = 0;
@@ -6718,7 +6718,7 @@ yyreduce:
     break;
 
   case 228:
-#line 2264 "D:/Projects/Ruby\\parse.y"
+#line 2264 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[-5].node));
@@ -6731,14 +6731,14 @@ yyreduce:
     break;
 
   case 229:
-#line 2274 "D:/Projects/Ruby\\parse.y"
+#line 2274 "parse.y"
     {
 			(yyval.node) = (yyvsp[0].node);
 		    ;}
     break;
 
   case 230:
-#line 2280 "D:/Projects/Ruby\\parse.y"
+#line 2280 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -6751,14 +6751,14 @@ yyreduce:
     break;
 
   case 232:
-#line 2293 "D:/Projects/Ruby\\parse.y"
+#line 2293 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 233:
-#line 2297 "D:/Projects/Ruby\\parse.y"
+#line 2297 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = arg_append((yyvsp[-3].node), NEW_HASH((yyvsp[-1].node)));
@@ -6769,7 +6769,7 @@ yyreduce:
     break;
 
   case 234:
-#line 2305 "D:/Projects/Ruby\\parse.y"
+#line 2305 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST(NEW_HASH((yyvsp[-1].node)));
@@ -6780,7 +6780,7 @@ yyreduce:
     break;
 
   case 235:
-#line 2315 "D:/Projects/Ruby\\parse.y"
+#line 2315 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -6791,7 +6791,7 @@ yyreduce:
     break;
 
   case 240:
-#line 2333 "D:/Projects/Ruby\\parse.y"
+#line 2333 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[0].node));
@@ -6802,7 +6802,7 @@ yyreduce:
     break;
 
   case 241:
-#line 2341 "D:/Projects/Ruby\\parse.y"
+#line 2341 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = arg_blk_pass((yyvsp[-1].node), (yyvsp[0].node));
@@ -6813,7 +6813,7 @@ yyreduce:
     break;
 
   case 242:
-#line 2349 "D:/Projects/Ruby\\parse.y"
+#line 2349 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST(NEW_HASH((yyvsp[-1].node)));
@@ -6826,7 +6826,7 @@ yyreduce:
     break;
 
   case 243:
-#line 2359 "D:/Projects/Ruby\\parse.y"
+#line 2359 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = arg_append((yyvsp[-3].node), NEW_HASH((yyvsp[-1].node)));
@@ -6838,7 +6838,7 @@ yyreduce:
     break;
 
   case 245:
-#line 2376 "D:/Projects/Ruby\\parse.y"
+#line 2376 "parse.y"
     {
 			(yyval.num) = cmdarg_stack;
 			CMDARG_PUSH(1);
@@ -6846,7 +6846,7 @@ yyreduce:
     break;
 
   case 246:
-#line 2381 "D:/Projects/Ruby\\parse.y"
+#line 2381 "parse.y"
     {
 			/* CMDARG_POP() */
 			cmdarg_stack = (yyvsp[-1].num);
@@ -6855,7 +6855,7 @@ yyreduce:
     break;
 
   case 247:
-#line 2389 "D:/Projects/Ruby\\parse.y"
+#line 2389 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_BLOCK_PASS((yyvsp[0].node));
@@ -6866,28 +6866,28 @@ yyreduce:
     break;
 
   case 248:
-#line 2399 "D:/Projects/Ruby\\parse.y"
+#line 2399 "parse.y"
     {
 			(yyval.node) = (yyvsp[0].node);
 		    ;}
     break;
 
   case 249:
-#line 2403 "D:/Projects/Ruby\\parse.y"
+#line 2403 "parse.y"
     {
 			(yyval.node) = 0;
 		    ;}
     break;
 
   case 250:
-#line 2407 "D:/Projects/Ruby\\parse.y"
+#line 2407 "parse.y"
     {
 			(yyval.node) = 0;
 		    ;}
     break;
 
   case 251:
-#line 2413 "D:/Projects/Ruby\\parse.y"
+#line 2413 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[0].node));
@@ -6898,7 +6898,7 @@ yyreduce:
     break;
 
   case 252:
-#line 2421 "D:/Projects/Ruby\\parse.y"
+#line 2421 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_SPLAT((yyvsp[0].node));
@@ -6909,7 +6909,7 @@ yyreduce:
     break;
 
   case 253:
-#line 2429 "D:/Projects/Ruby\\parse.y"
+#line 2429 "parse.y"
     {
 		    /*%%%*/
 			NODE *n1;
@@ -6926,7 +6926,7 @@ yyreduce:
     break;
 
   case 254:
-#line 2443 "D:/Projects/Ruby\\parse.y"
+#line 2443 "parse.y"
     {
 		    /*%%%*/
 			NODE *n1;
@@ -6944,7 +6944,7 @@ yyreduce:
     break;
 
   case 255:
-#line 2460 "D:/Projects/Ruby\\parse.y"
+#line 2460 "parse.y"
     {
 		    /*%%%*/
 			NODE *n1;
@@ -6961,7 +6961,7 @@ yyreduce:
     break;
 
   case 256:
-#line 2474 "D:/Projects/Ruby\\parse.y"
+#line 2474 "parse.y"
     {
 		    /*%%%*/
 			NODE *n1;
@@ -6979,7 +6979,7 @@ yyreduce:
     break;
 
   case 257:
-#line 2489 "D:/Projects/Ruby\\parse.y"
+#line 2489 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_SPLAT((yyvsp[0].node));
@@ -6990,7 +6990,7 @@ yyreduce:
     break;
 
   case 266:
-#line 2507 "D:/Projects/Ruby\\parse.y"
+#line 2507 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_FCALL((yyvsp[0].id), 0);
@@ -7001,7 +7001,7 @@ yyreduce:
     break;
 
   case 267:
-#line 2515 "D:/Projects/Ruby\\parse.y"
+#line 2515 "parse.y"
     {
 		    /*%%%*/
 			(yyval.num) = ruby_sourceline;
@@ -7011,7 +7011,7 @@ yyreduce:
     break;
 
   case 268:
-#line 2523 "D:/Projects/Ruby\\parse.y"
+#line 2523 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-1].node) == NULL) {
@@ -7031,12 +7031,12 @@ yyreduce:
     break;
 
   case 269:
-#line 2539 "D:/Projects/Ruby\\parse.y"
+#line 2539 "parse.y"
     {lex_state = EXPR_ENDARG;;}
     break;
 
   case 270:
-#line 2540 "D:/Projects/Ruby\\parse.y"
+#line 2540 "parse.y"
     {
 			rb_warning0("(...) interpreted as grouped expression");
 		    /*%%%*/
@@ -7048,7 +7048,7 @@ yyreduce:
     break;
 
   case 271:
-#line 2549 "D:/Projects/Ruby\\parse.y"
+#line 2549 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -7059,7 +7059,7 @@ yyreduce:
     break;
 
   case 272:
-#line 2557 "D:/Projects/Ruby\\parse.y"
+#line 2557 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_COLON2((yyvsp[-2].node), (yyvsp[0].id));
@@ -7070,7 +7070,7 @@ yyreduce:
     break;
 
   case 273:
-#line 2565 "D:/Projects/Ruby\\parse.y"
+#line 2565 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_COLON3((yyvsp[0].id));
@@ -7081,7 +7081,7 @@ yyreduce:
     break;
 
   case 274:
-#line 2573 "D:/Projects/Ruby\\parse.y"
+#line 2573 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-1].node) == 0) {
@@ -7097,7 +7097,7 @@ yyreduce:
     break;
 
   case 275:
-#line 2586 "D:/Projects/Ruby\\parse.y"
+#line 2586 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_HASH((yyvsp[-1].node));
@@ -7108,7 +7108,7 @@ yyreduce:
     break;
 
   case 276:
-#line 2594 "D:/Projects/Ruby\\parse.y"
+#line 2594 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_RETURN(0);
@@ -7119,7 +7119,7 @@ yyreduce:
     break;
 
   case 277:
-#line 2602 "D:/Projects/Ruby\\parse.y"
+#line 2602 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_yield((yyvsp[-1].node));
@@ -7130,7 +7130,7 @@ yyreduce:
     break;
 
   case 278:
-#line 2610 "D:/Projects/Ruby\\parse.y"
+#line 2610 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_YIELD(0, Qfalse);
@@ -7141,7 +7141,7 @@ yyreduce:
     break;
 
   case 279:
-#line 2618 "D:/Projects/Ruby\\parse.y"
+#line 2618 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_YIELD(0, Qfalse);
@@ -7152,12 +7152,12 @@ yyreduce:
     break;
 
   case 280:
-#line 2625 "D:/Projects/Ruby\\parse.y"
+#line 2625 "parse.y"
     {in_defined = 1;;}
     break;
 
   case 281:
-#line 2626 "D:/Projects/Ruby\\parse.y"
+#line 2626 "parse.y"
     {
 		    /*%%%*/
 			in_defined = 0;
@@ -7170,7 +7170,7 @@ yyreduce:
     break;
 
   case 282:
-#line 2636 "D:/Projects/Ruby\\parse.y"
+#line 2636 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op(cond((yyvsp[-1].node)), '!');
@@ -7181,7 +7181,7 @@ yyreduce:
     break;
 
   case 283:
-#line 2644 "D:/Projects/Ruby\\parse.y"
+#line 2644 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = call_uni_op(cond(NEW_NIL()), '!');
@@ -7192,7 +7192,7 @@ yyreduce:
     break;
 
   case 284:
-#line 2652 "D:/Projects/Ruby\\parse.y"
+#line 2652 "parse.y"
     {
 		    /*%%%*/
 			(yyvsp[0].node)->nd_iter = NEW_FCALL((yyvsp[-1].id), 0);
@@ -7206,7 +7206,7 @@ yyreduce:
     break;
 
   case 286:
-#line 2664 "D:/Projects/Ruby\\parse.y"
+#line 2664 "parse.y"
     {
 		    /*%%%*/
 			block_dup_check((yyvsp[-1].node)->nd_args, (yyvsp[0].node));
@@ -7220,14 +7220,14 @@ yyreduce:
     break;
 
   case 287:
-#line 2675 "D:/Projects/Ruby\\parse.y"
+#line 2675 "parse.y"
     {
 			(yyval.node) = (yyvsp[0].node);
 		    ;}
     break;
 
   case 288:
-#line 2682 "D:/Projects/Ruby\\parse.y"
+#line 2682 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_IF(cond((yyvsp[-4].node)), (yyvsp[-2].node), (yyvsp[-1].node));
@@ -7239,7 +7239,7 @@ yyreduce:
     break;
 
   case 289:
-#line 2694 "D:/Projects/Ruby\\parse.y"
+#line 2694 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_UNLESS(cond((yyvsp[-4].node)), (yyvsp[-2].node), (yyvsp[-1].node));
@@ -7251,17 +7251,17 @@ yyreduce:
     break;
 
   case 290:
-#line 2702 "D:/Projects/Ruby\\parse.y"
+#line 2702 "parse.y"
     {COND_PUSH(1);;}
     break;
 
   case 291:
-#line 2702 "D:/Projects/Ruby\\parse.y"
+#line 2702 "parse.y"
     {COND_POP();;}
     break;
 
   case 292:
-#line 2705 "D:/Projects/Ruby\\parse.y"
+#line 2705 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_WHILE(cond((yyvsp[-4].node)), (yyvsp[-1].node), 1);
@@ -7273,17 +7273,17 @@ yyreduce:
     break;
 
   case 293:
-#line 2713 "D:/Projects/Ruby\\parse.y"
+#line 2713 "parse.y"
     {COND_PUSH(1);;}
     break;
 
   case 294:
-#line 2713 "D:/Projects/Ruby\\parse.y"
+#line 2713 "parse.y"
     {COND_POP();;}
     break;
 
   case 295:
-#line 2716 "D:/Projects/Ruby\\parse.y"
+#line 2716 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_UNTIL(cond((yyvsp[-4].node)), (yyvsp[-1].node), 1);
@@ -7295,7 +7295,7 @@ yyreduce:
     break;
 
   case 296:
-#line 2727 "D:/Projects/Ruby\\parse.y"
+#line 2727 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CASE((yyvsp[-3].node), (yyvsp[-1].node));
@@ -7307,7 +7307,7 @@ yyreduce:
     break;
 
   case 297:
-#line 2736 "D:/Projects/Ruby\\parse.y"
+#line 2736 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CASE(0, (yyvsp[-1].node));
@@ -7318,17 +7318,17 @@ yyreduce:
     break;
 
   case 298:
-#line 2744 "D:/Projects/Ruby\\parse.y"
+#line 2744 "parse.y"
     {COND_PUSH(1);;}
     break;
 
   case 299:
-#line 2746 "D:/Projects/Ruby\\parse.y"
+#line 2746 "parse.y"
     {COND_POP();;}
     break;
 
   case 300:
-#line 2749 "D:/Projects/Ruby\\parse.y"
+#line 2749 "parse.y"
     {
 		    /*%%%*/
 			/*
@@ -7392,7 +7392,7 @@ yyreduce:
     break;
 
   case 301:
-#line 2810 "D:/Projects/Ruby\\parse.y"
+#line 2810 "parse.y"
     {
 			if (in_def || in_single)
 			    yyerror("class definition in method body");
@@ -7405,7 +7405,7 @@ yyreduce:
     break;
 
   case 302:
-#line 2821 "D:/Projects/Ruby\\parse.y"
+#line 2821 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CLASS((yyvsp[-4].node), (yyvsp[-1].node), (yyvsp[-3].node));
@@ -7418,7 +7418,7 @@ yyreduce:
     break;
 
   case 303:
-#line 2831 "D:/Projects/Ruby\\parse.y"
+#line 2831 "parse.y"
     {
 		    /*%%%*/
 			(yyval.num) = in_def;
@@ -7430,7 +7430,7 @@ yyreduce:
     break;
 
   case 304:
-#line 2840 "D:/Projects/Ruby\\parse.y"
+#line 2840 "parse.y"
     {
 		    /*%%%*/
 			(yyval.num) = in_single;
@@ -7444,7 +7444,7 @@ yyreduce:
     break;
 
   case 305:
-#line 2852 "D:/Projects/Ruby\\parse.y"
+#line 2852 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_SCLASS((yyvsp[-5].node), (yyvsp[-1].node));
@@ -7461,7 +7461,7 @@ yyreduce:
     break;
 
   case 306:
-#line 2866 "D:/Projects/Ruby\\parse.y"
+#line 2866 "parse.y"
     {
 			if (in_def || in_single)
 			    yyerror("module definition in method body");
@@ -7474,7 +7474,7 @@ yyreduce:
     break;
 
   case 307:
-#line 2877 "D:/Projects/Ruby\\parse.y"
+#line 2877 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MODULE((yyvsp[-3].node), (yyvsp[-1].node));
@@ -7487,7 +7487,7 @@ yyreduce:
     break;
 
   case 308:
-#line 2887 "D:/Projects/Ruby\\parse.y"
+#line 2887 "parse.y"
     {
 			(yyval.id) = cur_mid;
 			cur_mid = (yyvsp[0].id);
@@ -7500,7 +7500,7 @@ yyreduce:
     break;
 
   case 309:
-#line 2899 "D:/Projects/Ruby\\parse.y"
+#line 2899 "parse.y"
     {
 		    /*%%%*/
 			NODE *body = remove_begin((yyvsp[-1].node));
@@ -7520,12 +7520,12 @@ yyreduce:
     break;
 
   case 310:
-#line 2915 "D:/Projects/Ruby\\parse.y"
+#line 2915 "parse.y"
     {lex_state = EXPR_FNAME;;}
     break;
 
   case 311:
-#line 2916 "D:/Projects/Ruby\\parse.y"
+#line 2916 "parse.y"
     {
 			in_single++;
 			lex_state = EXPR_END; /* force for args */
@@ -7537,7 +7537,7 @@ yyreduce:
     break;
 
   case 312:
-#line 2927 "D:/Projects/Ruby\\parse.y"
+#line 2927 "parse.y"
     {
 		    /*%%%*/
 			NODE *body = remove_begin((yyvsp[-1].node));
@@ -7555,7 +7555,7 @@ yyreduce:
     break;
 
   case 313:
-#line 2942 "D:/Projects/Ruby\\parse.y"
+#line 2942 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_BREAK(0);
@@ -7566,7 +7566,7 @@ yyreduce:
     break;
 
   case 314:
-#line 2950 "D:/Projects/Ruby\\parse.y"
+#line 2950 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_NEXT(0);
@@ -7577,7 +7577,7 @@ yyreduce:
     break;
 
   case 315:
-#line 2958 "D:/Projects/Ruby\\parse.y"
+#line 2958 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_REDO();
@@ -7588,7 +7588,7 @@ yyreduce:
     break;
 
   case 316:
-#line 2966 "D:/Projects/Ruby\\parse.y"
+#line 2966 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_RETRY();
@@ -7599,7 +7599,7 @@ yyreduce:
     break;
 
   case 317:
-#line 2976 "D:/Projects/Ruby\\parse.y"
+#line 2976 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -7612,7 +7612,7 @@ yyreduce:
     break;
 
   case 318:
-#line 2988 "D:/Projects/Ruby\\parse.y"
+#line 2988 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "begin");
@@ -7621,7 +7621,7 @@ yyreduce:
     break;
 
   case 319:
-#line 2995 "D:/Projects/Ruby\\parse.y"
+#line 2995 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "if");
@@ -7630,7 +7630,7 @@ yyreduce:
     break;
 
   case 320:
-#line 3002 "D:/Projects/Ruby\\parse.y"
+#line 3002 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "unless");
@@ -7639,7 +7639,7 @@ yyreduce:
     break;
 
   case 321:
-#line 3009 "D:/Projects/Ruby\\parse.y"
+#line 3009 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "while");
@@ -7648,7 +7648,7 @@ yyreduce:
     break;
 
   case 322:
-#line 3016 "D:/Projects/Ruby\\parse.y"
+#line 3016 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "until");
@@ -7657,7 +7657,7 @@ yyreduce:
     break;
 
   case 323:
-#line 3023 "D:/Projects/Ruby\\parse.y"
+#line 3023 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "case");
@@ -7666,7 +7666,7 @@ yyreduce:
     break;
 
   case 324:
-#line 3030 "D:/Projects/Ruby\\parse.y"
+#line 3030 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "for");
@@ -7675,7 +7675,7 @@ yyreduce:
     break;
 
   case 325:
-#line 3037 "D:/Projects/Ruby\\parse.y"
+#line 3037 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "class");
@@ -7684,7 +7684,7 @@ yyreduce:
     break;
 
   case 326:
-#line 3044 "D:/Projects/Ruby\\parse.y"
+#line 3044 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "module");
@@ -7693,7 +7693,7 @@ yyreduce:
     break;
 
   case 327:
-#line 3051 "D:/Projects/Ruby\\parse.y"
+#line 3051 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_push(parser, "def");
@@ -7702,7 +7702,7 @@ yyreduce:
     break;
 
   case 328:
-#line 3058 "D:/Projects/Ruby\\parse.y"
+#line 3058 "parse.y"
     {
 #ifndef RIPPER
 			if (RTEST(ruby_verbose)) token_info_pop(parser, "end");  /* POP */
@@ -7711,7 +7711,7 @@ yyreduce:
     break;
 
   case 335:
-#line 3089 "D:/Projects/Ruby\\parse.y"
+#line 3089 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_IF(cond((yyvsp[-3].node)), (yyvsp[-1].node), (yyvsp[0].node));
@@ -7723,7 +7723,7 @@ yyreduce:
     break;
 
   case 337:
-#line 3101 "D:/Projects/Ruby\\parse.y"
+#line 3101 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[0].node);
@@ -7734,7 +7734,7 @@ yyreduce:
     break;
 
   case 340:
-#line 3115 "D:/Projects/Ruby\\parse.y"
+#line 3115 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = assignable((yyvsp[0].id), 0);
@@ -7745,7 +7745,7 @@ yyreduce:
     break;
 
   case 341:
-#line 3123 "D:/Projects/Ruby\\parse.y"
+#line 3123 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -7756,7 +7756,7 @@ yyreduce:
     break;
 
   case 342:
-#line 3133 "D:/Projects/Ruby\\parse.y"
+#line 3133 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[0].node));
@@ -7767,7 +7767,7 @@ yyreduce:
     break;
 
   case 343:
-#line 3141 "D:/Projects/Ruby\\parse.y"
+#line 3141 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append((yyvsp[-2].node), (yyvsp[0].node));
@@ -7778,7 +7778,7 @@ yyreduce:
     break;
 
   case 344:
-#line 3151 "D:/Projects/Ruby\\parse.y"
+#line 3151 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[0].node), 0);
@@ -7789,7 +7789,7 @@ yyreduce:
     break;
 
   case 345:
-#line 3159 "D:/Projects/Ruby\\parse.y"
+#line 3159 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-3].node), assignable((yyvsp[0].id), 0));
@@ -7800,7 +7800,7 @@ yyreduce:
     break;
 
   case 346:
-#line 3167 "D:/Projects/Ruby\\parse.y"
+#line 3167 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-5].node), NEW_POSTARG(assignable((yyvsp[-2].id), 0), (yyvsp[0].node)));
@@ -7811,7 +7811,7 @@ yyreduce:
     break;
 
   case 347:
-#line 3175 "D:/Projects/Ruby\\parse.y"
+#line 3175 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-2].node), -1);
@@ -7822,7 +7822,7 @@ yyreduce:
     break;
 
   case 348:
-#line 3183 "D:/Projects/Ruby\\parse.y"
+#line 3183 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN((yyvsp[-4].node), NEW_POSTARG(-1, (yyvsp[0].node)));
@@ -7833,7 +7833,7 @@ yyreduce:
     break;
 
   case 349:
-#line 3191 "D:/Projects/Ruby\\parse.y"
+#line 3191 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, assignable((yyvsp[0].id), 0));
@@ -7844,7 +7844,7 @@ yyreduce:
     break;
 
   case 350:
-#line 3199 "D:/Projects/Ruby\\parse.y"
+#line 3199 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, NEW_POSTARG(assignable((yyvsp[-2].id), 0), (yyvsp[0].node)));
@@ -7858,7 +7858,7 @@ yyreduce:
     break;
 
   case 351:
-#line 3210 "D:/Projects/Ruby\\parse.y"
+#line 3210 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, -1);
@@ -7869,7 +7869,7 @@ yyreduce:
     break;
 
   case 352:
-#line 3218 "D:/Projects/Ruby\\parse.y"
+#line 3218 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_MASGN(0, NEW_POSTARG(-1, (yyvsp[0].node)));
@@ -7880,7 +7880,7 @@ yyreduce:
     break;
 
   case 353:
-#line 3228 "D:/Projects/Ruby\\parse.y"
+#line 3228 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), (yyvsp[-3].node), (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -7891,7 +7891,7 @@ yyreduce:
     break;
 
   case 354:
-#line 3236 "D:/Projects/Ruby\\parse.y"
+#line 3236 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-7].node), (yyvsp[-5].node), (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -7902,7 +7902,7 @@ yyreduce:
     break;
 
   case 355:
-#line 3244 "D:/Projects/Ruby\\parse.y"
+#line 3244 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-3].node), (yyvsp[-1].node), 0, 0, (yyvsp[0].id));
@@ -7913,7 +7913,7 @@ yyreduce:
     break;
 
   case 356:
-#line 3252 "D:/Projects/Ruby\\parse.y"
+#line 3252 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), (yyvsp[-3].node), 0, (yyvsp[-1].node), (yyvsp[0].id));
@@ -7924,7 +7924,7 @@ yyreduce:
     break;
 
   case 357:
-#line 3260 "D:/Projects/Ruby\\parse.y"
+#line 3260 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-3].node), 0, (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -7935,7 +7935,7 @@ yyreduce:
     break;
 
   case 358:
-#line 3268 "D:/Projects/Ruby\\parse.y"
+#line 3268 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-1].node), 0, 1, 0, 0);
@@ -7947,7 +7947,7 @@ yyreduce:
     break;
 
   case 359:
-#line 3277 "D:/Projects/Ruby\\parse.y"
+#line 3277 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), 0, (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -7958,7 +7958,7 @@ yyreduce:
     break;
 
   case 360:
-#line 3285 "D:/Projects/Ruby\\parse.y"
+#line 3285 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-1].node), 0, 0, 0, (yyvsp[0].id));
@@ -7969,7 +7969,7 @@ yyreduce:
     break;
 
   case 361:
-#line 3293 "D:/Projects/Ruby\\parse.y"
+#line 3293 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-3].node), (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -7980,7 +7980,7 @@ yyreduce:
     break;
 
   case 362:
-#line 3301 "D:/Projects/Ruby\\parse.y"
+#line 3301 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-5].node), (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -7991,7 +7991,7 @@ yyreduce:
     break;
 
   case 363:
-#line 3309 "D:/Projects/Ruby\\parse.y"
+#line 3309 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-1].node), 0, 0, (yyvsp[0].id));
@@ -8002,7 +8002,7 @@ yyreduce:
     break;
 
   case 364:
-#line 3317 "D:/Projects/Ruby\\parse.y"
+#line 3317 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-3].node), 0, (yyvsp[-1].node), (yyvsp[0].id));
@@ -8013,7 +8013,7 @@ yyreduce:
     break;
 
   case 365:
-#line 3325 "D:/Projects/Ruby\\parse.y"
+#line 3325 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -8024,7 +8024,7 @@ yyreduce:
     break;
 
   case 366:
-#line 3333 "D:/Projects/Ruby\\parse.y"
+#line 3333 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -8035,7 +8035,7 @@ yyreduce:
     break;
 
   case 367:
-#line 3341 "D:/Projects/Ruby\\parse.y"
+#line 3341 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, 0, 0, (yyvsp[0].id));
@@ -8046,14 +8046,14 @@ yyreduce:
     break;
 
   case 369:
-#line 3352 "D:/Projects/Ruby\\parse.y"
+#line 3352 "parse.y"
     {
 			command_start = Qtrue;
 		    ;}
     break;
 
   case 370:
-#line 3358 "D:/Projects/Ruby\\parse.y"
+#line 3358 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8065,7 +8065,7 @@ yyreduce:
     break;
 
   case 371:
-#line 3367 "D:/Projects/Ruby\\parse.y"
+#line 3367 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8077,7 +8077,7 @@ yyreduce:
     break;
 
   case 372:
-#line 3376 "D:/Projects/Ruby\\parse.y"
+#line 3376 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-2].node);
@@ -8088,7 +8088,7 @@ yyreduce:
     break;
 
   case 374:
-#line 3388 "D:/Projects/Ruby\\parse.y"
+#line 3388 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8099,7 +8099,7 @@ yyreduce:
     break;
 
   case 377:
-#line 3414 "D:/Projects/Ruby\\parse.y"
+#line 3414 "parse.y"
     {
 		    /*%%%*/
 			new_bv((yyvsp[0].id));
@@ -8110,14 +8110,14 @@ yyreduce:
     break;
 
   case 378:
-#line 3422 "D:/Projects/Ruby\\parse.y"
+#line 3422 "parse.y"
     {
 			(yyval.node) = 0;
 		    ;}
     break;
 
   case 379:
-#line 3427 "D:/Projects/Ruby\\parse.y"
+#line 3427 "parse.y"
     {
 		    /*%%%*/
 			dyna_push();
@@ -8129,7 +8129,7 @@ yyreduce:
     break;
 
   case 380:
-#line 3437 "D:/Projects/Ruby\\parse.y"
+#line 3437 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -8143,7 +8143,7 @@ yyreduce:
     break;
 
   case 381:
-#line 3450 "D:/Projects/Ruby\\parse.y"
+#line 3450 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LAMBDA((yyvsp[-2].node));
@@ -8154,7 +8154,7 @@ yyreduce:
     break;
 
   case 382:
-#line 3458 "D:/Projects/Ruby\\parse.y"
+#line 3458 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LAMBDA((yyvsp[-1].node));
@@ -8165,21 +8165,21 @@ yyreduce:
     break;
 
   case 383:
-#line 3468 "D:/Projects/Ruby\\parse.y"
+#line 3468 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 384:
-#line 3472 "D:/Projects/Ruby\\parse.y"
+#line 3472 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 385:
-#line 3478 "D:/Projects/Ruby\\parse.y"
+#line 3478 "parse.y"
     {
 		    /*%%%*/
 			dyna_push();
@@ -8189,7 +8189,7 @@ yyreduce:
     break;
 
   case 386:
-#line 3487 "D:/Projects/Ruby\\parse.y"
+#line 3487 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ITER((yyvsp[-2].node),(yyvsp[-1].node));
@@ -8202,7 +8202,7 @@ yyreduce:
     break;
 
   case 387:
-#line 3499 "D:/Projects/Ruby\\parse.y"
+#line 3499 "parse.y"
     {
 		    /*%%%*/
 			block_dup_check((yyvsp[-1].node)->nd_args, (yyvsp[0].node));
@@ -8216,7 +8216,7 @@ yyreduce:
     break;
 
   case 388:
-#line 3510 "D:/Projects/Ruby\\parse.y"
+#line 3510 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -8228,7 +8228,7 @@ yyreduce:
     break;
 
   case 389:
-#line 3519 "D:/Projects/Ruby\\parse.y"
+#line 3519 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -8240,7 +8240,7 @@ yyreduce:
     break;
 
   case 390:
-#line 3530 "D:/Projects/Ruby\\parse.y"
+#line 3530 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_FCALL((yyvsp[-1].id), (yyvsp[0].node));
@@ -8252,7 +8252,7 @@ yyreduce:
     break;
 
   case 391:
-#line 3539 "D:/Projects/Ruby\\parse.y"
+#line 3539 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -8265,7 +8265,7 @@ yyreduce:
     break;
 
   case 392:
-#line 3549 "D:/Projects/Ruby\\parse.y"
+#line 3549 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-3].node), (yyvsp[-1].id), (yyvsp[0].node));
@@ -8278,7 +8278,7 @@ yyreduce:
     break;
 
   case 393:
-#line 3559 "D:/Projects/Ruby\\parse.y"
+#line 3559 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-2].node), (yyvsp[0].id), 0);
@@ -8289,7 +8289,7 @@ yyreduce:
     break;
 
   case 394:
-#line 3567 "D:/Projects/Ruby\\parse.y"
+#line 3567 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-2].node), rb_intern("call"), (yyvsp[0].node));
@@ -8303,7 +8303,7 @@ yyreduce:
     break;
 
   case 395:
-#line 3578 "D:/Projects/Ruby\\parse.y"
+#line 3578 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CALL((yyvsp[-2].node), rb_intern("call"), (yyvsp[0].node));
@@ -8317,7 +8317,7 @@ yyreduce:
     break;
 
   case 396:
-#line 3589 "D:/Projects/Ruby\\parse.y"
+#line 3589 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_SUPER((yyvsp[0].node));
@@ -8328,7 +8328,7 @@ yyreduce:
     break;
 
   case 397:
-#line 3597 "D:/Projects/Ruby\\parse.y"
+#line 3597 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ZSUPER();
@@ -8339,7 +8339,7 @@ yyreduce:
     break;
 
   case 398:
-#line 3605 "D:/Projects/Ruby\\parse.y"
+#line 3605 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-3].node) && nd_type((yyvsp[-3].node)) == NODE_SELF)
@@ -8354,7 +8354,7 @@ yyreduce:
     break;
 
   case 399:
-#line 3619 "D:/Projects/Ruby\\parse.y"
+#line 3619 "parse.y"
     {
 		    /*%%%*/
 			dyna_push();
@@ -8365,7 +8365,7 @@ yyreduce:
     break;
 
   case 400:
-#line 3628 "D:/Projects/Ruby\\parse.y"
+#line 3628 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ITER((yyvsp[-2].node),(yyvsp[-1].node));
@@ -8380,7 +8380,7 @@ yyreduce:
     break;
 
   case 401:
-#line 3640 "D:/Projects/Ruby\\parse.y"
+#line 3640 "parse.y"
     {
 		    /*%%%*/
 			dyna_push();
@@ -8391,7 +8391,7 @@ yyreduce:
     break;
 
   case 402:
-#line 3649 "D:/Projects/Ruby\\parse.y"
+#line 3649 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ITER((yyvsp[-2].node),(yyvsp[-1].node));
@@ -8404,7 +8404,7 @@ yyreduce:
     break;
 
   case 403:
-#line 3663 "D:/Projects/Ruby\\parse.y"
+#line 3663 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_WHEN((yyvsp[-3].node), (yyvsp[-1].node), (yyvsp[0].node));
@@ -8415,7 +8415,7 @@ yyreduce:
     break;
 
   case 406:
-#line 3679 "D:/Projects/Ruby\\parse.y"
+#line 3679 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-3].node)) {
@@ -8435,7 +8435,7 @@ yyreduce:
     break;
 
   case 408:
-#line 3699 "D:/Projects/Ruby\\parse.y"
+#line 3699 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIST((yyvsp[0].node));
@@ -8446,7 +8446,7 @@ yyreduce:
     break;
 
   case 409:
-#line 3707 "D:/Projects/Ruby\\parse.y"
+#line 3707 "parse.y"
     {
 		    /*%%%*/
 			if (!((yyval.node) = splat_array((yyvsp[0].node)))) (yyval.node) = (yyvsp[0].node);
@@ -8457,14 +8457,14 @@ yyreduce:
     break;
 
   case 411:
-#line 3718 "D:/Projects/Ruby\\parse.y"
+#line 3718 "parse.y"
     {
 			(yyval.node) = (yyvsp[0].node);
 		    ;}
     break;
 
   case 413:
-#line 3725 "D:/Projects/Ruby\\parse.y"
+#line 3725 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[0].node);
@@ -8475,7 +8475,7 @@ yyreduce:
     break;
 
   case 416:
-#line 3737 "D:/Projects/Ruby\\parse.y"
+#line 3737 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_LIT(ID2SYM((yyvsp[0].id)));
@@ -8486,7 +8486,7 @@ yyreduce:
     break;
 
   case 418:
-#line 3748 "D:/Projects/Ruby\\parse.y"
+#line 3748 "parse.y"
     {
 		    /*%%%*/
 			NODE *node = (yyvsp[0].node);
@@ -8504,7 +8504,7 @@ yyreduce:
     break;
 
   case 421:
-#line 3767 "D:/Projects/Ruby\\parse.y"
+#line 3767 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = literal_concat((yyvsp[-1].node), (yyvsp[0].node));
@@ -8515,7 +8515,7 @@ yyreduce:
     break;
 
   case 422:
-#line 3777 "D:/Projects/Ruby\\parse.y"
+#line 3777 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -8526,7 +8526,7 @@ yyreduce:
     break;
 
   case 423:
-#line 3787 "D:/Projects/Ruby\\parse.y"
+#line 3787 "parse.y"
     {
 		    /*%%%*/
 			NODE *node = (yyvsp[-1].node);
@@ -8554,7 +8554,7 @@ yyreduce:
     break;
 
   case 424:
-#line 3814 "D:/Projects/Ruby\\parse.y"
+#line 3814 "parse.y"
     {
 		    /*%%%*/
 			int options = (yyvsp[0].num);
@@ -8597,7 +8597,7 @@ yyreduce:
     break;
 
   case 425:
-#line 3856 "D:/Projects/Ruby\\parse.y"
+#line 3856 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ZARRAY();
@@ -8608,14 +8608,14 @@ yyreduce:
     break;
 
   case 426:
-#line 3864 "D:/Projects/Ruby\\parse.y"
+#line 3864 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 427:
-#line 3870 "D:/Projects/Ruby\\parse.y"
+#line 3870 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8626,7 +8626,7 @@ yyreduce:
     break;
 
   case 428:
-#line 3878 "D:/Projects/Ruby\\parse.y"
+#line 3878 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append((yyvsp[-2].node), evstr2dstr((yyvsp[-1].node)));
@@ -8637,7 +8637,7 @@ yyreduce:
     break;
 
   case 430:
-#line 3896 "D:/Projects/Ruby\\parse.y"
+#line 3896 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = literal_concat((yyvsp[-1].node), (yyvsp[0].node));
@@ -8648,7 +8648,7 @@ yyreduce:
     break;
 
   case 431:
-#line 3906 "D:/Projects/Ruby\\parse.y"
+#line 3906 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_ZARRAY();
@@ -8659,14 +8659,14 @@ yyreduce:
     break;
 
   case 432:
-#line 3914 "D:/Projects/Ruby\\parse.y"
+#line 3914 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 433:
-#line 3920 "D:/Projects/Ruby\\parse.y"
+#line 3920 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8677,7 +8677,7 @@ yyreduce:
     break;
 
   case 434:
-#line 3928 "D:/Projects/Ruby\\parse.y"
+#line 3928 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append((yyvsp[-2].node), (yyvsp[-1].node));
@@ -8688,7 +8688,7 @@ yyreduce:
     break;
 
   case 435:
-#line 3938 "D:/Projects/Ruby\\parse.y"
+#line 3938 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8699,7 +8699,7 @@ yyreduce:
     break;
 
   case 436:
-#line 3946 "D:/Projects/Ruby\\parse.y"
+#line 3946 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = literal_concat((yyvsp[-1].node), (yyvsp[0].node));
@@ -8710,7 +8710,7 @@ yyreduce:
     break;
 
   case 437:
-#line 3956 "D:/Projects/Ruby\\parse.y"
+#line 3956 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8721,7 +8721,7 @@ yyreduce:
     break;
 
   case 438:
-#line 3964 "D:/Projects/Ruby\\parse.y"
+#line 3964 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = literal_concat((yyvsp[-1].node), (yyvsp[0].node));
@@ -8732,7 +8732,7 @@ yyreduce:
     break;
 
   case 440:
-#line 3975 "D:/Projects/Ruby\\parse.y"
+#line 3975 "parse.y"
     {
 			(yyval.node) = lex_strterm;
 			lex_strterm = 0;
@@ -8741,7 +8741,7 @@ yyreduce:
     break;
 
   case 441:
-#line 3981 "D:/Projects/Ruby\\parse.y"
+#line 3981 "parse.y"
     {
 		    /*%%%*/
 			lex_strterm = (yyvsp[-1].node);
@@ -8754,7 +8754,7 @@ yyreduce:
     break;
 
   case 442:
-#line 3991 "D:/Projects/Ruby\\parse.y"
+#line 3991 "parse.y"
     {
 			(yyval.node) = lex_strterm;
 			lex_strterm = 0;
@@ -8765,7 +8765,7 @@ yyreduce:
     break;
 
   case 443:
-#line 3999 "D:/Projects/Ruby\\parse.y"
+#line 3999 "parse.y"
     {
 			lex_strterm = (yyvsp[-2].node);
 			COND_LEXPOP();
@@ -8780,7 +8780,7 @@ yyreduce:
     break;
 
   case 444:
-#line 4013 "D:/Projects/Ruby\\parse.y"
+#line 4013 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_GVAR((yyvsp[0].id));
@@ -8791,7 +8791,7 @@ yyreduce:
     break;
 
   case 445:
-#line 4021 "D:/Projects/Ruby\\parse.y"
+#line 4021 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_IVAR((yyvsp[0].id));
@@ -8802,7 +8802,7 @@ yyreduce:
     break;
 
   case 446:
-#line 4029 "D:/Projects/Ruby\\parse.y"
+#line 4029 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = NEW_CVAR((yyvsp[0].id));
@@ -8813,7 +8813,7 @@ yyreduce:
     break;
 
   case 448:
-#line 4040 "D:/Projects/Ruby\\parse.y"
+#line 4040 "parse.y"
     {
 		    /*%%%*/
 			lex_state = EXPR_END;
@@ -8826,7 +8826,7 @@ yyreduce:
     break;
 
   case 453:
-#line 4058 "D:/Projects/Ruby\\parse.y"
+#line 4058 "parse.y"
     {
 		    /*%%%*/
 			lex_state = EXPR_END;
@@ -8858,7 +8858,7 @@ yyreduce:
     break;
 
   case 456:
-#line 4091 "D:/Projects/Ruby\\parse.y"
+#line 4091 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = negate_lit((yyvsp[0].node));
@@ -8869,7 +8869,7 @@ yyreduce:
     break;
 
   case 457:
-#line 4099 "D:/Projects/Ruby\\parse.y"
+#line 4099 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = negate_lit((yyvsp[0].node));
@@ -8880,42 +8880,42 @@ yyreduce:
     break;
 
   case 463:
-#line 4113 "D:/Projects/Ruby\\parse.y"
+#line 4113 "parse.y"
     {ifndef_ripper((yyval.id) = keyword_nil);;}
     break;
 
   case 464:
-#line 4114 "D:/Projects/Ruby\\parse.y"
+#line 4114 "parse.y"
     {ifndef_ripper((yyval.id) = keyword_self);;}
     break;
 
   case 465:
-#line 4115 "D:/Projects/Ruby\\parse.y"
+#line 4115 "parse.y"
     {ifndef_ripper((yyval.id) = keyword_true);;}
     break;
 
   case 466:
-#line 4116 "D:/Projects/Ruby\\parse.y"
+#line 4116 "parse.y"
     {ifndef_ripper((yyval.id) = keyword_false);;}
     break;
 
   case 467:
-#line 4117 "D:/Projects/Ruby\\parse.y"
+#line 4117 "parse.y"
     {ifndef_ripper((yyval.id) = keyword__FILE__);;}
     break;
 
   case 468:
-#line 4118 "D:/Projects/Ruby\\parse.y"
+#line 4118 "parse.y"
     {ifndef_ripper((yyval.id) = keyword__LINE__);;}
     break;
 
   case 469:
-#line 4119 "D:/Projects/Ruby\\parse.y"
+#line 4119 "parse.y"
     {ifndef_ripper((yyval.id) = keyword__ENCODING__);;}
     break;
 
   case 470:
-#line 4123 "D:/Projects/Ruby\\parse.y"
+#line 4123 "parse.y"
     {
 		    /*%%%*/
 			if (!((yyval.node) = gettable((yyvsp[0].id)))) (yyval.node) = NEW_BEGIN(0);
@@ -8926,7 +8926,7 @@ yyreduce:
     break;
 
   case 471:
-#line 4133 "D:/Projects/Ruby\\parse.y"
+#line 4133 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = assignable((yyvsp[0].id), 0);
@@ -8937,7 +8937,7 @@ yyreduce:
     break;
 
   case 474:
-#line 4147 "D:/Projects/Ruby\\parse.y"
+#line 4147 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -8948,21 +8948,21 @@ yyreduce:
     break;
 
   case 475:
-#line 4155 "D:/Projects/Ruby\\parse.y"
+#line 4155 "parse.y"
     {
 			lex_state = EXPR_BEG;
 		    ;}
     break;
 
   case 476:
-#line 4159 "D:/Projects/Ruby\\parse.y"
+#line 4159 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 477:
-#line 4163 "D:/Projects/Ruby\\parse.y"
+#line 4163 "parse.y"
     {
 		    /*%%%*/
 			yyerrok;
@@ -8975,7 +8975,7 @@ yyreduce:
     break;
 
   case 478:
-#line 4175 "D:/Projects/Ruby\\parse.y"
+#line 4175 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -8990,14 +8990,14 @@ yyreduce:
     break;
 
   case 479:
-#line 4187 "D:/Projects/Ruby\\parse.y"
+#line 4187 "parse.y"
     {
 			(yyval.node) = (yyvsp[-1].node);
 		    ;}
     break;
 
   case 480:
-#line 4193 "D:/Projects/Ruby\\parse.y"
+#line 4193 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), (yyvsp[-3].node), (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -9008,7 +9008,7 @@ yyreduce:
     break;
 
   case 481:
-#line 4201 "D:/Projects/Ruby\\parse.y"
+#line 4201 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-7].node), (yyvsp[-5].node), (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -9019,7 +9019,7 @@ yyreduce:
     break;
 
   case 482:
-#line 4209 "D:/Projects/Ruby\\parse.y"
+#line 4209 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-3].node), (yyvsp[-1].node), 0, 0, (yyvsp[0].id));
@@ -9030,7 +9030,7 @@ yyreduce:
     break;
 
   case 483:
-#line 4217 "D:/Projects/Ruby\\parse.y"
+#line 4217 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), (yyvsp[-3].node), 0, (yyvsp[-1].node), (yyvsp[0].id));
@@ -9041,7 +9041,7 @@ yyreduce:
     break;
 
   case 484:
-#line 4225 "D:/Projects/Ruby\\parse.y"
+#line 4225 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-3].node), 0, (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -9052,7 +9052,7 @@ yyreduce:
     break;
 
   case 485:
-#line 4233 "D:/Projects/Ruby\\parse.y"
+#line 4233 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-5].node), 0, (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -9063,7 +9063,7 @@ yyreduce:
     break;
 
   case 486:
-#line 4241 "D:/Projects/Ruby\\parse.y"
+#line 4241 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args((yyvsp[-1].node), 0, 0, 0, (yyvsp[0].id));
@@ -9074,7 +9074,7 @@ yyreduce:
     break;
 
   case 487:
-#line 4249 "D:/Projects/Ruby\\parse.y"
+#line 4249 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-3].node), (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -9085,7 +9085,7 @@ yyreduce:
     break;
 
   case 488:
-#line 4257 "D:/Projects/Ruby\\parse.y"
+#line 4257 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-5].node), (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -9096,7 +9096,7 @@ yyreduce:
     break;
 
   case 489:
-#line 4265 "D:/Projects/Ruby\\parse.y"
+#line 4265 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-1].node), 0, 0, (yyvsp[0].id));
@@ -9107,7 +9107,7 @@ yyreduce:
     break;
 
   case 490:
-#line 4273 "D:/Projects/Ruby\\parse.y"
+#line 4273 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, (yyvsp[-3].node), 0, (yyvsp[-1].node), (yyvsp[0].id));
@@ -9118,7 +9118,7 @@ yyreduce:
     break;
 
   case 491:
-#line 4281 "D:/Projects/Ruby\\parse.y"
+#line 4281 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, (yyvsp[-1].id), 0, (yyvsp[0].id));
@@ -9129,7 +9129,7 @@ yyreduce:
     break;
 
   case 492:
-#line 4289 "D:/Projects/Ruby\\parse.y"
+#line 4289 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, (yyvsp[-3].id), (yyvsp[-1].node), (yyvsp[0].id));
@@ -9140,7 +9140,7 @@ yyreduce:
     break;
 
   case 493:
-#line 4297 "D:/Projects/Ruby\\parse.y"
+#line 4297 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, 0, 0, (yyvsp[0].id));
@@ -9151,7 +9151,7 @@ yyreduce:
     break;
 
   case 494:
-#line 4305 "D:/Projects/Ruby\\parse.y"
+#line 4305 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = new_args(0, 0, 0, 0, 0);
@@ -9162,7 +9162,7 @@ yyreduce:
     break;
 
   case 495:
-#line 4315 "D:/Projects/Ruby\\parse.y"
+#line 4315 "parse.y"
     {
 		    /*%%%*/
 			yyerror("formal argument cannot be a constant");
@@ -9174,7 +9174,7 @@ yyreduce:
     break;
 
   case 496:
-#line 4324 "D:/Projects/Ruby\\parse.y"
+#line 4324 "parse.y"
     {
 		    /*%%%*/
 			yyerror("formal argument cannot be an instance variable");
@@ -9186,7 +9186,7 @@ yyreduce:
     break;
 
   case 497:
-#line 4333 "D:/Projects/Ruby\\parse.y"
+#line 4333 "parse.y"
     {
 		    /*%%%*/
 			yyerror("formal argument cannot be a global variable");
@@ -9198,7 +9198,7 @@ yyreduce:
     break;
 
   case 498:
-#line 4342 "D:/Projects/Ruby\\parse.y"
+#line 4342 "parse.y"
     {
 		    /*%%%*/
 			yyerror("formal argument cannot be a class variable");
@@ -9210,7 +9210,7 @@ yyreduce:
     break;
 
   case 500:
-#line 4354 "D:/Projects/Ruby\\parse.y"
+#line 4354 "parse.y"
     {
 		    /*%%%*/
 			if (!is_local_id((yyvsp[0].id)))
@@ -9223,7 +9223,7 @@ yyreduce:
     break;
 
   case 501:
-#line 4366 "D:/Projects/Ruby\\parse.y"
+#line 4366 "parse.y"
     {
 		    /*%%%*/
 			arg_var((yyvsp[0].id));
@@ -9234,7 +9234,7 @@ yyreduce:
     break;
 
   case 502:
-#line 4374 "D:/Projects/Ruby\\parse.y"
+#line 4374 "parse.y"
     {
 		    /*%%%*/
 			ID tid = internal_id();
@@ -9254,7 +9254,7 @@ yyreduce:
     break;
 
   case 504:
-#line 4400 "D:/Projects/Ruby\\parse.y"
+#line 4400 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-2].node);
@@ -9268,7 +9268,7 @@ yyreduce:
     break;
 
   case 505:
-#line 4413 "D:/Projects/Ruby\\parse.y"
+#line 4413 "parse.y"
     {
 		    /*%%%*/
 			if (!is_local_id((yyvsp[-2].id)))
@@ -9283,7 +9283,7 @@ yyreduce:
     break;
 
   case 506:
-#line 4427 "D:/Projects/Ruby\\parse.y"
+#line 4427 "parse.y"
     {
 		    /*%%%*/
 			if (!is_local_id((yyvsp[-2].id)))
@@ -9298,7 +9298,7 @@ yyreduce:
     break;
 
   case 507:
-#line 4441 "D:/Projects/Ruby\\parse.y"
+#line 4441 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[0].node);
@@ -9309,7 +9309,7 @@ yyreduce:
     break;
 
   case 508:
-#line 4449 "D:/Projects/Ruby\\parse.y"
+#line 4449 "parse.y"
     {
 		    /*%%%*/
 			NODE *opts = (yyvsp[-2].node);
@@ -9326,7 +9326,7 @@ yyreduce:
     break;
 
   case 509:
-#line 4465 "D:/Projects/Ruby\\parse.y"
+#line 4465 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[0].node);
@@ -9337,7 +9337,7 @@ yyreduce:
     break;
 
   case 510:
-#line 4473 "D:/Projects/Ruby\\parse.y"
+#line 4473 "parse.y"
     {
 		    /*%%%*/
 			NODE *opts = (yyvsp[-2].node);
@@ -9354,7 +9354,7 @@ yyreduce:
     break;
 
   case 513:
-#line 4493 "D:/Projects/Ruby\\parse.y"
+#line 4493 "parse.y"
     {
 		    /*%%%*/
 			if (!is_local_id((yyvsp[0].id)))
@@ -9369,7 +9369,7 @@ yyreduce:
     break;
 
   case 514:
-#line 4505 "D:/Projects/Ruby\\parse.y"
+#line 4505 "parse.y"
     {
 		    /*%%%*/
 			(yyval.id) = internal_id();
@@ -9381,7 +9381,7 @@ yyreduce:
     break;
 
   case 517:
-#line 4520 "D:/Projects/Ruby\\parse.y"
+#line 4520 "parse.y"
     {
 		    /*%%%*/
 			if (!is_local_id((yyvsp[0].id)))
@@ -9398,14 +9398,14 @@ yyreduce:
     break;
 
   case 518:
-#line 4536 "D:/Projects/Ruby\\parse.y"
+#line 4536 "parse.y"
     {
 			(yyval.id) = (yyvsp[0].id);
 		    ;}
     break;
 
   case 519:
-#line 4540 "D:/Projects/Ruby\\parse.y"
+#line 4540 "parse.y"
     {
 		    /*%%%*/
 			(yyval.id) = 0;
@@ -9416,7 +9416,7 @@ yyreduce:
     break;
 
   case 520:
-#line 4550 "D:/Projects/Ruby\\parse.y"
+#line 4550 "parse.y"
     {
 		    /*%%%*/
 			value_expr((yyvsp[0].node));
@@ -9429,12 +9429,12 @@ yyreduce:
     break;
 
   case 521:
-#line 4559 "D:/Projects/Ruby\\parse.y"
+#line 4559 "parse.y"
     {lex_state = EXPR_BEG;;}
     break;
 
   case 522:
-#line 4560 "D:/Projects/Ruby\\parse.y"
+#line 4560 "parse.y"
     {
 		    /*%%%*/
 			if ((yyvsp[-1].node) == 0) {
@@ -9464,7 +9464,7 @@ yyreduce:
     break;
 
   case 524:
-#line 4590 "D:/Projects/Ruby\\parse.y"
+#line 4590 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = (yyvsp[-1].node);
@@ -9475,7 +9475,7 @@ yyreduce:
     break;
 
   case 526:
-#line 4607 "D:/Projects/Ruby\\parse.y"
+#line 4607 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_concat((yyvsp[-2].node), (yyvsp[0].node));
@@ -9486,7 +9486,7 @@ yyreduce:
     break;
 
   case 527:
-#line 4617 "D:/Projects/Ruby\\parse.y"
+#line 4617 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append(NEW_LIST((yyvsp[-2].node)), (yyvsp[0].node));
@@ -9497,7 +9497,7 @@ yyreduce:
     break;
 
   case 528:
-#line 4625 "D:/Projects/Ruby\\parse.y"
+#line 4625 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = list_append(NEW_LIST(NEW_LIT(ID2SYM((yyvsp[-1].id)))), (yyvsp[0].node));
@@ -9508,17 +9508,17 @@ yyreduce:
     break;
 
   case 550:
-#line 4681 "D:/Projects/Ruby\\parse.y"
+#line 4681 "parse.y"
     {yyerrok;;}
     break;
 
   case 553:
-#line 4686 "D:/Projects/Ruby\\parse.y"
+#line 4686 "parse.y"
     {yyerrok;;}
     break;
 
   case 554:
-#line 4690 "D:/Projects/Ruby\\parse.y"
+#line 4690 "parse.y"
     {
 		    /*%%%*/
 			(yyval.node) = 0;
@@ -9801,7 +9801,7 @@ yyreturn:
 }
 
 
-#line 4698 "D:/Projects/Ruby\\parse.y"
+#line 4698 "parse.y"
 
 # undef parser
 # undef yylex

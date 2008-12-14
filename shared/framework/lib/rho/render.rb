@@ -1,12 +1,19 @@
-require 'erb'
+#require 'erb'
 	
 module Rho
   class RhoController
-	def self.renderfile(filename)
-		ERB.new(IO.read(filename)).result(binding)
-	end
+    
+    def self.renderfile(filename)
+      if File.extname(filename) == '.iseq'
+	      eval_compiled_file(filename, binding)
+	    else
+        IO.read(filename)		    
+	    end
+	  end
+  	
     def render(view)
-		ERB.new(IO.read(@request[:modelpath]+view.to_s+'.erb')).result(binding)
-    end
+		  eval_compiled_file(@request[:modelpath]+view.to_s+'_erb'+'.iseq', binding )
+    end    
+    
   end # RhoController
 end # Rho

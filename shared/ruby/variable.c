@@ -470,7 +470,7 @@ rb_define_hooked_variable(
 {
     struct global_variable *gvar;
     ID id;
-    VALUE tmp;
+    VALUE tmp = 0;
     
     if (var)
         tmp = *var;

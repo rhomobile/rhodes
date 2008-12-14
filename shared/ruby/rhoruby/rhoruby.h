@@ -17,7 +17,7 @@ extern "C" {
 typedef unsigned long VALUE;
 #endif
 	
-void RhoRubyStart(const char* szAppPath);
+void RhoRubyStart();
 
 VALUE createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
@@ -29,6 +29,8 @@ char* callFramework(VALUE hashReq);
 char* callServeIndex(char* index_name);
 	
 void RhoRubyStop();
+
+const char* RhoGetRootPath();
 
 #if defined(__cplusplus)
 }
