@@ -15,3 +15,9 @@ class SyncEngine
   def self.unlock_sync_mutex
   end
 end
+require 'rho'
+class << Rho::RhoFSConnector
+  def __rhoGetCurrentDir
+    "../../../apps/"
+  end
+end
