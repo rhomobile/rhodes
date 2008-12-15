@@ -9,6 +9,10 @@ win32/bin/*
 wm/target/*
 bb/.metadata/*
 
+symbian/.metadata/*
+symbian/bin/*
+symbian/target/*
+
 *.jar
 *.cod
 *.debug
