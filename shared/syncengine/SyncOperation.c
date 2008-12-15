@@ -104,71 +104,64 @@ void set_sync_post_body(pSyncOperation op) {
 int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *type) {
 	pSyncOperation current_op;
 	int i,count = 0;
-	if (op_list_select_statement == NULL) {
-		const char *sql;
-		sql = "SELECT attrib, source_id, object, value, update_type \
-			   FROM object_values where source_id=? and update_type =?";
-		if (sqlite3_prepare_v2(database, sql, -1, &op_list_select_statement, NULL) != SQLITE_OK) {
-			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
-		}
-		sqlite3_bind_int(op_list_select_statement, 1, source->_source_id);
-		sqlite3_bind_text(op_list_select_statement, 2, type, -1, SQLITE_TRANSIENT);
-		/* Step through each row and create the sync operation value */
-		while(sqlite3_step(op_list_select_statement) == SQLITE_ROW) {
-			char *tmp_operation,*tmp_attrib,*tmp_object,*tmp_value;
-			int tmp_source_id;
-			pSyncObject tmp_sync_object;
+	prepare_db_statement("SELECT attrib, source_id, object, value, update_type \
+						 FROM object_values where source_id=? and update_type =?",
+						 database,
+						 &op_list_select_statement);
+	sqlite3_bind_int(op_list_select_statement, 1, source->_source_id);
+	sqlite3_bind_text(op_list_select_statement, 2, type, -1, SQLITE_TRANSIENT);
+	/* Step through each row and create the sync operation value */
+	while(sqlite3_step(op_list_select_statement) == SQLITE_ROW) {
+		char *tmp_operation,*tmp_attrib,*tmp_object,*tmp_value;
+		int tmp_source_id;
+		pSyncObject tmp_sync_object;
 
-			if (count >= max_count) { break; }
-			if (strcmp(type, "create") == 0){
-				tmp_operation = UPDATE_TYPE_CREATE;
-			} else if (strcmp(type, "update") == 0) {
-				tmp_operation = UPDATE_TYPE_UPDATE;
-			} else if (strcmp(type, "delete") == 0) {
-				tmp_operation = UPDATE_TYPE_DELETE;
-			}
-			tmp_attrib = (char *)sqlite3_column_text(op_list_select_statement, 0);
-			tmp_source_id = (int)sqlite3_column_int(op_list_select_statement, 1);
-			tmp_object = (char *)sqlite3_column_text(op_list_select_statement, 2);
-			tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
-			tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
-																	  tmp_source_id, tmp_object, 
-																	  tmp_value, type, 0, 0);
-			
-			current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, source->_source_url, tmp_operation);
-			list[count] = current_op;
-			count++;
-		} 
-		for (i = 0; i < count; i++) {
-			printf("Adding sync operation (attrib, source_id, object, value, update_type, uri): %s, %i, %s, %s, %s, %s\n", 
-				   list[i]->_sync_object->_attrib, 
-				   list[i]->_sync_object->_source_id, 
-				   list[i]->_sync_object->_object, 
-				   list[i]->_sync_object->_value,
-				   list[i]->_sync_object->_update_type,
-				   list[i]->_uri);
+		if (count >= max_count) { break; }
+		if (strcmp(type, "create") == 0){
+			tmp_operation = UPDATE_TYPE_CREATE;
+		} else if (strcmp(type, "update") == 0) {
+			tmp_operation = UPDATE_TYPE_UPDATE;
+		} else if (strcmp(type, "delete") == 0) {
+			tmp_operation = UPDATE_TYPE_DELETE;
 		}
-		sqlite3_reset(op_list_select_statement);
-		sqlite3_finalize(op_list_select_statement);
-		op_list_select_statement = NULL;
+		tmp_attrib = (char *)sqlite3_column_text(op_list_select_statement, 0);
+		tmp_source_id = (int)sqlite3_column_int(op_list_select_statement, 1);
+		tmp_object = (char *)sqlite3_column_text(op_list_select_statement, 2);
+		tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
+		tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
+																  tmp_source_id, tmp_object, 
+																  tmp_value, type, 0, 0);
+		
+		current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, source->_source_url, tmp_operation);
+		list[count] = current_op;
+		count++;
+	} 
+	for (i = 0; i < count; i++) {
+		printf("Adding sync operation (attrib, source_id, object, value, update_type, uri): %s, %i, %s, %s, %s, %s\n", 
+			   list[i]->_sync_object->_attrib, 
+			   list[i]->_sync_object->_source_id, 
+			   list[i]->_sync_object->_object, 
+			   list[i]->_sync_object->_value,
+			   list[i]->_sync_object->_update_type,
+			   list[i]->_uri);
 	}
+	sqlite3_reset(op_list_select_statement);
+	sqlite3_finalize(op_list_select_statement);
+	op_list_select_statement = NULL;
 	return count;
 }
 
 /* remove the operations from the database after processing */
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type) {
-	if (op_list_delete_statment == NULL) {
-        const char *sql = "DELETE FROM object_values WHERE update_type=? and source_id=?";
-        if (sqlite3_prepare_v2(database, sql, -1, &op_list_delete_statment, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
-        }
-		sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
-		sqlite3_step(op_list_delete_statment);
-		sqlite3_reset(op_list_delete_statment);
-		sqlite3_finalize(op_list_delete_statment);
-		op_list_delete_statment = NULL;
-    }
+	prepare_db_statement("DELETE FROM object_values WHERE update_type=? and source_id=?",
+						 database,
+						 &op_list_delete_statment);
+	sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
+	sqlite3_step(op_list_delete_statment);
+	sqlite3_reset(op_list_delete_statment);
+	sqlite3_finalize(op_list_delete_statment);
+	op_list_delete_statment = NULL;
 }
 
 void free_op_list(pSyncOperation *list, int available) {

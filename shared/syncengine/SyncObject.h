@@ -63,18 +63,12 @@ pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key,
 									   char *value, char *update_type, int hydrated, int dirty) ;
 /* Copy an existing object */
 pSyncObject SyncObjectCopy(pSyncObject new_object);
-	
-/* Cleanup (delete) all of the placeholder objects. */
-void cleanup_placeholders(sqlite3* db);
 /* Check if object exists in database already */
 int exists_in_database(pSyncObject ref);
-/* Fetch the current list of query objects from the database */
-int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list);
 /* Initialize the row with a placeholder object (to be used by dehydrate later) */
 int insert_into_database(pSyncObject ref);
 /* Remove the object list from the database */
 int delete_from_database_by_source(sqlite3 *db, int source);
-
 /* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
 pSyncObject hydrate(pSyncObject ref);
 /* Flushes all but the primary key and title out to the database. */
