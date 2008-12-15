@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
+#include "Utils.h"
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
@@ -74,7 +75,7 @@ int fetch_remote_changes(sqlite3 *database) {
  */
 int push_remote_changes(pSyncOperation *list, int size) {
 	char *data;
-	int i, success;
+	int i, success = 0;
 	size_t data_size = 0;
 	
 	if (size == 0) return SYNC_PUSH_CHANGES_OK;
@@ -106,38 +107,33 @@ int push_remote_changes(pSyncOperation *list, int size) {
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
-	if (op_list_source_ids_statement == NULL) {
-		const char *sql = "SELECT source_id,source_url from sources";
-		if (sqlite3_prepare_v2(database, sql, -1, &op_list_source_ids_statement, NULL) != SQLITE_OK) {
-			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
-		}
-		while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
-			int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
-			char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
-			list[count] = SourceCreate(url, id);
-			count++;
-		}
-		sqlite3_reset(op_list_source_ids_statement);
-		sqlite3_finalize(op_list_source_ids_statement);
-		op_list_source_ids_statement = NULL;
+	prepare_db_statement("SELECT source_id,source_url from sources", 
+						 database, 
+						 &op_list_source_ids_statement);
+	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
+		int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
+		char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
+		list[count] = SourceCreate(url, id);
+		count++;
 	}
+	sqlite3_reset(op_list_source_ids_statement);
+	sqlite3_finalize(op_list_source_ids_statement);
+	op_list_source_ids_statement = NULL;
 	return count;
 }
 
 int get_object_count_from_database(sqlite3 *database) {
-	int count,success;
-	if (ob_count_statement == NULL) {
-		const char *sql = "SELECT count(*) from object_values";
-		if (sqlite3_prepare_v2(database, sql, -1, &ob_count_statement, NULL) != SQLITE_OK) {
-			printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(database));
-		}
-		success = sqlite3_step(ob_count_statement);
-		if (success == SQLITE_ROW) {
-			count = sqlite3_column_int(ob_count_statement, 0);
-		}
-		sqlite3_reset(ob_count_statement);
-		sqlite3_finalize(ob_count_statement);
-		ob_count_statement = NULL;
+	int count = 0;
+	int success = 0;
+	prepare_db_statement("SELECT count(*) from object_values",
+						 database,
+						 &ob_count_statement);
+	success = sqlite3_step(ob_count_statement);
+	if (success == SQLITE_ROW) {
+		count = sqlite3_column_int(ob_count_statement, 0);
 	}
+	sqlite3_reset(ob_count_statement);
+	sqlite3_finalize(ob_count_statement);
+	ob_count_statement = NULL;
 	return count;
 }

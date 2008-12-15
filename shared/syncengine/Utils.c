@@ -50,3 +50,9 @@ unsigned int DJBHash(char* str, unsigned int len) {
 	}
 	return hash;
 }
+
+void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement) {
+	if (sqlite3_prepare_v2(db, sql, -1, statement, NULL) != SQLITE_OK) {
+		printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
+	}
+}

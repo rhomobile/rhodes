@@ -21,6 +21,12 @@
 #ifndef __UTILS__
 #define __UTILS__
 
+#if !defined(_WIN32_WCE)
+#include <sqlite3.h>
+#else
+#include "sqlite3.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -38,6 +44,8 @@ char* itoa (int n);
 char* str_assign(char* data);
 	
 unsigned int DJBHash(char* str, unsigned int len);
+
+void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement);
 
 #if defined(__cplusplus)
 }
