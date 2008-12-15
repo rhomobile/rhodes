@@ -65,7 +65,6 @@ module Rho
 	
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
-        puts "app require: #{RhoApplication::get_app_path(appname)+'application'}"
         require RhoApplication::get_app_path(appname)+'application'
         APPLICATIONS[appname] = Object.const_get(appname+'Application').new
       end
