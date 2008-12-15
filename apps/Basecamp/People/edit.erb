@@ -1,0 +1,31 @@
+<form title="Edit People" 
+	  class="panel" 
+	  id="people_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@people.object%>"/>
+		
+		  <div class="row">
+			  <label>first name: </label>
+			  <input type="text" name="people[first-name]" value="<%=@people.first_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>last name: </label>
+			  <input type="text" name="people[last-name]" value="<%=@people.last_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>email: </label>
+			  <input type="text" name="people[email-address]" value="<%=@people.email_address%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @people.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>

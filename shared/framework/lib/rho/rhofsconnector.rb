@@ -22,9 +22,9 @@ module Rho
 
       def get_db_fullpathname
         if defined? SYNC_DB_FILE
-	      File.join(__rhoGetCurrentDir(), SYNC_DB_FILE)
+	        File.join(SYNC_DB_FILE)
         else
-	      File.join(__rhoGetCurrentDir(), 'db/syncdb.sqlite')
+	        File.join(__rhoGetCurrentDir(), 'db/syncdb.sqlite')
         end
       end
     end
