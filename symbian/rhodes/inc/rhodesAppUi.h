@@ -1,0 +1,118 @@
+/*
+ ============================================================================
+ Author	    : Anton Antonov
+ Version	: 1.0
+ Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ============================================================================
+ */
+
+#ifndef __RHODESAPPUI_h__
+#define __RHODESAPPUI_h__
+
+// INCLUDES
+#include <aknappui.h>
+
+// FORWARD DECLARATIONS
+class CRhodesAppView;
+class CHttpServer;
+class CSyncEngineWrap;
+
+struct sqlite3;
+// CLASS DECLARATION
+/**
+ * CRhodesAppUi application UI class.
+ * Interacts with the user through the UI and request message processing
+ * from the handler class
+ */
+class CRhodesAppUi : public CAknAppUi
+	{
+public:
+	// Constructors and destructor
+
+	/**
+	 * ConstructL.
+	 * 2nd phase constructor.
+	 */
+	void ConstructL();
+
+	/**
+	 * CRhodesAppUi.
+	 * C++ default constructor. This needs to be public due to
+	 * the way the framework constructs the AppUi
+	 */
+	CRhodesAppUi();
+
+	/**
+	 * ~CRhodesAppUi.
+	 * Virtual Destructor.
+	 */
+	virtual ~CRhodesAppUi();
+	
+private:
+	// Functions from base classes
+
+	/**
+	 * From CEikAppUi, HandleCommandL.
+	 * Takes care of command handling.
+	 * @param aCommand Command to be handled.
+	 */
+	void HandleCommandL(TInt aCommand);
+
+    void HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent);
+    
+
+	/**
+	 *  HandleStatusPaneSizeChange.
+	 *  Called by the framework when the application status pane
+	 *  size is changed.
+	 */
+	void HandleStatusPaneSizeChange();
+
+	/**
+	 *  From CCoeAppUi, HelpContextL.
+	 *  Provides help context for the application.
+	 *  size is changed.
+	 */
+	CArrayFix<TCoeHelpContext>* HelpContextL() const;
+	
+	/**
+    * From CEikAppUi, handles key events.
+    * @param aKeyEvent Event to handled.
+    * @param aType Type of the key event. 
+    * @return Response code (EKeyWasConsumed, EKeyWasNotConsumed). 
+    */
+    virtual TKeyResponse HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
+
+
+private:
+	// Data
+
+	CHttpServer* iHttpServer;
+	CSyncEngineWrap* iSyncEngineWrap;
+
+	/**
+	 * The application view
+	 * Owned by CRhodesAppUi
+	 */
+	CRhodesAppView* iAppView;
+	
+    
+    sqlite3 * iDatabase;
+
+	};
+
+#endif // __RHODESAPPUI_h__
+// End of File

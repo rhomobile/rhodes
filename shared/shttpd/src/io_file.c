@@ -86,7 +86,11 @@ static void
 close_file(struct stream *stream)
 {
 	assert(stream->chan.fd != -1);
+#ifdef __SYMBIAN32__
+	_symbian_close(stream->chan.fd);
+#else	
 	(void) close(stream->chan.fd);
+#endif	
 }
 
 void

@@ -30,6 +30,10 @@
 #define	SSL_LIB				"libssl.so"
 #define	DIRSEP				'/'
 #define	IS_DIRSEP_CHAR(c)		((c) == '/')
+
+#ifndef O_BINARY
 #define	O_BINARY			0
+#endif //O_BINARY
+
 #define	closesocket(a)			close(a)
 #define	ERRNO				errno

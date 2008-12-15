@@ -24,6 +24,7 @@ extern void Init_System(void);
 //RhoSupport extension
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
+extern VALUE RhoPreparePath(VALUE path);
 
 static VALUE  framework;
 static ID framework_mid;
@@ -50,15 +51,21 @@ void RhoRubyStart()
 		Init_SyncEngine();
 		Init_System();
         
-        Init_RhoSupport();
+    Init_RhoSupport();
 
-        require_compiled(rb_str_new2("rhoframework"), &framework );
+    require_compiled(rb_str_new2("rhoframework"), &framework );
 
-        rb_gc_register_mark_object(framework);
+    rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
 	}	
 }
+#ifdef __SYMBIAN32__
+const char* RhoGetRootPath() {
+	return "c:\\Data\\Rho\\";
+}
+
+#endif
 
 #ifdef WINCE
 extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
@@ -137,7 +144,7 @@ char* callFramework(VALUE hashReq) {
 char* callServeIndex(char* index_name) {
 	char* szRes;
 	
-	VALUE callres = rb_funcall(framework, framework_mid2, 1, rb_str_new2(index_name));
+	VALUE callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
 	
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method call result type = %s\n", rb_type_to_s(callres));

@@ -1,0 +1,20 @@
+TARGET		  shttpd.lib
+TARGETTYPE	  lib
+UID			 0
+
+USERINCLUDE	 ..\..\..\shared\shttpd\src
+USERINCLUDE	 ..\..\..\shared\ruby\symbian
+USERINCLUDE	 ..\..\..\shared\ruby\rhoruby
+SYSTEMINCLUDE   \epoc32\include
+SYSTEMINCLUDE   \epoc32\include\stdapis
+
+#ifdef ENABLE_ABIV2_MODE
+DEBUGGABLE
+#endif
+
+SOURCEPATH ..\..\..\shared\shttpd\src
+SOURCE auth.c 
+//SOURCE cgi.c 
+SOURCE compat_unix.c 
+//SOURCE io_cgi.c 
+SOURCE io_dir.c io_emb.c io_file.c io_socket.c io_ssi.c io_ssl.c log.c md5.c rdispatcher.c shttpd.c standalone.c string.c

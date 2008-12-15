@@ -186,7 +186,7 @@ shttpd_open_listening_port(int port)
 	int		sock, on = 1;
 	struct usa	sa;
 
-#ifdef _WIN32
+#if defined( _WIN32)
 	{WSADATA data;	WSAStartup(MAKEWORD(2,2), &data);}
 #endif /* _WIN32 */
 
@@ -1916,7 +1916,7 @@ shttpd_init(int argc, char *argv[])
 	tm->tm_gmtoff - 3600 * (tm->tm_isdst > 0 ? 1 : 0);
 #endif
 
-#ifdef _WIN32
+#if defined( _WIN32)
 	{WSADATA data;	WSAStartup(MAKEWORD(2,2), &data);}
 #endif /* _WIN32 */
 

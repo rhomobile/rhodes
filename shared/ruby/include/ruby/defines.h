@@ -103,7 +103,10 @@ void xfree(void*);
 #undef _WIN32
 #endif
 
-#if defined(_WIN32) || defined(__EMX__)
+#ifdef __SYMBIAN32__
+#undef _WIN32
+#endif
+#if defined(_WIN32) || defined(__EMX__) || defined(__SYMBIAN32__)
 #define DOSISH 1
 # define DOSISH_DRIVE_LETTER
 #endif
@@ -192,8 +195,16 @@ void xfree(void*);
 #include "ruby/win32.h"
 #endif
 
+#ifdef __SYMBIAN32__
+#include "symbian.h"
+#endif //__SYMBIAN32__
+
 #if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
 #include <net/socket.h> /* intern.h needs fd_set definition */
+#endif
+
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif
 
 #ifdef RUBY_EXPORT

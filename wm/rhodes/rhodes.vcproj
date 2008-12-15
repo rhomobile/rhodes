@@ -82,7 +82,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"

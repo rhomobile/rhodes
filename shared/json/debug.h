@@ -25,18 +25,51 @@ extern void mc_info(const char *msg, ...);
 #define MC_SET_DEBUG(x) mc_set_debug(x)
 #define MC_GET_DEBUG() mc_get_debug()
 #define MC_SET_SYSLOG(x) mc_set_syslog(x)
-#define MC_ABORT(x, ...) mc_abort(x, ##__VA_ARGS__)
-#define MC_DEBUG(x, ...) mc_debug(x, ##__VA_ARGS__)
-#define MC_ERROR(x, ...) mc_error(x, ##__VA_ARGS__)
-#define MC_INFO(x, ...) mc_info(x, ##__VA_ARGS__)
+
+#define MC_ABORT0(x) mc_abort(x)
+#define MC_ABORT(x, arg1)  mc_abort(x, arg1)
+#define MC_ABORT2(x, arg1, arg2)  mc_abort(x, arg1, arg2)
+#define MC_ABORT3(x, arg1, arg2, arg3)  mc_abort(x, arg1, arg2, arg3)
+
+#define MC_DEBUG0(x)  mc_debug(x)
+#define MC_DEBUG(x, arg1)  mc_debug(x, arg1)
+#define MC_DEBUG2(x, arg1, arg2)  mc_debug(x, arg1, arg2)
+#define MC_DEBUG3(x, arg1, arg2, arg3)  mc_debug(x, arg1, arg2, arg3)
+
+#define MC_ERROR0(x)  mc_error(x)
+#define MC_ERROR(x, arg1)  mc_error(x, arg1)
+#define MC_ERROR2(x, arg1, arg2)  mc_error(x, arg1, arg2)
+#define MC_ERROR3(x, arg1, arg2, arg3)  mc_error(x, arg1, arg2, arg3)
+
+#define MC_INFO0(x)  mc_info(x)
+#define MC_INFO(x, arg1)  mc_info(x, arg1)
+#define MC_INFO2(x, arg1, arg2)  mc_info(x, arg1, arg2)
+#define MC_INFO3(x, arg1, arg2, arg3)  mc_info(x, arg1, arg2, arg3)
+
 #else
 #define MC_SET_DEBUG(x) if (0) mc_set_debug(x)
 #define MC_GET_DEBUG() (0)
 #define MC_SET_SYSLOG(x) if (0) mc_set_syslog(x)
-#define MC_ABORT(x, ...) if (0) mc_abort(x, ##__VA_ARGS__)
-#define MC_DEBUG(x, ...) if (0) mc_debug(x, ##__VA_ARGS__)
-#define MC_ERROR(x, ...) if (0) mc_error(x, ##__VA_ARGS__)
-#define MC_INFO(x, ...) if (0) mc_info(x, ##__VA_ARGS__)
+#define MC_ABORT0(x) if (0) mc_abort(x)
+#define MC_ABORT(x, arg1) if (0) mc_abort(x, arg1)
+#define MC_ABORT2(x, arg1, arg2) if (0) mc_abort(x, arg1, arg2)
+#define MC_ABORT3(x, arg1, arg2, arg3) if (0) mc_abort(x, arg1, arg2, arg3)
+
+#define MC_DEBUG0(x) if (0) mc_debug(x)
+#define MC_DEBUG(x, arg1) if (0) mc_debug(x, arg1)
+#define MC_DEBUG2(x, arg1, arg2) if (0) mc_debug(x, arg1, arg2)
+#define MC_DEBUG3(x, arg1, arg2, arg3) if (0) mc_debug(x, arg1, arg2, arg3)
+
+#define MC_ERROR0(x) if (0) mc_error(x)
+#define MC_ERROR(x, arg1) if (0) mc_error(x, arg1)
+#define MC_ERROR2(x, arg1, arg2) if (0) mc_error(x, arg1, arg2)
+#define MC_ERROR3(x, arg1, arg2, arg3) if (0) mc_error(x, arg1, arg2, arg3)
+
+#define MC_INFO0(x) if (0) mc_info(x)
+#define MC_INFO(x, arg1) if (0) mc_info(x, arg1)
+#define MC_INFO2(x, arg1, arg2) if (0) mc_info(x, arg1, arg2)
+#define MC_INFO3(x, arg1, arg2, arg3) if (0) mc_info(x, arg1, arg2, arg3)
+	
 #endif
 
 #endif

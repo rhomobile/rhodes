@@ -1604,7 +1604,7 @@ dln_find_1(const char *fname, const char *path, char *fbuf, int size,
 #if defined(DOSISH)
 	if (exe_flag) {
 	    static const char extension[][5] = {
-#if defined(__EMX__) || defined(_WIN32)
+#if defined(__EMX__) || defined(_WIN32) || defined(__SYMBIAN32__)
 		".exe", ".com", ".cmd", ".bat",
 /* end of __EMX__ or _WIN32 */
 #endif

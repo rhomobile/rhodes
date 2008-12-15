@@ -173,6 +173,7 @@ void start_sync_engine(sqlite3 *db) {
     pthread_attr_t  attr;
     pthread_t       p_thread_id;
     int             return_val;
+    int thread_error;
 	database = db;
 	
 	// Initialize thread
@@ -183,15 +184,15 @@ void start_sync_engine(sqlite3 *db) {
     assert(!return_val);
     return_val = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     assert(!return_val);
-	
-    int thread_error = pthread_create(&p_thread_id, &attr, &sync_engine_main_routine, NULL);
+	  
+    thread_error = pthread_create(&p_thread_id, &attr, &sync_engine_main_routine, NULL);
 	
     return_val = pthread_attr_destroy(&attr);
     assert(!return_val);
     if (thread_error != 0) {
-		//TODO: Report error
+		  //TODO: Report error
     }
-	
+	  
 }
 
 void stop_sync_engine() {

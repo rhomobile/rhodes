@@ -32,7 +32,7 @@
   char* strndup(const char* str, size_t n);
 #endif /* !HAVE_STRNDUP */
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(__SYMBIAN32__)
 #define REFCOUNT_DEBUG 1
 #endif
 
