@@ -12,6 +12,12 @@ bb/.metadata/*
 symbian/.metadata/*
 symbian/bin/*
 symbian/target/*
+symbian/*/.project
+abld.bat
+ABLD.BAT
+*.sis
+*.sisx
+.cproject
 
 *.jar
 *.cod
