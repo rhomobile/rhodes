@@ -1989,7 +1989,7 @@ rb_file_chown(VALUE obj, VALUE owner, VALUE group)
     o = NIL_P(owner) ? -1 : NUM2INT(owner);
     g = NIL_P(group) ? -1 : NUM2INT(group);
     GetOpenFile(obj, fptr);
-#if defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__)
+#if defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__) || defined(__SYMBIAN32__)
     if (NIL_P(fptr->pathv)) return Qnil;
     if (chown(RSTRING_PTR(fptr->pathv), o, g) == -1)
 	rb_sys_fail_path(fptr->pathv);
@@ -3445,6 +3445,7 @@ extern unsigned long __attribute__((stdcall)) GetLastError(void);
 static VALUE
 rb_thread_flock(void *data)
 {
+#ifndef __SYMBIAN32__
 #ifdef __CYGWIN__
     int old_errno = errno;
 #endif
@@ -3457,6 +3458,10 @@ rb_thread_flock(void *data)
     }
 #endif
     return (VALUE)ret;
+#else
+	rb_sys_fail("not implemented");
+	return (VALUE)0;
+#endif
 }
 
 /*

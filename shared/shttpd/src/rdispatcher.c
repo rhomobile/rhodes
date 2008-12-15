@@ -1,9 +1,8 @@
-//#include <sys/types.h>
 #include <string.h>
 
-#include "rhoruby.h"
 #include "defs.h"
 #include "llist.h"
+#include "rhoruby.h"
 
 typedef struct __Route {
   char* _url;

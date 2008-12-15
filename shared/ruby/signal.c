@@ -421,7 +421,13 @@ ruby_signal(int signum, sighandler_t handler)
 
     sigemptyset(&sigact.sa_mask);
 #ifdef SA_SIGINFO
-    sigact.sa_sigaction = (void (*)(int, siginfo_t*, void*))handler;
+    
+  #ifdef __SYMBIAN32__
+      sigact.sa_handler = handler;
+  #else //!__SYMBIAN32__
+      sigact.sa_sigaction = (void (*)(int, siginfo_t*, void*))handler;
+  #endif//!__SYMBIAN32__
+
     sigact.sa_flags = SA_SIGINFO;
 #else
     sigact.sa_handler = handler;
@@ -482,7 +488,7 @@ static int trap_last_mask;
 void
 rb_disable_interrupt(void)
 {
-#ifndef _WIN32
+#if ! defined(_WIN32) && ! defined(__SYMBIAN32__)
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, SIGVTALRM);
@@ -494,7 +500,7 @@ rb_disable_interrupt(void)
 void
 rb_enable_interrupt(void)
 {
-#ifndef _WIN32
+#if ! defined(_WIN32) && ! defined(__SYMBIAN32__)
     sigset_t mask;
     sigemptyset(&mask);
     pthread_sigmask(SIG_SETMASK, &mask, NULL);

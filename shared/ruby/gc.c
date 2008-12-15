@@ -31,6 +31,9 @@
 #include <sys/resource.h>
 #endif
 
+#ifdef __SYMBIAN32__
+#undef RUSAGE_SELF
+#endif
 #if defined _WIN32 || defined __CYGWIN__
 #include <windows.h>
 #endif
@@ -117,7 +120,7 @@ getrusage_time(void)
     getrusage(RUSAGE_SELF, &usage);
     time = usage.ru_utime;
     return time.tv_sec + time.tv_usec * 1e-6;
-#elif defined _WIN32
+#elif defined (_WIN32)
     FILETIME creation_time, exit_time, kernel_time, user_time;
     ULARGE_INTEGER ui;
     LONG_LONG q;

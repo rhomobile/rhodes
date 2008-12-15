@@ -4381,7 +4381,7 @@ pipe_open(struct rb_exec_arg *eargp, VALUE prog, const char *modestr, int fmode,
 #if defined(HAVE_FORK)
     int status;
     struct popen_arg arg;
-#elif defined(_WIN32)
+#elif defined(_WIN32) || defined(__SYMBIAN32__)
     int openmode = rb_io_modestr_oflags(modestr);
     const char *exename = NULL;
     volatile VALUE cmdbuf;
@@ -6003,7 +6003,11 @@ argf_next_argv(VALUE argf)
 		    chmod(fn, st.st_mode);
 #endif
 		    if (st.st_uid!=st2.st_uid || st.st_gid!=st2.st_gid) {
-			fchown(fw, st.st_uid, st.st_gid);
+#ifdef __SYMBIAN32__
+				chown(fn, st.st_uid, st.st_gid);
+#else
+				fchown(fw, st.st_uid, st.st_gid);
+#endif
 		    }
 #endif
 		    rb_stdout = prep_io(fw, FMODE_WRITABLE, rb_cFile, fn);

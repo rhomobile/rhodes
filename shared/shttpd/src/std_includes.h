@@ -11,6 +11,11 @@
 #ifndef STD_HEADERS_INCLUDED
 #define	STD_HEADERS_INCLUDED
 
+#ifdef __SYMBIAN32__
+#undef _WIN32
+//#include "symbian.h"
+#endif //__SYMBIAN32__
+
 #ifndef _WIN32_WCE /* Some ANSI #includes are not available on Windows CE */
 #include <sys/types.h>
 #include <sys/stat.h>

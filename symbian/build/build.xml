@@ -1,0 +1,20 @@
+<project name="buildSymbian" default="all" basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="bin.dir" location="../bin" />
+  <property name="src.dir" location="${bin.dir}/RhoBundle" />
+  <property name="ruby.path" value="../../win32/target/compiler/RhoRuby.exe" />
+  <property name="sharedAnt.dir" value="../../shared/build" />
+  <property name="target.dir" location="../target/N95" />
+
+  <target name="all">
+
+    <delete dir="${target.dir}" />
+    <mkdir dir="${target.dir}" />
+    
+    <ant dir = "${sharedAnt.dir}"/>
+
+  </target>
+  
+</project>

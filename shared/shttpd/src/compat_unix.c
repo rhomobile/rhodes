@@ -9,6 +9,7 @@
  */
 
 #include "defs.h"
+#include "compat_unix.h"
 
 void 
 _shttpd_set_close_on_exec(int fd)
@@ -16,22 +17,59 @@ _shttpd_set_close_on_exec(int fd)
 	(void) fcntl(fd, F_SETFD, FD_CLOEXEC);
 }
 
+#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
+#define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
+#endif
+
+static void
+translate_char(const char *path, char* buf)
+{
+	int i, len;
+	len = strlen(path);
+	for ( i = 0; path[i]; i++ )
+	{
+		if ( path[i] == '/')
+			buf[i] = '\\';
+		else
+			buf[i] = path[i]; 
+	}
+	buf[i] = 0;
+}
+
 int
 _shttpd_stat(const char *path, struct stat *stp)
 {
+#ifdef __SYMBIAN32__
+	char buf[256];
+	translate_char(path, buf);
+	return (stat(buf, stp));
+#else
 	return (stat(path, stp));
+#endif	
 }
 
 int
 _shttpd_open(const char *path, int flags, int mode)
 {
+#ifdef __SYMBIAN32__
+	char buf[256];
+	translate_char(path, buf);
+	return (open(buf, flags, mode));
+#else
 	return (open(path, flags, mode));
+#endif	
 }
 
 int
 _shttpd_remove(const char *path)
 {
+#ifdef __SYMBIAN32__
+	char buf[256];
+	translate_char(path, buf);
+	return (remove(buf));
+#else
 	return (remove(path));
+#endif	
 }
 
 int
@@ -43,7 +81,14 @@ _shttpd_rename(const char *path1, const char *path2)
 int
 _shttpd_mkdir(const char *path, int mode)
 {
+#ifdef __SYMBIAN32__
+	char buf[256];
+	translate_char(path, buf);
+	return (mkdir(buf, mode));
+#else
 	return (mkdir(path, mode));
+#endif	
+	
 }
 
 char *

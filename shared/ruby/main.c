@@ -33,7 +33,7 @@ main(int argc, char **argv)
 
 const char* RhoGetRootPath()
 {
-    return "D:/Projects/rhodes/rhodes/win32/build/RhoBundle/";
+    return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
 }
 
 #else 

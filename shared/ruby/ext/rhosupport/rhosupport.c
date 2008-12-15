@@ -5,6 +5,9 @@
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();
+static VALUE loadISeqFromFile(VALUE path);
+VALUE require_compiled(VALUE fname, VALUE* result);
+VALUE RhoPreparePath(VALUE path);
 
 VALUE __rhoGetCurrentDir(void)
 {
@@ -14,17 +17,17 @@ VALUE __rhoGetCurrentDir(void)
 VALUE
 rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 {
-    VALUE scope, fname, iseqval;
+    VALUE scope, fname, fname2, iseqval;
     const char *file = 0;
 
     rb_scan_args(argc, argv, "11", &fname, &scope);
 
-    iseqval = loadISeqFromFile(fname);
+    iseqval = loadISeqFromFile(RhoPreparePath(fname));
     return eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
     //return eval_iseq_with_scope(self, scope, iseqval );
 }   
 
-VALUE loadISeqFromFile(VALUE path)
+static VALUE loadISeqFromFile(VALUE path)
 {
 //        fiseq = File.open(fName)
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
@@ -61,11 +64,12 @@ static VALUE find_file(VALUE fname)
     int type;
     FilePathValue(fname);
 
-    tmp = fname;
+    tmp = rb_str_dup(fname);
     type = rb_find_file_ext(&tmp, loadable_ext);
     tmp = rb_file_expand_path(tmp, Qnil);
+
     if ( type == 1 )
-        return tmp;
+        return RhoPreparePath(tmp);
 
     return 0;
 }
@@ -73,7 +77,7 @@ static VALUE find_file(VALUE fname)
 VALUE isAlreadyLoaded(VALUE path)
 {
     VALUE v, features;
-    long i,n;
+    long i;
     const char *f;
 
     features = GET_VM()->loaded_features;
@@ -83,7 +87,7 @@ VALUE isAlreadyLoaded(VALUE path)
         f = StringValuePtr(v);
         if ( RSTRING_LEN(v) != RSTRING_LEN(path))
             continue;
-        if (stricmp(f, RSTRING_PTR(path)) == 0) {
+        if (strcmp(f, RSTRING_PTR(path)) == 0) {
             return Qtrue;
         }
     }
@@ -97,7 +101,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
-    if ( stricmp("strscan",RSTRING_PTR(fname))==0 || stricmp("enumerator",RSTRING_PTR(fname))==0 )
+    if ( strcmp("strscan",RSTRING_PTR(fname))==0 || strcmp("enumerator",RSTRING_PTR(fname))==0 )
         return Qtrue;
 
     path = find_file(fname);
@@ -118,6 +122,33 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     }
 
     return Qnil;
+}
+
+#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
+#define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
+#endif
+
+static void
+translate_char(char *p, int from, int to)
+{
+    while (*p) {
+	    if ((unsigned char)*p == from)
+	      *p = to;
+	    p = CharNext(p);
+    }
+}
+
+VALUE RhoPreparePath(VALUE path){
+#ifdef __SYMBIAN32__
+
+	VALUE fname2 = rb_str_dup(path);
+	
+	translate_char(RSTRING_PTR(fname2),'/', '\\');
+	
+	return fname2;
+#endif //__SYMBIAN32__
+	
+	return path;
 }
 
 void Init_RhoSupport()

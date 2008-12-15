@@ -1,0 +1,66 @@
+
+TARGET                                  SQLite60.lib
+TARGETTYPE                              lib 
+UID                                     0x1000008d 0x00000001 
+VENDORID                                0 
+
+SOURCEPATH                              ..\src 
+SOURCE                                  where.cpp 
+SOURCE                                  vtab.cpp 
+SOURCE                                  vdbemem.cpp 
+SOURCE                                  vdbefifo.cpp 
+SOURCE                                  vdbeblob.cpp 
+SOURCE                                  vdbeaux.cpp 
+SOURCE                                  vdbeapi.cpp 
+SOURCE                                  vdbe.cpp 
+SOURCE                                  vacuum.cpp 
+SOURCE                                  util.cpp 
+SOURCE                                  utf.cpp 
+SOURCE                                  update.cpp 
+SOURCE                                  trigger.cpp 
+SOURCE                                  tokenize.cpp 
+SOURCE                                  table.cpp 
+SOURCE                                  select.cpp 
+SOURCE                                  random.cpp 
+SOURCE                                  printf.cpp 
+SOURCE                                  prepare.cpp 
+SOURCE                                  pragma.cpp 
+SOURCE                                  parse.cpp 
+SOURCE                                  pager.cpp 
+SOURCE                                  os.cpp 
+SOURCE                                  opcodes.cpp 
+SOURCE                                  mutex.cpp 
+SOURCE                                  mem4.cpp 
+SOURCE                                  mem3.cpp 
+SOURCE                                  mem2.cpp 
+SOURCE                                  mem1.cpp 
+SOURCE                                  malloc.cpp 
+SOURCE                                  main.cpp 
+SOURCE                                  loadext.cpp 
+SOURCE                                  legacy.cpp 
+SOURCE                                  journal.cpp 
+SOURCE                                  insert.cpp 
+SOURCE                                  helper.cpp 
+SOURCE                                  hash.cpp 
+SOURCE                                  func.cpp 
+SOURCE                                  expr.cpp 
+SOURCE                                  delete.cpp 
+SOURCE                                  date.cpp 
+SOURCE                                  complete.cpp 
+SOURCE                                  callback.cpp 
+SOURCE                                  build.cpp 
+SOURCE                                  btree.cpp 
+SOURCE                                  btmutex.cpp 
+SOURCE                                  auth.cpp 
+SOURCE                                  attach.cpp 
+SOURCE                                  analyze.cpp 
+SOURCE                                  alter.cpp 
+SOURCE                                  os_symbian.cpp 
+
+USERINCLUDE                             ..\src 
+USERINCLUDE                             .. 
+
+SYSTEMINCLUDE                           \Epoc32\include 
+SYSTEMINCLUDE                           \Epoc32\include\stdapis 
+
+macro                                   OS_SYMBIAN 

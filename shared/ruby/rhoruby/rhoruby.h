@@ -13,10 +13,14 @@
 extern "C" {
 #endif
 
-#ifndef VALUE
+#ifdef __SYMBIAN32__
+#include <sys/types.h>
+#endif //__SYMBIAN32__
+
+#ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
-#endif
-	
+#endif //!RUBY_RUBY_H
+
 void RhoRubyStart();
 
 VALUE createHash();

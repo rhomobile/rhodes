@@ -26,5 +26,9 @@
 #define	CGI_ENV_VARS	64		/* Maximum vars passed to CGI	*/
 #define	SERVICE_NAME	"SHTTPD " VERSION	/* NT service name	*/
 #define NO_AUTH 1
+#ifndef NO_CGI
+#define NO_CGI 1
+#endif //NO_CGI
+#define NO_SSL 1
 
 #endif /* CONFIG_HEADER_DEFINED */

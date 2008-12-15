@@ -517,7 +517,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
  out:
   if(tok->err == json_tokener_success) return json_object_get(current);
-  MC_DEBUG("json_tokener_parse_ex: error %s at offset %d\n",
+  MC_DEBUG2("json_tokener_parse_ex: error %s at offset %d\n",
 	   json_tokener_errors[tok->err], tok->char_offset);
   return NULL;
 }

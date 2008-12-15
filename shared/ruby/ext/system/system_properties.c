@@ -28,6 +28,8 @@ char* get_property(char* property) {
 			return "APPLE";
 #elif defined(_WIN32)
 			return "WINDOWS";
+#elif defined(__SYMBIAN32__)
+			return "SYMBIAN";
 #else
 			return "UNKNOWN";
 #endif			

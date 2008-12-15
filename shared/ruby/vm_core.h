@@ -35,7 +35,13 @@
 #include <signal.h>
 
 #ifndef NSIG
-# define NSIG (_SIGMAX + 1)      /* For QNX */
+# ifdef DJGPP
+#  define NSIG SIGMAX
+# elif defined (__SYMBIAN32__)
+#  include <sys/signal.h>
+# else
+#  define NSIG (_SIGMAX + 1)      /* For QNX */
+# endif
 #endif
 
 #define RUBY_NSIG NSIG
