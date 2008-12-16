@@ -44,6 +44,8 @@ extern "C" {
 	
 int parse_json_list(pSyncObject *list, char *input, int size);
 
+char *parse_client_id(char *input);
+
 
 #if defined(__cplusplus)
 }

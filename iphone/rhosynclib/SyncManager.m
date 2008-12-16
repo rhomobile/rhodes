@@ -96,16 +96,3 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 	[pool release];
 	return SYNC_PUSH_CHANGES_OK;
 }
-
-void populate_list(sqlite3 *database) {
-	/*rhosynctestappdelegate *appDelegate = (rhosynctestappdelegate *)[[UIApplication sharedApplication] delegate];
-	 [appDelegate.list release];
-	 appDelegate.list = [[NSMutableArray alloc] init];
-	 pSyncObject *db_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-	 int available = fetch_objects_from_database(database, db_list);
-	 for (int i = 0; i < available; i++) {
-	 SyncObjectWrapper *newWrapper = [[SyncObjectWrapper alloc] init];
-	 newWrapper.wrappedObject = db_list[i];
-	 [appDelegate.list addObject:newWrapper];
-	 }*/
-}

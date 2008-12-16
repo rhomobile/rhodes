@@ -35,7 +35,6 @@ pthread_condattr_t sync_details;
 #endif
 sqlite3 *database;
 
-//
 int process_local_changes() {
   /* List holding operations */
   if (!stop_running) {
@@ -49,6 +48,7 @@ int process_local_changes() {
 	  for(i = 0; i < source_length; i++) {
 		  result = 0;
 		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
+		  setup_client_id(database, source_list[i]);
 		  result += process_op_list(source_list[i], "update");
 		  result += process_op_list(source_list[i], "create");
 		  result += process_op_list(source_list[i], "delete");

@@ -109,39 +109,15 @@ pSyncObject SyncObjectCopy(pSyncObject new_object) {
 	return sync;
 }
 
-/* 
- * Cleanup placeholder rows, this is mostly a temporary solution 
- * until we can cleanup the placeholders as we go
- */
-void cleanup_placeholders(sqlite3* db) {
-  int success;
-	if (cleanup_statement == NULL) {
-        const char *sql = "DELETE FROM object_values WHERE source_id=?";
-        if (sqlite3_prepare_v2(db, sql, -1, &cleanup_statement, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
-        }
-    }
-    sqlite3_bind_int(cleanup_statement, 1, new_source_id);
-    success = sqlite3_step(cleanup_statement);
-    sqlite3_reset(cleanup_statement);
-    if (success != SQLITE_DONE) {
-        printf("Error: failed to cleanup the database with message '%s'.", sqlite3_errmsg(db));
-    }
-	
-}
-
 /* lookup by id and return 1 if a row exists in the database, otherwise return 0 */
 int exists_in_database(pSyncObject ref) {
   int success;
 	if (ref->_primary_key == 0) {
 		return 0;
 	}
-    if (select_statement == NULL) {
-        const char *sql = "SELECT value FROM object_values where id=?";
-        if (sqlite3_prepare_v2(ref->_database, sql, -1, &select_statement, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
-        }
-    }
+    prepare_db_statement("SELECT value FROM object_values where id=?",
+						 ref->_database,
+						 &select_statement);
 	sqlite3_bind_int(select_statement, 1, ref->_primary_key);
 	success = sqlite3_step(select_statement);
 	/* we have a row with the same value, return 1 */
@@ -156,48 +132,15 @@ int exists_in_database(pSyncObject ref) {
 	return 0;
 }
 
-int fetch_objects_from_database(sqlite3 *database, pSyncObject *db_list) {
-	int i, count = 0;
-	
-	if (fetch_statement == NULL) {
-		const char *sql = "SELECT id FROM object_values where update_type = 'query'";	
-		if (sqlite3_prepare_v2(database, sql, -1, &fetch_statement, NULL) != SQLITE_OK) {
-			printf("Error: failed to prepare statement with message '%s'.\n", sqlite3_errmsg(database));
-		} else {
-			for (i = 0; sqlite3_step(fetch_statement) == SQLITE_ROW; i++) {
-				pSyncObject new_object = SyncObjectCreate();
-				int	primary_key = sqlite3_column_int(fetch_statement, 0);
-				new_object->_primary_key = primary_key;
-				new_object->_hydrated = 0;
-				new_object->_database = database;
-				hydrate(new_object);
-				db_list[i] = new_object;
-				count++;
-			}
-		}
-		sqlite3_reset(fetch_statement);
-		//fetch_statement = NULL;
-	}
-	return count;
-}
-
 /* insert object into database, returns SYNC_OBJECT_DUPLICATE, SYNC_OBJECT_ERROR, or SYNC_OBJECT_SUCCESS */
 int insert_into_database(pSyncObject ref) {
   int success;
 	if (exists_in_database(ref)) {
-		/* Object already exists with that key */
-		/* TODO: implement merge */
-		//printf("Object exists in database with key: %d value: %s\n", ref->_primary_key, ref->_value);
 		return SYNC_OBJECT_DUPLICATE;
 	} else {
-		if (insert_statement == NULL) {
-			const char *sql = "INSERT INTO object_values (id, attrib, source_id, object, value, created_at, updated_at, update_type) VALUES(?,?,?,?,?,?,?,?)";
-			if (sqlite3_prepare_v2(ref->_database, sql, -1, &insert_statement, NULL) != SQLITE_OK) {
-				printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
-				sqlite3_reset(insert_statement);
-				return SYNC_OBJECT_ERROR;
-			}
-		}
+		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, created_at, updated_at, update_type) VALUES(?,?,?,?,?,?,?,?)",
+							 ref->_database,
+							 &insert_statement);
 		sqlite3_bind_int(insert_statement, 1, ref->_primary_key);
 		sqlite3_bind_text(insert_statement, 2, new_entry, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_int(insert_statement, 3, new_source_id);
@@ -219,22 +162,19 @@ int insert_into_database(pSyncObject ref) {
 
 /* Remove all objects from database */
 int delete_from_database_by_source(sqlite3 *db, int source) {
-    int success;
-    if (delete_statement == NULL) {
-        const char *sql = "DELETE FROM object_values where source_id=?";
-        if (sqlite3_prepare_v2(db, sql, -1, &delete_statement, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
-        }
-		sqlite3_bind_int(delete_statement, 1, source);
-		success = sqlite3_step(delete_statement);
-		sqlite3_reset(delete_statement);
-		if (success != SQLITE_DONE) {
-			printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
-			return 1;
-		}
-		sqlite3_finalize(delete_statement);
-		delete_statement = NULL;
-    }
+    int success = 0;
+	prepare_db_statement("DELETE FROM object_values where source_id=?",
+						 db,
+						 &delete_statement);
+	sqlite3_bind_int(delete_statement, 1, source);
+	success = sqlite3_step(delete_statement);
+	sqlite3_reset(delete_statement);
+	if (success != SQLITE_DONE) {
+		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
+		return 1;
+	}
+	sqlite3_finalize(delete_statement);
+	delete_statement = NULL;
 	return 0;
 }
 			 
@@ -242,13 +182,9 @@ int delete_from_database_by_source(sqlite3 *db, int source) {
 pSyncObject hydrate(pSyncObject ref) {
     int success;
     if (ref->_hydrated) return ref;
-    /* Compile the hydration statement, if needed. */
-    if (hydrate_statement == NULL) {
-        const char *sql = "SELECT attrib, source_id, object, value, created_at, updated_at, update_type FROM object_values WHERE id=?";
-        if (sqlite3_prepare_v2(ref->_database, sql, -1, &hydrate_statement, NULL) != SQLITE_OK) {
-            printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
-        }
-    }
+    prepare_db_statement("SELECT attrib, source_id, object, value, created_at, updated_at, update_type FROM object_values WHERE id=?",
+						 ref->_database,
+						 &hydrate_statement);
     sqlite3_bind_int(hydrate_statement, 1, ref->_primary_key);
     success =sqlite3_step(hydrate_statement);
 	
@@ -281,13 +217,9 @@ pSyncObject hydrate(pSyncObject ref) {
 void dehydrate(pSyncObject ref) {
   int success;
     if (ref->_dirty) {		
-        /* Write any changes to the database. */
-        if (dehydrate_statement == NULL) {
-            const char *sql = "UPDATE object_values SET attrib=?, source_id=?, object=?, value=?, created_at=?, updated_at=?, update_type=? WHERE id=?";
-            if (sqlite3_prepare_v2(ref->_database, sql, -1, &dehydrate_statement, NULL) != SQLITE_OK) {
-                printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(ref->_database));
-            }
-        }
+		prepare_db_statement("UPDATE object_values SET attrib=?, source_id=?, object=?, value=?, created_at=?, updated_at=?, update_type=? WHERE id=?",
+							 ref->_database,
+							 &dehydrate_statement);
         sqlite3_bind_text(dehydrate_statement, 1, ref->_attrib, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_int(dehydrate_statement, 2, ref->_source_id);
         sqlite3_bind_text(dehydrate_statement, 3, ref->_object, -1, SQLITE_TRANSIENT);

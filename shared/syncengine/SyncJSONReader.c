@@ -107,3 +107,41 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 	}
 	return parsed_size;
 }
+
+char *parse_client_id(char *input) {
+	struct json_object *json;
+	struct array_list *json_list;
+	struct lh_entry *entry;
+	char *key;
+	struct json_object *val;	
+	struct lh_entry *sub_entry;
+	char *sub_key;
+	struct json_object *sub_val;
+	char *c_id;
+	
+	json = json_tokener_parse(input);
+	json_list = json_object_get_array((struct json_object *)json);
+	struct json_object *json_client = (struct json_object *) array_list_get_idx(json_list, 0);		
+	for (entry = json_object_get_object(json_client)->head; entry; entry = entry->next) {
+		key = (char *) entry->k;
+		val = (struct json_object *) entry->v;
+
+		if (strcmp(key, "client") == 0) {
+			printf("parsed client_id: %s\n", json_object_get_string(val));
+			sub_entry = json_object_get_object(val)->head;
+			for (;;) {
+				if (sub_entry != NULL && sub_entry->k != NULL) {
+					sub_key = (char *) sub_entry->k;
+					sub_val = (struct json_object *) sub_entry->v;
+					if (strcmp(sub_key, "client_id") == 0) {
+						c_id = json_object_get_string(sub_val);
+					} else {
+						break;
+					}
+					sub_entry = sub_entry->next;
+				}
+			}
+		}
+	}
+	return c_id;
+}
