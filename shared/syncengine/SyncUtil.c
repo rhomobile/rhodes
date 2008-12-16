@@ -125,7 +125,6 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	}
 	sqlite3_reset(op_list_source_ids_statement);
 	sqlite3_finalize(op_list_source_ids_statement);
-	op_list_source_ids_statement = NULL;
 	return count;
 }
 
@@ -141,7 +140,6 @@ int get_object_count_from_database(sqlite3 *database) {
 	}
 	sqlite3_reset(ob_count_statement);
 	sqlite3_finalize(ob_count_statement);
-	ob_count_statement = NULL;
 	return count;
 }
 
@@ -161,10 +159,10 @@ void setup_client_id(sqlite3 *database, pSource source) {
 		printf("Using client_id %s from database...\n", source->_client_id);
 	} else {
 		sqlite3_reset(client_id_statement);
-		sprintf(url_string, "%s/autocreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
+		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
-			source->_client_id = (char *)parse_client_id(json_string);
+			source->_client_id = str_assign((char *)parse_client_id(json_string));
 		}
 		prepare_db_statement("UPDATE sources set client_id=? where source_id=?",
 							 database,
@@ -175,4 +173,5 @@ void setup_client_id(sqlite3 *database, pSource source) {
 		printf("Intialized new client_id %s from source...\n", source->_client_id);
 	}
 	sqlite3_reset(client_id_statement);
+	sqlite3_finalize(client_id_statement);
 }

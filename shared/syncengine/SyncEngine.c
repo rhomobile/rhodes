@@ -36,7 +36,6 @@ pthread_condattr_t sync_details;
 sqlite3 *database;
 
 int process_local_changes() {
-  /* List holding operations */
   if (!stop_running) {
 	  // Process local changes
 	  int i,result,source_length;
