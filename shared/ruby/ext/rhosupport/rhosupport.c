@@ -17,7 +17,7 @@ VALUE __rhoGetCurrentDir(void)
 VALUE
 rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 {
-    VALUE scope, fname, fname2, iseqval;
+    VALUE scope, fname, iseqval;
     const char *file = 0;
 
     rb_scan_args(argc, argv, "11", &fname, &scope);
@@ -98,7 +98,7 @@ VALUE isAlreadyLoaded(VALUE path)
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
-
+	
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
     if ( strcmp("strscan",RSTRING_PTR(fname))==0 || strcmp("enumerator",RSTRING_PTR(fname))==0 )
@@ -109,7 +109,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     if ( path != 0 )
     {
         VALUE seq;
-
+		
         if ( isAlreadyLoaded(path) == Qtrue )
             return Qtrue;
 

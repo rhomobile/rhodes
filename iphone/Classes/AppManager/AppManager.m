@@ -95,6 +95,20 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
 @end
 
+const char* RhoGetRootPath() {
+	static bool loaded = FALSE;
+	static char root[FILENAME_MAX];
+	if (!loaded){
+		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		NSString *documentsDirectory = [paths objectAtIndex:0];
+		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
+
+		loaded = TRUE;
+	}
+	
+	return root;
+}
+
 const char* GetApplicationsRootPath() {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];

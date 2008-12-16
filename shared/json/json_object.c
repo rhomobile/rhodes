@@ -63,7 +63,7 @@ static struct lh_table *json_object_table;
 
 static void json_object_init(void) __attribute__ ((constructor));
 static void json_object_init(void) {
-  MC_DEBUG("json_object_init: creating object table\n");
+  MC_DEBUG0("json_object_init: creating object table\n");
   json_object_table = lh_kptr_table_new(128, "json_object_table", NULL);
 }
 
@@ -76,11 +76,11 @@ static void json_object_fini(void) {
   	       json_object_table->count);
       lh_foreach(json_object_table, ent) {
         struct json_object* obj = (struct json_object*)ent->v;
-        MC_DEBUG("\t%s:%p\n", json_type_name[obj->o_type], obj);
+        MC_DEBUG2("\t%s:%p\n", json_type_name[obj->o_type], obj);
       }
     }
   }
-  MC_DEBUG("json_object_fini: freeing object table\n");
+  MC_DEBUG0("json_object_fini: freeing object table\n");
   lh_table_free(json_object_table);
 }
 #endif /* REFCOUNT_DEBUG */
@@ -156,7 +156,7 @@ extern void json_object_put(struct json_object *this)
 static void json_object_generic_delete(struct json_object* this)
 {
 #ifdef REFCOUNT_DEBUG
-  MC_DEBUG("json_object_delete_%s: %p\n",
+  MC_DEBUG2("json_object_delete_%s: %p\n",
 	   json_type_name[this->o_type], this);
   lh_table_delete(json_object_table, this);
 #endif /* REFCOUNT_DEBUG */
@@ -173,7 +173,7 @@ static struct json_object* json_object_new(enum json_type o_type)
   this->_delete = &json_object_generic_delete;
 #ifdef REFCOUNT_DEBUG
   lh_table_insert(json_object_table, this, this);
-  MC_DEBUG("json_object_new_%s: %p\n", json_type_name[this->o_type], this);
+  MC_DEBUG2("json_object_new_%s: %p\n", json_type_name[this->o_type], this);
 #endif /* REFCOUNT_DEBUG */
   return this;
 }
