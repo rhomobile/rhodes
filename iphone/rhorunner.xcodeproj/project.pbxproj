@@ -31,7 +31,6 @@
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
-		F5DA59030E9696F50062A28B /* Test in Resources */ = {isa = PBXBuildFile; fileRef = F5DA58FF0E9696F50062A28B /* Test */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -384,7 +383,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				F5DA59030E9696F50062A28B /* Test in Resources */,
 				F563D8080EA95EDC0062DA57 /* apps in Resources */,
 				46C744690EAFA99D00CC76F1 /* icon.png in Resources */,
 				467E716E0EB673F000E5958D /* lib in Resources */,

@@ -89,7 +89,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 - (void) configure {
 	[self copyFromMainBundle:@"apps" replace:YES];
 	[self copyFromMainBundle:@"lib" replace:YES];
-	[self copyFromMainBundle:@"sqlite3" replace:YES];
+	//[self copyFromMainBundle:@"sqlite3" replace:YES];
 	[self copyFromMainBundle:@"db" replace:NO];
 }
 
@@ -100,9 +100,10 @@ const char* RhoGetRootPath() {
 	static char root[FILENAME_MAX];
 	if (!loaded){
 		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-		NSString *documentsDirectory = [paths objectAtIndex:0];
+		NSString *documentsDirectory = //[paths objectAtIndex:0];
+		[ [paths objectAtIndex:0] stringByAppendingString:@"/"];
 		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
-
+		
 		loaded = TRUE;
 	}
 	

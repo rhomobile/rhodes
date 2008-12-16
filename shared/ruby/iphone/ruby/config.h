@@ -235,12 +235,12 @@
 
 #define LOAD_RELATIVE 1
 
-#define RUBY_LIB "/Documents/lib"
-#define RUBY_SITE_LIB "/Documents/apps"
-#define RUBY_SITE_LIB2 "/Documents/samples"
-#define RUBY_VENDOR_LIB "/Documents/vendor"
-#define RUBY_VENDOR_LIB2 "/Documents/vendor/lib"
+#define RUBY_LIB "/lib"
+#define RUBY_SITE_LIB "/lib"
+#define RUBY_SITE_LIB2 "/lib"
+#define RUBY_VENDOR_LIB "/lib"
+#define RUBY_VENDOR_LIB2 "/lib"
 #define RUBY_PLATFORM "i386-darwin9.5.0"
-#define RUBY_ARCHLIB "/Documents/archlib"
-#define RUBY_SITE_ARCHLIB "/Documents/archlib/lib"
-#define RUBY_VENDOR_ARCHLIB "/Documents/vendor/archlib"
+#define RUBY_ARCHLIB "/lib"
+#define RUBY_SITE_ARCHLIB "/lib"
+#define RUBY_VENDOR_ARCHLIB "/lib"
