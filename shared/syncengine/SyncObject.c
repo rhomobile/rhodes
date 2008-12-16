@@ -129,6 +129,7 @@ int exists_in_database(pSyncObject ref) {
 		}
     }
 	sqlite3_reset(select_statement);
+	sqlite3_finalize(select_statement);
 	return 0;
 }
 
@@ -156,6 +157,7 @@ int insert_into_database(pSyncObject ref) {
 			return 0;
 		} 
 		ref->_hydrated = 0;
+		sqlite3_finalize(insert_statement);
 		return SYNC_OBJECT_SUCCESS;
 	}
 }
@@ -208,6 +210,7 @@ pSyncObject hydrate(pSyncObject ref) {
 		ref->_update_type = str_assign(unknown);
     }
     sqlite3_reset(hydrate_statement);
+	sqlite3_finalize(hydrate_statement);
     /* Update object state with respect to hydration. */
     ref->_hydrated = 1;
 	return ref;
@@ -229,10 +232,11 @@ void dehydrate(pSyncObject ref) {
 		sqlite3_bind_text(dehydrate_statement, 7, ref->_update_type, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_int(dehydrate_statement, 8, ref->_primary_key);
         success = sqlite3_step(dehydrate_statement);
-        sqlite3_reset(dehydrate_statement);
         if (success == SQLITE_ERROR) {
             printf("Error: failed to dehydrate with message '%s'.", sqlite3_errmsg(ref->_database));
         }
+		sqlite3_reset(dehydrate_statement);
+		sqlite3_finalize(dehydrate_statement);
         ref->_dirty = 0;
     }
     ref->_hydrated = 0;
