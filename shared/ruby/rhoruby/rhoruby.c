@@ -64,7 +64,6 @@ void RhoRubyStart()
 const char* RhoGetRootPath() {
 	return "c:\\Data\\Rho\\";
 }
-
 #endif
 
 #ifdef WINCE

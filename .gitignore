@@ -4,6 +4,8 @@ shared/framework/pkg
 iphone/build/*
 iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
+iphone/bin/*
+
 wm/bin/*
 win32/bin/*
 wm/target/*

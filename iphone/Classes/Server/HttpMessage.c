@@ -728,7 +728,7 @@ HTTPRedirect(HttpContextRef context, char* location) {
 	return 1;
 }
 
-static const char *indexfile[] = { "controller.rb", "index.html", "index.htm" };
+static const char *indexfile[] = { "controller.iseq", "index_erb.iseq", "index.html", "index.htm" };
 
 static int 
 _HTTPGetIndexFile(HttpContextRef context, char* path) {

@@ -73,17 +73,11 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	}
 }
 
-
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	DBG(("Initializing ruby\n"));
-	char* libpath = strdup(GetApplicationsRootPath());
-	char* apps = strrchr (libpath,'/');
-	if (apps!=NULL) *apps = '\0';
-	DBG(("libpath: %s\n", libpath));
-	RhoRubyStart( libpath );
-	free(libpath);
+	RhoRubyStart();
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
