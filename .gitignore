@@ -5,6 +5,7 @@ iphone/build/*
 iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
 iphone/bin/*
+mac/bin/*
 
 wm/bin/*
 win32/bin/*

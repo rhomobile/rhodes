@@ -16,9 +16,9 @@
 #include <locale.h>
 #endif
 
-//#define COMPILER 1
+#define COMPILER 1
 
-RUBY_GLOBAL_SETUP
+//RUBY_GLOBAL_SETUP
 
 #ifndef COMPILER
 int

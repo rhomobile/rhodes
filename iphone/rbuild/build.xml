@@ -1,0 +1,25 @@
+<project name="buildSymbian" default="all" basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="bin.dir" location="../bin" />
+  <property name="src.dir" location="${bin.dir}/RhoBundle" />
+  <property name="ruby.path" value="../../mac/target/compiler/RubyMac" />
+  <property name="sharedAnt.dir" value="../../shared/build" />
+  <property name="target.dir" location="../target/iphone" />
+
+  <target name="all">
+
+    <delete dir="${target.dir}" />
+    <mkdir dir="${target.dir}" />
+    
+    <ant dir = "${sharedAnt.dir}"/>
+
+    <copy todir="${src.dir}/apps/shared/js">
+        <fileset dir="../../apps/shared/js">
+                <include name="**/*" />
+            </fileset>
+    </copy>
+  </target>
+  
+</project>
