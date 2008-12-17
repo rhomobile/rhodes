@@ -329,5 +329,4 @@ public class RubyIO extends RubyBasic {
         io.close();
         return r;
     }
-    
 }

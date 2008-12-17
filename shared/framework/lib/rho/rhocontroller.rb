@@ -1,8 +1,8 @@
-if defined? RHO_ME
-	require 'rho/renderME'
-else
+#if defined? RHO_ME
+#	require 'rho/renderME'
+#else
 	require 'rho/render'
-end
+#end
 
 require 'rho/rhosupport'
 

@@ -14,7 +14,6 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
-PerstImplJSR75
 PerstLite
 ]
 ExcludeFromBuildAll=0
@@ -293,6 +292,7 @@ src\com\xruby\runtime\builtin\AttrReader.java
 src\com\xruby\runtime\builtin\AttrWriter.java
 src\com\xruby\runtime\builtin\ErrnoModuleBuilder.java
 src\com\xruby\runtime\builtin\IErrno.java
+src\com\xruby\runtime\builtin\InputStreamExecutor.java
 src\com\xruby\runtime\builtin\ObjectFactory.java
 src\com\xruby\runtime\builtin\OutputStreamExecutor.java
 src\com\xruby\runtime\builtin\RubyArray.java
@@ -340,6 +340,7 @@ src\com\xruby\runtime\lang\GlobalVariables.java
 src\com\xruby\runtime\lang\MethodBlockBase.java
 src\com\xruby\runtime\lang\MethodCache.java
 src\com\xruby\runtime\lang\ObjectSpace.java
+src\com\xruby\runtime\lang\RhoSupport.java
 src\com\xruby\runtime\lang\RubyAPI.java
 src\com\xruby\runtime\lang\RubyBasic.java
 src\com\xruby\runtime\lang\RubyBinding.java

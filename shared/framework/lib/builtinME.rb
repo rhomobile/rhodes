@@ -133,6 +133,32 @@ class Array
     
 end
 
+class File
+    SEPARATOR = '/'
+
+    def File.join *aString
+        s = ""
+        first = true
+        aString.each {|x|
+            if !first
+                s += File::SEPARATOR
+            end
+            s+= x
+            first = false
+        }
+        s
+    end
+end
+
+class IO
+    def each
+        while !eof
+          yield gets
+        end
+        close
+    end
+end
+
 class Time
     include Comparable
 end

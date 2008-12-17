@@ -14,6 +14,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.RubyKernelModule;
 
 public class RhoConnection implements HttpConnection {
 	/** Request URI **/
@@ -331,10 +332,19 @@ public class RhoConnection implements HttpConnection {
 	
 	}
 	
-	void redirectTo( String location ){
-		responseCode = 301;
+	void respondMoved( String location ){
+		responseCode = HTTP_MOVED_PERM;
 		responseMsg = "Moved Permanently";
 		resHeaders.addProperty("Location", location);
+		contentLength = 0;
+	}
+
+	void respondNotFound( String strError ){
+		responseCode = HTTP_NOT_FOUND;
+		responseMsg = "Not found";
+		if ( strError != null && strError.length() != 0 )
+			responseMsg += ".Error: " + strError;
+		
 		contentLength = 0;
 	}
 	
@@ -356,6 +366,158 @@ public class RhoConnection implements HttpConnection {
 		return "text/html";
 	}
 	
+	protected Class findClass(String path){
+		String name = RubyKernelModule.createMainClassName(path);
+		Class c = null;
+		
+		try{
+			c = Class.forName(name);
+		}catch(ClassNotFoundException exc){}
+		
+		return c;
+	}
+
+	static final String[] m_arIndexes = {"index_erb", "index.html", "index.htm"};
+	
+	public static int findIndex(String strUrl){
+		String filename;
+		int nLastSlash = strUrl.lastIndexOf('/');
+		if ( nLastSlash >= 0 )
+			filename = strUrl.substring(nLastSlash+1);
+		else
+			filename = strUrl;
+		
+		for( int i = 0; i < m_arIndexes.length; i++ ){
+			if ( filename.equalsIgnoreCase(m_arIndexes[i]) )
+				return i;
+		}
+		
+		return -1;
+	}
+
+	protected boolean httpGetIndexFile(){
+		String strIndex = null;
+		String slash = "";
+		if ( uri.getPath()!=null && uri.getPath().length() > 0 )
+			slash = uri.getPath().charAt(uri.getPath().length()-1) == '/' ? "" : "/";
+		
+		for( int i = 0; i < m_arIndexes.length; i++ ){
+			String name = uri.getPath() + slash + m_arIndexes[i];
+			if ( findClass(name) != null || RhoRuby.loadFile(name) != null ){
+				strIndex = name;
+				break;
+			}
+		}
+		
+		if ( strIndex == null )
+			return false;
+		
+		respondMoved(strIndex);
+		return true;
+	}
+
+	protected boolean httpServeFile()throws IOException{
+		String strContType = getContentType(uri.getPath());
+		
+		if ( strContType.equals("application/javascript"))
+			responseData = new ByteArrayInputStream(new String("").getBytes());
+		else	
+			responseData = RhoRuby.loadFile(uri.getPath());
+	
+		if (responseData== null)
+			return false;
+		
+		resHeaders.addProperty("Content-Type", strContType );
+		contentLength = responseData.available(); 
+		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
+		
+		return true;
+	}
+	
+	protected boolean httpGetFile()throws IOException{
+		
+		String strTemp = uri.getPath();
+		if ( strTemp.length() == 0 || strTemp.charAt(strTemp.length()-1)!='/')
+			strTemp += '/';
+
+		if( findClass(strTemp + "controller") != null )
+			return false;
+		
+		int nPos = findIndex(uri.getPath());
+		if ( nPos >= 0 ){
+			RubyValue res = RhoRuby.processIndexRequest( 
+					uri.getPath() + (nPos == 0 ? ".iseq" : "") ); //erb-compiled should load from class
+			processResponse(res);
+			return true;
+		}
+
+		if( httpGetIndexFile() )
+			return true;
+		
+		return httpServeFile();
+	}
+	
+	protected boolean dispatch()throws IOException{
+		UrlParser up = new UrlParser(uri.getPath());
+		String apps = up.next();
+		String application;
+		if ( apps.equalsIgnoreCase("apps") )
+			application = up.next();
+		else
+			application = apps;
+		
+		String model = up.next();
+		
+		if ( model.length() == 0 )
+			return false;
+			
+		Properties reqHash = new Properties();
+		
+		String actionid = up.next();
+		String actionnext = up.next();
+		if ( actionid.length() > 0 ){
+			if ( actionid.length() > 2 && 
+				 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
+				reqHash.setProperty( "id", actionid);
+				reqHash.setProperty( "action", actionnext);
+			}else{
+				reqHash.setProperty( "id", actionnext);
+				reqHash.setProperty( "action", actionid);
+			}
+		}
+		reqHash.setProperty( "application",application);
+		reqHash.setProperty( "model", model);
+
+		reqHash.setProperty("request-method", this.method);
+		reqHash.setProperty("request-uri", uri.toString());
+		reqHash.setProperty("request-query", uri.getQueryString());
+		
+		if ( postData != null && postData.size() > 0 ){
+			log(postData.toString());
+			reqHash.setProperty("request-body", postData.toString());
+		}
+		
+		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
+		processResponse(res);
+		
+		return true;
+	}
+	
+	protected void processRequest()  throws IOException{
+		if (!requestProcessed) {
+			String strErr = "";
+			
+			if ( this.method == "GET" && httpGetFile() ){
+				
+			}else if ( dispatch() ){
+			}else{
+				respondNotFound(strErr);
+			}
+			
+			requestProcessed = true;
+		}
+	}
+	/*
 	protected void processRequest() throws IOException {
 		if (!requestProcessed) {
 			log("Processing request : " + uri.toString() );
@@ -367,7 +529,7 @@ public class RhoConnection implements HttpConnection {
 				if ( strContType.equals("application/javascript"))
 					responseData = new ByteArrayInputStream(new String("").getBytes());
 				else	
-					responseData = RhoRuby.loadFile(uri.getPath());
+					responseData = RhoRuby.loadFile("/apps"+uri.getPath());
 				
 				if (responseData!= null){
 					resHeaders.addProperty("Content-Type", strContType );
@@ -415,7 +577,7 @@ public class RhoConnection implements HttpConnection {
 			
 			requestProcessed = true;
 		}
-	}
+	}*/
 
 	private void processResponse(RubyValue res){
 		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){

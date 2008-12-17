@@ -30,7 +30,7 @@ public class RubyString extends RubyBasic {
 
     RubyString(String s) {
         super(RubyRuntime.StringClass);
-        sb_ = new StringBuffer(s);
+        sb_ = new StringBuffer(s != null ? s : "");
     }
 
     RubyString(StringBuffer sb) {

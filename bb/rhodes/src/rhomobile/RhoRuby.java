@@ -5,12 +5,13 @@ import java.io.InputStream;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
+//import java.io.ByteArrayInputStream;
 //import com.rho.sync.SyncEngine; 
 
 public class RhoRuby {
 
 	public static final RubyID serveID = RubyID.intern("serve_hash");
+	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	static RubyValue receiver;
 	static xruby.ServeME.main mainObj;
 	
@@ -32,7 +33,14 @@ public class RhoRuby {
 	}
 	
 	static public InputStream loadFile(String path){
-		return mainObj.getClass().getResourceAsStream("/apps"+path);		
+		return mainObj.getClass().getResourceAsStream(path);		
+	}
+
+	public static RubyValue processIndexRequest(String strIndex ){
+		
+		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createString(strIndex), null, serveIndexID);
+		
+		return value;
 	}
 	
 	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{

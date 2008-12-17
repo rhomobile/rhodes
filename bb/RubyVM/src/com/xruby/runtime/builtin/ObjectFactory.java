@@ -10,6 +10,7 @@ import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyID;
 import com.xruby.runtime.lang.RubyMethod;
+import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -111,6 +112,12 @@ public class ObjectFactory {
         return new RubyFile(filename, mode);
     }
 
+    //RHO_COMMENT
+    public static RubyIO createResourceFile(String filename, String mode) {
+        return new RubyFile(new InputStreamExecutor(filename, mode), RubyRuntime.FileClass );
+    }
+    //RHO_COMMENT
+    
     public static RubyMethodValue createMethod(RubyValue r, String s, RubyMethod m) {
         return new RubyMethodValue(r, s, m);
     }

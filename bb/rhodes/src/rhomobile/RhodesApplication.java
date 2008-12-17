@@ -87,15 +87,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		}
     	}
     	if ( nPos == -1 ){
-    		boolean bReplace = false;
-    		int nLast = strUrl.lastIndexOf('/');
-    		if( nLast == -1 )
-    			nLast = strUrl.lastIndexOf('\\');
-    		if( nLast > 0 ){
-    			String strPage = strUrl.substring(nLast+1);
-    			if ( strPage.equalsIgnoreCase("index.html") )
-    				bReplace = true;
-    		}
+    		boolean bReplace = RhoConnection.findIndex(strUrl) != -1;
 
     		if ( bReplace )
     			_history.setElementAt(strUrl, _history.size()-1 );
@@ -129,6 +121,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private HttpConnection  _currentConnection;
    
     private Vector _history;
+    
+    private final String _httpRoot = "http://localhost:8080/apps/";
     
     /***************************************************************************
      * Main.
@@ -194,8 +188,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);                        
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
-        _history.addElement("http://localhost:8080");
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread("http://localhost:8080", null, null, null, this);
+        _history.addElement(_httpRoot);
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(_httpRoot, null, null, null, this);
         thread.start();                       
     }
           
@@ -253,13 +247,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                 UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;    
                 String absoluteUrl = urlRequestedEvent.getURL();
+                if ( !absoluteUrl.startsWith(_httpRoot) )
+                	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
     
                 addToHistory(absoluteUrl);
                 
-                PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(urlRequestedEvent.getURL(),
-                                                                                         urlRequestedEvent.getHeaders(), 
-                                                                                         urlRequestedEvent.getPostData(),
-                                                                                         event, this);
+                PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl,
+                                                                                   urlRequestedEvent.getHeaders(), 
+                                                                                   urlRequestedEvent.getPostData(),
+                                                                                   event, this);
                 thread.start();
     
                 break;

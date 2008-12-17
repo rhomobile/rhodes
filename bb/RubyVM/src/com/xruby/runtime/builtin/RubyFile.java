@@ -237,4 +237,17 @@ public class RubyFile extends RubyIO {
         return com.xruby.runtime.lang.RubyKernelModule.open(receiver, args, block);
     }
 
+    //@RubyLevelMethod(name="extname", singleton=true)
+    public static RubyValue extname(RubyValue receiver, RubyValue arg) {
+        String filename = arg.toStr();
+        String ext = "";
+
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex != (filename.length() - 1)) {
+        	ext = filename.substring(dotIndex);
+        }
+
+        return ObjectFactory.createString(ext);
+    }
+    
 }

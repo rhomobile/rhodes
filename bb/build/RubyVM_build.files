@@ -300,6 +300,7 @@
 ..\RubyVM\src\com\xruby\runtime\builtin\RubyTime.java
 ..\RubyVM\src\com\xruby\runtime\builtin\RubyTopSelf.java
 ..\RubyVM\src\com\xruby\runtime\builtin\RubyTypesUtil.java
+..\RubyVM\src\com\xruby\runtime\builtin\InputStreamExecutor.java
 ..\RubyVM\src\com\xruby\runtime\lang\annotation\DummyMethod.java
 ..\RubyVM\src\com\xruby\runtime\lang\annotation\RubyAllocMethod.java
 ..\RubyVM\src\com\xruby\runtime\lang\annotation\RubyLevelClass.java
@@ -347,6 +348,7 @@
 ..\RubyVM\src\com\xruby\runtime\lang\RubyValue.java
 ..\RubyVM\src\com\xruby\runtime\lang\RubyVarArgBlock.java
 ..\RubyVM\src\com\xruby\runtime\lang\RubyVarArgMethod.java
+..\RubyVM\src\com\xruby\runtime\lang\RhoSupport.java
 ..\RubyVM\src\com\xruby\runtime\lang\util\CgMethodItem.java
 ..\RubyVM\src\com\xruby\runtime\lang\util\DummyMethod.java
 ..\RubyVM\src\com\xruby\runtime\lang\util\MethodFactory.java
