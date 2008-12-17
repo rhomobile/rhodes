@@ -10,6 +10,7 @@ mac/bin/*
 wm/bin/*
 win32/bin/*
 wm/target/*
+
 bb/.metadata/*
 
 symbian/.metadata/*

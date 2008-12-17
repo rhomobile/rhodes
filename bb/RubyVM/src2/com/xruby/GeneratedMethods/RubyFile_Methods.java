@@ -1,7 +1,6 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-import com.xruby.runtime.builtin.RubyFile;
 public class RubyFile_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -87,4 +86,10 @@ klass.getSingletonClass().defineMethod( "delete", new RubyVarArgMethod(){
 		return RubyFile.delete(receiver, args);}
 });
 klass.getSingletonClass().aliasMethod("unlink","delete");
+
+klass.getSingletonClass().defineMethod( "extname", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyFile.extname(receiver, arg);}
+});
+
 }}

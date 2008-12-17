@@ -295,6 +295,9 @@ public class RubyRuntime {
         StringIOClass = RubyAPI.defineClass("StringIO", RubyRuntime.ObjectClass);
         RubyStringIO_Methods.initMethods(StringIOClass);
         StringIOClass.includeModule(EnumerableModule);
+        
+        RhoSupport.init();
+        
       //  
         //StringIOClass = RubyTypeFactory.getClass(RubyStringIO.class);
 

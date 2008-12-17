@@ -293,6 +293,22 @@ public class RubyKernelModule {
         }*/
 	}
 
+	//RHO
+	//@RubyLevelMethod(name="__rhoGetCurrentDir", module=true)
+    public static RubyValue RhoGetCurrentDir(RubyValue receiver) {
+    	return ObjectFactory.createString("");
+    }
+    
+	//@RubyLevelMethod(name="eval_compiled_file", module=true)
+    public static RubyValue eval_compiled_file(RubyValue receiver, RubyValue file, RubyValue bindingArg) {
+        RubyBinding binding = null;
+        if (bindingArg != null && bindingArg instanceof RubyBinding) {
+            binding = (RubyBinding)bindingArg;
+        }
+    	
+    	return evalPrecompiledFile( file.toStr(), binding );
+    }
+	
 	private static RubyValue evalPrecompiledFile( String file_name, RubyBinding binding ){
 		String name = createMainClassName(file_name);
         try {
@@ -305,16 +321,21 @@ public class RubyKernelModule {
             } else {
                 return p.invoke();
             }
-        } catch (Exception e) {
-            throw new RubyException(e.getMessage());
+        }
+        catch (RubyException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RubyException(e.toString());
         }
 	}
+    //RHO
 
 	private static RubyValue eval(String evalText, RubyBinding binding, String file_name) {
 		//RHO_COMMENT: eval
-		if ( evalText.length() > 0 && file_name == null ){
-			return evalPrecompiledFile( evalText, binding);
-		}
+		//if ( evalText.length() > 0 && file_name == null ){
+		//	return evalPrecompiledFile( evalText, binding);
+		//}
 		throw new RubyException("Not implemented: eval(evalText,binding)");
 		
 		/*RubyCompiler compiler = new RubyCompiler(binding, false);
@@ -365,7 +386,7 @@ public class RubyKernelModule {
 
         return eval(args.get(0).toStr(), binding, file_name);
     }
-	
+   
 	//@RubyLevelMethod(name="method")
 	public static RubyValue objMethod(RubyValue receiver, RubyValue arg) {
 		String method_name = arg.toStr();
@@ -691,8 +712,13 @@ public class RubyKernelModule {
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {
             required_file = required_file.substring(0, required_file.length() - 3);
+        }else if (required_file.endsWith(".iseq")) {
+            required_file = required_file.substring(0, required_file.length() - 5);
         }
 
+        if ( required_file.charAt(0) == '/' || required_file.charAt(0) == '\\' )
+        	required_file = required_file.substring(1);
+        
         required_file = required_file.replace('/', '$');
         required_file = required_file.replace('\\', '$');
         required_file += ".main";
@@ -795,7 +821,10 @@ public class RubyKernelModule {
         String filename = args.get(0).toStr();
         RubyIO io;
         if (args.size() <= 1) {
-            io = ObjectFactory.createFile(filename, "r");
+            //io = ObjectFactory.createFile(filename, "r");
+        	//RHO_COMMENT
+        	io = ObjectFactory.createResourceFile(filename, "r");
+        	//RHO_COMMENT
         } else if (args.get(1) instanceof RubyFixnum) {
             String mode = "r";
             int i = args.get(1).toInt();
