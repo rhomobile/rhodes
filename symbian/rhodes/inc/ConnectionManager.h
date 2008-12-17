@@ -74,8 +74,10 @@ public:
 	RConnection*  GetConnection(){ return &iConnection; }
 	RSocketServ&  GetServerSocket(){ return iServerSocket; }
 	TApBearerType GetBearerFilter(){ return iBearerFilter; }
+	RHTTPSession  GetHTTPSession() { return iSessionHttp; }
 	
 	TBool 		  IsNewConnection(){ return iNewConnection; }
+	TBool         IsOfflineMode();
 	
 	TBool GetCredentialsL(const TUriC8& aURI, RString aRealm, RStringF aAuthenticationType, RString& aUsername, RString& aPassword);
 	

@@ -28,8 +28,6 @@
 #include "rhodesAppUI.h"
 
 #include "AppSoftkeysObserver.h"
-#include "StateChangeObserver.h"
-#include "LayoutObserver.h"
 #include "SpecialLoadObserver.h"
 
 #include <eiklabel.h>
@@ -91,19 +89,13 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	iCommandBase = TBrCtlDefs::ECommandIdBase;
 	
 	iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
-	iStateChangeObserver = CStateChangeObserver::NewL(this);
-	iLayoutObserver = CLayoutObserver::NewL(this);
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
 	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw |
-	                     TBrCtlDefs::ECapabilityGraphicalHistory | TBrCtlDefs::ECapabilityGraphicalPage | 
-	                     TBrCtlDefs::ECapabilityAccessKeys;
+	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys;
 
 	CreateBasicBrowserControlL();
 
-	// These observers can be added and removed dynamically
-    iBrCtlInterface->AddStateChangeObserverL(iStateChangeObserver);
-	
 	if ( iBrCtlInterface != NULL )
 		{
 			TRect rect( Position(), Size() );
@@ -147,14 +139,9 @@ CRhodesAppView::CRhodesAppView()
 CRhodesAppView::~CRhodesAppView()
 	{
 		if (iBrCtlInterface)
-	    {
-	    	iBrCtlInterface->RemoveStateChangeObserver(iStateChangeObserver);
 	        delete iBrCtlInterface;
-	    }
 		
-		delete iStateChangeObserver;
 		delete iAppSoftkeysObserver;
-		delete iLayoutObserver;
 		delete iSpecialLoadObserver;
 	}
 
@@ -317,7 +304,7 @@ void CRhodesAppView::CreateBasicBrowserControlL()
 	            iAppSoftkeysObserver, 
 	            NULL,
 	            iSpecialLoadObserver,
-	            iLayoutObserver, 
+	            NULL, 
 	            NULL);
 		}
 	}

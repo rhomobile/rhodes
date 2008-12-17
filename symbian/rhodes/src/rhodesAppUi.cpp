@@ -63,7 +63,7 @@ void CRhodesAppUi::ConstructL()
 	iHttpServer->ResumeThread();
 
 	//start sunc engine
-	//iSyncEngineWrap = CSyncEngineWrap::NewL(); 
+	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
 	
 	}
 // -----------------------------------------------------------------------------
