@@ -25,6 +25,7 @@
 #include "HttpConstants.h"
 
 #include <eikenv.h>
+#include <e32math.h>  //Rand
 
 CHttpFileManager::CHttpFileManager()
 	{
@@ -156,22 +157,27 @@ void CHttpFileManager::GetNewFile(TFileName& aFilePath, TFileName& aCompleteFile
 		_LIT(KFileExtension,".txt");
 		
 		_LIT(KTimeFormat,"%F%D%M%H%1%T");
-		TBuf<50> TimeDesc;
+		TBuf<50> buf;
 		TTime time;
 		time.HomeTime();
-		time.FormatL( TimeDesc, KTimeFormat);
-		TInt nSize = TimeDesc.Size();
-		aCompleteFileName.Append(TimeDesc);
+		time.FormatL( buf, KTimeFormat);
+		
+		aCompleteFileName.Append(buf);
+
+		TInt64 aSeed = time.Int64();
+		TInt randNum = Math::Rand(aSeed) % 1000;
+		aCompleteFileName.AppendNum(randNum);
+		
 		aCompleteFileName.Append(KFileExtension);
 		
 		if ( aIn )
 			aFilePath.Append( CHttpConstants::KHttpIN );
 		else
 			aFilePath.Append( CHttpConstants::KHttpOUT );
-		
+
 		if ( !aIn )
 			aFilePath.Append(CHttpConstants::KFileIncompletePrefix);
-		
+
 		aFilePath.Append(aCompleteFileName);
 	}
 
