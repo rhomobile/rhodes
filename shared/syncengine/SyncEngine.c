@@ -175,6 +175,7 @@ void start_sync_engine(sqlite3 *db) {
     int thread_error;
 	database = db;
 	
+#ifndef __SYMBIAN32__	
 	// Initialize thread
     return_val = pthread_attr_init(&attr);
 	pthread_condattr_init(&sync_details);
@@ -191,7 +192,13 @@ void start_sync_engine(sqlite3 *db) {
     if (thread_error != 0) {
 		  //TODO: Report error
     }
-	  
+#else
+    //[AA] posix thread is not required under the Symbian because we are using native Symbian threads
+	pthread_condattr_init(&sync_details);
+	pthread_cond_init(&sync_cond, &sync_details);
+	pthread_condattr_destroy(&sync_details);
+    
+#endif	  
 }
 
 void stop_sync_engine() {

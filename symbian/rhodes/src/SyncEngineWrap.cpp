@@ -92,7 +92,7 @@ void CSyncEngineWrap::ConstructL()
 		_LIT(KThreadName, "SyncThreadEntryPoint");
 		
 		//KMinHeapSize, 256*KMinHeapSize
-		TInt res = thread.Create(KThreadName, SyncThreadEntryPoint, 20000, 0x5000, 0x100000, this);
+		TInt res = thread.Create(KThreadName, SyncThreadEntryPoint, 20000, 0x5000, 0x200000, this);
 		
 		if ( res != KErrNone )
 			Panic( ERhodesSyncEngineInit);
