@@ -31,8 +31,6 @@
 //FORWARD DECLARATION
 class CRhodesAppUi;
 class CAppSoftkeysObserver;
-class CStateChangeObserver;
-class CLayoutObserver;
 class CSpecialLoadObserver;
 
 // CLASS DECLARATION
@@ -188,16 +186,8 @@ private: //data
         // Softkeys Observer
         CAppSoftkeysObserver* iAppSoftkeysObserver;
 
-        // State Change Observer
-        CStateChangeObserver* iStateChangeObserver;
-        
-        // Layout Observer
-        CLayoutObserver* iLayoutObserver;
-
         // Special Load Observer
         CSpecialLoadObserver* iSpecialLoadObserver;
-        
-       
 	};
 
 #endif // __RHODESAPPVIEW_h__

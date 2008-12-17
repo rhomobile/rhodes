@@ -96,8 +96,7 @@ protected:
 	TInt ExecuteL();
 	
 	void SendWindowEvent(TInt aEvent);
-
-
+	
 private: //data
 	
 	RThread thread;

@@ -47,11 +47,12 @@ SOURCE			rhodesAppView.cpp
 SOURCE			rhodesAppUi.cpp
 SOURCE			rhodesDocument.cpp
 SOURCE 			HttpServer.cpp
-SOURCE      AppSoftkeysObserver.cpp StateChangeObserver.cpp LayoutObserver.cpp
-SOURCE      SyncEngineWrap.cpp
-SOURCE      ConnectionManager.cpp SpecialLoadObserver.cpp
-SOURCE      geolocation.c 
-SOURCE      rsyncengine.c 
+SOURCE 			AppSoftkeysObserver.cpp
+SOURCE 			SyncEngineWrap.cpp
+SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp
+SOURCE 			geolocation.c 
+SOURCE 			rsyncengine.c 
+SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
 
 //Shared syncengine
 SOURCEPATH 		..\..\..\shared\syncengine
@@ -107,6 +108,7 @@ LIBRARY                                 commdb.lib
 LIBRARY                                 http.lib
 LIBRARY                                 esock.lib
 LIBRARY                                 centralrepository.lib
+LIBRARY                                 inetprotutil.lib
 
 LIBRARY 	   libc.lib 
 LIBRARY 	   libpthread.lib 

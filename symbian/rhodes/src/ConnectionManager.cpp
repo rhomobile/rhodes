@@ -87,6 +87,10 @@ void CConnectionManager::Release()
 	    iServerSocket.Close();
 	}
 
+TBool  CConnectionManager::IsOfflineMode()
+	{
+		return (iPreviousProfileId == EConnectionStatus::Disconnected) ? ETrue : EFalse;
+	}
 
 TBool CConnectionManager::SetupConnection()
 	{
@@ -267,7 +271,8 @@ TBool CConnectionManager::FindExistingConnection()
 }
 
 
-TBool CConnectionManager::GetCredentialsL(const TUriC8& aURI, RString aRealm, RStringF aAuthenticationType, RString& aUsername, RString& aPassword)
+TBool CConnectionManager::GetCredentialsL(const TUriC8& /*aURI*/, RString /*aRealm*/, 
+		RStringF /*aAuthenticationType*/, RString& /*aUsername*/, RString& /*aPassword*/)
 {
 
     //// Return ETrue if user has given credentials (username and password),
