@@ -16,7 +16,7 @@ begin
     require 'sqlite3/value'
 
     require 'sqlite3/database'
-	require 'rhom/rhom_db_adapter'
+    require 'rhom/rhom_db_adapter'
 	
     require 'rhom/rhom_object'
     require 'rhofsconnector'
@@ -29,10 +29,10 @@ begin
     require 'rho/rhoapplication'
     
     require 'rho/rho'
-	require 'rho'
+    require 'rho'
 	
-	puts 'RHO loaded'
-	Rho::RHO.new
+    puts 'RHO loaded'
+    Rho::RHO.new
 rescue Exception => e
-	puts e.message
+    puts e.message
 end
