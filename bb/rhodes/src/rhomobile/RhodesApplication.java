@@ -250,7 +250,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 if ( !absoluteUrl.startsWith(_httpRoot) )
                 	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
     
-                addToHistory(absoluteUrl);
+                if ( urlRequestedEvent.getPostData() == null ||
+                	 urlRequestedEvent.getPostData().length == 0 )
+                	addToHistory(absoluteUrl);
                 
                 PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl,
                                                                                    urlRequestedEvent.getHeaders(), 
@@ -305,7 +307,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
-                        	addToHistory(e.getLocation());                        	
+                            String absoluteUrl = e.getLocation();
+                            if ( !absoluteUrl.startsWith(_httpRoot) )
+                            	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
+                        	
+                        	addToHistory(absoluteUrl);                        	
                             Object eventSource = e.getSource();
                             if (eventSource instanceof HttpConnection) {
                                 referrer = ((HttpConnection)eventSource).getRequestProperty(REFERER);

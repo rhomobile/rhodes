@@ -14,7 +14,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.RubyKernelModule;
+import com.xruby.runtime.lang.RhoSupport;
 
 public class RhoConnection implements HttpConnection {
 	/** Request URI **/
@@ -339,6 +339,12 @@ public class RhoConnection implements HttpConnection {
 		contentLength = 0;
 	}
 
+	void respondOK(){
+		responseCode = HTTP_OK;
+		responseMsg = "Success";
+		contentLength = 0;
+	}
+	
 	void respondNotFound( String strError ){
 		responseCode = HTTP_NOT_FOUND;
 		responseMsg = "Not found";
@@ -367,7 +373,7 @@ public class RhoConnection implements HttpConnection {
 	}
 	
 	protected Class findClass(String path){
-		String name = RubyKernelModule.createMainClassName(path);
+		String name = RhoSupport.createMainClassName(path);
 		Class c = null;
 		
 		try{
@@ -457,6 +463,27 @@ public class RhoConnection implements HttpConnection {
 		return httpServeFile();
 	}
 	
+	protected boolean checkRhoExtensions(String application, String model ){
+		if ( application.equalsIgnoreCase("AppManager") ){
+			//TODO: AppManager
+			respondOK();
+			return true;
+		}else if ( application.equalsIgnoreCase("system") ){
+			if ( model.equalsIgnoreCase("geolocation") ){
+				//TODO: geolocation
+				respondOK();
+				return true;
+			}else if ( model.equalsIgnoreCase("syncdb") ){
+				com.rho.sync.SyncEngine.wakeUp();
+				respondOK();
+				return true;
+			}
+		}else if ( application.equalsIgnoreCase("shared") )
+			return false;
+		
+		return false;
+	}
+	
 	protected boolean dispatch()throws IOException{
 		UrlParser up = new UrlParser(uri.getPath());
 		String apps = up.next();
@@ -470,7 +497,10 @@ public class RhoConnection implements HttpConnection {
 		
 		if ( model.length() == 0 )
 			return false;
-			
+		
+		if ( checkRhoExtensions(application, model ) )
+			return true;
+		
 		Properties reqHash = new Properties();
 		
 		String actionid = up.next();
@@ -517,67 +547,6 @@ public class RhoConnection implements HttpConnection {
 			requestProcessed = true;
 		}
 	}
-	/*
-	protected void processRequest() throws IOException {
-		if (!requestProcessed) {
-			log("Processing request : " + uri.toString() );
-			if ( uri.getPath().length() == 0 || uri.getPath() == "/" ){
-				//index page
-				redirectTo("index.html");
-			}else{
-				String strContType = getContentType(uri.getPath());
-				if ( strContType.equals("application/javascript"))
-					responseData = new ByteArrayInputStream(new String("").getBytes());
-				else	
-					responseData = RhoRuby.loadFile("/apps"+uri.getPath());
-				
-				if (responseData!= null){
-					resHeaders.addProperty("Content-Type", strContType );
-					contentLength = responseData.available(); 
-					resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
-				}else{
-					UrlParser up = new UrlParser(uri.getPath());  
-					String application = up.next();
-					String model = up.next();
-					
-					if ( model.length() == 0 ){
-						redirectTo(application+"/index.html");
-					}else{
-						Properties reqHash = new Properties();
-						
-						String actionid = up.next();
-						String actionnext = up.next();
-						if ( actionid.length() > 0 ){
-							if ( actionid.length() > 2 && 
-								 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
-								reqHash.setProperty( "id", actionid);
-								reqHash.setProperty( "action", actionnext);
-							}else{
-								reqHash.setProperty( "id", actionnext);
-								reqHash.setProperty( "action", actionid);
-							}
-						}
-						reqHash.setProperty( "application",application);
-						reqHash.setProperty( "model", model);
-
-						reqHash.setProperty("request-method", this.method);
-						reqHash.setProperty("request-uri", uri.toString());
-						reqHash.setProperty("request-query", uri.getQueryString());
-						
-						if ( postData != null && postData.size() > 0 ){
-							log(postData.toString());
-							reqHash.setProperty("request-body", postData.toString());
-						}
-						
-						RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
-						processResponse(res);
-					}					
-				}
-			}
-			
-			requestProcessed = true;
-		}
-	}*/
 
 	private void processResponse(RubyValue res){
 		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){

@@ -1,7 +1,7 @@
 rmdir RhoBundle /S /Q
 xcopy "../../shared/framework/lib" RhoBundle /S /I /EXCLUDE:excludeFRMWK.txt
 del "RhoBundle\date.rb"
-del "RhoBundle\rho\rhofsconnectorME.rb"
+
 xcopy "../../apps/Rhosugar" "RhoBundle/apps/Rhosugar" /S /I /EXCLUDE:excludeAPPS.txt
 xcopy "../../apps/Sources" "RhoBundle/apps/Sources" /S /I /EXCLUDE:excludeAPPS.txt
 xcopy "../../apps/*.erb" "RhoBundle/apps" /I /F

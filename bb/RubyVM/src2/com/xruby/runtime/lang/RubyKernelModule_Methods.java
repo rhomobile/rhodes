@@ -298,14 +298,4 @@ klass.defineModuleMethod( "Integer", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyKernelModule.toInteger(receiver, arg);}
 });
-//RHO
-klass.defineModuleMethod( "eval_compiled_file", new RubyTwoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block ){
-		return RubyKernelModule.eval_compiled_file(receiver, arg1, arg2);}
-});
-klass.defineModuleMethod( "__rhoGetCurrentDir", new RubyNoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyBlock block ){
-		return RubyKernelModule.RhoGetCurrentDir(receiver);}
-});
-//RHO
 }}

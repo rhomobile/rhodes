@@ -1,4 +1,3 @@
-#require 'erb'
 	
 module Rho
   class RhoController

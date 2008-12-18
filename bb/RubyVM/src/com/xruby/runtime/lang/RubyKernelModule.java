@@ -293,49 +293,8 @@ public class RubyKernelModule {
         }*/
 	}
 
-	//RHO
-	//@RubyLevelMethod(name="__rhoGetCurrentDir", module=true)
-    public static RubyValue RhoGetCurrentDir(RubyValue receiver) {
-    	return ObjectFactory.createString("");
-    }
-    
-	//@RubyLevelMethod(name="eval_compiled_file", module=true)
-    public static RubyValue eval_compiled_file(RubyValue receiver, RubyValue file, RubyValue bindingArg) {
-        RubyBinding binding = null;
-        if (bindingArg != null && bindingArg instanceof RubyBinding) {
-            binding = (RubyBinding)bindingArg;
-        }
-    	
-    	return evalPrecompiledFile( file.toStr(), binding );
-    }
-	
-	private static RubyValue evalPrecompiledFile( String file_name, RubyBinding binding ){
-		String name = createMainClassName(file_name);
-        try {
-            Class c = Class.forName(name);
-            Object o = c.newInstance();
-            RubyProgram p = (RubyProgram) o;
-
-            if (null != binding) {
-                return p.invoke(binding.getSelf(), binding.getVariables(), binding.getBlock(), binding.getScope());
-            } else {
-                return p.invoke();
-            }
-        }
-        catch (RubyException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new RubyException(e.toString());
-        }
-	}
-    //RHO
-
 	private static RubyValue eval(String evalText, RubyBinding binding, String file_name) {
 		//RHO_COMMENT: eval
-		//if ( evalText.length() > 0 && file_name == null ){
-		//	return evalPrecompiledFile( evalText, binding);
-		//}
 		throw new RubyException("Not implemented: eval(evalText,binding)");
 		
 		/*RubyCompiler compiler = new RubyCompiler(binding, false);
@@ -708,30 +667,10 @@ public class RubyKernelModule {
         return RubyConstant.QTRUE;*/
     }
     
-    public static String createMainClassName(String required_file) {
-        //remove ".rb" if has one
-        if (required_file.endsWith(".rb")) {
-            required_file = required_file.substring(0, required_file.length() - 3);
-        }else if (required_file.endsWith(".iseq")) {
-            required_file = required_file.substring(0, required_file.length() - 5);
-        }
-
-        if ( required_file.charAt(0) == '/' || required_file.charAt(0) == '\\' )
-        	required_file = required_file.substring(1);
-        
-        required_file = required_file.replace('/', '$');
-        required_file = required_file.replace('\\', '$');
-        required_file += ".main";
-        return "xruby." + required_file;
-    }
-    
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)
     public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
-    	//RHO_COMMENT: loadWithReflection
-    	//return RubyConstant.QFALSE;
-    	
         String required_file = arg.toStr();
-        String name = /*NameFactory.*/createMainClassName(required_file);
+        String name = RhoSupport.createMainClassName(required_file);
         try {
             Class c = Class.forName(name);
             Object o = c.newInstance();
