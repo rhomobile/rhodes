@@ -20,11 +20,10 @@
 
 #include "Source.h"
 
-pSource SourceCreate(char *source_url, int source_id, char *client_id) {
+pSource SourceCreate(char *source_url, int source_id) {
 	pSource source = malloc(sizeof(Source));
 	source->_source_url = str_assign(source_url);
 	source->_source_id = source_id;
-	source->_client_id = str_assign(client_id);
 	return source;
 }
 
@@ -40,7 +39,6 @@ void SourceRelease(pSource source) {
 	if(source != NULL) {
 		if(source->_source_url != NULL) {
 			free(source->_source_url);
-			free(source->_client_id);
 		}
 		free(source);
 	}

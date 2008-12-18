@@ -24,7 +24,7 @@ void finalize_src_statements() {
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(sqlite3 *database) {
+int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	pSyncObject *list;
 	char url_string[4096];
 	int max_size = 100;
@@ -44,7 +44,7 @@ int fetch_remote_changes(sqlite3 *database) {
 				"%s%s&client_id=%s", 
 				source_list[i]->_source_url, 
 				SYNC_SOURCE_FORMAT, 
-				source_list[i]->_client_id);
+				client_id);
 		printf("url_string: %s\n", url_string);
 		
 		json_string = fetch_remote_data(url_string);
@@ -113,14 +113,13 @@ int push_remote_changes(pSyncOperation *list, int size) {
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
-	prepare_db_statement("SELECT source_id,source_url,client_id from sources", 
+	prepare_db_statement("SELECT source_id,source_url from sources", 
 						 database, 
 						 &op_list_source_ids_statement);
 	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
 		int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
 		char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
-		char *client_id = (char *)sqlite3_column_text(op_list_source_ids_statement, 2);
-		list[count] = SourceCreate(url, id, client_id);
+		list[count] = SourceCreate(url, id);
 		count++;
 	}
 	sqlite3_reset(op_list_source_ids_statement);
@@ -144,34 +143,32 @@ int get_object_count_from_database(sqlite3 *database) {
 }
 
 /* setup client id from database, otherwise intialize from source */
-void setup_client_id(sqlite3 *database, pSource source) {
+char *get_client_id(sqlite3 *database, pSource source) {
 	char *json_string;
 	char url_string[4096];
-	char *c_id;
-	prepare_db_statement("SELECT client_id from sources where source_id=?",
+	char *c_id = NULL;
+	prepare_db_statement("SELECT client_id from client_info limit 1",
 						 database,
 						 &client_id_statement);
-	sqlite3_bind_int(client_id_statement, 1, source->_source_id);
-	sqlite3_step(client_id_statement) == SQLITE_ROW;
-	c_id = (char *)sqlite3_column_text(client_id_statement, 0);
+	sqlite3_step(client_id_statement);
+	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
 	if (c_id != NULL) {
-		source->_client_id = str_assign(c_id);
-		printf("Using client_id %s from database...\n", source->_client_id);
+		printf("Using client_id %s from database...\n", c_id);
 	} else {
 		sqlite3_reset(client_id_statement);
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
-			source->_client_id = str_assign((char *)parse_client_id(json_string));
+			c_id = str_assign((char *)parse_client_id(json_string));
 		}
-		prepare_db_statement("UPDATE sources set client_id=? where source_id=?",
+		prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
 							 database,
 							 &client_id_statement);
-		sqlite3_bind_text(client_id_statement, 1, source->_client_id, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_int(client_id_statement, 2, source->_source_id);
+		sqlite3_bind_text(client_id_statement, 1, c_id, -1, SQLITE_TRANSIENT);
 		sqlite3_step(client_id_statement);
-		printf("Intialized new client_id %s from source...\n", source->_client_id);
+		printf("Intialized new client_id %s from source...\n", c_id);
 	}
 	sqlite3_reset(client_id_statement);
 	sqlite3_finalize(client_id_statement);
+	return c_id;
 }
