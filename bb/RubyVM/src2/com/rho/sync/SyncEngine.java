@@ -132,6 +132,13 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QTRUE;
 	}
 
+	public static void wakeUp() {
+		// Initialize only one thread
+		if (sThread != null) {
+			sThread.wakeUpSyncEngine();
+		}
+	}
+	
 	// @RubyLevelMethod(name="stop")
 	/**
 	 * Stop.

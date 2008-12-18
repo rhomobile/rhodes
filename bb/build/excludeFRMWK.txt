@@ -1,5 +1,4 @@
 erb.rb
 find.rb
-renderME.rb
 rhom_db_adapter.rb
 singleton.rb

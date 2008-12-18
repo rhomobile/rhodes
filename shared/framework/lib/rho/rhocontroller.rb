@@ -1,9 +1,4 @@
-#if defined? RHO_ME
-#	require 'rho/renderME'
-#else
-	require 'rho/render'
-#end
-
+require 'rho/render'
 require 'rho/rhosupport'
 
 module Rho
