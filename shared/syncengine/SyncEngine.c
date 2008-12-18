@@ -41,13 +41,16 @@ int process_local_changes() {
 	  int i,result,source_length;
 	  int max_size = 100;
 	  pSource *source_list;
+	  char *client_id = NULL;
 	  source_list = malloc(max_size*sizeof(pSource));
 	  source_length = get_sources_from_database(source_list, database, max_size);
 	  
 	  for(i = 0; i < source_length; i++) {
+		  if(client_id == NULL) {
+			  client_id = get_client_id(database, source_list[i]);  
+		  }
 		  result = 0;
 		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
-		  setup_client_id(database, source_list[i]);
 		  result += process_op_list(source_list[i], "update");
 		  result += process_op_list(source_list[i], "create");
 		  result += process_op_list(source_list[i], "delete");
@@ -57,15 +60,16 @@ int process_local_changes() {
 		  printf("Remote update failed, not continuing with sync...\n");
 	  } else {
 		  /* fetch new list from sync source */
-		  int available_remote = fetch_remote_changes(database);
+		  int available_remote = fetch_remote_changes(database, client_id);
 		  if(available_remote > 0) {
 			  printf("Successfully processed %i records...\n", available_remote);
   			
 		  }
-		  /* update the in-memory list */
-		  /*populate_list(database);*/
 	  }
 	  free_source_list(source_list, source_length);
+	  if (client_id) {
+		  free(client_id);  
+	  }
   } else {
 	  finalize_statements();
 	  finalize_op_statements();

@@ -32,12 +32,11 @@ extern "C" {
 typedef struct {
 	int				_source_id;		/* id corresponding to source */
 	char*			_source_url;	/* url for the source */
-	char*			_client_id;		/* client_id for a given source */
 } Source;
 	
 typedef Source* pSource;
 	
-pSource SourceCreate(char *source_url, int source_id, char *client_id);
+pSource SourceCreate(char *source_url, int source_id);
 	
 void free_source_list(pSource *list, int length);
 	
