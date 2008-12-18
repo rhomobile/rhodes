@@ -16,7 +16,6 @@ AutoRestart=0
 [DependsOn
 PerstImplJSR75
 PerstLite
-RhoBundle
 RubyVM
 ]
 ExcludeFromBuildAll=0
@@ -30,6 +29,7 @@ src\rhomobile\RhoRuby.java
 src\rhomobile\SecondaryResourceFetchThread.java
 src\rhomobile\URI.java
 src\rhomobile\Utilities.java
+../bin/RhoBundle.jar
 ]
 HaveAlxImports=0
 HaveDefs=0
