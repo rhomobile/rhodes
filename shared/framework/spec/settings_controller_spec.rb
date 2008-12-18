@@ -30,15 +30,16 @@ describe "Rho" do
   end
   
   it "should get all sources for index" do 
-    @controller.get_all_sources.size.should == 4
+    @controller.get_all_sources.size.should > 0
   end
   
   it "should retrieve source for update" do
-    @controller.get_source('{1}')['source_url'].should == 'http://rhosync.rhohub.com/sources/1'
+    @controller.get_source('{1}')['source_url'].should =~ /sources\/1/
+    
   end
   
   it "should retrieve source without braces" do
-    @controller.get_source('1')['source_url'].should == 'http://rhosync.rhohub.com/sources/1'
+    @controller.get_source('1')['source_url'].should =~ /sources\/1/
   end
   
   it "should update source" do
