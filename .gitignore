@@ -10,10 +10,12 @@ mac/bin/*
 wm/bin/*
 win32/bin/*
 wm/target/*
+wm/build/cleanup.js
 
 bb/.metadata/*
 bb/bin/*
 bb/target/*
+bb/build/LogFile.txt
 bb/*/.settings
 bb/*/.project
 bb/*/.classpath

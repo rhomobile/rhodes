@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="src" path="/.bb.jdw"/>
-	<classpathentry kind="src" path=".tmp"/>
-	<classpathentry exported="true" kind="src" path="/RubyVM"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

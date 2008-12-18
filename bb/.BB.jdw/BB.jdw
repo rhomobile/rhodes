@@ -13,12 +13,10 @@ DependenciesInWorkspace=0
 [Projects
 ..\PerstDb\blackberry_jde\PerstImplJSR75.jdp
 ..\PerstDb\blackberry_jde\PerstLite.jdp
-..\RhoBundle\RhoBundle.jdp
 ..\rhodes\rhodes.jdp
 ..\RubyVM\RubyVM.jdp
 ]
 [ReleaseActiveProjects
-..\RhoBundle\RhoBundle.jdp
 ..\rhodes\rhodes.jdp
 ..\RubyVM\RubyVM.jdp
 ]
