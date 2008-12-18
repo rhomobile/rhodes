@@ -7,21 +7,29 @@
 
   <property name="rubylib.dir" location="../framework/lib" />
 
+  <condition property="compileERB.path" value="compileERB.rb">
+    <not><isset property="compileERB.path"/></not>
+  </condition>
+
+  <condition property="srclib.dir" value="${src.dir}/lib">
+    <not> <isset property="srclib.dir"/> </not>
+  </condition>
+
   <target name="clean" description="clean build">
 		<delete dir="${src.dir}" />
 		<mkdir dir="${src.dir}" />
 	</target>
 
 	<target name="RhoBundle" depends="clean">
-        <copy todir="${src.dir}/lib">
-            <fileset dir="../../shared/framework/lib">
+        <copy todir="${srclib.dir}">
+            <fileset dir="../../shared/framework/lib" excludes="${exclude.lib}" >
                 <include name="**/*.rb" />
                 <exclude name="**/erb.rb" />
                 <exclude name="**/find.rb" />
             </fileset>
         </copy>
         <copy todir="${src.dir}/apps">
-            <fileset dir="../../apps">
+            <fileset dir="../../apps" excludes ="${exclude.apps}" >
                 <include name="**/*.rb" />
                 <include name="**/*.erb" />
                 <include name="**/*.html" />
@@ -30,17 +38,6 @@
               
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
-                <exclude name="shared/js/**" />
-            </fileset>
-        </copy>
-        <copy todir="${src.dir}/lib/sqlite3">
-            <fileset dir="../../shared/sqlite3">
-                <include name="**/*.rb" />
-            </fileset>
-        </copy>
-        <copy todir="${src.dir}/db">
-            <fileset dir="../../shared/db">
-                <include name="**/*.sqlite" />
             </fileset>
         </copy>
     </target>
@@ -60,36 +57,57 @@
 
   <target name="compileERB" depends="createAppManifest">
 
-        <copy file="compileERB.rb" todir="${src.dir}"/>
+    <copy file="${compileERB.path}" todir="${src.dir}"/>
 
-        <exec executable="${ruby.path}">
-            <arg value="-R${rubylib.dir}" />
-            <arg value="${src.dir}/compileERB.rb" />
-        </exec>
+    <exec executable="${ruby.path}">
+      <arg value="-R${rubylib.dir}" />
+      <arg value="${src.dir}/compileERB.rb" />
+    </exec>
 
-        <delete file="${src.dir}/compileERB.rb" />
+    <delete file="${src.dir}/compileERB.rb" />
 
-    </target>
+  </target>
 
-    <target name="compileRB" depends="compileERB">
-        <copy file="compileRB.rb" todir="${src.dir}"/>
+  <target name="bundleCommon" depends="compileERB">
+  </target>
 
-        <exec executable="${ruby.path}">
-            <arg value="-R${rubylib.dir}" />
-            <arg value="${src.dir}/compileRB.rb" />
-        </exec>
+  <target name="bundleDB" depends="bundleCommon">
+    <copy todir="${src.dir}/lib/sqlite3">
+      <fileset dir="../../shared/sqlite3">
+        <include name="**/*.rb" />
+      </fileset>
+    </copy>
+    <copy todir="${src.dir}/db">
+      <fileset dir="../../shared/db">
+        <include name="**/*.sqlite" />
+      </fileset>
+    </copy>
+  </target>
 
-        <delete file="${src.dir}/compileRB.rb" />
+  <target name="compileRB" depends="bundleDB">
+    <copy file="compileRB.rb" todir="${src.dir}"/>
 
-    </target>
+    <exec executable="${ruby.path}">
+        <arg value="-R${rubylib.dir}" />
+        <arg value="${src.dir}/compileRB.rb" />
+    </exec>
 
-    <target name="all" depends="compileRB">
+    <delete file="${src.dir}/compileRB.rb" />
 
-        <delete>
-            <fileset dir="${src.dir}" includes="**/*.rb"/>
-            <fileset dir="${src.dir}" includes="**/*.erb"/>            
-        </delete>
+  </target>
 
-    </target>
+  
+  <target name="deleteRBandERB">
+
+    <delete>
+      <fileset dir="${src.dir}" includes="**/*.rb"/>
+      <fileset dir="${src.dir}" includes="**/*.erb"/>            
+    </delete>
+
+  </target>
+
+  <target name="all" depends="compileRB,deleteRBandERB">
+
+  </target>
 
 </project>

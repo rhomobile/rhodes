@@ -1,4 +1,0 @@
-erb.rb
-find.rb
-rhom_db_adapter.rb
-singleton.rb

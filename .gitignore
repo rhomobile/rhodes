@@ -12,6 +12,13 @@ win32/bin/*
 wm/target/*
 
 bb/.metadata/*
+bb/bin/*
+bb/target/*
+bb/*/.settings
+bb/*/.project
+bb/*/.classpath
+*.cso
+bb/.BB.jdw/*.files
 
 symbian/.metadata/*
 symbian/bin/*
