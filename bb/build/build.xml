@@ -62,6 +62,8 @@
 
     <delete dir="${target.dir}" />
     <mkdir dir="${target.dir}" />
+
+    <delete file="../RhoBundle/RhoBundle.jar" />
   </target>
 
   <target name="RhoBundle" depends="clean">
@@ -83,7 +85,15 @@
     </exec>
 
     <delete dir="${src.dir}" />
-    
+
+    <exec executable="${jde.home}/bin/preverify.exe">
+      <arg value="-classpath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
+      <arg value="-d" />
+      <arg value="../RhoBundle" />
+      <arg value="${bin.dir}/RhoBundle.jar" />
+    </exec>
+
   </target>
 
   <target name="compileSrc" depends="RhoBundle">
