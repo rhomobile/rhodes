@@ -8,6 +8,8 @@
   <property name="sharedAnt.dir" value="../../shared/build" />
   <property name="target.dir" location="../target/N95" />
 
+  <property name="exclude.apps" value="shared/js/**" />
+
   <target name="all">
 
     <delete dir="${target.dir}" />

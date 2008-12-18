@@ -9,6 +9,8 @@
   <property name="cabWiz.dir" value="C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz" />
   <property name="target.dir" location="../target/wm6p" />
 
+  <property name="exclude.apps" value="shared/js/**" />
+
   <target name="all">
 
     <delete dir="${target.dir}" />
