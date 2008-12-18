@@ -17,7 +17,10 @@ bb/target/*
 bb/*/.settings
 bb/*/.project
 bb/*/.classpath
+bb/*/*/.classpath
 *.cso
+*.csl
+*.err
 bb/.BB.jdw/*.files
 
 symbian/.metadata/*

@@ -107,6 +107,7 @@
   </target>
 
   <target name="all" depends="compileRB,deleteRBandERB">
+    <delete file="LogFile.txt" />
 
   </target>
 
