@@ -175,7 +175,7 @@
 
     <antcall target="${signType.target}" />
       
-    <delete dir="${tmp.dir}" />
+    <delete dir="${bin.dir}" />
 
     <!-- Create web directory -->
     <copy file="${target.dir}/rhodesApp.jad" todir="${target.dir}/web">
