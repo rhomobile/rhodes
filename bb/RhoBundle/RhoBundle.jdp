@@ -19,7 +19,7 @@ RubyVM
 ExcludeFromBuildAll=0
 [Files
 RhoBundle.alx
-RhoBundle.jar
+../bin/RhoBundle.jar
 ]
 HaveAlxImports=0
 HaveDefs=0
