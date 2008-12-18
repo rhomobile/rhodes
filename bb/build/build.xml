@@ -21,11 +21,11 @@
   <property name="BBLib.dir" location="lib" />
   <property name="tmp.dir" value="${bin.dir}/tmp" />
 
-  <condition property="javac.home" value="${javac46.home}">
-    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  <condition property="javac.home" value="${javac41.home}">
+    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
   </condition>
-  <condition property="jde.home" value="${jde46.home}">
-    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  <condition property="jde.home" value="${jde41.home}">
+    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
   </condition>
 
   <condition property="javac.home" value="${javac42.home}">
@@ -33,6 +33,27 @@
   </condition>
   <condition property="jde.home" value="${jde42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+  </condition>
+
+  <condition property="javac.home" value="${javac43.home}">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
+  <condition property="jde.home" value="${jde43.home}">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
+
+  <condition property="javac.home" value="${javac46.home}">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+  <condition property="jde.home" value="${jde46.home}">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+
+  <condition property="signType.target" value="autoSign">
+    <isset property="bbsign.pwd"/>
+  </condition>
+  <condition property="signType.target" value="manualSign">
+    <not> <isset property="bbsign.pwd"/> </not>
   </condition>
 
   <target name="clean">
@@ -104,6 +125,26 @@
 
   </target>
 
+  <target name="autoSign">
+    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
+      <arg value="-jar" />
+      <arg value="${jde.home}\bin\SignatureTool.jar" />
+      <arg value="-c" />
+      <arg value="-a" />
+      <arg value="-p" />
+      <arg value="${bbsign.pwd}" />
+      <arg value="rhodesApp.cod" />
+    </exec>
+  </target>
+  
+  <target name="manualSign">
+    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
+      <arg value="-jar" />
+      <arg value="${jde.home}\bin\SignatureTool.jar" />
+      <arg value="rhodesApp.cod" />
+    </exec>
+  </target>
+
   <target name="rhodes" depends="compileSrc">
 
     <rapc output="rhodesApp" destdir="${target.dir}" nowarn="true" quiet="true" verbose="false">
@@ -122,10 +163,8 @@
       </fileset>
     </copy>
 
-    <java jar="${jde.home}\bin\SignatureTool.jar" fork="true">
-      <arg value="${target.dir}/rhodesApp.cod" />
-    </java>
-
+    <antcall target="${signType.target}" />
+      
     <delete dir="${tmp.dir}" />
 
     <!-- Create web directory -->
