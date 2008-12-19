@@ -1,6 +1,6 @@
 = Introduction 
 
-The Rhodes framework is a platform for building locally executing, device-optimized mobile applications for all major smartphone devices. These applications are optimized for interacting with transactional enterprise application backends. It is also designed to work with synced local using "RhoSync"[http://github.com/rhomobile/rhosync/tree/master]. It is initially available for iPhone, Windows Mobile and Research in Motion (Blackberry) smartphones.  Support for Android and Symbian is planned.  
+The Rhodes framework is a platform for building locally executing, device-optimized mobile applications for all major smartphone devices. These applications are optimized for interacting with transactional enterprise application backends. It is also designed to work with synced local using RhoSync[http://github.com/rhomobile/rhosync/tree/master]. It is initially available for iPhone, Windows Mobile and Research in Motion (Blackberry) smartphones.  Support for Android and Symbian is planned.  
 
 Rhodes takes much of its inspiration from web-oriented MVC style frameworks such as Ruby on Rails. However it has several simplifications and optimizations for the mobile scenario. Some of these are to make it easier for the developer. Most of them are to keep the framework as lightweight as possible to be able to run on mobile devices with limited memory. As with developing apps on any good app framework (Rails, Merb, Django), building a Rhodes mobile application consists of building a set of files and putting them into the right directories for the respective models.
 
@@ -78,11 +78,11 @@ Inside the iPhone directory is an iPhone XCode project.  Load that project (curr
 
 = More Resources
 
-There is a "tutorial available":[http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile] on the "Rhomobile site":http://rhomobile.com
+There is a tutorial available[http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile] on the "Rhomobile site"[http://rhomobile.com]
 
-The "Rhodes spec"[http://rhomobile.com/wiki/index.php?title=Rhodes] is also available on the "Rhomobile wiki"[http://rhomobile.com/wiki/index.php?title=Rhomobile]
+The Rhodes spec[http://rhomobile.com/wiki/index.php?title=Rhodes] is also available on the Rhomobile wiki[http://rhomobile.com/wiki/index.php?title=Rhomobile]
 
-For further questions "email us"[mailto:info@rhomobile.com]
+For further questions email us[mailto:info@rhomobile.com]
 
 = Known Issues
 
