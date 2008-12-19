@@ -74,8 +74,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 250224734;
-			PBXWorkspaceStateSaveDate = 250224734;
+			PBXPerProjectTemplateStateSaveDate = 250815075;
+			PBXWorkspaceStateSaveDate = 250815075;
 		};
 		perUserProjectItems = {
 			6632090F0EB240B10040AB39 /* PBXTextBookmark */ = 6632090F0EB240B10040AB39 /* PBXTextBookmark */;
@@ -102,10 +102,7 @@
 			66BC6C960EEA0E3700C4F90D /* PBXTextBookmark */ = 66BC6C960EEA0E3700C4F90D /* PBXTextBookmark */;
 			66C517490EEF52AC00DEA758 /* PBXTextBookmark */ = 66C517490EEF52AC00DEA758 /* PBXTextBookmark */;
 			66C5174A0EEF52AC00DEA758 /* PBXTextBookmark */ = 66C5174A0EEF52AC00DEA758 /* PBXTextBookmark */;
-			66C5174C0EEF52AC00DEA758 /* PBXTextBookmark */ = 66C5174C0EEF52AC00DEA758 /* PBXTextBookmark */;
-			66C5174E0EEF52AC00DEA758 /* PBXTextBookmark */ = 66C5174E0EEF52AC00DEA758 /* PBXTextBookmark */;
 			66C5174F0EEF52AC00DEA758 /* PBXTextBookmark */ = 66C5174F0EEF52AC00DEA758 /* PBXTextBookmark */;
-			66C517510EEF52AC00DEA758 /* PBXTextBookmark */ = 66C517510EEF52AC00DEA758 /* PBXTextBookmark */;
 			66D29E5B0EB67C3C007F6639 /* PBXTextBookmark */ = 66D29E5B0EB67C3C007F6639 /* PBXTextBookmark */;
 			66D29E7E0EB683A0007F6639 /* PBXTextBookmark */ = 66D29E7E0EB683A0007F6639 /* PBXTextBookmark */;
 			66D29E7F0EB683A0007F6639 /* PBXTextBookmark */ = 66D29E7F0EB683A0007F6639 /* PBXTextBookmark */;
@@ -370,11 +367,6 @@
 		name = edit.erb;
 		path = /Users/adam/rhodes/apps/RhoSiebel/ServiceRequest/edit.erb;
 		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1011, 490}}";
-			sepNavSelRange = "{1097, 0}";
-			sepNavVisRange = "{0, 902}";
-		};
 	};
 	66BC6C860EEA0E3700C4F90D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -523,33 +515,10 @@
 	};
 	66C5174B0EEF52AC00DEA758 /* sugar_accounts.rb */ = {
 		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
 		name = sugar_accounts.rb;
 		path = /Users/adam/rhosync/lib/sugar_accounts.rb;
 		sourceTree = "<absolute>";
-	};
-	66C5174C0EEF52AC00DEA758 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 66C5174D0EEF52AC00DEA758 /* rhogen.rb */;
-		rLen = 0;
-		rLoc = 2147483647;
-		rType = 0;
-	};
-	66C5174D0EEF52AC00DEA758 /* rhogen.rb */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = text.script.ruby;
-		name = rhogen.rb;
-		path = /Users/adam/rhodes/shared/framework/generators/rhogen.rb;
-		sourceTree = "<absolute>";
-	};
-	66C5174E0EEF52AC00DEA758 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 66A570F90EEA1ACB00D08813 /* edit.erb */;
-		name = "edit.erb: 36";
-		rLen = 0;
-		rLoc = 1097;
-		rType = 0;
-		vrLen = 902;
-		vrLoc = 0;
 	};
 	66C5174F0EEF52AC00DEA758 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -563,24 +532,9 @@
 	};
 	66C517500EEF52AC00DEA758 /* sugar_accounts.rb */ = {
 		isa = PBXFileReference;
+		lastKnownFileType = text.script.ruby;
 		name = sugar_accounts.rb;
 		path = /Users/adam/rhosync/lib/sugar_accounts.rb;
-		sourceTree = "<absolute>";
-	};
-	66C517510EEF52AC00DEA758 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 66C517520EEF52AC00DEA758 /* rhogen.rb */;
-		name = "rhogen.rb: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 685;
-		vrLoc = 0;
-	};
-	66C517520EEF52AC00DEA758 /* rhogen.rb */ = {
-		isa = PBXFileReference;
-		name = rhogen.rb;
-		path = /Users/adam/rhodes/shared/framework/generators/rhogen.rb;
 		sourceTree = "<absolute>";
 	};
 	66D29E5B0EB67C3C007F6639 /* PBXTextBookmark */ = {
