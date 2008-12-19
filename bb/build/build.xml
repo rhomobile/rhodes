@@ -56,6 +56,8 @@
     <not> <isset property="bbsign.pwd"/> </not>
   </condition>
 
+  <available file="../RubyVM/RubyVM.jar" property="RubyVM.present"/>
+  
   <target name="clean">
     <delete dir="${tmp.dir}" />
     <mkdir dir="${tmp.dir}" />
@@ -66,6 +68,21 @@
     <delete file="../RhoBundle/RhoBundle.jar" />
   </target>
 
+  <target name="showWarning" unless="RubyVM.present">
+    <echo message="WARNING: RhuBundle does not created - build RubyVM first."/>
+  </target>
+  <target name="makepreverifyRhoBundle" if="RubyVM.present">
+    <exec executable="${jde.home}/bin/preverify.exe">
+      <arg value="-classpath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
+      <arg value="-d" />
+      <arg value="../RhoBundle" />
+      <arg value="${bin.dir}/RhoBundle.jar" />
+    </exec>
+  </target>
+
+  <target name="preverifyRhoBundle" depends="makepreverifyRhoBundle,showWarning"/>
+  
   <target name="RhoBundle" depends="clean">
     <ant dir = "${sharedAnt.dir}" target="bundleCommon" />
 
@@ -85,16 +102,10 @@
     </exec>
 
     <delete dir="${src.dir}" />
+    
+    <antcall target="preverifyRhoBundle"/>
 
-    <exec executable="${jde.home}/bin/preverify.exe">
-      <arg value="-classpath" />
-      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
-      <arg value="-d" />
-      <arg value="../RhoBundle" />
-      <arg value="${bin.dir}/RhoBundle.jar" />
-    </exec>
-
-  </target>
+    </target>
 
   <target name="compileSrc" depends="RhoBundle">
 
