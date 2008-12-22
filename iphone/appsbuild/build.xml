@@ -1,0 +1,33 @@
+<project name="buildiPhoneApps" default="all" basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="simapp.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Applications" />
+  <property name="rhodes.dir" location="../../../Temp" />
+  <property name="simlink.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Library/Preferences" />
+  <property name="rhodeslink.dir" location="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences" />
+  <property name="sim.dir" location="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications" />
+  
+  <!-- 3 799 319 
+/Users/evgeny/Library/Application Support/iPhone Simulator/User/Applications/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences  
+  com.apple.mobilecal.plist, .GlobalPreferences.plist-->
+
+  <target name="all">
+
+    <mkdir dir="${simapp.dir}" />
+    <!--
+    <copy todir="${simapp.dir}">
+        <fileset dir="${rhodes.dir}">
+          <include name="**/*" />
+		  <exclude name="**/.DS_Store"/>
+		</fileset>
+    </copy> -->
+	
+	<symlink link="${rhodeslink.dir}/com.apple.PeoplePicker.plist" resource="${simlink.dir}/com.apple.PeoplePicker.plist"/>
+	<symlink link="${rhodeslink.dir}/.GlobalPreferences.plist" resource="${simlink.dir}/.GlobalPreferences.plist"/>
+<!--
+	<symlink link="iPhoneSimulator.link" resource="${sim.dir}/iPhone Simulator.app"/> -->
+	
+  </target>
+  
+</project>
