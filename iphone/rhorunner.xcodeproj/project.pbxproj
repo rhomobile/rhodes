@@ -317,6 +317,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
 			buildPhases = (
+				5C0442920EFBE79D0014E5C6 /* ShellScript */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				5C043F280EF7C3AD0014E5C6 /* CopyFiles */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -391,6 +392,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5C0442920EFBE79D0014E5C6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			comments = "Compile ruby sources";
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd rbuild\nant";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
