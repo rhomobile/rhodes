@@ -8,6 +8,8 @@
   <property name="sharedAnt.dir" value="../../shared/build" />
   <property name="target.dir" location="../target/iphone" />
 
+  <property name="exclude.lib" value="**/builtinME.rb,**/ServeME.rb,**/TestServe.rb" />
+
   <target name="all">
 
     <delete dir="${target.dir}" />
