@@ -63,7 +63,21 @@ void RhoRubyStart()
         
     Init_RhoSupport();
 
+#ifdef ENABLE_RUBY_VM_STAT
+    struct timeval  start;
+    struct timeval  end;
+    
+    gettimeofday (&start, NULL);
+#endif    
+
     require_compiled(rb_str_new2("rhoframework"), &framework );
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    g_require_compiled_usec += end.tv_usec - start.tv_usec; 
+    g_require_compiled_sec += end.tv_sec  - start.tv_sec;
+#endif    
 
     rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
