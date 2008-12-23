@@ -36,6 +36,7 @@ USERINCLUDE    ..\..\..\shared\json
 USERINCLUDE    ..\..\..\shared\syncengine
 USERINCLUDE    ..\..\..\shared\ruby
 USERINCLUDE    ..\..\..\shared\ruby\include
+USERINCLUDE    ..\..\..\shared\ruby\include\ruby
 USERINCLUDE    ..\..\..\shared\ruby\symbian
 
 STATICLIBRARY 	   rubylib.lib
