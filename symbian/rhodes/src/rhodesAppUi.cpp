@@ -178,24 +178,12 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			char buf[500] = {0};
 			sprintf( buf,    "stat:\n___________________\n"
 							 "iceq stat:\n "
-					         "iseq_load: %u%s\n"
 							 "iseq binread: %u%s\n"
 							 "iseq marshal: %u%s\n"
-							 "iseq eval: %u%s\n"
-							 "require_compiled: %u%s\n"
-							 "ruby_start: %u%s\n",
-							 g_iseq_load_usec > 1000 ? (g_iseq_load_usec / 1000 ) : g_iseq_load_usec,
-							 g_iseq_load_usec > 1000 ? " msec" : " micrsec",		 
-							 g_iseq_binread_usec > 1000 ? (g_iseq_binread_usec / 1000 ) : g_iseq_binread_usec,
-							 g_iseq_binread_usec > 1000 ? " msec" : " micrsec",									 
-							 g_iseq_marshal_load_usec > 1000 ? (g_iseq_marshal_load_usec / 1000) : g_iseq_marshal_load_usec,
-							 g_iseq_marshal_load_usec > 1000 ? " msec" : " micrsec",									 
-							 g_iseq_eval_usec > 1000 ? (g_iseq_eval_usec / 1000 ) : g_iseq_eval_usec,
-							 g_iseq_eval_usec > 1000 ? " msec" : " micrsec",
-							 g_require_compiled_usec > 1000 ? (g_require_compiled_usec / 1000 ) : g_require_compiled_usec,
-							 g_require_compiled_usec > 1000 ? " msec" : " micrsec",
-							 g_ruby_start_usec > 1000 ? (g_ruby_start_usec / 1000 ) : g_ruby_start_usec,
- 							 g_ruby_start_usec > 1000 ? " msec" : " micrsec" );
+							 "require_compiled: %u%s\n",
+							 g_iseq_binread_sec, "sec",
+							 g_iseq_marshal_load_sec, "sec",
+							 g_require_compiled_sec, "sec" );
 			
 			TPtrC8 ptr8((TUint8*)buf);
 			HBufC *msg = HBufC::NewLC(ptr8.Length());

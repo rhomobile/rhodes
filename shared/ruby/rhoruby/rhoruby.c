@@ -44,9 +44,7 @@ void RhoRubyStart()
 #endif
     {
 #ifdef ENABLE_RUBY_VM_STAT
-    struct timeval  start;
-    struct timeval  end;
-    gettimeofday (&start, NULL); 
+    g_collect_stat = 1; 
 #endif    
     
 		RUBY_INIT_STACK;
@@ -72,10 +70,7 @@ void RhoRubyStart()
 		CONST_ID(framework_mid2, "serve_index");
 		
 #ifdef ENABLE_RUBY_VM_STAT
-    gettimeofday (&end, NULL);
-    
-    g_ruby_start_usec += end.tv_usec - start.tv_usec; 
-    g_ruby_start_sec += end.tv_sec  - start.tv_sec; 
+	g_collect_stat = 0; 
 #endif    
 		
 	}	
