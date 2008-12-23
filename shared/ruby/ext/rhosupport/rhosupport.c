@@ -37,21 +37,14 @@ static VALUE loadISeqFromFile(VALUE path)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
-    gettimeofday (&start, NULL); 
 #endif    
 
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
 
 #ifdef ENABLE_RUBY_VM_STAT
-    gettimeofday (&end, NULL);
-    
-    if ( g_collect_stat )
-	{
-	    g_iseq_binread_usec += end.tv_usec - start.tv_usec; 
-	    g_iseq_binread_sec += end.tv_sec  - start.tv_sec; 
-	}
-    gettimeofday (&start, NULL);
+    gettimeofday (&start, NULL); 
 #endif    
+
 
 //        arr = Marshal.load(fiseq)
         VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
@@ -64,12 +57,25 @@ static VALUE loadISeqFromFile(VALUE path)
 	    g_iseq_marshal_load_usec += end.tv_usec - start.tv_usec; 
 	    g_iseq_marshal_load_sec += end.tv_sec  - start.tv_sec;
 	}
+    gettimeofday (&start, NULL);
 #endif    
         
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
-        return rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+        VALUE seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    if ( g_collect_stat )
+	{
+	    g_iseq_binread_usec += end.tv_usec - start.tv_usec; 
+	    g_iseq_binread_sec += end.tv_sec  - start.tv_sec; 
+	}
+#endif    
+
+        return seq;
 }
 
 VALUE
@@ -132,13 +138,6 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
 	
-#ifdef ENABLE_RUBY_VM_STAT
-    struct timeval  start;
-    struct timeval  end;
-    
-    gettimeofday (&start, NULL);
-#endif    
-    
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
     if ( strcmp("strscan",RSTRING_PTR(fname))==0 || strcmp("enumerator",RSTRING_PTR(fname))==0 )
@@ -158,13 +157,6 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         seq = loadISeqFromFile(path);
 
         *result = rb_funcall(seq, rb_intern("eval"), 0 );
-
-#ifdef ENABLE_RUBY_VM_STAT
-    gettimeofday (&end, NULL);
-    
-    g_require_compiled_usec += end.tv_usec - start.tv_usec; 
-    g_require_compiled_sec += end.tv_sec  - start.tv_sec;
-#endif    
 
         return Qtrue;
     }
