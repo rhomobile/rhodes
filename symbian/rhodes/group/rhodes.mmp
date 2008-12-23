@@ -35,6 +35,8 @@ USERINCLUDE    ..\..\SQLite60\src
 USERINCLUDE    ..\..\..\shared\json
 USERINCLUDE    ..\..\..\shared\syncengine
 USERINCLUDE    ..\..\..\shared\ruby
+USERINCLUDE    ..\..\..\shared\ruby\include
+USERINCLUDE    ..\..\..\shared\ruby\symbian
 
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
@@ -53,6 +55,9 @@ SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp
 SOURCE 			geolocation.c 
 SOURCE 			rsyncengine.c 
 SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
+
+SOURCEPATH		..\src\phonebook
+SOURCE 			phonebook.c
 
 //Shared syncengine
 SOURCEPATH 		..\..\..\shared\syncengine
