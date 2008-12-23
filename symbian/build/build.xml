@@ -155,7 +155,7 @@
         
         <!-- Update the build date automatically, build number is manually set -->
         <propertyfile file = "${build.dir}/release.properties" comment = "Rhodes release.properties" >
-            <entry key="build.date"   type="date" value="now" pattern="yyyyMMdd"/>
+            <!-- <entry key="build.date"   type="date" value="now" pattern="yyyyMMdd"/> -->
             <!-- <entry key="build.number" type="int"  operation = "+" default="1"/> -->
         </propertyfile>
 	
@@ -193,8 +193,8 @@
     
         <!-- Update the build date automatically, build number is manually set -->
         <propertyfile file = "${build.dir}/release.properties" comment = "Rhodes working build" >
-            <entry key="build.date"   type="date" value="now" pattern="yyyyMMdd"/>
-            <!--entry key="build.number" type="int"  operation = "+" default="1"/-->
+            <!--<entry key="build.date"   type="date" value="now" pattern="yyyyMMdd"/> -->
+            <!--<entry key="build.number" type="int"  operation = "+" default="1"/> -->
         </propertyfile>
         
         <!-- Load release.propeties -->
