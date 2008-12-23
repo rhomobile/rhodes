@@ -85,10 +85,16 @@ read_file(struct stream *stream, void *buf, size_t len)
 static void
 close_file(struct stream *stream)
 {
-	assert(stream->chan.fd != -1);
 #ifdef __SYMBIAN32__
-	_symbian_close(stream->chan.fd);
+	FILE* f;
+	assert(stream->chan.fd != -1);
+
+	f = fdopen(stream->chan.fd, "rw");
+
+	if ( f )
+		(void) fclose(f);
 #else	
+	assert(stream->chan.fd != -1);
 	(void) close(stream->chan.fd);
 #endif	
 }

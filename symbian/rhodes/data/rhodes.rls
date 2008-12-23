@@ -30,9 +30,13 @@
 
 #define qtn_exit "Exit"
 
+#define qtn_stat "Stat"
+
 #define qtn_loc_resource_file_1 "\\resource\\apps\\rhodes"
 
 #define qtn_about_dialog_title "About"
+
+#define qtn_stat_dialog_title "Statistics"
 
 #define qtn_about_dialog_text "Rhodes Version 1.0.0\n\nAuthor: Rhomobile\n\nSupport: all@rhomobile.com\n\n(c) Copyright (C) 2008 Lars Burgess. All rights reserved."
 

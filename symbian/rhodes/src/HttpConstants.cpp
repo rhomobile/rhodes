@@ -25,9 +25,9 @@
 const char* CHttpConstants::KGetCommand = "GET";
 const char* CHttpConstants::KPostCommand = "POST";
 
-_DEFINE_LIT(CHttpConstants, KHttpIN, "c:\\data\\rho\\http\\in\\");
-_DEFINE_LIT(CHttpConstants, KHttpOUT, "c:\\data\\rho\\http\\out\\");
+_DEFINE_LIT(CHttpConstants, KHttpIN, "\\data\\rho\\http\\in\\");
+_DEFINE_LIT(CHttpConstants, KHttpOUT, "\\data\\rho\\http\\out\\");
 
 _DEFINE_LIT(CHttpConstants, KFileIncompletePrefix, "___");
-_DEFINE_LIT(CHttpConstants, KFileSystemRoot,"c:\\");
+_DEFINE_LIT(CHttpConstants, KFileSystemRoot,"\\");
 _DEFINE_LIT(CHttpConstants, KDateFormat,"%D%M%Y%/0%1%/1%2%/2%3%/3 %:0%H%:1%T%:2%S.%C%:3");

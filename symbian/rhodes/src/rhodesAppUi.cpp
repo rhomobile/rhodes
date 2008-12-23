@@ -40,6 +40,17 @@
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
 
+#ifndef ENABLE_RUBY_VM_STAT
+#define ENABLE_RUBY_VM_STAT
+#endif
+
+#include "stat/stat.h"
+
+extern "C"
+{
+int	 sprintf(char * __restrict, const char * __restrict, ...);
+}
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 
@@ -156,6 +167,45 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			dlg->RunLD();
 			}
 			break;
+#ifdef ENABLE_RUBY_VM_STAT			
+		case EStat:
+			{
+			CAknMessageQueryDialog* dlg = new (ELeave)CAknMessageQueryDialog();
+			dlg->PrepareLC(R_STAT_QUERY_DIALOG);
+			HBufC* title = iEikonEnv->AllocReadResourceLC(R_STAT_DIALOG_TITLE);
+			dlg->QueryHeading()->SetTextL(*title);
+			CleanupStack::PopAndDestroy(); //title
+			char buf[500] = {0};
+			sprintf( buf,    "stat:\n___________________\n"
+							 "iceq stat:\n "
+					         "iseq_load: %u%s\n"
+							 "iseq binread: %u%s\n"
+							 "iseq marshal: %u%s\n"
+							 "iseq eval: %u%s\n"
+							 "require_compiled: %u%s\n"
+							 "ruby_start: %u%s\n",
+							 g_iseq_load_usec > 1000 ? (g_iseq_load_usec / 1000 ) : g_iseq_load_usec,
+							 g_iseq_load_usec > 1000 ? " msec" : " micrsec",		 
+							 g_iseq_binread_usec > 1000 ? (g_iseq_binread_usec / 1000 ) : g_iseq_binread_usec,
+							 g_iseq_binread_usec > 1000 ? " msec" : " micrsec",									 
+							 g_iseq_marshal_load_usec > 1000 ? (g_iseq_marshal_load_usec / 1000) : g_iseq_marshal_load_usec,
+							 g_iseq_marshal_load_usec > 1000 ? " msec" : " micrsec",									 
+							 g_iseq_eval_usec > 1000 ? (g_iseq_eval_usec / 1000 ) : g_iseq_eval_usec,
+							 g_iseq_eval_usec > 1000 ? " msec" : " micrsec",
+							 g_require_compiled_usec > 1000 ? (g_require_compiled_usec / 1000 ) : g_require_compiled_usec,
+							 g_require_compiled_usec > 1000 ? " msec" : " micrsec",
+							 g_ruby_start_usec > 1000 ? (g_ruby_start_usec / 1000 ) : g_ruby_start_usec,
+ 							 g_ruby_start_usec > 1000 ? " msec" : " micrsec" );
+			
+			TPtrC8 ptr8((TUint8*)buf);
+			HBufC *msg = HBufC::NewLC(ptr8.Length());
+			msg->Des().Copy(ptr8);
+			dlg->SetMessageTextL(*msg);
+			CleanupStack::PopAndDestroy(msg);
+			dlg->RunLD();
+			}	
+			break;
+#endif			
 		default:
 			iAppView->HandleCommandL(aCommand);
 			break;

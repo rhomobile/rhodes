@@ -29,6 +29,7 @@ enum TRhodesIds
 	{
 	EHelp = 1, // start value must not be 0
 	EAbout,
+	EStat,
 	ECmdAppNavigate,
     ECmdAppReload,
     ECmdAppBack,
