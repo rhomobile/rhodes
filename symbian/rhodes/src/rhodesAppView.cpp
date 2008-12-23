@@ -239,6 +239,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	            }
 	            break;
 	        }
+	        case EAknSoftkeyBack:
 	        case ECmdAppBack:
 	        {
 	            if (iBrCtlInterface)
@@ -306,6 +307,8 @@ void CRhodesAppView::CreateBasicBrowserControlL()
 	            iSpecialLoadObserver,
 	            NULL, 
 	            NULL);
+	        
+	        iBrCtlInterface->ClearCache();
 		}
 	}
 

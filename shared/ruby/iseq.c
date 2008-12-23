@@ -19,6 +19,10 @@
 #include "insns.inc"
 #include "insns_info.inc"
 
+#ifdef ENABLE_RUBY_VM_STAT
+#include "stat/stat.h"
+#endif
+
 /* compile.c */
 void iseq_compile(VALUE self, NODE *node);
 int iseq_translate_threaded_code(rb_iseq_t *iseq);
@@ -370,6 +374,12 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     rb_compile_option_t option;
     int i = 0;
 
+#ifdef ENABLE_RUBY_VM_STAT
+    struct timeval  start;
+    struct timeval  end;
+    gettimeofday (&start, NULL); 
+#endif    
+
     /* [magic, major_version, minor_version, format_type, misc,
      *  name, filename,
      *  type, locals, args, exception_table, body]
@@ -431,6 +441,14 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     iseq_build_from_ary(iseq, locals, args, exception, body);
 
     cleanup_iseq_build(iseq);
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    g_iseq_load_usec += end.tv_usec - start.tv_usec; 
+    g_iseq_load_sec += end.tv_sec  - start.tv_sec; 
+#endif    
+    
     return iseqval;
 }
 

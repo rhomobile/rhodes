@@ -13,6 +13,10 @@
 #endif
 #include "rhoruby.h"
 
+#ifdef ENABLE_RUBY_VM_STAT
+#include "../stat/stat.h"
+#endif
+
 extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
@@ -39,6 +43,12 @@ void RhoRubyStart()
     setlocale(LC_CTYPE, "");
 #endif
     {
+#ifdef ENABLE_RUBY_VM_STAT
+    struct timeval  start;
+    struct timeval  end;
+    gettimeofday (&start, NULL); 
+#endif    
+    
 		RUBY_INIT_STACK;
 		ruby_init();
 
@@ -60,13 +70,16 @@ void RhoRubyStart()
     rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
+		
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    g_ruby_start_usec += end.tv_usec - start.tv_usec; 
+    g_ruby_start_sec += end.tv_sec  - start.tv_sec; 
+#endif    
+		
 	}	
 }
-#ifdef __SYMBIAN32__
-const char* RhoGetRootPath() {
-	return "c:\\Data\\Rho\\";
-}
-#endif
 
 #ifdef WINCE
 extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);

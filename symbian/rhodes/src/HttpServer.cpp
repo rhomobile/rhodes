@@ -118,9 +118,7 @@ TInt CHttpServer::ExecuteL()
 		//Send open home event
 		SendWindowEvent( ECmdAppHome );
 		
-		//Starting SYNC
-		//start_sync();
-	 	while ( !iClose )
+		while ( !iClose )
 			{
 			shttpd_poll(ctx, 1000);
 			}

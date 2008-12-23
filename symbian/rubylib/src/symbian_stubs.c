@@ -73,6 +73,6 @@ int execv(const char *path, char *const argv[]){
   return 0;
 }
 
-int _symbian_close(int fd){
-    return 0;//close(fd);
-}
+/*int _symbian_close(int fd){
+	return close(fd);
+}*/

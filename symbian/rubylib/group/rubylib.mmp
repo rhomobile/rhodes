@@ -126,4 +126,7 @@ SOURCE rhosupport.c
 SOURCEPATH  ..\..\..\shared\ruby\rhoruby
 SOURCE      rhoruby.c 
 
+SOURCEPATH  ..\..\..\shared\ruby\stat
+SOURCE      stat.c
+
 // End of File
