@@ -10,8 +10,7 @@ extern "C" {
 
 #ifdef ENABLE_RUBY_VM_STAT
 
-extern unsigned long g_iseq_load_sec; //time lapsed in iseq_load (in seconds)
-extern unsigned long g_iseq_load_usec; //time lapsed in iseq_load (in microseconds) 
+extern int g_collect_stat;
 
 extern unsigned long g_iseq_binread_sec; //time lapsed in binread (in seconds)
 extern unsigned long g_iseq_binread_usec; //time lapsed in binread (in microseconds) 
@@ -19,14 +18,8 @@ extern unsigned long g_iseq_binread_usec; //time lapsed in binread (in microseco
 extern unsigned long g_iseq_marshal_load_sec; //time lapsed in marshal load (in seconds)
 extern unsigned long g_iseq_marshal_load_usec; //time lapsed in marshal load (in microseconds)
 
-extern unsigned long g_iseq_eval_sec;
-extern unsigned long g_iseq_eval_usec;
-
 extern unsigned long g_require_compiled_sec;
 extern unsigned long g_require_compiled_usec;
-
-extern unsigned long g_ruby_start_sec;
-extern unsigned long g_ruby_start_usec;
 
 #endif
 

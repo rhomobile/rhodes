@@ -131,7 +131,7 @@
 		<!-- 
 			Output directory for sis
 		-->	
-		<property name="dir.output"  value="${bin.dir}/${SDK}"/>
+		<property name="dir.output"  value="${root.dir}/target/${SDK}"/>
 
 		<!-- Log files -->
     	<property name="log.build" value="${bin.dir}/build.log"/>
