@@ -45,9 +45,11 @@ static VALUE loadISeqFromFile(VALUE path)
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
-    g_iseq_binread_usec += end.tv_usec - start.tv_usec; 
-    g_iseq_binread_sec += end.tv_sec  - start.tv_sec; 
-    
+    if ( g_collect_stat )
+	{
+	    g_iseq_binread_usec += end.tv_usec - start.tv_usec; 
+	    g_iseq_binread_sec += end.tv_sec  - start.tv_sec; 
+	}
     gettimeofday (&start, NULL);
 #endif    
 
@@ -57,8 +59,11 @@ static VALUE loadISeqFromFile(VALUE path)
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
-    g_iseq_marshal_load_usec += end.tv_usec - start.tv_usec; 
-    g_iseq_marshal_load_sec += end.tv_sec  - start.tv_sec; 
+    if ( g_collect_stat )
+	{
+	    g_iseq_marshal_load_usec += end.tv_usec - start.tv_usec; 
+	    g_iseq_marshal_load_sec += end.tv_sec  - start.tv_sec;
+	}
 #endif    
         
 //        fiseq.close
@@ -130,9 +135,8 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
-    struct timeval  req_start;
     
-    gettimeofday (&req_start, NULL);
+    gettimeofday (&start, NULL);
 #endif    
     
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
@@ -153,20 +157,13 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
         seq = loadISeqFromFile(path);
 
-#ifdef ENABLE_RUBY_VM_STAT
-    gettimeofday (&start, NULL); 
-#endif    
-
         *result = rb_funcall(seq, rb_intern("eval"), 0 );
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
-    g_iseq_eval_usec += end.tv_usec - start.tv_usec; 
-    g_iseq_eval_sec += end.tv_sec  - start.tv_sec;
-    
-    g_require_compiled_usec += end.tv_usec - req_start.tv_usec; 
-    g_require_compiled_sec += end.tv_sec  - req_start.tv_sec;
+    g_require_compiled_usec += end.tv_usec - start.tv_usec; 
+    g_require_compiled_sec += end.tv_sec  - start.tv_sec;
 #endif    
 
         return Qtrue;
