@@ -1,0 +1,23 @@
+<form title="Edit Contact" 
+	  class="panel" 
+	  id="contact_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="contact[id]" value="<%=@contact['id']%>"/>
+		<div class="row">
+			<label>First Name: </label>
+			<input type="text" name="contact[first_name]" value="<%=@contact['first_name']%>"/>
+		</div>
+		<div class="row">
+			<label>Last Name: </label>
+			<input type="text" name="contact[last_name]" value="<%=@contact['last_name']%>"/>
+		</div>
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @contact['id'])%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>
