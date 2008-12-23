@@ -129,4 +129,7 @@ SOURCE      rhoruby.c
 SOURCEPATH  ..\..\..\shared\ruby\stat
 SOURCE      stat.c
 
+SOURCEPATH ..\..\..\shared\ruby\ext\phonebook
+SOURCE      phonebook_wrap.c
+
 // End of File
