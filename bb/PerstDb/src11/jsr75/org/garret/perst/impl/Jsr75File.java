@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import javax.microedition.io.*;
 import javax.microedition.io.file.*;
+import java.util.Vector;
 
 public class Jsr75File implements SimpleFile 
 {
@@ -23,12 +24,14 @@ public class Jsr75File implements SimpleFile
     private boolean        noFlush;
 
     private static final int ZERO_BUF_SIZE = 4096;
-
-	private void log(String txt) {
+    private static Vector m_arRoots;
+    private static String m_strRhoPath;
+    
+	static private void log(String txt) {
 		System.out.println(txt);
 	}
 
-	void createDir( String strDir  )throws Exception{
+	static void createDir( String strDir  )throws IOException{
 		log("Dir:"+strDir);
 		FileConnection fdir = null;
 		try{
@@ -41,7 +44,7 @@ public class Jsr75File implements SimpleFile
 	        }else{
 	        	log("Dir exists.");	        	
 	        }
-		}catch(Exception exc){
+		}catch(IOException exc){
 			log("Create directory failed." + exc.getMessage());
 			throw exc;
 		}finally{
@@ -50,6 +53,81 @@ public class Jsr75File implements SimpleFile
 		}
 	}
 
+    static private Vector getRoots(){
+    	if ( m_arRoots != null )
+    		return m_arRoots;
+    	
+    	m_arRoots = new Vector();
+    	Enumeration e = FileSystemRegistry.listRoots();
+        while (e.hasMoreElements()) {
+        	String strRoot = (String)e.nextElement();
+        	log("Root: " + strRoot);
+        	
+        	m_arRoots.addElement(strRoot);
+        }    	
+        
+        return m_arRoots;
+    }
+	
+    static private String findRoot(String strRoot){
+    	Vector arRoots = getRoots();
+    	for( int i = 0; i < arRoots.size(); i++ ){
+    		String strRoot1 = (String)arRoots.elementAt(i);
+        	if ( strRoot1.equalsIgnoreCase(strRoot) ){
+        		return strRoot1;
+        	}
+    	}
+    	
+    	return null;
+    }
+    
+    static String makeRootPath(){
+    	String strRoot = findRoot("SDCard/");
+    	
+    	if ( strRoot != null )
+    		return strRoot;
+    	
+		String strVer = DeviceInfo.getPlatformVersion();
+		if ( strVer == null || strVer.length() == 0 )//emulator
+			strRoot = findRoot("store/");
+		else
+		{
+    		int nDot = strVer.indexOf('.');
+    		int nMajor = 0;
+    		int nMinor = 0;
+    		
+    		if ( nDot >= 0 )
+    		{
+    			nMinor = Integer.parseInt( strVer.substring(nDot+1) );
+    			nMajor = Integer.parseInt( strVer.substring(0, nDot) );
+    		}else
+    			nMajor = Integer.parseInt( strVer );
+    		
+    		if ( nMajor >= 4 && nMinor >= 6 ){
+    			strRoot = findRoot("store/");	    		
+    		}
+		}
+		
+    	return strRoot;
+    }
+    
+	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
+    static String getRhoPath() throws IOException{
+    	if ( m_strRhoPath != null )
+    		return m_strRhoPath;
+    	
+    	String strRoot = makeRootPath();
+    	m_strRhoPath = "file:///" + strRoot;
+    	
+    	if ( strRoot.equalsIgnoreCase("store/") )
+    		m_strRhoPath += "home/user/";
+    	
+    	m_strRhoPath += "Rho/";
+    	createDir( m_strRhoPath );
+    	
+    	return m_strRhoPath;
+    }
+    
     public void open(String path, boolean readOnly, boolean noFlush) 
     {
         String url = path;
@@ -59,41 +137,17 @@ public class Jsr75File implements SimpleFile
             if (url.startsWith("/")) { 
                 url = "file:///" + path;
             } else { 
-            	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
            
-            	Enumeration e = FileSystemRegistry.listRoots();
-            	url = "file:///" + path;
-                while (e.hasMoreElements()) {
-                    // choose arbitrary root directory
-                	String strRoot = (String)e.nextElement();
-                	if ( !strRoot.equalsIgnoreCase("SDCard/") ){
-                		continue;
-                	}
-                	String strDir = "file:///" + strRoot;
-                	if ( !strRoot.equalsIgnoreCase("SDCard/") )
-                		strDir += "home/user/";
-                	
-                	strDir += "Rho/";
-                	String url2 = strDir + path;
-                    try {
-                    	createDir( strDir );
-                    	log(url2);
-                        fconn = (FileConnection)Connector.open(url2);
-                        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                        if (!fconn.exists()) {
-                        	log("Create file.");
-                            fconn.create();  // create the file if it doesn't exist
-                        }
-                        break;
-                    } catch (Exception x) {
-                    	log("Error open file: " + url2 + "; Msg:" + x.getMessage());
-                        fconn = null;
-                        //url = "file:///" + path;
-                        // try next root
-                    }
-                }
+            	try{
+	            	String strRhoPath = getRhoPath();
+	            	url = strRhoPath + path;
+            	} catch (IOException x) { 
+                 	log("Exception: " + x.getMessage());
+                     throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+                 }              	
             }
         }
+        
         try { 
             if (fconn == null) {
                 fconn = (FileConnection)Connector.open(url);

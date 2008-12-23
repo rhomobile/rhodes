@@ -273,27 +273,13 @@
       COMPILE
     ========================================================================
     -->
-    <target name="compile" depends="init, clean_ablt">
+    <target name="compile" depends="init">
         <!-- 
             Build files and compile all projects.
             Dirs used depends on which build target was called ('build' or 'build-no-checkout').
         -->
         
         <mkdir dir="${dir.output}"/>
-        
-        <echo message="Creating ABLD.BAT: 'bldmake bldfiles'..."/>
-        <exec dir="${dir.rubylib.build}" executable="bldmake" failonerror="true">
-            <arg line="bldfiles"/>
-        </exec>
-        <exec dir="${dir.SQLite60.build}" executable="bldmake" failonerror="true">
-            <arg line="bldfiles"/>
-        </exec>
-        <exec dir="${dir.shttpd.build}" executable="bldmake" failonerror="true">
-            <arg line="bldfiles"/>
-        </exec>
-        <exec dir="${dir.rhodes.build}" executable="bldmake" failonerror="true">
-            <arg line="bldfiles"/>
-        </exec>
         
         <echo message="Compiling RhoBundle..."/>
         <echo message="output to file: ${log.build}"/>
@@ -452,7 +438,7 @@
     CLEAN
     ========================================================================
     -->
-    <target name="clean" depends="init">
+    <target name="clean" depends="init, clean_ablt">
     
         <mkdir dir="${bin.dir}"/>
 
@@ -520,6 +506,21 @@
             <arg value="abld.bat"/>
             <arg line="reallyclean"/>
         </exec>
+        
+        <echo message="Creating ABLD.BAT: 'bldmake bldfiles'..."/>
+        <exec dir="${dir.rubylib.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
+        <exec dir="${dir.SQLite60.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
+        <exec dir="${dir.shttpd.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
+        <exec dir="${dir.rhodes.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
+        
 	</target>
 	
 	<target name="rhobundle" depends="init, clean">
