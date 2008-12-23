@@ -30,6 +30,8 @@
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
+		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
+		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 /* End PBXBuildFile section */
 
@@ -120,6 +122,9 @@
 		F57917130E8ACA9E00BBC54D /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = AppManager/AppManager.h; sourceTree = "<group>"; };
 		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
+		F58E7FD90F008A6A00E46829 /* phonebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phonebook.h; path = Classes/Phonebook/phonebook.h; sourceTree = SOURCE_ROOT; };
+		F58E7FDA0F008A6B00E46829 /* phonebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = phonebook.m; path = Classes/Phonebook/phonebook.m; sourceTree = SOURCE_ROOT; };
+		F58E80100F008B3F00E46829 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = ../../../../../../System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
@@ -137,6 +142,7 @@
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
 				F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */,
 				F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */,
+				F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +169,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F58E7FD80F008A2300E46829 /* Phonebook */,
 				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F568940B0E92FC1A004DBB2D /* Rhoruby */,
@@ -226,6 +233,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F58E80100F008B3F00E46829 /* AddressBook.framework */,
 				F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */,
 				F563D4130EA6D10F0062DA57 /* CoreLocation.framework */,
 				05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */,
@@ -291,6 +299,15 @@
 				F579171F0E8AE1DE00BBC54D /* AppManagerI.h */,
 			);
 			name = AppManager;
+			sourceTree = "<group>";
+		};
+		F58E7FD80F008A2300E46829 /* Phonebook */ = {
+			isa = PBXGroup;
+			children = (
+				F58E7FD90F008A6A00E46829 /* phonebook.h */,
+				F58E7FDA0F008A6B00E46829 /* phonebook.m */,
+			);
+			name = Phonebook;
 			sourceTree = "<group>";
 		};
 		F59F15FC0E9449B8004103B4 /* Products */ = {
@@ -429,6 +446,7 @@
 				F563D0340EA541710062DA57 /* geolocation.c in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
+				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

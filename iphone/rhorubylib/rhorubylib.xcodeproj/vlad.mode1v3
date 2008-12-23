@@ -210,11 +210,15 @@
 			<array>
 				<string>active-combo-popup</string>
 				<string>action</string>
-				<string>NSToolbarFlexibleSpaceItem</string>
+				<string>clean</string>
 				<string>build-and-go</string>
+				<string>go</string>
+				<string>go-run</string>
 				<string>com.apple.ide.PBXToolbarStopButton</string>
 				<string>get-info</string>
 				<string>NSToolbarFlexibleSpaceItem</string>
+				<string>go-debug</string>
+				<string>servicesModuledebug</string>
 				<string>com.apple.pbx.toolbar.searchfield</string>
 			</array>
 			<key>ControllerClassBaseName</key>
@@ -228,6 +232,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -267,6 +273,7 @@
 								<string>F59F13BF0E9436C7004103B4</string>
 								<string>F5E360CA0EB6A7E300226287</string>
 								<string>F5E360B00EB6A63B00226287</string>
+								<string>F58E7FE50F008A8500E46829</string>
 								<string>F5177F150EE5B5D9000EA1A0</string>
 								<string>F5E360C30EB6A76500226287</string>
 								<string>C6A0FF2B0290797F04C91782</string>
@@ -276,7 +283,6 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>11</integer>
 									<integer>10</integer>
 									<integer>9</integer>
 									<integer>1</integer>
@@ -314,8 +320,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -333,7 +337,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F588FDD20EEDD5C1001EFF78</string>
+										<string>F58E7FE90F008AAE00E46829</string>
 										<key>history</key>
 										<array>
 											<string>F5E362450EB791EC00226287</string>
@@ -388,7 +392,7 @@
 											<string>F5BC39630EE5EAE000A6B9DD</string>
 											<string>F5AD506C0EE61365004768A0</string>
 											<string>F5AD506D0EE61365004768A0</string>
-											<string>F5AD50720EE61365004768A0</string>
+											<string>F588FDD20EEDD5C1001EFF78</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -498,9 +502,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F588FDD30EEDD5C1001EFF78</string>
+				<string>F58E7FEA0F008AAE00E46829</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F588FDD40EEDD5C1001EFF78</string>
+				<string>F58E7FEB0F008AAE00E46829</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
