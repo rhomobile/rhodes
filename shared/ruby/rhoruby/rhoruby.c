@@ -20,6 +20,7 @@ extern void Init_SyncEngine(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
+extern void Init_Phonebook(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -50,6 +51,7 @@ void RhoRubyStart()
 		Init_GeoLocation();
 		Init_SyncEngine();
 		Init_System();
+		Init_Phonebook();
         
     Init_RhoSupport();
 
@@ -100,6 +102,10 @@ void RhoRubyStop()
 }
 
 char* makeControllerCall(char* classname, char* methodname);
+
+VALUE getnil() {
+	return Qnil;
+}
 
 VALUE createHash() {
 	return rb_hash_new();

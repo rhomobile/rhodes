@@ -210,11 +210,15 @@
 			<array>
 				<string>active-combo-popup</string>
 				<string>action</string>
-				<string>NSToolbarFlexibleSpaceItem</string>
+				<string>clean</string>
 				<string>build-and-go</string>
+				<string>go</string>
+				<string>go-run</string>
 				<string>com.apple.ide.PBXToolbarStopButton</string>
 				<string>get-info</string>
 				<string>NSToolbarFlexibleSpaceItem</string>
+				<string>go-debug</string>
+				<string>servicesModuledebug</string>
 				<string>com.apple.pbx.toolbar.searchfield</string>
 			</array>
 			<key>ControllerClassBaseName</key>
@@ -299,7 +303,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>0 119 1280 659 0 0 1280 778 </string>
+						<string>160 219 1280 659 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -329,7 +333,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F563D9CE0EACFEE00062DA57</string>
+										<string>F58E7FDF0F008A7A00E46829</string>
 										<key>history</key>
 										<array>
 											<string>F563D5F10EA912F20062DA57</string>
@@ -337,7 +341,7 @@
 											<string>F563D6480EA92F3E0062DA57</string>
 											<string>F563D6490EA92F3E0062DA57</string>
 											<string>F563D9CB0EACFEE00062DA57</string>
-											<string>F563D9CC0EACFEE00062DA57</string>
+											<string>F563D9CE0EACFEE00062DA57</string>
 										</array>
 										<key>nextStack</key>
 										<array>
@@ -347,10 +351,7 @@
 										<array>
 											<string>F563D5F40EA912F20062DA57</string>
 											<string>F563D5F50EA912F20062DA57</string>
-											<string>F563D5F70EA912F20062DA57</string>
-											<string>F563D64C0EA92F3E0062DA57</string>
 											<string>F563D64D0EA92F3E0062DA57</string>
-											<string>F563D64E0EA92F3E0062DA57</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -364,7 +365,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {1072, 613}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 119 1280 659 0 0 1280 778 </string>
+								<string>160 219 1280 659 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -384,7 +385,7 @@
 								<key>Frame</key>
 								<string>{{0, 618}, {1072, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 119 1280 659 0 0 1280 778 </string>
+								<string>160 219 1280 659 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -408,9 +409,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F563D5590EA8254C0062DA57</string>
+				<string>F58E7FE00F008A7A00E46829</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F563D55A0EA8254C0062DA57</string>
+				<string>F58E7FE10F008A7A00E46829</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -544,12 +545,10 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C530D57069F1CE1000CFCEE</string>
-		<string>F563D55C0EA8254C0062DA57</string>
-		<string>/Users/vlad/Documents/rhorunner/iphone/rhosynclib/rhosynclib.xcodeproj</string>
+		<string>/Volumes/Projects/rhomobile/rhodes/iphone/rhosynclib/rhosynclib.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>0 119 1280 659 0 0 1280 778 </string>
+	<string>160 219 1280 659 0 0 1440 878 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

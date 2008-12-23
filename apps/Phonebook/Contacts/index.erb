@@ -1,0 +1,6 @@
+<ul id="contacts" title="Contacts">
+<%@contacts.each_value do |x|%>
+<li><%=link_to "#{x['first_name']} #{x['last_name']}", "edit", x['id']%></li>
+<%end%>
+<li><font color="blue"><%=link_to "New Contact", "new"%></font></li>
+</ul>

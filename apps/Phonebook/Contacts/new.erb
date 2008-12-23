@@ -1,0 +1,17 @@
+<form title="New Employee" 
+	  class="panel" 
+	  id="contact_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<div class="row">
+			<label>First Name: </label>
+			<input type="text" name="contact[first_name]"/>
+		</div>
+		<div class="row">
+			<label>Last Name: </label>
+			<input type="text" name="contact[last_name]"/>
+		</div>
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>
