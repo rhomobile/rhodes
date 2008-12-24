@@ -16,7 +16,7 @@
   com.apple.mobilecal.plist, .GlobalPreferences.plist-->
 
   <target name="all">
-
+<!-- 
     <exec executable="xcodebuild" dir="${rhodesproj.dir}">
       <arg value="clean" />
       <arg value="build" />
@@ -26,10 +26,14 @@
       <arg value="Debug" />
 	  <arg value="-sdk" />
 	  <arg value="iphonesimulator2.1" />
-    </exec>
+    </exec> -->
     
     <mkdir dir="${simapp.dir}" />
-  	    
+  	<mkdir dir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE" />
+	<mkdir dir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Documents" />
+	<mkdir dir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library" />
+	<mkdir dir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences" />
+	    
     <copy todir="${simapp.dir}">
         <fileset dir="${rhodes.dir}">
           <include name="**/*" />
