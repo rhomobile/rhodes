@@ -34,6 +34,8 @@ ABLD.BAT
 *.sis
 *.sisx
 .cproject
+*.hlp
+*.hrh
 
 *.jar
 *.cod
