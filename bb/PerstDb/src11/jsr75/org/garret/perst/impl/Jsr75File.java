@@ -103,7 +103,7 @@ public class Jsr75File implements SimpleFile
     		}else
     			nMajor = Integer.parseInt( strVer );
     		
-    		if ( nMajor >= 4 && nMinor >= 6 ){
+    		if ( nMajor >= 4 && nMinor >= 3 ){
     			strRoot = findRoot("store/");	    		
     		}
 		}
