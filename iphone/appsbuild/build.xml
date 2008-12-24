@@ -2,32 +2,45 @@
 
   <property file="build.properties"/>
 
+  <!--
   <property name="simapp.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Applications" />
   <property name="rhodes.dir" location="../../../Temp" />
   <property name="simlink.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Library/Preferences" />
   <property name="rhodeslink.dir" location="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences" />
   <property name="sim.dir" location="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications" />
-  
+  -->
+  <property name="rhodesproj.dir" location="../" />
+
   <!-- 3 799 319 
 /Users/evgeny/Library/Application Support/iPhone Simulator/User/Applications/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences  
   com.apple.mobilecal.plist, .GlobalPreferences.plist-->
 
   <target name="all">
 
-    <mkdir dir="${simapp.dir}" />
-	<mkdir dir="${simapp.dir}/Documents" />
+    <exec executable="xcodebuild" dir="${rhodesproj.dir}">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-target" />
+      <arg value="rhorunner" />
+      <arg value="-configuration" />
+      <arg value="debug" />
+    </exec>
+
     <!--
+    <mkdir dir="${simapp.dir}" />
+  	<mkdir dir="${simapp.dir}/Documents" />
+    
     <copy todir="${simapp.dir}">
         <fileset dir="${rhodes.dir}">
           <include name="**/*" />
 		  <exclude name="**/.DS_Store"/>
 		</fileset>
-    </copy> -->
+    </copy>
 	
 	<copy todir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE">
 		<zipfileset src="${rhodes.dir}/rhorunner.app.zip" />
 	</copy>
-<!--		  
+
 	<symlink link="${rhodeslink.dir}/com.apple.PeoplePicker.plist" resource="${simlink.dir}/com.apple.PeoplePicker.plist"/>
 	<symlink link="${rhodeslink.dir}/.GlobalPreferences.plist" resource="${simlink.dir}/.GlobalPreferences.plist"/>
 
