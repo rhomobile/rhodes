@@ -6,7 +6,7 @@ iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
 iphone/bin/*
 mac/bin/*
-
+iphone/*/*.link
 wm/bin/*
 win32/bin/*
 wm/target/*
