@@ -2,13 +2,13 @@
 
   <property file="build.properties"/>
 
-  <!--
+  
   <property name="simapp.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Applications" />
-  <property name="rhodes.dir" location="../../../Temp" />
+  <property name="rhodes.dir" location="rhodes" />
   <property name="simlink.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Library/Preferences" />
   <property name="rhodeslink.dir" location="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE/Library/Preferences" />
   <property name="sim.dir" location="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications" />
-  -->
+  <property name="rhodesapp.dir" location="../build/Debug-iphonesimulator" />
   <property name="rhodesproj.dir" location="../" />
 
   <!-- 3 799 319 
@@ -19,33 +19,51 @@
 
     <exec executable="xcodebuild" dir="${rhodesproj.dir}">
       <arg value="clean" />
-      <arg value="install" />
+      <arg value="build" />
       <arg value="-target" />
       <arg value="rhorunner" />
       <arg value="-configuration" />
-      <arg value="debug" />
+      <arg value="Debug" />
+	  <arg value="-sdk" />
+	  <arg value="iphonesimulator2.1" />
     </exec>
-
-    <!--
-    <mkdir dir="${simapp.dir}" />
-  	<mkdir dir="${simapp.dir}/Documents" />
     
+    <mkdir dir="${simapp.dir}" />
+  	    
     <copy todir="${simapp.dir}">
         <fileset dir="${rhodes.dir}">
           <include name="**/*" />
 		  <exclude name="**/.DS_Store"/>
 		</fileset>
     </copy>
-	
-	<copy todir="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE">
-		<zipfileset src="${rhodes.dir}/rhorunner.app.zip" />
-	</copy>
 
-	<symlink link="${rhodeslink.dir}/com.apple.PeoplePicker.plist" resource="${simlink.dir}/com.apple.PeoplePicker.plist"/>
-	<symlink link="${rhodeslink.dir}/.GlobalPreferences.plist" resource="${simlink.dir}/.GlobalPreferences.plist"/>
+    <exec executable="cp">
+      <arg value="-R" />
+      <arg value="-p" />
+	  <arg value="${rhodesapp.dir}/rhorunner.app" />
+      <arg value="${simapp.dir}/264FFCAF-C71D-4543-B293-9058E31CFFEE" />
+	  
+    </exec>
 
-	<symlink link="iPhoneSimulator.link" resource="${sim.dir}/iPhone Simulator.app"/> -->
-	
+    <exec executable="ln">
+      <arg value="-f" />
+	  <arg value="-s" />
+      <arg value="${simlink.dir}/com.apple.PeoplePicker.plist" />
+	  <arg value="${rhodeslink.dir}/com.apple.PeoplePicker.plist" />
+    </exec>
+    <exec executable="ln">
+      <arg value="-f" />
+	  <arg value="-s" />
+      <arg value="${simlink.dir}/.GlobalPreferences.plist" />
+	  <arg value="${rhodeslink.dir}/.GlobalPreferences.plist" />
+    </exec>
+    <exec executable="ln">
+      <arg value="-f" />
+	  <arg value="-s" />
+      <arg value="${sim.dir}/iPhone Simulator.app" />
+	  <arg value="iPhoneSimulator.link" />
+    </exec>
+
   </target>
   
 </project>
