@@ -199,13 +199,16 @@ void Init_RhoSupport()
 
     {
       VALUE path = __rhoGetCurrentDir();
-      VALUE stdioPath, exist;
+      VALUE stdioPath, exist, logio;
       rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("rhologpath.txt"));
       exist = rb_funcall(rb_cFile, rb_intern("exist?"), 1, path);
       if ( exist == Qtrue ){
         stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
         if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
-          freopen( RSTRING_PTR(stdioPath), "w", stdout );
+          //freopen( RSTRING_PTR(stdioPath), "w", stdout );
+          logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w"));
+          rb_gv_set("$stdout", logio);
+          rb_gv_set("$stderr", logio);
       }
     }
 }
