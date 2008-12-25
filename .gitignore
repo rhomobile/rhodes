@@ -11,6 +11,7 @@ wm/bin/*
 win32/bin/*
 wm/target/*
 wm/build/cleanup.js
+iphone/*/rholog.txt
 
 bb/.metadata/*
 bb/bin/*
