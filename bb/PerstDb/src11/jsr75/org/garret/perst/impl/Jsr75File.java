@@ -150,7 +150,7 @@ public class Jsr75File implements SimpleFile
         
         try { 
             if (fconn == null) {
-                fconn = (FileConnection)Connector.open(url);
+                fconn = (FileConnection)Connector.open(url,Connector.READ_WRITE);
                 // If no exception is thrown, then the URI is valid, but the file may or may not exist.
                 if (!fconn.exists()) { 
                     fconn.create();  // create the file if it doesn't exist

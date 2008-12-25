@@ -119,6 +119,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public abstract void remove(Table_base item);
 	    
 	    public abstract Iterator iterator( RubyHash where);
+	    public abstract Iterator iterator();
+	    
 	}	
 	
 	public static class Table_object_values extends Table_base { 
@@ -204,6 +206,10 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.remove(new Key( item.object, item.update_type),item);
 		    	item.deallocate();
+		    }
+
+		    public Iterator iterator(){
+		    	return source_idANDupdate_type.iterator();
 		    }
 		    
 		    public Iterator iterator( RubyHash where){
@@ -358,12 +364,12 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	source_id.remove(new Key(item.source_id),item);
 		    	item.deallocate();
 		    }
+
+		    public Iterator iterator(){
+	    		return source_id.iterator(); 
+		    }
 		    
 		    public Iterator iterator(RubyHash where){
-		    	if(where == null ) 
-		    	{ 
-		    		return source_id.iterator(); 
-		    	}
 		    	RubyValue val = where.get(SOURCE_ID);
 		    	if ( val == RubyConstant.QNIL )
 		    		return null;
@@ -477,8 +483,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		}
 		
 		TableRootBase tblRoot = getTableRoot(tableName);
-		if ( tblRoot != null && where != RubyConstant.QNIL ){
-			Iterator iter = tblRoot.iterator((RubyHash)where);
+		if ( tblRoot != null ){
+			Iterator iter = (where != null && where != RubyConstant.QNIL) ? 
+					tblRoot.iterator((RubyHash)where) :
+					tblRoot.iterator();
+					
 			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
 			while(iter != null && iter.hasNext()){
 				Table_base item = (Table_base)iter.next();
