@@ -112,6 +112,11 @@ TInt CHttpServer::Execute()
 
 TInt CHttpServer::ExecuteL()
 	{
+		// Create and install the active scheduler
+		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
+		CleanupStack::PushL(activeScheduler);
+		CActiveScheduler::Install(activeScheduler);
+
 		//Initialize Ruby
 		RhoRubyStart();
 	
@@ -125,6 +130,8 @@ TInt CHttpServer::ExecuteL()
 
 		RhoRubyStop();
 
+		CleanupStack::PopAndDestroy(activeScheduler);
+		
 	 	return 0;
 	}
 
