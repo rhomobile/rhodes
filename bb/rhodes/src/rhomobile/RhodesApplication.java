@@ -85,6 +85,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     			nPos = i;
     			break;
     		}
+    		String strUrl1 = strUrl + "/index";
+    		if ( strUrl1.equalsIgnoreCase((String)_history.elementAt(i)) ){
+    			nPos = i;
+    			break;
+    		}
+    		
     	}
     	if ( nPos == -1 ){
     		boolean bReplace = RhoConnection.findIndex(strUrl) != -1;
