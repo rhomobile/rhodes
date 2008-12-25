@@ -196,4 +196,16 @@ void Init_RhoSupport()
     rb_define_global_function("require", rb_require_compiled, 1);
     rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
     rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
+
+    {
+      VALUE path = __rhoGetCurrentDir();
+      VALUE stdioPath, exist;
+      rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("rhologpath.txt"));
+      exist = rb_funcall(rb_cFile, rb_intern("exist?"), 1, path);
+      if ( exist == Qtrue ){
+        stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
+        if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
+          freopen( RSTRING_PTR(stdioPath), "w", stdout );
+      }
+    }
 }

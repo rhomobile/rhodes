@@ -16,7 +16,7 @@
 #include <locale.h>
 #endif
 
-#define COMPILER 1
+//#define COMPILER 1
 
 //RUBY_GLOBAL_SETUP
 
@@ -34,6 +34,10 @@ main(int argc, char **argv)
 const char* RhoGetRootPath()
 {
     return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
+}
+
+void Init_Phonebook()
+{
 }
 
 #else 
