@@ -2225,4 +2225,3 @@ SWIGEXPORT void Init_Phonebook(void) {
   rb_define_module_function(mPhonebook, "saveRecord", _wrap_saveRecord, -1);
   rb_define_module_function(mPhonebook, "deleteRecord", _wrap_deleteRecord, -1);
 }
-

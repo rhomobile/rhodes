@@ -70,4 +70,7 @@
 //d:Default CBA right button for multipurpose browser display
 #define STRING_r_brctl_cancel_default "Back"
 
+//d: Contact database not found 
+rls_string STRING_r_contacts_db_not_found "Contact database not found"
+
 // End of File

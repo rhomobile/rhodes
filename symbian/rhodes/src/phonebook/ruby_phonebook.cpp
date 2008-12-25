@@ -20,56 +20,99 @@
  ============================================================================
  */
 
-#include "ruby/ruby.h"
-
 //Stubs for phonebook
+#include "Phonebook.h"
+#include <cpbkcontactitem.h>
 
-void* openPhonebook() {
-	return NULL;
+extern "C" 
+{
+void* openPhonebook() 
+{
+	CPhonebook* phonebook = CPhonebook::NewL();
+	return phonebook;
 }
 
-void  closePhonebook(void* pb) {
+void  closePhonebook(void* pb) 
+{
+	if ( pb )
+    {
+    	CPhonebook* phonebook = (CPhonebook*)pb;
+    	delete phonebook;
+    }
 }
 
-VALUE getallPhonebookRecords(void* pb) {
+VALUE getallPhonebookRecords(void* pb) 
+{
+	if ( pb )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		return phonebook->getallPhonebookRecords();
+	}
+
 	return getnil();	
 }
 
-VALUE getPhonebookRecord(void* pb, char* id) {
+void* openPhonebookRecord(void* pb, char* id) 
+{
+	if ( pb && id )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		return phonebook->openContact(id);
+	}
+
+	return NULL;
+}
+
+VALUE getPhonebookRecord(void* pb, char* id) 
+{
+	if ( pb && id )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		return phonebook->getContact(id);
+	}
 	return getnil();	
 }
 
 //==================================================================================
 
 VALUE getfirstPhonebookRecord(void* pb) {
+	pb;
 	return getnil();
 }
 
 VALUE getnextPhonebookRecord(void* pb) {
+	pb;
 	return getnil();}
 
 //==================================================================================
 
-void* createRecord() {
-	return NULL;
+void* createRecord() 
+{
+	return CPhonebook::createRecord();
 }
 
-void* openPhonebookRecord(void* pb, char* id) {
-	return NULL;
-}
-
-int setRecordValue(void* record, char* prop, char* value) {
+int setRecordValue(void* record, char* prop, char* value) 
+{
+	CPhonebook::setRecord((CPbkContactItem*)record, prop, value);
 	return 1;
 }
 
-int addRecord(void* pb, void* record) {
+int addRecord(void* pb, void* record) 
+{
+	pb;
+	CPhonebook::addRecord((CPbkContactItem*)record);
 	return 1;
 }
 
 int saveRecord(void* pb, void* record) {
+	pb;
+	record;
 	return 1;
 }
 
 int deleteRecord(void* pb, void* record) {
+	pb;
+	record;
 	return 1;
+}
 }
