@@ -53,7 +53,6 @@ SOURCE 			HttpServer.cpp
 SOURCE 			AppSoftkeysObserver.cpp
 SOURCE 			SyncEngineWrap.cpp
 SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp
-SOURCE 			geolocation.c 
 SOURCE 			rsyncengine.c 
 SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
 
@@ -133,4 +132,4 @@ SOURCEPATH ..\src\phonebook
 SOURCE Phonebook.cpp
 SOURCE ruby_phonebook.cpp
 SOURCEPATH ..\src\geolocation
-SOURCE GeoLocation.cpp
+SOURCE GeoLocation.cpp ruby_geolocation.cpp
