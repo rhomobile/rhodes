@@ -37,7 +37,7 @@ USERINCLUDE    ..\..\..\shared\syncengine
 USERINCLUDE    ..\..\..\shared\ruby
 USERINCLUDE    ..\..\..\shared\ruby\include
 USERINCLUDE    ..\..\..\shared\ruby\include\ruby
-USERINCLUDE    ..\..\..\shared\ruby\symbian
+USERINCLUDE    ..\..\..\shared\ruby\symbian ..\inc\phonebook ..\inc\geolocation
 
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
@@ -57,8 +57,6 @@ SOURCE 			geolocation.c
 SOURCE 			rsyncengine.c 
 SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
 
-SOURCEPATH		..\src\phonebook
-SOURCE 			phonebook.c
 
 //Shared syncengine
 SOURCEPATH 		..\..\..\shared\syncengine
@@ -115,10 +113,11 @@ LIBRARY                                 http.lib
 LIBRARY                                 esock.lib
 LIBRARY                                 centralrepository.lib
 LIBRARY                                 inetprotutil.lib
-
-LIBRARY 	   libc.lib 
-LIBRARY 	   libpthread.lib 
-LIBRARY 	   libm.lib
+LIBRARY                                 cntmodel.lib
+LIBRARY                                 pbkeng.lib
+LIBRARY                                 libc.lib 
+LIBRARY                                 libpthread.lib 
+LIBRARY                                 libm.lib
 
 LANG SC
 
@@ -130,3 +129,8 @@ EPOCSTACKSIZE     80000
 EPOCHEAPSIZE      0x100000 0x500000 
 
 // End of File
+SOURCEPATH ..\src\phonebook
+SOURCE Phonebook.cpp
+SOURCE ruby_phonebook.cpp
+SOURCEPATH ..\src\geolocation
+SOURCE GeoLocation.cpp

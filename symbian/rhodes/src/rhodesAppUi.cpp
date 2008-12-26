@@ -46,10 +46,7 @@
 
 #include "stat/stat.h"
 
-extern "C"
-{
-int	 sprintf(char * __restrict, const char * __restrict, ...);
-}
+#include <stdio.h> //for sprintf
 
 // ============================ MEMBER FUNCTIONS ===============================
 
