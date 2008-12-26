@@ -15,7 +15,7 @@
   <property name="simapp.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Applications" />
   <property name="rhodes.guid" value="264FFCAF-C71D-4543-B293-9058E31CFFEE" />
   <property name="simrhodes.dir" location="${simapp.dir}/${rhodes.guid}" />
-  <property name="applog.path" location="./rholog.txt" />
+  <property name="applogfull.path" location="${applog.path}" />
   <property name="rhodesapp.dir" location="../build/Debug-iphonesimulator" />
   <property name="simlink.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Library/Preferences" />
   <property name="sim.dir" location="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications" />
@@ -67,7 +67,7 @@
     <mkdir dir="${simrhodes.dir}/Library" />
     <mkdir dir="${simrhodes.dir}/Library/Preferences" />
 
-    <echo message="${applog.path}" file="${simrhodes.dir}/Documents/rhologpath.txt"/>
+    <echo message="${applogfull.path}" file="${simrhodes.dir}/Documents/rhologpath.txt"/>
     <echo message="(version 1)\n(debug deny)\n(allow default)\n" file="${simapp.dir}/${rhodes.guid}.sb"/>
 
     <exec executable="cp">
