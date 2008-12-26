@@ -34,6 +34,7 @@
 
   <target name="clean" depends="appclean">
     <delete dir="${target.dir}" />
+	<ant dir = "${sharedAnt.dir}" target="clean"/>
   </target>
 
   <target name="RhoBundle">
@@ -68,7 +69,7 @@
     <mkdir dir="${simrhodes.dir}/Library/Preferences" />
 
     <echo message="${applogfull.path}" file="${simrhodes.dir}/Documents/rhologpath.txt"/>
-    <echo message="(version 1)\n(debug deny)\n(allow default)\n" file="${simapp.dir}/${rhodes.guid}.sb"/>
+    <echo message="(version 1)${line.separator}(debug deny)${line.separator}(allow default)${line.separator}" file="${simapp.dir}/${rhodes.guid}.sb"/>
 
     <exec executable="cp">
       <arg value="-R" />

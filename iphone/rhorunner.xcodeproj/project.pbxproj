@@ -423,7 +423,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd rbuild\nant";
+			shellScript = "cd rbuild\nant rhobundle";
 		};
 /* End PBXShellScriptBuildPhase section */
 
