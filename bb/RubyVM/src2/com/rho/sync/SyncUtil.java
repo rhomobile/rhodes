@@ -367,8 +367,8 @@ public class SyncUtil {
 	public static int getObjectCountFromDatabase() {
 		RubyArray arr = createArray();
 		arr.add(createString("object_values")); //table name
-		//arr.add(createString("*")); //attributes
-		arr.add(createString("source_id")); //not nil attributes
+		arr.add(createString("*")); //attributes
+		//arr.add(createString("source_id")); //not nil attributes
 		arr.add(RubyConstant.QNIL); //where
 
 		RubyHash params = createHash();
