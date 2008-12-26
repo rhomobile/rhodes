@@ -56,32 +56,43 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	
 	    	return res;
 	    }
-	    public void addOrdered( RubyArray res, RubyValue attrib, 
-	    		RubyValue orderBy, RubyHash distinctMap ){
+	    
+	    public boolean addOrdered( RubyArray res, RubyValue attrib, 
+	    		RubyValue orderBy, RubyHash distinctMap, boolean count ){
 	    	RubyHash hash = getValueByName((RubyString)attrib);
 	    	if ( distinctMap != null && hash.size().toInt() > 0 ){
 	    		RubyValue val = hash.get(attrib);
 	    		if ( val != RubyConstant.QNIL ){
 	    			if ( distinctMap.has_key(val) == RubyConstant.QTRUE )
-	    				return;
+	    				return false;
 	    			distinctMap.add(val, val);
 	    		}
 	    	}
 	    	
-	    	if ( orderBy == null )
-	    		res.add( hash );
-	    	else
-	    	{
-	    		RubyString val1 = (RubyString)(hash.get(orderBy));
-	    		for( int i = 0; i < res.size(); i++ ){
-	    			RubyString val2 = (RubyString)(((RubyHash)res.get(i)).get(orderBy));
-	    			if ( val1.operator_compare(val2).toInt() <= 0 ){
-	    				res.insert(i, hash);
-	    				return;
-	    			}
+	    	if ( count ){
+	    		if ( !attrib.equals(ALL) && hash.size().toInt() > 0 ){
+		    		RubyValue val = hash.get(attrib);
+		    		if ( val == RubyConstant.QNIL )
+		    			return false;
 	    		}
-	    		res.add( hash );
+	    		return true;
 	    	}
+	    	
+	    	if ( orderBy == null ){
+	    		res.add( hash );
+	    		return true;
+	    	}
+	    	
+    		RubyString val1 = (RubyString)(hash.get(orderBy));
+    		for( int i = 0; i < res.size(); i++ ){
+    			RubyString val2 = (RubyString)(((RubyHash)res.get(i)).get(orderBy));
+    			if ( val1.operator_compare(val2).toInt() <= 0 ){
+    				res.insert(i, hash);
+    				return true;
+    			}
+    		}
+    		res.add( hash );
+	    	return true;
 	    }
 	    
 	    public Table_base(){}
@@ -470,18 +481,21 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	RubyValue selectFromTable(RubyValue tableName, RubyValue attrib, 
 			RubyValue where, RubyValue params){
-		RubyArray res = new RubyArray(); 
-		
 		RubyValue orderBy = null;
 		boolean distinct = false;
+		boolean count = false;
 		if ( params != null && params != RubyConstant.QNIL ){
 			orderBy = ((RubyHash)params).get(ObjectFactory.createString("order by"));
 			if ( orderBy == RubyConstant.QNIL )
 				orderBy = null;
 			distinct = ((RubyHash)params).get(ObjectFactory.createString("distinct")) != 
 				RubyConstant.QNIL;
+			count = ((RubyHash)params).get(ObjectFactory.createString("count")) != 
+				RubyConstant.QNIL;
 		}
-		
+
+		RubyArray res = new RubyArray(); 
+		int nCount = 0;
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			Iterator iter = (where != null && where != RubyConstant.QNIL) ? 
@@ -491,9 +505,13 @@ public class PerstLiteAdapter  extends RubyBasic {
 			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
 			while(iter != null && iter.hasNext()){
 				Table_base item = (Table_base)iter.next();
-				item.addOrdered( res, attrib, orderBy, distinctMap );
+				nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
 			}
 		}
+		
+		if ( count )
+			return ObjectFactory.createInteger(nCount);
+		
 		return res;
 	}
 
