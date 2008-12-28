@@ -51,7 +51,7 @@
   
   <target name="rhobundle" depends="RhoBundle"></target>
   
-  <target name="runapp">
+  <target name="runapp" depends="RhoBundle">
     <exec executable="xcodebuild" dir="${rhodesproj.dir}">
       <arg value="build" />
       <arg value="-target" />
