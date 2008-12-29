@@ -1,8 +1,8 @@
 require 'find'
 
-dir = '.'
+dir = File.dirname(File.expand_path(__FILE__))
 fname = "rhorunner.app"
-fappGuid = File.new( File.join(File.dirname(File.expand_path(__FILE__)),'rhodesguid.properties'), "w")
+fappGuid = File.new( File.join(dir,'rhodesguid.properties'), "w")
 
 Find.find(dir) do |path| 
   if File.basename(path) == fname
