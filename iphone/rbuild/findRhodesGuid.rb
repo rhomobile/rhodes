@@ -14,5 +14,5 @@ Find.find(dir) do |path|
   end
 end
 
-fappManifest.close()
+fappGuid.close()
 			  
