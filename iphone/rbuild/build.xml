@@ -50,6 +50,7 @@
   <target name="rhobundle" depends="RhoBundle"></target>
 
   <target name="findRhodesGuid">
+	<property name="rubylib.dir" location="${sharedAnt.dir}/../framework/lib" />
     <copy file="findRhodesGuid.rb" todir="${simapp.dir}"/>
     
     <exec executable="${ruby.path}">
@@ -58,12 +59,13 @@
     </exec>
     
     <delete file="${simapp.dir}/findRhodesGuid.rb" />
+	<move file="${simapp.dir}/rhodesguid.properties" todir="."/>
   </target>
 
   <target name="runapp" depends="RhoBundle,findRhodesGuid">
     <property file="rhodesguid.properties"/>
 
-    <condition property="rhodes.guid" value="264FFCAF-C71D-4543-B293-9058E31CFFEE">
+    <condition property="rhodes.guid" value="364FFCAF-C71D-4543-B293-9058E31CFFEE">
       <not><isset property="rhodes.guid"/></not>
     </condition>
     <property name="simrhodes.dir" location="${simapp.dir}/${rhodes.guid}" />
@@ -108,6 +110,8 @@
       <arg value="${simrhodes.dir}/Library/Preferences/.GlobalPreferences.plist" />
     </exec>
 
+	<delete file="rhodesguid.properties"/>
+	
     <exec executable="open">
       <arg value="${sim.dir}/iPhone Simulator.app" />
     </exec>
