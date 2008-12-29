@@ -50,10 +50,14 @@
   <target name="rhobundle" depends="RhoBundle"></target>
 
   <target name="findRhodesGuid">
-    <exec executable="${ruby.path}" dir="${simapp.dir}">
+    <copy file="findRhodesGuid.rb" todir="${simapp.dir}"/>
+    
+    <exec executable="${ruby.path}">
       <arg value="-R${rubylib.dir}" />
-      <arg value="findRhodesGuid.rb" />
+      <arg value="${simapp.dir}/findRhodesGuid.rb" />
     </exec>
+    
+    <delete file="${simapp.dir}/findRhodesGuid.rb" />
   </target>
 
   <target name="runapp" depends="RhoBundle,findRhodesGuid">
