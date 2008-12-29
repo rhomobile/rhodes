@@ -50,9 +50,8 @@ SOURCE			rhodesAppView.cpp
 SOURCE			rhodesAppUi.cpp
 SOURCE			rhodesDocument.cpp
 SOURCE 			HttpServer.cpp
-SOURCE 			AppSoftkeysObserver.cpp
 SOURCE 			SyncEngineWrap.cpp
-SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp
+SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp AppSoftkeysObserver.cpp
 SOURCE 			rsyncengine.c 
 SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
 
