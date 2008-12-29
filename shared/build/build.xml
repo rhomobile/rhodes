@@ -35,7 +35,7 @@
                 <include name="**/*.html" />
                 <include name="**/*.txt" />
                 <include name="**/*.css" />
-              
+                
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
             </fileset>
