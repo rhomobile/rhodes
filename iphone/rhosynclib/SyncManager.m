@@ -30,7 +30,7 @@
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-char *fetch_remote_data(char *url_string) {
+char *fetch_remote_data(char *url_string, char *session) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	
@@ -39,8 +39,9 @@ char *fetch_remote_data(char *url_string) {
 	NSHTTPURLResponse* response;
 	[request setURL:[NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]]];
 	[request setHTTPMethod:@"GET"];
+	[request setHTTPShouldHandleCookies:NO];
+	[request setValue:[[NSString alloc] initWithUTF8String:session] forHTTPHeaderField:@"Cookie"];	
 	NSString *logData;
-	
 	NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
 	
 	if (conn) {
@@ -48,10 +49,15 @@ char *fetch_remote_data(char *url_string) {
 		NSInteger code = [response statusCode];
 		if (error || code != 200) {
 			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			NSLog([[request URL] absoluteString]); 
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			[pool release];
 			return NULL;
 		} else {
+			NSDictionary *cookies = [response allHeaderFields];
+			for (id key in cookies) {
+				NSLog(@"key: %@, value: %@", key, [cookies objectForKey:key]);
+			}
 			logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 		}
 	}
@@ -59,6 +65,44 @@ char *fetch_remote_data(char *url_string) {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	[pool release];
 	return data;
+}
+
+char *test_login(char* url) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+	NSError *error = nil;
+	NSHTTPURLResponse *response;
+	NSString *linkString = [[NSString alloc] initWithUTF8String:url];
+	NSString *postBody = @"login=lars&password=password";
+	//[request setURL:[NSURL URLWithString:linkString]];
+	[request setURL:[NSURL URLWithString:@"http://rhosync.local/sessions/create"]];
+	[request setHTTPMethod:@"POST"];
+	[request addValue:@"application/json" forHTTPHeaderField:@"accepts"];
+	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
+	NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+	if (conn) {
+		NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+		NSInteger code = [response statusCode];
+		if (error || code != 200) {
+			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			[pool release];
+			return NULL;
+		} else {
+			NSDictionary *cookies = [response allHeaderFields];
+			for (id key in cookies) {
+				NSLog(@"key: %@, value: %@", key, [cookies objectForKey:key]);
+			}
+			char *cookie = (char *)[[cookies objectForKey:@"Set-Cookie"] UTF8String];
+			char *login_success = fetch_remote_data(url, cookie);
+			NSLog(@"Success: %s", login_success);
+			return login_success;
+		}
+	}
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	[pool release];
+	return NULL;
 }
 
 /*
