@@ -27,11 +27,12 @@
 #include "rhodesAppView.h"
 #include "rhodesAppUI.h"
 
-#include "AppSoftkeysObserver.h"
+//#include "AppSoftkeysObserver.h"
 #include "SpecialLoadObserver.h"
 
 #include <eiklabel.h>
 #include <avkon.hrh>
+#include <avkon.rsg>
 
 #include "rhodes.hrh"
 
@@ -88,11 +89,11 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	
 	iCommandBase = TBrCtlDefs::ECommandIdBase;
 	
-	iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
+	//iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
 	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw |
-	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys;
+	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys | TBrCtlDefs::ECacheModeNoCache;
 
 	CreateBasicBrowserControlL();
 
@@ -111,14 +112,21 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 		    
 		}
 	
-	CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();
-	current->SetCommandSetL( R_BROWSER_DEFAULT_BUTTONS );
-	
 	//loading start page
-	_LIT(KLoadingPage, "file:///c:\\Data\\Rho\\apps\\loading.html");
+	_LIT(KLoadingPage, "\\Data\\Rho\\apps\\loading.html");
 	
-	LoadUrl(KLoadingPage);
-	
+	RFs rfs;
+    RFile file;
+    User::LeaveIfError(rfs.Connect());
+    CleanupClosePushL(rfs);
+    if ( file.Open(rfs, KLoadingPage(), EFileShareReadersOrWriters) == KErrNone )
+	{    
+		CleanupClosePushL(file);
+	    iBrCtlInterface->LoadFileL(file);
+	    file.Close();
+	    CleanupStack::PopAndDestroy(1); // file
+	}
+    CleanupStack::PopAndDestroy(1); // rfs
 	}
 
 // -----------------------------------------------------------------------------
@@ -141,7 +149,9 @@ CRhodesAppView::~CRhodesAppView()
 		if (iBrCtlInterface)
 	        delete iBrCtlInterface;
 		
-		delete iAppSoftkeysObserver;
+		//if ( iAppSoftkeysObserver )
+		//	delete iAppSoftkeysObserver;
+		
 		delete iSpecialLoadObserver;
 	}
 
@@ -214,6 +224,11 @@ void CRhodesAppView::CancelLoad()
 //
 void CRhodesAppView::HandleCommandL(TInt aCommand)
 	{
+		if ( iBrCtlInterface )
+		{
+			iBrCtlInterface->ClearCache();
+		}
+		
 	    switch ( aCommand )
 	    {
 	        case ECmdAppRestoreSetting:
@@ -240,6 +255,15 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	            break;
 	        }
 	        case EAknSoftkeyBack:
+        	{
+        		if (iBrCtlInterface)
+    			{
+		            TBrCtlDefs::TBrCtlElementType type = iBrCtlInterface->FocusedElementType();
+		            
+		            if(type == TBrCtlDefs::EElementActivatedInputBox )
+		            	break;
+    			}
+    		}
 	        case ECmdAppBack:
 	        {
 	            if (iBrCtlInterface)
@@ -247,7 +271,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	                iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandBack);
 	            }
 	            break;
-	            }
+	        }
 	        case ECmdAppForward:
 	        {
 	            if (iBrCtlInterface)
@@ -265,22 +289,33 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         			}
         		break;
         	}
+	        /*case EAknSoftkeyCancel:
+        	{
+        		CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();
+	        	if ( current )
+        		{
+	        		current->SetCommandSetL( R_AVKON_SOFTKEYS_OPTIONS_BACK );
+	        		current->SetFocus(EFalse, EDrawNow);
+        		}
+	        	break;
+        	}*/
 	        default:
-	            if (aCommand >= iCommandBase && 
-					aCommand < iCommandBase + TBrCtlDefs::ECommandIdWMLBase && 
-					iBrCtlInterface)
-	            {
+	        	if (aCommand >= iCommandBase &&
+	                aCommand < iCommandBase + TBrCtlDefs::ECommandIdWMLBase &&
+	                iBrCtlInterface)
+	                {
 	                iBrCtlInterface->HandleCommandL(aCommand);
-	            }
-	
+	                }
+
 	            if (aCommand >= iCommandBase + TBrCtlDefs::ECommandIdWMLBase &&
 	                aCommand < iCommandBase + TBrCtlDefs::ECommandIdRange &&
 	                iBrCtlInterface)
-	            {
+	                {
 	                iBrCtlInterface->HandleCommandL(aCommand);
-	            }              
+	                }              
 	            break;      
 	    }
+	    
 	}
 
 // ----------------------------------------------------
@@ -302,7 +337,7 @@ void CRhodesAppView::CreateBasicBrowserControlL()
 	            rect, 
 	            iBrCtlCapabilities,
 	            iCommandBase, 
-	            iAppSoftkeysObserver, 
+	            /*iAppSoftkeysObserver*/NULL, 
 	            NULL,
 	            iSpecialLoadObserver,
 	            NULL, 
@@ -364,6 +399,29 @@ TKeyResponse CRhodesAppView::HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCo
     return EKeyWasNotConsumed;
 }
 
-
+void CRhodesAppView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
+{
+    if (iBrCtlInterface && aResourceId == R_MENUBAR )
+    {
+        iBrCtlInterface->AddOptionMenuItemsL(*aMenuPane, aResourceId);
+        RPointerArray<TBrCtlWmlServiceOption>* options;
+        options = iBrCtlInterface->WMLOptionMenuItemsL();
+        TInt i;
+        TInt count = options->Count();
+        for (i = 0; i < count; i++)
+    	{
+            TBrCtlWmlServiceOption* option = (*options)[i];
+            if (option != NULL)
+            {
+                CEikMenuPaneItem::SData item;
+                item.iText.Copy(option->Text());
+                item.iCommandId = option->ElemID();
+                item.iFlags = 0;
+                item.iCascadeId = 0;
+                aMenuPane->InsertMenuItemL(item, 0);
+            }
+        }
+    }
+}
 // End of File
 

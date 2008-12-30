@@ -64,7 +64,7 @@ RESOURCE EIK_APP_INFO
 	{
 	menubar = r_menubar;
 	hotkeys=r_rhodes_hotkeys;
-	cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+	cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
 	}
 
 

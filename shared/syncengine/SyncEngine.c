@@ -216,4 +216,6 @@ void shutdown_database() {
 void start_sync_engine(sqlite3 *db) {	
 	database = db;
 }
+void shutdown_database() {
+}
 #endif //!defined(_WIN32_WCE)

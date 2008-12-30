@@ -29,6 +29,12 @@
 #include "HttpFileManager.h"
 #include "HttpConstants.h"
 
+#ifndef ENABLE_RUBY_VM_STAT
+#define ENABLE_RUBY_VM_STAT
+#endif
+
+#include "stat/stat.h"
+
 extern "C"
 	{
 		#include "sqlite3.h"
@@ -122,6 +128,10 @@ TInt CSyncEngineWrap::ExecuteL()
 		//Initialize Ruby
 		StartSyncEngine();
 	
+#ifdef ENABLE_RUBY_VM_STAT	
+		g_sync_thread_loaded = 1;
+#endif
+		
 		sync_engine_main_routine(NULL);//main 
 		
 		StopSyncEngine();

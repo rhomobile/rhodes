@@ -1,4 +1,4 @@
-<project name="buildWM" default="all" basedir=".">
+<project name="buildWM" default="buildall" basedir=".">
 
   <property file="build.properties"/>
 
@@ -9,14 +9,45 @@
   <property name="cabWiz.dir" value="C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz" />
   <property name="target.dir" location="../target/wm6p" />
 
-  <property name="exclude.apps" value="shared/js/**" />
+  <!-- <property name="exclude.apps" value="js/**" /> -->
 
-  <target name="all">
+  <target name="clean.rhodes">
+    <delete dir="${bin.dir}/Windows Mobile 6 Professional SDK (ARMV4I)" />
+  </target>
 
+  <target name="clean.target">
+    <ant dir = "${sharedAnt.dir}" target="clean"/>
+    <delete file="${bin.dir}/rhodes.inf" />    
     <delete dir="${target.dir}" />
     <mkdir dir="${target.dir}" />
-    
+  </target>
+
+  <target name="clean" depends="clean.target,clean.rhodes">
+    <delete dir="${target.dir}" />
+    <mkdir dir="${target.dir}" />
+  </target>
+
+  <target name="RhoBundle" depends="clean.target">
     <ant dir = "${sharedAnt.dir}"/>
+    <delete dir="${src.dir}/apps/shared/js">
+      <exclude name="**/rho*.js" />
+      <exclude name="**/iui.css" />
+      <exclude name="**/*.png" />
+    </delete>
+  </target>
+
+  <target name="build.rhodes">
+    <exec executable="vcbuild" dir="../">
+      <arg value="/M4"/>
+      <arg value="rhodes.sln"/>
+      <arg value="Release|Windows Mobile 6 Professional SDK (ARMV4I)"/>
+    </exec>
+  </target>
+
+  <target name="rebuild.rhodes" depends="clean.rhodes,build.rhodes">
+  </target>
+
+  <target name="buildall" depends="RhoBundle,build.rhodes">
 
     <exec executable="cscript">
       <arg value="build_inf.js"/>
