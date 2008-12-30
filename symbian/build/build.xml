@@ -78,8 +78,6 @@
 	    <property name="root.dir" value="${basedir}"/>
 	    <echo message="root: ${root.dir}" />
 
-		<property name="exclude.apps" value="shared/js/**" />
-		
 		<!-- 
 			Build directory
 		-->	
