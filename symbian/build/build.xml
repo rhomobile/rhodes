@@ -41,6 +41,9 @@
        <echo message=""/> 
        <echo message="where options is"/>
        <echo message=""/> 
+       <echo message="For testing on emulator (WINSCW)"/> 
+       <echo message="build-apps             : to clean + build apps + build rhodes + execute emulator"/>
+       <echo message=""/> 
        <echo message="For developement only: build based on working dirs"/> 
        <echo message="build-all              : to clean + build + make sis + sign sis (no checkout)"/>
        <echo message="build-selfsign         : to clean + build + make sis + selfsign sis (no checkout)"/> 
@@ -65,6 +68,9 @@
     <target name="build-build"     depends="init, build-no-checkout, compile, make-sis, sign-sis"/>
     <target name="build-sis"       depends="init, build-no-checkout, make-sis, sign-sis"/>
 
+	<!-- testing on emulator -->
+	<target name="build-apps"       depends="init-apps, clean-apps, appbuild, run-app"/>
+	
     <!--
     ========================================================================
       INIT: Setting variables
@@ -78,8 +84,6 @@
 	    <property name="root.dir" value="${basedir}"/>
 	    <echo message="root: ${root.dir}" />
 
-		<property name="exclude.apps" value="shared/js/**" />
-		
 		<!-- 
 			Build directory
 		-->	
@@ -146,6 +150,75 @@
 		
     </target>
 
+	<!--
+    ========================================================================
+      INIT APPS BUILD
+    ========================================================================
+    -->
+	<target name="init-apps" depends="init">
+		<!--
+		    Reset build.target 
+		-->
+		
+		<property name="apps.root"  value="${epocroot}\epoc32\winscw\c\Data\Rho"/>
+		
+		<property name="rhodes.app"  value="${epocroot}\epoc32\release\winscw\udeb\rhodes.exe"/>
+		
+		<property name="rhodes.app.dir"  value="${epocroot}\epoc32\release\winscw\udeb\"/>
+		
+		<property name="logfile.location"  value="${epocroot}\epoc32\winscw\c\Data\Rho\rhologpath.txt"/>
+		    
+	</target>
+
+	<!--
+    ========================================================================
+      CLEAN DATA\RHO ON EMULATOR
+    ========================================================================
+    -->
+    <target name="clean-apps" depends="clean">
+    	
+    	<echo message="Cleaning rho apps dir..."/>
+        <delete dir="${apps.root}"/>
+        <mkdir dir="${apps.root}"/>
+        
+    </target>
+    
+    <!--
+    ========================================================================
+      BUILD RHODES AND RUBY APPS FOR EMULATOR
+    ========================================================================
+    -->
+    
+    <target name="appbuild" depends="init-apps, build-no-checkout, compile">
+    	<echo message="Build apps..."/>
+    
+    	<echo message="Copy rhobundle to the emulator..."/>
+    	
+    	<copy todir="${apps.root}">
+		    <fileset dir="${src.dir}"/>
+		</copy>
+		
+		<echo message="Enable rhodes logging if log file path is presented..."/>
+		<copy file="${build.dir}/logfile.template" tofile="${logfile.location}"/>
+		
+		<replace file="${logfile.location}" token="{{LOGFILEPATH}}" value="${logfile.path}"/>
+		
+    </target>
+    
+    <!--
+    ========================================================================
+      RUN RHODES ON EMULATOR
+    ========================================================================
+    -->
+    <target name="run-app" depends="init-apps">
+	    
+	    <echo message = "run rhodes application on emulator" />
+	    <exec executable="cmd" dir="${rhodes.app.dir}" spawn="true">
+	    	<arg line="/c ${rhodes.app}" />
+	    </exec>
+	    
+    </target>
+    
     <!--
     ========================================================================
       BUILD
@@ -273,7 +346,7 @@
       COMPILE
     ========================================================================
     -->
-    <target name="compile" depends="init, clean_ablt">
+    <target name="compile" depends="init, clean_ablt, rhobundle">
         <!-- 
             Build files and compile all projects.
             Dirs used depends on which build target was called ('build' or 'build-no-checkout').
@@ -281,16 +354,14 @@
         
         <mkdir dir="${dir.output}"/>
         
-        <echo message="Compiling RhoBundle..."/>
-        <echo message="output to file: ${log.build}"/>
-        <ant dir = "${sharedAnt.dir}" output="${log.build}" />
+        <echo message="Build target: ${build.target}" />
         
         <echo message="Compiling rubylib..."/>
         <echo message="output to file: ${log.build}"/>
         <exec dir="${dir.rubylib.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
             <arg value="/c"/>
             <arg value="abld.bat"/>
-		    <arg line="build ${build.target} UREL"/>
+		    <arg line="build ${build.target}"/>
 		</exec>
 		
         <echo message="Compiling SQLite60..."/>
@@ -298,7 +369,7 @@
         <exec dir="${dir.SQLite60.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
             <arg value="/c"/>
             <arg value="abld.bat"/>
-		    <arg line="build ${build.target} UREL"/>
+		    <arg line="build ${build.target}"/>
 		</exec>
 	        
         <echo message="Compiling shttpd..."/>
@@ -306,7 +377,7 @@
         <exec dir="${dir.shttpd.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
             <arg value="/c"/>
             <arg value="abld.bat"/>
-		    <arg line="build ${build.target} UREL"/>
+		    <arg line="build ${build.target}"/>
 		</exec>
 
 		<echo message="Compiling rhodes..."/>
@@ -314,7 +385,7 @@
         <exec dir="${dir.rhodes.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
             <arg value="/c"/>
             <arg value="abld.bat"/>
-		    <arg line="build ${build.target} UREL"/>
+		    <arg line="build ${build.target}"/>
 		</exec>
         
         <!-- Open logs and continue -->
@@ -512,6 +583,14 @@
 		<echo message="Compiling RhoBundle..."/>
         <echo message="output to file: ${log.build}"/>
         <ant dir = "${sharedAnt.dir}" output="${log.build}" />
+        
+        <!--Remove Javascript and CSS-->
+        <delete dir="${src.dir}/apps/shared/js">
+          <!-- <exclude name="**/rho*.js" />
+              <exclude name="**/iui.css" />
+              <exclude name="**/*.png" /> -->
+        </delete>
+        <delete dir="${src.dir}/apps/shared/css"/>
 	</target>
 	  	  
 </project>

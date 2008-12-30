@@ -12,14 +12,12 @@ extern "C" {
 
 extern int g_collect_stat;
 
-extern unsigned long g_iseq_binread_sec; //time lapsed in binread (in seconds)
-extern unsigned long g_iseq_binread_usec; //time lapsed in binread (in microseconds) 
+extern unsigned long g_iseq_binread_msec; 
+extern unsigned long g_iseq_marshal_load_msec; 
+extern unsigned long g_require_compiled_msec;
 
-extern unsigned long g_iseq_marshal_load_sec; //time lapsed in marshal load (in seconds)
-extern unsigned long g_iseq_marshal_load_usec; //time lapsed in marshal load (in microseconds)
-
-extern unsigned long g_require_compiled_sec;
-extern unsigned long g_require_compiled_usec;
+extern int g_httpd_thread_loaded;
+extern int g_sync_thread_loaded;
 
 #endif
 

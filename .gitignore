@@ -25,6 +25,7 @@ bb/*/.classpath
 *.err
 bb/.BB.jdw/*.files
 *.jad
+bb/build/rholog.txt
 
 symbian/.metadata/*
 symbian/bin/*

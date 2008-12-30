@@ -6,6 +6,12 @@
 	<property name="vendor" value="RhoMobile" />
 
   <property name="rubylib.dir" location="../framework/lib" />
+  <property name="sharedapps.dir" location="../../apps/shared" />
+  <property name="sourceapps.dir" location="../../apps/Sources" />
+
+  <condition property="apps.dir" value="../../apps">
+    <not> <isset property="apps.dir"/>  </not>
+  </condition>
 
   <condition property="compileERB.path" value="compileERB.rb">
     <not><isset property="compileERB.path"/></not>
@@ -22,24 +28,40 @@
 
 	<target name="RhoBundle" depends="clean">
         <copy todir="${srclib.dir}">
-            <fileset dir="../../shared/framework/lib" excludes="${exclude.lib}" >
+            <fileset dir="${rubylib.dir}" excludes="${exclude.lib}" >
                 <include name="**/*.rb" />
                 <exclude name="**/erb.rb" />
                 <exclude name="**/find.rb" />
             </fileset>
         </copy>
         <copy todir="${src.dir}/apps">
-            <fileset dir="../../apps" excludes ="${exclude.apps}" >
-                <include name="**/*.rb" />
+          
+            <fileset dir="${apps.dir}" excludes ="${exclude.apps}" >
+<!--            <include name="**/*.rb" />
                 <include name="**/*.erb" />
                 <include name="**/*.html" />
                 <include name="**/*.txt" />
-                <include name="**/*.css" />
+                <include name="**/*.css" /> -->
               
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
             </fileset>
         </copy>
+
+        <copy todir="${src.dir}/apps/shared">
+          <fileset dir="../../apps/shared" excludes ="${exclude.apps}" >
+            <exclude name="**/nbproject" />
+            <exclude name="**/.DS_Store" />
+          </fileset>
+        </copy>
+
+        <copy todir="${src.dir}/apps/Sources">
+          <fileset dir="../../apps/Sources" excludes ="${exclude.apps}" >
+            <exclude name="**/nbproject" />
+            <exclude name="**/.DS_Store" />
+          </fileset>
+        </copy>
+    
     </target>
 
   <target name="createAppManifest" depends="RhoBundle">
