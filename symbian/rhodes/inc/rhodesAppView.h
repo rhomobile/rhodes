@@ -30,8 +30,8 @@
 
 //FORWARD DECLARATION
 class CRhodesAppUi;
-class CAppSoftkeysObserver;
 class CSpecialLoadObserver;
+//class CAppSoftkeysObserver;
 
 // CLASS DECLARATION
 class CRhodesAppView : public CCoeControl, MCoeControlObserver, MBrCtlDataLoadSupplier
@@ -183,11 +183,11 @@ private: //data
         // Informs whether or not CancelLoad has been called
         TBool iCancelInitDataLoad;
 
-        // Softkeys Observer
-        CAppSoftkeysObserver* iAppSoftkeysObserver;
-
         // Special Load Observer
         CSpecialLoadObserver* iSpecialLoadObserver;
+        
+        //Softkeys Observer
+        //CAppSoftkeysObserver* iAppSoftkeysObserver;
 	};
 
 #endif // __RHODESAPPVIEW_h__

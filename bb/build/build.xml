@@ -21,17 +21,16 @@
   <property name="BBLib.dir" location="lib" />
   <property name="tmp.dir" value="${bin.dir}/tmp" />
 
-  <condition property="javac.home" value="${javac41.home}">
-    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
-  </condition>
-  <condition property="jde.home" value="${jde41.home}">
-    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
-  </condition>
-
   <condition property="javac.home" value="${javac42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
   </condition>
   <condition property="jde.home" value="${jde42.home}">
+    <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+  </condition>
+  <condition property="sim.name" value="8100">
+    <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
   </condition>
 
@@ -41,11 +40,23 @@
   <condition property="jde.home" value="${jde43.home}">
     <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
   </condition>
+  <condition property="sim.name" value="8120">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds43.home}">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
 
   <condition property="javac.home" value="${javac46.home}">
     <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
   </condition>
   <condition property="jde.home" value="${jde46.home}">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+  <condition property="sim.name" value="9000">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds46.home}">
     <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
   </condition>
 
@@ -184,15 +195,64 @@
       </fileset>
     </copy>
 
-    <antcall target="${signType.target}" />
-      
     <delete dir="${bin.dir}" />
+
+  </target>
+
+  <target name="sim.run" description="Simulator run">
+    <echo message="${mds.home}"/>
+    <exec executable="cmd.exe" dir="${mds.home}" spawn="true">
+      <arg line="/c run.bat" />
+    </exec>
+
+    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
+      <arg line="/c ${sim.name}.bat" />
+    </exec>
+  </target>
+
+  <target name="device.build" depends="rhodes">
+
+    <antcall target="${signType.target}" />
 
     <!-- Create web directory -->
     <copy file="${target.dir}/rhodesApp.jad" todir="${target.dir}/web">
       <zipfileset src="${target.dir}/rhodesApp.cod" />
     </copy>
-
+    
+  </target>
+  
+  <target name="device.load" depends="device.build">
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator" osfamily="windows" vmlauncher="true" failonerror="false">
+      <arg value="/execute=UsbCableInsertion(true)" />
+    </exec>
+    <exec executable="${jde.home}/bin/javaloader.exe" osfamily="windows" vmlauncher="false" failonerror="true">
+      <arg value="-u" />
+      <arg value="load" />
+      <arg value="${target.dir}/rhodesApp.cod" />
+    </exec>
   </target>
 
+  <target name="runapp" depends="rhodes">
+    <pathconvert property="codfile" dirsep="/">
+      <path location="${target.dir}/rhodesApp.cod"/>
+    </pathconvert>
+
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator">
+      <arg value="/session=${sim.name}" />
+      <arg value="/execute=LoadCod(${codfile})" />
+    </exec>
+    <waitfor maxwait="5" maxwaitunit="second"><available file="nothing.log"/></waitfor>
+    
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator">
+      <arg value="/session=${sim.name}" />
+      <arg value="/execute=Exit(true)" />
+    </exec>
+    <waitfor maxwait="5" maxwaitunit="second"><available file="nothing.log"/></waitfor>
+
+    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
+      <arg line="/c ${sim.name}.bat" />
+    </exec>
+    
+  </target>
+  
 </project>

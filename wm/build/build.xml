@@ -1,4 +1,4 @@
-<project name="buildWM" default="all" basedir=".">
+<project name="buildWM" default="buildall" basedir=".">
 
   <property file="build.properties"/>
 
@@ -11,12 +11,16 @@
 
   <property name="exclude.apps" value="shared/js/**" />
 
-  <target name="all">
-
+  <target name="clean">
     <delete dir="${target.dir}" />
     <mkdir dir="${target.dir}" />
-    
+  </target>
+
+  <target name="RhoBundle" depends="clean">
     <ant dir = "${sharedAnt.dir}"/>
+  </target>
+  
+  <target name="buildall" depends="RhoBundle">
 
     <exec executable="cscript">
       <arg value="build_inf.js"/>
