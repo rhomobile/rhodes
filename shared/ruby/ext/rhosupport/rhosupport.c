@@ -54,8 +54,11 @@ static VALUE loadISeqFromFile(VALUE path)
     
     if ( g_collect_stat )
 	{
-	    g_iseq_marshal_load_usec += end.tv_usec - start.tv_usec; 
-	    g_iseq_marshal_load_sec += end.tv_sec  - start.tv_sec;
+		if ( end.tv_sec > 0 )
+			g_iseq_marshal_load_msec += (end.tv_sec  - start.tv_sec) * 1000;
+		else
+			g_iseq_marshal_load_msec += (end.tv_usec - start.tv_usec)/1000; 
+	    
 	}
     gettimeofday (&start, NULL);
 #endif    
@@ -70,8 +73,10 @@ static VALUE loadISeqFromFile(VALUE path)
     
     if ( g_collect_stat )
 	{
-	    g_iseq_binread_usec += end.tv_usec - start.tv_usec; 
-	    g_iseq_binread_sec += end.tv_sec  - start.tv_sec; 
+		if ( end.tv_sec > 0 )
+			g_iseq_binread_msec += (end.tv_sec  - start.tv_sec) * 1000;
+		else
+			g_iseq_binread_msec += ( end.tv_usec - start.tv_usec )/1000; 
 	}
 #endif    
 

@@ -340,6 +340,7 @@ rb_longjmp(int tag, VALUE mesg)
     VALUE e;
     rb_thread_t *th = GET_THREAD();
     const char *file;
+    const char *tmp;
     int line = 0;
 
     if (rb_thread_set_raised(th)) {
@@ -396,7 +397,7 @@ rb_longjmp(int tag, VALUE mesg)
 	    JUMP_TAG(status);
 	}
     }
-
+    
     rb_trap_restore_mask();
 
     if (tag != TAG_FATAL) {
