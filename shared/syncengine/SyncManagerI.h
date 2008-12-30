@@ -20,4 +20,5 @@
 
 char *fetch_remote_data(char *url_string);
 int push_remote_data(char* url, char* data, size_t data_size);
+char *test_login(char* url);
 //void populate_list(sqlite3 *database);

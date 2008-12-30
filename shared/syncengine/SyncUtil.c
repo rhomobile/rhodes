@@ -11,11 +11,15 @@ extern int push_remote_data(char* url, char* data, size_t data_size);
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
+static sqlite3_stmt *client_session_statement = NULL;
+static sqlite3_stmt *client_db_statement = NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
 	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
 	if (client_id_statement) sqlite3_finalize(client_id_statement);
+	if (client_session_statement) sqlite3_finalize(client_session_statement);
+	if (client_db_statement) sqlite3_finalize(client_db_statement);
 }
 
 /* 
@@ -29,7 +33,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	int max_size = 100;
 	int i,j,available,source_length;
 	char *json_string;
-	char *type = "noop";
+	char *type = NULL;
 	
 	pSource *source_list;
 	source_list = malloc(max_size*sizeof(pSource));
@@ -47,6 +51,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				client_id);
 		printf("url_string: %s\n", url_string);
 		
+		test_login(url_string);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
@@ -157,14 +162,9 @@ char *get_client_id(sqlite3 *database, pSource source) {
 	char *json_string;
 	char url_string[4096];
 	char *c_id = NULL;
-	prepare_db_statement("SELECT client_id from client_info limit 1",
-						 database,
-						 &client_id_statement);
-	sqlite3_step(client_id_statement);
-	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
-	if (c_id != NULL) {
-		printf("Using client_id %s from database...\n", c_id);
-	} else {
+	
+	c_id = get_client_db_info("client_id", database);
+	if (c_id == NULL) {
 		sqlite3_reset(client_id_statement);
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
 		json_string = fetch_remote_data(url_string);
@@ -180,4 +180,45 @@ char *get_client_id(sqlite3 *database, pSource source) {
 	}
 	sqlite3_reset(client_id_statement);
 	return c_id;
+}
+
+/* setup session from database, otherwise intialize from source */
+char *get_session(sqlite3 *database, pSource source) {
+	char *json_string;
+	char url_string[4096];
+	char *session = NULL;
+	
+	session = get_client_db_info("session", database);
+	if (session == NULL) {
+		sqlite3_reset(client_session_statement);
+		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
+		json_string = fetch_remote_data(url_string);
+		if(json_string && strlen(json_string) > 0) {
+			session = str_assign((char *)parse_client_id(json_string));
+		}
+		prepare_db_statement("INSERT INTO client_info (session) values (?)",
+							 database,
+							 &client_session_statement);
+		sqlite3_bind_text(client_session_statement, 1, session, -1, SQLITE_TRANSIENT);
+		sqlite3_step(client_session_statement);
+		printf("Intialized new session %s from source...\n", session);
+	}
+	sqlite3_reset(client_session_statement);
+	return session;
+}
+
+char *get_client_db_info(char *field, sqlite3 *database) {
+	char *info = NULL;
+	prepare_db_statement("SELECT ? from client_info limit 1",
+						 database,
+						 &client_db_statement);
+	sqlite3_bind_text(client_db_statement, 1, field, -1, SQLITE_TRANSIENT);
+	sqlite3_step(client_db_statement);
+	
+	info = str_assign((char *)sqlite3_column_text(client_db_statement, 0));
+	if (info != NULL) {
+		printf("Using %s %s from database...\n", field, info);
+	} 
+	sqlite3_reset(client_db_statement);
+	return info;
 }

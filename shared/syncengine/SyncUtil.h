@@ -15,6 +15,8 @@ int push_remote_changes(pSyncOperation *list, int size);
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size);
 int get_object_count_from_database(sqlite3 *database);
 char *get_client_id(sqlite3 *database, pSource source);	
+char *get_session(sqlite3 *database, pSource source);
+char *get_client_db_info(char *field, sqlite3 *database);
 
 #if defined(__cplusplus)
 }

@@ -49,6 +49,7 @@ pSyncObject SyncObjectCreate() {
 	sync->_created_at = NULL;
 	sync->_updated_at = NULL;
 	sync->_update_type = NULL;
+	sync->_db_operation = NULL;
 	sync->_primary_key = 0;
 	return sync;
 }
