@@ -75,8 +75,11 @@ void RhoRubyStart()
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
-    g_require_compiled_usec += end.tv_usec - start.tv_usec; 
-    g_require_compiled_sec += end.tv_sec  - start.tv_sec;
+    if ( end.tv_sec > 0 )
+    	g_require_compiled_msec += (end.tv_sec  - start.tv_sec) * 1000;
+    else
+    	g_require_compiled_msec += (end.tv_usec - start.tv_usec)/1000; 
+    
 #endif    
 
     rb_gc_register_mark_object(framework);

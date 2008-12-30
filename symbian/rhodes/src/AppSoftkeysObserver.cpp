@@ -24,6 +24,7 @@
 #include <rhodes.rsg>
 #include "rhodesAppView.h"
 
+#include <avkon.rsg>
 
 CAppSoftkeysObserver::CAppSoftkeysObserver()
 	{
@@ -70,17 +71,18 @@ CAppSoftkeysObserver::UpdateSoftkeyL(TBrCtlKeySoftkey /*aKeySoftkey*/,
     TBrCtlDefs::TBrCtlElementType type = brCtl->FocusedElementType();
 
     CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();
+    
     switch (type)
         {
+    	case TBrCtlDefs::EElementActivatedObjectBox:
         case TBrCtlDefs::EElementActivatedInputBox:
-            current->SetCommandSetL( R_INPUT_ELEMENT_BUTTONS );
+            current->SetCommandSetL( R_AVKON_SOFTKEYS_CANCEL );
             break;
         
         default:
-            current->SetCommandSetL( R_BROWSER_DEFAULT_BUTTONS );
+            current->SetCommandSetL( R_AVKON_SOFTKEYS_OPTIONS_BACK );
             break;
         }
     current->DrawNow();
-    brCtl->SetRect(iAppView->Rect());
     }
 
