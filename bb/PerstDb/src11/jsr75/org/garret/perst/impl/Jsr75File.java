@@ -117,6 +117,9 @@ public class Jsr75File implements SimpleFile
     		return m_strRhoPath;
     	
     	String strRoot = makeRootPath();
+    	if ( strRoot == null )
+    		throw new IOException("Could not find storage");
+    	
     	m_strRhoPath = "file:///" + strRoot;
     	
     	if ( strRoot.equalsIgnoreCase("store/") )
