@@ -36,6 +36,8 @@ extern "C" {
 
 typedef struct {
 	sqlite3*		_database;
+	/* track the database operation to use */
+	char*			_db_operation;
 	/* object_values columns */
 	int				_primary_key;
 	char*			_attrib;
@@ -45,35 +47,25 @@ typedef struct {
 	char*			_created_at;
 	char*			_updated_at;
 	char*			_update_type;
-	
-	/* state variables */
-	int				_hydrated;
-	int				_dirty;
 } SyncObject;
 
 typedef SyncObject* pSyncObject;
 	
-/* Finalize (delete) all of the SQLite compiled queries. */
-void finalize_statements();
+void finalize_sync_obj_statements();
+
 /* Initialize empty sync object */
 pSyncObject SyncObjectCreate();
 /* Initialize sync object with values */
 pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key, 
 									   char *attrib, int source_id, char *object, 
-									   char *value, char *update_type, int hydrated, int dirty) ;
-/* Copy an existing object */
+									   char *value, char *update_type);
+	
 pSyncObject SyncObjectCopy(pSyncObject new_object);
-/* Check if object exists in database already */
 int exists_in_database(pSyncObject ref);
-/* Initialize the row with a placeholder object (to be used by dehydrate later) */
 int insert_into_database(pSyncObject ref);
-/* Remove the object list from the database */
+//void update_into_database(pSyncObject ref);
+int delete_from_database(pSyncObject ref);
 int delete_from_database_by_source(sqlite3 *db, int source);
-/* Brings the rest of the object data into memory. If already in memory, no action is taken (harmless no-op). */
-pSyncObject hydrate(pSyncObject ref);
-/* Flushes all but the primary key and title out to the database. */
-void dehydrate(pSyncObject ref);
-
 void free_ob_list(pSyncObject *list, int available);
 	
 /* Free object */

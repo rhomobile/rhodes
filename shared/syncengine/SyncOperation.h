@@ -48,8 +48,8 @@ typedef struct {
 } SyncOperation;
 
 typedef SyncOperation* pSyncOperation;
-	
-void finalize_op_statements();
+
+void finalize_sync_op_statements();	
 
 /*
  * Creates an instance of SyncOperation and populates the operation information

@@ -3,12 +3,13 @@
 
 #include "SyncOperation.h"
 #include "Source.h"
+#include "Utils.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-void finalize_src_statements();
+void finalize_sync_util_statements();
 int fetch_remote_changes(sqlite3 *database, char *client_id);
 int push_remote_changes(pSyncOperation *list, int size);
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size);
