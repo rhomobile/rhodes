@@ -46,6 +46,8 @@ char* str_assign(char* data);
 unsigned int DJBHash(char* str, unsigned int len);
 
 void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement);
+	
+void finalize_statements(sqlite3 *database);
 
 #if defined(__cplusplus)
 }
