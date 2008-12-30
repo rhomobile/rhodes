@@ -20,6 +20,7 @@
   <!-- BB build props-->
   <property name="BBLib.dir" location="lib" />
   <property name="tmp.dir" value="${bin.dir}/tmp" />
+  <property name="applogfull.path" location="${applog.path}" />
 
   <condition property="javac.home" value="${javac42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
@@ -199,15 +200,31 @@
 
   </target>
 
-  <target name="sim.run" description="Simulator run">
-    <echo message="${mds.home}"/>
+  <target name="mds.run">
     <exec executable="cmd.exe" dir="${mds.home}" spawn="true">
       <arg line="/c run.bat" />
     </exec>
+  </target>
 
-    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
+  <target name="sim1.run">
+<!--    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
       <arg line="/c ${sim.name}.bat" />
-    </exec>
+    </exec> -->
+    <exec executable="${jde.home}/simulator/fledge.exe" dir="${jde.home}/simulator" spawn="true">
+      <arg value="/app=Jvm.dll" />
+      <arg value="/handheld=${sim.name}" />
+      <arg value="/session=${sim.name}" />
+      <arg value="/app-param=DisableRegistration" />
+      <arg value="/app-param=JvmAlxConfigFile:${sim.name}.xml" />
+      <arg value="/data-port=0x4d44" />
+      <arg value="/data-port=0x4d4e" />
+      <arg value="/pin=0x2100000A" />
+      <arg value="/app-param=JvmDebugFile:${applogfull.path}" />
+    </exec> 
+
+  </target>
+
+  <target name="sim.run" depends="mds.run,sim1.run">
   </target>
 
   <target name="device.build" depends="rhodes">
@@ -249,9 +266,7 @@
     </exec>
     <waitfor maxwait="5" maxwaitunit="second"><available file="nothing.log"/></waitfor>
 
-    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
-      <arg line="/c ${sim.name}.bat" />
-    </exec>
+    <antcall target="sim1.run" />
     
   </target>
   
