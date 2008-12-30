@@ -56,23 +56,23 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				available = parse_json_list(list, json_string, size);
 				printf("Parsed %i records from sync source...\n", available);
 				if(available > 0) {
-					//delete_from_database_by_source(database, source_list[i]->_source_id);
+					delete_from_database_by_source(database, source_list[i]->_source_id);
 					for(j = 0; j < available; j++) {
 						list[j]->_database = database;
-						//insert_into_database(list[j]);
-						type = list[j]->_db_operation;
-						if (type) {
-							if(strcmp(type, "insert") == 0) {
-								printf("Inserting record %s\n...", list[j]->_object);
-								insert_into_database(list[j]);
-							} 
-							else if (strcmp(type, "delete") == 0) {
-								printf("Deleting record %s\n...", list[j]->_object);
-								delete_from_database(list[j]);
-							} else {
-								printf("Warning: received improper update_type: %s...\n", type);
-							}
-						}
+						insert_into_database(list[j]);
+						//type = list[j]->_db_operation;
+//						if (type) {
+//							if(strcmp(type, "insert") == 0) {
+//								printf("Inserting record %s\n...", list[j]->_object);
+//								insert_into_database(list[j]);
+//							} 
+//							else if (strcmp(type, "delete") == 0) {
+//								printf("Deleting record %s\n...", list[j]->_object);
+//								delete_from_database(list[j]);
+//							} else {
+//								printf("Warning: received improper update_type: %s...\n", type);
+//							}
+//						}
 					}
 				}
 				/* free the in-memory list after populating the database */
