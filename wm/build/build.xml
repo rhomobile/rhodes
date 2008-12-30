@@ -29,7 +29,11 @@
 
   <target name="RhoBundle" depends="clean.target">
     <ant dir = "${sharedAnt.dir}"/>
-    <delete dir="${src.dir}/apps/shared/js" />
+    <delete dir="${src.dir}/apps/shared/js">
+      <exclude name="**/rho*.js" />
+      <exclude name="**/iui.css" />
+      <exclude name="**/*.png" />
+    </delete>
   </target>
 
   <target name="build.rhodes">
