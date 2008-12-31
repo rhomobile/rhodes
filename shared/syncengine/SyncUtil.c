@@ -5,7 +5,7 @@
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
 
-extern char* fetch_remote_data(char *url);
+extern char* fetch_remote_data(char *url, char *session);
 extern int push_remote_data(char* url, char* data, size_t data_size);
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
@@ -49,10 +49,16 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				source_list[i]->_source_url, 
 				SYNC_SOURCE_FORMAT, 
 				client_id);
-		printf("url_string: %s\n", url_string);
 		
-		test_login(url_string);
-		json_string = fetch_remote_data(url_string);
+		printf("Trying to login...\n");
+		char login_string[4096] = "";
+		sprintf(login_string, 
+				"%s/client_login", 
+				source_list[i]->_source_url);
+		printf("url_string: %s\n", url_string);
+		char *session = get_cookie_from_login(login_string);
+		json_string = fetch_remote_data(url_string, session);
+		if (session) free(session);
 		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
 			// Initialize parsing list and call json parser
@@ -61,23 +67,23 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				available = parse_json_list(list, json_string, size);
 				printf("Parsed %i records from sync source...\n", available);
 				if(available > 0) {
-					delete_from_database_by_source(database, source_list[i]->_source_id);
+					//delete_from_database_by_source(database, source_list[i]->_source_id);
 					for(j = 0; j < available; j++) {
 						list[j]->_database = database;
-						insert_into_database(list[j]);
-						//type = list[j]->_db_operation;
-//						if (type) {
-//							if(strcmp(type, "insert") == 0) {
-//								printf("Inserting record %s\n...", list[j]->_object);
-//								insert_into_database(list[j]);
-//							} 
-//							else if (strcmp(type, "delete") == 0) {
-//								printf("Deleting record %s\n...", list[j]->_object);
-//								delete_from_database(list[j]);
-//							} else {
-//								printf("Warning: received improper update_type: %s...\n", type);
-//							}
-//						}
+						//insert_into_database(list[j]);
+						type = list[j]->_db_operation;
+						if (type) {
+							if(strcmp(type, "insert") == 0) {
+								printf("Inserting record %s\n...", list[j]->_object);
+								insert_into_database(list[j]);
+							} 
+							else if (strcmp(type, "delete") == 0) {
+								printf("Deleting record %s\n...", list[j]->_object);
+								delete_from_database(list[j]);
+							} else {
+								printf("Warning: received improper update_type: %s...\n", type);
+							}
+						}
 					}
 				}
 				/* free the in-memory list after populating the database */
@@ -167,7 +173,7 @@ char *get_client_id(sqlite3 *database, pSource source) {
 	if (c_id == NULL) {
 		sqlite3_reset(client_id_statement);
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
-		json_string = fetch_remote_data(url_string);
+		json_string = fetch_remote_data(url_string, NULL);
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
@@ -192,7 +198,7 @@ char *get_session(sqlite3 *database, pSource source) {
 	if (session == NULL) {
 		sqlite3_reset(client_session_statement);
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
-		json_string = fetch_remote_data(url_string);
+		json_string = fetch_remote_data(url_string, NULL);
 		if(json_string && strlen(json_string) > 0) {
 			session = str_assign((char *)parse_client_id(json_string));
 		}
