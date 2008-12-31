@@ -170,6 +170,9 @@ _create_request_hash(struct conn *c, RouteRef route, const char* body, int bodyl
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
 
+  if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg") )
+    return NULL;
+
   if ((route = _alloc_route(c->uri)) != NULL) {
     if (_parse_route(route)) {
       struct stat	st;

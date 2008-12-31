@@ -7,7 +7,8 @@
 		</style>
 		<% if System::get_property('platform') == 'WINDOWS' %>
 			<script src="/shared/js/rhogeolocation-wm.js"></script>
-		<% else %>
+		<% end %>
+		<% if System::get_property('platform') == 'APPLE' %>
 			<script src="/shared/js/jquery-1.2.6.min.js"></script>
 			<script src="/shared/js/rhogeolocation.js"></script>
 		<% end %>

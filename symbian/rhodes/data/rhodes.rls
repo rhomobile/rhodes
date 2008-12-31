@@ -38,7 +38,7 @@
 
 #define qtn_stat_dialog_title "Statistics"
 
-#define qtn_about_dialog_text "Rhodes Version 1.0.0\n\nAuthor: Rhomobile\n\nSupport: all@rhomobile.com\n\n(c) Copyright (C) 2008 Lars Burgess. All rights reserved."
+#define qtn_about_dialog_text "Rhodes Version 1.0.0\n\nAuthor: Anton Antonov\n\nSupport: all@rhomobile.com\n\n(c) Copyright (C) 2008 Rhomobile. All rights reserved."
 
 //Menu Item Navigate
 #define qtn_menu_navigate "Navigate"
