@@ -73,7 +73,12 @@ private:
 
     void HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent);
     
+    /**
+     *  From MEikMenuObserver
+     */
+    void DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane);
 
+    
 	/**
 	 *  HandleStatusPaneSizeChange.
 	 *  Called by the framework when the application status pane

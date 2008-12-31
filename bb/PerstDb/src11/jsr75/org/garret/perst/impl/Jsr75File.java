@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import javax.microedition.io.*;
 import javax.microedition.io.file.*;
 import java.util.Vector;
+import net.rim.device.api.system.*;
 
 public class Jsr75File implements SimpleFile 
 {
@@ -81,32 +82,67 @@ public class Jsr75File implements SimpleFile
     	return null;
     }
     
+    static private String getSoftwareVersion(){
+	  ApplicationManager appMan = ApplicationManager.getApplicationManager();
+	  //grab the running applications
+	  ApplicationDescriptor[] appDes = appMan.getVisibleApplications();
+	
+	  //check for the version of a standard
+	  //RIM app. I like to use the ribbon
+	  //app but you can check the version
+	  //of any RIM module as they will all
+	  //be the same.
+	  int size = appDes.length;
+	  String strVer = "0.0";
+	  for (int i = size-1; i>=0; --i){
+	      if ((appDes[i].getModuleName()).equals("net_rim_bb_ribbon_app")){
+	    	  strVer = appDes[i].getVersion();
+	    	  break;
+	      }
+	  }
+	  
+	  return strVer; 
+    }
+    
+    static class SoftVersion{
+		int nMajor = 0;
+		int nMinor = 0;
+    };
+    
+    static SoftVersion getSoftVersion(){
+    	SoftVersion ver = new SoftVersion();
+		String strVer = getSoftwareVersion();//DeviceInfo.getPlatformVersion();
+    	
+		int nDot = strVer.indexOf('.');
+		
+		if ( nDot >= 0 )
+		{
+			ver.nMajor = Integer.parseInt( strVer.substring(0, nDot) );
+			
+			int nDot2 = strVer.indexOf('.',nDot+1);
+			if ( nDot2 >= 0 )
+				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
+			else
+				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
+		}else
+			ver.nMajor = Integer.parseInt( strVer );
+		
+	
+		return ver;
+    }
+    
     static String makeRootPath(){
+    	SoftVersion ver = getSoftVersion();    	
+		
     	String strRoot = findRoot("SDCard/");
     	
     	if ( strRoot != null )
     		return strRoot;
     	
-		String strVer = DeviceInfo.getPlatformVersion();
-		if ( strVer == null || strVer.length() == 0 )//emulator
+    	if ( ver.nMajor == 0 )//emulator
 			strRoot = findRoot("store/");
-		else
-		{
-    		int nDot = strVer.indexOf('.');
-    		int nMajor = 0;
-    		int nMinor = 0;
-    		
-    		if ( nDot >= 0 )
-    		{
-    			nMinor = Integer.parseInt( strVer.substring(nDot+1) );
-    			nMajor = Integer.parseInt( strVer.substring(0, nDot) );
-    		}else
-    			nMajor = Integer.parseInt( strVer );
-    		
-    		if ( nMajor >= 4 && nMinor >= 3 ){
-    			strRoot = findRoot("store/");	    		
-    		}
-		}
+		else if ( ver.nMajor >= 4 && ver.nMinor >= 3 )
+			strRoot = findRoot("store/");	    		
 		
     	return strRoot;
     }
@@ -117,6 +153,9 @@ public class Jsr75File implements SimpleFile
     		return m_strRhoPath;
     	
     	String strRoot = makeRootPath();
+    	if ( strRoot == null )
+    		throw new IOException("Could not find storage");
+    	
     	m_strRhoPath = "file:///" + strRoot;
     	
     	if ( strRoot.equalsIgnoreCase("store/") )
