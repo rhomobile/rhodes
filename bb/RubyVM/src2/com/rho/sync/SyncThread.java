@@ -67,7 +67,7 @@ public class SyncThread implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		SyncUtil.fetch_client_login("lars","password");
+		//SyncUtil.fetch_client_login("lars","password");
 		
 		while (!quit) {
 			synchronized (sync) {
