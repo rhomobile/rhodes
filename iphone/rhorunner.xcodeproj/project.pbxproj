@@ -542,7 +542,7 @@
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = DefaultProfileUuid;
 				SDKROOT = iphoneos2.1;
-				USER_HEADER_SEARCH_PATHS = ../shared/syncengine;
+				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
 			};
 			name = Debug;
 		};
@@ -566,7 +566,7 @@
 				);
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.0;
-				USER_HEADER_SEARCH_PATHS = ../shared/syncengine;
+				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
 			};
 			name = Release;
 		};
