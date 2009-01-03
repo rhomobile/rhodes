@@ -142,6 +142,10 @@ int process_op_list(pSource source, char *type) {
 	return 0;
 }
 
+sqlite3 *get_database() {
+	return database;
+}
+
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {

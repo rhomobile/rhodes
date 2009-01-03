@@ -22,30 +22,31 @@
 #import <Foundation/Foundation.h>
 #include "Constants.h"
 #include "SyncJSONReader.h"
-#include "Utils.h"
-//#import "rhosynctestappdelegate.h"
+#include "SyncUtil.h"
+#include "SyncEngine.h"
+
+extern char *get_session();
 
 /* 
  * Pulls the latest object_values list 
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-char *fetch_remote_data(char *url_string, char *session) {
+char *fetch_remote_data(char *url_string) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	char *session = get_session();
+	char *data;
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	NSURL *url = [NSURL URLWithString:[[NSString alloc] initWithUTF8String:url_string]];
+	NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:url_string] autorelease]];
 	
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 	NSError *error = nil;
 	NSHTTPURLResponse* response;
 	[request setURL:url];
 	[request setHTTPMethod:@"GET"];
-
-	//if (session) [request setValue:[[NSString alloc] initWithUTF8String:session] forHTTPHeaderField:@"Cookie"];	
-	
-	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    NSDictionary *cookiesInfo = [NSHTTPCookie requestHeaderFieldsWithCookies:[cookieStore cookies]];
-	[request setValue:[cookiesInfo objectForKey:@"Cookie"] forHTTPHeaderField:@"Cookie"];
+	if (strlen(session) > 0) {
+		[request setValue:[[[NSString alloc] initWithUTF8String:session] autorelease] forHTTPHeaderField:@"Cookie"];
+	}
 	
 	NSString *logData;
 	NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
@@ -61,55 +62,74 @@ char *fetch_remote_data(char *url_string, char *session) {
 		}  else {
 			logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 		}
+	} else {
+		insert_sync_status(get_database(), "false");	
 	}
-	char *data = str_assign((char *)[logData UTF8String]);
-	
+	data = str_assign((char *)[logData UTF8String]);
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	[pool release];
 	return data;
 }
 
-void get_cookie_from_login(char* url) {
+/*
+ * Login with given login/password
+ * If return success if cookie is stored into shared
+ * cookie storage NSHTTPCookieStorage
+ */
+int login(const char *login, const char *password) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-	NSError *error = nil;
-	NSHTTPURLResponse *response;
-	NSString *linkString = [[NSString alloc] initWithUTF8String:url];
-	NSString *postBody = @"login=lars&password=password&remember_me=1";
-	[request setURL:[NSURL URLWithString:linkString]];
-	[request setHTTPMethod:@"POST"];
-	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
-	NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
-	if (conn) {
-		[NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error];
-		NSInteger code = [response statusCode];
-		if (error || code != 200) {
-			NSLog(@"An error occured connecting to the sync source: %d returned", code);
+	pSource *source_list;
+	int i, source_length, cookie_size = 0;
+	source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
+	for(i = 0; i < source_length; i++) {
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse *response;
+		char login_string[4096] = "";
+		sprintf(login_string, 
+				"%s/client_login", 
+				source_list[i]->_source_url);
+		NSString *linkString = [[NSString alloc] initWithUTF8String:login_string];
+		NSMutableString *postBody = [[NSMutableString alloc] initWithString:@"login="];
+		[postBody appendString:[[NSString alloc] initWithUTF8String:login]];
+		[postBody appendString:@"&password="];
+		[postBody appendString:[[NSString alloc] initWithUTF8String:password]];
+		[postBody appendString:@"&remember_me=1"];
+		[request setURL:[NSURL URLWithString:linkString]];
+		[request setHTTPMethod:@"POST"];
+		[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
+		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		if (conn) {
+			[NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error];
+			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			[pool release];
-		} else {
-			
-			NSDictionary *headers = [response allHeaderFields];
-			for (id key in headers) {
-				NSLog(@"key: %@, value: %@", key, [headers objectForKey:key]);
-			}
-			
-			NSHTTPCookieStorage *store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-			NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse*)response allHeaderFields] 
-																	  forURL:[NSURL URLWithString:linkString]];
-			NSEnumerator *c = [cookies objectEnumerator];
-			id cookie;
-			while (cookie = [c nextObject]) {
-				NSLog(@"Name: %@, Value: %@, Expires: %@",
-					  [cookie name],
-					  [cookie value]);				
-				[store setCookie:cookie];
+			if (error || code != 200) {
+				NSLog(@"An error occured connecting to the sync source: %d returned", code);
+			} else {
+				NSHTTPCookieStorage *store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+				NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse*)response allHeaderFields] 
+																		  forURL:[NSURL URLWithString:linkString]];
+				NSEnumerator *c = [cookies objectEnumerator];
+				id cookie;
+				while (cookie = [c nextObject]) {
+					NSLog(@"Storing Cookie: Name: %@, Value: %@",
+						  [cookie name],
+						  [cookie value]);				
+					[store setCookie:cookie];
+					cookie_size++;
+				}
 			}
 		}
 	}
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-	[pool release];
+	if (cookie_size == 0) {
+		[pool release];
+		return 0;
+	} else {
+		[pool release];
+		return 1;
+	}
 }
 
 /*
@@ -119,6 +139,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 	if (data_size == 0 || data == NULL) {
 		return SYNC_PUSH_CHANGES_OK;
 	}
+	char *session = get_session();
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
@@ -128,6 +149,9 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 	NSString *postBody = [[[NSString alloc] initWithUTF8String:data] autorelease];
 	[request setURL:[NSURL URLWithString:linkString]];
 	[request setHTTPMethod:@"POST"];
+	if (strlen(session) > 0) {
+		[request setValue:[[[NSString alloc] initWithUTF8String:(char *)get_session()] autorelease] forHTTPHeaderField:@"Cookie"];
+	}
 	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
 	NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 	if (conn) {
@@ -146,4 +170,15 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	[pool release];
 	return SYNC_PUSH_CHANGES_OK;
+}
+
+/*
+ * Retrieve cookie from shared cookie storage
+ */
+char *get_session() {
+	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSDictionary *cookiesInfo = [NSHTTPCookie requestHeaderFieldsWithCookies:[cookieStore cookies]];
+	char *session =  (char *)[[cookiesInfo objectForKey:@"Cookie"] UTF8String];
+	printf("Using session %s...\n",session);
+	return session == NULL ? "" : session;
 }

@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<title>Login</title>
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+		<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
+		<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
+		<script src="/shared/js/jquery-1.2.6.min.js"></script>
+		<script src="/shared/js/rho.js"></script> 
+	</head>
+	<body>
+		<div class="toolbar">
+			<h1 id="pageTitle">
+				<script language="JavaScript">
+					document.write(document.title)
+				</script>
+			</h1>
+			<a id="backButton" class="button" href="./"></a>
+		</div>
+		<ul id="users" selected="true" title="Login">
+			<form class="panel" 
+				  id="user_edit_form" 
+				  method="POST" 
+				  action="<%=url_for('login')%>">
+				<fieldset>
+					<%if @error%>
+					<p><%=@error%></p>
+					<%end%>
+					<div class="row">
+						<label>Login: </label>
+						<input type="text" maxlength="100" name="login"/>
+					</div>
+					<div class="row">
+						<label>Password: </label>
+						<input type="password" maxlength="100" name="password"/>
+					</div>
+				</fieldset>
+				<input type="submit" value="Login"/>
+			</form>
+			<li><a href="/" target="_self">Home</a></li>
+		</ul>
+	</body>
+</html>
