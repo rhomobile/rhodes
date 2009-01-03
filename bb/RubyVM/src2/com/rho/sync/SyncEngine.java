@@ -23,6 +23,7 @@ import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -58,6 +59,11 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QFALSE;
 	}
 
+	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
+		boolean bRes = SyncUtil.fetch_client_login(arg1.toString(), arg2.toString());
+		return bRes ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+	}
+	
 	/**
 	 * Inits the methods.
 	 * 
@@ -99,6 +105,12 @@ public class SyncEngine extends RubyBasic {
 				new RubyNoArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyBlock block) {
 						return SyncEngine.unlock_sync_mutex(receiver);
+					}
+				});
+		klass.getSingletonClass().defineMethod("login",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+						return SyncEngine.login(arg1,arg2);
 					}
 				});
 

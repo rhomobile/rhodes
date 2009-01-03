@@ -19,42 +19,23 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	public static final RubyString ID = ObjectFactory.createString("id");
 	public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
-	public static final RubyString URL = ObjectFactory.createString("source_url");
+	public static final RubyString SOURCE_URL = ObjectFactory.createString("source_url");
+	public static final RubyString SESSION = ObjectFactory.createString("session");
+	
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
-	private static final String DB_FILENAME = "syncdb_.dbs";
+	private static final String DB_FILENAME = "syncdb_5.dbs";
 
-	public static class Table_base extends Persistent{
-	    int id = 0;
-	    int source_id=0;
-	    String url = "";
-		
-	    // Serialize the object
-	    public void writeObject(IOutputStream out) {
-	    	out.writeInt(id);
-	        out.writeInt(source_id);
-	        out.writeString(url);
-	    }
-
-	    // Deserialize the object
-	    public void readObject(IInputStream in) {
-	    	id = in.readInt();
-	    	source_id = in.readInt();
-	    	url = in.readString();
+	public static class Table_base1 extends Persistent{
+	    public Table_base1(){}
+	    public Table_base1(Storage db, RubyHash hash){
+	        super(db);
 	    }
 		
 	    RubyHash getValueByName(RubyString name){
-	    	RubyHash res = ObjectFactory.createHash();
-	    	boolean bAll = name.equals(ALL);
-	    	
-	    	if ( bAll || name.equals(SOURCE_ID) )
-	    		res.add( SOURCE_ID, ObjectFactory.createInteger(source_id) );
-	    	if ( bAll || name.equals(URL) )
-	    		res.add( URL, ObjectFactory.createString(url) );
-	    	if ( bAll || name.equals(ID) )
-	    		res.add( ID, ObjectFactory.createInteger(id) );
-	    	
-	    	return res;
+	    	return ObjectFactory.createHash();
+	    }
+	    public void setValues(RubyHash hash){
 	    }
 	    
 	    public boolean addOrdered( RubyArray res, RubyValue attrib, 
@@ -95,7 +76,40 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	return true;
 	    }
 	    
+	}
+	
+	public static class Table_base extends Table_base1{
+	    int id = 0;
+	    int source_id=0;
+		
+	    // Serialize the object
+	    public void writeObject(IOutputStream out) {
+	    	out.writeInt(id);
+	        out.writeInt(source_id);
+	    }
+
+	    // Deserialize the object
+	    public void readObject(IInputStream in) {
+	    	id = in.readInt();
+	    	source_id = in.readInt();
+	    }
+		
+	    RubyHash getValueByName(RubyString name){
+	    	RubyHash res = ObjectFactory.createHash();
+	    	boolean bAll = name.equals(ALL);
+	    	
+	    	if ( bAll || name.equals(SOURCE_ID) )
+	    		res.add( SOURCE_ID, ObjectFactory.createInteger(source_id) );
+	    	if ( bAll || name.equals(ID) )
+	    		res.add( ID, ObjectFactory.createInteger(id) );
+	    	
+	    	return res;
+	    }
+	    
 	    public Table_base(){}
+	    public Table_base(Storage db, RubyHash hash){
+	        super(db,hash);
+	    }
 	    
 	    public void setValues(RubyHash hash){
 	        RubyValue val = hash.getValue(ID);
@@ -105,15 +119,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        val = hash.getValue(SOURCE_ID);
 	        if ( val != RubyConstant.QNIL )
 	        	source_id = val.toInt();
-	        val = hash.getValue(URL);
-	        if ( val != RubyConstant.QNIL )
-	        	url = val.toStr();
-	        
 	    }
 	    
-	    public Table_base(Storage db, RubyHash hash){
-	        super(db);
-	    }
 	}
 	
 	public static abstract class TableRootBase extends Persistent { 
@@ -125,9 +132,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 		}
 	    public abstract void clear();
 	    
-	    public abstract void put(Table_base item);
+	    public abstract void put(Table_base1 item);
 	    //public abstract void set(Table_base item);
-	    public abstract void remove(Table_base item);
+	    public abstract void remove(Table_base1 item);
 	    
 	    public abstract Iterator iterator( RubyHash where);
 	    public abstract Iterator iterator();
@@ -205,13 +212,13 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	object_idANDattrib.clear();
 		    }
 		    
-		    public void put(Table_base itemB){
+		    public void put(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
 		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.put(new Key( item.object, item.update_type),item);
 		    }
-		    public void remove(Table_base itemB){
+		    public void remove(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
 		    	source_idANDupdate_type.remove(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
@@ -338,6 +345,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 
 	public static class Table_sources extends Table_base { 
 		
+	    String source_url = "";
+	    String session = "";
+		
 		public static class TableRoot extends TableRootBase { 
 		    Index source_id;
 
@@ -368,10 +378,12 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	source_id.clear();
 		    }
 		    
-		    public void put(Table_base item){
+		    public void put(Table_base1 itemB){
+		    	Table_sources item = (Table_sources)itemB; 
 		    	source_id.put(new Key(item.source_id), item);
 		    }
-		    public void remove(Table_base item){
+		    public void remove(Table_base1 itemB){
+		    	Table_sources item = (Table_sources)itemB;
 		    	source_id.remove(new Key(item.source_id),item);
 		    	item.deallocate();
 		    }
@@ -395,6 +407,142 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        super(db,hash);
 	        setValues(hash);
 	    }
+	    
+	    // Serialize the object
+	    public void writeObject(IOutputStream out) { 
+	    	super.writeObject(out);
+	    	out.writeString(source_url);
+	    	out.writeString(session);
+	    }
+
+	    // Deserialize the object
+	    public void readObject(IInputStream in) { 
+	    	super.readObject(in);
+	    	source_url = in.readString();
+	    	session = in.readString();
+	    }
+	    
+	    RubyHash getValueByName(RubyString name){
+	    	RubyHash res = super.getValueByName(name);
+	    	boolean bAll = name.equals(ALL);
+	    	
+	    	if ( bAll || name.equals(SOURCE_URL) )
+	    		res.add( SOURCE_URL, ObjectFactory.createString(source_url) );
+	    	if ( bAll || name.equals(SESSION) )
+	    		res.add( SESSION, ObjectFactory.createString(session) );
+	    	
+	    	return res;
+	    }
+	    
+	    public void setValues(RubyHash hash){
+	    	super.setValues(hash);
+	    	
+	        RubyValue val = hash.getValue(SOURCE_URL);
+	        if ( val != RubyConstant.QNIL )
+	        	source_url = val.toStr();
+	        val = hash.getValue(SESSION);
+	        if ( val != RubyConstant.QNIL )
+	        	session = val.toStr();
+	    }
+	    
+	};
+
+	public static class Table_client_info extends Table_base1 { 
+		
+	    String client_id = "";
+		
+		public static final RubyString CLIENT_ID = ObjectFactory.createString("client_id");
+	    
+		public static class TableRoot extends TableRootBase { 
+		    Index client_id;
+
+		    // Deserialize the object
+		    public void readObject(IInputStream in) { 
+		    	client_id = (Index)in.readObject();
+		    }
+
+		    // Serialize the object
+		    public void writeObject(IOutputStream out) { 
+		        out.writeObject(client_id);
+		    }
+
+		    public TableRoot() {}
+		    public TableRoot(Storage db) { 
+		        super(db);
+		        
+		        client_id = db.createIndex(Types.String, true);
+		    }
+		    
+		    public void clear(){
+		    	Iterator iter = client_id.iterator();
+		    	while(iter.hasNext()){
+		    		Table_client_info item = (Table_client_info)iter.next();
+		    		client_id.remove(new Key(item.client_id),item);
+		    		item.deallocate();
+		    	}
+		    	client_id.clear();
+		    }
+		    
+		    public void put(Table_base1 itemB){
+		    	Table_client_info item = (Table_client_info)itemB; 
+		    	client_id.put(new Key( item.client_id),item);
+		    }
+		    public void remove(Table_base1 itemB){
+		    	Table_client_info item = (Table_client_info)itemB;
+		    	client_id.remove(new Key( item.client_id),item);
+		    	item.deallocate();
+		    }
+
+		    public Iterator iterator(){
+	    		return client_id.iterator(); 
+		    }
+		    
+		    public Iterator iterator(RubyHash where){
+		    	RubyValue val = where.get(CLIENT_ID);
+		    	if ( val == RubyConstant.QNIL )
+		    		return null;
+		    	return client_id.iterator(new Key(val.toString()), new Key(val.toString()), Index.ASCENT_ORDER);
+		    }
+		}	
+		
+	    public static String name(){return "client_info";}
+	    
+	    public Table_client_info() {}
+	    public Table_client_info(Storage db, RubyHash hash){
+	        super(db,hash);
+	        setValues(hash);
+	    }
+	    
+	    // Serialize the object
+	    public void writeObject(IOutputStream out) { 
+	    	super.writeObject(out);
+	    	out.writeString(client_id);
+	    }
+
+	    // Deserialize the object
+	    public void readObject(IInputStream in) { 
+	    	super.readObject(in);
+	    	client_id = in.readString();
+	    }
+	    
+	    RubyHash getValueByName(RubyString name){
+	    	RubyHash res = super.getValueByName(name);
+	    	boolean bAll = name.equals(ALL);
+	    	
+	    	if ( bAll || name.equals(CLIENT_ID) )
+	    		res.add( CLIENT_ID, ObjectFactory.createString(client_id) );
+	    	
+	    	return res;
+	    }
+	    
+	    public void setValues(RubyHash hash){
+	    	super.setValues(hash);
+	    	
+	        RubyValue val = hash.getValue(CLIENT_ID);
+	        if ( val != RubyConstant.QNIL )
+	        	client_id = val.toStr();
+	    }
+	    
 	};
 	
 	Storage m_storage;
@@ -436,8 +584,9 @@ public class PerstLiteAdapter  extends RubyBasic {
             // ... register new root object
             m_storage.setRoot(root);
             
-            root.put("sources", new Table_sources.TableRoot(m_storage) );
-            root.put("object_values", new Table_object_values.TableRoot(m_storage) );
+            root.put(Table_sources.name(), new Table_sources.TableRoot(m_storage) );
+            root.put(Table_object_values.name(), new Table_object_values.TableRoot(m_storage) );
+            root.put(Table_client_info.name(), new Table_client_info.TableRoot(m_storage) );
         }
 	}
 	
@@ -456,11 +605,15 @@ public class PerstLiteAdapter  extends RubyBasic {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
 			String strName = tableName.toStr();
-			Table_base item = null;
+			Table_base1 item = null;
 			if ( strName.equals(Table_sources.name()) )
 				item = new Table_sources(m_storage,(RubyHash)mapValues);
-			else
+			else if ( strName.equals(Table_object_values.name()) )
 				item = new Table_object_values(m_storage,(RubyHash)mapValues);
+			else if ( strName.equals(Table_client_info.name()) )
+				item = new Table_client_info(m_storage,(RubyHash)mapValues);
+			else
+				throw new RubyException("Unknown database name:" + strName);
 			
 			tblRoot.put(item);
 			m_storage.commit();
@@ -504,7 +657,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 					
 			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
 			while(iter != null && iter.hasNext()){
-				Table_base item = (Table_base)iter.next();
+				Table_base1 item = (Table_base1)iter.next();
 				nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
 			}
 		}
@@ -527,9 +680,13 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public synchronized RubyValue updateIntoTable(RubyValue tableName, RubyValue mapValues, RubyValue where ) {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
-			Iterator iter = tblRoot.iterator((RubyHash)where);
+//			Iterator iter = tblRoot.iterator((RubyHash)where);
+			Iterator iter = (where != null && where != RubyConstant.QNIL) ? 
+					tblRoot.iterator((RubyHash)where) :
+					tblRoot.iterator();
+			
 			while(iter != null && iter.hasNext()){
-				Table_base item = (Table_base)iter.next();
+				Table_base1 item = (Table_base1)iter.next();
 				if ( item != null ){
 					item.setValues((RubyHash)mapValues);
 					item.modify();
@@ -561,7 +718,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);
 			Iterator iter = tblRoot.iterator((RubyHash)where);
 			while(iter != null && iter.hasNext()){
-				Table_base item = (Table_base)iter.next();
+				Table_base1 item = (Table_base1)iter.next();
 				if ( item != null ){
 					tblRoot.remove(item);
 				}

@@ -44,7 +44,7 @@ public class SyncThread implements Runnable {
 	SyncThread() {
 		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
 		//SyncUtil.adapter.initialize(null);
-		delaySync = SyncUtil.getObjectCountFromDatabase();
+		delaySync = SyncUtil.getObjectCountFromDatabase("object_values");
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
@@ -67,6 +67,8 @@ public class SyncThread implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		SyncUtil.fetch_client_login("lars","password");
+		
 		while (!quit) {
 			synchronized (sync) {
 				SyncUtil.adapter.initialize(null);
