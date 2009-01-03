@@ -35,7 +35,7 @@ public class SyncJSONParser {
 	 * 
 	 * @return the array list
 	 */
-	public static ArrayList parseJSONList(String input) {
+	public static ArrayList parseObjectValues(String input) {
 		ArrayList list = new ArrayList();
 
 		// Iterates over a JSONArray provided by input and parses
@@ -50,15 +50,20 @@ public class SyncJSONParser {
 				JSONObject current = (JSONObject) element.get("object_value");
 				if (current != null) {
 					String attrib = (String) current.get("attrib");
-					int sourceId = ((Integer) current.get("source_id"))
-							.intValue();
+					int sourceId = ((Integer) current.get("source_id")).intValue();
 					String object = (String) current.get("object");
 					Object obValue = current.get("value");
-					String value = obValue == JSONObject.NULL ? null
-							: (String) obValue;
+					String value = obValue == JSONObject.NULL ? null : (String) obValue;
+					
 					String updateType = (String) current.get("update_type");
-					SyncObject newObject = new SyncObject(attrib, sourceId,
-							object, value, updateType);
+					SyncObject newObject = new SyncObject(attrib, sourceId,	object, 
+							value, updateType);
+					
+					newObject.setCreatedAt( (String)current.get("created_at"));
+					newObject.setDbOperation((String)current.get("db_operation"));
+					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
+					newObject.setUpdatedAt((String)current.get("updated_at"));
+					
 					list.add(newObject);
 				}
 			}
@@ -69,4 +74,23 @@ public class SyncJSONParser {
 		}
 		return list;
 	}
+	
+	public static String parseClientID(String input) {
+		String client_id = "";
+
+		// Iterates over a JSONArray provided by input and parses
+		// a SyncObject ArrayList
+		try {
+			JSONObject object = new JSONObject(input);
+			JSONObject client = (JSONObject)object.get("client");
+			if (client != null)
+				client_id = (String) client.get("client_id");
+
+		} catch (Exception e) {
+			System.out.println("There was an error processing the json list: "
+					+ e.getMessage());
+		}
+		return client_id;
+	}
+	
 }
