@@ -55,8 +55,8 @@
           </fileset>
         </copy>
 
-        <copy todir="${src.dir}/apps/Sources">
-          <fileset dir="../../apps/Sources" excludes ="${exclude.apps}" >
+        <copy todir="${src.dir}/apps/Settings">
+          <fileset dir="../../apps/Settings" excludes ="${exclude.apps}" >
             <exclude name="**/nbproject" />
             <exclude name="**/.DS_Store" />
           </fileset>

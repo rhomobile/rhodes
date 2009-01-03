@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-char *fetch_remote_data(char *url_string, char *session);
+char *get_session();
+char *fetch_remote_data(char *url_string);
 int push_remote_data(char* url, char* data, size_t data_size);
-void get_cookie_from_login(char* url);
-//void populate_list(sqlite3 *database);
+int login(const char *login, const char *password);

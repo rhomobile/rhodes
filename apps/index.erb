@@ -20,13 +20,14 @@
 			<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
 			<a href="Basecamp">Basecamp</a><br/>
 			<a href="Phonebook">Phonebook</a><br/>
-			Platform:<%= System::get_property('PLatform')%><br/>
+			Platform:<%= System::get_property('platform')%><br/>
 			Your location: <geolocation>loading...</geolocation><br/>
 			Latitude: <geolatitude>loading...</geolatitude><br/>
 			Longitude: <geolongitude>loading...</geolongitude><br/>
 		</div>
 		<div id="sourcescontainer">
-			<small><a href="/Sources/Source/index">Edit Sources</a><br/></small>
+			<small><a href="/Settings/Source/index">Edit Sources</a><br/></small>
+			<small><a href="/Settings/User/edit">Login</a><br/></small>
 		</div>
 	</body>
 </html>

@@ -5,14 +5,17 @@
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
 
-extern char* fetch_remote_data(char *url, char *session);
+extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
+extern char *get_session();
+extern char *get_database();
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
 static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
+static sqlite3_stmt *sync_status_statement = NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
@@ -20,6 +23,7 @@ void finalize_sync_util_statements() {
 	if (client_id_statement) sqlite3_finalize(client_id_statement);
 	if (client_session_statement) sqlite3_finalize(client_session_statement);
 	if (client_db_statement) sqlite3_finalize(client_db_statement);
+	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
 }
 
 /* 
@@ -30,15 +34,14 @@ void finalize_sync_util_statements() {
 int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	pSyncObject *list;
 	char url_string[4096];
-	int max_size = 100;
 	int i,j,available,source_length;
 	char *json_string;
 	char *type = NULL;
 	
 	pSource *source_list;
-	source_list = malloc(max_size*sizeof(pSource));
+	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	
-	source_length = get_sources_from_database(source_list, database, max_size);
+	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 	available = 0;
 	printf("Iterating over %i sources...\n", source_length);
 	
@@ -49,16 +52,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				source_list[i]->_source_url, 
 				SYNC_SOURCE_FORMAT, 
 				client_id);
-		
-		printf("Trying to login...\n");
-		char login_string[4096] = "";
-		sprintf(login_string, 
-				"%s/client_login", 
-				source_list[i]->_source_url);
-		printf("url_string: %s\n", url_string);
-		char *session = get_cookie_from_login(login_string);
-		json_string = fetch_remote_data(url_string, session);
-		if (session) free(session);
+		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
 			// Initialize parsing list and call json parser
@@ -96,6 +90,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	
 	free_source_list(source_list, source_length);
 	printf("fetch remote changes done\n");
+	insert_sync_status((sqlite3 *)get_database(), "true");
 	return available;
 }
 
@@ -173,7 +168,7 @@ char *get_client_id(sqlite3 *database, pSource source) {
 	if (c_id == NULL) {
 		sqlite3_reset(client_id_statement);
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
-		json_string = fetch_remote_data(url_string, NULL);
+		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
@@ -186,31 +181,6 @@ char *get_client_id(sqlite3 *database, pSource source) {
 	}
 	sqlite3_reset(client_id_statement);
 	return c_id;
-}
-
-/* setup session from database, otherwise intialize from source */
-char *get_session(sqlite3 *database, pSource source) {
-	char *json_string;
-	char url_string[4096];
-	char *session = NULL;
-	
-	session = get_client_db_info("session", database);
-	if (session == NULL) {
-		sqlite3_reset(client_session_statement);
-		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
-		json_string = fetch_remote_data(url_string, NULL);
-		if(json_string && strlen(json_string) > 0) {
-			session = str_assign((char *)parse_client_id(json_string));
-		}
-		prepare_db_statement("INSERT INTO client_info (session) values (?)",
-							 database,
-							 &client_session_statement);
-		sqlite3_bind_text(client_session_statement, 1, session, -1, SQLITE_TRANSIENT);
-		sqlite3_step(client_session_statement);
-		printf("Intialized new session %s from source...\n", session);
-	}
-	sqlite3_reset(client_session_statement);
-	return session;
 }
 
 char *get_client_db_info(char *field, sqlite3 *database) {
@@ -227,4 +197,14 @@ char *get_client_db_info(char *field, sqlite3 *database) {
 	} 
 	sqlite3_reset(client_db_statement);
 	return info;
+}
+
+void insert_sync_status(sqlite3 *database, const char *status) {
+	prepare_db_statement("UPDATE client_info set last_sync_success=? WHERE client_id=?",
+						 database,
+						 &sync_status_statement);
+	sqlite3_bind_text(sync_status_statement, 1, status, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(sync_status_statement, 2, get_client_db_info("client_id", database), -1, SQLITE_TRANSIENT);
+	sqlite3_step(sync_status_statement); 
+	sqlite3_reset(sync_status_statement);
 }
