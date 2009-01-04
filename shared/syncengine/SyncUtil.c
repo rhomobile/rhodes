@@ -16,6 +16,7 @@ static sqlite3_stmt *client_id_statement = NULL;
 static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
+static sqlite3_stmt *session_db_statement = NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
@@ -24,6 +25,7 @@ void finalize_sync_util_statements() {
 	if (client_session_statement) sqlite3_finalize(client_session_statement);
 	if (client_db_statement) sqlite3_finalize(client_db_statement);
 	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
+	if (session_db_statement) sqlite3_finalize(session_db_statement);
 }
 
 /* 
@@ -208,3 +210,45 @@ void insert_sync_status(sqlite3 *database, const char *status) {
 	sqlite3_step(sync_status_statement); 
 	sqlite3_reset(sync_status_statement);
 }
+
+/**
+ * Retrieve cookie from database storage
+ */
+char *get_db_session(char* source_url) {
+	char *session = NULL;
+	
+	if ( source_url )
+	{
+		prepare_db_statement("SELECT session FROM sources WHERE source_url=?",
+						     (sqlite3 *)get_database(),
+							 &session_db_statement);
+		sqlite3_bind_text(session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
+		sqlite3_step(session_db_statement);
+		
+		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
+		sqlite3_reset(session_db_statement);
+	}
+	return session;
+}
+
+/**
+ * Save cookie to the database storage
+ */
+int set_db_session(char* source_url, char * session) {
+
+	int success = 0;
+	
+	if ( source_url && session )
+	{
+		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
+							 (sqlite3 *)get_database(),
+							 &session_db_statement);
+		
+		sqlite3_bind_text(session_db_statement, 1, session, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
+		success = sqlite3_step(session_db_statement);
+		sqlite3_reset(session_db_statement);
+	}
+	return success;
+}
+
