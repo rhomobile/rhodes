@@ -13,6 +13,10 @@
 #endif
 #include "rhoruby.h"
 
+#ifdef ENABLE_RUBY_VM_STAT
+#include "../stat/stat.h"
+#endif
+
 extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
@@ -20,6 +24,7 @@ extern void Init_SyncEngine(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
+extern void Init_Phonebook(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -38,6 +43,10 @@ void RhoRubyStart()
     setlocale(LC_CTYPE, "");
 #endif
     {
+#ifdef ENABLE_RUBY_VM_STAT
+    g_collect_stat = 1; 
+#endif    
+    
 		RUBY_INIT_STACK;
 		ruby_init();
 
@@ -50,21 +59,39 @@ void RhoRubyStart()
 		Init_GeoLocation();
 		Init_SyncEngine();
 		Init_System();
+		Init_Phonebook();
         
     Init_RhoSupport();
 
+#ifdef ENABLE_RUBY_VM_STAT
+    struct timeval  start;
+    struct timeval  end;
+    
+    gettimeofday (&start, NULL);
+#endif    
+
     require_compiled(rb_str_new2("rhoframework"), &framework );
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    if ( end.tv_sec > 0 )
+    	g_require_compiled_msec += (end.tv_sec  - start.tv_sec) * 1000;
+    else
+    	g_require_compiled_msec += (end.tv_usec - start.tv_usec)/1000; 
+    
+#endif    
 
     rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
+		
+#ifdef ENABLE_RUBY_VM_STAT
+	g_collect_stat = 0; 
+#endif    
+		
 	}	
 }
-#ifdef __SYMBIAN32__
-const char* RhoGetRootPath() {
-	return "c:\\Data\\Rho\\";
-}
-#endif
 
 #ifdef WINCE
 extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
@@ -100,6 +127,10 @@ void RhoRubyStop()
 }
 
 char* makeControllerCall(char* classname, char* methodname);
+
+VALUE getnil() {
+	return Qnil;
+}
 
 VALUE createHash() {
 	return rb_hash_new();

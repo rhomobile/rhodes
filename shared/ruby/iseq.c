@@ -431,6 +431,7 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     iseq_build_from_ary(iseq, locals, args, exception, body);
 
     cleanup_iseq_build(iseq);
+
     return iseqval;
 }
 

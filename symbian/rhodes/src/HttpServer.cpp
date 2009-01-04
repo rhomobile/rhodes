@@ -29,16 +29,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef ENABLE_RUBY_VM_STAT
+#define ENABLE_RUBY_VM_STAT
+#endif
+
+#include "stat/stat.h"
+
 extern "C" struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
 extern "C" void shttpd_fini(struct shttpd_ctx *);
 extern "C" void shttpd_poll(struct shttpd_ctx *, int milliseconds);
 extern "C" int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
 
-extern "C"
-	{
-	//	const char* ROOT_PATH = "c:\\Data\\Ruby\\";
-	//	const char* APPS_PATH = "c:\\Data\\Rho\\apps";
-	}
 TInt ThreadEntryPoint(TAny *aPtr)
 {
 	CHttpServer *pHttpServer = (CHttpServer *)aPtr;
@@ -112,21 +113,30 @@ TInt CHttpServer::Execute()
 
 TInt CHttpServer::ExecuteL()
 	{
+		// Create and install the active scheduler
+		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
+		CleanupStack::PushL(activeScheduler);
+		CActiveScheduler::Install(activeScheduler);
+
 		//Initialize Ruby
 		RhoRubyStart();
 	
 		//Send open home event
 		SendWindowEvent( ECmdAppHome );
 		
-		//Starting SYNC
-		//start_sync();
-	 	while ( !iClose )
+#ifdef ENABLE_RUBY_VM_STAT		
+		g_httpd_thread_loaded = 1;
+#endif		
+		
+		while ( !iClose )
 			{
 			shttpd_poll(ctx, 1000);
 			}
 
 		RhoRubyStop();
 
+		CleanupStack::PopAndDestroy(activeScheduler);
+		
 	 	return 0;
 	}
 

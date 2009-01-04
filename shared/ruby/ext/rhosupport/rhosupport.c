@@ -1,6 +1,10 @@
 #include "vm_core.h"
 
 #include "ruby/ruby.h"
+#include "ruby/io.h"
+#ifdef ENABLE_RUBY_VM_STAT
+#include "../../stat/stat.h"
+#endif
 
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
@@ -30,13 +34,53 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 static VALUE loadISeqFromFile(VALUE path)
 {
 //        fiseq = File.open(fName)
+#ifdef ENABLE_RUBY_VM_STAT
+    struct timeval  start;
+    struct timeval  end;
+#endif    
+
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&start, NULL); 
+#endif    
+
+
 //        arr = Marshal.load(fiseq)
         VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    if ( g_collect_stat )
+	{
+		if ( end.tv_sec > 0 )
+			g_iseq_marshal_load_msec += (end.tv_sec  - start.tv_sec) * 1000;
+		else
+			g_iseq_marshal_load_msec += (end.tv_usec - start.tv_usec)/1000; 
+	    
+	}
+    gettimeofday (&start, NULL);
+#endif    
+        
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
-        return rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+        VALUE seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+
+#ifdef ENABLE_RUBY_VM_STAT
+    gettimeofday (&end, NULL);
+    
+    if ( g_collect_stat )
+	{
+		if ( end.tv_sec > 0 )
+			g_iseq_binread_msec += (end.tv_sec  - start.tv_sec) * 1000;
+		else
+			g_iseq_binread_msec += ( end.tv_usec - start.tv_usec )/1000; 
+	}
+#endif    
+
+        return seq;
 }
 
 VALUE
@@ -116,6 +160,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         rb_ary_push(GET_VM()->loaded_features, path);
 
         seq = loadISeqFromFile(path);
+
         *result = rb_funcall(seq, rb_intern("eval"), 0 );
 
         return Qtrue;
@@ -156,4 +201,19 @@ void Init_RhoSupport()
     rb_define_global_function("require", rb_require_compiled, 1);
     rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
     rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
+
+    {
+      VALUE path = __rhoGetCurrentDir();
+      VALUE stdioPath, exist, logio;
+      rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("rhologpath.txt"));
+      exist = rb_funcall(rb_cFile, rb_intern("exist?"), 1, path);
+      if ( exist == Qtrue ){
+        stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
+        if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
+          //freopen( RSTRING_PTR(stdioPath), "w", stdout );
+		  logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w+"));
+          rb_gv_set("$stdout", logio);
+          rb_gv_set("$stderr", logio);
+      }
+    }
 }

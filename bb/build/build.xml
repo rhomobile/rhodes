@@ -12,7 +12,7 @@
   <property name="sharedAnt.dir" value="../../shared/build" />
   <property name="target.dir" location="../target/${BBVer}" />
 
-  <property name="exclude.apps" value="shared/**" />
+  <!-- <property name="exclude.apps" value="**/css,**/js" /> -->
   <property name="exclude.lib" value="**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb" />
   <property name="compileERB.path" location="compileERB.rb" />
   <property name="srclib.dir" value="${src.dir}"/>
@@ -20,18 +20,18 @@
   <!-- BB build props-->
   <property name="BBLib.dir" location="lib" />
   <property name="tmp.dir" value="${bin.dir}/tmp" />
-
-  <condition property="javac.home" value="${javac41.home}">
-    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
-  </condition>
-  <condition property="jde.home" value="${jde41.home}">
-    <equals arg1="${BBVer}" arg2="4.1" trim="true"/>
-  </condition>
+  <property name="applogfull.path" location="${applog.path}" />
 
   <condition property="javac.home" value="${javac42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
   </condition>
   <condition property="jde.home" value="${jde42.home}">
+    <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+  </condition>
+  <condition property="sim.name" value="8100">
+    <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds42.home}">
     <equals arg1="${BBVer}" arg2="4.2" trim="true"/>
   </condition>
 
@@ -41,11 +41,23 @@
   <condition property="jde.home" value="${jde43.home}">
     <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
   </condition>
+  <condition property="sim.name" value="8120">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds43.home}">
+    <equals arg1="${BBVer}" arg2="4.3" trim="true"/>
+  </condition>
 
   <condition property="javac.home" value="${javac46.home}">
     <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
   </condition>
   <condition property="jde.home" value="${jde46.home}">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+  <condition property="sim.name" value="9000">
+    <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
+  </condition>
+  <condition property="mds.home" value="${mds46.home}">
     <equals arg1="${BBVer}" arg2="4.6" trim="true"/>
   </condition>
 
@@ -56,6 +68,8 @@
     <not> <isset property="bbsign.pwd"/> </not>
   </condition>
 
+  <available file="../RubyVM/RubyVM.jar" property="RubyVM.present"/>
+  
   <target name="clean">
     <delete dir="${tmp.dir}" />
     <mkdir dir="${tmp.dir}" />
@@ -66,9 +80,25 @@
     <delete file="../RhoBundle/RhoBundle.jar" />
   </target>
 
+  <target name="showWarning" unless="RubyVM.present">
+    <echo message="WARNING: RhuBundle does not created - build RubyVM first."/>
+  </target>
+  <target name="makepreverifyRhoBundle" if="RubyVM.present">
+    <exec executable="${jde.home}/bin/preverify.exe">
+      <arg value="-classpath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
+      <arg value="-d" />
+      <arg value="../RhoBundle" />
+      <arg value="${bin.dir}/RhoBundle.jar" />
+    </exec>
+  </target>
+
+  <target name="preverifyRhoBundle" depends="makepreverifyRhoBundle,showWarning"/>
+  
   <target name="RhoBundle" depends="clean">
     <ant dir = "${sharedAnt.dir}" target="bundleCommon" />
-
+    <delete dir="${src.dir}/apps/shared" />
+    
     <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
       <arg value="-jar" />
       <arg value="${BBLib.dir}/xruby-0.3.3.jar" />
@@ -85,16 +115,10 @@
     </exec>
 
     <delete dir="${src.dir}" />
+    
+    <antcall target="preverifyRhoBundle"/>
 
-    <exec executable="${jde.home}/bin/preverify.exe">
-      <arg value="-classpath" />
-      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
-      <arg value="-d" />
-      <arg value="../RhoBundle" />
-      <arg value="${bin.dir}/RhoBundle.jar" />
-    </exec>
-
-  </target>
+    </target>
 
   <target name="compileSrc" depends="RhoBundle">
 
@@ -173,15 +197,78 @@
       </fileset>
     </copy>
 
-    <antcall target="${signType.target}" />
-      
     <delete dir="${bin.dir}" />
+
+  </target>
+
+  <target name="mds.run">
+    <exec executable="cmd.exe" dir="${mds.home}" spawn="true">
+      <arg line="/c run.bat" />
+    </exec>
+  </target>
+
+  <target name="sim1.run">
+<!--    <exec executable="cmd.exe" dir="${jde.home}/simulator" spawn="true">
+      <arg line="/c ${sim.name}.bat" />
+    </exec> -->
+    <exec executable="${jde.home}/simulator/fledge.exe" dir="${jde.home}/simulator" spawn="true">
+      <arg value="/app=Jvm.dll" />
+      <arg value="/handheld=${sim.name}" />
+      <arg value="/session=${sim.name}" />
+      <arg value="/app-param=DisableRegistration" />
+      <arg value="/app-param=JvmAlxConfigFile:${sim.name}.xml" />
+      <arg value="/data-port=0x4d44" />
+      <arg value="/data-port=0x4d4e" />
+      <arg value="/pin=0x2100000A" />
+      <arg value="/app-param=JvmDebugFile:${applogfull.path}" />
+    </exec> 
+
+  </target>
+
+  <target name="sim.run" depends="mds.run,sim1.run">
+  </target>
+
+  <target name="device.build" depends="rhodes">
+
+    <antcall target="${signType.target}" />
 
     <!-- Create web directory -->
     <copy file="${target.dir}/rhodesApp.jad" todir="${target.dir}/web">
       <zipfileset src="${target.dir}/rhodesApp.cod" />
     </copy>
-
+    
+  </target>
+  
+  <target name="device.load" depends="device.build">
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator" osfamily="windows" vmlauncher="true" failonerror="false">
+      <arg value="/execute=UsbCableInsertion(true)" />
+    </exec>
+    <exec executable="${jde.home}/bin/javaloader.exe" osfamily="windows" vmlauncher="false" failonerror="true">
+      <arg value="-u" />
+      <arg value="load" />
+      <arg value="${target.dir}/rhodesApp.cod" />
+    </exec>
   </target>
 
+  <target name="runapp" depends="rhodes">
+    <pathconvert property="codfile" dirsep="/">
+      <path location="${target.dir}/rhodesApp.cod"/>
+    </pathconvert>
+
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator">
+      <arg value="/session=${sim.name}" />
+      <arg value="/execute=LoadCod(${codfile})" />
+    </exec>
+    <waitfor maxwait="5" maxwaitunit="second"><available file="nothing.log"/></waitfor>
+    
+    <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator">
+      <arg value="/session=${sim.name}" />
+      <arg value="/execute=Exit(true)" />
+    </exec>
+    <waitfor maxwait="5" maxwaitunit="second"><available file="nothing.log"/></waitfor>
+
+    <antcall target="sim1.run" />
+    
+  </target>
+  
 </project>

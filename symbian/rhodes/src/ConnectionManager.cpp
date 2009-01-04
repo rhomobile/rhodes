@@ -183,7 +183,7 @@ TBool CConnectionManager::SetupConnection()
 
 		// initialize a view 
 		CCommsDbConnectionPrefTableView* commDBView = 
-		commDB->OpenConnectionPrefTableInRankOrderLC(ECommDbConnectionDirectionOutgoing);
+		commDB->OpenConnectionPrefTableInRankOrderLC(ECommDbConnectionDirectionUnknown);
 
 		// go to the first record 
 		User::LeaveIfError(commDBView->GotoFirstRecord());

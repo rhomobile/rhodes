@@ -127,7 +127,8 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 -(void) stop {
     CFRunLoopStop(runLoop);
 	// Stop the sync engine
-	stop_sync_engine();	
+	stop_sync_engine();
+	shutdown_database();
 }
 
 - (void)dealloc 

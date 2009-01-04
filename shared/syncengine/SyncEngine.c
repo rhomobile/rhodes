@@ -71,16 +71,7 @@ int process_local_changes() {
 		  free(client_id);  
 	  }
   } else {
-	  finalize_statements();
-	  finalize_op_statements();
-	  finalize_src_statements();
-  	
-	  // Close the database.
-	  if (sqlite3_close(database) != SQLITE_OK) {
-		  printf("Error: failed to close database with message '%s'.\n", sqlite3_errmsg(database));
-	  }
-	  printf("Sync engine is shutdown...\n");
-	  return 1;
+	  shutdown_database();
   }
   return 0;
 }
@@ -212,8 +203,19 @@ void stop_sync_engine() {
 	pthread_cond_broadcast(&sync_cond);
 	pthread_mutex_unlock(&sync_mutex);
 }
+
+void shutdown_database() {
+	finalize_sync_obj_statements();
+	finalize_sync_util_statements();
+	finalize_sync_op_statements();
+  	
+	sqlite3_close(database);
+	printf("Sync engine is shutdown...\n");
+}
 #else
 void start_sync_engine(sqlite3 *db) {	
 	database = db;
+}
+void shutdown_database() {
 }
 #endif //!defined(_WIN32_WCE)

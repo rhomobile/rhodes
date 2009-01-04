@@ -6,11 +6,12 @@ iphone/rhorubylib/build/*
 iphone/rhosynclib/build/*
 iphone/bin/*
 mac/bin/*
-
+iphone/*/*.link
 wm/bin/*
 win32/bin/*
 wm/target/*
 wm/build/cleanup.js
+iphone/*/rholog.txt
 
 bb/.metadata/*
 bb/bin/*
@@ -24,6 +25,7 @@ bb/*/.classpath
 *.err
 bb/.BB.jdw/*.files
 *.jad
+bb/build/rholog.txt
 
 symbian/.metadata/*
 symbian/bin/*
@@ -34,6 +36,8 @@ ABLD.BAT
 *.sis
 *.sisx
 .cproject
+*.hlp
+*.hrh
 
 *.jar
 *.cod

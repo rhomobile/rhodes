@@ -25,12 +25,10 @@
 static char* attr_format = "attrvals[][%s]=%s";
 
 static sqlite3_stmt *op_list_select_statement = NULL;
-static sqlite3_stmt *op_list_sources_statement = NULL;
 static sqlite3_stmt *op_list_delete_statment = NULL;
 
-void finalize_op_statements() {
-    if (op_list_select_statement) sqlite3_finalize(op_list_select_statement);
-	if (op_list_sources_statement) sqlite3_finalize(op_list_sources_statement);
+void finalize_sync_op_statements() {
+	if (op_list_select_statement) sqlite3_finalize(op_list_select_statement);
 	if (op_list_delete_statment) sqlite3_finalize(op_list_delete_statment);
 }
 
@@ -130,7 +128,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 		tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
 		tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
 																  tmp_source_id, tmp_object, 
-																  tmp_value, type, 0, 0);
+																  tmp_value, type);
 		
 		current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, source->_source_url, tmp_operation);
 		list[count] = current_op;
@@ -146,8 +144,6 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 			   list[i]->_uri);
 	}
 	sqlite3_reset(op_list_select_statement);
-	sqlite3_finalize(op_list_select_statement);
-	op_list_select_statement = NULL;
 	return count;
 }
 
@@ -160,8 +156,6 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
 	sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
 	sqlite3_step(op_list_delete_statment);
 	sqlite3_reset(op_list_delete_statment);
-	sqlite3_finalize(op_list_delete_statment);
-	op_list_delete_statment = NULL;
 }
 
 void free_op_list(pSyncOperation *list, int available) {

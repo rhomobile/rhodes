@@ -40,6 +40,24 @@
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
 
+#ifndef ENABLE_RUBY_VM_STAT
+#define ENABLE_RUBY_VM_STAT
+#endif
+
+#include "stat/stat.h"
+
+#include <fcntl.h>
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/types.h>
+
+extern "C"
+{
+	char g_szSource[20+1];
+	char g_szMessage[100+1];
+}
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 
@@ -110,6 +128,25 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 				iSyncEngineWrap->ResumeThread();
 			HandleCommandL(ECmdAppHome);
 		}
+		else if ( aType == (EEventUser + ECmdShowDebugWindow))
+		{
+			CAknMessageQueryDialog* dlg = new (ELeave)CAknMessageQueryDialog();
+			dlg->PrepareLC(R_STAT_QUERY_DIALOG);
+			
+			TPtrC8 titleptr8((const TUint8 *)g_szSource);
+			HBufC *title = HBufC::NewLC(titleptr8.Length());
+			title->Des().Copy(titleptr8);
+			dlg->QueryHeading()->SetTextL(*title);
+			CleanupStack::PopAndDestroy(title);
+			
+			TPtrC8 msgptr8((const TUint8 *)g_szMessage);
+			HBufC *msg = HBufC::NewLC(msgptr8.Length());
+			msg->Des().Copy(msgptr8);
+			dlg->SetMessageTextL(*msg);
+			CleanupStack::PopAndDestroy(msg);
+			
+			dlg->RunLD();
+		}
 		else
 		{
 			// Call the base class implementation
@@ -156,6 +193,37 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			dlg->RunLD();
 			}
 			break;
+#ifdef ENABLE_RUBY_VM_STAT			
+		case EStat:
+			{
+			CAknMessageQueryDialog* dlg = new (ELeave)CAknMessageQueryDialog();
+			dlg->PrepareLC(R_STAT_QUERY_DIALOG);
+			HBufC* title = iEikonEnv->AllocReadResourceLC(R_STAT_DIALOG_TITLE);
+			dlg->QueryHeading()->SetTextL(*title);
+			CleanupStack::PopAndDestroy(); //title
+			char buf[500] = {0};
+			sprintf( buf,    "stat:\n___________________\n"
+							 "iceq stat:\n "
+							 "iseq binread: %u%s\n"
+							 "iseq marshal: %u%s\n"
+							 "require_compiled: %u%s\n"
+							 "httpd thread loaded: %d\n"
+							 "sync thread loaded: %d\n",
+							 g_iseq_binread_msec, "msec",
+							 g_iseq_marshal_load_msec, "msec",
+							 g_require_compiled_msec, "msec",
+							 g_httpd_thread_loaded,
+							 g_sync_thread_loaded);
+			
+			TPtrC8 ptr8((TUint8*)buf);
+			HBufC *msg = HBufC::NewLC(ptr8.Length());
+			msg->Des().Copy(ptr8);
+			dlg->SetMessageTextL(*msg);
+			CleanupStack::PopAndDestroy(msg);
+			dlg->RunLD();
+			}	
+			break;
+#endif			
 		default:
 			iAppView->HandleCommandL(aCommand);
 			break;
@@ -198,6 +266,41 @@ CArrayFix<TCoeHelpContext>* CRhodesAppUi::HelpContextL() const
 TKeyResponse CRhodesAppUi::HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType)
 {
     return iAppView->HandleKeyEventL(aKeyEvent, aType);
+}
+
+void CRhodesAppUi::DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane)
+{
+    iAppView->DynInitMenuPaneL(aResourceId, aMenuPane);
+}
+
+extern "C"
+{
+	void showDebugMessage( const char* source, const char* message )
+	{
+		if ( source && message )
+		{
+			memset(g_szSource, 0, sizeof(g_szSource) );
+			memset(g_szMessage, 0, sizeof(g_szMessage) );
+			
+			memcpy( g_szSource, source, strlen(source) > 20 ? 20 : strlen(source) );
+			memcpy( g_szMessage, message, strlen(message) > 100 ? 100 : strlen(message));
+		
+			// Create a window server event
+			RWsSession wsSession;
+			TWsEvent event;
+
+			if ( wsSession.Connect() == KErrNone )
+			{
+				// Set event data. eventType.data = KData;
+				event.SetType(EEventUser + ECmdShowDebugWindow); // set event type
+				event.SetTimeNow(); // set the event time
+				event.SetHandle(wsSession.WsHandle()); // set window server handle
+				
+				// Send the created event
+				wsSession.SendEventToAllWindowGroups(event);
+			}
+		}
+	}
 }
 
 // End of File

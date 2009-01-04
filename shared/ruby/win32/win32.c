@@ -4467,8 +4467,8 @@ rb_w32_write(int fd, const void *buf, size_t size)
 	memset(&ol, 0, sizeof(ol));
 	if (!(_osfile(fd) & (FDEV | FPIPE))) {
 	    LONG high = 0;
-	    DWORD low = SetFilePointer((HANDLE)_osfhnd(fd), 0, &high,
-				       FILE_CURRENT);
+		DWORD method = _osfile(fd) & FAPPEND ? FILE_END : FILE_CURRENT;
+		DWORD low = SetFilePointer((HANDLE)_osfhnd(fd), 0, &high, method);
 #ifndef INVALID_SET_FILE_POINTER
 #define INVALID_SET_FILE_POINTER ((DWORD)-1)
 #endif

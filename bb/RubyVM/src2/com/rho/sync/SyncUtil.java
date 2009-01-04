@@ -366,12 +366,16 @@ public class SyncUtil {
 	 */
 	public static int getObjectCountFromDatabase() {
 		RubyArray arr = createArray();
-		RubyHash where = createHash();
-		arr.add(createString("object_values"));
-		arr.add(createString("*"));
-		where.add(createString("source_id"), RubyConstant.QNIL);
-		arr.add(where);
-		RubyArray results = (RubyArray)adapter.selectFromTable(arr);
-		return results == null ? 0 : results.size();
+		arr.add(createString("object_values")); //table name
+		arr.add(createString("*")); //attributes
+		//arr.add(createString("source_id")); //not nil attributes
+		arr.add(RubyConstant.QNIL); //where
+
+		RubyHash params = createHash();
+		params.add(createString("count"), RubyConstant.QTRUE);
+		arr.add(params);
+		
+		RubyInteger results = (RubyInteger)adapter.selectFromTable(arr);
+		return results == null ? 0 : results.toInt();
 	}
 }

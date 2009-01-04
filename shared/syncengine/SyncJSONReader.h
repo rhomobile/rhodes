@@ -2,18 +2,6 @@
  *  SyncJSONReader.h
  *  RhoSyncClient
  *
- *  Parses the JSON response for the fetch:
- *  [{"object_value": {
- *      "updated_at": "2008-09-17T22:31:42Z", 
- *      "update_type": "query", 
- *      "id": 1, 
- *      "value": "24/7 Couriers 964608", 
- *      "source_id": 1, 
- *      "object": "24004283442000", 
- *      "created_at": "2008-09-17T22:31:42Z", 
- *      "attrib": "name"}
- *  }]
- *
  *  Copyright (C) 2008 Lars Burgess. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
