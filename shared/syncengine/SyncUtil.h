@@ -18,6 +18,16 @@ char *get_client_id(sqlite3 *database, pSource source);
 char *get_client_db_info(char *field, sqlite3 *database);
 void insert_sync_status(sqlite3 *database, const char *status);
 
+/**
+ * Retrieve cookie from database storage
+ */
+char *get_db_session(char* source_url);
+
+/**
+ * Save cookie to the database storage
+ */
+int set_db_session(char* source_url, char * session);
+
 #if defined(__cplusplus)
 }
 #endif

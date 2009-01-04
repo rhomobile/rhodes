@@ -97,9 +97,16 @@ public:
 	//Invoke http method
 	void InvokeHttpMethodL(TInt aCommand);
 
+	//Invoke http method
+	void InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize);
+
 	//Toggle verbose mode
 	void ToggleVerbose();
 	
+	//get response body (client must free allocated memory)
+	char* GetResponse();
+	
+	void SetCookie( char* cookie, TInt size );
 private:
 
 	/**
@@ -111,6 +118,8 @@ private:
 	 * EPOC default constructor for performing 2nd stage construction
 	 */
 	void ConstructL();
+	
+	void WriteCookie(RHTTPHeaders headers);
 	
 protected:
 	//read body from body request file
@@ -133,6 +142,7 @@ private: //data
 	RHTTPTransaction iTrans;
 
 	TBool iHasARequestBody;
+	TBool iNotUsingFile;
 	
 	RFs iFileServ;
 	RFile iReqBodyFile;
@@ -143,6 +153,8 @@ private: //data
 	CHttpEventHandler* iTransObs;
 	
 	CHttpFileManager* iHttpFileManager; 
+	
+	HBufC8* iCookie;
 	};
 
 #endif // HTTPCLIENT_H

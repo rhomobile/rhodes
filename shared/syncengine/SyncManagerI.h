@@ -22,3 +22,26 @@ char *get_session();
 char *fetch_remote_data(char *url_string);
 int push_remote_data(char* url, char* data, size_t data_size);
 int login(const char *login, const char *password);
+
+/**
+ * login to rhosync server (default implementation)
+ * If succeeded stores session into the database
+ * 
+ * To start using this method you will need to implement 
+ * get_session_from_login callback for you platform 
+ * 
+ * @param login
+ * @param password
+ * @return 1 - succeeded, 0 - failed
+ */
+int db_login ( char* login, char* password );
+
+/**
+ * This callback is required be db_login (platform specific part)
+ * 
+ * @param url
+ * @param login
+ * @param password
+ * @return session
+ */
+char* get_session_from_login(char* url, char* login, char* password);
