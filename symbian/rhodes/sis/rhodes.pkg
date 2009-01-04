@@ -13,10 +13,9 @@
 #{"rhodes"},(0xE6B4F4DF),1,0,0
 
 ;Localised Vendor name
-%{"Vendor-EN"}
-
+%{"RhoMobile-EN"}
 ;Unique Vendor name
-:"Vendor"
+:"RhoMobile"
 
 ;Supports Series 60 v 3.0
 [0x101F7961], 0, 0, 0, {"Series60ProductID"}
@@ -35,3 +34,6 @@
 
 ;required for application to be covered by backup/restore facility 
 "..\sis\backup_registration.xml"		-"!:\private\E6B4F4DF\backup_registration.xml"
+
+;RhoBundle files
+

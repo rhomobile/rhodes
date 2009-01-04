@@ -356,7 +356,7 @@ public class RhoConnection implements HttpConnection {
 	
 	static String getContentType( String path ){
 		int nPoint = path.lastIndexOf('.');
-		String strExt = "html";
+		String strExt = "";
 		if ( nPoint > 0 )
 			strExt = path.substring(nPoint+1);
 		
@@ -368,8 +368,10 @@ public class RhoConnection implements HttpConnection {
 			return "text/css";
 		else if ( strExt.equals("gif") )
 			return "image/gif";
+		else if ( strExt.equals("html") || strExt.equals("htm") )
+			return "text/html";
 		
-		return "text/html";
+		return "";
 	}
 	
 	protected Class findClass(String path){
@@ -422,8 +424,7 @@ public class RhoConnection implements HttpConnection {
 		return true;
 	}
 
-	protected boolean httpServeFile()throws IOException{
-		String strContType = getContentType(uri.getPath());
+	protected boolean httpServeFile(String strContType)throws IOException{
 		
 		if ( strContType.equals("application/javascript"))
 			responseData = new ByteArrayInputStream(new String("").getBytes());
@@ -433,7 +434,9 @@ public class RhoConnection implements HttpConnection {
 		if (responseData== null)
 			return false;
 		
-		resHeaders.addProperty("Content-Type", strContType );
+		if ( strContType.length() > 0 )
+			resHeaders.addProperty("Content-Type", strContType );
+		
 		contentLength = responseData.available(); 
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 		
@@ -442,25 +445,29 @@ public class RhoConnection implements HttpConnection {
 	
 	protected boolean httpGetFile()throws IOException{
 		
-		String strTemp = uri.getPath();
-		if ( strTemp.length() == 0 || strTemp.charAt(strTemp.length()-1)!='/')
-			strTemp += '/';
-
-		if( findClass(strTemp + "controller") != null )
-			return false;
-		
-		int nPos = findIndex(uri.getPath());
-		if ( nPos >= 0 ){
-			RubyValue res = RhoRuby.processIndexRequest( 
-					uri.getPath() + (nPos == 0 ? ".iseq" : "") ); //erb-compiled should load from class
-			processResponse(res);
-			return true;
+		String strContType = getContentType(uri.getPath());
+		if ( strContType.length() == 0 )
+		{
+			String strTemp = uri.getPath();
+			if ( strTemp.length() == 0 || strTemp.charAt(strTemp.length()-1)!='/')
+				strTemp += '/';
+	
+			if( findClass(strTemp + "controller") != null )
+				return false;
+			
+			int nPos = findIndex(uri.getPath());
+			if ( nPos >= 0 ){
+				RubyValue res = RhoRuby.processIndexRequest( 
+						uri.getPath() + (nPos == 0 ? ".iseq" : "") ); //erb-compiled should load from class
+				processResponse(res);
+				return true;
+			}
+	
+			if( httpGetIndexFile() )
+				return true;
 		}
-
-		if( httpGetIndexFile() )
-			return true;
 		
-		return httpServeFile();
+		return httpServeFile(strContType);
 	}
 	
 	protected boolean checkRhoExtensions(String application, String model ){

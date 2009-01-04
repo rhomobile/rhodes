@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="rhodes"
 	ProjectGUID="{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}"
 	RootNamespace="Rhodes"
@@ -82,7 +82,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -363,7 +363,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -728,6 +728,26 @@
 			</File>
 			<File
 				RelativePath=".\syncengine\rsyncengine.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="phonebook"
+			>
+			<File
+				RelativePath=".\phonebook\NativeAddressBook.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\phonebook\NativeAddressBook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\phonebook\phonebook.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\phonebook\phonebook.h"
 				>
 			</File>
 		</Filter>

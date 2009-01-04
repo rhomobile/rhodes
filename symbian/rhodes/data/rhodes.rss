@@ -64,7 +64,7 @@ RESOURCE EIK_APP_INFO
 	{
 	menubar = r_menubar;
 	hotkeys=r_rhodes_hotkeys;
-	cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+	cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
 	}
 
 
@@ -112,6 +112,11 @@ RESOURCE MENU_PANE r_menu
 				command = EAbout;
 				txt = qtn_about;
 				},
+		MENU_ITEM
+				{
+				command = EStat;
+				txt = qtn_stat;
+				},		
 		MENU_ITEM
 				{
 				command = EAknSoftkeyExit;
@@ -192,6 +197,38 @@ RESOURCE DIALOG r_about_query_dialog
 		};
 	}
 
+// -----------------------------------------------------------------------------
+//
+// Stat dialog resource.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_stat_query_dialog
+	{
+	flags = EGeneralQueryFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+	buttons = R_AVKON_SOFTKEYS_OK_EMPTY;
+	items=
+		{
+		DLG_LINE 
+			{
+			type = EAknCtPopupHeadingPane;
+			id = EAknMessageQueryHeaderId;
+			itemflags = EEikDlgItemNonFocusing;
+			control = AVKON_HEADING
+				{
+				};
+			},
+		DLG_LINE
+			{
+			type = EAknCtMessageQuery;
+			id = EAknMessageQueryContentId;
+			control = AVKON_MESSAGE_QUERY
+				{
+				};
+			}
+		};
+	}
+
 
 // -----------------------------------------------------------------------------
 //
@@ -201,6 +238,7 @@ RESOURCE DIALOG r_about_query_dialog
 //
 RESOURCE TBUF32 r_caption_string { buf=qtn_caption_string; }
 RESOURCE TBUF32 r_about_dialog_title { buf=qtn_about_dialog_title; }
+RESOURCE TBUF32 r_stat_dialog_title { buf=qtn_stat_dialog_title; }
 RESOURCE TBUF r_about_dialog_text { buf=qtn_about_dialog_text; }
 RESOURCE TBUF r_command1_text { buf=qtn_command1_text; }
 
@@ -271,10 +309,21 @@ RESOURCE CBA r_browser_default_buttons
     buttons =
                 {
                 CBA_BUTTON {id=EAknSoftkeyOptions; txt=STRING_r_brctl_options_default;},
-                CBA_BUTTON {id=EAknSoftkeyCancel; txt=STRING_r_brctl_cancel_default;}
+                CBA_BUTTON {id=EAknSoftkeyBack; txt=STRING_r_brctl_cancel_default;}
                 };
     }
 
 
+//-----------------------------------------------------------------------------
+//
+//    r_contacts_db_not_found
+//    Label of database not found
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_contacts_db_not_found
+    {
+    buf = STRING_r_contacts_db_not_found;
+    }
 
 // End of File

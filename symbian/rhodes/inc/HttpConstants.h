@@ -55,13 +55,13 @@ public:
 	_DECLARE_LIT(KFileIncompletePrefix, "___");
 	
 	//folder for request body files
-	_DECLARE_LIT(KHttpIN, "c:\\data\\rho\\http\\in\\");
+	_DECLARE_LIT(KHttpIN, "\\data\\rho\\http\\in\\");
 	
 	//folder for response body files
-	_DECLARE_LIT(KHttpOUT, "c:\\data\\rho\\http\\out\\");
+	_DECLARE_LIT(KHttpOUT, "\\data\\rho\\http\\out\\");
 
 	// File system root
-	_DECLARE_LIT(KFileSystemRoot,"c:\\");
+	_DECLARE_LIT(KFileSystemRoot,"\\");
 
 	// format for output of data/time values
 	_DECLARE_LIT(KDateFormat,"%D%M%Y%/0%1%/1%2%/2%3%/3 %:0%H%:1%T%:2%S.%C%:3");

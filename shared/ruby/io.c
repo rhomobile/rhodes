@@ -4128,8 +4128,11 @@ rb_fdopen(int fd, const char *modestr)
 static void
 io_check_tty(rb_io_t *fptr)
 {
+	//TODO: rho - io_check_tty
+#if !defined(__APPLE__)	
     if (isatty(fptr->fd))
-        fptr->mode |= FMODE_TTY|FMODE_DUPLEX;
+#endif		
+        fptr->mode |= FMODE_TTY|FMODE_DUPLEX|FMODE_SYNC;
 }
 
 static VALUE

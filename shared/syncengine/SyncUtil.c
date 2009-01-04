@@ -4,7 +4,6 @@
 #include "Constants.h"
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
-#include "Utils.h"
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
@@ -13,7 +12,7 @@ static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
 
-void finalize_src_statements() {
+void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
 	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
 	if (client_id_statement) sqlite3_finalize(client_id_statement);
@@ -30,6 +29,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	int max_size = 100;
 	int i,j,available,source_length;
 	char *json_string;
+	char *type = "noop";
 	
 	pSource *source_list;
 	source_list = malloc(max_size*sizeof(pSource));
@@ -60,7 +60,19 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 					for(j = 0; j < available; j++) {
 						list[j]->_database = database;
 						insert_into_database(list[j]);
-						dehydrate(list[j]);
+						//type = list[j]->_db_operation;
+//						if (type) {
+//							if(strcmp(type, "insert") == 0) {
+//								printf("Inserting record %s\n...", list[j]->_object);
+//								insert_into_database(list[j]);
+//							} 
+//							else if (strcmp(type, "delete") == 0) {
+//								printf("Deleting record %s\n...", list[j]->_object);
+//								delete_from_database(list[j]);
+//							} else {
+//								printf("Warning: received improper update_type: %s...\n", type);
+//							}
+//						}
 					}
 				}
 				/* free the in-memory list after populating the database */
@@ -123,7 +135,6 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		count++;
 	}
 	sqlite3_reset(op_list_source_ids_statement);
-	sqlite3_finalize(op_list_source_ids_statement);
 	return count;
 }
 
@@ -138,7 +149,6 @@ int get_object_count_from_database(sqlite3 *database) {
 		count = sqlite3_column_int(ob_count_statement, 0);
 	}
 	sqlite3_reset(ob_count_statement);
-	sqlite3_finalize(ob_count_statement);
 	return count;
 }
 
@@ -169,6 +179,5 @@ char *get_client_id(sqlite3 *database, pSource source) {
 		printf("Intialized new client_id %s from source...\n", c_id);
 	}
 	sqlite3_reset(client_id_statement);
-	sqlite3_finalize(client_id_statement);
 	return c_id;
 }

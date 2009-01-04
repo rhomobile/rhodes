@@ -7,7 +7,8 @@
 		</style>
 		<% if System::get_property('platform') == 'WINDOWS' %>
 			<script src="/shared/js/rhogeolocation-wm.js"></script>
-		<% else %>
+		<% end %>
+		<% if System::get_property('platform') == 'APPLE' %>
 			<script src="/shared/js/jquery-1.2.6.min.js"></script>
 			<script src="/shared/js/rhogeolocation.js"></script>
 		<% end %>
@@ -18,7 +19,8 @@
 			<a href="Rhosugar">SugarCRM Demo</a><br/>
 			<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
 			<a href="Basecamp">Basecamp</a><br/>
-			Platform:<%= System::get_property('PLatform')%>
+			<a href="Phonebook">Phonebook</a><br/>
+			Platform:<%= System::get_property('PLatform')%><br/>
 			Your location: <geolocation>loading...</geolocation><br/>
 			Latitude: <geolatitude>loading...</geolatitude><br/>
 			Longitude: <geolongitude>loading...</geolongitude><br/>

@@ -29,12 +29,15 @@
 #include "HttpFileManager.h"
 #include "HttpConstants.h"
 
+#ifndef ENABLE_RUBY_VM_STAT
+#define ENABLE_RUBY_VM_STAT
+#endif
+
+#include "stat/stat.h"
+
 extern "C"
 	{
 		#include "sqlite3.h"
-	
-		int	 sprintf(char * __restrict, const char * __restrict, ...);
-		int	 strlen(const char *);
 		
 		void start_sync_engine(sqlite3 *db);
 		void stop_sync_engine();
@@ -47,6 +50,7 @@ extern "C"
 		const char* RhoGetRootPath();
 		
 		#include <fcntl.h>
+		#include <string.h>
 		#include <stdio.h>
 		#include <time.h>
 		#include <sys/types.h>
@@ -124,6 +128,10 @@ TInt CSyncEngineWrap::ExecuteL()
 		//Initialize Ruby
 		StartSyncEngine();
 	
+#ifdef ENABLE_RUBY_VM_STAT	
+		g_sync_thread_loaded = 1;
+#endif
+		
 		sync_engine_main_routine(NULL);//main 
 		
 		StopSyncEngine();

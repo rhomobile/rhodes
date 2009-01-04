@@ -23,6 +23,7 @@ typedef unsigned long VALUE;
 
 void RhoRubyStart();
 
+VALUE getnil();	
 VALUE createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
