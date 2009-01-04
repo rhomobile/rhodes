@@ -229,7 +229,7 @@ void shutdown_database() {
 int db_login ( char* login, char* password )
 {
 	int retval = 0;
-	int i,available,source_length;
+	int i,source_length;
 	pSource *source_list;
 	
 	if ( login )
@@ -246,8 +246,6 @@ int db_login ( char* login, char* password )
 		{
 			char login_url[1024] = {0};
 			char* session = 0;
-			char* test_session = "Cookie=auth_token=37c3ea34eb355ea09c1d42f6eed2498347db168f;path=/;_rhosync_session=BAh7BzoMdXNlcl9pZGkGIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--6142a37e81b7cf1fb21fe219ecf2d51cf2e4f379;path=/;";
-			
 			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
 			
 			//fetch session from server
