@@ -26,18 +26,8 @@ import com.xruby.runtime.lang.RubyValue;
  */
 public class SyncObject {
 	
-	/**
-	 * Delete from database by source.
-	 * 
-	 * @param id the id
-	 */
-	public static void deleteFromDatabaseBySource(int id) {
-		RubyHash hash = SyncUtil.createHash();
-		hash.add(SyncUtil.createString("source_id"), SyncUtil
-				.createInteger((long) id));
-		SyncUtil.adapter.deleteFromTable(SyncUtil
-				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
-	}
+	/* track the database operation to use */	
+	private String _db_operation;
 	
 	/** The _primary key. */
 	private int _primaryKey = -1;
@@ -86,7 +76,7 @@ public class SyncObject {
 	 * 
 	 * @return the int
 	 */
-	public int dehydrate() {
+	public int insertIntoDatabase() {
 		try {
 			SyncUtil.adapter.insertIntoTable(SyncUtil
 					.createString(SyncConstants.OBJECTS_TABLE), this
@@ -97,6 +87,52 @@ public class SyncObject {
 			return SyncConstants.SYNC_OBJECT_ERROR;
 		}
 		return SyncConstants.SYNC_OBJECT_SUCCESS;
+	}
+
+	public void deleteFromDatabase() {
+		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("object"), SyncUtil
+				.createString(this.getObject()));
+		SyncUtil.adapter.deleteFromTable(SyncUtil
+				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
+	}
+	
+	/**
+	 * Delete from database by source.
+	 * 
+	 * @param id the id
+	 */
+	public static void deleteFromDatabaseBySource(int id) {
+		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("source_id"), SyncUtil
+				.createInteger((long) id));
+		SyncUtil.adapter.deleteFromTable(SyncUtil
+				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
+	}
+
+	/**
+	 * Gets the hash from values.
+	 * 
+	 * @return the hash from values
+	 */
+	private RubyHash getHashFromValues() {
+		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("attrib"), SyncUtil
+				.createString(this.getAttrib()));
+		hash.add(SyncUtil.createString("source_id"), SyncUtil
+				.createInteger((long) this.getSourceId()));
+		hash.add(SyncUtil.createString("object"), SyncUtil
+				.createString(this.getObject()));
+		hash.add(SyncUtil.createString("value"), SyncUtil
+				.createString(this.getValue()));
+		hash.add(SyncUtil.createString("created_at"), SyncUtil
+				.createString(this.getCreatedAt()));
+		hash.add(SyncUtil.createString("updated_at"), SyncUtil
+				.createString(this.getUpdatedAt()));
+		hash.add(SyncUtil.createString("update_type"), SyncUtil
+				.createString(this.getUpdateType()));
+		
+		return hash;
 	}
 
 	/**
@@ -116,27 +152,7 @@ public class SyncObject {
 	public String getCreatedAt() {
 		return _createdAt;
 	}
-
-	/**
-	 * Gets the hash from values.
-	 * 
-	 * @return the hash from values
-	 */
-	private RubyHash getHashFromValues() {
-		RubyHash hash = SyncUtil.createHash();
-		hash.add(SyncUtil.createString("source_id"), SyncUtil
-				.createInteger((long) this.getSourceId()));
-		hash.add(SyncUtil.createString("attrib"), SyncUtil
-				.createString(this.getAttrib()));
-		hash.add(SyncUtil.createString("object"), SyncUtil
-				.createString(this.getObject()));
-		hash.add(SyncUtil.createString("value"), SyncUtil
-				.createString(this.getValue()));
-		hash.add(SyncUtil.createString("update_type"), SyncUtil
-				.createString(this.getUpdateType()));
-		return hash;
-	}
-
+	
 	/**
 	 * Gets the object.
 	 * 
@@ -261,5 +277,13 @@ public class SyncObject {
 	 */
 	public void setValue(String value) {
 		this._value = value;
+	}
+
+	public String getDbOperation() {
+		return _db_operation;
+	}
+
+	public void setDbOperation(String _db_operation) {
+		this._db_operation = _db_operation;
 	}
 }

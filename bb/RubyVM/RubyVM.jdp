@@ -252,6 +252,7 @@ src2\com\rho\sync\SyncOperation.java
 src2\com\rho\sync\SyncSource.java
 src2\com\rho\sync\SyncThread.java
 src2\com\rho\sync\SyncUtil.java
+src2\com\rho\sync\Tokenizer.java
 src2\com\xruby\GeneratedMethods\ObjectSpace_Methods.java
 src2\com\xruby\GeneratedMethods\RubyArray_Methods.java
 src2\com\xruby\GeneratedMethods\RubyBignum_Methods.java
