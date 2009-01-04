@@ -492,7 +492,7 @@ public class SyncUtil {
 					cookie.strAuth += ";" + s1 + "=" + s2;
 				else if (bSession)
 					cookie.strSession += ";" + s1 + "=" + s2;
-			}else if ( s1.equalsIgnoreCase("_rhosync_session") && s2.length() > 0 ){
+			}else if ( s1.equalsIgnoreCase("rhosync_session") && s2.length() > 0 ){
 				cookie.strSession = s1 + "=" + s2;
 				bSession = true;
 			}
