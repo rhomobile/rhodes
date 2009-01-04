@@ -182,3 +182,8 @@ char *get_session() {
 	printf("Using session %s...\n",session);
 	return session == NULL ? "" : session;
 }
+
+/* stub this since it is not used */
+char* get_session_from_login(char* url, char* login, char* password) {
+	return NULL;
+}
