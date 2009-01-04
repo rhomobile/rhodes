@@ -63,11 +63,16 @@ public:
 
 	void SetVerbose(TBool aVerbose);
 	TBool Verbose() const { return iVerbose; }
+	
+	void SetUsingFile(TBool aUsingFile) { iUsingFile = aUsingFile; } 
+	
 	//
 	// methods from MHTTPTransactionCallback
 	//
 	virtual void MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent& aEvent);
 	virtual TInt MHFRunError(TInt aError, RHTTPTransaction aTransaction, const THTTPEvent& aEvent);
+	
+	char* GetResponse();
 
 protected:
 	//get file name for response body
@@ -93,7 +98,6 @@ private: //data
 	TBool iVerbose;
 
 	TBool iSavingResponseBody;
-	TPtrC8 iBodyData;
 	MHTTPDataSupplier* iRespBody;
 
 	TFileName iRespBodyFileName;
@@ -104,6 +108,12 @@ private: //data
 	TFileName iRespBodyFilePath;
 	
 	CHttpFileManager* iHttpFileManager;
+	
+	TBool iUsingFile;
+	
+	TPtr8 iResBodyBufferPtr;
+	HBufC8* iResBodyBuffer;
+	TInt iCurPos;
 	};
 
 #endif // HTTPEVENTHANDLER_H

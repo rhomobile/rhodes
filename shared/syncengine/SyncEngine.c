@@ -25,6 +25,7 @@
 #include "SyncEngine.h"
 #include "SyncUtil.h"
 #include "SyncManagerI.h"
+#include "Constants.h"
 
 int stop_running = 0;
 int delay_sync = 0;
@@ -216,6 +217,65 @@ void shutdown_database() {
 	sqlite3_close(database);
 	printf("Sync engine is shutdown...\n");
 }
+
+/**
+ * login to rhosync server (default implementation)
+ * If succeeded stores session into the database
+ * 
+ * @param login
+ * @param password
+ * @return 1 - succeeded, 0 - failed
+ */
+int db_login ( char* login, char* password )
+{
+	int retval = 0;
+	int i,available,source_length;
+	pSource *source_list;
+	
+	if ( login )
+	{
+		//get login url
+		pthread_mutex_lock(&sync_mutex);
+	
+		source_list = malloc(MAX_SOURCES*sizeof(pSource));
+		
+		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+		
+		/* iterate over each source id and get session */
+		for(i = 0; i < source_length; i++) 
+		{
+			char login_url[1024] = {0};
+			char* session = 0;
+			char* test_session = "Cookie=auth_token=37c3ea34eb355ea09c1d42f6eed2498347db168f;path=/;_rhosync_session=BAh7BzoMdXNlcl9pZGkGIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--6142a37e81b7cf1fb21fe219ecf2d51cf2e4f379;path=/;";
+			
+			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
+			
+			//fetch session from server
+			session = get_session_from_login(login_url, login, password);
+		
+			//save session to the sources database
+			if ( session != NULL && strlen(session) > 0 )
+			{
+				retval = set_db_session( source_list[i]->_source_url, session );
+			}
+			
+			if ( session )
+				free(session);
+		}
+		
+		free_source_list(source_list, source_length);
+		
+		pthread_mutex_unlock(&sync_mutex);
+	}
+	else
+	{
+		printf("Unable to login: 'login' parameter is not specified.\n");
+	}
+	
+	return retval;
+}
+
+
 #else
 void start_sync_engine(sqlite3 *db) {	
 	database = db;

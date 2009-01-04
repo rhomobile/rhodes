@@ -37,8 +37,10 @@ _LIT(KHttpClientTestName, "RhoHttpClient");
 
 
 CHttpEventHandler::CHttpEventHandler()
+	: iResBodyBufferPtr(0,0), iResBodyBuffer(NULL)
 	{
 	iVerbose = EFalse;
+	iUsingFile = EFalse;
 	}
 
 CHttpEventHandler::~CHttpEventHandler()
@@ -131,27 +133,43 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 
 			if (iSavingResponseBody) // If we're saving, then open a file handle for the new file
 			{
-				iHttpFileManager->GetNewFile(iRespBodyFilePath, iRespBodyFileName, EFalse);
-				
-				// Check it exists and open a file handle
-				TInt valid = iFileServ.IsValidName(iRespBodyFilePath);
-				if (!valid)
+				if ( iUsingFile )
 				{
-					if (iVerbose)
-						iTest->Console()->Printf(_L("The specified filename is not valid!.\n"));
+					iHttpFileManager->GetNewFile(iRespBodyFilePath, iRespBodyFileName, EFalse);
 					
-					iSavingResponseBody = EFalse;
+					// Check it exists and open a file handle
+					TInt valid = iFileServ.IsValidName(iRespBodyFilePath);
+					if (!valid)
+					{
+						if (iVerbose)
+							iTest->Console()->Printf(_L("The specified filename is not valid!.\n"));
+						
+						iSavingResponseBody = EFalse;
+					}
+					else
+					{
+						TInt err = iRespBodyFile.Create(iFileServ,
+													  iRespBodyFilePath,
+													  EFileWrite|EFileShareExclusive);
+						if (err)
+						{
+							iSavingResponseBody = EFalse;
+							User::Leave(err);
+						}
+					}
 				}
 				else
 				{
-					TInt err = iRespBodyFile.Create(iFileServ,
-												  iRespBodyFilePath,
-												  EFileWrite|EFileShareExclusive);
-					if (err)
-					{
-						iSavingResponseBody = EFalse;
-						User::Leave(err);
-					}
+					TInt dataSize = resp.Body()->OverallDataSize();
+					
+					if ( iResBodyBuffer )
+						delete iResBodyBuffer;
+					
+					iResBodyBuffer = NULL;
+					iResBodyBuffer = HBufC8::NewMaxL(dataSize);
+					iResBodyBufferPtr.Set(iResBodyBuffer->Des());
+					
+					iCurPos = 0;
 				}
 			}
 
@@ -170,12 +188,21 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 			{
 				TPtrC8 bodyData;
 				TBool lastChunk = iRespBody->GetNextDataPart(bodyData);
-				iRespBodyFile.Write(bodyData);
-				if (lastChunk)
+								
+				if ( iUsingFile )
 				{
-					iRespBodyFile.Flush();
-					iRespBodyFile.Rename(iRespBodyFileName);
-					iRespBodyFile.Close();
+					iRespBodyFile.Write(bodyData);
+					if (lastChunk)
+					{
+						iRespBodyFile.Flush();
+						iRespBodyFile.Rename(iRespBodyFileName);
+						iRespBodyFile.Close();
+					}
+				}
+				else
+				{
+					Mem::Copy((void*)(iResBodyBuffer->Ptr()+iCurPos), (void*)bodyData.Ptr(), bodyData.Size());
+					iCurPos += bodyData.Size();
 				}
 			}
 
@@ -380,3 +407,22 @@ void CHttpEventHandler::DumpIt(const TDesC8& aData)
 		}
 	}
 
+char* CHttpEventHandler::GetResponse()
+{
+	char* str = NULL;
+	
+	if ( iResBodyBuffer && iResBodyBufferPtr.Length() > 0 )
+	{
+		TInt size = iResBodyBufferPtr.Length();
+		str = new char[size + 1];
+	    Mem::Copy(str, iResBodyBuffer->Ptr(), size);
+	    str[size] = '\0';
+	}
+	
+	if ( iResBodyBuffer )
+		delete iResBodyBuffer;
+	
+	iResBodyBuffer = NULL;
+	
+	return str;
+}

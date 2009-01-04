@@ -38,13 +38,16 @@ _LIT8(KAccept, "*/*");
 
 _LIT(KHttpClientPanic, "HTTP-EC");
 
+const TDesC8& my_cookie_name=_L8("Cookie");
+
 //Uid for singleton
 //const TInt KUidHttpClient = 12334534;
 
 CHttpClient::CHttpClient()
 	: /*CCoeStatic( TUid::Uid(KUidHttpClient) ),*/ 
-	iReqBodySubmitBufferPtr(0,0), iUriPtr(0,0), iUri(NULL), iReqBodySubmitBuffer(NULL)
+	iReqBodySubmitBufferPtr(0,0), iUriPtr(0,0), iUri(NULL), iReqBodySubmitBuffer(NULL), iCookie(NULL)
 	{
+	iDataChunkCount = 0;
 	}
 
 CHttpClient::~CHttpClient()
@@ -111,7 +114,45 @@ void CHttpClient::ConstructL()
 		iTransObs = CHttpEventHandler::NewL();
 		
 		iHttpFileManager = CHttpFileManager::NewL();
+		
+		iNotUsingFile = EFalse;
 	}
+
+void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize)
+{
+	iNotUsingFile = ETrue;
+	
+	if( iUri )
+		delete iUri;
+	
+	iUri = NULL;
+	iUri = HBufC8::NewMaxL(aUrlSize+1);
+						
+	Mem::Fill((void*)iUri->Ptr(), aUrlSize+1, 0);
+	Mem::Copy((void*)iUri->Ptr(), (void*)aUrl, aUrlSize);
+	
+	iUriPtr.Set(iUri->Des());
+		
+	if ( aBody )
+	{
+		if ( iReqBodySubmitBuffer )
+			delete iReqBodySubmitBuffer;
+		
+		iReqBodySubmitBuffer = NULL;
+		iReqBodySubmitBuffer = HBufC8::NewMaxL(aBodySize);
+		
+		Mem::Fill((void*)iReqBodySubmitBuffer->Ptr(), aBodySize, 0);
+		Mem::Copy((void*)iReqBodySubmitBuffer->Ptr(), (void*)aBody, aBodySize);
+			
+		iReqBodySubmitBufferPtr.Set(iReqBodySubmitBuffer->Des());
+	}
+	
+	iTransObs->SetUsingFile(EFalse); 
+	
+	InvokeHttpMethodL(aCommand);
+	
+	iTransObs->SetUsingFile(ETrue); //enable by default
+}
 
 //Invoke http method
 void CHttpClient::InvokeHttpMethodL(TInt aCommand)
@@ -139,6 +180,7 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 						}
 				
 				//read body and url
+				if ( !iNotUsingFile )
 				GetRequestBodyL();
 				
 				TInt realSize = 0;
@@ -161,6 +203,9 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 				SetHeaderL(hdr, HTTP::EUserAgent, KUserAgent);
 				SetHeaderL(hdr, HTTP::EAccept, KAccept);
 		
+				if ( iCookie )
+					WriteCookie(hdr);
+				
 				// Add headers and body data for methods that use request bodies
 				if (iHasARequestBody)
 					{
@@ -184,16 +229,23 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 				CActiveScheduler::Start();
 
 				//close and delete request file
-				iReqBodyFile.Close();
-				iFileServ.Delete(iReqBodyFilePath);
+				if ( !iNotUsingFile )
+				{
+					iReqBodyFile.Close();
+					iFileServ.Delete(iReqBodyFilePath);
+				}
 			}	
 	}
 
 TBool CHttpClient::GetNextDataPart(TPtrC8& aDataPart)
 	{
 	__ASSERT_DEBUG(iReqBodySubmitBuffer, User::Panic(KHttpClientPanic, EReqBodySumitBufferNotAllocated));
-	// Read from the request body file
+	
 	TBool retVal = EFalse;
+			
+	if ( !iNotUsingFile )
+	{
+		// Read from the request body file
 	TInt err = iReqBodyFile.Read(iReqBodySubmitBufferPtr);
 	if (err == KErrNone)
 		{
@@ -201,29 +253,49 @@ TBool CHttpClient::GetNextDataPart(TPtrC8& aDataPart)
 		++iDataChunkCount;
 		retVal = (iReqBodySubmitBufferPtr.Length() == 0);
 		}
+	}
+	else
+	{
+		//read from memory
+		
+		aDataPart.Set(iReqBodySubmitBufferPtr);
+	
+		++iDataChunkCount;
+		retVal = ETrue;
+	}
 	return retVal;
 	}
 
 void CHttpClient::ReleaseData()
 	{
+	iDataChunkCount = 0;
 	// Clear out the submit buffer
 	TPtr8 buff = iReqBodySubmitBuffer->Des();
 	buff.Zero();
-	// Notify HTTP of more data available immediately, since it's being read from file
-	TRAPD(err, iTrans.NotifyNewRequestBodyPartL());
 	
-	if (err != KErrNone)
-		User::Panic(KHttpClientPanic, KCouldntNotifyBodyDataPart);
+	// Notify HTTP of more data available immediately, since it's being read from file
+	//TRAPD(err, iTrans.NotifyNewRequestBodyPartL());
+	
+	//if (err != KErrNone)
+	//	User::Panic(KHttpClientPanic, KCouldntNotifyBodyDataPart);
 	
 }	
 
 TInt CHttpClient::OverallDataSize()
 	{
 	TInt size = 0;
-	TInt err = iReqBodyFile.Size(size);
+
+	if ( !iNotUsingFile )
+	{
+	TInt err = iReqBodyFile.Size(size);	
 	if (err < 0)
 		User::Panic(KHttpClientPanic,KBodyWithInvalidSize);
-
+	}
+	else
+	{
+		if ( iReqBodySubmitBuffer )
+			size = iReqBodySubmitBuffer->Length();
+	}
 	return size;
 	}
 
@@ -305,3 +377,46 @@ void CHttpClient::GetRequestBodyL()
 			
 		}
 	}
+
+char* CHttpClient::GetResponse()
+{
+	return iTransObs->GetResponse();
+}
+
+void CHttpClient::SetCookie( char* cookie, TInt size )
+{
+	if( iCookie )
+		delete iCookie;
+	
+	iCookie = NULL;
+	
+	if ( cookie && size > 0 )
+	{
+		iCookie = HBufC8::NewMaxL(size+1);
+							
+		Mem::Fill((void*)iCookie->Ptr(), size+1, 0);
+		Mem::Copy((void*)iCookie->Ptr(), (void*)cookie, size);
+	}
+}
+void CHttpClient::WriteCookie(RHTTPHeaders headers)
+{
+	RStringPool string_pool = iConnectionManager->GetHTTPSession().StringPool();
+	
+	RStringF cookie_rsf = string_pool.StringF(HTTP::ECookie,RHTTPSession::GetTable());
+	THTTPHdrVal field_value;
+	field_value.SetStrF (cookie_rsf);
+	headers.SetFieldL(cookie_rsf, field_value);
+	
+	THTTPHdrVal cookie_hdr;
+	RStringF cookie_name_rsf = string_pool.StringF(HTTP::ECookieName,RHTTPSession::GetTable());
+	
+	RString name = string_pool.OpenStringL (my_cookie_name);
+	cookie_hdr.SetStr (name);
+	headers.SetParamL (cookie_rsf, cookie_name_rsf, cookie_hdr, 0);
+	name.Close();
+	RStringF cookie_value_rsf = string_pool.StringF(HTTP::ECookieValue,RHTTPSession::GetTable());
+	RString value = string_pool.OpenStringL (iCookie->Des());
+	cookie_hdr.SetStr (value);
+	headers.SetParamL (cookie_rsf, cookie_value_rsf, cookie_hdr, 0);
+	value.Close();
+}
