@@ -1,4 +1,5 @@
 #include "../stdafx.h"
+#include "ext/phonebook/phonebook.h" 
 #include "NativeAddressBook.h"
 
 #define INITGUID
@@ -55,70 +56,93 @@ int CABOutlookRecord::load() {
 		if(SUCCEEDED(m_pContact->get_Oid(&oid) ) ) {
 			char buf[128];
 			sprintf(buf,"{outlook %ld}",oid);
-			setValue("id",buf);
+			setValue(RUBY_PB_ID,buf);
 		}
+
 		BSTR pwsz = NULL;
 		if(SUCCEEDED(m_pContact->get_MobileTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
 				LPCSTR number = bstr2str(pwsz);
-				setValue("mobile_number",number);
-				setValue("sms_number",number);
+				setValue(RUBY_PB_MOBILE_NUMBER,number);
 			}
-			::SysFreeString( pwsz);		
+			::SysFreeString( pwsz);
 		}
 		
 		if(SUCCEEDED(m_pContact->get_HomeTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue("home_number",bstr2str(pwsz));
+				setValue(RUBY_PB_HOME_NUMBER,bstr2str(pwsz));
 			}
 			::SysFreeString( pwsz);
 		}	
 		
 		if(SUCCEEDED(m_pContact->get_BusinessTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue("work_number",bstr2str(pwsz));
+				setValue(RUBY_PB_BUSINESS_NUMBER,bstr2str(pwsz));
 			}
 			::SysFreeString( pwsz);
 		}
 
 		if(SUCCEEDED(m_pContact->get_FirstName(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue("first_name",bstr2str(pwsz));
+				setValue(RUBY_PB_FIRST_NAME,bstr2str(pwsz));
 			}
 			::SysFreeString(pwsz);
 		}
 
 		if(SUCCEEDED(m_pContact->get_LastName(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue("last_name",bstr2str(pwsz));
+				setValue(RUBY_PB_LAST_NAME,bstr2str(pwsz));
 			}
 			::SysFreeString(pwsz);
 		}
+
+		if(SUCCEEDED(m_pContact->get_CompanyName(&pwsz) ) ) {
+			if(pwsz[0]!=0) {
+				setValue(RUBY_PB_COMPANY_NAME,bstr2str(pwsz));
+			}
+			::SysFreeString(pwsz);
+		}
+		
+		if(SUCCEEDED(m_pContact->get_Email1Address(&pwsz) ) ) {
+			if(pwsz[0]!=0) {
+				setValue(RUBY_PB_EMAIL_ADDRESS,bstr2str(pwsz));
+			}
+			::SysFreeString(pwsz);
+		}
+
 	}
 	return 1;
 }
 
 void CABOutlookRecord::saveValues() {
-	const char* value = getValue("mobile_number").c_str();
+	const char* value = getValue(RUBY_PB_MOBILE_NUMBER).c_str();
 	if (value!=NULL) {
 		m_pContact->put_MobileTelephoneNumber(_bstr_t(value));
 	}
-	value = getValue("home_number").c_str();
+	value = getValue(RUBY_PB_HOME_NUMBER).c_str();
 	if (value!=NULL) {
 		m_pContact->put_HomeTelephoneNumber(_bstr_t(value));
 	}
-	value = getValue("work_number").c_str();
+	value = getValue(RUBY_PB_BUSINESS_NUMBER).c_str();
 	if (value!=NULL) {
 		m_pContact->put_BusinessTelephoneNumber(_bstr_t(value));
 	}
 
-	value = getValue("first_name").c_str();
+	value = getValue(RUBY_PB_FIRST_NAME).c_str();
 	if (value!=NULL) {
 		m_pContact->put_FirstName(_bstr_t(value));
 	}
-	value = getValue("last_name").c_str();
+	value = getValue(RUBY_PB_LAST_NAME).c_str();
 	if (value!=NULL) {
 		m_pContact->put_LastName(_bstr_t(value));
+	}
+	value = getValue(RUBY_PB_COMPANY_NAME).c_str();
+	if (value!=NULL) {
+		m_pContact->put_CompanyName(_bstr_t(value));
+	}
+	value = getValue(RUBY_PB_EMAIL_ADDRESS).c_str();
+	if (value!=NULL) {
+		m_pContact->put_Email1Address(_bstr_t(value));
 	}
 }
 
@@ -270,7 +294,6 @@ int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records) {
 			pRecord = new CABOutlookRecord(pContact);
 			if(pRecord) {
 				pRecord->load();
-				pRecord->dump();
 				records.push_back(pRecord);
 			} else {
 				pContact->Release();
@@ -290,7 +313,6 @@ CABRecord* CNativeAddressBook::getOutlookRecord(long oid) {
 				pRecord = new CABOutlookRecord(pContact);
 				if(pRecord) {
 					pRecord->load();
-					pRecord->dump();
 					return pRecord;
 				} else {
 					pContact->Release();

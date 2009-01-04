@@ -8,6 +8,7 @@
  */
 
 #include "rhoruby.h"
+#include "ruby/ext/phonebook/phonebook.h"
 #include "phonebook.h"
 
 static int _getProperty(char* property);
@@ -55,6 +56,53 @@ static void _getAllPeople(LocalPhonebook* phonebook) {
 	}
 }
 
+static void _addPropertyToHash(VALUE hash, const char* key, CFStringRef property) {
+	if (property) {
+		char buf[256];
+		snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(property, CFStringGetSystemEncoding()));
+		addStrToHash(hash, key, buf, strlen(buf));
+		CFRelease(property);
+	}
+}
+
+static void _addPhonesToHash(VALUE hash,ABRecordRef ref) {
+	ABMultiValueRef phones = ABRecordCopyValue(ref,kABPersonPhoneProperty);
+	if (phones) {
+		int num_phones = ABMultiValueGetCount(phones);
+		for (int n = 0; n < num_phones; n++) {
+			CFStringRef label = ABMultiValueCopyLabelAtIndex(phones,n);
+			if(CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_BUSINESS_NUMBER,
+					ABMultiValueCopyValueAtIndex(phones,n));
+			} else if(CFStringCompare(label,kABHomeLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_HOME_NUMBER,
+								ABMultiValueCopyValueAtIndex(phones,n));
+			} else if(CFStringCompare(label,kABPersonPhoneMobileLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_MOBILE_NUMBER,
+								ABMultiValueCopyValueAtIndex(phones,n));
+			} 
+			CFRelease(label);
+		}
+		CFRelease(phones);
+	}	
+}
+
+static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
+	ABMultiValueRef emails = ABRecordCopyValue(ref,kABPersonEmailProperty);
+	if (emails) {
+		int num_phones = ABMultiValueGetCount(emails);
+		for (int n = 0; n < num_phones; n++) {
+			CFStringRef label = ABMultiValueCopyLabelAtIndex(emails,n);
+			if(CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_EMAIL_ADDRESS,
+								   ABMultiValueCopyValueAtIndex(emails,n));
+			}
+			CFRelease(label);
+		}
+		CFRelease(emails);
+	}	
+}
+
 static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	char buf[256];
 
@@ -64,18 +112,22 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	if (precordId) {
 		*precordId = recordId;
 	}
-	CFStringRef firstName = ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-	CFStringRef lastName = ABRecordCopyValue(ref, kABPersonLastNameProperty);
-	
+			
 	snprintf(buf, sizeof(buf), "{%d}", recordId);
-	addStrToHash(hash, "id", buf, strlen(buf));
-	snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(firstName, CFStringGetSystemEncoding()));
-	addStrToHash(hash, "first_name", buf, strlen(buf));
-	snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(lastName, CFStringGetSystemEncoding()));
-	addStrToHash(hash, "last_name", buf, strlen(buf));
+	addStrToHash(hash, RUBY_PB_ID, buf, strlen(buf));
 	
-	CFRelease(firstName);
-	CFRelease(lastName);
+	_addPropertyToHash(hash, RUBY_PB_FIRST_NAME, 
+		ABRecordCopyValue(ref, kABPersonFirstNameProperty));
+
+	_addPropertyToHash(hash, RUBY_PB_LAST_NAME, 
+					   ABRecordCopyValue(ref, kABPersonLastNameProperty));
+	
+	_addPropertyToHash(hash, RUBY_PB_COMPANY_NAME, 
+					   ABRecordCopyValue(ref, kABPersonOrganizationProperty));
+	
+	_addPhonesToHash(hash,ref);
+	
+	_addEmailToHash(hash,ref);
 	
 	return hash;
 }
@@ -163,6 +215,56 @@ void* openPhonebookRecord(void* pb, char* id) {
 	return NULL;		
 }
 
+static CFStringRef _getPhoneLabel(const char* property) {
+	if (strcmp(RUBY_PB_BUSINESS_NUMBER,property)==0) {
+		return kABWorkLabel;
+	} else if (strcmp(RUBY_PB_HOME_NUMBER, property)==0) {
+		return kABHomeLabel;
+	} if (strcmp(RUBY_PB_MOBILE_NUMBER, property)==0) {
+		return kABPersonPhoneMobileLabel;
+	}	
+	return NULL;
+}
+
+static CFStringRef _getEmailLabel(const char* property) {
+	if (strcmp(RUBY_PB_EMAIL_ADDRESS,property)==0) {
+		return kABWorkLabel;
+	} 
+	return NULL;
+}
+
+static boolean_t _replaceProperty(ABMutableMultiValueRef mv, CFStringRef label, CFStringRef value, int index) {
+	CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,index);
+	boolean_t found = CFStringCompare(lbl,label,0)==kCFCompareEqualTo;
+	if (found) {
+		ABMultiValueReplaceValueAtIndex(mv, value, index);
+	} 
+	CFRelease(lbl);
+	return found;
+}
+
+static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, const char* value) {
+	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+	ABMutableMultiValueRef mv = ABRecordCopyValue(record,propId);
+	if (!mv) {
+		mv = ABMultiValueCreateMutable(kABMultiStringPropertyType); 
+		ABMultiValueAddValueAndLabel(mv,v,label,nil);
+	} else {
+		boolean_t replaced = FALSE;
+		int num_phones = ABMultiValueGetCount(mv);
+		for (int n = 0; n < num_phones; n++) {
+			replaced = _replaceProperty(mv,label,v,n);
+			if (replaced) break;
+		}
+		if (!replaced) {
+			ABMultiValueAddValueAndLabel(mv,v,label,nil);
+		}
+	}
+	ABRecordSetValue(record, propId, mv, nil);
+	CFRelease(mv);
+	CFRelease(v);	
+}
+
 int setRecordValue(void* record, char* property, char* value) {
 	if (record) {
 		int prop = _getProperty(property);
@@ -171,6 +273,16 @@ int setRecordValue(void* record, char* property, char* value) {
 												  CFStringGetSystemEncoding());
 			ABRecordSetValue(record, prop, v, nil);
 			CFRelease(v);
+		} else {
+			CFStringRef label = _getPhoneLabel(property);
+			if (label) {
+				_updateMultiValueProperty(record,kABPersonPhoneProperty,label,value);
+			} else {
+				label = _getEmailLabel(property);
+				if (label) {
+					_updateMultiValueProperty(record,kABPersonEmailProperty,label,value);
+				}
+			}
 		}
 	}
 	return 1;
@@ -205,13 +317,14 @@ int deleteRecord(void* pb, void* record) {
 
 //==================================================================================
 
-enum {pbUnknown=0,pbFirstName,pbLastName};
+enum {pbUnknown=0,pbFirstName,pbLastName,pbCompanyName};
 static const struct {
 	const char* _name;
 	const int  _value;
 } pbp[] = {
-{ "first_name", pbFirstName },
-{ "last_name", pbLastName },
+{ RUBY_PB_FIRST_NAME, pbFirstName },
+{ RUBY_PB_LAST_NAME, pbLastName },
+{ RUBY_PB_COMPANY_NAME, pbCompanyName },
 { NULL, 0 }
 };
 
@@ -228,6 +341,8 @@ static int _getProperty(char* property) {
 			return kABPersonFirstNameProperty;
 		case pbLastName:
 			return kABPersonLastNameProperty;
+		case pbCompanyName:
+			return kABPersonOrganizationProperty;
 	}
 	return -1;
 }
