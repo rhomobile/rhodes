@@ -179,6 +179,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
+    set_db_client_id(database,c_id);
 	}
 	sqlite3_reset(client_id_statement);
 	return c_id;
