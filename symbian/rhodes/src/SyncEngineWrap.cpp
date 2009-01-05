@@ -51,8 +51,8 @@ extern "C"
 		
 		const char* RhoGetRootPath();
 		
-		int login ( char* login, char* password );
-		int db_login ( char* login, char* password );
+		int login ( const char* login, const char* password );
+//		int db_login ( const char* login, const char* password );
 		
 		void parse_source_url(char* url, char* source, int size);
 		
@@ -246,22 +246,67 @@ extern "C"
 		
 		return retval;
 	}
-	
-	int login ( char* login, char* password )
-	{
-		return db_login(login, password);
-	}
-	
-	char* get_session_from_login(char* url, char* login, char* password)
-	{
-		char data[100];
-		sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+/*	
+void parseCookie(const char* szCookie, char* session ){
+  char* szPathPos = 0;
+  char* szPathEnd = 0;
 
+  while( *szCookie == ' ' ) szCookie++;
+
+  szPathPos = strstr(szCookie, "path=");
+  if ( szPathPos )
+    szPathEnd = strchr( szPathPos, ';' );
+
+  if ( strncmp(szCookie,"auth_token=", strlen("auth_token=")) == 0 )
+  {
+    char* szEndAuth = strchr( szCookie, ';' );
+    if ( szEndAuth-szCookie > strlen("auth_token=")+1 )
+      strncat(session, szCookie, szPathEnd-szCookie+1 );
+  }else if ( strncmp(szCookie,"rhosync_session=", strlen("rhosync_session=")) == 0 ){
+      strncat(session, szCookie, szPathEnd-szCookie+1 );
+  }
+}
+
+char* parseHeadersForSession(const char* szHeaders){
+  const char* szHeader = szHeaders;
+  char * session = malloc(1024);
+  session[0] = 0;
+  while( szHeader && *szHeader ){
+    if ( strncmp(szHeader,"Set-Cookie:", strlen("Set-Cookie:")) == 0 )
+      parseCookie(szHeader+strlen("Set-Cookie:"),session);
+
+    szHeader = szHeader + strlen(szHeader) + 1;
+  }
+
+  return session;
+}
+*/
+
+  void makeLoginRequest(char* url, char* data ){
 		if (!gHttpClient) 
 			gHttpClient = CHttpClient::NewL();
 
 		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, strlen(data));
-				
-		return gHttpClient->GetResponse();
-	}
+
+    /*gHttpClient->GetResponse();
+      headers = get_session_from_login(login_url,data);
+      if ( headers )
+        session = parseHeadersForSession(headers);
+
+			//save session to the sources database
+			if ( session != NULL && strlen(session) > 0 )
+			{
+        printf("Session from login(%s): %s.\n", login_url, session);
+				retval = set_db_session( source_list[i]->_source_url, session );
+			}
+
+			if ( headers )
+				free(headers);
+
+			if ( session )
+				free(session);
+
+    */
+  }
+
 }

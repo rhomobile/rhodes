@@ -15,6 +15,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "SyncManagerI.h"
 
 void lock_sync_mutex() {
   CSyncEngine* sync = CSyncEngine::Instance();
@@ -35,6 +36,10 @@ void start_sync() {
   CSyncEngine* sync = CSyncEngine::Instance();
   if (sync) sync->StartSync();
 }
+
+/*int login(const char*arg1, const char* arg2){
+  return db_login(arg1, arg2);
+}*/
 
 #ifdef __cplusplus
 } //extern "C" {
@@ -193,10 +198,10 @@ void ErrorMessage(LPTSTR pszFunction)
 { 
     // Retrieve the system error message for the last-error code
 
-    LPTSTR pszMessage;
+    LPTSTR pszMessage = NULL;
     DWORD dwLastError = GetLastError(); 
 
-    FormatMessage(
+    DWORD dwRes = FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -207,10 +212,12 @@ void ErrorMessage(LPTSTR pszFunction)
         0, NULL );
 
     // Display the error message and exit the process
-
-    wprintf(L"%s failed with error %d: %s\n", pszFunction, dwLastError, pszMessage);
-
-    LocalFree(pszMessage);
+    if ( dwRes == 0 )
+      wprintf(L"%s failed with error %d\n", pszFunction, dwLastError);
+    else{
+      wprintf(L"%s failed with error %d: %s\n", pszFunction, dwLastError, pszMessage);
+      LocalFree(pszMessage);
+    }
 }
 
 HANDLE hConnection = NULL;
@@ -320,7 +327,7 @@ void free_url_components(URL_COMPONENTS *uri) {
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
-char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
+char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders) {
   char       *cstr = NULL;
   std::string data = "";
   char        sBuf[1024];
@@ -375,7 +382,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
     wsprintf((LPWSTR)sBuf,L"%s%s",uri.lpszUrlPath,uri.lpszExtraInfo);
     hRequest = HttpOpenRequest( hConnection, verb, 
       (LPWSTR)sBuf, NULL, NULL, NULL, 
-      INTERNET_FLAG_KEEP_CONNECTION, NULL );
+      INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE, NULL );
     if ( !hRequest ) {
       pszFunction = L"HttpOpenRequest";
       free_url_components(&uri);
@@ -398,14 +405,25 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
       }
 
       if ( bOk ){
-      BOOL bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
-      while (bRead && (dwBytesRead > 0)) {
-        data.append(sBuf, dwBytesRead);
-        bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
-      }
-      //make a copy of recieved data
-      cstr = new char [data.size()+1];
-      strcpy (cstr, data.c_str());
+        if ( bGetHeaders ){
+          DWORD dwSize = 0;
+	        HttpQueryInfo(hRequest, HTTP_QUERY_RAW_HEADERS, NULL, &dwSize, NULL);
+	        if( dwSize != 0 )
+	        {
+		        cstr = new char [dwSize+1];
+		        // Call HttpQueryInfo again to get the headers.
+		        bOk = HttpQueryInfoA(hRequest, HTTP_QUERY_RAW_HEADERS, (LPVOID) cstr, &dwSize, NULL);
+          }
+        }else{
+          BOOL bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
+          while (bRead && (dwBytesRead > 0)) {
+            data.append(sBuf, dwBytesRead);
+            bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
+          }
+          //make a copy of recieved data
+          cstr = new char [data.size()+1];
+          strcpy (cstr, data.c_str());
+        }
       }
     } else {
       pszFunction = L"HttpOpenRequest";
@@ -426,9 +444,13 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size) {
 }
 
 char* fetch_remote_data(char* url) {
-  return remote_data(L"GET", url, NULL, 0);
+  return remote_data(L"GET", url, NULL, 0, false);
 }
 
 int push_remote_data(char* url, char* data, size_t data_size) {
-  return remote_data(L"POST", url, data, data_size)==NULL ? 1 : 0;
+  return remote_data(L"POST", url, data, data_size, false)==NULL ? 1 : 0;
+}
+
+void makeLoginRequest(char* url, char* data ){
+  remote_data(L"POST", url, data, strlen(data), false);
 }

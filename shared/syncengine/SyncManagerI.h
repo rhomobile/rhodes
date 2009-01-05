@@ -34,7 +34,7 @@ int login(const char *login, const char *password);
  * @param password
  * @return 1 - succeeded, 0 - failed
  */
-int db_login ( char* login, char* password );
+//int db_login ( const char* login, const char* password );
 
 /**
  * This callback is required be db_login (platform specific part)
@@ -44,4 +44,5 @@ int db_login ( char* login, char* password );
  * @param password
  * @return session
  */
-char* get_session_from_login(char* url, char* login, char* password);
+//char* get_session_from_login(char* url, char* data );//login, char* password);
+void makeLoginRequest(char* url, char* data );
