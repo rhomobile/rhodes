@@ -9,10 +9,12 @@ extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
 extern char *get_session();
 extern char *get_database();
+extern char *get_client_id();
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
+static sqlite3_stmt *client_id_insert_statement = NULL;
 static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
@@ -22,6 +24,7 @@ void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
 	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
 	if (client_id_statement) sqlite3_finalize(client_id_statement);
+	if (client_id_insert_statement) sqlite3_finalize(client_id_insert_statement);
 	if (client_session_statement) sqlite3_finalize(client_session_statement);
 	if (client_db_statement) sqlite3_finalize(client_db_statement);
 	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
@@ -63,10 +66,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				available = parse_json_list(list, json_string, size);
 				printf("Parsed %i records from sync source...\n", available);
 				if(available > 0) {
-					//delete_from_database_by_source(database, source_list[i]->_source_id);
 					for(j = 0; j < available; j++) {
 						list[j]->_database = database;
-						//insert_into_database(list[j]);
 						type = list[j]->_db_operation;
 						if (type) {
 							if(strcmp(type, "insert") == 0) {
@@ -161,14 +162,18 @@ int get_object_count_from_database(sqlite3 *database) {
 }
 
 /* setup client id from database, otherwise intialize from source */
-char *get_client_id(sqlite3 *database, pSource source) {
+char *set_client_id(sqlite3 *database, pSource source) {
 	char *json_string;
 	char url_string[4096];
 	char *c_id = NULL;
-	
-	c_id = get_client_db_info("client_id", database);
-	if (c_id == NULL) {
-		sqlite3_reset(client_id_statement);
+	prepare_db_statement("SELECT client_id from client_info limit 1",
+						 database,
+						 &client_id_statement);
+	sqlite3_step(client_id_statement);
+	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
+	if (c_id != NULL && strlen(c_id) > 0) {
+		printf("Using client_id %s from database...\n", c_id);
+	} else {
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
@@ -176,29 +181,14 @@ char *get_client_id(sqlite3 *database, pSource source) {
 		}
 		prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
 							 database,
-							 &client_id_statement);
-		sqlite3_bind_text(client_id_statement, 1, c_id, -1, SQLITE_TRANSIENT);
-		sqlite3_step(client_id_statement);
+							 &client_id_insert_statement);
+		sqlite3_bind_text(client_id_insert_statement, 1, c_id, -1, SQLITE_TRANSIENT);
+		sqlite3_step(client_id_insert_statement);
 		printf("Intialized new client_id %s from source...\n", c_id);
+		sqlite3_reset(client_id_insert_statement);
 	}
 	sqlite3_reset(client_id_statement);
 	return c_id;
-}
-
-char *get_client_db_info(char *field, sqlite3 *database) {
-	char *info = NULL;
-	prepare_db_statement("SELECT ? from client_info limit 1",
-						 database,
-						 &client_db_statement);
-	sqlite3_bind_text(client_db_statement, 1, field, -1, SQLITE_TRANSIENT);
-	sqlite3_step(client_db_statement);
-	
-	info = str_assign((char *)sqlite3_column_text(client_db_statement, 0));
-	if (info != NULL) {
-		printf("Using %s %s from database...\n", field, info);
-	} 
-	sqlite3_reset(client_db_statement);
-	return info;
 }
 
 void insert_sync_status(sqlite3 *database, const char *status) {
@@ -206,7 +196,7 @@ void insert_sync_status(sqlite3 *database, const char *status) {
 						 database,
 						 &sync_status_statement);
 	sqlite3_bind_text(sync_status_statement, 1, status, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(sync_status_statement, 2, get_client_db_info("client_id", database), -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(sync_status_statement, 2, (char *)get_client_id(), -1, SQLITE_TRANSIENT);
 	sqlite3_step(sync_status_statement); 
 	sqlite3_reset(sync_status_statement);
 }

@@ -34,7 +34,8 @@ pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
-sqlite3 *database;
+static sqlite3 *database;
+static char *client_id = NULL;
 
 int process_local_changes() {
   if (!stop_running) {
@@ -42,13 +43,12 @@ int process_local_changes() {
 	  int i,result,source_length;
 	  int max_size = 100;
 	  pSource *source_list;
-	  char *client_id = NULL;
 	  source_list = malloc(max_size*sizeof(pSource));
 	  source_length = get_sources_from_database(source_list, database, max_size);
 	  
 	  for(i = 0; i < source_length; i++) {
 		  if(client_id == NULL) {
-			  client_id = get_client_id(database, source_list[i]);  
+			  client_id = set_client_id(database, source_list[i]);  
 		  }
 		  result = 0;
 		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
@@ -68,10 +68,10 @@ int process_local_changes() {
 		  }
 	  }
 	  free_source_list(source_list, source_length);
+  } else {
 	  if (client_id) {
 		  free(client_id);  
 	  }
-  } else {
 	  shutdown_database();
   }
   return 0;
@@ -145,6 +145,10 @@ int process_op_list(pSource source, char *type) {
 
 sqlite3 *get_database() {
 	return database;
+}
+
+char *get_client_id() {
+	return client_id;
 }
 
 #if !defined(_WIN32_WCE)

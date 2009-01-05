@@ -63,9 +63,7 @@ pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key,
 pSyncObject SyncObjectCopy(pSyncObject new_object);
 int exists_in_database(pSyncObject ref);
 int insert_into_database(pSyncObject ref);
-//void update_into_database(pSyncObject ref);
 int delete_from_database(pSyncObject ref);
-int delete_from_database_by_source(sqlite3 *db, int source);
 void free_ob_list(pSyncObject *list, int available);
 	
 /* Free object */
