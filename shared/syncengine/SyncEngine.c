@@ -222,6 +222,15 @@ void shutdown_database() {
 	printf("Sync engine is shutdown...\n");
 }
 
+#else
+void start_sync_engine(sqlite3 *db) {	
+	database = db;
+}
+void shutdown_database() {
+}
+#endif //!defined(_WIN32_WCE)
+
+#ifndef __APPLE__
 /**
  * login to rhosync server (default implementation)
  * If succeeded stores session into the database
@@ -230,44 +239,36 @@ void shutdown_database() {
  * @param password
  * @return 1 - succeeded, 0 - failed
  */
-int db_login ( char* login, char* password )
+int login ( const char* login, const char* password )
 {
 	int retval = 0;
-	int i,source_length;
+	int i,available,source_length;
 	pSource *source_list;
 	
 	if ( login )
 	{
-		//get login url
-		pthread_mutex_lock(&sync_mutex);
-	
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
 		
 		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 		/* iterate over each source id and get session */
+    lock_sync_mutex();
 		for(i = 0; i < source_length; i++) 
 		{
 			char login_url[1024] = {0};
 			char* session = 0;
+      char* headers = 0;
+		  char data[100];
+
 			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
 			
 			//fetch session from server
-			session = get_session_from_login(login_url, login, password);
-		
-			//save session to the sources database
-			if ( session != NULL && strlen(session) > 0 )
-			{
-				retval = set_db_session( source_list[i]->_source_url, session );
-			}
-			
-			if ( session )
-				free(session);
+		  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+      makeLoginRequest( login_url, data );
 		}
-		
+		unlock_sync_mutex();
+
 		free_source_list(source_list, source_length);
-		
-		pthread_mutex_unlock(&sync_mutex);
 	}
 	else
 	{
@@ -277,11 +278,4 @@ int db_login ( char* login, char* password )
 	return retval;
 }
 
-
-#else
-void start_sync_engine(sqlite3 *db) {	
-	database = db;
-}
-void shutdown_database() {
-}
-#endif //!defined(_WIN32_WCE)
+#endif //__APPLE__
