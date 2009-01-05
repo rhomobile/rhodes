@@ -230,6 +230,14 @@ void shutdown_database() {
 }
 #endif //!defined(_WIN32_WCE)
 
+void clearClient_ID(){
+  if ( client_id )
+    free(client_id);
+  client_id = NULL;
+
+  set_db_client_id(database,"");
+}
+
 #ifndef __APPLE__
 /**
  * login to rhosync server (default implementation)
@@ -266,6 +274,7 @@ int login ( const char* login, const char* password )
 		  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
       makeLoginRequest( login_url, data );
 		}
+    clearClient_ID();
 		unlock_sync_mutex();
 
 		free_source_list(source_list, source_length);
