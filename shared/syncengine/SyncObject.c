@@ -136,29 +136,6 @@ int insert_into_database(pSyncObject ref) {
 	}
 }
 
-///* update the record in the database with a given SyncObject */
-//void update_into_database(pSyncObject ref) {
-//	int success;	
-//	prepare_db_statement("UPDATE object_values SET attrib=?, source_id=?, object=?, value=?, created_at=?, \
-//						 updated_at=?, update_type=? WHERE attrib=? and object=?",
-//						 ref->_database,
-//						 &update_statement);
-//	sqlite3_bind_text(update_statement, 1, ref->_attrib, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_int(update_statement, 2, ref->_source_id);
-//	sqlite3_bind_text(update_statement, 3, ref->_object, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 4, ref->_value, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 5, ref->_created_at, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 6, ref->_updated_at, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 7, ref->_update_type, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 8, ref->_attrib, -1, SQLITE_TRANSIENT);
-//	sqlite3_bind_text(update_statement, 9, ref->_object, -1, SQLITE_TRANSIENT);
-//	success = sqlite3_step(update_statement);
-//	if (success == SQLITE_ERROR) {
-//		printf("Error: failed to dehydrate with message '%s'.", sqlite3_errmsg(ref->_database));
-//	}
-//	sqlite3_reset(update_statement);
-//} 
-
 /* delete a specific set of object_values from the database */
 int delete_from_database(pSyncObject ref) {
     int success = 0;
@@ -173,23 +150,6 @@ int delete_from_database(pSyncObject ref) {
 		return 1;
 	}
 	sqlite3_reset(delete_statement);
-	return 0;
-}
-
-/* Remove all objects from database by a given source */
-int delete_from_database_by_source(sqlite3 *db, int source) {
-    int success = 0;
-	prepare_db_statement("DELETE FROM object_values where source_id=?",
-						 db,
-						 &delete_by_source_statement);
-	sqlite3_bind_int(delete_by_source_statement, 1, source);
-	success = sqlite3_step(delete_by_source_statement);
-	
-	if (success != SQLITE_DONE) {
-		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(db));
-		return 1;
-	}
-	sqlite3_reset(delete_by_source_statement);
 	return 0;
 }
 

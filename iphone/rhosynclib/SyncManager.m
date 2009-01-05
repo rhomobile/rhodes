@@ -82,6 +82,7 @@ int login(const char *login, const char *password) {
 	int i, source_length, cookie_size = 0;
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
+	pthread_mutex_lock(&sync_mutex);
 	for(i = 0; i < source_length; i++) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
@@ -123,6 +124,7 @@ int login(const char *login, const char *password) {
 			}
 		}
 	}
+	pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
 		[pool release];
 		return 0;
@@ -136,21 +138,22 @@ int login(const char *login, const char *password) {
  * Pushes changes from list to rhosync server
  */
 int push_remote_data(char* url, char* data, size_t data_size) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	if (data_size == 0 || data == NULL) {
+		[pool release];
 		return SYNC_PUSH_CHANGES_OK;
 	}
 	char *session = get_session();
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 	NSError *error = nil;
 	NSHTTPURLResponse *response;
 	NSString *linkString = [[NSString alloc] initWithUTF8String:url];
-	NSString *postBody = [[[NSString alloc] initWithUTF8String:data] autorelease];
+	NSString *postBody = [[NSString alloc] initWithUTF8String:data];
 	[request setURL:[NSURL URLWithString:linkString]];
 	[request setHTTPMethod:@"POST"];
 	if (strlen(session) > 0) {
-		[request setValue:[[[NSString alloc] initWithUTF8String:(char *)get_session()] autorelease] forHTTPHeaderField:@"Cookie"];
+		[request setValue:[[NSString alloc] initWithUTF8String:session] forHTTPHeaderField:@"Cookie"];
 	}
 	[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
 	NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
