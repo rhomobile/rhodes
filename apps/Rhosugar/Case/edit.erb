@@ -27,7 +27,7 @@
 			<label>Account Name: </label>
 			<select name="case[account_id]">
 				<%@accounts.each do |a|%>
-					<option value="<%=a.object%>" <%if @account.name==a.name%>
+					<option value="<%=a.id%>" <%if @account.name==a.name%>
 					selected<%end%>><%=a.name%></option>
 				<%end%>
 			</select>
@@ -35,17 +35,17 @@
 		<div class="row">
 			<label>Priority: </label>
 			<select name="case[priority]" value="<%=@case.priority%>">
-				<option
-                                    <%if @case.priority=="High"%>
-                                    selected
-                                    <%end%>
-                                >High</option>
-				<option
+				<option value="High"
+          <%if @case.priority=="High"%>
+          selected
+        <%end%>
+         >High</option>
+				<option value="Medium"
                                     <%if @case.priority=="Medium"%>
                                     selected
                                     <%end%>
                                 >Medium</option>
-				<option
+				<option value="Low"
                                     <%if @case.priority=="Low"%>
                                     selected
                                     <%end%>
