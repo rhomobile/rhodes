@@ -124,6 +124,7 @@ int login(const char *login, const char *password) {
 			}
 		}
 	}
+	clearClient_ID();
 	pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
 		[pool release];

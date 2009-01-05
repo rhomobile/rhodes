@@ -179,16 +179,19 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
-		prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
-							 database,
-							 &client_id_insert_statement);
-		sqlite3_bind_text(client_id_insert_statement, 1, c_id, -1, SQLITE_TRANSIENT);
-		sqlite3_step(client_id_insert_statement);
-		printf("Intialized new client_id %s from source...\n", c_id);
-		sqlite3_reset(client_id_insert_statement);
 	}
 	sqlite3_reset(client_id_statement);
 	return c_id;
+}
+
+void set_db_client_id( sqlite3 *database, char *c_id ){
+	prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
+						 database,
+						 &client_id_insert_statement);
+	sqlite3_bind_text(client_id_insert_statement, 1, c_id, -1, SQLITE_TRANSIENT);
+	sqlite3_step(client_id_insert_statement);
+	printf("Intialized new client_id %s from source...\n", c_id);
+	sqlite3_reset(client_id_insert_statement);
 }
 
 void insert_sync_status(sqlite3 *database, const char *status) {
