@@ -42,7 +42,7 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String fetchRemoteData(String url) throws IOException {
+	public static String fetchRemoteData(String url, String session) throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
 		HttpConnection connection = null;
@@ -52,6 +52,10 @@ public class SyncManager {
 			int ch = 0;
 			//connection = (HttpConnection) Connector.open(url);
 			connection = NetworkAccess.connect(url);
+			if ( session != null &&  session.length() > 0 )
+				connection.setRequestProperty("Cookie", session);
+			
+			String str = connection.getRequestProperty("Cookie");
 			is = connection.openInputStream();
 			len = connection.getLength();
 			code = connection.getResponseCode();
@@ -95,30 +99,19 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static int pushRemoteData(String url, String data)
+	public static int pushRemoteData(String url, String data, String session)
 			throws IOException {
-		// Performs a post to url with post body provided by data
-		OutputStream os = null;
 		HttpConnection connection = null;
-		int code = 0;
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		try {
-			//connection = (HttpConnection) Connector.open(url);
-			connection = NetworkAccess.connect(url);
-			os = connection.openOutputStream();
-			connection.setRequestMethod(HttpConnection.POST);
-			os.write(data.getBytes());
-			os.flush();
+			connection = makePostRequest(url,data,session);
 
-			code = connection.getResponseCode();
+			int code = connection.getResponseCode();
 			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}
 		} finally {
-			if (os != null) {
-				os.close();
-			}
 			if (connection != null) {
 				connection.close();
 			}
@@ -126,4 +119,25 @@ public class SyncManager {
 
 		return success;
 	}
+	
+	public static HttpConnection makePostRequest(String url, String data, String session)
+			throws IOException {
+		// Performs a post to url with post body provided by data
+		OutputStream os = null;
+		HttpConnection connection = null;
+		try {
+			connection = NetworkAccess.connect(url);
+			os = connection.openOutputStream();
+			connection.setRequestMethod(HttpConnection.POST);
+			os.write(data.getBytes());
+			os.flush();
+		} finally {
+			if (os != null) {
+				os.close();
+			}
+		}
+	
+		return connection;
+	}
+	
 }

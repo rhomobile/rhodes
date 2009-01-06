@@ -393,8 +393,11 @@ void CRhodesAppView::HandleControlEventL( CCoeControl* /*aControl*/,TCoeEvent /*
 TKeyResponse CRhodesAppView::HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType)
 {
 	if (iBrCtlInterface)
-    {
-    	return iBrCtlInterface->OfferKeyEventL(aKeyEvent, aType);
+    {	
+    	TBrCtlDefs::TBrCtlElementType type = iBrCtlInterface->FocusedElementType();
+		            
+    	if(type != TBrCtlDefs::EElementActivatedInputBox )
+    		return iBrCtlInterface->OfferKeyEventL(aKeyEvent, aType);
     }
     return EKeyWasNotConsumed;
 }

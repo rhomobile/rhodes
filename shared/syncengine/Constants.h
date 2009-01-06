@@ -34,6 +34,7 @@ extern "C" {
 #define UPDATE_TYPE_DELETE "deleteobjects"
 
 #define MAX_SYNC_OBJECTS 500
+#define MAX_SOURCES 100
 
 /* Sync Object db codes */
 #define SYNC_OBJECT_SUCCESS 0

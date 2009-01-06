@@ -97,9 +97,19 @@ public:
 	//Invoke http method
 	void InvokeHttpMethodL(TInt aCommand);
 
+	//Invoke http method
+	void InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize);
+
 	//Toggle verbose mode
 	void ToggleVerbose();
 	
+	//get response body (client must free allocated memory)
+	char* GetResponse();
+	
+	//get cookie
+	char* GetCookie();
+	
+	void SetCookie( char* cookie );
 private:
 
 	/**
@@ -117,7 +127,7 @@ protected:
 	void GetRequestBodyL();
 
 	//set header
-	void SetHeaderL(RHTTPHeaders aHeaders, TInt aHdrField, const TDesC8& aHdrValue);
+	void SetHeaderL(RHTTPHeaders& aHeaders, TInt aHdrField, const TDesC8& aHdrValue);
 	
 private: //data
 	
@@ -133,6 +143,7 @@ private: //data
 	RHTTPTransaction iTrans;
 
 	TBool iHasARequestBody;
+	TBool iNotUsingFile;
 	
 	RFs iFileServ;
 	RFile iReqBodyFile;
@@ -143,6 +154,8 @@ private: //data
 	CHttpEventHandler* iTransObs;
 	
 	CHttpFileManager* iHttpFileManager; 
+	
+	TBuf8<1024> iCookie;
 	};
 
 #endif // HTTPCLIENT_H

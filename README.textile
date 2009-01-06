@@ -1,0 +1,69 @@
+h1. Rhodes
+
+The "Rhodes framework":http://github.com/rhomobile/rhodes/tree/master is a platform for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via "RhoSync":http://github.com/rhomobile/rhosync/tree/master). Rhodes is now available for iPhone, Windows Mobile, Research in Motion (Blackberry) and Symbian smartphones.  
+
+h2. INTRODUCTION  
+
+Rhodes takes much of its inspiration from web-oriented MVC style frameworks such as Ruby on Rails. However it has several simplifications and optimizations for the mobile scenario. Some of these are to make it easier for the developer. Most of them are to keep the framework as lightweight as possible to be able to run on mobile devices with limited memory. As with developing apps on any good app framework (Rails, Merb, Django), building a Rhodes mobile application consists of building a set of files and putting them into the right directories for the respective models.
+
+h2. STARTING A RHODES APPLICATION
+
+The first step in using Rhodes is to make a clone of Rhodes itself.  
+
+	git	clone git://github.com/rhomobile/rhodes.git rhodes
+	
+Notice that we are using the public clone URL.  We would prefer that you don't check your apps back in to Rhodes. So this is what makes sense for working on apps versus contributing to Rhodes itself. You will then do your work in /apps directory as described below.  
+
+h2. DIRECTORY STRUCTURE
+
+Beneath the Rhodes root directory (as determined by doing a git clone of the Rhodes project) there is an /apps subdirectory.  There is an index.html in this that contains the top level content, which will is by default a list of available applications.  It starts out as a link to our sample app for mobilizing SugarCRM called RhoSugar.   You can delete the link to that sample app and provide a link to your own app or just add links to your own apps. You can modify the config.rb file that is available in the root of the /apps directory to allow going directly to a single application.
+
+Below the /apps directory will be a subdirectory for each application name. For example /Rhosugar might be the subdirectory for an application that provides mobile access to SugarCRM. Beneath the application subdirectory there will be an index.html file that contains links to controllers for specific models, or whatever content the app developer wishes to appear at the top level of the application. This default landing page will typically have links to the controllers for each of the data models. 
+
+There will also be several subdirectories, one for each model or synced data object. For example, there might be subdirectories called /Accounts, /Employees, and /Cases. Each model subdirectory contains a controller in the file controller.rb. These subdirectories each contain a set of template files as Embedded Ruby (ERB) files. These control how data from the model is displayed and what links are available to other actions. Note that this structure is reminiscent of Rails and MERB's structure, but is a bit simpler by design.
+
+  /Rhodes (or whatever you call the directory where you do the git clone)
+    index.html (modify this "overall Rhodes index page"  to point to the new app you are building, ships with a link to our SugarCRM sample app)
+    /apps (there will be other directories below Rhodes but this is what we care about)
+      index.html  
+      config.rb (allows configuration of the default app)
+      /<app_name>  (directory for a single app, for example /RhoSugar)
+        index.html (home page of the app, always generated with links to all synced data models by default, can be edited by user)
+        config.rb (configure for the right sync source)
+        /<model directory> (for example \Accounts)   
+          index.erb
+          new.erb
+          edit.erb
+          controller.rb  
+        /<model directory> (for example \Cases)
+         index.erb
+         new.erb
+         edit.erb
+         controller.rb 
+
+h2. APPLICATION GENERATOR 
+
+Rhodes features an application generator called rhogen that generates  a controller and views for a given model.  The syntax for running Rhogen is:
+
+  rhogen application <appname>
+
+This will generate a config.rb and an index.html file.  Currently config.rb is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the RhoSync README.
+
+h3. Generate a Model and Associated Controller and Templates
+
+  rhogen model <modelname>
+
+will generate a controller as the file controller.rb and several views as <action-name>.erb (corresponding to the actions below). Each Rhodes model/controller pair has several actions to perform basic CRUD (create, read, update and delete) on the object generated by default by the scaffold . Specifically the templat views generated are:
+
+    * index - to list all objects
+    * new - to display the editing form for creating a new object
+    * edit - to edit the actual object
+
+
+h2. MORE RESOURCES
+
+There is a "tutorial available":http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site:http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
+
+The "Rhodes spec":http://rhomobile.com/wiki/index.php?title=Rhodes) is also available on the "Rhomobile documentation wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile. 
+
+For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile

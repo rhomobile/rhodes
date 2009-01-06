@@ -25,6 +25,7 @@
 #include "SyncEngine.h"
 #include "SyncUtil.h"
 #include "SyncManagerI.h"
+#include "Constants.h"
 
 int stop_running = 0;
 int delay_sync = 0;
@@ -33,7 +34,8 @@ pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
-sqlite3 *database;
+static sqlite3 *database;
+static char *client_id = NULL;
 
 int process_local_changes() {
   if (!stop_running) {
@@ -41,13 +43,12 @@ int process_local_changes() {
 	  int i,result,source_length;
 	  int max_size = 100;
 	  pSource *source_list;
-	  char *client_id = NULL;
 	  source_list = malloc(max_size*sizeof(pSource));
 	  source_length = get_sources_from_database(source_list, database, max_size);
 	  
 	  for(i = 0; i < source_length; i++) {
 		  if(client_id == NULL) {
-			  client_id = get_client_id(database, source_list[i]);  
+			  client_id = set_client_id(database, source_list[i]);  
 		  }
 		  result = 0;
 		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
@@ -67,10 +68,10 @@ int process_local_changes() {
 		  }
 	  }
 	  free_source_list(source_list, source_length);
+  } else {
 	  if (client_id) {
 		  free(client_id);  
 	  }
-  } else {
 	  shutdown_database();
   }
   return 0;
@@ -140,6 +141,14 @@ int process_op_list(pSource source, char *type) {
 	
 	free_op_list(op_list, available);
 	return 0;
+}
+
+sqlite3 *get_database() {
+	return database;
+}
+
+char *get_client_id() {
+	return client_id;
 }
 
 #if !defined(_WIN32_WCE)
@@ -212,6 +221,7 @@ void shutdown_database() {
 	sqlite3_close(database);
 	printf("Sync engine is shutdown...\n");
 }
+
 #else
 void start_sync_engine(sqlite3 *db) {	
 	database = db;
@@ -219,3 +229,53 @@ void start_sync_engine(sqlite3 *db) {
 void shutdown_database() {
 }
 #endif //!defined(_WIN32_WCE)
+
+void clear_client_id(){
+  if ( client_id )
+    free(client_id);
+  client_id = NULL;
+  set_db_client_id(database,"");
+}
+
+#ifndef __APPLE__
+/**
+ * login to rhosync server (default implementation)
+ * If succeeded stores session into the database
+ * 
+ * @param login
+ * @param password
+ * @return 1 - succeeded, 0 - failed
+ */
+int login(const char* login, const char* password) {
+	int retval = 0;
+	int i,available,source_length;
+	pSource *source_list;
+	if (login && password) {
+		source_list = malloc(MAX_SOURCES*sizeof(pSource));
+		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+		
+		/* iterate over each source id and get session */
+		lock_sync_mutex();
+		for(i = 0; i < source_length; i++) {
+			char login_url[1024] = {0};
+			char* session = 0;
+			char* headers = 0;
+			char data[100];
+
+			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
+			
+			//fetch session from server
+			sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+			makeLoginRequest( login_url, data );
+		}
+		clear_client_id();
+		unlock_sync_mutex();
+		free_source_list(source_list, source_length);
+	}
+	else {
+		printf("Unable to login: 'login' parameter is not specified.\n");
+	}
+	return retval;
+}
+
+#endif //__APPLE__

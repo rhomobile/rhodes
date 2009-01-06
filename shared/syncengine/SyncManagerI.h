@@ -18,6 +18,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+char *get_session(char *url_string);
 char *fetch_remote_data(char *url_string);
 int push_remote_data(char* url, char* data, size_t data_size);
-//void populate_list(sqlite3 *database);
+int login(const char *login, const char *password);
+
+/**
+ * login to rhosync server (default implementation)
+ * If succeeded stores session into the database
+ * 
+ * To start using this method you will need to implement 
+ * get_session_from_login callback for you platform 
+ * 
+ * @param login
+ * @param password
+ * @return 1 - succeeded, 0 - failed
+ */
+//int db_login ( const char* login, const char* password );
+
+/**
+ * This callback is required be db_login (platform specific part)
+ * 
+ * @param url
+ * @param login
+ * @param password
+ * @return session
+ */
+//char* get_session_from_login(char* url, char* data );//login, char* password);
+void makeLoginRequest(char* url, char* data );

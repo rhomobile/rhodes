@@ -63,12 +63,20 @@ public:
 
 	void SetVerbose(TBool aVerbose);
 	TBool Verbose() const { return iVerbose; }
+	
+	void SetUsingFile(TBool aUsingFile) { iUsingFile = aUsingFile; } 
+	
 	//
 	// methods from MHTTPTransactionCallback
 	//
 	virtual void MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent& aEvent);
 	virtual TInt MHFRunError(TInt aError, RHTTPTransaction aTransaction, const THTTPEvent& aEvent);
+	
+	char* GetResponse();
 
+	char* GetCookie();
+	
+	void ClearCookie();
 protected:
 	//get file name for response body
 	void GetResponseBodyFile(TDes& aResBodyFileName);
@@ -88,12 +96,14 @@ private:
 	void DumpRespHeadersL(RHTTPTransaction& aTrans);
 	void DumpRespBody(RHTTPTransaction& aTrans);
 	void DumpIt(const TDesC8& aData);
-
+	
+	void ParseCookieL(RHTTPTransaction& aTrans);
+	TBool GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool);
+	
 private: //data
 	TBool iVerbose;
 
 	TBool iSavingResponseBody;
-	TPtrC8 iBodyData;
 	MHTTPDataSupplier* iRespBody;
 
 	TFileName iRespBodyFileName;
@@ -104,6 +114,14 @@ private: //data
 	TFileName iRespBodyFilePath;
 	
 	CHttpFileManager* iHttpFileManager;
+	
+	TBool iUsingFile;
+	
+	TPtr8 iResBodyBufferPtr;
+	HBufC8* iResBodyBuffer;
+	TInt iCurPos;
+	
+	TBuf8<1024> iCookies;
 	};
 
 #endif // HTTPEVENTHANDLER_H

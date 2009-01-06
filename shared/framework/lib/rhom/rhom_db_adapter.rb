@@ -52,7 +52,7 @@ module Rhom
       def execute_sql(sql=nil)
         result = []
         if sql
-          #puts 'query is ' + sql
+          puts 'query is ' + sql
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
@@ -77,22 +77,24 @@ module Rhom
     
       # generates where clause based on hash
       def where_str(condition)
-        cond = ""
-        condition.each do |key,value|
-          val = value.is_a?(String) ? "'#{value}'" : "#{value}"
-          cond << " #{key} = #{val} and"
-        end
+        cond = string_from_key_vals(condition," and")
         cond[0..cond.length - 5]
       end
     
       # generates value clause based on hash
       def vals_str(values)
+        vals = string_from_key_vals(values, ",")
+        vals[0..vals.length - 2]
+      end
+      
+      # generates key/value list
+      def string_from_key_vals(values, delim)
         vals = ""
         values.each do |key,value|
           val = value.is_a?(String) ? "'#{value}'" : "#{value}"
-          vals << "#{key} = #{val},"
+          vals << " #{key} = #{val}#{delim} "
         end
-        vals[0..vals.length - 2]
+        vals
       end
     
       # support for select statements

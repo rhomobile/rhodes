@@ -37,8 +37,10 @@ _LIT(KHttpClientTestName, "RhoHttpClient");
 
 
 CHttpEventHandler::CHttpEventHandler()
+	: iResBodyBufferPtr(0,0), iResBodyBuffer(NULL)
 	{
 	iVerbose = EFalse;
+	iUsingFile = EFalse;
 	}
 
 CHttpEventHandler::~CHttpEventHandler()
@@ -129,33 +131,54 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 				iSavingResponseBody = ETrue;
 			}
 
+			if ((status >= 200) && (status < 300) && (status != 204))
+			{
+				ParseCookieL(aTransaction);
+			}
+			
 			if (iSavingResponseBody) // If we're saving, then open a file handle for the new file
 			{
-				iHttpFileManager->GetNewFile(iRespBodyFilePath, iRespBodyFileName, EFalse);
-				
-				// Check it exists and open a file handle
-				TInt valid = iFileServ.IsValidName(iRespBodyFilePath);
-				if (!valid)
+				if ( iUsingFile )
 				{
-					if (iVerbose)
-						iTest->Console()->Printf(_L("The specified filename is not valid!.\n"));
+					iHttpFileManager->GetNewFile(iRespBodyFilePath, iRespBodyFileName, EFalse);
 					
-					iSavingResponseBody = EFalse;
+					// Check it exists and open a file handle
+					TInt valid = iFileServ.IsValidName(iRespBodyFilePath);
+					if (!valid)
+					{
+						if (iVerbose)
+							iTest->Console()->Printf(_L("The specified filename is not valid!.\n"));
+						
+						iSavingResponseBody = EFalse;
+					}
+					else
+					{
+						TInt err = iRespBodyFile.Create(iFileServ,
+													  iRespBodyFilePath,
+													  EFileWrite|EFileShareExclusive);
+						if (err)
+						{
+							iSavingResponseBody = EFalse;
+							User::Leave(err);
+						}
+					}
 				}
 				else
 				{
-					TInt err = iRespBodyFile.Create(iFileServ,
-												  iRespBodyFilePath,
-												  EFileWrite|EFileShareExclusive);
-					if (err)
-					{
-						iSavingResponseBody = EFalse;
-						User::Leave(err);
-					}
+					TInt dataSize = resp.Body()->OverallDataSize();
+					
+					if ( iResBodyBuffer )
+						delete iResBodyBuffer;
+					
+					iResBodyBuffer = NULL;
+					iResBodyBuffer = HBufC8::NewMaxL(dataSize);
+					iResBodyBufferPtr.Set(iResBodyBuffer->Des());
+					
+					iCurPos = 0;
 				}
 			}
-
-			} break;
+			
+		} break;
 		case THTTPEvent::EGotResponseBodyData:
 			{
 			// Get the body data supplier
@@ -170,12 +193,21 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 			{
 				TPtrC8 bodyData;
 				TBool lastChunk = iRespBody->GetNextDataPart(bodyData);
-				iRespBodyFile.Write(bodyData);
-				if (lastChunk)
+								
+				if ( iUsingFile )
 				{
-					iRespBodyFile.Flush();
-					iRespBodyFile.Rename(iRespBodyFileName);
-					iRespBodyFile.Close();
+					iRespBodyFile.Write(bodyData);
+					if (lastChunk)
+					{
+						iRespBodyFile.Flush();
+						iRespBodyFile.Rename(iRespBodyFileName);
+						iRespBodyFile.Close();
+					}
+				}
+				else
+				{
+					Mem::Copy((void*)(iResBodyBuffer->Ptr()+iCurPos), (void*)bodyData.Ptr(), bodyData.Size());
+					iCurPos += bodyData.Size();
 				}
 			}
 
@@ -380,3 +412,120 @@ void CHttpEventHandler::DumpIt(const TDesC8& aData)
 		}
 	}
 
+char* CHttpEventHandler::GetResponse()
+{
+	char* str = NULL;
+	
+	if ( iResBodyBuffer && iResBodyBufferPtr.Length() > 0 )
+	{
+		TInt size = iResBodyBufferPtr.Length();
+		str = new char[size + 1];
+	    Mem::Copy(str, iResBodyBuffer->Ptr(), size);
+	    str[size] = '\0';
+	}
+	
+	if ( iResBodyBuffer )
+		delete iResBodyBuffer;
+	
+	iResBodyBuffer = NULL;
+	
+	return str;
+}
+
+void CHttpEventHandler::ParseCookieL(RHTTPTransaction& aTrans)
+{
+	RHTTPResponse response = aTrans.Response();
+	RHTTPResponse resp = aTrans.Response();
+	RStringPool pool = aTrans.Session().StringPool();
+    RHTTPHeaders headers = resp.GetHeaderCollection();
+    
+	RStringF fieldName = pool.StringF(HTTP::ESetCookie,RHTTPSession::GetTable());
+	
+	_LIT(KSeparator,";");
+	_LIT(KPathName,";path=");
+	_LIT(KEqual,"=");
+	
+	THTTPHdrVal val;
+	if (headers.GetField(fieldName, 0, val) != KErrNotFound)
+	{
+		RStringF cookieValueName = pool.StringF(HTTP::ECookieValue,RHTTPSession::GetTable());
+		RStringF cookieNameName = pool.StringF(HTTP::ECookieName,RHTTPSession::GetTable());
+		RStringF cookiePathName = pool.StringF(HTTP::EPath,RHTTPSession::GetTable());
+	
+		if (val.StrF() == pool.StringF(HTTP::ECookie, RHTTPSession::GetTable()))
+		{
+			THTTPHdrVal cookieValue;
+			THTTPHdrVal cookieName;
+			THTTPHdrVal cookiePath;
+			
+			TInt parts = headers.FieldPartsL(fieldName);
+	
+			Mem::Fill((void*)iCookies.Ptr(), 1024, 0);
+			
+			// Get all the cookies.
+			for (TInt i = 0; i < parts; i++)
+			{
+				headers.GetParam(fieldName, cookieValueName, cookieValue, i);
+				headers.GetParam(fieldName, cookieNameName, cookieName, i);
+				headers.GetParam(fieldName, cookiePathName, cookiePath, i);
+				
+				if ( GetHdrVal( cookieName, pool) )
+					iCookies.Append(KEqual);
+					
+				if ( GetHdrVal( cookieValue, pool) )
+				{	
+					iCookies.Append(KPathName);
+					GetHdrVal( cookiePath, pool);
+					iCookies.Append(KSeparator);
+				}
+			}
+		}
+	}
+}
+
+TBool CHttpEventHandler::GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool)
+{
+	TBool retval = ETrue;
+	TPtrC8 auth_token((const TUint8*)"auth_token");
+	
+	switch (hdrVal.Type())
+	{
+		case THTTPHdrVal::KStrFVal:
+			{
+				RStringF fieldNameStr = pool.StringF(hdrVal.StrF());
+				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
+				
+				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
+					iCookies.Append(fieldNameDesC);
+				else
+					retval = EFalse;
+			}
+			break;
+		case THTTPHdrVal::KStrVal:
+			{
+				RString fieldNameStr = pool.String(hdrVal.Str());
+				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
+				
+				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
+					iCookies.Append(fieldNameDesC);
+				else
+					retval = EFalse;
+			}
+			break;
+	}
+	
+	return retval;
+}
+
+char* CHttpEventHandler::GetCookie()
+{
+	if ( iCookies.Length() > 0 )
+		return (char *)iCookies.Ptr();
+	else
+		return NULL;
+}
+
+void CHttpEventHandler::ClearCookie()
+{
+	iCookies.Zero();
+}
