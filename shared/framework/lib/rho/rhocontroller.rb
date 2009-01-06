@@ -31,7 +31,8 @@ module Rho
 	
     def url_for(action,id=nil)
       action = action.to_s
-      amurl = '/'+@request['application']+'/'+@request['model'] 
+      amurl = '/'+@request['application']+'/'+@request['model']
+      return action if action == '/'
       return amurl if action == 'create' or action == 'index'
       return amurl +'/'+ (id.nil? ? action.to_s : id.to_s + '/' + action.to_s)
     end

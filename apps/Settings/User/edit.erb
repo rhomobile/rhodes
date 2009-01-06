@@ -1,0 +1,19 @@
+                  <form class="panel" 
+				  id="user_edit_form" 
+				  method="POST" 
+				  action="<%=url_for('login')%>">
+				<fieldset>
+					<%if @error%>
+					<p><%=@error%></p>
+					<%end%>
+					<div class="row">
+						<label>Login: </label>
+						<input type="text" maxlength="100" name="login"/>
+					</div>
+					<div class="row">
+						<label>Password: </label>
+						<input type="password" maxlength="100" name="password"/>
+					</div>
+				</fieldset>
+				<input type="submit" value="Login"/><a href="/" target="_self">Cancel</a>
+			</form>

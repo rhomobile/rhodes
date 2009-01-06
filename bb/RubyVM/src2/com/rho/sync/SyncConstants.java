@@ -36,6 +36,8 @@ public class SyncConstants {
 	/** The Constant SOURCES_TABLE. */
 	public static final String SOURCES_TABLE = "sources";
 
+	public static final String CLIENT_INFO = "client_info";
+	
 	// Sync OP Types
 	/** The Constant UPDATE_TYPE_UPDATE. */
 	public static final String UPDATE_TYPE_UPDATE = "updateobjects";

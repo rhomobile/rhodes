@@ -47,16 +47,26 @@ extern "C"
 		
 		void* sync_engine_main_routine(void* data);
 
+		char *get_db_session(char* source_url);
+		int set_db_session(char* source_url, char * session);
+		
 		const char* RhoGetRootPath();
+		
+		int login ( const char* login, const char* password );
+//		int db_login ( const char* login, const char* password );
+		
+		void parse_source_url(char* url, char* source, int size);
 		
 		#include <fcntl.h>
 		#include <string.h>
 		#include <stdio.h>
+		#include <stdlib.h>
 		#include <time.h>
 		#include <sys/types.h>
 	}
 
 CHttpClient* gHttpClient; //Http client
+CHttpClient* gHttpLoginClient; //Http client
 
 TInt SyncThreadEntryPoint(TAny *aPtr)
 {
@@ -127,7 +137,7 @@ TInt CSyncEngineWrap::ExecuteL()
 
 		//Initialize Ruby
 		StartSyncEngine();
-	
+
 #ifdef ENABLE_RUBY_VM_STAT	
 		g_sync_thread_loaded = 1;
 #endif
@@ -182,74 +192,81 @@ extern "C"
 	{
 	char* fetch_remote_data(char* url) 
 	{
-		char* szData = NULL;
-		CHttpFileManager* iHttpFileManager = CHttpFileManager::NewL();
+		char* cookie = 0;
+		char source[1024] = {0};
+		
 		if (!gHttpClient) 
 			gHttpClient = CHttpClient::NewL();
 				
-		if ( iHttpFileManager && gHttpClient )
-		{
-			if ( iHttpFileManager->GetFilesCount( ETrue) == 0 ) //currently only one file will be used
-			{
-				if ( iHttpFileManager->CreateRequestFile( (const TUint8*)url, strlen(url), NULL, 0 ) ) 
-					gHttpClient->InvokeHttpMethodL(CHttpConstants::EGet);
-			}
-			
-			TFileName respFile;
-			iHttpFileManager->GetOldestFile( respFile, EFalse );
-			
-			if ( respFile.Size() > 0 )
-			{
-				TFileName respFilePath;
-				respFilePath.Append(CHttpConstants::KHttpOUT);
-				respFilePath.Append(respFile);
-
-				szData = iHttpFileManager->ReadResponseFile( respFilePath );
-				iHttpFileManager->DeleteFile(respFilePath);
-			}
-		}
-		delete iHttpFileManager;
+		parse_source_url(url, source, 1024);
 		
-		return szData;
+		cookie = get_db_session(source);
+		gHttpClient->SetCookie( cookie);
+		
+		if ( cookie )
+			free(cookie);
+
+		gHttpClient->InvokeHttpMethodL(CHttpConstants::EGet, (const TUint8*)url, strlen(url), NULL, 0);
+		
+		return gHttpClient->GetResponse();
+	}
+	
+	void parse_source_url(char* url, char* source, int size)
+	{
+		int i = 0;
+		int count = strlen(url);
+		
+		for ( i = count; i >= 0  && ( url[i] != '/' && url[i] != '?' ); i--);
+		
+		if ( i <= size && i > 0)
+		{
+			strncpy( source, url, i);
+			source[i] = '\0';
+		}
 	}
 	
 	int push_remote_data(char* url, char* data, size_t data_size) 
 	{
 		int retval = 0;
-		char* szData = NULL;
-		CHttpFileManager* iHttpFileManager = CHttpFileManager::NewL();
+		char* szData = 0;
+		char* cookie = 0;
+		
 		if (!gHttpClient) 
 			gHttpClient = CHttpClient::NewL();
 				
-		if ( iHttpFileManager && gHttpClient )
-		{
-			if ( iHttpFileManager->GetFilesCount( ETrue) == 0 ) //currently only one file will be used
-			{
-				if ( iHttpFileManager->CreateRequestFile( (const TUint8*)url, strlen(url), (const TUint8*)data, data_size ) ) 
-					gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost);
-			}
-			
-			TFileName respFile;
-			iHttpFileManager->GetOldestFile( respFile, EFalse );
-			
-			if ( respFile.Size() > 0 )
-			{
-				TFileName respFilePath;
-				respFilePath.Append(CHttpConstants::KHttpOUT);
-				respFilePath.Append(respFile);
-
-				szData = iHttpFileManager->ReadResponseFile( respFilePath );
-				iHttpFileManager->DeleteFile(respFilePath);
-			}
-		}
-		delete iHttpFileManager;
-
+		cookie = get_db_session(url);
+		gHttpClient->SetCookie( cookie );
+		
+		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, data_size);
+		
+		szData = gHttpClient->GetResponse();
+	
+		retval = szData ? 1 : 0;
+		
 		if ( szData )
 			delete szData;
-		else
-			retval = 1;
-	
+		
 		return retval;
 	}
-	
+
+	void makeLoginRequest(char* url, char* data )
+	{
+	  	char* session = NULL;
+	  
+	  	if (!gHttpLoginClient) 
+	  		gHttpLoginClient = CHttpClient::NewL();
+
+	  	gHttpLoginClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, strlen(data));
+
+		session = gHttpLoginClient->GetCookie();
+		
+		if ( session )
+		{
+			char source[1024] = {0};
+			parse_source_url(url, source, 1024);
+			
+			set_db_session( source, session );
+		}	
 	}
+
+}

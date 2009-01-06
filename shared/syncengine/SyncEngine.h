@@ -60,10 +60,14 @@ void lock_sync_mutex();
 void unlock_sync_mutex();	
 void wake_up_sync_engine();
 	
+sqlite3 *get_database();
+	
 /* Main entry point to the sync engine */
 void start_sync_engine(sqlite3 *db);
 void stop_sync_engine();
 void shutdown_database();
+
+void clear_client_id();
 
 #if defined(__cplusplus)
 }
