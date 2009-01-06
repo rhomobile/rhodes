@@ -39,6 +39,7 @@ public:
         COMMAND_ID_HANDLER(IDM_OPENURL, OnOpenURLCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
         COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
+        COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
     END_MSG_MAP()
 
 private:
@@ -57,6 +58,7 @@ private:
     LRESULT OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 public:
     BEGIN_SINK_MAP(CMainWindow)

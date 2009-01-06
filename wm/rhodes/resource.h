@@ -1,6 +1,7 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file (slightly massaged).
-// Header file that defines resource IDs. Used by Rhoeds.rc.
+// Microsoft Visual C++ generated include file.
+// Used by Rhodes.rc
+//
 #define IDD_GETURLDIALOG                103
 #define IDR_MAIN_MENU                   105
 #define IDR_MAIN_MENUBAR                106
@@ -19,13 +20,16 @@
 #define IDM_OPENURL                     40006
 #define IDM_REFRESH                     40007
 #define IDM_STOP                        40008
+#define ID_Menu                         40009
+#define ID_SYNC                         40010
+#define IDM_SYNC                        40011
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         40009
+#define _APS_NEXT_COMMAND_VALUE         40012
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           108
 #endif

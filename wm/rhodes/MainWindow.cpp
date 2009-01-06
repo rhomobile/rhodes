@@ -177,6 +177,14 @@ LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
+extern "C" void dosync();
+
+LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	dosync();
+    return 0;
+}
+
 // **************************************************************************
 //
 // event handlers
