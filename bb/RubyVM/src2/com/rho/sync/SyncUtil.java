@@ -558,6 +558,7 @@ public class SyncUtil {
 			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
 			
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
+			adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));			
 		}
 		
 		return true;
