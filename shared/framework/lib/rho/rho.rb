@@ -67,6 +67,10 @@ module Rho
       APPLICATIONS[appname]
     end
 
+    def get_start_path
+      Rho::RhoConfig.start_path
+    end
+
     def serve(req)
       begin
 	    puts 'inside RHO.serve...'
@@ -185,9 +189,19 @@ module Rho
   # Generic configuration class which accepts hashes with unique keys
   class RhoConfig
     @@sources = {}
+    @@start_path = '/'
+    
     class << self
       def sources
         @@sources
+      end
+      
+      def start_path
+        @@start_path
+      end
+            
+      def start_path=(path=nil)
+        @@start_path = path if path
       end
       
       def add_source(modelname, new_source=nil)
