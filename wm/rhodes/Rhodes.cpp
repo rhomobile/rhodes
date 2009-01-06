@@ -42,7 +42,7 @@ public :
         m_serverHost.Start(m_appWindow.m_hWnd);
         // Navigate to the home page
         TCHAR _laodingpage[MAX_PATH];
-        LPTSTR lp = CHttpServer::GetLoadingPage(_laodingpage);
+		LPTSTR lp = CHttpServer::Instance()->GetLoadingPage(_laodingpage);
         m_appWindow.Navigate(lp);
         //m_appWindow.Navigate(HOME_PAGE);
 

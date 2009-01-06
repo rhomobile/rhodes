@@ -6,9 +6,6 @@
 #include "resource.h"
 #include "GetURLDialog.h"
 
-#define HOME_PAGE     L"http://localhost:8080/"
-#define LOADING_PAGE  L"file:///%s/loading.html"
-
 static const UINT ID_BROWSER = 1;
 
 class CMainWindow :
