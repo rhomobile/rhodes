@@ -228,8 +228,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -300,7 +298,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>0 117 1280 659 0 0 1280 778 </string>
+						<string>0 119 1280 659 0 0 1280 778 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -383,7 +381,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {1072, 409}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 117 1280 659 0 0 1280 778 </string>
+								<string>0 119 1280 659 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -391,6 +389,8 @@
 							<string>409pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -403,7 +403,7 @@
 								<key>Frame</key>
 								<string>{{0, 414}, {1072, 204}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 117 1280 659 0 0 1280 778 </string>
+								<string>0 119 1280 659 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -563,7 +563,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>6677DEAA0F11A0530098F2B6</string>
 		<string>6677DEAB0F11A0530098F2B6</string>
 		<string>1C78EAAD065D492600B07095</string>
 		<string>1CD10A99069EF8BA00B06720</string>
@@ -571,7 +570,7 @@
 		<string>/Users/adam/rhodes/iphone/rhorunner.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>0 117 1280 659 0 0 1280 778 </string>
+	<string>0 119 1280 659 0 0 1280 778 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
