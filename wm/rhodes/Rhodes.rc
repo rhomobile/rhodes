@@ -1,5 +1,5 @@
-// Resources used by this application.
-
+// Microsoft Visual C++ generated resource script.
+//
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -27,18 +27,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -52,24 +52,16 @@ END
 // RCDATA
 //
 
-IDR_MAIN_MENUBAR RCDATA
+IDR_MAIN_MENUBAR RCDATA 
 BEGIN
-    IDR_MAIN_MENU,
-    2,
-    I_IMAGENONE, IDM_SK1_EXIT, TBSTATE_ENABLED,
-        TBSTYLE_AUTOSIZE | TBSTYLE_BUTTON,   IDS_EXIT, 0, NOMENU,
-    I_IMAGENONE, IDM_SK2_MENU, TBSTATE_ENABLED,
-        TBSTYLE_AUTOSIZE | TBSTYLE_DROPDOWN, IDS_MENU, 0, 0,
+    0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff, 
+    0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
 END
 
-IDR_GETURL_MENUBAR RCDATA
+IDR_GETURL_MENUBAR RCDATA 
 BEGIN
-    0,
-    2,
-    I_IMAGENONE, IDOK,     TBSTATE_ENABLED,
-        TBSTYLE_AUTOSIZE | TBSTYLE_BUTTON, IDS_OK,     0, NOMENU,
-    I_IMAGENONE, IDCANCEL, TBSTATE_ENABLED,
-        TBSTYLE_AUTOSIZE | TBSTYLE_BUTTON, IDS_CANCEL, 0, NOMENU,
+    0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff, 
+    0xfffe, 0x0002, 0x0004, 0x0010, 0x2714, 0x0000, 0xffff
 END
 
 
@@ -78,7 +70,7 @@ END
 // Menu
 //
 
-IDR_MAIN_MENU MENU
+IDR_MAIN_MENU MENU 
 BEGIN
     POPUP ""
     BEGIN
@@ -88,6 +80,7 @@ BEGIN
         MENUITEM "Open URL...",                 IDM_OPENURL
         MENUITEM "Refresh",                     IDM_REFRESH
         MENUITEM "Stop",                        IDM_STOP, GRAYED
+        MENUITEM "Sync",                        IDM_SYNC
     END
 END
 
@@ -99,11 +92,10 @@ END
 
 IDD_GETURLDIALOG DIALOG  0, 0, 156, 129
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-EXSTYLE WS_EX_CAPTIONOKBTN
+EXSTYLE 0x80000000L
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Enter URL, full path, or UNC location:",
-                    IDC_STATIC_PROMPT,4,4,92,20
+    LTEXT           "Enter URL, full path, or UNC location:",IDC_STATIC_PROMPT,4,4,92,20
     EDITTEXT        IDC_EDIT_URL,4,24,92,12,ES_AUTOHSCROLL
 END
 
@@ -114,7 +106,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_GETURLDIALOG, DIALOG
     BEGIN
@@ -132,7 +124,7 @@ END
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     IDS_EXIT                "Exit"
     IDS_MENU                "Menu"
