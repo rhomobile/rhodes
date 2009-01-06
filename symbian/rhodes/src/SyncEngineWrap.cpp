@@ -48,6 +48,7 @@ extern "C"
 		void* sync_engine_main_routine(void* data);
 
 		char *get_db_session(char* source_url);
+		int set_db_session(char* source_url, char * session);
 		
 		const char* RhoGetRootPath();
 		
@@ -65,6 +66,7 @@ extern "C"
 	}
 
 CHttpClient* gHttpClient; //Http client
+CHttpClient* gHttpLoginClient; //Http client
 
 TInt SyncThreadEntryPoint(TAny *aPtr)
 {
@@ -188,7 +190,6 @@ void CSyncEngineWrap::TerminateThread()
 
 extern "C"
 	{
-	static int g_logged_in = false;
 	char* fetch_remote_data(char* url) 
 	{
 		char* cookie = 0;
@@ -200,7 +201,8 @@ extern "C"
 		parse_source_url(url, source, 1024);
 		
 		cookie = get_db_session(source);
-		gHttpClient->SetCookie( cookie, strlen(cookie) );
+		gHttpClient->SetCookie( cookie);
+		
 		if ( cookie )
 			free(cookie);
 
@@ -214,9 +216,9 @@ extern "C"
 		int i = 0;
 		int count = strlen(url);
 		
-		for ( i = 0; i < count && url[i] != '?'; i++);
+		for ( i = count; i >= 0  && ( url[i] != '/' && url[i] != '?' ); i--);
 		
-		if ( i <= size )
+		if ( i <= size && i > 0)
 		{
 			strncpy( source, url, i);
 			source[i] = '\0';
@@ -233,7 +235,7 @@ extern "C"
 			gHttpClient = CHttpClient::NewL();
 				
 		cookie = get_db_session(url);
-		gHttpClient->SetCookie( cookie, strlen(cookie) );
+		gHttpClient->SetCookie( cookie );
 		
 		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, data_size);
 		
@@ -246,67 +248,25 @@ extern "C"
 		
 		return retval;
 	}
-/*	
-void parseCookie(const char* szCookie, char* session ){
-  char* szPathPos = 0;
-  char* szPathEnd = 0;
 
-  while( *szCookie == ' ' ) szCookie++;
+	void makeLoginRequest(char* url, char* data )
+	{
+	  	char* session = NULL;
+	  
+	  	if (!gHttpLoginClient) 
+	  		gHttpLoginClient = CHttpClient::NewL();
 
-  szPathPos = strstr(szCookie, "path=");
-  if ( szPathPos )
-    szPathEnd = strchr( szPathPos, ';' );
+	  	gHttpLoginClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, strlen(data));
 
-  if ( strncmp(szCookie,"auth_token=", strlen("auth_token=")) == 0 )
-  {
-    char* szEndAuth = strchr( szCookie, ';' );
-    if ( szEndAuth-szCookie > strlen("auth_token=")+1 )
-      strncat(session, szCookie, szPathEnd-szCookie+1 );
-  }else if ( strncmp(szCookie,"rhosync_session=", strlen("rhosync_session=")) == 0 ){
-      strncat(session, szCookie, szPathEnd-szCookie+1 );
-  }
-}
-
-char* parseHeadersForSession(const char* szHeaders){
-  const char* szHeader = szHeaders;
-  char * session = malloc(1024);
-  session[0] = 0;
-  while( szHeader && *szHeader ){
-    if ( strncmp(szHeader,"Set-Cookie:", strlen("Set-Cookie:")) == 0 )
-      parseCookie(szHeader+strlen("Set-Cookie:"),session);
-
-    szHeader = szHeader + strlen(szHeader) + 1;
-  }
-
-  return session;
-}
-*/
-
-  void makeLoginRequest(char* url, char* data ){
-		if (!gHttpClient) 
-			gHttpClient = CHttpClient::NewL();
-
-		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, strlen(data));
-
-    /*gHttpClient->GetResponse();
-      headers = get_session_from_login(login_url,data);
-      if ( headers )
-        session = parseHeadersForSession(headers);
-
-			//save session to the sources database
-			if ( session != NULL && strlen(session) > 0 )
-			{
-        printf("Session from login(%s): %s.\n", login_url, session);
-				retval = set_db_session( source_list[i]->_source_url, session );
-			}
-
-			if ( headers )
-				free(headers);
-
-			if ( session )
-				free(session);
-
-    */
-  }
+		session = gHttpLoginClient->GetCookie();
+		
+		if ( session )
+		{
+			char source[1024] = {0};
+			parse_source_url(url, source, 1024);
+			
+			set_db_session( source, session );
+		}	
+	}
 
 }
