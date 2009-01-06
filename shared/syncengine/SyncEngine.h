@@ -67,7 +67,7 @@ void start_sync_engine(sqlite3 *db);
 void stop_sync_engine();
 void shutdown_database();
 
-void clearClient_ID();
+void clear_client_id();
 
 #if defined(__cplusplus)
 }

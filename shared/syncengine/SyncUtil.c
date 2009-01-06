@@ -90,7 +90,6 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 			free(json_string);
 		}
 	}
-	
 	free_source_list(source_list, source_length);
 	printf("fetch remote changes done\n");
 	insert_sync_status((sqlite3 *)get_database(), "true");
