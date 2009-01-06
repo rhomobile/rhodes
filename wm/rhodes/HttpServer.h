@@ -9,7 +9,8 @@ class CHttpServer : public IWorkerThreadClient
   HANDLE m_hEvent;
 
 public:
-  CHttpServer(void);
+  static CHttpServer* Create();
+  static CHttpServer* Instance();
   virtual ~CHttpServer(void);
 
   CWorkerThread<DefaultThreadTraits> m_thread;
@@ -18,15 +19,21 @@ public:
 	void FreezeThread();
   
   //returns same buffer filled w/ path to lading page
-  static LPTSTR GetLoadingPage(LPTSTR buffer); 
+  LPTSTR GetLoadingPage(LPTSTR buffer); 
+  LPTSTR GetStartPage();
 
 private:
-	HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);
-	HRESULT CloseHandle(HANDLE hHandle);
+  CHttpServer(void);
+
+  HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);
+  HRESULT CloseHandle(HANDLE hHandle);
 
   struct shttpd_ctx	*ctx;
-	bool  InitHttpServer();
+  bool  InitHttpServer();
 
-  bool  m_bRubyInitialized;
-  bool  InitRubyFramework();
+  bool m_bRubyInitialized;
+  bool InitRubyFramework();
+
+  LPTSTR m_pStartPage;
+  bool InitStartPage();
 };
