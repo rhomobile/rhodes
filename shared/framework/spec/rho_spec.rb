@@ -36,6 +36,20 @@ describe "Rho" do
     @rho.source_initialized?(1).should == true
   end
   
+  it "should have start_path" do
+    Rho::RhoConfig.start_path.should == '/'
+  end
+  
+  it "should set start_path" do
+    Rho::RhoConfig.start_path = '/foo/bar'
+    Rho::RhoConfig.start_path.should == '/foo/bar'
+  end
+  
+  it "should retrieve start_path" do
+    Rho::RhoConfig.start_path = '/'
+    @rho.get_start_path.should == '/'
+  end
+  
   it "should return from get_app" do
     pending "fix relative paths for testing of get_app"
   end
