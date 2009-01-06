@@ -3,7 +3,7 @@
 CServerHost::CServerHost()
 {
   m_syncengine = CSyncEngine::Create();
-  m_httpserver = new CHttpServer;
+  m_httpserver = CHttpServer::Create();
 }
 
 CServerHost::~CServerHost(void)

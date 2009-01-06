@@ -57,11 +57,11 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartSuccess, onStartFailure;
+@synthesize actionTarget, onStartFailure, onStartSuccess;
 
-- (void)serverStarted:(void*)data {
+- (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
-		[actionTarget performSelector:onStartSuccess];
+		[actionTarget performSelector:onStartSuccess withObject:data];
 	}
 	// Do sync w/ remote DB 
 	wake_up_sync_engine();	
@@ -78,6 +78,9 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
+	char* start_page = callGetStartPage();
+	DBG(("Start page: %s\n", start_page));
+	NSString* ref_start_page = [NSString stringWithCString:start_page encoding:NSUTF8StringEncoding];
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
@@ -85,7 +88,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
 		DBG(("HTTP Server started and ready\n"));
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:NULL waitUntilDone:NO];
+							   withObject:ref_start_page waitUntilDone:NO];
         [[NSRunLoop currentRunLoop] run];
         DBG(("Invalidating local server\n"));
         ServerInvalidate(server);
@@ -95,6 +98,8 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 							   withObject:NULL waitUntilDone:NO];
     }
     
+	[ref_start_page release];
+	
 	DBG(("Stopping ruby"));
 	RhoRubyStop();
 	

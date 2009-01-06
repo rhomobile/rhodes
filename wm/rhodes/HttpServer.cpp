@@ -6,9 +6,24 @@
 #include "syncengine/rsyncengine.h"
 #include "geolocation/LocationController.h"
 
+static CHttpServer* m_instance = NULL;
+
+CHttpServer* CHttpServer::Create() {
+  if (m_instance) 
+    return m_instance;
+  m_instance = new CHttpServer;
+  return m_instance;
+}
+
+CHttpServer* CHttpServer::Instance() {
+  return m_instance;
+}
+
 CHttpServer::CHttpServer(void)
 {
   m_bRubyInitialized = false;
+  m_pStartPage = NULL;
+
   InitHttpServer();
 	m_thread.Initialize();
   m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -24,6 +39,9 @@ CHttpServer::~CHttpServer(void)
 
   CGPSController* pGPS = CGPSController::Instance();
   pGPS->DeleteInstance();
+  if (m_pStartPage) {
+	  free(m_pStartPage);
+  }
 }
 
 void CHttpServer::ResumeThread()
@@ -39,6 +57,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bRubyInitialized) {
     InitRubyFramework();
+	InitStartPage();
     ATLTRACE(L"Starting SYNC\n");
     start_sync();
   }
@@ -91,5 +110,37 @@ LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
     free(root);
   }
   return buffer;
+}
+
+
+#define HOME_PAGE_A "http://localhost:8080"
+#define HOME_PAGE_W L"http://localhost:8080/"
+
+bool CHttpServer::InitStartPage() {
+	if (m_bRubyInitialized) {
+		if (m_pStartPage==NULL) {
+			char* slash = "";
+			char* start_page = callGetStartPage();
+			if (!start_page) {
+				start_page = "";
+			} else if ( (*start_page!='/')&&(*start_page!='\\') ) {
+				slash = "/";
+			}
+			int len = strlen(HOME_PAGE_A)+strlen(slash)+strlen(start_page);
+			char* sp = (char*) malloc(len+1);
+			sprintf(sp,"%s%s%s",HOME_PAGE_A,slash,start_page);
+			m_pStartPage = wce_mbtowc(sp);
+			free(sp);
+		}
+		return true;
+	}
+	return false;
+}
+
+LPTSTR CHttpServer::GetStartPage() {
+	if (m_pStartPage)
+		return m_pStartPage;
+	else
+		return HOME_PAGE_W;
 }
 
