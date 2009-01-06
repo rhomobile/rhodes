@@ -230,11 +230,10 @@ void shutdown_database() {
 }
 #endif //!defined(_WIN32_WCE)
 
-void clearClient_ID(){
+void clear_client_id(){
   if ( client_id )
     free(client_id);
   client_id = NULL;
-
   set_db_client_id(database,"");
 }
 
@@ -247,43 +246,35 @@ void clearClient_ID(){
  * @param password
  * @return 1 - succeeded, 0 - failed
  */
-int login ( const char* login, const char* password )
-{
+int login(const char* login, const char* password) {
 	int retval = 0;
 	int i,available,source_length;
 	pSource *source_list;
-	
-	if ( login )
-	{
+	if (login && password) {
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
-		
 		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 		/* iterate over each source id and get session */
-    lock_sync_mutex();
-		for(i = 0; i < source_length; i++) 
-		{
+		lock_sync_mutex();
+		for(i = 0; i < source_length; i++) {
 			char login_url[1024] = {0};
 			char* session = 0;
-      char* headers = 0;
-		  char data[100];
+			char* headers = 0;
+			char data[100];
 
 			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
 			
 			//fetch session from server
-		  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
-      makeLoginRequest( login_url, data );
+			sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+			makeLoginRequest( login_url, data );
 		}
-    clearClient_ID();
+		clear_client_id();
 		unlock_sync_mutex();
-
 		free_source_list(source_list, source_length);
 	}
-	else
-	{
+	else {
 		printf("Unable to login: 'login' parameter is not specified.\n");
 	}
-	
 	return retval;
 }
 
