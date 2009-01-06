@@ -114,9 +114,14 @@ RESOURCE MENU_PANE r_menu
 				},
 		MENU_ITEM
 				{
-				command = EStat;
-				txt = qtn_stat;
+				command = ESync;
+				txt = qtn_sync;
 				},		
+//		MENU_ITEM
+//				{
+//				command = EStat;
+//				txt = qtn_stat;
+//				},		
 		MENU_ITEM
 				{
 				command = EAknSoftkeyExit;

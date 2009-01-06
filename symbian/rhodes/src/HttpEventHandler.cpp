@@ -131,6 +131,11 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 				iSavingResponseBody = ETrue;
 			}
 
+			if ((status >= 200) && (status < 300) && (status != 204))
+			{
+				ParseCookieL(aTransaction);
+			}
+			
 			if (iSavingResponseBody) // If we're saving, then open a file handle for the new file
 			{
 				if ( iUsingFile )
@@ -172,8 +177,8 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 					iCurPos = 0;
 				}
 			}
-
-			} break;
+			
+		} break;
 		case THTTPEvent::EGotResponseBodyData:
 			{
 			// Get the body data supplier
@@ -425,4 +430,102 @@ char* CHttpEventHandler::GetResponse()
 	iResBodyBuffer = NULL;
 	
 	return str;
+}
+
+void CHttpEventHandler::ParseCookieL(RHTTPTransaction& aTrans)
+{
+	RHTTPResponse response = aTrans.Response();
+	RHTTPResponse resp = aTrans.Response();
+	RStringPool pool = aTrans.Session().StringPool();
+    RHTTPHeaders headers = resp.GetHeaderCollection();
+    
+	RStringF fieldName = pool.StringF(HTTP::ESetCookie,RHTTPSession::GetTable());
+	
+	_LIT(KSeparator,";");
+	_LIT(KPathName,";path=");
+	_LIT(KEqual,"=");
+	
+	THTTPHdrVal val;
+	if (headers.GetField(fieldName, 0, val) != KErrNotFound)
+	{
+		RStringF cookieValueName = pool.StringF(HTTP::ECookieValue,RHTTPSession::GetTable());
+		RStringF cookieNameName = pool.StringF(HTTP::ECookieName,RHTTPSession::GetTable());
+		RStringF cookiePathName = pool.StringF(HTTP::EPath,RHTTPSession::GetTable());
+	
+		if (val.StrF() == pool.StringF(HTTP::ECookie, RHTTPSession::GetTable()))
+		{
+			THTTPHdrVal cookieValue;
+			THTTPHdrVal cookieName;
+			THTTPHdrVal cookiePath;
+			
+			TInt parts = headers.FieldPartsL(fieldName);
+	
+			Mem::Fill((void*)iCookies.Ptr(), 1024, 0);
+			
+			// Get all the cookies.
+			for (TInt i = 0; i < parts; i++)
+			{
+				headers.GetParam(fieldName, cookieValueName, cookieValue, i);
+				headers.GetParam(fieldName, cookieNameName, cookieName, i);
+				headers.GetParam(fieldName, cookiePathName, cookiePath, i);
+				
+				if ( GetHdrVal( cookieName, pool) )
+					iCookies.Append(KEqual);
+					
+				if ( GetHdrVal( cookieValue, pool) )
+				{	
+					iCookies.Append(KPathName);
+					GetHdrVal( cookiePath, pool);
+					iCookies.Append(KSeparator);
+				}
+			}
+		}
+	}
+}
+
+TBool CHttpEventHandler::GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool)
+{
+	TBool retval = ETrue;
+	TPtrC8 auth_token((const TUint8*)"auth_token");
+	
+	switch (hdrVal.Type())
+	{
+		case THTTPHdrVal::KStrFVal:
+			{
+				RStringF fieldNameStr = pool.StringF(hdrVal.StrF());
+				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
+				
+				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
+					iCookies.Append(fieldNameDesC);
+				else
+					retval = EFalse;
+			}
+			break;
+		case THTTPHdrVal::KStrVal:
+			{
+				RString fieldNameStr = pool.String(hdrVal.Str());
+				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
+				
+				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
+					iCookies.Append(fieldNameDesC);
+				else
+					retval = EFalse;
+			}
+			break;
+	}
+	
+	return retval;
+}
+
+char* CHttpEventHandler::GetCookie()
+{
+	if ( iCookies.Length() > 0 )
+		return (char *)iCookies.Ptr();
+	else
+		return NULL;
+}
+
+void CHttpEventHandler::ClearCookie()
+{
+	iCookies.Zero();
 }
