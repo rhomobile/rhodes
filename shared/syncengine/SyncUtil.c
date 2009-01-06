@@ -7,7 +7,7 @@
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
-extern char *get_session();
+extern char *get_session(char *url_string);
 extern char *get_database();
 extern char *get_client_id();
 

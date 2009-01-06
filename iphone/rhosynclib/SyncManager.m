@@ -25,7 +25,7 @@
 #include "SyncUtil.h"
 #include "SyncEngine.h"
 
-extern char *get_session();
+extern char *get_session(char *url_string);
 
 /* 
  * Pulls the latest object_values list 
@@ -35,7 +35,7 @@ extern char *get_session();
 char *fetch_remote_data(char *url_string) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	char *session = NULL;
-	session = str_assign(get_session());
+	session = str_assign(get_session(url_string));
 	if (session || strstr(url_string, "clientcreate")) {
 		char *data;
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
@@ -98,7 +98,7 @@ int login(const char *login, const char *password) {
 		sprintf(login_string, 
 				"%s/client_login", 
 				source_list[i]->_source_url);
-		session = str_assign(get_session());
+		session = str_assign(get_session(login_string));
 		if (!session) {
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 			NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
@@ -161,7 +161,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 		[pool release];
 		return SYNC_PUSH_CHANGES_OK;
 	}
-	char *session = str_assign(get_session());
+	char *session = str_assign(get_session(url));
 	if (session) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
@@ -201,11 +201,11 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 /*
  * Retrieve cookie from shared cookie storage
  */
-char *get_session() {
+char *get_session(char *url_string) {
+	NSURL *url = [[NSURL alloc] initWithString:[[NSString alloc] initWithUTF8String:url_string]];
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    NSDictionary *cookiesInfo = [NSHTTPCookie 
-								 requestHeaderFieldsWithCookies:[cookieStore cookies]];
-	char *session =  (char *)[[cookiesInfo objectForKey:@"Cookie"] UTF8String];
+	NSArray *cookies = [cookieStore cookiesForURL:url];
+	char *session =  (char *)[[[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"] UTF8String];
 	if (session) printf("Using session %s...\n",session);
-	return session;
+	return session == NULL || strcmp(session,"") == 0 ? NULL : session;
 }
