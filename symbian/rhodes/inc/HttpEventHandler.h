@@ -74,6 +74,9 @@ public:
 	
 	char* GetResponse();
 
+	char* GetCookie();
+	
+	void ClearCookie();
 protected:
 	//get file name for response body
 	void GetResponseBodyFile(TDes& aResBodyFileName);
@@ -93,7 +96,10 @@ private:
 	void DumpRespHeadersL(RHTTPTransaction& aTrans);
 	void DumpRespBody(RHTTPTransaction& aTrans);
 	void DumpIt(const TDesC8& aData);
-
+	
+	void ParseCookieL(RHTTPTransaction& aTrans);
+	TBool GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool);
+	
 private: //data
 	TBool iVerbose;
 
@@ -114,6 +120,8 @@ private: //data
 	TPtr8 iResBodyBufferPtr;
 	HBufC8* iResBodyBuffer;
 	TInt iCurPos;
+	
+	TBuf8<1024> iCookies;
 	};
 
 #endif // HTTPEVENTHANDLER_H

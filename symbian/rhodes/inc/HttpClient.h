@@ -106,7 +106,10 @@ public:
 	//get response body (client must free allocated memory)
 	char* GetResponse();
 	
-	void SetCookie( char* cookie, TInt size );
+	//get cookie
+	char* GetCookie();
+	
+	void SetCookie( char* cookie );
 private:
 
 	/**
@@ -119,14 +122,12 @@ private:
 	 */
 	void ConstructL();
 	
-	void WriteCookie(RHTTPHeaders headers);
-	
 protected:
 	//read body from body request file
 	void GetRequestBodyL();
 
 	//set header
-	void SetHeaderL(RHTTPHeaders aHeaders, TInt aHdrField, const TDesC8& aHdrValue);
+	void SetHeaderL(RHTTPHeaders& aHeaders, TInt aHdrField, const TDesC8& aHdrValue);
 	
 private: //data
 	
@@ -154,7 +155,7 @@ private: //data
 	
 	CHttpFileManager* iHttpFileManager; 
 	
-	HBufC8* iCookie;
+	TBuf8<1024> iCookie;
 	};
 
 #endif // HTTPCLIENT_H
