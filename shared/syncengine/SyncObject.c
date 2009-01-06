@@ -139,11 +139,12 @@ int insert_into_database(pSyncObject ref) {
 /* delete a specific set of object_values from the database */
 int delete_from_database(pSyncObject ref) {
     int success = 0;
-	prepare_db_statement("DELETE FROM object_values where object=? and attrib=?",
+	prepare_db_statement("DELETE FROM object_values where object=? and attrib=? and value=?",
 						 ref->_database,
 						 &delete_statement);
 	sqlite3_bind_text(delete_statement, 1, ref->_object, -1, SQLITE_TRANSIENT);
 	sqlite3_bind_text(delete_statement, 2, ref->_attrib, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(delete_statement, 3, ref->_value, -1, SQLITE_TRANSIENT);
 	success = sqlite3_step(delete_statement);
 	
 	if (success != SQLITE_DONE) {

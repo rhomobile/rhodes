@@ -16,6 +16,8 @@ class UserController < Rho::RhoController
       render :edit
     end
     if success
+      # run sync if we were successful
+      SyncEngine::dosync
       redirect '/'
     else
       @error = "You entered an invalid login/password, please try again."
