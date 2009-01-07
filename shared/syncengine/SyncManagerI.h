@@ -18,7 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-char *get_session(char *url_string);
+char *get_session(const char *url_string);
+void delete_session(const char *url_string);
 char *fetch_remote_data(char *url_string);
 int push_remote_data(char* url, char* data, size_t data_size);
 int login(const char *login, const char *password);
