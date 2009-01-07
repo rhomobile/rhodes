@@ -1,0 +1,46 @@
+<form title="Edit Ticket" 
+	  class="panel" 
+	  id="ticket_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
+		
+		  <div class="row">
+			  <label>title: </label>
+			  <input type="text" name="ticket[title]" value="<%=@ticket.title%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+			
+				<select id="ticket_state" name="ticket[state]">
+					<option>new</option>
+					<option>open</option>
+					<option>resolved</option>
+					<option>hold</option>
+					<option>invalid</option>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>body: </label>
+			  <input type="text" name="ticket[body]" value="<%=@ticket.body%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>tag: </label>
+			  <input type="text" name="ticket[tag]" value="<%=@ticket.tag%>"/>
+		  </div>
+				
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @ticket.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+	
+	<p>debug object:<%= @ticket.object.to_i %> <%= @ticket.object.inspect.to_s %><p>
+	
+</form>

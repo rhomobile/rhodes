@@ -1,0 +1,37 @@
+<form title="New Ticket" 
+	  class="panel"
+	  id="ticket_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
+		
+		  <div class="row">
+			  <label>title: </label>
+			  <input type="text" name="ticket[title]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+				<select id="ticket_state" name="ticket[state]">
+					<option>new</option>
+					<option>open</option>
+					<option>resolved</option>
+					<option>hold</option>
+					<option>invalid</option>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>body: </label>
+			  <input type="text" name="ticket[body]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>tag: </label>
+			  <input type="text" name="ticket[tag]"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>
