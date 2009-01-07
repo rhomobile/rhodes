@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "MainWindow.h"
+#include "HttpServer.h"
 
 CMainWindow::CMainWindow()
 {
@@ -150,8 +151,8 @@ LRESULT CMainWindow::OnForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-  m_spIWebBrowser2->Navigate(HOME_PAGE, NULL, NULL, NULL, NULL);
-  return 0;
+	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetStartPage(), NULL, NULL, NULL, NULL);
+	return 0;
 }
 
 LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

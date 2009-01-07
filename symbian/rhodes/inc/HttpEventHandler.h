@@ -77,6 +77,9 @@ public:
 	char* GetCookie();
 	
 	void ClearCookie();
+	
+	CConsoleBase* Console();
+	
 protected:
 	//get file name for response body
 	void GetResponseBodyFile(TDes& aResBodyFileName);
