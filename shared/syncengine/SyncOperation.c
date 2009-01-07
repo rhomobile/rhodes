@@ -22,6 +22,8 @@
 #include "SyncOperation.h"
 #include "Constants.h"
 
+extern void save_source_url(const char* source_url);
+
 static char* attr_format = "attrvals[][%s]=%s";
 
 static sqlite3_stmt *op_list_select_statement = NULL;
@@ -44,6 +46,8 @@ pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *source, ch
 	sync->_post_body = malloc(POST_BODY_SIZE);
 	set_sync_uri(sync, source);
 	set_sync_post_body(sync);
+
+	save_source_url(source);
 	return sync;
 }
 
