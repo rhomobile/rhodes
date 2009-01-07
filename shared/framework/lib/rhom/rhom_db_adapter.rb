@@ -92,7 +92,7 @@ module Rhom
         vals = ""
         values.each do |key,value|
           val = value.is_a?(String) ? "'#{value}'" : "#{value}"
-          vals << " #{key} = #{val}#{delim} "
+          vals << " #{key} = #{val}#{delim}"
         end
         vals
       end

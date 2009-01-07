@@ -25,7 +25,7 @@
 #include "SyncUtil.h"
 #include "SyncEngine.h"
 
-extern char *get_session(char *url_string);
+extern char *get_session(const char *url_string);
 
 /* 
  * Pulls the latest object_values list 
@@ -152,6 +152,20 @@ int login(const char *login, const char *password) {
 	}
 }
 
+void delete_session(const char *url_string) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	NSArray *cookies = [cookieStore cookiesForURL:[[NSURL alloc] 
+												   initWithString:[[NSString alloc] 
+																   initWithUTF8String:url_string]]];
+	int count = [cookies count];
+	int i;
+	for (i = 0; i < count; i++) {
+		[cookieStore deleteCookie:(NSHTTPCookie *)[cookies objectAtIndex:i]];
+	}
+	[pool release];
+}
+
 /*
  * Pushes changes from list to rhosync server
  */
@@ -201,7 +215,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 /*
  * Retrieve cookie from shared cookie storage
  */
-char *get_session(char *url_string) {
+char *get_session(const char *url_string) {
 	NSURL *url = [[NSURL alloc] initWithString:[[NSString alloc] initWithUTF8String:url_string]];
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	NSArray *cookies = [cookieStore cookiesForURL:url];
