@@ -34,6 +34,7 @@ extern VALUE RhoPreparePath(VALUE path);
 static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
+static ID framework_mid3;
 
 static char* rb_type_to_s(VALUE obj);
 
@@ -85,6 +86,7 @@ void RhoRubyStart()
     rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
+		CONST_ID(framework_mid3, "get_start_path");
 		
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
@@ -179,6 +181,26 @@ char* callServeIndex(char* index_name) {
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method call result type = %s\n", rb_type_to_s(callres));
 		return "Error";//TBD: Supply html description of the error
+	}
+	
+	//TBD: need to cleanup memory
+	rb_gc();
+#if defined(DEBUG)
+	print_profile_report();
+#endif
+	
+	szRes = RSTRING_PTR(callres);
+	return szRes;
+}
+
+char* callGetStartPage() {
+	char* szRes;
+	
+	VALUE callres = rb_funcall(framework, framework_mid3, 0, Qnil);
+	
+	if (TYPE(callres)!=T_STRING) {
+		printf("Method's get_start_page result type = %s\n", rb_type_to_s(callres));
+		return "/";
 	}
 	
 	//TBD: need to cleanup memory

@@ -7,7 +7,8 @@
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
-extern char *get_session(char *url_string);
+extern char *get_session(const char *url_string);
+extern void delete_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
 
@@ -59,8 +60,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				client_id);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
-			printf("JSON String: %s\n", json_string);
 			int size = MAX_SYNC_OBJECTS;
+			printf("JSON String: %s\n", json_string);
 			// Initialize parsing list and call json parser
 			list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
 			if (list) {
@@ -179,6 +180,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
+		delete_session(url_string);
     set_db_client_id(database,c_id);
 	}
 	sqlite3_reset(client_id_statement);
