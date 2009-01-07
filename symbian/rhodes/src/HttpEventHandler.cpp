@@ -344,6 +344,10 @@ void CHttpEventHandler::DumpRespBody(RHTTPTransaction& aTrans)
 		iTest->Console()->Printf(_L("Got last data chunk.\n"));
 	}
 
+CConsoleBase* CHttpEventHandler::Console()
+	{
+		return iTest->Console();
+	}
 
 void CHttpEventHandler::DumpIt(const TDesC8& aData)
 //Do a formatted dump of binary data
@@ -495,6 +499,13 @@ TBool CHttpEventHandler::GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool)
 				RStringF fieldNameStr = pool.StringF(hdrVal.StrF());
 				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
 				
+				if (iVerbose)
+				{
+					TBuf<CHttpConstants::KMaxHeaderValueLen>  value;
+					value.Copy(fieldNameDesC.Left(CHttpConstants::KMaxHeaderValueLen));
+					iTest->Console()->Printf(_L("%S:\n"), &value);
+				}
+
 				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
 					iCookies.Append(fieldNameDesC);
 				else
@@ -505,6 +516,13 @@ TBool CHttpEventHandler::GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool)
 			{
 				RString fieldNameStr = pool.String(hdrVal.Str());
 				const TDesC8& fieldNameDesC = fieldNameStr.DesC();
+				
+				if (iVerbose)
+				{
+					TBuf<CHttpConstants::KMaxHeaderValueLen>  value;
+					value.Copy(fieldNameDesC.Left(CHttpConstants::KMaxHeaderValueLen));
+					iTest->Console()->Printf(_L("%S:\n"), &value);
+				}
 				
 				if ( fieldNameDesC.Length() > 0 && fieldNameDesC.Compare(auth_token) )
 					iCookies.Append(fieldNameDesC);
@@ -519,6 +537,14 @@ TBool CHttpEventHandler::GetHdrVal( THTTPHdrVal& hdrVal, RStringPool& pool)
 
 char* CHttpEventHandler::GetCookie()
 {
+	if (iVerbose)
+	{
+		if ( iCookies.Length() > 0)
+			iTest->Console()->Printf(_L("Have cookie"));
+		else
+			iTest->Console()->Printf(_L("No cookie"));
+	}
+	
 	if ( iCookies.Length() > 0 )
 		return (char *)iCookies.Ptr();
 	else
@@ -527,5 +553,8 @@ char* CHttpEventHandler::GetCookie()
 
 void CHttpEventHandler::ClearCookie()
 {
+	Mem::Fill((void*)iCookies.Ptr(), CHttpConstants::KMaxUrlSize, 0);
 	iCookies.Zero();
+	if (iVerbose)
+		iTest->Console()->Printf(_L("CHttpEventHandler::ClearCookie"));
 }
