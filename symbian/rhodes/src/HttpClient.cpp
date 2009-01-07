@@ -117,6 +117,8 @@ void CHttpClient::ConstructL()
 		iHttpFileManager = CHttpFileManager::NewL();
 		
 		iNotUsingFile = EFalse;
+		
+		//iTransObs->SetVerbose( ETrue );
 	}
 
 void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize)
@@ -142,6 +144,9 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrl
 	
 	iTransObs->SetUsingFile(EFalse); 
 	
+	if ( iTransObs->Verbose() )
+		iTransObs->Console()->Printf(_L("InvokeHttpMethodL:\n"));
+	
 	InvokeHttpMethodL(aCommand);
 	
 	iTransObs->SetUsingFile(ETrue); //enable by default
@@ -162,10 +167,22 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 		RStringF method;
 		iHasARequestBody = EFalse;
 		
+		if ( iTransObs->Verbose() )
+			iTransObs->Console()->Printf(_L("Clear cookie.\n"));
+		
 		iTransObs->ClearCookie();
 		
-		if ( iConnectionManager && !iConnectionManager->IsOfflineMode())
+		if ( iTransObs->Verbose() )
+			iTransObs->Console()->Printf(_L("Setup connection.\n"));
+		
+		if ( iConnectionManager )
 			{
+				if ( iConnectionManager->IsOfflineMode() && iConnectionManager->GetBearerFilter() != EApBearerTypeWLAN )
+				{
+					if ( iTransObs->Verbose() )
+						iTransObs->Console()->Printf(_L("Detected offline mode.\n"));
+				}
+				
 				iConnectionManager->SetupConnection();
 				
 				RStringPool strP = iConnectionManager->GetHTTPSession().StringPool();
@@ -185,7 +202,7 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 				
 				//read body and url
 				if ( !iNotUsingFile )
-				GetRequestBodyL();
+					GetRequestBodyL();
 				
 				TInt realSize = 0;
 				for ( TInt i = 0; i < CHttpConstants::KMaxUrlSize && iUriPtr[i]; i++)
@@ -203,13 +220,19 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 				iTrans = iConnectionManager->GetHTTPSession().OpenTransactionL(uri, *iTransObs, method);
 				RHTTPHeaders hdr = iTrans.Request().GetHeaderCollection();
 		
+				if ( iTransObs->Verbose() )
+					iTransObs->Console()->Printf(_L("Add headers.\n"));
+				
 				// Add headers appropriate to all methods
 				SetHeaderL(hdr, HTTP::EUserAgent, KUserAgent);
-				SetHeaderL(hdr, HTTP::EAccept, KAccept);
-				SetHeaderL(hdr, HTTP::EConnection, KConnection);
+				//SetHeaderL(hdr, HTTP::ECookie, KAccept);
+				//SetHeaderL(hdr, HTTP::EConnection, KConnection);
 				
 				if ( iCookie.Length() > 0 )
 				{
+					if ( iTransObs->Verbose() )
+						iTransObs->Console()->Printf(_L("Set cookie.\n"));
+					
 					//SetHeaderL(hdr, HTTP::ECookie, iCookie);
 				
 					TBuf8<1024> my_cookie_name ( (const TUint8*)"auth_token" );
@@ -248,6 +271,8 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 					iTrans.Request().SetBody(*dataSupplier);
 					}
 	
+				if ( iTransObs->Verbose() )
+					iTransObs->Console()->Printf(_L("Submit the transaction.\n"));
 				// submit the transaction
 				iTrans.SubmitL();
 	
@@ -266,6 +291,9 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 
 TBool CHttpClient::GetNextDataPart(TPtrC8& aDataPart)
 	{
+	if ( iTransObs->Verbose() )
+		iTransObs->Console()->Printf(_L("GetNextDataPart:\n"));
+	
 	__ASSERT_DEBUG(iReqBodySubmitBuffer, User::Panic(KHttpClientPanic, EReqBodySumitBufferNotAllocated));
 	
 	TBool retVal = EFalse;
@@ -295,6 +323,9 @@ TBool CHttpClient::GetNextDataPart(TPtrC8& aDataPart)
 
 void CHttpClient::ReleaseData()
 	{
+	if ( iTransObs->Verbose() )
+		iTransObs->Console()->Printf(_L("ReleaseData:\n"));
+
 	iDataChunkCount = 0;
 	// Clear out the submit buffer
 	TPtr8 buff = iReqBodySubmitBuffer->Des();
@@ -311,6 +342,9 @@ void CHttpClient::ReleaseData()
 TInt CHttpClient::OverallDataSize()
 	{
 	TInt size = 0;
+
+	if ( iTransObs->Verbose() )
+		iTransObs->Console()->Printf(_L("OverallDataSize:\n"));
 
 	if ( !iNotUsingFile )
 	{
@@ -412,6 +446,9 @@ char* CHttpClient::GetResponse()
 
 char* CHttpClient::GetCookie()
 {
+	if ( iTransObs->Verbose() )
+		iTransObs->Console()->Printf(_L("GetCookie:\n"));
+
 	return iTransObs->GetCookie();
 }
 
@@ -420,7 +457,15 @@ void CHttpClient::SetCookie( char* cookie)
 	iCookie.Zero();
 	if ( cookie )
 	{
+		if ( iTransObs->Verbose() )
+			iTransObs->Console()->Printf(_L("SetCookie: Have cookie\n"));
+	
 		TPtrC8 ptr8((const TUint8*)cookie);
 		iCookie.Copy(ptr8);
+	}
+	else
+	{
+		if ( iTransObs->Verbose() )
+			iTransObs->Console()->Printf(_L("SetCookie: no cookie\n"));
 	}
 }
