@@ -211,9 +211,11 @@ module Rhom
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
                       # update viewable list
+=begin
                       result = ::Rhom::RhomDbAdapter::update_into_table(::Rhom::TABLE_NAME,
                                                                 {"value"=>new_val},
                                                                 {"object"=>obj, "attrib"=>method})
+=end
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
