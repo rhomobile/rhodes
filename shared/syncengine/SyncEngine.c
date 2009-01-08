@@ -266,9 +266,11 @@ int login(const char* login, const char* password) {
 			
 			//fetch session from server
 			sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+			
+			save_source_url( source_list[i]->_source_url );
 			makeLoginRequest( login_url, data );
 		}
-		clear_client_id();
+		
 		unlock_sync_mutex();
 		free_source_list(source_list, source_length);
 	}
