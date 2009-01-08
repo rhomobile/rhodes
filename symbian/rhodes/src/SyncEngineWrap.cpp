@@ -47,15 +47,15 @@ extern "C"
 		
 		void* sync_engine_main_routine(void* data);
 
-		char *get_db_session(char* source_url);
-		int set_db_session(char* source_url, char * session);
+		char *get_db_session(const char* source_url);
+		int set_db_session(const char* source_url, const char * session);
+		
+		void delete_db_session( const char* source_url );
+		const char* load_source_url();
 		
 		const char* RhoGetRootPath();
 		
 		int login ( const char* login, const char* password );
-//		int db_login ( const char* login, const char* password );
-		
-		void parse_source_url(char* url, char* source, int size);
 		
 		#include <fcntl.h>
 		#include <string.h>
@@ -193,14 +193,11 @@ extern "C"
 	char* fetch_remote_data(char* url) 
 	{
 		char* cookie = 0;
-		char source[1024] = {0};
 		
 		if (!gHttpClient) 
 			gHttpClient = CHttpClient::NewL();
-				
-		parse_source_url(url, source, 1024);
 		
-		cookie = get_db_session(source);
+		cookie = get_db_session(load_source_url());
 		gHttpClient->SetCookie( cookie);
 		
 		if ( cookie )
@@ -211,12 +208,12 @@ extern "C"
 		return gHttpClient->GetResponse();
 	}
 	
-	void parse_source_url(char* url, char* source, int size)
+	void parse_source_url(const char* url, char* source, int size)
 	{
 		int i = 0;
 		int count = strlen(url);
 		
-		for ( i = count; i >= 0  && ( url[i] != '/' && url[i] != '?' ); i--);
+		for ( i = count; i >= 0  && ( url[i] != '/' && url[i] != '?' ); i--){};
 		
 		if ( i <= size && i > 0)
 		{
@@ -261,12 +258,11 @@ extern "C"
 		session = gHttpLoginClient->GetCookie();
 		
 		if ( session )
-		{
-			char source[1024] = {0};
-			parse_source_url(url, source, 1024);
-			
-			set_db_session( source, session );
-		}	
+			set_db_session( load_source_url(), session );
 	}
 
+	void delete_session(const char *url_string)
+	{
+		delete_db_session(url_string);
+	}
 }

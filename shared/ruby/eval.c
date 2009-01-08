@@ -370,6 +370,8 @@ rb_longjmp(int tag, VALUE mesg)
 	th->errinfo = mesg;
     }
 
+    tmp = RSTRING_PTR(rb_obj_as_string(th->errinfo));
+    
     if (RTEST(ruby_debug) && !NIL_P(e = th->errinfo) &&
 	!rb_obj_is_kind_of(e, rb_eSystemExit)) {
 	int status;
@@ -378,12 +380,12 @@ rb_longjmp(int tag, VALUE mesg)
 	if ((status = EXEC_TAG()) == 0) {
 	    RB_GC_GUARD(e) = rb_obj_as_string(e);
 	    if (file) {
-		warn_printf("Exception `%s' at %s:%d - %s\n",
+		warn_printf("Exception '%s' at %s:%d - %s\n",
 			    rb_obj_classname(th->errinfo),
 			    file, line, RSTRING_PTR(e));
 	    }
 	    else {
-		warn_printf("Exception `%s' - %s\n",
+		warn_printf("Exception '%s' - %s\n",
 			    rb_obj_classname(th->errinfo),
 			    RSTRING_PTR(e));
 	    }
