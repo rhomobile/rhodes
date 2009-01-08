@@ -23,6 +23,7 @@
 #include "Constants.h"
 
 extern void save_source_url(const char* source_url);
+extern char *get_client_id();
 
 static char* attr_format = "attrvals[][%s]=%s";
 
@@ -59,10 +60,11 @@ void set_sync_uri(pSyncOperation sync, char *source) {
 	
 	/* construct the uri */
 	sprintf(temp, 
-			"%s/%s%s", 
+			"%s/%s%s&client_id=%s", 
 			source, 
 			sync->_operation, 
-			SYNC_SOURCE_FORMAT);
+			SYNC_SOURCE_FORMAT,
+			get_client_id());
 	strcpy((void *)sync->_uri, temp);
 }
 
