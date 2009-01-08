@@ -24,4 +24,8 @@ class UserController < Rho::RhoController
       render :edit
     end
   end
+  
+  def logout
+    SyncEngine::logout
+  end
 end
