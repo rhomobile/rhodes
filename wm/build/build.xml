@@ -1,15 +1,36 @@
 <project name="buildWM" default="buildall" basedir=".">
 
+    <fail message="build.properties does not exist, please copy build.properties.sample and fill in your settings.">
+        <condition>
+            <not>
+                <available file="build.properties" />
+            </not>
+        </condition>
+    </fail>
+
   <property file="build.properties"/>
 
   <property name="bin.dir" location="../bin" />
   <property name="src.dir" location="${bin.dir}/RhoBundle" />
   <property name="ruby.path" value="../../win32/target/compiler/RhoRuby.exe" />
   <property name="sharedAnt.dir" value="../../shared/build" />
-  <property name="cabWiz.dir" value="C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz" />
   <property name="target.dir" location="../target/wm6p" />
 
   <!-- <property name="exclude.apps" value="js/**" /> -->
+
+   <!--
+    ========================================================================
+      ALL
+    ========================================================================
+    -->
+    <target name="help">            
+       <echo message="Usage: ant [options]"/>      
+       <echo message=""/> 
+       <echo message="buildall               : to build rhobundle + rhodes"/>
+       <echo message=""/> 
+       <echo message="RhoBundle              : to build rhobundle"/>
+    </target> 
+
 
   <target name="clean.rhodes">
     <delete dir="${bin.dir}/Windows Mobile 6 Professional SDK (ARMV4I)" />
@@ -37,7 +58,7 @@
   </target>
 
   <target name="build.rhodes">
-    <exec executable="vcbuild" dir="../">
+    <exec executable="${vcbuild.tool}" dir="../">
       <arg value="/M4"/>
       <arg value="rhodes.sln"/>
       <arg value="Release|Windows Mobile 6 Professional SDK (ARMV4I)"/>

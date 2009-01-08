@@ -21,12 +21,24 @@ void set_db_client_id( sqlite3 *database, char *c_id );
 /**
  * Retrieve cookie from database storage
  */
-char *get_db_session(char* source_url);
+char *get_db_session(const char* source_url);
 
 /**
  * Save cookie to the database storage
  */
-int set_db_session(char* source_url, char * session);
+int set_db_session(const char* source_url, const char * session);
+
+
+/**
+ * internal functions used for storing/loading original source url 
+ */
+void save_source_url(const char* source_url);
+const char* load_source_url();
+
+/**
+ * Delete session
+ */
+void delete_session(const char *url_string);
 
 #if defined(__cplusplus)
 }

@@ -12,7 +12,7 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
   #p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value
   p.extra_deps         = [
-    ['sqlite3-ruby','>= 1.2.4'],
+    ['sqlite3-ruby','= 1.2.3'],
     ['rcov'],
     ['rspec'],
     ['templater'],

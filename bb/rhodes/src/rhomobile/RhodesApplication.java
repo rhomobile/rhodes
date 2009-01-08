@@ -161,9 +161,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     class CMainScreen extends MainScreen{
 
+		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+			public void run() {
+					SyncEngine.wakeUp();
+				}
+			};			
+    	
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
+			menu.add(syncItem);
 		}
 
 		public boolean onClose() {
@@ -194,8 +201,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);                        
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
-        _history.addElement(_httpRoot);
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(_httpRoot, null, null, null, this);
+        String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + 
+        	RhoRuby.getStartPage();
+        _history.addElement(strStartPage);
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(strStartPage, null, null, null, this);
         thread.start();                       
     }
           
@@ -290,7 +299,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                     RedirectEvent e = (RedirectEvent) event;
                     String referrer = e.getSourceURL();
-                                        
+                    String absoluteUrl = e.getLocation();
+                    
                     switch (e.getType()) {
 
                         case RedirectEvent.TYPE_SINGLE_FRAME_REDIRECT :
@@ -313,7 +323,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
-                            String absoluteUrl = e.getLocation();
                             if ( !absoluteUrl.startsWith(_httpRoot) )
                             	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
                         	
@@ -328,7 +337,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     
                     HttpHeaders requestHeaders = new HttpHeaders();
                     requestHeaders.setProperty(REFERER, referrer);
-                    PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(e.getLocation(), requestHeaders,null, event, this);
+                    PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl, requestHeaders,null, event, this);
                     thread.start();
                     break;
 
