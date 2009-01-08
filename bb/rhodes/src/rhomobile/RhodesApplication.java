@@ -161,9 +161,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     class CMainScreen extends MainScreen{
 
+		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+			public void run() {
+					SyncEngine.wakeUp();
+				}
+			};			
+    	
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
+			menu.add(syncItem);
 		}
 
 		public boolean onClose() {
