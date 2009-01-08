@@ -321,7 +321,7 @@ public class SyncUtil {
 	 * 
 	 * @return the int
 	 */
-	private static int processOpList(SyncSource source, String type, String client_id ) {
+	private static int processOpList(SyncSource source, String type, String clientId) {
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		ArrayList list = getOpListFromDatabase(type, source);
 		if (list.size() == 0) {
@@ -329,7 +329,7 @@ public class SyncUtil {
 		}
 		System.out.println("Found " + list.size()
 				+ " available records for processing...");
-		if (pushRemoteChanges(source, list, client_id) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
+		if (pushRemoteChanges(source, list, clientId) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		} else {
 			// We're done processsing, remove from database so we
@@ -349,7 +349,7 @@ public class SyncUtil {
 	 * 
 	 * @return the int
 	 */
-	public static int pushRemoteChanges(SyncSource source, ArrayList list, String client_id) {
+	public static int pushRemoteChanges(SyncSource source, ArrayList list, String clientId) {
 		int success = 0;
 		StringBuffer data = new StringBuffer();
 		String url = null;
@@ -366,8 +366,7 @@ public class SyncUtil {
 		try {
 			// Construct the post url
 			url = source.get_sourceUrl() + "/"
-					+ ((SyncOperation) list.get(0)).get_operation() + 
-					"?client_id=" + client_id;
+					+ ((SyncOperation) list.get(0)).get_operation() + "?client_id=" + clientId;
 			String session = get_session(source);
 			success = SyncManager.pushRemoteData(url, data.toString(),session);
 		} catch (IOException e) {
