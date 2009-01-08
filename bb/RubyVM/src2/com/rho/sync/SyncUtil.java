@@ -366,7 +366,7 @@ public class SyncUtil {
 		try {
 			// Construct the post url
 			url = source.get_sourceUrl() + "/"
-					+ ((SyncOperation) list.get(0)).get_operation() + "&client_id=" + clientId;
+					+ ((SyncOperation) list.get(0)).get_operation() + "?client_id=" + clientId;
 			String session = get_session(source);
 			success = SyncManager.pushRemoteData(url, data.toString(),session);
 		} catch (IOException e) {
