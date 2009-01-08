@@ -94,9 +94,9 @@ public class SyncObject {
 		hash.add(SyncUtil.createString("object"), SyncUtil
 				.createString(this.getObject()));
 		hash.add(SyncUtil.createString("attrib"), SyncUtil
-				.createString(this.getObject()));
+				.createString(this.getAttrib()));
 		hash.add(SyncUtil.createString("value"), SyncUtil
-				.createString(this.getObject()));
+				.createString(this.getValue()));
 		SyncUtil.adapter.deleteFromTable(SyncUtil
 				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
 	}
