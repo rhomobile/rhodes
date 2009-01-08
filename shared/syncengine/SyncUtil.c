@@ -20,6 +20,7 @@ static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
 static sqlite3_stmt *session_db_statement = NULL;
+static sqlite3_stmt *del_session_db_statement = NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
@@ -30,6 +31,33 @@ void finalize_sync_util_statements() {
 	if (client_db_statement) sqlite3_finalize(client_db_statement);
 	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
 	if (session_db_statement) sqlite3_finalize(session_db_statement);
+	if (del_session_db_statement) sqlite3_finalize(del_session_db_statement);
+}
+
+/**
+ * This global buffer will store source url between requests
+ * It can be used by other routines to understand what is the original source url. To avoid parsing etc...
+ */
+static char g_source_url[1024] = {0};
+
+void save_source_url(const char* source_url)
+{
+	int size = 0; 
+	
+	memset( g_source_url, 0, sizeof(g_source_url));
+	
+	if ( source_url )
+	{
+		size = strlen(source_url);
+		
+		if ( (size + 1 < sizeof(g_source_url) ) )
+			memcpy( (void*)g_source_url, (const void*)source_url, size);
+	}
+}
+
+const char* load_source_url()
+{
+	return g_source_url;
 }
 
 /* 
@@ -53,6 +81,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	
 	/* iterate over each source id and do a fetch */
 	for(i = 0; i < source_length; i++) {
+		
+		save_source_url(source_list[i]->_source_url);
+		
 		sprintf(url_string, 
 				"%s%s&client_id=%s", 
 				source_list[i]->_source_url, 
@@ -180,7 +211,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
-		delete_session(url_string);
+		delete_session(source->_source_url);
     set_db_client_id(database,c_id);
 	}
 	sqlite3_reset(client_id_statement);
@@ -210,7 +241,7 @@ void insert_sync_status(sqlite3 *database, const char *status) {
 /**
  * Retrieve cookie from database storage
  */
-char *get_db_session(char* source_url) {
+char *get_db_session(const char* source_url) {
 	char *session = NULL;
 	
 	if ( source_url )
@@ -227,10 +258,22 @@ char *get_db_session(char* source_url) {
 	return session;
 }
 
+void delete_db_session( const char* source_url )
+{
+	if ( source_url )
+	{
+		prepare_db_statement("DELETE FROM sources WHERE source_url=?",
+						 (sqlite3 *)get_database(),
+						 &del_session_db_statement);
+		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
+		sqlite3_step(del_session_db_statement); 
+		sqlite3_reset(del_session_db_statement);
+	}
+}
 /**
  * Save cookie to the database storage
  */
-int set_db_session(char* source_url, char * session) {
+int set_db_session(const char* source_url, const char * session) {
 
 	int success = 0;
 	

@@ -92,7 +92,7 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	//iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
-	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw |
+	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw | TBrCtlDefs::ECapabilityCursorNavigation |
 	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys | TBrCtlDefs::ECacheModeNoCache;
 
 	CreateBasicBrowserControlL();
