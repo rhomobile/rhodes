@@ -32,7 +32,7 @@ extern "C" {
 #endif
 	
 #define POST_BODY_SIZE 4096
-#define SYNC_URI_SIZE 1024
+#define SYNC_URI_SIZE 2048
 
 /*
  * Used to store a rhosync operation which is used
