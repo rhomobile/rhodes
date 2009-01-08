@@ -291,9 +291,9 @@ public class SyncUtil {
 			
 			System.out.println("URL: " + current.get_sourceUrl());
 			int success = 0;
-			success += processOpList(current, "create");
-			success += processOpList(current, "update");
-			success += processOpList(current, "delete");
+			success += processOpList(current, "create", client_id);
+			success += processOpList(current, "update", client_id);
+			success += processOpList(current, "delete", client_id);
 			if (success > 0) {
 				System.out
 						.println("Remote update failed, not continuing with sync...");
@@ -321,7 +321,7 @@ public class SyncUtil {
 	 * 
 	 * @return the int
 	 */
-	private static int processOpList(SyncSource source, String type) {
+	private static int processOpList(SyncSource source, String type, String client_id ) {
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		ArrayList list = getOpListFromDatabase(type, source);
 		if (list.size() == 0) {
@@ -329,7 +329,7 @@ public class SyncUtil {
 		}
 		System.out.println("Found " + list.size()
 				+ " available records for processing...");
-		if (pushRemoteChanges(source, list) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
+		if (pushRemoteChanges(source, list, client_id) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		} else {
 			// We're done processsing, remove from database so we
@@ -349,7 +349,7 @@ public class SyncUtil {
 	 * 
 	 * @return the int
 	 */
-	public static int pushRemoteChanges(SyncSource source, ArrayList list) {
+	public static int pushRemoteChanges(SyncSource source, ArrayList list, String client_id) {
 		int success = 0;
 		StringBuffer data = new StringBuffer();
 		String url = null;
@@ -366,7 +366,8 @@ public class SyncUtil {
 		try {
 			// Construct the post url
 			url = source.get_sourceUrl() + "/"
-					+ ((SyncOperation) list.get(0)).get_operation();
+					+ ((SyncOperation) list.get(0)).get_operation() + 
+					"?client_id=" + client_id;
 			String session = get_session(source);
 			success = SyncManager.pushRemoteData(url, data.toString(),session);
 		} catch (IOException e) {
