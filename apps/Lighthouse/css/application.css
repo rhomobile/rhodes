@@ -1,2 +1,7 @@
-#ticket_state {margin-top:5px;}
-.ticket_status {color: #ff1177;}
+fieldset select {margin-top:5px;}
+
+.ticket_details {font-size:85%;}
+.hold {color:#EEBB00;}
+.new {color:#FF1177;}
+.open {color:#AAAAAA;}
+.name {color:#3388BB;}
