@@ -1,5 +1,5 @@
 == 0.2.0
-Initial 0.2 release, major features:
+Major features:
 * scripted build process for all platforms
 * incremental sync
 * symbian support
