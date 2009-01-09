@@ -1,4 +1,5 @@
 require 'rho/rhocontroller'
+require File.join(File.dirname(__FILE__), '../application')
 require File.join(File.dirname(__FILE__), '../helpers/application_helper')
 
 class TicketController < Rho::RhoController
@@ -28,6 +29,9 @@ class TicketController < Rho::RhoController
   def assgined_to_me
     @title = "Assigned to me"
     @tickets = Ticket.find(:all)
+    @tickets = @tickets.reject do |ticket|
+      ticket.assigned_user_id != LighthouseApplication::LIGHTHOUSE_ID
+    end
     render :index
   end
   
