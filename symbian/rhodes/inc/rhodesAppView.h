@@ -110,6 +110,10 @@ public:
     */
     TKeyResponse HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
         
+    /**
+     * Init start page
+     */
+    void InitStartPage();
 
 protected:
 
@@ -133,7 +137,6 @@ protected:
     */
     void Draw(const TRect& aRect) const;
 
-    
     /**
     * Handle key events.
     */
@@ -188,6 +191,7 @@ private: //data
         
         //Softkeys Observer
         //CAppSoftkeysObserver* iAppSoftkeysObserver;
+        TBuf<1024> iStartPage;
 	};
 
 #endif // __RHODESAPPVIEW_h__
