@@ -83,20 +83,30 @@ public:
 	VALUE getContact(char* id);
 	
 	/**
+	 * Commit contact
+	 */
+	void saveContact(CContactItem* contactItem);
+	
+	/**
+	 * Delete contact
+	 */
+	void deleteContact(CContactItem* contactItem);
+	
+	/**
 	 * Create contact
 	 * The caller take ownership of the object.
 	 */
-	static CPbkContactItem* createRecord();
+	static CContactCard* createRecord();
 	
 	/**
 	 * Set contact's field value 
 	 */
-	static void setRecord(CPbkContactItem* record, char* prop, char* value);
+	static void setRecordValue(CContactItem* contactItem, char* prop, char* value);
 	
 	/**
 	 * Add record
 	 */
-	static void addRecord( CPbkContactItem* record );
+	void addRecord( CContactCard* card );
 	
 private:
 
@@ -130,9 +140,10 @@ private:
 	 */
 	VALUE getFields(CContactItemFieldSet& fieldSet, char* id);
 	
+	static TUid getFieldId( char* prop );
+	
 private: //data
 	CContactDatabase* iContactDb;
-	
 	};
 
 #endif // PHONEBOOK_H
