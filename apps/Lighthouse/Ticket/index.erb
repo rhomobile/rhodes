@@ -1,4 +1,4 @@
-<ul id="tickets" title="Tickets">
+<ul id="tickets" title="<%= @title %>">
 <% @tickets.each do |ticket| %>
 
 <% project = Project.find(ticket.project_id) %>
@@ -9,5 +9,5 @@
 </li>
 
 <% end %>
-<li><font color="blue"><%=link_to "New Ticket", "new"%></font></li>
+<li><font color="blue"><%=link_to "Add New Ticket", "new"%></font></li>
 </ul>
