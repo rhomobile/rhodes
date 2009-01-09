@@ -1,0 +1,7 @@
+<ul id="projects" title="Projects">
+<%@projects.each do |x|%>
+
+<li><%=link_to "#{x.name}", "show", x.object%></li>
+
+<%end%>
+</ul>

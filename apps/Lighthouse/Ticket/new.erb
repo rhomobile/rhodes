@@ -12,6 +12,15 @@
 		  </div>
 		
 		  <div class="row">
+			  <label>project: </label>
+				<select id="ticket_project" name="ticket[project_id]">
+					<% Project.find(:all).each do |project| %>
+						<option value="<%= project.object %>"><%= project.name %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
 			  <label>status: </label>
 				<select id="ticket_state" name="ticket[state]">
 					<option>new</option>

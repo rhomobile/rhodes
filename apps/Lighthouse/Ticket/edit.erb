@@ -3,16 +3,17 @@
 	  id="ticket_edit_form" 
 	  method="POST" 
 	  action="<%=url_for('update')%>">
+	
+		<h1 style="margin:0px"><%= @ticket.title %></h1>
+
+		<p>#<%= @ticket.number %> <%= Project.find(@ticket.project_id).name %></p>
+		<p><b>Reported by:</b> <%= User.find(@ticket.creator_id).name %> | <%= @ticket.created_at %></p>
+		
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
 		
 		  <div class="row">
-			  <label>title: </label>
-			  <input type="text" name="ticket[title]" value="<%=@ticket.title%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>status: </label>
+			  <label>Status:</label>
 			
 				<select id="ticket_state" name="ticket[state]">
 					<option>new</option>
@@ -40,7 +41,6 @@
 			<font color="#990000">Delete</font>
 		</a>
 	</p>
-	
-	<p>debug object:<%= @ticket.object.to_i %> <%= @ticket.object.inspect.to_s %><p>
+
 	
 </form>

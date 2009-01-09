@@ -1,6 +1,9 @@
 require 'rho/rhocontroller'
+require File.join(File.dirname(__FILE__), '../helpers/application_helper')
 
 class TicketController < Rho::RhoController
+  
+  include ApplicationHelper
   
   #GET /Ticket
   def index
@@ -10,7 +13,8 @@ class TicketController < Rho::RhoController
 
   # GET /Ticket/1
   def show
-    @tickets = Ticket.find(@params['object'])
+    @ticket = Ticket.find(@params['id'])
+    render :show
   end
 
   # GET /Ticket/new
