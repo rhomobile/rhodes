@@ -7,12 +7,12 @@
 		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
 		
 		  <div class="row">
-			  <label>title: </label>
+			  <label>Title:</label>
 			  <input type="text" name="ticket[title]"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>project: </label>
+			  <label>Project:</label>
 				<select id="ticket_project" name="ticket[project_id]">
 					<% Project.find(:all).each do |project| %>
 						<option value="<%= project.object %>"><%= project.name %></option>
@@ -21,7 +21,7 @@
 		  </div>
 		
 		  <div class="row">
-			  <label>status: </label>
+			  <label>Status: </label>
 				<select id="ticket_state" name="ticket[state]">
 					<option>new</option>
 					<option>open</option>
@@ -32,12 +32,12 @@
 		  </div>
 		
 		  <div class="row">
-			  <label>body: </label>
+			  <label>Describe the problem:</label>
 			  <input type="text" name="ticket[body]"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>tag: </label>
+			  <label>Tags:</label>
 			  <input type="text" name="ticket[tag]"/>
 		  </div>
 		
