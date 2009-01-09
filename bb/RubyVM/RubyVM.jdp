@@ -14,6 +14,7 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
+PerstImplJSR75
 PerstLite
 ]
 ExcludeFromBuildAll=0
