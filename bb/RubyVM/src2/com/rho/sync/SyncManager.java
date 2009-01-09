@@ -127,6 +127,9 @@ public class SyncManager {
 		HttpConnection connection = null;
 		try {
 			connection = NetworkAccess.connect(url);
+			if ( session != null &&  session.length() > 0 )
+				connection.setRequestProperty("Cookie", session);
+			
 			os = connection.openOutputStream();
 			connection.setRequestMethod(HttpConnection.POST);
 			os.write(data.getBytes());

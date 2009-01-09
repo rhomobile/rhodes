@@ -12,6 +12,8 @@ public class RhoRuby {
 
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
+	public static final RubyID getStartPath = RubyID.intern("get_start_path");
+	
 	static RubyValue receiver;
 	static xruby.ServeME.main mainObj;
 	
@@ -41,6 +43,13 @@ public class RhoRuby {
 		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createString(strIndex), null, serveIndexID);
 		
 		return value;
+	}
+
+	public static String getStartPage(){
+		
+		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
+		
+		return value.toString();
 	}
 	
 	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
