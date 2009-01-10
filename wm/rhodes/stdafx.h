@@ -34,7 +34,7 @@
 #include <atlcom.h>
 #include <atlwin.h>
 #include <atlhost.h>
-#include <atlsiface.h>
+//#include <atlsiface.h>
 
 #include <pvdispid.h>
 #include <piedocvw.h>

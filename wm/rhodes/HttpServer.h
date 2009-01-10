@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "atlutil.h" //Using local copy, as 'standard' atlutil has errors
+#include "atlutil-vc08.h" //Using local copy, as 'standard' atlutil has errors
 
 #include "shttpd.h"
 
