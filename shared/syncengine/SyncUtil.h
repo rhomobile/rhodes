@@ -35,6 +35,11 @@ int set_db_session(const char* source_url, const char * session);
 void save_source_url(const char* source_url);
 const char* load_source_url();
 
+/**
+ * Delete session
+ */
+void delete_session(const char *url_string);
+
 #if defined(__cplusplus)
 }
 #endif

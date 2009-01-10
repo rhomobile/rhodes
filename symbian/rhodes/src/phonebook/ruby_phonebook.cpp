@@ -52,17 +52,6 @@ VALUE getallPhonebookRecords(void* pb)
 	return getnil();	
 }
 
-void* openPhonebookRecord(void* pb, char* id) 
-{
-	if ( pb && id )
-	{
-		CPhonebook* phonebook = (CPhonebook*)pb;
-		return phonebook->openContact(id);
-	}
-
-	return NULL;
-}
-
 VALUE getPhonebookRecord(void* pb, char* id) 
 {
 	if ( pb && id )
@@ -91,28 +80,52 @@ void* createRecord()
 	return CPhonebook::createRecord();
 }
 
+void* openPhonebookRecord(void* pb, char* id) 
+{
+	if ( pb && id )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		return phonebook->openContact(id);
+	}
+
+	return NULL;
+}
+
 int setRecordValue(void* record, char* prop, char* value) 
 {
-	CPhonebook::setRecord((CPbkContactItem*)record, prop, value);
+	if (record) {
+		CPhonebook::setRecordValue((CContactItem*)record, prop, value);
+	}
 	return 1;
 }
 
 int addRecord(void* pb, void* record) 
 {
-	pb;
-	CPhonebook::addRecord((CPbkContactItem*)record);
+	if ( pb && record )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		phonebook->addRecord((CContactCard*)record);
+	}
 	return 1;
 }
 
 int saveRecord(void* pb, void* record) {
-	pb;
-	record;
+
+	if ( pb && record )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		phonebook->saveContact((CContactItem*)record);
+	}
 	return 1;
 }
 
 int deleteRecord(void* pb, void* record) {
-	pb;
-	record;
+
+	if ( pb && record )
+	{
+		CPhonebook* phonebook = (CPhonebook*)pb;
+		phonebook->deleteContact((CContactItem*)record);
+	}
 	return 1;
 }
 }
