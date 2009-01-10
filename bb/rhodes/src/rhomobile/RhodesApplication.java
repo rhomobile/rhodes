@@ -161,9 +161,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     class CMainScreen extends MainScreen{
 
+		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+			public void run() {
+					SyncEngine.wakeUp();
+				}
+			};			
+    	
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
+			menu.add(syncItem);
 		}
 
 		public boolean onClose() {
@@ -194,8 +201,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);                        
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
-        _history.addElement(_httpRoot);
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(_httpRoot, null, null, null, this);
+        String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + 
+        	RhoRuby.getStartPage();
+        _history.addElement(strStartPage);
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(strStartPage, null, null, null, this);
         thread.start();                       
     }
           

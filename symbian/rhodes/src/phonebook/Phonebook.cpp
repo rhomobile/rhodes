@@ -161,7 +161,45 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         TPtrC value = lastName->Text();
         add2hash(&hash, RUBY_PB_LAST_NAME, value);
     }
-	
+    
+    // Get home phone
+    findpos = fieldSet.Find( KUidContactFieldPhoneNumber );
+
+    // Check that the last name field is actually there.
+    if ( (findpos > -1) || (findpos >= fieldSet.Count()) )
+    {
+        CContactItemField& itemField = fieldSet[ findpos ];
+        CContactTextField* textField = itemField.TextStorage();
+        TPtrC value = textField->Text();
+        add2hash(&hash, RUBY_PB_HOME_NUMBER, value);
+        add2hash(&hash, RUBY_PB_MOBILE_NUMBER, value);
+        add2hash(&hash, RUBY_PB_BUSINESS_NUMBER, value);
+    }
+
+    // Get email
+    findpos = fieldSet.Find( KUidContactFieldEMail );
+
+    // Check that the last name field is actually there.
+    if ( (findpos > -1) || (findpos >= fieldSet.Count()) )
+    {
+        CContactItemField& itemField = fieldSet[ findpos ];
+        CContactTextField* textField = itemField.TextStorage();
+        TPtrC value = textField->Text();
+        add2hash(&hash, RUBY_PB_EMAIL_ADDRESS, value);
+    }
+
+    // Get company
+    findpos = fieldSet.Find( KUidContactFieldCompanyName );
+
+    // Check that the last name field is actually there.
+    if ( (findpos > -1) || (findpos >= fieldSet.Count()) )
+    {
+        CContactItemField& itemField = fieldSet[ findpos ];
+        CContactTextField* textField = itemField.TextStorage();
+        TPtrC value = textField->Text();
+        add2hash(&hash, RUBY_PB_COMPANY_NAME, value);
+    }
+
 	return hash;
 }
 
@@ -195,7 +233,7 @@ VALUE CPhonebook::getallPhonebookRecords()
     // make items for listbox
     const TInt nc( contacts->Count() );
 
-    for ( TInt i( nc-1 ); i >= 0; i-- ) //For each ContactId
+    for ( TInt i = 0; i < nc; i++ ) //For each ContactId
     {
         CContactItem* contact = NULL;
         // The caller takes ownership of the returned object.
@@ -204,7 +242,7 @@ VALUE CPhonebook::getallPhonebookRecords()
         CleanupStack::PushL( contact );
 
         char rid[20] = {0};
-        sprintf( rid, "%d", contact->Id());
+        sprintf( rid, "{%d}", contact->Id());
         
         if (rid) 
     	{
@@ -222,15 +260,20 @@ VALUE CPhonebook::getallPhonebookRecords()
 
 CContactItem* CPhonebook::openContact(char* id)
 {
-	TInt nID = atoi(id);
+	TInt nID = -1;
+	sscanf( id, "{%d}", &nID );
 	
-	CContactItem* contact = NULL;
-    // The caller takes ownership of the returned object.
-    // So push it onto the CleanupStack
-    contact = iContactDb->OpenContactL( nID );
-    CleanupStack::PushL( contact );
-    
-    return contact;
+	if ( nID >= 0 )
+	{
+		CContactItem* contact = NULL;
+	    // The caller takes ownership of the returned object.
+	    // So push it onto the CleanupStack
+	    contact = iContactDb->OpenContactL( nID );
+	    CleanupStack::PushL( contact );
+	    
+	    return contact;
+	}
+	return NULL;
 }
 
 VALUE CPhonebook::getContact(char* id)
@@ -250,67 +293,120 @@ VALUE CPhonebook::getContact(char* id)
     return getnil();
 }
 
-CPbkContactItem* CPhonebook::createRecord()
+CContactCard* CPhonebook::createRecord()
 {
-	CPbkContactEngine* engine = CPbkContactEngine::NewL();
-	if ( engine )
+	CContactCard* card = CContactCard::NewLC();
+	return card;
+}
+
+TUid CPhonebook::getFieldId( char* prop )
+{
+	TUid fieldID = {-1};
+	
+	if ( strcmp(RUBY_PB_FIRST_NAME, prop) == 0 )
 	{
-		CleanupStack::PushL( engine );
-		
-		// Create a contact with few default fields
-		// All the default fields are empty and won't be displayed
-		// until some information is stored in them
-		CPbkContactItem* contact = engine->CreateEmptyContactL();
-		
-		CleanupStack::PopAndDestroy( engine );
-		return contact;
+		fieldID = KUidContactFieldGivenName;
+	}
+	else if ( strcmp(RUBY_PB_LAST_NAME, prop) == 0 )
+	{
+		fieldID = KUidContactFieldFamilyName;
+	}
+	else if ( strcmp(RUBY_PB_MOBILE_NUMBER, prop) == 0 ||
+			strcmp(RUBY_PB_HOME_NUMBER, prop) == 0 ||
+			strcmp(RUBY_PB_BUSINESS_NUMBER, prop) == 0 )
+	{
+		fieldID = KUidContactFieldPhoneNumber;
+	}
+	else if ( strcmp(RUBY_PB_EMAIL_ADDRESS, prop) == 0 )
+	{
+		fieldID = KUidContactFieldEMail;
+	}
+	else if ( strcmp(RUBY_PB_COMPANY_NAME, prop) == 0 )
+	{
+		fieldID = KUidContactFieldCompanyName;
 	}
 	
-	return NULL;
+	return fieldID;
 }
 
-void CPhonebook::setRecord(CPbkContactItem* record, char* prop, char* value)
+void ConvertToUnicode(RFs& session, TDes16& aUnicode, const char *str)
 {
-	if ( record && prop && value )
+  	CCnvCharacterSetConverter *converter = CCnvCharacterSetConverter::NewL();
+  	converter->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, session);
+  
+  	TPtrC8 ptr((const unsigned char*)str);
+
+  	int state = CCnvCharacterSetConverter::KStateDefault;
+  	converter->ConvertToUnicode(aUnicode, ptr, state);
+  	
+  	delete converter;
+}
+
+void CPhonebook::setRecordValue(CContactItem* contactItem, char* prop, char* value)
+{
+	if ( contactItem && prop && value )
 	{
-		CPbkContactItem* contact = record;
+		TUid fieldId = CPhonebook::getFieldId(prop);
 		
-		TPbkFieldId fieldID = -1;
-		if ( strcmp(RUBY_PB_FIRST_NAME, prop) == 0 )
+		if ( fieldId.iUid >= 0 ) //if supported id
 		{
-			fieldID = EPbkFieldIdFirstName;
-		}
-		else if ( strcmp(RUBY_PB_FIRST_NAME, prop) == 0 )
-		{
-			fieldID = EPbkFieldIdLastName;
-		}
-		
-		TPbkContactItemField* contactItemField = contact->FindField(fieldID);
-		if ( contactItemField )
-		{
-			TPtrC8 ptr8((TUint8*)value);
-			HBufC *hb = HBufC::NewLC(ptr8.Length());
-			hb->Des().Copy(ptr8);
-			contactItemField->TextStorage()->SetText(hb);
-			CleanupStack::PopAndDestroy(hb);
-		}
+			TInt phoneFieldIndex =	contactItem->CardFields().Find(fieldId);
+
+			RFs iSession;
+			User::LeaveIfError(iSession.Connect());
+
+			TBuf<100> textValue;
+			ConvertToUnicode( iSession, textValue, value );
+
+			if(phoneFieldIndex == KErrNotFound)
+			{
+				// The contact has no existing phone field, so add one.
+				CContactItemField* addPhoneField = CContactItemField::NewLC(KStorageTypeText, fieldId);
+			
+				addPhoneField->SetMapping(fieldId);
+				addPhoneField->TextStorage()->SetTextL(textValue);
+			
+				contactItem->AddFieldL(*addPhoneField); // Takes ownership
+			
+				CleanupStack::Pop(addPhoneField);
+			}
+			else
+			{
+				// Modify the existing phone field’s contents.
+				CContactItemField& phoneField = contactItem->CardFields()[phoneFieldIndex];
+				phoneField.TextStorage()->SetTextL(textValue);
+			}
+
+			iSession.Close();
+		}	
 	}
 }
 
-void CPhonebook::addRecord( CPbkContactItem* record )
+void CPhonebook::addRecord( CContactCard* card )
 {
-	if ( record )
+	if ( card )
 	{
-		CPbkContactEngine* engine = CPbkContactEngine::NewL();
-		CleanupStack::PushL( engine );
-		
-		CPbkContactItem* contact = record;
-		CleanupStack::PushL( contact );
-		
-		// Store the contact to the phonebook
-		engine->AddNewContactL( *contact );
-		
-		CleanupStack::PopAndDestroy( contact );
-		CleanupStack::PopAndDestroy( engine );
+		TContactItemId cardId = iContactDb->AddNewContactL(*card);
+		delete card;
+	}
+}
+
+void CPhonebook::saveContact(CContactItem* contactItem)
+{
+	if ( contactItem )
+	{
+		iContactDb->CommitContactL( *contactItem );
+	    CleanupStack::PopAndDestroy( contactItem );
+	}
+}
+
+void CPhonebook::deleteContact(CContactItem* contactItem)
+{
+	if ( contactItem )
+	{
+		TContactItemId id = contactItem->Id();
+		iContactDb->CloseContactL( id );
+		CleanupStack::PopAndDestroy( contactItem );
+		iContactDb->DeleteContactL( id );
 	}
 }

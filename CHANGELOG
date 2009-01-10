@@ -1,4 +1,24 @@
-== 0.1.1
+== 0.2.0
+Major features:
+* scripted build process for all platforms
+* incremental sync
+* symbian support
+* winmo performance enhancements
+* settable sources
+* PIM access
+* authentication support (w/ login page)
+
+Known issues:
+* [#109] rhom object manager doesn't re-generate objects with attributes after loading with empty database
+* [#128] object update doesn't immediately update the viewable list (only after sync occurs)
+* [#115] authentication currently doesn't provide UI feedback if sync fails, only if username/password isn't
+         provided initially
+* [#157] RIM 4.7 JDE is not yet supported, only 4.6.0 and 4.2 are supported
+* [#145] phonebook not supported on RIM
+* [#146] geolocation not supported on RIM
+* [#126] erb compilation errors are not reported to developer
+* [#117] logout not supported, still need to reinstall application or invalidate session on server to logout
+* [#153] RIM logs in multiple times to same domain
 
 == 0.1.0 
 * Initial support for iPhone, RIM (v4.6), and Windows Mobile (v6)
