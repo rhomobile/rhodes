@@ -1,6 +1,11 @@
 #pragma once
 #include "../stdafx.h"
+
+#if (_MSC_VER == 1400)
+#include "../atlutil.h" //Using local copy, as 'standard' atlutil has errors
+#else
 #include "../atlutil-vc08.h" //Using local copy, as 'standard' atlutil has errors
+#endif
 
 #include "shttpd.h"
 #include "sqlite3.h"
