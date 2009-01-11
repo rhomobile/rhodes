@@ -1,0 +1,13 @@
+<ul id="tickets" title="<%= @title %>">
+<% @tickets.each do |ticket| %>
+
+<% project = Project.find(ticket.project_id) %>
+
+<li class="ticket_details">
+	<%= link_to "<span class=\"name\">\"#{ticket.title}\"</span>", "edit", ticket.object %>
+	#<%= ticket.number %> / <%= project.name %> / <span class="<%= ticket.state %>"><%= ticket.state %></span>
+</li>
+
+<% end %>
+<li><font color="blue"><%=link_to "Add New Ticket", "new"%></font></li>
+</ul>

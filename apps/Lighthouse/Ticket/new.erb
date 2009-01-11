@@ -1,0 +1,46 @@
+<form title="New Ticket" 
+	  class="panel"
+	  id="ticket_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
+		
+		  <div class="row">
+			  <label>Title:</label>
+			  <input type="text" name="ticket[title]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Project:</label>
+				<select id="ticket_project" name="ticket[project_id]">
+					<% Project.find(:all).each do |project| %>
+						<option value="<%= project.object %>"><%= project.name %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Status: </label>
+				<select id="ticket_state" name="ticket[state]">
+					<option>new</option>
+					<option>open</option>
+					<option>resolved</option>
+					<option>hold</option>
+					<option>invalid</option>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Describe the problem:</label>
+			  <input type="text" name="ticket[body]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Tags:</label>
+			  <input type="text" name="ticket[tag]"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>

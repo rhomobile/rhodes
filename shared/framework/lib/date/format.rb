@@ -5,7 +5,10 @@ require 'rational'
 
 class Date
 
+  SECONDS_IN_DAY = 60*60*24
+
   module Format # :nodoc:
+
 
     MONTHS = {
       'january'  => 1, 'february' => 2, 'march'    => 3, 'april'    => 4,
