@@ -125,6 +125,9 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 		{ 
 			if ( iSyncEngineWrap )
 				iSyncEngineWrap->ResumeThread();
+			
+			iAppView->InitStartPage();
+			
 			HandleCommandL(ECmdAppHome);
 		}
 		else

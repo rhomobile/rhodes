@@ -61,6 +61,8 @@ public:
 	 */
 	virtual ~CRhodesAppUi();
 	
+	const TDesC& GetStartPage();
+	
 private:
 	// Functions from base classes
 

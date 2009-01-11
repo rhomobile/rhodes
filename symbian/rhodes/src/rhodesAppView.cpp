@@ -43,6 +43,16 @@
 
 #include <commdb.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+extern "C" {
+
+char* callGetStartPage();
+
+}
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -127,7 +137,7 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	    CleanupStack::PopAndDestroy(1); // file
 	}
     CleanupStack::PopAndDestroy(1); // rfs
-	}
+    }
 
 // -----------------------------------------------------------------------------
 // CRhodesAppView::CRhodesAppView()
@@ -154,6 +164,36 @@ CRhodesAppView::~CRhodesAppView()
 		
 		delete iSpecialLoadObserver;
 	}
+
+
+void CRhodesAppView::InitStartPage()
+{
+	char* slash = "";
+	char* start_page = callGetStartPage();
+	if (!start_page) {
+		start_page = "";
+	} else if ( (*start_page!='/')&&(*start_page!='\\') ) {
+		slash = "/";
+	}
+	int len = strlen("http://127.0.0.1:8080")+strlen(slash)+strlen(start_page);
+	char* sp = (char*) malloc(len+1);
+	sprintf(sp,"http://127.0.0.1:8080%s%s",slash,start_page);
+
+	RFs session;
+	User::LeaveIfError(session.Connect());
+	
+	CCnvCharacterSetConverter *converter = CCnvCharacterSetConverter::NewL();
+  	converter->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, session);
+  
+  	TPtrC8 ptr((const unsigned char*)sp);
+
+  	int state = CCnvCharacterSetConverter::KStateDefault;
+  	converter->ConvertToUnicode(iStartPage, ptr, state);
+	
+  	session.Close();
+  	
+	free(sp);
+}
 
 // -----------------------------------------------------------------------------
 // CRhodesAppView::Draw()
@@ -284,8 +324,8 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         	{
         		if (iBrCtlInterface)
         			{
-        				_LIT(KHomePage, "http://127.0.0.1:8080/");
-        				iBrCtlInterface->LoadUrlL(KHomePage);
+        				//_LIT(KHomePage, "http://127.0.0.1:8080/");
+        				iBrCtlInterface->LoadUrlL(iStartPage);
         			}
         		break;
         	}
