@@ -412,7 +412,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
 	        {
 		        cstr = new char [dwSize+1];
 		        // Call HttpQueryInfo again to get the headers.
-		        bOk = HttpQueryInfoA(hRequest, HTTP_QUERY_RAW_HEADERS, (LPVOID) cstr, &dwSize, NULL);
+		        bOk = (bool) HttpQueryInfoA(hRequest, HTTP_QUERY_RAW_HEADERS, (LPVOID) cstr, &dwSize, NULL);
           }
         }else{
           BOOL bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
