@@ -204,7 +204,10 @@ char* callGetStartPage() {
 	}
 	
 	//TBD: need to cleanup memory
+#ifndef __SYMBIAN32__	
 	rb_gc();
+#endif	
+	
 #if defined(DEBUG)
 	print_profile_report();
 #endif

@@ -1,5 +1,5 @@
-#if _MSC_VER != 1400
-#error MSC version unmatch: _MSC_VER: 1400 is expected.
+#if !((_MSC_VER == 1400)||(_MSC_VER == 1500))
+#error MSC version unmatch: _MSC_VER: 1400 or 1500 is expected.
 #endif
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
