@@ -1,6 +1,5 @@
 require 'rho/rhocontroller'
-require File.join(File.dirname(__FILE__), '../application')
-require File.join(File.dirname(__FILE__), '../helpers/application_helper')
+require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class TicketController < Rho::RhoController
   
@@ -29,8 +28,12 @@ class TicketController < Rho::RhoController
   def assgined_to_me
     @title = "Assigned to me"
     @tickets = Ticket.find(:all)
+    
+    # get the ID of user passed from the source
+    settings = LighthouseSettings.find(:all)[0]
+    
     @tickets = @tickets.reject do |ticket|
-      ticket.assigned_user_id != LighthouseApplication::LIGHTHOUSE_ID
+      ticket.assigned_user_id != settings.lighthouse_id
     end
     render :index
   end
