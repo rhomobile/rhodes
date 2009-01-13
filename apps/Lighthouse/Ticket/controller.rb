@@ -29,8 +29,12 @@ class TicketController < Rho::RhoController
   def assgined_to_me
     @title = "Assigned to me"
     @tickets = Ticket.find(:all)
+    
+    # get the ID of user passed from the source
+    settings = LighthouseSettings.find(:all)[0]
+    
     @tickets = @tickets.reject do |ticket|
-      ticket.assigned_user_id != LighthouseApplication::LIGHTHOUSE_ID
+      ticket.assigned_user_id != settings.lighthouse_id
     end
     render :index
   end
