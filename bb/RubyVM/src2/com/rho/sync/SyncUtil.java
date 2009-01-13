@@ -500,6 +500,17 @@ public class SyncUtil {
 		}
 	}
 	
+	private static String extractToc(String toc_name, String data) {
+		int start = data.indexOf(toc_name);
+		if (start!=-1) {
+			int end = data.indexOf(';', start);
+			if (end!=-1) {
+				return data.substring(start, end);
+			}
+		}		
+		return null;
+	}
+	
 	private static ParsedCookie makeCookie( HttpConnection connection )throws IOException{
 		ParsedCookie cookie = new ParsedCookie();
 		
@@ -508,8 +519,22 @@ public class SyncUtil {
 			if ( strField == null )
 				break;
 			
-			if ( strField.equalsIgnoreCase("Set-Cookie"))
-				parseCookie( connection.getHeaderField(i), cookie );
+			if ( strField.equalsIgnoreCase("Set-Cookie")) {
+				String header_field = connection.getHeaderField(i);
+				System.out.println("Set-Cookie: " + header_field);
+				parseCookie( header_field, cookie );
+				// Hack to make it work on 4.6 device which doesn't parse cookies correctly
+//				if (cookie.strAuth==null) {
+//					String auth = extractToc("auth_token", header_field);
+//					cookie.strAuth = auth;
+//					System.out.println("Extracted auth_token: " + auth);
+//				}
+				if (cookie.strSession==null) {
+					String rhosync_session = extractToc("rhosync_session", header_field);
+					cookie.strSession = rhosync_session;
+					System.out.println("Extracted rhosync_session: " + rhosync_session);
+				}
+			}
 		}
 		
 		return cookie;
