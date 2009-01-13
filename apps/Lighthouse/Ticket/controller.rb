@@ -1,6 +1,5 @@
 require 'rho/rhocontroller'
-require File.join(File.dirname(__FILE__), '../application')
-require File.join(File.dirname(__FILE__), '../helpers/application_helper')
+require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class TicketController < Rho::RhoController
   

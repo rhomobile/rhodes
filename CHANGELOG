@@ -19,6 +19,9 @@ Known issues:
 * [#126] erb compilation errors are not reported to developer
 * [#117] logout not supported, still need to reinstall application or invalidate session on server to logout
 * [#153] RIM logs in multiple times to same domain
+* [#191 & #192] Lighthouse tickets don't work properly on blackberry
+* [#188] opera mini browser opens when launching on HTC Fuze (as workaround you can close manually)
+* [#166] RIM needs format on reinstall to delete database
 
 == 0.1.0 
 * Initial support for iPhone, RIM (v4.6), and Windows Mobile (v6)
