@@ -4,26 +4,36 @@ class="panel"
 	  method="POST" 
 	  action="<%=url_for('update')%>">
 		
-		<h1 style="margin:0px"><%= @ticket.title %></h1>
 
 		<div class="ticket_header">
-			#<%= @ticket.number %> <%= Project.find(@ticket.project_id).name %>
-			<div class="font-size:85%"><span>Reported by:</span> 
-			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> | <%= @ticket.created_at %></div>
+			<h1 class="ticket_title"><%= @ticket.title %></h1>
+			
+			<div style="float:right">
+			<div class="ticketnum">#<%= @ticket.number %></div> <%#= Project.find(@ticket.project_id).name %>
+			<span class="<%= @ticket.state %>"><%= @ticket.state %></span>
+			</div>
+			<div class="ticket_reported"><span>Reported by:</span> 
+			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> <br />
+			<%= @ticket.created_at %></div>
 		</div>
+		<div class="clearer"></div>
+		<h3>Comments and changes</h3>
 		<div id="ticket_history">
 			<% TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }.each do |change| %>
-				<span><%= User.find(change.user_id).name %> <%= change.updated_at %></span>
-				<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
-				<% if change_log.length > 1 %>
-					<ul>
-						<% change_log.each do |element| %>
-						<li><%= element %></li>
-						<% end %>
-					</ul>
-				<% else %>
-					<p><%= change.changes %></p>
-				<% end %>
+				<div class="ticket_version">
+					<div class="changename"><%= User.find(change.user_id).name %></div>
+					<div class="changedate"><%= change.updated_at %></div>
+					<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
+					<% if change_log.length > 1 %>
+						<ul class="info">
+							<% change_log.each do |element| %>
+							<li>→ <%= element %></li>
+							<% end %>
+						</ul>
+					<% else %>
+						<p><%= change.changes %></p>
+					<% end %>
+				</div>
 			<% end %>
 		</div>
 		<h2>UPDATE THIS TICKET</h2>
