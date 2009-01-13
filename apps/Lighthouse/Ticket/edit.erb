@@ -11,7 +11,21 @@ class="panel"
 			<div class="font-size:85%"><span>Reported by:</span> 
 			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> | <%= @ticket.created_at %></div>
 		</div>
-		
+		<div id="ticket_history">
+			<% TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }.each do |change| %>
+				<span><%= User.find(change.user_id).name %> <%= change.updated_at %></span>
+				<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
+				<% if change_log.length > 1 %>
+					<ul>
+						<% change_log.each do |element| %>
+						<li><%= element %></li>
+						<% end %>
+					</ul>
+				<% else %>
+					<p><%= change.changes %></p>
+				<% end %>
+			<% end %>
+		</div>
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
 		
