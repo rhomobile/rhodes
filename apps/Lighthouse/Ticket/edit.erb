@@ -26,8 +26,24 @@ class="panel"
 				<% end %>
 			<% end %>
 		</div>
+		<h2>UPDATE THIS TICKET</h2>
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
+		
+		  <div class="row">
+			  <label>Edit Title</label>
+			  <input type="text" name="ticket[title]" value="<%= @ticket.title %>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Add a comment</label>
+			  <input type="text" name="ticket[body]" value="<%= @ticket.body %>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Tags</label>
+			  <input type="text" name="ticket[tag]" value="<%= @ticket.tag %>"/>
+		  </div>
 		
 			<div class="row"><label>Who's responsible?</label>
 				<select id="ticket_assigned_user_id" name="ticket[assigned_user_id]">
@@ -40,25 +56,14 @@ class="panel"
 		  </div>
 		
 		  <div class="row">
-			  <label>Status:</label>
+			  <label>Status</label>
 			
 				<select id="ticket_state" name="ticket[state]">
-					<option>new</option>
-					<option>open</option>
-					<option>resolved</option>
-					<option>hold</option>
-					<option>invalid</option>
+					<% %w(new open resolved hold invalid).each do |state| %>
+						<% selected = (state == @ticket.state) ? "selected=\"#{@ticket.state}\"" : "" %>
+						<option <%= selected %>><%= state %></option>
+					<% end %>
 				</select>
-		  </div>
-		
-		  <div class="row">
-			  <label>body: </label>
-			  <input type="text" name="ticket[body]" value="<%=@ticket.body%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>tag: </label>
-			  <input type="text" name="ticket[tag]" value="<%=@ticket.tag%>"/>
 		  </div>
 				
 	</fieldset>
