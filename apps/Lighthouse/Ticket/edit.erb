@@ -1,10 +1,4 @@
-<form title="Edit Ticket" 
-class="panel"
-	  id="ticket_edit_form" 
-	  method="POST" 
-	  action="<%=url_for('update')%>">
-		
-
+<form class="panel" id="ticket_edit_form" title="Edit Ticket" method="POST" action="<%=url_for('update')%>">
 		<div class="ticket_header">
 			<h1 class="ticket_title"><%= @ticket.title %></h1>
 			
