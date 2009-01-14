@@ -1,33 +1,55 @@
-<form title="Edit Ticket" 
-class="panel"
-	  id="ticket_edit_form" 
-	  method="POST" 
-	  action="<%=url_for('update')%>">
-		
-		<h1 style="margin:0px"><%= @ticket.title %></h1>
-
+<form class="panel" id="ticket_edit_form" title="Edit Ticket" method="POST" action="<%=url_for('update')%>">
 		<div class="ticket_header">
-			#<%= @ticket.number %> <%= Project.find(@ticket.project_id).name %>
-			<div class="font-size:85%"><span>Reported by:</span> 
-			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> | <%= @ticket.created_at %></div>
+			<h1 class="ticket_title"><%= @ticket.title %></h1>
+			
+			<div style="float:right">
+			<div class="ticketnum">#<%= @ticket.number %></div> <%#= Project.find(@ticket.project_id).name %>
+			<span class="<%= @ticket.state %>"><%= @ticket.state %></span>
+			</div>
+			<div class="ticket_reported"><span>Reported by:</span> 
+			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> <br />
+			<%= @ticket.created_at %></div>
 		</div>
+		<div class="clearer"></div>
+		<h3>Comments and changes</h3>
 		<div id="ticket_history">
-			<% TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }.each do |change| %>
-				<span><%= User.find(change.user_id).name %> <%= change.updated_at %></span>
-				<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
-				<% if change_log.length > 1 %>
-					<ul>
-						<% change_log.each do |element| %>
-						<li><%= element %></li>
-						<% end %>
-					</ul>
-				<% else %>
-					<p><%= change.changes %></p>
-				<% end %>
+			<% versions = TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }
+				 versions = versions.sort { |x,y| DateTime.parse(x.updated_at) <=> DateTime.parse(y.updated_at) }
+				versions.each do |change| %>
+				<div class="ticket_version">
+					<div class="changename"><%= User.find(change.user_id).name %></div>
+					<div class="changedate"><%= change.updated_at %></div>
+					<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
+					<% if change_log.length > 1 %>
+						<ul class="info">
+							<% change_log.each do |element| %>
+							<li>→ <%= element %></li>
+							<% end %>
+						</ul>
+					<% else %>
+						<p><%= change.changes %></p>
+					<% end %>
+				</div>
 			<% end %>
 		</div>
+		<h2>UPDATE THIS TICKET</h2>
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@ticket.object%>"/>
+		
+		  <div class="row">
+			  <label>Edit Title</label>
+			  <input type="text" name="ticket[title]" value="<%= @ticket.title %>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Add a comment</label>
+			  <input type="text" name="ticket[body]" value="<%= @ticket.body %>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Tags</label>
+			  <input type="text" name="ticket[tag]" value="<%= @ticket.tag %>"/>
+		  </div>
 		
 			<div class="row"><label>Who's responsible?</label>
 				<select id="ticket_assigned_user_id" name="ticket[assigned_user_id]">
@@ -39,26 +61,27 @@ class="panel"
 				</select>
 		  </div>
 		
-		  <div class="row">
-			  <label>Status:</label>
-			
-				<select id="ticket_state" name="ticket[state]">
-					<option>new</option>
-					<option>open</option>
-					<option>resolved</option>
-					<option>hold</option>
-					<option>invalid</option>
+			<div class="row"><label>Milestone</label>
+				<select id="ticket_milestone_id" name="ticket[milestone_id]">
+					<option value="">-- none --</option>
+					<% Milestone.find(:all).each do |milestone| %>
+						<% if milestone.project_id == @ticket.project_id %>
+							<% selected = (@ticket.milestone_id == strip_braces(milestone.object)) ? "selected=\"#{strip_braces(milestone.object)}\"" : "" %>
+							<option value="<%= strip_braces(milestone.object) %>" <%= selected %>><%= milestone.title %></option>
+						<% end %>
+					<% end %>
 				</select>
 		  </div>
 		
 		  <div class="row">
-			  <label>body: </label>
-			  <input type="text" name="ticket[body]" value="<%=@ticket.body%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>tag: </label>
-			  <input type="text" name="ticket[tag]" value="<%=@ticket.tag%>"/>
+			  <label>Status</label>
+			
+				<select id="ticket_state" name="ticket[state]">
+					<% %w(new open resolved hold invalid).each do |state| %>
+						<% selected = (state == @ticket.state) ? "selected=\"#{@ticket.state}\"" : "" %>
+						<option <%= selected %>><%= state %></option>
+					<% end %>
+				</select>
 		  </div>
 				
 	</fieldset>
