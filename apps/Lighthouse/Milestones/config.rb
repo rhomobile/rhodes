@@ -1,3 +1,3 @@
 require 'rho'
 
-Rho::RhoConfig::add_source("Milestone", {"url"=>"http://rhosync.local/apps/3/sources/10", "source_id"=>10})
+Rho::RhoConfig::add_source("Milestone", {"url"=>"http://rhosyncdev.rhohub.com/apps/4/sources/6", "source_id"=>6})
