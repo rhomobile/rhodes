@@ -13,7 +13,9 @@
 		<div class="clearer"></div>
 		<h3>Comments and changes</h3>
 		<div id="ticket_history">
-			<% TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }.each do |change| %>
+			<% versions = TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }
+				 versions = versions.sort { |x,y| DateTime.parse(x.updated_at) <=> DateTime.parse(y.updated_at) }
+				versions.each do |change| %>
 				<div class="ticket_version">
 					<div class="changename"><%= User.find(change.user_id).name %></div>
 					<div class="changedate"><%= change.updated_at %></div>
