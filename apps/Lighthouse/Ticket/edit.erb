@@ -59,6 +59,18 @@
 				</select>
 		  </div>
 		
+			<div class="row"><label>Milestone</label>
+				<select id="ticket_milestone_id" name="ticket[milestone_id]">
+					<option value="">-- none --</option>
+					<% Milestone.find(:all).each do |milestone| %>
+						<% if milestone.project_id == @ticket.project_id %>
+							<% selected = (@ticket.milestone_id == strip_braces(milestone.object)) ? "selected=\"#{strip_braces(milestone.object)}\"" : "" %>
+							<option value="<%= strip_braces(milestone.object) %>" <%= selected %>><%= milestone.title %></option>
+						<% end %>
+					<% end %>
+				</select>
+		  </div>
+		
 		  <div class="row">
 			  <label>Status</label>
 			
