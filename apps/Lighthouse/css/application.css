@@ -1,7 +1,36 @@
 fieldset select {margin-top:5px;}
 
 .ticket_details {font-size:85%;}
+.ticket_reported {clear:left;font-size:85%;}
+
 .hold {color:#EEBB00;}
 .new {color:#FF1177;}
 .open {color:#AAAAAA;}
 .name {color:#3388BB;}
+.resolved {color:#66AA00;}
+
+.ticket_title {margin:0;float:left;}
+.ticketnum {
+	-moz-border-radius-bottomleft:4px;
+	-moz-border-radius-bottomright:4px;
+	-moz-border-radius-topleft:4px;
+	-moz-border-radius-topright:4px;
+	background:#DDDDDD none repeat scroll 0 0;
+	font-size:130%;
+	font-weight:bold;
+	padding:20px;
+}
+
+.clearer {clear:both;}
+.changename {font-weight:bold;}
+
+.ticket_version {border-bottom:1px solid #ddd;margin-bottom:10px;}
+
+ul.info {
+margin-left:0px;padding-left:0;
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+}
+
+ul.info li {font-weight:bold;margin-left:10px;padding-left:0;}

@@ -3,8 +3,8 @@
 	<% @tickets.each do |ticket| %>
 		<% if project = Project.find(ticket.project_id) %>
 			<li class="ticket_details">
-				<%= link_to "<span class=\"name\">\"#{ticket.title}\"</span>", "edit", ticket.object %>
-				#<%= ticket.number %> / <%= project.name %> / <span class="<%= ticket.state %>"><%= ticket.state %></span>
+				<div><%= strike_if(link_to("<span class=\"name\">\"#{ticket.title}\"</span>", "edit", ticket.object), resolved?(ticket)) %></div>
+				<%= strike_if("##{ticket.number}", resolved?(ticket)) %> / <%= project.name %> / <span class="<%= ticket.state %>"><%= ticket.state %></span>
 			</li>
 		<% end %>
 	<% end %>
