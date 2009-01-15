@@ -81,9 +81,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	
 	/* iterate over each source id and do a fetch */
 	for(i = 0; i < source_length; i++) {
-		
 		save_source_url(source_list[i]->_source_url);
-		
 		sprintf(url_string, 
 				"%s%s&client_id=%s", 
 				source_list[i]->_source_url, 
@@ -92,7 +90,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
-			printf("JSON String: %s\n", json_string);
+			//printf("JSON data: %s\n", json_string);
 			// Initialize parsing list and call json parser
 			list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
 			if (list) {
@@ -104,11 +102,13 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 						type = list[j]->_db_operation;
 						if (type) {
 							if(strcmp(type, "insert") == 0) {
-								printf("Inserting record %s\n...", list[j]->_object);
+								printf("Inserting record %s - %s: %s\n", list[j]->_object, 
+									   list[j]->_attrib, list[j]->_value);
 								insert_into_database(list[j]);
 							} 
 							else if (strcmp(type, "delete") == 0) {
-								printf("Deleting record %s\n...", list[j]->_object);
+								printf("Deleting record %s - %s: %s\n", list[j]->_object, 
+									   list[j]->_attrib, list[j]->_value);
 								delete_from_database(list[j]);
 							} else {
 								printf("Warning: received improper update_type: %s...\n", type);
@@ -124,7 +124,6 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 		}
 	}
 	free_source_list(source_list, source_length);
-	printf("fetch remote changes done\n");
 	insert_sync_status((sqlite3 *)get_database(), "true");
 	return available;
 }

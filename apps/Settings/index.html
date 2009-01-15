@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Rhodes Settings</title>
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+	</head>
+	<body>
+	  <div align="center">
+	    <h3>Home</h3>
+	    <a href="Source">Edit Sources</a><br/>
+		<a href="/" target="_self">Home</a><br/>
+		<% if SyncEngine::logged_in > 0 %>
+	      <a href="/Settings/User/logout">Logout</a>
+	    <%else%>
+	      <a href="/Settings/User/login">Login</a>
+	    <%end%>
+	  </div>
+	</body>
+</html>
+

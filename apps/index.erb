@@ -2,9 +2,6 @@
 	<head>
 		<title>Home</title>
 		<meta name="viewport" content="initial-scale=1.0, width=device-width"/>
-		<style type="text/css">
-			#sourcescontainer { position: absolute; bottom: 2em; }
-		</style>
 		<% if System::get_property('platform') == 'WINDOWS' %>
 			<script src="/shared/js/rhogeolocation-wm.js"></script>
 		<% end %>
@@ -16,20 +13,24 @@
 	<body>
 		<div align="center">
 			<h3>Home</h3>
-			<a href="Rhosugar">SugarCRM Demo</a><br/>
-			<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
+			<h4>Sample Apps</h4>
+			<a href="Rhosugar">SugarCRM</a><br/>
+			<a href="RhoSiebel">Siebel Field Service</a><br/>
 			<a href="Basecamp">Basecamp</a><br/>
-			<a href="Phonebook">Phonebook</a><br/>
 			<a href="Lighthouse">Lighthouse</a></br>
 			
+			<h4>Device Capabilites</h4>
+			<a href="Phonebook">Phonebook List</a><br/>
 			Platform:<%= System::get_property('platform')%><br/>
 			Your location: <geolocation>loading...</geolocation><br/>
 			Latitude: <geolatitude>loading...</geolatitude><br/>
 			Longitude: <geolongitude>loading...</geolongitude><br/>
-		</div>
-		<div id="sourcescontainer">
-			<small><a href="/Settings/Source/index">Edit Sources</a><br/></small>
-			<small><a href="/Settings/User/edit">Login</a><br/></small>
+			<a href="Settings">Rhodes Settings</a><br/>
+			<% if SyncEngine::logged_in > 0 %>
+			  <a href="/Settings/User/logout">Logout</a>
+			<%else%>
+			  <a href="/Settings/User/login">Login</a>
+			<%end%>
 		</div>
 	</body>
 </html>
