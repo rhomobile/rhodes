@@ -51,7 +51,6 @@ int process_local_changes() {
 			  client_id = set_client_id(database, source_list[i]);  
 		  }
 		  result = 0;
-		  printf("Processing local changes for source %i...\n", source_list[i]->_source_id);
 		  result += process_op_list(source_list[i], "update");
 		  result += process_op_list(source_list[i], "create");
 		  result += process_op_list(source_list[i], "delete");
@@ -125,11 +124,12 @@ int process_op_list(pSource source, char *type) {
 	pSyncOperation *op_list = NULL;
 	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
 	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
-	printf("Found %i available records for %s processing...\n", available, type);
+	if (available > 0) {
+		printf("Found %i available records for %s processing on source %i...\n", available, type, source->_source_id);
+	}
 	
 	success = push_remote_changes(op_list, available);
 	if(success == SYNC_PUSH_CHANGES_OK) {
-		printf("Successfully processed %i records for %s...\n", available, type);
 		if(available > 0) {
 			remove_op_list_from_database(op_list, database, type);
 		}
@@ -275,7 +275,7 @@ int login(const char* login, const char* password) {
 		free_source_list(source_list, source_length);
 	}
 	else {
-		printf("Unable to login: 'login' parameter is not specified.\n");
+		printf("Unable to login: 'login' or 'password' parameter is not specified.\n");
 	}
 	return retval;
 }

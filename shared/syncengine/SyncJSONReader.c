@@ -4,14 +4,13 @@
  *
  *  Parses the JSON response from the fetch:
  *  [{"object_value": {
- *      "updated_at": "2008-09-17T22:31:42Z", 
  *      "update_type": "query", 
  *      "id": 1, 
  *      "value": "24/7 Couriers 964608", 
  *      "source_id": 1, 
  *      "object": "24004283442000", 
- *      "created_at": "2008-09-17T22:31:42Z", 
- *      "attrib": "name"}
+ *      "attrib": "name",
+ *      "db_operation": "insert"}
  *  }]
  *
  *  Copyright (C) 2008 Lars Burgess. All rights reserved.
@@ -66,9 +65,7 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 					add_to_list = 1;
 					sub_key = (char *) sub_entry->k;
 					sub_val = (struct json_object *) sub_entry->v;
-					if (strcmp(sub_key, "updated_at") == 0) {
-						current_parse_object->_updated_at = json_object_get_string(sub_val);
-					} else if (strcmp(sub_key, "update_type") == 0) {
+					if (strcmp(sub_key, "update_type") == 0) {
 						current_parse_object->_update_type = json_object_get_string(sub_val);
 					} else if (strcmp(sub_key, "id") == 0) {
 						current_parse_object->_primary_key = atoi(json_object_get_string(sub_val));
@@ -78,8 +75,6 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 						current_parse_object->_source_id = atoi(json_object_get_string(sub_val));
 					} else if (strcmp(sub_key, "object") == 0) {
 						current_parse_object->_object = json_object_get_string(sub_val);
-					} else if (strcmp(sub_key, "created_at") == 0) {
-						current_parse_object->_created_at = json_object_get_string(sub_val);
 					} else if (strcmp(sub_key, "attrib") == 0) {
 						current_parse_object->_attrib = json_object_get_string(sub_val);
 					} else if (strcmp(sub_key, "db_operation") == 0) {
