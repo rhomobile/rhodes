@@ -5,7 +5,7 @@ class EmployeeController < Rho::RhoController
   # GET /Employees
   def index
     @employees = Employee.find(:all)
-    render :index
+    render :action => :index
   end
 
   # GET /Employees/1
@@ -17,13 +17,13 @@ class EmployeeController < Rho::RhoController
   def new
     @accounts = Account.find :all
     @employee = Employee.new
-    render :new
+    render :action => :new
   end
 
   # GET /Employees/1/edit
   def edit
     @employee = Employee.find(@params['id'])
-    render :edit
+    render :action => :edit
   end
 
   # POST /Employees

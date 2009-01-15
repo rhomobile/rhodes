@@ -6,7 +6,7 @@ class ContactsController < Rho::RhoController
   # GET /Contacts
   def index
     @contacts = Rho::RhoContact.find(:all)
-    render :index
+    render
   end
 
   # GET /Contacts/1
@@ -16,13 +16,13 @@ class ContactsController < Rho::RhoController
 
   # GET /Contacts/new
   def new
-    render :new
+    render :action => :new
   end
 
   # GET /Contacts/1/edit
   def edit
     @contact = Rho::RhoContact.find(@params['id'])
-    render :edit
+    render :action => :edit
   end
 
   # POST /Contacts

@@ -51,6 +51,7 @@ static const struct http_header http_headers[] = {
   {17, HDR_STRING, OFFSET(accept_encoding), "Accept-Encoding: " },
   {17, HDR_STRING, OFFSET(accept_language), "Accept-Language: " },
   {6,  HDR_STRING, OFFSET(host),		"Host: "	},
+  {18, HDR_STRING, OFFSET(x_requested_with), "X-Requested-With: "	},
 	{0,  HDR_INT,	 0,			NULL			}
 };
 
