@@ -5,7 +5,7 @@ class CaseController < Rho::RhoController
   # GET /cases
   def index
     @cases = Case.find(:all)
-    render :index
+    render :layout => :case_layout
   end
 
   # GET /cases/1
@@ -18,7 +18,7 @@ class CaseController < Rho::RhoController
     @accounts = Account.find :all
     @employees = Employee.find :all
     @case = Case.new
-    render :new
+    render :action => :new, :layout => :case_layout
   end
 
   # GET /cases/1/edit
@@ -28,7 +28,7 @@ class CaseController < Rho::RhoController
     @account = Account.find @case.account_id
     @employees = Employee.find :all
     @employee = Employee.find @case.assigned_user_id
-    render :edit
+    render :action => :edit, :layout => :case_layout
   end
 
   # POST /cases

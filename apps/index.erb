@@ -1,35 +1,19 @@
-<html>
-	<head>
-		<title>Home</title>
-		<meta name="viewport" content="initial-scale=1.0, width=device-width"/>
-		<style type="text/css">
-			#sourcescontainer { position: absolute; bottom: 2em; }
-		</style>
-		<% if System::get_property('platform') == 'WINDOWS' %>
-			<script src="/shared/js/rhogeolocation-wm.js"></script>
-		<% end %>
-		<% if System::get_property('platform') == 'APPLE' %>
-			<script src="/shared/js/jquery-1.2.6.min.js"></script>
-			<script src="/shared/js/rhogeolocation.js"></script>
-		<% end %>
-	</head
-	<body>
-		<div align="center">
-			<h3>Home</h3>
-			<a href="Rhosugar">SugarCRM Demo</a><br/>
-			<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
-			<a href="Basecamp">Basecamp</a><br/>
-			<a href="Phonebook">Phonebook</a><br/>
-			<a href="Lighthouse">Lighthouse</a></br>
+<!-- main index page -->
+
+<div align="center">
+	<h3>Home</h3>
+	<a href="Rhosugar">SugarCRM Demo</a><br/>
+	<a href="RhoSiebel">Siebel Field Service Demo</a><br/>
+	<a href="Basecamp">Basecamp</a><br/>
+	<a href="Phonebook">Phonebook</a><br/>
+	<a href="Lighthouse">Lighthouse</a></br>
 			
-			Platform:<%= System::get_property('platform')%><br/>
-			Your location: <geolocation>loading...</geolocation><br/>
-			Latitude: <geolatitude>loading...</geolatitude><br/>
-			Longitude: <geolongitude>loading...</geolongitude><br/>
-		</div>
-		<div id="sourcescontainer">
-			<small><a href="/Settings/Source/index">Edit Sources</a><br/></small>
-			<small><a href="/Settings/User/edit">Login</a><br/></small>
-		</div>
-	</body>
-</html>
+	Platform:<%= System::get_property('platform')%><br/>
+	Your location: <geolocation>loading...</geolocation><br/>
+	Latitude: <geolatitude>loading...</geolatitude><br/>
+	Longitude: <geolongitude>loading...</geolongitude><br/>
+</div>
+<div id="sourcescontainer">
+	<small><a href="/Settings/Source/index">Edit Sources</a><br/></small>
+	<small><a href="/Settings/User/edit">Login</a><br/></small>
+</div>
