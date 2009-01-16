@@ -603,5 +603,32 @@ public class SyncUtil {
 		}
 		return "";
 	}
-	
+
+	public static boolean logged_in() {
+		boolean success = false;
+		RubyArray sources = SyncUtil.getSourceList();
+		for (int i = 0; i < sources.size(); i++) {
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
+			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			SyncSource current = new SyncSource(url, id);
+			if (get_session(current).length() > 0) {
+				success = true;
+			}
+		}
+		return success;
+	}
+
+	public static void logout() {
+		RubyArray sources = SyncUtil.getSourceList();
+		for (int i = 0; i < sources.size(); i++) {
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			RubyHash values = SyncUtil.createHash();
+			values.add(PerstLiteAdapter.SESSION, null);
+			RubyHash where = SyncUtil.createHash();
+			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
+		}
+	}
 }

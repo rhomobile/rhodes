@@ -8,9 +8,13 @@
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
 extern char *get_session(const char *url_string);
-extern void delete_session(const char *url_string);
+extern void delete_db_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
+
+#if defined(_WIN32_WCE)
+extern void delete_winmo_session(const char *url_string);
+#endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
@@ -210,7 +214,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
-		delete_session(source->_source_url);
+		//delete_session(source->_source_url);
     set_db_client_id(database,c_id);
 	}
 	sqlite3_reset(client_id_statement);
@@ -261,12 +265,17 @@ void delete_db_session( const char* source_url )
 {
 	if ( source_url )
 	{
-		prepare_db_statement("DELETE FROM sources WHERE source_url=?",
+#if !defined(_WIN32_WCE)
+		prepare_db_statement("UPDATE sources SET session=NULL where source_url=?",
 						 (sqlite3 *)get_database(),
 						 &del_session_db_statement);
 		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
 		sqlite3_step(del_session_db_statement); 
 		sqlite3_reset(del_session_db_statement);
+
+#else
+		delete_winmo_session(source_url);
+#endif
 	}
 }
 /**
