@@ -38,6 +38,7 @@ USERINCLUDE    ..\..\..\shared\ruby
 USERINCLUDE    ..\..\..\shared\ruby\include
 USERINCLUDE    ..\..\..\shared\ruby\include\ruby
 USERINCLUDE    ..\..\..\shared\ruby\symbian ..\inc\phonebook ..\inc\geolocation
+USERINCLUDE    ..\..\..\shared\unzip
 
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
@@ -54,7 +55,7 @@ SOURCE 			SyncEngineWrap.cpp
 SOURCE 			ConnectionManager.cpp SpecialLoadObserver.cpp AppSoftkeysObserver.cpp
 SOURCE 			rsyncengine.c 
 SOURCE 			HttpClient.cpp HttpConstants.cpp HttpEventHandler.cpp HttpFileManager.cpp
-
+SOURCE 			AppManager.cpp
 
 //Shared syncengine
 SOURCEPATH 		..\..\..\shared\syncengine
@@ -132,3 +133,7 @@ SOURCE Phonebook.cpp
 SOURCE ruby_phonebook.cpp
 SOURCEPATH ..\src\geolocation
 SOURCE GeoLocation.cpp ruby_geolocation.cpp
+
+SOURCEPATH 		..\..\..\shared\unzip
+SOURCE unzip.cpp
+

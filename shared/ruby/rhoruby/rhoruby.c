@@ -35,6 +35,8 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 static ID framework_mid3;
+static ID framework_mid4;
+static ID framework_mid5;
 
 static char* rb_type_to_s(VALUE obj);
 
@@ -87,6 +89,8 @@ void RhoRubyStart()
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
 		CONST_ID(framework_mid3, "get_start_path");
+		CONST_ID(framework_mid4, "get_rhobundle_zip_url");
+		CONST_ID(framework_mid5, "get_rhobundle_zip_pwd");
 		
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
@@ -201,6 +205,29 @@ char* callGetStartPage() {
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method's get_start_page result type = %s\n", rb_type_to_s(callres));
 		return "/";
+	}
+	
+	//TBD: need to cleanup memory
+#ifndef __SYMBIAN32__	
+	rb_gc();
+#endif	
+	
+#if defined(DEBUG)
+	print_profile_report();
+#endif
+	
+	szRes = RSTRING_PTR(callres);
+	return szRes;
+}
+
+char* callGetRhobundleZipUrl() {
+	char* szRes;
+	
+	VALUE callres = rb_funcall(framework, framework_mid4, 0, Qnil);
+	
+	if (TYPE(callres)!=T_STRING) {
+		printf("Method's get_rhobundle_zip_url result type = %s\n", rb_type_to_s(callres));
+		return NULL;
 	}
 	
 	//TBD: need to cleanup memory

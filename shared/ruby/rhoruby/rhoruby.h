@@ -33,10 +33,12 @@ VALUE addHashToHash(VALUE hash, const char* key, VALUE val);
 char* callFramework(VALUE hashReq);
 char* callServeIndex(char* index_name);
 char* callGetStartPage();
+char* callGetRhobundleZipUrl();
 
 void RhoRubyStop();
 
 const char* RhoGetRootPath();
+
 
 #if defined(__cplusplus)
 }

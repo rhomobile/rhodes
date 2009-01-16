@@ -1,8 +1,9 @@
 /*
  ============================================================================
- Author	    : Anton Antonov
- Version	: 1.0
- Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
+ Name		: AppManager.h
+ Author	  : Anton Antonov
+ Version	 : 1.0
+ Copyright   : Copyright (C) 2008 Rhomobile. All rights reserved.
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,25 +17,27 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ Description : CAppManager declaration
  ============================================================================
  */
 
-#ifndef HTTPSERVER_H
-#define HTTPSERVER_H
+#ifndef APPMANAGER_H
+#define APPMANAGER_H
 
 // INCLUDES
 #include <e32std.h>
+#include <e32base.h>
 
-//FORWARD DECLARATION
-struct shttpd_ctx;
-
+class CHttpClient;
+class CHttpFileManager;
+class CRhodesAppUi;
 // CLASS DECLARATION
 
 /**
- *  CHttpServer
+ *  CAppManager
  * 
  */
-class CHttpServer	
+class CAppManager : public CBase
 	{
 public:
 	// Constructors and destructor
@@ -42,77 +45,41 @@ public:
 	/**
 	 * Destructor.
 	 */
-	~CHttpServer();
+	~CAppManager();
 
 	/**
 	 * Two-phased constructor.
 	 */
-	static CHttpServer* NewL();
+	static CAppManager* NewL(CRhodesAppUi * aAppUI);
 
 	/**
 	 * Two-phased constructor.
 	 */
-	static CHttpServer* NewLC();
+	static CAppManager* NewLC(CRhodesAppUi * aAppUI);
 
 	/**
-	 * Resume thread
+	 * @param aUrl - url of the zip file with rhobundle
 	 */
-	void ResumeThread();
+	void reloadRhoBundle(const char* aUrl, const char* zipPassword);
 	
-	/**
-	 * Suspend thread
-	 */
-	void SuspendThread();
-	
-	/**
-	 * Stop thread
-	 */
-	void StopThread();
-	
-	void StopRubyFramework() { iStopRubyFramework = true; }
-	void StartRubyFramework() { iStartRubyFramework = true; }
-	/**
-	 * Main thread function
-	 */
-	TInt Execute(); 
-
 private:
 
 	/**
 	 * Constructor for performing 1st stage construction
 	 */
-	CHttpServer();
+	CAppManager();
 
 	/**
 	 * EPOC default constructor for performing 2nd stage construction
 	 */
 	void ConstructL();
 	
-protected:
-	
-	/**
-	 * Initialize http server
-	 */
-	void InitHttpServer();
-	
-	/**
-	 * Initialize ruby framework
-	 */
-	void InitRubyFramework();
-	
-	TInt ExecuteL();
-	
-	void SendWindowEvent(TInt aEvent);
-	
-private: //data
-	
-	RThread thread;
-	
-	struct shttpd_ctx* ctx;
-	bool iClose;
-	
-	bool iStopRubyFramework;
-	bool iStartRubyFramework;
+	void setAppUI(CRhodesAppUi * aAppUI){ iAppUI = aAppUI;}
+
+private:
+	CHttpClient* iHttpClient;
+	CHttpFileManager* iHttpFileManager;
+	CRhodesAppUi * iAppUI;
 	};
 
-#endif // HTTPSERVER_H
+#endif // APPMANAGER_H

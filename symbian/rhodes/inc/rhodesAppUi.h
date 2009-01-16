@@ -29,6 +29,7 @@
 class CRhodesAppView;
 class CHttpServer;
 class CSyncEngineWrap;
+class CAppManager;
 
 struct sqlite3;
 // CLASS DECLARATION
@@ -62,7 +63,19 @@ public:
 	virtual ~CRhodesAppUi();
 	
 	const TDesC& GetStartPage();
+
+	void StopRubyFramework();
+	void StartRubyFramework();
 	
+	/**
+	 * Stop HttpServer and SyncEngine
+	 */
+	void StopThreads();
+	
+	/**
+	 * 
+	 */
+	void ShowInfoMessage(TInt aTitleId, TInt aMessageId);
 private:
 	// Functions from base classes
 
@@ -116,9 +129,12 @@ private:
 	 */
 	CRhodesAppView* iAppView;
 	
-    
+	CAppManager* iAppManager;
+	
     sqlite3 * iDatabase;
 
+    char* szRhoBundleZipUrl;
+    bool iRhoBundleReloadEnabled;
 	};
 
 #endif // __RHODESAPPUI_h__
