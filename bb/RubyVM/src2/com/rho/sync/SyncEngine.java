@@ -61,12 +61,12 @@ public class SyncEngine extends RubyBasic {
 
 	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
 		boolean bRes = SyncUtil.fetch_client_login(arg1.toString(), arg2.toString());
-		return bRes ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
 	}
 	
 	public static RubyValue logged_in() {
 		boolean bRes = SyncUtil.logged_in();
-		return bRes ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
 	}
 	
 	public static RubyValue logout() {
