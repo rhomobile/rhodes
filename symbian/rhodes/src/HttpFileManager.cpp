@@ -154,7 +154,7 @@ void CHttpFileManager::GetNewFile(TFileName& aFilePath, TFileName& aCompleteFile
 		aFilePath.Zero();
 		aCompleteFileName.Zero();
 		
-		_LIT(KFileExtension,".txt");
+		_LIT(KFileExtension,".dat");
 		
 		_LIT(KTimeFormat,"%F%D%M%H%1%T");
 		TBuf<50> buf;
@@ -247,7 +247,7 @@ TInt CHttpFileManager::GetFilesCount( TBool aIn )
 	else
 		filteredFiles = CHttpConstants::KHttpOUT;
 
-	//_LIT(KFileMask,"*.txt");
+	//_LIT(KFileMask,"*.dat");
 	//filteredFiles.Append(KFileMask);
 	
 	// valid Directory in the file system tree

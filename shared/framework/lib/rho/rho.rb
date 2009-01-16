@@ -70,6 +70,14 @@ module Rho
     def get_start_path
       Rho::RhoConfig.start_path
     end
+    
+    def get_rhobundle_zip_url
+      Rho::RhoConfig.rhobundle_zip_url
+    end
+    
+    def get_rhobundle_zip_pwd
+      Rho::RhoConfig.rhobundle_zip_pwd
+    end
 
     def serve(req)
       begin
@@ -190,6 +198,8 @@ module Rho
   class RhoConfig
     @@sources = {}
     @@start_path = '/'
+    @@rhobundle_zip_url = nil
+    @@rhobundle_zip_pwd = nil
     
     class << self
       def sources
@@ -202,6 +212,22 @@ module Rho
             
       def start_path=(path=nil)
         @@start_path = path if path
+      end
+      
+      def rhobundle_zip_url
+        @@rhobundle_zip_url
+      end
+            
+      def rhobundle_zip_url=(url=nil)
+        @@rhobundle_zip_url = url
+      end
+      
+      def rhobundle_zip_pwd
+        @@rhobundle_zip_pwd
+      end
+            
+      def rhobundle_zip_pwd=(pwd=nil)
+        @@rhobundle_zip_pwd = pwd
       end
       
       def add_source(modelname, new_source=nil)

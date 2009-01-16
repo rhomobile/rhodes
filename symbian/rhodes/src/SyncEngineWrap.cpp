@@ -24,6 +24,7 @@
 #include "SyncEngineWrap.h"
 #include "rhodes.pan"
 #include <eikenv.h>
+#include <e32math.h>  //Rand
 
 #include "HttpClient.h"
 #include "HttpFileManager.h"
@@ -82,7 +83,8 @@ CSyncEngineWrap::CSyncEngineWrap()
 
 CSyncEngineWrap::~CSyncEngineWrap()
 	{
-		thread.Terminate(NULL);
+		thread.Kill( KErrCancel );
+		thread.Close();
 	}
 
 CSyncEngineWrap* CSyncEngineWrap::NewLC()
@@ -105,8 +107,18 @@ void CSyncEngineWrap::ConstructL()
 		//create suspended thread
 		_LIT(KThreadName, "SyncThreadEntryPoint");
 		
+		TBuf<30> threadName;
+		threadName.Append(KThreadName);
+
+		TTime time;
+		time.HomeTime();
+
+		TInt64 aSeed = time.Int64();
+		TInt randNum = Math::Rand(aSeed) % 1000;
+		threadName.AppendNum(randNum);
+
 		//KMinHeapSize, 256*KMinHeapSize
-		TInt res = thread.Create(KThreadName, SyncThreadEntryPoint, 20000, 0x5000, 0x200000, this);
+		TInt res = thread.Create(threadName, SyncThreadEntryPoint, 20000, 0x5000, 0x200000, this);
 		
 		if ( res != KErrNone )
 			Panic( ERhodesSyncEngineInit);
