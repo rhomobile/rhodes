@@ -41,6 +41,8 @@
 			  <input type="text" name="ticket[title]" value="<%= @ticket.title %>"/>
 		  </div>
 		
+			<input type="hidden" id="ticket_project_id" name="ticket[project_id]" value="<%=@ticket.project_id %>"/>
+		
 		  <div class="row">
 			  <label>Add a comment</label>
 			  <input type="text" name="ticket[body]" value="<%= @ticket.body %>"/>
