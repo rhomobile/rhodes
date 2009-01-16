@@ -444,7 +444,7 @@ TKeyResponse CRhodesAppView::HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCo
 
 void CRhodesAppView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 {
-    if (iBrCtlInterface && aResourceId == R_MENUBAR )
+    if (iBrCtlInterface && aResourceId == R_MENU )
     {
         iBrCtlInterface->AddOptionMenuItemsL(*aMenuPane, aResourceId);
         RPointerArray<TBrCtlWmlServiceOption>* options;
