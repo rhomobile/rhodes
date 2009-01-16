@@ -625,7 +625,7 @@ public class SyncUtil {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, null);
+			values.add(PerstLiteAdapter.SESSION, SyncUtil.createString(""));
 			RubyHash where = SyncUtil.createHash();
 			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
