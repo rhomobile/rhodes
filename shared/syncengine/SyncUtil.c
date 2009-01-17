@@ -14,6 +14,7 @@ extern char *get_client_id();
 
 #if defined(_WIN32_WCE)
 extern void delete_winmo_session(const char *url_string);
+extern char *get_winmo_session_size(const char *url_string);
 #endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
@@ -249,6 +250,7 @@ char *get_db_session(const char* source_url) {
 	
 	if ( source_url )
 	{
+#if !defined(_WIN32_WCE)
 		prepare_db_statement("SELECT session FROM sources WHERE source_url=?",
 						     (sqlite3 *)get_database(),
 							 &session_db_statement);
@@ -257,6 +259,9 @@ char *get_db_session(const char* source_url) {
 		
 		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
 		sqlite3_reset(session_db_statement);
+#else
+		session = get_winmo_session_size(source_url) == 0 ? NULL : str_assign("exists");
+#endif
 	}
 	return session;
 }
