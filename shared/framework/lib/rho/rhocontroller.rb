@@ -1,5 +1,6 @@
 require 'rho/render'
 require 'rho/rhosupport'
+require 'rho/rhoviewhelpers'
 
 module Rho
   class RhoController
@@ -26,26 +27,6 @@ module Rho
       not /XMLHttpRequest/i.match(@request['headers']['X-Requested-With']).nil?
     end
     alias xhr? :xml_http_request?
-
-    def link_to(name,action,id=nil,confirm=nil)
-      action = action.to_s
-      if (action != 'delete')
-        "<a href=\"#{url_for(action,id)}\">#{name}</a>"
-      else
-        "<a href=\"#{url_for(action,id)}\" onclick=\""+  #if (confirm('#{confirm}')) {
-        "var f = document.createElement('form'); f.style.display = 'none';" +
-          "this.parentNode.appendChild(f); f.method = 'POST'; f.action = this.href;f.submit();"+
-          "return false;\">#{name}</a>"
-      end
-    end
-
-    def url_for(action,id=nil)
-      action = action.to_s
-      amurl = '/'+@request['application']+'/'+@request['model']
-      return action if action == '/'
-      return amurl if action == 'create' or action == 'index'
-      return amurl +'/'+ (id.nil? ? action.to_s : id.to_s + '/' + action.to_s)
-    end
 
     def redirect(action,id=nil)
       @response['status'] = 302
