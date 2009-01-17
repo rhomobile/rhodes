@@ -455,10 +455,23 @@ int makeLoginRequest(char* url, char* data ){
   return remote_data(L"POST", url, data, strlen(data), false)==NULL ? 0 : 1;
 }
 
+int get_winmo_session_size(const char *url_string) {
+  LPTSTR lpszData;
+  DWORD dwSize=0;
+  LPTSTR url = wce_mbtowc(url_string);
+  lpszData = (wchar_t*)malloc(512*sizeof(wchar_t) );
+
+  InternetGetCookie(url, NULL, lpszData, &dwSize);
+  free(url);
+  delete[]lpszData;
+  return dwSize;
+}
+
 void delete_winmo_session(const char *url_string) {
   BOOL bReturn;
   // Delete the session cookie.
   LPTSTR url = wce_mbtowc(url_string);
-  bReturn = InternetSetCookie(url, NULL, NULL);
+  bReturn = InternetSetCookie(url, NULL, L"");
+  get_winmo_session_size(url_string);
   free(url);
 }

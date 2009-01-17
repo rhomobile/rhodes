@@ -303,6 +303,7 @@ int logged_in() {
 			free(session);
 		}
 	}
+	free_source_list(source_list, source_length);
 	unlock_sync_mutex();
 	return retval;
 }
@@ -321,6 +322,7 @@ void logout() {
 	for(i = 0; i < source_length; i++) {
 		delete_db_session(source_list[i]->_source_url);
 	}
+	free_source_list(source_list, source_length);
 	unlock_sync_mutex();
 }
 
