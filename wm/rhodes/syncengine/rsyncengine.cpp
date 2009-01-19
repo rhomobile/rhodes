@@ -327,7 +327,7 @@ void free_url_components(URL_COMPONENTS *uri) {
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
-char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders) {
+char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders, bool bGetRawData = false, DWORD* pdwDataSize = NULL) {
   char       *cstr = NULL;
   std::string data = "";
   char        sBuf[1024];
@@ -420,9 +420,15 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
             data.append(sBuf, dwBytesRead);
             bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
           }
-          //make a copy of recieved data
-          cstr = new char [data.size()+1];
-          strcpy (cstr, data.c_str());
+		  if ( bGetRawData && pdwDataSize ){
+			  cstr = new char [*pdwDataSize];
+			  memcpy (cstr, data.c_str(), *pdwDataSize);
+		  }
+		  else {
+			  //make a copy of recieved data
+			  cstr = new char [data.size()+1];
+			  strcpy (cstr, data.c_str());
+		  }
         }
       }
     } else {
