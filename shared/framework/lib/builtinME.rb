@@ -102,7 +102,21 @@ module Enumerable
 end
 
 class Array
-    alias size length
+    alias reject! delete_if
+  
+    def reject
+      a = []
+      each {|x|
+        if !yield x
+          a << x
+        end
+      }
+      a
+    end
+	
+    def to_a
+        self
+    end
 	
     def join(sepString="")
         return to_s if sepString.nil? || sepString == ""
@@ -116,6 +130,9 @@ class Array
     end
 
     alias map! collect!
+    alias size length
+    alias to_ary to_a
+    alias to_s inspect
   
     def inspect
         str = "["
@@ -129,7 +146,6 @@ class Array
         }
         str << "]"
     end
-    alias to_s inspect
     
 end
 
