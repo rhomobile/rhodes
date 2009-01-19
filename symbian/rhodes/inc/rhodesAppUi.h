@@ -129,12 +129,14 @@ private:
 	 */
 	CRhodesAppView* iAppView;
 	
-	CAppManager* iAppManager;
-	
     sqlite3 * iDatabase;
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	CAppManager* iAppManager;
 
     char* szRhoBundleZipUrl;
     bool iRhoBundleReloadEnabled;
+#endif    
 	};
 
 #endif // __RHODESAPPUI_h__

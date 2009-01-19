@@ -27,6 +27,10 @@ public:
   LPTSTR GetLoadingPage(LPTSTR buffer); 
   LPTSTR GetStartPage();
 
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+  const char* GetRhobundleReloadUrl();
+#endif 
+
 private:
   CHttpServer(void);
 
@@ -41,4 +45,8 @@ private:
 
   LPTSTR m_pStartPage;
   bool InitStartPage();
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+  char* m_szRhobundleReloadUrl;
+#endif
 };
