@@ -327,8 +327,10 @@ void free_url_components(URL_COMPONENTS *uri) {
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
-char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders, bool bGetRawData = false, DWORD* pdwDataSize = NULL) {
+char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
+				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL) {
   char       *cstr = NULL;
+  char		 *session = NULL;
   std::string data = "";
   char        sBuf[1024];
   DWORD       dwBytesRead  = 0;
@@ -342,6 +344,12 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
   hInet = hConnection = hRequest = NULL;
 
   do {
+	// Don't make a connection attempt if there is no session
+    session = get_db_session(load_source_url());
+	if ( bCheckSession && !session && !strstr(url, "clientcreate") ) {
+	  break;
+	}
+	if (session) free(session);
 
     if( !SetupInternetConnection(urlw) ) {
       break;
@@ -450,27 +458,15 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
 }
 
 char* fetch_remote_data(char* url) {
-  return remote_data(L"GET", url, NULL, 0, false);
+  return remote_data(L"GET", url, NULL, 0, false, false, true);
 }
 
 int push_remote_data(char* url, char* data, size_t data_size) {
-  return remote_data(L"POST", url, data, data_size, false)==NULL ? 1 : 0;
+  return remote_data(L"POST", url, data, data_size, false, false, true)==NULL ? 1 : 0;
 }
 
 int makeLoginRequest(char* url, char* data ){
-  return remote_data(L"POST", url, data, strlen(data), false)==NULL ? 0 : 1;
-}
-
-int get_winmo_session_size(const char *url_string) {
-  LPTSTR lpszData;
-  DWORD dwSize=0;
-  LPTSTR url = wce_mbtowc(url_string);
-  lpszData = (wchar_t*)malloc(512*sizeof(wchar_t) );
-
-  InternetGetCookie(url, NULL, lpszData, &dwSize);
-  free(url);
-  delete[]lpszData;
-  return dwSize;
+  return remote_data(L"POST", url, data, strlen(data), false, false, false)==NULL ? 0 : 1;
 }
 
 void delete_winmo_session(const char *url_string) {
@@ -478,6 +474,5 @@ void delete_winmo_session(const char *url_string) {
   // Delete the session cookie.
   LPTSTR url = wce_mbtowc(url_string);
   bReturn = InternetSetCookie(url, NULL, L"");
-  get_winmo_session_size(url_string);
   free(url);
 }

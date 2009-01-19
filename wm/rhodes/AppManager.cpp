@@ -7,7 +7,7 @@
 #include "unzip.h"
 #include "rhoruby/rhoruby.h"
 
-extern char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders, bool bGetRawData, DWORD* pdwDataSize);
+extern char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders, bool bGetRawData, bool bCheckSession, DWORD* pdwDataSize);
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
 CAppManager::CAppManager(void)
@@ -24,7 +24,7 @@ void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
 	{
 		//get zip file with rhodes
 		DWORD dwDataSize = 0;
-		char* zipData = remote_data( L"GET", const_cast<char*>(szUrl), NULL, 0, false, true, &dwDataSize );
+		char* zipData = remote_data( L"GET", const_cast<char*>(szUrl), NULL, 0, false, true, false, &dwDataSize );
 
 		LPWSTR rootw = wce_mbtowc(RhoGetRootPath());  
 
