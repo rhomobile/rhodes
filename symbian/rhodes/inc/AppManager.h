@@ -24,6 +24,8 @@
 #ifndef APPMANAGER_H
 #define APPMANAGER_H
 
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
@@ -81,5 +83,7 @@ private:
 	CHttpFileManager* iHttpFileManager;
 	CRhodesAppUi * iAppUI;
 	};
+
+#endif //ENABLE_DYNAMIC_RHOBUNDLE
 
 #endif // APPMANAGER_H
