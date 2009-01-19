@@ -86,8 +86,10 @@ void CRhodesAppUi::ConstructL()
 
 	//start sunc engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
-	
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE	
 	iAppManager = CAppManager::NewL(this);
+#endif	
 	}
 // -----------------------------------------------------------------------------
 // CRhodesAppUi::CRhodesAppUi()
@@ -96,8 +98,10 @@ void CRhodesAppUi::ConstructL()
 //
 CRhodesAppUi::CRhodesAppUi()
 	{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE	
 	iRhoBundleReloadEnabled = true;
 	szRhoBundleZipUrl = NULL;
+#endif	
 	// No implementation required
 	}
 
@@ -126,8 +130,15 @@ CRhodesAppUi::~CRhodesAppUi()
 		iSyncEngineWrap = NULL;
 		}
 	
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	if ( iAppManager )
+		{
+		delete iAppManager;
+		iAppManager = NULL;
+		}
 	if ( szRhoBundleZipUrl )
 		delete szRhoBundleZipUrl;
+#endif	
 	}
 
 void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent)
@@ -189,9 +200,11 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case EReloadRhobundle:
 			{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
 				if ( iAppManager && szRhoBundleZipUrl )
 					iAppManager->reloadRhoBundle(szRhoBundleZipUrl, NULL);
-				break;	
+#endif	
+				break;
 			}
 		case ESync:
 			{
@@ -300,6 +313,7 @@ void CRhodesAppUi::DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane)
     
     if (aResourceId == R_MENU )
 	{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
 		if ( iRhoBundleReloadEnabled )
 		{
 			iRhoBundleReloadEnabled = false;
@@ -308,8 +322,9 @@ void CRhodesAppUi::DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane)
 
 		if ( !szRhoBundleZipUrl )
 			aMenuPane->DeleteMenuItem(EReloadRhobundle);
-
-		//aMenuPane->SetItemDimmed(EReloadRhobundle, ETrue);
+#else
+		aMenuPane->DeleteMenuItem(EReloadRhobundle);
+#endif
 	}
 }
 
