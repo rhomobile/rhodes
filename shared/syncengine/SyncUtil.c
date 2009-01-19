@@ -250,7 +250,6 @@ char *get_db_session(const char* source_url) {
 	
 	if ( source_url )
 	{
-#if !defined(_WIN32_WCE)
 		prepare_db_statement("SELECT session FROM sources WHERE source_url=?",
 						     (sqlite3 *)get_database(),
 							 &session_db_statement);
@@ -259,9 +258,6 @@ char *get_db_session(const char* source_url) {
 		
 		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
 		sqlite3_reset(session_db_statement);
-#else
-		session = get_winmo_session_size(source_url) == 0 ? NULL : str_assign("exists");
-#endif
 	}
 	return session;
 }
@@ -270,7 +266,6 @@ void delete_db_session( const char* source_url )
 {
 	if ( source_url )
 	{
-#if !defined(_WIN32_WCE)
 		prepare_db_statement("UPDATE sources SET session=NULL where source_url=?",
 						 (sqlite3 *)get_database(),
 						 &del_session_db_statement);
@@ -278,7 +273,8 @@ void delete_db_session( const char* source_url )
 		sqlite3_step(del_session_db_statement); 
 		sqlite3_reset(del_session_db_statement);
 
-#else
+#if defined(_WIN32_WCE)
+		// Delete from winmo cookies
 		delete_winmo_session(source_url);
 #endif
 	}
@@ -286,7 +282,7 @@ void delete_db_session( const char* source_url )
 /**
  * Save cookie to the database storage
  */
-int set_db_session(const char* source_url, const char * session) {
+int set_db_session(const char* source_url, const char *session) {
 
 	int success = 0;
 	

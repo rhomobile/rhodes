@@ -271,6 +271,11 @@ int login(const char* login, const char* password) {
 			
 			save_source_url( source_list[i]->_source_url );
 			retval = makeLoginRequest( login_url, data );
+#if defined(_WIN32_WCE)
+			// just using db as a placeholder for winmo since 
+			// we can't delete the session
+			set_db_session( source_list[i]->_source_url, "exists" );
+#endif
 		}
 		
 		unlock_sync_mutex();
