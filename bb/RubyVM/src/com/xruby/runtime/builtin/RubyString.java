@@ -1140,10 +1140,14 @@ public class RubyString extends RubyBasic {
     public RubyValue format(RubyValue arg) {
         String format = toString();
         String s;
+        //RHO_MOBILE
         if (arg instanceof RubyArray) {
-            s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg((RubyArray)arg, 0));
+            //s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg((RubyArray)arg, 0));
+        	s = StringMe.format(format, (RubyArray)arg);
         } else {
-            s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg(new RubyArray(arg), 0));
+            //s = StringMe.format(format, com.xruby.runtime.lang.RubyKernelModule.buildFormatArg(new RubyArray(arg), 0));
+        	RubyArray args = new RubyArray(arg); 
+        	s = StringMe.format(format, args);
         }
         return ObjectFactory.createString(s);
     }
