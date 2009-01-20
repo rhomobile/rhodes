@@ -1,3 +1,6 @@
+== 0.2.1 2009-01-20
+ * adding new layout framework to generator [#45]
+
 == 0.2.0 2009-01-07
  * releasing 0.2 version of gem
  * fixed sqlite3-ruby 1.2.4 dependency [#147]
