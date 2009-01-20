@@ -47,6 +47,17 @@ public class RhoSupport {
     	return ObjectFactory.createString("");
     }
     
+	public static Class findClass(String path){
+		String name = createMainClassName(path);
+		Class c = null;
+		
+		try{
+			c = Class.forName(name);
+		}catch(ClassNotFoundException exc){}
+		
+		return c;
+	}
+    
 	//@RubyLevelMethod(name="eval_compiled_file", module=true)
     public static RubyValue eval_compiled_file(RubyValue receiver, RubyValue file, RubyValue bindingArg) {
         RubyBinding binding = null;
