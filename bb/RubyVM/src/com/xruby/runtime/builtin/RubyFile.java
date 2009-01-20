@@ -48,6 +48,9 @@ public class RubyFile extends RubyIO {
     ////@RubyLevelMethod(name="exist?", alias="exists?", singleton=true)
     public static RubyValue exist_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
+        if ( fileName.startsWith("/apps"))
+        	return ObjectFactory.createBoolean(RhoSupport.findClass(fileName)!=null);
+        
         File file = new File(fileName);
         return ObjectFactory.createBoolean(file.exists());
     }
