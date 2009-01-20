@@ -97,7 +97,7 @@ public class SyncUtil {
 		try {
 			String session = get_session(source);
 			data = SyncManager.fetchRemoteData(source.get_sourceUrl()
-					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session );
+					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session, true);
 		} catch (IOException e) {
 			System.out
 					.println("There was an error fetching data from the sync source: "
@@ -368,7 +368,7 @@ public class SyncUtil {
 			url = source.get_sourceUrl() + "/"
 					+ ((SyncOperation) list.get(0)).get_operation() + "?client_id=" + clientId;
 			String session = get_session(source);
-			success = SyncManager.pushRemoteData(url, data.toString(),session);
+			success = SyncManager.pushRemoteData(url, data.toString(), session, true);
 		} catch (IOException e) {
 			System.out.println("There was an error pushing changes: "
 					+ e.getMessage());
@@ -404,7 +404,7 @@ public class SyncUtil {
 			String data = null;
 			try {
 				data = SyncManager.fetchRemoteData(source.get_sourceUrl()+"/clientcreate"
-						+ SyncConstants.SYNC_FORMAT, "");
+						+ SyncConstants.SYNC_FORMAT, "", false);
 			} catch (IOException e) {
 				System.out
 						.println("There was an error fetching data from the sync source: "
