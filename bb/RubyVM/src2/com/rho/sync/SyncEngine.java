@@ -56,7 +56,8 @@ public class SyncEngine extends RubyBasic {
 	 * @return the ruby value
 	 */
 	public static RubyValue dosync(RubyValue receiver) {
-		return RubyConstant.QFALSE;
+		wakeUp();
+		return RubyConstant.QTRUE;
 	}
 
 	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
@@ -184,10 +185,10 @@ public class SyncEngine extends RubyBasic {
 	 * @return the ruby value
 	 */
 	public static RubyValue stop(RubyValue receiver) {
-		/*if ( sThread != null ){
+		if ( sThread != null ){
 			sThread.quit();
 			sThread = null;
-		}*/
+		}
 		
 		return RubyConstant.QTRUE;
 	}
