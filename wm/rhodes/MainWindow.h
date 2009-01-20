@@ -37,6 +37,7 @@ public:
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
         COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
         COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
+		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
     END_MSG_MAP()
 
 private:
@@ -56,7 +57,7 @@ private:
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 public:
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
@@ -95,4 +96,6 @@ private:
 
     // Used to manage SIP state. Also used to adjust window for SIP.
     SHACTIVATEINFO m_sai;
+
+	bool m_bRhobundleReloadEnabled;
 };

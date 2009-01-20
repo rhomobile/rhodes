@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\wm\sqlite3"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;STATIC_LINKED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,7 +104,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\wm\sqlite3"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;STATIC_LINKED"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
@@ -560,10 +560,6 @@
 				<Filter
 					Name="syncengine"
 					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\syncengine\syncengine_wrap.c"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="rhosupport"

@@ -23,6 +23,8 @@
 
 #include "AppManager.h"
 
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+
 #include <avkon.hrh>
 #include <aknmessagequerydialog.h>
 #include <aknnotewrappers.h>
@@ -146,6 +148,6 @@ void CAppManager::reloadRhoBundle(const char* aUrl, const char* zipPassword)
 			}
 		}
 	}
-	
-	
 }
+
+#endif

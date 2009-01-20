@@ -145,15 +145,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    String attrib="";
 	    String object="";
 	    String value="";
-	    String created_at="";
-	    String updated_at="";
 	    String update_type="";
 
 		private static final RubyString ATTRIB = ObjectFactory.createString("attrib");
 		private static final RubyString OBJECT = ObjectFactory.createString("object");
 		private static final RubyString VALUE = ObjectFactory.createString("value");
-		private static final RubyString CREATED_AT = ObjectFactory.createString("created_at");
-		private static final RubyString UPDATED_AT = ObjectFactory.createString("updated_at");
 		private static final RubyString UPDATE_TYPE = ObjectFactory.createString("update_type");
 	    
 		public static class TableRoot extends TableRootBase { 
@@ -271,8 +267,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	out.writeString(attrib);
 	    	out.writeString(object);
 	    	out.writeString(value);
-	    	out.writeString(created_at);
-	    	out.writeString(updated_at);
 	    	out.writeString(update_type);	    	
 	    }
 
@@ -282,8 +276,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	attrib = in.readString();
 	    	object = in.readString();
 	    	value = in.readString();
-	    	created_at = in.readString();
-	    	updated_at = in.readString();
 	    	update_type = in.readString();
 	    }
 
@@ -297,10 +289,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		res.add( OBJECT, ObjectFactory.createString(object) );
 	    	if ( bAll || name.equals(VALUE) )
 	    		res.add( VALUE, ObjectFactory.createString(value) );
-	    	if ( bAll || name.equals(CREATED_AT) )
-	    		res.add( CREATED_AT, ObjectFactory.createString(created_at) );
-	    	if ( bAll || name.equals(UPDATED_AT) )
-	    		res.add( UPDATED_AT, ObjectFactory.createString(updated_at) );
 	    	if ( bAll || name.equals(UPDATE_TYPE) )
 	    		res.add( UPDATE_TYPE, ObjectFactory.createString(update_type) );
 	    	
@@ -319,13 +307,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        	object = val.toStr();
 	        val = hash.getValue(VALUE);
 	        if ( val != RubyConstant.QNIL )
-	        	value = val.toStr();	        
-	        val = hash.getValue(CREATED_AT);
-	        if ( val != RubyConstant.QNIL )
-	        	created_at = val.toStr();	        
-	        val = hash.getValue(UPDATED_AT);
-	        if ( val != RubyConstant.QNIL )
-	        	updated_at = val.toStr();	        
+	        	value = val.toStr();	               
 	        val = hash.getValue(UPDATE_TYPE);
 	        if ( val != RubyConstant.QNIL )
 	        	update_type = val.toStr();	        
@@ -334,11 +316,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public Table_object_values(){}
 	    public Table_object_values(Storage db, RubyHash hash){
 	        super(db,hash);
-//			System.out.println("New Object Value: ");
-//			System.out.println("attrib, value, update_type: "
-//					+ hash.getValue(ATTRIB).asString() + ", "
-//					+ hash.getValue(VALUE).asString() + ", "
-//					+ hash.getValue(UPDATE_TYPE).asString());
 	        setValues(hash);
 	    }
 	};

@@ -37,6 +37,8 @@ pthread_condattr_t sync_details;
 static sqlite3 *database;
 static char *client_id = NULL;
 
+extern void delete_db_session(const char *source_url);
+
 int process_local_changes() {
   if (!stop_running) {
 	  // Process local changes
@@ -248,7 +250,7 @@ void clear_client_id(){
  */
 int login(const char* login, const char* password) {
 	int retval = 0;
-	int i,available,source_length;
+	int i,source_length;
 	pSource *source_list;
 	if (login && password) {
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
@@ -268,7 +270,12 @@ int login(const char* login, const char* password) {
 			sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
 			
 			save_source_url( source_list[i]->_source_url );
-			makeLoginRequest( login_url, data );
+			retval = makeLoginRequest( login_url, data );
+#if defined(_WIN32_WCE)
+			// just using db as a placeholder for winmo since 
+			// we can't delete the session
+			set_db_session( source_list[i]->_source_url, "exists" );
+#endif
 		}
 		
 		unlock_sync_mutex();
@@ -278,6 +285,50 @@ int login(const char* login, const char* password) {
 		printf("Unable to login: 'login' or 'password' parameter is not specified.\n");
 	}
 	return retval;
+}
+
+/**
+ * check if user is logged in to rhosync server 
+ *
+ * @return 1 - session exists, 0 - session is null or empty
+ */
+int logged_in() {
+	char *session;
+	int i,source_length,retval = 0;
+	pSource *source_list;
+	source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+		
+	/* iterate over each source id and delete session */
+	lock_sync_mutex();
+	for(i = 0; i < source_length; i++) {
+		session = get_db_session(source_list[i]->_source_url);
+		if (session && strlen(session) > 0) {
+			retval = 1;
+			free(session);
+		}
+	}
+	free_source_list(source_list, source_length);
+	unlock_sync_mutex();
+	return retval;
+}
+
+/**
+ * logout from rhosync server
+ */
+void logout() {
+	int i,source_length;
+	pSource *source_list;
+	source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+		
+	/* iterate over each source id and delete session */
+	lock_sync_mutex();
+	for(i = 0; i < source_length; i++) {
+		delete_db_session(source_list[i]->_source_url);
+	}
+	free_source_list(source_list, source_length);
+	unlock_sync_mutex();
 }
 
 #endif //__APPLE__

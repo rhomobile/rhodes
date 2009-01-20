@@ -4,9 +4,11 @@
 #include "resource.h"
 #include "MainWindow.h"
 #include "HttpServer.h"
+#include "AppManager.h"
 
 CMainWindow::CMainWindow()
 {
+	m_bRhobundleReloadEnabled = true;
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 }
@@ -151,6 +153,22 @@ LRESULT CMainWindow::OnForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if ( m_bRhobundleReloadEnabled )
+	{
+		m_bRhobundleReloadEnabled = false;
+
+		#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+		if ( !CHttpServer::Instance()->GetRhobundleReloadUrl() ) //disable RhoBundle reload url
+		{
+			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
+		}
+		#else
+			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
+		#endif
+	}
+
 	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetStartPage(), NULL, NULL, NULL, NULL);
 	return 0;
 }
@@ -184,6 +202,15 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
 	dosync();
     return 0;
+}
+
+LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() )
+		CAppManager::ReloadRhoBundle(CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
+#endif
+	return 0;
 }
 
 // **************************************************************************
