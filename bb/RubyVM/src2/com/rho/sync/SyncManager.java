@@ -31,6 +31,8 @@ import com.rho.NetworkAccess;
  */
 public class SyncManager {
 
+	private static HttpConnection connection = null;
+	
 	/**
 	 * Fetch remote data.
 	 * 
@@ -46,13 +48,12 @@ public class SyncManager {
 			throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
-		HttpConnection connection = null;
 		int code = 0;
 		if (checkSession && (session == null || session.length() == 0)) return null;
 		try {
 			long len = 0;
 			int ch = 0;
-			//connection = (HttpConnection) Connector.open(url);
+			closeConnection();
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
@@ -81,9 +82,7 @@ public class SyncManager {
 			if (is != null) {
 				is.close();
 			}
-			if (connection != null) {
-				connection.close();
-			}
+			closeConnection();
 		}
 		return buffer.toString();
 	}
@@ -103,11 +102,10 @@ public class SyncManager {
 	 */
 	public static int pushRemoteData(String url, String data, String session, boolean checkSession)
 			throws IOException {
-		HttpConnection connection = null;
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		try {
-			connection = makePostRequest(url,data,session);
+			makePostRequest(url,data,session);
 
 			int code = connection.getResponseCode();
 			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
@@ -115,20 +113,18 @@ public class SyncManager {
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}
 		} finally {
-			if (connection != null) {
-				connection.close();
-			}
+			closeConnection();
 		}
 
 		return success;
 	}
 	
-	public static HttpConnection makePostRequest(String url, String data, String session)
+	public static void makePostRequest(String url, String data, String session)
 			throws IOException {
 		// Performs a post to url with post body provided by data
 		OutputStream os = null;
-		HttpConnection connection = null;
 		try {
+			closeConnection();
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
@@ -142,8 +138,23 @@ public class SyncManager {
 				os.close();
 			}
 		}
-	
+	}
+
+	public static HttpConnection getConnection() {
 		return connection;
+	}
+
+	public static void closeConnection(){
+		if ( connection != null ){
+			try{
+				connection.close();
+			}catch(IOException exc){
+				System.out.println("There was an error close connection: "
+						+ exc.getMessage());
+			}
+		}
+		
+		connection = null;
 	}
 	
 }
