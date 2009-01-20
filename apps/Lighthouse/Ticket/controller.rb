@@ -1,5 +1,6 @@
 require 'rho/rhocontroller'
 require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
+require 'time'
 
 class TicketController < Rho::RhoController
   
@@ -18,7 +19,6 @@ class TicketController < Rho::RhoController
       
       @tickets = @tickets.reject {|ticket| ticket.project_id != strip_braces(@params['id']) }
     end
-    
     @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
     
     render :index
@@ -28,9 +28,9 @@ class TicketController < Rho::RhoController
   def today
     @title = "Todays tickets"
     @tickets = Ticket.find(:all)
-    today = DateTime.now
+    today = Time.new
     @tickets = @tickets.reject do |ticket|
-      ttime = DateTime.parse(ticket.created_at)
+      ttime = Time.parse(ticket.created_at)
       (ttime.day != today.day) || (ttime.month != today.month) || (ttime.year != today.year)
     end
     render :index
@@ -47,6 +47,8 @@ class TicketController < Rho::RhoController
     @tickets = @tickets.reject do |ticket|
       ticket.assigned_user_id != settings.lighthouse_id
     end
+    @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
+    
     render :index
   end
   
@@ -62,7 +64,7 @@ class TicketController < Rho::RhoController
     
     # we pass in th ID of the project to create under
     @ticket.project_id = strip_braces(@params['id'])
-    @ticket.created_at = DateTime.now
+    @ticket.created_at = Time.new
     
     render :new
   end
