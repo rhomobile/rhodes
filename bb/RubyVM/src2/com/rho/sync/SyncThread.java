@@ -28,7 +28,7 @@ import com.rho.db.PerstLiteAdapter;
 public class SyncThread implements Runnable {
 
 	/** The quit. */
-	private boolean quit = false;
+	//private boolean quit = false;
 
 	/** The sync. */
 	private String sync = "sync";
@@ -38,6 +38,14 @@ public class SyncThread implements Runnable {
 	/** The Constant SYNC_WAIT_INTERVAL. */
 	private static final long SYNC_WAIT_INTERVAL = 90000L;
 
+	private static final int STATE_NONE = 0;
+	private static final int STATE_SYNC = 1;
+	private static final int STATE_CANCEL = 2;
+	private static final int STATE_PAUSE = 3;
+	private static final int STATE_DOSTOP = 4;
+	
+	private int m_nState = STATE_NONE;
+	
 	/**
 	 * Instantiates a new sync thread.
 	 */
@@ -56,8 +64,17 @@ public class SyncThread implements Runnable {
 	 */
 	public void quit() {
 		synchronized (sync) {
-			quit = true;
+			setState(STATE_DOSTOP);
 			sync.notify();
+			
+			SyncManager.closeConnection();
+			while( getState() != STATE_NONE ){
+				try{
+					sync.wait(100);
+				} catch (Exception e) {
+					System.out.println("Wait exception:" + e.getMessage());
+				}				
+			}
 		}
 	}
 
@@ -69,8 +86,8 @@ public class SyncThread implements Runnable {
 	public void run() {
 		//SyncUtil.fetch_client_login("lars","password");
 		
-		while (!quit) {
-			synchronized (sync) {
+		while (!isStop()) {
+			//synchronized (sync) {
 				SyncUtil.adapter.initialize(null);
 				System.out.println("SyncEngine is awake..."
 						+ new Date(System.currentTimeMillis()).toString());
@@ -78,7 +95,8 @@ public class SyncThread implements Runnable {
 				if (delaySync == 0) {
 					// Thread is simple, process local changes and make sure
 					// there are no errors before waiting for SYNC_WAIT_INTERVAL
-					if (SyncUtil.processLocalChanges() != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
+					setState(STATE_SYNC);
+					if (SyncUtil.processLocalChanges(this) != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
 						System.out
 								.println("There was an error processing local changes");
 						break;
@@ -87,13 +105,19 @@ public class SyncThread implements Runnable {
 					delaySync = 0;
 				}
 
-				try {
-					if (!quit)
-						sync.wait(SYNC_WAIT_INTERVAL);
-				} catch (Exception e) {
+				synchronized (sync) {
+					try {
+						if (!isStop()){
+							setState(STATE_PAUSE);
+							sync.wait(SYNC_WAIT_INTERVAL);
+						}
+					} catch (Exception e) {
+						System.out.println("Wait exception:" + e.getMessage());
+					}
 				}
-			}
+			//}
 		}
+		setState(STATE_NONE);
 		System.out.println("Shutting down SyncEngine...");
 		// SyncUtil.adapter.close();
 		System.out.println("SyncEngine is shutdown...");
@@ -104,13 +128,31 @@ public class SyncThread implements Runnable {
 	 * 
 	 * @return true, if successful
 	 */
-	public boolean wakeUpSyncEngine() {
-		synchronized (sync) {
-			if (!quit) {
-				sync.notify();
-				return true;
+	public void wakeUpSyncEngine() {
+		if ( getState() == STATE_PAUSE ){
+			synchronized (sync) {	
+				sync.notify(); 
 			}
-			return false;
 		}
+		
+		//synchronized (sync) {
+			//if (!quit) {
+			//	sync.notify();
+			//	return true;
+			//}
+			//return false;
+		//}
+	}
+
+	public synchronized int getState() {
+		return m_nState;
+	}
+
+	public boolean isStop() {
+		return getState()==STATE_DOSTOP;
+	}
+	
+	private synchronized void setState(int state) {
+		m_nState = state;
 	}
 }
