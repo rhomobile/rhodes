@@ -374,17 +374,6 @@ public class RhoConnection implements HttpConnection {
 		return "";
 	}
 	
-	protected Class findClass(String path){
-		String name = RhoSupport.createMainClassName(path);
-		Class c = null;
-		
-		try{
-			c = Class.forName(name);
-		}catch(ClassNotFoundException exc){}
-		
-		return c;
-	}
-
 	static final String[] m_arIndexes = {"index_erb", "index.html", "index.htm"};
 	
 	public static int findIndex(String strUrl){
@@ -411,7 +400,7 @@ public class RhoConnection implements HttpConnection {
 		
 		for( int i = 0; i < m_arIndexes.length; i++ ){
 			String name = uri.getPath() + slash + m_arIndexes[i];
-			if ( findClass(name) != null || RhoRuby.loadFile(name) != null ){
+			if ( RhoSupport.findClass(name) != null || RhoRuby.loadFile(name) != null ){
 				strIndex = name;
 				break;
 			}
@@ -452,7 +441,7 @@ public class RhoConnection implements HttpConnection {
 			if ( strTemp.length() == 0 || strTemp.charAt(strTemp.length()-1)!='/')
 				strTemp += '/';
 	
-			if( findClass(strTemp + "controller") != null )
+			if( RhoSupport.findClass(strTemp + "controller") != null )
 				return false;
 			
 			int nPos = findIndex(uri.getPath());
