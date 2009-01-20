@@ -21,6 +21,10 @@ CHttpServer* CHttpServer::Instance() {
 
 CHttpServer::CHttpServer(void)
 {
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+  m_szRhobundleReloadUrl = NULL;
+#endif
+
   m_bRubyInitialized = false;
   m_pStartPage = NULL;
 
@@ -42,6 +46,11 @@ CHttpServer::~CHttpServer(void)
   if (m_pStartPage) {
 	  free(m_pStartPage);
   }
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+  if ( m_szRhobundleReloadUrl )
+	  delete m_szRhobundleReloadUrl;
+#endif
 }
 
 void CHttpServer::ResumeThread()
@@ -58,6 +67,10 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
   if (!m_bRubyInitialized) {
     InitRubyFramework();
 	InitStartPage();
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	m_szRhobundleReloadUrl = callGetRhobundleZipUrl();
+#endif
     ATLTRACE(L"Starting SYNC\n");
     start_sync();
   }
@@ -144,3 +157,8 @@ LPTSTR CHttpServer::GetStartPage() {
 		return HOME_PAGE_W;
 }
 
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+const char* CHttpServer::GetRhobundleReloadUrl() {
+	return m_szRhobundleReloadUrl;
+}
+#endif
