@@ -1139,7 +1139,8 @@ process_options(VALUE arg)
     //RHO
       ruby_init_loadpath(NULL);
 
-    ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
+    //RHO
+    //ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
     lenc = rb_locale_encoding();
     rb_enc_associate(rb_progname, lenc);
     opt->script_name = rb_str_new4(rb_progname);
