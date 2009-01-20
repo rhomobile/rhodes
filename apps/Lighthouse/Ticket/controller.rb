@@ -19,6 +19,8 @@ class TicketController < Rho::RhoController
       @tickets = @tickets.reject {|ticket| ticket.project_id != strip_braces(@params['id']) }
     end
     
+    @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
+    
     render :index
   end
 
