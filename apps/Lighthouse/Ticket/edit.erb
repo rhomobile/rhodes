@@ -8,17 +8,17 @@
 			</div>
 			<div class="ticket_reported"><span>Reported by:</span> 
 			<a href="<%= "/Lighthouse/User/{#{@ticket.creator_id}}/show" %>"><%= User.find(@ticket.creator_id).name %></a> <br />
-			<%= @ticket.created_at %></div>
+			<%= Time.parse(@ticket.created_at).strftime("%B %d, %Y @ %I:%M%p") %></div>
 		</div>
 		<div class="clearer"></div>
 		<h3>Comments and changes</h3>
 		<div id="ticket_history">
 			<% versions = TicketVersions.find(:all).reject {|version| version.ticket_id != strip_braces(@ticket.object) }
-				 versions = versions.sort { |x,y| DateTime.parse(x.updated_at) <=> DateTime.parse(y.updated_at) }
+				 versions = versions.sort { |x,y| Time.parse(x.updated_at) <=> Time.parse(y.updated_at) }
 				versions.each do |change| %>
 				<div class="ticket_version">
 					<div class="changename"><%= User.find(change.user_id).name %></div>
-					<div class="changedate"><%= change.updated_at %></div>
+					<div class="changedate"><%= Time.parse(change.updated_at).strftime("%B %d, %Y @ %I:%M%p") %></div>
 					<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
 					<% if change_log.length > 1 %>
 						<ul class="info">
