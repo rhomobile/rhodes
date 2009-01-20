@@ -103,8 +103,12 @@ module Rhom
                 # returns an array of objects based on an existing array
                 def get_list(objs)
                   new_list = []
-                  if objs and defined? Rho::RhoConfig::sources[self.name.to_s]
-                    attrib_length = Rho::RhoConfig::sources[self.name.to_s]['attribs'].length
+                  attrib_length = 0
+                  source = Rho::RhoConfig::sources[self.name.to_s]
+                  if source
+                    attrib_length = source['attribs'].length
+                  end
+                  if objs and source and attrib_length > 0
                     list_length = 0
                     list_length = (objs.length / attrib_length) unless attrib_length == 0
                     new_obj = nil
@@ -130,9 +134,8 @@ module Rhom
                       new_list << new_obj
                     end
                   else
-                    # source attributes are not initialized, 
-                    # try again
-                    RhomObjectFactory::init_sources
+                    # source attributes are not initialized, try again
+                    RhomObjectFactory::init_source_attribs
                   end
                   new_list
                 end
@@ -210,12 +213,6 @@ module Rhom
                   # then we procede with update
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
-                      # update viewable list
-=begin
-                      result = ::Rhom::RhomDbAdapter::update_into_table(::Rhom::TABLE_NAME,
-                                                                {"value"=>new_val},
-                                                                {"object"=>obj, "attrib"=>method})
-=end
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,

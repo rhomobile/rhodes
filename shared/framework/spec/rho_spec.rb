@@ -26,7 +26,7 @@ describe "Rho" do
 
   it "should populate configuration in sources table" do
     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
-    sources.size.should > 0
+    sources.size.should > 1
   end
   
   it "should initialize configuration only once" do

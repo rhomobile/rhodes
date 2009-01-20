@@ -65,7 +65,6 @@ int process_local_changes() {
 		  int available_remote = fetch_remote_changes(database, client_id);
 		  if(available_remote > 0) {
 			  printf("Successfully processed %i records...\n", available_remote);
-  			
 		  }
 	  }
 	  free_source_list(source_list, source_length);
