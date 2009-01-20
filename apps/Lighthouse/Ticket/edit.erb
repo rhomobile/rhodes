@@ -23,7 +23,9 @@
 					<% if change_log.length > 1 %>
 						<ul class="info">
 							<% change_log.each do |element| %>
-							<li>→ <%= element %></li>
+								<% if element != "<<<EOC>>>" %>
+									<li>→ <%= element %></li>
+								<% end %>
 							<% end %>
 						</ul>
 					<% else %>
