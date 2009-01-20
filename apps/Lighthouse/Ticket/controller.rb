@@ -1,5 +1,6 @@
 require 'rho/rhocontroller'
 require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
+require 'time'
 
 class TicketController < Rho::RhoController
   
@@ -7,8 +8,19 @@ class TicketController < Rho::RhoController
   
   #GET /Ticket
   def index
+    puts "in index with >#{@params['id']}<"
     @title = "All tickets"	
     @tickets = Ticket.find(:all)
+    
+    # if we pass in an ID them limit by only that project 
+    if @params['id']
+      @project = Project.find(@params['id'])
+      @title = @project.name
+      
+      @tickets = @tickets.reject {|ticket| ticket.project_id != strip_braces(@params['id']) }
+    end
+    @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
+    
     render :index
   end
 
@@ -16,9 +28,9 @@ class TicketController < Rho::RhoController
   def today
     @title = "Todays tickets"
     @tickets = Ticket.find(:all)
-    today = DateTime.now
+    today = Time.new
     @tickets = @tickets.reject do |ticket|
-      ttime = DateTime.parse(ticket.created_at)
+      ttime = Time.parse(ticket.created_at)
       (ttime.day != today.day) || (ttime.month != today.month) || (ttime.year != today.year)
     end
     render :index
@@ -35,6 +47,8 @@ class TicketController < Rho::RhoController
     @tickets = @tickets.reject do |ticket|
       ticket.assigned_user_id != settings.lighthouse_id
     end
+    @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
+    
     render :index
   end
   
@@ -47,6 +61,11 @@ class TicketController < Rho::RhoController
   # GET /Ticket/new
   def new
     @ticket = Ticket.new
+    
+    # we pass in th ID of the project to create under
+    @ticket.project_id = strip_braces(@params['id'])
+    @ticket.created_at = Time.new
+    
     render :new
   end
 
@@ -58,6 +77,8 @@ class TicketController < Rho::RhoController
 
   # POST /Ticket/create
   def create
+    puts "in ticket create with #{@params['ticket'].inspect.to_s}\n"
+    
     @ticket = Ticket.new(@params['ticket'])
     @ticket.save
     redirect :index

@@ -9,7 +9,7 @@
 		<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
 		<script src="/shared/js/jquery-1.2.6.min.js"></script>
 		<script src="/shared/js/rho.js"></script> 
-		<script src="//Lighthouse/js/application.js"></script> 
+		<script src="/Lighthouse/js/application.js"></script> 
 		
 	</head>
 	<body>
@@ -21,13 +21,18 @@
 			</h1>
 			<a id="backButton" class="button" href="./"></a>
 		</div>
+		
 		<ul id="home" selected="true" title="Lighthouse">
+		<% if SyncEngine::logged_in > 0 %>		
 			<li><a href="Ticket">All tickets</li>
 			<li><a href="Ticket/today">Todays tickets</li>
 			<li><a href="Ticket/assgined_to_me">Tickets assigned to me</li>
-				
 			<li><a href="Project">Projects</li>
 			<li><a href="User">Users</li>	
+		<% else %>
+			<li><a href="/Settings/User/login" target="_self">Login</a></li>
+	  <% end %>
 		</ul>
+
 	</body>
 </html>
