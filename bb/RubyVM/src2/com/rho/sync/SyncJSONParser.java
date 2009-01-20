@@ -59,10 +59,8 @@ public class SyncJSONParser {
 					SyncObject newObject = new SyncObject(attrib, sourceId,	object, 
 							value, updateType);
 					
-					newObject.setCreatedAt( (String)current.get("created_at"));
 					newObject.setDbOperation((String)current.get("db_operation"));
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
-					newObject.setUpdatedAt((String)current.get("updated_at"));
 					
 					list.add(newObject);
 				}

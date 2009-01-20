@@ -6,6 +6,10 @@ class SourceController < Rho::SettingsController
     render :index
   end
   
+  def show
+    @source = self.get_source(@params['id'])
+  end
+  
   def edit
     @source = self.get_source(@params['id'])
     render :edit

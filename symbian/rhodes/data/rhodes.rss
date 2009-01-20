@@ -116,6 +116,11 @@ RESOURCE MENU_PANE r_menu
 				{
 				command = ESync;
 				txt = qtn_sync;
+				},
+		MENU_ITEM
+				{
+				command = EReloadRhobundle;
+				txt = qtn_reload_rhobundle;
 				},		
 //		MENU_ITEM
 //				{
@@ -245,7 +250,8 @@ RESOURCE TBUF32 r_caption_string { buf=qtn_caption_string; }
 RESOURCE TBUF32 r_about_dialog_title { buf=qtn_about_dialog_title; }
 RESOURCE TBUF32 r_stat_dialog_title { buf=qtn_stat_dialog_title; }
 RESOURCE TBUF r_about_dialog_text { buf=qtn_about_dialog_text; }
-RESOURCE TBUF r_command1_text { buf=qtn_command1_text; }
+RESOURCE TBUF32 r_update_rhobundle_dialog_title { buf=qtn_update_rhobundle_dialog_title; }
+RESOURCE TBUF r_update_rhobundle_dialog_text { buf=qtn_update_rhobundle_dialog_text; }
 
 
 // ---------------------------------------------------------------------------- 

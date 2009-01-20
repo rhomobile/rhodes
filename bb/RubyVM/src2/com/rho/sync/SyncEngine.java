@@ -56,12 +56,23 @@ public class SyncEngine extends RubyBasic {
 	 * @return the ruby value
 	 */
 	public static RubyValue dosync(RubyValue receiver) {
-		return RubyConstant.QFALSE;
+		wakeUp();
+		return RubyConstant.QTRUE;
 	}
 
 	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
 		boolean bRes = SyncUtil.fetch_client_login(arg1.toString(), arg2.toString());
-		return bRes ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
+	}
+	
+	public static RubyValue logged_in() {
+		boolean bRes = SyncUtil.logged_in();
+		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
+	}
+	
+	public static RubyValue logout() {
+		SyncUtil.logout();
+		return RubyConstant.QNIL; 
 	}
 	
 	/**
@@ -113,6 +124,20 @@ public class SyncEngine extends RubyBasic {
 						return SyncEngine.login(arg1,arg2);
 					}
 				});
+		
+		klass.getSingletonClass().defineMethod("logged_in",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						return SyncEngine.logged_in();
+					}
+				});
+		
+		klass.getSingletonClass().defineMethod("logout",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						return SyncEngine.logout();
+					}
+				});
 
 	}
 
@@ -160,10 +185,10 @@ public class SyncEngine extends RubyBasic {
 	 * @return the ruby value
 	 */
 	public static RubyValue stop(RubyValue receiver) {
-		/*if ( sThread != null ){
+		if ( sThread != null ){
 			sThread.quit();
 			sThread = null;
-		}*/
+		}
 		
 		return RubyConstant.QTRUE;
 	}

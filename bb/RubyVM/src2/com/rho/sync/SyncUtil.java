@@ -97,7 +97,7 @@ public class SyncUtil {
 		try {
 			String session = get_session(source);
 			data = SyncManager.fetchRemoteData(source.get_sourceUrl()
-					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session );
+					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session, true);
 		} catch (IOException e) {
 			System.out
 					.println("There was an error fetching data from the sync source: "
@@ -277,11 +277,11 @@ public class SyncUtil {
 	 * 
 	 * @return the int
 	 */
-	public static int processLocalChanges() {
+	public static int processLocalChanges(SyncThread thread) {
 		RubyArray sources = SyncUtil.getSourceList();
 
 		String client_id = null;
-		for (int i = 0; i < sources.size(); i++) {
+		for (int i = 0; i < sources.size() && !thread.isStop(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
@@ -289,11 +289,17 @@ public class SyncUtil {
 			if ( client_id == null )
 				client_id = get_client_id(current);
 			
+			if ( thread.isStop() )	break;
+			
 			System.out.println("URL: " + current.get_sourceUrl());
 			int success = 0;
 			success += processOpList(current, "create", client_id);
+			if ( thread.isStop() )	break;			
 			success += processOpList(current, "update", client_id);
+			if ( thread.isStop() )	break;			
 			success += processOpList(current, "delete", client_id);
+			if ( thread.isStop() )	break;
+			
 			if (success > 0) {
 				System.out
 						.println("Remote update failed, not continuing with sync...");
@@ -368,7 +374,7 @@ public class SyncUtil {
 			url = source.get_sourceUrl() + "/"
 					+ ((SyncOperation) list.get(0)).get_operation() + "?client_id=" + clientId;
 			String session = get_session(source);
-			success = SyncManager.pushRemoteData(url, data.toString(),session);
+			success = SyncManager.pushRemoteData(url, data.toString(), session, true);
 		} catch (IOException e) {
 			System.out.println("There was an error pushing changes: "
 					+ e.getMessage());
@@ -404,22 +410,23 @@ public class SyncUtil {
 			String data = null;
 			try {
 				data = SyncManager.fetchRemoteData(source.get_sourceUrl()+"/clientcreate"
-						+ SyncConstants.SYNC_FORMAT, "");
+						+ SyncConstants.SYNC_FORMAT, "", false);
+				
+				if (data != null)
+					client_id = SyncJSONParser.parseClientID(data);
+
+				RubyHash hash = SyncUtil.createHash();
+				hash.add(SyncUtil.createString("client_id"), createString(client_id));
+				
+				if ( getObjectCountFromDatabase(SyncConstants.CLIENT_INFO) > 0 )
+					adapter.updateIntoTable(createString(SyncConstants.CLIENT_INFO), hash, RubyConstant.QNIL);
+				else
+					adapter.insertIntoTable(createString(SyncConstants.CLIENT_INFO), hash);
 			} catch (IOException e) {
 				System.out
 						.println("There was an error fetching data from the sync source: "
 								+ e.getMessage());
 			}
-			if (data != null)
-				client_id = SyncJSONParser.parseClientID(data);
-
-			RubyHash hash = SyncUtil.createHash();
-			hash.add(SyncUtil.createString("client_id"), createString(client_id));
-			
-			if ( getObjectCountFromDatabase(SyncConstants.CLIENT_INFO) > 0 )
-				adapter.updateIntoTable(createString(SyncConstants.CLIENT_INFO), hash, RubyConstant.QNIL);
-			else
-				adapter.insertIntoTable(createString(SyncConstants.CLIENT_INFO), hash);
 		}
 		return client_id;
 	}
@@ -554,9 +561,10 @@ public class SyncUtil {
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 			
 			try {
-				connection = SyncManager.makePostRequest(sourceUrl+"/client_login", 
+				SyncManager.makePostRequest(sourceUrl+"/client_login", 
 						"login=" + strUser+ "&password="+strPwd+"&remember_me=1", "");
 	
+				connection = SyncManager.getConnection(); 
 				int code = connection.getResponseCode();
 				if (code == HttpConnection.HTTP_OK ){
 					ParsedCookie cookie = makeCookie(connection);
@@ -565,25 +573,21 @@ public class SyncUtil {
 				else
 					System.out.println("Error posting data: " + code);
 				
+				RubyHash values = SyncUtil.createHash();
+				values.add(PerstLiteAdapter.SESSION, createString(strSession));
+				RubyHash where = SyncUtil.createHash();
+				where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+				
+				adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
+				//adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));			
+				
 			} catch (IOException e) {
 				System.out.println("There was an error fetch_client_login: "
 						+ e.getMessage());
 			} finally {
-				if (connection != null) {
-					try{ connection.close(); }catch (IOException e){
-						System.out.println("There was an error close connection: "
-								+ e.getMessage());
-					}
-				}
+				SyncManager.closeConnection();
+				connection = null;
 			}
-	
-			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, createString(strSession));
-			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
-			
-			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
-			//adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));			
 		}
 		
 		return true;
@@ -603,5 +607,32 @@ public class SyncUtil {
 		}
 		return "";
 	}
-	
+
+	public static boolean logged_in() {
+		boolean success = false;
+		RubyArray sources = SyncUtil.getSourceList();
+		for (int i = 0; i < sources.size(); i++) {
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
+			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			SyncSource current = new SyncSource(url, id);
+			if (get_session(current).length() > 0) {
+				success = true;
+			}
+		}
+		return success;
+	}
+
+	public static void logout() {
+		RubyArray sources = SyncUtil.getSourceList();
+		for (int i = 0; i < sources.size(); i++) {
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			RubyHash values = SyncUtil.createHash();
+			values.add(PerstLiteAdapter.SESSION, SyncUtil.createString(""));
+			RubyHash where = SyncUtil.createHash();
+			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
+		}
+	}
 }

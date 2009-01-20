@@ -5,7 +5,8 @@ require 'rational'
 
 class Date
 
-  SECONDS_IN_DAY = 60*60*24
+  #SECONDS_IN_DAY = 60*60*24
+  #SECONDS_IN_DAY         = Rational(1, 86400)
 
   module Format # :nodoc:
 
@@ -248,7 +249,7 @@ class Date
       when 'e', 'Oe'; emit_a(mday, 2, f)
       when 'F'
 	if m == '%F'
-	  format('%.4d-%02d-%02d', year, mon, mday) # 4p
+	  format('%.4d-%02d-%02d', year(), mon(), mday()) # 4p
 	else
 	  emit_a(strftime('%Y-%m-%d'), 0, f)
 	end
@@ -280,11 +281,11 @@ class Date
       when 'r'; emit_a(strftime('%I:%M:%S %p'), 0, f)
       when 'S', 'OS'; emit_n(sec, 2, f)
       when 's'
-	s = ((ajd - UNIX_EPOCH_IN_AJD) / SECONDS_IN_DAY).round
+	s = ((ajd - UNIX_EPOCH_IN_AJD) / Rational(1, 86400)).round
 	emit_sn(s, 1, f)
       when 'T'
 	if m == '%T'
-	  format('%02d:%02d:%02d', hour, min, sec) # 4p
+	  format('%02d:%02d:%02d', hour(), min(), sec()) # 4p
 	else
 	  emit_a(strftime('%H:%M:%S'), 0, f)
 	end
@@ -304,7 +305,7 @@ class Date
 	t = $1.size
 	sign = if offset < 0 then -1 else +1 end
 	fr = offset.abs
-	ss = fr.div(SECONDS_IN_DAY) # 4p
+	ss = fr.div(Rational(1, 86400)) # 4p
 	hh, ss = ss.divmod(3600)
 	mm, ss = ss.divmod(60)
 	if t == 3

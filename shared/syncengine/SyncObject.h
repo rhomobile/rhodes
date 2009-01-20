@@ -44,8 +44,6 @@ typedef struct {
 	int				_source_id;
 	char*			_object;
 	char*			_value;
-	char*			_created_at;
-	char*			_updated_at;
 	char*			_update_type;
 } SyncObject;
 

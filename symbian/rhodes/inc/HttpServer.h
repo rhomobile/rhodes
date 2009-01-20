@@ -65,6 +65,13 @@ public:
 	void SuspendThread();
 	
 	/**
+	 * Stop thread
+	 */
+	void StopThread();
+	
+	void StopRubyFramework() { iStopRubyFramework = true; }
+	void StartRubyFramework() { iStartRubyFramework = true; }
+	/**
 	 * Main thread function
 	 */
 	TInt Execute(); 
@@ -103,6 +110,9 @@ private: //data
 	
 	struct shttpd_ctx* ctx;
 	bool iClose;
+	
+	bool iStopRubyFramework;
+	bool iStartRubyFramework;
 	};
 
 #endif // HTTPSERVER_H

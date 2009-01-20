@@ -22,7 +22,7 @@ RubyVM
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
-src\rhomobile\DateParser.java
+src\rhomobile\DateTimeTokenizer.java
 src\rhomobile\Properties.java
 src\rhomobile\RhoConnection.java
 src\rhomobile\RhodesApplication.java

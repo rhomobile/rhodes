@@ -1550,6 +1550,8 @@ extern void dosync();
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
 extern int login(const char *login, const char *password);
+extern int logged_in();
+extern void logout();
 
 
 SWIGINTERN swig_type_info*
@@ -1697,6 +1699,34 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_logged_in(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)logged_in();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_logout(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  logout();
+  return Qnil;
+fail:
   return Qnil;
 }
 
@@ -1967,5 +1997,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "login", _wrap_login, -1);
+  rb_define_module_function(mSyncEngine, "logged_in", _wrap_logged_in, -1);
+  rb_define_module_function(mSyncEngine, "logout", _wrap_logout, -1);
 }
 
