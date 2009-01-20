@@ -12,6 +12,7 @@ class ContactsController < Rho::RhoController
   # GET /Contacts/1
   def show
     @contact = Rho::RhoContact.find(@params['id'])
+    render :action => :show
   end
 
   # GET /Contacts/new

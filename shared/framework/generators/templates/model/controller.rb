@@ -1,11 +1,11 @@
 require 'rho/rhocontroller'
 
 class <%= class_name %>Controller < Rho::RhoController
-  
+
   #GET /<%= class_name %>
   def index
     @<%= name.pluralize %> = <%= class_name %>.find(:all)
-    render :index
+    render
   end
 
   # GET /<%= class_name %>/1
@@ -16,13 +16,13 @@ class <%= class_name %>Controller < Rho::RhoController
   # GET /<%= class_name %>/new
   def new
     @<%= name %> = <%= class_name %>.new
-    render :new
+    render :action => :new
   end
 
   # GET /<%= class_name %>/1/edit
   def edit
     @<%= name %> = <%= class_name %>.find(@params['id'])
-    render :edit
+    render :action => :edit
   end
 
   # POST /<%= class_name %>/create

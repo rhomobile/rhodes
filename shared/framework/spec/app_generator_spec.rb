@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/generator_spec_helper'
 
 describe Rhogen::AppGenerator do
-  
+
   app_name = 'NeatApp'
 
   it "should complain if no name is specified" do
@@ -9,25 +9,25 @@ describe Rhogen::AppGenerator do
       @generator = Rhogen::AppGenerator.new('/tmp', {})
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
-  
-  
+
+
   it "should generate class_name" do
     @generator = Rhogen::AppGenerator.new('/tmp', {}, 'Class-With-Hyphens')
     @generator.class_name.should == 'ClassWithHyphens'
   end
-  
+
   before do
     @generator = Rhogen::AppGenerator.new('/tmp', {}, app_name)
   end
-  
-  it "should create application.rb and index.html files" do
-    ['application.rb', 'index.html'].each do |template|
+
+  it "should create application.rb, index.erb, and layout.erb files" do
+    ['application.rb', 'index.erb', 'layout.erb'].each do |template|
       @generator.should create("/tmp/#{app_name}/#{template}")
     end
   end
-  
+
   it "should generate valid erb templates" do
     pending "need to figure out how to validate erb"
   end
-  
+
 end
