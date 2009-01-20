@@ -42,11 +42,13 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String fetchRemoteData(String url, String session) throws IOException {
+	public static String fetchRemoteData(String url, String session, boolean checkSession) 
+			throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
 		HttpConnection connection = null;
 		int code = 0;
+		if (checkSession && (session == null || session.length() == 0)) return null;
 		try {
 			long len = 0;
 			int ch = 0;
@@ -99,10 +101,11 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static int pushRemoteData(String url, String data, String session)
+	public static int pushRemoteData(String url, String data, String session, boolean checkSession)
 			throws IOException {
 		HttpConnection connection = null;
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
+		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		try {
 			connection = makePostRequest(url,data,session);
 
