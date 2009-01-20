@@ -46,4 +46,4 @@ int login(const char *login, const char *password);
  * @return session
  */
 //char* get_session_from_login(char* url, char* data );//login, char* password);
-void makeLoginRequest(char* url, char* data );
+int makeLoginRequest(char* url, char* data );

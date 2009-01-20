@@ -16,8 +16,16 @@
 #include <locale.h>
 #endif
 
-//#define COMPILER 1
+extern void Init_SyncEngine(void);
 
+#define COMPILER 1
+/*
+ if (rb_safe_level() == 0) {
+ ruby_incpush(getenv("RUBYLIB"));
+    }
+[04.01.2009 11:44:19] evgeny vovchenko says: это надо убрать
+[04.01.2009 11:44:35] evgeny vovchenko says: ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
+*/
 //RUBY_GLOBAL_SETUP
 
 #ifndef COMPILER
@@ -55,6 +63,9 @@ main(int argc, char **argv)
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
+
+    SetEnvironmentVariable("RUBYOPT","");
+    SetEnvironmentVariable("RUBYLIB","");
 
 //    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);
@@ -108,4 +119,7 @@ void dosync() {
 }
 
 void Init_GeoLocation(){
+}
+
+void Init_SyncEngine(void) {
 }

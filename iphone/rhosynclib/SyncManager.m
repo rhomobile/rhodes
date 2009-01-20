@@ -26,6 +26,7 @@
 #include "SyncEngine.h"
 
 extern char *get_session(const char *url_string);
+extern int logged_in();
 
 /* 
  * Pulls the latest object_values list 
@@ -37,6 +38,7 @@ char *fetch_remote_data(char *url_string) {
 	char *session = NULL;
 	session = str_assign(get_session(url_string));
 	if (session || strstr(url_string, "clientcreate")) {
+		printf("Fetching data from %s\n", url_string);
 		char *data;
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:url_string] autorelease]];
@@ -73,7 +75,6 @@ char *fetch_remote_data(char *url_string) {
 		[pool release];
 		return data;
 	} else {
-		printf("No session provided...\n");
 		if (session) free(session);
 		[pool release];
 		return NULL;
@@ -92,14 +93,12 @@ int login(const char *login, const char *password) {
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
 	pthread_mutex_lock(&sync_mutex);
-	char *session = NULL;
 	for(i = 0; i < source_length; i++) {
 		char login_string[4096] = "";
 		sprintf(login_string, 
 				"%s/client_login", 
 				source_list[i]->_source_url);
-		session = str_assign(get_session(login_string));
-		if (!session) {
+		if (!logged_in()) {
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 			NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 			NSError *error = nil;
@@ -142,11 +141,9 @@ int login(const char *login, const char *password) {
 	clear_client_id();
 	pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
-		if (session) free(session);
 		[pool release];
 		return 0;
 	} else {
-		if (session) free(session);
 		[pool release];
 		return 1;
 	}
@@ -212,6 +209,38 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 	}
 }
 
+NSArray *get_all_cookies() {
+	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	NSArray *cookies = [cookieStore cookies];
+	return cookies;
+}
+
+int logged_in() {
+	int i,retval = 0;
+	NSArray *cookies;
+	cookies = get_all_cookies();
+	int count = [cookies count];
+	// Iterate over all cookies and see if we have a rhosync_session
+	for (i = 0; i < count; i++) {
+		if ([[[cookies objectAtIndex:i] name] isEqualToString:@"rhosync_session"]) retval = 1;
+	}
+	return retval;
+}
+
+void logout() {
+	int i;
+	NSArray *cookies;
+	cookies = get_all_cookies();
+	int count = [cookies count];
+	for (i = 0; i < count; i++) {
+		NSHTTPCookie *cookie = [cookies objectAtIndex:i];
+		NSString *name = [cookie name];
+		if ([name isEqualToString:@"rhosync_session"] || [name isEqualToString:@"auth_token"]) {
+			[[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+		}
+	}
+}
+
 /*
  * Retrieve cookie from shared cookie storage
  */
@@ -220,6 +249,5 @@ char *get_session(const char *url_string) {
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	NSArray *cookies = [cookieStore cookiesForURL:url];
 	char *session =  (char *)[[[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"] UTF8String];
-	if (session) printf("Using session %s...\n",session);
 	return session == NULL || strcmp(session,"") == 0 ? NULL : session;
 }

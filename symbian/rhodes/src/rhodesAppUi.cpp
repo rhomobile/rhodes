@@ -40,6 +40,10 @@
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
 
+#include "AppManager.h"
+
+#include "rhoruby/rhoruby.h"
+
 #ifndef ENABLE_RUBY_VM_STAT
 #define ENABLE_RUBY_VM_STAT
 #endif
@@ -51,6 +55,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
+#include <libc/sys/unistd.h>
 
 extern "C"
 {
@@ -81,7 +86,10 @@ void CRhodesAppUi::ConstructL()
 
 	//start sunc engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
-	
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE	
+	iAppManager = CAppManager::NewL(this);
+#endif	
 	}
 // -----------------------------------------------------------------------------
 // CRhodesAppUi::CRhodesAppUi()
@@ -90,6 +98,10 @@ void CRhodesAppUi::ConstructL()
 //
 CRhodesAppUi::CRhodesAppUi()
 	{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE	
+	iRhoBundleReloadEnabled = true;
+	szRhoBundleZipUrl = NULL;
+#endif	
 	// No implementation required
 	}
 
@@ -117,6 +129,16 @@ CRhodesAppUi::~CRhodesAppUi()
 		delete iSyncEngineWrap;
 		iSyncEngineWrap = NULL;
 		}
+	
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	if ( iAppManager )
+		{
+		delete iAppManager;
+		iAppManager = NULL;
+		}
+	if ( szRhoBundleZipUrl )
+		delete szRhoBundleZipUrl;
+#endif	
 	}
 
 void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent)
@@ -137,6 +159,28 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 		}
 	}
 
+void CRhodesAppUi::StopRubyFramework()
+{
+	iHttpServer->StopRubyFramework();
+}
+
+void CRhodesAppUi::StartRubyFramework()
+{
+	iHttpServer->StartRubyFramework(); 
+}
+
+void CRhodesAppUi::StopThreads()
+	{
+
+	if ( iHttpServer )
+		iHttpServer->StopThread();
+		
+	if ( iSyncEngineWrap )
+		iSyncEngineWrap->TerminateThread();
+
+	sleep(2);
+	
+	}
 
 // -----------------------------------------------------------------------------
 // CRhodesAppUi::HandleCommandL()
@@ -149,12 +193,19 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 		{
 		case EEikCmdExit:
 		case EAknSoftkeyExit:
-			
-			if ( iSyncEngineWrap )
-				iSyncEngineWrap->TerminateThread();
-			
-			Exit();
-			break;
+			{
+				StopThreads();
+				Exit();
+				break;
+			}
+		case EReloadRhobundle:
+			{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+				if ( iAppManager && szRhoBundleZipUrl )
+					iAppManager->reloadRhoBundle(szRhoBundleZipUrl, NULL);
+#endif	
+				break;
+			}
 		case ESync:
 			{
 				dosync();
@@ -259,6 +310,36 @@ TKeyResponse CRhodesAppUi::HandleKeyEventL(const TKeyEvent& aKeyEvent,TEventCode
 void CRhodesAppUi::DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane)
 {
     iAppView->DynInitMenuPaneL(aResourceId, aMenuPane);
+    
+    if (aResourceId == R_MENU )
+	{
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+		if ( iRhoBundleReloadEnabled )
+		{
+			iRhoBundleReloadEnabled = false;
+			szRhoBundleZipUrl = callGetRhobundleZipUrl();
+		}
+
+		if ( !szRhoBundleZipUrl )
+			aMenuPane->DeleteMenuItem(EReloadRhobundle);
+#else
+		aMenuPane->DeleteMenuItem(EReloadRhobundle);
+#endif
+	}
+}
+
+void CRhodesAppUi::ShowInfoMessage(TInt aTitleId, TInt aMessageId)
+{
+	//Show information message
+	CAknMessageQueryDialog* dlg = new (ELeave)CAknMessageQueryDialog();
+	dlg->PrepareLC(R_ABOUT_QUERY_DIALOG);
+	HBufC* title = iEikonEnv->AllocReadResourceLC(aTitleId);
+	dlg->QueryHeading()->SetTextL(*title);
+	CleanupStack::PopAndDestroy(); //title
+	HBufC* msg = iEikonEnv->AllocReadResourceLC(aMessageId);
+	dlg->SetMessageTextL(*msg);
+	CleanupStack::PopAndDestroy(); //msg
+	dlg->RunLD();
 }
 
 // End of File

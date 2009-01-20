@@ -118,6 +118,7 @@ void CHttpClient::ConstructL()
 		
 		iNotUsingFile = EFalse;
 		
+		iTransObs->SetUsingFile(ETrue); //enable by default
 		//iTransObs->SetVerbose( ETrue );
 	}
 

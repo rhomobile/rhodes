@@ -40,7 +40,10 @@
 # $Id$
 #
 
-require 'date/format'
+if defined? RHO_ME
+else	
+  require 'date/format'
+end
 
 #
 # Implements the extensions to the Time class that are described in the

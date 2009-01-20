@@ -193,6 +193,10 @@
 #
 #     puts secs_to_new_year()
 
+if defined? RHO_ME
+	require 'rationalME'
+end
+
 require 'rational'
 require 'date/format'
 
@@ -387,8 +391,8 @@ class Date
       end
       a = (y / 100.0).floor
       b = 2 - a + (a / 4.0).floor
-      jd = (365.25 * (y + 4716)).floor +
-	(30.6001 * (m + 1)).floor +
+      jd = (365.25 * (y + 4716)).floor() +
+	(30.6001 * (m + 1)).floor() +
 	d + b - 1524
       if jd < sg
 	jd -= b
@@ -499,7 +503,7 @@ class Date
     # Returns the Astronomical Julian Day Number as a single
     # numeric value.
     def jd_to_ajd(jd, fr, of=0) jd + fr - of - 1.to_r/2 end # :nodoc:
-
+    
     # Convert a fractional day +fr+ to [hours, minutes, seconds,
     # fraction_of_a_second]
     def day_fraction_to_time(fr) # :nodoc:
@@ -1137,7 +1141,7 @@ class Date
   #trv once :jd, :day_fraction, :mjd, :ld
 
   # Get the date as a Civil Date, [year, month, day_of_month]
-  def civil() jd_to_civil(jd, @sg) end # :nodoc:
+  def civil() jd_to_civil(jd(), @sg) end # :nodoc:
 
   # Get the date as an Ordinal Date, [year, day_of_year]
   def ordinal() jd_to_ordinal(jd, @sg) end # :nodoc:
@@ -1393,7 +1397,7 @@ class Date
   def next_year(n=1) self >> n * 12 end
   def prev_year(n=1) self << n * 12 end
 
-  require 'enumerator'
+  #require 'enumerator'
 
   # Step the current date forward +step+ days at a
   # time (or backward, if +step+ is negative) until
@@ -1517,8 +1521,9 @@ class DateTime < Date
   #
   # All day/time values default to 0.
   def self.jd(jd=0, h=0, min=0, s=0, of=0, sg=ITALY)
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_jd?(jd, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1542,8 +1547,9 @@ class DateTime < Date
   # +y+ defaults to -4712, and +d+ to 1; this is Julian Day Number
   # day 0.  The time values default to 0.
   def self.ordinal(y=-4712, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_ordinal?(y, d, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1567,8 +1573,9 @@ class DateTime < Date
   # +y+ defaults to -4712, +m+ to 1, and +d+ to 1; this is Julian Day
   # Number day 0.  The time values default to 0.
   def self.civil(y=-4712, m=1, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_civil?(y, m, d, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1595,8 +1602,9 @@ class DateTime < Date
   # Julian Day Number day 0.
   # The time values default to 0.
   def self.commercial(y=-4712, w=1, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_commercial?(y, w, d, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1606,8 +1614,9 @@ class DateTime < Date
   end
 
   def self.weeknum(y=-4712, w=0, d=1, f=0, h=0, min=0, s=0, of=0, sg=ITALY) # :nodoc:
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_weeknum?(y, w, d, f, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1619,8 +1628,9 @@ class DateTime < Date
   private_class_method :weeknum
 
   def self.nth_kday(y=-4712, m=1, n=1, k=1, h=0, min=0, s=0, of=0, sg=ITALY) # :nodoc:
+    fr = _valid_time?(h, min, s)
     unless (jd = _valid_nth_kday?(y, m, n, k, sg)) &&
-	   (fr = _valid_time?(h, min, s))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     if String === of
@@ -1634,8 +1644,9 @@ class DateTime < Date
   def self.new_by_frags(elem, sg) # :nodoc:
     elem = rewrite_frags(elem)
     elem = complete_frags(elem)
+    fr = valid_time_frags?(elem)
     unless (jd = valid_date_frags?(elem, sg)) &&
-	   (fr = valid_time_frags?(elem))
+	   (fr)
       raise ArgumentError, 'invalid date'
     end
     sf = (elem[:sec_fraction] || 0)
@@ -1732,8 +1743,8 @@ class Time
   end
 
   def to_datetime
-    jd = DateTime.__send__(:civil_to_jd, year, mon, mday, DateTime::ITALY)
-    fr = DateTime.__send__(:time_to_day_fraction, hour, min, [sec, 59].min) +
+    jd = DateTime.__send__(:civil_to_jd, year(), mon(), mday(), DateTime::ITALY)
+    fr = DateTime.__send__(:time_to_day_fraction, hour(), min(), [sec, 59].min) +
       nsec.to_r/86400_000_000_000
     of = utc_offset.to_r/86400
     DateTime.new!(DateTime.__send__(:jd_to_ajd, jd, fr, of),

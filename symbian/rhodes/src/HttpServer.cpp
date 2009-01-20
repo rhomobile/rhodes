@@ -25,6 +25,8 @@
 #include "rhodesApplication.h"
 #include "rhodesAppUI.h"
 
+#include <e32math.h>  //Rand
+
 #include "rhoruby/rhoruby.h"
 #include <stdio.h>
 #include <string.h>
@@ -47,7 +49,7 @@ TInt ThreadEntryPoint(TAny *aPtr)
 }
 
 CHttpServer::CHttpServer()
-	:iClose(false)
+	:iClose(false), iStopRubyFramework(false), iStartRubyFramework(false)
 	{
 	// No implementation required
 	}
@@ -58,7 +60,8 @@ CHttpServer::~CHttpServer()
 		
 		shttpd_fini(ctx);
 		
-		thread.Terminate(0);
+		thread.Kill( KErrCancel );
+		thread.Close();
 	}
 
 CHttpServer* CHttpServer::NewLC()
@@ -84,8 +87,18 @@ void CHttpServer::ConstructL()
 		//create suspended thread
 		_LIT(KThreadName, "HttpServerThread");
 		
+		TBuf<30> threadName;
+		threadName.Append(KThreadName);
+
+		TTime time;
+		time.HomeTime();
+
+		TInt64 aSeed = time.Int64();
+		TInt randNum = Math::Rand(aSeed) % 1000;
+		threadName.AppendNum(randNum);
+				
 		//KMinHeapSize, 256*KMinHeapSize
-		TInt res = thread.Create(KThreadName, ThreadEntryPoint, 
+		TInt res = thread.Create(threadName, ThreadEntryPoint, 
 				//0x1000000, 0x5000, 0x1000000,
 				80000, 0x100000, 0x500000,
 				this);
@@ -129,9 +142,21 @@ TInt CHttpServer::ExecuteL()
 #endif		
 		
 		while ( !iClose )
+		{
+			if ( iStopRubyFramework )
 			{
-			shttpd_poll(ctx, 1000);
+				iStopRubyFramework = false;
+				RhoRubyStop();
 			}
+			
+			if ( iStartRubyFramework )
+			{
+				iStartRubyFramework = false;
+				RhoRubyStart();
+			}
+			
+			shttpd_poll(ctx, 1000);
+		}
 
 		RhoRubyStop();
 
@@ -169,6 +194,12 @@ void CHttpServer::SuspendThread()
 		thread.Suspend();
 	}
 
+void CHttpServer::StopThread()
+	{
+	SuspendThread();
+	iClose = true;
+	ResumeThread();
+	}
 
 void CHttpServer::InitHttpServer()
 	{
