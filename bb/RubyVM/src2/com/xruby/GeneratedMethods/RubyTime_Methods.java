@@ -56,6 +56,7 @@ klass.defineMethod( "wday", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).wday();}
 });
+
 klass.defineMethod( "hour", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).hour();}
@@ -67,6 +68,10 @@ klass.defineMethod( "min", new RubyNoArgMethod(){
 klass.defineMethod( "sec", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).sec();}
+});
+klass.defineMethod( "nsec", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).nsec();}
 });
 
 klass.defineMethod( "<=>", new RubyOneArgMethod(){ 
@@ -103,10 +108,20 @@ klass.defineMethod( "day", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).day();}
 });
+klass.aliasMethod("mday","day");
+
+klass.defineMethod( "gmt_offset", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyTime)receiver).gmt_offset();}
+});
+klass.aliasMethod("gmtoff","gmt_offset");
+klass.aliasMethod("utc_offset","gmt_offset");
+
 klass.defineMethod( "zone", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).zone();}
 });
+
 klass.defineMethod( "initialize", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).initialize();}

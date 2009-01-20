@@ -99,6 +99,20 @@ module Enumerable
     
     alias map :collect
     
+    def max(&proc)
+        proc = lambda { |a, b| a <=> b } unless block_given?
+        max = nil
+        each {|obj| max = obj if max.nil? || proc.call(max, obj) < 0}
+        max
+    end
+
+    def min(&proc)
+        proc = lambda { |a, b| a <=> b } unless block_given?
+        min = nil
+        each {|obj| min = obj if min.nil? || proc.call(min, obj) > 0}
+        min
+    end
+    
 end
 
 class Array
@@ -516,6 +530,37 @@ class String
 
     def inspect
         '"' + to_s + '"'
+    end
+
+	#from rubinius
+    # justify left = -1, center = 0, right = 1
+    def justify_string(width, str, justify)
+        return self if width <= length
+        pad = width - length
+        out = str.to_str * (pad / str.length)
+        out << str[0, pad - out.length] if out.length < pad
+        # Left justification
+        return self << out if justify == -1
+        # Right justification
+        return out << self if justify == 1
+        # and finially center
+        split = (width / 2) - (length / 2)
+        return out.insert(split-((width-length)%2), self)
+    end
+	
+	#from rubinius
+    def rjust(width, str=" ")
+        justify_string(width, str, 1)
+    end
+	
+	#from rubinius
+    def ljust(width, str=" ")
+        justify_string(width, str, -1)
+    end
+
+	#from rubinius
+    def center(width, str=" ")
+        justify_string(width, str, 0)
     end
 	
     alias to_str to_s	

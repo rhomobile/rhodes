@@ -106,7 +106,7 @@ public class RubyTime extends RubyBasic {
 
     //@RubyLevelMethod(name="hour")
     public RubyValue hour() {
-        return ObjectFactory.createFixnum(date_.get(Calendar.HOUR));
+        return ObjectFactory.createFixnum(date_.get(Calendar.HOUR_OF_DAY));
     }
 
     //@RubyLevelMethod(name="min")
@@ -117,6 +117,11 @@ public class RubyTime extends RubyBasic {
     //@RubyLevelMethod(name="sec")
     public RubyValue sec() {
         return ObjectFactory.createFixnum(date_.get(Calendar.SECOND));
+    }
+
+    //@RubyLevelMethod(name="nsec")
+    public RubyValue nsec() {
+        return ObjectFactory.createFixnum(date_.get(Calendar.MILLISECOND)*1000000);
     }
     
     //@RubyLevelMethod(name="to_f")
@@ -186,16 +191,23 @@ public class RubyTime extends RubyBasic {
     //@RubyLevelMethod(name="zone")
     public RubyString zone() {
         //String name = date_.getTimeZone().getDisplayName(false, TimeZone.SHORT, Locale.US);
-    	//TODO: zone - Date.toString() and parse it.
-    	// "EEE MMM dd HH:mm:ss zzz yyyy";
-    	throw new RuntimeException("Not Implemented");
-    	/*String name = date_.getTime().toString();
-        if (name.equals("GMT")) {
-            name = "UTC";
+    	String strZone = date_.getTimeZone().toString();
+        if (strZone.equals("GMT")) {
+        	strZone = "UTC";
         }
-        return ObjectFactory.createString(name);*/
+        return ObjectFactory.createString(strZone);
     }
 
+    //@RubyLevelMethod(name = "gmt_offset", alias="gmtoff", alias="utc_offset")
+    public RubyValue gmt_offset() {
+        //int offset = dt.getZone().getOffsetFromLocal(dt.getMillis());
+    	String strZone = date_.getTimeZone().toString();
+    	int offset = date_.getTimeZone().getOffset(1, 
+    			date_.get(Calendar.YEAR), date_.get(Calendar.MONTH), date_.get(Calendar.DATE), 
+    			date_.get(Calendar.DAY_OF_WEEK), date_.get(Calendar.MILLISECOND) );
+        return ObjectFactory.createFixnum(offset/1000);
+    }
+    
     //@RubyLevelMethod(name="utc", alias="gm")
     public static RubyTime utc(RubyValue receiver, RubyArray args) {
         return createTime(args, TimeZone.getTimeZone("GMT"));

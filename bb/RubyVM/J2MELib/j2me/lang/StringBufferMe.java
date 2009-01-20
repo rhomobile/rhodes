@@ -35,8 +35,12 @@ public class StringBufferMe {
 			for( int i = 0; i < count-end; i++ )
 				strThis.setCharAt(start + len+i, strThis.charAt(end+i));
 		}
-		for( int i = 0; i < len; i++ )
-			strThis.setCharAt(start+i, str.charAt(i));
+		int i = start;
+		for( ; i < count; i++ )
+			strThis.setCharAt(i, str.charAt(i-start));
+
+		for( ; i < len; i++ )
+			strThis.append(str.charAt(i-start));
 		
 //        System.arraycopy(value, end, value, start + len, count - end);
 //        str.getChars(value, start);

@@ -13,7 +13,10 @@
   <property name="target.dir" location="../target/${BBVer}" />
 
   <!-- <property name="exclude.apps" value="**/css,**/js" /> -->
-  <property name="exclude.lib" value="**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb" />
+  <condition property="exclude.lib" value="**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb,**/rationalME.rb,**/format.rb">
+    <not><isset property="exclude.lib"/></not>
+  </condition>
+
   <property name="compileERB.path" location="compileERB.rb" />
   <property name="srclib.dir" value="${src.dir}"/>
   
