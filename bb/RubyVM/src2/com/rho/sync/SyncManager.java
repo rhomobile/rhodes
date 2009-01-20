@@ -55,7 +55,7 @@ public class SyncManager {
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
 			
-			String str = connection.getRequestProperty("Cookie");
+			//String str = connection.getRequestProperty("Cookie");
 			is = connection.openInputStream();
 			len = connection.getLength();
 			code = connection.getResponseCode();

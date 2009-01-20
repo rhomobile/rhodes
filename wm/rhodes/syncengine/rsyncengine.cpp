@@ -327,8 +327,10 @@ void free_url_components(URL_COMPONENTS *uri) {
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
-char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGetHeaders) {
+char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
+				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL) {
   char       *cstr = NULL;
+  char		 *session = NULL;
   std::string data = "";
   char        sBuf[1024];
   DWORD       dwBytesRead  = 0;
@@ -342,6 +344,12 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
   hInet = hConnection = hRequest = NULL;
 
   do {
+	// Don't make a connection attempt if there is no session
+    session = get_db_session(load_source_url());
+	if ( bCheckSession && !session && !strstr(url, "clientcreate") ) {
+	  break;
+	}
+	if (session) free(session);
 
     if( !SetupInternetConnection(urlw) ) {
       break;
@@ -420,9 +428,15 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
             data.append(sBuf, dwBytesRead);
             bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
           }
-          //make a copy of recieved data
-          cstr = new char [data.size()+1];
-          strcpy (cstr, data.c_str());
+		  if ( bGetRawData && pdwDataSize ){
+			  cstr = new char [*pdwDataSize];
+			  memcpy (cstr, data.c_str(), *pdwDataSize);
+		  }
+		  else {
+			  //make a copy of recieved data
+			  cstr = new char [data.size()+1];
+			  strcpy (cstr, data.c_str());
+		  }
         }
       }
     } else {
@@ -444,18 +458,21 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, bool bGe
 }
 
 char* fetch_remote_data(char* url) {
-  return remote_data(L"GET", url, NULL, 0, false);
+  return remote_data(L"GET", url, NULL, 0, false, false, true);
 }
 
 int push_remote_data(char* url, char* data, size_t data_size) {
-  return remote_data(L"POST", url, data, data_size, false)==NULL ? 1 : 0;
+  return remote_data(L"POST", url, data, data_size, false, false, true)==NULL ? 1 : 0;
 }
 
-void makeLoginRequest(char* url, char* data ){
-  remote_data(L"POST", url, data, strlen(data), false);
+int makeLoginRequest(char* url, char* data ){
+  return remote_data(L"POST", url, data, strlen(data), false, false, false)==NULL ? 0 : 1;
 }
 
-void delete_session(const char *url_string)
-{
-  //added stub to resolve linkage problems
+void delete_winmo_session(const char *url_string) {
+  BOOL bReturn;
+  // Delete the session cookie.
+  LPTSTR url = wce_mbtowc(url_string);
+  bReturn = InternetSetCookie(url, NULL, L"");
+  free(url);
 }

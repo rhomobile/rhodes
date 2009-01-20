@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import org.jruby.util.Sprintf;
 
 import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.lang.RubyValue;
 
 public class PrintStreamMe {
     public static void printf( PrintStream out, String strFormat, RubyArray args)

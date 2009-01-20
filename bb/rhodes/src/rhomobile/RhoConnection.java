@@ -87,7 +87,7 @@ public class RhoConnection implements HttpConnection {
 		log("getHeaderFieldDate: " + name);
 		processRequest();
         try {
-            return DateParser.parse(getHeaderField(name));
+            return DateTimeTokenizer.parse(getHeaderField(name));
         } catch (NumberFormatException nfe) {
             // fall through
         } catch (IllegalArgumentException iae) {

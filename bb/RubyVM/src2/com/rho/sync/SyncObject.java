@@ -43,12 +43,6 @@ public class SyncObject {
 	
 	/** The _value. */
 	private String _value;
-	
-	/** The _created at. */
-	private String _createdAt;
-	
-	/** The _updated at. */
-	private String _updatedAt;
 
 	/** The _update type. */
 	private String _updateType;
@@ -129,10 +123,6 @@ public class SyncObject {
 				.createString(this.getObject()));
 		hash.add(SyncUtil.createString("value"), SyncUtil
 				.createString(this.getValue()));
-		hash.add(SyncUtil.createString("created_at"), SyncUtil
-				.createString(this.getCreatedAt()));
-		hash.add(SyncUtil.createString("updated_at"), SyncUtil
-				.createString(this.getUpdatedAt()));
 		hash.add(SyncUtil.createString("update_type"), SyncUtil
 				.createString(this.getUpdateType()));
 		
@@ -148,15 +138,6 @@ public class SyncObject {
 		return _attrib;
 	}
 
-	/**
-	 * Gets the created at.
-	 * 
-	 * @return the created at
-	 */
-	public String getCreatedAt() {
-		return _createdAt;
-	}
-	
 	/**
 	 * Gets the object.
 	 * 
@@ -182,15 +163,6 @@ public class SyncObject {
 	 */
 	public int getSourceId() {
 		return _sourceId;
-	}
-
-	/**
-	 * Gets the updated at.
-	 * 
-	 * @return the updated at
-	 */
-	public String getUpdatedAt() {
-		return _updatedAt;
 	}
 
 	/**
@@ -221,15 +193,6 @@ public class SyncObject {
 	}
 
 	/**
-	 * Sets the created at.
-	 * 
-	 * @param createdAt the new created at
-	 */
-	public void setCreatedAt(String createdAt) {
-		this._createdAt = createdAt;
-	}
-
-	/**
 	 * Sets the object.
 	 * 
 	 * @param object the new object
@@ -254,15 +217,6 @@ public class SyncObject {
 	 */
 	public void setSourceId(int sourceId) {
 		this._sourceId = sourceId;
-	}
-
-	/**
-	 * Sets the updated at.
-	 * 
-	 * @param updatedAt the new updated at
-	 */
-	public void setUpdatedAt(String updatedAt) {
-		this._updatedAt = updatedAt;
 	}
 
 	/**
