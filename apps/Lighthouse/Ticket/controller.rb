@@ -21,7 +21,7 @@ class TicketController < Rho::RhoController
     end
     @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
     
-    render :index
+    render :action => :index
   end
 
   #GET /Ticket/today
@@ -33,7 +33,8 @@ class TicketController < Rho::RhoController
       ttime = Time.parse(ticket.created_at)
       (ttime.day != today.day) || (ttime.month != today.month) || (ttime.year != today.year)
     end
-    render :index
+    
+    render :action => :index
   end
   
   #GET /Ticket/assgined_to_me
@@ -49,13 +50,13 @@ class TicketController < Rho::RhoController
     end
     @tickets = @tickets.sort {|x,y| y.number.to_i <=> x.number.to_i }
     
-    render :index
+    render :action => :index
   end
   
   # GET /Ticket/1
   def show
     @ticket = Ticket.find(@params['id'])
-    render :show
+    render :action => :show
   end
 
   # GET /Ticket/new
@@ -66,13 +67,13 @@ class TicketController < Rho::RhoController
     @ticket.project_id = strip_braces(@params['id'])
     @ticket.created_at = Time.new
     
-    render :new
+    render :action => :new
   end
 
   # GET /Ticket/1/edit
   def edit
     @ticket = Ticket.find(@params['id'])
-    render :edit
+    render :action => :edit
   end
 
   # POST /Ticket/create
