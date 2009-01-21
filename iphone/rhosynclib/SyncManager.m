@@ -66,9 +66,7 @@ char *fetch_remote_data(char *url_string) {
 			}  else {
 				logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 			}
-		} else {
-			insert_sync_status(get_database(), "false");	
-		}
+		} 
 		data = str_assign((char *)[logData UTF8String]);
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		if (session) free(session);
