@@ -66,9 +66,7 @@ char *fetch_remote_data(char *url_string) {
 			}  else {
 				logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 			}
-		} else {
-			insert_sync_status(get_database(), "false");	
-		}
+		} 
 		data = str_assign((char *)[logData UTF8String]);
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		if (session) free(session);
@@ -89,6 +87,7 @@ char *fetch_remote_data(char *url_string) {
 int login(const char *login, const char *password) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	pSource *source_list;
+	char *session = NULL;
 	int i, source_length, cookie_size = 0;
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
@@ -98,7 +97,8 @@ int login(const char *login, const char *password) {
 		sprintf(login_string, 
 				"%s/client_login", 
 				source_list[i]->_source_url);
-		if (!logged_in()) {
+		session = str_assign(get_session(source_list[i]->_source_url));
+		if (!session) {
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 			NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 			NSError *error = nil;
@@ -137,8 +137,9 @@ int login(const char *login, const char *password) {
 		} else {
 			printf("Found existing session for url...\n");
 		}
+		if (session) free(session);
 	}
-	clear_client_id();
+	//clear_client_id();
 	pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
 		[pool release];
