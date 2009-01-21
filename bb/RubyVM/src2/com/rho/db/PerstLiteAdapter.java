@@ -5,11 +5,14 @@ import org.garret.perst.IOutputStream;
 import org.garret.perst.Index;
 import org.garret.perst.Iterator;
 import org.garret.perst.Persistent;
+import org.garret.perst.SimpleFile;
 import org.garret.perst.Storage;
 import org.garret.perst.StorageError;
 import org.garret.perst.StorageFactory;
 import org.garret.perst.Types;
 import org.garret.perst.Key;
+import org.garret.perst.impl.FileFactory;
+import org.garret.perst.impl.Jsr75File;
 
 import com.rho.sync.SyncUtil;
 import com.xruby.runtime.builtin.*;
@@ -26,6 +29,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
 	private static final String DB_FILENAME = "syncdb.dbs";
+	private static final String DB_VERSION_FNAME = "version";
 
 	public static class Table_base1 extends Persistent{
 	    public Table_base1(){}
@@ -428,10 +432,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static class Table_client_info extends Table_base1 { 
 		
 	    String client_id = "";
-	    String version = "";
 		
 		public static final RubyString CLIENT_ID = ObjectFactory.createString("client_id");
-		public static final RubyString VERSION = ObjectFactory.createString("version");
 	    
 		public static class TableRoot extends TableRootBase { 
 		    Index client_id;
@@ -497,14 +499,12 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public void writeObject(IOutputStream out) { 
 	    	super.writeObject(out);
 	    	out.writeString(client_id);
-	    	out.writeString(version);
 	    }
 
 	    // Deserialize the object
 	    public void readObject(IInputStream in) { 
 	    	super.readObject(in);
 	    	client_id = in.readString();
-	    	version = in.readString();
 	    }
 	    
 	    RubyHash getValueByName(RubyString name){
@@ -513,8 +513,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	
 	    	if ( bAll || name.equals(CLIENT_ID) )
 	    		res.add( CLIENT_ID, ObjectFactory.createString(client_id) );
-	    	if ( bAll || name.equals(VERSION) )
-	    		res.add( VERSION, ObjectFactory.createString(version) );
 	    	
 	    	return res;
 	    }
@@ -525,10 +523,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        RubyValue val = hash.getValue(CLIENT_ID);
 	        if ( val != RubyConstant.QNIL )
 	        	client_id = val.toStr();
-	        val = hash.getValue(VERSION);
-	        if ( val != RubyConstant.QNIL )
-	        	version = val.toStr();
-	        
 	    }
 	    
 	};
@@ -557,6 +551,16 @@ public class PerstLiteAdapter  extends RubyBasic {
 		if (isClosed() == RubyConstant.QFALSE) {
 			return;
 		}
+
+    	//Check version
+		if ( strVer != null && strVer.length() > 0 ){
+        	String dbVer = readDBVersion();
+			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) ){
+				org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
+	            writeDBVersion(strVer);
+			}
+        }
+		
 		m_storage = StorageFactory.getInstance().createStorage();
 		
         try { 
@@ -575,27 +579,23 @@ public class PerstLiteAdapter  extends RubyBasic {
             root.put(Table_sources.name(), new Table_sources.TableRoot(m_storage) );
             root.put(Table_object_values.name(), new Table_object_values.TableRoot(m_storage) );
             root.put(Table_client_info.name(), new Table_client_info.TableRoot(m_storage) );
-
-            //Write version
-			RubyHash hash = SyncUtil.createHash();
-			hash.add(Table_client_info.VERSION, ObjectFactory.createString(strVer));
-            insertIntoTable(ObjectFactory.createString(Table_client_info.name()), hash );
-        }else if ( strVer != null && strVer.length() > 0 ){
-        	//Check version
-        	RubyArray results = (RubyArray)selectFromTable(ObjectFactory.createString(Table_client_info.name()),
-        			Table_client_info.VERSION, RubyConstant.QNIL, RubyConstant.QNIL );
-    		if ( results.size() > 0 ){
-    			RubyHash item = (RubyHash)results.get(0);
-    			RubyValue value = item.getValue(Table_client_info.VERSION); 
-    			if ( value == null || value == RubyConstant.QNIL ||
-    				 !value.toString().equalsIgnoreCase(strVer) ){
-    				m_storage.close();
-    				m_storage = null;
-    				org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
-    				createDB(strVer);
-    			}
-    		}
         }
+	}
+	
+	String readDBVersion(){
+        SimpleFile file = FileFactory.createFile();
+        file.open(DB_VERSION_FNAME, true, true);
+        byte buf[] = new byte[20];
+		int len = file.read(0, buf);
+		file.close();
+		return new String(buf,0,len);
+	}
+	
+	void writeDBVersion(String ver){
+        SimpleFile file = FileFactory.createFile();
+        file.open(DB_VERSION_FNAME, false, false);
+        file.write(0, ver.getBytes());
+        file.close();
 	}
 	
 	TableRootBase getTableRoot( RubyValue tableName ){
