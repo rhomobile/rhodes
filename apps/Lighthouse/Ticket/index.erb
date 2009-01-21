@@ -1,5 +1,5 @@
 <ul id="tickets" title="<%= @title %>">	
-<% if @tickets.length > 0 %>
+<% if @tickets && @tickets.length > 0 %>
 	<% @tickets.each do |ticket| %>
 		<% if project = Project.find(ticket.project_id) %>
 			<li class="ticket_details">

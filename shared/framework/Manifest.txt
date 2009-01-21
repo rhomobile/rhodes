@@ -42,6 +42,7 @@ lib/rhom/rhom_db_adapter.rb
 lib/rhom/rhom_db_adapterME.rb
 lib/rhom/rhom_object.rb
 lib/rhom/rhom_object_factory.rb
+lib/rhom/rhom_source.rb
 lib/singleton.rb
 lib/time.rb
 rhodes.gemspec
