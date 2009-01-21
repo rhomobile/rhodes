@@ -109,13 +109,11 @@ module Rhom
                   source = Rho::RhoConfig::sources[self.name.to_s]
                   if source
                     attrib_length = source['attribs'].length
-                    puts "inside IF statement: length is #{attrib_length}"
                   end
                   if attrib_length == 0
                     # source attributes are not initialized, try again
                     ::Rhom::RhomObjectFactory::init_source_attribs
                   end
-                  puts "after IF statement: length is #{attrib_length}"
                   if objs and source and attrib_length > 0
                     list_length = 0
                     list_length = (objs.length / attrib_length) unless attrib_length == 0
