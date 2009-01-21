@@ -18,6 +18,7 @@ module Rhom
         @last_deleted_size = result['last_deleted_size']
         @last_sync_duration = result['last_sync_duration']
         @last_sync_success = result['last_sync_success'] == 1 ? true : false
+      end
     end
   end
 end
