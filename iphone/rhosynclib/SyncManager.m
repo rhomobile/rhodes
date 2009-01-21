@@ -149,20 +149,6 @@ int login(const char *login, const char *password) {
 	}
 }
 
-void delete_session(const char *url_string) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	NSArray *cookies = [cookieStore cookiesForURL:[[NSURL alloc] 
-												   initWithString:[[NSString alloc] 
-																   initWithUTF8String:url_string]]];
-	int count = [cookies count];
-	int i;
-	for (i = 0; i < count; i++) {
-		[cookieStore deleteCookie:(NSHTTPCookie *)[cookies objectAtIndex:i]];
-	}
-	[pool release];
-}
-
 /*
  * Pushes changes from list to rhosync server
  */
