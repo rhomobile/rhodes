@@ -190,7 +190,7 @@ public class Jsr75File implements SimpleFile
         	fc.delete();
         } catch (IOException x) { 
         	log("Exception: " + x.getMessage());
-            throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+            //throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
         }        
     }
     

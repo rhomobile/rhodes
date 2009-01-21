@@ -28,7 +28,7 @@ module Rhom
       def open(dbfile=nil)
         puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
-			db = DbAdapter.new(Rhodes::VERSION)
+			db = DbAdapter.new(Rhodes::DBVERSION)
 			@@database = db
         end
 		
