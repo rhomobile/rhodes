@@ -281,6 +281,8 @@ extern "C"
 		
 		if ( session )
 			set_db_session( load_source_url(), session );
+		else
+			delete_db_session(load_source_url());
 	}
 
 	void delete_session(const char *url_string)
