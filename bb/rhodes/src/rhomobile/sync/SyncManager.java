@@ -76,6 +76,7 @@ public class SyncManager {
 				}
 			} else {
 				System.out.println("Error retrieving data: " + code);
+				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 				return null;
 			}
 		} finally {
@@ -108,9 +109,10 @@ public class SyncManager {
 			makePostRequest(url,data,session);
 
 			int code = connection.getResponseCode();
-			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
+			if (code != HttpConnection.HTTP_OK) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
+				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 			}
 		} finally {
 			closeConnection();

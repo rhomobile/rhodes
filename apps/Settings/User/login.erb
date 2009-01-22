@@ -5,6 +5,9 @@
 	 method="POST" 
 	 action="<%=url_for('do_login')%>">
   <fieldset>
+	<% if @msg %>
+	  <p><%= @msg %></p>
+	<% end %>
     <div class="row">
       <label>Login: </label>
       <input type="text" maxlength="100" name="login"/>

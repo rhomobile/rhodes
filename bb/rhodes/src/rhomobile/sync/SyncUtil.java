@@ -569,6 +569,7 @@ public class SyncUtil {
 
 	public static boolean fetch_client_login( String strUser, String strPwd )
 	{
+		boolean success = true;
 		RubyArray sources = getSourceList();
 		for( int i = 0; i < sources.size(); i++ )
 		{
@@ -592,9 +593,11 @@ public class SyncUtil {
 						ParsedCookie cookie = makeCookie(connection);
 						strSession = cookie.strAuth+";" +cookie.strSession+";";
 					}
-					else
+					else{
 						System.out.println("Error posting data: " + code);
-					
+            success = false;
+          }
+
 				} catch (IOException e) {
 					System.out.println("There was an error fetch_client_login: "
 							+ e.getMessage());
@@ -612,7 +615,7 @@ public class SyncUtil {
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
 		}
 		
-		return true;
+		return success;
 	}
 	
 	public static String get_client_db_info(String attr) {
