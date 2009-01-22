@@ -1,4 +1,4 @@
-package com.rho.db;
+package rhomobile.db;
 
 import org.garret.perst.IInputStream;
 import org.garret.perst.IOutputStream;
@@ -12,9 +12,6 @@ import org.garret.perst.StorageFactory;
 import org.garret.perst.Types;
 import org.garret.perst.Key;
 import org.garret.perst.impl.FileFactory;
-import org.garret.perst.impl.Jsr75File;
-
-import com.rho.sync.SyncUtil;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 

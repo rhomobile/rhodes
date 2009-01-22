@@ -16,15 +16,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.rho.sync;
+package rhomobile.sync;
 
 import java.io.IOException;
 
 import javax.microedition.io.HttpConnection;
 
+import rhomobile.URI;
+
 import j2me.util.ArrayList;
 
-import com.rho.db.PerstLiteAdapter;
+import rhomobile.db.PerstLiteAdapter;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
@@ -448,6 +450,24 @@ public class SyncUtil {
 		return element.get(PerstLiteAdapter.SESSION).toString();
 	}
 	
+	private static String getSessionByDomain(String url){
+		RubyArray sources = getSourceList();
+
+		URI uri = new URI(url);
+		for( int i = 0; i < sources.size(); i++ )
+		{
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
+			String session = element.get(PerstLiteAdapter.SESSION).toString();
+			URI uriSrc = new URI(sourceUrl);
+			if ( session != null && session.length() > 0 &&
+				 uri.getHost().equalsIgnoreCase(uriSrc.getHost()))
+				return session;
+		}
+		
+		return "";
+	}
+	
 	static class ParsedCookie {
 		String strAuth;
 		String strSession;
@@ -546,7 +566,7 @@ public class SyncUtil {
 		
 		return cookie;
 	}
-	
+
 	public static boolean fetch_client_login( String strUser, String strPwd )
 	{
 		boolean success = true;
@@ -560,37 +580,39 @@ public class SyncUtil {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
-			
-			try {
-				SyncManager.makePostRequest(sourceUrl+"/client_login", 
-						"login=" + strUser+ "&password="+strPwd+"&remember_me=1", "");
-	
-				connection = SyncManager.getConnection(); 
-				int code = connection.getResponseCode();
-				if (code == HttpConnection.HTTP_OK ){
-					ParsedCookie cookie = makeCookie(connection);
-					strSession = cookie.strAuth+";" +cookie.strSession+";";
+
+			strSession = getSessionByDomain(sourceUrl);
+			if ( strSession.length() == 0 ){
+				try {
+					SyncManager.makePostRequest(sourceUrl+"/client_login", 
+							"login=" + strUser+ "&password="+strPwd+"&remember_me=1", "");
+		
+					connection = SyncManager.getConnection(); 
+					int code = connection.getResponseCode();
+					if (code == HttpConnection.HTTP_OK ){
+						ParsedCookie cookie = makeCookie(connection);
+						strSession = cookie.strAuth+";" +cookie.strSession+";";
+					}
+					else{
+						System.out.println("Error posting data: " + code);
+            success = false;
+          }
+
+				} catch (IOException e) {
+					System.out.println("There was an error fetch_client_login: "
+							+ e.getMessage());
+				} finally {
+					SyncManager.closeConnection();
+					connection = null;
 				}
-				else {
-					System.out.println("Error posting data: " + code);
-					success = false;
-				}
-				
-				RubyHash values = SyncUtil.createHash();
-				values.add(PerstLiteAdapter.SESSION, createString(strSession));
-				RubyHash where = SyncUtil.createHash();
-				where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
-				
-				adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
-				//adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));			
-				
-			} catch (IOException e) {
-				System.out.println("There was an error fetch_client_login: "
-						+ e.getMessage());
-			} finally {
-				SyncManager.closeConnection();
-				connection = null;
 			}
+
+			RubyHash values = SyncUtil.createHash();
+			values.add(PerstLiteAdapter.SESSION, createString(strSession));
+			RubyHash where = SyncUtil.createHash();
+			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			
+			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
 		}
 		
 		return success;
