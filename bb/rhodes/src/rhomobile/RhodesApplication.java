@@ -19,8 +19,8 @@ import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.TrackwheelListener; 
 import net.rim.device.api.system.SystemListener;
 
-import com.rho.NetworkAccess;
-import com.rho.sync.SyncEngine;
+import rhomobile.NetworkAccess;
+import rhomobile.sync.SyncEngine;
 
 import java.util.Vector;
 

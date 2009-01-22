@@ -7,3 +7,17 @@
 ..\rhodes\src\rhomobile\URI.java 
 ..\rhodes\src\rhomobile\Utilities.java
 ..\PerstDb\src11\jsr75\org\garret\perst\impl\Jsr75File.java
+..\rhodes\src\rhomobile\NetworkAccess.java
+..\rhodes\src\rhomobile\db\PerstLiteAdapter.java
+..\rhodes\src\rhomobile\sync\SyncConstants.java
+..\rhodes\src\rhomobile\sync\SyncEngine.java
+..\rhodes\src\rhomobile\sync\SyncJSONParser.java
+..\rhodes\src\rhomobile\sync\SyncManager.java
+..\rhodes\src\rhomobile\sync\SyncObject.java
+..\rhodes\src\rhomobile\sync\SyncOperation.java
+..\rhodes\src\rhomobile\sync\SyncSource.java
+..\rhodes\src\rhomobile\sync\SyncThread.java
+..\rhodes\src\rhomobile\sync\SyncUtil.java
+..\rhodes\src\rhomobile\sync\Tokenizer.java
+
+

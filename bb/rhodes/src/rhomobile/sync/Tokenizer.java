@@ -1,4 +1,4 @@
-package com.rho.sync;
+package rhomobile.sync;
 
 public class Tokenizer {
 
