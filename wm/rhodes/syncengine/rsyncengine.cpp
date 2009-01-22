@@ -408,8 +408,12 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
       if( HttpQueryInfo(hRequest,HTTP_QUERY_STATUS_CODE,res,&dwLen,&nIndex) ){
         if ( wcscmp(res,L"200") == 0 )
           bOk = true;
-        else
+		else {
           bOk = false;
+		  // If we're unauthorized, delete any cookies that might have been
+		  // stored so we don't reuse them later
+		  if ( wcscmp(res,L"401") == 0 ) delete_winmo_session(load_source_url());
+		}
       }
 
       if ( bOk ){

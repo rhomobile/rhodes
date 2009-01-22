@@ -549,6 +549,7 @@ public class SyncUtil {
 	
 	public static boolean fetch_client_login( String strUser, String strPwd )
 	{
+		boolean success = true;
 		RubyArray sources = getSourceList();
 		for( int i = 0; i < sources.size(); i++ )
 		{
@@ -570,8 +571,10 @@ public class SyncUtil {
 					ParsedCookie cookie = makeCookie(connection);
 					strSession = cookie.strAuth+";" +cookie.strSession+";";
 				}
-				else
+				else {
 					System.out.println("Error posting data: " + code);
+					success = false;
+				}
 				
 				RubyHash values = SyncUtil.createHash();
 				values.add(PerstLiteAdapter.SESSION, createString(strSession));
@@ -590,7 +593,7 @@ public class SyncUtil {
 			}
 		}
 		
-		return true;
+		return success;
 	}
 	
 	public static String get_client_db_info(String attr) {
