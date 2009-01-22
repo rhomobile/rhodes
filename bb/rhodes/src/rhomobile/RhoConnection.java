@@ -470,7 +470,7 @@ public class RhoConnection implements HttpConnection {
 				respondOK();
 				return true;
 			}else if ( model.equalsIgnoreCase("syncdb") ){
-				com.rho.sync.SyncEngine.wakeUp();
+				rhomobile.sync.SyncEngine.wakeUp();
 				respondOK();
 				return true;
 			}

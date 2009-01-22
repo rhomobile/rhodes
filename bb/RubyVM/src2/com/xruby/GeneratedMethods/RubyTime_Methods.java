@@ -1,5 +1,4 @@
 package com.xruby.GeneratedMethods;
-import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 public class RubyTime_Methods{
