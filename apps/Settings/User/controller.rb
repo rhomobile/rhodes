@@ -2,6 +2,7 @@ require 'rho'
 require 'rho/rhocontroller'
 
 class UserController < Rho::RhoController
+  layout :user_layout
 
   # GET /User/edit
   def login
