@@ -1,10 +1,12 @@
-<div align="center">
-  <h3>Home</h3>
-    <a href="Source">Edit Sources</a><br/>
-    <a href="/" target="_self">Home</a><br/>
-    <% if SyncEngine::logged_in > 0 %>
-	  <a href="/Settings/User/logout">Logout</a>
-	<%else%>
-	  <a href="/Settings/User/login">Login</a>
-	<%end%>
+<div class="toolbar">
+	<h1 id="pageTitle">
+		<script language="JavaScript">
+			document.write(document.title)
+		</script>
+	</h1>
+	<a id="backButton" class="button" href="./"/>
 </div>
+<ul id="settings" selected="true" title="Settings">
+	<li><a href="Source">Edit Sources</a></li>
+	<li><a href="/" target="_self">Home</a></li>
+</ul>

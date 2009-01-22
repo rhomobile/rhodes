@@ -4,10 +4,25 @@
 	  method="POST" 
 	  action="<%=url_for('update')%>">
 	<fieldset>
-		<input type="hidden" name="id" value="<%=@source['source_id']%>"/>
+		<input type="hidden" name="id" value="<%=@source.source_id%>"/>
 		<div class="row">
 			<label>URL: </label>
-			<input type="text" maxlength="2048" name="source[source_url]" value="<%=@source['source_url']%>"/>
+			<input type="text" maxlength="2048" name="source[source_url]" value="<%=@source.source_url%>"/>
+		</div>
+		<div class="row">
+			<label>Last Updated:</label>
+			<p><%=Time.parse(@source.last_updated)%></p>
+		</div>
+		<div class="row">
+			<label>Last Sync Summary:</label>
+			<p>Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%></p>
+		</div>
+		<div class="row">
+			<% if @source.last_sync_success %>
+			  <font color="green">Last sync successful</font>
+			<% else %>
+			  <font color="red">Last sync encountered error</font>
+			<% end %>
 		</div>
 	</fieldset>
 	<input type="submit" value="Update"/>
