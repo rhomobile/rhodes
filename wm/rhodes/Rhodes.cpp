@@ -41,10 +41,10 @@ public :
         // Starting local server
         m_serverHost.Start(m_appWindow.m_hWnd);
         // Navigate to the home page
-        TCHAR _laodingpage[MAX_PATH];
-		LPTSTR lp = CHttpServer::Instance()->GetLoadingPage(_laodingpage);
-        m_appWindow.Navigate(lp);
-        //m_appWindow.Navigate(HOME_PAGE);
+        //TCHAR _laodingpage[MAX_PATH];
+		//LPTSTR lp = CHttpServer::Instance()->GetLoadingPage(_laodingpage);
+        m_appWindow.Navigate2(_T("about:blank"));
+        //m_appWindow.Navigate(CHttpServer::Instance()->GetStartPage());
 
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);
