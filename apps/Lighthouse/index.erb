@@ -1,0 +1,21 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		<script language="JavaScript">
+			document.write(document.title)
+		</script>
+	</h1>
+	<a id="backButton" class="button" href="./"></a>
+</div>
+
+<ul id="home" selected="true" title="Lighthouse">
+<% if SyncEngine::logged_in > 0 %>		
+	<li><a href="Ticket">All tickets</li>
+	<li><a href="Ticket/today">Todays tickets</li>
+	<li><a href="Ticket/assgined_to_me">Tickets assigned to me</li>
+	<li><a href="Project">Projects</li>
+	<li><a href="User">Users</li>	
+	<li><a href="/Settings/User/logout" target="_self">Logout</a></li>	
+<% else %>
+	<li><a href="/Settings/User/login" target="_self">Login</a></li>
+ <% end %>
+</ul>

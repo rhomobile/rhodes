@@ -26,22 +26,24 @@ module Rhom
     
     def initialize
 	    unless not defined? Rho::RhoConfig::sources
-  	    init_source_attribs
+  	    ::Rhom::RhomObjectFactory::init_source_attribs
   	    init_objects
   	  end
     end
 	
-	  def init_source_attribs
-  	  # merge source attributes into config hash
-  	  # TODO: This shouldn't reference 'source[1]' directly
-  	  Rho::RhoConfig::sources.each do |source|
-  	    src_attribs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
-  	                                                         'attrib',
-  	                                                         {"source_id"=>source[1]['source_id'].to_s},
-  	                                                         {"distinct"=>true})
-  	    # update our source with the proper attributes
-  		  source[1].merge!({"attribs"=>src_attribs})
-  	  end
+	  class << self
+	    def init_source_attribs
+    	  # merge source attributes into config hash
+    	  # TODO: This shouldn't reference 'source[1]' directly
+    	  Rho::RhoConfig::sources.each do |source|
+    	    src_attribs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
+    	                                                         'attrib',
+    	                                                         {"source_id"=>source[1]['source_id'].to_s},
+    	                                                         {"distinct"=>true})
+    	    # update our source with the proper attributes
+    		  source[1].merge!({"attribs"=>src_attribs})
+    	  end
+    	end
   	end
   
     # Initialize new object with dynamic attributes
@@ -103,8 +105,16 @@ module Rhom
                 # returns an array of objects based on an existing array
                 def get_list(objs)
                   new_list = []
-                  if objs and defined? Rho::RhoConfig::sources[self.name.to_s]
-                    attrib_length = Rho::RhoConfig::sources[self.name.to_s]['attribs'].length
+                  attrib_length = 0
+                  source = Rho::RhoConfig::sources[self.name.to_s]
+                  if source
+                    attrib_length = source['attribs'].length
+                  end
+                  if attrib_length == 0
+                    # source attributes are not initialized, try again
+                    ::Rhom::RhomObjectFactory::init_source_attribs
+                  end
+                  if objs and source and attrib_length > 0
                     list_length = 0
                     list_length = (objs.length / attrib_length) unless attrib_length == 0
                     new_obj = nil
@@ -129,10 +139,6 @@ module Rhom
                       end
                       new_list << new_obj
                     end
-                  else
-                    # source attributes are not initialized, 
-                    # try again
-                    RhomObjectFactory::init_sources
                   end
                   new_list
                 end
@@ -210,12 +216,6 @@ module Rhom
                   # then we procede with update
                   if new_val and val != new_val
                     unless self.method_name_reserved?(method) or new_val.length == 0
-                      # update viewable list
-=begin
-                      result = ::Rhom::RhomDbAdapter::update_into_table(::Rhom::TABLE_NAME,
-                                                                {"value"=>new_val},
-                                                                {"object"=>obj, "attrib"=>method})
-=end
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,

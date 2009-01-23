@@ -11,9 +11,13 @@
   <property name="ruby.path" value="../../win32/target/compiler/RhoRuby.exe" />
   <property name="sharedAnt.dir" value="../../shared/build" />
   <property name="target.dir" location="../target/${BBVer}" />
+  <property name="RubyVM.dir" location="../RubyVM" />
 
   <!-- <property name="exclude.apps" value="**/css,**/js" /> -->
-  <property name="exclude.lib" value="**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb" />
+  <condition property="exclude.lib" value="**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb,**/rationalME.rb,**/format.rb">
+    <not><isset property="exclude.lib"/></not>
+  </condition>
+
   <property name="compileERB.path" location="compileERB.rb" />
   <property name="srclib.dir" value="${src.dir}"/>
   
@@ -68,16 +72,21 @@
     <not> <isset property="bbsign.pwd"/> </not>
   </condition>
 
-  <available file="../RubyVM/RubyVM.jar" property="RubyVM.present"/>
-  
-  <target name="clean">
+  <available file="${RubyVM.dir}/RubyVM.jar" property="RubyVM.present"/>
+
+  <target name="clean.dev">
     <delete dir="${tmp.dir}" />
     <mkdir dir="${tmp.dir}" />
 
-    <delete dir="${target.dir}" />
-    <mkdir dir="${target.dir}" />
-
     <delete file="../RhoBundle/RhoBundle.jar" />
+  </target>
+
+  <target name="clean" depends="clean.dev">
+    <delete>
+      <fileset  dir="${target.dir}"  includes="**/*.*"/>
+    </delete>
+        
+    <mkdir dir="${target.dir}" />
   </target>
 
   <target name="showWarning" unless="RubyVM.present">
@@ -86,7 +95,7 @@
   <target name="makepreverifyRhoBundle" if="RubyVM.present">
     <exec executable="${jde.home}/bin/preverify.exe">
       <arg value="-classpath" />
-      <arg value="${jde.home}/lib/net_rim_api.jar;../RubyVM/RubyVM.jar" />
+      <arg value="${jde.home}/lib/net_rim_api.jar;${RubyVM.dir}/RubyVM.jar" />
       <arg value="-d" />
       <arg value="../RhoBundle" />
       <arg value="${bin.dir}/RhoBundle.jar" />
@@ -95,7 +104,7 @@
 
   <target name="preverifyRhoBundle" depends="makepreverifyRhoBundle,showWarning"/>
   
-  <target name="RhoBundle" depends="clean">
+  <target name="RhoBundle">
     <ant dir = "${sharedAnt.dir}" target="bundleCommon" />
     <delete dir="${src.dir}/apps/shared" />
     
@@ -118,10 +127,9 @@
     
     <antcall target="preverifyRhoBundle"/>
 
-    </target>
+  </target>
 
-  <target name="compileSrc" depends="RhoBundle">
-
+  <target name="compileAllSrc">
     <exec executable="${javac.home}\javac.exe">
       <arg value="-g" />
       <arg value="-d" />
@@ -136,9 +144,18 @@
       <arg value="1.3" />
       <arg value="-nowarn" />
       <arg value="@RubyVM_build.files" />
-      <arg value="@PerstLite_build.files"/>
-      <arg value="@rhodes_build.files"/>
+      <arg value="@PerstLite_build.files" />
+      <arg value="@rhodes_build.files" />      
     </exec>
+  </target>
+  
+  <target name="unpackRhoBundle">
+    <copy todir="${tmp.dir}" >
+      <zipfileset src="${bin.dir}/RhoBundle.jar" />
+    </copy>
+  </target>
+
+  <target name="compileRhodes">
 
     <copy todir="${tmp.dir}/resources">
       <fileset dir="../rhodes/resources" />
@@ -146,40 +163,15 @@
 
     <jar destfile="${bin.dir}/rhodes.jar" manifest="manifest.mf">
       <fileset dir="${tmp.dir}" />
-      <zipfileset src="${bin.dir}/RhoBundle.jar" />
     </jar>
 
     <exec executable="${jde.home}/bin/preverify.exe">
       <arg value="-classpath" />
-      <arg value="${jde.home}/lib/net_rim_api.jar" />
+      <arg value="${rhodes.implib}" />
       <arg value="-d" />
       <arg value="${target.dir}" />
       <arg value="${bin.dir}/rhodes.jar" />
     </exec>
-
-  </target>
-
-  <target name="autoSign">
-    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
-      <arg value="-jar" />
-      <arg value="${jde.home}\bin\SignatureTool.jar" />
-      <arg value="-c" />
-      <arg value="-a" />
-      <arg value="-p" />
-      <arg value="${bbsign.pwd}" />
-      <arg value="rhodesApp.cod" />
-    </exec>
-  </target>
-  
-  <target name="manualSign">
-    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
-      <arg value="-jar" />
-      <arg value="${jde.home}\bin\SignatureTool.jar" />
-      <arg value="rhodesApp.cod" />
-    </exec>
-  </target>
-
-  <target name="rhodes" depends="compileSrc">
 
     <rapc output="rhodesApp" destdir="${target.dir}" nowarn="true" quiet="true" verbose="false">
       <jdp title="rhodesApp" vendor="${vendor}" version="${version}" icon="resources/icon.png" type="cldc" />
@@ -188,7 +180,7 @@
           <include name="rhodes.jar" />
         </fileset>
       </src>
-      <import location="${jde.home}/lib/net_rim_api.jar" />
+      <import location="${rhodes.implib}" />
     </rapc>
 
     <copy todir="${target.dir}">
@@ -199,6 +191,163 @@
 
     <delete dir="${bin.dir}" />
 
+  </target>
+
+  <target name="rhodes" depends="clean,RhoBundle,compileAllSrc,unpackRhoBundle">
+    <antcall target="compileRhodes">
+        <param name="rhodes.implib" value="${jde.home}/lib/net_rim_api.jar"/>
+    </antcall>
+  </target>
+  
+  <target name="autoSign">
+    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
+      <arg value="-jar" />
+      <arg value="${jde.home}\bin\SignatureTool.jar" />
+      <arg value="-c" />
+      <arg value="-a" />
+      <arg value="-p" />
+      <arg value="${bbsign.pwd}" />
+      <arg value="-r" />
+      <arg value="${target.dir}" />
+    </exec>
+  </target>
+
+  <target name="manualSign">
+    <exec executable="${javac.home}/java.exe" dir="${target.dir}">
+      <arg value="-jar" />
+      <arg value="${jde.home}\bin\SignatureTool.jar" />
+      <arg value="-r" />
+      <arg value="${target.dir}" />
+    </exec>
+  </target>
+
+  <target name="device.build" depends="rhodes">
+
+    <antcall target="${signType.target}" />
+
+    <!-- Create web directory -->
+    <copy file="${target.dir}/rhodesApp.jad" todir="${target.dir}/web">
+      <zipfileset src="${target.dir}/rhodesApp.cod" />
+    </copy>
+
+  </target>
+
+  <target name="build.RubyVM">
+    <delete file="${RubyVM.dir}/RubyVM.jar" />
+    <mkdir dir="${tmp.dir}/RubyVM" />
+
+    <exec executable="${javac.home}\javac.exe">
+      <arg value="-g" />
+      <arg value="-d" />
+      <arg value="${tmp.dir}/RubyVM" />
+      <arg value="-bootclasspath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar" />
+      <arg value="-source" />
+      <arg value="1.3" />
+      <arg value="-target" />
+      <arg value="1.3" />
+      <arg value="-nowarn" />
+      <arg value="@RubyVM_build.files" />
+    </exec>
+
+    <jar destfile="${bin.dir}/RubyVM.jar" manifest="RubyVM_manifest.mf">
+      <fileset dir="${tmp.dir}/RubyVM" />
+    </jar>
+
+    <exec executable="${jde.home}/bin/preverify.exe">
+      <arg value="-classpath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar" />
+      <arg value="-d" />
+      <arg value="${RubyVM.dir}" />
+      <arg value="${bin.dir}/RubyVM.jar" />
+    </exec>
+
+    <rapc output="RubyVM" destdir="${target.dir}" nowarn="true" quiet="true" verbose="false">
+      <jdp title="RubyVM" vendor="${vendor}" version="${version}" type="library" />
+      <src>
+        <fileset dir="${RubyVM.dir}">
+          <include name="RubyVM.jar" />
+        </fileset>
+      </src>
+      <import location="${jde.home}/lib/net_rim_api.jar" />
+    </rapc>
+
+    <delete dir="${tmp.dir}/RubyVM" />
+  </target>
+
+  <target name="RhoBundle.cod">
+    <antcall target="RhoBundle"/>
+
+    <rapc output="RhoBundle" destdir="${target.dir}" nowarn="true" quiet="true" verbose="false">
+      <jdp title="RhoBundle" vendor="${vendor}" version="${bundle_version}" type="library" />
+      <src>
+        <fileset dir="../RhoBundle">
+          <include name="RhoBundle.jar" />
+        </fileset>
+      </src>
+      <import location="${jde.home}/lib/net_rim_api.jar;${RubyVM.dir}/RubyVM.jar" />
+    </rapc>
+
+    <copy todir="${target.dir}">
+      <fileset dir="./">
+        <include name="RhoBundle.alx"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="RhoBundle.dev" depends="clean.dev,RhoBundle.cod">
+    <antcall target="${signType.target}" />
+
+    <!-- Create web directory -->
+    <copy todir="${target.dir}/web">
+      <fileset dir="${target.dir}">
+        <include name="RhoBundle.jad"/>
+      </fileset>
+
+      <zipfileset src="${target.dir}/RhoBundle.cod" />
+    </copy>
+
+  </target>
+  
+  <target name="device.devbuild" depends="clean">
+
+    <antcall target="build.RubyVM"/>
+    <antcall target="RhoBundle.cod"/>
+    
+    <exec executable="${javac.home}\javac.exe">
+      <arg value="-g" />
+      <arg value="-d" />
+      <arg value="${tmp.dir}" />
+      <arg value="-classpath" />
+      <arg value="${bin.dir}/RhoBundle.jar;${RubyVM.dir}/RubyVM.jar" />
+      <arg value="-bootclasspath" />
+      <arg value="${jde.home}/lib/net_rim_api.jar" />
+      <arg value="-source" />
+      <arg value="1.3" />
+      <arg value="-target" />
+      <arg value="1.3" />
+      <arg value="-nowarn" />
+      <arg value="@PerstLite_build.files" />
+      <arg value="@rhodes_build.files" />
+    </exec>
+    
+    <antcall target="compileRhodes">
+      <param name="rhodes.implib" value="${jde.home}/lib/net_rim_api.jar;${bin.dir}/RhoBundle.jar;${RubyVM.dir}/RubyVM.jar"/>
+    </antcall>
+    
+    <antcall target="${signType.target}" />
+    <!-- Create web directory -->
+    <copy todir="${target.dir}/web">
+      <fileset dir="${target.dir}">
+        <include name="*.jad"/>
+      </fileset>
+
+      <zipfileset src="${target.dir}/RhoBundle.cod" />      
+      <zipfileset src="${target.dir}/rhodesApp.cod" />
+      <zipfileset src="${target.dir}/RubyVM.cod" />
+    </copy>
+    
   </target>
 
   <target name="mds.run">
@@ -228,17 +377,6 @@
   <target name="sim.run" depends="mds.run,sim1.run">
   </target>
 
-  <target name="device.build" depends="rhodes">
-
-    <antcall target="${signType.target}" />
-
-    <!-- Create web directory -->
-    <copy file="${target.dir}/rhodesApp.jad" todir="${target.dir}/web">
-      <zipfileset src="${target.dir}/rhodesApp.cod" />
-    </copy>
-    
-  </target>
-  
   <target name="device.load" depends="device.build">
     <exec executable="${jde.home}/simulator/fledgecontroller.exe" dir="${jde.home}/simulator" osfamily="windows" vmlauncher="true" failonerror="false">
       <arg value="/execute=UsbCableInsertion(true)" />

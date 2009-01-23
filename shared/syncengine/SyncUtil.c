@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "SyncManagerI.h"
@@ -86,12 +88,15 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 	
 	/* iterate over each source id and do a fetch */
 	for(i = 0; i < source_length; i++) {
+		int success=0, size_deleted=0, size_inserted=0;
+		double start=0,duration = 0;
 		save_source_url(source_list[i]->_source_url);
 		sprintf(url_string, 
 				"%s%s&client_id=%s", 
 				source_list[i]->_source_url, 
 				SYNC_SOURCE_FORMAT, 
 				client_id);
+		start = time(NULL);
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			int size = MAX_SYNC_OBJECTS;
@@ -110,11 +115,13 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 								printf("Inserting record %s - %s: %s\n", list[j]->_object, 
 									   list[j]->_attrib, list[j]->_value);
 								insert_into_database(list[j]);
+								size_inserted++;
 							} 
 							else if (strcmp(type, "delete") == 0) {
 								printf("Deleting record %s - %s: %s\n", list[j]->_object, 
 									   list[j]->_attrib, list[j]->_value);
 								delete_from_database(list[j]);
+								size_deleted++;
 							} else {
 								printf("Warning: received improper update_type: %s...\n", type);
 							}
@@ -125,11 +132,16 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 				free_ob_list(list, available);
 				free(list);
 			}
+			success = 1;
 			free(json_string);
+		} else {
+			success = 0;
 		}
+		duration = time(NULL) - start;
+		update_source_sync_status((sqlite3 *)get_database(), 
+								  source_list[i], size_inserted, size_deleted, duration, success);
 	}
 	free_source_list(source_list, source_length);
-	insert_sync_status((sqlite3 *)get_database(), "true");
 	return available;
 }
 
@@ -215,7 +227,6 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
 		}
-		//delete_session(source->_source_url);
     set_db_client_id(database,c_id);
 	}
 	sqlite3_reset(client_id_statement);
@@ -232,12 +243,20 @@ void set_db_client_id( sqlite3 *database, char *c_id ){
 	sqlite3_reset(client_id_insert_statement);
 }
 
-void insert_sync_status(sqlite3 *database, const char *status) {
-	prepare_db_statement("UPDATE client_info set last_sync_success=? WHERE client_id=?",
+void update_source_sync_status(sqlite3 *database, pSource source, 
+							   int num_inserted, int num_deleted, double sync_duration, int status) {
+	time_t now_in_seconds;
+	now_in_seconds = time(NULL);	
+	prepare_db_statement("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
+						 last_sync_duration=?,last_sync_success=? WHERE source_id=?",
 						 database,
 						 &sync_status_statement);
-	sqlite3_bind_text(sync_status_statement, 1, status, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(sync_status_statement, 2, (char *)get_client_id(), -1, SQLITE_TRANSIENT);
+	sqlite3_bind_int(sync_status_statement, 1, now_in_seconds);
+	sqlite3_bind_int(sync_status_statement, 2, num_inserted);
+	sqlite3_bind_int(sync_status_statement, 3, num_deleted);
+	sqlite3_bind_double(sync_status_statement, 4, sync_duration);
+	sqlite3_bind_int(sync_status_statement, 5, status);
+	sqlite3_bind_int(sync_status_statement, 6, source->_source_id);
 	sqlite3_step(sync_status_statement); 
 	sqlite3_reset(sync_status_statement);
 }

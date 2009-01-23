@@ -34,6 +34,7 @@ klass.defineModuleMethod( "sprintf", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyKernelModule.sprintf(receiver, args);}
 });
+klass.aliasMethod("format","sprintf");
 klass.defineMethod( "open", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyKernelModule.open(receiver, args, block);}

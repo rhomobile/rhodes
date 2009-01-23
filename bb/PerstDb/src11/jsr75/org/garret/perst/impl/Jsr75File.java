@@ -1,10 +1,10 @@
 package org.garret.perst.impl;
-import net.rim.device.api.system.DeviceInfo;
+//import net.rim.device.api.system.DeviceInfo;
 
 import org.garret.perst.*;
 
 import java.io.IOException;
-import java.io.EOFException;
+//import java.io.EOFException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -165,6 +165,33 @@ public class Jsr75File implements SimpleFile
     	createDir( m_strRhoPath );
     	
     	return m_strRhoPath;
+    }
+    
+    public static void delete(String path) 
+    {
+        String url = path;
+        if (!url.startsWith("file:")) { 
+            if (url.startsWith("/")) { 
+                url = "file:///" + path;
+            } else { 
+           
+            	try{
+	            	String strRhoPath = getRhoPath();
+	            	url = strRhoPath + path;
+            	} catch (IOException x) { 
+                 	log("Exception: " + x.getMessage());
+                     throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+                 }              	
+            }
+        }
+        
+        try { 
+        	FileConnection fc = (FileConnection)Connector.open(url,Connector.READ_WRITE);
+        	fc.delete();
+        } catch (IOException x) { 
+        	log("Exception: " + x.getMessage());
+            //throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+        }        
     }
     
     public void open(String path, boolean readOnly, boolean noFlush) 

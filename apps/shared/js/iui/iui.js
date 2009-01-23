@@ -70,7 +70,7 @@ window.iui =
             if (cb)
                 cb(false);
         };
-        
+
         req.onreadystatechange = function()
         {
             if (req.readyState == 4)
@@ -91,6 +91,7 @@ window.iui =
         if (args)
         {
             req.open(method || "GET", href, true);
+            req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             req.setRequestHeader("Content-Length", args.length);
             req.send(args.join("&"));
@@ -98,10 +99,11 @@ window.iui =
         else
         {
             req.open(method || "GET", href, true);
+            req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             req.send(null);
         }
     },
-    
+
     insertPages: function(nodes)
     {
         var targetPage;
@@ -121,13 +123,13 @@ window.iui =
 
                 if (child.getAttribute("selected") == "true" || !targetPage)
                     targetPage = child;
-                
+
                 --i;
             }
         }
 
         if (targetPage)
-            iui.showPage(targetPage);    
+            iui.showPage(targetPage);
     },
 
     getSelectedPage: function()
@@ -136,7 +138,7 @@ window.iui =
         {
             if (child.nodeType == 1 && child.getAttribute("selected") == "true")
                 return child;
-        }    
+        }
     },
     isNativeUrl: function(href)
     {
@@ -172,14 +174,14 @@ addEventListener("unload", function(event)
 {
 	return;
 }, false);
-    
+
 addEventListener("click", function(event)
 {
     var link = findParent(event.target, "a");
     if (link)
     {
         function unselect() { link.removeAttribute("selected"); }
-        
+
         if (link.href && link.hash && link.hash != "#")
         {
             link.setAttribute("selected", "true");
@@ -208,8 +210,8 @@ addEventListener("click", function(event)
         }
         else
             return;
-        
-        event.preventDefault();        
+
+        event.preventDefault();
     }
 }, true);
 
@@ -219,7 +221,7 @@ addEventListener("click", function(event)
     if (div && hasClass(div, "toggle"))
     {
         div.setAttribute("toggled", div.getAttribute("toggled") != "true");
-        event.preventDefault();        
+        event.preventDefault();
     }
 }, true);
 
@@ -230,10 +232,10 @@ function orientChangeHandler()
   {
     case 0:
         setOrientation("portrait");
-        break;  
-        
+        break;
+
     case 90:
-    case -90: 
+    case -90:
         setOrientation("landscape");
         break;
   }
@@ -251,7 +253,7 @@ function checkOrientAndLocation()
     if (!hasOrientationEvent)
     {
       if (window.innerWidth != currentWidth)
-      {   
+      {
           currentWidth = window.innerWidth;
           var orient = currentWidth == 320 ? "portrait" : "landscape";
           setOrientation(orient);
@@ -275,7 +277,7 @@ function showDialog(page)
 {
     currentDialog = page;
     page.setAttribute("selected", "true");
-    
+
     if (hasClass(page, "dialog") && !page.target)
         showForm(page);
 }
@@ -287,7 +289,7 @@ function showForm(form)
         event.preventDefault();
         submitForm(form);
     };
-    
+
     form.onclick = function(event)
     {
         if (event.target == form && hasClass(form, "dialog"))
@@ -314,7 +316,7 @@ function updatePage(page, fromPage)
 
     if (page.localName.toLowerCase() == "form" && !page.target)
         showForm(page);
-        
+
     var backButton = $("backButton");
     if (backButton)
     {
@@ -326,11 +328,11 @@ function updatePage(page, fromPage)
         }
         else
             backButton.style.display = "none";
-    }    
+    }
 }
 
 function slidePages(fromPage, toPage, backwards)
-{        
+{
     var axis = (backwards ? fromPage : toPage).getAttribute("axis");
     if (axis == "y")
         (backwards ? fromPage : toPage).style.top = "100%";
@@ -340,7 +342,7 @@ function slidePages(fromPage, toPage, backwards)
     toPage.setAttribute("selected", "true");
     scrollTo(0, 1);
     clearInterval(checkTimer);
-    
+
     var percent = 100;
     slide();
     var timer = setInterval(slide, slideInterval);
@@ -357,7 +359,7 @@ function slidePages(fromPage, toPage, backwards)
             checkTimer = setInterval(checkOrientAndLocation, 300);
             setTimeout(updatePage, 0, toPage, fromPage);
         }
-    
+
         if (axis == "y")
         {
             backwards
@@ -366,8 +368,8 @@ function slidePages(fromPage, toPage, backwards)
         }
         else
         {
-            fromPage.style.left = (backwards ? (100-percent) : (percent-100)) + "%"; 
-            toPage.style.left = (backwards ? -percent : percent) + "%"; 
+            fromPage.style.left = (backwards ? (100-percent) : (percent-100)) + "%";
+            toPage.style.left = (backwards ? -percent : percent) + "%";
         }
     }
 }
@@ -399,7 +401,7 @@ function encodeForm(form)
     encode(form.getElementsByTagName("input"));
     encode(form.getElementsByTagName("textarea"));
     encode(form.getElementsByTagName("select"));
-    return args;    
+    return args;
 }
 
 function findParent(node, localName)

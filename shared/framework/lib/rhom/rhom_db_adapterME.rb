@@ -17,6 +17,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+require 'rhodes'
+
 module Rhom
   class RhomDbAdapter
     
@@ -26,7 +28,7 @@ module Rhom
       def open(dbfile=nil)
         puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
-			db = DbAdapter.new(dbfile)
+			db = DbAdapter.new(Rhodes::DBVERSION)
 			@@database = db
         end
 		

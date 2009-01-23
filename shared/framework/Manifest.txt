@@ -6,7 +6,8 @@ Rakefile
 bin/rhogen
 generators/rhogen.rb
 generators/templates/application/application.rb
-generators/templates/application/index.html
+generators/templates/application/index.erb
+generators/templates/application/layout.erb
 generators/templates/model/config.rb
 generators/templates/model/controller.rb
 generators/templates/model/edit.erb
@@ -21,6 +22,7 @@ lib/date/format.rb
 lib/erb.rb
 lib/find.rb
 lib/rational.rb
+lib/rationalME.rb
 lib/rho.rb
 lib/rho/render.rb
 lib/rho/rho.rb
@@ -29,6 +31,7 @@ lib/rho/rhocontact.rb
 lib/rho/rhocontroller.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhosupport.rb
+lib/rho/rhoviewhelpers.rb
 lib/rho/settings_controller.rb
 lib/rhodes.rb
 lib/rhoframework.rb
@@ -39,6 +42,7 @@ lib/rhom/rhom_db_adapter.rb
 lib/rhom/rhom_db_adapterME.rb
 lib/rhom/rhom_object.rb
 lib/rhom/rhom_object_factory.rb
+lib/rhom/rhom_source.rb
 lib/singleton.rb
 lib/time.rb
 rhodes.gemspec

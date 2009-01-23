@@ -1,5 +1,8 @@
 package j2me.lang;
 
+import org.jruby.util.Sprintf;
+import com.xruby.runtime.builtin.RubyArray;
+
 public class StringMe {
 
     static int codePointAtImpl( String a, int index, int limit)
@@ -23,11 +26,10 @@ public class StringMe {
         return codePointAtImpl(str, index, str.length() );//, offset + index, offset + count);
     }
 	
-    public static String format(String format, Object arg1) {
-    	//TODO: String.format
-    	throw new RuntimeException("Not Implemented");
-    	//return format;
+    public static String format(String format, RubyArray args) {
+    	return Sprintf.sprintf(format, args);
     }
+    
     public static String format(String format, int arg1) {
     	//TODO: String.format
     	throw new RuntimeException("Not Implemented");

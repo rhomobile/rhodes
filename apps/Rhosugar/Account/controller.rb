@@ -1,10 +1,12 @@
 require 'rho/rhocontroller'
 
 class AccountController < Rho::RhoController
+  layout :account_layout
+
   # GET /cases
   def index
     @accounts = Account.find(:all)
-    render :index
+    render
   end
 
   # GET /cases/1
@@ -16,14 +18,14 @@ class AccountController < Rho::RhoController
   def new
     @account = Account.new
     @industries=["Electronics","Finance","Technology"]
-    render :new
+    render :action => :new
   end
 
   # GET /cases/1/edit
   def edit
     @account = Account.find(@params['id'])
     @industries=["Electronics","Finance","Technology"]
-    render :edit
+    render :action => :edit
   end
 
   # POST /cases

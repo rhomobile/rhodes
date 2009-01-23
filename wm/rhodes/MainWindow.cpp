@@ -1,13 +1,17 @@
 // MainWindow.cpp: Defines main window for this application.
 
 #include "stdafx.h"
+#include <webvw.h> 
+#include <string>
 #include "resource.h"
 #include "MainWindow.h"
 #include "HttpServer.h"
 #include "AppManager.h"
+#include "rhoruby/rhoruby.h"
 
 CMainWindow::CMainWindow()
 {
+	m_bLoading = true;
 	m_bRhobundleReloadEnabled = true;
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
@@ -17,8 +21,12 @@ CMainWindow::~CMainWindow()
 {
 }
 
+void CMainWindow::Navigate2(BSTR URL) {
+  m_spIWebBrowser2->Navigate2(&CComVariant(URL), NULL, &CComVariant(L"_self"), NULL, NULL);
+}
+
 void CMainWindow::Navigate(BSTR URL) {
-  m_spIWebBrowser2->Navigate(URL, NULL, NULL, NULL, NULL);;
+  m_spIWebBrowser2->Navigate(URL, NULL, &CComVariant(L"_self"), NULL, NULL);
 }
 
 // **************************************************************************
@@ -259,13 +267,86 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
     OutputDebugString(szOutput);
 }
 
+std::wstring& loadLoadingHtml(std::wstring& str) {
+	FILE *file;
+	wchar_t	buf[1024];
+	std::string fname = RhoGetRootPath();
+	
+	fname.append("apps\\loading.html");
+	file = fopen(fname.c_str(), "r"); 
+	
+	if(file==NULL) {
+		str.append(L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>");
+	} else {
+		while(fgetws(buf, sizeof(buf), file) != NULL) { 
+			str.append(buf);     
+		}
+		fclose(file);
+	}
+	return str;
+}
+
+void writeToTheDoc(IPIEHTMLDocument2 *document) {
+	HRESULT hresult = S_OK;
+	VARIANT *param;
+	SAFEARRAY *sfArray;
+	std::wstring html;
+	BSTR bstr = SysAllocString(loadLoadingHtml(html).c_str());
+
+	// Creates a new one-dimensional array
+	sfArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+	
+	if (sfArray == NULL || document == NULL) {
+		goto cleanup;
+	}
+
+	hresult = SafeArrayAccessData(sfArray,(LPVOID*) & param);
+	param->vt = VT_BSTR;
+	param->bstrVal = bstr;
+	hresult = SafeArrayUnaccessData(sfArray);
+	hresult = document->write(sfArray);
+
+cleanup:
+	SysFreeString(bstr);
+	if (sfArray != NULL) {
+		SafeArrayDestroy(sfArray);
+	}
+}
+
+void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
+{
+	HRESULT hr;
+	IDispatch* pHtmlDoc = NULL;
+
+    // Retrieve the document object.
+    hr = m_spIWebBrowser2->get_Document( &pHtmlDoc );
+    if ( SUCCEEDED(hr) )
+    {
+		IPIEHTMLDocument2* pDoc;
+		hr = pHtmlDoc->QueryInterface(__uuidof(IPIEHTMLDocument2),  (void**)&pDoc );
+        if ( SUCCEEDED(hr) )
+        {
+			// Write to the document
+			writeToTheDoc(pDoc);
+			pDoc->Release();
+        }
+    }
+}
+
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
     TCHAR szOutput[128];
+	
+	LPCTSTR url = OLE2CT(V_BSTR(pvtURL)); 
+	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
+		OutputDebugString(L"Show loading page\n");
+		ShowLoadingPage(pDisp, pvtURL);
+		m_bLoading = false; //show loading page only once
+	}
 
     StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
-                    TEXT("0x%08p %s\n"), pDisp, OLE2CT(V_BSTR(pvtURL)));
+                    TEXT("0x%08p %s\n"), pDisp, url);
     OutputDebugString(szOutput);
 
     VERIFY(SetEnabledState(IDM_STOP, FALSE));
