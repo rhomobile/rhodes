@@ -326,7 +326,18 @@ public class PerstLiteAdapter  extends RubyBasic {
 		
 	    String source_url = "";
 	    String session = "";
-		
+	    int last_updated = 0;
+	    int last_inserted_size = 0;
+	    int last_deleted_size = 0;
+	    int last_sync_duration = 0;
+	    int last_sync_success = 0;
+	    
+	    public static final RubyString LAST_UPDATED = ObjectFactory.createString("last_updated");
+	    public static final RubyString LAST_INSERTED_SIZE = ObjectFactory.createString("last_inserted_size");
+	    public static final RubyString LAST_DELETED_SIZE = ObjectFactory.createString("last_deleted_size");
+	    public static final RubyString LAST_SYNC_DURATION = ObjectFactory.createString("last_sync_duration");
+	    public static final RubyString LAST_SYNC_SUCCESS = ObjectFactory.createString("last_sync_success");
+	    
 		public static class TableRoot extends TableRootBase { 
 		    Index source_id;
 
@@ -392,6 +403,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	super.writeObject(out);
 	    	out.writeString(source_url);
 	    	out.writeString(session);
+	    	out.writeInt(last_updated);
+	    	out.writeInt(last_inserted_size);
+	    	out.writeInt(last_deleted_size);
+	    	out.writeInt(last_sync_duration);
+	    	out.writeInt(last_sync_success);
 	    }
 
 	    // Deserialize the object
@@ -399,6 +415,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	super.readObject(in);
 	    	source_url = in.readString();
 	    	session = in.readString();
+	    	last_updated = in.readInt();
+	    	last_inserted_size = in.readInt();
+	    	last_deleted_size = in.readInt();
+	    	last_sync_duration = in.readInt();
+	    	last_sync_success = in.readInt();
 	    }
 	    
 	    RubyHash getValueByName(RubyString name){
@@ -409,6 +430,16 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		res.add( SOURCE_URL, ObjectFactory.createString(source_url) );
 	    	if ( bAll || name.equals(SESSION) )
 	    		res.add( SESSION, ObjectFactory.createString(session) );
+	    	if ( bAll || name.equals(LAST_UPDATED) )
+	    		res.add( LAST_UPDATED, ObjectFactory.createInteger(last_updated) );
+	    	if ( bAll || name.equals(LAST_INSERTED_SIZE) )
+	    		res.add( LAST_INSERTED_SIZE, ObjectFactory.createInteger(last_inserted_size) );
+	    	if ( bAll || name.equals(LAST_DELETED_SIZE) )
+	    		res.add( LAST_DELETED_SIZE, ObjectFactory.createInteger(last_deleted_size) );
+	    	if ( bAll || name.equals(LAST_SYNC_DURATION) )
+	    		res.add( LAST_SYNC_DURATION, ObjectFactory.createInteger(last_sync_duration) );
+	    	if ( bAll || name.equals(LAST_SYNC_SUCCESS) )
+	    		res.add( LAST_SYNC_SUCCESS, ObjectFactory.createInteger(last_sync_success) );
 	    	
 	    	return res;
 	    }
@@ -422,6 +453,21 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        val = hash.getValue(SESSION);
 	        if ( val != RubyConstant.QNIL )
 	        	session = val.toStr();
+	        val = hash.getValue(LAST_UPDATED);
+	        if ( val != RubyConstant.QNIL )
+	        	last_updated = val.toInt();
+	        val = hash.getValue(LAST_INSERTED_SIZE);
+	        if ( val != RubyConstant.QNIL )
+	        	last_inserted_size = val.toInt();
+	        val = hash.getValue(LAST_DELETED_SIZE);
+	        if ( val != RubyConstant.QNIL )
+	        	last_deleted_size = val.toInt();
+	        val = hash.getValue(LAST_SYNC_DURATION);
+	        if ( val != RubyConstant.QNIL )
+	        	last_sync_duration = val.toInt();
+	        val = hash.getValue(LAST_SYNC_SUCCESS);
+	        if ( val != RubyConstant.QNIL )
+	        	last_sync_success = val.toInt();
 	    }
 	    
 	};
