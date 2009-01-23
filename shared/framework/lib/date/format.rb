@@ -298,7 +298,7 @@ class Date
       when 'w', 'Ow'; emit_n(wday, 1, f)
       when 'X', 'EX'; emit_a(strftime('%H:%M:%S'), 0, f)
       when 'x', 'Ex'; emit_a(strftime('%m/%d/%y'), 0, f)
-      when 'Y', 'EY'; emit_sn(year, 4, f)
+      when 'Y', 'EY'; emit_sn(year(), 4, f)
       when 'y', 'Ey', 'Oy'; emit_n(year % 100, 2, f)
       when 'Z'; emit_au(strftime('%:z'), 0, f)
       when /\A(:{0,3})z/
@@ -1034,7 +1034,7 @@ class Date
   def self._parse(str, comp=true)
     str = str.dup
 
-    e = Format::Bag.new
+    e = Date::Format::Bag.new
 
     e._comp = comp
 
@@ -1246,8 +1246,8 @@ class Date
       else
 	dst = zone.sub!(/\s+dst\z/, '')
       end
-      if Format::ZONES.include?(zone)
-	offset = Format::ZONES[zone]
+      if Date::Format::ZONES.include?(zone)
+	offset = Date::Format::ZONES[zone]
 	offset += 3600 if dst
       elsif zone.sub!(/\A(?:gmt|utc?)?([-+])/, '')
 	sign = $1

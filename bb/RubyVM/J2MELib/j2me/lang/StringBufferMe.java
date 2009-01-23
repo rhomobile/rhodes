@@ -9,7 +9,7 @@ public class StringBufferMe {
     public static int indexOf(StringBuffer strThis, String str, int fromIndex) {
     	return strThis.toString().indexOf(str, fromIndex);
     }
-    
+/*    
     public static StringBuffer replace( StringBuffer strThis, int start, int end, String str) {
     	AbstractStringBuilder_replace(strThis, start, end, str);
         return strThis;
@@ -36,7 +36,7 @@ public class StringBufferMe {
 				strThis.setCharAt(start + len+i, strThis.charAt(end+i));
 		}
 		int i = start;
-		for( ; i < count; i++ )
+		for( ; i < Math.min(count,len); i++ )
 			strThis.setCharAt(i, str.charAt(i-start));
 
 		for( ; i < len; i++ )
@@ -46,6 +46,6 @@ public class StringBufferMe {
 //        str.getChars(value, start);
         count = newCount;
         return strThis;
-    }
+    }*/
     
 }
