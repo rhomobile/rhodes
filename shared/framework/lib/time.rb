@@ -40,10 +40,7 @@
 # $Id$
 #
 
-if defined? RHO_ME
-else	
-  require 'date/format'
-end
+require 'date/format'
 
 #
 # Implements the extensions to the Time class that are described in the
@@ -347,7 +344,7 @@ class Time
         else
           year += 1900
         end
-        self.utc(year, $2, $1.to_i, $4.to_i, $5.to_i, $6.to_i)
+        self.utc(year(), $2, $1.to_i, $4.to_i, $5.to_i, $6.to_i)
       elsif /\A\s*
              (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\x20
              (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\x20
@@ -416,9 +413,9 @@ class Time
   #
   def rfc2822
     sprintf('%s, %02d %s %d %02d:%02d:%02d ',
-      RFC2822_DAY_NAME[wday],
-      day, RFC2822_MONTH_NAME[mon-1], year,
-      hour, min, sec) +
+      RFC2822_DAY_NAME[wday()],
+      day(), RFC2822_MONTH_NAME[mon()-1], year(),
+      hour(), min(), sec() ) +
     if utc?
       '-0000'
     else

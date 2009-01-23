@@ -198,7 +198,8 @@ public class RubyString extends RubyBasic {
     }
 
     public RubyString setString(String s) {
-    	StringBufferMe.replace(sb_, 0, sb_.length(), s);
+    	//StringBufferMe.replace(sb_, 0, sb_.length(), s);
+    	sb_ = new StringBuffer(s);
         return this;
     }
 
