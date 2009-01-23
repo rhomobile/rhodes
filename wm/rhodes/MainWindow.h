@@ -16,6 +16,7 @@ public:
     CMainWindow();
     ~CMainWindow();
     //
+	void Navigate2(BSTR URL);
     void Navigate(BSTR URL);
 
     // Required to forward messages to the PIEWebBrowser control
@@ -78,8 +79,9 @@ private:
     void __stdcall OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL);
     void __stdcall OnCommandStateChange(long lCommand, BOOL bEnable);
 
-    // utility function
+    // utility functions
     BOOL SetEnabledState(UINT uMenuItemID, BOOL bEnable);
+	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
 
 private:
     // Represents the PIEWebBrowser control contained in the main application.
@@ -97,5 +99,6 @@ private:
     // Used to manage SIP state. Also used to adjust window for SIP.
     SHACTIVATEINFO m_sai;
 
+	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;
 };

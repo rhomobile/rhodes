@@ -210,6 +210,11 @@ extern "C"
 			gHttpClient = CHttpClient::NewL();
 		
 		cookie = get_db_session(load_source_url());
+		
+		if ( !cookie && !strstr(url, "clientcreate") ) {
+			return NULL;
+		}
+		
 		gHttpClient->SetCookie( cookie);
 		
 		if ( cookie )
@@ -244,6 +249,11 @@ extern "C"
 			gHttpClient = CHttpClient::NewL();
 				
 		cookie = get_db_session(url);
+		
+		if ( !cookie && !strstr(url, "clientcreate") ) {
+		   return 0;
+		  }
+		
 		gHttpClient->SetCookie( cookie );
 		
 		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, data_size);
@@ -271,6 +281,8 @@ extern "C"
 		
 		if ( session )
 			set_db_session( load_source_url(), session );
+		else
+			delete_db_session(load_source_url());
 	}
 
 	void delete_session(const char *url_string)
