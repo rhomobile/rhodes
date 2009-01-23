@@ -37,7 +37,7 @@ module Rhom
           end
         else
           result = ::Rhom::RhomDbAdapter::select_from_table('sources', '*', 
-                                                            {:source_id => strip_braces(args.first)}).first
+                                                            {"source_id" => strip_braces(args.first)}).first
           list << RhomSource.new(result)
         end
         list.size > 1 ? list : list[0]
