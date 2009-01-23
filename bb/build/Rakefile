@@ -1,0 +1,145 @@
+require 'pathname'
+
+$config = YAML::load( File.open( 'build.yml' ) )
+
+class Hash
+  def fetch_r(key)
+    if self.has_key?(key) and not self[key].is_a?(Hash)
+      return self[key]
+    else
+      self.each do |val|
+	value = false 
+	if val.is_a?(Array)
+          val.each do |x|
+            value = x.fetch_r(key) if x.is_a?(Hash)
+	    return value if value
+	  end
+	end
+        value = val.fetch_r(key) if val.is_a?(Hash)
+	return value if value
+      end
+    end
+    return false  
+  end
+end
+
+def config_parse(conf)
+  if conf.is_a?(Array)
+    conf.collect! do |x|
+      if x.is_a?(Hash) or x.is_a?(Array)
+        config_parse(x)
+	x
+      else
+	if x =~ /%(.*?)%/
+	  x.gsub!(/%.*?%/, $config.fetch_r($1).to_s)
+        end
+	x
+      end
+    end
+  elsif conf.is_a?(Hash)
+    conf = conf.collect do |k,x|
+	    
+      if x.is_a?(Hash) or x.is_a?(Array)
+        config_parse(x)
+	x
+      else 
+	if x.to_s =~ /%(.*?)%/
+	  x.gsub!(/%.*?%/, $config.fetch_r($1).to_s)
+        end
+	x
+      end
+    end
+  end
+end
+
+def run(command, args)
+  argstr = " "
+  args.each do |x|
+    x = x.to_s
+    x.gsub!(/"/,"\\\"")
+    argstr += "\"" + x + "\" "
+  end
+ 
+  return `#{command} #{argstr}`
+end
+
+def unjar(src,targetdir)
+  cmd =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
+  p = Pathname.new(src)
+  src = p.realpath
+  currentdir = pwd()
+
+  args = Array.new
+
+  args << "xvf"
+  args << src.to_s
+
+  chdir targetdir
+  
+  puts run(cmd,args)
+  chdir currentdir
+end
+
+def jar(target,manifest,files)
+  cmd =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
+  
+  args = Array.new
+  args << "cvfm"
+
+end
+
+config_parse($config)
+
+desc "Clean up"
+task :clean do
+  remove_dir($config["build"]["tmpdir"],true)
+  remove_dir($config["build"]["targetdir"],true)
+
+  mkdir_p $config["build"]["tmpdir"]
+  mkdir_p $config["build"]["targetdir"]
+
+  rm "../RhoBundle/RhoBundle.jar", :force => true
+end
+
+desc "Compile Sources"
+task :compile do
+  javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+  jde =  $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+  args = Array.new
+ 
+  args << "-g"
+  args << "-d"
+  args << $config["build"]["tmpdir"] 
+  args << "-classpath"
+  args << $config["build"]["bindir"] + "/RhoBundle.jar"
+  args << "-bootclasspath"
+  args << jde + "/lib/net_rim_api.jar"
+  args << "-source"
+  args << "1.3"
+  args << "-target"
+  args << "1.3"
+  args << "-nowarn"
+  args << "@RubyVM_build.files"
+  args << "@PerstLite_build.files"
+  args << "@rhodes_build.files"
+  puts "\texecuting javac"
+  puts run(javac,args)
+
+  cp_r "../rhodes/resources", $config["build"]["tmpdir"] + "/resources"
+
+  unjar($config["build"]["bindir"] + "/RhoBundle.jar", $config["build"]["tmpdir"])
+
+end
+
+
+desc "Test Rake Target"
+task :test do
+  puts "test config"
+  puts $config["build"]["srcdir"] 
+
+#  puts config.inspect
+  puts $config["build"]["srcdir"] 
+#  puts $config.inspect
+#  puts config.fetch_r("bblib") 
+end
