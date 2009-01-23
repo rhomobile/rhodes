@@ -27,6 +27,7 @@
 
 extern char *get_session(const char *url_string);
 extern int logged_in();
+extern void logout();
 
 /* 
  * Pulls the latest object_values list 
@@ -58,17 +59,21 @@ char *fetch_remote_data(char *url_string) {
 		if (conn) {
 			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
 			NSInteger code = [response statusCode];
-			if (error || code != 200) {
-				NSLog(@"An error occured connecting to the sync source: %d returned", code);
-				[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			NSInteger errorCode = [error code];
+			code = [response statusCode];
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			if (code != 200) {
+				NSLog(@"An error occured connecting to the sync source: %i returned", code);
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired) {
+					logout();
+				}
 				[pool release];
 				return NULL;
 			}  else {
 				logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 			}
-		} else {
-			insert_sync_status(get_database(), "false");	
-		}
+		} 
 		data = str_assign((char *)[logData UTF8String]);
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		if (session) free(session);
@@ -89,6 +94,7 @@ char *fetch_remote_data(char *url_string) {
 int login(const char *login, const char *password) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	pSource *source_list;
+	char *session = NULL;
 	int i, source_length, cookie_size = 0;
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
@@ -98,11 +104,12 @@ int login(const char *login, const char *password) {
 		sprintf(login_string, 
 				"%s/client_login", 
 				source_list[i]->_source_url);
-		if (!logged_in()) {
+		session = str_assign(get_session(source_list[i]->_source_url));
+		if (!session) {
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 			NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-			NSError *error = nil;
-			NSHTTPURLResponse *response;
+			NSError *error = [[[NSError alloc] init] autorelease];
+			NSHTTPURLResponse *response = [[[NSHTTPURLResponse alloc] init] autorelease];
 			NSString *linkString = [[NSString alloc] initWithUTF8String:login_string];
 			NSMutableString *postBody = [[NSMutableString alloc] initWithString:@"login="];
 			[postBody appendString:[[NSString alloc] initWithUTF8String:login]];
@@ -115,10 +122,15 @@ int login(const char *login, const char *password) {
 			NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 			if (conn) {
 				[NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error];
+				NSInteger errorCode = [error code];
 				NSInteger code = [response statusCode];
 				[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-				if (error || code != 200) {
-					NSLog(@"An error occured connecting to the sync source: %d returned", code);
+				if (code != 200) {
+					NSLog(@"An error occured connecting to the sync source: %i returned", code);
+					if (errorCode == NSURLErrorUserCancelledAuthentication || 
+						errorCode == NSURLErrorUserAuthenticationRequired) {
+						logout();
+					}
 				} else {
 					NSHTTPCookieStorage *store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 					NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse*)response allHeaderFields] 
@@ -137,8 +149,8 @@ int login(const char *login, const char *password) {
 		} else {
 			printf("Found existing session for url...\n");
 		}
+		if (session) free(session);
 	}
-	clear_client_id();
 	pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
 		[pool release];
@@ -147,20 +159,6 @@ int login(const char *login, const char *password) {
 		[pool release];
 		return 1;
 	}
-}
-
-void delete_session(const char *url_string) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	NSArray *cookies = [cookieStore cookiesForURL:[[NSURL alloc] 
-												   initWithString:[[NSString alloc] 
-																   initWithUTF8String:url_string]]];
-	int count = [cookies count];
-	int i;
-	for (i = 0; i < count; i++) {
-		[cookieStore deleteCookie:(NSHTTPCookie *)[cookies objectAtIndex:i]];
-	}
-	[pool release];
 }
 
 /*
@@ -189,10 +187,15 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) {
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
-			if (error || code != 200) {
-				NSLog(@"An error occured connecting to the sync source: %d returned", code);
-				[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			if (code != 200) {
+				NSLog(@"An error occured connecting to the sync source: %i returned", code);
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired) {
+					logout();
+				}
 				[pool release];
 				return SYNC_PUSH_CHANGES_ERROR;
 			} else {

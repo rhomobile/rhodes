@@ -1,4 +1,4 @@
-package com.rho;
+package rhomobile;
 
 import java.io.IOException;
 

@@ -1,36 +1,22 @@
-<html>
-	<head>
-		<title>Home</title>
-		<meta name="viewport" content="initial-scale=1.0, width=device-width"/>
-		<% if System::get_property('platform') == 'WINDOWS' %>
-			<script src="/shared/js/rhogeolocation-wm.js"></script>
-		<% end %>
-		<% if System::get_property('platform') == 'APPLE' %>
-			<script src="/shared/js/jquery-1.2.6.min.js"></script>
-			<script src="/shared/js/rhogeolocation.js"></script>
-		<% end %>
-	</head
-	<body>
-		<div align="center">
-			<h3>Home</h3>
-			<h4>Sample Apps</h4>
-			<a href="Rhosugar">SugarCRM</a><br/>
-			<a href="RhoSiebel">Siebel Field Service</a><br/>
-			<a href="Basecamp">Basecamp</a><br/>
-			<a href="Lighthouse">Lighthouse</a></br>
-			
-			<h4>Device Capabilites</h4>
-			<a href="Phonebook">Phonebook List</a><br/>
-			Platform:<%= System::get_property('platform')%><br/>
-			Your location: <geolocation>loading...</geolocation><br/>
-			Latitude: <geolatitude>loading...</geolatitude><br/>
-			Longitude: <geolongitude>loading...</geolongitude><br/>
-			<a href="Settings">Rhodes Settings</a><br/>
-			<% if SyncEngine::logged_in > 0 %>
-			  <a href="/Settings/User/logout">Logout</a>
-			<%else%>
-			  <a href="/Settings/User/login">Login</a>
-			<%end%>
-		</div>
-	</body>
-</html>
+<!-- main index page -->
+<div align="center">
+	<h3>Home</h3>
+	<h4>Sample Apps</h4>
+	<a href="Rhosugar">SugarCRM</a><br/>
+	<a href="RhoSiebel">Siebel Field Service</a><br/>
+	<a href="Basecamp">Basecamp</a><br/>
+	<a href="Lighthouse">Lighthouse</a><br/>
+
+	<h4>Device Capabilites</h4>
+	<a href="Phonebook">Phonebook List</a><br/>
+	Platform:<%= System::get_property('platform')%><br/>
+	Your location: <geolocation>loading...</geolocation><br/>
+	Latitude: <geolatitude>loading...</geolatitude><br/>
+	Longitude: <geolongitude>loading...</geolongitude><br/>
+	<a href="Settings">Settings</a><br/>
+	<% if SyncEngine::logged_in > 0 %>
+		<a href="/Settings/User/logout">Logout</a>
+	<%else%>
+		<a href="/Settings/User/login">Login</a>
+	<%end%>
+</div>

@@ -1,22 +1,24 @@
-require 'rho/settings_controller'
+require 'rho/rhocontroller'
+require 'rhom/rhom_source'
 
-class SourceController < Rho::SettingsController
+class SourceController < Rho::RhoController
+  include Rhom
+
   def index
-    @sources = self.get_all_sources
-    render :index
-  end
-  
-  def show
-    @source = self.get_source(@params['id'])
+    @sources = RhomSource.find(:all)
+    render :action => :index
   end
   
   def edit
-    @source = self.get_source(@params['id'])
-    render :edit
+    @source = RhomSource.find(@params['id'])
+    render :action => :edit
   end
   
   def update
-    self.update_source(@params['source'], @params['id'])
-    redirect :index
+    @source = RhomSource.find(@params['id'])
+    
+    @source.update_attributes(@params['source'])
+    
+    redirect :action => :index
   end
 end

@@ -67,6 +67,7 @@ struct headers {
 	struct parsed_header	accept_encoding; /* Accept-Encoding */
 	struct parsed_header	accept_language; /* Accept-Language */
 	struct parsed_header	host;		/* Host */
+	struct parsed_header	x_requested_with;	/* X-Requested-With */
 };
     
     

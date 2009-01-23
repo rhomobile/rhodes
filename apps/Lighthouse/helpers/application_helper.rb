@@ -10,4 +10,16 @@ module ApplicationHelper
   def resolved?(ticket)
     ticket.state == "resolved"
   end
+  
+  def display_blanks(value)
+    if blank?(value)
+      "---"
+    else
+      value
+    end
+  end
+  
+  def blank?(value)
+    value.nil? || value == "" || value.length==0
+  end
 end

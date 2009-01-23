@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.rho.sync;
+package rhomobile.sync;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,13 +24,15 @@ import java.io.OutputStream;
 
 //import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-import com.rho.NetworkAccess;
+import rhomobile.NetworkAccess;
 
 /**
  * The Class SyncManager.
  */
 public class SyncManager {
 
+	private static HttpConnection connection = null;
+	
 	/**
 	 * Fetch remote data.
 	 * 
@@ -42,15 +44,16 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String fetchRemoteData(String url, String session) throws IOException {
+	public static String fetchRemoteData(String url, String session, boolean checkSession) 
+			throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
-		HttpConnection connection = null;
 		int code = 0;
+		if (checkSession && (session == null || session.length() == 0)) return null;
 		try {
 			long len = 0;
 			int ch = 0;
-			//connection = (HttpConnection) Connector.open(url);
+			closeConnection();
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
@@ -73,15 +76,14 @@ public class SyncManager {
 				}
 			} else {
 				System.out.println("Error retrieving data: " + code);
+				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 				return null;
 			}
 		} finally {
 			if (is != null) {
 				is.close();
 			}
-			if (connection != null) {
-				connection.close();
-			}
+			closeConnection();
 		}
 		return buffer.toString();
 	}
@@ -99,33 +101,32 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static int pushRemoteData(String url, String data, String session)
+	public static int pushRemoteData(String url, String data, String session, boolean checkSession)
 			throws IOException {
-		HttpConnection connection = null;
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
+		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		try {
-			connection = makePostRequest(url,data,session);
+			makePostRequest(url,data,session);
 
 			int code = connection.getResponseCode();
-			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
+			if (code != HttpConnection.HTTP_OK) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
+				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 			}
 		} finally {
-			if (connection != null) {
-				connection.close();
-			}
+			closeConnection();
 		}
 
 		return success;
 	}
 	
-	public static HttpConnection makePostRequest(String url, String data, String session)
+	public static void makePostRequest(String url, String data, String session)
 			throws IOException {
 		// Performs a post to url with post body provided by data
 		OutputStream os = null;
-		HttpConnection connection = null;
 		try {
+			closeConnection();
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
@@ -139,8 +140,23 @@ public class SyncManager {
 				os.close();
 			}
 		}
-	
+	}
+
+	public static HttpConnection getConnection() {
 		return connection;
+	}
+
+	public static void closeConnection(){
+		if ( connection != null ){
+			try{
+				connection.close();
+			}catch(IOException exc){
+				System.out.println("There was an error close connection: "
+						+ exc.getMessage());
+			}
+		}
+		
+		connection = null;
 	}
 	
 }

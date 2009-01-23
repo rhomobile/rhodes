@@ -7,6 +7,8 @@ import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 //import java.io.ByteArrayInputStream;
 //import com.rho.sync.SyncEngine; 
+import rhomobile.db.PerstLiteAdapter;
+import rhomobile.sync.SyncEngine;
 
 public class RhoRuby {
 
@@ -20,8 +22,11 @@ public class RhoRuby {
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
 		
-		com.xruby.runtime.lang.RubyRuntime.init(args);
+		RubyRuntime.init(args);
 
+        PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
+        SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+        
 		mainObj = new xruby.ServeME.main();
 		receiver = mainObj.invoke();
 	}

@@ -33,7 +33,7 @@ extern "C" {
 #define UPDATE_TYPE_CREATE "createobjects"
 #define UPDATE_TYPE_DELETE "deleteobjects"
 
-#define MAX_SYNC_OBJECTS 500
+#define MAX_SYNC_OBJECTS 100000
 #define MAX_SOURCES 100
 
 /* Sync Object db codes */

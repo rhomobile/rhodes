@@ -12,8 +12,8 @@ import com.xruby.runtime.builtin.*;
 //import com.xruby.runtime.lang.util.RubyTypeFactory;
 //import com.xruby.runtime.stdlib.*;
 import com.xruby.GeneratedMethods.*; 
-import com.rho.db.PerstLiteAdapter;
-import com.rho.sync.SyncEngine;
+//import com.rho.db.PerstLiteAdapter;
+//import com.rho.sync.SyncEngine;
 import com.rho.StringScanner;
 
 public class RubyRuntime {
@@ -227,10 +227,10 @@ public class RubyRuntime {
         RubyExceptionValue_Methods.initMethods(ExceptionClass);
 
         DBAdapterClass = RubyAPI.defineClass("DbAdapter", RubyRuntime.ObjectClass);
-        PerstLiteAdapter.initMethods(DBAdapterClass);
+//        PerstLiteAdapter.initMethods(DBAdapterClass);
         
         SyncEngineClass = RubyAPI.defineClass("SyncEngine", RubyRuntime.ObjectClass);
-        SyncEngine.initMethods(SyncEngineClass);
+//        SyncEngine.initMethods(SyncEngineClass);
 
         StringScannerClass = RubyAPI.defineClass("StringScanner", RubyRuntime.ObjectClass);
         StringScanner.initMethods(StringScannerClass);

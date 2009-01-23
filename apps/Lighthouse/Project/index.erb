@@ -1,7 +1,5 @@
 <ul id="projects" title="Projects">
-<%@projects.each do |x|%>
-
-<li><%=link_to "#{x.name}", "show", x.object%></li>
-
-<%end%>
+	<% @projects.each do |x| %>
+		<li><a href="<%= "/Lighthouse/Ticket/#{x.object}/index" %>"><%= x.name %></a></li>
+	<% end %>
 </ul>
