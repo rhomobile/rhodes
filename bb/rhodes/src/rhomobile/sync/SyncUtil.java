@@ -95,8 +95,11 @@ public class SyncUtil {
 	 */
 	public static int fetchRemoteChanges(SyncSource source, String client_id) {
 		int count = 0;
+		int success=0, deleted=0, inserted=0;
+		long start=0, duration=0;
 		String data = null;
 		try {
+			start = System.currentTimeMillis();
 			String session = get_session(source);
 			data = SyncManager.fetchRemoteData(source.get_sourceUrl()
 					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session, true);
@@ -110,27 +113,46 @@ public class SyncUtil {
 			count = list.size();
 			String type;
 			if (count > 0) {
-//				SyncObject.deleteFromDatabaseBySource(source.get_sourceId());
 				for (int i = 0; i < count; i++) {
 				  type = ((SyncObject)list.get(i)).getDbOperation();
 				  if (type != null) {
 				    if (type.equalsIgnoreCase("insert")) {
 				    	((SyncObject)list.get(i)).insertIntoDatabase();
+				    	inserted++;
 				    } else if (type.equalsIgnoreCase("delete")) {
 				    	((SyncObject)list.get(i)).deleteFromDatabase();
+				    	deleted++;
 				    }
 				  }
-					
-					// Perform the insert on each record
-		            //int success = ((SyncObject) list.get(i)).dehydrate();
-					//if (success != SyncConstants.SYNC_OBJECT_SUCCESS) {
-					//	System.out
-					//			.println("There was an error saving records.");
-					//}
 				}
 			}
+			success = 1;
 		}
+		duration = (System.currentTimeMillis() - start) / 1000L;
+		updateSourceSyncStatus(source, inserted, deleted, duration, success);
 		return count;
+	}
+
+	/**
+	 * Update the sync source status after each sync run
+	 * @param source
+	 * @param inserted
+	 * @param deleted
+	 * @param duration
+	 * @param success
+	 */
+	private static void updateSourceSyncStatus(SyncSource source, int inserted,
+			int deleted, long duration, int success) {
+		RubyHash values = SyncUtil.createHash();
+		long now = System.currentTimeMillis() / 1000;
+		values.add(PerstLiteAdapter.Table_sources.LAST_UPDATED, createInteger(now));
+		values.add(PerstLiteAdapter.Table_sources.LAST_INSERTED_SIZE, createInteger(inserted));
+		values.add(PerstLiteAdapter.Table_sources.LAST_DELETED_SIZE, createInteger(deleted));
+		values.add(PerstLiteAdapter.Table_sources.LAST_SYNC_DURATION, createInteger(duration));
+		values.add(PerstLiteAdapter.Table_sources.LAST_SYNC_SUCCESS, createInteger(success));
+		RubyHash where = SyncUtil.createHash();
+		where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source.get_sourceId()));
+		adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
 	}
 
 	/**
