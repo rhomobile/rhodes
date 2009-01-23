@@ -3,7 +3,7 @@ module Rhodes
     VERSION = '0.2.1'
   end
   unless defined? Rhodes::DBVERSION
-    DBVERSION = '0.2.1'
+    DBVERSION = '0.2.2'
   end
   
 end
