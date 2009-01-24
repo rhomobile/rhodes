@@ -1,0 +1,96 @@
+<form title="Edit SugarAccount" 
+	  class="panel" 
+	  id="SugarAccount_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarAccount.object%>"/>
+		
+		  <div class="row">
+			  <label>name: </label>
+			  <input type="text" name="SugarAccount[name]" value="<%=@SugarAccount.name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>industry: </label>
+			  <input type="text" name="SugarAccount[industry]" value="<%=@SugarAccount.industry%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="SugarAccount[description]" value="<%=@SugarAccount.description%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>account_type: </label>
+			  <input type="text" name="SugarAccount[account_type]" value="<%=@SugarAccount.account_type%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>industry: </label>
+			  <input type="text" name="SugarAccount[industry]" value="<%=@SugarAccount.industry%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>annual_revenue: </label>
+			  <input type="text" name="SugarAccount[annual_revenue]" value="<%=@SugarAccount.annual_revenue%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_fax: </label>
+			  <input type="text" name="SugarAccount[phone_fax]" value="<%=@SugarAccount.phone_fax%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>billing_address_street: </label>
+			  <input type="text" name="SugarAccount[billing_address_street]" value="<%=@SugarAccount.billing_address_street%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>billing_address_city: </label>
+			  <input type="text" name="SugarAccount[billing_address_city]" value="<%=@SugarAccount.billing_address_city%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>billing_address_state: </label>
+			  <input type="text" name="SugarAccount[billing_address_state]" value="<%=@SugarAccount.billing_address_state%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>billing_address_postalcode: </label>
+			  <input type="text" name="SugarAccount[billing_address_postalcode]" value="<%=@SugarAccount.billing_address_postalcode%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>billing_address_country: </label>
+			  <input type="text" name="SugarAccount[billing_address_country]" value="<%=@SugarAccount.billing_address_country%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>rating: </label>
+			  <input type="text" name="SugarAccount[rating]" value="<%=@SugarAccount.rating%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>website: </label>
+			  <input type="text" name="SugarAccount[website]" value="<%=@SugarAccount.website%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_office: </label>
+			  <input type="text" name="SugarAccount[phone_office]" value="<%=@SugarAccount.phone_office%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>email1: </label>
+			  <input type="text" name="SugarAccount[email1]" value="<%=@SugarAccount.email1%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @SugarAccount.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>

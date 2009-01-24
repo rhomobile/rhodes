@@ -1,0 +1,186 @@
+<form title="New Lead" 
+	  class="panel"
+	  id="SugarLead_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarLead.object%>"/>
+		
+		  <div class="row">
+			  <label>date_entered: </label>
+			  <input type="text" name="SugarLead[date_entered]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>date_modified: </label>
+			  <input type="text" name="SugarLead[date_modified]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>modified_by_name: </label>
+			  <input type="text" name="SugarLead[modified_by_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>created_by_name: </label>
+			  <input type="text" name="SugarLead[created_by_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="SugarLead[description]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>assigned_user_name: </label>
+			  <input type="text" name="SugarLead[assigned_user_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>salutation: </label>
+			  <input type="text" name="SugarLead[salutation]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>first_name: </label>
+			  <input type="text" name="SugarLead[first_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>last_name: </label>
+			  <input type="text" name="SugarLead[last_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>title: </label>
+			  <input type="text" name="SugarLead[title]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>department: </label>
+			  <input type="text" name="SugarLead[department]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>do_not_call: </label>
+			  <input type="text" name="SugarLead[do_not_call]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_home: </label>
+			  <input type="text" name="SugarLead[phone_home]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_mobile: </label>
+			  <input type="text" name="SugarLead[phone_mobile]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_work: </label>
+			  <input type="text" name="SugarLead[phone_work]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_other: </label>
+			  <input type="text" name="SugarLead[phone_other]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_fax: </label>
+			  <input type="text" name="SugarLead[phone_fax]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>email1: </label>
+			  <input type="text" name="SugarLead[email1]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>email2: </label>
+			  <input type="text" name="SugarLead[email2]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>primary_address_street: </label>
+			  <input type="text" name="SugarLead[primary_address_street]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>primary_address_city: </label>
+			  <input type="text" name="SugarLead[primary_address_city]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>primary_address_state: </label>
+			  <input type="text" name="SugarLead[primary_address_state]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>primary_address_postalcode: </label>
+			  <input type="text" name="SugarLead[primary_address_postalcode]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>primary_address_country: </label>
+			  <input type="text" name="SugarLead[primary_address_country]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>assistant: </label>
+			  <input type="text" name="SugarLead[assistant]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>assistant_phone: </label>
+			  <input type="text" name="SugarLead[assistant_phone]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>refered_by: </label>
+			  <input type="text" name="SugarLead[refered_by]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>lead_source: </label>
+			  <input type="text" name="SugarLead[lead_source]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>lead_source_description: </label>
+			  <input type="text" name="SugarLead[lead_source_description]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+			  <input type="text" name="SugarLead[status]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status_description: </label>
+			  <input type="text" name="SugarLead[status_description]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>report_to_name: </label>
+			  <input type="text" name="SugarLead[report_to_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>account_name: </label>
+			  <input type="text" name="SugarLead[account_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>opportunity_name: </label>
+			  <input type="text" name="SugarLead[opportunity_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>opportunity_amount: </label>
+			  <input type="text" name="SugarLead[opportunity_amount]"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>
