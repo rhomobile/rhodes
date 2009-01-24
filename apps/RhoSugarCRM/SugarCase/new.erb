@@ -1,0 +1,66 @@
+<form title="New SugarCase" 
+	  class="panel"
+	  id="SugarCase_new_form" 
+	  method="POST" 
+	  action="<%=url_for('create')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarCase.object%>"/>
+		
+		  <div class="row">
+			  <label>name: </label>
+			  <input type="text" name="SugarCase[name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>date_entered: </label>
+			  <input type="text" name="SugarCase[date_entered]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>created_by_name: </label>
+			  <input type="text" name="SugarCase[created_by_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="SugarCase[description]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>assigned_user_name: </label>
+			  <input type="text" name="SugarCase[assigned_user_name]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>case_number: </label>
+			  <input type="text" name="SugarCase[case_number]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>type: </label>
+			  <input type="text" name="SugarCase[type]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+			  <input type="text" name="SugarCase[status]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>priority: </label>
+			  <input type="text" name="SugarCase[priority]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>resolution: </label>
+			  <input type="text" name="SugarCase[resolution]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>account_name: </label>
+			  <input type="text" name="SugarCase[account_name]"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>

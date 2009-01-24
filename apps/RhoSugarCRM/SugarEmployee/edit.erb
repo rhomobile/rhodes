@@ -1,0 +1,126 @@
+<form title="Edit SugarEmployee" 
+	  class="panel" 
+	  id="SugarEmployee_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"/>
+		
+		  <div class="row">
+			  <label>user_name: </label>
+			  <input type="text" name="SugarEmployee[user_name]" value="<%=@SugarEmployee.user_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>first_name: </label>
+			  <input type="text" name="SugarEmployee[first_name]" value="<%=@SugarEmployee.first_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>last_name: </label>
+			  <input type="text" name="SugarEmployee[last_name]" value="<%=@SugarEmployee.last_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>reports_to_name: </label>
+			  <input type="text" name="SugarEmployee[reports_to_name]" value="<%=@SugarEmployee.reports_to_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>description: </label>
+			  <input type="text" name="SugarEmployee[description]" value="<%=@SugarEmployee.description%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>title: </label>
+			  <input type="text" name="SugarEmployee[title]" value="<%=@SugarEmployee.title%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>department: </label>
+			  <input type="text" name="SugarEmployee[department]" value="<%=@SugarEmployee.department%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_home: </label>
+			  <input type="text" name="SugarEmployee[phone_home]" value="<%=@SugarEmployee.phone_home%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_mobile: </label>
+			  <input type="text" name="SugarEmployee[phone_mobile]" value="<%=@SugarEmployee.phone_mobile%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_work: </label>
+			  <input type="text" name="SugarEmployee[phone_work]" value="<%=@SugarEmployee.phone_work%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_other: </label>
+			  <input type="text" name="SugarEmployee[phone_other]" value="<%=@SugarEmployee.phone_other%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>phone_fax: </label>
+			  <input type="text" name="SugarEmployee[phone_fax]" value="<%=@SugarEmployee.phone_fax%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+			  <input type="text" name="SugarEmployee[status]" value="<%=@SugarEmployee.status%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>address_street: </label>
+			  <input type="text" name="SugarEmployee[address_street]" value="<%=@SugarEmployee.address_street%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>address_city: </label>
+			  <input type="text" name="SugarEmployee[address_city]" value="<%=@SugarEmployee.address_city%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>address_state: </label>
+			  <input type="text" name="SugarEmployee[address_state]" value="<%=@SugarEmployee.address_state%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>address_country: </label>
+			  <input type="text" name="SugarEmployee[address_country]" value="<%=@SugarEmployee.address_country%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>address_postalcode: </label>
+			  <input type="text" name="SugarEmployee[address_postalcode]" value="<%=@SugarEmployee.address_postalcode%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>employee_status: </label>
+			  <input type="text" name="SugarEmployee[employee_status]" value="<%=@SugarEmployee.employee_status%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>messenger_id: </label>
+			  <input type="text" name="SugarEmployee[messenger_id]" value="<%=@SugarEmployee.messenger_id%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>messenger_type: </label>
+			  <input type="text" name="SugarEmployee[messenger_type]" value="<%=@SugarEmployee.messenger_type%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>email1: </label>
+			  <input type="text" name="SugarEmployee[email1]" value="<%=@SugarEmployee.email1%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @SugarEmployee.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>

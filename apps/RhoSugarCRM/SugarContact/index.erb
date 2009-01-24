@@ -1,0 +1,8 @@
+<ul id="SugarContacts" title="Contacts">
+<%@SugarContacts.each do |x|%>
+
+<li><%=link_to "#{x.date_modified}", "edit", x.object%></li>
+
+<%end%>
+<li><font color="blue"><%=link_to "New Contact", "new"%></font></li>
+</ul>
