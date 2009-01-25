@@ -11,6 +11,24 @@ class Date
 
   #SECONDS_IN_DAY = 60*60*24
   #SECONDS_IN_DAY         = Rational(1, 86400)
+  
+#From date.rb:
+  # Full month names, in English.  Months count from 1 to 12; a
+  # month's numerical representation indexed into this array
+  # gives the name of that month (hence the first element is nil).
+  MONTHNAMES = [nil] + %w(January February March April May June July
+			  August September October November December)
+
+  # Full names of days of the week, in English.  Days of the week
+  # count from 0 to 6 (except in the commercial week); a day's numerical
+  # representation indexed into this array gives the name of that day.
+  DAYNAMES = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
+
+  # Abbreviated month names, in English.
+  ABBR_MONTHNAMES = [nil] + %w(Jan Feb Mar Apr May Jun
+			       Jul Aug Sep Oct Nov Dec)
+  # Abbreviated day names, in English.
+  ABBR_DAYNAMES = %w(Sun Mon Tue Wed Thu Fri Sat)
 
   module Format # :nodoc:
 
