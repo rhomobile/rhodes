@@ -1,28 +1,13 @@
-require 'rationalME'
+require 'date/format'
 
 class Time
 
-  def to_time() getlocal end
-
-  def to_datetime
-    DateTime.new(self)
-  end
-
   def strftime(fmt='%F')
-    to_datetime().strftime(fmt);
+    DateTimeME.new(self).strftime(fmt);
   end
 end
 
-class Date
-  # Full month names, in English.  Months count from 1 to 12; a
-  # month's numerical representation indexed into this array
-  # gives the name of that month (hence the first element is nil).
-  MONTHNAMES = [nil] + %w(January February March April May June July
-			  August September October November December)
-
-end
-
-class DateTime < Date
+class DateTimeME < Date
 
   def wday() @m_time.wday end
   def mon() @m_time.mon end

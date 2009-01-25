@@ -238,20 +238,20 @@ class Date
   # Full month names, in English.  Months count from 1 to 12; a
   # month's numerical representation indexed into this array
   # gives the name of that month (hence the first element is nil).
-  MONTHNAMES = [nil] + %w(January February March April May June July
-			  August September October November December)
+  #MONTHNAMES = [nil] + %w(January February March April May June July
+	#		  August September October November December)
 
   # Full names of days of the week, in English.  Days of the week
   # count from 0 to 6 (except in the commercial week); a day's numerical
   # representation indexed into this array gives the name of that day.
-  DAYNAMES = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
+  #DAYNAMES = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
 
   # Abbreviated month names, in English.
-  ABBR_MONTHNAMES = [nil] + %w(Jan Feb Mar Apr May Jun
-			       Jul Aug Sep Oct Nov Dec)
+  #ABBR_MONTHNAMES = [nil] + %w(Jan Feb Mar Apr May Jun
+	#		       Jul Aug Sep Oct Nov Dec)
 
   # Abbreviated day names, in English.
-  ABBR_DAYNAMES = %w(Sun Mon Tue Wed Thu Fri Sat)
+  #ABBR_DAYNAMES = %w(Sun Mon Tue Wed Thu Fri Sat)
 
   [MONTHNAMES, DAYNAMES, ABBR_MONTHNAMES, ABBR_DAYNAMES].each do |xs|
     xs.each{|x| x.freeze unless x.nil?}.freeze
