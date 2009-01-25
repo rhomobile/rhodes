@@ -1738,7 +1738,7 @@ class Time
   def to_time() getlocal end
 
   def to_date
-    jd = Date.__send__(:civil_to_jd, year, mon, mday, Date::ITALY)
+    jd = Date.__send__(:civil_to_jd, year(), mon(), mday(), Date::ITALY)
     Date.new!(Date.__send__(:jd_to_ajd, jd, 0, 0), 0, Date::ITALY)
   end
 
@@ -1755,7 +1755,7 @@ end
 
 class Date
 
-  def to_time() Time.local(year, mon, mday) end
+  def to_time() Time.local(year(), mon(), mday()) end
   def to_date() self end
   def to_datetime() DateTime.new!(jd_to_ajd(jd, 0, 0), @of, @sg) end
 
@@ -1778,7 +1778,7 @@ class DateTime < Date
   def to_time
     d = new_offset(0)
     d.instance_eval do
-      Time.utc(year, mon, mday, hour, min, sec + sec_fraction)
+      Time.utc(year(), mon(), mday(), hour(), min(), sec + sec_fraction)
     end.
 	getlocal
   end
