@@ -20,7 +20,11 @@ module Rho
 			def create!(properties)
 				pb = Phonebook::openPhonebook
 				unless pb.nil?
-					record = Phonebook::createRecord
+if defined? RHO_ME
+					record = Phonebook::createRecord(pb)
+else
+					record = Phonebook::createRecord					
+end					
 					if record.nil?
 						puts "Can't find record " + properties['id']
 					else
