@@ -8,6 +8,23 @@ class Test
 end
 end
 
+SEE ALSO: date\format.rb:
+class Date
+
+  #SECONDS_IN_DAY = 60*60*24
+  #SECONDS_IN_DAY         = Rational(1, 86400)
+
+  module Format # :nodoc:
+  ...
+  end
+
+NOT WORKING  
+1249:       if Format::ZONES.include?(zone)
+WORKING:
+1249:       if Date::Format::ZONES.include?(zone)
+end
+
+
 3. Compiler crash:
 top, parent = T.new.m, nil 
 
