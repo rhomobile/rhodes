@@ -59,9 +59,9 @@ module Kernel
 end
 
 class Object
-    def to_a
-        [self]
-    end
+#    def to_a
+#        [self]
+#    end
 	
     alias type :class 
     
@@ -75,6 +75,14 @@ module Enumerable
         i = 0;
         each {|x| yield x, i; i = i + 1}
     end
+	
+    def to_a
+        arr = []
+        each{|obj| arr <<obj}
+        return arr
+    end
+    
+    alias entries :to_a
 	
     def inject(*args)
         if args.size == 0 then
@@ -128,9 +136,9 @@ class Array
       a
     end
 	
-    def to_a
-        self
-    end
+#    def to_a
+#        self
+#    end
 	
     def join(sepString="")
         return to_s if sepString.nil? || sepString == ""
@@ -215,6 +223,17 @@ class Hash
     
     alias each_pair each
     
+    def to_a
+        res = []
+        each_pair do |k, v|
+          item = []
+          item << k
+          item << v
+          res << item
+        end
+        res
+    end
+
     def inspect
         r = '{'
         is_first = true

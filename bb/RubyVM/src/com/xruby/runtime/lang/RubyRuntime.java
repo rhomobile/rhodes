@@ -84,7 +84,8 @@ public class RubyRuntime {
     public static RubyClass DBAdapterClass;
     public static RubyClass SyncEngineClass;
     public static RubyClass StringScannerClass;
-    
+    public static RubyClass PhonebookClass;
+    public static RubyClass PBRecordClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -234,6 +235,10 @@ public class RubyRuntime {
 
         StringScannerClass = RubyAPI.defineClass("StringScanner", RubyRuntime.ObjectClass);
         StringScanner.initMethods(StringScannerClass);
+
+        PhonebookClass = RubyAPI.defineClass("Phonebook", RubyRuntime.ObjectClass);
+        PBRecordClass = RubyAPI.defineClass("PBRecord", RubyRuntime.ObjectClass);
+//      RhoPhonebook.initMethods(PhonebookClass);
         
 //
         /*RubyTypeFactory.getClass(RubyObject.class);
