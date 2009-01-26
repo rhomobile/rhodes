@@ -1,4 +1,4 @@
-<form title="Edit SugarContact" 
+<form title="Edit Contact" 
 	  class="panel" 
 	  id="SugarContact_edit_form" 
 	  method="POST" 
@@ -6,172 +6,194 @@
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarContact.object%>"/>
 		
-		  <div class="row">
-			  <label>date_modified: </label>
-			  <input type="text" name="SugarContact[date_modified]" value="<%=@SugarContact.date_modified%>"/>
+		<div class="row">
+		  <label>Salutation</label>
+		  <input type="text" name="SugarContact[salutation]" value="<%=@SugarContact.salutation%>"/>
+	  </div>
+	
+		<div class="row">
+		  <label>First Name</label>
+		  <input type="text" name="SugarContact[first_name]" value="<%=@SugarContact.first_name%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Last Name</label>
+		  <input type="text" name="SugarContact[last_name]" value="<%=@SugarContact.last_name%>"/>
+	  </div>
+	
+		 <div class="row">
+			  <label>Account Name</label>
+			  <input type="text" name="SugarContact[account_name]" value="<%=@SugarContact.account_name%>"/>
 		  </div>
 		
+	  <div class="row">
+		  <label>Lead Source</label>
+		  <input type="text" name="SugarContact[lead_source]" value="<%=@SugarContact.lead_source%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Campaign</label>
+		  <input type="text" name="SugarContact[campaign_name]" value="<%=@SugarContact.campaign_name%>"/>
+	  </div>
+		
+	  <div class="row">
+		  <label>Title</label>
+		  <input type="text" name="SugarContact[title]" value="<%=@SugarContact.title%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Department</label>
+		  <input type="text" name="SugarContact[department]" value="<%=@SugarContact.department%>"/>
+	  </div> 
+	
+	  <div class="row">
+		  <label>Reports To</label>
+		  <input type="text" name="SugarContact[report_to_name]" value="<%=@SugarContact.report_to_name%>"/>
+	  </div>
+
+
+	  <div class="row">
+		  <label>Do Not Call</label>
+		  <input type="checkbox" name="SugarContact[do_not_call]" value="<%=@SugarContact.do_not_call%>"/>
+	  </div>
+		
+		<div class="row">
+		  <label>Assigned to</label>
+		  <input type="text" name="SugarContact[assigned_user_name]" value="<%=@SugarContact.assigned_user_name%>"/>
+	  </div>
+	
 		  <div class="row">
-			  <label>description: </label>
+			  <label>Description</label>
 			  <input type="text" name="SugarContact[description]" value="<%=@SugarContact.description%>"/>
 		  </div>
-		
+	
+
 		  <div class="row">
-			  <label>created_by_name: </label>
-			  <input type="text" name="SugarContact[created_by_name]" value="<%=@SugarContact.created_by_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>assigned_user_name: </label>
-			  <input type="text" name="SugarContact[assigned_user_name]" value="<%=@SugarContact.assigned_user_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>salutation: </label>
-			  <input type="text" name="SugarContact[salutation]" value="<%=@SugarContact.salutation%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>first_name: </label>
-			  <input type="text" name="SugarContact[first_name]" value="<%=@SugarContact.first_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>last_name: </label>
-			  <input type="text" name="SugarContact[last_name]" value="<%=@SugarContact.last_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>title: </label>
-			  <input type="text" name="SugarContact[title]" value="<%=@SugarContact.title%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>department: </label>
-			  <input type="text" name="SugarContact[department]" value="<%=@SugarContact.department%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>do_not_call: </label>
-			  <input type="text" name="SugarContact[do_not_call]" value="<%=@SugarContact.do_not_call%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_home: </label>
-			  <input type="text" name="SugarContact[phone_home]" value="<%=@SugarContact.phone_home%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_mobile: </label>
-			  <input type="text" name="SugarContact[phone_mobile]" value="<%=@SugarContact.phone_mobile%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_work: </label>
-			  <input type="text" name="SugarContact[phone_work]" value="<%=@SugarContact.phone_work%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_other: </label>
-			  <input type="text" name="SugarContact[phone_other]" value="<%=@SugarContact.phone_other%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_fax: </label>
-			  <input type="text" name="SugarContact[phone_fax]" value="<%=@SugarContact.phone_fax%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>email1: </label>
+			  <label>Email #1</label>
 			  <input type="text" name="SugarContact[email1]" value="<%=@SugarContact.email1%>"/>
 		  </div>
-		
+
 		  <div class="row">
-			  <label>email2: </label>
+			  <label>Email #2</label>
 			  <input type="text" name="SugarContact[email2]" value="<%=@SugarContact.email2%>"/>
 		  </div>
-		
+			
+
+			</fieldset>
+	
+			
+		<h2>Primary Address</h2>	
+		<fieldset>
 		  <div class="row">
-			  <label>primary_address_street: </label>
+			  <label>Street</label>
 			  <input type="text" name="SugarContact[primary_address_street]" value="<%=@SugarContact.primary_address_street%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>primary_address_city: </label>
+			  <label>City</label>
 			  <input type="text" name="SugarContact[primary_address_city]" value="<%=@SugarContact.primary_address_city%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>primary_address_state: </label>
+			  <label>State</label>
 			  <input type="text" name="SugarContact[primary_address_state]" value="<%=@SugarContact.primary_address_state%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>primary_address_postalcode: </label>
+			  <label>Postal code</label>
 			  <input type="text" name="SugarContact[primary_address_postalcode]" value="<%=@SugarContact.primary_address_postalcode%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>primary_address_country: </label>
+			  <label>Country</label>
 			  <input type="text" name="SugarContact[primary_address_country]" value="<%=@SugarContact.primary_address_country%>"/>
 		  </div>
+		</fieldset>
 		
+		<fieldset>
+			  <div class="row">
+				  <label>Office phone</label>
+				  <input type="text" name="SugarContact[phone_work]" value="<%=@SugarContact.phone_work%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Mobile</label>
+				  <input type="text" name="SugarContact[phone_mobile]" value="<%=@SugarContact.phone_mobile%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Home</label>
+				  <input type="text" name="SugarContact[phone_home]" value="<%=@SugarContact.phone_home%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Other phone</label>
+				  <input type="text" name="SugarContact[phone_other]" value="<%=@SugarContact.phone_other%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Fax</label>
+				  <input type="text" name="SugarContact[phone_fax]" value="<%=@SugarContact.phone_fax%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Birthdate</label>
+				  <input type="text" name="SugarContact[birthdate]" value="<%=@SugarContact.birthdate%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Assistant</label>
+				  <input type="text" name="SugarContact[assistant]" value="<%=@SugarContact.assistant%>"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Assistant Phone</label>
+				  <input type="text" name="SugarContact[assistant_phone]" value="<%=@SugarContact.assistant_phone%>"/>
+			  </div>
+		</fieldset>
+		
+
+		<fieldset>
 		  <div class="row">
-			  <label>alt_address_street: </label>
-			  <input type="text" name="SugarContact[alt_address_street]" value="<%=@SugarContact.alt_address_street%>"/>
+			  <label>Date Modified</label>
+			  <input type="text" name="SugarContact[date_modified]" value="<%=@SugarContact.date_modified%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>alt_address_city: </label>
-			  <input type="text" name="SugarContact[alt_address_city]" value="<%=@SugarContact.alt_address_city%>"/>
+			  <label>Date Created</label>
+			  <%=@SugarContact.date_entered%>
 		  </div>
-		
-		  <div class="row">
-			  <label>alt_address_state: </label>
-			  <input type="text" name="SugarContact[alt_address_state]" value="<%=@SugarContact.alt_address_state%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>alt_address_postalcode: </label>
-			  <input type="text" name="SugarContact[alt_address_postalcode]" value="<%=@SugarContact.alt_address_postalcode%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>alt_address_country: </label>
-			  <input type="text" name="SugarContact[alt_address_country]" value="<%=@SugarContact.alt_address_country%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>assistant: </label>
-			  <input type="text" name="SugarContact[assistant]" value="<%=@SugarContact.assistant%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>assistant_phone: </label>
-			  <input type="text" name="SugarContact[assistant_phone]" value="<%=@SugarContact.assistant_phone%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>lead_source: </label>
-			  <input type="text" name="SugarContact[lead_source]" value="<%=@SugarContact.lead_source%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>account_name: </label>
-			  <input type="text" name="SugarContact[account_name]" value="<%=@SugarContact.account_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>report_to_name: </label>
-			  <input type="text" name="SugarContact[report_to_name]" value="<%=@SugarContact.report_to_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>birthdate: </label>
-			  <input type="text" name="SugarContact[birthdate]" value="<%=@SugarContact.birthdate%>"/>
-		  </div>
-		
+		</fieldset>
+	
+		<h2>Other Address</h2>
+		<fieldset>
+	  <div class="row">
+		  <label>Street</label>
+		  <input type="text" name="SugarContact[alt_address_street]" value="<%=@SugarContact.alt_address_street%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>City</label>
+		  <input type="text" name="SugarContact[alt_address_city]" value="<%=@SugarContact.alt_address_city%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>State</label>
+		  <input type="text" name="SugarContact[alt_address_state]" value="<%=@SugarContact.alt_address_state%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Postal code</label>
+		  <input type="text" name="SugarContact[alt_address_postalcode]" value="<%=@SugarContact.alt_address_postalcode%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Country</label>
+		  <input type="text" name="SugarContact[alt_address_country]" value="<%=@SugarContact.alt_address_country%>"/>
+	  </div>
 	</fieldset>
+	
+	
 	<input type="submit" value="Update"/>
 	<p align="center">
 		<a href="<%=url_for('delete', @SugarContact.object)%>">
