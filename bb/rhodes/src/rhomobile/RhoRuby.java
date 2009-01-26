@@ -26,6 +26,7 @@ public class RhoRuby {
 
         PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
         SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+        RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
         
 		mainObj = new xruby.ServeME.main();
 		receiver = mainObj.invoke();
