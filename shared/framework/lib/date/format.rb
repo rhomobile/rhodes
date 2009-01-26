@@ -1,12 +1,34 @@
 # format.rb: Written by Tadayoshi Funaba 1999-2008
 # $Id: format.rb,v 2.43 2008-01-17 20:16:31+09 tadf Exp $
 
+if defined? RHO_ME
+	require 'rationalME'
+end
+
 require 'rational'
 
 class Date
 
   #SECONDS_IN_DAY = 60*60*24
   #SECONDS_IN_DAY         = Rational(1, 86400)
+  
+#From date.rb:
+  # Full month names, in English.  Months count from 1 to 12; a
+  # month's numerical representation indexed into this array
+  # gives the name of that month (hence the first element is nil).
+  MONTHNAMES = [nil] + %w(January February March April May June July
+			  August September October November December)
+
+  # Full names of days of the week, in English.  Days of the week
+  # count from 0 to 6 (except in the commercial week); a day's numerical
+  # representation indexed into this array gives the name of that day.
+  DAYNAMES = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
+
+  # Abbreviated month names, in English.
+  ABBR_MONTHNAMES = [nil] + %w(Jan Feb Mar Apr May Jun
+			       Jul Aug Sep Oct Nov Dec)
+  # Abbreviated day names, in English.
+  ABBR_DAYNAMES = %w(Sun Mon Tue Wed Thu Fri Sat)
 
   module Format # :nodoc:
 
@@ -245,28 +267,28 @@ class Date
       when 'C', 'EC'; emit_sn((year / 100).floor, 2, f)
       when 'c', 'Ec'; emit_a(strftime('%a %b %e %H:%M:%S %Y'), 0, f)
       when 'D'; emit_a(strftime('%m/%d/%y'), 0, f)
-      when 'd', 'Od'; emit_n(mday, 2, f)
-      when 'e', 'Oe'; emit_a(mday, 2, f)
+      when 'd', 'Od'; emit_n(mday(), 2, f)
+      when 'e', 'Oe'; emit_a(mday(), 2, f)
       when 'F'
 	if m == '%F'
 	  format('%.4d-%02d-%02d', year(), mon(), mday()) # 4p
 	else
 	  emit_a(strftime('%Y-%m-%d'), 0, f)
 	end
-      when 'G'; emit_sn(cwyear, 4, f)
+      when 'G'; emit_sn(cwyear(), 4, f)
       when 'g'; emit_n(cwyear % 100, 2, f)
-      when 'H', 'OH'; emit_n(hour, 2, f)
+      when 'H', 'OH'; emit_n(hour(), 2, f)
       when 'h'; emit_ad(strftime('%b'), 0, f)
       when 'I', 'OI'; emit_n((hour % 12).nonzero? || 12, 2, f)
-      when 'j'; emit_n(yday, 3, f)
-      when 'k'; emit_a(hour, 2, f)
+      when 'j'; emit_n(yday(), 3, f)
+      when 'k'; emit_a(hour(), 2, f)
       when 'L'
 	w = f[:w] || 3
 	u = 10**w
 	emit_n((sec_fraction * u).floor, w, f)
       when 'l'; emit_a((hour % 12).nonzero? || 12, 2, f)
-      when 'M', 'OM'; emit_n(min, 2, f)
-      when 'm', 'Om'; emit_n(mon, 2, f)
+      when 'M', 'OM'; emit_n(min(), 2, f)
+      when 'm', 'Om'; emit_n(mon(), 2, f)
       when 'N'
 	w = f[:w] || 9
 	u = 10**w
@@ -279,7 +301,7 @@ class Date
 	emit_sn(s, 1, f)
       when 'R'; emit_a(strftime('%H:%M'), 0, f)
       when 'r'; emit_a(strftime('%I:%M:%S %p'), 0, f)
-      when 'S', 'OS'; emit_n(sec, 2, f)
+      when 'S', 'OS'; emit_n(sec(), 2, f)
       when 's'
 	s = ((ajd - UNIX_EPOCH_IN_AJD) / Rational(1, 86400)).round
 	emit_sn(s, 1, f)
@@ -292,10 +314,10 @@ class Date
       when 't'; emit_a("\t", 0, f)
       when 'U', 'W', 'OU', 'OW'
 	emit_n(if c[-1,1] == 'U' then wnum0 else wnum1 end, 2, f)
-      when 'u', 'Ou'; emit_n(cwday, 1, f)
-      when 'V', 'OV'; emit_n(cweek, 2, f)
+      when 'u', 'Ou'; emit_n(cwday(), 1, f)
+      when 'V', 'OV'; emit_n(cweek(), 2, f)
       when 'v'; emit_a(strftime('%e-%b-%Y'), 0, f)
-      when 'w', 'Ow'; emit_n(wday, 1, f)
+      when 'w', 'Ow'; emit_n(wday(), 1, f)
       when 'X', 'EX'; emit_a(strftime('%H:%M:%S'), 0, f)
       when 'x', 'Ex'; emit_a(strftime('%m/%d/%y'), 0, f)
       when 'Y', 'EY'; emit_sn(year(), 4, f)
