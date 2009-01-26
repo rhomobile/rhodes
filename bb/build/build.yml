@@ -21,7 +21,8 @@ build:
   rubypath: ../../win32/target/compiler/RhoRuby.exe
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
-  excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
+  rubyVMdir: ../RubyVM
+  excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb,**/rationalME.rb,**/format.rb"
   compileERB: compileERB.rb
   bblib: lib
   tmpdir: %bindir%/tmp
