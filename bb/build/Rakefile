@@ -23,6 +23,26 @@ class Hash
   end
 end
 
+def get_absolute(path)
+  currentdir = pwd
+  
+  path = currentdir + "/" + path
+
+  patharray = path.split(/\//)
+
+  while idx = patharray.index("..") do
+    if idx == 0
+      raise "error getting absolute"
+    end
+   
+    if patharray[idx-1] != ".."
+      patharray.delete_at(idx)
+      patharray.delete_at(idx-1)
+    end
+  end
+  return patharray.join("/")  
+end	
+
 def config_parse(conf)
   if conf.is_a?(Array)
     conf.collect! do |x|
@@ -52,15 +72,39 @@ def config_parse(conf)
   end
 end
 
-def run(command, args)
+def run(command, args, wd=nil)
   argstr = " "
+  currentdir = ""
+
   args.each do |x|
     x = x.to_s
-    x.gsub!(/"/,"\\\"")
-    argstr += "\"" + x + "\" "
+#    x.gsub!(/"/,"\\\"")
+    argstr +=  x + " "
+    #argstr += "\"" + x + "\" "
   end
- 
-  return `#{command} #{argstr}`
+
+  if not wd.nil?
+    currentdir = pwd()
+    chdir wd  
+  end
+puts "PWD:" + pwd
+puts "CMD:" + command
+puts "ARGS:" + argstr
+  
+  command = command + " " + argstr
+  #retval =  `#{command} #{argstr}`
+  retval = %x[#{command}]
+
+ # bb = IO.popen(command);
+ # b = bb.readlines
+ # retval = b.join
+
+  if not wd.nil?
+    chdir currentdir
+  end
+
+  return retval
+
 end
 
 def unjar(src,targetdir)
@@ -75,17 +119,103 @@ def unjar(src,targetdir)
   args << src.to_s
 
   chdir targetdir
-  
   puts run(cmd,args)
   chdir currentdir
 end
 
-def jar(target,manifest,files)
+def jar(target,manifest,files,isfolder=false)
   cmd =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
   
-  args = Array.new
-  args << "cvfm"
+  args = []
+  args << "cfM"
+  args << target
+  #args << manifest
+  if isfolder
+    mkdir files + "/META-INF" if not FileTest.exists? files + "/META-INF"
+    cp manifest, files + "/META-INF/MANIFEST.MF"
+    args << "-C"
+    args << files
+    args << "."
+  else
+    args << files
+  end
 
+  puts run(cmd,args)
+
+
+end
+
+def rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,library=true,quiet=true, nowarn=true)
+  cmd = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+ cmd = "java.exe"
+  
+  jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+  currentdir = pwd()
+
+
+  chdir destdir
+
+  if output and title and version and vendor
+    f = File.new(output + ".rapc", "w")
+    f.write "MicroEdition-Profile: MIDP-2.0\r\n"
+    f.write "MicroEdition-Configuration: CLDC-1.1\r\n"
+    f.write "MIDlet-Name: " + output + "\r\n"
+    f.write "MIDlet-Version: " + version + "\r\n"
+    f.write "MIDlet-Vendor: " + vendor + "\r\n"
+    f.write "MIDlet-Jar-URL: " + output + ".jar\r\n"
+    f.write "MIDlet-Jar-Size: 0\r\n"
+    f.write "RIM-Library-Flags: 2\r\n" if library
+  end
+
+
+  args = []
+  args << "-classpath"
+#  args << "-jar"
+  args << '"' + jdehome + "/bin/rapc.jar;"+  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/../lib;"+  $config["env"]["paths"][$config["env"]["bbver"]]["jde"] +"/lib\""
+  args << "net.rim.tools.compiler.Compiler"
+#  args << "-quiet" if quiet
+  args << "-noWarn" if nowarn
+  args << '"import=' + imports + '"'
+  args << 'codename=' + output
+  args << 'library=' + output if library
+  args << output + '.rapc'
+  args << files
+
+  puts run("cmd /C " + cmd,args)
+  chdir currentdir
+
+end
+
+def ant(dir,target)
+
+  bindir = $config["build"]["bindir"]
+  srcdir = $config["build"]["srcdir"]
+  rubypath = $config["build"]["rubypath"]
+  shareddir = $config["build"]["shareddir"]
+  targetdir = $config["build"]["targetdir"]
+  rubyVMdir = $config["build"]["rubyVMdir"]
+  excludelib = $config["build"]["excludelib"]
+  compileERB = $config["build"]["compileERB"]
+  
+
+  args = []
+  args << "-buildfile"
+  args << dir + "/build.xml"
+  args << "-d" 
+  args << '"-Dbin.dir=' + get_absolute(bindir) + '"'
+  args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
+  args << '"-Druby.path=' + get_absolute(rubypath) + '"'
+  args << '"-DsharedAnt.dir=' + get_absolute(shareddir) + '"'
+  args << '"-Dtarget.dir=' + get_absolute(targetdir) + '"'
+  args << '"-DRubyVM.dir=' + get_absolute(rubyVMdir) + '"'
+  args << '"-Dexclude.lib=' + excludelib + '"'
+  args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'
+  args << '"-Dsrclib.dir=' + get_absolute(srcdir) + '"'
+
+
+  args << target
+  #puts args.to_s
+  puts run("ant.bat",args,dir)
 end
 
 config_parse($config)
@@ -101,20 +231,121 @@ task :clean do
   rm "../RhoBundle/RhoBundle.jar", :force => true
 end
 
+desc "Compile RhoBundle"
+task :compileRhoBundle => :buildRubyVM do
+  java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+  jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+  jarexe =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
+
+  ant($config["build"]["shareddir"],"bundleCommon")
+
+  rm_rf $config["build"]["srcdir"] + "/apps/shared"
+
+  args = []
+
+  args << "-jar"
+  args << get_absolute($config["build"]["bblib"]) + "/xruby-0.3.3.jar"
+  args << "-c"
+  args << "RhoBundle"
+
+  puts run(java,args,$config["build"]["bindir"])
+
+  ant($config["build"]["shareddir"],"deleteRBandERB")
+
+#XXX jar function should handle this
+  args = []
+  args << "uf"
+  args << "../RhoBundle.jar"
+  args << "apps/*.*"
+  puts run(jarexe,args,$config["build"]["srcdir"])
+
+  rm_rf $config["build"]["srcdir"]
+
+#XXX Move to task  
+  args = []
+  args << "-classpath"
+  args << '"' + jdehome + "/lib/net_rim_api.jar;"+$config["build"]["rubyVMdir"]+"/RubyVM.jar\""
+  args << "-d"
+  args << "../RhoBundle"
+  args << $config["build"]["bindir"] + "/RhoBundle.jar"
+  puts run(jdehome + "/bin/preverify.exe",args)
+
+end
+
+desc "Build RubyVM"
+task :buildRubyVM do
+  rubyvmdir = $config["build"]["rubyVMdir"]
+  javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+  tmpdir = $config["build"]["tmpdir"]
+  jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+  rm_f rubyvmdir + "/RubyVM.jar"
+
+  mkdir tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
+  mkdir  $config["build"]["targetdir"] if not FileTest.exists?  $config["build"]["targetdir"]
+
+  args = []
+  args << "-g"
+  args << "-d"
+  args << '"' +tmpdir + '/RubyVM"'
+  args << "-bootclasspath"
+  args << '"' + $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
+  args << "-source"
+  args << "1.3"
+  args << "-target"
+  args << "1.3"
+  args << "-nowarn"
+  args << "@RubyVM_build.files"
+
+  puts run(javac,args)
+
+  #XXX Move to task/function
+  args = []
+  args << "-classpath"
+  args << '"' + jdehome + "/lib/net_rim_api.jar\""
+  args << "-d"
+  args << $config["build"]["tmpdir"] + "/RubyVM.preverify"
+  args << '"' + $config["build"]["tmpdir"] + "/RubyVM\""
+  puts run(jdehome + "/bin/preverify.exe",args)
+
+#  jar($config["build"]["bindir"]+"/RubyVM.jar", "RubyVM_manifest.mf", $config["build"]["tmpdir"] + "/RubyVM.preverify",true)
+  jar(rubyvmdir+"/RubyVM.jar", "RubyVM_manifest.mf", $config["build"]["tmpdir"] + "/RubyVM.preverify",true)
+
+#  args = []
+#  args << "-classpath"
+#  args << '"' + jdehome + "/lib/net_rim_api.jar\""
+#  args << "-d"
+#  args << rubyvmdir
+#  args << '"' + $config["build"]["bindir"]+"/RubyVM.jar\""
+#  puts run(jdehome + "/bin/preverify.exe",args)
+
+
+  #RAPC it here
+
+  rapc("RubyVM", 
+       $config["build"]["targetdir"],
+       jdehome + "/lib/net_rim_api.jar",
+       '"' + get_absolute(rubyvmdir + "/RubyVM.jar") +'"',
+       "RubyVM",
+       $config["env"]["vendor"],
+       $config["env"]["version"]
+      )
+
+end
+
 desc "Compile Sources"
 task :compile do
   javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
   jde =  $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
-  args = Array.new
- 
+  args = [] 
   args << "-g"
   args << "-d"
   args << $config["build"]["tmpdir"] 
   args << "-classpath"
   args << $config["build"]["bindir"] + "/RhoBundle.jar"
   args << "-bootclasspath"
-  args << jde + "/lib/net_rim_api.jar"
+  args << '"' + jde + "/lib/net_rim_api.jar\""
   args << "-source"
   args << "1.3"
   args << "-target"
@@ -126,12 +357,18 @@ task :compile do
   puts "\texecuting javac"
   puts run(javac,args)
 
-  cp_r "../rhodes/resources", $config["build"]["tmpdir"] + "/resources"
-
-  unjar($config["build"]["bindir"] + "/RhoBundle.jar", $config["build"]["tmpdir"])
-
 end
 
+desc "Compile Rhodes"
+task :compileRhodes do
+  cp_r "../rhodes/resources", $config["build"]["tmpdir"] + "/resources"
+#XXX finish me please
+end
+
+desc "Unpack RhoBundle"
+task :unpackRhoBundle do
+  unjar($config["build"]["bindir"] + "/RhoBundle.jar", $config["build"]["tmpdir"])
+end
 
 desc "Test Rake Target"
 task :test do
