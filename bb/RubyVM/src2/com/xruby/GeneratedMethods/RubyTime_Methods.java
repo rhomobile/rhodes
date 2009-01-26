@@ -29,6 +29,8 @@ klass.defineMethod( "gmt?", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyTime)receiver).gmt_question();}
 });
+klass.aliasMethod("utc?","gmt?");
+klass.aliasMethod("gmtime?","gmt?");
 klass.getSingletonClass().defineMethod( "mktime", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyTime.local(receiver, args);}
