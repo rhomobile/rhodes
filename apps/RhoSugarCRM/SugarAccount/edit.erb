@@ -12,15 +12,25 @@
 		  </div>
 		
 		  <div class="row">
-			  <label>Industry</label>
-			  <input type="text" name="SugarAccount[industry]" value="<%=@SugarAccount.industry%>"/>
+			  <label>Website</label>
+			  <input type="text" name="SugarAccount[website]" value="<%=@SugarAccount.website%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>Description</label>
-			  <input type="text" name="SugarAccount[description]" value="<%=@SugarAccount.description%>"/>
+			  <label>Phone Office</label>
+			  <input type="text" name="SugarAccount[phone_office]" value="<%=@SugarAccount.phone_office%>"/>
 		  </div>
 		
+		  <div class="row">
+			  <label>Fax</label>
+			  <input type="text" name="SugarAccount[phone_fax]" value="<%=@SugarAccount.phone_fax%>"/>
+		  </div>
+				
+		  <div class="row">
+			  <label>Industry</label>
+			  <input type="text" name="SugarAccount[industry]" value="<%=@SugarAccount.industry%>"/>
+		  </div>
+				
 		  <div class="row">
 			  <label>Type</label>
 			  <input type="text" name="SugarAccount[account_type]" value="<%=@SugarAccount.account_type%>"/>
@@ -31,53 +41,80 @@
 			  <input type="text" name="SugarAccount[annual_revenue]" value="<%=@SugarAccount.annual_revenue%>"/>
 		  </div>
 		
+			</fieldset>
+			<h2>Billing Address</h2>
+			
+			<fieldset>
 		  <div class="row">
-			  <label>Fax</label>
-			  <input type="text" name="SugarAccount[phone_fax]" value="<%=@SugarAccount.phone_fax%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Billing Address Street</label>
+			  <label>Street</label>
 			  <input type="text" name="SugarAccount[billing_address_street]" value="<%=@SugarAccount.billing_address_street%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>Billing Address City</label>
+			  <label>City</label>
 			  <input type="text" name="SugarAccount[billing_address_city]" value="<%=@SugarAccount.billing_address_city%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>billing_address_state: </label>
+			  <label>State</label>
 			  <input type="text" name="SugarAccount[billing_address_state]" value="<%=@SugarAccount.billing_address_state%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>billing_address_postalcode: </label>
+			  <label>Postal Code</label>
 			  <input type="text" name="SugarAccount[billing_address_postalcode]" value="<%=@SugarAccount.billing_address_postalcode%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>billing_address_country: </label>
+			  <label>Country</label>
 			  <input type="text" name="SugarAccount[billing_address_country]" value="<%=@SugarAccount.billing_address_country%>"/>
+		  </div>
+			</fieldset>
+			
+			<h2>Shipping Address</h2>
+			
+			<fieldset>
+		  <div class="row">
+			  <label>Street</label>
+			  <input type="text" name="SugarAccount[shipping_address_street]" value="<%=@SugarAccount.shipping_address_street%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>rating: </label>
+			  <label>City</label>
+			  <input type="text" name="SugarAccount[shipping_address_city]" value="<%=@SugarAccount.shipping_address_city%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>State</label>
+			  <input type="text" name="SugarAccount[shipping_address_state]" value="<%=@SugarAccount.shipping_address_state%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Postal Code</label>
+			  <input type="text" name="SugarAccount[shipping_address_postalcode]" value="<%=@SugarAccount.shipping_address_postalcode%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Country</label>
+			  <input type="text" name="SugarAccount[shipping_address_country]" value="<%=@SugarAccount.shipping_address_country%>"/>
+		  </div>
+			</fieldset>
+			
+			<fieldset>
+		  <div class="row">
+			  <label>Rating</label>
 			  <input type="text" name="SugarAccount[rating]" value="<%=@SugarAccount.rating%>"/>
 		  </div>
 		
+
 		  <div class="row">
-			  <label>website: </label>
-			  <input type="text" name="SugarAccount[website]" value="<%=@SugarAccount.website%>"/>
-		  </div>
+			  <label>Description</label>
+			  <input type="text" name="SugarAccount[description]" value="<%=@SugarAccount.description%>"/>
+		  </div> 
+	
 		
 		  <div class="row">
-			  <label>phone_office: </label>
-			  <input type="text" name="SugarAccount[phone_office]" value="<%=@SugarAccount.phone_office%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>email1: </label>
+			  <label>Email</label>
 			  <input type="text" name="SugarAccount[email1]" value="<%=@SugarAccount.email1%>"/>
 		  </div>
 		
