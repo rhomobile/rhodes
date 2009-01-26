@@ -1,3 +1,9 @@
+== 0.2.3 2009-01-26
+ * added newgem dependency
+
+== 0.2.2 2009-01-23
+ * fixed bug in layout.erb template
+
 == 0.2.1 2009-01-20
  * adding new layout framework to generator [#45]
 
