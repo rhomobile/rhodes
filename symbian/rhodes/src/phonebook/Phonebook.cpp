@@ -149,6 +149,10 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         TPtrC value = firstName->Text();
         add2hash(&hash, RUBY_PB_FIRST_NAME, value);
     }
+    else
+	{
+		addStrToHash(hash, RUBY_PB_FIRST_NAME, "", strlen(""));
+	}
 
     // Get last name
     findpos = fieldSet.Find( KUidContactFieldFamilyName );
@@ -161,6 +165,10 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         TPtrC value = lastName->Text();
         add2hash(&hash, RUBY_PB_LAST_NAME, value);
     }
+    else
+	{
+		addStrToHash(hash, RUBY_PB_LAST_NAME, "", strlen(""));
+	}
     
     // Get home phone
     findpos = fieldSet.Find( KUidContactFieldPhoneNumber );
@@ -175,7 +183,13 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         add2hash(&hash, RUBY_PB_MOBILE_NUMBER, value);
         add2hash(&hash, RUBY_PB_BUSINESS_NUMBER, value);
     }
-
+    else
+	{
+		addStrToHash(hash, RUBY_PB_HOME_NUMBER, "", strlen(""));
+		addStrToHash(hash, RUBY_PB_MOBILE_NUMBER, "", strlen(""));
+		addStrToHash(hash, RUBY_PB_BUSINESS_NUMBER, "", strlen(""));
+	}
+    
     // Get email
     findpos = fieldSet.Find( KUidContactFieldEMail );
 
@@ -187,7 +201,11 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         TPtrC value = textField->Text();
         add2hash(&hash, RUBY_PB_EMAIL_ADDRESS, value);
     }
-
+    else
+	{
+		addStrToHash(hash, RUBY_PB_EMAIL_ADDRESS, "", strlen(""));
+	}
+    
     // Get company
     findpos = fieldSet.Find( KUidContactFieldCompanyName );
 
@@ -199,7 +217,11 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
         TPtrC value = textField->Text();
         add2hash(&hash, RUBY_PB_COMPANY_NAME, value);
     }
-
+    else
+	{
+		addStrToHash(hash, RUBY_PB_COMPANY_NAME, "", strlen(""));
+	}
+    
 	return hash;
 }
 
