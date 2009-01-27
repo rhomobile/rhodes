@@ -89,7 +89,7 @@ VALUE getnextPhonebookRecord(void* pb) {
 
 //==================================================================================
 
-void* createRecord() {
+void* createRecord(void* pb) {
 	return new CABOutlookRecord(NULL);
 }
 
