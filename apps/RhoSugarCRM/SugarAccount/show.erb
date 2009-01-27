@@ -1,1 +1,48 @@
+<div class="panel">
+ 
+<table class="grid">
+  <tr>
+    <td class="gridleft">Name</td>
+		<td class="gridright"><%=@SugarAccount.name%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Website</td>
+		<td class="gridright"><a href="<%= "http://www.#{@SugarAccount.website}" %>" target="_self"><%=@SugarAccount.website%></a></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Ticker Symbol</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft"></td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+	<tr>
+    <td class="gridleft">	</td>
+		<td class="gridright"> </td>
+	</tr>
+</table>
+
 <%= link_to "#{@SugarAccount.name}", "edit", @SugarAccount.object %>
+
+</div>

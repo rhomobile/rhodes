@@ -1,1 +1,64 @@
-<%= link_to "#{@SugarOpportunity.name}", "edit", @SugarOpportunity.object %>
+<div class="panel">
+ 
+<table class="grid">
+  <tr>
+    <td class="gridleft">
+    Opportunity Name
+    </td>
+    <td class="gridright">
+    <%=@SugarOpportunity.name%>
+    </td>
+  </tr>
+  
+  <tr>
+  <td class="gridleft">
+   Date Entered
+  </td>
+  <td class="gridright">
+   <%= Time.parse(@SugarOpportunity.date_entered).strftime("%B %d, %Y") %>
+  </td>
+  </tr>
+ 
+  <tr>
+  <td class="gridleft">
+   Date Modified
+  </td>
+  <td class="gridright">
+   <%=@SugarOpportunity.date_modified%>
+  </td>
+  </tr>
+    
+</table>
+ 
+<table class="grid">
+  <tr>
+    <td class="gridleft">
+    Deal Type
+    </td>
+    <td class="gridright">
+    <%=@SugarOpportunity.name%>
+    </td>
+  </tr>
+  
+  <tr>
+  <td class="gridleft">
+   Date To Bid
+  </td>
+  <td class="gridright">
+   <%=@SugarOpportunity.date_entered%>
+  </td>
+  </tr>
+ 
+  <tr>
+  <td class="gridleft">
+   Date To Close
+  </td>
+  <td class="gridright">
+   <%=@SugarOpportunity.date_modified%>
+  </td>
+  </tr>
+</table>
+ 
+  <%= link_to "Edit", "edit", @SugarOpportunity.object %>
+ 
+</div>
