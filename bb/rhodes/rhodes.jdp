@@ -28,6 +28,7 @@ src\rhomobile\NetworkAccess.java
 src\rhomobile\Properties.java
 src\rhomobile\RhoConnection.java
 src\rhomobile\RhodesApplication.java
+src\rhomobile\RhoPhonebook.java
 src\rhomobile\RhoRuby.java
 src\rhomobile\SecondaryResourceFetchThread.java
 src\rhomobile\sync\SyncConstants.java

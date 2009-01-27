@@ -4,7 +4,7 @@
 	  method="POST" 
 	  action="<%=url_for('update')%>">
 	<fieldset>
-		<input type="hidden" name="id" value="<%=@source.source_id%>"/>
+		<input type="hidden" name="source[source_id]" value="<%=@source.source_id%>"/>
 		<div class="row">
 			<label>Name</label><span><%=@source.name%></span>
 		</div>

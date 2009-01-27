@@ -20,5 +20,13 @@ public class ArrayMe {
     	throw new RuntimeException("Not Implemented");
     	//return arThis;
     }
+    public static Object[] clone(Object[] arThis)
+    {
+    	Object[] copy = new Object[arThis.length];
+    	for( int i = 0; i < arThis.length; i++ )
+    		copy[i] = arThis[i];
+    	
+    	return copy;
+    }
 	
 }
