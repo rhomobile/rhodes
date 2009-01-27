@@ -10,7 +10,8 @@ class SugarCampaignController < Rho::RhoController
 
   # GET /SugarCampaign/1
   def show
-    @SugarCampaigns = SugarCampaign.find(@params['object'])
+    @SugarCampaign = SugarCampaign.find(@params['id'])
+    render :action => :show
   end
 
   # GET /SugarCampaign/new
