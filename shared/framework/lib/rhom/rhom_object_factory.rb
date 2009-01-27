@@ -115,9 +115,8 @@ module Rhom
                   end
 
                   # convert hash to array
-                  hash_list.each do |key,val|
-                    list << val
-                  end
+                  list = hash_list.values
+                  hash_list = nil
                   if list.length == 1 and args.first != :all
                     return list[0]
                   end
