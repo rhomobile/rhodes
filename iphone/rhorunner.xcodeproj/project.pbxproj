@@ -523,7 +523,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Vidal Graupera";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -540,7 +540,7 @@
 					"-lrhosynclib",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = DefaultProfileUuid;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F4B424DF-1492-42CD-B571-3A5D3A6D81BE";
 				SDKROOT = iphoneos2.1;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
 			};
@@ -550,7 +550,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Vidal Graupera";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -565,6 +565,7 @@
 					"-lrhosynclib",
 				);
 				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F4B424DF-1492-42CD-B571-3A5D3A6D81BE";
 				SDKROOT = iphoneos2.0;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
 			};
