@@ -19,7 +19,7 @@ ul.info li {font-weight:bold;margin-left:10px;padding-left:0;}
 }
 
 textarea {
-	font-size: 16px;
+  font-size: 16px;
   font-weight: normal;
 }
 
@@ -27,26 +27,31 @@ textarea {
 .tallrow select { float:right; clear:left; font-size: 120%; height: 30px;}
 
 .tallrow input:not(input[type|=radio]):not(input[type|=checkbox]) {
-		width:auto;
+	width:auto;
     margin: 0;
     padding: 6px;
 }
 
 table.grid {
     table-layout: fixed;
-    cellspacing: 10;
+    cellspacing: 20px;
     width: 100%;
-    background: #ffffff;
+	position: relative;
+	margin: 0 0 20px 0;
+	padding: 5px;
     -webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
     border: 1px solid #999999;
+    background: #ffffff;
+    font-size: 80%;
 }
 
 .gridleft {
-   align: right;
-   width: 30%;
-   color: cornflowerblue;	
+   text-align: right;
+   width: 35%;
+   color: #4183C4;
 }
 
 .gridright {
-   align: left;	
+   text-align: left;	
 }
