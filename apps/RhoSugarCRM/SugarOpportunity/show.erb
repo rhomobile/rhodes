@@ -1,1 +1,34 @@
-<%= link_to "#{@SugarOpportunity.name}", "edit", @SugarOpportunity.object %>
+<table class="grid">
+	<tr>
+		<td class="gridleft">
+		Opportunity Name
+		</td>
+		<td class="gridright">
+		<%=@SugarOpportunity.name%>
+		</td>
+	</tr>
+	
+	<tr>
+  <td class="gridleft">
+	  Date Entered
+	</td>
+	<td class="gridright">
+	  <%=@SugarOpportunity.date_entered%>
+	</td>
+	</tr>
+
+	<tr>
+  <td class="gridleft">
+	  Date Modified
+	</td>
+	<td class="gridright">
+	  <%=@SugarOpportunity.date_modified%>
+	</td>
+	</tr>
+	
+	<tr>
+		<%= link_to "#{@SugarOpportunity.name}", "edit", @SugarOpportunity.object %>
+	</tr>
+	
+</table>
+

@@ -31,3 +31,22 @@ textarea {
     margin: 0;
     padding: 6px;
 }
+
+table.grid {
+    table-layout: fixed;
+    cellspacing: 10;
+    width: 100%;
+    background: #ffffff;
+    -webkit-border-radius: 10px;
+    border: 1px solid #999999;
+}
+
+.gridleft {
+   align: right;
+   width: 30%;
+   color: cornflowerblue;	
+}
+
+.gridright {
+   align: left;	
+}
