@@ -13,12 +13,14 @@ generators/templates/model/controller.rb
 generators/templates/model/edit.erb
 generators/templates/model/index.erb
 generators/templates/model/new.erb
+generators/templates/model/show.erb
 generators/templates/source/source_adapter.rb
 lib/ServeME.rb
 lib/TestServe.rb
 lib/builtinME.rb
 lib/date.rb
 lib/date/format.rb
+lib/dateME.rb
 lib/erb.rb
 lib/find.rb
 lib/rational.rb
