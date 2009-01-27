@@ -10,7 +10,8 @@ class SugarLeadController < Rho::RhoController
 
   # GET /SugarLead/1
   def show
-    @SugarLeads = SugarLead.find(@params['object'])
+    @SugarLead = SugarLead.find(@params['id'])
+    render :action => :show
   end
 
   # GET /SugarLead/new

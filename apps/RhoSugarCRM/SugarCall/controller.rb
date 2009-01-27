@@ -10,7 +10,8 @@ class SugarCallController < Rho::RhoController
 
   # GET /SugarCall/1
   def show
-    @SugarCalls = SugarCall.find(@params['object'])
+    @SugarCall = SugarCall.find(@params['id'])
+    render :action => :show
   end
 
   # GET /SugarCall/new

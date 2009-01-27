@@ -1,7 +1,7 @@
 <ul id="SugarEmployees" title="Employees">
 <%@SugarEmployees.each do |x|%>
 
-<li><%=link_to "#{x.first_name} #{x.last_name}", "edit", x.object%></li>
+<li><%=link_to "#{x.first_name} #{x.last_name}", "show", x.object%></li>
 
 <%end%>
 <li><font color="blue"><%=link_to "New Employee", "new"%></font></li>
