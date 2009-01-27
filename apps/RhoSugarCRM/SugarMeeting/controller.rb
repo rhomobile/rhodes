@@ -10,7 +10,8 @@ class SugarMeetingController < Rho::RhoController
 
   # GET /SugarMeeting/1
   def show
-    @SugarMeetings = SugarMeeting.find(@params['object'])
+    @SugarMeeting = SugarMeeting.find(@params['id'])
+    render :action => :show
   end
 
   # GET /SugarMeeting/new
