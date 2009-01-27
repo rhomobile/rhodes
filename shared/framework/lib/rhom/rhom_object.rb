@@ -36,6 +36,10 @@ module Rhom
         end
       end
     end
+    
+    def remove_var(name)
+      remove_instance_variable("@#{name}")
+    end
   
     def strip_braces(str=nil)
       str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
@@ -48,6 +52,10 @@ module Rhom
         hash = ((hash << 5) + hash) + str[i].to_i
       end
       return hash
+    end
+    
+    def method_name_reserved?(method)
+      method =~ /object|source_id|update_type|type/
     end
   end # RhomObject
 end # Rhom

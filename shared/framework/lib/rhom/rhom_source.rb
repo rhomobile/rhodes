@@ -3,6 +3,7 @@ require 'rhom/rhom_object'
 
 module Rhom
   class RhomSource
+    include RhomObject
     attr_accessor :source_url
     attr_reader   :source_id, :name, :last_updated, :last_inserted_size, 
                   :last_deleted_size, :last_sync_duration,

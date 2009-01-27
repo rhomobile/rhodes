@@ -34,6 +34,7 @@ describe "RhomObjectFactory" do
   it "should set source_id attributes" do
     "1".should == Account.get_source_id
     "2".should == Case.get_source_id
+    "3".should == Employee.get_source_id
   end
   
   it "should dynamically assign values" do
@@ -50,30 +51,26 @@ describe "RhomObjectFactory" do
   
   it "should retrieve Case models" do
     results = Case.find(:all)
-    #array_print(results)
-    results.length.should == 5
-    "60".should == results[0].case_number
-    "hire another engineer".should == results[4].name
+    results.length.should == 7
+    results[0].case_number.should == "57"
+    results[4].name.should == "implement SugarCRM sample app"
   end
   
   it "should retrieve Account models" do
     results = Account.find(:all)
     results.length.should == 5
-    #array_print(results)
-    
-    "Mobio India".should == results[0].name
-    "Technology".should == results[0].industry
-    "Aeroprise".should == results[1].name
+    "vSpring".should == results[0].name
+    "Finance".should == results[0].industry
+    "Rhomobile".should == results[1].name
     "Technology".should == results[1].industry
-    "Electronics".should == results[4].industry
-    "Mirapath".should == results[4].name
+    "Technology".should == results[4].industry
+    "Mobio India".should == results[4].name
   end
   
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
-    
-    # expecting name, industry, update_type, object, source_id
-    @account.instance_variables.size.should == 5
+
+    @account.instance_variables.size.should == 36
   end
   
   it "should calculate same djb_hash" do
@@ -107,30 +104,25 @@ describe "RhomObjectFactory" do
   end
   
   it "should partially update a record" do
-    pending "due to bug #128 this fails"
-=begin
     new_attributes = {"name"=>"Mobio US"}
-    @account = Account.find(:all).first
+    @account = Account.find("44e804f2-4933-4e20-271c-48fcecd9450d")
     @account.update_attributes(new_attributes)
     
-    @new_acct = Account.find(:all).first
+    @new_acct = Account.find("44e804f2-4933-4e20-271c-48fcecd9450d")
     
-    "Mobio US".should == @new_acct.name
-    "Technology".should == @new_acct.industry
-=end
+    puts "new acct: #{@new_acct.inspect}"
+    @new_acct.name.should == "Mobio US"
+    @new_acct.industry.should == "Technology"
   end
   
   it "should fully update a record" do
-    pending "due to bug #128 this fails"
-=begin
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
     @account = Account.find(:all).first
     @account.update_attributes(new_attributes)
     
     @new_acct = Account.find(:all).first
     
-    "Mobio US".should == @new_acct.name
-    "Electronics".should == @new_acct.industry
-=end
+    @new_acct.name.should == "Mobio US"
+    @new_acct.industry.should == "Electronics"
   end
 end
