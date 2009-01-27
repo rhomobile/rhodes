@@ -75,8 +75,9 @@ VALUE getnextPhonebookRecord(void* pb) {
 
 //==================================================================================
 
-void* createRecord() 
+void* createRecord(void* pb) 
 {
+  pb;
 	return CPhonebook::createRecord();
 }
 
