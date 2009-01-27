@@ -1,0 +1,71 @@
+<form title="Edit SugarCampaign" 
+	  class="panel" 
+	  id="SugarCampaign_edit_form" 
+	  method="POST" 
+	  action="<%=url_for('update')%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarCampaign.object%>"/>
+		
+		  <div class="row">
+			  <label>name: </label>
+			  <input type="text" name="SugarCampaign[name]" value="<%=@SugarCampaign.name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>date_entered: </label>
+			  <input type="text" name="SugarCampaign[date_entered]" value="<%=@SugarCampaign.date_entered%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>date_modified: </label>
+			  <input type="text" name="SugarCampaign[date_modified]" value="<%=@SugarCampaign.date_modified%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>assigned_user_name: </label>
+			  <input type="text" name="SugarCampaign[assigned_user_name]" value="<%=@SugarCampaign.assigned_user_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>team_name: </label>
+			  <input type="text" name="SugarCampaign[team_name]" value="<%=@SugarCampaign.team_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>start_date: </label>
+			  <input type="text" name="SugarCampaign[start_date]" value="<%=@SugarCampaign.start_date%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>end_date: </label>
+			  <input type="text" name="SugarCampaign[end_date]" value="<%=@SugarCampaign.end_date%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>status: </label>
+			  <input type="text" name="SugarCampaign[status]" value="<%=@SugarCampaign.status%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>budget: </label>
+			  <input type="text" name="SugarCampaign[budget]" value="<%=@SugarCampaign.budget%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>expected_revenue: </label>
+			  <input type="text" name="SugarCampaign[expected_revenue]" value="<%=@SugarCampaign.expected_revenue%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>campaign_type: </label>
+			  <input type="text" name="SugarCampaign[campaign_type]" value="<%=@SugarCampaign.campaign_type%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for('delete', @SugarCampaign.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>
