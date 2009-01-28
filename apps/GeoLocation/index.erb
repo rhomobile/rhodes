@@ -1,0 +1,17 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		<script language="JavaScript">
+			document.write(document.title)
+		</script>
+	</h1>
+	<a id="backButton" class="button" href="./"></a>
+</div>
+<br/>
+Your location:<%= GeoLocation.latitude.abs.to_s + "f° " + (GeoLocation.latitude < 0 ? "South" : "North") + ", " +
+				GeoLocation.longitude.abs.to_s + "f° " + (GeoLocation.longitude < 0 ? "West" : "East") %>
+<br/><br/>
+Latitude: <%= GeoLocation.latitude.to_s %><br/>
+Longitude: <%= GeoLocation.longitude.to_s %>
+
+<br/><br/>
+<a href="#" target="_self">Refresh</a>

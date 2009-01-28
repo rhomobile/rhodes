@@ -617,8 +617,8 @@ public class SyncUtil {
 					}
 					else{
 						System.out.println("Error posting data: " + code);
-            success = false;
-          }
+			            success = false;
+					}
 
 				} catch (IOException e) {
 					System.out.println("There was an error fetch_client_login: "
