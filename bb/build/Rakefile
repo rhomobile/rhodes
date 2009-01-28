@@ -2,6 +2,8 @@ require 'Jake.rb'
 
 config = Jake.config(File.open('build.yml'))
 
+rhodesimplib = ""
+
 desc "Clean up"
 task :clean do
   remove_dir(config["build"]["tmpdir"],true)
@@ -90,16 +92,9 @@ task :buildRubyVM do
   args << '"' + config["build"]["tmpdir"] + "/RubyVM\""
   puts Jake.run(jdehome + "/bin/preverify.exe",args)
 
-#  jar(config["build"]["bindir"]+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
+
   Jake.jar(rubyvmdir+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
 
-#  args = []
-#  args << "-classpath"
-#  args << '"' + jdehome + "/lib/net_rim_api.jar\""
-#  args << "-d"
-#  args << rubyvmdir
-#  args << '"' + config["build"]["bindir"]+"/RubyVM.jar\""
-#  puts run(jdehome + "/bin/preverify.exe",args)
 
 
   #RAPC it here
@@ -113,6 +108,8 @@ task :buildRubyVM do
        config["env"]["version"]
       )
 
+  rm_rf config["build"]["tmpdir"] + "/RubyVM.preverify"
+  rm_rf config["build"]["tmpdir"] + "/RubyVM"
 end
 
 desc "Compile Sources"
@@ -133,7 +130,7 @@ task :compile do
   args << "-target"
   args << "1.3"
   args << "-nowarn"
-  args << "@RubyVM_build.files"
+  #args << "@RubyVM_build.files"
   args << "@PerstLite_build.files"
   args << "@rhodes_build.files"
   puts "\texecuting javac"
@@ -143,8 +140,46 @@ end
 
 desc "Compile Rhodes"
 task :compileRhodes do
+  jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+	
+  if rhodesimplib == ""
+    throw "Implib not set!"
+  end
   cp_r "../rhodes/resources", config["build"]["tmpdir"] + "/resources"
-#XXX finish me please
+
+  Jake.jar(config["build"]["bindir"] + "/rhodes.jar", "manifest.mf", config["build"]["tmpdir"],true)
+
+  args = []
+  args << "-classpath"
+  args << '"' + rhodesimplib + '"'
+  args << "-d"
+  args << '"' + config["build"]["targetdir"] + '"'
+  args << '"' + config["build"]["bindir"] + "/rhodes.jar\""
+  puts Jake.run(jdehome + "/bin/preverify.exe",args)  
+
+    Jake.rapc("rhodesApp", 
+       config["build"]["targetdir"],
+       rhodesimplib,
+       '"' + Jake.get_absolute( config["build"]["bindir"] + "/rhodes.jar") +'"',
+       "rhodesApp",
+       config["env"]["vendor"],
+       config["env"]["version"],
+       "resources/icon.png",
+       false,
+       true
+      )
+  cp "./rhodesApp.alx", config["build"]["targetdir"]
+ # rm_rf config["build"]["bindir"]
+
+end
+
+desc "Build rhodes"
+task :rhodes => [ :clean, :compileRhoBundle, :compile ] do
+  Jake.unjar(config["build"]["bindir"] + "/RhoBundle.jar",config["build"]["tmpdir"])
+
+  rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar"
+
+  Rake::Task["compileRhodes"].execute
 end
 
 desc "Unpack RhoBundle"
