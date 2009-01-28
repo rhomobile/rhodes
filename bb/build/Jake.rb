@@ -134,12 +134,10 @@ class Jake
     cmd =  @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
     
     args = []
-    args << "cfM"
+    args << "cfm"
     args << target
-    #args << manifest
+    args << manifest
     if isfolder
-      mkdir files + "/META-INF" if not FileTest.exists? files + "/META-INF"
-      cp manifest, files + "/META-INF/MANIFEST.MF"
       args << "-C"
       args << files
       args << "."
@@ -152,7 +150,7 @@ class Jake
   
   end
   
-  def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,library=true,quiet=true, nowarn=true)
+  def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
     cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
    cmd = "java.exe"
     
@@ -164,14 +162,20 @@ class Jake
   
     if output and title and version and vendor
       f = File.new(output + ".rapc", "w")
-      f.write "MicroEdition-Profile: MIDP-2.0\r\n"
-      f.write "MicroEdition-Configuration: CLDC-1.1\r\n"
-      f.write "MIDlet-Name: " + output + "\r\n"
-      f.write "MIDlet-Version: " + version + "\r\n"
-      f.write "MIDlet-Vendor: " + vendor + "\r\n"
-      f.write "MIDlet-Jar-URL: " + output + ".jar\r\n"
-      f.write "MIDlet-Jar-Size: 0\r\n"
-      f.write "RIM-Library-Flags: 2\r\n" if library
+      f.write "MicroEdition-Profile: MIDP-2.0\n"
+      f.write "MicroEdition-Configuration: CLDC-1.1\n"
+      f.write "MIDlet-Name: " + output + "\n"
+      f.write "MIDlet-Version: " + version + "\n"
+      f.write "MIDlet-Vendor: " + vendor + "\n"
+      f.write "MIDlet-Jar-URL: " + output + ".jar\n"
+      f.write "MIDlet-Jar-Size: 0\n"
+      f.write "RIM-Library-Flags: 2\n" if library
+
+      if cldc and icon
+        f.write "MIDlet-1: " + title + "," + icon + ",\n"
+        f.write "RIM-MIDLET-Flags-1: 0\n"
+      end
+
       f.close
     end
   
