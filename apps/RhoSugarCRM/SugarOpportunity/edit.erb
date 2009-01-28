@@ -3,112 +3,60 @@
 	  id="SugarOpportunity_edit_form" 
 	  method="POST" 
 	  action="<%=url_for('update')%>">
-
-
-    <table class="grid">
-	<tr >
-    <td class="gridleft">
-	Very cool stuff This is a really long Label
-	</td>
-	<td class="gridright">
-	    Super-Duper-cool-Content
-	    Super Duper cool Content
-    Super Duper cool Content
-    </td>
-    </tr>
-
-<!--	
-    <table cellspacing="10" bgcolor="#ff0000" width="100%">
-	<tr >
-    <td align="right" width="20%">
-	This is a really long Label
-	</td>
-	<td align="left">
-	    Super-Duper-cool-Content
-	    Super Duper cool Content
-    Super Duper cool Content
-    </td>
-    </tr>
--->
 	
-	<fieldset>
+	  <fieldset>
 		<input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
 		
 		  <div class="row">
-			  <label>Opportunity Name</label>
+			  <label>Name</label>
 			  <input type="text" name="SugarOpportunity[name]" value="<%=@SugarOpportunity.name%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>Date Entered</label>
-			  <input type="text" name="SugarOpportunity[date_entered]" value="<%=@SugarOpportunity.date_entered%>"/>
+			  <label>Account</label>
+			  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
 		  </div>
-		
+
+			<div class="row">
+			  <label>Type</label>
+			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
+			</div>
+						
 		  <div class="row">
-			  <label>Date Modified</label>
-			  <input type="text" name="SugarOpportunity[date_modified]" value="<%=@SugarOpportunity.date_modified%>"/>
+			  <label>Lead Source</label>
+			  <input type="text" name="SugarOpportunity[lead_source]" value="<%=@SugarOpportunity.lead_source%>"/>
 		  </div>
-		
+	
 		  <div class="row">
-			  <label>Modified By</label>
-			  <input type="text" name="SugarOpportunity[modified_by_name]" value="<%=@SugarOpportunity.modified_by_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Created</label>
-			  <input type="text" name="SugarOpportunity[created_by]" value="<%=@SugarOpportunity.created_by%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Created By</label>
-			  <input type="text" name="SugarOpportunity[created_by_name]" value="<%=@SugarOpportunity.created_by_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Description</label>
-			  <input type="text" name="SugarOpportunity[description]" value="<%=@SugarOpportunity.description%>"/>
+			  <label>Campaign</label>
+			  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %>"/>
 		  </div>
 		
 		  <div class="row">
 			  <label>Assigned To</label>
 			  <input type="text" name="SugarOpportunity[assigned_user_name]" value="<%=@SugarOpportunity.assigned_user_name%>"/>
 		  </div>
-		
-		  <div class="row">
-			  <label>Opportunity Type</label>
-			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%=@SugarOpportunity.opportunity_type%>"/>
+
+		  <div class="tallrow" style="height:auto">
+			  <label>Description</label>
+			  <textarea  name="SugarOpportunity[description]" value="<%=@SugarOpportunity.description%>" rows="5" style="margin:6px;width:90%"></textarea>
+				<div class="clearer"></div>			
 		  </div>
+					
+		 </fieldset>
 		
-		  <div class="row">
-			  <label>Account Name</label>
-			  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Campaign Name</label>
-			  <input type="text" name="SugarOpportunity[campaign_name]" value="<%=@SugarOpportunity.campaign_name%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Lead Source</label>
-			  <input type="text" name="SugarOpportunity[lead_source]" value="<%=@SugarOpportunity.lead_source%>"/>
-		  </div>
-		
+		 <fieldset>	
+			
 		  <div class="row">
 			  <label>Amount</label>
-			  <input type="text" name="SugarOpportunity[amount]" value="<%=@SugarOpportunity.amount%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Amount (dollars)</label>
 			  <input type="text" name="SugarOpportunity[amount_usdollar]" value="<%=@SugarOpportunity.amount_usdollar%>"/>
 		  </div>
-		
+
 		  <div class="row">
-			  <label>Date Closed</label>
+			  <label>Close Date</label>
 			  <input type="text" name="SugarOpportunity[date_closed]" value="<%=@SugarOpportunity.date_closed%>"/>
 		  </div>
-		
+
 		  <div class="row">
 			  <label>Next Steps</label>
 			  <input type="text" name="SugarOpportunity[next_step]" value="<%=@SugarOpportunity.next_step%>"/>
@@ -120,10 +68,10 @@
 		  </div>
 		
 		  <div class="row">
-			  <label>Probability</label>
+			  <label>Probability&nbsp;(%)</label>
 			  <input type="text" name="SugarOpportunity[probability]" value="<%=@SugarOpportunity.probability%>"/>
 		  </div>
-		
+																						
 	</fieldset>
 	<input type="submit" value="Update"/>
 	<p align="center">
