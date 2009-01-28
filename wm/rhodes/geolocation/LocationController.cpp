@@ -388,3 +388,29 @@ void show_geolocation(struct shttpd_arg *arg) {
 
 	arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
+
+extern "C"{
+double geo_latitude() {
+  CGPSController* gps = CGPSController::Instance();
+	gps->TurnGpsOn();
+	gps->UpdateTimeout();
+
+	return gps->GetLatitude();
+}
+
+double geo_longitude() {
+  CGPSController* gps = CGPSController::Instance();
+	gps->TurnGpsOn();
+	gps->UpdateTimeout();
+
+	return gps->GetLongitude();
+}
+
+int geo_known_position() {
+  CGPSController* gps = CGPSController::Instance();
+	gps->TurnGpsOn();
+	gps->UpdateTimeout();
+
+	return gps->IsKnownPosition();
+}
+}

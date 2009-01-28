@@ -20,9 +20,11 @@ import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
 
 import rhomobile.NetworkAccess;
+import rhomobile.location.GeoLocation;
 import rhomobile.sync.SyncEngine;
 
 import java.util.Vector;
+
 
 /**
  * 
@@ -144,18 +146,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     void doClose(){
 		SyncEngine.stop(null);
+		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
     }
 
 	public void activate() {
 		SyncEngine.start(null);
-
+		GeoLocation.start();
+		
 		super.activate();
 	}
     
 	public void deactivate() {
 		SyncEngine.stop(null);
-
+		GeoLocation.stop();
+		
 		super.deactivate();
 	}
     
