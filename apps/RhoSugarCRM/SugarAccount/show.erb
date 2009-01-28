@@ -7,42 +7,102 @@
 	</tr>
 	<tr>
     <td class="gridleft">Website</td>
-		<td class="gridright"><a href="<%= "http://www.#{@SugarAccount.website}" %>" target="_self"><%=@SugarAccount.website%></a></td>
+		<td class="gridright"><a href="<%= "http://#{@SugarAccount.website}" %>" target="_self"><%=@SugarAccount.website%></a></td>
 	</tr>
 	<tr>
     <td class="gridleft">Ticker Symbol</td>
-		<td class="gridright"> </td>
+		<td class="gridright"><%=@SugarAccount.ticker_symbol%></td>
 	</tr>
 	<tr>
-    <td class="gridleft"></td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Member of</td>
+		<td class="gridright"><%=@SugarAccount.parent_name%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Ownership</td>
+		<td class="gridright"><%=@SugarAccount.ownership%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Industry</td>
+		<td class="gridright"><%=@SugarAccount.industry%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Type</td>
+		<td class="gridright"><%=@SugarAccount.account_type%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Team</td>
+		<td class="gridright"><%=@SugarAccount.team_name%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Assigned to</td>
+		<td class="gridright"><%=@SugarAccount.assigned_user_name%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">	</td>
-		<td class="gridright"> </td>
+    <td class="gridleft">Billing Address</td>
+		<td class="gridright"><%=@SugarAccount.billing_address_street%><br />
+			<%=@SugarAccount.billing_address_city%> <%=@SugarAccount.billing_address_state%> <%=@SugarAccount.billing_address_postalcode%><br />
+			<%=@SugarAccount.billing_address_country%>
+		</td>
+	</tr>
+	<tr>
+    <td class="gridleft">Description</td>
+		<td class="gridright"><%=@SugarAccount.description%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Email</td>
+		<td class="gridright"><a href="<%="mailto:#{@SugarAccount.email1}"%>"><%= @SugarAccount.email1 %></a></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Phone Office</td>
+		<td class="gridright"><a href="<%="tel:#{@SugarAccount.phone_office}"%>"><%= @SugarAccount.phone_office %></a></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Fax</td>
+		<td class="gridright"><%=@SugarAccount.phone_fax%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Phone Office</td>
+		<td class="gridright"><%=@SugarAccount.phone_office%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Other Phone</td>
+		<td class="gridright"><%=@SugarAccount.phone_alternate%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Employees</td>
+		<td class="gridright"><%=@SugarAccount.employees%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Rating</td>
+		<td class="gridright"><%=@SugarAccount.rating%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">SIC Code</td>
+		<td class="gridright"><%=@SugarAccount.sic_code%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Annual Revenue</td>
+		<td class="gridright"><%=@SugarAccount.annual_revenue%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Date Modified</td>
+		<td class="gridright"><%=@SugarAccount.date_modified%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Date Entered</td>
+		<td class="gridright"><%=@SugarAccount.date_entered%></td>
+	</tr>		
+	<tr>
+    <td class="gridleft">Shipping Address</td>
+		<td class="gridright"><%=@SugarAccount.shipping_address_street%><br />
+			<%=@SugarAccount.shipping_address_city%> <%=@SugarAccount.shipping_address_state%> <%=@SugarAccount.shipping_address_postalcode%><br />
+			<%=@SugarAccount.shipping_address_country%>
+		</td>
 	</tr>
 </table>
 
-<%= link_to "#{@SugarAccount.name}", "edit", @SugarAccount.object %>
+<%= link_to "Edit", "edit", @SugarAccount.object %>
 
 </div>
