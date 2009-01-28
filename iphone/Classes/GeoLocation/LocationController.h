@@ -19,6 +19,10 @@
 - (char*) getLocation;
 - (void)  stop; 
 
+- (double) getLatitude;
+- (double) getLongitude;
+- (int) isKnownLocation;
+
 - (void)locationManager:(CLLocationManager *)manager
 	didUpdateToLocation:(CLLocation *)newLocation
 		   fromLocation:(CLLocation *)oldLocation;

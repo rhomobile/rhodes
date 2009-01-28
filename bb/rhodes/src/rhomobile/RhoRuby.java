@@ -9,6 +9,7 @@ import java.io.IOException;
 //import com.rho.sync.SyncEngine; 
 import rhomobile.db.PerstLiteAdapter;
 import rhomobile.sync.SyncEngine;
+import rhomobile.location.GeoLocation;
 
 public class RhoRuby {
 
@@ -27,6 +28,7 @@ public class RhoRuby {
         PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
         SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
+        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
         
 		mainObj = new xruby.ServeME.main();
 		receiver = mainObj.invoke();

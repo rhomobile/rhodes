@@ -102,7 +102,7 @@ public class RubyObject extends RubyBasic {
 		return RubyConstant.QFALSE;
     }
 
-    //@RubyLevelMethod(name="instance_variable_remove")
+    //@RubyLevelMethod(name="remove_instance_variable")
     public RubyValue instance_variable_remove(RubyValue arg1){
 		RubyID mid = RubyID.intern(arg1.toStr());
 		

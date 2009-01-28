@@ -1,6 +1,9 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class SugarContactController < Rho::RhoController
+  
+  include ApplicationHelper
 
   #GET /SugarContact
   def index
@@ -11,6 +14,14 @@ class SugarContactController < Rho::RhoController
   # GET /SugarContact/1
   def show
     @SugarContact = SugarContact.find(@params['id'])
+    puts @SugarContact.inspect
+    
+    puts "lead source = #{@SugarContact.lead_source}"
+    puts "lead source.to_s = #{@SugarContact.lead_source.to_s}"
+    puts "lead source.length = #{@SugarContact.lead_source.length}"
+    puts "lead inspect = #{@SugarContact.lead_source.inspect}"
+    puts "lead class = #{@SugarContact.lead_source.class}"
+    
     render :action => :show
   end
 

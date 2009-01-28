@@ -10,6 +10,9 @@ import java.io.OutputStream;
 
 import javax.microedition.io.HttpConnection;
 
+import rhomobile.location.GeoLocation;
+
+
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
@@ -415,8 +418,11 @@ public class RhoConnection implements HttpConnection {
 
 	protected boolean httpServeFile(String strContType)throws IOException{
 		
-		if ( strContType.equals("application/javascript"))
-			responseData = new ByteArrayInputStream(new String("").getBytes());
+		if ( strContType.equals("application/javascript")){
+			//responseData = RhoRuby.loadFile(uri.getPath());
+			//if ( responseData == null )
+				responseData = new ByteArrayInputStream(new String("").getBytes());
+		}
 		else	
 			responseData = RhoRuby.loadFile(uri.getPath());
 	
@@ -466,8 +472,7 @@ public class RhoConnection implements HttpConnection {
 			return true;
 		}else if ( application.equalsIgnoreCase("system") ){
 			if ( model.equalsIgnoreCase("geolocation") ){
-				//TODO: geolocation
-				respondOK();
+				showGeoLocation();
 				return true;
 			}else if ( model.equalsIgnoreCase("syncdb") ){
 				rhomobile.sync.SyncEngine.wakeUp();
@@ -478,6 +483,33 @@ public class RhoConnection implements HttpConnection {
 			return false;
 		
 		return false;
+	}
+	
+	void showGeoLocation(){
+		String location;
+		if ( !GeoLocation.isStarted() )
+			location = "Unavailable;Unavailable;Unavailable";
+		else if( !GeoLocation.isKnownPosition() )
+			location = "reading...;reading...;reading...";//<br/>" + GeoLocation.getLog();
+		else
+		{
+			double latitude = GeoLocation.GetLatitude();
+			double longitude = GeoLocation.GetLongitude();
+		
+			location = String.valueOf(Math.abs(latitude)) + "f° " +
+				(latitude < 0 ? "South" : "North") + ", " +
+				String.valueOf(Math.abs(longitude)) + "f° " +	
+				(longitude < 0 ? "West" : "East") + ";" +
+				String.valueOf(latitude) + ";" +
+				String.valueOf(longitude) + ";";
+		}
+			
+		respondOK();
+		
+		contentLength = location.length();
+		responseData = new ByteArrayInputStream(location.getBytes());
+		resHeaders.addProperty("Content-Type", "text/html" );
+		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 	}
 	
 	protected boolean dispatch()throws IOException{
