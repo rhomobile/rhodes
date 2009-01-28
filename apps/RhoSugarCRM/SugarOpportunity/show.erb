@@ -1,64 +1,86 @@
 <div class="panel">
  
-<table class="grid">
-  <tr>
-    <td class="gridleft">
-    Opportunity Name
-    </td>
-    <td class="gridright">
-    <%=@SugarOpportunity.name%>
-    </td>
-  </tr>
-  
-  <tr>
-  <td class="gridleft">
-   Date Entered
-  </td>
-  <td class="gridright">
-   <%= Time.parse(@SugarOpportunity.date_entered).strftime("%B %d, %Y") %>
-  </td>
-  </tr>
- 
-  <tr>
-  <td class="gridleft">
-   Date Modified
-  </td>
-  <td class="gridright">
-   <%=@SugarOpportunity.date_modified%>
-  </td>
-  </tr>
-    
-</table>
- 
-<table class="grid">
-  <tr>
-    <td class="gridleft">
-    Deal Type
-    </td>
-    <td class="gridright">
-    <%=@SugarOpportunity.name%>
-    </td>
-  </tr>
-  
-  <tr>
-  <td class="gridleft">
-   Date To Bid
-  </td>
-  <td class="gridright">
-   <%=@SugarOpportunity.date_entered%>
-  </td>
-  </tr>
- 
-  <tr>
-  <td class="gridleft">
-   Date To Close
-  </td>
-  <td class="gridright">
-   <%=@SugarOpportunity.date_modified%>
-  </td>
-  </tr>
-</table>
- 
-  <%= link_to "Edit", "edit", @SugarOpportunity.object %>
+   <table class="grid">			
+		  <tr>
+			<td class="gridleft">Opportunity Name</td>
+			<td class="gridright"><%=@SugarOpportunity.name%></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Account Name</td>
+			<td class="gridright"><%=@SugarOpportunity.account_name%></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Type</td>
+			<td class="gridright"><%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %></td>
+		  </tr>
+	
+		  <tr>
+			<td class="gridleft">Lead Source</td>
+			<td class="gridright"><%=@SugarOpportunity.lead_source%></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Campaign Name</td>
+			<td class="gridright"><%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Assigned To</td>
+			<td class="gridright"><%=@SugarOpportunity.assigned_user_name%></td>
+		  </tr>		
+		
+		  <tr>
+			<td class="gridleft">Description</td>
+			<td class="gridright"><%=@SugarOpportunity.description%></td>
+		  </tr>
+
+   </table>
+				
+   <table class="grid">
+	
+		  <tr>
+			<td class="gridleft">Amount (USD&nbsp;$)</td>
+			<td class="gridright"><%=@SugarOpportunity.amount_usdollar%></td>
+		  </tr>
+				
+		  <tr><td class="gridleft">Expected Close Date</td>
+			<td class="gridright"><%=@SugarOpportunity.date_closed%></td>
+		  </tr>
+				
+		  <tr>
+			<td class="gridleft">Next Steps</td>
+			<td class="gridright"><%=@SugarOpportunity.next_step%></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Sales Stage</td>
+			<td class="gridright"><%=@SugarOpportunity.sales_stage%></td>
+		  </tr>																	
+		
+   </table>		
+		
+   <table class="grid">					
+		  <tr>
+			<td class="gridleft">Probability&nbsp;(%)</td>
+			<td class="gridright"><%=@SugarOpportunity.probability%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Date Modified</td>
+			  <td class="gridright"><%=@SugarOpportunity.date_modified%> by <%=@SugarOpportunity.modified_by_name%></td>
+		  </tr>
+
+		  <tr>
+			<td class="gridleft">Created By</td>
+			<td class="gridright"><%=@SugarOpportunity.date_entered%> by <%=@SugarOpportunity.created_by_name%></td>
+		  </tr>
+						
+	</table>
+	
+	<p align="center" class="whiteButton">
+		<a href="<%=url_for('edit', @SugarOpportunity.object)%>">Edit</a>
+	</p>	
  
 </div>
