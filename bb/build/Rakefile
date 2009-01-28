@@ -197,3 +197,65 @@ task :test do
 #  puts config.inspect
 #  puts config.fetch_r("bblib") 
 end
+
+desc "Run Sim"
+task :runsim do
+  sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+  
+  command =  '"' + jde + "/simulator/fledge.exe\""
+  args = [] 
+  args << "/app=Jvm.dll"
+  args << "/handheld=" + sim
+  args << "/session=" + sim
+  args << "/app-param=DisableRegistration"
+  args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
+  args << "/data-port=0x4d44"
+  args << "/data-port=0x4d4e"
+  args << "/pin=0x2100000A"
+  args << "/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"])
+
+  Thread.new { Jake.run(command,args,jde + "/simulator") }
+end
+
+desc "Run Sim, load app"
+task :runapp do
+  sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+
+  command =  '"' + jde + "/simulator/fledge.exe\""
+  args = [] 
+  args << "/app=Jvm.dll"
+  args << "/handheld=" + sim
+  args << "/session=" + sim
+  args << "/app-param=DisableRegistration"
+  args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
+  args << "/data-port=0x4d44"
+  args << "/data-port=0x4d4e"
+  args << "/pin=0x2100000A"
+  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
+
+  Thread.new { Jake.run(command,args,jde + "/simulator",true) }
+
+  puts "sleeping to allow simulator to get started"
+  sleep 15
+
+  command = '"' + jde + "/simulator/fledgecontroller.exe\""
+  args = []
+  args << "/session="+sim
+  args << "\"/execute=LoadCod("+Jake.get_absolute(config["build"]["targetdir"])+")\""
+
+  Jake.run(command,args, jde + "/simulator")
+
+  sleep 5
+
+  args = []
+  args << "/session="+sim
+  args << "/execute=Exit(true)"
+  Jake.run(command,args, jde + "/simulator")
+
+  sleep 5
+
+  Rake::Task["runsim"].execute
+
+end

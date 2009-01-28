@@ -79,7 +79,7 @@ class Jake
     end
   end
   
-  def self.run(command, args, wd=nil)
+  def self.run(command, args, wd=nil,system = false)
     argstr = " "
     currentdir = ""
   
@@ -100,12 +100,15 @@ class Jake
     
     command = command + " " + argstr
     #retval =  `#{command} #{argstr}`
-    retval = %x[#{command}]
-  
-   # bb = IO.popen(command);
-   # b = bb.readlines
-   # retval = b.join
-  
+    #retval = %x[#{command}]
+    if system
+      system(command)
+      retval = ""
+    else
+      bb = IO.popen(command)
+      b = bb.readlines
+      retval = b.join
+    end
     if not wd.nil?
       chdir currentdir
     end
