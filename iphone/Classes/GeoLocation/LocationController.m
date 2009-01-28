@@ -67,6 +67,40 @@ static char location_message[256];
 	return true;
 }
 
+- (double) getLatitude{
+	if (![self update]) {
+		return 0.0f;
+	}
+	_location = _locationManager.location;
+	if (_location==NULL) {
+		return 0.0f;
+	}
+	double latitude = _location.coordinate.latitude;
+	return latitude;
+}
+
+- (double) getLongitude{
+	if (![self update]) {
+		return 0.0f;
+	}
+	_location = _locationManager.location;
+	if (_location==NULL) {
+		return 0.0f;
+	}
+	return _location.coordinate.longitude;
+}
+
+- (int) isKnownLocation{
+	if (![self update]) {
+		return 0;
+	}
+	_location = _locationManager.location;
+	if (_location==NULL) {
+		return 0;
+	}
+	return 1;
+}
+
 - (char*) getLocation {
 	if (![self update]) {
 		return "Unavailable;Unavailable;Unavailable";
@@ -153,6 +187,20 @@ static char location_message[256];
 /* static */ void
 _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 	DBG(("Stopping location controller on timeout\n"));
-	[[LocationController sharedInstance] stop];
+	//[[LocationController sharedInstance] stop];
 }
+
+	double geo_latitude() {
+		
+		return [[LocationController sharedInstance] getLatitude];
+	}
+	
+	double geo_longitude() {
+		
+		return [[LocationController sharedInstance] getLongitude];
+	}
+	
+	int geo_known_position() {
+		return [[LocationController sharedInstance] isKnownLocation];
+	}
 
