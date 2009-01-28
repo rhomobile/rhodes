@@ -68,13 +68,15 @@ public class SyncThread implements Runnable {
 			sync.notify();
 			
 			SyncManager.closeConnection();
-			while( getState() != STATE_NONE ){
+			/*int nTry = 0;
+			while( nTry < 10 && getState() != STATE_NONE ){
 				try{
 					sync.wait(100);
+					nTry++;
 				} catch (Exception e) {
 					System.out.println("Wait exception:" + e.getMessage());
 				}				
-			}
+			}*/
 		}
 	}
 

@@ -24,6 +24,7 @@ class <%=name%> < SourceAdapter
         o.object=x['id']
         o.attrib=y.name
         o.value=y.value
+        o.user_id=user_id if user_id
         o.save
       end
     end

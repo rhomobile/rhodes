@@ -76,22 +76,47 @@ module Rhom
                 def get_source_id
                   Rho::RhoConfig::sources[self.name.to_s]['source_id'].to_s
                 end
+                
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
                 def find(*args)
                   list = []
+                  hash_list = {}
+                  conditions = {}
+                  attrib_length = 0
+                  source = Rho::RhoConfig::sources[self.name.to_s]
+                  attrib_length = source['attribs'].length if source
+                  # source attributes are not initialized, try again
+                  ::Rhom::RhomObjectFactory::init_source_attribs if attrib_length == 0
+
+                  # first find all query objects
                   if args.first == :all
-                    result = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
-                                                              '*',
-                                                              {"source_id"=>get_source_id,"update_type"=>'query'},
-                                                              {"order by"=>'object'})
+                    conditions = {"source_id"=>get_source_id}
                   else
-                    obj = strip_braces(args.first.to_s)
-                    result = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
-                                                              '*',
-                                                              {"object"=>obj,"update_type"=>'query'})
+                    conditions = {"object"=>strip_braces(args.first.to_s)}
                   end
-                  list = get_list(result)
+                  
+                  # process query, create, and update lists in order
+                  ["query", "create", "update"].each do |update_type|
+                    conditions.merge!({"update_type"=>update_type})
+                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions,
+                                                                    {"order by"=>'object'})
+                    objs.collect! do |obj|
+                      object = obj['object']
+                      attrib = obj['attrib']
+                      value = obj['value']
+                      hash_list[object] = get_new_obj(obj) if not hash_list[object]
+                      if not method_name_reserved?(attrib) and hash_list[object].send attrib.to_sym
+                        hash_list[object].remove_var(attrib)
+                      end
+                      hash_list[object].send attrib.to_sym, value if not method_name_reserved?(attrib)
+                      nil # remove the element from the array
+                    end
+                  end
+
+                  # convert hash to array
+                  list = hash_list.values
+                  hash_list = nil
                   if list.length == 1 and args.first != :all
                     return list[0]
                   end
@@ -101,54 +126,12 @@ module Rhom
                 def find_by(*args)
                   # TODO: implement
                 end
-
-                # returns an array of objects based on an existing array
-                def get_list(objs)
-                  new_list = []
-                  attrib_length = 0
-                  source = Rho::RhoConfig::sources[self.name.to_s]
-                  if source
-                    attrib_length = source['attribs'].length
-                  end
-                  if attrib_length == 0
-                    # source attributes are not initialized, try again
-                    ::Rhom::RhomObjectFactory::init_source_attribs
-                  end
-                  if objs and source and attrib_length > 0
-                    list_length = 0
-                    list_length = (objs.length / attrib_length) unless attrib_length == 0
-                    new_obj = nil
-                    # iterate over the array and determine object
-                    # structure based on attribute/value pairs
-                    list_length.times do |i|
-                      new_obj = get_new_obj(objs[i*attrib_length])
-                      attrib_length.times do |j|
-                        # setup index and assign accessors
-                        idx = i*attrib_length+j
-                        begin
-                          # only update attributes if they belong
-                          # to the current object
-                          if objs[idx]['object'] == strip_braces((new_obj.send 'object'.to_sym))
-                            attrib = objs[idx]['attrib'].to_s
-                            value = objs[idx]['value'].to_s
-                            new_obj.send attrib.to_sym, value
-                          end
-                        rescue
-                          puts "failed to reference objs[#{idx}]..."
-                        end
-                      end
-                      new_list << new_obj
-                    end
-                  end
-                  new_list
-                end
   
+                private
                 # returns new model instance with a temp object id
                 def get_new_obj(obj, type='query')
                   tmp_obj = self.new
                   tmp_obj.send 'object'.to_sym, "{#{obj['object'].to_s}}"
-                  tmp_obj.send 'source_id'.to_sym, get_source_id
-                  tmp_obj.send 'update_type'.to_sym, type
                   tmp_obj
                 end
               end #class methods
@@ -190,15 +173,6 @@ module Rhom
                                                                "update_type"=>'create'})
                   end
                 end
-                # Create a temporary query record to display in the list
-                Rho::RhoConfig::sources[self.class.name.to_s]['attribs'].each do |attrib|
-                  result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
-                                                            {"source_id"=>self.get_inst_source_id,
-                                                             "object"=>obj,
-                                                             "attrib"=>attrib['attrib'],
-                                                             "value"=>self.send(attrib['attrib'].to_sym),
-                                                             "update_type"=>'query'})
-                end
                 result
               end
           
@@ -235,10 +209,6 @@ module Rhom
               
               def inst_strip_braces(str=nil)
                 str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
-              end
-            
-              def method_name_reserved?(method)
-                method =~ /object|source_id|update_type/
               end
             end)
         end
