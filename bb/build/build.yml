@@ -2,7 +2,7 @@ env:
   version: 0.2.0
   vendor: rhomobile
   bbver: 4.6
-  applog: ./rholog.txt
+  applog: rholog.txt
   paths:
     4.6:
       jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0
