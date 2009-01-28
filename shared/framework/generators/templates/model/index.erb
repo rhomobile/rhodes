@@ -1,7 +1,7 @@
 <ul id="<%= name.pluralize %>" title="<%= class_name.pluralize %>">
 <%%@<%=name.pluralize%>.each do |x|%>
 <%if self.attributes?%>
-<li><%%=link_to "#{x.<%=attributes[0]%>}", "edit", x.object%></li>
+<li><%%=link_to "#{x.<%=attributes[0]%>}", "show", x.object%></li>
 <%else%>
 <li>Some list entry...</li>
 <%end%>

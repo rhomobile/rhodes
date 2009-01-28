@@ -23,7 +23,7 @@ VALUE getPhonebookRecord(void* pb, char* id);
 VALUE getfirstPhonebookRecord(void* pb);
 VALUE getnextPhonebookRecord(void* pb);
 
-void* createRecord();
+void* createRecord(void* pb);
 void* openPhonebookRecord(void* pb, char* id);
 int setRecordValue(void* record, char* prop, char* value);
 int addRecord(void* pb, void* record);

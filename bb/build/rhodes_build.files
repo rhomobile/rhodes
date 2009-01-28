@@ -6,6 +6,7 @@
 ..\rhodes\src\rhomobile\SecondaryResourceFetchThread.java 
 ..\rhodes\src\rhomobile\URI.java 
 ..\rhodes\src\rhomobile\Utilities.java
+..\rhodes\src\rhomobile\RhoPhonebook.java 
 ..\PerstDb\src11\jsr75\org\garret\perst\impl\Jsr75File.java
 ..\rhodes\src\rhomobile\NetworkAccess.java
 ..\rhodes\src\rhomobile\db\PerstLiteAdapter.java

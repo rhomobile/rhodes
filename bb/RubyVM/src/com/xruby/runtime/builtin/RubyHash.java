@@ -23,6 +23,12 @@ public class RubyHash extends RubyBasic {
         super(RubyRuntime.HashClass);
     }
 
+    public RubyValue clone() {
+    	RubyHash cl = new RubyHash();
+	  	cl.doClone(this);
+	  	return cl;
+    }
+    
     //@SuppressWarnings("unchecked")
     protected void doClone(RubyValue orig) {
     	RubyHash h = (RubyHash)orig;
