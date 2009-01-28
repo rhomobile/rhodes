@@ -1,8 +1,15 @@
 <ul id="SugarAccounts" title="Accounts">
-<%@SugarAccounts.each do |x|%>
+<% @SugarAccounts.each do |x| %>
 
-<li><%=link_to "#{x.name}", "show", x.object%></li>
+<li class="overview">
+	<a href="<%= "/RhoSugarCRM/SugarAccount/#{x.object}/show" %>">
+		<%= x.name %>
+		<div>
+		<%= x.billing_address_city %>&nbsp;<%= x.phone_office %>
+		</div>
+	</a>
+</li>
 
-<%end%>
+<% end %>
 <li><font color="blue"><%=link_to "New Account", "new"%></font></li>
 </ul>

@@ -25,6 +25,10 @@
 			  <label>Member Of</label>
 				<select id="SugarAccount_parent" name="SugarAccount[parent_id]">
 					<option value="">-- none --</option>
+					<% SugarAccount.find(:all).each do |account| %>
+						<% selected = (@SugarAccount.parent_id == strip_braces(account.object)) ? "selected=\"#{strip_braces(account.object)}\"" : "" %>
+						<option value="<%= strip_braces(account.object) %>" <%= selected %>><%= account.name %></option>
+					<% end %>
 				</select>
 		  </div>
 		
@@ -68,6 +72,10 @@
 			  <label>Assigned to</label>
 				<select id="SugarAccount_assigned_user_id" name="SugarAccount[assigned_user_id]">
 					<option value="">-- none --</option>
+					<% SugarUser.find(:all).each do |user| %>
+						<% selected = (@SugarAccount.assigned_user_id == strip_braces(user.object)) ? "selected=\"#{strip_braces(user.object)}\"" : "" %>
+						<option value="<%= strip_braces(user.object) %>" <%= selected %>><%= user.user_name %></option>
+					<% end %>
 				</select>
 		  </div>
 		

@@ -11,6 +11,8 @@ list-style-type:none;
 
 ul.info li {font-weight:bold;margin-left:10px;padding-left:0;}
 
+li.overview div {font-size:85%;font-weight:normal;color:#4183C4;}
+
 .tallrow {
 	position: relative;
 	height:84px;
@@ -40,6 +42,7 @@ table.grid {
 	cellspacing: 20px;
 	width: 100%;
 
+	border-collapse: collapse;
 	position: relative;
 	margin: 0 0 20px 0;
 	padding: 5px;
@@ -50,15 +53,20 @@ table.grid {
 	font-size: 80%;
 }
 
-table.grid tr {
-    border-bottom: 1px solid #BBBBBB;
+table.grid td {
+	border-bottom: 1px solid #BBBBBB;
+	padding:10px;
+	margin:0;
+}
+
+table.grid tr:last-of-type td {
+	border-bottom: none;
 }
 
 .gridleft {
 	text-align: right;
 	width: 35%;
 	color: #4183C4;
-	margin-right:10px;
 }
  
 .gridright {
