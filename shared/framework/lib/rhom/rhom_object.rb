@@ -30,7 +30,8 @@ module Rhom
         varname = name.to_s.gsub(/=/,"")
         if instance_variable_defined? "@#{varname}"
           #TODO: Figure out why this returns an array
-          instance_variable_get( "@#{varname}" )[0]
+          inst_var = instance_variable_get( "@#{varname}" )[0]
+          inst_var.nil? or inst_var.length == 0 ? "" : inst_var
         else  
           instance_variable_set( "@#{varname}", args )  
         end
