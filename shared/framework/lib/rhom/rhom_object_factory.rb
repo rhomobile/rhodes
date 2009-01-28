@@ -106,10 +106,10 @@ module Rhom
                       attrib = obj['attrib']
                       value = obj['value']
                       hash_list[object] = get_new_obj(obj) if not hash_list[object]
-                      if not method_name_reserved?(attrib) and hash_list[object].send attrib.to_sym
+                      if not method_name_reserved?(attrib) and hash_list[object].send(attrib.to_sym)
                         hash_list[object].remove_var(attrib)
                       end
-                      hash_list[object].send attrib.to_sym, value if not method_name_reserved?(attrib)
+                      hash_list[object].send(attrib.to_sym(), value) if not method_name_reserved?(attrib)
                       nil # remove the element from the array
                     end
                   end
