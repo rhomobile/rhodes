@@ -23,6 +23,9 @@ textarea {
   font-weight: normal;
 }
 
+label {
+	font-size: 80%;	
+}
 .tallrow label { float:left; line-height: 42px;font-weight: bold; margin-left:14px;}
 .tallrow select { float:right; clear:left; font-size: 120%; height: 30px;}
 
@@ -45,6 +48,10 @@ table.grid {
 	border: 1px solid #999999;
 	background: #ffffff;
 	font-size: 80%;
+}
+
+table.grid tr {
+    border-bottom: 1px solid #BBBBBB;
 }
 
 .gridleft {
