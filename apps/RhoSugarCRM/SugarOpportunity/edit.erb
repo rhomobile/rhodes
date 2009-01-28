@@ -5,7 +5,7 @@
 	  action="<%=url_for('update')%>">
 	
 	  <fieldset>
-		<input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
+		  <input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
 		
 		  <div class="row">
 			  <label>Name</label>
@@ -17,10 +17,19 @@
 			  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
 		  </div>
 
+<!--
 			<div class="row">
 			  <label>Type</label>
 			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
 			</div>
+-->				
+				
+			<select id="opportunity_type" name="SugarOpportunity[opportunity_type]">
+				<% %w(Existing\ Business New\ Business).each do |state| %>
+					<% selected = (state == @SugarOpportunity.opportunity_type) ? "selected=\"#{@SugarOpportunity.opportunity_type}\"" : "" %>
+					<option <%= selected %>><%= state %></option>
+				<% end %>
+			</select>
 						
 		  <div class="row">
 			  <label>Lead Source</label>
@@ -39,8 +48,8 @@
 
 		  <div class="tallrow" style="height:auto">
 			  <label>Description</label>
-			  <textarea  name="SugarOpportunity[description]" value="<%=@SugarOpportunity.description%>" rows="5" style="margin:6px;width:90%"></textarea>
-				<div class="clearer"></div>			
+			  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= @SugarOpportunity.description %></textarea>
+				<div class="clearer"></div>
 		  </div>
 					
 		 </fieldset>

@@ -1,5 +1,7 @@
 <div class="panel">
- 
+
+	<a class="button right_button" href="<%=url_for('edit', @SugarOpportunity.object)%>">Edit</a>
+ 	
    <table class="grid">			
 		  <tr>
 			<td class="gridleft">Opportunity Name</td>
@@ -78,9 +80,5 @@
 		  </tr>
 						
 	</table>
-	
-	<p align="center" class="whiteButton">
-		<a href="<%=url_for('edit', @SugarOpportunity.object)%>">Edit</a>
-	</p>	
- 
+	 
 </div>

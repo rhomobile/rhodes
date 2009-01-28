@@ -74,3 +74,6 @@ table.grid tr:last-of-type td {
 	font-weight:bold;
 }
 
+.right_button {
+    margin: -45px 0 0 0;
+}
