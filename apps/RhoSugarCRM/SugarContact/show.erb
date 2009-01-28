@@ -1,1 +1,117 @@
-<%= link_to "#{@SugarContact.first_name} #{@SugarContact.last_name}", "edit", @SugarContact.object %>
+<div class="panel">
+ 
+<a class="button right_button" href="<%=url_for('edit', @SugarContact.object)%>">Edit</a>
+
+<table class="grid">
+  <tr>
+    <td class="gridleft">Name</td>
+		<td class="gridright"><%= [@SugarContact.salutation, @SugarContact.first_name,@SugarContact.last_name].join(' ')%></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Account</td>
+		<td class="gridright"><%= @SugarContact.account_name %></td>
+	</tr>		
+  <tr>
+    <td class="gridleft">Lead Source</td>
+		<td class="gridright"><%= @SugarContact.lead_source %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Campaign</td>
+		<td class="gridright"><%= @SugarContact.campaign_name %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Title</td>
+		<td class="gridright"><%= @SugarContact.title %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Department</td>
+		<td class="gridright"><%= @SugarContact.department %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Reports To</td>
+		<td class="gridright"><%= @SugarContact.report_to_name %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Do Not Call</td>
+		<td class="gridright"><%= @SugarContact.do_not_call %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Team</td>
+		<td class="gridright"><%= @SugarContact.team_name %></td>
+	</tr>		
+  <tr>
+    <td class="gridleft">Assigned to</td>
+		<td class="gridright"><%= @SugarContact.assigned_user_name %></td>
+	</tr>		
+  <tr>
+    <td class="gridleft">Primary Address</td>
+		<td class="gridright"><%=@SugarContact.primary_address_street%><br />
+			<%=@SugarContact.primary_address_city%> <%=@SugarContact.primary_address_state%> <%=@SugarContact.primary_address_postalcode%><br />
+			<%=@SugarContact.primary_address_country%></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Description</td>
+		<td class="gridright"><%= @SugarContact.description %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Email #1</td>
+		<td class="gridright"><%= mailto @SugarContact.email1, @SugarContact.email1 %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Email #2</td>
+		<td class="gridright"><%= mailto @SugarContact.email2, @SugarContact.email2 %></td>
+	</tr>
+	
+  <tr>
+    <td class="gridleft">Office Phone</td>
+		<td class="gridright"><%= click_to_call @SugarContact.phone_work %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Mobile</td>
+		<td class="gridright"><%= click_to_call @SugarContact.phone_mobile %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Home</td>
+		<td class="gridright"><%= click_to_call @SugarContact.phone_home %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Other Phone</td>
+		<td class="gridright"><%= click_to_call @SugarContact.phone_other %></td>
+	</tr>
+	
+  <tr>
+    <td class="gridleft">Fax</td>
+		<td class="gridright"><%= @SugarContact.phone_fax %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Birthdate</td>
+		<td class="gridright"><%= @SugarContact.birthdate %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Assistant</td>
+		<td class="gridright"><%= @SugarContact.assistant %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Assistant Phone</td>
+		<td class="gridright"><%= click_to_call @SugarContact.assistant_phone %></td>
+	</tr>
+	
+  <tr>
+    <td class="gridleft">Date Modified</td>
+		<td class="gridright"><%= @SugarContact.date_modified %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Date Created</td>
+		<td class="gridright"><%= @SugarContact.date_entered %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Other Address</td>
+		<td class="gridright"><%=@SugarContact.alt_address_street%><br />
+			<%=@SugarContact.alt_address_city%> <%=@SugarContact.alt_address_state%> <%=@SugarContact.alt_address_postalcode%><br />
+			<%=@SugarContact.alt_address_country%></td>
+	</tr>
+		
+
+</table>
+
+</div>

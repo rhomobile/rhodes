@@ -22,13 +22,24 @@
 	  </div>
 	
 		 <div class="row">
-			  <label>Account Name</label>
-			  <input type="text" name="SugarContact[account_name]" value="<%=@SugarContact.account_name%>"/>
+			  <label>Account </label>			
+				<select id="SugarAccount_account_id" name="SugarContact[account_id]">
+					<option value="">-- none --</option>
+					<% SugarAccount.find(:all).each do |account| %>
+						<% selected = (@SugarContact.account_id == strip_braces(account.object)) ? "selected=\"#{strip_braces(account.object)}\"" : "" %>
+						<option value="<%= strip_braces(account.object) %>" <%= selected %>><%= account.name %></option>
+					<% end %>
+				</select>
 		  </div>
 		
 	  <div class="row">
-		  <label>Lead Source</label>
-		  <input type="text" name="SugarContact[lead_source]" value="<%=@SugarContact.lead_source%>"/>
+		  <label>Lead Source</label>	
+			<select id="SugarContact_lead_source]" name="SugarContact[lead_source]">
+				<option value="" label=""/>
+				<% %w(Cold\ Call Existing\ Customer Self\ Generated Employee Partner Public\ Relations Direct\ Mail Trade\ Show Web\ Site Word\ of\ mouth Email  Campaign Other).each do |choice| %>
+					<option <% if choice == @SugarContact.lead_source %>selected="selected"<% end %>><%= choice %></option>
+				<% end %>
+			</select>
 	  </div>
 	
 	  <div class="row">

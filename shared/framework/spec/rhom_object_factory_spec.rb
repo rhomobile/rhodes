@@ -36,7 +36,7 @@ describe "RhomObjectFactory" do
     "2".should == Case.get_source_id
     "3".should == Employee.get_source_id
   end
-  
+
   it "should dynamically assign values" do
     account = Account.new
     account.name = 'hello name'
@@ -59,12 +59,12 @@ describe "RhomObjectFactory" do
   it "should retrieve Account models" do
     results = Account.find(:all)
     results.length.should == 5
-    "vSpring".should == results[0].name
-    "Finance".should == results[0].industry
-    "Rhomobile".should == results[1].name
-    "Technology".should == results[1].industry
-    "Technology".should == results[4].industry
-    "Mobio India".should == results[4].name
+    results[0].name.should == "vSpring"
+    results[0].industry.should == "Finance"
+    results[1].name.should == "Rhomobile"
+    results[1].industry.should == "Technology"
+    results[4].industry.should == "Technology"
+    results[4].name.should == "Mobio India"
   end
   
   it "should have correct number of attributes" do
@@ -96,10 +96,8 @@ describe "RhomObjectFactory" do
     destroy_id = @account.object
     @account.destroy
     @account_nil = Account.find(destroy_id)
-    
     @account_nil.size.should == 0
     new_count = Account.find(:all).size
-    
     (count - 1).should == new_count
   end
   
@@ -107,14 +105,11 @@ describe "RhomObjectFactory" do
     new_attributes = {"name"=>"Mobio US"}
     @account = Account.find("44e804f2-4933-4e20-271c-48fcecd9450d")
     @account.update_attributes(new_attributes)
-    
     @new_acct = Account.find("44e804f2-4933-4e20-271c-48fcecd9450d")
-    
-    puts "new acct: #{@new_acct.inspect}"
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Technology"
   end
-  
+
   it "should fully update a record" do
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
     @account = Account.find(:all).first
@@ -124,5 +119,22 @@ describe "RhomObjectFactory" do
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
+  end
+
+  it "should retrieve and modify one record" do
+    @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @acct.name.should == "Mobio US"
+    @acct.industry.should == "Technology"
+    
+    @acct.name = "Rhomobile US"
+    
+    @acct.name.should == "Rhomobile US"
+  end
+  
+  it "should return an empty value for a non-existent attribute" do
+    @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @acct.foobar.should be_nil
   end
 end
