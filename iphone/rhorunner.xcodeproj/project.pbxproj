@@ -21,7 +21,6 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		F563D0340EA541710062DA57 /* geolocation.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D0330EA541710062DA57 /* geolocation.c */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
@@ -104,8 +103,6 @@
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F563D0320EA541710062DA57 /* geolocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = geolocation.h; path = GeoLocation/geolocation.h; sourceTree = "<group>"; };
-		F563D0330EA541710062DA57 /* geolocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation.c; path = GeoLocation/geolocation.c; sourceTree = "<group>"; };
 		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
 		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -246,8 +243,6 @@
 		F563D0310EA5408C0062DA57 /* GeoLocation */ = {
 			isa = PBXGroup;
 			children = (
-				F563D0320EA541710062DA57 /* geolocation.h */,
-				F563D0330EA541710062DA57 /* geolocation.c */,
 				F563D38D0EA6BC2E0062DA57 /* LocationController.h */,
 				F563D38E0EA6BC2E0062DA57 /* LocationController.m */,
 			);
@@ -443,7 +438,6 @@
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
 				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
 				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
-				F563D0340EA541710062DA57 /* geolocation.c in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
