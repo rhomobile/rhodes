@@ -1,4 +1,6 @@
 <ul id="SugarAccounts" title="Accounts">
+<a class="button right_button" href="/RhoSugarCRM/SugarAccount/new">New</a>
+	
 <% @SugarAccounts.each do |x| %>
 
 <li class="overview">
@@ -11,5 +13,4 @@
 </li>
 
 <% end %>
-<li><font color="blue"><%=link_to "New Account", "new"%></font></li>
 </ul>
