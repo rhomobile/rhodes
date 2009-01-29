@@ -197,7 +197,7 @@ VALUE getnextPhonebookRecord(void* pb) {
 
 //==================================================================================
 
-void* createRecord() {
+void* createRecord(void* pb) {
 	return (void*) ABPersonCreate();
 }
 

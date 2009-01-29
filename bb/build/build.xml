@@ -106,7 +106,9 @@
   
   <target name="RhoBundle">
     <ant dir = "${sharedAnt.dir}" target="bundleCommon" />
-    <delete dir="${src.dir}/apps/shared" />
+    <delete dir="${src.dir}/apps/shared">
+      <!-- <exclude name="**/rhogeolocation.js" /> -->
+    </delete>
     
     <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
       <arg value="-jar" />

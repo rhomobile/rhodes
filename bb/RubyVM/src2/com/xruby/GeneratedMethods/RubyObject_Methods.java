@@ -21,7 +21,7 @@ klass.defineMethod( "instance_variable_set", new RubyTwoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
 		return ((RubyObject)receiver).instance_variable_set( arg0, arg1);}
 });
-klass.defineMethod( "instance_variable_remove", new RubyOneArgMethod(){ 
+klass.defineMethod( "remove_instance_variable", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyObject)receiver).instance_variable_remove( arg);}
 });

@@ -1553,7 +1553,7 @@ extern void* openPhonebookRecord(void* pb, char* id);
 extern VALUE getPhonebookRecord(void* pb, char* id);
 extern VALUE getfirstPhonebookRecord(void* pb);
 extern VALUE getnextPhonebookRecord(void* pb);
-extern void* createRecord();
+extern void* createRecord(void* pb);
 extern int setRecordValue(void* record, char* property, char* value);
 extern int addRecord(void* pb, void* record);
 extern int saveRecord(void* pb, void* record);
@@ -1804,13 +1804,19 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_createRecord(int argc, VALUE *argv, VALUE self) {
+  void *arg1 = (void *) 0 ;
   void *result = 0 ;
+  int res1 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  result = (void *)createRecord();
+  res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "createRecord" "', argument " "1"" of type '" "void *""'"); 
+  }
+  result = (void *)createRecord(arg1);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_void, 0 |  0 );
   return vresult;
 fail:
@@ -2225,3 +2231,4 @@ SWIGEXPORT void Init_Phonebook(void) {
   rb_define_module_function(mPhonebook, "saveRecord", _wrap_saveRecord, -1);
   rb_define_module_function(mPhonebook, "deleteRecord", _wrap_deleteRecord, -1);
 }
+

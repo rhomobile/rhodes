@@ -1,3 +1,5 @@
+require 'bsearch'
+
 module Rho
 	class RhoContact
 		class << self
@@ -20,7 +22,7 @@ module Rho
 			def create!(properties)
 				pb = Phonebook::openPhonebook
 				unless pb.nil?
-					record = Phonebook::createRecord
+					record = Phonebook::createRecord(pb)
 					if record.nil?
 						puts "Can't find record " + properties['id']
 					else
@@ -62,6 +64,47 @@ module Rho
 				end
 			end
 
-		end
-	end
-end
+			# Examples of how to use select method:
+			#
+    		# selected = Rho::RhoContact.select('first_name' => 'David') { |x| x[1]['last_name']=='Taylor' }
+			# ==> returns record(s) of the David Taylor
+			#
+    		# selected = Rho::RhoContact.select('first_name' => 'Kate')
+			# ==> Returns all records of Kate
+			#
+    		# selected = Rho::RhoContact.select('last_name' => 'User') do |x|
+    		# 	x[1]['first_name']=='Test' and x[1]['company_name']=="rhomobile"
+    		# end
+			# ==> returns all records of the Test User from the company rhomobile
+			#
+			def select(index, &block)
+				key, value = index.keys[0], index.values[0]
+				if @contacts.nil? or @key != key
+					@key, @contacts = key, find(:all).to_a.sort! {|x,y| x[1][key] <=> y[1][key] }
+				end
+				found = @contacts[@contacts.bsearch_range {|x| x[1][key] <=> value}]
+				unless found.nil? or block.nil?
+					return found.select(&block)
+				end
+				return found
+			end
+
+			def select_by_name(first_last_name, &block)
+				if @contacts.nil?
+					@contacts = find(:all).to_a.sort! do |x,y|
+						x[1]['first_name'] + " " + x[1]['last_name'] <=> y[1]['first_name'] + " " + y[1]['last_name']
+					end
+				end
+				range = @contacts.bsearch_range do |x|
+					x[1]['first_name'] + " " + x[1]['last_name'] <=> first_last_name
+				end
+				found = @contacts[range]
+				unless found.nil? or block.nil?
+					return found.select(&block)
+				end
+				return found
+			end
+
+		end #<< self
+	end # class RhoContact
+end # module Rho

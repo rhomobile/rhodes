@@ -24,10 +24,14 @@ ExcludeFromBuildAll=0
 resources\icon.png
 src\rhomobile\DateTimeTokenizer.java
 src\rhomobile\db\PerstLiteAdapter.java
+src\rhomobile\location\GeoLocation.java
+src\rhomobile\location\GeoLocationAsync.java
+src\rhomobile\location\GeoLocationImpl.java
 src\rhomobile\NetworkAccess.java
 src\rhomobile\Properties.java
 src\rhomobile\RhoConnection.java
 src\rhomobile\RhodesApplication.java
+src\rhomobile\RhoPhonebook.java
 src\rhomobile\RhoRuby.java
 src\rhomobile\SecondaryResourceFetchThread.java
 src\rhomobile\sync\SyncConstants.java

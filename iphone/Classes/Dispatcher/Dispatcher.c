@@ -16,7 +16,7 @@
 #include "HttpMessage.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
-#include "geolocation.h"
+//#include "geolocation.h"
 #include "SyncEngine.h"
 
 char *trim(char *str)
