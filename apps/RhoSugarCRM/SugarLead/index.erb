@@ -1,7 +1,12 @@
 <ul id="SugarLeads" title="Leads">
-<%@SugarLeads.each do |x|%>
+<% @SugarLeads.each do |lead| %>
 
-<li><%=link_to "#{x.first_name} #{x.last_name}", "show", x.object%></li>
+<li class="overview">
+<%= link_to "#{lead.first_name} #{lead.last_name}", "show", lead.object %>
+<div>
+<%= lead.status %> | <%= lead.account_name %>
+</div>
+</li>
 
 <%end%>
 <li><font color="blue"><%=link_to "New Lead", "new"%></font></li>

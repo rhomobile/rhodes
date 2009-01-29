@@ -43,8 +43,14 @@
 	  </div>
 	
 	  <div class="row">
-		  <label>Campaign</label>
-		  <input type="text" name="SugarContact[campaign_name]" value="<%=@SugarContact.campaign_name%>"/>
+		  <label>Campaign</label>		
+			<select id="SugarContact_campaign_id" name="SugarContact[campaign_id]">
+				<option value="">-- none --</option>
+				<% SugarCampaign.find(:all).each do |campaign| %>
+					<% selected = (@SugarContact.campaign_id == strip_braces(campaign.object)) ? "selected=\"#{strip_braces(campaign.object)}\"" : "" %>
+					<option value="<%= strip_braces(campaign.object) %>" <%= selected %>><%= campaign.name %></option>
+				<% end %>
+			</select>
 	  </div>
 		
 	  <div class="row">
@@ -58,26 +64,88 @@
 	  </div> 
 	
 	  <div class="row">
-		  <label>Reports To</label>
-		  <input type="text" name="SugarContact[report_to_name]" value="<%=@SugarContact.report_to_name%>"/>
+		  <label>Reports To</label>		
+			<select id="SugarContact_reports_to_id" name="SugarContact[reports_to_id]">
+				<option value="">-- none --</option>
+				<% SugarContact.find(:all).each do |contact| %>
+					<% selected = (@SugarContact.reports_to_id == strip_braces(contact.object)) ? "selected=\"#{strip_braces(contact.object)}\"" : "" %>
+					<option value="<%= strip_braces(contact.object) %>" <%= selected %>><%= "#{contact.first_name} #{contact.last_name}" %></option>
+				<% end %>
+			</select>
 	  </div>
-
 
 	  <div class="row">
 		  <label>Do Not Call</label>
 		  <input type="checkbox" name="SugarContact[do_not_call]" value="<%=@SugarContact.do_not_call%>"/>
 	  </div>
-		
-		<div class="row">
-		  <label>Assigned to</label>
-		  <input type="text" name="SugarContact[assigned_user_name]" value="<%=@SugarContact.assigned_user_name%>"/>
+	
+	  <div class="row">
+		  <label>Team</label>
+			<select id="SugarContact_team_id" name="SugarContact[team_id]">
+				<option value="">-- none --</option>
+				<% SugarTeam.find(:all).each do |team| %>
+					<% selected = (@SugarContact.team_id == strip_braces(team.object)) ? "selected=\"#{strip_braces(team.object)}\"" : "" %>
+					<option value="<%= strip_braces(team.object) %>" <%= selected %>><%= team.name %></option>
+				<% end %>
+			</select>
 	  </div>
 	
-		  <div class="row">
-			  <label>Description</label>
-			  <input type="text" name="SugarContact[description]" value="<%=@SugarContact.description%>"/>
-		  </div>
+		<div class="row">
+		  <label>Assigned to</label>
+			<select id="SugarContact_assigned_user_id" name="SugarContact[assigned_user_id]">
+				<option value="">-- none --</option>
+				<% SugarUser.find(:all).each do |user| %>
+					<% selected = (@SugarContact.assigned_user_id == strip_braces(user.object)) ? "selected=\"#{strip_braces(user.object)}\"" : "" %>
+					<option value="<%= strip_braces(user.object) %>" <%= selected %>><%= user.user_name %></option>
+				<% end %>
+			</select>
+	  </div>
 	
+	</fieldset>
+	
+	<fieldset>
+		  <div class="row">
+			  <label>Office phone</label>
+			  <input type="text" name="SugarContact[phone_work]" value="<%=@SugarContact.phone_work%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Mobile</label>
+			  <input type="text" name="SugarContact[phone_mobile]" value="<%=@SugarContact.phone_mobile%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Home</label>
+			  <input type="text" name="SugarContact[phone_home]" value="<%=@SugarContact.phone_home%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Other phone</label>
+			  <input type="text" name="SugarContact[phone_other]" value="<%=@SugarContact.phone_other%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Fax</label>
+			  <input type="text" name="SugarContact[phone_fax]" value="<%=@SugarContact.phone_fax%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Birthdate</label>
+			  <input type="text" name="SugarContact[birthdate]" value="<%=@SugarContact.birthdate%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Assistant</label>
+			  <input type="text" name="SugarContact[assistant]" value="<%=@SugarContact.assistant%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Assistant Phone</label>
+			  <input type="text" name="SugarContact[assistant_phone]" value="<%=@SugarContact.assistant_phone%>"/>
+		  </div>
+	</fieldset>
+	
+		<fieldset>
 
 		  <div class="row">
 			  <label>Email #1</label>
@@ -121,60 +189,6 @@
 		  </div>
 		</fieldset>
 		
-		<fieldset>
-			  <div class="row">
-				  <label>Office phone</label>
-				  <input type="text" name="SugarContact[phone_work]" value="<%=@SugarContact.phone_work%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Mobile</label>
-				  <input type="text" name="SugarContact[phone_mobile]" value="<%=@SugarContact.phone_mobile%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Home</label>
-				  <input type="text" name="SugarContact[phone_home]" value="<%=@SugarContact.phone_home%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Other phone</label>
-				  <input type="text" name="SugarContact[phone_other]" value="<%=@SugarContact.phone_other%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Fax</label>
-				  <input type="text" name="SugarContact[phone_fax]" value="<%=@SugarContact.phone_fax%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Birthdate</label>
-				  <input type="text" name="SugarContact[birthdate]" value="<%=@SugarContact.birthdate%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Assistant</label>
-				  <input type="text" name="SugarContact[assistant]" value="<%=@SugarContact.assistant%>"/>
-			  </div>
-
-			  <div class="row">
-				  <label>Assistant Phone</label>
-				  <input type="text" name="SugarContact[assistant_phone]" value="<%=@SugarContact.assistant_phone%>"/>
-			  </div>
-		</fieldset>
-		
-
-		<fieldset>
-		  <div class="row">
-			  <label>Date Modified</label>
-			  <input type="text" name="SugarContact[date_modified]" value="<%=@SugarContact.date_modified%>"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>Date Created</label>
-			  <%=@SugarContact.date_entered%>
-		  </div>
-		</fieldset>
 	
 		<h2>Other Address</h2>
 		<fieldset>
@@ -204,11 +218,13 @@
 	  </div>
 	</fieldset>
 	
-	
+	<fieldset>
+  <div class="tallrow" style="height:auto">
+	  <label>Description</label>
+	  <textarea name="SugarContact[description]" rows="5" style="margin:6px;width:90%"><%= @SugarContact.description %></textarea>
+		<div class="clearer"></div>
+  </div>
+	</fieldset>
+
 	<input type="submit" value="Update"/>
-	<p align="center">
-		<a href="<%=url_for('delete', @SugarContact.object)%>">
-			<font color="#990000">Delete</font>
-		</a>
-	</p>
 </form>
