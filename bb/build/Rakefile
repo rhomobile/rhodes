@@ -11,7 +11,7 @@ task :clean do
 
   mkdir_p config["build"]["tmpdir"]
   mkdir_p config["build"]["targetdir"]
-
+  rm config["build"]["bindir"] + "/*.jar", :force => true
   rm "../RhoBundle/RhoBundle.jar", :force => true
 end
 
@@ -33,7 +33,7 @@ task :compileRhoBundle => :buildRubyVM do
   args << "RhoBundle"
 
   puts Jake.run(java,args,config["build"]["bindir"])
-
+  $stdout.flush
   Jake.ant(config["build"]["shareddir"],"deleteRBandERB")
 
 #XXX jar function should handle this
@@ -42,7 +42,7 @@ task :compileRhoBundle => :buildRubyVM do
   args << "../RhoBundle.jar"
   args << "apps/*.*"
   puts Jake.run(jarexe,args,config["build"]["srcdir"])
-
+  $stdout.flush
   rm_rf config["build"]["srcdir"]
 
 #XXX Move to task  
@@ -53,7 +53,7 @@ task :compileRhoBundle => :buildRubyVM do
   args << "../RhoBundle"
   args << config["build"]["bindir"] + "/RhoBundle.jar"
   puts Jake.run(jdehome + "/bin/preverify.exe",args)
-
+  $stdout.flush
 end
 
 desc "Build RubyVM"
@@ -82,7 +82,7 @@ task :buildRubyVM do
   args << "@RubyVM_build.files"
 
   puts Jake.run(javac,args)
-
+  $stdout.flush
   #XXX Move to task/function
   args = []
   args << "-classpath"
@@ -91,10 +91,10 @@ task :buildRubyVM do
   args << config["build"]["tmpdir"] + "/RubyVM.preverify"
   args << '"' + config["build"]["tmpdir"] + "/RubyVM\""
   puts Jake.run(jdehome + "/bin/preverify.exe",args)
-
+  $stdout.flush
 
   Jake.jar(rubyvmdir+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
-
+  $stdout.flush
 
 
   #RAPC it here
@@ -107,7 +107,7 @@ task :buildRubyVM do
        config["env"]["vendor"],
        config["env"]["version"]
       )
-
+  $stdout.flush
   rm_rf config["build"]["tmpdir"] + "/RubyVM.preverify"
   rm_rf config["build"]["tmpdir"] + "/RubyVM"
 end
@@ -122,7 +122,7 @@ task :compile do
   args << "-d"
   args << config["build"]["tmpdir"] 
   args << "-classpath"
-  args << config["build"]["bindir"] + "/RhoBundle.jar"
+  args << '"' + config["build"]["bindir"] + "/RhoBundle.jar;"+config["build"]["rubyVMdir"]+"/RubyVM.jar\""
   args << "-bootclasspath"
   args << '"' + jde + "/lib/net_rim_api.jar\""
   args << "-source"
@@ -135,7 +135,7 @@ task :compile do
   args << "@rhodes_build.files"
   puts "\texecuting javac"
   puts Jake.run(javac,args)
-
+  $stdout.flush
 end
 
 desc "Compile Rhodes"
@@ -148,19 +148,20 @@ task :compileRhodes do
   cp_r "../rhodes/resources", config["build"]["tmpdir"] + "/resources"
 
   Jake.jar(config["build"]["bindir"] + "/rhodes.jar", "manifest.mf", config["build"]["tmpdir"],true)
-
+  $stdout.flush
   args = []
   args << "-classpath"
   args << '"' + rhodesimplib + '"'
   args << "-d"
   args << '"' + config["build"]["targetdir"] + '"'
   args << '"' + config["build"]["bindir"] + "/rhodes.jar\""
-  puts Jake.run(jdehome + "/bin/preverify.exe",args)  
 
+  puts Jake.run(jdehome + "/bin/preverify.exe",args)  
+  $stdout.flush
     Jake.rapc("rhodesApp", 
        config["build"]["targetdir"],
        rhodesimplib,
-       '"' + Jake.get_absolute( config["build"]["bindir"] + "/rhodes.jar") +'"',
+       '"' + Jake.get_absolute( config["build"]["targetdir"] + "/rhodes.jar") +'"',
        "rhodesApp",
        config["env"]["vendor"],
        config["env"]["version"],
@@ -168,16 +169,16 @@ task :compileRhodes do
        false,
        true
       )
+  $stdout.flush
   cp "./rhodesApp.alx", config["build"]["targetdir"]
  # rm_rf config["build"]["bindir"]
-
 end
 
 desc "Build rhodes"
 task :rhodes => [ :clean, :compileRhoBundle, :compile ] do
   Jake.unjar(config["build"]["bindir"] + "/RhoBundle.jar",config["build"]["tmpdir"])
-
-  rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar"
+  $stdout.flush
+  rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["rubyVMdir"]+"/RubyVM.jar")
 
   Rake::Task["compileRhodes"].execute
 end
@@ -185,13 +186,14 @@ end
 desc "Unpack RhoBundle"
 task :unpackRhoBundle do
   Jake.unjar(config["build"]["bindir"] + "/RhoBundle.jar", config["build"]["tmpdir"])
+  $stdout.flush
 end
 
 desc "Test Rake Target"
 task :test do
   puts "test config"
   puts config["build"]["srcdir"] 
-
+  
 #  puts config.inspect
   puts config["build"]["srcdir"] 
 #  puts config.inspect
@@ -215,11 +217,12 @@ task :runsim do
   args << "/pin=0x2100000A"
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"])
 
-  Thread.new { Jake.run(command,args,jde + "/simulator") }
+  Thread.new { Jake.run(command,args,jde + "/simulator",true) }
+  $stdout.flush
 end
 
 desc "Run Sim, load app"
-task :runapp do
+task :runapp  => :rhodes do
   sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
   jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
 
@@ -236,7 +239,7 @@ task :runapp do
   args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
 
   Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-
+  $stdout.flush
   puts "sleeping to allow simulator to get started"
   sleep 15
 
@@ -246,16 +249,16 @@ task :runapp do
   args << "\"/execute=LoadCod("+Jake.get_absolute(config["build"]["targetdir"])+")\""
 
   Jake.run(command,args, jde + "/simulator")
-
+  $stdout.flush
   sleep 5
 
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
   Jake.run(command,args, jde + "/simulator")
-
+  $stdout.flush
   sleep 5
 
   Rake::Task["runsim"].execute
-
+  $stdout.flush
 end

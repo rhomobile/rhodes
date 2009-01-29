@@ -125,7 +125,7 @@ class Jake
   
     args = Array.new
   
-    args << "xvf"
+    args << "xf"
     args << src.to_s
   
     chdir targetdir
@@ -188,8 +188,8 @@ class Jake
   #  args << "-jar"
     args << '"' + jdehome + "/bin/rapc.jar\""
     args << "net.rim.tools.compiler.Compiler"
-  #  args << "-quiet" if quiet
-    args << "-noWarn" if nowarn
+    args << "-quiet" if quiet
+    args << "-nowarn" if nowarn
     args << '"import=' + imports + '"'
     args << 'codename=' + output
     args << 'library=' + output if library
@@ -216,7 +216,7 @@ class Jake
     args = []
     args << "-buildfile"
     args << dir + "/build.xml"
-    args << "-d" 
+   # args << "-d" 
     args << '"-Dbin.dir=' + get_absolute(bindir) + '"'
     args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
     args << '"-Druby.path=' + get_absolute(rubypath) + '"'
