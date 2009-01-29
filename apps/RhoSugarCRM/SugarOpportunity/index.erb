@@ -4,7 +4,7 @@
 <a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new">New</a>
 
 <li class="overview">
-	<a href="<%= "/RhoSugarCRM/SugarAccount/#{x.object}/show" %>">
+	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>">
 		<%= x.name %>
 		<div>
 		<%= x.sales_stage %>&nbsp;<%= x.probability %>%
@@ -13,9 +13,5 @@
 </li>
 
 <%end%>
-
-<!--
-<li><font color="blue"><%=link_to "New Opportunity", "new"%></font></li>
--->
 
 </ul>

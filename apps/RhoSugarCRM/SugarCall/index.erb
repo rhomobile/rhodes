@@ -1,8 +1,22 @@
 <ul id="SugarCalls" title="Calls">
+	
+<a class="button right_button" href="/RhoSugarCRM/SugarCall/new">New</a>
+	
 <%@SugarCalls.each do |x|%>
 
-<li><%=link_to "#{x.name}", "show", x.object%></li>
+	<li class="overview">
+		<a href="<%= "/RhoSugarCRM/SugarCall/#{x.object}/show" %>">
+			<%= x.name %>
+			<div>
+			<%= x.status %>&nbsp;<%= x.date_start %>
+			</div>
+		</a>
+	</li>
 
 <%end%>
+
+<!-->
 <li><font color="blue"><%=link_to "New Call", "new"%></font></li>
+-->
+
 </ul>

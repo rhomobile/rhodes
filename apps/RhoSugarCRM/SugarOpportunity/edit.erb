@@ -23,18 +23,26 @@
 			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
 			</div>
 -->				
-				
+
+   <div class="row">			
+      <label>Type</label>
 			<select id="opportunity_type" name="SugarOpportunity[opportunity_type]">
 				<% %w(Existing\ Business New\ Business).each do |state| %>
 					<% selected = (state == @SugarOpportunity.opportunity_type) ? "selected=\"#{@SugarOpportunity.opportunity_type}\"" : "" %>
 					<option <%= selected %>><%= state %></option>
 				<% end %>
-			</select>
-						
-		  <div class="row">
-			  <label>Lead Source</label>
-			  <input type="text" name="SugarOpportunity[lead_source]" value="<%=@SugarOpportunity.lead_source%>"/>
-		  </div>
+			</select>	
+  </div>		
+
+		<div class="row">
+		  <label>Lead Source</label>
+				<select id="lead_source" name="SugarOpportunity[lead_source]">
+					<% %w(\ Cold\ Call Existing\ Customer Self\ Generated Employee Partner Public\ Relations Direct\ Mail Conference Trade\ Show Web\ Site Word\ of\ mouth Email Campaign Other).each do |state| %>
+						<% selected = (state == @SugarOpportunity.lead_source) ? "selected=\"#{@SugarOpportunity.lead_source}\"" : "" %>
+						<option <%= selected %>><%= state %></option>
+					<% end %>
+				</select>
+	  </div>
 	
 		  <div class="row">
 			  <label>Campaign</label>
@@ -82,10 +90,7 @@
 		  </div>
 																						
 	</fieldset>
+	
 	<input type="submit" value="Update"/>
-	<p align="center">
-		<a href="<%=url_for('delete', @SugarOpportunity.object)%>">
-			<font color="#990000">Delete</font>
-		</a>
-	</p>
+		
 </form>
