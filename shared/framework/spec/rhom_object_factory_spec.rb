@@ -32,11 +32,11 @@ describe "RhomObjectFactory" do
   end
   
   it "should set source_id attributes" do
-    "1".should == Account.get_source_id
-    "2".should == Case.get_source_id
-    "3".should == Employee.get_source_id
+    Account.get_source_id.should == "1"
+    Case.get_source_id.should == "2"
+    Employee.get_source_id.should == "3"
   end
-  
+
   it "should dynamically assign values" do
     account = Account.new
     account.name = 'hello name'
@@ -109,7 +109,7 @@ describe "RhomObjectFactory" do
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Technology"
   end
-  
+
   it "should fully update a record" do
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
     @account = Account.find(:all).first
@@ -119,5 +119,22 @@ describe "RhomObjectFactory" do
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
+  end
+
+  it "should retrieve and modify one record" do
+    @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @acct.name.should == "Mobio US"
+    @acct.industry.should == "Technology"
+    
+    @acct.name = "Rhomobile US"
+    
+    @acct.name.should == "Rhomobile US"
+  end
+  
+  it "should return an empty value for a non-existent attribute" do
+    @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @acct.foobar.should be_nil
   end
 end
