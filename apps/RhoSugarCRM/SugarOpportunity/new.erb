@@ -3,99 +3,91 @@
 	  id="SugarOpportunity_new_form" 
 	  method="POST" 
 	  action="<%=url_for('create')%>">
-	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
-		
-		  <div class="row">
-			  <label>name: </label>
-			  <input type="text" name="SugarOpportunity[name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>date_entered: </label>
-			  <input type="text" name="SugarOpportunity[date_entered]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>date_modified: </label>
-			  <input type="text" name="SugarOpportunity[date_modified]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>modified_by_name: </label>
-			  <input type="text" name="SugarOpportunity[modified_by_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>created_by: </label>
-			  <input type="text" name="SugarOpportunity[created_by]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>created_by_name: </label>
-			  <input type="text" name="SugarOpportunity[created_by_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>description: </label>
-			  <input type="text" name="SugarOpportunity[description]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>assigned_user_name: </label>
-			  <input type="text" name="SugarOpportunity[assigned_user_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>opportunity_type: </label>
-			  <input type="text" name="SugarOpportunity[opportunity_type]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>account_name: </label>
-			  <input type="text" name="SugarOpportunity[account_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>campaign_name: </label>
-			  <input type="text" name="SugarOpportunity[campaign_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>lead_source: </label>
-			  <input type="text" name="SugarOpportunity[lead_source]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>amount: </label>
-			  <input type="text" name="SugarOpportunity[amount]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>amount_usdollar: </label>
-			  <input type="text" name="SugarOpportunity[amount_usdollar]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>date_closed: </label>
-			  <input type="text" name="SugarOpportunity[date_closed]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>next_step: </label>
-			  <input type="text" name="SugarOpportunity[next_step]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>sales_stage: </label>
-			  <input type="text" name="SugarOpportunity[sales_stage]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>probability: </label>
-			  <input type="text" name="SugarOpportunity[probability]"/>
-		  </div>
-		
-	</fieldset>
+	
+			  <fieldset>
+				  <input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
+
+				  <div class="row">
+					  <label>Name</label>
+					  <input type="text" name="SugarOpportunity[name]" value="<%=@SugarOpportunity.name%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Account</label>
+					  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
+				  </div>
+
+				   <div class="row">			
+				      <label>Type</label>
+							<select id="opportunity_type" name="SugarOpportunity[opportunity_type]">
+								<% %w(Existing\ Business New\ Business).each do |state| %>
+									<% selected = (state == @SugarOpportunity.opportunity_type) ? "selected=\"#{@SugarOpportunity.opportunity_type}\"" : "" %>
+									<option <%= selected %>><%= state %></option>
+								<% end %>
+							</select>	
+				  </div>		
+
+						<div class="row">
+						  <label>Lead Source</label>
+								<select id="lead_source" name="SugarOpportunity[lead_source]">
+									<% %w(\ Cold\ Call Existing\ Customer Self\ Generated Employee Partner Public\ Relations Direct\ Mail Conference Trade\ Show Web\ Site Word\ of\ mouth Email Campaign Other).each do |state| %>
+										<% selected = (state == @SugarOpportunity.lead_source) ? "selected=\"#{@SugarOpportunity.lead_source}\"" : "" %>
+										<option <%= selected %>><%= state %></option>
+									<% end %>
+								</select>
+					  </div>
+
+				  <div class="row">
+					  <label>Lead Source</label>
+					  <input type="text" name="SugarOpportunity[lead_source]" value="<%=@SugarOpportunity.lead_source%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Campaign</label>
+					  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Assigned To</label>
+					  <input type="text" name="SugarOpportunity[assigned_user_name]" value="<%=@SugarOpportunity.assigned_user_name%>"/>
+				  </div>
+
+				  <div class="tallrow" style="height:auto">
+					  <label>Description</label>
+					  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= @SugarOpportunity.description %></textarea>
+						<div class="clearer"></div>
+				  </div>
+
+				 </fieldset>
+
+				 <fieldset>	
+
+				  <div class="row">
+					  <label>Amount</label>
+					  <input type="text" name="SugarOpportunity[amount_usdollar]" value="<%=@SugarOpportunity.amount_usdollar%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Close Date</label>
+					  <input type="text" name="SugarOpportunity[date_closed]" value="<%=@SugarOpportunity.date_closed%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Next Steps</label>
+					  <input type="text" name="SugarOpportunity[next_step]" value="<%=@SugarOpportunity.next_step%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Sales Stage</label>
+					  <input type="text" name="SugarOpportunity[sales_stage]" value="<%=@SugarOpportunity.sales_stage%>"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Probability&nbsp;(%)</label>
+					  <input type="text" name="SugarOpportunity[probability]" value="<%=@SugarOpportunity.probability%>"/>
+				  </div>
+
+			</fieldset>
+	
 	<input type="submit" value="Create"/>
 </form>
