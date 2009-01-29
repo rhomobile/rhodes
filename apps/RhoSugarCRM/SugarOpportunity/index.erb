@@ -1,8 +1,17 @@
 <ul id="SugarOpportunities" title="Opportunities">
 <%@SugarOpportunities.each do |x|%>
 
-<li><%=link_to "#{x.name}", "show", x.object%></li>
+<a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new">New</a>
+
+<li class="overview">
+	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>">
+		<%= x.name %>
+		<div>
+		<%= x.sales_stage %>&nbsp;<%= x.probability %>%
+		</div>
+	</a>
+</li>
 
 <%end%>
-<li><font color="blue"><%=link_to "New Opportunity", "new"%></font></li>
+
 </ul>
