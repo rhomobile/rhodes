@@ -46,7 +46,6 @@ module Rho
           src_id = source['source_id']
           url = source['url']
           if !self.source_initialized?(src_id)
-            puts "initializing source #{src_id}..."
             Rhom::RhomDbAdapter::insert_into_table('sources',
                                                   {"source_id"=>src_id,"source_url"=>url})
           end
