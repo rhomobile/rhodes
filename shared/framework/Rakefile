@@ -18,7 +18,8 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
     ['templater'],
     ['diff-lcs'],
     ['extlib'],
-    ['newgem']
+    ['newgem'],
+    ['activesupport']
   ]
   
   p.clean_globs |= %w[**/.DS_Store tmp *.log]

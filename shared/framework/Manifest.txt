@@ -17,6 +17,7 @@ generators/templates/model/show.erb
 generators/templates/source/source_adapter.rb
 lib/ServeME.rb
 lib/TestServe.rb
+lib/bsearch.rb
 lib/builtinME.rb
 lib/date.rb
 lib/date/format.rb
