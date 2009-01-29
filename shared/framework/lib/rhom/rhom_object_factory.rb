@@ -26,25 +26,9 @@ module Rhom
     
     def initialize
 	    unless not defined? Rho::RhoConfig::sources
-  	    ::Rhom::RhomObjectFactory::init_source_attribs
   	    init_objects
   	  end
     end
-	
-	  class << self
-	    def init_source_attribs
-    	  # merge source attributes into config hash
-    	  # TODO: This shouldn't reference 'source[1]' directly
-    	  Rho::RhoConfig::sources.each do |source|
-    	    src_attribs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
-    	                                                         'attrib',
-    	                                                         {"source_id"=>source[1]['source_id'].to_s},
-    	                                                         {"distinct"=>true})
-    	    # update our source with the proper attributes
-    		  source[1].merge!({"attribs"=>src_attribs})
-    	  end
-    	end
-  	end
   
     # Initialize new object with dynamic attributes
     def init_objects
@@ -83,11 +67,6 @@ module Rhom
                   list = []
                   hash_list = {}
                   conditions = {}
-                  attrib_length = 0
-                  source = Rho::RhoConfig::sources[self.name.to_s]
-                  attrib_length = source['attribs'].length if source
-                  # source attributes are not initialized, try again
-                  ::Rhom::RhomObjectFactory::init_source_attribs if attrib_length == 0
 
                   # first find all query objects
                   if args.first == :all

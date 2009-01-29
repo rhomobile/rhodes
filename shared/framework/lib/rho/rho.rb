@@ -34,7 +34,6 @@ module Rho
     # setup the sources table and model attributes for all applications
     def init_sources
       if defined? Rho::RhoConfig::sources
-        src_attribs = []
         
         # quick and dirty way to get unique array of hashes
         uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
