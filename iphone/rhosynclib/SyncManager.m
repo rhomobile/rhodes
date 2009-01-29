@@ -68,6 +68,7 @@ char *fetch_remote_data(char *url_string) {
 					errorCode == NSURLErrorUserAuthenticationRequired) {
 					logout();
 				}
+				if (session) free(session);
 				[pool release];
 				return NULL;
 			}  else {
@@ -196,6 +197,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 					errorCode == NSURLErrorUserAuthenticationRequired) {
 					logout();
 				}
+				if (session) free(session);
 				[pool release];
 				return SYNC_PUSH_CHANGES_ERROR;
 			} else {
@@ -204,9 +206,11 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 			}
 		}
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+		if (session) free(session);
 		[pool release];
 		return SYNC_PUSH_CHANGES_OK;
 	} else {
+		if (session) free(session);
 		[pool release];
 		return SYNC_PUSH_CHANGES_ERROR;
 	}

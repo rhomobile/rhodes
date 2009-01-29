@@ -24,7 +24,7 @@ describe Rhogen::ModelGenerator do
   end
 
   it "should create config.rb, controller.rb, index.erb, edit.erb, and new.erb files" do
-    ['config.rb', 'controller.rb', 'index.erb', 'edit.erb', 'new.erb'].each do |template|
+    ['config.rb', 'controller.rb', 'index.erb', 'edit.erb', 'new.erb', 'show.erb'].each do |template|
       @generator.should create("/tmp/#{model_name.camel_case}/#{template}")
     end
   end

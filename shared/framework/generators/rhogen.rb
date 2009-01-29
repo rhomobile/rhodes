@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'templater'
+require 'activesupport'
 
 module Rhogen
-
   extend Templater::Manifold
 
   desc <<-DESC
@@ -10,12 +10,12 @@ module Rhogen
   DESC
 
   class BaseGenerator < Templater::Generator
-      def class_name
-        name.gsub('-', '_').camel_case
-      end
-
-      alias_method :module_name, :class_name
+    def class_name
+      name.gsub('-', '_').camel_case
     end
+
+    alias_method :module_name, :class_name
+  end
 
   class AppGenerator < BaseGenerator
 
@@ -34,22 +34,23 @@ module Rhogen
 
     template :application do |template|
       template.source = 'application.rb'
-      template.destination = "#{name}/application.rb"
+      template.destination = "#{name.camel_case}/application.rb"
     end
 
     template :index do |template|
       template.source = 'index.erb'
-      template.destination = "#{name}/index.erb"
+      template.destination = "#{name.camel_case}/index.erb"
     end
 
     template :layout do |template|
       template.source = 'layout.erb'
-      template.destination = "#{name}/layout.erb"
+      template.destination = "#{name.camel_case}/layout.erb"
     end
 
   end
 
   class ModelGenerator < BaseGenerator
+    include ActiveSupport::Inflector
 
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
@@ -85,6 +86,11 @@ module Rhogen
     template :new do |template|
       template.source = 'new.erb'
       template.destination = "#{name.camel_case}/new.erb"
+    end
+    
+    template :new do |template|
+      template.source = 'show.erb'
+      template.destination = "#{name.camel_case}/show.erb"
     end
 
     template :controller do |template|

@@ -1,0 +1,13 @@
+<ul id="SugarContacts" title="Contacts">
+<% @SugarContacts.each do |contact| %>
+
+<li class="overview">
+<%= link_to "#{contact.first_name} #{contact.last_name}", "show", contact.object %>
+<div>
+<%= contact.account_name %>&nbsp;<%= contact.phone_work %>
+</div>
+</li>
+
+<% end %>
+<li><font color="blue"><%=link_to "New Contact", "new"%></font></li>
+</ul>

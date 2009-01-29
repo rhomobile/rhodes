@@ -1,7 +1,6 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-import com.xruby.runtime.builtin.RubyArray;
 public class RubyArray_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -282,4 +281,9 @@ klass.defineMethod( "shift", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).shift();}
 });
+klass.defineMethod( "to_a", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyArray)receiver).to_a();}
+});
+
 }}

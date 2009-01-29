@@ -10,7 +10,8 @@ class <%= class_name %>Controller < Rho::RhoController
 
   # GET /<%= class_name %>/1
   def show
-    @<%= name.pluralize %> = <%= class_name %>.find(@params['object'])
+    @<%= name %> = <%= class_name %>.find(@params['id'])
+    render :action => :show
   end
 
   # GET /<%= class_name %>/new

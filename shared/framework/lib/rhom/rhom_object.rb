@@ -28,13 +28,21 @@ module Rhom
     def method_missing(name, *args)
       unless name == Fixnum
         varname = name.to_s.gsub(/=/,"")
-        if instance_variable_defined? "@#{varname}"
-          #TODO: Figure out why this returns an array
-          instance_variable_get( "@#{varname}" )[0]
-        else  
-          instance_variable_set( "@#{varname}", args )  
+        setting = (name.to_s =~ /=/)
+        inst_var = nil
+
+        if setting
+          inst_var = instance_variable_set( "@#{varname}", args[0] )  
+        else
+          inst_var = instance_variable_get( "@#{varname}" )
         end
+        
+        inst_var
       end
+    end
+    
+    def remove_var(name)
+      remove_instance_variable("@#{name}")
     end
   
     def strip_braces(str=nil)
@@ -48,6 +56,10 @@ module Rhom
         hash = ((hash << 5) + hash) + str[i].to_i
       end
       return hash
+    end
+    
+    def method_name_reserved?(method)
+      method =~ /object|source_id|update_type|type/
     end
   end # RhomObject
 end # Rhom
