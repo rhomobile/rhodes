@@ -1,1 +1,112 @@
-<%= link_to "#{@SugarLead.first_name} #{@SugarLead.last_name}", "edit", @SugarLead.object %>
+<div class="panel" title="Show Lead" >
+ 
+<a class="button right_button" href="<%=url_for('edit', @SugarLead.object)%>">Edit</a>
+
+<table class="grid">
+	<tr>
+    <td class="gridleft">Lead Source</td>
+		<td class="gridright"><%= @SugarLead.lead_source %></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Lead Source Description</td>
+		<td class="gridright"><%= @SugarLead.lead_source_description %></td>
+	</tr>	
+  <tr>
+    <td class="gridleft">Referred By</td>
+		<td class="gridright"><%= @SugarLead.refered_by %></td>
+	</tr>		
+  <tr>
+    <td class="gridleft">Name</td>
+		<td class="gridright"><%= [@SugarLead.salutation, @SugarLead.first_name,@SugarLead.last_name].join(' ')%></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Account</td>
+		<td class="gridright"><%= @SugarLead.account_name %></td>
+	</tr>		
+  <tr>
+    <td class="gridleft">Title</td>
+		<td class="gridright"><%= @SugarLead.title %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Department</td>
+		<td class="gridright"><%= @SugarLead.department %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Team</td>
+		<td class="gridright"><%= @SugarLead.team_name %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Assigned to</td>
+		<td class="gridright"><%= @SugarLead.assigned_user_name %></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Primary Address</td>
+		<td class="gridright"><%=@SugarLead.primary_address_street%><br />
+			<%=@SugarLead.primary_address_city%> <%=@SugarLead.primary_address_state%> <%=@SugarLead.primary_address_postalcode%><br />
+			<%=@SugarLead.primary_address_country%></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Description</td>
+		<td class="gridright"><%= @SugarLead.description %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Email #1</td>
+		<td class="gridright"><%= mailto @SugarLead.email1, @SugarLead.email1 %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Email #2</td>
+		<td class="gridright"><%= mailto @SugarLead.email2, @SugarLead.email2 %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Status</td>
+		<td class="gridright"><%= @SugarLead.status %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Status Description</td>
+		<td class="gridright"><%= @SugarLead.status_description %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Campaign</td>
+		<td class="gridright"><%= @SugarLead.campaign_name %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Office Phone</td>
+		<td class="gridright"><%= click_to_call @SugarLead.phone_work %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Mobile</td>
+		<td class="gridright"><%= click_to_call @SugarLead.phone_mobile %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Home</td>
+		<td class="gridright"><%= click_to_call @SugarLead.phone_home %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Other Phone</td>
+		<td class="gridright"><%= click_to_call @SugarLead.phone_other %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Fax</td>
+		<td class="gridright"><%= @SugarLead.phone_fax %></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Do Not Call</td>
+		<td class="gridright"><%= @SugarLead.do_not_call == "0" ? "False" : "True" %></td>
+	</tr>	
+  <tr>
+    <td class="gridleft">Date Modified</td>
+		<td class="gridright"><%= @SugarLead.date_modified %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Date Created</td>
+		<td class="gridright"><%= @SugarLead.date_entered %></td>
+	</tr>
+  <tr>
+    <td class="gridleft">Other Address</td>
+		<td class="gridright"><%=@SugarLead.alt_address_street%><br />
+			<%=@SugarLead.alt_address_city%> <%=@SugarLead.alt_address_state%> <%=@SugarLead.alt_address_postalcode%><br />
+			<%=@SugarLead.alt_address_country%></td>
+	</tr>
+</table>
+
+</div>
