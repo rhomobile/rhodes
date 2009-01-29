@@ -1,3 +1,6 @@
+== 0.2.5 2009-01-28
+ * erb labels are now humanized
+
 == 0.2.4 2009-01-27
  * added show.erb to model generator [#164]
  * base source_adapter should include user_id on sync
