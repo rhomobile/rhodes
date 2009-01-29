@@ -29,19 +29,19 @@ class ContactsController < Rho::RhoController
   # POST /Contacts
   def create
     @contact = Rho::RhoContact.create!(@params['contact'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Contacts/1
   def update
     Rho::RhoContact.update_attributes(@params['contact'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Contacts/1/delete
   def delete
     Rho::RhoContact.destroy(@params['id'])
-    redirect :index
+    redirect :action => :index
   end
 
 end
