@@ -1,1 +1,57 @@
-<%= link_to "#{@SugarCall.name}", "edit", @SugarCall.object %>
+<div class="panel">
+
+	<a class="button right_button" href="<%=url_for('edit', @SugarCall.object)%>">Edit</a>
+ 	
+   <table class="grid">			
+		  <tr>
+			<td class="gridleft">Subject</td>
+			<td class="gridright"><%=@SugarCall.name%></td>
+		  </tr>
+
+		  <tr>
+			<td class="gridleft">Start Date</td>
+			<td class="gridright"><%=@SugarCall.date_start%></td>
+		  </tr>
+
+		  <tr>
+			<td class="gridleft">Duration</td>
+			<td class="gridright"><%=@SugarCall.duration_hours%>h&nbsp;<%=@SugarCall.duration_minutes%>m</td>
+		  </tr>
+		
+		  <tr>
+			  <td class="gridleft">Date Modified</td>
+			  <td class="gridright"><%=@SugarCall.date_modified%> by <%=@SugarCall.modified_by_name%></td>
+		  </tr>
+
+		  <tr>
+			<td class="gridleft">Date Created</td>
+			<td class="gridright"><%=@SugarCall.date_entered%> by <%=@SugarCall.created_by_name%></td>
+		  </tr>
+
+		  <tr>
+			<td class="gridleft">Reminder</td>
+			<td class="gridright"><%= @SugarCall.reminder_time != "-1" ? "#{@SugarCall.reminder_time.to_i / 60} minute(s) prior" : "none" %></td>
+		  </tr>
+		
+		  <tr>
+			<td class="gridleft">Description</td>
+			<td class="gridright"><%=@SugarCall.description%></td>
+		  </tr>
+
+   </table>		
+	
+	 <table class="grid">				
+		  <tr>
+			<td class="gridleft">Status</td>
+			<td class="gridright"><%=@SugarCall.direction%>&nbsp;<%=@SugarCall.status%></td>
+		  </tr>
+					
+		  <tr>
+			<td class="gridleft">Assigned To</td>
+			<td class="gridright"><%=@SugarCall.assigned_user_name%></td>
+		  </tr>		
+   </table>
+					 
+</div>
+
+
