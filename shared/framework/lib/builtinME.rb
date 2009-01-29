@@ -154,7 +154,6 @@ class Array
     alias map! collect!
     alias size length
     alias to_ary to_a
-    alias to_s inspect
   
     def inspect
         str = "["
@@ -168,6 +167,8 @@ class Array
         }
         str << "]"
     end
+
+    alias to_s inspect
     
 end
 
