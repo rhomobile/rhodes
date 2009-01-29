@@ -2,7 +2,7 @@
 	  class="panel" 
 	  id="SugarLead_edit_form" 
 	  method="POST" 
-	  action="<%=url_for('update')%>">
+	  action="<%=url_for(:action => :update)%>">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarLead.object%>"/>
 
