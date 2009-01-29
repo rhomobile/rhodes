@@ -1,6 +1,6 @@
 <div class="panel" title="Show Contact">
  
-<a class="button right_button" href="<%=url_for('edit', @SugarContact.object)%>">Edit</a>
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>">Edit</a>
 
 <table class="grid">
   <tr>

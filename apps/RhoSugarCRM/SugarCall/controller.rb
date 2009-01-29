@@ -31,20 +31,20 @@ class SugarCallController < Rho::RhoController
   def create
     @SugarCall = SugarCall.new(@params['SugarCall'])
     @SugarCall.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarCall/1/update
   def update
     @SugarCall = SugarCall.find(@params['id'])
     @SugarCall.update_attributes(@params['SugarCall'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarCall/1/delete
   def delete
     @SugarCall = SugarCall.find(@params['id'])
     @SugarCall.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

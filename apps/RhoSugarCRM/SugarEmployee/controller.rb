@@ -30,20 +30,20 @@ class SugarEmployeeController < Rho::RhoController
   def create
     @SugarEmployee = SugarEmployee.new(@params['SugarEmployee'])
     @SugarEmployee.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarEmployee/1/update
   def update
     @SugarEmployee = SugarEmployee.find(@params['id'])
     @SugarEmployee.update_attributes(@params['SugarEmployee'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarEmployee/1/delete
   def delete
     @SugarEmployee = SugarEmployee.find(@params['id'])
     @SugarEmployee.destroy
-    redirect :index
+    redirect :action => :index
   end
 end
