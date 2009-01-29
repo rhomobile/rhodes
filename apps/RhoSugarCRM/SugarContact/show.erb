@@ -1,4 +1,4 @@
-<div class="panel">
+<div class="panel" title="Show Contact">
  
 <a class="button right_button" href="<%=url_for('edit', @SugarContact.object)%>">Edit</a>
 
@@ -33,7 +33,7 @@
 	</tr>
   <tr>
     <td class="gridleft">Do Not Call</td>
-		<td class="gridright"><%= @SugarContact.do_not_call %></td>
+		<td class="gridright"><%= @SugarContact.do_not_call == "0" ? "False" : "True" %></td>
 	</tr>
   <tr>
     <td class="gridleft">Team</td>
@@ -110,8 +110,6 @@
 			<%=@SugarContact.alt_address_city%> <%=@SugarContact.alt_address_state%> <%=@SugarContact.alt_address_postalcode%><br />
 			<%=@SugarContact.alt_address_country%></td>
 	</tr>
-		
-
 </table>
 
 </div>
