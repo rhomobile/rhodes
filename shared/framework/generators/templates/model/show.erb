@@ -2,5 +2,5 @@
   <% attributes.each do |attribute| %>
     <li><%%=@<%=name%>.<%=attribute%>%></li>
   <% end %>
-  <li><%%=link_to "Edit #{@<%=name%>.<%=attributes[0]%>}", "edit", @<%=name%>.object%></li>
+  <li><%%=link_to "Edit #{@<%=name%>.<%=attributes[0]%>}", :action => :edit, :id => @<%=name%>.object%></li>
 </ul>

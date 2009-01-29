@@ -82,20 +82,20 @@ class TicketController < Rho::RhoController
     
     @ticket = Ticket.new(@params['ticket'])
     @ticket.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Ticket/1/update
   def update
     @ticket = Ticket.find(@params['id'])
     @ticket.update_attributes(@params['ticket'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Ticket/1/delete
   def delete
     @ticket = Ticket.find(@params['id'])
     @ticket.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

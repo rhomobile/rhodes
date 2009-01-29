@@ -30,20 +30,20 @@ class <%= class_name %>Controller < Rho::RhoController
   def create
     @<%= name %> = <%= class_name %>.new(@params['<%= name %>'])
     @<%= name %>.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /<%= class_name %>/1/update
   def update
     @<%= name %> = <%= class_name %>.find(@params['id'])
     @<%= name %>.update_attributes(@params['<%= name %>'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /<%= class_name %>/1/delete
   def delete
     @<%= name %> = <%= class_name %>.find(@params['id'])
     @<%= name %>.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

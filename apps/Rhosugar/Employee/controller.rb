@@ -30,21 +30,21 @@ class EmployeeController < Rho::RhoController
   def create
     @employee = Employee.new(@params['employee'])
     @employee.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Employees/1
   def update
     @employee = Employee.find(@params['id'])
     @employee.update_attributes(@params['employee'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /Employees/1/delete
   def delete
     @employee = Employee.find(@params['id'])
     @employee.destroy
-    redirect :index
+    redirect :action => :index
   end
 
 end

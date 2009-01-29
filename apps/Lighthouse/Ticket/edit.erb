@@ -1,4 +1,4 @@
-<form class="panel" id="ticket_edit_form" title="Edit Ticket" method="POST" action="<%=url_for('update')%>">
+<form class="panel" id="ticket_edit_form" title="Edit Ticket" method="POST" action="<%=url_for(:action => :update)%>">
 		<div class="ticket_header">
 			<h1 class="ticket_title"><%= @ticket.title %></h1>
 			
@@ -93,6 +93,6 @@
 	</fieldset>
 	<input type="submit" value="Update"/>
 	<p align="center" class="whiteButton">
-		<a href="<%=url_for('delete', @ticket.object)%>"><font color="#990000">Delete</font></a>
+		<a href="<%=url_for(:action => :delete, :id => @ticket.object)%>"><font color="#990000">Delete</font></a>
 	</p>
 </form>
