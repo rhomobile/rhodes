@@ -44,12 +44,12 @@ module Rhom
                   # create a temp id for the create type
                   # TODO: This is duplicative of get_new_obj
                   temp_objid = djb_hash(obj.values.to_s, 10).to_s
-                  self.send :object=, "#{temp_objid}"
-                  self.send :source_id=, obj['source_id'].to_s
-                  self.send :update_type=, 'create'
+                  self.send("object=".to_sym(), temp_objid)
+                  self.send("source_id=".to_sym(), obj['source_id'].to_s)
+                  self.send("update_type=".to_sym(), 'create')
                   obj.each do |key,value|
 					          val =  self.inst_strip_braces(value)
-                    self.send "#{key}=".to_sym, val
+                    self.send("#{key}=".to_sym(), val)
                   end
                 end
             
@@ -110,7 +110,7 @@ module Rhom
                 # returns new model instance with a temp object id
                 def get_new_obj(obj, type='query')
                   tmp_obj = self.new
-                  tmp_obj.send :object=, "{#{obj['object'].to_s}}"
+                  tmp_obj.send("object=".to_sym(), "{#{obj['object'].to_s}}")
                   tmp_obj
                 end
               end #class methods
