@@ -19,7 +19,7 @@
 		<div class="tallrow">
 			<label>Last Sync Summary</label>
 			<span>
-			Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%>
+			Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%> Duration: <%=@source.last_sync_duration%> sec
 			</span>
 		</div>
 		<div class="row">
@@ -29,6 +29,9 @@
 			<% else %>
 			  <font color="red">Encountered error</font>
 			<% end %></span>
+		</div>
+		<div class="row">
+			<label>Number of records</label><span><%=@source.distinct_objects%></span>
 		</div>
 	</fieldset>
 	<input type="submit" value="Update"/>

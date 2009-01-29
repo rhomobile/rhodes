@@ -1,0 +1,14 @@
+<ul id="SugarLeads" title="Leads">
+<a class="button right_button" href="/RhoSugarCRM/SugarLead/new">New</a>
+
+<% @SugarLeads.each do |lead| %>
+
+<li class="overview">
+<%= link_to "#{lead.first_name} #{lead.last_name}", "show", lead.object %>
+<div>
+<%= lead.status %> | <%= lead.account_name %>
+</div>
+</li>
+
+<% end %>
+</ul>

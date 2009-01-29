@@ -7,7 +7,7 @@
 		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
 		<% attributes.each do |attribute| %>
 		  <div class="row">
-			  <label><%=attribute%>: </label>
+			  <label><%=humanize(attribute)%>: </label>
 			  <input type="text" name="<%= name %>[<%= attribute %>]"/>
 		  </div>
 		<% end %>

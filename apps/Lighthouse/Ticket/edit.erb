@@ -19,17 +19,19 @@
 				<div class="ticket_version">
 					<div class="changename"><%= User.find(change.user_id).name %></div>
 					<div class="changedate"><%= Time.parse(change.updated_at).strftime("%B %d, %Y @ %I:%M%p") %></div>
-					<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
-					<% if change_log.length > 1 %>
-						<ul class="info">
-							<% change_log.each do |element| %>
-								<% if element != "<<<EOC>>>" %>
-									<li>→ <%= element %></li>
+					<% if change.changes %>
+						<% change_log = change.changes.split("||||") # we encoded array on the server this way %>
+						<% if change_log.length > 1 %>
+							<ul class="info">
+								<% change_log.each do |element| %>
+									<% if element != "<<<EOC>>>" %>
+										<li>→ <%= element %></li>
+									<% end %>
 								<% end %>
-							<% end %>
-						</ul>
-					<% else %>
-						<p><%= change.changes %></p>
+							</ul>
+						<% else %>
+							<p><%= change.changes %></p>
+						<% end %>
 					<% end %>
 				</div>
 			<% end %>
@@ -47,7 +49,7 @@
 		
 		  <div class="tallrow" style="height:auto">
 			  <label>Add a comment</label>
-			  <textarea name="ticket[body]" value="<%= @ticket.body %>" rows="5" style="margin:6px;width:90%"></textarea>
+			  <textarea name="ticket[body]" rows="5" style="margin:6px;width:90%"></textarea>
 				<div class="clearer"></div>
 		  </div>
 		
