@@ -30,20 +30,20 @@ class SugarProductController < Rho::RhoController
   def create
     @SugarProduct = SugarProduct.new(@params['SugarProduct'])
     @SugarProduct.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarProduct/1/update
   def update
     @SugarProduct = SugarProduct.find(@params['id'])
     @SugarProduct.update_attributes(@params['SugarProduct'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarProduct/1/delete
   def delete
     @SugarProduct = SugarProduct.find(@params['id'])
     @SugarProduct.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

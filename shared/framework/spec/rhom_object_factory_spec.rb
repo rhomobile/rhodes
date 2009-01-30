@@ -32,9 +32,9 @@ describe "RhomObjectFactory" do
   end
   
   it "should set source_id attributes" do
-    "1".should == Account.get_source_id
-    "2".should == Case.get_source_id
-    "3".should == Employee.get_source_id
+    Account.get_source_id.should == "1"
+    Case.get_source_id.should == "2"
+    Employee.get_source_id.should == "3"
   end
 
   it "should dynamically assign values" do

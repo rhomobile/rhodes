@@ -26,25 +26,9 @@ module Rhom
     
     def initialize
 	    unless not defined? Rho::RhoConfig::sources
-  	    ::Rhom::RhomObjectFactory::init_source_attribs
   	    init_objects
   	  end
     end
-	
-	  class << self
-	    def init_source_attribs
-    	  # merge source attributes into config hash
-    	  # TODO: This shouldn't reference 'source[1]' directly
-    	  Rho::RhoConfig::sources.each do |source|
-    	    src_attribs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
-    	                                                         'attrib',
-    	                                                         {"source_id"=>source[1]['source_id'].to_s},
-    	                                                         {"distinct"=>true})
-    	    # update our source with the proper attributes
-    		  source[1].merge!({"attribs"=>src_attribs})
-    	  end
-    	end
-  	end
   
     # Initialize new object with dynamic attributes
     def init_objects
@@ -60,12 +44,12 @@ module Rhom
                   # create a temp id for the create type
                   # TODO: This is duplicative of get_new_obj
                   temp_objid = djb_hash(obj.values.to_s, 10).to_s
-                  self.send :object=, "#{temp_objid}"
-                  self.send :source_id=, obj['source_id'].to_s
-                  self.send :update_type=, 'create'
+                  self.send("object=".to_sym(), temp_objid)
+                  self.send("source_id=".to_sym(), obj['source_id'].to_s)
+                  self.send("update_type=".to_sym(), 'create')
                   obj.each do |key,value|
 					          val =  self.inst_strip_braces(value)
-                    self.send "#{key}=".to_sym, val
+                    self.send("#{key}=".to_sym(), val)
                   end
                 end
             
@@ -83,11 +67,6 @@ module Rhom
                   list = []
                   hash_list = {}
                   conditions = {}
-                  attrib_length = 0
-                  source = Rho::RhoConfig::sources[self.name.to_s]
-                  attrib_length = source['attribs'].length if source
-                  # source attributes are not initialized, try again
-                  ::Rhom::RhomObjectFactory::init_source_attribs if attrib_length == 0
 
                   # first find all query objects
                   if args.first == :all
@@ -131,7 +110,7 @@ module Rhom
                 # returns new model instance with a temp object id
                 def get_new_obj(obj, type='query')
                   tmp_obj = self.new
-                  tmp_obj.send :object=, "{#{obj['object'].to_s}}"
+                  tmp_obj.send("object=".to_sym(), "{#{obj['object'].to_s}}")
                   tmp_obj
                 end
               end #class methods

@@ -33,20 +33,20 @@ class SugarLeadController < Rho::RhoController
   def create
     @SugarLead = SugarLead.new(@params['SugarLead'])
     @SugarLead.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarLead/1/update
   def update
     @SugarLead = SugarLead.find(@params['id'])
     @SugarLead.update_attributes(@params['SugarLead'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarLead/1/delete
   def delete
     @SugarLead = SugarLead.find(@params['id'])
     @SugarLead.destroy
-    redirect :index
+    redirect :action => :index
   end
 end
