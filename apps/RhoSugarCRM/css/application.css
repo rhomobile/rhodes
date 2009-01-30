@@ -77,3 +77,8 @@ table.grid tr:last-of-type td {
 .right_button {
     margin: -45px 0 0 0;
 }
+
+.left_button {
+/*    margin: -45px 0 0 -200px; */
+    display: inline;  /* show the hidden back button */
+}
