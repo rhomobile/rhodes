@@ -35,3 +35,14 @@ describe "rho initializer", :shared => true do
     end
   end
 end
+
+describe "rho db initializer", :shared => true do
+  before(:each) do
+    FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
+  end
+
+  after(:each) do 
+    FileUtils.rm_rf('build/syncdbtest.sqlite')
+    @rhom = nil
+  end
+end
