@@ -40,7 +40,7 @@ char *fetch_remote_data(char *url_string) {
 	session = str_assign(get_session(url_string));
 	if (session || strstr(url_string, "clientcreate")) {
 		printf("Fetching data from %s\n", url_string);
-		char *data;
+		char *ret_data;
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:url_string] autorelease]];
 		
@@ -54,32 +54,29 @@ char *fetch_remote_data(char *url_string) {
 		}
 		
 		NSString *logData;
-		NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
-		
-		if (conn) {
-			NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-			NSInteger code = [response statusCode];
-			NSInteger errorCode = [error code];
-			code = [response statusCode];
-			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			if (code != 200) {
-				NSLog(@"An error occured connecting to the sync source: %i returned", code);
-				if (errorCode == NSURLErrorUserCancelledAuthentication || 
-					errorCode == NSURLErrorUserAuthenticationRequired) {
-					logout();
-				}
-				if (session) free(session);
-				[pool release];
-				return NULL;
-			}  else {
-				logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-			}
-		} 
-		data = str_assign((char *)[logData UTF8String]);
+
+  NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+  NSInteger code = [response statusCode];
+  NSInteger errorCode = [error code];
+  code = [response statusCode];
+  [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+  if (code != 200) {
+    NSLog(@"An error occured connecting to the sync source: %i returned", code);
+    if (errorCode == NSURLErrorUserCancelledAuthentication || 
+      errorCode == NSURLErrorUserAuthenticationRequired) {
+      logout();
+    }
+    if (session) free(session);
+    [pool release];
+    return NULL;
+  }  else {
+    logData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  }
+		ret_data = str_assign((char *)[logData UTF8String]);
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		if (session) free(session);
 		[pool release];
-		return data;
+		return ret_data;
 	} else {
 		if (session) free(session);
 		[pool release];
