@@ -2,7 +2,7 @@
 	  class="panel" 
 	  id="SugarEmployee_edit_form" 
 	  method="POST" 
-	  action="<%=url_for('update')%>">
+	  action="<%=url_for(:action => :update)%>">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"/>
 		
@@ -122,7 +122,7 @@
 	</fieldset>
 	<input type="submit" value="Update"/>
 	<p align="center">
-		<a href="<%=url_for('delete', @SugarEmployee.object)%>">
+		<a href="<%=url_for(:action => :delete, :id => @SugarEmployee.object)%>">
 			<font color="#990000">Delete</font>
 		</a>
 	</p>

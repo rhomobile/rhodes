@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'templater'
+require 'activesupport'
 
 module Rhogen
-
   extend Templater::Manifold
 
   desc <<-DESC
@@ -50,6 +50,7 @@ module Rhogen
   end
 
   class ModelGenerator < BaseGenerator
+    include ActiveSupport::Inflector
 
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')

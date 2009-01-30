@@ -5,10 +5,6 @@ require 'rho/rhoviewhelpers'
 module Rho
   class RhoController
 
-	#def initialize
-	#	self.class.layout 'layout'
-	#end
-
     def default_action
       return Hash['GET','show','PUT','update','POST','update',
         'DELETE','delete'][@request['request-method']] unless @request['id'].nil?
@@ -28,11 +24,12 @@ module Rho
     end
     alias xhr? :xml_http_request?
 
-    def redirect(action,id=nil)
-      @response['status'] = 302
-      @response['headers']['Location'] = url_for(action,id)
-      @response['message'] = 'Moved temporarily'
+    def redirect(url_params = {},options = {})
+      @response['status'] = options['status'] || 302 
+      @response['headers']['Location'] = url_for(url_params)
+      @response['message'] = options['message'] || 'Moved temporarily'
       return ''
     end
+    
   end # RhoController
 end # Rho

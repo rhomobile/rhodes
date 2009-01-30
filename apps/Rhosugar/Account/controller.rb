@@ -32,20 +32,20 @@ class AccountController < Rho::RhoController
   def create
     @account = Account.new(@params['account'])
     @account.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /cases/1
   def update
     @account = Account.find(@params['id'])
     @account.update_attributes(@params['account'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /cases/1/delete
   def delete
     @account = Account.find(@params['id'])
     @account.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

@@ -1,6 +1,6 @@
 <div class="panel">
  
-<a class="button right_button" href="<%=url_for('edit', @SugarAccount.object)%>">Edit</a>
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarAccount.object)%>">Edit</a>
 
 <table class="grid">
   <tr>

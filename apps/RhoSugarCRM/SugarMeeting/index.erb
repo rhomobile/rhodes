@@ -1,8 +1,8 @@
 <ul id="SugarMeetings" title="Meetings">
 <%@SugarMeetings.each do |x|%>
 
-<li><%=link_to "#{x.name}", "show", x.object%></li>
+<li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
 
 <%end%>
-<li><font color="blue"><%=link_to "New Meeting", "new"%></font></li>
+<li><font color="blue"><%=link_to "New Meeting", :action => :new%></font></li>
 </ul>
