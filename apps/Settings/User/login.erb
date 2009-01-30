@@ -3,7 +3,7 @@
       class="panel" 
 		 id="user_edit_form" 
 	 method="POST" 
-	 action="<%=url_for('do_login')%>">
+	 action="<%=url_for(:action => 'do_login')%>">
   <fieldset>
 	<% if @msg %>
 	  <p><%= @msg %></p>

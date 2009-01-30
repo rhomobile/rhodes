@@ -29,20 +29,20 @@ class ServiceRequestController < Rho::RhoController
   def create
     @service_request = ServiceRequest.new(@params['service_request'])
     @service_request.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /ServiceRequest/1/update
   def update
     @service_request = ServiceRequest.find(@params['id'])
     @service_request.update_attributes(@params['service_request'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /ServiceRequest/1/delete
   def delete
     @service_request = ServiceRequest.find(@params['id'])
     @service_request.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

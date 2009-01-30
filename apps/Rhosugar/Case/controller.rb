@@ -35,21 +35,21 @@ class CaseController < Rho::RhoController
   def create
     @case = Case.new(@params['case'])
     @case.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /cases/1
   def update
     @case = Case.find(@params['object'])
     @case.update_attributes(@params['case'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /cases/1/delete
   def delete
     @case = Case.find(@params['id'])
     @case.destroy
-    redirect :index
+    redirect :action => :index
   end
 
 end

@@ -29,20 +29,20 @@ class PeopleController < Rho::RhoController
   def create
     @people = People.new(@params['people'])
     @people.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /People/1/update
   def update
     @people = People.find(@params['id'])
     @people.update_attributes(@params['people'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /People/1/delete
   def delete
     @people = People.find(@params['id'])
     @people.destroy
-    redirect :index
+    redirect :action => :index
   end
 end
