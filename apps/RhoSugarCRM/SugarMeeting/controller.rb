@@ -30,20 +30,20 @@ class SugarMeetingController < Rho::RhoController
   def create
     @SugarMeeting = SugarMeeting.new(@params['SugarMeeting'])
     @SugarMeeting.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarMeeting/1/update
   def update
     @SugarMeeting = SugarMeeting.find(@params['id'])
     @SugarMeeting.update_attributes(@params['SugarMeeting'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarMeeting/1/delete
   def delete
     @SugarMeeting = SugarMeeting.find(@params['id'])
     @SugarMeeting.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

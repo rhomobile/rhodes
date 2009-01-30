@@ -17,6 +17,7 @@ generators/templates/model/show.erb
 generators/templates/source/source_adapter.rb
 lib/ServeME.rb
 lib/TestServe.rb
+lib/bsearch.rb
 lib/builtinME.rb
 lib/date.rb
 lib/date/format.rb
@@ -54,6 +55,7 @@ spec/configs/case.rb
 spec/configs/employee.rb
 spec/generator_spec_helper.rb
 spec/model_generator_spec.rb
+spec/rho_controller_spec.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
 spec/source_generator_spec.rb

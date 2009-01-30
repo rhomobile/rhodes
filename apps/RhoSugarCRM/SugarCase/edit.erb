@@ -2,7 +2,7 @@
 	  class="panel" 
 	  id="SugarCase_edit_form" 
 	  method="POST" 
-	  action="<%=url_for('update')%>">
+	  action="<%=url_for(:action => :update)%>">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarCase.object%>"/>
 		
@@ -76,7 +76,7 @@
 	
 	<input type="submit" value="Update"/>
 	<p align="center">
-		<a href="<%=url_for('delete', @SugarCase.object)%>">
+		<a href="<%=url_for(:action => :delete, :id => @SugarCase.object)%>">
 			<font color="#990000">Delete</font>
 		</a>
 	</p>

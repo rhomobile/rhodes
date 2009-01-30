@@ -37,5 +37,10 @@ module Rhom
     def initialize
       @factory = RhomObjectFactory.new
     end
+    
+    def self.client_id
+      c_id = ::Rhom::RhomDbAdapter::select_from_table('client_info','client_id')[0]
+      c_id.nil? ? nil : c_id['client_id']
+    end
   end # Rhom
 end # Rhom

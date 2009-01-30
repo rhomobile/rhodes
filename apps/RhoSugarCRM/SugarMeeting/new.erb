@@ -2,7 +2,7 @@
 	  class="panel"
 	  id="SugarMeeting_new_form" 
 	  method="POST" 
-	  action="<%=url_for('create')%>">
+	  action="<%=url_for(:action => :create)%>">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarMeeting.object%>"/>
 		

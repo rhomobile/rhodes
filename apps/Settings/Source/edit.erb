@@ -2,7 +2,7 @@
 	  class="panel" 
 	  id="source_edit_form" 
 	  method="POST" 
-	  action="<%=url_for('update')%>">
+	  action="<%=url_for(:action => :update)%>">
 	<fieldset>
 		<input type="hidden" name="source[source_id]" value="<%=@source.source_id%>"/>
 		<div class="row">
@@ -19,7 +19,7 @@
 		<div class="tallrow">
 			<label>Last Sync Summary</label>
 			<span>
-			Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%>
+			Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%> Duration: <%=@source.last_sync_duration%> sec
 			</span>
 		</div>
 		<div class="row">
