@@ -21,39 +21,39 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe "Rho" do
-  
+
   it_should_behave_like "rho initializer"
 
   it "should populate configuration in sources table" do
     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
     sources.size.should > 1
   end
-  
+
   it "should initialize configuration only once" do
     Rhom::RhomDbAdapter::delete_all_from_table('sources')
     @rho.source_initialized?(1).should == false
     @rho.init_sources
     @rho.source_initialized?(1).should == true
   end
-  
+
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/'
   end
-  
+
   it "should set start_path" do
     Rho::RhoConfig.start_path = '/foo/bar'
     Rho::RhoConfig.start_path.should == '/foo/bar'
   end
-  
+
   it "should retrieve start_path" do
     Rho::RhoConfig.start_path = '/'
     @rho.get_start_path.should == '/'
   end
-  
+
   it "should return from get_app" do
     pending "fix relative paths for testing of get_app"
   end
-  
+
   it "should serve request" do
     pending "need to mock request"
   end

@@ -1,1 +1,1 @@
-<%= link_to "#{@SugarEmployee.first_name} #{@SugarEmployee.last_name}", "edit", @SugarEmployee.object %>
+<%= link_to "#{@SugarEmployee.first_name} #{@SugarEmployee.last_name}", :action => :edit, :id => @SugarEmployee.object %>

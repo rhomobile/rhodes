@@ -17,6 +17,6 @@ class SourceController < Rho::RhoController
   def update
     @source = RhomSource.find(@params['source']['source_id'])
     @source.update_attributes(@params['source'])
-    redirect :index
+    redirect :action => :index
   end
 end
