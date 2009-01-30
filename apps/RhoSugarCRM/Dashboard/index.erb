@@ -1,0 +1,180 @@
+<html>
+ <head>
+		<title>Dashboard</title>
+		<% if System::get_property('platform') == 'APPLE' %>
+			<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+			<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
+			<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
+			<script src="/shared/js/jquery-1.2.6.min.js"></script>
+			<script src="/shared/js/rho.js"></script>			
+		<% end %>	
+		
+		<style type="text/css" media="screen">
+		@import "/RhoSugarCRM/css/application.css"; 
+		</style>
+	
+  <script type="application/x-javascript">
+
+    function interp_segment(x1, x2, t) {
+	    return x1 + (x2 - x1) * t;
+    }
+
+    function curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, mid_x) {
+//	    var cp_dist_offset = 20;
+	    var cp_dist_offset = (bx - ax) * 0.05 + 2;
+	    var cp_y_margin = 3;
+	    var cp_mid_x = mid_x;
+	
+			ctx.beginPath();
+			ctx.moveTo(ax, ay);
+			ctx.quadraticCurveTo(cp_mid_x, ay - cp_dist_offset, bx, by);
+			ctx.lineTo(cx, cy - cp_y_margin);
+			ctx.quadraticCurveTo(cp_mid_x, cy - cp_dist_offset, dx, dy - cp_y_margin);	
+			ctx.fill();	
+    }
+
+    function end_cap(ctx, ax, ay, bx, by, cx, cy, dx, dy) {
+			ctx.beginPath();
+			ctx.moveTo(ax, ay);
+			ctx.lineTo(dx, dy);
+			ctx.lineTo(cx, cy);
+			ctx.lineTo(bx, by);
+			ctx.fill();	
+    }
+
+    function draw() {
+      var canvas = document.getElementById("canvas");
+      if (canvas.getContext) {
+        var ctx = canvas.getContext("2d");
+
+        // setup top and bottom of funnel (for a 500 x 500 square)
+/*
+        var t1X = 10; //10;
+        var t1Y = 20; //20;
+        var t2X = 490; //190;
+        var t2Y = 20; //20;
+        var b1X = 230; //80;
+        var b1Y = 490; //190;
+        var b2X = 270; //120;
+        var b2Y = 490; //190;
+        var midX = 250; //100;
+*/
+
+        // setup top and bottom of funnel (for a 200 x 200 square)
+				var t1X = 10; //10;
+				var t1Y = 20; //20;
+				var t2X = 190; //190;
+				var t2Y = 20; //20;
+				var b1X = 80; //80;
+				var b1Y = 190; //190;
+				var b2X = 120; //120;
+				var b2Y = 190; //190;
+				var midX = 100; //100;
+
+        var ax, ay, bx, by, cx, cy, dx, dy, t;
+
+        ctx.fillStyle = "rgb(200,0,0)";
+        t = 0;
+        ax = interp_segment(t1X, b1X, t);
+        ay = interp_segment(t1Y, b1Y, t);
+        bx = interp_segment(t2X, b2X, t);
+        by = interp_segment(t2Y, b2Y, t);
+        cx = interp_segment(t2X, b2X, t + 0.2);
+        cy = interp_segment(t2Y, b2Y, t + 0.2);
+        dx = interp_segment(t1X, b1X, t + 0.2);
+        dy = interp_segment(t1Y, b1Y, t + 0.2);
+        curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, midX);
+
+        ctx.fillStyle = "rgb(0,200,0)";
+        t = 0;
+        ax = interp_segment(t1X, b1X, t + 0.2);
+        ay = interp_segment(t1Y, b1Y, t + 0.2);
+        bx = interp_segment(t2X, b2X, t + 0.2);
+        by = interp_segment(t2Y, b2Y, t + 0.2);
+        cx = interp_segment(t2X, b2X, t + 0.5);
+        cy = interp_segment(t2Y, b2Y, t + 0.5);
+        dx = interp_segment(t1X, b1X, t + 0.5);
+        dy = interp_segment(t1Y, b1Y, t + 0.5);
+        curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, midX);
+
+        ctx.fillStyle = "rgb(0,0,200)";
+        t = 0;
+        ax = interp_segment(t1X, b1X, t + 0.5);
+        ay = interp_segment(t1Y, b1Y, t + 0.5);
+        bx = interp_segment(t2X, b2X, t + 0.5);
+        by = interp_segment(t2Y, b2Y, t + 0.5);
+        cx = interp_segment(t2X, b2X, t + 0.6);
+        cy = interp_segment(t2Y, b2Y, t + 0.6);
+        dx = interp_segment(t1X, b1X, t + 0.6);
+        dy = interp_segment(t1Y, b1Y, t + 0.6);
+        curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, midX);
+
+        ctx.fillStyle = "rgb(220,150,0)";
+        t = 0;
+        ax = interp_segment(t1X, b1X, t + 0.6);
+        ay = interp_segment(t1Y, b1Y, t + 0.6);
+        bx = interp_segment(t2X, b2X, t + 0.6);
+        by = interp_segment(t2Y, b2Y, t + 0.6);
+        cx = interp_segment(t2X, b2X, t + 0.8);
+        cy = interp_segment(t2Y, b2Y, t + 0.8);
+        dx = interp_segment(t1X, b1X, t + 0.8);
+        dy = interp_segment(t1Y, b1Y, t + 0.8);
+        curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, midX);
+
+        ctx.fillStyle = "rgb(120,0,250)";
+        t = 0;
+        ax = interp_segment(t1X, b1X, t + 0.8);
+        ay = interp_segment(t1Y, b1Y, t + 0.8);
+        bx = interp_segment(t2X, b2X, t + 0.8);
+        by = interp_segment(t2Y, b2Y, t + 0.8);
+        cx = interp_segment(t2X, b2X, t + 0.95);
+        cy = interp_segment(t2Y, b2Y, t + 0.95);
+        dx = interp_segment(t1X, b1X, t + 0.95);
+        dy = interp_segment(t1Y, b1Y, t + 0.95);
+        curved_wedge(ctx, ax, ay, bx, by, cx, cy, dx, dy, midX);
+
+        // fill in end cap
+        end_cap(ctx, ax, ay, bx, by, cx, cy, dx, dy);				
+      }
+    }
+  </script>
+ </head>
+ <body onload="draw();">
+	
+<!--
+	<div class="toolbar">
+		<h1 id="pageTitle">
+			<script language="JavaScript">
+				document.write(document.title)
+			</script>
+		</h1>
+	</div>		
+-->
+		
+<!--
+		<a id="backButton" class="button" href="./">Home</a>
+-->	
+
+<div class="toolbar">
+	<h1 id="pageTitle">
+	</h1>
+<!--
+	<a id="backButton" class="button left_button" href="/RhoSugarCRM" target="_self">SugarCRM</a>
+-->
+</div>		
+
+	<ul id="home" selected="true" title="Dashboard">
+		
+		<a class="button right_button" href="/RhoSugarCRM" target="_self">SugarCRM</a>		
+		
+	 <div style="position:absolute;top:10;left:50;font-size:100%;font-weight:bold">My Pipeline</div>
+   <canvas id="canvas" style="position:absolute;top:40;left:50" width="200" height="200"></canvas>
+   <div style="position:absolute;top:240;left:50;font-size:120%">
+	  <div style="color:#ff0000">$35K - Decision Makers</div>
+	  <div style="color:#00ff00">$75K - Negotiation/Review</div>
+	  <div style="color:#0000ff">$25K - Perception Analysis</div>
+	  <div style="color:#f05500">$35K - Prospecting</div>
+	  <div style="color:#7000ff">$35K - Qualification</div>
+	</div>
+ </body>
+</html>
