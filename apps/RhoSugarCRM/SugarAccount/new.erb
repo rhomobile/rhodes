@@ -1,91 +1,193 @@
-<form title="New SugarAccount" 
-	  class="panel"
-	  id="SugarAccount_new_form" 
-	  method="POST" 
-	  action="<%=url_for('create')%>">
+<form title="New Account" 
+		  class="panel"
+		  id="SugarAccount_new_form" 
+		  method="POST" 
+		  action="<%=url_for('create')%>">
+
 	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarAccount.object%>"/>
 		
 		  <div class="row">
-			  <label>name: </label>
+			  <label>Name</label>
 			  <input type="text" name="SugarAccount[name]"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>industry: </label>
-			  <input type="text" name="SugarAccount[industry]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>description: </label>
-			  <input type="text" name="SugarAccount[description]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>account_type: </label>
-			  <input type="text" name="SugarAccount[account_type]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>industry: </label>
-			  <input type="text" name="SugarAccount[industry]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>annual_revenue: </label>
-			  <input type="text" name="SugarAccount[annual_revenue]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_fax: </label>
-			  <input type="text" name="SugarAccount[phone_fax]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>billing_address_street: </label>
-			  <input type="text" name="SugarAccount[billing_address_street]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>billing_address_city: </label>
-			  <input type="text" name="SugarAccount[billing_address_city]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>billing_address_state: </label>
-			  <input type="text" name="SugarAccount[billing_address_state]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>billing_address_postalcode: </label>
-			  <input type="text" name="SugarAccount[billing_address_postalcode]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>billing_address_country: </label>
-			  <input type="text" name="SugarAccount[billing_address_country]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>rating: </label>
-			  <input type="text" name="SugarAccount[rating]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>website: </label>
+			  <label>Website</label>
 			  <input type="text" name="SugarAccount[website]"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>phone_office: </label>
+			  <label>Ticker Symbol</label>
+			  <input type="text" name="SugarAccount[ticker_symbol]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Member Of</label>
+				<select id="SugarAccount_parent" name="SugarAccount[parent_id]">
+					<option value="">-- none --</option>
+					<% SugarAccount.find(:all).each do |account| %>
+						<option><%= account.name %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Ownership</label>
+			  <input type="text" name="SugarAccount[ownership]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Industry</label>
+				<select id="SugarAccount_industry" name="SugarAccount[industry]">
+					<option value="" label=""/>
+					<% %w(Apparel Banking Chemicals Communications Construction Consulting Education Electronics Energy Engineering Entertainment Environmental Finance Government Healthcare Hospitality Insurance Machinery Manufacturing Media Not For Profit Recreation Retail Shipping Technology Telecommunications Transportation Utilities Other).each do |choice| %>
+						<option><%= choice %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Type</label>
+				<select id="SugarAccount_account_type" name="SugarAccount[account_type]">
+					<option value="" label=""/>
+					<% %w(Analyst Competitor Customer Integrator Investor Partner Press Prospect Reseller Other).each do |choice| %>
+						<option><%= choice %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Team</label>
+				<select id="SugarAccount_team_id" name="SugarAccount[team_id]">
+					<option value="">-- none --</option>
+					<% SugarTeam.find(:all).each do |team| %>
+						<option value="<%= strip_braces(team.object) %>"><%= team.name %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Assigned to</label>
+				<select id="SugarAccount_assigned_user_id" name="SugarAccount[assigned_user_id]">
+					<option value="">-- none --</option>
+					<% SugarUser.find(:all).each do |user| %>
+						<option value="<%= strip_braces(user.object) %>"><%= user.user_name %></option>
+					<% end %>
+				</select>
+		  </div>
+		
+		  <div class="row">
+			  <label>Phone Office</label>
 			  <input type="text" name="SugarAccount[phone_office]"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>email1: </label>
-			  <input type="text" name="SugarAccount[email1]"/>
+			  <label>Phone Fax</label>
+			  <input type="text" name="SugarAccount[phone_fax]"/>
+		  </div>
+				
+		  <div class="row">
+			  <label>Other Phone</label>
+			  <input type="text" name="SugarAccount[phone_alternate]"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Employees</label>
+			  <input type="text" name="SugarAccount[employees]"/>
 		  </div>
 		
-	</fieldset>
-	<input type="submit" value="Create"/>
+		  <div class="row">
+			  <label>Rating</label>
+			  <input type="text" name="SugarAccount[rating]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>SIC Code</label>
+			  <input type="text" name="SugarAccount[sic_code]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Annual revenue</label>
+			  <input type="text" name="SugarAccount[annual_revenue]"/>
+		  </div>
+		
+		</fieldset>
+			
+		<h2>Billing Address</h2>
+			
+		<fieldset>
+		  <div class="row">
+			  <label>Street</label>
+			  <input type="text" name="SugarAccount[billing_address_street]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>City</label>
+			  <input type="text" name="SugarAccount[billing_address_city]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>State</label>
+			  <input type="text" name="SugarAccount[billing_address_state]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Postal Code</label>
+			  <input type="text" name="SugarAccount[billing_address_postalcode]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Country</label>
+			  <input type="text" name="SugarAccount[billing_address_country]"/>
+		  </div>
+		</fieldset>
+			
+			<h2>Shipping Address</h2>
+			
+		<fieldset>
+		  <div class="row">
+			  <label>Street</label>
+			  <input type="text" name="SugarAccount[shipping_address_street]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>City</label>
+			  <input type="text" name="SugarAccount[shipping_address_city]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>State</label>
+			  <input type="text" name="SugarAccount[shipping_address_state]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Postal Code</label>
+			  <input type="text" name="SugarAccount[shipping_address_postalcode]"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Country</label>
+			  <input type="text" name="SugarAccount[shipping_address_country]"/>
+		  </div>
+		</fieldset>
+			
+		<fieldset>		
+		  <div class="row">
+			  <label>Email</label>
+			  <input type="text" name="SugarAccount[email1]"/>
+		  </div>
+		</fieldset>
+		
+		<fieldset>	
+		  <div class="tallrow" style="height:auto">
+			  <label>Description</label>
+			  <textarea name="SugarAccount[description]" rows="5" style="margin:6px;width:90%"></textarea>
+				<div class="clearer"></div>
+		  </div>
+		
+		</fieldset>
+	
+		<input type="submit" value="Create"/>
+
 </form>
+

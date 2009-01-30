@@ -42,7 +42,7 @@
 			</select>
 	  </div>
 	
-	  <div class="row">
+	  <div class="tallrow">
 		  <label>Campaign</label>		
 			<select id="SugarContact_campaign_id" name="SugarContact[campaign_id]">
 				<option value="">-- none --</option>
@@ -51,6 +51,7 @@
 					<option value="<%= strip_braces(campaign.object) %>" <%= selected %>><%= campaign.name %></option>
 				<% end %>
 			</select>
+			<div class="clearer"></div>
 	  </div>
 		
 	  <div class="row">
