@@ -33,20 +33,20 @@ class SugarOpportunityController < Rho::RhoController
   def create
     @SugarOpportunity = SugarOpportunity.new(@params['SugarOpportunity'])
     @SugarOpportunity.save
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarOpportunity/1/update
   def update
     @SugarOpportunity = SugarOpportunity.find(@params['id'])
     @SugarOpportunity.update_attributes(@params['SugarOpportunity'])
-    redirect :index
+    redirect :action => :index
   end
 
   # POST /SugarOpportunity/1/delete
   def delete
     @SugarOpportunity = SugarOpportunity.find(@params['id'])
     @SugarOpportunity.destroy
-    redirect :index
+    redirect :action => :index
   end
 end

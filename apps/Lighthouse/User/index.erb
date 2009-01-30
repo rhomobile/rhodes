@@ -1,7 +1,7 @@
 <ul id="users" title="Users">
 <%@users.each do |x|%>
 
-<li><%=link_to "#{x.name}", "show", x.object %></li>
+<li><%=link_to "#{x.name}", :action => :show, :id => x.object %></li>
 
 <%end%>
 </ul>
