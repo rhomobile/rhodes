@@ -25,6 +25,10 @@ klass.defineMethod( "<=>", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).operator_compare(arg);}
 });
+klass.defineMethod( "include?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).include_p(arg);}
+});
 klass.defineMethod( "=~", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).operator_match(arg);}

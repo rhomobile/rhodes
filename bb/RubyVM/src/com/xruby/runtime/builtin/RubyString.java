@@ -1008,6 +1008,13 @@ public class RubyString extends RubyBasic {
         return ObjectFactory.createFixnum(compare);
     }
 
+    //RHO_MOBILE
+    //@RubyLevelMethod(name = "include?")
+    public RubyValue include_p(RubyValue arg) {
+    	int nIndex = sb_.toString().indexOf(arg.toStr());
+    	return ObjectFactory.createBoolean(nIndex>=0);
+    }
+    
     //@RubyLevelMethod(name="casecmp")
     RubyValue run(RubyValue arg) {
         if (!(arg instanceof RubyString)) {
