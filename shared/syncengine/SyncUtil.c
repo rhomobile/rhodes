@@ -233,6 +233,8 @@ char *set_client_id(sqlite3 *database, pSource source) {
 						 &client_id_statement);
 	sqlite3_step(client_id_statement);
 	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
+  unlock_sync_mutex();	
+
 	if (c_id != NULL && strlen(c_id) > 0) {
 		printf("Using client_id %s from database...\n", c_id);
 	} else {
@@ -243,8 +245,8 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		}
     set_db_client_id(database,c_id);
 	}
+  lock_sync_mutex();	
 	sqlite3_reset(client_id_statement);
-
   unlock_sync_mutex();	
 
 	return c_id;
