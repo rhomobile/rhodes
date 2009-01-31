@@ -82,11 +82,12 @@
   </target>
 
   <target name="clean" depends="clean.dev">
+    <mkdir dir="${target.dir}" />
+
     <delete>
       <fileset  dir="${target.dir}"  includes="**/*.*"/>
     </delete>
-        
-    <mkdir dir="${target.dir}" />
+
   </target>
 
   <target name="showWarning" unless="RubyVM.present">
