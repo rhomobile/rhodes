@@ -66,8 +66,8 @@ extern "C"
 		#include <sys/types.h>
 	}
 
-CHttpClient* gHttpClient; //Http client
-CHttpClient* gHttpLoginClient; //Http client
+//CHttpClient* gHttpClient; //Http client
+//CHttpClient* gHttpLoginClient; //Http client
 
 TInt SyncThreadEntryPoint(TAny *aPtr)
 {
@@ -117,8 +117,8 @@ void CSyncEngineWrap::ConstructL()
 		TInt randNum = Math::Rand(aSeed) % 1000;
 		threadName.AppendNum(randNum);
 
-		//KMinHeapSize, 256*KMinHeapSize
-		TInt res = thread.Create(threadName, SyncThreadEntryPoint, 20000, 0x5000, 0x200000, this);
+		//KMinHeapSize, 256*KMinHeapSize                                 
+		TInt res = thread.Create(threadName, SyncThreadEntryPoint, 20000, 0x100000, 0x3D4000, this);
 		
 		if ( res != KErrNone )
 			Panic( ERhodesSyncEngineInit);
@@ -143,9 +143,9 @@ TInt CSyncEngineWrap::Execute()
 TInt CSyncEngineWrap::ExecuteL()
 	{
 		// Create and install the active scheduler
-		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
-		CleanupStack::PushL(activeScheduler);
-		CActiveScheduler::Install(activeScheduler);
+		//CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
+		//CleanupStack::PushL(activeScheduler);
+		//CActiveScheduler::Install(activeScheduler);
 
 		//Initialize Ruby
 		StartSyncEngine();
@@ -158,7 +158,7 @@ TInt CSyncEngineWrap::ExecuteL()
 		
 		StopSyncEngine();
 
-		CleanupStack::PopAndDestroy(activeScheduler);
+		//CleanupStack::PopAndDestroy(activeScheduler);
 		
 	 	return 0;
 	}
@@ -202,87 +202,66 @@ void CSyncEngineWrap::TerminateThread()
 
 extern "C"
 	{
+
+	#include "posix_http_client.h"
+	
 	char* fetch_remote_data(char* url) 
 	{
 		char* cookie = 0;
-		
-		if (!gHttpClient) 
-			gHttpClient = CHttpClient::NewL();
+		char* responseBody = 0; 
 		
 		cookie = get_db_session(load_source_url());
 		
 		if ( !cookie && !strstr(url, "clientcreate") ) {
 			return NULL;
 		}
-		
-		gHttpClient->SetCookie( cookie);
+
+		sendHttpRequest(url, cookie, NULL, 0, &responseBody, NULL, 0 );
 		
 		if ( cookie )
 			free(cookie);
 
-		gHttpClient->InvokeHttpMethodL(CHttpConstants::EGet, (const TUint8*)url, strlen(url), NULL, 0);
-		
-		return gHttpClient->GetResponse();
-	}
-	
-	void parse_source_url(const char* url, char* source, int size)
-	{
-		int i = 0;
-		int count = strlen(url);
-		
-		for ( i = count; i >= 0  && ( url[i] != '/' && url[i] != '?' ); i--){};
-		
-		if ( i <= size && i > 0)
-		{
-			strncpy( source, url, i);
-			source[i] = '\0';
-		}
+		return responseBody;
 	}
 	
 	int push_remote_data(char* url, char* data, size_t data_size) 
 	{
 		int retval = 0;
-		char* szData = 0;
+		char* responseBody = 0;
 		char* cookie = 0;
 		
-		if (!gHttpClient) 
-			gHttpClient = CHttpClient::NewL();
-				
 		cookie = get_db_session(url);
 		
 		if ( !cookie && !strstr(url, "clientcreate") ) {
 		   return 0;
 		  }
 		
-		gHttpClient->SetCookie( cookie );
+		sendHttpRequest(url, cookie, data, data_size, &responseBody, NULL, 1 );
 		
-		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, data_size);
+		retval = responseBody ? 1 : 0;
 		
-		szData = gHttpClient->GetResponse();
-	
-		retval = szData ? 1 : 0;
-		
-		if ( szData )
-			delete szData;
+		if ( responseBody )
+			free(responseBody);
 		
 		return retval;
 	}
 
 	void makeLoginRequest(char* url, char* data )
 	{
-	  	char* session = NULL;
+		char* session = 0;
 	  
-	  	if (!gHttpLoginClient) 
-	  		gHttpLoginClient = CHttpClient::NewL();
-
-	  	gHttpLoginClient->InvokeHttpMethodL(CHttpConstants::EPost, (const TUint8*)url, strlen(url), (const TUint8*)data, strlen(data));
-
-		session = gHttpLoginClient->GetCookie();
+		if ( !url || !data)
+			return;
 		
+		sendHttpRequest(url, NULL, data, strlen(data), NULL, &session, 1 );
+	
 		if ( session )
 			set_db_session( load_source_url(), session );
 		else
 			delete_db_session(load_source_url());
+		
+		if ( session )
+			free(session);
 	}
 
 	void delete_session(const char *url_string)

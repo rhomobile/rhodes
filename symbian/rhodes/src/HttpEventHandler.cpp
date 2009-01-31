@@ -41,6 +41,7 @@ CHttpEventHandler::CHttpEventHandler()
 	{
 	iVerbose = EFalse;
 	iUsingFile = EFalse;
+	iTest = NULL;
 	}
 
 CHttpEventHandler::~CHttpEventHandler()
@@ -129,6 +130,11 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 						iTest->Console()->Printf(_L("Response body size is unknown\n"));
 				}
 				iSavingResponseBody = ETrue;
+			}
+			else
+			{
+				if (iVerbose)
+					iTest->Console()->Printf(_L("Response status is bad\n"));
 			}
 
 			if ((status >= 200) && (status < 300) && (status != 204))
