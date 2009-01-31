@@ -32,6 +32,7 @@ int delay_sync = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
 static sqlite3 *database;
@@ -98,7 +99,7 @@ void* sync_engine_main_routine(void* data) {
 	
 	printf("Starting sync engine main routine...\n");
 	delay_sync = get_object_count_from_database(database);
-	//pthread_mutex_lock(&sync_mutex);
+	pthread_mutex_lock(&sync_mutex2);
 	while(!stop_running) {
 		struct timespec   ts;
 		struct timeval    tp;
@@ -109,7 +110,7 @@ void* sync_engine_main_routine(void* data) {
 		ts.tv_sec += WAIT_TIME_SECONDS;
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
-		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
+		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
 		printf("Sync engine continues w/ current operations...\n");
 	
 		if(!delay_sync) {
@@ -121,7 +122,7 @@ void* sync_engine_main_routine(void* data) {
 		}
 
 	}
-	//pthread_mutex_unlock(&sync_mutex);
+	pthread_mutex_unlock(&sync_mutex2);
 	
     return NULL;
 }

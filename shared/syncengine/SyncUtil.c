@@ -13,6 +13,8 @@ extern char *get_session(const char *url_string);
 extern void delete_db_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
+extern void lock_sync_mutex();
+extern void unlock_sync_mutex();
 
 #if defined(_WIN32_WCE)
 extern void delete_winmo_session(const char *url_string);
