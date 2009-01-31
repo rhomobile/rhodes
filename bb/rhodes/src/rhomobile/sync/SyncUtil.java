@@ -247,6 +247,9 @@ public class SyncUtil {
 	 */
 	public static RubyArray getSourceList() {
 		RubyArray arr = createArray();
+		if ( adapter == null )
+			return arr;
+		
 		arr.add(createString("sources"));
 		arr.add(createString("*"));
 		return (RubyArray) adapter.selectFromTable(arr);

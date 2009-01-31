@@ -274,6 +274,9 @@ CGPSController::CGPSController() {
 	InitializeCriticalSection(&m_critical_section);
 	m_knownPosition = false;
 	m_gpsIsOn = false;
+	m_latitude = 0;
+	m_longitude = 0;
+
 }
 
 void CGPSController::TurnGpsOn() {
@@ -295,6 +298,8 @@ void CGPSController::CheckTimeout() {
 			CGPSDevice::TurnOff();
 			gps->m_gpsIsOn = false;
 			gps->m_knownPosition = false;
+	    gps->m_latitude = 0;
+	    gps->m_longitude = 0;
 		}
 	}
 }

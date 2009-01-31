@@ -96,7 +96,7 @@ int login(const char *login, const char *password) {
 	int i, source_length, cookie_size = 0;
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, get_database(), MAX_SOURCES);
-	pthread_mutex_lock(&sync_mutex);
+	//pthread_mutex_lock(&sync_mutex);
 	for(i = 0; i < source_length; i++) {
 		char login_string[4096] = "";
 		sprintf(login_string, 
@@ -149,7 +149,7 @@ int login(const char *login, const char *password) {
 		}
 		if (session) free(session);
 	}
-	pthread_mutex_unlock(&sync_mutex);
+	//pthread_mutex_unlock(&sync_mutex);
 	if (cookie_size == 0) {
 		[pool release];
 		return 0;
