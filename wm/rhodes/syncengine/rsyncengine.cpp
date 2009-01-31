@@ -132,12 +132,14 @@ HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bSyncInitialized) {
     StartSyncEngine();
-    WaitForSingleObject(m_hDoSyncEvent,INFINITE);
-  }else
-    WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
+    //WaitForSingleObject(m_hDoSyncEvent,INFINITE);
+  }//else
+
+  ATLTRACE(_T("Wait Sync timeout\n"));
+  WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
   
   PerformSync();
-  ShowHomePage();
+  //ShowHomePage();
 
   return S_OK;
 }

@@ -75,13 +75,12 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
     ATLTRACE(L"Starting SYNC\n");
 
     CSyncEngine* sync = CSyncEngine::Instance();
+    if (sync) sync->ShowHomePage();
 
-    if (logged_in()){
-      if (sync) sync->ShowHomePage();
+//    if (logged_in()){
+      
       start_sync();
-    }
-    else
-      if (sync) sync->ShowHomePage();
+//    }  else   if (sync) sync->ShowHomePage();
   }
   shttpd_poll(ctx, 1000);
 
