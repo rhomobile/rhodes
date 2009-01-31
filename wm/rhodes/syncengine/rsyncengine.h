@@ -27,6 +27,7 @@ public:
 	void FreezeThread();
 
   void SetMainWindow(HWND hWnd) { m_hMainWindow = hWnd; }
+  void ShowHomePage();
 
   void Lock();
   void Unlock();

@@ -1,3 +1,7 @@
+0. self.send :object=, "#{temp_objid}"
+It sends "object" instead of "object="
+This works:
+self.send "object=".to_sym(), "#{temp_objid}"
 1. ID vs Method name : v1, v2 = m1, nil
 2. Scope of visibility :
 module Rho

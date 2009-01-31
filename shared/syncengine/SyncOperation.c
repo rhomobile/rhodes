@@ -21,6 +21,7 @@
 
 #include "SyncOperation.h"
 #include "Constants.h"
+#include "SyncEngine.h"
 
 extern void save_source_url(const char* source_url);
 extern char *get_client_id();
@@ -108,6 +109,9 @@ void set_sync_post_body(pSyncOperation op) {
 int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *type) {
 	pSyncOperation current_op;
 	int i,count = 0;
+
+  lock_sync_mutex();	
+
 	prepare_db_statement("SELECT attrib, source_id, object, value, update_type \
 						 FROM object_values where source_id=? and update_type =?",
 						 database,
@@ -150,11 +154,16 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 			   list[i]->_uri);
 	}
 	sqlite3_reset(op_list_select_statement);
+
+  unlock_sync_mutex();	
+
 	return count;
 }
 
 /* remove the operations from the database after processing */
 void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type) {
+  lock_sync_mutex();	
+
 	prepare_db_statement("DELETE FROM object_values WHERE update_type=? and source_id=?",
 						 database,
 						 &op_list_delete_statment);
@@ -162,6 +171,8 @@ void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char 
 	sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
 	sqlite3_step(op_list_delete_statment);
 	sqlite3_reset(op_list_delete_statment);
+
+  unlock_sync_mutex();	
 }
 
 void free_op_list(pSyncOperation *list, int available) {
