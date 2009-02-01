@@ -9,16 +9,24 @@
 <ul id="home" selected="true" title="RhoSugar 2.0">
 	<% if SyncEngine::logged_in > 0 %>		
 
-	  <li><a href="Dashboard" target="_self"><img class="menu_icon" src="images/arrowicon.png" alt="dashboard"/>Dashboard</a></li>
-		<li><a href="SugarOpportunity"><img class="menu_icon" src="images/graphsicon.png"/>Opportunities</a></li>
-		<li><a href="SugarLead"><img class="menu_icon" src="images/boardicon.png"/>Leads</a></li>
-		<li><a href="SugarContact"><img class="menu_icon" src="images/peopleicon.png"/>Contacts</a></li>	
-		<li><a href="SugarAccount"><img class="menu_icon" src="images/buildingicon.png"/>Accounts</a></li>
-		<li><a href="Pages">More...</li>
-	
+		<% if System::get_property('platform') == 'Blackberry' %>
+	    <li><a href="Dashboard" target="_self">Dashboard</a></li>
+		  <li><a href="SugarOpportunity">Opportunities</a></li>
+		  <li><a href="SugarLead">Leads</a></li>
+		  <li><a href="SugarContact">Contacts</a></li>	
+		  <li><a href="SugarAccount">Accounts</a></li>
+
+    <% else %>
+	    <li><a href="Dashboard" target="_self"><img class="menu_icon" src="images/arrowicon.png" alt="dashboard"/>Dashboard</a></li>
+		  <li><a href="SugarOpportunity"><img class="menu_icon" src="images/graphsicon.png"/>Opportunities</a></li>
+		  <li><a href="SugarLead"><img class="menu_icon" src="images/boardicon.png"/>Leads</a></li>
+		  <li><a href="SugarContact"><img class="menu_icon" src="images/peopleicon.png"/>Contacts</a></li>	
+		  <li><a href="SugarAccount"><img class="menu_icon" src="images/buildingicon.png"/>Accounts</a></li>
+    
+	  <% end %>	
+	  <li><a href="Pages">More...</a></li>
 		<li><a href="/Settings/User/logout" target="_self">Logout</a></li>	
 	<% else %>
 		<li><a href="/Settings/User/login" target="_self">Login</a></li>
 	 <% end %>
-	</ul>
 </ul>
