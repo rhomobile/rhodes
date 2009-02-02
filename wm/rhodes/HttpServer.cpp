@@ -5,6 +5,7 @@
 #include "HttpServer.h"
 #include "syncengine/rsyncengine.h"
 #include "geolocation/LocationController.h"
+#include "SyncEngine.h"
 
 static CHttpServer* m_instance = NULL;
 
@@ -66,13 +67,20 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bRubyInitialized) {
     InitRubyFramework();
-	InitStartPage();
+	  InitStartPage();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	m_szRhobundleReloadUrl = callGetRhobundleZipUrl();
 #endif
     ATLTRACE(L"Starting SYNC\n");
-    start_sync();
+
+    CSyncEngine* sync = CSyncEngine::Instance();
+    if (sync) sync->ShowHomePage();
+
+//    if (logged_in()){
+      
+      start_sync();
+//    }  else   if (sync) sync->ShowHomePage();
   }
   shttpd_poll(ctx, 1000);
 

@@ -68,6 +68,7 @@ void stop_sync_engine();
 void shutdown_database();
 
 void clear_client_id();
+int logged_in();
 
 #if defined(__cplusplus)
 }

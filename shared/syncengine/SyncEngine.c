@@ -32,6 +32,7 @@ int delay_sync = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
 static sqlite3 *database;
@@ -43,18 +44,23 @@ int process_local_changes() {
   if (!stop_running) {
 	  // Process local changes
 	  int i,result,source_length;
-	  int max_size = 100;
 	  pSource *source_list;
-	  source_list = malloc(max_size*sizeof(pSource));
-	  source_length = get_sources_from_database(source_list, database, max_size);
+	  source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 	  
-	  for(i = 0; i < source_length; i++) {
+	  for(i = 0; i < source_length&& !stop_running; i++) {
 		  if(client_id == NULL) {
-			  client_id = set_client_id(database, source_list[i]);  
+			  client_id = set_client_id(database, source_list[i]);
 		  }
 		  result = 0;
+      if ( stop_running )
+        break;
 		  result += process_op_list(source_list[i], "update");
+      if ( stop_running )
+        break;
 		  result += process_op_list(source_list[i], "create");
+      if ( stop_running )
+        break;
 		  result += process_op_list(source_list[i], "delete");
 	  }
   	
@@ -62,13 +68,17 @@ int process_local_changes() {
 		  printf("Remote update failed, not continuing with sync...\n");
 	  } else {
 		  /* fetch new list from sync source */
-		  int available_remote = fetch_remote_changes(database, client_id);
-		  if(available_remote > 0) {
-			  printf("Successfully processed %i records...\n", available_remote);
-		  }
+  	  for(i = 0; i < source_length && !stop_running; i++) {
+		    int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
+		    if(available_remote > 0) {
+			    printf("Successfully processed %i records...\n", available_remote);
+		    }
+      }
 	  }
 	  free_source_list(source_list, source_length);
-  } else {
+  } 
+  
+  if (stop_running) {
 	  if (client_id) {
 		  free(client_id);  
 	  }
@@ -89,7 +99,7 @@ void* sync_engine_main_routine(void* data) {
 	
 	printf("Starting sync engine main routine...\n");
 	delay_sync = get_object_count_from_database(database);
-	pthread_mutex_lock(&sync_mutex);
+	pthread_mutex_lock(&sync_mutex2);
 	while(!stop_running) {
 		struct timespec   ts;
 		struct timeval    tp;
@@ -100,7 +110,7 @@ void* sync_engine_main_routine(void* data) {
 		ts.tv_sec += WAIT_TIME_SECONDS;
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
-		pthread_cond_timedwait(&sync_cond, &sync_mutex, &ts);
+		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
 		printf("Sync engine continues w/ current operations...\n");
 	
 		if(!delay_sync) {
@@ -112,7 +122,7 @@ void* sync_engine_main_routine(void* data) {
 		}
 
 	}
-	pthread_mutex_unlock(&sync_mutex);
+	pthread_mutex_unlock(&sync_mutex2);
 	
     return NULL;
 }
@@ -164,10 +174,10 @@ void unlock_sync_mutex() {
 }
 
 void wake_up_sync_engine() {
-	pthread_mutex_lock(&sync_mutex);
+	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
 	pthread_cond_broadcast(&sync_cond);
-	pthread_mutex_unlock(&sync_mutex);
+	//pthread_mutex_unlock(&sync_mutex);
 }
 
 /*
@@ -208,10 +218,10 @@ void start_sync_engine(sqlite3 *db) {
 
 void stop_sync_engine() {
 	printf("Shutting down sync engine routine...\n");
-	pthread_mutex_lock(&sync_mutex);
+	//pthread_mutex_lock(&sync_mutex);
 	stop_running = 1;
 	pthread_cond_broadcast(&sync_cond);
-	pthread_mutex_unlock(&sync_mutex);
+	//pthread_mutex_unlock(&sync_mutex);
 }
 
 void shutdown_database() {
@@ -251,33 +261,41 @@ int login(const char* login, const char* password) {
 	int retval = 0;
 	int i,source_length;
 	pSource *source_list;
+  void* pDomainData = 0;
+
 	if (login && password) {
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
 		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 		/* iterate over each source id and get session */
-		lock_sync_mutex();
+		//lock_sync_mutex();
 		for(i = 0; i < source_length; i++) {
 			char login_url[1024] = {0};
 			char* session = 0;
 			char* headers = 0;
 			char data[100];
 
-			sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
-			
-			//fetch session from server
-			sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
-			
-			save_source_url( source_list[i]->_source_url );
-			retval = makeLoginRequest( login_url, data );
+      session = get_db_session_by_server(source_list[i]->_source_url);
+      if ( session == 0 ){
+			  sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
+  			
+			  //fetch session from server
+			  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+  			
+			  save_source_url( source_list[i]->_source_url );
+			  retval = makeLoginRequest( login_url, data );
 #if defined(_WIN32_WCE)
 			// just using db as a placeholder for winmo since 
 			// we can't delete the session
 			set_db_session( source_list[i]->_source_url, "exists" );
 #endif
+      }else{
+        set_db_session( source_list[i]->_source_url, session );
+        free(session);
+      }
 		}
 		
-		unlock_sync_mutex();
+		//unlock_sync_mutex();
 		free_source_list(source_list, source_length);
 	}
 	else {
@@ -299,7 +317,7 @@ int logged_in() {
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 	/* iterate over each source id and delete session */
-	lock_sync_mutex();
+	//lock_sync_mutex();
 	for(i = 0; i < source_length; i++) {
 		session = get_db_session(source_list[i]->_source_url);
 		if (session && strlen(session) > 0) {
@@ -308,7 +326,7 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
-	unlock_sync_mutex();
+	//unlock_sync_mutex();
 	return retval;
 }
 
@@ -322,12 +340,12 @@ void logout() {
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 	/* iterate over each source id and delete session */
-	lock_sync_mutex();
+	//lock_sync_mutex();
 	for(i = 0; i < source_length; i++) {
 		delete_db_session(source_list[i]->_source_url);
 	}
 	free_source_list(source_list, source_length);
-	unlock_sync_mutex();
+	//unlock_sync_mutex();
 }
 
 #endif //__APPLE__

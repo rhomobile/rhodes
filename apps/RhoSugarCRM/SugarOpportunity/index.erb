@@ -1,7 +1,7 @@
 <ul id="SugarOpportunities" title="Opportunities">
-<%@SugarOpportunities.each do |x|%>
-
 <a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new">New</a>
+
+<%@SugarOpportunities.each do |x|%>
 
 <li class="overview">
 	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>">

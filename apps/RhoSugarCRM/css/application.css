@@ -82,3 +82,9 @@ table.grid tr:last-of-type td {
 /*    margin: -45px 0 0 -200px; */
     display: inline;  /* show the hidden back button */
 }
+
+.menu_icon {
+    border:none;
+    margin:-10px 2px -10px -5px;
+    min-height:32px;
+}
