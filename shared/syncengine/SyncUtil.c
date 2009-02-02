@@ -334,7 +334,7 @@ char *get_db_session_by_server(char* source_url) {
 
       char* szServer2 = parseServerFromUrl(url);
       if ( sess && strlen(sess) > 0 &&
-           szServer && szServer2 && stricmp(szServer,szServer2) == 0 ){
+           szServer && szServer2 && strcmp(szServer,szServer2) == 0 ){
         session = str_assign(sess);
         break;
       }
