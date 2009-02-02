@@ -1,6 +1,0 @@
-<ul id="cases" title="Cases">
-<%@cases.each do |x|%>
-	<li><%=link_to x.name, :action => :edit, :id => x.object%></li>
-<%end%>
-<li><font color="blue"><%=link_to "New Case", :action => :new%></font></li>
-</ul>
