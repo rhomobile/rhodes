@@ -215,14 +215,14 @@ task :runsim do
   args << "/data-port=0x4d44"
   args << "/data-port=0x4d4e"
   args << "/pin=0x2100000A"
-  args << "/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"])
+  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
 
   Thread.new { Jake.run(command,args,jde + "/simulator",true) }
   $stdout.flush
 end
 
 desc "Run Sim, load app"
-task :runapp  => :rhodes do
+task :runapp  => [:rhodes, :mdsRun] do
   sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
   jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
 
@@ -262,3 +262,139 @@ task :runapp  => :rhodes do
   Rake::Task["runsim"].execute
   $stdout.flush
 end
+
+desc "Sign cod files automatically"
+task :autoSign do
+  java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"] 
+  
+  args = []
+  args << "-jar"
+  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << "-c"
+  args << "-a"
+  args << "-p"
+  args << '"' + config["build"]["bbsignpwd"] +'"'
+  args << "-r"
+  args << config["build"]["targetdir"]
+
+  puts Jake.run(java,args)
+  $stdout.flush
+
+end
+
+desc "Sign cod files manually"
+task :manualSign do
+  java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"] 
+  
+  args = []
+  args << "-jar"
+  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << "-r"
+  args << config["build"]["targetdir"]
+
+  puts Jake.run(java,args)
+  $stdout.flush
+
+end
+
+desc "Build for device"
+task :deviceBuild => :rhodes do
+  if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
+    Rake::Task["autoSign"].execute
+  else
+    Rake::Task["manualSign"].execute
+  end
+
+  mkdir_p config["build"]["targetdir"] + "/web" if not FileTest.exists? config["build"]["targetdir"] + "/web"
+
+  cp config["build"]["targetdir"] + "/rhodesApp.jad", config["build"]["targetdir"] + "/web"
+
+  Jake.unjar(config["build"]["targetdir"] + "/rhodesApp.cod", config["build"]["targetdir"] + "/web")
+
+end
+
+desc "Build rhobundle.cod"
+task :rhobundleCod => :compileRhoBundle do
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"] 
+  rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["rubyVMdir"]+"/RubyVM.jar")
+  
+  Jake.rapc("RhoBundle",
+     config["build"]["targetdir"],
+     rhodesimplib ,
+     '"' + Jake.get_absolute("../RhoBundle/RhoBundle.jar") + '"',
+     "RhoBundle",
+     config["env"]["vendor"],
+     config["env"]["version"]
+  )
+
+  cp "RhoBundle.alx", config["build"]["targetdir"]
+
+end
+
+desc "Build rhobundle dev"
+task :rhobundleDev => :rhobundleCod do
+#XXX IMPLEMENT ME
+  if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
+    Rake::Task["autoSign"].execute
+  else
+    Rake::Task["manualSign"].execute
+  end
+
+  mkdir_p config["build"]["targetdir"] + "/web" if not FileTest.exists? config["build"]["targetdir"] + "/web"
+
+  cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
+
+  Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
+end
+
+desc "Build device devbuild"
+task :deviceDev => [:buildRubyVM, :rhobundleCod, :compile] do
+  rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["rubyVMdir"]+"/RubyVM.jar") +";" + Jake.get_absolute(config["build"]["bindir"] + "/RhoBundle.jar")
+
+  Rake::Task["compileRhodes"].execute
+
+  if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
+    Rake::Task["autoSign"].execute
+  else
+    Rake::Task["manualSign"].execute
+  end
+
+  mkdir_p config["build"]["targetdir"] + "/web" if not FileTest.exists? config["build"]["targetdir"] + "/web"
+
+  cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
+  cp config["build"]["targetdir"] + "/rhodesApp.jad", config["build"]["targetdir"] + "/web"
+  cp config["build"]["targetdir"] + "/RubyVM.jad", config["build"]["targetdir"] + "/web"
+
+  Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
+  Jake.unjar(config["build"]["targetdir"] + "/rhodesApp.cod", config["build"]["targetdir"] + "/web")
+  Jake.unjar(config["build"]["targetdir"] + "/RubyVM.cod", config["build"]["targetdir"] + "/web")
+
+end
+
+desc "load device"
+task :loadDevice do
+  jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+
+  command = '"' + jde + "/simulator/fledgecontroller.exe\""
+  args = []
+  args << "/session="+sim
+  args << "\"/execute=LoadCod("+Jake.get_absolute(config["build"]["targetdir"])+")\""
+
+  Jake.run(command,args, jde + "/simulator")
+  $stdout.flush
+end
+
+desc "Run MDS"
+task :mdsRun do
+  mdshome =  config["env"]["paths"][config["env"]["bbver"]]["mds"]
+  args = []
+  args << "/c"
+  args << "run.bat"
+
+  Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
+
+end
+
+
