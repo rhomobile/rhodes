@@ -45,7 +45,7 @@ int parse_url(const char *url, UrlInfo *urlinfo)
 	if (s)
 		url = s + strlen("://");
 
-	/* search for a port seperator */
+	/* search for a port separator */
 	if (strchr(url, ':') != NULL)
 	{
 		ret = sscanf(url, "%[^:]:%hu/", urlinfo->host, (short unsigned int*) &urlinfo->port);
