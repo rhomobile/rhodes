@@ -198,12 +198,12 @@ void CSyncEngineWrap::StartSyncEngine()
 
 void CSyncEngineWrap::StopSyncEngine()
 	{
-	lock_sync_mutex();
+	/*lock_sync_mutex();
 
 	if (iDatabase)
 		sqlite3_close(iDatabase);
 
-	unlock_sync_mutex();
+	unlock_sync_mutex();*/
 	}
 
 void CSyncEngineWrap::ResumeThread()
