@@ -49,14 +49,18 @@ char* str_assign_ex(char* data, int len) {
 	return NULL;
 }
 
-char* parseServerFromUrl(const char* url){
+char* parseServerFromUrl( char* url){
   char* pStartSrv, *pEndSrv, *szSrv;
   int nSrvLen;
   char* pHttp = strstr(url,"://");
   if ( !pHttp )
     pHttp = strstr(url,":\\\\");
 
-  pStartSrv = (pHttp ? pHttp+3 : url);
+  if ( pHttp )
+	  pStartSrv = pHttp+3;
+  else
+	  pStartSrv = url;
+  
   pEndSrv = strchr( pStartSrv, '/');
   if ( !pEndSrv )
     pEndSrv = strchr( pStartSrv, '\\');

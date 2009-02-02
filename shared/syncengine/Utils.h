@@ -43,7 +43,7 @@ char* itoa (int n);
 /* Allocate a string based on size of data */
 char* str_assign(char* data);
 char* str_assign_ex(char* data,int len);
-char* parseServerFromUrl(const char* url);
+char* parseServerFromUrl(char* url);
 
 unsigned int DJBHash(char* str, unsigned int len);
 
