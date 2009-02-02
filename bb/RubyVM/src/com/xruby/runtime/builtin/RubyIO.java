@@ -272,9 +272,6 @@ public class RubyIO extends RubyBasic {
     //RHO_COMMENT
     private static char[] buffer = new char[1024];
 	public static final RubyValue readFully(InputStream in) throws IOException {
-		int size = in.available();
-		if (size < 0)
-			size = 1024;
 		RubyString str = ObjectFactory.createString();	
 		UTF8StreamReader reader = new UTF8StreamReader();
 		reader.setInput(in);

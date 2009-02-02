@@ -13,6 +13,8 @@ extern char *get_session(const char *url_string);
 extern void delete_db_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
+extern void lock_sync_mutex();
+extern void unlock_sync_mutex();
 
 #if defined(_WIN32_WCE)
 extern void delete_winmo_session(const char *url_string);
@@ -72,28 +74,29 @@ const char* load_source_url()
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(sqlite3 *database, char *client_id) {
+int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 	pSyncObject *list;
 	char url_string[4096];
-	int i,j,available,source_length;
+	int j,available;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
 	
-	pSource *source_list;
-	source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	//pSource *source_list;
+	//source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	
-	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+	//source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 	available = 0;
-	printf("Iterating over %i sources...\n", source_length);
+	//printf("Iterating over %i sources...\n", source_length);
 	
 	/* iterate over each source id and do a fetch */
-	for(i = 0; i < source_length; i++) {
+	//for(i = 0; i < source_length; i++) 
+  {
 		int success=0, size_deleted=0, size_inserted=0;
 		double start=0,duration = 0;
-		save_source_url(source_list[i]->_source_url);
+		save_source_url(src->_source_url);
 		sprintf(url_string, 
 				"%s%s&client_id=%s", 
-				source_list[i]->_source_url, 
+				src->_source_url, 
 				SYNC_SOURCE_FORMAT, 
 				client_id);
 		start = time(NULL);
@@ -112,8 +115,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 						type = list[j]->_db_operation;
 						if (type) {
 							if(strcmp(type, "insert") == 0) {
-								printf("Inserting record %s - %s: %s\n", list[j]->_object, 
-									   list[j]->_attrib, list[j]->_value);
+								/*printf("Inserting record %s - %s: %s\n", list[j]->_object, 
+									   list[j]->_attrib, list[j]->_value);*/
 								insert_into_database(list[j]);
 								size_inserted++;
 							} 
@@ -139,9 +142,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id) {
 		}
 		duration = time(NULL) - start;
 		update_source_sync_status((sqlite3 *)get_database(), 
-								  source_list[i], size_inserted, size_deleted, duration, success);
+								  src, size_inserted, size_deleted, duration, success);
 	}
-	free_source_list(source_list, source_length);
+	//free_source_list(source_list, source_length);
 	return available;
 }
 
@@ -182,6 +185,8 @@ int push_remote_changes(pSyncOperation *list, int size) {
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
+  lock_sync_mutex();
+
 	prepare_db_statement("SELECT source_id,source_url from sources", 
 						 database, 
 						 &op_list_source_ids_statement);
@@ -192,12 +197,17 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		count++;
 	}
 	sqlite3_reset(op_list_source_ids_statement);
+
+  unlock_sync_mutex();	
+
 	return count;
 }
 
 int get_object_count_from_database(sqlite3 *database) {
 	int count = 0;
 	int success = 0;
+  lock_sync_mutex();	
+
 	prepare_db_statement("SELECT count(*) from object_values",
 						 database,
 						 &ob_count_statement);
@@ -206,6 +216,9 @@ int get_object_count_from_database(sqlite3 *database) {
 		count = sqlite3_column_int(ob_count_statement, 0);
 	}
 	sqlite3_reset(ob_count_statement);
+
+  unlock_sync_mutex();	
+
 	return count;
 }
 
@@ -214,11 +227,16 @@ char *set_client_id(sqlite3 *database, pSource source) {
 	char *json_string;
 	char url_string[4096];
 	char *c_id = NULL;
+
+  lock_sync_mutex();	
+
 	prepare_db_statement("SELECT client_id from client_info limit 1",
 						 database,
 						 &client_id_statement);
 	sqlite3_step(client_id_statement);
 	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
+  unlock_sync_mutex();	
+
 	if (c_id != NULL && strlen(c_id) > 0) {
 		printf("Using client_id %s from database...\n", c_id);
 	} else {
@@ -229,11 +247,16 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		}
     set_db_client_id(database,c_id);
 	}
+  lock_sync_mutex();	
 	sqlite3_reset(client_id_statement);
+  unlock_sync_mutex();	
+
 	return c_id;
 }
 
 void set_db_client_id( sqlite3 *database, char *c_id ){
+  lock_sync_mutex();	
+
 	prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
 						 database,
 						 &client_id_insert_statement);
@@ -241,12 +264,17 @@ void set_db_client_id( sqlite3 *database, char *c_id ){
 	sqlite3_step(client_id_insert_statement);
 	printf("Intialized new client_id %s from source...\n", c_id);
 	sqlite3_reset(client_id_insert_statement);
+
+  unlock_sync_mutex();	
 }
 
 void update_source_sync_status(sqlite3 *database, pSource source, 
 							   int num_inserted, int num_deleted, double sync_duration, int status) {
 	time_t now_in_seconds;
-	now_in_seconds = time(NULL);	
+	now_in_seconds = time(NULL);
+
+  lock_sync_mutex();	
+
 	prepare_db_statement("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?",
 						 database,
@@ -259,6 +287,8 @@ void update_source_sync_status(sqlite3 *database, pSource source,
 	sqlite3_bind_int(sync_status_statement, 6, source->_source_id);
 	sqlite3_step(sync_status_statement); 
 	sqlite3_reset(sync_status_statement);
+
+  unlock_sync_mutex();	
 }
 
 /**
@@ -269,6 +299,8 @@ char *get_db_session(const char* source_url) {
 	
 	if ( source_url )
 	{
+    lock_sync_mutex();	
+
 		prepare_db_statement("SELECT session FROM sources WHERE source_url=?",
 						     (sqlite3 *)get_database(),
 							 &session_db_statement);
@@ -277,7 +309,40 @@ char *get_db_session(const char* source_url) {
 		
 		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
 		sqlite3_reset(session_db_statement);
+
+    unlock_sync_mutex();	
+
 	}
+	return session;
+}
+
+char *get_db_session_by_server(char* source_url) {
+	char *session = NULL;
+	
+	if ( source_url )
+	{
+    char* szServer = parseServerFromUrl(source_url);
+    lock_sync_mutex();	
+
+	  prepare_db_statement("SELECT session,source_url from sources", 
+						   (sqlite3 *)get_database(),
+						   &op_list_source_ids_statement);
+	  while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW) {
+		  char * sess = (char*)sqlite3_column_text(op_list_source_ids_statement, 0);
+		  char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
+
+      char* szServer2 = parseServerFromUrl(url);
+      if ( sess && strlen(sess) > 0 &&
+           szServer && szServer2 && _stricmp(szServer,szServer2) == 0 ){
+        session = str_assign(sess);
+        break;
+      }
+	  }
+	  sqlite3_reset(op_list_source_ids_statement);
+
+    unlock_sync_mutex();	
+	}
+
 	return session;
 }
 
@@ -285,12 +350,15 @@ void delete_db_session( const char* source_url )
 {
 	if ( source_url )
 	{
+    lock_sync_mutex();	
 		prepare_db_statement("UPDATE sources SET session=NULL where source_url=?",
 						 (sqlite3 *)get_database(),
 						 &del_session_db_statement);
 		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
 		sqlite3_step(del_session_db_statement); 
 		sqlite3_reset(del_session_db_statement);
+
+    unlock_sync_mutex();	
 
 #if defined(_WIN32_WCE)
 		// Delete from winmo cookies
@@ -307,6 +375,8 @@ int set_db_session(const char* source_url, const char *session) {
 	
 	if ( source_url && session )
 	{
+    lock_sync_mutex();	
+
 		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
 							 (sqlite3 *)get_database(),
 							 &session_db_statement);
@@ -315,6 +385,8 @@ int set_db_session(const char* source_url, const char *session) {
 		sqlite3_bind_text(session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
 		success = sqlite3_step(session_db_statement);
 		sqlite3_reset(session_db_statement);
+
+    unlock_sync_mutex();
 	}
 	return success;
 }

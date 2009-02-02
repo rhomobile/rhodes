@@ -76,10 +76,10 @@ CSyncEngine::CSyncEngine(void)
 
 CSyncEngine::~CSyncEngine(void)
 {
-  Lock();
+  //Lock();
   stop_running = 1;
   ::SetEvent(m_hDoSyncEvent);
-  Unlock();
+  //Unlock();
 
 	m_thread.RemoveHandle(m_hEvent);
 	m_thread.Shutdown();
@@ -99,40 +99,47 @@ void CSyncEngine::FreezeThread()
 
 void CSyncEngine::Lock() {
   EnterCriticalSection(&m_critical_section);
-  ATLTRACE(_T("Sync engine thread locked\n"));
+//  ATLTRACE(_T("Sync engine thread locked\n"));
 }
 
 void CSyncEngine::Unlock() {
   LeaveCriticalSection(&m_critical_section);
-  ATLTRACE(_T("Sync engine thread unlocked\n"));
+//  ATLTRACE(_T("Sync engine thread unlocked\n"));
 }
 
 void CSyncEngine::TriggerSync() {
-  Lock();
+  //Lock();
   ::SetEvent(m_hDoSyncEvent);
-  Unlock();
+  //Unlock();
 }
 
 void CSyncEngine::StartSync() {
-  Lock();
+  //Lock();
   stop_running = 0;
   ::SetEvent(m_hDoSyncEvent);
-  Unlock();
+  //Unlock();
+}
+
+void CSyncEngine::ShowHomePage()
+{
+  if (m_hMainWindow) {
+    ::PostMessage(m_hMainWindow,WM_COMMAND,IDM_HOME,0);
+    m_hMainWindow = NULL;
+  }
 }
 
 HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bSyncInitialized) {
     StartSyncEngine();
-  }
-  
-  WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
-  PerformSync();
+    //WaitForSingleObject(m_hDoSyncEvent,INFINITE);
+  }//else
 
-  if (m_hMainWindow) {
-    ::SendMessage(m_hMainWindow,WM_COMMAND,IDM_HOME,0);
-    m_hMainWindow = NULL;
-  }
+  ATLTRACE(_T("Wait Sync timeout\n"));
+  WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
+  
+  PerformSync();
+  //ShowHomePage();
 
   return S_OK;
 }
@@ -151,34 +158,36 @@ HRESULT CSyncEngine::CloseHandle(HANDLE hHandle)
 
 bool CSyncEngine::StartSyncEngine()
 {
-  Lock();
-
   ATLTRACE(_T("Starting sync engine\n"));
   char dbpath[MAX_PATH];
   sprintf(dbpath,"%sdb\\syncdb.sqlite",RhoGetRootPath());
+
+  Lock();
   sqlite3_open(dbpath,&m_database);
+  Unlock();
+
   // Set the delay based on records from the database
   m_delaySync = get_object_count_from_database(m_database);
   start_sync_engine(m_database);
   m_bSyncInitialized = true;
+  stop_running = 0;
 
-  Unlock();
   return true;
 }
 
 bool CSyncEngine::PerformSync()
 {
-  Lock();
+  //Lock();
 
   ATLTRACE(_T("Performing sync\n"));
   ::ResetEvent(m_hDoSyncEvent);
   if (!m_delaySync) {
-	process_local_changes();
+	  process_local_changes();
   } else {
     m_delaySync = 0;
   }
 
-  Unlock();
+  //Unlock();
   return true;
 }
 
@@ -332,6 +341,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
   char       *cstr = NULL;
   char		 *session = NULL;
   std::string data = "";
+  //CAtlStringA data;
   char        sBuf[1024];
   DWORD       dwBytesRead  = 0;
   LPWSTR      urlw;
@@ -344,12 +354,12 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
   hInet = hConnection = hRequest = NULL;
 
   do {
-	// Don't make a connection attempt if there is no session
+	  // Don't make a connection attempt if there is no session
     session = get_db_session(load_source_url());
-	if ( bCheckSession && !session && !strstr(url, "clientcreate") ) {
-	  break;
-	}
-	if (session) free(session);
+	  if ( bCheckSession && !session && !strstr(url, "clientcreate") ) {
+	    break;
+	  }
+	  if (session) free(session);
 
     if( !SetupInternetConnection(urlw) ) {
       break;
@@ -430,17 +440,20 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
           BOOL bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
           while (bRead && (dwBytesRead > 0)) {
             data.append(sBuf, dwBytesRead);
+            //data.Append(sBuf, dwBytesRead);
             bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
           }
-		  if ( bGetRawData && pdwDataSize ){
-			  cstr = new char [*pdwDataSize];
-			  memcpy (cstr, data.c_str(), *pdwDataSize);
-		  }
-		  else {
-			  //make a copy of recieved data
-			  cstr = new char [data.size()+1];
-			  strcpy (cstr, data.c_str());
-		  }
+		      if ( bGetRawData && pdwDataSize ){
+			      cstr = new char [*pdwDataSize];
+            memcpy (cstr, data.c_str(), *pdwDataSize);
+		      }
+		      else {
+			      //make a copy of recieved data
+			      cstr = new char [data.size()+1];
+			      strcpy (cstr, data.c_str());
+            //cstr = new char [data.GetLength()+1];
+            //strcpy (cstr, data.GetString());
+		      }
         }
       }
     } else {

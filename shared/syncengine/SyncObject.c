@@ -86,20 +86,27 @@ int exists_in_database(pSyncObject ref) {
 	if (ref->_primary_key == 0) {
 		return 0;
 	}
-    prepare_db_statement("SELECT value FROM object_values where id=?",
+
+  lock_sync_mutex();	
+
+  prepare_db_statement("SELECT value FROM object_values where id=?",
 						 ref->_database,
 						 &select_statement);
 	sqlite3_bind_int(select_statement, 1, ref->_primary_key);
 	success = sqlite3_step(select_statement);
 	/* we have a row with the same value, return 1 */
-    if (success == SQLITE_ROW) {
+  if (success == SQLITE_ROW) {
 		char *tmp_check = str_assign((char *)sqlite3_column_text(select_statement, 0));
 		if(strcmp(tmp_check, ref->_value) == 0) {
 			sqlite3_reset(select_statement);
+      unlock_sync_mutex();	
 			return 1;
 		}
-    }
+  }
 	sqlite3_reset(select_statement);
+
+  unlock_sync_mutex();	
+
 	return 0;
 }
 
@@ -109,6 +116,8 @@ int insert_into_database(pSyncObject ref) {
 	if (exists_in_database(ref)) {
 		return SYNC_OBJECT_DUPLICATE;
 	} else {
+    lock_sync_mutex();	
+
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
 							 update_type) VALUES(?,?,?,?,?,?)",
 							 ref->_database,
@@ -122,16 +131,21 @@ int insert_into_database(pSyncObject ref) {
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
+      unlock_sync_mutex();	
 			return 0;
 		} 
 		sqlite3_reset(insert_statement);
+    unlock_sync_mutex();	
 		return SYNC_OBJECT_SUCCESS;
 	}
 }
 
 /* delete a specific set of object_values from the database */
 int delete_from_database(pSyncObject ref) {
-    int success = 0;
+  int success = 0;
+
+  lock_sync_mutex();	
+
 	prepare_db_statement("DELETE FROM object_values where object=? and attrib=? and value=?",
 						 ref->_database,
 						 &delete_statement);
@@ -142,9 +156,13 @@ int delete_from_database(pSyncObject ref) {
 	
 	if (success != SQLITE_DONE) {
 		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
+    unlock_sync_mutex();	
+
 		return 1;
 	}
 	sqlite3_reset(delete_statement);
+  unlock_sync_mutex();	
+
 	return 0;
 }
 

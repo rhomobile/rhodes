@@ -134,6 +134,7 @@ public class SyncThread implements Runnable {
 		if ( getState() == STATE_PAUSE ){
 			synchronized (sync) {	
 				sync.notify(); 
+				sync.notify();
 			}
 		}
 		

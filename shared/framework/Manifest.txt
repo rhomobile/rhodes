@@ -58,6 +58,7 @@ spec/model_generator_spec.rb
 spec/rho_controller_spec.rb
 spec/rho_spec.rb
 spec/rhom_object_factory_spec.rb
+spec/rhom_spec.rb
 spec/source_generator_spec.rb
 spec/spec.opts
 spec/spec_helper.rb

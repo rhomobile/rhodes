@@ -24,6 +24,13 @@ import java.io.OutputStream;
 
 //import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+
+import javolution.io.UTF8StreamReader;
+
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyString;
+import com.xruby.runtime.lang.RubyValue;
+
 import rhomobile.NetworkAccess;
 
 /**
@@ -32,6 +39,23 @@ import rhomobile.NetworkAccess;
 public class SyncManager {
 
 	private static HttpConnection connection = null;
+	private static char[] m_ReadBuffer = new char[8192];
+	
+	private static final StringBuffer readFully(InputStream in) throws IOException {
+		StringBuffer buffer = new StringBuffer();
+		UTF8StreamReader reader = new UTF8StreamReader();
+		reader.setInput(in);
+		while (true) {
+			synchronized (m_ReadBuffer) {
+				int len = reader.read(m_ReadBuffer);
+				if (len < 0) {
+					break;
+				}
+				buffer.append(m_ReadBuffer, 0, len);
+			}
+		}
+		return buffer;
+	}
 	
 	/**
 	 * Fetch remote data.
@@ -50,6 +74,7 @@ public class SyncManager {
 		InputStream is = null;
 		int code = 0;
 		if (checkSession && (session == null || session.length() == 0)) return null;
+		
 		try {
 			long len = 0;
 			int ch = 0;
@@ -63,7 +88,11 @@ public class SyncManager {
 			len = connection.getLength();
 			code = connection.getResponseCode();
 			if (code == HttpConnection.HTTP_OK) {
-				if (len != -1) {
+				if ( len > 1024*100)
+					return null;
+				
+				buffer = readFully(is);
+				/*if (len != -1) {
 					for (int i = 0; i < len; i++) {
 						if ((ch = is.read()) != -1) {
 							buffer.append((char) ch);
@@ -73,7 +102,7 @@ public class SyncManager {
 					while ((ch = is.read()) != -1) {
 						buffer.append((char) ch);
 					}
-				}
+				}*/
 			} else {
 				System.out.println("Error retrieving data: " + code);
 				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();

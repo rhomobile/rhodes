@@ -21,15 +21,7 @@ require File.dirname(__FILE__) + "/spec_helper"
 describe "RhomObjectFactory" do
 
   it_should_behave_like "rho initializer"
-  
-  before(:each) do
-    FileUtils.cp_r('spec/syncdbtest.sqlite','build/syncdbtest.sqlite')
-  end
-  
-  after(:each) do 
-    FileUtils.rm_rf('build/syncdbtest.sqlite')
-    @rhom = nil
-  end
+  it_should_behave_like "rho db initializer"
   
   it "should set source_id attributes" do
     Account.get_source_id.should == "1"

@@ -33,11 +33,40 @@ char* itoa (int n) {
 char* str_assign(char* data) {
 	if (data) {
 		int len = strlen(data);
+    return str_assign_ex(data,len);
+	}
+	return NULL;
+}
+
+/* Allocate a string based on size of data */
+char* str_assign_ex(char* data, int len) {
+	if (data) {
 		char* a = malloc(len+1);
-		strcpy(a,data);
+		strncpy(a,data,len);
+    a[len] = 0;
 		return a;
 	}
 	return NULL;
+}
+
+char* parseServerFromUrl( char* url){
+  char* pStartSrv, *pEndSrv, *szSrv;
+  int nSrvLen;
+  char* pHttp = strstr(url,"://");
+  if ( !pHttp )
+    pHttp = strstr(url,":\\\\");
+
+  if ( pHttp )
+	  pStartSrv = pHttp+3;
+  else
+	  pStartSrv = url;
+  
+  pEndSrv = strchr( pStartSrv, '/');
+  if ( !pEndSrv )
+    pEndSrv = strchr( pStartSrv, '\\');
+
+  nSrvLen = pEndSrv ? (pEndSrv - pStartSrv) : strlen(pStartSrv);
+  return str_assign_ex(pStartSrv, nSrvLen);
 }
 
 /* Use DJBHash function to generate temp object id */
