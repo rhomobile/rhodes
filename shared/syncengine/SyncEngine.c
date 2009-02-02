@@ -36,9 +36,13 @@ pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
 static sqlite3 *database;
-static char *client_id = NULL;
+char *client_id = NULL;
 
 extern void delete_db_session(const char *source_url);
+
+#ifdef __SYMBIAN32__
+extern int g_cur_source;
+#endif
 
 int process_local_changes() {
   if (!stop_running) {
@@ -64,23 +68,49 @@ int process_local_changes() {
 		  result += process_op_list(source_list[i], "delete");
 	  }
   	
-	  if (result > 0) {
+	  if (result > 0) 
+	  {
 		  printf("Remote update failed, not continuing with sync...\n");
-	  } else {
+	  } 
+	  else 
+	  {
 		  /* fetch new list from sync source */
-  	  for(i = 0; i < source_length && !stop_running; i++) {
-		    int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
-		    if(available_remote > 0) {
-			    printf("Successfully processed %i records...\n", available_remote);
-		    }
-      }
+	  
+#ifdef __SYMBIAN32__
+	  /**
+	   * [AA] In case of out of memory problems we need to restart sync thread for each source 
+	   */
+		  if ( g_cur_source >= source_length )
+			  g_cur_source = 0;
+	
+		  if ( !stop_running && g_cur_source < source_length )
+		  {
+			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source]);
+			  if(available_remote > 0) {
+				  printf("Successfully processed %i records...\n", available_remote);
+			  }
+			  
+			  g_cur_source++;
+			  stop_running = 1; //stop sync thread
+		  }
+	  
+#else
+		  for(i = 0; i < source_length && !stop_running; i++)
+		  {
+				int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
+				if(available_remote > 0) {
+					printf("Successfully processed %i records...\n", available_remote);
+				}
+		  }
+#endif	  
 	  }
 	  free_source_list(source_list, source_length);
   } 
   
   if (stop_running) {
 	  if (client_id) {
-		  free(client_id);  
+		  free(client_id);
+		  client_id = NULL;
 	  }
 	  shutdown_database();
   }
@@ -108,6 +138,14 @@ void* sync_engine_main_routine(void* data) {
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
 		ts.tv_sec += WAIT_TIME_SECONDS;
+
+#ifdef __SYMBIAN32__		
+		if ( g_cur_source != 0 )
+		{
+			delay_sync = 0;
+			ts.tv_sec = 1;
+		}
+#endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
@@ -123,6 +161,10 @@ void* sync_engine_main_routine(void* data) {
 
 	}
 	pthread_mutex_unlock(&sync_mutex2);
+	
+#ifdef __SYMBIAN32__
+	stop_running = 0;
+#endif	
 	
     return NULL;
 }
