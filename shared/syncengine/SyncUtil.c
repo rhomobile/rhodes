@@ -316,7 +316,7 @@ char *get_db_session(const char* source_url) {
 	return session;
 }
 
-char *get_db_session_by_server(const char* source_url) {
+char *get_db_session_by_server(char* source_url) {
 	char *session = NULL;
 	
 	if ( source_url )
