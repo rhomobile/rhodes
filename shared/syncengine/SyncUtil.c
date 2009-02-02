@@ -316,6 +316,36 @@ char *get_db_session(const char* source_url) {
 	return session;
 }
 
+char *get_db_session_by_server(const char* source_url) {
+	char *session = NULL;
+	
+	if ( source_url )
+	{
+    char* szServer = parseServerFromUrl(source_url);
+    lock_sync_mutex();	
+
+	  prepare_db_statement("SELECT session,source_url from sources", 
+						   (sqlite3 *)get_database(),
+						   &op_list_source_ids_statement);
+	  while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW) {
+		  char * sess = (char*)sqlite3_column_text(op_list_source_ids_statement, 0);
+		  char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
+
+      char* szServer2 = parseServerFromUrl(url);
+      if ( sess && strlen(sess) > 0 &&
+           szServer && szServer2 && _stricmp(szServer,szServer2) == 0 ){
+        session = str_assign(sess);
+        break;
+      }
+	  }
+	  sqlite3_reset(op_list_source_ids_statement);
+
+    unlock_sync_mutex();	
+	}
+
+	return session;
+}
+
 void delete_db_session( const char* source_url )
 {
 	if ( source_url )

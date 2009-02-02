@@ -25,6 +25,12 @@ void set_db_client_id( sqlite3 *database, char *c_id );
 char *get_db_session(const char* source_url);
 
 /**
+ * Retrieve cookie from database storage by sync server name
+ */
+
+char *get_db_session_by_server(const char* source_url);
+
+/**
  * Save cookie to the database storage
  */
 int set_db_session(const char* source_url, const char * session);

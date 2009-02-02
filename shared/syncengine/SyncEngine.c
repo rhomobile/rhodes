@@ -249,20 +249,6 @@ void clear_client_id(){
 }
 
 #ifndef __APPLE__
-char* getSessionByDomain(const char* url){
-	/*int i,source_length;
-	pSource *source_list;
-	source_list = malloc(MAX_SOURCES*sizeof(pSource));
-	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
-
-  for(i = 0; i < source_length; i++) {
-    source_list[i]->_source_url
-  }
-
-	free_source_list(source_list, source_length); */
-  return 0;
-}
-
 /**
  * login to rhosync server (default implementation)
  * If succeeded stores session into the database
@@ -275,6 +261,8 @@ int login(const char* login, const char* password) {
 	int retval = 0;
 	int i,source_length;
 	pSource *source_list;
+  void* pDomainData = 0;
+
 	if (login && password) {
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
 		source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
@@ -287,7 +275,7 @@ int login(const char* login, const char* password) {
 			char* headers = 0;
 			char data[100];
 
-      session = getSessionByDomain(source_list[i]->_source_url);
+      session = get_db_session_by_server(source_list[i]->_source_url);
       if ( session == 0 ){
 			  sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
   			

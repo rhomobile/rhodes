@@ -42,7 +42,9 @@ char* itoa (int n);
 	
 /* Allocate a string based on size of data */
 char* str_assign(char* data);
-	
+char* str_assign_ex(char* data,int len);
+char* parseServerFromUrl(const char* url);
+
 unsigned int DJBHash(char* str, unsigned int len);
 
 void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement);
