@@ -143,7 +143,7 @@ void* sync_engine_main_routine(void* data) {
 		if ( g_cur_source != 0 )
 		{
 			delay_sync = 0;
-			ts.tv_sec = 1;
+			ts.tv_sec = 2;
 		}
 #endif
 		
@@ -271,7 +271,9 @@ void shutdown_database() {
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
   	
+#ifndef __SYMBIAN32__	
 	sqlite3_close(database);
+#endif	
 	printf("Sync engine is shutdown...\n");
 }
 
