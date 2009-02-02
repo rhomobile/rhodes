@@ -1,8 +1,9 @@
 <ul id="SugarCampaigns" title="Campaigns">
+<a class="button right_button" href="/RhoSugarCRM/SugarCampaign/new">New</a>
+	
 <%@SugarCampaigns.each do |x|%>
 
 <li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
 
 <%end%>
-<li><font color="blue"><%=link_to "New SugarCampaign", :action => :new%></font></li>
 </ul>
