@@ -19,6 +19,7 @@ extern void unlock_sync_mutex();
 #if defined(_WIN32_WCE)
 extern void delete_winmo_session(const char *url_string);
 extern char *get_winmo_session_size(const char *url_string);
+#define stricmp _stricmp
 #endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
@@ -333,7 +334,7 @@ char *get_db_session_by_server(char* source_url) {
 
       char* szServer2 = parseServerFromUrl(url);
       if ( sess && strlen(sess) > 0 &&
-           szServer && szServer2 && _stricmp(szServer,szServer2) == 0 ){
+           szServer && szServer2 && stricmp(szServer,szServer2) == 0 ){
         session = str_assign(sess);
         break;
       }
