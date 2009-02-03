@@ -116,14 +116,14 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 						type = list[j]->_db_operation;
 						if (type) {
 							if(strcmp(type, "insert") == 0) {
-								/*printf("Inserting record %s - %s: %s\n", list[j]->_object, 
+								/*printf("Inserting record %i - %s - %s: %s\n", 
+									   list[j]->_primary_key, list[j]->_object, 
 									   list[j]->_attrib, list[j]->_value);*/
 								insert_into_database(list[j]);
 								size_inserted++;
 							} 
 							else if (strcmp(type, "delete") == 0) {
-								printf("Deleting record %s - %s: %s\n", list[j]->_object, 
-									   list[j]->_attrib, list[j]->_value);
+								/*printf("Deleting record %i\n", list[j]->_primary_key);*/
 								delete_from_database(list[j]);
 								size_deleted++;
 							} else {
