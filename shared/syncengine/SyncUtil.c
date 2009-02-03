@@ -110,8 +110,6 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 	char *json_string;
 	char *type = NULL;
 	
-	printf("[BEGIN] fetch_remote_changes client_id:%s source_url:%s\n", client_id, src->_source_url);
-	
 	//pSource *source_list;
 	//source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	
@@ -177,8 +175,6 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 	}
 	//free_source_list(source_list, source_length);
     
-    printf("[END] fetch_remote_changes\n"); 
-  
 	return available;
 }
 
@@ -242,8 +238,6 @@ int get_object_count_from_database(sqlite3 *database) {
 	int count = 0;
 	int success = 0;
 	
-	printf("[BEGIN] get_object_count_from_database\n");
-	
     lock_sync_mutex();	
 
 	prepare_db_statement("SELECT count(*) from object_values",
@@ -256,8 +250,6 @@ int get_object_count_from_database(sqlite3 *database) {
 	sqlite3_reset(ob_count_statement);
 
     unlock_sync_mutex();	
-
-    printf("[END] get_object_count_from_database\n");
     
 	return count;
 }
