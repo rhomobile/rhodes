@@ -116,7 +116,7 @@ int insert_into_database(pSyncObject ref) {
 	if (exists_in_database(ref)) {
 		return SYNC_OBJECT_DUPLICATE;
 	} else {
-    lock_sync_mutex();	
+		lock_sync_mutex();	
 
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
 							 update_type) VALUES(?,?,?,?,?,?)",
@@ -131,37 +131,35 @@ int insert_into_database(pSyncObject ref) {
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
-      unlock_sync_mutex();	
+			unlock_sync_mutex();	
 			return 0;
 		} 
 		sqlite3_reset(insert_statement);
-    unlock_sync_mutex();	
+		unlock_sync_mutex();	
 		return SYNC_OBJECT_SUCCESS;
 	}
 }
 
 /* delete a specific set of object_values from the database */
 int delete_from_database(pSyncObject ref) {
-  int success = 0;
+	int success = 0;
 
-  lock_sync_mutex();	
+	lock_sync_mutex();	
 
-	prepare_db_statement("DELETE FROM object_values where object=? and attrib=? and value=?",
+	prepare_db_statement("DELETE FROM object_values where id=?",
 						 ref->_database,
 						 &delete_statement);
-	sqlite3_bind_text(delete_statement, 1, ref->_object, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(delete_statement, 2, ref->_attrib, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_text(delete_statement, 3, ref->_value, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_int(delete_statement, 1, ref->_primary_key);
 	success = sqlite3_step(delete_statement);
-	
+
 	if (success != SQLITE_DONE) {
 		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
-    unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 		return 1;
 	}
 	sqlite3_reset(delete_statement);
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 	return 0;
 }
