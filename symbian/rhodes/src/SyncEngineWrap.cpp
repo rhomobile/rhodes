@@ -186,7 +186,7 @@ TInt CSyncEngineWrap::ExecuteL()
 
 void CSyncEngineWrap::StartSyncEngine()
 	{
-	printf("[BEGIN] sqlite3_open");
+	printf("[BEGIN] sqlite3_open\n");
 	
 	lock_sync_mutex();
 
@@ -197,19 +197,19 @@ void CSyncEngineWrap::StartSyncEngine()
 
 	unlock_sync_mutex();
 	
-	printf("[END] sqlite3_open");
+	printf("[END] sqlite3_open\n");
 	}
 
 void CSyncEngineWrap::StopSyncEngine()
 	{
-	printf("[BEGIN] sqlite3_close");
+	printf("[BEGIN] sqlite3_close\n");
 	lock_sync_mutex();
 
 	if (iDatabase)
 		sqlite3_close(iDatabase);
 
 	unlock_sync_mutex();
-	printf("[END] sqlite3_close");
+	printf("[END] sqlite3_close\n");
 	}
 
 void CSyncEngineWrap::ResumeThread()
