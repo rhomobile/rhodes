@@ -1,6 +1,0 @@
-<ul id="employees" title="Employees">
-<%@employees.each do |x|%>
-<li><%=link_to "#{x.first_name} #{x.last_name}", :action => :edit, :id => x.object%></li>
-<%end%>
-<li><font color="blue"><%=link_to "New Employee", :action => :new%></font></li>
-</ul>
