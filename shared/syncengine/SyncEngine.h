@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#define WAIT_TIME_SECONDS 30//600
+#define WAIT_TIME_SECONDS 90//600
 
 extern int stop_running;
 
