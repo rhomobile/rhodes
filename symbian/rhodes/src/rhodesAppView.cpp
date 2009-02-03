@@ -103,7 +103,7 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
 	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw | TBrCtlDefs::ECapabilityCursorNavigation |
-	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys | TBrCtlDefs::ECacheModeNoCache;
+	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys ;
 
 	CreateBasicBrowserControlL();
 
@@ -298,6 +298,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         	{
         		if (iBrCtlInterface)
     			{
+					iBrCtlInterface->ClearCache();
 		            TBrCtlDefs::TBrCtlElementType type = iBrCtlInterface->FocusedElementType();
 		            
 		            if(type == TBrCtlDefs::EElementActivatedInputBox )
@@ -308,6 +309,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	        {
 	            if (iBrCtlInterface)
 	            {
+					iBrCtlInterface->ClearCache();
 	                iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandBack);
 	            }
 	            break;
