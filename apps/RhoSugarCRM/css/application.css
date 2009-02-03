@@ -51,6 +51,7 @@ table.grid {
 	border: 1px solid #999999;
 	background: #ffffff;
 	font-size: 80%;
+	border: none;
 }
 
 table.grid td {
