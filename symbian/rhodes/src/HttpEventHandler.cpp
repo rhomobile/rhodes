@@ -181,6 +181,11 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 					if ( dataSize > 10 * 1024) //~10kb skip large chunks of data
 					{
 						iSavingResponseBody = false;
+						//try to stop current connection
+						if (iVerbose)
+							iTest->Console()->Printf(_L("Transaction Failed\n"));
+						aTransaction.Close();
+						CActiveScheduler::Stop();
 					}
 					else
 					{

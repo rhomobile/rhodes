@@ -238,9 +238,13 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 }
 
 int get_object_count_from_database(sqlite3 *database) {
+
 	int count = 0;
 	int success = 0;
-  lock_sync_mutex();	
+	
+	printf("[BEGIN] get_object_count_from_database\n");
+	
+    lock_sync_mutex();	
 
 	prepare_db_statement("SELECT count(*) from object_values",
 						 database,
@@ -251,8 +255,10 @@ int get_object_count_from_database(sqlite3 *database) {
 	}
 	sqlite3_reset(ob_count_statement);
 
-  unlock_sync_mutex();	
+    unlock_sync_mutex();	
 
+    printf("[END] get_object_count_from_database\n");
+    
 	return count;
 }
 

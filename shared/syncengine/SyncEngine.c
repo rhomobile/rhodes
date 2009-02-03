@@ -149,8 +149,9 @@ void* sync_engine_main_routine(void* data) {
 			delay_sync = 0;
 			ts.tv_sec = 2;
 		}
-#endif
+
 		printf("[BEGIN] sync_engine delay_sync:%d g_cur_source:%d", delay_sync, g_cur_source);
+#endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
@@ -213,17 +214,20 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
+	printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
+	printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
 void wake_up_sync_engine() {
 	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
+	delay_sync = 0;
 	pthread_cond_broadcast(&sync_cond);
 	//pthread_mutex_unlock(&sync_mutex);
 }
@@ -363,6 +367,9 @@ int logged_in() {
 	char *session;
 	int i,source_length,retval = 0;
 	pSource *source_list;
+	
+	printf("[BEGIN]logged_in\n");
+	
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
@@ -376,6 +383,9 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
+	
+	printf("[END]logged_in\n");
+	
 	//unlock_sync_mutex();
 	return retval;
 }
