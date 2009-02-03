@@ -33,15 +33,43 @@ static sqlite3_stmt *session_db_statement = NULL;
 static sqlite3_stmt *del_session_db_statement = NULL;
 
 void finalize_sync_util_statements() {
-	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
-	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
-	if (client_id_statement) sqlite3_finalize(client_id_statement);
-	if (client_id_insert_statement) sqlite3_finalize(client_id_insert_statement);
-	if (client_session_statement) sqlite3_finalize(client_session_statement);
-	if (client_db_statement) sqlite3_finalize(client_db_statement);
-	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
-	if (session_db_statement) sqlite3_finalize(session_db_statement);
-	if (del_session_db_statement) sqlite3_finalize(del_session_db_statement);
+	if (op_list_source_ids_statement) {
+		sqlite3_finalize(op_list_source_ids_statement);
+		op_list_source_ids_statement = NULL;
+	}
+	if (ob_count_statement) {
+		sqlite3_finalize(ob_count_statement);
+		ob_count_statement = NULL;
+	}
+	if (client_id_statement) {
+		sqlite3_finalize(client_id_statement);
+		client_id_statement = NULL;
+	}
+	if (client_id_insert_statement) {
+		sqlite3_finalize(client_id_insert_statement);
+		client_id_insert_statement = NULL;
+	}
+	if (client_session_statement) {
+		sqlite3_finalize(client_session_statement);
+		client_session_statement = NULL;
+	}
+	if (client_db_statement) {
+		sqlite3_finalize(client_db_statement);
+		client_db_statement = NULL;
+	}
+	if (sync_status_statement) {
+		sqlite3_finalize(sync_status_statement);
+		sync_status_statement = NULL;
+	}
+	if (session_db_statement) {
+		sqlite3_finalize(session_db_statement);
+		session_db_statement = NULL;
+	}
+	
+	if (del_session_db_statement) {
+		sqlite3_finalize(del_session_db_statement);
+		del_session_db_statement = NULL;
+	}
 }
 
 /**
@@ -81,6 +109,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 	int j,available;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
+	
+	printf("[BEGIN] fetch_remote_changes client_id:%s source_url:%s\n", client_id, src->_source_url);
 	
 	//pSource *source_list;
 	//source_list = malloc(MAX_SOURCES*sizeof(pSource));
@@ -146,6 +176,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 								  src, size_inserted, size_deleted, duration, success);
 	}
 	//free_source_list(source_list, source_length);
+    
+    printf("[END] fetch_remote_changes\n"); 
+  
 	return available;
 }
 
