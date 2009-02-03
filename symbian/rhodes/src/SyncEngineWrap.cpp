@@ -186,6 +186,8 @@ TInt CSyncEngineWrap::ExecuteL()
 
 void CSyncEngineWrap::StartSyncEngine()
 	{
+	printf("[BEGIN] sqlite3_open");
+	
 	lock_sync_mutex();
 
 	char dbpath[KMaxFileName];
@@ -194,16 +196,20 @@ void CSyncEngineWrap::StartSyncEngine()
 	start_sync_engine(iDatabase);
 
 	unlock_sync_mutex();
+	
+	printf("[END] sqlite3_open");
 	}
 
 void CSyncEngineWrap::StopSyncEngine()
 	{
+	printf("[BEGIN] sqlite3_close");
 	lock_sync_mutex();
 
 	if (iDatabase)
 		sqlite3_close(iDatabase);
 
 	unlock_sync_mutex();
+	printf("[END] sqlite3_close");
 	}
 
 void CSyncEngineWrap::ResumeThread()
@@ -233,6 +239,8 @@ extern "C"
 		char* retval = 0;
 		CHttpClient* gHttpClient = NULL;
 
+		printf("[BEGIN] fetch_remote_data: %s\n", url);
+		
 		cookie = get_db_session(load_source_url());
 
 		if (!cookie && !strstr(url, "clientcreate"))
@@ -252,6 +260,8 @@ extern "C"
 		retval = gHttpClient->GetResponse();
 
 		delete gHttpClient;
+		
+		printf("[END] fetch_remote_data\n"); 
 		
 		return retval;
 	}

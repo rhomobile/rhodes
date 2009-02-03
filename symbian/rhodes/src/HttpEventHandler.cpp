@@ -175,11 +175,18 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 					
 					if ( iResBodyBuffer )
 						delete iResBodyBuffer;
-					
+						
 					iResBodyBuffer = NULL;
-					iResBodyBuffer = HBufC8::NewMaxL(dataSize);
-					iResBodyBufferPtr.Set(iResBodyBuffer->Des());
 					
+					if ( dataSize > 10 * 1024) //~10kb skip large chunks of data
+					{
+						iSavingResponseBody = false;
+					}
+					else
+					{
+						iResBodyBuffer = HBufC8::NewMaxL(dataSize);
+						iResBodyBufferPtr.Set(iResBodyBuffer->Des());
+					}					
 					iCurPos = 0;
 				}
 			}

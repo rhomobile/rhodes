@@ -108,11 +108,15 @@ int process_local_changes() {
   } 
   
   if (stop_running) {
+	  printf("process_local_changes: cleanup\n");
+  
 	  if (client_id) {
 		  free(client_id);
 		  client_id = NULL;
 	  }
+	  printf("[BEGIN] shutdown_database\n");
 	  shutdown_database();
+	  printf("[END] shutdown_database\n");
   }
   return 0;
 }
@@ -146,6 +150,7 @@ void* sync_engine_main_routine(void* data) {
 			ts.tv_sec = 2;
 		}
 #endif
+		printf("[BEGIN] sync_engine delay_sync:%d g_cur_source:%d", delay_sync, g_cur_source);
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
@@ -166,6 +171,7 @@ void* sync_engine_main_routine(void* data) {
 	stop_running = 0;
 #endif	
 	
+	printf("[END] sync_engine ");
     return NULL;
 }
 #endif
