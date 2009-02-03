@@ -119,7 +119,7 @@ void CHttpClient::ConstructL()
 		iNotUsingFile = EFalse;
 		
 		iTransObs->SetUsingFile(ETrue); //enable by default
-		//iTransObs->SetVerbose( ETrue );
+		iTransObs->SetVerbose( ETrue );
 	}
 
 void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize)
