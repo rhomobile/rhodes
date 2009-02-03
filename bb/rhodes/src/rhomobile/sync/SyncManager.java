@@ -39,7 +39,7 @@ import rhomobile.NetworkAccess;
 public class SyncManager {
 
 	private static HttpConnection connection = null;
-	private static char[] m_ReadBuffer = new char[8192];
+	private static char[] m_ReadBuffer = new char[1024];
 	
 	private static final StringBuffer readFully(InputStream in) throws IOException {
 		StringBuffer buffer = new StringBuffer();
