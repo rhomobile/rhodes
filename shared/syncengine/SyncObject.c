@@ -31,10 +31,25 @@ static sqlite3_stmt *delete_by_source_statement = NULL;
 static sqlite3_stmt *select_statement = NULL;
 
 void finalize_sync_obj_statements() {
-	if (insert_statement) sqlite3_finalize(insert_statement);
-	if (delete_statement) sqlite3_finalize(delete_statement);
-	if (delete_by_source_statement) sqlite3_finalize(delete_by_source_statement);
-	if (select_statement) sqlite3_finalize(select_statement);
+	if (insert_statement) {
+		sqlite3_finalize(insert_statement);
+		insert_statement = NULL;
+	}
+		
+	if (delete_statement) {
+		sqlite3_finalize(delete_statement);
+		delete_statement = NULL;
+	}
+	
+	if (delete_by_source_statement) {
+		sqlite3_finalize(delete_by_source_statement);
+		delete_by_source_statement = NULL;
+	}
+	
+	if (select_statement) {
+		sqlite3_finalize(select_statement);
+		select_statement = NULL;
+	}
 }
 
 static int new_source_id = -1;
