@@ -36,7 +36,7 @@ public class SyncThread implements Runnable {
 	private static int delaySync = 0;
 
 	/** The Constant SYNC_WAIT_INTERVAL. */
-	private static final long SYNC_WAIT_INTERVAL = 600000L;
+	private static final long SYNC_WAIT_INTERVAL = 90000L;
 
 	private static final int STATE_NONE = 0;
 	private static final int STATE_SYNC = 1;
