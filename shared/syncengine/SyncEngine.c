@@ -149,8 +149,9 @@ void* sync_engine_main_routine(void* data) {
 			delay_sync = 0;
 			ts.tv_sec = 2;
 		}
-#endif
+
 		printf("[BEGIN] sync_engine delay_sync:%d g_cur_source:%d", delay_sync, g_cur_source);
+#endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
