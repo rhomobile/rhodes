@@ -114,9 +114,7 @@ int process_local_changes() {
 		  free(client_id);
 		  client_id = NULL;
 	  }
-	  printf("[BEGIN] shutdown_database\n");
 	  shutdown_database();
-	  printf("[END] shutdown_database\n");
   }
   return 0;
 }
@@ -149,8 +147,6 @@ void* sync_engine_main_routine(void* data) {
 			delay_sync = 0;
 			ts.tv_sec = 2;
 		}
-
-		printf("[BEGIN] sync_engine delay_sync:%d g_cur_source:%d", delay_sync, g_cur_source);
 #endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
@@ -172,8 +168,7 @@ void* sync_engine_main_routine(void* data) {
 	stop_running = 0;
 #endif	
 	
-	printf("[END] sync_engine ");
-    return NULL;
+	return NULL;
 }
 #endif
 
@@ -368,8 +363,6 @@ int logged_in() {
 	int i,source_length,retval = 0;
 	pSource *source_list;
 	
-	printf("[BEGIN]logged_in\n");
-	
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
@@ -383,8 +376,6 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
-	
-	printf("[END]logged_in\n");
 	
 	//unlock_sync_mutex();
 	return retval;
