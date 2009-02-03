@@ -1,0 +1,1 @@
+%1 -javacompiler=%2 -quiet import=%3 library=%4 %5 %6
