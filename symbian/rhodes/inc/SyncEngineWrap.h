@@ -93,10 +93,10 @@ private:
 	void StartSyncEngine();
 
 	void StopSyncEngine();
-	
-	
+
 protected:
 	TInt ExecuteL();
+	void SendWindowEvent(TInt aEvent);
 	
 private://data
 		sqlite3 * iDatabase;

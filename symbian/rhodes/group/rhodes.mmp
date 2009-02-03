@@ -125,7 +125,7 @@ SECUREID		  0xE6B4F4DF
 
 CAPABILITY        LocalServices NetworkServices ReadUserData UserEnvironment WriteUserData
 EPOCSTACKSIZE     80000
-EPOCHEAPSIZE      0x100000 0x100000 
+EPOCHEAPSIZE      0x100000 0x500000 
 
 // End of File
 SOURCEPATH ..\src\phonebook
