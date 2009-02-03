@@ -32,8 +32,14 @@ static sqlite3_stmt *op_list_select_statement = NULL;
 static sqlite3_stmt *op_list_delete_statment = NULL;
 
 void finalize_sync_op_statements() {
-	if (op_list_select_statement) sqlite3_finalize(op_list_select_statement);
-	if (op_list_delete_statment) sqlite3_finalize(op_list_delete_statment);
+	if (op_list_select_statement) {
+		sqlite3_finalize(op_list_select_statement);
+		op_list_select_statement = NULL;
+	}
+	if (op_list_delete_statment) {
+		sqlite3_finalize(op_list_delete_statment);
+		op_list_delete_statment = NULL;
+	}
 }
 
 /*
