@@ -685,4 +685,9 @@ public class SyncUtil {
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
 		}
 	}
+
+	public static void resetSyncDb() {
+		adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
+		adapter.deleteAllFromTable(createString(SyncConstants.OBJECTS_TABLE));
+	}
 }
