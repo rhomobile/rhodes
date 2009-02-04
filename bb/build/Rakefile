@@ -63,51 +63,65 @@ task :buildRubyVM do
   tmpdir = config["build"]["tmpdir"]
   jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
 
-  rm_f rubyvmdir + "/RubyVM.jar"
+  rubyvmfiles = File.readlines('RubyVM_build.files').map { |l| l.gsub!(/\\/,'/') }
+  
+  if not uptodate?(rubyvmdir + '/RubyVM.jar',rubyvmfiles)
+    rm_f rubyvmdir + "/RubyVM.jar"
 
-  mkdir tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
-  mkdir  config["build"]["targetdir"] if not FileTest.exists?  config["build"]["targetdir"]
+    mkdir tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
+    mkdir  config["build"]["targetdir"] if not FileTest.exists?  config["build"]["targetdir"]
 
-  args = []
-  args << "-g"
-  args << "-d"
-  args << '"' +tmpdir + '/RubyVM"'
-  args << "-bootclasspath"
-  args << '"' + config["env"]["paths"][config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
-  args << "-source"
-  args << "1.3"
-  args << "-target"
-  args << "1.3"
-  args << "-nowarn"
-  args << "@RubyVM_build.files"
+    args = []
+    args << "-g"
+    args << "-d"
+    args << '"' +tmpdir + '/RubyVM"'
+    args << "-bootclasspath"
+    args << '"' + config["env"]["paths"][config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
+    args << "-source"
+    args << "1.3"
+    args << "-target"
+    args << "1.3"
+    args << "-nowarn"
+    args << "@RubyVM_build.files"
 
-  puts Jake.run(javac,args)
-  $stdout.flush
-  #XXX Move to task/function
-  args = []
-  args << "-classpath"
-  args << '"' + jdehome + "/lib/net_rim_api.jar\""
-  args << "-d"
-  args << config["build"]["tmpdir"] + "/RubyVM.preverify"
-  args << '"' + config["build"]["tmpdir"] + "/RubyVM\""
-  puts Jake.run(jdehome + "/bin/preverify.exe",args)
-  $stdout.flush
+    puts Jake.run(javac,args)
+    $stdout.flush
+    #XXX Move to task/function
+    args = []
+    args << "-classpath"
+    args << '"' + jdehome + "/lib/net_rim_api.jar\""
+    args << "-d"
+    args << config["build"]["tmpdir"] + "/RubyVM.preverify"
+    args << '"' + config["build"]["tmpdir"] + "/RubyVM\""
+    puts Jake.run(jdehome + "/bin/preverify.exe",args)
+    $stdout.flush
 
-  Jake.jar(rubyvmdir+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
-  $stdout.flush
-
+    Jake.jar(rubyvmdir+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
+    $stdout.flush
+  else
+    puts 'RubyVM.jar is up to date'
+    $stdout.flush
+  end
 
   #RAPC it here
-
-  Jake.rapc("RubyVM", 
-       config["build"]["targetdir"],
-       jdehome + "/lib/net_rim_api.jar",
-       '"' + Jake.get_absolute(rubyvmdir + "/RubyVM.jar") +'"',
-       "RubyVM",
-       config["env"]["vendor"],
-       config["env"]["version"]
+  if not ( uptodate?(config["build"]["targetdir"] + '/RubyVM.jar',rubyvmdir + "/RubyVM.jar") and 
+	   uptodate?(config["build"]["targetdir"] + '/RubyVM.cod',rubyvmdir + "/RubyVM.jar")
+	 )
+    rm_f config["build"]["targetdir"] + '/RubyVM*.*'
+    Jake.rapc("RubyVM", 
+         config["build"]["targetdir"],
+         jdehome + "/lib/net_rim_api.jar",
+         '"' + Jake.get_absolute(rubyvmdir + "/RubyVM.jar") +'"',
+         "RubyVM",
+         config["env"]["vendor"],
+         config["env"]["version"]
       )
-  $stdout.flush
+    $stdout.flush
+  else
+    puts 'RubyVM .cod files are up to date'
+    $stdout.flush
+  end
+
   rm_rf config["build"]["tmpdir"] + "/RubyVM.preverify"
   rm_rf config["build"]["tmpdir"] + "/RubyVM"
 end
