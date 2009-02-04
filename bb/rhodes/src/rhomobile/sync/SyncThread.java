@@ -89,6 +89,17 @@ public class SyncThread implements Runnable {
 		//SyncUtil.fetch_client_login("lars","password");
 		
 		while (!isStop()) {
+			synchronized (sync) {
+				try {
+					if (!isStop()){
+						setState(STATE_PAUSE);
+						sync.wait(SYNC_WAIT_INTERVAL);
+					}
+				} catch (Exception e) {
+					System.out.println("Wait exception:" + e.getMessage());
+				}
+			}
+			
 			//synchronized (sync) {
 				SyncUtil.adapter.initialize(null);
 				System.out.println("SyncEngine is awake..."
@@ -107,16 +118,6 @@ public class SyncThread implements Runnable {
 					delaySync = 0;
 				}
 
-				synchronized (sync) {
-					try {
-						if (!isStop()){
-							setState(STATE_PAUSE);
-							sync.wait(SYNC_WAIT_INTERVAL);
-						}
-					} catch (Exception e) {
-						System.out.println("Wait exception:" + e.getMessage());
-					}
-				}
 			//}
 		}
 		setState(STATE_NONE);
@@ -132,7 +133,8 @@ public class SyncThread implements Runnable {
 	 */
 	public void wakeUpSyncEngine() {
 		if ( getState() == STATE_PAUSE ){
-			synchronized (sync) {	
+			synchronized (sync) {
+				delaySync = 0;
 				sync.notify(); 
 				sync.notify();
 			}

@@ -80,9 +80,6 @@ int process_local_changes() {
 	  /**
 	   * [AA] In case of out of memory problems we need to restart sync thread for each source 
 	   */
-		  if ( g_cur_source >= source_length )
-			  g_cur_source = 0;
-	
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
 			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source]);
@@ -93,7 +90,10 @@ int process_local_changes() {
 			  g_cur_source++;
 			  stop_running = 1; //stop sync thread
 		  }
-	  
+
+		  if ( g_cur_source >= source_length )
+			  g_cur_source = 0;
+
 #else
 		  for(i = 0; i < source_length && !stop_running; i++)
 		  {
@@ -108,6 +108,8 @@ int process_local_changes() {
   } 
   
   if (stop_running) {
+	  printf("process_local_changes: cleanup\n");
+  
 	  if (client_id) {
 		  free(client_id);
 		  client_id = NULL;
@@ -126,7 +128,6 @@ int process_local_changes() {
  */
 #if !defined(_WIN32_WCE)
 void* sync_engine_main_routine(void* data) {
-	
 	printf("Starting sync engine main routine...\n");
 	delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex2);
@@ -137,14 +138,19 @@ void* sync_engine_main_routine(void* data) {
 		/* Convert from timeval to timespec */
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
-		ts.tv_sec += WAIT_TIME_SECONDS;
 
 #ifdef __SYMBIAN32__		
 		if ( g_cur_source != 0 )
 		{
 			delay_sync = 0;
-			ts.tv_sec = 2;
+			ts.tv_sec += 1;
 		}
+		else
+		{
+			ts.tv_sec += WAIT_TIME_SECONDS;
+		}
+#else
+		ts.tv_sec += WAIT_TIME_SECONDS;
 #endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
@@ -163,10 +169,15 @@ void* sync_engine_main_routine(void* data) {
 	pthread_mutex_unlock(&sync_mutex2);
 	
 #ifdef __SYMBIAN32__
+	
+	pthread_cond_destroy(&sync_cond);
+	pthread_mutex_destroy(&sync_mutex2);
+	pthread_mutex_destroy(&sync_mutex);
+
 	stop_running = 0;
 #endif	
 	
-    return NULL;
+	return NULL;
 }
 #endif
 
@@ -207,17 +218,20 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
+//	printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
+//	printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
 void wake_up_sync_engine() {
 	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
+	delay_sync = 0;
 	pthread_cond_broadcast(&sync_cond);
 	//pthread_mutex_unlock(&sync_mutex);
 }
@@ -254,6 +268,10 @@ void start_sync_engine(sqlite3 *db) {
 	pthread_condattr_init(&sync_details);
 	pthread_cond_init(&sync_cond, &sync_details);
 	pthread_condattr_destroy(&sync_details);
+	
+	pthread_mutex_init(&sync_mutex2, NULL);
+	pthread_mutex_init(&sync_mutex, NULL);
+	
     
 #endif	  
 }
@@ -357,6 +375,7 @@ int logged_in() {
 	char *session;
 	int i,source_length,retval = 0;
 	pSource *source_list;
+	
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
@@ -370,6 +389,7 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
+	
 	//unlock_sync_mutex();
 	return retval;
 }

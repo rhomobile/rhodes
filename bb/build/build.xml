@@ -110,7 +110,10 @@
     <delete dir="${src.dir}/apps/shared">
       <!-- <exclude name="**/rhogeolocation.js" /> -->
     </delete>
-    
+    <delete>
+      <fileset dir="${src.dir}/apps" includes="**/*.png"/>
+    </delete>
+
     <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
       <arg value="-jar" />
       <arg value="${BBLib.dir}/xruby-0.3.3.jar" />
@@ -176,6 +179,32 @@
       <arg value="${bin.dir}/rhodes.jar" />
     </exec>
 
+    <copy todir="${target.dir}">
+      <fileset dir="./">
+        <include name="rhodesApp.rapc"/>
+      </fileset>
+    </copy>
+    <!-- 
+    <exec executable="${jde.home}/bin/rapc.exe">
+      <arg value="-javacompiler" />
+      <arg value="${javac.home}/javac.exe" />
+      <arg value="-quiet" />
+      <arg value="-import=${rhodes.implib}" />
+      <arg value="${target.dir}/rhodesApp.rapc" />
+      <arg value="${target.dir}/rhodes.jar" />
+    </exec> -->
+
+    <exec executable="cmd">
+      <arg line="/c runRAPC.bat"/>
+      <arg value="${jde.home}/bin/rapc.exe" />
+      <arg value="${javac.home}/javac.exe" />
+      <arg value="${rhodes.implib}" />
+      <arg value="${target.dir}/rhodesApp" />
+      <arg value="${target.dir}/rhodesApp.rapc" />
+      <arg value="${target.dir}/rhodes.jar" />
+    </exec>
+
+    <!--
     <rapc output="rhodesApp" destdir="${target.dir}" nowarn="true" quiet="true" verbose="false">
       <jdp title="rhodesApp" vendor="${vendor}" version="${version}" icon="resources/icon.png" type="cldc" />
       <src>
@@ -184,7 +213,7 @@
         </fileset>
       </src>
       <import location="${rhodes.implib}" />
-    </rapc>
+    </rapc> -->
 
     <copy todir="${target.dir}">
       <fileset dir="./">

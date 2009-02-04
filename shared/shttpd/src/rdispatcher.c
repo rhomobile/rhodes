@@ -4,6 +4,10 @@
 #include "llist.h"
 #include "rhoruby.h"
 
+#ifdef __SYMBIAN32__      
+      extern int g_need_launch_gc;
+#endif
+      
 typedef struct __Route {
   char* _url;
 	char* _application;
@@ -290,6 +294,9 @@ void rho_serve(struct shttpd_arg *arg) {
       void* data = get_collected_data(&state->post_data, state->nchunks, state->nread);
       VALUE req = _create_request_hash(
         arg->priv, (RouteRef) arg->user_data, data, state->nread);
+#ifdef __SYMBIAN32__      
+      g_need_launch_gc = 1;
+#endif      
       shttpd_printf(arg, "%s", callFramework(req));
       _free_route(arg->user_data);
       arg->user_data = NULL;
