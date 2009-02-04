@@ -150,11 +150,13 @@ public class RubyRegexp extends RubyBasic {
 
     //@RubyLevelMethod(name="match")
     public RubyValue match(RubyValue arg) {
-        if (!(arg instanceof RubyString)) {
+        /*if (!(arg instanceof RubyString)) {
             //not comparable
             return RubyConstant.QFALSE;
-        }
-
+        }*/
+    	if ( arg == RubyConstant.QNIL )
+    		return RubyConstant.QNIL; 
+    	
         RubyMatchData m = this.match(arg.toStr());
         if (null == m) {
             return RubyConstant.QNIL;
