@@ -141,7 +141,7 @@ public class SyncThread implements Runnable {
 			synchronized (sync) {
 				delaySync = false;
 				sync.notify(); 
-				//sync.notify();
+				sync.notify();
 			}
 		}
 		
