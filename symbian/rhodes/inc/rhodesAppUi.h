@@ -34,8 +34,8 @@ class CAppManager;
 struct sqlite3;
 // CLASS DECLARATION
 /**
- * CRhodesAppUi application UI class.
  * Interacts with the user through the UI and request message processing
+ * CRhodesAppUi application UI class.
  * from the handler class
  */
 class CRhodesAppUi : public CAknAppUi

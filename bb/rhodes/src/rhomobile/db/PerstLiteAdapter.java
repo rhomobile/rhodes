@@ -266,6 +266,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    // Serialize the object
 	    public void writeObject(IOutputStream out) { 
 	    	super.writeObject(out);
+	    	out.writeInt(id);
 	    	out.writeString(attrib);
 	    	out.writeString(object);
 	    	out.writeString(value);
@@ -275,6 +276,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    // Deserialize the object
 	    public void readObject(IInputStream in) { 
 	    	super.readObject(in);
+	    	id = in.readInt();
 	    	attrib = in.readString();
 	    	object = in.readString();
 	    	value = in.readString();

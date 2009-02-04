@@ -37,10 +37,17 @@
 
 #include "stat/stat.h"
 
-extern "C" struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
-extern "C" void shttpd_fini(struct shttpd_ctx *);
-extern "C" void shttpd_poll(struct shttpd_ctx *, int milliseconds);
-extern "C" int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
+extern "C" 
+{
+	struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
+	void shttpd_fini(struct shttpd_ctx *);
+	void shttpd_poll(struct shttpd_ctx *, int milliseconds);
+	int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
+	
+	int rb_garbage_collect(void); 
+	
+	int g_need_launch_gc = 0;
+}
 
 TInt ThreadEntryPoint(TAny *aPtr)
 {
@@ -153,6 +160,12 @@ TInt CHttpServer::ExecuteL()
 			{
 				iStartRubyFramework = false;
 				RhoRubyStart();
+			}
+			
+			if ( g_need_launch_gc )
+			{
+				g_need_launch_gc = 0;
+				rb_garbage_collect();
 			}
 			
 			shttpd_poll(ctx, 1000);

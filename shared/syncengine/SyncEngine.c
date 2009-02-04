@@ -36,9 +36,13 @@ pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
 static sqlite3 *database;
-static char *client_id = NULL;
+char *client_id = NULL;
 
 extern void delete_db_session(const char *source_url);
+
+#ifdef __SYMBIAN32__
+extern int g_cur_source;
+#endif
 
 int process_local_changes() {
   if (!stop_running) {
@@ -64,23 +68,51 @@ int process_local_changes() {
 		  result += process_op_list(source_list[i], "delete");
 	  }
   	
-	  if (result > 0) {
+	  if (result > 0) 
+	  {
 		  printf("Remote update failed, not continuing with sync...\n");
-	  } else {
+	  } 
+	  else 
+	  {
 		  /* fetch new list from sync source */
-  	  for(i = 0; i < source_length && !stop_running; i++) {
-		    int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
-		    if(available_remote > 0) {
-			    printf("Successfully processed %i records...\n", available_remote);
-		    }
-      }
+	  
+#ifdef __SYMBIAN32__
+	  /**
+	   * [AA] In case of out of memory problems we need to restart sync thread for each source 
+	   */
+		  if ( !stop_running && g_cur_source < source_length )
+		  {
+			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source]);
+			  if(available_remote > 0) {
+				  printf("Successfully processed %i records...\n", available_remote);
+			  }
+			  
+			  g_cur_source++;
+			  stop_running = 1; //stop sync thread
+		  }
+
+		  if ( g_cur_source >= source_length )
+			  g_cur_source = 0;
+
+#else
+		  for(i = 0; i < source_length && !stop_running; i++)
+		  {
+				int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
+				if(available_remote > 0) {
+					printf("Successfully processed %i records...\n", available_remote);
+				}
+		  }
+#endif	  
 	  }
 	  free_source_list(source_list, source_length);
   } 
   
   if (stop_running) {
+	  printf("process_local_changes: cleanup\n");
+  
 	  if (client_id) {
-		  free(client_id);  
+		  free(client_id);
+		  client_id = NULL;
 	  }
 	  shutdown_database();
   }
@@ -96,7 +128,6 @@ int process_local_changes() {
  */
 #if !defined(_WIN32_WCE)
 void* sync_engine_main_routine(void* data) {
-	
 	printf("Starting sync engine main routine...\n");
 	delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex2);
@@ -107,7 +138,20 @@ void* sync_engine_main_routine(void* data) {
 		/* Convert from timeval to timespec */
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
+
+#ifdef __SYMBIAN32__		
+		if ( g_cur_source != 0 )
+		{
+			delay_sync = 0;
+			ts.tv_sec += 1;
+		}
+		else
+		{
+			ts.tv_sec += WAIT_TIME_SECONDS;
+		}
+#else
 		ts.tv_sec += WAIT_TIME_SECONDS;
+#endif
 		
 		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
@@ -124,7 +168,16 @@ void* sync_engine_main_routine(void* data) {
 	}
 	pthread_mutex_unlock(&sync_mutex2);
 	
-    return NULL;
+#ifdef __SYMBIAN32__
+	
+	pthread_cond_destroy(&sync_cond);
+	pthread_mutex_destroy(&sync_mutex2);
+	pthread_mutex_destroy(&sync_mutex);
+
+	stop_running = 0;
+#endif	
+	
+	return NULL;
 }
 #endif
 
@@ -165,17 +218,20 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
+	printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
+	printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
 void wake_up_sync_engine() {
 	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
+	delay_sync = 0;
 	pthread_cond_broadcast(&sync_cond);
 	//pthread_mutex_unlock(&sync_mutex);
 }
@@ -212,6 +268,10 @@ void start_sync_engine(sqlite3 *db) {
 	pthread_condattr_init(&sync_details);
 	pthread_cond_init(&sync_cond, &sync_details);
 	pthread_condattr_destroy(&sync_details);
+	
+	pthread_mutex_init(&sync_mutex2, NULL);
+	pthread_mutex_init(&sync_mutex, NULL);
+	
     
 #endif	  
 }
@@ -229,7 +289,9 @@ void shutdown_database() {
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
   	
+#ifndef __SYMBIAN32__	
 	sqlite3_close(database);
+#endif	
 	printf("Sync engine is shutdown...\n");
 }
 
@@ -313,6 +375,7 @@ int logged_in() {
 	char *session;
 	int i,source_length,retval = 0;
 	pSource *source_list;
+	
 	source_list = malloc(MAX_SOURCES*sizeof(pSource));
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
@@ -326,6 +389,7 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
+	
 	//unlock_sync_mutex();
 	return retval;
 }

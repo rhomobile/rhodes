@@ -85,12 +85,8 @@ public class SyncObject {
 
 	public void deleteFromDatabase() {
 		RubyHash hash = SyncUtil.createHash();
-		hash.add(SyncUtil.createString("object"), SyncUtil
-				.createString(this.getObject()));
-		hash.add(SyncUtil.createString("attrib"), SyncUtil
-				.createString(this.getAttrib()));
-		hash.add(SyncUtil.createString("value"), SyncUtil
-				.createString(this.getValue()));
+		hash.add(SyncUtil.createString("id"), SyncUtil
+				.createInteger(this.getPrimaryKey()));
 		SyncUtil.adapter.deleteFromTable(SyncUtil
 				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
 	}
@@ -115,6 +111,8 @@ public class SyncObject {
 	 */
 	private RubyHash getHashFromValues() {
 		RubyHash hash = SyncUtil.createHash();
+		hash.add(SyncUtil.createString("id"), SyncUtil
+				.createInteger(this.getPrimaryKey()));
 		hash.add(SyncUtil.createString("attrib"), SyncUtil
 				.createString(this.getAttrib()));
 		hash.add(SyncUtil.createString("source_id"), SyncUtil

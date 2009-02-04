@@ -39,7 +39,7 @@ import rhomobile.NetworkAccess;
 public class SyncManager {
 
 	private static HttpConnection connection = null;
-	private static char[] m_ReadBuffer = new char[8192];
+	private static char[] m_ReadBuffer = new char[1024];
 	
 	private static final StringBuffer readFully(InputStream in) throws IOException {
 		StringBuffer buffer = new StringBuffer();
@@ -138,7 +138,7 @@ public class SyncManager {
 			makePostRequest(url,data,session);
 
 			int code = connection.getResponseCode();
-			if (code != HttpConnection.HTTP_OK) {
+			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
