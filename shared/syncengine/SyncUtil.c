@@ -19,6 +19,7 @@ extern void unlock_sync_mutex();
 #if defined(_WIN32_WCE)
 extern void delete_winmo_session(const char *url_string);
 extern char *get_winmo_session_size(const char *url_string);
+#define stricmp _stricmp
 #endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
@@ -32,15 +33,43 @@ static sqlite3_stmt *session_db_statement = NULL;
 static sqlite3_stmt *del_session_db_statement = NULL;
 
 void finalize_sync_util_statements() {
-	if (op_list_source_ids_statement) sqlite3_finalize(op_list_source_ids_statement);
-	if (ob_count_statement) sqlite3_finalize(ob_count_statement);
-	if (client_id_statement) sqlite3_finalize(client_id_statement);
-	if (client_id_insert_statement) sqlite3_finalize(client_id_insert_statement);
-	if (client_session_statement) sqlite3_finalize(client_session_statement);
-	if (client_db_statement) sqlite3_finalize(client_db_statement);
-	if (sync_status_statement) sqlite3_finalize(sync_status_statement);
-	if (session_db_statement) sqlite3_finalize(session_db_statement);
-	if (del_session_db_statement) sqlite3_finalize(del_session_db_statement);
+	if (op_list_source_ids_statement) {
+		sqlite3_finalize(op_list_source_ids_statement);
+		op_list_source_ids_statement = NULL;
+	}
+	if (ob_count_statement) {
+		sqlite3_finalize(ob_count_statement);
+		ob_count_statement = NULL;
+	}
+	if (client_id_statement) {
+		sqlite3_finalize(client_id_statement);
+		client_id_statement = NULL;
+	}
+	if (client_id_insert_statement) {
+		sqlite3_finalize(client_id_insert_statement);
+		client_id_insert_statement = NULL;
+	}
+	if (client_session_statement) {
+		sqlite3_finalize(client_session_statement);
+		client_session_statement = NULL;
+	}
+	if (client_db_statement) {
+		sqlite3_finalize(client_db_statement);
+		client_db_statement = NULL;
+	}
+	if (sync_status_statement) {
+		sqlite3_finalize(sync_status_statement);
+		sync_status_statement = NULL;
+	}
+	if (session_db_statement) {
+		sqlite3_finalize(session_db_statement);
+		session_db_statement = NULL;
+	}
+	
+	if (del_session_db_statement) {
+		sqlite3_finalize(del_session_db_statement);
+		del_session_db_statement = NULL;
+	}
 }
 
 /**
@@ -115,14 +144,14 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 						type = list[j]->_db_operation;
 						if (type) {
 							if(strcmp(type, "insert") == 0) {
-								/*printf("Inserting record %s - %s: %s\n", list[j]->_object, 
+								/*printf("Inserting record %i - %s - %s: %s\n", 
+									   list[j]->_primary_key, list[j]->_object, 
 									   list[j]->_attrib, list[j]->_value);*/
 								insert_into_database(list[j]);
 								size_inserted++;
 							} 
 							else if (strcmp(type, "delete") == 0) {
-								printf("Deleting record %s - %s: %s\n", list[j]->_object, 
-									   list[j]->_attrib, list[j]->_value);
+								/*printf("Deleting record %i\n", list[j]->_primary_key);*/
 								delete_from_database(list[j]);
 								size_deleted++;
 							} else {
@@ -145,6 +174,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 								  src, size_inserted, size_deleted, duration, success);
 	}
 	//free_source_list(source_list, source_length);
+    
 	return available;
 }
 
@@ -204,9 +234,11 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 }
 
 int get_object_count_from_database(sqlite3 *database) {
+
 	int count = 0;
 	int success = 0;
-  lock_sync_mutex();	
+	
+    lock_sync_mutex();	
 
 	prepare_db_statement("SELECT count(*) from object_values",
 						 database,
@@ -217,8 +249,8 @@ int get_object_count_from_database(sqlite3 *database) {
 	}
 	sqlite3_reset(ob_count_statement);
 
-  unlock_sync_mutex();	
-
+    unlock_sync_mutex();	
+    
 	return count;
 }
 
@@ -333,7 +365,7 @@ char *get_db_session_by_server(char* source_url) {
 
       char* szServer2 = parseServerFromUrl(url);
       if ( sess && strlen(sess) > 0 &&
-           szServer && szServer2 && _stricmp(szServer,szServer2) == 0 ){
+           szServer && szServer2 && strcmp(szServer,szServer2) == 0 ){
         session = str_assign(sess);
         break;
       }

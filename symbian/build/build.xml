@@ -586,11 +586,11 @@
         
         <!--Remove Javascript and CSS-->
         <delete dir="${src.dir}/apps/shared/js">
-          <!-- <exclude name="**/rho*.js" />
+          <!-- <exclude name="**/rho*.js" />-->
               <exclude name="**/iui.css" />
-              <exclude name="**/*.png" /> -->
+              <exclude name="**/*.png" /> 
         </delete>
-        <delete dir="${src.dir}/apps/shared/css"/>
+        <!-- <delete dir="${src.dir}/apps/shared/css"/> -->
 	</target>
 	  	  
 </project>

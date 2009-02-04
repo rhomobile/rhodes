@@ -1,11 +1,23 @@
 <ul title="More">
 
+		<% if System::get_property('platform') == 'Blackberry' %>
+		
+		<li><a href="SugarCall">Calls</a></li>
+		<li><a href="SugarMeeting">Meetings</a></li>
+		<li><a href="SugarCase">Cases</a></li>
+		<li><a href="SugarEmployee">Employees</a></li>
+		<li><a href="SugarCampaign">Campaigns</a></li>
+		<li><a href="SugarProduct">Products</a></li>
+
+    <% else %>
+
 		<li><a href="SugarCall"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
 		<li><a href="SugarMeeting"><img class="menu_icon" src="images/briefcaseicon.png"/>Meetings</a></li>
 		<li><a href="SugarCase"><img class="menu_icon" src="images/docsicon.png"/>Cases</a></li>
 		<li><a href="SugarEmployee"><img class="menu_icon" src="images/stampicon.png"/>Employees</a></li>
 		<li><a href="SugarCampaign"><img class="menu_icon" src="images/bulbicon.png"/>Campaigns</a></li>
 		<li><a href="SugarProduct"><img class="menu_icon" src="images/stacksicon.png"/>Products</a></li>
+	  <% end %>	
 			
 		<li><a href="/RhoSugarCRM" target="_self">Home</li>
 	</ul>
