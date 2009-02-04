@@ -218,13 +218,13 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
-	printf("lock_sync_mutex\n");
+//	printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
-	printf("unlock_sync_mutex\n");
+//	printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
