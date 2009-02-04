@@ -316,7 +316,7 @@ void shutdown_database() {
  * a database reset
  */
 void trigger_sync_db_reset() {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__SYMBIAN32__)  
 	db_reset_delay = 1;
 	wake_up_sync_engine();
 #else

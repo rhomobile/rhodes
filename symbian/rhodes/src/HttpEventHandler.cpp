@@ -178,7 +178,7 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 						
 					iResBodyBuffer = NULL;
 					
-					if ( dataSize > 10 * 1024) //~10kb skip large chunks of data
+					if ( dataSize > 50 * 1024) //skip large chunks of data
 					{
 						iSavingResponseBody = false;
 						//try to stop current connection
