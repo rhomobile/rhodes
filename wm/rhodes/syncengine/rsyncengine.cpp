@@ -67,6 +67,7 @@ CSyncEngine::CSyncEngine(void)
   m_database = NULL;
   stop_running = 1;
   m_delaySync = 0;
+  m_dbResetDelay = 0;
   m_bSyncInitialized = false;
   m_hDoSyncEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_thread.Initialize();
@@ -181,8 +182,14 @@ bool CSyncEngine::PerformSync()
 
   ATLTRACE(_T("Performing sync\n"));
   ::ResetEvent(m_hDoSyncEvent);
-  if (!m_delaySync) {
+  if (!m_delaySync && !m_dbResetDelay) {
 	  process_local_changes();
+  } else if (m_dbResetDelay) {
+	/* reset db for next iteration */
+	reset_sync_db();
+	clear_client_id();
+	m_dbResetDelay = 0;
+	m_delaySync = 0;
   } else {
     m_delaySync = 0;
   }
@@ -201,6 +208,11 @@ bool CSyncEngine::StopSyncEngine()
 
   Unlock();
   return true;
+}
+
+void CSyncEngine::TriggerDbReset()
+{
+  m_dbResetDelay = 1;
 }
 
 void ErrorMessage(LPTSTR pszFunction)
@@ -492,4 +504,12 @@ void delete_winmo_session(const char *url_string) {
   LPTSTR url = wce_mbtowc(url_string);
   bReturn = InternetSetCookie(url, NULL, L"");
   free(url);
+}
+
+void triggerSyncDbReset() {
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) {
+	sync->TriggerDbReset();
+	sync->TriggerSync();
+  }
 }
