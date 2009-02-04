@@ -41,6 +41,9 @@ char *client_id = NULL;
 
 extern void delete_db_session(const char *source_url);
 extern void reset_sync_db();
+extern void trigger_sync_db_reset();
+// WM function
+extern void triggerSyncDbReset();
 
 #ifdef __SYMBIAN32__
 extern int g_cur_source;
@@ -313,8 +316,12 @@ void shutdown_database() {
  * a database reset
  */
 void trigger_sync_db_reset() {
+#ifdef __APPLE__
 	db_reset_delay = 1;
 	wake_up_sync_engine();
+#else
+	triggerSyncDbReset();
+#endif
 }
 
 void clear_client_id() {
