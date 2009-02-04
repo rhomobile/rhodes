@@ -14,6 +14,14 @@ class SyncEngine
   end
   def self.unlock_sync_mutex
   end
+  def self.login
+    1
+  end
+  def self.logout
+  end
+  def self.logged_in
+    1
+  end
 end
 require 'rho'
 class << Rho::RhoFSConnector
