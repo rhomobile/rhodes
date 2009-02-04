@@ -59,7 +59,6 @@ int process_op_list(pSource source, char *type);
 void lock_sync_mutex();
 void unlock_sync_mutex();	
 void wake_up_sync_engine();
-void trigger_sync_db_reset();
 void clear_client_id();
 	
 sqlite3 *get_database();
