@@ -151,6 +151,14 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			iAppView->InitStartPage();
 			
 			HandleCommandL(ECmdAppHome);
+		} 
+		else if ( aType == (EEventUser + ECmdAppStartNewSync))
+		{
+			if ( iSyncEngineWrap )
+				delete iSyncEngineWrap;
+			
+			iSyncEngineWrap = CSyncEngineWrap::NewL();
+			iSyncEngineWrap->ResumeThread();
 		}
 		else
 		{

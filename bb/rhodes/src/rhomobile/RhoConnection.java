@@ -418,13 +418,18 @@ public class RhoConnection implements HttpConnection {
 
 	protected boolean httpServeFile(String strContType)throws IOException{
 		
+		String strPath = uri.getPath();
+		if ( !strPath.startsWith("/apps") )
+			strPath = "/apps" + strPath; 
+			
 		if ( strContType.equals("application/javascript")){
-			//responseData = RhoRuby.loadFile(uri.getPath());
+			//responseData = RhoRuby.loadFile(strPath);
 			//if ( responseData == null )
-				responseData = new ByteArrayInputStream(new String("").getBytes());
+			String str = "";
+			responseData = new ByteArrayInputStream(str.getBytes());
 		}
 		else	
-			responseData = RhoRuby.loadFile(uri.getPath());
+			responseData = RhoRuby.loadFile(strPath);
 	
 		if (responseData== null)
 			return false;

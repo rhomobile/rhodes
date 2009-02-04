@@ -14,7 +14,14 @@
 #define	VERSION		"1.42"		/* Version			*/
 #define	CONFIG_FILE	"shttpd.conf"	/* Configuration file		*/
 #define	HTPASSWD	".htpasswd"	/* Passwords file name		*/
-#define	URI_MAX		4096    /*16384 /Default max request size	*/
+
+//#ifdef __SYMBIAN32__
+//	#define	URI_MAX		16384
+//#else
+//	#define	URI_MAX		4096    /*16384 /Default max request size	*/
+//#endif
+#define	URI_MAX		16384 /* Default max request size	*/
+
 #define	LISTENING_PORTS	"8080"		/* Default listening ports	*/
 #define	INDEX_FILES	"index_erb.iseq,index.html,index.htm,index.php,index.cgi"
 #define	CGI_EXT		"cgi,pl,php"	/* Default CGI extensions	*/
