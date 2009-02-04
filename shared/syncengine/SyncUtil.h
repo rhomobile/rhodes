@@ -20,6 +20,11 @@ void update_source_sync_status(sqlite3 *database, pSource source,
 void set_db_client_id( sqlite3 *database, char *c_id );
 
 /**
+ * Resets the sync db tables
+ */
+void reset_sync_db();
+
+/**
  * Retrieve cookie from database storage
  */
 char *get_db_session(const char* source_url);
@@ -40,8 +45,7 @@ int set_db_session(const char* source_url, const char * session);
  * internal functions used for storing/loading original source url 
  */
 void save_source_url(const char* source_url);
-const char* load_source_url();
-	
+const char* load_source_url();	
 
 #if defined(__cplusplus)
 }

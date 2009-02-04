@@ -29,6 +29,7 @@
 
 int stop_running = 0;
 int delay_sync = 0;
+int db_reset_delay = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -39,6 +40,10 @@ static sqlite3 *database;
 char *client_id = NULL;
 
 extern void delete_db_session(const char *source_url);
+extern void reset_sync_db();
+extern void trigger_sync_db_reset();
+// WM function
+extern void triggerSyncDbReset();
 
 #ifdef __SYMBIAN32__
 extern int g_cur_source;
@@ -110,10 +115,7 @@ int process_local_changes() {
   if (stop_running) {
 	  printf("process_local_changes: cleanup\n");
   
-	  if (client_id) {
-		  free(client_id);
-		  client_id = NULL;
-	  }
+	  clear_client_id();
 	  shutdown_database();
   }
   return 0;
@@ -157,10 +159,16 @@ void* sync_engine_main_routine(void* data) {
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
 		printf("Sync engine continues w/ current operations...\n");
 	
-		if(!delay_sync) {
+		if(!delay_sync && !db_reset_delay) {
 			if(process_local_changes()) {
 				break;
 			}
+		} else if (db_reset_delay) {
+			/* reset db for next iteration */
+			reset_sync_db();
+			clear_client_id();
+			db_reset_delay = 0;
+			delay_sync = 0;
 		} else {
 			delay_sync = 0;
 		}
@@ -218,13 +226,13 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
-//	printf("lock_sync_mutex\n");
+	//printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
-//	printf("unlock_sync_mutex\n");
+	//printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
@@ -303,11 +311,22 @@ void shutdown_database() {
 }
 #endif //!defined(_WIN32_WCE)
 
-void clear_client_id(){
-  if ( client_id )
-    free(client_id);
-  client_id = NULL;
-  set_db_client_id(database,"");
+/**
+ * Called from ruby to trigger
+ * a database reset
+ */
+void trigger_sync_db_reset() {
+#ifdef __APPLE__
+	db_reset_delay = 1;
+	wake_up_sync_engine();
+#else
+	triggerSyncDbReset();
+#endif
+}
+
+void clear_client_id() {
+	if ( client_id ) free( client_id );
+	client_id = NULL;
 }
 
 #ifndef __APPLE__
@@ -323,7 +342,7 @@ int login(const char* login, const char* password) {
 	int retval = 0;
 	int i,source_length;
 	pSource *source_list;
-  void* pDomainData = 0;
+	void* pDomainData = 0;
 
 	if (login && password) {
 		source_list = malloc(MAX_SOURCES*sizeof(pSource));
@@ -337,24 +356,24 @@ int login(const char* login, const char* password) {
 			char* headers = 0;
 			char data[100];
 
-      session = get_db_session_by_server(source_list[i]->_source_url);
-      if ( session == 0 ){
-			  sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
-  			
-			  //fetch session from server
-			  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
-  			
-			  save_source_url( source_list[i]->_source_url );
-			  retval = makeLoginRequest( login_url, data );
+		  session = get_db_session_by_server(source_list[i]->_source_url);
+		  if ( session == 0 ){
+				  sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
+				
+				  //fetch session from server
+				  sprintf(data,"login=%s&password=%s&remember_me=1",login, password);
+				
+				  save_source_url( source_list[i]->_source_url );
+				  retval = makeLoginRequest( login_url, data );
 #if defined(_WIN32_WCE)
-			// just using db as a placeholder for winmo since 
-			// we can't delete the session
-			set_db_session( source_list[i]->_source_url, "exists" );
+				// just using db as a placeholder for winmo since 
+				// we can't delete the session
+				set_db_session( source_list[i]->_source_url, "exists" );
 #endif
-      }else{
-        set_db_session( source_list[i]->_source_url, session );
-        free(session);
-      }
+		  }else{
+			set_db_session( source_list[i]->_source_url, session );
+			free(session);
+		  }
 		}
 		
 		//unlock_sync_mutex();

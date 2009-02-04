@@ -28,4 +28,18 @@ describe "Rhom" do
   it "should get client_id" do
     Rhom::Rhom::client_id.should == '67320d31-e42e-4156-af91-5d9bd7175b08'
   end
+  
+  it "should perform full reset of database" do
+    Rhom::Rhom::database_full_reset
+    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
+    Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
+    Rhom::Rhom::client_id.should be_nil
+  end
+  
+  it "should perform full database reset and logout" do
+    Rhom::Rhom::database_full_reset_and_logout
+    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
+    Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
+    Rhom::Rhom::client_id.should be_nil
+  end
 end
