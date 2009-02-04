@@ -585,11 +585,11 @@
         <ant dir = "${sharedAnt.dir}" output="${log.build}" />
         
         <!--Remove Javascript and CSS-->
-        <!-- <delete dir="${src.dir}/apps/shared/js">
-          <exclude name="**/rho*.js" />
+        <delete dir="${src.dir}/apps/shared/js">
+          <!-- <exclude name="**/rho*.js" />-->
               <exclude name="**/iui.css" />
               <exclude name="**/*.png" /> 
-        </delete>-->
+        </delete>
         <!-- <delete dir="${src.dir}/apps/shared/css"/> -->
 	</target>
 	  	  
