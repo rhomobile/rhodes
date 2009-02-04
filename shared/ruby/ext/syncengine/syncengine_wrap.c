@@ -1646,7 +1646,7 @@ _wrap_lock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  //lock_sync_mutex();
+  lock_sync_mutex();
   return Qnil;
 fail:
   return Qnil;
@@ -1658,7 +1658,7 @@ _wrap_unlock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  //unlock_sync_mutex();
+  unlock_sync_mutex();
   return Qnil;
 fail:
   return Qnil;
