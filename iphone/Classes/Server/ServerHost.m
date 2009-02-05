@@ -64,7 +64,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 		[actionTarget performSelector:onStartSuccess withObject:data];
 	}
 	// Do sync w/ remote DB 
-	wake_up_sync_engine();	
+	//wake_up_sync_engine();	
 }
 
 - (void)serverFailed:(void*)data {
