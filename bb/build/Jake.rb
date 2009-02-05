@@ -132,7 +132,19 @@ class Jake
     puts run(cmd,args)
     chdir currentdir
   end
-  
+  def self.jarfilelist(target)
+    cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+
+    args = []
+    args << "tf"
+    args << target
+
+    filelist = []
+    run(cmd,args).each { |file| filelist << file if not file =~ /\/$/ }
+
+    filelist
+  end
+
   def self.jar(target,manifest,files,isfolder=false)
     cmd =  @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
     

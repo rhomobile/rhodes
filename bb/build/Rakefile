@@ -6,6 +6,8 @@ rhodesimplib = ""
 
 desc "Clean up"
 task :clean do
+  rubyvmdir = config["build"]["rubyVMdir"]
+
   remove_dir(config["build"]["tmpdir"],true)
   remove_dir(config["build"]["targetdir"],true)
 
@@ -13,9 +15,11 @@ task :clean do
   mkdir_p config["build"]["targetdir"]
   rm config["build"]["bindir"] + "/*.jar", :force => true
   rm "../RhoBundle/RhoBundle.jar", :force => true
+  rm rubyvmdir + '/RubyVM.jar', :force => true
 end
 
 desc "Compile RhoBundle"
+#XXX change to ns build, rhobundle
 task :compileRhoBundle => :buildRubyVM do
   java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
   jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
@@ -54,6 +58,9 @@ task :compileRhoBundle => :buildRubyVM do
   args << config["build"]["bindir"] + "/RhoBundle.jar"
   puts Jake.run(jdehome + "/bin/preverify.exe",args)
   $stdout.flush
+
+  rm_rf config["build"]["tmpdir"]
+  mkdir_p config["build"]["tmpdir"]
 end
 
 desc "Build RubyVM"
@@ -127,9 +134,12 @@ task :buildRubyVM do
 end
 
 desc "Compile Sources"
-task :compile do
+task :compile => :buildRubyVM do
   javac = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/javac.exe"
   jde =  config["env"]["paths"][config["env"]["bbver"]]["jde"]
+
+
+  
 
   args = [] 
   args << "-g"
@@ -159,38 +169,62 @@ task :compileRhodes do
   if rhodesimplib == ""
     throw "Implib not set!"
   end
-  cp_r "../rhodes/resources", config["build"]["tmpdir"] + "/resources"
 
-  Jake.jar(config["build"]["bindir"] + "/rhodes.jar", "manifest.mf", config["build"]["tmpdir"],true)
-  $stdout.flush
-  args = []
-  args << "-classpath"
-  args << '"' + rhodesimplib + '"'
-  args << "-d"
-  args << '"' + config["build"]["targetdir"] + '"'
-  args << '"' + config["build"]["bindir"] + "/rhodes.jar\""
+  srcres = Dir.glob("../rhodes/resources/**/*")
+  dstres = Dir.glob(config["build"]["tmpdir"] + "/resources/**/*")
 
-  puts Jake.run(jdehome + "/bin/preverify.exe",args)  
-  $stdout.flush
-    Jake.rapc("rhodesApp", 
-       config["build"]["targetdir"],
-       rhodesimplib,
-       '"' + Jake.get_absolute( config["build"]["targetdir"] + "/rhodes.jar") +'"',
-       "rhodesApp",
-       config["env"]["vendor"],
-       config["env"]["version"],
-       "resources/icon.png",
-       false,
-       true
-      )
-  $stdout.flush
-  cp "./rhodesApp.alx", config["build"]["targetdir"]
- # rm_rf config["build"]["bindir"]
+  uptodate = true
+
+  dstres.each { |dst| puts dst }
+  srcres.each do |src|
+    newsrc = src.gsub(/^\.\.\/rhodes/,config["build"]["tmpdir"])
+    uptodate = false if dstres.index(src).nil? or not FileUtils.uptodate?(dstres.index(src),newsrc)
+  end
+
+   
+  cp_r "../rhodes/resources", config["build"]["tmpdir"] + "/resources" if not uptodate
+  
+  srcfiles = Dir.glob(config["build"]["tmpdir"] + "/**/*") | rhodesimplib.split(';')
+  if not FileUtils.uptodate?(config["build"]["targetdir"] + "/rhodes.jar",srcfiles)
+    Jake.jar(config["build"]["bindir"] + "/rhodes.jar", "manifest.mf", config["build"]["tmpdir"],true)
+    $stdout.flush
+    args = []
+    args << "-classpath"
+    args << '"' + rhodesimplib + '"'
+    args << "-d"
+    args << '"' + config["build"]["targetdir"] + '"'
+    args << '"' + config["build"]["bindir"] + "/rhodes.jar\""
+
+    puts Jake.run(jdehome + "/bin/preverify.exe",args)  
+    $stdout.flush
+      Jake.rapc("rhodesApp", 
+         config["build"]["targetdir"],
+         rhodesimplib,
+         '"' + Jake.get_absolute( config["build"]["targetdir"] + "/rhodes.jar") +'"',
+         "rhodesApp",
+         config["env"]["vendor"],
+         config["env"]["version"],
+         "resources/icon.png",
+         false,
+         true
+        )
+    $stdout.flush
+  else
+    puts "rhodes up to date"
+  end
+  
+  cp "./rhodesApp.alx", config["build"]["targetdir"] if not FileUtils.uptodate?( config["build"]["targetdir"]+"/rhodesApp.alx", "./rhodesApp.alx")
+  
 end
 
 desc "Build rhodes"
 task :rhodes => [ :clean, :compileRhoBundle, :compile ] do
-  Jake.unjar(config["build"]["bindir"] + "/RhoBundle.jar",config["build"]["tmpdir"])
+  uptodate = true
+  Jake.jarfilelist(config["build"]["bindir"] + "/RhoBundle.jar").each do |file|
+    uptodate = false if not FileUtils.uptodate?( config["build"]["tmpdir"] + "/" + file, config["build"]["bindir"] + "/RhoBundle.jar" )
+  end 
+  Jake.unjar(config["build"]["bindir"] + "/RhoBundle.jar",config["build"]["tmpdir"]) if not uptodate
+
   $stdout.flush
   rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["rubyVMdir"]+"/RubyVM.jar")
 
