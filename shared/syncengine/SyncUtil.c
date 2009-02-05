@@ -31,6 +31,8 @@ static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
 static sqlite3_stmt *session_db_statement = NULL;
 static sqlite3_stmt *del_session_db_statement = NULL;
+static sqlite3_stmt *del_all_client_info_statement = NULL;
+static sqlite3_stmt *del_all_ob_val_statement = NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) {
@@ -65,10 +67,17 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(session_db_statement);
 		session_db_statement = NULL;
 	}
-	
 	if (del_session_db_statement) {
 		sqlite3_finalize(del_session_db_statement);
 		del_session_db_statement = NULL;
+	}
+	if (del_all_ob_val_statement) {
+		sqlite3_finalize(del_all_ob_val_statement);
+		del_all_ob_val_statement = NULL;
+	}
+	if (del_all_client_info_statement) {
+		sqlite3_finalize(del_all_client_info_statement);
+		del_all_client_info_statement = NULL;
 	}
 }
 
@@ -260,14 +269,14 @@ char *set_client_id(sqlite3 *database, pSource source) {
 	char url_string[4096];
 	char *c_id = NULL;
 
-  lock_sync_mutex();	
+	lock_sync_mutex();	
 
 	prepare_db_statement("SELECT client_id from client_info limit 1",
 						 database,
 						 &client_id_statement);
 	sqlite3_step(client_id_statement);
 	c_id = str_assign((char *)sqlite3_column_text(client_id_statement, 0));
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 	if (c_id != NULL && strlen(c_id) > 0) {
 		printf("Using client_id %s from database...\n", c_id);
@@ -279,15 +288,15 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		}
     set_db_client_id(database,c_id);
 	}
-  lock_sync_mutex();	
+	lock_sync_mutex();	
 	sqlite3_reset(client_id_statement);
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 	return c_id;
 }
 
 void set_db_client_id( sqlite3 *database, char *c_id ){
-  lock_sync_mutex();	
+	lock_sync_mutex();	
 
 	prepare_db_statement("INSERT INTO client_info (client_id) values (?)",
 						 database,
@@ -297,15 +306,15 @@ void set_db_client_id( sqlite3 *database, char *c_id ){
 	printf("Intialized new client_id %s from source...\n", c_id);
 	sqlite3_reset(client_id_insert_statement);
 
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 }
 
 void update_source_sync_status(sqlite3 *database, pSource source, 
 							   int num_inserted, int num_deleted, double sync_duration, int status) {
 	time_t now_in_seconds;
 	now_in_seconds = time(NULL);
-
-  lock_sync_mutex();	
+	
+	lock_sync_mutex();	
 
 	prepare_db_statement("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?",
@@ -407,7 +416,7 @@ int set_db_session(const char* source_url, const char *session) {
 	
 	if ( source_url && session )
 	{
-    lock_sync_mutex();	
+		lock_sync_mutex();	
 
 		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
 							 (sqlite3 *)get_database(),
@@ -418,8 +427,32 @@ int set_db_session(const char* source_url, const char *session) {
 		success = sqlite3_step(session_db_statement);
 		sqlite3_reset(session_db_statement);
 
-    unlock_sync_mutex();
+		unlock_sync_mutex();
 	}
 	return success;
+}
+
+/**
+ * Reset sync db
+ * (deletes all object_values and client_info rows)
+ */
+void reset_sync_db() {
+	lock_sync_mutex();	
+	printf("Resetting sync db...\n");
+	
+	prepare_db_statement("delete from object_values",
+						 (sqlite3 *)get_database(),
+						 &del_all_ob_val_statement);
+	prepare_db_statement("delete from client_info",
+						 (sqlite3 *)get_database(),
+						 &del_all_client_info_statement);
+	printf("Deleting all objects from db...\n");
+	sqlite3_step(del_all_ob_val_statement);
+	sqlite3_reset(del_all_ob_val_statement);
+	printf("Deleting client info from db...\n");
+	sqlite3_step(del_all_client_info_statement);
+	sqlite3_reset(del_all_client_info_statement);
+	
+	unlock_sync_mutex();
 }
 
