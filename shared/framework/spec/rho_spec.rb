@@ -23,6 +23,7 @@ require File.dirname(__FILE__) + "/spec_helper"
 describe "Rho" do
 
   it_should_behave_like "rho initializer"
+  it_should_behave_like "rho db initializer"
 
   it "should populate configuration in sources table" do
     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')

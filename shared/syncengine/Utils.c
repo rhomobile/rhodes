@@ -50,7 +50,7 @@ char* str_assign_ex(char* data, int len) {
 }
 
 char* parseServerFromUrl( char* url){
-  char* pStartSrv, *pEndSrv, *szSrv;
+  char* pStartSrv, *pEndSrv;
   int nSrvLen;
   char* pHttp = strstr(url,"://");
   if ( !pHttp )
