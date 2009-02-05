@@ -20,7 +20,7 @@
 <!--
 			<div class="row">
 			  <label>Type</label>
-			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= @SugarOpportunity.opportunity_type %>"/>
+			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
 			</div>
 -->				
 
@@ -46,7 +46,7 @@
 	
 		  <div class="row">
 			  <label>Campaign</label>
-			  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= @SugarOpportunity.campaign_name %>"/>
+			  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %>"/>
 		  </div>
 		
 		  <div class="row">

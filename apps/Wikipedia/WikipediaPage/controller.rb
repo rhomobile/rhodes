@@ -3,30 +3,24 @@ require 'rho/rhocontroller'
 class WikipediaPageController < Rho::RhoController
 
   def index
-    puts "WikipediaPage index"
+    render
+  end
+  
+  def show
+    puts "WikipediaPage show"
+    
     @page = WikipediaPage.find(:all)[0]
-    
-    # data assemble all the attributes
-    puts @page.inspect.to_s
-    
-    puts "with #{@page.instance_variables.length} instance_variables"
-    
-    puts "reconstructing #{@page.packet_count} elements"
-    puts "expecting #{@page.data_length} bytes"
-    
+
     page_pieces = []
     # elements start at 0
     0.upto(@page.packet_count.to_i - 1) do |page|
-      page_pieces << @page.send("p_#{page}".to_s)
+     page_pieces << @page.send("p_#{page}".to_s)
     end
     encoded_page = page_pieces.join
-    
-    puts "encoded_page length = #{encoded_page.length}"
-    puts "difference = #{encoded_page.length - @page.data_length.to_i}"
 
     @data = encoded_page.unpack("m")[0]
-    
-    render
+
+    render :action => :show, :layout => false
   end
   
   def create
@@ -37,6 +31,6 @@ class WikipediaPageController < Rho::RhoController
     
     SyncEngine::dosync
 
-    redirect :action => :index
+    redirect :action => :show
   end
 end

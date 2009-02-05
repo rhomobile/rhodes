@@ -7,8 +7,12 @@
 				  <input type="text" name="search"/>
 			  </div>
 		</fieldset>
-		<input type="submit" value="Go!"/>
+		<input type="submit" value="Go!"/>		
 	</form>
 	
-	<%= @data %>
+	<ul>
+	<li><%=link_to "Last article", :action => :show %></li>
+	</ul>
+	
+	<iframe src="/Wikipedia/WikipediaPage/show" width="100%" height="100%" style="margin:0;padding;"></iframe>
 </div>

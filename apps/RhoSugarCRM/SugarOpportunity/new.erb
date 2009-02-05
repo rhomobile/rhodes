@@ -44,7 +44,7 @@
 
 				  <div class="row">
 					  <label>Campaign</label>
-					  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= @SugarOpportunity.campaign_name %>"/>
+					  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %>"/>
 				  </div>
 
 				  <div class="row">
