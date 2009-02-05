@@ -15,7 +15,7 @@
 		
 		  <tr>
 			<td class="gridleft">Type</td>
-			<td class="gridright"><%= @SugarOpportunity.opportunity_type %></td>
+			<td class="gridright"><%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %></td>
 		  </tr>
 	
 		  <tr>
@@ -25,7 +25,7 @@
 		
 		  <tr>
 			<td class="gridleft">Campaign Name</td>
-			<td class="gridright"><%= @SugarOpportunity.campaign_name %></td>
+			<td class="gridright"><%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %></td>
 		  </tr>
 		
 		  <tr>
