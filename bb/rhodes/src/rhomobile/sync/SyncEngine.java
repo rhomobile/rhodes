@@ -75,6 +75,12 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QNIL; 
 	}
 	
+	public static RubyValue reset_sync_db() {
+		SyncThread.setDbResetDelay(true);
+		wakeUp();
+		return RubyConstant.QNIL; 
+	}
+	
 	/**
 	 * Inits the methods.
 	 * 
@@ -136,6 +142,13 @@ public class SyncEngine extends RubyBasic {
 				new RubyNoArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyBlock block) {
 						return SyncEngine.logout();
+					}
+				});
+		
+		klass.getSingletonClass().defineMethod("trigger_sync_db_reset",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						return SyncEngine.reset_sync_db();
 					}
 				});
 

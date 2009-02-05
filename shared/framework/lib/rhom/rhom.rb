@@ -38,9 +38,21 @@ module Rhom
       @factory = RhomObjectFactory.new
     end
     
-    def self.client_id
-      c_id = ::Rhom::RhomDbAdapter::select_from_table('client_info','client_id')[0]
-      c_id.nil? ? nil : c_id['client_id']
-    end
+    class << Rhom
+      def client_id
+        c_id = ::Rhom::RhomDbAdapter::select_from_table('client_info','client_id')[0]
+        c_id.nil? ? nil : c_id['client_id']
+      end
+      
+      def database_full_reset
+        ::Rhom::RhomDbAdapter::delete_all_from_table(TABLE_NAME)
+        ::Rhom::RhomDbAdapter::delete_all_from_table('client_info')
+      end
+      
+      def database_full_reset_and_logout
+        database_full_reset
+        SyncEngine::logout
+      end
+    end #class methods
   end # Rhom
 end # Rhom

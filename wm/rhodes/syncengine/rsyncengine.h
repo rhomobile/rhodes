@@ -33,6 +33,7 @@ public:
   void Unlock();
   void TriggerSync();
   void StartSync();
+  void TriggerDbReset();
 
 private:
   CSyncEngine(void);
@@ -45,6 +46,7 @@ private:
 
   sqlite3 *m_database;
   int	m_delaySync;
+  int   m_dbResetDelay;
   bool  m_bSyncInitialized;
   bool  StartSyncEngine();
   bool  PerformSync();
@@ -59,6 +61,7 @@ char* fetch_remote_data(char* url);
 int push_remote_data(char* url, char* data, size_t data_size);
 void start_sync();
 void delete_winmo_session(const char *url_string);
+void triggerSyncDbReset();
 
 #ifdef __cplusplus
 } //extern "C" {

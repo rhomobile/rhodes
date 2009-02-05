@@ -8,6 +8,7 @@ extern void unlock_sync_mutex();
 extern int login(const char *login, const char *password);
 extern int logged_in();
 extern void logout();
+extern void trigger_sync_db_reset();
 %}
 
 extern void dosync();
@@ -16,3 +17,4 @@ extern void unlock_sync_mutex();
 extern int login(const char *login, const char *password);
 extern int logged_in();
 extern void logout();
+extern void trigger_sync_db_reset();
