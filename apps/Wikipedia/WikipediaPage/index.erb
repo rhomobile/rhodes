@@ -1,0 +1,14 @@
+<div class="panel">
+	
+	<form id="search_form" method="POST" action="<%=url_for(:action => :create)%>">
+		<fieldset>		
+			  <div class="row">
+				  <label>Search:</label>
+				  <input type="text" name="search"/>
+			  </div>
+		</fieldset>
+		<input type="submit" value="Go!"/>
+	</form>
+	
+	<%= @data %>
+</div>
