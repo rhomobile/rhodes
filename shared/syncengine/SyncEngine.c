@@ -28,7 +28,7 @@
 #include "Constants.h"
 
 int stop_running = 0;
-int delay_sync = 0;
+//int delay_sync = 0;
 int db_reset_delay = 0;
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
@@ -131,7 +131,7 @@ int process_local_changes() {
 #if !defined(_WIN32_WCE)
 void* sync_engine_main_routine(void* data) {
 	printf("Starting sync engine main routine...\n");
-	delay_sync = get_object_count_from_database(database);
+	//delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex2);
 	while(!stop_running) {
 		struct timespec   ts;
@@ -144,7 +144,7 @@ void* sync_engine_main_routine(void* data) {
 #ifdef __SYMBIAN32__		
 		if ( g_cur_source != 0 )
 		{
-			delay_sync = 0;
+			//delay_sync = 0;
 			ts.tv_sec += 1;
 		}
 		else
@@ -159,7 +159,7 @@ void* sync_engine_main_routine(void* data) {
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
 		printf("Sync engine continues w/ current operations...\n");
 	
-		if(!delay_sync && !db_reset_delay) {
+		if(/*!delay_sync &&*/ !db_reset_delay) {
 			if(process_local_changes()) {
 				break;
 			}
@@ -168,9 +168,9 @@ void* sync_engine_main_routine(void* data) {
 			reset_sync_db();
 			clear_client_id();
 			db_reset_delay = 0;
-			delay_sync = 0;
+			//delay_sync = 0;
 		} else {
-			delay_sync = 0;
+			//delay_sync = 0;
 		}
 
 	}
@@ -239,7 +239,7 @@ void unlock_sync_mutex() {
 void wake_up_sync_engine() {
 	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
-	delay_sync = 0;
+	//delay_sync = 0;
 	pthread_cond_broadcast(&sync_cond);
 	//pthread_mutex_unlock(&sync_mutex);
 }
