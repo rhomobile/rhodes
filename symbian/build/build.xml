@@ -546,7 +546,7 @@
             <arg line="bldfiles"/>
         </exec>
 	    
-	    <!-- <echo message="Calling REALLYCLEAN for rhodes..."/>
+	    <echo message="Calling REALLYCLEAN for rhodes..."/>
         <echo message="output to file: ${log.build}"/>
         <exec dir="${dir.rhodes.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
             <arg value="/c"/>
@@ -576,7 +576,7 @@
             <arg value="/c"/>
             <arg value="abld.bat"/>
             <arg line="reallyclean"/>
-        </exec> -->
+        </exec>
 	</target>
 	
 	<target name="rhobundle" depends="init, clean">
