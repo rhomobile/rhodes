@@ -1,22 +1,25 @@
-
 <form title="Login to Rhodes"
       class="panel" 
 		 id="user_edit_form" 
 	 method="POST" 
 	 action="<%=url_for(:action => 'do_login')%>">
   <fieldset>
+	
 	<% if @msg %>
-	  <p><%= @msg %></p>
+	  <p style="color:#ff0000"><%= @msg %></p>
 	<% end %>
-    <div class="row">
-      <label>Login: </label>
-      <input type="text" maxlength="100" name="login"/>
-    </div>
-    <div class="row">
-      <label>Password: </label>
-      <input type="text" maxlength="100" name="password"/> 
-    </div>
-  </fieldset>
+	
+	<table>
+		<tr>
+			<td><label>Login</label></td>
+			<td><input type="text" maxlength="100" name="login"/></td>
+		</tr>
+		<tr>
+			<td><label >Password</label></td>
+			<td><input type="text" maxlength="100" name="password"/></td>
+		</tr>
+	</table>
+
   <p align="center">
     <input type="submit" value="Login"/><br/>
     <a href="<%=Rho::RhoConfig.start_path%>" target="_self">Cancel</a>
