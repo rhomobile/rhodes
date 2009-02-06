@@ -44,7 +44,7 @@ extern "C"
 	void shttpd_poll(struct shttpd_ctx *, int milliseconds);
 	int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
 	
-	int rb_garbage_collect(void); 
+	void rb_gc(void); 
 	
 	int g_need_launch_gc = 0;
 }
@@ -107,7 +107,7 @@ void CHttpServer::ConstructL()
 		//KMinHeapSize, 256*KMinHeapSize
 		TInt res = thread.Create(threadName, ThreadEntryPoint, 
 				//0x1000000, 0x5000, 0x1000000,
-				80000, 0x100000, 0x500000,
+				80000, 0x100000, 0x1000000,
 				this);
 		
 		if ( res != KErrNone )
@@ -165,7 +165,7 @@ TInt CHttpServer::ExecuteL()
 			if ( g_need_launch_gc )
 			{
 				g_need_launch_gc = 0;
-				rb_garbage_collect();
+				rb_gc();
 			}
 			
 			shttpd_poll(ctx, 1000);
