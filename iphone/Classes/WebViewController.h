@@ -4,13 +4,23 @@
 
 @interface WebViewController : UIViewController <UIActionSheetDelegate> {
 	IBOutlet UINavigationBar* navBar;
-	IBOutlet UINavigationItem* navItem;
-	IBOutlet UIBarButtonItem* syncBtn;
+	IBOutlet UIBarButtonItem* homeBtn;
+	IBOutlet UIBarButtonItem* backBtn;
+	IBOutlet UILabel* activityInfo;
 	IBOutlet UIWebView *webView;
+	IBOutlet UIActivityIndicatorView *activity;
 }
 
 -(void)navigate:(NSString*)url;
 
--(void)runSync;
+-(void)setActivityInfo:(NSString *)labelText;
+
+-(IBAction)goBack;
+
+-(IBAction)goHome;
+
+-(void)active;
+
+-(void)inactive;
 
 @end
