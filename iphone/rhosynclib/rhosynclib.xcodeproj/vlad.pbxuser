@@ -31,8 +31,8 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 251693683;
-			PBXWorkspaceStateSaveDate = 251693683;
+			PBXPerProjectTemplateStateSaveDate = 255896595;
+			PBXWorkspaceStateSaveDate = 255896595;
 		};
 		perUserProjectItems = {
 			F563D5F10EA912F20062DA57 /* PBXTextBookmark */ = F563D5F10EA912F20062DA57 /* PBXTextBookmark */;
@@ -44,8 +44,8 @@
 			F563D64D0EA92F3E0062DA57 /* PBXTextBookmark */ = F563D64D0EA92F3E0062DA57 /* PBXTextBookmark */;
 			F563D9CB0EACFEE00062DA57 /* PBXTextBookmark */ = F563D9CB0EACFEE00062DA57 /* PBXTextBookmark */;
 			F563D9CD0EACFEE00062DA57 /* PBXTextBookmark */ = F563D9CD0EACFEE00062DA57 /* PBXTextBookmark */;
-			F563D9CE0EACFEE00062DA57 /* PBXTextBookmark */ = F563D9CE0EACFEE00062DA57 /* PBXTextBookmark */;
 			F58E7FDF0F008A7A00E46829 /* PBXTextBookmark */ = F58E7FDF0F008A7A00E46829 /* PBXTextBookmark */;
+			F5C61C9F0F3CFE4F00207621 /* PBXTextBookmark */ = F5C61C9F0F3CFE4F00207621 /* PBXTextBookmark */;
 		};
 		sourceControlManager = F563D5480EA824810062DA57 /* Source Control */;
 		userBuildSettings = {
@@ -53,9 +53,9 @@
 	};
 	46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1011, 3066}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 6062}}";
 			sepNavSelRange = "{4394, 17}";
-			sepNavVisRange = "{3894, 1284}";
+			sepNavVisRange = "{3855, 967}";
 		};
 	};
 	46E9210C0E9BF3E700F14AC8 /* SyncEngine.h */ = {
@@ -204,16 +204,6 @@
 		vrLen = 1747;
 		vrLoc = 7381;
 	};
-	F563D9CE0EACFEE00062DA57 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */;
-		name = "SyncEngine.c: 142";
-		rLen = 17;
-		rLoc = 4394;
-		rType = 0;
-		vrLen = 1085;
-		vrLoc = 4004;
-	};
 	F58E7FDF0F008A7A00E46829 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */;
@@ -223,5 +213,15 @@
 		rType = 0;
 		vrLen = 1284;
 		vrLoc = 3894;
+	};
+	F5C61C9F0F3CFE4F00207621 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 46E9210B0E9BF3E700F14AC8 /* SyncEngine.c */;
+		name = "SyncEngine.c: 158";
+		rLen = 17;
+		rLoc = 4394;
+		rType = 0;
+		vrLen = 967;
+		vrLoc = 3855;
 	};
 }
