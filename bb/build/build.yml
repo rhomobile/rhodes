@@ -18,6 +18,7 @@ env:
 build:
   bindir: ../bin
   srcdir: %bindir%/RhoBundle
+  preverified: %bindir%/preverified
   rubypath: ../../win32/target/compiler/RhoRuby.exe
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
