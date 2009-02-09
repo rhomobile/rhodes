@@ -491,11 +491,22 @@ char* fetch_remote_data(char* url) {
 }
 
 int push_remote_data(char* url, char* data, size_t data_size) {
-  return remote_data(L"POST", url, data, data_size, false, false, true)==NULL ? 1 : 0;
+  char* res = remote_data(L"POST", url, data, data_size, false, false, true);
+  int  nRes = res==NULL ? 1 : 0;
+  if ( res )
+      free(res);
+  return nRes;
+  //return remote_data(L"POST", url, data, data_size, false, false, true)==NULL ? 1 : 0;
 }
 
 int makeLoginRequest(char* url, char* data ){
-  return remote_data(L"POST", url, data, strlen(data), false, false, false)==NULL ? 0 : 1;
+  char* res = remote_data(L"POST", url, data, strlen(data), false, false, false);
+  int  nRes = res==NULL ? 1 : 0;
+  if ( res )
+      free(res);
+  return nRes;
+
+  //return remote_data(L"POST", url, data, strlen(data), false, false, false)==NULL ? 0 : 1;
 }
 
 void delete_winmo_session(const char *url_string) {
