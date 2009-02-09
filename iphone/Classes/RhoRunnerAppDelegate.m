@@ -21,12 +21,18 @@
 	[webViewController navigate:location];
 }
 
+- (void)onRefreshView {
+	[webViewController refresh];
+}
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
 
     //Create local server and start it
-    serverHost = [[ServerHost alloc] init];
+    //serverHost = [[ServerHost alloc] init];
+	serverHost = [ServerHost sharedInstance];
 	serverHost->actionTarget = self;
 	serverHost->onStartSuccess = @selector(onServerStarted:);
+	serverHost->onRefreshView = @selector(onRefreshView);
     [serverHost start];
 	
     //Create View
@@ -46,6 +52,5 @@
 	[window release];
 	[super dealloc];
 }
-
 
 @end

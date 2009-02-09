@@ -19,15 +19,19 @@
 	id  actionTarget;
 	SEL onStartSuccess;
 	SEL onStartFailure;
+	SEL onRefreshView;
 }
 
 // callbacks
 @property (assign) id  actionTarget;
 @property (assign) SEL onStartSuccess;
 @property (assign) SEL onStartFailure;
+@property (assign) SEL onRefreshView;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
 - (void) stop;
+
++ (ServerHost *)sharedInstance;
 
 @end

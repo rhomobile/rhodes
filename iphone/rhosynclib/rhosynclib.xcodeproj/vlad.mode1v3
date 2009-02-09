@@ -333,7 +333,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F58E7FDF0F008A7A00E46829</string>
+										<string>F5C61C9F0F3CFE4F00207621</string>
 										<key>history</key>
 										<array>
 											<string>F563D5F10EA912F20062DA57</string>
@@ -341,7 +341,7 @@
 											<string>F563D6480EA92F3E0062DA57</string>
 											<string>F563D6490EA92F3E0062DA57</string>
 											<string>F563D9CB0EACFEE00062DA57</string>
-											<string>F563D9CE0EACFEE00062DA57</string>
+											<string>F58E7FDF0F008A7A00E46829</string>
 										</array>
 										<key>nextStack</key>
 										<array>
@@ -409,9 +409,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F58E7FE00F008A7A00E46829</string>
+				<string>F5C61CA00F3CFE4F00207621</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F58E7FE10F008A7A00E46829</string>
+				<string>F5C61CA10F3CFE4F00207621</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -545,7 +545,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/Volumes/Projects/rhomobile/rhodes/iphone/rhosynclib/rhosynclib.xcodeproj</string>
+		<string>/Users/vlad/Documents/Projects/rhodes/iphone/rhosynclib/rhosynclib.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>160 219 1280 659 0 0 1440 878 </string>
