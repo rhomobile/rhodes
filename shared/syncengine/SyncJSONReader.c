@@ -30,6 +30,7 @@
  */
 
 #include "SyncJSONReader.h"
+#include "Utils.h"
 
 int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free) {
 	/* Parsing vars */
