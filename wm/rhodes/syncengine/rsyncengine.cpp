@@ -492,7 +492,7 @@ char* fetch_remote_data(char* url) {
 
 int push_remote_data(char* url, char* data, size_t data_size) {
   char* res = remote_data(L"POST", url, data, data_size, false, false, true);
-  int  nRes = res==NULL ? 1 : 0;
+  int  nRes = res==NULL ? 0 : 1;
   if ( res )
       free(res);
   return nRes;
@@ -501,7 +501,7 @@ int push_remote_data(char* url, char* data, size_t data_size) {
 
 int makeLoginRequest(char* url, char* data ){
   char* res = remote_data(L"POST", url, data, strlen(data), false, false, false);
-  int  nRes = res==NULL ? 1 : 0;
+  int  nRes = res==NULL ? 0 : 1;
   if ( res )
       free(res);
   return nRes;
