@@ -1,6 +1,12 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading" selected="false">
+  Accounts
+</div>
+<% end %>
+
 <ul id="SugarAccounts" title="Accounts">
-<a class="button right_button" href="/RhoSugarCRM/SugarAccount/new">New</a>
-	
+  <a class="button right_button" href="/RhoSugarCRM/SugarAccount/new">New</a>
+	  
 <% @SugarAccounts.each do |x| %>
 
 <li class="overview">

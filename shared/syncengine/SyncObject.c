@@ -189,7 +189,8 @@ void free_ob_list(pSyncObject *list, int available) {
 
 void SyncObjectRelease(pSyncObject ref) {
 	if (ref) {
-		if (ref->_attrib) {
+        //This fields deleted by JSON
+		/*if (ref->_attrib) {
 			free(ref->_attrib);
 		} 
 		if(ref->_object) {
@@ -200,7 +201,7 @@ void SyncObjectRelease(pSyncObject ref) {
 		} 
 		if(ref->_update_type) {
 			free(ref->_update_type);
-		}
+		}*/
 		free(ref);
 	}
 }

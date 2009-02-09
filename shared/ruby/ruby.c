@@ -397,37 +397,37 @@ ruby_init_loadpath(const char* szRoot)
 #define incpush(path) rb_ary_push(load_path, rubylib_mangled_path2(path))
     load_path = GET_VM()->load_path;
 
-    if (rb_safe_level() == 0) {
-	ruby_incpush(getenv("RUBYLIB"));
-    }
+   // if (rb_safe_level() == 0) {
+	//ruby_incpush(getenv("RUBYLIB"));
+    //}
 
 #ifdef RUBY_SEARCH_PATH
-    incpush(RUBY_RELATIVE(RUBY_SEARCH_PATH));
+    //incpush(RUBY_RELATIVE(RUBY_SEARCH_PATH));
 #endif
 
-    incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
+    //incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
 #ifdef RUBY_SITE_THIN_ARCHLIB
-    incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
+    //incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
 #endif
-    incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
-    incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
+   // incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
+   // incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
 
-    incpush(RUBY_RELATIVE(RUBY_VENDOR_LIB2));
+   // incpush(RUBY_RELATIVE(RUBY_VENDOR_LIB2));
 #ifdef RUBY_VENDOR_THIN_ARCHLIB
-    incpush(RUBY_RELATIVE(RUBY_VENDOR_THIN_ARCHLIB));
+    //incpush(RUBY_RELATIVE(RUBY_VENDOR_THIN_ARCHLIB));
 #endif
-    incpush(RUBY_RELATIVE(RUBY_VENDOR_ARCHLIB));
-    incpush(RUBY_RELATIVE(RUBY_VENDOR_LIB));
+   // incpush(RUBY_RELATIVE(RUBY_VENDOR_ARCHLIB));
+   // incpush(RUBY_RELATIVE(RUBY_VENDOR_LIB));
 
     incpush(RUBY_RELATIVE(RUBY_LIB));
 #ifdef RUBY_THIN_ARCHLIB
-    incpush(RUBY_RELATIVE(RUBY_THIN_ARCHLIB));
+   // incpush(RUBY_RELATIVE(RUBY_THIN_ARCHLIB));
 #endif
-    incpush(RUBY_RELATIVE(RUBY_ARCHLIB));
+   // incpush(RUBY_RELATIVE(RUBY_ARCHLIB));
 
-    if (rb_safe_level() == 0) {
-	incpush(".");
-    }
+    //if (rb_safe_level() == 0) {
+	//incpush(".");
+    //}
 }
 
 
