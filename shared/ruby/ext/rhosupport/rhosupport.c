@@ -104,18 +104,35 @@ static const char *const loadable_ext[] = {
 
 static VALUE find_file(VALUE fname)
 {
-    VALUE tmp;
-    int type;
+    VALUE res;//, dir;
+    //int type=1;
+    //int nStart;
+    //char buf[500];
+
     FilePathValue(fname);
 
-    tmp = rb_str_dup(fname);
-    type = rb_find_file_ext(&tmp, loadable_ext);
-    tmp = rb_file_expand_path(tmp, Qnil);
+    if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
+     //   sprintf(buf,"%s%s", RSTRING_PTR(fname), ".iseq");
+        res = rb_str_dup(fname);
+        rb_str_cat(res,".iseq",5);
+    }
+    else{
+        VALUE load_path = GET_VM()->load_path;
+        VALUE dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
-    if ( type == 1 )
-        return RhoPreparePath(tmp);
+//        sprintf(buf,"%s/%s%s", RSTRING_PTR(dir), RSTRING_PTR(fname),".iseq");
+        res = rb_str_dup(dir);
+        rb_str_cat(res,"/",1);
+        rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
+        rb_str_cat(res,".iseq",5);
+    }
 
-    return 0;
+    //printf("Path: %s\n", buf);
+    //tmp=rb_str_new2(buf);
+//    if ( type == 1 )
+        return RhoPreparePath(res);
+
+    //return 0;
 }
 
 VALUE isAlreadyLoaded(VALUE path)
