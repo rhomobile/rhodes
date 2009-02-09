@@ -1,23 +1,98 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+More
+</div>
+<% end %>
+
 <ul title="More">
 
-		<% if System::get_property('platform') == 'Blackberry' %>
-		
-		<li><a href="SugarCall">Calls</a></li>
-		<li><a href="SugarMeeting">Meetings</a></li>
-		<li><a href="SugarCase">Cases</a></li>
-		<li><a href="SugarEmployee">Employees</a></li>
-		<li><a href="SugarCampaign">Campaigns</a></li>
-		<li><a href="SugarProduct">Products</a></li>
-
+    <% if System::get_property('platform') == 'APPLE' %>
+      <li><a href="SugarCall"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
+		  <li><a href="SugarMeeting"><img class="menu_icon" src="images/briefcaseicon.png"/>Meetings</a></li>
+		  <li><a href="SugarCase"><img class="menu_icon" src="images/docsicon.png"/>Cases</a></li>
+		  <li><a href="SugarEmployee"><img class="menu_icon" src="images/stampicon.png"/>Employees</a></li>
+		  <li><a href="SugarCampaign"><img class="menu_icon" src="images/bulbicon.png"/>Campaigns</a></li>
+		  <li><a href="SugarProduct"><img class="menu_icon" src="images/stacksicon.png"/>Products</a></li>      
     <% else %>
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/badgeicon.png"/>
+            </td>
+            <td>
+              <a href="SugarCall">Calls</a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/briefcaseicon.png"/>
+            </td>
+            <td>
+              <a href="SugarMeeting">Meetings</a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/docsicon.png"/>
+            </td>
+            <td>
+              <a href="SugarCase">Cases</a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/stampicon.png"/>
+            </td>
+            <td>
+              <a href="SugarEmployee">Employees</a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/bulbicon.png"/>
+            </td>
+            <td>
+              <a href="SugarCampaign">Campaigns</a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      
+      <li>
+        <table>
+          <tr>
+            <td>
+              <img class="menu_icon" src="images/stacksicon.png"/>
+            </td>
+            <td>
+              <a href="SugarProduct">Products</a>
+            </td>
+          </tr>
+        </table>
+      </li>
 
-		<li><a href="SugarCall"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
-		<li><a href="SugarMeeting"><img class="menu_icon" src="images/briefcaseicon.png"/>Meetings</a></li>
-		<li><a href="SugarCase"><img class="menu_icon" src="images/docsicon.png"/>Cases</a></li>
-		<li><a href="SugarEmployee"><img class="menu_icon" src="images/stampicon.png"/>Employees</a></li>
-		<li><a href="SugarCampaign"><img class="menu_icon" src="images/bulbicon.png"/>Campaigns</a></li>
-		<li><a href="SugarProduct"><img class="menu_icon" src="images/stacksicon.png"/>Products</a></li>
-	  <% end %>	
+      <% end %>	
 			
 		<li><a href="/RhoSugarCRM" target="_self">Home</li>
 	</ul>
