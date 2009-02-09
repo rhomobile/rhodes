@@ -1,3 +1,12 @@
+== 0.3.0 & 0.3.1
+Major features:
+* incremental sync enhancements
+* source refresh enhancements
+* see http://rhomobile.lighthouseapp.com/projects/16701-rhosync/tickets?q=milestone%3A%220.3.0%22+state%3Aclosed
+
+Known issues:
+* see http://rhomobile.lighthouseapp.com/projects/16701/milestones/30412-03x
+
 == 0.2.0
 Major features:
 * scripted build process for all platforms
