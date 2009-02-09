@@ -23,4 +23,8 @@
 
 -(void)inactive;
 
+-(void)refresh;
+
+-(void)runSync;
+
 @end

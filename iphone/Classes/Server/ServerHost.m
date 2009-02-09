@@ -55,9 +55,12 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 #pragma mark -
 
+static ServerHost* sharedSH = nil;
+
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView;
+
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -70,6 +73,12 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 - (void)serverFailed:(void*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartFailure]) {
 		[actionTarget performSelector:onStartFailure];
+	}
+}
+
+- (void)refreshView {
+	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
+		[actionTarget performSelector:onRefreshView];
 	}
 }
 
@@ -142,4 +151,49 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	[super dealloc];
 }
 
++ (ServerHost *)sharedInstance {
+    @synchronized(self) {
+        if (sharedSH == nil) {
+            [[self alloc] init]; // assignment not done here
+        }
+    }
+    return sharedSH;
+}
+
++ (id)allocWithZone:(NSZone *)zone {
+    @synchronized(self) {
+        if (sharedSH == nil) {
+            sharedSH = [super allocWithZone:zone];
+            return sharedSH;  // assignment and return on first allocation
+        }
+    }
+    return nil; // on subsequent allocation attempts return nil
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    return self;
+}
+
+- (id)retain {
+    return self;
+}
+
+- (unsigned)retainCount {
+    return UINT_MAX;  // denotes an object that cannot be released
+}
+
+- (void)release {
+    //do nothing
+}
+
+- (id)autorelease {
+    return self;
+}
+
 @end
+
+//ruby extension hooks
+void webview_refresh() {
+	[[ServerHost sharedInstance] refreshView];
+}

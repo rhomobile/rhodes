@@ -64,6 +64,22 @@ NSString *loadingText = @"Loading...";
 	[self inactive];
 	
 	self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
+
+	syncBtn = [[[UIBarButtonItem alloc]
+				initWithTitle:@"Sync"
+				style:UIBarButtonItemStyleBordered
+				target:self 
+				action:@selector(runSync:)] autorelease];
+	self.navigationItem.leftBarButtonItem = syncBtn;
+}
+
+-(void)refresh {
+	[webView reload];
+}
+
+- (void)runSync
+{
+	wake_up_sync_engine();
 }
 
 @end
