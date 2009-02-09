@@ -1,3 +1,9 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+  Contact
+</div>
+<% end %>
+
 <div class="panel" title="Show Contact">
  
 <a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>">Edit</a>
