@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="153"/>
+			<integer value="83"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -46,7 +46,7 @@
 							<object class="IBUIWebView" id="842565669">
 								<reference key="NSNextResponder" ref="178952735"/>
 								<int key="NSvFlags">1316</int>
-								<string key="NSFrame">{{0, 20}, {320, 416}}</string>
+								<string key="NSFrame">{{0, 64}, {320, 372}}</string>
 								<reference key="NSSuperview" ref="178952735"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">1</int>
@@ -101,7 +101,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUIBarStyle">1</int>
-								<object class="NSMutableArray" key="IBUIItems">
+								<object class="NSArray" key="IBUIItems">
 									<bool key="EncodedWithXMLCoder">YES</bool>
 									<object class="IBUINavigationItem" id="232728839">
 										<reference key="IBUINavigationBar" ref="507564378"/>
@@ -485,7 +485,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 					</object>
-					<string>{{524, 373}, {320, 480}}</string>
+					<string>{{476, 117}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>RhoRunnerAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
