@@ -6,15 +6,13 @@
 			<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
 			<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
 			<script src="/shared/js/jquery-1.2.6.min.js"></script>
-			<script src="/shared/js/rho.js"></script>			
+			<script src="/shared/js/rho.js"></script>	
+					
+            <LINK href="/RhoSugarCRM/css/iphone.css" type="text/css" rel="stylesheet"/>
+        <% else %>
+            <LINK href="/RhoSugarCRM/css/xhtml.css" type="text/css" rel="stylesheet"/>
 		<% end %>	
-		
-        <LINK href="/RhoSugarCRM/css/application.css" type="text/css" rel="stylesheet"/>
-		<!--
-		<style type="text/css" media="screen">
-    		@import "/RhoSugarCRM/css/application.css"; 
-		</style> -->
-	
+			
   <script type="application/x-javascript">
 
     function interp_segment(x1, x2, t) {
@@ -143,20 +141,6 @@
  </head>
  <body onload="draw();">
 	
-<!--
-	<div class="toolbar">
-		<h1 id="pageTitle">
-			<script language="JavaScript">
-				document.write(document.title)
-			</script>
-		</h1>
-	</div>		
--->
-		
-<!--
-		<a id="backButton" class="button" href="./">Home</a>
--->	
-
 <div class="toolbar">
 	<h1 id="pageTitle">
 	</h1>
@@ -165,18 +149,30 @@
 -->
 </div>		
 
+<div class="generic_heading">
+  Dashboard
+</div>
+
 	<ul id="home" selected="true" title="Dashboard">
 		
 		<a class="button right_button" href="/RhoSugarCRM" target="_self">Home</a>		
 		
 	 <div style="position:absolute;top:10;left:50;font-size:100%;font-weight:bold">My Pipeline</div>
-   <canvas id="canvas" style="position:absolute;top:40;left:50" width="200" height="200"></canvas>
+	 
+	<% if System::get_property('platform') == 'APPLE' %>	 
+       <canvas id="canvas" style="position:absolute;top:40;left:50" width="200" height="200"></canvas>
+   <% else %>
+       <img src="/RhoSugarCRM/images/dashboardmockup.png" style="position:absolute;top:40;left:40"/>
+   <% end %>
+   
    <div style="position:absolute;top:240;left:50;font-size:120%">
 	  <div style="color:#ff0000">$35K - Decision Makers</div>
 	  <div style="color:#00ff00">$75K - Negotiation/Review</div>
 	  <div style="color:#0000ff">$25K - Perception Analysis</div>
 	  <div style="color:#f05500">$35K - Prospecting</div>
 	  <div style="color:#7000ff">$35K - Qualification</div>
+	  <br/>
+	  <div style="color:#555555;font-size:80%"><i>(Sample Graphic and Data)</i></div>
 	</div>
  </body>
 </html>
