@@ -145,7 +145,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 			// Initialize parsing list and call json parser
 			list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
 			if (list) {
-				available = parse_json_list(list, json_string, size);
+                struct json_object* json_to_free = 0;
+				available = parse_json_list(list, json_string, size, &json_to_free);
 				printf("Parsed %i records from sync source...\n", available);
 				if(available > 0) {
 					for(j = 0; j < available; j++) {
@@ -172,6 +173,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
 				/* free the in-memory list after populating the database */
 				free_ob_list(list, available);
 				free(list);
+
+                if ( json_to_free )
+                    json_object_put(json_to_free);
 			}
 			success = 1;
 			free(json_string);
@@ -285,6 +289,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 		json_string = fetch_remote_data(url_string);
 		if(json_string && strlen(json_string) > 0) {
 			c_id = str_assign((char *)parse_client_id(json_string));
+            free(json_string);
 		}
     set_db_client_id(database,c_id);
 	}

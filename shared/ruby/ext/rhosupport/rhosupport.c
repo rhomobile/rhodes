@@ -5,6 +5,9 @@
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../../stat/stat.h"
 #endif
+#ifdef _WIN32
+#include "missing/file.h"
+#endif
 
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
@@ -104,18 +107,49 @@ static const char *const loadable_ext[] = {
 
 static VALUE find_file(VALUE fname)
 {
-    VALUE tmp;
-    int type;
+    VALUE res;
+    int nOK = 0;
+
     FilePathValue(fname);
 
-    tmp = rb_str_dup(fname);
-    type = rb_find_file_ext(&tmp, loadable_ext);
-    tmp = rb_file_expand_path(tmp, Qnil);
+    if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
+        res = rb_str_dup(fname);
+        rb_str_cat(res,".iseq",5);
+    }
+    else{
+        int i = 0;
+        VALUE load_path = GET_VM()->load_path;
+        //TODO: support document relative require
+        /*if (RARRAY_LEN(load_path)>1){
+            for( ; i < RARRAY_LEN(load_path); i++ ){
+                VALUE dir = RARRAY_PTR(load_path)[i];
+                res = rb_str_dup(dir);
+                rb_str_cat(res,"/",1);
+                rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
+                rb_str_cat(res,".iseq",5);
 
-    if ( type == 1 )
-        return RhoPreparePath(tmp);
+                if( eaccess(RSTRING_PTR(res), R_OK) == 0 ){
+                    nOK = 1;
+                    break;
+                }
+            }
+            if ( !nOK )
+                return 0;
+        }else{*/
+            VALUE dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
-    return 0;
+            res = rb_str_dup(dir);
+            rb_str_cat(res,"/",1);
+            rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
+            rb_str_cat(res,".iseq",5);
+        //}
+    }
+
+    res = RhoPreparePath(res);
+    if ( !nOK )
+        nOK = 1;//eaccess(RSTRING_PTR(res), R_OK) == 0 ? 1 : 0;
+
+    return nOK ? res : 0;
 }
 
 VALUE isAlreadyLoaded(VALUE path)
