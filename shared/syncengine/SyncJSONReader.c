@@ -30,8 +30,9 @@
  */
 
 #include "SyncJSONReader.h"
+#include "Utils.h"
 
-int parse_json_list(pSyncObject *list, char *input, int size) {
+int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free) {
 	/* Parsing vars */
 	struct json_object *json;
 	struct array_list *json_list;
@@ -46,6 +47,9 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 	
 	json = json_tokener_parse(input);
 	if ( !json ) return 0;
+    if ( json_to_free )
+        *json_to_free = json;
+
 	json_list = json_object_get_array((struct json_object *)json);
 	parsed_size = array_list_length(json_list);
 	if (size < parsed_size) parsed_size = size;
@@ -89,6 +93,7 @@ int parse_json_list(pSyncObject *list, char *input, int size) {
 			}
 		}
 	}
+
 	return parsed_size;
 }
 
@@ -115,11 +120,14 @@ char *parse_client_id(char *input) {
 					sub_key = (char *) sub_entry->k;
 					sub_val = (struct json_object *) sub_entry->v;
 					if (strcmp(sub_key, "client_id") == 0) {
-						c_id = json_object_get_string(sub_val);
+						c_id = str_assign(json_object_get_string(sub_val));
 					}
 				}
 			}
 		}
 	}
+    if ( json )
+        json_object_put(json);
+
 	return c_id;
 }

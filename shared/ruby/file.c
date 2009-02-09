@@ -66,6 +66,8 @@ int flock(int, int);
 #define lstat stat
 #endif
 
+static int file_load_ok(const char *path);
+
 #ifdef __BEOS__ /* should not change ID if -1 */
 static int
 be_chown(const char *path, uid_t owner, gid_t group)
@@ -1169,10 +1171,13 @@ rb_file_chardev_p(VALUE obj, VALUE fname)
 static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
-    struct stat st;
+    //RHO : improve perfomance
+    /*struct stat st;
 
     if (rb_stat(fname, &st) < 0) return Qfalse;
-    return Qtrue;
+    return Qtrue;*/
+    if( file_load_ok(RSTRING_PTR(fname)) ) return Qtrue;
+    return Qfalse;
 }
 
 /*
