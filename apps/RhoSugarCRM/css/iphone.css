@@ -85,6 +85,7 @@ table.grid tr:last-of-type td {
 
 .menu_icon {
     border:none;
-    margin:-10px 2px -10px -5px;
-    min-height:32px;
+	vertical-align:middle;
+	padding-right: 4px;
+	margin-top: -4px;
 }
