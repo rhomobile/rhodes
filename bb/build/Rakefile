@@ -150,8 +150,8 @@ namespace "build" do
   
     if not uptodate?(config["build"]["preverified"] + '/RubyVM.jar',rubyvmfiles)
 
-      mkdir tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
-      mkdir  config["build"]["targetdir"] if not FileTest.exists?  config["build"]["targetdir"]
+      mkdir_p tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
+      mkdir_p  config["build"]["targetdir"] if not FileTest.exists?  config["build"]["targetdir"]
 
       args = []
       args << "-g"
