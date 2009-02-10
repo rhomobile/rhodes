@@ -27,7 +27,7 @@
 /* Database access statements */
 static sqlite3_stmt *insert_statement = NULL;
 static sqlite3_stmt *delete_statement = NULL;
-static sqlite3_stmt *delete_by_source_statement = NULL;
+//static sqlite3_stmt *delete_by_source_statement = NULL;
 static sqlite3_stmt *select_statement = NULL;
 
 void finalize_sync_obj_statements() {
@@ -41,10 +41,10 @@ void finalize_sync_obj_statements() {
 		delete_statement = NULL;
 	}
 	
-	if (delete_by_source_statement) {
-		sqlite3_finalize(delete_by_source_statement);
-		delete_by_source_statement = NULL;
-	}
+//	if (delete_by_source_statement) {
+//		sqlite3_finalize(delete_by_source_statement);
+//		delete_by_source_statement = NULL;
+//	}
 	
 	if (select_statement) {
 		sqlite3_finalize(select_statement);
@@ -146,6 +146,7 @@ int insert_into_database(pSyncObject ref) {
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
+            sqlite3_reset(insert_statement);
 			unlock_sync_mutex();	
 			return 0;
 		} 
@@ -169,6 +170,7 @@ int delete_from_database(pSyncObject ref) {
 
 	if (success != SQLITE_DONE) {
 		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
+        sqlite3_reset(delete_statement);
 	unlock_sync_mutex();	
 
 		return 1;
