@@ -26,13 +26,15 @@ static sqlite3_stmt *op_list_source_ids_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
 static sqlite3_stmt *client_id_insert_statement = NULL;
-static sqlite3_stmt *client_session_statement = NULL;
+//static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
 static sqlite3_stmt *session_db_statement = NULL;
 static sqlite3_stmt *del_session_db_statement = NULL;
 static sqlite3_stmt *del_all_client_info_statement = NULL;
 static sqlite3_stmt *del_all_ob_val_statement = NULL;
+static sqlite3_stmt *session_url_source_statement=NULL;
+static sqlite3_stmt *set_session_db_statement=NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) {
@@ -51,10 +53,10 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(client_id_insert_statement);
 		client_id_insert_statement = NULL;
 	}
-	if (client_session_statement) {
-		sqlite3_finalize(client_session_statement);
-		client_session_statement = NULL;
-	}
+//	if (client_session_statement) {
+//		sqlite3_finalize(client_session_statement);
+//		client_session_statement = NULL;
+//	}
 	if (client_db_statement) {
 		sqlite3_finalize(client_db_statement);
 		client_db_statement = NULL;
@@ -79,6 +81,15 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(del_all_client_info_statement);
 		del_all_client_info_statement = NULL;
 	}
+	if (session_url_source_statement) {
+		sqlite3_finalize(session_url_source_statement);
+		session_url_source_statement = NULL;
+	}
+	if (set_session_db_statement) {
+		sqlite3_finalize(set_session_db_statement);
+		set_session_db_statement = NULL;
+	}
+
 }
 
 /**
@@ -372,10 +383,10 @@ char *get_db_session_by_server(char* source_url) {
 
 	  prepare_db_statement("SELECT session,source_url from sources", 
 						   (sqlite3 *)get_database(),
-						   &op_list_source_ids_statement);
-	  while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW) {
-		  char * sess = (char*)sqlite3_column_text(op_list_source_ids_statement, 0);
-		  char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
+						   &session_url_source_statement);
+	  while(sqlite3_step(session_url_source_statement) == SQLITE_ROW) {
+		  char * sess = (char*)sqlite3_column_text(session_url_source_statement, 0);
+		  char *url = (char *)sqlite3_column_text(session_url_source_statement, 1);
 
       char* szServer2 = parseServerFromUrl(url);
       if ( sess && strlen(sess) > 0 &&
@@ -384,7 +395,7 @@ char *get_db_session_by_server(char* source_url) {
         break;
       }
 	  }
-	  sqlite3_reset(op_list_source_ids_statement);
+	  sqlite3_reset(session_url_source_statement);
 
     unlock_sync_mutex();	
 	}
@@ -425,12 +436,12 @@ int set_db_session(const char* source_url, const char *session) {
 
 		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
 							 (sqlite3 *)get_database(),
-							 &session_db_statement);
+							 &set_session_db_statement);
 		
-		sqlite3_bind_text(session_db_statement, 1, session, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
-		success = sqlite3_step(session_db_statement);
-		sqlite3_reset(session_db_statement);
+		sqlite3_bind_text(set_session_db_statement, 1, session, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(set_session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
+		success = sqlite3_step(set_session_db_statement);
+		sqlite3_reset(set_session_db_statement);
 
 		unlock_sync_mutex();
 	}
