@@ -20,6 +20,8 @@
 
 -(IBAction)goBack;
 
+-(IBAction)goForward;
+
 -(IBAction)goHome;
 
 -(void)active;

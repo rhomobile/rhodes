@@ -26,6 +26,10 @@ NSString *loadingText = @"Loading...";
 	[webView goBack];
 }
 
+-(IBAction)goForward {
+	[webView goForward];
+}
+
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
 		[self navigate:viewHomeUrl];
