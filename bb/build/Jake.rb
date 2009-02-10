@@ -122,11 +122,12 @@ class Jake
     p = Pathname.new(src)
     src = p.realpath
     currentdir = pwd()
+    src = src.to_s.gsub(/"/,"")
   
     args = Array.new
   
     args << "xf"
-    args << src.to_s
+    args << '"' + src.to_s + '"'
   
     chdir targetdir
     puts run(cmd,args)
@@ -134,10 +135,11 @@ class Jake
   end
   def self.jarfilelist(target)
     cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+    target.gsub!(/"/,"")
 
     args = []
     args << "tf"
-    args << target
+    args << '"' + target +'"'
 
     filelist = []
     run(cmd,args).each { |file| filelist << file if not file =~ /\/$/ }
@@ -147,10 +149,11 @@ class Jake
 
   def self.jar(target,manifest,files,isfolder=false)
     cmd =  @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+    target.gsub!(/"/,"")
     
     args = []
     args << "cfm"
-    args << target
+    args << '"' + target +'"'
     args << manifest
     if isfolder
       args << "-C"
