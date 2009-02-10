@@ -112,9 +112,15 @@ module Rho
       qstring = '?'
       query.each do |key,value|
         qstring += '&' if qstring.length > 1
-        qstring += ERB::Util.url_encode(key.to_s) + '=' + ERB::Util.url_encode(value.to_s)
+        qstring += url_encode(key.to_s) + '=' + url_encode(value.to_s)
       end
       qstring
+    end
+    
+    def url_encode(s)
+      s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
+        sprintf("%%%02X", $&.unpack("C")[0])
+      }
     end
     
   end # RhoController

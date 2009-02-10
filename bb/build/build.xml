@@ -110,9 +110,9 @@
     <delete dir="${src.dir}/apps/shared">
       <!-- <exclude name="**/rhogeolocation.js" /> -->
     </delete>
-    <delete>
-      <fileset dir="${src.dir}/apps" includes="**/*.png"/>
-    </delete>
+    <!-- <delete> -->
+    <!-- <fileset dir="${src.dir}/apps" includes="**/*.png"/> -->
+    <!-- </delete> -->
 
     <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
       <arg value="-jar" />

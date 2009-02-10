@@ -1,1 +1,7 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+  Employee
+</div>
+<% end %>
+
 <%= link_to "#{@SugarEmployee.first_name} #{@SugarEmployee.last_name}", :action => :edit, :id => @SugarEmployee.object %>
