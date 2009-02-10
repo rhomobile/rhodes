@@ -36,6 +36,10 @@ NSString *loadingText = @"Loading...";
 	}
 }
 
+-(IBAction)refresh {
+	[webView reload];
+}
+
 -(void)setActivityInfo:(NSString *)labelText {
 	if (!labelText) {
 		activityInfo.hidden = YES;
@@ -76,10 +80,6 @@ NSString *loadingText = @"Loading...";
 //				target:self 
 //				action:@selector(runSync:)] autorelease];
 //	self.navigationItem.leftBarButtonItem = syncBtn;
-}
-
--(void)refresh {
-	[webView reload];
 }
 
 - (void)runSync
