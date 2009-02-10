@@ -59,7 +59,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onSetViewHomeUrl;
 
 
 - (void)serverStarted:(NSString*)data {
@@ -82,14 +82,20 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+- (void)setViewHomeUrl:(NSString*)url {
+	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
+		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
+	}	
+}
+
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
-	char* start_page = callGetStartPage();
-	DBG(("Start page: %s\n", start_page));
-	NSString* ref_start_page = [NSString stringWithCString:start_page encoding:NSUTF8StringEncoding];
+	homeUrl = [NSString stringWithCString:callGetStartPage() encoding:NSUTF8StringEncoding];
+	DBG(("Start page: %s\n", [homeUrl UTF8String]));
+	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
@@ -97,7 +103,7 @@ static ServerHost* sharedSH = nil;
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
 		DBG(("HTTP Server started and ready\n"));
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:ref_start_page waitUntilDone:NO];
+							   withObject:homeUrl waitUntilDone:NO];
         [[NSRunLoop currentRunLoop] run];
         DBG(("Invalidating local server\n"));
         ServerInvalidate(server);
@@ -106,8 +112,6 @@ static ServerHost* sharedSH = nil;
 		[self performSelectorOnMainThread:@selector(serverFailed:) 
 							   withObject:NULL waitUntilDone:NO];
     }
-    
-	[ref_start_page release];
 	
 	DBG(("Stopping ruby"));
 	RhoRubyStop();
@@ -148,6 +152,7 @@ static ServerHost* sharedSH = nil;
 - (void)dealloc 
 {
     [appManager release];
+	[homeUrl release];
 	[super dealloc];
 }
 

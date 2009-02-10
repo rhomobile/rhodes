@@ -9,7 +9,10 @@
 	IBOutlet UILabel* activityInfo;
 	IBOutlet UIWebView *webView;
 	IBOutlet UIActivityIndicatorView *activity;
+	NSString *viewHomeUrl;
 }
+
+@property (assign) NSString *viewHomeUrl;
 
 -(void)navigate:(NSString*)url;
 
