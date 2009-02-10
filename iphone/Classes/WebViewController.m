@@ -15,11 +15,6 @@ NSString *loadingText = @"Loading...";
 -(void)navigate:(NSString*)url {
     printf("Navigating to the specifyed URL\n");
  	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
-	if ([url isEqualToString:viewHomeUrl]) {
-		backBtn.enabled = NO;
-	} else {
-		backBtn.enabled = YES;
-	}
 }
 
 -(IBAction)goBack {
@@ -72,14 +67,25 @@ NSString *loadingText = @"Loading...";
 	[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
 	[self inactive];
 	
-	self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
-
-	//syncBtn = [[[UIBarButtonItem alloc]
-//				initWithTitle:@"Sync"
-//				style:UIBarButtonItemStyleBordered
-//				target:self 
-//				action:@selector(runSync:)] autorelease];
-//	self.navigationItem.leftBarButtonItem = syncBtn;
+	if ([webView canGoBack]) {
+		backBtn.enabled = YES;
+	} else {
+		backBtn.enabled = NO;
+	}
+	if ([webView canGoForward]) {
+		forwardBtn.enabled = YES;
+	} else {
+		forwardBtn.enabled = NO;
+	}
+	
+	/*self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
+		
+	syncBtn = [[[UIBarButtonItem alloc]
+				initWithTitle:@"Sync"
+				style:UIBarButtonItemStyleBordered
+				target:self 
+				action:@selector(runSync:)] autorelease];
+	self.navigationItem.leftBarButtonItem = syncBtn;*/
 }
 
 - (void)runSync
