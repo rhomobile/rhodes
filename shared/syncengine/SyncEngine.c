@@ -52,11 +52,12 @@ extern int g_cur_source;
 int process_local_changes() {
   if (!stop_running) {
 	  // Process local changes
-	  int i,result,source_length;
+	  int i,result,source_length = 0;
 	  pSource *source_list;
-	  source_list = malloc(MAX_SOURCES*sizeof(pSource));
+	  source_list = calloc(MAX_SOURCES,sizeof(pSource));
+
 	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
-	  
+//#if 0	  
 	  for(i = 0; i < source_length&& !stop_running; i++) {
 		  if(client_id == NULL) {
 			  client_id = set_client_id(database, source_list[i]);
@@ -109,6 +110,7 @@ int process_local_changes() {
 		  }
 #endif	  
 	  }
+//#endif 
 	  free_source_list(source_list, source_length);
   } 
   
@@ -308,6 +310,11 @@ void start_sync_engine(sqlite3 *db) {
 	database = db;
 }
 void shutdown_database() {
+	finalize_sync_obj_statements();
+	finalize_sync_util_statements();
+	finalize_sync_op_statements();
+
+	printf("Sync engine is shutdown...\n");
 }
 #endif //!defined(_WIN32_WCE)
 
