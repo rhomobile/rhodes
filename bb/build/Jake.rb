@@ -170,7 +170,7 @@ class Jake
   
   def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
     cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
-   cmd = "java.exe"
+#   cmd = "java.exe"
     
     jdehome = @@config["env"]["paths"][@@config["env"]["bbver"]]["jde"]
     currentdir = pwd()
@@ -211,7 +211,8 @@ class Jake
     args << output + '.rapc'
     args << files
   
-    puts run("cmd /C " + cmd,args)
+    cmd.gsub!(/\//,"\\")
+    puts run( '"' + cmd + '"',args)
     chdir currentdir
   
   end
