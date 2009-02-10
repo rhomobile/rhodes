@@ -15,14 +15,20 @@
 @synthesize window;
 @synthesize webViewController;
 
+NSString *localhost = @"http://localhost:8080/";
+
 - (void)onServerStarted:(NSString*)data {
 	printf("Server Started notification is recived\n");
-	NSString* location = [@"http://localhost:8080/" stringByAppendingPathComponent:(NSString*)data];
+	NSString* location = [localhost stringByAppendingPathComponent:(NSString*)data];
 	[webViewController navigate:location];
 }
 
 - (void)onRefreshView {
 	[webViewController refresh];
+}
+
+- (void)onSetViewHomeUrl:(NSString *)url {
+	[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
@@ -33,6 +39,7 @@
 	serverHost->actionTarget = self;
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
+	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
     [serverHost start];
 	
     //Create View
