@@ -70,7 +70,8 @@ CSyncEngine::CSyncEngine(void)
   m_dbResetDelay = 0;
   m_bSyncInitialized = false;
   m_hDoSyncEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	m_thread.Initialize();
+  m_thread.Initialize();
+  ::SetThreadPriority( m_thread.GetThreadHandle(), THREAD_PRIORITY_BELOW_NORMAL );
   m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   m_thread.AddHandle(m_hEvent, this, NULL);
 }
@@ -183,7 +184,8 @@ bool CSyncEngine::PerformSync()
   ATLTRACE(_T("Performing sync\n"));
   ::ResetEvent(m_hDoSyncEvent);
   if (!m_delaySync && !m_dbResetDelay) {
-	  process_local_changes();
+      //for (int i = 0; i < 10000; i++ )
+	    process_local_changes();
   } else if (m_dbResetDelay) {
 	/* reset db for next iteration */
 	reset_sync_db();
