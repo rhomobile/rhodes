@@ -6,6 +6,7 @@
 	IBOutlet UINavigationBar* navBar;
 	IBOutlet UIBarButtonItem* homeBtn;
 	IBOutlet UIBarButtonItem* backBtn;
+	IBOutlet UIBarButtonItem* forwardBtn;
 	IBOutlet UILabel* activityInfo;
 	IBOutlet UIWebView *webView;
 	IBOutlet UIActivityIndicatorView *activity;
