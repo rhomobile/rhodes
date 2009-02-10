@@ -429,3 +429,57 @@ task :clean => "clean:all"
 
 desc "run:app"
 task :run => "run:app"
+
+namespace "config" do
+  task :check do
+    javahome = config["env"]["paths"][config["env"]["bbver"]]["java"]
+    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+    mdshome = config["env"]["paths"][config["env"]["bbver"]]["mds"]
+
+    puts "BBVER: " + config["env"]["bbver"].to_s
+    puts "JAVAHOME: " + javahome
+    puts "JDEHOME: " + jdehome
+    puts "MDSHOME: " + mdshome
+
+    if not FileTest.exists? javahome
+      puts "JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
+      throw "JAVAHOME missing"
+    end
+
+    if not FileTest.exists? javahome + "/javac.exe"
+      puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "javac missing"
+    end
+
+    if not FileTest.exists? javahome + "/java.exe"
+      puts "java.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "java missing"
+    end
+
+    if not FileTest.exists? javahome + "/jar.exe"
+      puts "jar.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "jar missing"
+    end
+
+    if not FileTest.exists? jdehome
+      puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      throw "JDEHOME missing"
+    end
+    if not FileTest.exists? mdshome
+      puts "MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      throw "MDSHOME missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/preverify.exe"
+      puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
+      throw "preverify missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/rapc.jar"
+      puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
+      throw "rapc missing"
+    end
+    
+    puts "Config appears valid"
+  end
+end
