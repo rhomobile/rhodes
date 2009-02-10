@@ -26,6 +26,7 @@
 #include "SyncUtil.h"
 #include "SyncManagerI.h"
 #include "Constants.h"
+#include "Notifications.h"
 
 int stop_running = 0;
 //int delay_sync = 0;
@@ -105,6 +106,7 @@ int process_local_changes() {
 				int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
+					fire_notification(source_list[i]->_source_id);
 				}
 		  }
 #endif	  
@@ -290,6 +292,7 @@ void stop_sync_engine() {
 	stop_running = 1;
 	pthread_cond_broadcast(&sync_cond);
 	//pthread_mutex_unlock(&sync_mutex);
+	free_notifications();
 }
 
 void shutdown_database() {
