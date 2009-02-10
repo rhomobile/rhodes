@@ -24,11 +24,11 @@
 
 -(IBAction)goHome;
 
+-(IBAction)refresh;
+
 -(void)active;
 
 -(void)inactive;
-
--(void)refresh;
 
 -(void)runSync;
 
