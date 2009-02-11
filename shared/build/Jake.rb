@@ -207,7 +207,7 @@ class Jake
     #args << '"' + jdehome + "/bin/rapc.jar\""
     #args << "net.rim.tools.compiler.Compiler"
     
-    args << "-javacompiler='" + javabin + "/javac.exe'"
+    args << "\"-javacompiler=" + javabin + "/javac.exe\""
     args << "-quiet" if quiet
     args << "-nowarn" if nowarn
     args << '"import=' + imports + '"'
@@ -224,12 +224,8 @@ class Jake
   
   def self.ant(dir,target)
   
-    bindir = @@config["build"]["bindir"]
     srcdir = @@config["build"]["srcdir"]
     rubypath = @@config["build"]["rubypath"]
-    shareddir = @@config["build"]["shareddir"]
-    targetdir = @@config["build"]["targetdir"]
-    rubyVMdir = @@config["build"]["rubyVMdir"]
     excludelib = @@config["build"]["excludelib"]
     compileERB = @@config["build"]["compileERB"]
     
@@ -237,13 +233,8 @@ class Jake
     args = []
     args << "-buildfile"
     args << dir + "/build.xml"
-   # args << "-d" 
-    args << '"-Dbin.dir=' + get_absolute(bindir) + '"'
     args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
     args << '"-Druby.path=' + get_absolute(rubypath) + '"'
-    args << '"-DsharedAnt.dir=' + get_absolute(shareddir) + '"'
-    args << '"-Dtarget.dir=' + get_absolute(targetdir) + '"'
-    args << '"-DRubyVM.dir=' + get_absolute(rubyVMdir) + '"'
     args << '"-Dexclude.lib=' + excludelib + '"'
     args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'
     args << '"-Dsrclib.dir=' + get_absolute(srcdir) + '"'
