@@ -25,6 +25,7 @@ extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
 extern void Init_Phonebook(void);
+extern void Init_WebView(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -63,6 +64,7 @@ void RhoRubyStart()
 		Init_SyncEngine();
 		Init_System();
 		Init_Phonebook();
+		Init_WebView();
         
     Init_RhoSupport();
 
