@@ -6,6 +6,7 @@ class UserController < Rho::RhoController
 
   # GET /User/edit
   def login
+    #SyncEngine::set_notification(1,"/RhoSugarCRM")
     render :action => :login
   end
 
