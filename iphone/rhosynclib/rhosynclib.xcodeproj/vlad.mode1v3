@@ -334,7 +334,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F5B8F8A40F41095300C9AF85</string>
+										<string>F5B8FA6E0F426B3900C9AF85</string>
 										<key>history</key>
 										<array>
 											<string>F563D5F10EA912F20062DA57</string>
@@ -349,11 +349,10 @@
 											<string>F5B8F78A0F40F0BF00C9AF85</string>
 											<string>F5B8F78B0F40F0BF00C9AF85</string>
 											<string>F5B8F8370F4102C200C9AF85</string>
-											<string>F5B8F8380F4102C200C9AF85</string>
 											<string>F5B8F86B0F41059A00C9AF85</string>
 											<string>F5B8F86C0F41059A00C9AF85</string>
-											<string>F5B8F8980F41092500C9AF85</string>
-											<string>F5B8F8990F41092500C9AF85</string>
+											<string>F5B8F99D0F4238E100C9AF85</string>
+											<string>F5B8F99E0F4238E100C9AF85</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -363,16 +362,15 @@
 											<string>F5B8F78F0F40F0BF00C9AF85</string>
 											<string>F5B8F7900F40F0BF00C9AF85</string>
 											<string>F5B8F7910F40F0BF00C9AF85</string>
-											<string>F5B8F7920F40F0BF00C9AF85</string>
 											<string>F5B8F7960F40F0BF00C9AF85</string>
 											<string>F5B8F7970F40F0BF00C9AF85</string>
 											<string>F5B8F7980F40F0BF00C9AF85</string>
 											<string>F5B8F7990F40F0BF00C9AF85</string>
 											<string>F5B8F83A0F4102C200C9AF85</string>
-											<string>F5B8F83C0F4102C200C9AF85</string>
 											<string>F5B8F8560F4104EE00C9AF85</string>
-											<string>F5B8F8580F4104EE00C9AF85</string>
 											<string>F5B8F89A0F41092500C9AF85</string>
+											<string>F5B8F9570F4208D600C9AF85</string>
+											<string>F5B8F99F0F4238E100C9AF85</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -430,9 +428,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F5B8F83E0F4102C200C9AF85</string>
+				<string>F5B8F93F0F42086100C9AF85</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F5B8F83F0F4102C200C9AF85</string>
+				<string>F5B8F9400F42086100C9AF85</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -566,8 +564,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>F563D55C0EA8254C0062DA57</string>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>/Users/vlad/Documents/Projects/rhodes/iphone/rhosynclib/rhosynclib.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -648,7 +646,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>F563D55C0EA8254C0062DA57</string>
-				<string>F5B8F8400F4102C200C9AF85</string>
+				<string>F5B8F9A10F4238E100C9AF85</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -690,8 +688,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {316, 194}}</string>
-											<string>{{316, 0}, {378, 194}}</string>
+											<string>{{0, 0}, {316, 198}}</string>
+											<string>{{316, 0}, {378, 198}}</string>
 										</array>
 									</dict>
 									<key>VerticalSplitView</key>
@@ -706,8 +704,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {694, 194}}</string>
-											<string>{{0, 194}, {694, 187}}</string>
+											<string>{{0, 0}, {694, 198}}</string>
+											<string>{{0, 198}, {694, 183}}</string>
 										</array>
 									</dict>
 								</dict>
@@ -740,7 +738,7 @@
 										<real>148</real>
 									</array>
 									<key>Frame</key>
-									<string>{{316, 0}, {378, 194}}</string>
+									<string>{{316, 0}, {378, 198}}</string>
 									<key>RubberWindowFrame</key>
 									<string>21 433 694 422 0 0 1440 878 </string>
 								</dict>
@@ -768,13 +766,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>F5B8F8410F4102C200C9AF85</string>
+				<string>F5B8F9410F42086100C9AF85</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>F5B8F8420F4102C200C9AF85</string>
-				<string>F5B8F8430F4102C200C9AF85</string>
-				<string>F5B8F8440F4102C200C9AF85</string>
-				<string>F5B8F8450F4102C200C9AF85</string>
-				<string>F5B8F8460F4102C200C9AF85</string>
+				<string>F5B8F9420F42086100C9AF85</string>
+				<string>F5B8F9430F42086100C9AF85</string>
+				<string>F5B8F9440F42086100C9AF85</string>
+				<string>F5B8F9450F42086100C9AF85</string>
+				<string>F5B8F9460F42086100C9AF85</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>

@@ -1,6 +1,8 @@
 #import "WebViewController.h"
 #include "rhoruby.h"
 
+static char currentLocation[4096] = "";
+
 @implementation WebViewController
 
 NSString *loadingText = @"Loading...";
@@ -66,6 +68,12 @@ NSString *loadingText = @"Loading...";
 	
 	self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
 
+	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
+	char* fragment = strstr(currentLocation,"#");
+	if (fragment) *fragment = 0; //cut out fragment
+	printf("Current location: %s\n",currentLocation);
+	
 	//syncBtn = [[[UIBarButtonItem alloc]
 //				initWithTitle:@"Sync"
 //				style:UIBarButtonItemStyleBordered
@@ -84,3 +92,8 @@ NSString *loadingText = @"Loading...";
 }
 
 @end
+
+char* get_current_location() {
+	return currentLocation;
+}
+
