@@ -54,6 +54,7 @@ int process_local_changes() {
 	  // Process local changes
 	  int i,result,source_length = 0;
 	  pSource *source_list;
+	  char *ask_params = NULL;
 	  source_list = calloc(MAX_SOURCES,sizeof(pSource));
 
 	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
@@ -63,16 +64,20 @@ int process_local_changes() {
 			  client_id = set_client_id(database, source_list[i]);
 		  }
 		  result = 0;
-      if ( stop_running )
-        break;
+		  if ( stop_running )
+			  break;
 		  result += process_op_list(source_list[i], "update");
-      if ( stop_running )
-        break;
+		  if ( stop_running )
+			  break;
 		  result += process_op_list(source_list[i], "create");
-      if ( stop_running )
-        break;
+		  if ( stop_running )
+			  break;
 		  result += process_op_list(source_list[i], "delete");
+		  if ( stop_running )
+			  break;
 	  }
+	  
+	  //ask_params = str_assign(get_params_for_source(source_list[i]));
   	
 	  if (result > 0) 
 	  {
@@ -88,7 +93,7 @@ int process_local_changes() {
 	   */
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
-			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source]);
+			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
 			  }
@@ -103,7 +108,7 @@ int process_local_changes() {
 #else
 		  for(i = 0; i < source_length && !stop_running; i++)
 		  {
-				int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
+				int available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
 				}
@@ -112,11 +117,11 @@ int process_local_changes() {
 	  }
 //#endif 
 	  free_source_list(source_list, source_length);
+	  if (ask_params) free(ask_params);
   } 
   
   if (stop_running) {
 	  printf("process_local_changes: cleanup\n");
-  
 	  clear_client_id();
 	  shutdown_database();
   }
@@ -133,7 +138,6 @@ int process_local_changes() {
 #if !defined(_WIN32_WCE)
 void* sync_engine_main_routine(void* data) {
 	printf("Starting sync engine main routine...\n");
-	//delay_sync = get_object_count_from_database(database);
 	pthread_mutex_lock(&sync_mutex2);
 	while(!stop_running) {
 		struct timespec   ts;
@@ -146,7 +150,6 @@ void* sync_engine_main_routine(void* data) {
 #ifdef __SYMBIAN32__		
 		if ( g_cur_source != 0 )
 		{
-			//delay_sync = 0;
 			ts.tv_sec += 1;
 		}
 		else
@@ -161,20 +164,16 @@ void* sync_engine_main_routine(void* data) {
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
 		printf("Sync engine continues w/ current operations...\n");
 	
-		if(/*!delay_sync &&*/ !db_reset_delay) {
+		if(!db_reset_delay) {
 			if(process_local_changes()) {
 				break;
 			}
-		} else if (db_reset_delay) {
+		} else {
 			/* reset db for next iteration */
 			reset_sync_db();
 			clear_client_id();
 			db_reset_delay = 0;
-			//delay_sync = 0;
-		} else {
-			//delay_sync = 0;
 		}
-
 	}
 	pthread_mutex_unlock(&sync_mutex2);
 	
@@ -228,22 +227,17 @@ char *get_client_id() {
 #if !defined(_WIN32_WCE)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
-	//printf("lock_sync_mutex\n");
 	pthread_mutex_lock(&sync_mutex);
 }
 
 /* exposed function to release lock on sync mutex */
 void unlock_sync_mutex() {
-	//printf("unlock_sync_mutex\n");
 	pthread_mutex_unlock(&sync_mutex);
 }
 
 void wake_up_sync_engine() {
-	//pthread_mutex_lock(&sync_mutex);
 	printf("Waking up sync engine...\n");
-	//delay_sync = 0;
 	pthread_cond_broadcast(&sync_cond);
-	//pthread_mutex_unlock(&sync_mutex);
 }
 
 /*
@@ -288,10 +282,8 @@ void start_sync_engine(sqlite3 *db) {
 
 void stop_sync_engine() {
 	printf("Shutting down sync engine routine...\n");
-	//pthread_mutex_lock(&sync_mutex);
 	stop_running = 1;
 	pthread_cond_broadcast(&sync_cond);
-	//pthread_mutex_unlock(&sync_mutex);
 }
 
 void shutdown_database() {
@@ -406,7 +398,6 @@ int logged_in() {
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 	/* iterate over each source id and delete session */
-	//lock_sync_mutex();
 	for(i = 0; i < source_length; i++) {
 		session = get_db_session(source_list[i]->_source_url);
 		if (session && strlen(session) > 0) {
@@ -415,8 +406,6 @@ int logged_in() {
 		}
 	}
 	free_source_list(source_list, source_length);
-	
-	//unlock_sync_mutex();
 	return retval;
 }
 
@@ -430,12 +419,10 @@ void logout() {
 	source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 		
 	/* iterate over each source id and delete session */
-	//lock_sync_mutex();
 	for(i = 0; i < source_length; i++) {
 		delete_db_session(source_list[i]->_source_url);
 	}
 	free_source_list(source_list, source_length);
-	//unlock_sync_mutex();
 }
 
 #endif //__APPLE__
