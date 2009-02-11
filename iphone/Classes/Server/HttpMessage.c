@@ -791,6 +791,68 @@ _HTTPGetFile(HttpContextRef context, char* path)
 	}
 }
 
+static char* 
+_HTTPResolveIndex(char* url,char* path) {
+	char file[FILENAME_MAX];
+	struct stat	st;
+	const char* slash = path[strlen(path)-1] == '/' ? "" : "/";
+	
+	for (int i = 0; i < sizeof(indexfile) / sizeof(indexfile[0]); i++) {
+		HttpSnprintf(file, sizeof(file), "%s%s%s", path, slash, indexfile[i]);
+		if ( (stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
+			
+			if ( i == 0 ) {// there is a controller in this folder
+				return url;
+			}
+			
+			int url_len = strlen(url);
+			slash = url[strlen(url)-1] == '/' ? "" : "/";
+
+			int full_len = url_len + strlen(slash)+strlen(indexfile[i])+1;
+			char* resolved_url = malloc(full_len);
+			HttpSnprintf(resolved_url, full_len, "%s%s%s", url, slash, indexfile[i]);	
+			free(url);
+			
+			return resolved_url;
+		}
+	}
+	return url;
+}
+
+static char* localhost = "http://localhost:8080";
+
+char* HTTPResolveUrl(char* url) {
+	char path[URI_MAX];
+	struct stat	st;
+	char* tmp_url;
+	
+	char* full_path = strstr(url,"http://");
+	if (full_path) {
+		return full_path;
+	}
+
+	const char *root = HttpGetSiteRoot();
+	if (strlen(url) + strlen(root) >= sizeof(path)) {
+		tmp_url = url;
+	} else {
+		HttpSnprintf(path, sizeof(path), "%s%s", root, url);
+		if ( stat(path, &st) == -1 ) {
+			tmp_url = url;				
+		} else if ( S_ISDIR(st.st_mode) ) {
+			tmp_url = _HTTPResolveIndex(url,path);
+		} else {
+			tmp_url = url;				
+		}
+	}
+	
+	int full_len = strlen(localhost)+strlen(tmp_url)+1;
+	char* ret = malloc(full_len);
+	HttpSnprintf(ret, full_len, "%s%s", localhost, tmp_url);	
+	free(tmp_url);
+	
+	return ret;
+}
+
 int 
 HTTPProcessMessage(HttpContextRef context) {
 	int			res;

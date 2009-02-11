@@ -59,7 +59,7 @@ module Rhom
     end
     
     def method_name_reserved?(method)
-      method =~ /object|source_id|update_type|type/
+      method =~ /object|source_id|update_type|type|set_notification|clear_notification/
     end
   end # RhomObject
 end # Rhom
