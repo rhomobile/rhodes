@@ -1,4 +1,4 @@
-require 'Jake.rb'
+require '../../shared/build/Jake.rb'
 
 config = Jake.config(File.open('build.yml'))
 
@@ -137,6 +137,8 @@ namespace "build" do
     args << config["build"]["bindir"] + "/RhoBundle.jar"
     puts Jake.run(jdehome + "/bin/preverify.exe",args)
     $stdout.flush
+
+    cp config["build"]["bindir"] + "/RhoBundle.jar", config["build"]["rhobundledir"] + "/RhoBundle.jar"
 
   end
 
