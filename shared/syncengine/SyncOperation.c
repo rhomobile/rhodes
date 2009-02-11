@@ -167,18 +167,16 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 }
 
 /* remove the operations from the database after processing */
-void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type) {
-  lock_sync_mutex();	
-
+void remove_op_list_from_database(pSource source, sqlite3 *database, char *type) {
+	lock_sync_mutex();	
 	prepare_db_statement("DELETE FROM object_values WHERE update_type=? and source_id=?",
 						 database,
 						 &op_list_delete_statment);
 	sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
-	sqlite3_bind_int(op_list_delete_statment, 2, list[0]->_source_id);
+	sqlite3_bind_int(op_list_delete_statment, 2, source->_source_id);
 	sqlite3_step(op_list_delete_statment);
 	sqlite3_reset(op_list_delete_statment);
-
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 }
 
 void free_op_list(pSyncOperation *list, int available) {

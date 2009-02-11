@@ -106,9 +106,30 @@ module Rhom
                   # TODO: implement
                 end
   
+                def set_notification(url)
+                  SyncEngine.set_notification(get_source_id.to_i,url)
+                end
+                
+                def clear_notification
+                  SyncEngine.clear_notification(get_source_id.to_i)
+                end
+                
+                def ask(question)
+                  tmp_obj = get_new_obj(djb_hash("#{question}#{rand.to_s}", 10).to_s)
+                  if question
+                    ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
+                                                              {"source_id"=>self.get_inst_source_id,
+                                                               "object"=>tmp_obj.object,
+                                                               "attrib"=>'question',
+                                                               "value"=>question,
+                                                               "update_type"=>'ask'})
+                    SyncEngine::dosync
+                  end
+                end
+                    
                 private
                 # returns new model instance with a temp object id
-                def get_new_obj(obj, type='query')
+                def get_new_obj(obj)
                   tmp_obj = self.new
                   tmp_obj.send("object=".to_sym(), "{#{obj['object'].to_s}}")
                   tmp_obj

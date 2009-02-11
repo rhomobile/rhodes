@@ -26,6 +26,7 @@
 #include "SyncUtil.h"
 #include "SyncManagerI.h"
 #include "Constants.h"
+#include "Notifications.h"
 
 int stop_running = 0;
 //int delay_sync = 0;
@@ -54,7 +55,7 @@ int process_local_changes() {
 	  // Process local changes
 	  int i,result,source_length = 0;
 	  pSource *source_list;
-	  char *ask_params = NULL;
+	  char *ask_params;
 	  source_list = calloc(MAX_SOURCES,sizeof(pSource));
 
 	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
@@ -75,9 +76,7 @@ int process_local_changes() {
 		  result += process_op_list(source_list[i], "delete");
 		  if ( stop_running )
 			  break;
-	  }
-	  
-	  //ask_params = str_assign(get_params_for_source(source_list[i]));
+	  }  
   	
 	  if (result > 0) 
 	  {
@@ -93,6 +92,7 @@ int process_local_changes() {
 	   */
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
+			  ask_params = str_assign(get_params_for_source(source_list[g_cur_source], database));
 			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
@@ -108,10 +108,12 @@ int process_local_changes() {
 #else
 		  for(i = 0; i < source_length && !stop_running; i++)
 		  {
-				int available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
-				if(available_remote > 0) {
-					printf("Successfully processed %i records...\n", available_remote);
-				}
+			  ask_params = str_assign(get_params_for_source(source_list[i], database));
+			  int available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
+			  if(available_remote > 0) {
+				  printf("Successfully processed %i records...\n", available_remote);
+				  fire_notification(source_list[i]->_source_id);
+			  }
 		  }
 #endif	  
 	  }
@@ -204,7 +206,7 @@ int process_op_list(pSource source, char *type) {
 	success = push_remote_changes(op_list, available);
 	if(success == SYNC_PUSH_CHANGES_OK) {
 		if(available > 0) {
-			remove_op_list_from_database(op_list, database, type);
+			remove_op_list_from_database(source, database, type);
 		}
 	} else {
 		printf("There was an error processing records, not removing from database yet...\n");
@@ -284,6 +286,7 @@ void stop_sync_engine() {
 	printf("Shutting down sync engine routine...\n");
 	stop_running = 1;
 	pthread_cond_broadcast(&sync_cond);
+	free_notifications();
 }
 
 void shutdown_database() {

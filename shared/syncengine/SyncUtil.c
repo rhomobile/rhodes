@@ -23,6 +23,7 @@ extern char *get_winmo_session_size(const char *url_string);
 #endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
+static sqlite3_stmt *source_params_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
 static sqlite3_stmt *client_id_insert_statement = NULL;
@@ -39,6 +40,10 @@ void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) {
 		sqlite3_finalize(op_list_source_ids_statement);
 		op_list_source_ids_statement = NULL;
+	}
+	if (source_params_statement) {
+		sqlite3_finalize(source_params_statement);
+		source_params_statement = NULL;
 	}
 	if (ob_count_statement) {
 		sqlite3_finalize(ob_count_statement);
@@ -128,9 +133,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	int success=0, size_deleted=0, size_inserted=0;
 	double start=0,duration = 0;
 	save_source_url(src->_source_url);
-	if (params) {
+	if (params && strlen(params) > 0) {
 		sprintf(url_string, 
-				"%s%s%s&client_id=%s&params=%s", 
+				"%s%s%s&client_id=%s&question=%s", 
 				src->_source_url,
 				SYNC_ASK_ACTION,
 				SYNC_SOURCE_FORMAT, 
@@ -138,9 +143,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 				params);
 	} else {
 		sprintf(url_string, 
-				"%s%s%s&client_id=%s", 
+				"%s%s&client_id=%s", 
 				src->_source_url,
-				SYNC_SHOW_ACTION,
 				SYNC_SOURCE_FORMAT, 
 				client_id);
 	}
@@ -233,8 +237,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
-  lock_sync_mutex();
-
+	lock_sync_mutex();
 	prepare_db_statement("SELECT source_id,source_url from sources", 
 						 database, 
 						 &op_list_source_ids_statement);
@@ -245,19 +248,36 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		count++;
 	}
 	sqlite3_reset(op_list_source_ids_statement);
-
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 	return count;
 }
 
-int get_object_count_from_database(sqlite3 *database) {
+char *get_params_for_source(pSource source, sqlite3 *database) {
+	char *params;
+	char *ask_type = "ask";
+	
+	lock_sync_mutex();	
+	prepare_db_statement("SELECT value,update_type,source_id from object_values \
+						 where source_id=? and update_type=?",
+						 database,
+						 &source_params_statement);
+	sqlite3_bind_int(source_params_statement, 1, source->_source_id);
+	sqlite3_bind_text(source_params_statement, 2, ask_type, -1, SQLITE_TRANSIENT);
+	sqlite3_step(source_params_statement);
+	params = (char *)sqlite3_column_text(source_params_statement, 0);
+	sqlite3_reset(source_params_statement);
+	unlock_sync_mutex();
+	
+	remove_op_list_from_database(source, database, ask_type);
+	return params;
+}
 
+int get_object_count_from_database(sqlite3 *database) {
 	int count = 0;
 	int success = 0;
 	
     lock_sync_mutex();	
-
 	prepare_db_statement("SELECT count(*) from object_values",
 						 database,
 						 &ob_count_statement);
@@ -266,9 +286,7 @@ int get_object_count_from_database(sqlite3 *database) {
 		count = sqlite3_column_int(ob_count_statement, 0);
 	}
 	sqlite3_reset(ob_count_statement);
-
     unlock_sync_mutex();	
-    
 	return count;
 }
 
@@ -397,15 +415,14 @@ void delete_db_session( const char* source_url )
 {
 	if ( source_url )
 	{
-    lock_sync_mutex();	
+		lock_sync_mutex();	
 		prepare_db_statement("UPDATE sources SET session=NULL where source_url=?",
 						 (sqlite3 *)get_database(),
 						 &del_session_db_statement);
 		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
 		sqlite3_step(del_session_db_statement); 
 		sqlite3_reset(del_session_db_statement);
-
-    unlock_sync_mutex();	
+		unlock_sync_mutex();	
 
 #if defined(_WIN32_WCE)
 		// Delete from winmo cookies
@@ -423,7 +440,6 @@ int set_db_session(const char* source_url, const char *session) {
 	if ( source_url && session )
 	{
 		lock_sync_mutex();	
-
 		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
 							 (sqlite3 *)get_database(),
 							 &set_session_db_statement);
@@ -432,7 +448,6 @@ int set_db_session(const char* source_url, const char *session) {
 		sqlite3_bind_text(set_session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
 		success = sqlite3_step(set_session_db_statement);
 		sqlite3_reset(set_session_db_statement);
-
 		unlock_sync_mutex();
 	}
 	return success;
@@ -461,4 +476,3 @@ void reset_sync_db() {
 	
 	unlock_sync_mutex();
 }
-

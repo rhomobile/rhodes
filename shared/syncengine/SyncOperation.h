@@ -71,7 +71,7 @@ void set_sync_post_body(pSyncOperation op);
 int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *type);
 	
 /* remove the operations from the database after processing */
-void remove_op_list_from_database(pSyncOperation *list, sqlite3 *database, char *type);
+void remove_op_list_from_database(pSource source, sqlite3 *database, char *type);
 
 void free_op_list(pSyncOperation *list, int available);
 	

@@ -82,6 +82,11 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+- (void)performRefreshView {
+	[self performSelectorOnMainThread:@selector(refreshView)
+						   withObject:NULL waitUntilDone:NO]; 
+}
+
 - (void)setViewHomeUrl:(NSString*)url {
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
 		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
@@ -201,4 +206,9 @@ static ServerHost* sharedSH = nil;
 //ruby extension hooks
 void webview_refresh() {
 	[[ServerHost sharedInstance] refreshView];
+}
+
+void perform_webview_refresh() {
+	[[ServerHost sharedInstance] performRefreshView];
+														
 }
