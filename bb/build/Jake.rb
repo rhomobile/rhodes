@@ -169,10 +169,13 @@ class Jake
   end
   
   def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
-    cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
+    #cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
 #   cmd = "java.exe"
     
     jdehome = @@config["env"]["paths"][@@config["env"]["bbver"]]["jde"]
+    javabin = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"]
+    cmd = jdehome + "/bin/rapc.exe"
+    
     currentdir = pwd()
   
   
@@ -199,10 +202,12 @@ class Jake
   
   
     args = []
-    args << "-classpath"
+    #args << "-classpath"
   #  args << "-jar"
-    args << '"' + jdehome + "/bin/rapc.jar\""
-    args << "net.rim.tools.compiler.Compiler"
+    #args << '"' + jdehome + "/bin/rapc.jar\""
+    #args << "net.rim.tools.compiler.Compiler"
+    
+    args << "-javacompiler='" + javabin + "/javac.exe'"
     args << "-quiet" if quiet
     args << "-nowarn" if nowarn
     args << '"import=' + imports + '"'
