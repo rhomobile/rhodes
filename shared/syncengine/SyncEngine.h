@@ -49,7 +49,7 @@ extern int stop_running;
 pthread_cond_t sync_cond;
 pthread_mutex_t sync_mutex;
 #endif
-
+	
 void* sync_engine_main_routine(void* data);
 
 /* Process operations by type */
