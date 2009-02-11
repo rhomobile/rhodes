@@ -55,9 +55,12 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 
 #pragma mark -
 
+static ServerHost* sharedSH = nil;
+
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onSetViewHomeUrl;
+
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -73,14 +76,26 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	}
 }
 
+- (void)refreshView {
+	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
+		[actionTarget performSelector:onRefreshView];
+	}
+}
+
+- (void)setViewHomeUrl:(NSString*)url {
+	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
+		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
+	}	
+}
+
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
-	char* start_page = callGetStartPage();
-	DBG(("Start page: %s\n", start_page));
-	NSString* ref_start_page = [NSString stringWithCString:start_page encoding:NSUTF8StringEncoding];
+	homeUrl = [NSString stringWithCString:callGetStartPage() encoding:NSUTF8StringEncoding];
+	DBG(("Start page: %s\n", [homeUrl UTF8String]));
+	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
@@ -88,7 +103,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
 		DBG(("HTTP Server started and ready\n"));
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:ref_start_page waitUntilDone:NO];
+							   withObject:homeUrl waitUntilDone:NO];
         [[NSRunLoop currentRunLoop] run];
         DBG(("Invalidating local server\n"));
         ServerInvalidate(server);
@@ -97,8 +112,6 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 		[self performSelectorOnMainThread:@selector(serverFailed:) 
 							   withObject:NULL waitUntilDone:NO];
     }
-    
-	[ref_start_page release];
 	
 	DBG(("Stopping ruby"));
 	RhoRubyStop();
@@ -139,7 +152,53 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 - (void)dealloc 
 {
     [appManager release];
+	[homeUrl release];
 	[super dealloc];
 }
 
++ (ServerHost *)sharedInstance {
+    @synchronized(self) {
+        if (sharedSH == nil) {
+            [[self alloc] init]; // assignment not done here
+        }
+    }
+    return sharedSH;
+}
+
++ (id)allocWithZone:(NSZone *)zone {
+    @synchronized(self) {
+        if (sharedSH == nil) {
+            sharedSH = [super allocWithZone:zone];
+            return sharedSH;  // assignment and return on first allocation
+        }
+    }
+    return nil; // on subsequent allocation attempts return nil
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    return self;
+}
+
+- (id)retain {
+    return self;
+}
+
+- (unsigned)retainCount {
+    return UINT_MAX;  // denotes an object that cannot be released
+}
+
+- (void)release {
+    //do nothing
+}
+
+- (id)autorelease {
+    return self;
+}
+
 @end
+
+//ruby extension hooks
+void webview_refresh() {
+	[[ServerHost sharedInstance] refreshView];
+}
