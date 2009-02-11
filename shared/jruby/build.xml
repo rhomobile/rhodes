@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<project name="rubyvm" default="all" basedir=".">
+
+    <!-- Initialization variables -->
+    <property environment="env" />
+
+    <property name="rubyvm.jar.name" value="jrubyvm.jar"/>
+    <property name="source.dir" location="src"/>
+	<property name="bin.dir" location="bin"/>
+    <property name="classes.dir" value="${bin.dir}/classes"/>
+	
+	<path id="compile.classpath">
+    </path>
+
+    <!-- ============================= -->
+    <target name="all" depends="clean,build-rubyvm-jar" description="Does the whole work"/>
+
+    <!-- ====================================== -->
+    <target name="clean" description="Deletes compiled and generated code">
+    	<delete dir="${bin.dir}"/>
+    </target>
+
+    <!-- ====================================== -->
+    <target name="compile" description="Compiles the Java code">
+        <mkdir dir="${bin.dir}" />
+        <mkdir dir="${classes.dir}" />
+
+        <javac srcdir="${source.dir}" destdir="${classes.dir}" debug="on" deprecation="on">
+             <classpath refid="compile.classpath"/>
+        </javac>
+
+        <copy todir="${classes.dir}">
+            <fileset dir="${source.dir}">
+                <include name="**/*.properties" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- ====================================== -->
+    <target name="build-rubyvm-jar" depends="compile" description="Packages the rubyvm files into a jrubyvm JAR file">
+        <jar destfile="${bin.dir}/${rubyvm.jar.name}" basedir="${classes.dir}">
+        </jar>
+    </target>
+
+</project>
