@@ -23,7 +23,7 @@ build:
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
   rubyVMdir: ../RubyVM
-  excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb,**/rationalME.rb,**/format.rb"
+  excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
   compileERB: compileERB.rb
   bblib: lib
   tmpdir: %bindir%/tmp
