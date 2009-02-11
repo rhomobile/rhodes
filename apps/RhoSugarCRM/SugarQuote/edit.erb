@@ -1,0 +1,91 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+  Edit Quote
+</div>
+<% end %>
+<form title="Edit Quote" 
+	  class="panel" 
+	  id="SugarQuote_edit_form" 
+	  method="POST" 
+	  action="<%=url_for(:action => :update)%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%=@SugarQuote.object%>"/>
+		
+		  <div class="row">
+			  <label>Name</label>
+			  <input type="text" name="SugarQuote[name]" value="<%=@SugarQuote.name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Quote #</label>
+			  <input type="text" name="SugarQuote[quote_num]" value="<%=@SugarQuote.quote_num%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>PO</label>
+			  <input type="text" name="SugarQuote[purchase_order_num]" value="<%=@SugarQuote.purchase_order_num%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Terms</label>
+			  <input type="text" name="SugarQuote[payment_terms]" value="<%=@SugarQuote.payment_terms%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Team</label>
+			  <input type="text" name="SugarQuote[team_name]" value="<%=@SugarQuote.team_name%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Assigned to</label>
+			  <input type="text" name="SugarQuote[assigned_user_name]" value="<%=@SugarQuote.assigned_user_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Street Address</label>
+			  <input type="text" name="SugarQuote[billing_address_street]" value="<%=@SugarQuote.billing_address_street%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>City</label>
+			  <input type="text" name="SugarQuote[billing_address_city]" value="<%=@SugarQuote.billing_address_city%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>State</label>
+			  <input type="text" name="SugarQuote[billing_address_state]" value="<%=@SugarQuote.billing_address_state%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Postal Code</label>
+			  <input type="text" name="SugarQuote[billing_address_postalcode]" value="<%=@SugarQuote.billing_address_postalcode%>"/>
+		  </div>
+
+		  <div class="row">
+			  <label>Country</label>
+			  <input type="text" name="SugarQuote[billing_address_country]" value="<%=@SugarQuote.billing_address_country%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Opportunity</label>
+			  <input type="text" name="SugarQuote[opportunity_name]" value="<%=@SugarQuote.opportunity_name%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Sub total</label>
+			  <input type="text" name="SugarQuote[subtotal]" value="<%=@SugarQuote.subtotal%>"/>
+		  </div>
+		
+		  <div class="row">
+			  <label>Total</label>
+			  <input type="text" name="SugarQuote[total]" value="<%=@SugarQuote.total%>"/>
+		  </div>
+		
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%=url_for(:action => :delete, :id => @SugarQuote.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>
