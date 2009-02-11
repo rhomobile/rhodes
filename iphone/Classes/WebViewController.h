@@ -6,7 +6,8 @@
 	IBOutlet UINavigationBar* navBar;
 	IBOutlet UIBarButtonItem* homeBtn;
 	IBOutlet UIBarButtonItem* backBtn;
-	IBOutlet UIBarButtonItem* syncBtn;
+	//IBOutlet UIBarButtonItem* syncBtn;
+	IBOutlet UIBarButtonItem* forwardBtn;
 	IBOutlet UILabel* activityInfo;
 	IBOutlet UIWebView *webView;
 	IBOutlet UIActivityIndicatorView *activity;
@@ -21,13 +22,15 @@
 
 -(IBAction)goBack;
 
+-(IBAction)goForward;
+
 -(IBAction)goHome;
+
+-(IBAction)refresh;
 
 -(void)active;
 
 -(void)inactive;
-
--(void)refresh;
 
 -(void)runSync;
 

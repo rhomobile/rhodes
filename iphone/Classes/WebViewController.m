@@ -17,21 +17,24 @@ NSString *loadingText = @"Loading...";
 -(void)navigate:(NSString*)url {
     printf("Navigating to the specifyed URL\n");
  	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
-	if ([url isEqualToString:viewHomeUrl]) {
-		backBtn.enabled = NO;
-	} else {
-		backBtn.enabled = YES;
-	}
 }
 
 -(IBAction)goBack {
 	[webView goBack];
 }
 
+-(IBAction)goForward {
+	[webView goForward];
+}
+
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
 		[self navigate:viewHomeUrl];
 	}
+}
+
+-(IBAction)refresh {
+	[webView reload];
 }
 
 -(void)setActivityInfo:(NSString *)labelText {
@@ -66,24 +69,32 @@ NSString *loadingText = @"Loading...";
 	[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
 	[self inactive];
 	
-	self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
-
+	if ([webView canGoBack]) {
+		backBtn.enabled = YES;
+	} else {
+		backBtn.enabled = NO;
+	}
+	if ([webView canGoForward]) {
+		forwardBtn.enabled = YES;
+	} else {
+		forwardBtn.enabled = NO;
+	}
+	
 	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
 	char* fragment = strstr(currentLocation,"#");
 	if (fragment) *fragment = 0; //cut out fragment
 	printf("Current location: %s\n",currentLocation);
 	
-	//syncBtn = [[[UIBarButtonItem alloc]
-//				initWithTitle:@"Sync"
-//				style:UIBarButtonItemStyleBordered
-//				target:self 
-//				action:@selector(runSync:)] autorelease];
-//	self.navigationItem.leftBarButtonItem = syncBtn;
-}
-
--(void)refresh {
-	[webView reload];
+	/*self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
+	 
+	 syncBtn = [[[UIBarButtonItem alloc]
+	 initWithTitle:@"Sync"
+	 style:UIBarButtonItemStyleBordered
+	 target:self 
+	 action:@selector(runSync:)] autorelease];
+	 self.navigationItem.leftBarButtonItem = syncBtn;*/
+	
 }
 
 - (void)runSync

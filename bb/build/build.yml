@@ -1,0 +1,31 @@
+env:
+  version: 0.2.0
+  vendor: rhomobile
+  bbver: 4.6
+  applog: rholog.txt
+  paths:
+    4.6:
+      jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0
+      java: C:/Program Files/Java/jdk1.6.0_11/bin
+      mds: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS
+      sim: 9000
+    4.2:
+      jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0 
+      java: C:/Install/Java/jdk1.6.0_11/bin
+      mds: C:/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS
+      sim: 8100
+
+build:
+  bindir: ../bin
+  srcdir: %bindir%/RhoBundle
+  preverified: ../preverified
+  rubypath: ../../win32/target/compiler/RhoRuby.exe
+  shareddir: ../../shared/build
+  targetdir: ../target/%bbver%
+  rubyVMdir: ../RubyVM
+  excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb,**/rationalME.rb,**/format.rb"
+  compileERB: compileERB.rb
+  bblib: lib
+  tmpdir: %bindir%/tmp
+  
+
