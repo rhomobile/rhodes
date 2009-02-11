@@ -1,5 +1,5 @@
 require 'rho/rhocontroller'
-require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class SugarAccountController < Rho::RhoController
   

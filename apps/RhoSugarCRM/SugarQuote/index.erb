@@ -1,0 +1,22 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+  Quotes
+</div>
+<% end %>
+<ul id="SugarQuotes" title="Quotes">
+	<a class="button right_button" href="/RhoSugarCRM/SugarQuote/new">New</a>
+	
+	<%@SugarQuotes.each do |x|%>
+
+		<li class="overview">
+			<a href="<%= "/RhoSugarCRM/SugarQuote/#{x.object}/show" %>">
+				<%= x.name %>
+				<div>
+				<%= display_dollars(x.total) %>
+				</div>
+			</a>
+		</li>
+
+	<% end %>
+</ul>
+
