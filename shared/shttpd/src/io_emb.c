@@ -39,6 +39,8 @@ call_user(struct conn *c, struct shttpd_arg *arg, shttpd_callback_t func)
 	io_inc_head(&c->loc.io, arg->out.num_bytes);
 	io_inc_tail(&c->rem.io, arg->in.num_bytes);
 	c->loc.chan.emb.state = arg->state;		/* Save state */
+    //RHO
+    c->loc.chan.emb.data = arg->user_data;  /* Save user data */
 
 	/*
 	 * If callback finished output, that means it did all cleanup.

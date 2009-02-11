@@ -204,18 +204,20 @@ void* rho_dispatch(struct conn *c, const char* path) {
 }
 
 int collect_data(struct llhead *plist, const void* data, size_t len) {
-   struct data_chunk *chunk;
+    struct data_chunk *chunk;
 
-	if ((chunk = malloc(sizeof(*chunk))) != NULL) {
-    if ((chunk->data	= malloc(len)) != NULL) {
-      memcpy(chunk->data,data,len);
-      chunk->size = len;
-		  LL_TAIL(plist, &chunk->link);
-      return len;
-    }
-    free(chunk);
+	if ((chunk = malloc(sizeof(*chunk))) != NULL) 
+    {
+        if ((chunk->data = malloc(len)) != NULL) 
+        {
+            memcpy(chunk->data,data,len);
+            chunk->size = len;
+            LL_TAIL(plist, &chunk->link);
+            return len;
+        }
+        free(chunk);
 	}
-  return -1;
+    return -1;
 }
 
 static void
@@ -250,59 +252,112 @@ get_collected_data(struct llhead *head, int nchunks, size_t datasize) {
   return data;
 }
 
+struct rho_write_state {
+    char* data;		 
+    size_t	nDataLen; /* Content-Length	*/
+    size_t	nRead; /* Number of bytes read	*/
+};
+
+void rho_write_data(struct shttpd_arg *arg)
+{
+    struct rho_write_state* state = arg->state;
+
+    if ( state->nRead < state->nDataLen )
+        state->nRead += shttpd_printf(arg, "%s", state->data + state->nRead);
+
+    if ( state->nRead >= state->nDataLen )
+    {
+        arg->flags |= SHTTPD_END_OF_OUTPUT;
+        free(arg->state);
+        arg->state = NULL;
+    }
+}
+
+void rho_create_write_state(struct shttpd_arg *arg, char* data)
+{
+    struct rho_write_state* state = 0;
+	arg->state = state = calloc(1, sizeof(struct rho_write_state));
+
+    state->data = data;
+    state->nDataLen = strlen(data);
+}
+
 void rho_serve(struct shttpd_arg *arg) {
 	//const char	*s;
-  struct state {
-		size_t	cl;		 /* Content-Length	*/
-		size_t	nread; /* Number of bytes read	*/
-    int     nchunks; /* Number of chunks in the list */
-    struct llhead	post_data;
-	} *state;
+    struct rho_read_state {
+        size_t	cl;		 /* Content-Length	*/
+        size_t	nread; /* Number of bytes read	*/
+        int     nchunks; /* Number of chunks in the list */
+        struct llhead	post_data;
+    } *state;
 
 	/* If the connection was broken prematurely, cleanup */
 	if (arg->flags & SHTTPD_CONNECTION_ERROR) {
-    if (arg->state) {
-      state = arg->state;
-      free_list(&state->post_data, collected_data_destructor);
-		  free(arg->state);
+        if (arg->state) {
+
+            if (arg->user_data){ //Read request
+                state = arg->state;
+                free_list(&state->post_data, collected_data_destructor);
+            }
+
+            free(arg->state);
+        }
+
+        if (arg->user_data)
+            _free_route(arg->user_data);
+
+        arg->user_data = NULL;
+        arg->state = NULL;
+
+        return;
+	} 
+
+    if ( !arg->user_data ) {//Request read. Return response
+        rho_write_data(arg);
+        return;
     }
-    _free_route(arg->user_data);
-	} else if (arg->state == NULL) {
+
+    if (arg->state == NULL) {
 		/* New request. Allocate a state structure. */
 		arg->state = state = calloc(1, sizeof(*state));
-    state->cl = ((struct conn *)(arg->priv))->ch.cl._v.v_big_int;
-    state->nchunks = 0;
-    LL_INIT(&state->post_data);
-	} else {
-		state = arg->state;
+        state->cl = ((struct conn *)(arg->priv))->ch.cl._v.v_big_int;
+        state->nchunks = 0;
+        LL_INIT(&state->post_data);
+	} 
+    
+	state = arg->state;
 
-		/* Collect the POST data */
+	/* Collect the POST data */
     if (arg->in.len > 0) {
       if ( collect_data(&state->post_data,arg->in.buf, arg->in.len) == -1 ) {
         shttpd_printf(arg, "HTTP/1.0 500 Out of memory\n\n");
-		    arg->flags |= SHTTPD_END_OF_OUTPUT;
+	        arg->flags |= SHTTPD_END_OF_OUTPUT;
         return;
       }
+
       state->nchunks++;
       state->nread += arg->in.len;
-		  /* Tell SHTTPD we have processed all data */
-		  arg->in.num_bytes = arg->in.len;
+	  /* Tell SHTTPD we have processed all data */
+	  arg->in.num_bytes = arg->in.len;
     }
 
-		/* Read all input? Call ruby framework with collected data (if any) */
-		if (state->nread >= state->cl) {
-      void* data = get_collected_data(&state->post_data, state->nchunks, state->nread);
-      VALUE req = _create_request_hash(
-        arg->priv, (RouteRef) arg->user_data, data, state->nread);
-#ifdef __SYMBIAN32__      
-      g_need_launch_gc = 1;
-#endif      
-      shttpd_printf(arg, "%s", callFramework(req));
-      _free_route(arg->user_data);
-      arg->user_data = NULL;
-			free(state);
-			arg->flags |= SHTTPD_END_OF_OUTPUT;
-		}
+	/* Read all input? Call ruby framework with collected data (if any) */
+	if (state->nread >= state->cl) {
+        void* data = get_collected_data(&state->post_data, state->nchunks, state->nread);
+        VALUE req = _create_request_hash(
+            arg->priv, (RouteRef) arg->user_data, data, state->nread );
+        #ifdef __SYMBIAN32__      
+            g_need_launch_gc = 1;
+        #endif      
+
+        //shttpd_printf(arg, "%s", callFramework(req));
+        _free_route(arg->user_data);
+        arg->user_data = NULL;
+        free(state);
+        //arg->flags |= SHTTPD_END_OF_OUTPUT;
+
+        rho_create_write_state(arg,callFramework(req));
+        rho_write_data(arg);
 	}
 }
 
@@ -321,7 +376,28 @@ int isindex(struct conn *c, char* path) {
 }
 
 void rho_serve_index(struct shttpd_arg *arg) {
-	shttpd_printf(arg, "%s", callServeIndex(arg->user_data));
-	free(arg->user_data);
-	arg->flags |= SHTTPD_END_OF_OUTPUT;
+
+	if (arg->flags & SHTTPD_CONNECTION_ERROR) {
+        if (arg->state)
+	        free(arg->state);
+        if ( arg->user_data )
+            free(arg->user_data);
+
+        arg->state = NULL;
+        arg->user_data = NULL;
+
+        return;
+	}
+
+    if (arg->state == NULL) {
+        rho_create_write_state(arg,callServeIndex(arg->user_data));
+
+        free(arg->user_data);
+        arg->user_data = NULL;
+	}
+    rho_write_data(arg);
+
+	//shttpd_printf(arg, "%s", callServeIndex(arg->user_data));
+	//free(arg->user_data);
+	//arg->flags |= SHTTPD_END_OF_OUTPUT;
 }

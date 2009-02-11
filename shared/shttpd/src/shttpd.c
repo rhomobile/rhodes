@@ -543,7 +543,7 @@ get_path_info(struct conn *c, char *path, struct stat *stp)
 static void
 decide_what_to_do(struct conn *c)
 {
-	char		path[URI_MAX], buf[1024], *root;
+	char		path[URI_MAX]/*, buf[1024]*/, *root;
 	struct vec	alias_uri, alias_path;
 	struct stat	st;
 	int		rc;
@@ -628,9 +628,9 @@ decide_what_to_do(struct conn *c)
 	} else if (get_path_info(c, path, &st) != 0) {
 		_shttpd_send_server_error(c, 404, "Not Found");
 	} else if (S_ISDIR(st.st_mode) && path[strlen(path) - 1] != '/') {
-		(void) _shttpd_snprintf(buf, sizeof(buf),
+		(void) _shttpd_snprintf(path, sizeof(path),
 			"Moved Permanently\r\nLocation: %s/", c->uri);
-		_shttpd_send_server_error(c, 301, buf);
+		_shttpd_send_server_error(c, 301, path);
 	} else if (S_ISDIR(st.st_mode) &&
 	    find_index_file(c, path, sizeof(path) - 1, &st) == -1 &&
 	    !IS_TRUE(c->ctx, OPT_DIR_LIST)) {
@@ -774,6 +774,27 @@ parse_http_request(struct conn *c)
 	}
 }
 
+//RHO
+static struct conn*
+alloc_conn(struct shttpd_ctx	*ctx)
+{
+    //struct conn* c = (struct conn*)(ctx->conn_buffer);
+    struct conn* c = calloc(1,sizeof(struct conn) + OUT_BUF_MAX + INPUT_BUF_MAX);
+
+    if (c)
+    {
+        //memset(c,0,sizeof(struct conn));
+
+	    /* Set IO buffers */
+	    c->loc.io.buf	= (char *) (c + 1);
+	    c->rem.io.buf	= c->loc.io.buf + OUT_BUF_MAX;
+	    c->loc.io.size	= OUT_BUF_MAX;
+        c->rem.io.size = INPUT_BUF_MAX;
+    }
+
+    return c;
+}
+
 static void
 add_socket(struct worker *worker, int sock, int is_ssl)
 {
@@ -801,7 +822,7 @@ add_socket(struct worker *worker, int sock, int is_ssl)
 		(void) closesocket(sock);
 		SSL_free(ssl);
 #endif /* NO_SSL */
-	} else if ((c = calloc(1, sizeof(*c) + 2 * URI_MAX)) == NULL) {
+	} else if ( (c = alloc_conn(ctx)) == NULL) {
 #if !defined(NO_SSL)
 		if (ssl)
 			SSL_free(ssl);
@@ -825,11 +846,6 @@ add_socket(struct worker *worker, int sock, int is_ssl)
 	
 		c->rem.io_class	= &_shttpd_io_socket;
 		c->rem.chan.sock = sock;
-
-		/* Set IO buffers */
-		c->loc.io.buf	= (char *) (c + 1);
-		c->rem.io.buf	= c->loc.io.buf + URI_MAX;
-		c->loc.io.size	= c->rem.io.size = URI_MAX;
 
 #if !defined(NO_SSL)
 		if (is_ssl) {
