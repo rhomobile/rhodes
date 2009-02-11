@@ -164,6 +164,8 @@ _CallApplication(HttpContextRef context, RouteRef route) {
 	return 0;
 }
 
+extern char* GeoGetLocation();
+
 int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	
 	if (route->_application && !strcmp(route->_application,"AppManager")) {

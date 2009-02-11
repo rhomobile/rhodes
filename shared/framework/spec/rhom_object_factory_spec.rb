@@ -129,4 +129,14 @@ describe "RhomObjectFactory" do
     
     @acct.foobar.should be_nil
   end
+  
+  it "should respond to ask" do
+    question = 'where am i?'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question
+  end
 end
