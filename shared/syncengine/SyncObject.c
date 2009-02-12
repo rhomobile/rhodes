@@ -27,7 +27,6 @@
 /* Database access statements */
 static sqlite3_stmt *insert_statement = NULL;
 static sqlite3_stmt *delete_statement = NULL;
-//static sqlite3_stmt *delete_by_source_statement = NULL;
 static sqlite3_stmt *select_statement = NULL;
 
 void finalize_sync_obj_statements() {
@@ -40,11 +39,6 @@ void finalize_sync_obj_statements() {
 		sqlite3_finalize(delete_statement);
 		delete_statement = NULL;
 	}
-	
-//	if (delete_by_source_statement) {
-//		sqlite3_finalize(delete_by_source_statement);
-//		delete_by_source_statement = NULL;
-//	}
 	
 	if (select_statement) {
 		sqlite3_finalize(select_statement);
@@ -102,26 +96,24 @@ int exists_in_database(pSyncObject ref) {
 		return 0;
 	}
 
-  lock_sync_mutex();	
+	lock_sync_mutex();	
 
-  prepare_db_statement("SELECT value FROM object_values where id=?",
+	prepare_db_statement("SELECT value FROM object_values where id=?",
 						 ref->_database,
 						 &select_statement);
 	sqlite3_bind_int(select_statement, 1, ref->_primary_key);
 	success = sqlite3_step(select_statement);
 	/* we have a row with the same value, return 1 */
-  if (success == SQLITE_ROW) {
+	if (success == SQLITE_ROW) {
 		char *tmp_check = str_assign((char *)sqlite3_column_text(select_statement, 0));
 		if(strcmp(tmp_check, ref->_value) == 0) {
 			sqlite3_reset(select_statement);
-      unlock_sync_mutex();	
+			unlock_sync_mutex();	
 			return 1;
 		}
-  }
+	}
 	sqlite3_reset(select_statement);
-
-  unlock_sync_mutex();	
-
+	unlock_sync_mutex();	
 	return 0;
 }
 
@@ -159,20 +151,16 @@ int insert_into_database(pSyncObject ref) {
 /* delete a specific set of object_values from the database */
 int delete_from_database(pSyncObject ref) {
 	int success = 0;
-
 	lock_sync_mutex();	
-
 	prepare_db_statement("DELETE FROM object_values where id=?",
 						 ref->_database,
 						 &delete_statement);
 	sqlite3_bind_int(delete_statement, 1, ref->_primary_key);
 	success = sqlite3_step(delete_statement);
-
 	if (success != SQLITE_DONE) {
 		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
         sqlite3_reset(delete_statement);
-	unlock_sync_mutex();	
-
+		unlock_sync_mutex();	
 		return 1;
 	}
 	sqlite3_reset(delete_statement);

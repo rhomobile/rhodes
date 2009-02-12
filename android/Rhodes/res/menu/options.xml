@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+     <item android:title="@string/home" android:id="@+id/navigation_home"  android:icon="@drawable/home"/>
+     <item android:title="@string/forward" android:id="@+id/navigation_forward" android:icon="@drawable/next" />
+     <item android:title="@string/back" android:id="@+id/navigation_back" android:icon="@drawable/back"/>
+     <item android:checkable="false" android:title="@string/about" android:icon="@drawable/info" android:id="@+id/about" />
+     <item android:checkable="false" android:title="@string/sync" android:icon="@drawable/refresh" android:id="@+id/sync" />
+</menu>
