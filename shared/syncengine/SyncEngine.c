@@ -107,7 +107,9 @@ int process_local_changes() {
 				int available_remote = fetch_remote_changes(database, client_id, source_list[i]);
 				if(available_remote > 0) {
 					printf("Successfully processed %i records...\n", available_remote);
-					fire_notification(source_list[i]->_source_id);
+					if(!stop_running) {
+						fire_notification(source_list[i]->_source_id);
+					}
 				}
 		  }
 #endif	  
