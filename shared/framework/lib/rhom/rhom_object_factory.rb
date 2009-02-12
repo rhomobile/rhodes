@@ -106,6 +106,14 @@ module Rhom
                   # TODO: implement
                 end
   
+                def set_notification(url)
+                  SyncEngine.set_notification(get_source_id.to_i,url)
+                end
+                
+                def clear_notification
+                  SyncEngine.clear_notification(get_source_id.to_i)
+                end
+                    
                 private
                 # returns new model instance with a temp object id
                 def get_new_obj(obj, type='query')
