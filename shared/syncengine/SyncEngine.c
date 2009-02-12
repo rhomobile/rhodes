@@ -97,6 +97,7 @@ int process_local_changes() {
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
 			  }
+			  if (ask_params) free(ask_params);
 			  
 			  g_cur_source++;
 			  stop_running = 1; //stop sync thread
@@ -114,12 +115,12 @@ int process_local_changes() {
 				  printf("Successfully processed %i records...\n", available_remote);
 				  fire_notification(source_list[i]->_source_id);
 			  }
+			  if (ask_params) free(ask_params);
 		  }
 #endif	  
 	  }
 //#endif 
 	  free_source_list(source_list, source_length);
-	  if (ask_params) free(ask_params);
   } 
   
   if (stop_running) {
