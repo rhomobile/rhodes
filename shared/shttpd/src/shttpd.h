@@ -84,6 +84,7 @@ struct shttpd_ctx;
 
 struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
 int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
+const char* shttpd_get_index_names(struct shttpd_ctx *ctx);
 void shttpd_fini(struct shttpd_ctx *);
 void shttpd_register_uri(struct shttpd_ctx *ctx, const char *uri,
 		shttpd_callback_t callback, void *const user_data);

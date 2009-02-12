@@ -9,16 +9,20 @@
 #include "AppManager.h"
 #include "rhoruby/rhoruby.h"
 
+extern "C" char* wce_wctomb(const wchar_t* w);
+
 CMainWindow::CMainWindow()
 {
 	m_bLoading = true;
 	m_bRhobundleReloadEnabled = true;
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
+	m_current_url = NULL;
 }
 
 CMainWindow::~CMainWindow()
 {
+	free(m_current_url);
 }
 
 void CMainWindow::Navigate2(BSTR URL) {
@@ -62,7 +66,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     CHR(hr);
 
     // set initial properties for the control
-    m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
+    //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
+    m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
 
     // Create a menubar
     // (mbi was initialized above)
@@ -336,7 +341,7 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-    TCHAR szOutput[128];
+    TCHAR szOutput[256];
 	
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL)); 
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
@@ -345,8 +350,13 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		m_bLoading = false; //show loading page only once
 	}
 
+	if (m_current_url) { 
+		free(m_current_url);
+	}
+	m_current_url = wce_wctomb(url);
+
     StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
-                    TEXT("0x%08p %s\n"), pDisp, url);
+		TEXT("Current URL: %s\n"), url);
     OutputDebugString(szOutput);
 
     VERIFY(SetEnabledState(IDM_STOP, FALSE));
