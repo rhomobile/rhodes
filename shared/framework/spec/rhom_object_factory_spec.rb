@@ -131,12 +131,29 @@ describe "RhomObjectFactory" do
   end
   
   it "should respond to ask" do
-    question = 'where am i?'
+    question = 'Rhodes'
     Account.ask(question)
     res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
     res[0]['value'].should == question
+  end
+  
+  it "should encode ask params" do
+    # TODO: why isn't the before(:each) running here?
+    Rhom::RhomDbAdapter::delete_from_table('object_values', :update_type => 'ask')
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Account.ask(question)
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    @res.length.should == 1
+    
+    @res[0]['attrib'].should == 'question'
+    @res[0]['value'].should == question_encoded
+  end
+  
+  it "should find with conditions" do
+    
   end
 end
