@@ -253,5 +253,6 @@ char *get_session(const char *url_string) {
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	NSArray *cookies = [cookieStore cookiesForURL:url];
 	char *session =  (char *)[[[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"] UTF8String];
+	[url release];
 	return session == NULL || strcmp(session,"") == 0 ? NULL : session;
 }
