@@ -84,6 +84,7 @@ int process_local_changes() {
 	  } 
 	  else 
 	  {
+		  int available_remote;
 		  /* fetch new list from sync source */
 	  
 #ifdef __SYMBIAN32__
@@ -110,10 +111,12 @@ int process_local_changes() {
 		  for(i = 0; i < source_length && !stop_running; i++)
 		  {
 			  ask_params = str_assign(get_params_for_source(source_list[i], database));
-			  int available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
+			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
-				  fire_notification(source_list[i]->_source_id);
+				  if(!stop_running) {
+					  fire_notification(source_list[i]->_source_id);
+				  }
 			  }
 			  if (ask_params) free(ask_params);
 		  }

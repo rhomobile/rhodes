@@ -23,6 +23,11 @@ extern int _shttpd_strncasecmp(register const char *,register const char *, size
 #define strncasecmp _shttpd_strncasecmp
 #endif
 
+#ifdef _MSC_VER
+// warning C4018: '<' : signed/unsigned mismatch
+#pragma warning ( disable : 4018 )
+#endif
+
 #include "bits.h"
 #include "debug.h"
 #include "printbuf.h"

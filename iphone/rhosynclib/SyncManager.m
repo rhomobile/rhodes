@@ -244,12 +244,16 @@ void logout() {
  * Retrieve cookie from shared cookie storage
  */
 NSString *get_session(char *url_string) {
+	NSString *session = NULL;
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	NSArray *cookies = [cookieStore cookiesForURL:[NSURL URLWithString:[NSString stringWithCString:url_string]]];
-	NSString *cookie = [[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"];
-	NSString *session;
-	if (cookie) {
-		session = [[[NSString alloc] initWithString:cookie] autorelease];
+	if (cookieStore) {
+		NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String: url_string]];
+		NSArray *cookies = [cookieStore cookiesForURL:url];
+		NSString *cookie = [[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"];
+
+		if (cookie) {
+			session = [[[NSString alloc] initWithString:cookie] autorelease];
+		}
 	}
 	return session;
 }
