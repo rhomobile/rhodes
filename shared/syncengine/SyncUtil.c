@@ -128,9 +128,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	int j,available;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
-	available = 0;
 	int success=0, size_deleted=0, size_inserted=0;
 	double start=0,duration = 0;
+	available = 0;
 	save_source_url(src->_source_url);
 	if (params && strlen(params) > 0) {
 		sprintf(url_string, 

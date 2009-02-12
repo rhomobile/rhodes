@@ -18,6 +18,8 @@ public:
     //
 	void Navigate2(BSTR URL);
     void Navigate(BSTR URL);
+	
+	char* GetCurrentLocation() { return m_current_url; }
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
@@ -101,4 +103,5 @@ private:
 
 	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;
+	char* m_current_url;
 };

@@ -4,6 +4,8 @@
 #include "llist.h"
 #include "rhoruby.h"
 
+static char* localhost = "http://localhost:8080";
+
 #ifdef __SYMBIAN32__      
       extern int g_need_launch_gc;
 #endif
@@ -169,6 +171,97 @@ _create_request_hash(struct conn *c, RouteRef route, const char* body, int bodyl
 	}
 	
 	return hash;
+}
+
+/*
+static char* 
+_rho_resolve_index(char* url,char* path,const char *index_names) {
+	char file[FILENAME_MAX];
+	char indexfile[128];
+	struct stat	st;
+	char* resolved_url;
+	const char* slash = path[strlen(path)-1] == '/' ? "" : "/";
+	int full_len,url_len,len;
+
+	FOR_EACH_WORD_IN_LIST(index_names, len) {
+		strncpy(indexfile,index_names,len);
+		_shttpd_snprintf(file, sizeof(file), "%s%s%s", path, slash, indexfile);
+		if ( (_shttpd_stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
+			
+			//if ( i == 0 ) {// there is a controller in this folder
+			//	return url;
+			//}
+			
+			url_len = strlen(url);
+			slash = url[strlen(url)-1] == '/' ? "" : "/";
+
+			full_len = url_len + strlen(slash)+len+1;
+			resolved_url = malloc(full_len);
+			_shttpd_snprintf(resolved_url, full_len, "%s%s%s", url, slash, indexfile);	
+			free(url);
+			
+			return resolved_url;
+		}
+	}
+	return url;
+}
+*/
+
+static char* 
+_rho_resolve_index(char* url,char* path,const char *index_names) {
+	char filename[FILENAME_MAX];
+	struct stat	st;
+
+	//check if there is controller.rb
+	int len = strlen(path);
+	char* slash = path[len-1] == '\\' || path[len-1] == '/' ? "" : "/";
+	_shttpd_snprintf(filename,sizeof(filename),"%s%s%s",path,slash,"controller.iseq");
+	if ((_shttpd_stat(filename, &st) == 0)&&(!S_ISDIR(st.st_mode))) {
+	  return url;
+	}
+	
+	len = strlen(url);
+	if (url[len-1]!='/') {
+		char* tmp_url = malloc(len+2);
+		_shttpd_snprintf(tmp_url,len+2,"%s/",url);
+		free(url);
+		return tmp_url;
+	} 
+
+	return url;				
+}
+
+char* rho_resolve_url(char* url, const char* root,const char *index_names) {
+	char path[URI_MAX];
+	struct stat	st;
+	char* tmp_url;
+	char* ret;
+	int full_len;
+
+	char* full_path = strstr(url,"http://");
+	if (full_path) {
+		return full_path;
+	}
+
+	if (strlen(url) + strlen(root) >= sizeof(path)) {
+		tmp_url = url;
+	} else {
+		_shttpd_snprintf(path, sizeof(path), "%s%s", root, url);
+		if ( _shttpd_stat(path, &st) == -1 ) {
+			tmp_url = url;				
+		} else if ( S_ISDIR(st.st_mode) ) {
+			tmp_url = _rho_resolve_index(url,path,index_names);
+		} else {
+			tmp_url = url;				
+		}
+	}
+	
+	full_len = strlen(localhost)+strlen(tmp_url)+1;
+	ret = malloc(full_len);
+	_shttpd_snprintf(ret, full_len, "%s%s", localhost, tmp_url);	
+	free(tmp_url);
+	
+	return ret;
 }
 
 void* rho_dispatch(struct conn *c, const char* path) {
