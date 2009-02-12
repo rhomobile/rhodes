@@ -278,6 +278,23 @@ namespace "device" do
 
   end
 
+  desc "Build and package dev rhobundle for device"
+  task :rhobundle => "package:rhobundle" do
+
+    if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
+      Rake::Task["run:autosign"].execute
+    else
+      Rake::Task["run:manualsign"].execute
+    end
+
+    rm_rf Dir.glob(config["build"]["targetdir"] + "/web/RhoBundle*.*")
+
+    cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
+
+    Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
+
+  end
+
   desc "Build and package production for device"
   task :production => "package:all" do
     if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
