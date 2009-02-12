@@ -20,7 +20,13 @@
 //#else
 //	#define	URI_MAX		4096    /*16384 /Default max request size	*/
 //#endif
-#define	URI_MAX		16384 /* Default max request size	*/
+//#define	URI_MAX		16384 /* Default max request size	*/
+//This is maximum URI length
+#define	URI_MAX		2048
+//Buffer size for input request data
+#define INPUT_BUF_MAX 2048
+//Buffer size for output data
+#define OUT_BUF_MAX 4096
 
 #define	LISTENING_PORTS	"8080"		/* Default listening ports	*/
 #define	INDEX_FILES	"index_erb.iseq,index.html,index.htm,index.php,index.cgi"

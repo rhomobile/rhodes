@@ -1,0 +1,88 @@
+<% if System::get_property('platform') != 'APPLE' %>
+<div class="generic_heading">
+  Quote
+</div>
+<% end %>
+
+<div class="panel"> 
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarQuote.object)%>">Edit</a>
+
+<table class="grid">
+  <tr>
+    <td class="gridleft">Name</td>
+		<td class="gridright"><%=@SugarQuote.name%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Quote #</td>
+		<td class="gridright"><%=@SugarQuote.quote_num%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Purchase Order</td>
+		<td class="gridright"><%=@SugarQuote.purchase_order_num%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Payment Terms</td>
+		<td class="gridright"><%=@SugarQuote.payment_terms%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Team Name</td>
+		<td class="gridright"><%=@SugarQuote.team_name%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Assigned To</td>
+		<td class="gridright"><%=@SugarQuote.assigned_user_name%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Billing Account</td>
+		<td class="gridright"><%=@SugarQuote.billing_account_name%></td>
+	</tr>
+
+	<tr>
+    <td class="gridleft">Bill To</td>
+		<td class="gridright">
+			<%= display_blankstr(@SugarQuote.billing_address_street) + display_newline() + display_blankstr(@SugarQuote.billing_address_city) + display_space() + display_blankstr(@SugarQuote.billing_address_state) + display_space() + display_blankstr(@SugarQuote.billing_address_postalcode) + display_newline() + display_blankstr(@SugarQuote.billing_address_country) %>
+	  </td>
+	</tr>
+
+</table>
+
+<table class="grid">
+	<tr>
+    <td class="gridleft">Opportunity Name</td>
+		<td class="gridright"><%=@SugarQuote.opportunity_name%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Quote Stage</td>
+		<td class="gridright"><%=@SugarQuote.quote_stage%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Quote Type</td>
+		<td class="gridright"><%=@SugarQuote.quote_type%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Date Entered</td>
+		<td class="gridright"><%=@SugarQuote.date_entered%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Date Modified</td>
+		<td class="gridright"><%=@SugarQuote.date_modified%></td>
+	</tr>
+</table>
+
+<table class="grid">
+	<tr>
+    <td class="gridleft">Sub total</td>
+		<td class="gridright"><%=display_dollars(@SugarQuote.subtotal)%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Total</td>
+		<td class="gridright"><%=display_dollars(@SugarQuote.total)%></td>
+	</tr>
+</table>
+
+</div>

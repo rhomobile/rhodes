@@ -9,7 +9,6 @@
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size);
-extern char *get_session(const char *url_string);
 extern void delete_db_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
@@ -23,10 +22,10 @@ extern char *get_winmo_session_size(const char *url_string);
 #endif
 
 static sqlite3_stmt *op_list_source_ids_statement = NULL;
+static sqlite3_stmt *source_params_statement = NULL;
 static sqlite3_stmt *ob_count_statement = NULL;
 static sqlite3_stmt *client_id_statement = NULL;
 static sqlite3_stmt *client_id_insert_statement = NULL;
-//static sqlite3_stmt *client_session_statement = NULL;
 static sqlite3_stmt *client_db_statement = NULL;
 static sqlite3_stmt *sync_status_statement = NULL;
 static sqlite3_stmt *session_db_statement = NULL;
@@ -41,6 +40,10 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(op_list_source_ids_statement);
 		op_list_source_ids_statement = NULL;
 	}
+	if (source_params_statement) {
+		sqlite3_finalize(source_params_statement);
+		source_params_statement = NULL;
+	}
 	if (ob_count_statement) {
 		sqlite3_finalize(ob_count_statement);
 		ob_count_statement = NULL;
@@ -53,10 +56,6 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(client_id_insert_statement);
 		client_id_insert_statement = NULL;
 	}
-//	if (client_session_statement) {
-//		sqlite3_finalize(client_session_statement);
-//		client_session_statement = NULL;
-//	}
 	if (client_db_statement) {
 		sqlite3_finalize(client_db_statement);
 		client_db_statement = NULL;
@@ -123,81 +122,79 @@ const char* load_source_url()
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src) {
+int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params) {
 	pSyncObject *list;
 	char url_string[4096];
 	int j,available;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
-	
-	//pSource *source_list;
-	//source_list = malloc(MAX_SOURCES*sizeof(pSource));
-	
-	//source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 	available = 0;
-	//printf("Iterating over %i sources...\n", source_length);
-	
-	/* iterate over each source id and do a fetch */
-	//for(i = 0; i < source_length; i++) 
-  {
-		int success=0, size_deleted=0, size_inserted=0;
-		double start=0,duration = 0;
-		save_source_url(src->_source_url);
+	int success=0, size_deleted=0, size_inserted=0;
+	double start=0,duration = 0;
+	save_source_url(src->_source_url);
+	if (params && strlen(params) > 0) {
+		sprintf(url_string, 
+				"%s%s%s&client_id=%s&question=%s", 
+				src->_source_url,
+				SYNC_ASK_ACTION,
+				SYNC_SOURCE_FORMAT, 
+				client_id,
+				params);
+	} else {
 		sprintf(url_string, 
 				"%s%s&client_id=%s", 
-				src->_source_url, 
+				src->_source_url,
 				SYNC_SOURCE_FORMAT, 
 				client_id);
-		start = time(NULL);
-		json_string = fetch_remote_data(url_string);
-		if(json_string && strlen(json_string) > 0) {
-			int size = MAX_SYNC_OBJECTS;
-			//printf("JSON data: %s\n", json_string);
-			// Initialize parsing list and call json parser
-			list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-			if (list) {
-                struct json_object* json_to_free = 0;
-				available = parse_json_list(list, json_string, size, &json_to_free);
-				printf("Parsed %i records from sync source...\n", available);
-				if(available > 0) {
-					for(j = 0; j < available; j++) {
-						list[j]->_database = database;
-						type = list[j]->_db_operation;
-						if (type) {
-							if(strcmp(type, "insert") == 0) {
-								/*printf("Inserting record %i - %s - %s: %s\n", 
-									   list[j]->_primary_key, list[j]->_object, 
-									   list[j]->_attrib, list[j]->_value);*/
-								insert_into_database(list[j]);
-								size_inserted++;
-							} 
-							else if (strcmp(type, "delete") == 0) {
-								/*printf("Deleting record %i\n", list[j]->_primary_key);*/
-								delete_from_database(list[j]);
-								size_deleted++;
-							} else {
-								printf("Warning: received improper update_type: %s...\n", type);
-							}
+	}
+	start = time(NULL);
+	json_string = fetch_remote_data(url_string);
+	if(json_string && strlen(json_string) > 0) {
+		int size = MAX_SYNC_OBJECTS;
+		//printf("JSON data: %s\n", json_string);
+		// Initialize parsing list and call json parser
+		list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
+		if (list) {
+			struct json_object* json_to_free = 0;
+			available = parse_json_list(list, json_string, size, &json_to_free);
+			printf("Parsed %i records from sync source...\n", available);
+			if(available > 0) {
+				for(j = 0; j < available; j++) {
+					list[j]->_database = database;
+					type = list[j]->_db_operation;
+					if (type) {
+						if(strcmp(type, "insert") == 0) {
+							/*printf("Inserting record %i - %s - %s: %s\n", 
+								   list[j]->_primary_key, list[j]->_object, 
+								   list[j]->_attrib, list[j]->_value);*/
+							insert_into_database(list[j]);
+							size_inserted++;
+						} 
+						else if (strcmp(type, "delete") == 0) {
+							/*printf("Deleting record %i\n", list[j]->_primary_key);*/
+							delete_from_database(list[j]);
+							size_deleted++;
+						} else {
+							printf("Warning: received improper update_type: %s...\n", type);
 						}
 					}
 				}
-				/* free the in-memory list after populating the database */
-				free_ob_list(list, available);
-				free(list);
-
-                if ( json_to_free )
-                    json_object_put(json_to_free);
 			}
-			success = 1;
-			free(json_string);
-		} else {
-			success = 0;
+			/* free the in-memory list after populating the database */
+			free_ob_list(list, available);
+			free(list);
+
+			if ( json_to_free )
+				json_object_put(json_to_free);
 		}
-		duration = time(NULL) - start;
-		update_source_sync_status((sqlite3 *)get_database(), 
-								  src, size_inserted, size_deleted, duration, success);
+		success = 1;
+		free(json_string);
+	} else {
+		success = 0;
 	}
-	//free_source_list(source_list, source_length);
+	duration = time(NULL) - start;
+	update_source_sync_status((sqlite3 *)get_database(), 
+							  src, size_inserted, size_deleted, duration, success);
     
 	return available;
 }
@@ -239,8 +236,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
-  lock_sync_mutex();
-
+	lock_sync_mutex();
 	prepare_db_statement("SELECT source_id,source_url from sources", 
 						 database, 
 						 &op_list_source_ids_statement);
@@ -251,19 +247,36 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		count++;
 	}
 	sqlite3_reset(op_list_source_ids_statement);
-
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 
 	return count;
 }
 
-int get_object_count_from_database(sqlite3 *database) {
+char *get_params_for_source(pSource source, sqlite3 *database) {
+	char *params;
+	char *ask_type = "ask";
+	
+	lock_sync_mutex();	
+	prepare_db_statement("SELECT value,update_type,source_id from object_values \
+						 where source_id=? and update_type=?",
+						 database,
+						 &source_params_statement);
+	sqlite3_bind_int(source_params_statement, 1, source->_source_id);
+	sqlite3_bind_text(source_params_statement, 2, ask_type, -1, SQLITE_TRANSIENT);
+	sqlite3_step(source_params_statement);
+	params = (char *)sqlite3_column_text(source_params_statement, 0);
+	sqlite3_reset(source_params_statement);
+	unlock_sync_mutex();
+	
+	remove_op_list_from_database(source, database, ask_type);
+	return params;
+}
 
+int get_object_count_from_database(sqlite3 *database) {
 	int count = 0;
 	int success = 0;
 	
     lock_sync_mutex();	
-
 	prepare_db_statement("SELECT count(*) from object_values",
 						 database,
 						 &ob_count_statement);
@@ -272,9 +285,7 @@ int get_object_count_from_database(sqlite3 *database) {
 		count = sqlite3_column_int(ob_count_statement, 0);
 	}
 	sqlite3_reset(ob_count_statement);
-
     unlock_sync_mutex();	
-    
 	return count;
 }
 
@@ -329,9 +340,7 @@ void update_source_sync_status(sqlite3 *database, pSource source,
 							   int num_inserted, int num_deleted, double sync_duration, int status) {
 	time_t now_in_seconds;
 	now_in_seconds = time(NULL);
-	
 	lock_sync_mutex();	
-
 	prepare_db_statement("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?",
 						 database,
@@ -344,8 +353,7 @@ void update_source_sync_status(sqlite3 *database, pSource source,
 	sqlite3_bind_int(sync_status_statement, 6, source->_source_id);
 	sqlite3_step(sync_status_statement); 
 	sqlite3_reset(sync_status_statement);
-
-  unlock_sync_mutex();	
+	unlock_sync_mutex();	
 }
 
 /**
@@ -356,7 +364,7 @@ char *get_db_session(const char* source_url) {
 	
 	if ( source_url )
 	{
-    lock_sync_mutex();	
+		lock_sync_mutex();	
 
 		prepare_db_statement("SELECT session FROM sources WHERE source_url=?",
 						     (sqlite3 *)get_database(),
@@ -367,8 +375,7 @@ char *get_db_session(const char* source_url) {
 		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
 		sqlite3_reset(session_db_statement);
 
-    unlock_sync_mutex();	
-
+		unlock_sync_mutex();	
 	}
 	return session;
 }
@@ -378,8 +385,8 @@ char *get_db_session_by_server(char* source_url) {
 	
 	if ( source_url )
 	{
-    char* szServer = parseServerFromUrl(source_url);
-    lock_sync_mutex();	
+		char* szServer = parseServerFromUrl(source_url);
+		lock_sync_mutex();	
 
 	  prepare_db_statement("SELECT session,source_url from sources", 
 						   (sqlite3 *)get_database(),
@@ -407,15 +414,14 @@ void delete_db_session( const char* source_url )
 {
 	if ( source_url )
 	{
-    lock_sync_mutex();	
+		lock_sync_mutex();	
 		prepare_db_statement("UPDATE sources SET session=NULL where source_url=?",
 						 (sqlite3 *)get_database(),
 						 &del_session_db_statement);
 		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
 		sqlite3_step(del_session_db_statement); 
 		sqlite3_reset(del_session_db_statement);
-
-    unlock_sync_mutex();	
+		unlock_sync_mutex();	
 
 #if defined(_WIN32_WCE)
 		// Delete from winmo cookies
@@ -433,7 +439,6 @@ int set_db_session(const char* source_url, const char *session) {
 	if ( source_url && session )
 	{
 		lock_sync_mutex();	
-
 		prepare_db_statement("UPDATE sources SET session=? WHERE source_url=?",
 							 (sqlite3 *)get_database(),
 							 &set_session_db_statement);
@@ -442,7 +447,6 @@ int set_db_session(const char* source_url, const char *session) {
 		sqlite3_bind_text(set_session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
 		success = sqlite3_step(set_session_db_statement);
 		sqlite3_reset(set_session_db_statement);
-
 		unlock_sync_mutex();
 	}
 	return success;
@@ -471,4 +475,3 @@ void reset_sync_db() {
 	
 	unlock_sync_mutex();
 }
-
