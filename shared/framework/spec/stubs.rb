@@ -29,6 +29,8 @@ class SyncEngine
     1
   end
 end
+class StringScanner
+end
 require 'rho'
 class << Rho::RhoFSConnector
   def __rhoGetCurrentDir
