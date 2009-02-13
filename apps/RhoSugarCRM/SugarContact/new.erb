@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  New Contact
+<div class="toolbar">
+	<h1 id="pageTitle">
+		New Contact
+	</h1>
 </div>
-<% end %>
 
 <form title="New Contact" 
 	  class="panel"
 	  id="SugarContact_new_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :create)%>">
+	  action="<%=url_for(:action => :create)%>" selected="true">
 	<fieldset>
 			<div class="row">
 			  <label>Salutation</label>

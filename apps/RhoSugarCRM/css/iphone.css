@@ -1,3 +1,18 @@
+/* change default graphic for toolbar */
+body > .toolbar {
+  background: url(../images/toolbar_new.png) #ff0000 repeat-x;
+}
+
+/* now that we don't use back-buttons, we disable ellipsis on long labels */
+.toolbar > h1 {
+  overflow: visible;
+}
+
+/* generate a new button to match toolbar */
+.button {
+  -webkit-border-image: url(../images/toolButton_new.png) 0 5 0 5;	
+}
+
 fieldset select {margin-top:5px;}
 
 .clearer {clear:both;}
@@ -91,6 +106,25 @@ table.grid tr:last-of-type td {
 	margin-top: -4px;
 }
 
-generic_heading {
+.generic_heading {
 	display: none;
 }
+
+/*
+.generic_heading {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-bottom: 1px solid #2d3642;
+    border-top: 1px solid #6d84a2;
+    padding: 10px;
+    background-color: #556655;
+    font-size: 110%;
+    width: auto;
+    font-weight: bold;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #FFFFFF;
+}
+*/

@@ -1,10 +1,10 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Quote
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Quote
+	</h1>
 </div>
-<% end %>
 
-<div class="panel"> 
+<div class="panel" selected="true"> 
 <a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarQuote.object)%>">Edit</a>
 
 <table class="grid">
