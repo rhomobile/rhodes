@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  New Meeting
+<div class="toolbar">
+	<h1 id="pageTitle">
+		New Meeting
+	</h1>
 </div>
-<% end %>
 
 <form title="New Meeting" 
 	  class="panel"
 	  id="SugarMeeting_new_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :create)%>">
+	  action="<%=url_for(:action => :create)%>" selected="true">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarMeeting.object%>"/>
 		

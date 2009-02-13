@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  New Case
+<div class="toolbar">
+	<h1 id="pageTitle">
+		New Case
+	</h1>
 </div>
-<% end %>
 
 <form title="New SugarCase" 
 	  class="panel"
 	  id="SugarCase_new_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :create)%>">
+	  action="<%=url_for(:action => :create)%>" selected="true">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarCase.object%>"/>
 		
