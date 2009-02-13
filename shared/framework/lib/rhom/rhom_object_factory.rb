@@ -80,7 +80,6 @@ module Rhom
                   # if so, add them to the query
                   condition_hash = {}
                   if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
-                    
                     query_conditions = args[1][:conditions].each do |key,value|
                       condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
                     end
@@ -149,6 +148,10 @@ module Rhom
                 def ask(question)
                   tmp_obj = get_new_obj(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
                   if question
+                    # We only support one ask at a time!
+                    ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
+                                                              {"source_id"=>get_source_id,
+                                                               "update_type"=>'ask'})
                     ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                               {"source_id"=>get_source_id,
                                                                "object"=>tmp_obj.object,
