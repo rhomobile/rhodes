@@ -1,17 +1,16 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Calls
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Calls
+	</h1>
 </div>
-<% end %>
-
-<ul id="SugarCalls" title="Calls">
+<ul id="SugarCalls" title="Calls" selected="true">
 	
-<a class="button right_button" href="/RhoSugarCRM/SugarCall/new">New</a>
+<a class="button right_button" href="/RhoSugarCRM/SugarCall/new" target="_self">New</a>
 	
 <%@SugarCalls.each do |x|%>
 
 	<li class="overview">
-		<a href="<%= "/RhoSugarCRM/SugarCall/#{x.object}/show" %>">
+		<a href="<%= "/RhoSugarCRM/SugarCall/#{x.object}/show" %>" target="_self">
 			<%= x.name %>
 			<div>
 			<%= x.status %>&nbsp;<%= x.date_start %>
@@ -20,9 +19,4 @@
 	</li>
 
 <%end%>
-
-<!-->
-<li><font color="blue"><%=link_to "New Call", :action => :new%></font></li>
--->
-
 </ul>

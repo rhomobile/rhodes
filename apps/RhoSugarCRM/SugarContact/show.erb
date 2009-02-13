@@ -1,12 +1,12 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Contact
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Contact
+	</h1>
 </div>
-<% end %>
 
-<div class="panel" title="Show Contact">
+<div class="panel" title="Show Contact" selected="true">
  
-<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>">Edit</a>
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>" target="_self">Edit</a>
 
 <table class="grid">
   <tr>
