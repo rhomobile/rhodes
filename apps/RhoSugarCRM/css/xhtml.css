@@ -6,42 +6,22 @@ body {
     overflow-x: hidden;
 }
 
-/* disable display of normal iui display bar */
 .toolbar {
-	display:none;
-}
-
-.generic_heading {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     border-bottom: 1px solid #2d3642;
     border-top: 1px solid #6d84a2;
     padding: 10px;
     background-color: #556655;
-    font-size: 110%;
     width: auto;
-    font-weight: bold;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #FFFFFF;
 }
 
-/*
-.generic_heading > h1 {
-    position: absolute;
-    overflow: hidden;
-    left: 50%;
-    font-size: 110%;
+.toolbar > h1 {
     width: auto;
+    font-size: 130%;
     font-weight: bold;
     text-align: center;
-    text-overflow: ellipsis;
     white-space: nowrap;
     color: #FFFFFF;
 }
-*/
 
 .button {
     position: absolute;
@@ -136,20 +116,14 @@ label {
 	padding: 6px;
 }
 
+/* BB and WM do not like table-layout:fixed, but iPhone does */
 table.grid {
-	table-layout: fixed;
-/*	cellspacing: 20px; */
-	width: 95%;
-
-	border-collapse: collapse;
-	position: relative;
-	margin: 0 0 20px 0;
-	padding: 5px;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border: 1px solid #999999;
-	background: #ffffff;
-	font-size: 80%;
+  width: 95%;
+  margin: 3%;
+  padding: 5px;
+  border: 1px solid #999999;
+  background: #ffffff;
+  font-size: 80%;
 }
 
 table.grid td {
@@ -162,9 +136,10 @@ table.grid tr:last-of-type td {
 	border-bottom: none;
 }
 
+/* BB and WM want a width of 25% vs. 33% for iPhone */
 .gridleft {
 	text-align: right;
-	width: 35%;
+	width: 25%;
 	color: #4183C4;
 }
  
