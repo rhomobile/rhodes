@@ -41,7 +41,8 @@ describe "rho db initializer", :shared => true do
     @rhom = Rhom::RhomObjectFactory.new
   end
 
-  after(:each) do 
+  after(:each) do
+    Rhom::RhomDbAdapter.close
     @rho = nil
     @rhom = nil
   end
