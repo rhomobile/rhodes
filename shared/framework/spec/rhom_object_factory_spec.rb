@@ -141,8 +141,6 @@ describe "RhomObjectFactory" do
   end
   
   it "should encode ask params" do
-    # TODO: why isn't the before(:each) running here?
-    Rhom::RhomDbAdapter::delete_from_table('object_values', :update_type => 'ask')
     question = 'where am i?'
     question_encoded = 'where%20am%20i%3F'
     Account.ask(question)
