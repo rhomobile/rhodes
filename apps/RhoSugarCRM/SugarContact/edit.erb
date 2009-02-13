@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Edit Contact
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Edit Contact
+	</h1>
 </div>
-<% end %>
 
 <form title="Edit Contact" 
 	  class="panel" 
 	  id="SugarContact_edit_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :update)%>">
+	  action="<%=url_for(:action => :update)%>" selected="true">
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarContact.object%>"/>
 		

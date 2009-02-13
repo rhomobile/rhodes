@@ -1,10 +1,10 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Cases
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Cases
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarCases" title="Cases">
+<ul id="SugarCases" title="Cases" selected="true">
 <a class="button right_button" href="/RhoSugarCRM/SugarCase/new">New</a>
 	
 <%@SugarCases.each do |x|%>

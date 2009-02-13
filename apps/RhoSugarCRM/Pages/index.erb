@@ -1,19 +1,19 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-More
+<div class="toolbar">
+	<h1 id="pageTitle">
+		More
+	</h1>
 </div>
-<% end %>
 
-<ul title="More">
+<ul title="More" selected="true">
 
     <% if System::get_property('platform') == 'APPLE' %>
-      <li><a href="SugarCall"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
-		  <li><a href="SugarMeeting"><img class="menu_icon" src="images/briefcaseicon.png"/>Meetings</a></li>
-		  <li><a href="SugarCase"><img class="menu_icon" src="images/docsicon.png"/>Cases</a></li>
-		  <li><a href="SugarQuote"><img class="menu_icon" src="images/calcicon.png"/>Quotes</a></li>
-		  <li><a href="SugarEmployee"><img class="menu_icon" src="images/stampicon.png"/>Employees</a></li>
-		  <li><a href="SugarCampaign"><img class="menu_icon" src="images/bulbicon.png"/>Campaigns</a></li>
-		  <li><a href="SugarProduct"><img class="menu_icon" src="images/stacksicon.png"/>Products</a></li>      
+      <li><a href="SugarCall" target="_self"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
+		  <li><a href="SugarMeeting" target="_self"><img class="menu_icon" src="images/briefcaseicon.png"/>Meetings</a></li>
+		  <li><a href="SugarCase" target="_self"><img class="menu_icon" src="images/docsicon.png"/>Cases</a></li>
+		  <li><a href="SugarQuote" target="_self"><img class="menu_icon" src="images/calcicon.png"/>Quotes</a></li>
+		  <li><a href="SugarEmployee" target="_self"><img class="menu_icon" src="images/stampicon.png"/>Employees</a></li>
+		  <li><a href="SugarCampaign" target="_self"><img class="menu_icon" src="images/bulbicon.png"/>Campaigns</a></li>
+		  <li><a href="SugarProduct" target="_self"><img class="menu_icon" src="images/stacksicon.png"/>Products</a></li>      
     <% else %>
       <li>
         <table>
