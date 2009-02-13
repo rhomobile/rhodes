@@ -29,6 +29,7 @@ int execv(const char *path, char *const argv[])
 
 void abort(void)
 {
+    exit(-1);
 }
 
 int _cwait( int *termstat, int procHandle, int action )
