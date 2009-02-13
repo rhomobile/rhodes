@@ -15,10 +15,11 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
+#include <crtdbg.h>
 
 extern void Init_SyncEngine(void);
 
-#define COMPILER 1
+//#define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
  ruby_incpush(getenv("RUBYLIB"));
@@ -44,10 +45,6 @@ const char* RhoGetRootPath()
     return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
 }
 
-void Init_Phonebook()
-{
-}
-
 #else 
 #include "vm_core.h"
 static VALUE
@@ -57,6 +54,9 @@ int
 main(int argc, char **argv)
 {
     int nRes = 0;
+
+    //_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_LEAK_CHECK_DF);
+
 #ifdef RUBY_DEBUG_ENV
     ruby_set_debug_option(getenv("RUBY_DEBUG"));
 #endif
@@ -122,4 +122,7 @@ void Init_GeoLocation(){
 }
 
 void Init_SyncEngine(void) {
+}
+
+void Init_Phonebook(){
 }

@@ -33,6 +33,7 @@ VALUE addHashToHash(VALUE hash, const char* key, VALUE val);
 char* callFramework(VALUE hashReq);
 char* callServeIndex(char* index_name);
 char* callGetStartPage();
+char* callGetOptionsPage();
 char* callGetRhobundleZipUrl();
 
 void RhoRubyStop();

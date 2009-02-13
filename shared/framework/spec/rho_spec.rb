@@ -50,6 +50,20 @@ describe "Rho" do
     Rho::RhoConfig.start_path = '/'
     @rho.get_start_path.should == '/'
   end
+  
+  it "should have options_path" do
+    Rho::RhoConfig.options_path.should == '/'
+  end
+  
+  it "should set options_path" do
+    Rho::RhoConfig.options_path = '/ops2'
+    Rho::RhoConfig.options_path.should == '/ops2'
+  end
+  
+  it "should retrieve options_path" do
+    Rho::RhoConfig.options_path = '/ops3'
+    @rho.get_options_path.should == '/ops3'
+  end
 
   it "should return from get_app" do
     pending "fix relative paths for testing of get_app"
