@@ -29,7 +29,7 @@ module Rhom
       
       # maintains a single database connection
       def open(dbfile=nil)
-        puts "DB name = " + dbfile.inspect
+        #puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
           @@database = SQLite3::Database.new(dbfile)
         end

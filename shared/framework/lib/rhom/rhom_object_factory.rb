@@ -76,13 +76,33 @@ module Rhom
                     conditions = {"object"=>strip_braces(args.first.to_s)}
                   end
                   
-                  conditions.merge!(args.first) if args.first.is_a?(Hash)
-                  
+                  # do we have conditions?
+                  # if so, add them to the query
+                  condition_hash = {}
+                  if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
+                    
+                    query_conditions = args[1][:conditions].each do |key,value|
+                      condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
+                    end
+                  end
+                  conditions.merge!(condition_hash)
+
                   # process query, create, and update lists in order
                   ["query", "create", "update"].each do |update_type|
                     conditions.merge!({"update_type"=>update_type})
-                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions,
-                                                                    {"order by"=>'object'})
+                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'})
+                    
+                    # fetch the rest of the attributes if we're searching by specific attrib value
+                    if condition_hash and condition_hash.size > 0
+                      full_objects = []
+                      objs.each do |obj|
+                        full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {:object => obj['object'].to_s})
+                      end
+                      objs = full_objects
+                    end
+                    
+                    # build up the object array where each
+                    # row in this array is a rhom_object
                     objs.collect! do |obj|
                       object = obj['object']
                       attrib = obj['attrib']
@@ -99,7 +119,16 @@ module Rhom
                   # convert hash to array
                   list = hash_list.values
                   hash_list = nil
-                  if list.length == 1 and args.first != :all
+                  
+                  # setup order by if provided
+                  order = extract_options(args)
+                  order_value = order[:order] if order and order[:order]
+                  if order_value
+                    list.sort! {|x,y| x.send(order_value.to_sym) <=> y.send(order_value.to_sym) }
+                  end
+                  
+                  # return a single rhom object if searching for one
+                  if args.first == :first or args.first.is_a?(String)
                     return list[0]
                   end
                   list
