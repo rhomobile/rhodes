@@ -7,11 +7,10 @@ static char currentLocation[4096] = "";
 
 NSString *loadingText = @"Loading...";
 
-@synthesize viewHomeUrl;
+@synthesize viewHomeUrl, viewOptionsUrl;
 
 -(void)viewDidLoad {
 	[super viewDidLoad];
-	backBtn.enabled = NO;
 }
 
 -(void)navigate:(NSString*)url {
@@ -30,6 +29,12 @@ NSString *loadingText = @"Loading...";
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
 		[self navigate:viewHomeUrl];
+	}
+}
+
+-(IBAction)goOptions {
+	if (viewOptionsUrl != NULL) {
+		[self navigate:viewOptionsUrl];
 	}
 }
 

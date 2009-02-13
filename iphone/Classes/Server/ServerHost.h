@@ -14,7 +14,7 @@
 	AppManager * appManager;
     CFRunLoopRef runLoop;
 	sqlite3 *database;
-	NSString *homeUrl;
+	NSString *homeUrl,*optionsUrl;
 	
 @public
 	id  actionTarget;
@@ -22,6 +22,7 @@
 	SEL onStartFailure;
 	SEL onRefreshView;
 	SEL onSetViewHomeUrl;
+	SEL onSetViewOptionsUrl;
 }
 
 // callbacks
@@ -30,6 +31,7 @@
 @property (assign) SEL onStartFailure;
 @property (assign) SEL onRefreshView;
 @property (assign) SEL onSetViewHomeUrl;
+@property (assign) SEL onSetViewOptionsUrl;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
