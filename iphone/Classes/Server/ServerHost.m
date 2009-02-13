@@ -59,7 +59,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onSetViewHomeUrl;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onSetViewHomeUrl, onSetViewOptionsUrl;
 
 
 - (void)serverStarted:(NSString*)data {
@@ -93,14 +93,23 @@ static ServerHost* sharedSH = nil;
 	}	
 }
 
+- (void)setViewOptionsUrl:(NSString*)url {
+	if(actionTarget && [actionTarget respondsToSelector:onSetViewOptionsUrl]) {
+		[actionTarget performSelector:onSetViewOptionsUrl withObject:url];
+	}	
+}
+
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
 	homeUrl = [NSString stringWithCString:callGetStartPage() encoding:NSUTF8StringEncoding];
+	optionsUrl = [NSString stringWithCString:callGetOptionsPage() encoding:NSUTF8StringEncoding];
 	DBG(("Start page: %s\n", [homeUrl UTF8String]));
+	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
+	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
 	
     runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
@@ -158,6 +167,7 @@ static ServerHost* sharedSH = nil;
 {
     [appManager release];
 	[homeUrl release];
+	[optionsUrl release];
 	[super dealloc];
 }
 
