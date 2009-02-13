@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Edit Opportunity
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Edit Opportunity
+	</h1>
 </div>
-<% end %>
 
 <form title="Edit Opportunity" 
 	  class="panel" 
 	  id="SugarOpportunity_edit_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :update)%>">
+	  action="<%=url_for(:action => :update)%>" selected="true">
 	
 	  <fieldset>
 		  <input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
@@ -23,12 +23,6 @@
 			  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
 		  </div>
 
-<!--
-			<div class="row">
-			  <label>Type</label>
-			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
-			</div>
--->				
 
    <div class="row">			
       <label>Type</label>

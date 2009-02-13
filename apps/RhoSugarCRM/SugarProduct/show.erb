@@ -1,7 +1,7 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Product
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Product
+	</h1>
 </div>
-<% end %>
 
 <%= link_to "#{@SugarProduct.name}", :action => :edit, :id => @SugarProduct.object %>

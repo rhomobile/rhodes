@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  New Account
+<div class="toolbar">
+	<h1 id="pageTitle">
+		New Account
+	</h1>
 </div>
-<% end %>
 
 <form title="New Account" 
 		  class="panel"
 		  id="SugarAccount_new_form" 
 		  method="POST" 
-		  action="<%=url_for(:action => :create)%>">
+		  action="<%=url_for(:action => :create)%>" selected="true">
 
 	<fieldset>
 		

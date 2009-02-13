@@ -1,11 +1,11 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Contacts
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Contacts
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarContacts" title="Contacts">
-<a class="button right_button" href="/RhoSugarCRM/SugarContact/new">New</a>
+<ul id="SugarContacts" title="Contacts" selected="true">
+<a class="button right_button" href="/RhoSugarCRM/SugarContact/new" target="_self">New</a>
 	
 <% @SugarContacts.each do |contact| %>
 
