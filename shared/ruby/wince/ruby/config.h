@@ -134,6 +134,8 @@
 
 //#define CPDEBUG 2
 
+#include "tcmalloc/rhomem.h"
+
 #if 0
 !if "msvcr80-ruby190"!="$(RUBY_SO_NAME)" || "i386-mswin32_80"!="$(ARCH)-$(PLATFORM)"
 config.h: nul
