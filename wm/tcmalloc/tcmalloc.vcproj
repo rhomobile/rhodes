@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="shttpd"
-	ProjectGUID="{F646A3C2-A5CE-4C3A-AFDE-4EF7C5949D24}"
-	RootNamespace="shttpd"
+	Name="tcmalloc"
+	ProjectGUID="{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}"
+	RootNamespace="tcmalloc"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -72,7 +72,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -100,8 +100,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -124,8 +124,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\shared\ruby\rhoruby"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;NO_SSL;NO_SSI;NO_THREADS"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -147,7 +146,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -199,8 +198,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\shared\ruby\rhoruby;..\..\shared"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);UNICODE;_UNICODE;NO_SSL;NO_SSI;NO_THREADS"
+				AdditionalIncludeDirectories="../../shared/tcmalloc;../../shared/tcmalloc/windows;../../shared/ruby/wince;../../shared"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -222,7 +221,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -296,7 +295,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -369,7 +368,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -397,8 +396,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -421,8 +420,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\shared\ruby\rhoruby"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;NO_SSL;NO_SSI;NO_THREADS"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -443,7 +441,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -495,8 +493,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\shared\ruby\rhoruby;..\..\shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;NO_SSL;NO_SSI;NO_THREADS"
+				AdditionalIncludeDirectories="../../shared/tcmalloc;../../shared/tcmalloc/windows;../../shared/ruby/wince;../../shared"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -517,7 +515,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -590,7 +588,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/shttpd.lib"
+				OutputFile="$(OutDir)/tcmalloc.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -621,115 +619,137 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="windows"
 			>
 			<File
-				RelativePath="..\..\shared\shttpd\src\auth.c"
+				RelativePath="..\..\shared\tcmalloc\windows\config.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\compat_wince.c"
+				RelativePath="..\..\shared\tcmalloc\windows\port.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\io_dir.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\io_emb.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\io_file.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\io_socket.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\log.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\md5.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\rdispatcher.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\shttpd.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\string.c"
+				RelativePath="..\..\shared\tcmalloc\windows\port.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			Name="base"
 			>
 			<File
-				RelativePath="..\..\shared\shttpd\src\compat_win32.c"
+				RelativePath="..\..\shared\tcmalloc\base\basictypes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\compat_win32.h"
+				RelativePath="..\..\shared\tcmalloc\base\commandlineflags.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\compat_wince.h"
+				RelativePath="..\..\shared\tcmalloc\base\logging.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\config.h"
+				RelativePath="..\..\shared\tcmalloc\base\spinlock.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\shttpd\src\defs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\io.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\llist.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\md5.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\rdispatcher.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\shttpd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\ssl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\shttpd\src\std_includes.h"
+				RelativePath="..\..\shared\tcmalloc\base\thread_annotations.h"
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+		<File
+			RelativePath="..\..\shared\tcmalloc\central_freelist.cc"
 			>
-		</Filter>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\central_freelist.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\common.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\common.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\internal_logging.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\internal_logging.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\linked_list.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\maybe_threads.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\packed-cache-inl.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\page_heap.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\page_heap.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\page_heap_allocator.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\pagemap.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\rhomem.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\span.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\span.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\static_vars.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\static_vars.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\system-alloc.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\tcmalloc_.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\tcmalloc_guard.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\thread_cache.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\shared\tcmalloc\thread_cache.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
