@@ -19,6 +19,12 @@
 **
 ** This amalgamation was generated on 2008-10-15 11:26:48 UTC.
 */
+//RHO
+#define SQLITE_OMIT_EXPLAIN 1
+#define SQLITE_DISABLE_LFS 1
+#define SQLITE_THREADSAFE 0
+#define SQLITE_DEFAULT_MEMSTATUS 0
+//RHO
 #define localtime _SQLCRT_localtime
 
 #define SQLITE_CORE 1

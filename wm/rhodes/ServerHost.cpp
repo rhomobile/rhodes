@@ -16,7 +16,8 @@ CServerHost::~CServerHost(void)
 
 bool CServerHost::Start(HWND hWnd) {
   // Start HTTP server 
-  m_httpserver->ResumeThread();
+  m_httpserver->SetMainWindow(hWnd);
+  m_httpserver->ResumeThread();  
   //Start sync engine
   m_syncengine->SetMainWindow(hWnd);
   m_syncengine->ResumeThread();

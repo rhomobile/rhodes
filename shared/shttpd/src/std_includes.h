@@ -11,6 +11,10 @@
 #ifndef STD_HEADERS_INCLUDED
 #define	STD_HEADERS_INCLUDED
 
+#ifdef _WIN32_WCE
+#include "tcmalloc/rhomem.h"
+#endif /* _WIN32_WCE */
+
 #ifdef __SYMBIAN32__
 #undef _WIN32
 //#include "symbian.h"

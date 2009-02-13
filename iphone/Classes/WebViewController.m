@@ -1,15 +1,16 @@
 #import "WebViewController.h"
 #include "rhoruby.h"
 
+static char currentLocation[4096] = "";
+
 @implementation WebViewController
 
 NSString *loadingText = @"Loading...";
 
-@synthesize viewHomeUrl;
+@synthesize viewHomeUrl, viewOptionsUrl;
 
 -(void)viewDidLoad {
 	[super viewDidLoad];
-	backBtn.enabled = NO;
 }
 
 -(void)navigate:(NSString*)url {
@@ -28,6 +29,12 @@ NSString *loadingText = @"Loading...";
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
 		[self navigate:viewHomeUrl];
+	}
+}
+
+-(IBAction)goOptions {
+	if (viewOptionsUrl != NULL) {
+		[self navigate:viewOptionsUrl];
 	}
 }
 
@@ -78,14 +85,21 @@ NSString *loadingText = @"Loading...";
 		forwardBtn.enabled = NO;
 	}
 	
+	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
+	char* fragment = strstr(currentLocation,"#");
+	if (fragment) *fragment = 0; //cut out fragment
+	printf("Current location: %s\n",currentLocation);
+	
 	/*self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
-		
-	syncBtn = [[[UIBarButtonItem alloc]
-				initWithTitle:@"Sync"
-				style:UIBarButtonItemStyleBordered
-				target:self 
-				action:@selector(runSync:)] autorelease];
-	self.navigationItem.leftBarButtonItem = syncBtn;*/
+	 
+	 syncBtn = [[[UIBarButtonItem alloc]
+	 initWithTitle:@"Sync"
+	 style:UIBarButtonItemStyleBordered
+	 target:self 
+	 action:@selector(runSync:)] autorelease];
+	 self.navigationItem.leftBarButtonItem = syncBtn;*/
+	
 }
 
 - (void)runSync
@@ -94,3 +108,8 @@ NSString *loadingText = @"Loading...";
 }
 
 @end
+
+char* get_current_location() {
+	return currentLocation;
+}
+

@@ -2,6 +2,13 @@ module Rho
   module RhoSupport
 
     class << self
+      
+      def url_encode(s)
+        s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
+          sprintf("%%%02X", $&.unpack("C")[0])
+        }
+      end
+      
       def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
 	
       ESCAPED = /%([0-9a-fA-F]{2})/

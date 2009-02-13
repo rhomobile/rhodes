@@ -69,6 +69,10 @@ module Rho
       Rho::RhoConfig.start_path
     end
     
+    def get_options_path
+      Rho::RhoConfig.options_path
+    end
+    
     def get_rhobundle_zip_url
       Rho::RhoConfig.rhobundle_zip_url
     end
@@ -196,12 +200,21 @@ module Rho
   class RhoConfig
     @@sources = {}
     @@start_path = '/'
+    @@options_path = '/'
     @@rhobundle_zip_url = nil
     @@rhobundle_zip_pwd = nil
     
     class << self
       def sources
         @@sources
+      end
+      
+      def options_path
+        @@options_path
+      end
+            
+      def options_path=(path=nil)
+        @@options_path = path if path
       end
       
       def start_path

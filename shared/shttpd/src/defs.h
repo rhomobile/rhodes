@@ -265,6 +265,8 @@ struct shttpd_ctx {
 #if defined(__rtems__)
 	rtems_id         mutex;
 #endif /* _WIN32 */
+
+    //byte        conn_buffer[sizeof(struct conn) + OUT_BUF_MAX + INPUT_BUF_MAX];
 };
 
 struct listener {

@@ -23,6 +23,10 @@ public:
 	void ResumeThread();
 	void FreezeThread();
   
+  void SetMainWindow(HWND hWnd) { m_hMainWindow = hWnd; }
+  
+  struct shttpd_ctx	*GetHttpdContext() { return ctx; }
+
   //returns same buffer filled w/ path to lading page
   LPTSTR GetLoadingPage(LPTSTR buffer); 
   LPTSTR GetStartPage();
@@ -32,6 +36,8 @@ public:
 #endif 
 
 private:
+  HWND m_hMainWindow;
+
   CHttpServer(void);
 
   HRESULT Execute(DWORD_PTR dwParam, HANDLE hObject);
