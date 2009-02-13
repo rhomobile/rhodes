@@ -140,6 +140,25 @@ describe "RhomObjectFactory" do
     res[0]['value'].should == question
   end
   
+  it "should respond to ask with last question only" do
+    question = 'Rhodes'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question
+    
+    question = 'Ruby on Rails'
+    question_encoded = 'Ruby%20on%20Rails'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question_encoded
+  end
+  
   it "should encode ask params" do
     question = 'where am i?'
     question_encoded = 'where%20am%20i%3F'
