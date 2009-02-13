@@ -27,6 +27,10 @@ extern "C" {
 
 /* Define sync source */
 #define SYNC_SOURCE_FORMAT	"?format=json"
+	
+/* rhosync actions */
+#define SYNC_SHOW_ACTION   "/show"
+#define SYNC_ASK_ACTION    "/ask"
 
 /* Sync operation types */
 #define UPDATE_TYPE_UPDATE "updateobjects"

@@ -584,8 +584,8 @@ uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self, int argc
 #include "wince.h"
 #endif
 
-#ifndef IS_CLOSED_IO
-#define IS_CLOSED_IO(fd) ((fd) < 0)
-#endif //IS_CLOSED_IO
+//#ifndef IS_CLOSED_IO
+//#define IS_CLOSED_IO(fd) ((fd) < 0)
+//#endif //IS_CLOSED_IO
 
 #endif /* RUBY_WIN32_H */

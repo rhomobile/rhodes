@@ -6,6 +6,12 @@
 #include "syncengine/rsyncengine.h"
 #include "geolocation/LocationController.h"
 #include "SyncEngine.h"
+#include "rdispatcher.h"
+
+#if defined(_WIN32_WCE)
+// strdup is implemented as part of ruby CE port
+extern "C" char *strdup(const char * str);
+#endif
 
 static CHttpServer* m_instance = NULL;
 
@@ -25,6 +31,7 @@ CHttpServer::CHttpServer(void)
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
   m_szRhobundleReloadUrl = NULL;
 #endif
+  m_hMainWindow = NULL;
 
   m_bRubyInitialized = false;
   m_pStartPage = NULL;
@@ -170,3 +177,16 @@ const char* CHttpServer::GetRhobundleReloadUrl() {
 	return m_szRhobundleReloadUrl;
 }
 #endif
+
+extern "C" char* HTTPResolveUrl(char* url) {
+	char* ret = NULL;
+	CHttpServer* server = CHttpServer::Instance();
+	if (server) {
+		struct shttpd_ctx* ctx = server->GetHttpdContext();
+		char httproot[MAX_PATH];
+		const char *rootpath = RhoGetRootPath();
+		sprintf(httproot,"%sapps",rootpath);
+		ret = rho_resolve_url(url, httproot, shttpd_get_index_names(ctx));
+	}
+	return ret?ret:"";
+}

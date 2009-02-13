@@ -31,6 +31,10 @@ NSString *localhost = @"http://localhost:8080/";
 	[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
 }
 
+- (void)onSetViewOptionsUrl:(NSString *)url {
+	[webViewController setViewOptionsUrl:[localhost stringByAppendingPathComponent:url]];
+}
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
 
     //Create local server and start it
@@ -40,6 +44,7 @@ NSString *localhost = @"http://localhost:8080/";
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
 	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
+	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
     [serverHost start];
 	
     //Create View

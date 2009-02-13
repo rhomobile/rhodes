@@ -49,7 +49,7 @@ extern int stop_running;
 pthread_cond_t sync_cond;
 pthread_mutex_t sync_mutex;
 #endif
-
+	
 void* sync_engine_main_routine(void* data);
 
 /* Process operations by type */
@@ -60,7 +60,7 @@ void lock_sync_mutex();
 void unlock_sync_mutex();	
 void wake_up_sync_engine();
 void clear_client_id();
-	
+
 sqlite3 *get_database();
 	
 /* Main entry point to the sync engine */
