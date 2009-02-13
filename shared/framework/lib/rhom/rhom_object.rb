@@ -58,6 +58,10 @@ module Rhom
       return hash
     end
     
+    def extract_options(arr=[])
+      arr.last.is_a?(::Hash) ? arr.pop : {}
+    end
+    
     def method_name_reserved?(method)
       method =~ /object|source_id|update_type|type|set_notification|clear_notification/
     end
