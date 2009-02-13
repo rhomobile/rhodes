@@ -14,6 +14,11 @@ class SourceController < Rho::RhoController
     render :action => :edit
   end
   
+  def do_sync
+    SyncEngine::dosync
+    redirect Rho::RhoConfig.start_path
+  end
+  
   def update
     @source = RhomSource.find(@params['source']['source_id'])
     @source.update_attributes(@params['source'])
