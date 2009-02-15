@@ -4,4 +4,69 @@
 	</h1>
 </div>
 
-<%= link_to "#{@SugarMeeting.name}", :action => :edit, :id => @SugarMeeting.object %>
+<div class="panel" title="Meeting" selected="true">
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarMeeting.object)%>" target="_self">Edit</a>
+
+<table class="grid">
+	<tr>
+    <td class="gridleft">Name</td>
+		<td class="gridright"><%=@SugarMeeting.name%></td>
+	</tr>
+	<tr>
+    <td class="gridleft">Date entered</td>
+		<td class="gridright"><%=@SugarMeeting.date_entered%></td>
+	</tr>	
+	<tr>		
+    <td class="gridleft">Date Modified</td>
+		<td class="gridright"><%=@SugarMeeting.date_modified%></td>
+	</tr>	
+	<tr>				
+    <td class="gridleft">Modified By</td>
+		<td class="gridright"><%=@SugarMeeting.modified_by_name%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Created By</td>
+		<td class="gridright"><%=@SugarMeeting.created_by_name%></td>
+	</tr>	
+	<tr>				
+    <td class="gridleft">Description</td>
+		<td class="gridright"><%=@SugarMeeting.description%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Assigned To</td>
+		<td class="gridright"><%=@SugarMeeting.assigned_user_name%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Location</td>
+		<td class="gridright"><%=@SugarMeeting.location%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Duration Hours</td>
+		<td class="gridright"><%=@SugarMeeting.duration_hours%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Duration Min</td>
+		<td class="gridright"><%=@SugarMeeting.duration_minutes%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Date Start</td>
+		<td class="gridright"><%=@SugarMeeting.date_start%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Date End</td>
+		<td class="gridright"><%=@SugarMeeting.date_end%></td>
+	</tr>	
+	<tr>		
+    <td class="gridleft">status</td>
+		<td class="gridright"><%=@SugarMeeting.status%></td>
+	</tr>	
+	<tr>
+    <td class="gridleft">Reminder Time</td>
+		<td class="gridright"><%=@SugarMeeting.reminder_time%></td>
+	</tr>	
+	<tr>		
+    <td class="gridleft">Contact Name</td>
+		<td class="gridright"><%=@SugarMeeting.contact_name%></td>
+	</tr>	
+</table>
+</div>

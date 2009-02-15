@@ -5,6 +5,12 @@ class SugarCaseController < Rho::RhoController
   #GET /SugarCase
   def index
     @SugarCases = SugarCase.find(:all)
+    
+    # sort by name in ascending order
+    if (@SugarCases.length > 0)
+      @SugarCases = @SugarCases.sort_by {|item| !item.name.nil? ? item.name : ""}
+    end
+    
     render
   end
 

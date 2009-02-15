@@ -6,6 +6,12 @@ class SugarCallController < Rho::RhoController
   #GET /SugarCall
   def index
     @SugarCalls = SugarCall.find(:all)
+    
+    # sort by name in ascending order
+    if (@SugarCalls.length > 0)
+      @SugarCalls = @SugarCalls.sort_by {|item| !item.name.nil? ? item.name : ""}
+    end
+    
     render
   end
 

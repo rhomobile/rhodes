@@ -8,6 +8,12 @@ class SugarEmployeeController < Rho::RhoController
   #GET /SugarEmployee
   def index
     @SugarEmployees = SugarEmployee.find(:all)
+    
+    # sort by name in ascending order
+    if (@SugarEmployees.length > 0)
+      @SugarEmployees = @SugarEmployees.sort_by {|item| !item.last_name.nil? ? item.last_name : ""}
+    end
+    
     render
   end
 

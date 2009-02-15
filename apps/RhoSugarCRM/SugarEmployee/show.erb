@@ -4,6 +4,119 @@
 	</h1>
 </div>
 
-<div selected="true">
-<%= link_to "#{@SugarEmployee.first_name} #{@SugarEmployee.last_name}", :action => :edit, :id => @SugarEmployee.object %>
+<div class="panel" selected="true">
+	
+	<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarEmployee.object)%>" target="_self">Edit</a>
+	
+  <table class="grid">
+	<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"</td>
+	
+	  <tr>
+		  <td class="gridleft">Status</td>
+		  <td class="gridright"><%=@SugarEmployee.employee_status%></td>
+	  </tr>
+
+		  <tr>
+			  <td class="gridleft">First Name</td>
+			  <td class="gridright"><%=@SugarEmployee.first_name%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Last Name</td>
+			  <td class="gridright"><%=@SugarEmployee.last_name%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Title</td>
+			  <td class="gridright"><%=@SugarEmployee.title%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Department</td>
+			  <td class="gridright"><%=@SugarEmployee.department%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Reports to</td>
+			  <td class="gridright"><%=@SugarEmployee.reports_to_name%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">IM Type</td>
+			  <td class="gridright"><%=@SugarEmployee.messenger_type%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">IM Name</td>
+			  <td class="gridright"><%=@SugarEmployee.messenger_id%></td>
+		  </tr>
+		</table>
+
+		<table class="grid">
+		  <tr>
+			  <td class="gridleft">Office phone</td>
+			  <td class="gridright"><%=@SugarEmployee.phone_work%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Mobile</td>
+			  <td class="gridright"><%=@SugarEmployee.phone_mobile%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Other</td>
+			  <td class="gridright"><%=@SugarEmployee.phone_other%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Fax</td>
+			  <td class="gridright"><%=@SugarEmployee.phone_fax%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Home phone</td>
+			  <td class="gridright"><%=@SugarEmployee.phone_home%></td>
+		  </tr>		
+			</table>
+
+			<h2>Address</h2>
+			
+			<table class="grid">
+		  <tr>
+			  <td class="gridleft">Street</td>
+			  <td class="gridright"><%=@SugarEmployee.address_street%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">City</td>
+			  <td class="gridright"><%=@SugarEmployee.address_city%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">State</td>
+			  <td class="gridright"><%=@SugarEmployee.address_state%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Country</td>
+			  <td class="gridright"><%=@SugarEmployee.address_country%></td>
+		  </tr>
+
+		  <tr>
+			  <td class="gridleft">Postal code</td>
+			  <td class="gridright"><%=@SugarEmployee.address_postalcode%></td>
+		  </tr>
+			</table>
+
+			<table class="grid">
+			  <tr>
+				  <td class="gridleft">Notes</td>
+				  <td class="gridright"><%=@SugarEmployee.description%></td>
+			  </tr>
+
+			  <tr>
+				  <td class="gridleft">Email</td>
+				  <td class="gridright"><%=@SugarEmployee.email1%></td>
+			  </tr>
+		</table>
 </div>
