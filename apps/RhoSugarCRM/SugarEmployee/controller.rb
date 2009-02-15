@@ -1,7 +1,10 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class SugarEmployeeController < Rho::RhoController
 
+  include ApplicationHelper
+  
   #GET /SugarEmployee
   def index
     @SugarEmployees = SugarEmployee.find(:all)

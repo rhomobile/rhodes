@@ -8,7 +8,12 @@
 <a class="button right_button" href="/RhoSugarCRM/SugarEmployee/new" target="_self">New</a>
 	
 <% @SugarEmployees.each do |x| %>
-<li><%=link_to "#{x.first_name} #{x.last_name}", :action => :show, :id => x.object%></li>
+	<li class="overview">
+		<%=link_to "#{x.first_name} #{x.last_name}", :action => :show, :id => x.object%>
+		<div>
+		<%= x.title %><%= both_items_present?(x.title, x.phone_mobile) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.phone_mobile %>
+		</div>
+	</li>
 <% end %>
 
 </ul>

@@ -9,72 +9,46 @@
 	<% if SyncEngine::logged_in > 0 %>		
 
 		<% if System::get_property('platform') == 'APPLE' %>
-	    <li><a href="Dashboard" target="_self"><img class="menu_icon" src="images/arrowicon.png" alt="dashboard"/>Dashboard</a></li>
+		  <!-- disabled for now
+		    <li><a href="Dashboard" target="_self"><img class="menu_icon" src="images/arrowicon.png" alt="dashboard"/>Dashboard</a></li>
+      -->
 		  <li><a href="SugarOpportunity" target="_self"><img class="menu_icon" src="images/graphsicon.png"/>Opportunities</a></li>
 		  <li><a href="SugarLead" target="_self"><img class="menu_icon" src="images/boardicon.png"/>Leads</a></li>
 		  <li><a href="SugarContact" target="_self"><img class="menu_icon" src="images/peopleicon.png"/>Contacts</a></li>	
 		  <li><a href="SugarAccount" target="_self"><img class="menu_icon" src="images/buildingicon.png"/>Accounts</a></li>
+      <li><a href="SugarCall" target="_self"><img class="menu_icon" src="images/badgeicon.png"/>Calls</a></li>
+		  <li><a href="SugarQuote" target="_self"><img class="menu_icon" src="images/calcicon.png"/>Quotes</a></li>
     <% else %>
-	    <li>
-	      <table>
-	        <tr>
-	          <td>
-	            <img src="images/arrowicon.png" alt="dashboard"/>
-	          </td>
-	          <td>
-	            <a href="Dashboard" target="_self">Dashboard</a>
-	          </td>
-	        </tr>
-	      </table>
-	    </li>
-		  <li>
-	      <table>
-	        <tr>
-	          <td>
-	            <img src="images/graphsicon.png"/>
-	          </td>
-	          <td>
-	            <a href="SugarOpportunity">Opportunities</a>
-	          </td>
-	        </tr>
-	      </table>
-	    </li>
-	    <li>
-	      <table>
-	        <tr>
-	          <td>
-	            <img src="images/boardicon.png"/>
-	          </td>
-	          <td>
-	            <a href="SugarLead">Leads</a>
-	          </td>
-	        </tr>
-	      </table>
-	    </li>
-	    <li>
-	      <table>
-	        <tr>
-	          <td>
-	            <img src="images/peopleicon.png"/>
-	          </td>
-	          <td>
-	            <a href="SugarContact">Contacts</a>
-	          </td>
-	        </tr>
-	      </table>
-	    </li>
-	    <li>
-	      <table>
-	        <tr>
-	          <td>
-	            <img src="images/buildingicon.png"/>
-	          </td>
-	          <td>
-	            <a href="SugarAccount">Accounts</a>
-	          </td>
-	        </tr>
-	      </table>
-	    </li>    
+			  <!-- disabled for now
+	      <li><table><tr>
+	          <td><img src="images/arrowicon.png" alt="dashboard"/></td>
+	          <td><a href="Dashboard" target="_self">Dashboard</a></td>
+	     </tr></table></li>
+	      -->	
+		  <li><table><tr>
+	      <td><img src="images/graphsicon.png"/></td>
+	      <td><a href="SugarOpportunity">Opportunities</a></td>
+	    </tr></table></li>
+	    <li><table><tr>
+				<td><img src="images/boardicon.png"/></td>
+				<td><a href="SugarLead">Leads</a></td>
+	    </tr></table></li>
+	    <li><table><tr>
+				<td><img src="images/peopleicon.png"/></td>
+				<td><a href="SugarContact">Contacts</a></td>
+	    </tr></table></li>
+	    <li><table><tr>
+				<td><img src="images/buildingicon.png"/></td>
+				<td><a href="SugarAccount">Accounts</a></td>
+			</tr></table></li>
+	    <li><table><tr>
+				<td><img class="menu_icon" src="images/badgeicon.png"/></td>
+				<td><a href="SugarCall">Calls</a></td>
+			</tr></table></li>			
+	    <li><table><tr>
+				<td><img class="menu_icon" src="images/calcicon.png"/></td>
+				<td><a href="SugarQuote">Quotes</a></td>
+			</tr></table></li>
 	  <% end %>	
 	  <li><a href="Pages" target="_self">More...</a></li>
 		<li><a href="/Settings/User/logout" target="_self">Logout</a></li>	

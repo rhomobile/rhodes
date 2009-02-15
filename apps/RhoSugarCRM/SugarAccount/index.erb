@@ -13,7 +13,7 @@
 	<a href="<%= "/RhoSugarCRM/SugarAccount/#{x.object}/show" %>" target="_self">
 		<%= x.name %>
 		<div>
-		<%= x.billing_address_city %> | <%= x.phone_office %>
+		<%= x.billing_address_city %><%= both_items_present?(x.billing_address_city, x.phone_office) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.phone_office %>
 		</div>
 	</a>
 </li>
