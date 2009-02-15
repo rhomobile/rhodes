@@ -9,119 +9,118 @@
 	  id="SugarEmployee_new_form" 
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
-	<fieldset>
+	
+	  <fieldset>
 		<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"/>
 		
 		  <div class="row">
-			  <label>user_name: </label>
-			  <input type="text" name="SugarEmployee[user_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>first_name: </label>
-			  <input type="text" name="SugarEmployee[first_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>last_name: </label>
-			  <input type="text" name="SugarEmployee[last_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>reports_to_name: </label>
-			  <input type="text" name="SugarEmployee[reports_to_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>description: </label>
-			  <input type="text" name="SugarEmployee[description]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>title: </label>
-			  <input type="text" name="SugarEmployee[title]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>department: </label>
-			  <input type="text" name="SugarEmployee[department]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_home: </label>
-			  <input type="text" name="SugarEmployee[phone_home]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_mobile: </label>
-			  <input type="text" name="SugarEmployee[phone_mobile]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_work: </label>
-			  <input type="text" name="SugarEmployee[phone_work]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_other: </label>
-			  <input type="text" name="SugarEmployee[phone_other]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>phone_fax: </label>
-			  <input type="text" name="SugarEmployee[phone_fax]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>status: </label>
-			  <input type="text" name="SugarEmployee[status]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>address_street: </label>
-			  <input type="text" name="SugarEmployee[address_street]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>address_city: </label>
-			  <input type="text" name="SugarEmployee[address_city]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>address_state: </label>
-			  <input type="text" name="SugarEmployee[address_state]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>address_country: </label>
-			  <input type="text" name="SugarEmployee[address_country]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>address_postalcode: </label>
-			  <input type="text" name="SugarEmployee[address_postalcode]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>employee_status: </label>
+			  <label>Status</label>
 			  <input type="text" name="SugarEmployee[employee_status]"/>
 		  </div>
+
+			  <div class="row">
+				  <label>First Name</label>
+				  <input type="text" name="SugarEmployee[first_name]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Last Name</label>
+				  <input type="text" name="SugarEmployee[last_name]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Title</label>
+				  <input type="text" name="SugarEmployee[title]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Department</label>
+				  <input type="text" name="SugarEmployee[department]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Reports to</label>
+				  <input type="text" name="SugarEmployee[reports_to_name]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>IM Type</label>
+				  <input type="text" name="SugarEmployee[messenger_type]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>IM Name</label>
+				  <input type="text" name="SugarEmployee[messenger_id]"/>
+			  </div>
+			</fieldset>
+
+			<fieldset>
+			  <div class="row">
+				  <label>Office phone</label>
+				  <input type="text" name="SugarEmployee[phone_work]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Mobile</label>
+				  <input type="text" name="SugarEmployee[phone_mobile]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Other</label>
+				  <input type="text" name="SugarEmployee[phone_other]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Fax</label>
+				  <input type="text" name="SugarEmployee[phone_fax]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Home phone</label>
+				  <input type="text" name="SugarEmployee[phone_home]"/>
+			  </div>		
+				</fieldset>
+
+				<h2>Address</h2>
+				
+				<fieldset>
+			  <div class="row">
+				  <label>Street</label>
+				  <input type="text" name="SugarEmployee[address_street]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>City</label>
+				  <input type="text" name="SugarEmployee[address_city]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>State</label>
+				  <input type="text" name="SugarEmployee[address_state]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Country</label>
+				  <input type="text" name="SugarEmployee[address_country]"/>
+			  </div>
+
+			  <div class="row">
+				  <label>Postal code</label>
+				  <input type="text" name="SugarEmployee[address_postalcode]"/>
+			  </div>
+				</fieldset>
+
+				<fieldset>
+				  <div class="row">
+					  <label>Notes</label>
+					  <input type="text" name="SugarEmployee[description]"/>
+				  </div>
+
+				  <div class="row">
+					  <label>Email</label>
+					  <input type="text" name="SugarEmployee[email1]"/>
+				  </div>
+			</fieldset>
 		
-		  <div class="row">
-			  <label>messenger_id: </label>
-			  <input type="text" name="SugarEmployee[messenger_id]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>messenger_type: </label>
-			  <input type="text" name="SugarEmployee[messenger_type]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>email1: </label>
-			  <input type="text" name="SugarEmployee[email1]"/>
-		  </div>
-		
-	</fieldset>
 	<input type="submit" value="Create"/>
 </form>
