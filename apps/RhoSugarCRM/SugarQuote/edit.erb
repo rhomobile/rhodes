@@ -74,19 +74,22 @@
 		
 		  <div class="row">
 			  <label>Sub total</label>
-			  <input type="text" name="SugarQuote[subtotal]" value="<%=@SugarQuote.subtotal%>"/>
+			  <input type="text" name="SugarQuote[subtotal]" value="<%=display_number(@SugarQuote.subtotal)%>"/>
 		  </div>
 		
 		  <div class="row">
 			  <label>Total</label>
-			  <input type="text" name="SugarQuote[total]" value="<%=@SugarQuote.total%>"/>
+			  <input type="text" name="SugarQuote[total]" value="<%=display_number(@SugarQuote.total)%>"/>
 		  </div>
 		
 	</fieldset>
 	<input type="submit" value="Update"/>
+	<br>
+<!--	
 	<p align="center">
 		<a href="<%=url_for(:action => :delete, :id => @SugarQuote.object)%>">
 			<font color="#990000">Delete</font>
 		</a>
 	</p>
+-->	
 </form>

@@ -12,7 +12,7 @@
 <li class="overview">
 <%= link_to "#{contact.first_name} #{contact.last_name}", :action => :show, :id => contact.object %>
 <div>
-<%= contact.account_name %> | <%= contact.phone_work %>
+<%= contact.account_name %><%= both_items_present?(contact.account_name, contact.phone_work) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= contact.phone_work %>
 </div>
 </li>
 
