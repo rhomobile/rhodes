@@ -5,6 +5,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
+char* rho_resolve_url(char* url, const char* root,const char *index_names);
 void* rho_dispatch(struct conn *c, const char* path);
 void  rho_serve(struct shttpd_arg *arg);
 int   isindex(struct conn *c, char* path);

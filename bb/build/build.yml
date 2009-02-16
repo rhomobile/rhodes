@@ -17,6 +17,7 @@ env:
 
 build:
   bindir: ../bin
+  rhobundledir: ../RhoBundle
   srcdir: %bindir%/RhoBundle
   preverified: ../preverified
   rubypath: ../../win32/target/compiler/RhoRuby.exe

@@ -51,6 +51,13 @@ public :
         return S_OK;
     }
 
+	void DoViewRefresh() {
+		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
+	}
+
+	char* GetCurrentLocation() {
+		return m_appWindow.GetCurrentLocation();
+	}
 
     void RunMessageLoop( ) throw( )
     {
@@ -81,5 +88,19 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
     return _AtlModule.WinMain(nShowCmd);
+}
+
+//Hook for ruby call to refresh web view
+extern "C" void webview_refresh() {
+	_AtlModule.DoViewRefresh();
+}
+
+//Sync hook to refresh the web view
+extern "C" void perform_webview_refresh() {
+	webview_refresh();
+}
+
+extern "C" char* get_current_location() {
+	return _AtlModule.GetCurrentLocation();
 }
 

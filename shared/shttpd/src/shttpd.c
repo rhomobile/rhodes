@@ -1743,6 +1743,10 @@ shttpd_set_option(struct shttpd_ctx *ctx, const char *opt, const char *val)
 	return (retval);
 }
 
+const char* shttpd_get_index_names(struct shttpd_ctx *ctx) {
+	return ctx->options[OPT_INDEX_FILES];	
+}
+
 static void
 show_cfg_page(struct shttpd_arg *arg)
 {

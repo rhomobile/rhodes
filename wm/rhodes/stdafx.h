@@ -84,3 +84,5 @@ using namespace ATL;
         #endif
     #endif
 #endif
+
+#include "tcmalloc/rhomem.h"

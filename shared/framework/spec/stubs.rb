@@ -7,6 +7,12 @@ class Bignum
   def fdiv
   end
 end
+class String
+  # stub this until we run on 1.9
+  def force_encoding(str)
+    self
+  end
+end
 class SyncEngine
   def self.dosync
   end
@@ -22,6 +28,8 @@ class SyncEngine
   def self.logged_in
     1
   end
+end
+class StringScanner
 end
 require 'rho'
 class << Rho::RhoFSConnector
