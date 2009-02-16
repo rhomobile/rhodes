@@ -13,7 +13,7 @@
 	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>" target="_self">
 		<%= x.name %>
 		<div>
-		<%= x.sales_stage %>&nbsp;<%= x.probability %><%= !blank?(x.probability) ? '%' : "" %>
+		<%= x.sales_stage %><%= both_items_present?(x.sales_stage, x.probability) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.probability %><%= !blank?(x.probability) ? '%' : "" %>
 		</div>
 	</a>
 </li>

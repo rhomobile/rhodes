@@ -1,6 +1,9 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class SugarCaseController < Rho::RhoController
+
+  include ApplicationHelper
 
   #GET /SugarCase
   def index

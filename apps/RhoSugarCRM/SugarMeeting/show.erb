@@ -69,4 +69,11 @@
 		<td class="gridright"><%=@SugarMeeting.contact_name%></td>
 	</tr>	
 </table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarMeeting.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
+
 </div>

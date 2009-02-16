@@ -1,6 +1,9 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class SugarProductController < Rho::RhoController
+
+  include ApplicationHelper
 
   #GET /SugarProduct
   def index

@@ -84,8 +84,13 @@
 				  </div>
 
 				  <div class="row">
-					  <label>Sales Stage</label>
-					  <input type="text" name="SugarOpportunity[sales_stage]" value="<%=@SugarOpportunity.sales_stage%>"/>
+					  <label>Stage</label>					
+						<select id="sales_stage" name="SugarOpportunity[sales_stage]">
+							<% %w(Prospecting Qualification Needs\ Analysis Value\ Proposition Id.\ Decision\ Makers Perception\ Analysis Proposal/Price\ Quote Negotiation/Review Closed\ Won Closed\ Lost).each do |state| %>
+								<% selected = (state == @SugarOpportunity.sales_stage) ? "selected=\"#{@SugarOpportunity.sales_stage}\"" : "" %>
+								<option <%= selected %>><%= state %></option>
+							<% end %>
+						</select>
 				  </div>
 
 				  <div class="row">

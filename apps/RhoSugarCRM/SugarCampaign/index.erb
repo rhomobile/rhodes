@@ -9,7 +9,14 @@
 	
 <%@SugarCampaigns.each do |x|%>
 
-<li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
+<li class="overview">
+	<a href="<%= "/RhoSugarCRM/SugarCampaign/#{x.object}/show" %>" target="_self">
+		<%= x.name %>
+		<div>
+		<%= x.status %><%= both_items_present?(x.status, x.budget) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= display_dollars(x.budget) %>
+		</div>
+	</a>
+</li>
 
 <%end%>
 </ul>
