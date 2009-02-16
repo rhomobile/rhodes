@@ -13,65 +13,60 @@
 		<input type="hidden" name="id" value="<%=@SugarProduct.object%>"/>
 		
 		  <div class="row">
-			  <label>name: </label>
+			  <label>Name</label>
 			  <input type="text" name="SugarProduct[name]" value="<%=@SugarProduct.name%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>date_entered: </label>
+			  <label>Date Entered</label>
 			  <input type="text" name="SugarProduct[date_entered]" value="<%=@SugarProduct.date_entered%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>date_modified: </label>
+			  <label>Date Modified</label>
 			  <input type="text" name="SugarProduct[date_modified]" value="<%=@SugarProduct.date_modified%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>description: </label>
+			  <label>Description</label>
 			  <input type="text" name="SugarProduct[description]" value="<%=@SugarProduct.description%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>team_name: </label>
+			  <label>Team Name</label>
 			  <input type="text" name="SugarProduct[team_name]" value="<%=@SugarProduct.team_name%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>list_price: </label>
-			  <input type="text" name="SugarProduct[list_price]" value="<%=@SugarProduct.list_price%>"/>
+			  <label>List Price</label>
+			  <input type="text" name="SugarProduct[list_price]" value="<%=display_number(@SugarProduct.list_price)%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>cost_price: </label>
-			  <input type="text" name="SugarProduct[cost_price]" value="<%=@SugarProduct.cost_price%>"/>
+			  <label>Cost Price</label>
+			  <input type="text" name="SugarProduct[cost_price]" value="<%=display_number(@SugarProduct.cost_price)%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>discount_price: </label>
-			  <input type="text" name="SugarProduct[discount_price]" value="<%=@SugarProduct.discount_price%>"/>
+			  <label>Discount Price</label>
+			  <input type="text" name="SugarProduct[discount_price]" value="<%=display_number(@SugarProduct.discount_price)%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>status: </label>
+			  <label>Status</label>
 			  <input type="text" name="SugarProduct[status]" value="<%=@SugarProduct.status%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>website: </label>
+			  <label>Website</label>
 			  <input type="text" name="SugarProduct[website]" value="<%=@SugarProduct.website%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>account_name: </label>
+			  <label>Account</label>
 			  <input type="text" name="SugarProduct[account_name]" value="<%=@SugarProduct.account_name%>"/>
 		  </div>
 		
 	</fieldset>
-	<input type="submit" value="Update"/>
-	<p align="center">
-		<a href="<%=url_for(:action => :delete, :id => @SugarProduct.object)%>">
-			<font color="#990000">Delete</font>
-		</a>
-	</p>
+	<input type="submit" value="Update"/>	
 </form>

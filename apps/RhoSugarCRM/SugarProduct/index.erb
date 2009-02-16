@@ -9,7 +9,14 @@
 	
 <%@SugarProducts.each do |x|%>
 
-<li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
+<li class="overview">
+	<a href="<%= "/RhoSugarCRM/SugarProduct/#{x.object}/show" %>" target="_self">
+		<%= x.name %>
+		<div>
+		<%= display_dollars(x.list_price) %>
+		</div>
+	</a>
+</li>
 
 <%end%>
 </ul>

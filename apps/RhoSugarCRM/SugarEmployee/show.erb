@@ -119,4 +119,11 @@
 				  <td class="gridright"><%=@SugarEmployee.email1%></td>
 			  </tr>
 		</table>
+		
+		<p align="center">
+			<a href="<%=url_for(:action => :delete, :id => @SugarEmployee.object)%>">
+				<span class="deletebutton">Delete</span>
+			</a>
+		</p>
+		
 </div>

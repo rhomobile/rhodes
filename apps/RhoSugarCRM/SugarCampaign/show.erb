@@ -4,4 +4,70 @@
 	</h1>
 </div>
 
-<%= link_to "#{@SugarCampaign.name}", :action => :edit, :id => @SugarCampaign.object%>
+<div class="panel" selected="true">	
+	<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarCampaign.object)%>" target="_self">Edit</a>
+	
+<table class="grid">
+	  <tr>
+		  <td class="gridleft">Name</td>
+		  <td class="gridright"><%=@SugarCampaign.name%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Date Entered</td>
+		  <td class="gridright"><%=@SugarCampaign.date_entered%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Date Modified</td>
+		  <td class="gridright"><%=@SugarCampaign.date_modified%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Assigned To</td>
+		  <td class="gridright"><%=@SugarCampaign.assigned_user_name%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Team</td>
+		  <td class="gridright"><%=@SugarCampaign.team_name%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Start Date</td>
+		  <td class="gridright"><%=@SugarCampaign.start_date%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">End Date</td>
+		  <td class="gridright"><%=@SugarCampaign.end_date%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Status</td>
+		  <td class="gridright"><%=@SugarCampaign.status%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Budget</td>
+		  <td class="gridright"><%=display_dollars(@SugarCampaign.budget)%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Expected Revenue</td>
+		  <td class="gridright"><%=display_dollars(@SugarCampaign.expected_revenue)%></td>
+	  </tr>
+	
+	  <tr>
+		  <td class="gridleft">Campaign Type</td>
+		  <td class="gridright"><%=@SugarCampaign.campaign_type%></td>
+	  </tr>
+</table>	
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarCampaign.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
+
+</div>
