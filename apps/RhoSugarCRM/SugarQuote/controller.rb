@@ -10,10 +10,12 @@ class SugarQuoteController < Rho::RhoController
     @SugarQuotes = SugarQuote.find(:all)
     
     # sort by name in ascending order
-    if (@SugarQuotes.length > 0)
-      @SugarQuotes = @SugarQuotes.sort_by {|item| !item.name.nil? ? item.name : ""}
+		if System::get_property('platform') != 'Blackberry'    
+      if (@SugarQuotes.length > 0)
+        @SugarQuotes = @SugarQuotes.sort_by {|item| !item.name.nil? ? item.name : ""}
+      end
     end
-    
+  
     render
   end
 
