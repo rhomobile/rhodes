@@ -2,61 +2,18 @@
 body > .toolbar {
   background: url(../images/toolbar_new.png) #ff0000 repeat-x;
 }
-
 /* now that we don't use back-buttons, we disable ellipsis on long labels */
 .toolbar > h1 {
   overflow: visible;
 }
-
 /* generate a new button to match toolbar */
 .button {
   -webkit-border-image: url(../images/toolButton_new.png) 0 5 0 5;	
 }
-
-fieldset select {margin-top:5px;}
-
-.clearer {clear:both;}
-
-ul.info {
-margin-left:0px;padding-left:0;
-list-style-image:none;
-list-style-position:outside;
-list-style-type:none;
-}
-
-ul.info li {font-weight:bold;margin-left:10px;padding-left:0;}
-
-li.overview div {font-size:85%;font-weight:normal;color:#4183C4;}
-
-.tallrow {
-	position: relative;
-	height:84px;
-	border-bottom: 1px solid #999999;
-  -webkit-border-radius: 0;
-}
-
-textarea {
-  font-size: 16px;
-  font-weight: normal;
-}
-
-label {
-	font-size: 80%;	
-}
-.tallrow label { float:left; line-height: 42px;font-weight: bold; margin-left:14px;}
-.tallrow select { float:right; clear:left; font-size: 120%; height: 30px;}
-
-.tallrow input:not(input[type|=radio]):not(input[type|=checkbox]) {
-	width:auto;
-	margin: 0;
-	padding: 6px;
-}
-
 table.grid {
 	table-layout: fixed;
 	cellspacing: 20px;
 	width: 100%;
-
 	border-collapse: collapse;
 	position: relative;
 	margin: 0 0 20px 0;
@@ -68,63 +25,29 @@ table.grid {
 	font-size: 80%;
 	border: 0;
 }
-
 table.grid td {
 	border-bottom: 1px solid #BBBBBB;
 	padding:10px;
 	margin:0;
 }
-
 table.grid tr:last-of-type td {
 	border-bottom: none;
 }
-
 .gridleft {
 	text-align: right;
 	width: 35%;
 	color: #4183C4;
 }
- 
 .gridright {
 	text-align: left;
 	font-weight:bold;
 }
-
-.right_button {
-    margin: -45px 0 0 0;
-}
-
-.left_button {
-/*    margin: -45px 0 0 -200px; */
-    display: inline;  /* show the hidden back button */
-}
-
 .menu_icon {
-    border:none;
+  border:none;
 	vertical-align:middle;
 	padding-right: 4px;
 	margin-top: -4px;
 }
-
-.generic_heading {
-	display: none;
-}
-
-/*
-.generic_heading {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border-bottom: 1px solid #2d3642;
-    border-top: 1px solid #6d84a2;
-    padding: 10px;
-    background-color: #556655;
-    font-size: 110%;
-    width: auto;
-    font-weight: bold;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #FFFFFF;
-}
-*/
+/* show the hidden back button */
+.right_button {margin: -45px 0 0 0}
+.left_button {display: inline}

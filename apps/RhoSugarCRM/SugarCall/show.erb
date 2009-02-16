@@ -57,6 +57,12 @@
 			<td class="gridright"><%=@SugarCall.assigned_user_name%></td>
 		  </tr>		
    </table>
+
+	<p align="center">
+		<a href="<%=url_for(:action => :delete, :id => @SugarCall.object)%>">
+			<span class="deletebutton">Delete</span>
+		</a>
+	</p>
 					 
 </div>
 

@@ -12,60 +12,72 @@
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarCase.object%>"/>
 		
+		<div class="row">
+		  <label>Case Number</label>
+		  <input type="text" name="SugarCase[case_number]" value="<%=@SugarCase.case_number%>"/>
+	  </div>
+		
+		<div class="row">
+		  <label>Priority</label>
+		  <input type="text" name="SugarCase[priority]" value="<%=@SugarCase.priority%>"/>
+	  </div>
+	  
+	  <div class="row">
+		  <label>Status</label>
+		  <input type="text" name="SugarCase[status]" value="<%=@SugarCase.status%>"/>
+	  </div>
+	
+	  <div class="row">
+		  <label>Type</label>
+		  <input type="text" name="SugarCase[type]" value="<%=@SugarCase.type%>"/>
+	  </div>
+		</fieldset>
+			
+			<fieldset>
+	
 		  <div class="row">
-			  <label>name: </label>
-			  <input type="text" name="SugarCase[name]"/>
+			  <label>Subject</label>
+			  <input type="text" name="SugarCase[name]" value="<%=@SugarCase.name%>"/>
+		  </div>
+		
+				  <div class="row">
+					  <label>Description</label>
+					  <input type="text" name="SugarCase[description]" value="<%=@SugarCase.description%>"/>
+				  </div>
+		
+		
+				  <div class="row">
+					  <label>Resolution</label>
+					  <input type="text" name="SugarCase[resolution]" value="<%=@SugarCase.resolution%>"/>
+				  </div>
+				
+				</fieldset>
+				
+				<fieldset>
+				
+			  <div class="row">
+				  <label>Assigned to</label>
+				  <input type="text" name="SugarCase[assigned_user_name]" value="<%=@SugarCase.assigned_user_name%>"/>
+			  </div>
+
+
+			  <div class="row">
+				  <label>Account Name</label>
+				  <input type="text" name="SugarCase[account_name]" value="<%=@SugarCase.account_name%>"/>
+			  </div>
+			
+				</fieldset>
+
+		<fieldset>		
+		  <div class="row">
+			  <label>Modified On</label>
+			  <input type="text" name="SugarCase[date_modified]" value="<%=@SugarCase.date_modified%>"/>
 		  </div>
 		
 		  <div class="row">
-			  <label>date_entered: </label>
-			  <input type="text" name="SugarCase[date_entered]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>created_by_name: </label>
-			  <input type="text" name="SugarCase[created_by_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>description: </label>
-			  <input type="text" name="SugarCase[description]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>assigned_user_name: </label>
-			  <input type="text" name="SugarCase[assigned_user_name]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>case_number: </label>
-			  <input type="text" name="SugarCase[case_number]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>type: </label>
-			  <input type="text" name="SugarCase[type]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>status: </label>
-			  <input type="text" name="SugarCase[status]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>priority: </label>
-			  <input type="text" name="SugarCase[priority]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>resolution: </label>
-			  <input type="text" name="SugarCase[resolution]"/>
-		  </div>
-		
-		  <div class="row">
-			  <label>account_name: </label>
-			  <input type="text" name="SugarCase[account_name]"/>
-		  </div>
+			  <label>Created On</label>
+			  <input type="text" name="SugarCase[date_entered]" value="<%=@SugarCase.date_entered%>"/>
+		  </div>	
 		
 	</fieldset>
 	<input type="submit" value="Create"/>
