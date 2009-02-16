@@ -88,7 +88,7 @@ describe "RhomObjectFactory" do
     destroy_id = @account.object
     @account.destroy
     @account_nil = Account.find(destroy_id)
-    @account_nil.size.should == 0
+    @account_nil.should be_nil
     new_count = Account.find(:all).size
     (count - 1).should == new_count
   end
@@ -116,7 +116,7 @@ describe "RhomObjectFactory" do
   it "should retrieve and modify one record" do
     @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
     
-    @acct.name.should == "Mobio US"
+    @acct.name.should == "Mobio India"
     @acct.industry.should == "Technology"
     
     @acct.name = "Rhomobile US"
@@ -128,5 +128,87 @@ describe "RhomObjectFactory" do
     @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
     
     @acct.foobar.should be_nil
+  end
+  
+  it "should respond to ask" do
+    question = 'Rhodes'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question
+  end
+  
+  it "should respond to ask with last question only" do
+    question = 'Rhodes'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question
+    
+    question = 'Ruby on Rails'
+    question_encoded = 'Ruby%20on%20Rails'
+    Account.ask(question)
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res.length.should == 1
+    
+    res[0]['attrib'].should == 'question'
+    res[0]['value'].should == question_encoded
+  end
+  
+  it "should encode ask params" do
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Account.ask(question)
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    @res.length.should == 1
+    
+    @res[0]['attrib'].should == 'question'
+    @res[0]['value'].should == question_encoded
+  end
+  
+  it "should find with conditions" do
+    @accts = Account.find(:all, :conditions => {'industry' => 'Technology'})
+    @accts.length.should == 3
+    @accts[0].name.should == "Rhomobile"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Aeroprise"
+    @accts[1].industry.should == "Technology"
+  end
+  
+  it "should find first with conditions" do
+    @mobio_ind_acct = Account.find(:first, :conditions => {'name' => 'Mobio India'})
+    @mobio_ind_acct.name.should == "Mobio India"
+    @mobio_ind_acct.industry.should == "Technology"
+  end
+  
+  it "should order by column" do
+    @accts = Account.find(:all, :order => 'name')
+    
+    @accts.first.name.should == "Aeroprise"
+    @accts.first.industry.should == "Technology"
+    @accts.second.name.should == "Mirapath"
+    @accts.second.industry.should == "Electronics"
+    @accts.last.name.should == "vSpring"
+    @accts.last.industry.should == "Finance"
+  end
+  
+  it "should include only selected columns" do
+    pending "need to implement"
+    @accts = Account.find(:all, :select => ['name'])
+    
+    @accts[0].name.should == "vSpring"
+    @accts[0].industry.should be_nil
+  end
+  
+  it "should include selected columns and conditions" do
+    pending "need to implement"
+    @accts = Account.find(:all, :conditions => {'name' => 'vSpring'}, :select => ['name'])
+    
+    @accts[0].name.should == "vSpring"
+    @accts[0].industry.should be_nil
   end
 end

@@ -1,16 +1,16 @@
-require 'Jake.rb'
+require '../../shared/build/Jake.rb'
 
 config = Jake.config(File.open('build.yml'))
 
-rhodesimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["preverified"]+"/RubyVM.jar")
-
+rhobundleimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["preverified"]+"/RubyVM.jar")
+rhodesimplib = rhobundleimplib + ";"+ Jake.get_absolute(config["build"]["preverified"]+"/RhoBundle.jar")
 
 namespace "package" do
   desc "Package rhoBundle"
   task :rhobundle => ["build:rubyvm", "build:rhobundle"] do
     Jake.rapc("RhoBundle",
        config["build"]["targetdir"],
-       rhodesimplib ,
+       rhobundleimplib ,
        '"' + Jake.get_absolute(config["build"]["preverified"] + "/RhoBundle.jar") + '"',
        "RhoBundle",
        config["env"]["vendor"],
@@ -137,6 +137,8 @@ namespace "build" do
     args << config["build"]["bindir"] + "/RhoBundle.jar"
     puts Jake.run(jdehome + "/bin/preverify.exe",args)
     $stdout.flush
+
+    cp config["build"]["bindir"] + "/RhoBundle.jar", config["build"]["rhobundledir"] + "/RhoBundle.jar"
 
   end
 
@@ -273,6 +275,23 @@ namespace "device" do
     Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
     Jake.unjar(config["build"]["targetdir"] + "/rhodesApp.cod", config["build"]["targetdir"] + "/web")
     Jake.unjar(config["build"]["targetdir"] + "/RubyVM.cod", config["build"]["targetdir"] + "/web")
+
+  end
+
+  desc "Build and package dev rhobundle for device"
+  task :rhobundle => "package:rhobundle" do
+
+    if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
+      Rake::Task["run:autosign"].execute
+    else
+      Rake::Task["run:manualsign"].execute
+    end
+
+    rm_rf Dir.glob(config["build"]["targetdir"] + "/web/RhoBundle*.*")
+
+    cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
+
+    Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
 
   end
 

@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="161"/>
+			<integer value="61"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -136,7 +136,7 @@
 							<object class="IBUILabel" id="47732215">
 								<reference key="NSNextResponder" ref="178952735"/>
 								<int key="NSvFlags">1316</int>
-								<string key="NSFrame">{{124, 448}, {97, 21}}</string>
+								<string key="NSFrame">{{109, 447}, {72, 21}}</string>
 								<reference key="NSSuperview" ref="178952735"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -306,6 +306,22 @@
 					</object>
 					<int key="connectionID">171</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">optionsBtn</string>
+						<reference key="source" ref="1026065636"/>
+						<reference key="destination" ref="581169041"/>
+					</object>
+					<int key="connectionID">172</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">goOptions</string>
+						<reference key="source" ref="581169041"/>
+						<reference key="destination" ref="1026065636"/>
+					</object>
+					<int key="connectionID">173</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -357,10 +373,10 @@
 						<reference key="object" ref="178952735"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="47732215"/>
 							<reference ref="842565669"/>
 							<reference ref="748625629"/>
 							<reference ref="368036388"/>
+							<reference ref="47732215"/>
 						</object>
 						<reference key="parent" ref="380026005"/>
 					</object>
@@ -502,7 +518,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 					</object>
-					<string>{{375, 91}, {320, 480}}</string>
+					<string>{{423, 214}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>RhoRunnerAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -536,7 +552,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">171</int>
+			<int key="maxID">173</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -596,10 +612,12 @@
 							<string>goBack</string>
 							<string>goForward</string>
 							<string>goHome</string>
+							<string>goOptions</string>
 							<string>refresh</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -616,6 +634,7 @@
 							<string>forwardBtn</string>
 							<string>homeBtn</string>
 							<string>navBar</string>
+							<string>optionsBtn</string>
 							<string>webView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -626,6 +645,7 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UINavigationBar</string>
+							<string>UIBarButtonItem</string>
 							<string>UIWebView</string>
 						</object>
 					</object>

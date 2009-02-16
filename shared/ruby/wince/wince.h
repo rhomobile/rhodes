@@ -4,11 +4,13 @@
 
 #include <tchar.h>
 #include <winsock2.h>
+#include "tcmalloc/rhomem.h"
+
 /* unique difinition in wince platform. */
 
-#ifndef _MIPS_
-  #define CONTEXT_FLOATING_POINT  0x00000002L
-#endif
+//#ifndef _MIPS_
+//  #define CONTEXT_FLOATING_POINT  0x00000002L
+//#endif
 
 /* LockFile difinition. */
 #define LOCKFILE_FAIL_IMMEDIATELY   0x00000001
@@ -221,4 +223,12 @@ int __cdecl _getdrive (void);
 #define _mbspbrk strpbrk
 
 extern char **environ;
+
+#if _WIN32_WCE<=0x501
+#define BUFSIZ  512
+#define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
+#endif //_WIN32_WCE<=0x501
+
+#define BUFSIZ  512
+
 #endif /* _EXT_CE_ */
