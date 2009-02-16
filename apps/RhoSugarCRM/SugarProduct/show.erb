@@ -4,4 +4,70 @@
 	</h1>
 </div>
 
-<%= link_to "#{@SugarProduct.name}", :action => :edit, :id => @SugarProduct.object %>
+<div class="panel" selected="true"> 
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarProduct.object)%>">Edit</a>
+
+<table class="grid">
+	<tr>
+	  <td class="gridleft">Name</td>
+	  <td class="gridright"><%=@SugarProduct.name%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Date Entered</td>
+	  <td class="gridright"><%=@SugarProduct.date_entered%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Date Modified</td>
+	  <td class="gridright"><%=@SugarProduct.date_modified%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Description</td>
+	  <td class="gridright"><%=@SugarProduct.description%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Team Name</td>
+	  <td class="gridright"><%=@SugarProduct.team_name%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">List Price</td>
+	  <td class="gridright"><%=display_dollars(@SugarProduct.list_price)%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Cost Price</td>
+	  <td class="gridright"><%=display_dollars(@SugarProduct.cost_price)%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Discount Price</td>
+	  <td class="gridright"><%=display_dollars(@SugarProduct.discount_price)%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Status</td>
+	  <td class="gridright"><%=@SugarProduct.status%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Website</td>
+	  <td class="gridright"><%=@SugarProduct.website%></td>
+	</tr>
+
+	<tr>
+	  <td class="gridleft">Account</td>
+	  <td class="gridright"><%=@SugarProduct.account_name%></td>
+	</tr>
+</table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarProduct.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
+
+</div>

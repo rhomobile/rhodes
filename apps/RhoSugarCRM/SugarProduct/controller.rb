@@ -1,10 +1,19 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class SugarProductController < Rho::RhoController
+
+  include ApplicationHelper
 
   #GET /SugarProduct
   def index
     @SugarProducts = SugarProduct.find(:all)
+    
+    # sort by name in ascending order
+    if (@SugarProducts.length > 0)
+      @SugarProducts = @SugarProducts.sort_by {|item| !item.name.nil? ? item.name : ""}
+    end
+    
     render
   end
 

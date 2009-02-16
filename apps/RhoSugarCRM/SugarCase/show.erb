@@ -4,4 +4,71 @@
 	</h1>
 </div>
 
-<%= link_to "#{@SugarCase.name}", :action => :edit, :id => @SugarCase.object%>
+<div class="panel" selected="true">	
+	<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarCase.object)%>" target="_self">Edit</a>
+	
+	<table class="grid">	
+		<tr>
+		<td class="gridleft">Case Number</td>
+		<td class="gridright"><%=@SugarCase.case_number%></td>
+		</tr>
+
+		<tr>
+		<td class="gridleft">Priority</td>
+		<td class="gridright"><%=@SugarCase.priority%></td>
+		</tr>
+
+		<tr>
+		<td class="gridleft">Status</td>
+		<td class="gridright"><%=@SugarCase.status%></td>
+		</tr>
+
+		<tr>
+		<td class="gridleft">Type</td>
+		<td class="gridright"><%=@SugarCase.type%></td>
+		</tr>
+	</table>
+
+	<table class="grid">
+		<tr>
+		<td class="gridleft">Subject</td>
+		<td class="gridright"><%=@SugarCase.name%></td>
+		</tr>
+		<tr>
+		<td class="gridleft">Description</td>
+		<td class="gridright"><%=@SugarCase.description%></td>
+		</tr>
+		 <tr>
+			<td class="gridleft">Resolution</td>
+		 <td class="gridright"><%=@SugarCase.resolution%></td>
+		</tr>
+	</table>
+
+	<table class="grid">
+		<tr>
+			<td class="gridleft">Assigned to</td>
+		<td class="gridright"><%=@SugarCase.assigned_user_name%></td>
+		</tr>
+		<tr>
+			<td class="gridleft">Account Name</td>
+		<td class="gridright"><%=@SugarCase.account_name%></td>
+		</tr>
+	</table>
+
+	<table class="grid">		
+	<tr><td class="gridleft">Modified On</td>
+	<td class="gridright"><%=@SugarCase.date_modified%></td>
+	</tr>
+
+	<tr><td class="gridleft">Created On</td>
+	<td class="gridright"><%=@SugarCase.date_entered%></td>
+	</tr>
+	</table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarCase.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
+
+</div>

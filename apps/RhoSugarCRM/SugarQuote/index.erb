@@ -13,11 +13,11 @@
 			<a href="<%= "/RhoSugarCRM/SugarQuote/#{x.object}/show" %>" target="_self">
 				<%= x.name %>
 				<div>
-				<%= display_dollars(x.total) %>
+<%= display_dollars(x.total) %><%= both_items_present?(x.total, x.quote_stage) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.quote_stage %>
 				</div>
 			</a>
 		</li>
-
+		
 	<% end %>
 </ul>
 

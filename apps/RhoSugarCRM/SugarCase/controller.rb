@@ -1,10 +1,19 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class SugarCaseController < Rho::RhoController
+
+  include ApplicationHelper
 
   #GET /SugarCase
   def index
     @SugarCases = SugarCase.find(:all)
+    
+    # sort by name in ascending order
+    if (@SugarCases.length > 0)
+      @SugarCases = @SugarCases.sort_by {|item| !item.name.nil? ? item.name : ""}
+    end
+    
     render
   end
 
