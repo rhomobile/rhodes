@@ -10,8 +10,10 @@ class SugarContactController < Rho::RhoController
     @SugarContacts = SugarContact.find(:all)
     
     # sort by name in ascending order
-    if (@SugarContacts.length > 0)
-      @SugarContacts = @SugarContacts.sort_by {|item| !item.last_name.nil? ? item.last_name : ""}
+		if System::get_property('platform') != 'Blackberry'    
+      if (@SugarContacts.length > 0)
+        @SugarContacts = @SugarContacts.sort_by {|item| !item.last_name.nil? ? item.last_name : ""}
+      end
     end
     
     render
