@@ -34,7 +34,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>    // for write()
+#ifdef __SYMBIAN32__
+#include <libc/sys/unistd.h>
+#else
+#include <unistd.h>
+#endif //__SYSTEM32__
 #endif
 #include <string.h>
 //#include <google/malloc_extension.h>
