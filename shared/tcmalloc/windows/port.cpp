@@ -207,7 +207,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
 
   void* result = VirtualAlloc(0, size + extra,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-printf("VirtualAlloc = %d\n", size + extra);
+//printf("VirtualAlloc = %d\n", size + extra);
 
   if (result == NULL)
     return NULL;

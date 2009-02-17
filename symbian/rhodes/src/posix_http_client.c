@@ -23,6 +23,7 @@
 #define  LINE_SIZE  512
 
 #include "posix_http_client.h"
+#include "tcmalloc/rhomem.h"
 
 //Utils
 int   startsWith(const char *a, const char *b);
