@@ -6,7 +6,7 @@ public class RhoRubyImpl extends RhoRubyBase{
 
 	@Override
 	public void PlatformRhoRubyStart(String szAppPath) {
-		//TODO:
+		
 	}
 
 }

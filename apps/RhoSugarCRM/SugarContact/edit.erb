@@ -228,7 +228,7 @@
 	<fieldset>
   <div class="tallrow" style="height:auto">
 	  <label>Description</label>
-	  <textarea name="SugarContact[description]" rows="5" style="margin:6px;width:90%"><%= @SugarContact.description %></textarea>
+	  <textarea name="SugarContact[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarContact.description) %></textarea>
 		<div class="clearer"></div>
   </div>
 	</fieldset>

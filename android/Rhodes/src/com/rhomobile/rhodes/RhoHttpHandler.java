@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.util.Log;
@@ -48,8 +49,28 @@ public class RhoHttpHandler implements IHttpHandler {
 			}
 			while (key != null);
 			
-		} catch (IOException e) {
+			response.writeHeaders();
+			response.writeInputStream(conn.openInputStream(), conn.getLength());
+			
+		} 
+		catch ( FileNotFoundException fe)
+		{
+			Log.e(this.getClass().getSimpleName(), fe.getMessage());
+			
+			try {
+				response.sendError(404);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		catch (IOException e) {
 			Log.e(this.getClass().getSimpleName(), e.getMessage());
+			
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 	}

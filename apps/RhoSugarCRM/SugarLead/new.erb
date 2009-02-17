@@ -35,7 +35,7 @@
 
 	  <div class="tallrow" style="height:auto">
 		  <label>Lead Source Description</label>
-		  <textarea name="SugarLead[lead_source_description]" rows="5" style="margin:6px;width:90%"><%= @SugarLead.lead_source_description %></textarea>
+		  <textarea name="SugarLead[lead_source_description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.lead_source_description) %></textarea>
 			<div class="clearer"></div>
 	  </div>
 		
@@ -120,7 +120,7 @@
 			
 		  <div class="tallrow" style="height:auto">
 			  <label>Status Description</label>
-			  <textarea name="SugarLead[status_description]" rows="5" style="margin:6px;width:90%"><%= @SugarLead.status_description %></textarea>
+			  <textarea name="SugarLead[status_description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.status_description) %></textarea>
 				<div class="clearer"></div>
 		  </div>
 		
@@ -230,7 +230,7 @@
 		<fieldset>
 	  <div class="tallrow" style="height:auto">
 		  <label>Description</label>
-		  <textarea name="SugarLead[description]" rows="5" style="margin:6px;width:90%"><%= @SugarLead.description %></textarea>
+		  <textarea name="SugarLead[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.description) %></textarea>
 			<div class="clearer"></div>
 	  </div>
 		</fieldset>

@@ -17,12 +17,6 @@ public class HttpConnection extends RhoConnection {
 		
 	}
 
-	@Override
-	protected void wakeUpSyncEngine() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void processRequest() throws IOException
 	{
 		super.processRequest();
