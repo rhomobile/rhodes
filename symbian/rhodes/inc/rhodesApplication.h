@@ -25,6 +25,7 @@
 // INCLUDES
 #include <aknapp.h>
 #include "rhodes.hrh"
+#include "tcmalloc/rhomem.h"
 
 // UID for the application;
 // this should correspond to the uid defined in the mmp file

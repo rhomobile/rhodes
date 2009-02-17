@@ -250,9 +250,10 @@
         <property name="dir.symbian"         value="${dir.export.GIT}/symbian"/>
 	    <property name="dir.sis"             value="${dir.symbian}/rhodes/sis"/>
 	    <property name="dir.cert" 			 value="${dir.symbian}/rhodes/sis/cert"/>
-	    
+
+       	<property name="dir.tcmalloc.build"    value="${dir.symbian}/tcmalloc/group"/>	    
 		<property name="dir.rhodes.build"    value="${dir.symbian}/rhodes/group"/>
-    	<property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
+       	<property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
 		<property name="dir.SQLite60.build"  value="${dir.symbian}/SQLite60/group"/>
 		<property name="dir.rubylib.build"   value="${dir.symbian}/rubylib/group"/>
     </target>
@@ -288,8 +289,9 @@
         <property name="dir.symbian"         value="${root.dir}"/>
 	    <property name="dir.sis"             value="${dir.symbian}/rhodes/sis"/>
 	    
+            <property name="dir.tcmalloc.build"    value="${dir.symbian}/tcmalloc/group"/>
 		<property name="dir.rhodes.build"    value="${dir.symbian}/rhodes/group"/>
-    	<property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
+    	      <property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
 		<property name="dir.SQLite60.build"  value="${dir.symbian}/SQLite60/group"/>
 		<property name="dir.rubylib.build"   value="${dir.symbian}/rubylib/group"/>
 
@@ -355,6 +357,14 @@
         <mkdir dir="${dir.output}"/>
         
         <echo message="Build target: ${build.target}" />
+
+        <echo message="Compiling tcmalloc..."/>
+        <echo message="output to file: ${log.build}"/>
+        <exec dir="${dir.tcmalloc.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
+            <arg value="/c"/>
+            <arg value="abld.bat"/>
+		    <arg line="build ${build.target}"/>
+		</exec>
         
         <echo message="Compiling rubylib..."/>
         <echo message="output to file: ${log.build}"/>
@@ -533,6 +543,9 @@
         <mkdir dir="${dir.output}"/>
         
         <echo message="Creating ABLD.BAT: 'bldmake bldfiles'..."/>
+        <exec dir="${dir.tcmalloc.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
         <exec dir="${dir.rubylib.build}" executable="bldmake" failonerror="true">
             <arg line="bldfiles"/>
         </exec>
@@ -545,7 +558,15 @@
         <exec dir="${dir.rhodes.build}" executable="bldmake" failonerror="true">
             <arg line="bldfiles"/>
         </exec>
-	    
+	  
+        <echo message="Calling REALLYCLEAN for tcmalloc..."/>
+        <echo message="output to file: ${log.build}"/>
+        <exec dir="${dir.tcmalloc.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
+            <arg value="/c"/>
+            <arg value="abld.bat"/>
+            <arg line="reallyclean"/>
+        </exec>
+  
 	    <echo message="Calling REALLYCLEAN for rhodes..."/>
         <echo message="output to file: ${log.build}"/>
         <exec dir="${dir.rhodes.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
