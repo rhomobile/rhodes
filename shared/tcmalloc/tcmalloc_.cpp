@@ -607,7 +607,7 @@ void InvalidFree(void* ptr) {
 
 void* InvalidRealloc(void* old_ptr, size_t new_size) {
     old_ptr; new_size;
-  CRASH("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")\n",
+  CRASH2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")\n",
         old_ptr, new_size);
   return NULL;
 }

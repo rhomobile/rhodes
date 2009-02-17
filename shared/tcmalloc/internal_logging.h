@@ -53,7 +53,7 @@
 #endif
 
 // Short form for convenience
-#define MESSAGE(format, ...) ((void)0)//\
+#define MESSAGE(format, arg1) ((void)0)//\
   //TCMalloc_MESSAGE(__FILE__, __LINE__, format, __VA_ARGS__)
 
 // Dumps the specified message and then calls abort().  If
@@ -68,10 +68,14 @@
 #endif
 
 
-#define CRASH(format, ...) ((void)0) //\
+#define CRASH2(format, arg1, arg2) ((void)0) //\
   //TCMalloc_CRASH(false, __FILE__, __LINE__, format, __VA_ARGS__)
 
-#define CRASH_WITH_STATS(format, ...) \
+#define CRASH(format, arg1 ) ((void)0)
+
+#define CRASH3(format, arg1, arg2, arg3) ((void)0)
+
+#define CRASH_WITH_STATS(format, arg1) \
   TCMalloc_CRASH(true, __FILE__, __LINE__, format, __VA_ARGS__)
 
 // Like assert(), but executed even in NDEBUG mode
