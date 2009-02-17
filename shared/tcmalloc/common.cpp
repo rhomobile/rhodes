@@ -140,7 +140,7 @@ void SizeMap::Init() {
     sc++;
   }
   if (sc != kNumClasses) {
-    CRASH("wrong number of size classes: found %d instead of %d\n",
+    CRASH2("wrong number of size classes: found %d instead of %d\n",
           sc, int(kNumClasses));
   }
 
@@ -158,18 +158,18 @@ void SizeMap::Init() {
   for (size_t size = 0; size <= kMaxSize; size++) {
     const int sc = SizeClass(size);
     if (sc <= 0 || sc >= kNumClasses) {
-      CRASH("Bad size class %d for %" PRIuS "\n", sc, size);
+      CRASH2("Bad size class %d for %" PRIuS "\n", sc, size);
     }
     if (sc > 1 && size <= class_to_size_[sc-1]) {
-      CRASH("Allocating unnecessarily large class %d for %" PRIuS
+      CRASH2("Allocating unnecessarily large class %d for %" PRIuS
             "\n", sc, size);
     }
     const size_t s = class_to_size_[sc];
     if (size > s) {
-      CRASH("Bad size %" PRIuS " for %" PRIuS " (sc = %d)\n", s, size, sc);
+      CRASH3("Bad size %" PRIuS " for %" PRIuS " (sc = %d)\n", s, size, sc);
     }
     if (s == 0) {
-      CRASH("Bad size %" PRIuS " for %" PRIuS " (sc = %d)\n", s, size, sc);
+      CRASH3("Bad size %" PRIuS " for %" PRIuS " (sc = %d)\n", s, size, sc);
     }
   }
 
@@ -181,7 +181,7 @@ void SizeMap::Init() {
 
 void SizeMap::Dump() {
   // Dump class sizes and maximum external wastage per size class
-  for (size_t cl = 1; cl  < kNumClasses; ++cl) {
+  /*for (size_t cl = 1; cl  < kNumClasses; ++cl) {
     const int alloc_size = class_to_pages_[cl] << kPageShift;
     const int alloc_objs = alloc_size / class_to_size_[cl];
     const int min_used = (class_to_size_[cl-1] + 1) * alloc_objs;
@@ -193,7 +193,7 @@ void SizeMap::Dump() {
             int(class_to_pages_[cl] << kPageShift),
             max_waste * 100.0 / alloc_size
             );
-  }
+  }*/
 }
 
 // Metadata allocator -- keeps stats about how many bytes allocated.

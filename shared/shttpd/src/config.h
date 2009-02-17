@@ -43,5 +43,8 @@
 #define NO_CGI 1
 #endif //NO_CGI
 #define NO_SSL 1
+#define NO_SSI 1
+#define NO_SSL 1
+#define NO_THREADS 1
 
 #endif /* CONFIG_HEADER_DEFINED */

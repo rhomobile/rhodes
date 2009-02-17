@@ -85,7 +85,7 @@ read_file(struct stream *stream, void *buf, size_t len)
 static void
 close_file(struct stream *stream)
 {
-#ifdef __SYMBIAN32__
+/*#ifdef __SYMBIAN32__
 	FILE* f;
 	assert(stream->chan.fd != -1);
 
@@ -93,10 +93,10 @@ close_file(struct stream *stream)
 
 	if ( f )
 		(void) fclose(f);
-#else	
+#else*/	
 	assert(stream->chan.fd != -1);
 	(void) close(stream->chan.fd);
-#endif	
+//#endif	
 }
 
 void
