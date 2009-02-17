@@ -3,6 +3,8 @@ require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/applicatio
 
 class SugarCallController < Rho::RhoController
 
+  include ApplicationHelper
+
   #GET /SugarCall
   def index
     @SugarCalls = SugarCall.find(:all)

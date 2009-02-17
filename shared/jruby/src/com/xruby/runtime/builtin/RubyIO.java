@@ -287,8 +287,13 @@ public class RubyIO extends RubyBasic {
     static RubyValue loadFromResources(String fileName){
     	InputStream stream = fileName.getClass().getResourceAsStream("/"+fileName);
     	if ( stream == null )
-    		return null;
+    	{
+    		if ( stream == null )
+    			stream = RubyPlatformUtils.loadFile("/"+fileName, null);
     	
+    		if ( stream == null )
+    			return null;
+    	}
     	try{
     		return readFully(stream);
     	}catch( IOException exc ){

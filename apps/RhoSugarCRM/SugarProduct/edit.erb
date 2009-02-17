@@ -29,7 +29,7 @@
 		
 		  <div class="row">
 			  <label>Description</label>
-			  <input type="text" name="SugarProduct[description]" value="<%=@SugarProduct.description%>"/>
+			  <input type="text" name="SugarProduct[description]" value="<%=replace_newlines(@SugarProduct.description)%>"/>
 		  </div>
 		
 		  <div class="row">

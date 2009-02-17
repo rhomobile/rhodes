@@ -47,7 +47,7 @@
 			  <label>Industry</label>
 				<select id="SugarAccount_industry" name="SugarAccount[industry]">
 					<option value="" label=""/>
-					<% %w(Apparel Banking Chemicals Communications Construction Consulting Education Electronics Energy Engineering Entertainment Environmental Finance Government Healthcare Hospitality Insurance Machinery Manufacturing Media Not For Profit Recreation Retail Shipping Technology Telecommunications Transportation Utilities Other).each do |choice| %>
+					<% %w(Apparel Banking Chemicals Communications Construction Consulting Education Electronics Energy Engineering Entertainment Environmental Finance Government Healthcare Hospitality Insurance Machinery Manufacturing Media Not\ For\ Profit Recreation Retail Shipping Technology Telecommunications Transportation Utilities Other).each do |choice| %>
 						<option <% if choice == @SugarAccount.industry %>selected="selected"<% end %>><%= choice %></option>
 					<% end %>
 				</select>
@@ -190,7 +190,7 @@
 		<fieldset>	
 		  <div class="tallrow" style="height:auto">
 			  <label>Description</label>
-			  <textarea name="SugarAccount[description]" rows="5" style="margin:6px;width:90%"><%= @SugarAccount.description %></textarea>
+			  <textarea name="SugarAccount[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarAccount.description) %></textarea>
 				<div class="clearer"></div>
 		  </div>
 		
