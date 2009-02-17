@@ -2,11 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jrhodes"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jrhobundle"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jruby"/>
-	<classpathentry kind="lib" path="/jrhodes/bin/classes"/>
-	<classpathentry kind="lib" path="/jrhobundle/bin/classes"/>
-	<classpathentry kind="lib" path="/jruby/bin/classes"/>
+	<classpathentry kind="lib" path="libs/RhoBundle.jar"/>
+	<classpathentry kind="lib" path="libs/jrubyvm.jar"/>
+	<classpathentry kind="lib" path="libs/jrhodes.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

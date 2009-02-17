@@ -3,9 +3,6 @@
 	<name>Rhodes</name>
 	<comment></comment>
 	<projects>
-		<project>jrhobundle</project>
-		<project>jrhodes</project>
-		<project>jruby</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

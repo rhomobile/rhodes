@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import com.rho.util.Properties;
 import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.builtin.RubyPlatformUtils;
 import com.xruby.runtime.lang.RubyValue;
 
 //Rho ruby wrapper
@@ -85,16 +86,20 @@ public class RhoRuby {
 
 	static public InputStream loadFile(String path) {
 
+		InputStream is = null;
 		if (rhoRuby != null)
-			return rhoRuby.loadFile(path);
+			is = rhoRuby.loadFile(path);
 
-		return null;
+		if ( is == null )
+			is = RubyPlatformUtils.loadFile(path, null);
+		
+		return is;
 	}
 
 	static public RubyValue processIndexRequest(String strIndex) {
 
 		if (rhoRuby != null)
-			rhoRuby.processIndexRequest(strIndex);
+			return rhoRuby.processIndexRequest(strIndex);
 
 		return null;
 	}

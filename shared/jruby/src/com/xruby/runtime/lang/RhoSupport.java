@@ -1,6 +1,7 @@
 package com.xruby.runtime.lang;
 
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyPlatformUtils;
 
 public class RhoSupport {
 
@@ -93,7 +94,12 @@ public class RhoSupport {
     public static RubyValue get_property(RubyValue receiver, RubyValue arg) {
     	String strPropName = arg.toStr();
     	if ( strPropName.equalsIgnoreCase("platform") ){
-    		return ObjectFactory.createString("Blackberry");
+    		
+    		String platform = RubyPlatformUtils.getPlatform();
+    		if ( platform == null )
+    			return ObjectFactory.createString("Blackberry");
+    		else
+    			return ObjectFactory.createString(platform);
     	}
     	
     	return RubyConstant.QNIL;
