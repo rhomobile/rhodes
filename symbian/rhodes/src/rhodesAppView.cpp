@@ -190,6 +190,9 @@ void CRhodesAppView::InitStartPage()
   	int state = CCnvCharacterSetConverter::KStateDefault;
   	converter->ConvertToUnicode(iStartPage, ptr, state);
 	
+//  	_LIT(KHomePage, "http://127.0.0.1:8080/");
+//  	iStartPage = KHomePage;
+  	
   	session.Close();
   	
 	free(sp);

@@ -2,13 +2,10 @@ TARGET                                  rubylib.lib
 TARGETTYPE                              lib
 UID                                     0x1000008d 0x00000001
 
-//SYSTEMINCLUDE                           ..\.. 
-//SYSTEMINCLUDE                           ..\..\include 
-//SYSTEMINCLUDE                           ..\..\include\ruby 
-//SYSTEMINCLUDE                           ..\..\missing 
 SYSTEMINCLUDE                           \epoc32\include
 SYSTEMINCLUDE                           \epoc32\include\stdapis 
 SYSTEMINCLUDE                           \epoc32\include\libc
+SYSTEMINCLUDE                           \epoc32\include\stdapis\glib-2.0
 
 USERINCLUDE                             ..\..\..\shared\ruby\symbian 
 USERINCLUDE                             ..\..\..\shared\ruby
@@ -16,6 +13,7 @@ USERINCLUDE                             ..\..\..\shared\ruby\include
 USERINCLUDE                             ..\..\..\shared\ruby\include\ruby 
 USERINCLUDE                             ..\..\..\shared\ruby\missing
 USERINCLUDE                             ..\..\..\shared\ruby\generated
+USERINCLUDE                             ..\..\..\shared
 
 USERINCLUDE                             ..\..\SQLite60\src
 
@@ -98,7 +96,7 @@ SOURCE                                  us_ascii.c
 
 SOURCEPATH                              ..\..\..\shared\ruby\missing 
 SOURCE                                  crypt.c 
-SOURCE                                  alloca.c 
+//SOURCE                                  alloca.c 
 //SOURCE                                  vsnprintf.c 
 SOURCE                                  lgamma_r.c
 SOURCE                                  tgamma.c

@@ -193,4 +193,10 @@
 #define HAVE_SIGSETJMP 1
 #define HAVE__SETJMP 1
 #define HAVE__LONGJMP 1
-#define ENABLE_RUBY_VM_STAT 1
+//#define ENABLE_RUBY_VM_STAT 1
+
+#ifdef __GCCE__
+#include <glib/galloca.h>
+#endif //__GCCE32__
+
+#include "tcmalloc/rhomem.h"

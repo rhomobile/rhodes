@@ -49,7 +49,10 @@
 #define BASE_COMMANDLINEFLAGS_H_
 
 #include "config.h"
-#include <string>
+//#include <string>
+#ifdef _WIN32_WCE
+#include <new.h>
+#endif //_WIN32_WCE
 #include <string.h>               // for memchr
 #include <stdlib.h>               // for getenv
 #include "base/basictypes.h"

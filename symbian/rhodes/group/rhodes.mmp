@@ -26,6 +26,7 @@ UID		  0x100039CE 0xE6B4F4DF
 
 SYSTEMINCLUDE	 \epoc32\include
 SYSTEMINCLUDE	 \epoc32\include\stdapis
+SYSTEMINCLUDE	 \epoc32\include\libc
 SYSTEMINCLUDE	 \epoc32\include\ecom
 
 USERINCLUDE	   ..\inc
@@ -39,10 +40,12 @@ USERINCLUDE    ..\..\..\shared\ruby\include
 USERINCLUDE    ..\..\..\shared\ruby\include\ruby
 USERINCLUDE    ..\..\..\shared\ruby\symbian ..\inc\phonebook ..\inc\geolocation
 USERINCLUDE    ..\..\..\shared\unzip
+USERINCLUDE    ..\..\..\shared
 
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
 STATICLIBRARY 	   SQLite60.lib
+STATICLIBRARY 	   tcmalloc.lib
 
 SOURCEPATH		..\src
 SOURCE			rhodes.cpp

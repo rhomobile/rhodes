@@ -29,7 +29,7 @@ CHttpServer::CHttpServer(void)
   m_bRubyInitialized = false;
   m_pStartPage = NULL;
 
-  InitHttpServer();
+  //InitHttpServer();
 	m_thread.Initialize();
   m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   m_thread.AddHandle(m_hEvent, this, NULL);
@@ -39,7 +39,7 @@ CHttpServer::~CHttpServer(void)
 {
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
-  shttpd_fini(ctx);
+//  shttpd_fini(ctx);
   ATLTRACE(_T("Http server thread shutdown\n"));
 
   CGPSController* pGPS = CGPSController::Instance();
@@ -67,6 +67,8 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bRubyInitialized) {
     InitRubyFramework();
+    InitHttpServer();
+
 	  InitStartPage();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
@@ -94,6 +96,7 @@ HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
   if (m_bRubyInitialized) {
     ATLTRACE(_T("\nShutting-down ruby framework\n"));
+    shttpd_fini(ctx);
     RhoRubyStop();
   }
   ATLTRACE(_T("Closing http server handle\n"));

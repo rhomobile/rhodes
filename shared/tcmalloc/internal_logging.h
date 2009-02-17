@@ -51,7 +51,6 @@
 #ifdef HAVE___ATTRIBUTE__
   __attribute__ ((__format__ (__printf__, 3, 4)))
 #endif
-;
 
 // Short form for convenience
 #define MESSAGE(format, ...) ((void)0)//\
@@ -67,7 +66,7 @@
 #ifdef HAVE___ATTRIBUTE__
   __attribute__ ((__format__ (__printf__, 4, 5)))
 #endif
-;
+
 
 #define CRASH(format, ...) ((void)0) //\
   //TCMalloc_CRASH(false, __FILE__, __LINE__, format, __VA_ARGS__)
@@ -86,11 +85,12 @@ do {                                                                     \
 
 // Our own version of assert() so we can avoid hanging by trying to do
 // all kinds of goofy printing while holding the malloc lock.
-#ifndef NDEBUG
+//#undef ASSERT
+//#ifndef NDEBUG
 //#define ASSERT(cond) CHECK_CONDITION(cond)
-#else
+//#else
 //#define ASSERT(cond) ((void) 0)
-#endif
+//#endif
 
 // Print into buffer
 class TCMalloc_Printer {
@@ -108,7 +108,7 @@ class TCMalloc_Printer {
 #ifdef HAVE___ATTRIBUTE__
     __attribute__ ((__format__ (__printf__, 2, 3)))
 #endif
-;
+
 };
 
 #endif  // TCMALLOC_INTERNAL_LOGGING_H_
