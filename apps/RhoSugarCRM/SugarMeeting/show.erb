@@ -61,8 +61,8 @@
 		<td class="gridright"><%=@SugarMeeting.status%></td>
 	</tr>	
 	<tr>
-    <td class="gridleft">Reminder Time</td>
-		<td class="gridright"><%=@SugarMeeting.reminder_time%></td>
+    <td class="gridleft">Reminder Time</td>		
+		<td class="gridright"><%= @SugarMeeting.reminder_time != "-1" ? "#{@SugarMeeting.reminder_time.to_i / 60} minute(s) prior" : "none" %></td>
 	</tr>	
 	<tr>		
     <td class="gridleft">Contact Name</td>

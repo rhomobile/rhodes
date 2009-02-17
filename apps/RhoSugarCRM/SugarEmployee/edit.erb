@@ -114,7 +114,7 @@
 			<fieldset>
 		  <div class="row">
 			  <label>Notes</label>
-			  <input type="text" name="SugarEmployee[description]" value="<%=@SugarEmployee.description%>"/>
+			  <input type="text" name="SugarEmployee[description]" value="<%=replace_newlines(@SugarEmployee.description)%>"/>
 		  </div>
 					
 		  <div class="row">

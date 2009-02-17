@@ -56,7 +56,7 @@
 
 		  <div class="tallrow" style="height:auto">
 			  <label>Description</label>
-			  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= @SugarOpportunity.description %></textarea>
+			  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarOpportunity.description) %></textarea>
 				<div class="clearer"></div>
 		  </div>
 					

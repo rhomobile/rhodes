@@ -49,7 +49,7 @@
 
 			  <div class="tallrow" style="height:auto">
 				  <label>Description</label>			
-				  <textarea name="SugarCall[description]" rows="5" style="margin:6px;width:90%"><%= @SugarCall.description %></textarea>
+				  <textarea name="SugarCall[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarCall.description) %></textarea>
 			  </div>
 
 			  <div class="tallrow" style="height:auto;padding: 0 0 10px 0">
