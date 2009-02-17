@@ -69,3 +69,8 @@ void TCMalloc_SystemRelease(void* start, size_t length) {
     //TODO: TCMalloc_SystemRelease
 }
 
+void _sym_assert(int exp)
+{
+    if ( !exp)
+        exit(-1);
+}
