@@ -55,4 +55,12 @@ module ApplicationHelper
     !blank?(value1) && !blank?(value2)
   end
   
+  def replace_newlines(value)
+    if blank?(value)
+      " "
+    else
+      value.gsub('\n', ' ')
+    end       
+  end
+  
 end

@@ -39,7 +39,7 @@
 		
 		  <div class="row">
 			  <label>Description</label>
-			  <input type="text" name="SugarMeeting[description]" value="<%=@SugarMeeting.description%>"/>
+			  <input type="text" name="SugarMeeting[description]" value="<%=replace_newlines(@SugarMeeting.description)%>"/>
 		  </div>
 		
 		  <div class="row">
@@ -79,7 +79,15 @@
 		
 		  <div class="row">
 			  <label>Reminder Time</label>
-			  <input type="text" name="SugarMeeting[reminder_time]" value="<%=@SugarMeeting.reminder_time%>"/>
+				<select id="reminder_time" name="SugarMeeting[reminder_time]">
+					<% reminder_time_index = 0 %>
+					<% reminder_time_arr = [-1, 60, 300, 600, 900, 1800, 3600]%>
+					<% %w(None 1\ Minute\ Prior 5\ Minutes\ Prior 10\ Minutes\ Prior 15\ Minutes\ Prior 30\ Minutes\ Prior 1\ Hour\ Prior).each do |state| %>
+						<% selected = (reminder_time_arr[reminder_time_index].to_s == @SugarMeeting.reminder_time) ? "selected=\"#{@SugarCall.reminder_time}\"" : "" %>
+						<option <%= selected %> value="<%= reminder_time_arr[reminder_time_index].to_s %>"><%= state %></option>
+						<% reminder_time_index += 1%>
+					<% end %>
+				</select>
 		  </div>
 		
 		  <div class="row">
