@@ -71,6 +71,25 @@ class Object
 end
 
 module Enumerable
+    def find_all
+        a = []
+        each {|x|
+            if yield x
+                a.push(x)
+            end
+        }
+        return a
+    end
+
+    alias :select :find_all
+
+    def sort_by &block
+        array_of_tuples = []
+        each {|x| array_of_tuples.push([x, yield(x)])}
+        array_of_tuples = array_of_tuples.sort {|x, y| x[1] <=> y[1]}
+        return array_of_tuples.collect {|x| x[0]}
+    end
+
     def each_with_index 
         i = 0;
         each {|x| yield x, i; i = i + 1}
@@ -83,6 +102,25 @@ module Enumerable
     end
     
     alias entries :to_a
+
+    def sort(&proc)
+        #proc = lambda{ |a,b| a<=>b } unless block_given?
+        arr = to_a
+        arr.sort{|x,y| 
+            if block_given?  then
+                proc.call(x,y)
+            else
+            x<=>y
+            end
+        }
+    end
+    
+    def member?(other)
+        each{|obj| return true if obj == other }
+        return false
+    end
+    
+    alias include? :member?
 	
     def inject(*args)
         if args.size == 0 then
