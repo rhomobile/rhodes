@@ -53,4 +53,7 @@ class SpinLockHolder {  // Acquires a spinlock for as long as the scope lasts
 
 #define BASE_SPINLOCK_H_ 1
 
+void _sym_assert(int exp);
+#undef ASSERT
+#define ASSERT(exp) _sym_assert(exp)
 #endif //RHO_SYM_PORT__
