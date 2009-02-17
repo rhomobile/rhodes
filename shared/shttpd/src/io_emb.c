@@ -105,7 +105,7 @@ shttpd_printf(struct shttpd_arg *arg, const char *fmt, ...)
 		va_end(ap);
 
 		if (len < 0 || len > buflen)
-			len = buflen;
+            len = buflen - (len > buflen ? 1 : 0);
 		arg->out.num_bytes += len;
 	}
 
