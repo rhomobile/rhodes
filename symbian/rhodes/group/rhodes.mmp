@@ -28,6 +28,7 @@ SYSTEMINCLUDE	 \epoc32\include
 SYSTEMINCLUDE	 \epoc32\include\stdapis
 SYSTEMINCLUDE	 \epoc32\include\libc
 SYSTEMINCLUDE	 \epoc32\include\ecom
+SYSTEMINCLUDE    \epoc32\include\stdapis\glib-2.0
 
 USERINCLUDE	   ..\inc
 USERINCLUDE    ..\help
