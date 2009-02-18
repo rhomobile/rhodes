@@ -123,7 +123,8 @@ module Rhom
                   order = extract_options(args)
                   order_value = order[:order] if order and order[:order]
                   if order_value
-                    list.sort! {|x,y| x.send(order_value.to_sym) <=> y.send(order_value.to_sym) }
+                    order_sym = order_value.to_sym
+                    list.sort! {|x,y| x.send(order_sym) && y.send(order_sym) ? x.send(order_sym) <=> y.send(order_sym) : 0}
                   end
                   
                   # return a single rhom object if searching for one

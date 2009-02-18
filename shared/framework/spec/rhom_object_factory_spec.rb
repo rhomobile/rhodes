@@ -196,6 +196,12 @@ describe "RhomObjectFactory" do
     @accts.last.industry.should == "Finance"
   end
   
+  it "should return records when order by is nil for some records" do
+    @accts = Account.find(:all, :order => 'billing_address_country')
+    @accts.length.should == 5
+    @accts.first.name.should == "vSpring"
+  end
+  
   it "should include only selected columns" do
     pending "need to implement"
     @accts = Account.find(:all, :select => ['name'])
