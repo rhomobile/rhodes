@@ -7,15 +7,8 @@ class SugarLeadController < Rho::RhoController
 
   #GET /SugarLead
   def index
-    @SugarLeads = SugarLead.find(:all)
-    
     # sort by name in ascending order and only if all items are non-nil to prevent sort error
-		if System::get_property('platform') != 'Blackberry'    
-      if (@SugarLeads.length > 0)
-        @SugarLeads = @SugarLeads.sort_by {|item| !item.last_name.nil? ? item.last_name : ""}
-      end
-    end
-  
+    @SugarLeads = SugarLead.find(:all, :order => 'last_name')  
     render
   end
 
