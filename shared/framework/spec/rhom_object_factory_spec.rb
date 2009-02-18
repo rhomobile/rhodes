@@ -124,6 +124,31 @@ describe "RhomObjectFactory" do
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
   end
+  
+  it "should store only last updated value for attrib" do
+    new_attributes1 = {"new_name"=>"Mobio Europe"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes1)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @new_acct.new_name.should == "Mobio Europe"
+    @new_acct.name.should == "Mobio India"
+    @new_acct.industry.should == "Technology"
+    
+    new_attributes2 = {"new_name"=>"Mobio Asia"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes2)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @new_acct.new_name.should == "Mobio Asia"
+    @new_acct.name.should == "Mobio India"
+    @new_acct.industry.should == "Technology"
+    
+    records = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'update')
+    records.length.should == 1
+  end
 
   it "should retrieve and modify one record" do
     @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')

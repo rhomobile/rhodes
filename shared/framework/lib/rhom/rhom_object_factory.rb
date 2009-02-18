@@ -228,6 +228,11 @@ module Rhom
                   # then we procede with update
                   if new_val and old_val != new_val
                     unless self.method_name_reserved?(attrib) or new_val.length == 0
+                      ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
+                                                                {"source_id"=>self.get_inst_source_id,
+                                                                 "object"=>obj,
+                                                                 "attrib"=>attrib,
+                                                                 "update_type"=>'update'})
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
