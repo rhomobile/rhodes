@@ -217,20 +217,22 @@ module Rhom
               def update_attributes(attrs)
                 result = nil
                 obj = self.inst_strip_braces(self.object)
-                self.instance_variables.each do |method|
-                  method = method.to_s.gsub(/@/,"")
-                  val = self.send method.to_sym
+                attrs.each do |attrib,val|
+                  attrib = attrib.to_s.gsub(/@/,"")
+                  old_val = self.send attrib.to_sym
+                  
                   # Don't save objects with braces to database
-                  new_val = self.inst_strip_braces(attrs[method])
+                  new_val = self.inst_strip_braces(val)
+                  
                   # if the object's value doesn't match the database record
                   # then we procede with update
-                  if new_val and val != new_val
-                    unless self.method_name_reserved?(method) or new_val.length == 0
+                  if new_val and old_val != new_val
+                    unless self.method_name_reserved?(attrib) or new_val.length == 0
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
-                                                                 "attrib"=>method,
+                                                                 "attrib"=>attrib,
                                                                  "value"=>new_val,
                                                                  "update_type"=>'update'})
                     end
