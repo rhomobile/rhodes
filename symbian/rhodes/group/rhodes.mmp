@@ -70,6 +70,7 @@ SOURCE			SyncOperation.c
 SOURCE			SyncObject.c
 SOURCE			SyncJSONReader.c
 SOURCE			source.c
+SOURCE			Notifications.cpp
 
 SOURCEPATH 		..\..\..\shared\json
 SOURCE			arraylist.c
