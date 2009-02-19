@@ -146,6 +146,9 @@ public abstract class RhoConnection {
         return ((String)(resHeaders.getKeyAt(index)));
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getHost()
+	 */
 	public String getHost() {
 		log("getHost: " + uri.getHost());
 		return uri.getHost();
@@ -176,22 +179,34 @@ public abstract class RhoConnection {
 		return uri.getFragment();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getRequestMethod()
+	 */
 	public String getRequestMethod() {
 		log("getRequestMethod: " + method);
 		return method;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getRequestProperty(java.lang.String)
+	 */
 	public String getRequestProperty(String key) {
 		log("getRequestProperty: " + key);
         return reqHeaders.getPropertyIgnoreCase(key);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getResponseCode()
+	 */
 	public int getResponseCode() throws IOException {
 		log("getResponseCode" + responseCode);
 		processRequest();
 		return responseCode;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getResponseMessage()
+	 */
 	public String getResponseMessage() throws IOException {
 		log("getResponseMessage: " + responseMsg);
 		processRequest();
@@ -203,6 +218,9 @@ public abstract class RhoConnection {
 		return uri.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#setRequestMethod(java.lang.String)
+	 */
 	public void setRequestMethod(String method) throws IOException {
 		log("setRequestMethod: " + method);
         /*
@@ -297,6 +315,9 @@ public abstract class RhoConnection {
         }
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#getLength()
+	 */
 	public long getLength() {
 		log("getLength: " + contentLength);
 		try {
@@ -316,22 +337,37 @@ public abstract class RhoConnection {
         }
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#openDataInputStream()
+	 */
 	public DataInputStream openDataInputStream() throws IOException {
 		return new DataInputStream(openInputStream());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#openInputStream()
+	 */
 	public InputStream openInputStream() throws IOException {
 		processRequest();
 		return responseData;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#close()
+	 */
 	public void close() throws IOException {
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#openDataOutputStream()
+	 */
 	public DataOutputStream openDataOutputStream() throws IOException {
 		return new DataOutputStream(postData);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#openOutputStream()
+	 */
 	public OutputStream openOutputStream() throws IOException {
 		return postData;
 	}
@@ -577,7 +613,10 @@ public abstract class RhoConnection {
 		return true;
 	}
 	
-	protected void processRequest()  throws IOException{
+	/* (non-Javadoc)
+	 * @see com.rho.IHttpConnection#processRequest()
+	 */
+	public void processRequest()  throws IOException{
 		if (!requestProcessed) {
 			String strErr = "";
 			

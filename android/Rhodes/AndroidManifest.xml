@@ -12,7 +12,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.AboutDialog"></activity>
-        <service android:name=".RhoHttpService"/>
+        <service android:name=".RhoHttpService" />
+        <service android:name=".RhoSyncService" />
     </application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 
