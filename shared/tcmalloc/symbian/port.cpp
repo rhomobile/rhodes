@@ -6,24 +6,22 @@ static SpinLock alloc_lock(SpinLock::LINKER_INITIALIZED);
 pthread_mutex_t __initmutex = PTHREAD_MUTEX_INITIALIZER;
 
 SpinLock::SpinLock() : initialize_token_(0), mutex_( __initmutex )
-{}
+{
+  pthread_mutex_init(&mutex_, NULL);
+}
 
 SpinLock::SpinLock(StaticInitializer) : initialize_token_(0), mutex_( __initmutex )
-{}
+{
+  pthread_mutex_init(&mutex_, NULL);
+}
 
 void SpinLock::Lock() 
 {
-    //perftools_pthread_once(&initialize_token_, InitializeMutex);
-    /*  if (!initialize_token_)
-      {
-          pthread_mutex_init(&mutex_, NULL);
-          initialize_token_ = 1;
-      }
-    pthread_mutex_lock(&mutex_);*/
-  }
+	pthread_mutex_lock(&mutex_);
+}
 
 void SpinLock::Unlock() {
-    //pthread_mutex_unlock(&mutex_);
+    pthread_mutex_unlock(&mutex_);
 }
 
 // This is mostly like MmapSysAllocator::Alloc, except it does these weird

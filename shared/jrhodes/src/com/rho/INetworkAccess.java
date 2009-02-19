@@ -1,6 +1,7 @@
 package com.rho;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 public interface INetworkAccess {
 
@@ -10,7 +11,7 @@ public interface INetworkAccess {
 	
 	public abstract boolean isNetworkAvailable();
 	
-	public abstract RhoConnection connect(String server) throws IOException;
+	public abstract HttpURLConnection connect(String server) throws IOException;
 	
 	public abstract void log(String txt);
 	

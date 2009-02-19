@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -225,6 +226,11 @@ public class HttpHeader {
     public String getHeader(String key)
     {
         return (String)keyMap.get(key.toLowerCase());
+    }
+    
+    public Enumeration getHeaderKeys()
+    {
+    	return keyMap.keys();
     }
     
     /** 

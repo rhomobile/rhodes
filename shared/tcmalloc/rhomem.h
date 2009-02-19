@@ -39,4 +39,5 @@ void *  rho_realloc(void *, size_t);
 #endif //_RHO_NO_MEMDEFINES
 
 #endif// _WIN32_WCE
+
 #endif  // RHO_MEMORY__
