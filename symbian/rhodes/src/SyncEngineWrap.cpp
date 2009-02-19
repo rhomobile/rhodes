@@ -138,7 +138,7 @@ TInt CSyncEngineWrap::Execute()
 		}
 
 	//Send start new SyncEvent
-	SendWindowEvent(ECmdAppStartNewSync);
+	//SendWindowEvent(ECmdAppStartNewSync);
 
 	return err;
 	}
