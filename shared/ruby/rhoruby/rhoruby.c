@@ -12,6 +12,7 @@
 #include <locale.h>
 #endif
 #include "rhoruby.h"
+#include "vm_core.h"
 
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../stat/stat.h"
@@ -162,43 +163,59 @@ VALUE addHashToHash(VALUE hash, const char* key, VALUE val) {
 	return rb_hash_aset(hash, rb_str_new2(key), val);	
 }
 
-char* callFramework(VALUE hashReq) {
-	char* szRes;
-  VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
+char* getStringFromValue(VALUE val){
+    return RSTRING_PTR(val);
+}
+
+int getStringLenFromValue(VALUE val){
+    return RSTRING_LEN(val);
+}
+
+void  releaseValue(VALUE val){
+    VALUE ary = GET_THREAD()->vm->mark_object_ary;
+    int i = RARRAY_LEN(ary)-1;
+    for ( ; i >= 0; i-- ) {
+        if ( RARRAY_PTR(ary)[i]== val )
+            break;
+    }
+    if ( i >= 0 )
+        rb_ary_delete_at(ary,i);
+}
+
+VALUE callFramework(VALUE hashReq) {
+    VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
 	
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method call result type = %s\n", rb_type_to_s(callres));
-		return "Error";//TBD: Supply html description of the error
+		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
-	
+
+    rb_gc_register_mark_object(callres);
 	//TBD: need to cleanup memory
 	rb_gc();
 #if defined(DEBUG)
 	print_profile_report();
 #endif
 
-	szRes = RSTRING_PTR(callres);
-	return szRes;
+	return callres;
 }
 
-char* callServeIndex(char* index_name) {
-	char* szRes;
-	
+VALUE callServeIndex(char* index_name) {
 	VALUE callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
 	
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method call result type = %s\n", rb_type_to_s(callres));
-		return "Error";//TBD: Supply html description of the error
+		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
-	
+    rb_gc_register_mark_object(callres);
+
 	//TBD: need to cleanup memory
 	rb_gc();
 #if defined(DEBUG)
 	print_profile_report();
 #endif
 	
-	szRes = RSTRING_PTR(callres);
-	return szRes;
+	return callres;
 }
 
 char* callGetStartPage() {

@@ -7,15 +7,8 @@ class SugarCallController < Rho::RhoController
 
   #GET /SugarCall
   def index
-    @SugarCalls = SugarCall.find(:all)
-    
     # sort by name in ascending order
-		if System::get_property('platform') != 'Blackberry'    
-      if (@SugarCalls.length > 0)
-        @SugarCalls = @SugarCalls.sort_by {|item| !item.name.nil? ? item.name : ""}
-      end
-    end
-  
+    @SugarCalls = SugarCall.find(:all, :order => 'name')  
     render
   end
 

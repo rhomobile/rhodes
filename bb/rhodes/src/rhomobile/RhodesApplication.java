@@ -22,6 +22,7 @@ import net.rim.device.api.system.SystemListener;
 import rhomobile.NetworkAccess;
 import rhomobile.location.GeoLocation;
 import rhomobile.sync.SyncEngine;
+import rhomobile.sync.SyncNotifications;
 
 import java.util.Vector;
 
@@ -68,6 +69,32 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
     
+    class SyncNotificationsImpl extends SyncNotifications{
+    	public void refreshIfCurrent(String url){
+    		if ( url == null || url.length() == 0 )
+    			return;
+    		
+    		url.replace('\\', '/');
+    		if ( !url.startsWith(_httpRoot) ){
+	    		if ( url.charAt(0) == '/' )
+	    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
+	    		else	
+	    			url = _httpRoot + url;
+    		}
+    		
+    		String curUrl = (String)_history.lastElement();
+    		curUrl.replace('\\', '/');
+    		if ( curUrl.equalsIgnoreCase(url) )
+    			gotoUrl(curUrl);
+    	}
+    	
+    }
+
+    void gotoUrl(String url){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
+        thread.start();                       
+    }
+    
     void back(){
     	if ( _history.size() <= 1 )
     		return;
@@ -76,8 +103,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	String url = (String)_history.elementAt(nPos);
     	_history.removeElementAt(nPos+1);
     	
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
-        thread.start();                       
+    	gotoUrl(url);
     }
     
     void addToHistory(String strUrl ){
@@ -194,6 +220,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
+
+        SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
     	
         _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);

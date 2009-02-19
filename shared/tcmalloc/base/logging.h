@@ -40,7 +40,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>    // for write()
+#ifdef __SYMBIAN32__
+#include <libc/sys/unistd.h>
+#else
+#include <unistd.h>
+#endif //__SYSTEM32__
 #endif
 #include <string.h>    // for strlen()
 #include <assert.h>
@@ -208,7 +212,7 @@ inline void LOG_IF(int lvl, bool cond, const char* pat, ...) {
 // to allow even more low-level stuff in the future.
 // Like other "raw" routines, these functions are best effort, and
 // thus don't return error codes (except RawOpenForWriting()).
-#ifdef _WIN32
+#if defined( _WIN32 ) && !defined(__SYMBIAN32__)
 #include <windows.h>
 typedef HANDLE RawFD;
 const RawFD kIllegalRawFD = INVALID_HANDLE_VALUE;

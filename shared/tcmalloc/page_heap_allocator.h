@@ -44,7 +44,7 @@ class PageHeapAllocator {
   // allocated and their constructors might not have run by the time some
   // other static variable tries to allocate memory.
   void Init() {
-    ASSERT(kAlignedSize <= kAllocIncrement);
+    ASSERT(kAlignedSize <= (size_t)kAllocIncrement);
     inuse_ = 0;
     free_area_ = NULL;
     free_avail_ = 0;
