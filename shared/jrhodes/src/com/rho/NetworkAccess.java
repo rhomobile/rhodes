@@ -1,6 +1,7 @@
 package com.rho;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 public class NetworkAccess {
 
@@ -21,9 +22,9 @@ public class NetworkAccess {
 			networkAccess.autoConfigure();
 	}
 
-	static public RhoConnection connect(String server) throws IOException {
+	static public HttpURLConnection connect(String url) throws IOException {
 		if (networkAccess != null)
-			return networkAccess.connect(server);
+			return networkAccess.connect(url);
 		
 		return null;
 	}

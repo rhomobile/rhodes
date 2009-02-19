@@ -8,6 +8,10 @@ import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import com.rho.RhoRuby;
+import com.rhomobile.rhodes.RhoRubyImpl;
+import com.rhomobile.rhodes.RhodesInstance;
+
 import android.util.Log;
 
 /**
@@ -320,6 +324,13 @@ abstract public class ThreadedServer implements Runnable {
 		String name = thread.getName();
 		int runs = 0;
 
+		Log.d(this.name, "RhoRubyStart...");
+		RhoRuby.setRhoRubyImpl(new RhoRubyImpl());
+		RhoRuby.RhoRubyStart("");
+
+		Log.d(this.name, "startSyncEngine...");
+		RhodesInstance.getInstance().startSyncEngine();
+		
 		Log.d(this.name, "Listen on " + listen);
 
 		try {
@@ -336,12 +347,12 @@ abstract public class ThreadedServer implements Runnable {
 					// wait for a connection
 					connection = accept(listen);
 				} catch (Exception e) {
-					Log.d(this.name, e.getMessage());
+					//Log.d(this.name, e.getMessage());
 
 					synchronized (this) {
 						// If we are still running, interrupt was due to accept
 						// timeout
-						Log.d(this.name, "Threads=" + this.threadSet.size());
+						//Log.d(this.name, "Threads=" + this.threadSet.size());
 
 						if (this.running
 								&& this.threadSet.size() > this.minThreads) {
