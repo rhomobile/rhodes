@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class HttpListener extends ThreadedServer {
 
-	private static final Integer DEFAULT_IDLE_TIMEOUT = 1000;
+	private static final Integer DEFAULT_IDLE_TIMEOUT = 30000;
 
 	private InetAddrPort address = null;
 	private HttpServer server = null;

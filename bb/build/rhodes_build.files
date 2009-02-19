@@ -23,5 +23,5 @@
 ..\rhodes\src\rhomobile\sync\SyncThread.java
 ..\rhodes\src\rhomobile\sync\SyncUtil.java
 ..\rhodes\src\rhomobile\sync\Tokenizer.java
-
+..\rhodes\src\rhomobile\sync\SyncNotifications.java
 

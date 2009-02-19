@@ -3,8 +3,9 @@ package com.rho.sync;
 import j2me.util.ArrayList;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
-import com.rho.RhoConnection;
+import com.rho.IHttpConnection;
 import com.rho.db.PerstLiteAdapter;
 import com.rho.util.URI;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -543,15 +544,15 @@ public class SyncUtil {
 		return null;
 	}
 	
-	private static ParsedCookie makeCookie( RhoConnection connection )throws IOException{
+	private static ParsedCookie makeCookie( HttpURLConnection connection )throws IOException{
 		ParsedCookie cookie = new ParsedCookie();
 		
 		for ( int i = 0; ; i++ ){
 			String strField = connection.getHeaderFieldKey(i);
-			if ( strField == null )
+			if ( strField == null && i > 0 )
 				break;
 			
-			if ( strField.equalsIgnoreCase("Set-Cookie")) {
+			if ( strField != null && strField.equalsIgnoreCase("Set-Cookie")) {
 				String header_field = connection.getHeaderField(i);
 				System.out.println("Set-Cookie: " + header_field);
 				parseCookie( header_field, cookie );
@@ -580,7 +581,7 @@ public class SyncUtil {
 		{
 			String strSession="";
 			//String strExpire="";
-			RhoConnection connection = null;
+			HttpURLConnection connection = null;
 			
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
@@ -594,7 +595,7 @@ public class SyncUtil {
 		
 					connection = SyncManager.getConnection(); 
 					int code = connection.getResponseCode();
-					if (code == RhoConnection.HTTP_OK ){
+					if (code == IHttpConnection.HTTP_OK ){
 						ParsedCookie cookie = makeCookie(connection);
 						strSession = cookie.strAuth+";" +cookie.strSession+";";
 					}
