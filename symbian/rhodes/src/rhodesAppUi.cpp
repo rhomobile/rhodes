@@ -154,14 +154,14 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			
 			HandleCommandL(ECmdAppHome);
 		} 
-		else if ( aType == (EEventUser + ECmdAppStartNewSync))
+		/*else if ( aType == (EEventUser + ECmdAppStartNewSync))
 		{
 			if ( iSyncEngineWrap )
 				delete iSyncEngineWrap;
 			
 			iSyncEngineWrap = CSyncEngineWrap::NewL();
 			iSyncEngineWrap->ResumeThread();
-		}
+		}*/
 		else
 		{
 			// Call the base class implementation
@@ -197,6 +197,11 @@ void CRhodesAppUi::StopThreads()
 // Takes care of command handling.
 // -----------------------------------------------------------------------------
 //
+extern "C"
+	{
+int login(const char* login, const char* password);
+	}
+
 void CRhodesAppUi::HandleCommandL(TInt aCommand)
 	{
 	switch (aCommand)
@@ -218,6 +223,7 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case ESync:
 			{
+			//login("lars","password");
 				dosync();
 				break;
 			}
