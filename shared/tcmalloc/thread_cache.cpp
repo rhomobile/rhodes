@@ -386,12 +386,12 @@ void ThreadCache::RecomputeThreadCacheSize() {
 }
 
 void ThreadCache::Print() const {
-  for (int cl = 0; cl < kNumClasses; ++cl) {
+/*  for (int cl = 0; cl < kNumClasses; ++cl) {
     MESSAGE("      %5" PRIuS " : %4" PRIuS " len; %4d lo\n",
             Static::sizemap()->ByteSizeForClass(cl),
             list_[cl].length(),
             list_[cl].lowwatermark());
-  }
+  }*/
 }
 
 void ThreadCache::GetThreadStats(uint64_t* total_bytes, uint64_t* class_count) {

@@ -346,7 +346,7 @@ get_collected_data(struct llhead *head, int nchunks, size_t datasize) {
 }
 
 struct rho_write_state {
-    char* data;		 
+    VALUE   data;		 
     size_t	nDataLen; /* Content-Length	*/
     size_t	nRead; /* Number of bytes read	*/
 };
@@ -356,23 +356,25 @@ void rho_write_data(struct shttpd_arg *arg)
     struct rho_write_state* state = arg->state;
 
     if ( state->nRead < state->nDataLen )
-        state->nRead += shttpd_printf(arg, "%s", state->data + state->nRead);
+        state->nRead += shttpd_printf(arg, "%s", getStringFromValue(state->data) + state->nRead);
 
     if ( state->nRead >= state->nDataLen )
     {
         arg->flags |= SHTTPD_END_OF_OUTPUT;
+        releaseValue(state->data);
+
         free(arg->state);
         arg->state = NULL;
     }
 }
 
-void rho_create_write_state(struct shttpd_arg *arg, char* data)
+void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 {
     struct rho_write_state* state = 0;
 	arg->state = state = calloc(1, sizeof(struct rho_write_state));
 
     state->data = data;
-    state->nDataLen = strlen(data);
+    state->nDataLen = getStringLenFromValue(data);
 }
 
 void rho_serve(struct shttpd_arg *arg) {
@@ -391,7 +393,8 @@ void rho_serve(struct shttpd_arg *arg) {
             if (arg->user_data){ //Read request
                 state = arg->state;
                 free_list(&state->post_data, collected_data_destructor);
-            }
+            }else
+                releaseValue( ((struct rho_write_state*)arg->state)->data);
 
             free(arg->state);
         }
@@ -471,8 +474,10 @@ int isindex(struct conn *c, char* path) {
 void rho_serve_index(struct shttpd_arg *arg) {
 
 	if (arg->flags & SHTTPD_CONNECTION_ERROR) {
-        if (arg->state)
+        if (arg->state){
+            releaseValue( ((struct rho_write_state*)arg->state)->data);
 	        free(arg->state);
+        }
         if ( arg->user_data )
             free(arg->user_data);
 

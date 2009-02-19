@@ -626,7 +626,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\tcmalloc\windows\port.cc"
+				RelativePath="..\..\shared\tcmalloc\windows\port.cpp"
 				>
 			</File>
 			<File
@@ -659,7 +659,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\shared\tcmalloc\central_freelist.cc"
+			RelativePath="..\..\shared\tcmalloc\central_freelist.cpp"
 			>
 		</File>
 		<File
@@ -667,7 +667,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\common.cc"
+			RelativePath="..\..\shared\tcmalloc\common.cpp"
 			>
 		</File>
 		<File
@@ -675,7 +675,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\internal_logging.cc"
+			RelativePath="..\..\shared\tcmalloc\internal_logging.cpp"
 			>
 		</File>
 		<File
@@ -695,7 +695,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\page_heap.cc"
+			RelativePath="..\..\shared\tcmalloc\page_heap.cpp"
 			>
 		</File>
 		<File
@@ -715,7 +715,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\span.cc"
+			RelativePath="..\..\shared\tcmalloc\span.cpp"
 			>
 		</File>
 		<File
@@ -723,7 +723,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\static_vars.cc"
+			RelativePath="..\..\shared\tcmalloc\static_vars.cpp"
 			>
 		</File>
 		<File
@@ -735,7 +735,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\tcmalloc_.cc"
+			RelativePath="..\..\shared\tcmalloc\tcmalloc_.cpp"
 			>
 		</File>
 		<File
@@ -743,7 +743,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\thread_cache.cc"
+			RelativePath="..\..\shared\tcmalloc\thread_cache.cpp"
 			>
 		</File>
 		<File

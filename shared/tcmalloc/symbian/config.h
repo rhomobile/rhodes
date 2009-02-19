@@ -45,6 +45,7 @@
 
 /* Define to 1 if you have the declaration of `uname', and to 0 if you don't.
    */
+//Used
 #undef HAVE_DECL_UNAME
 
 /* Define to 1 if you have the declaration of `valloc', and to 0 if you don't.
@@ -79,6 +80,7 @@
 #define HAVE_HASH_SET 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
+//Used
 #undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the <libunwind.h> header file. */
@@ -88,13 +90,15 @@
 #undef HAVE_LINUX_PTRACE_H
 
 /* Define to 1 if you have the <malloc.h> header file. */
+//Used
 #undef HAVE_MALLOC_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
 /* Define to 1 if you have a working `mmap' system call. */
-#undef HAVE_MMAP
+//Used
+#define HAVE_MMAP 1
 
 /* define if the compiler implements namespaces */
 #define HAVE_NAMESPACES 1
@@ -103,7 +107,8 @@
 #undef HAVE_PROGRAM_INVOCATION_NAME
 
 /* Define if you have POSIX threads libraries and header files. */
-#undef HAVE_PTHREAD
+//Used
+#define HAVE_PTHREAD 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
@@ -112,9 +117,11 @@
 #undef HAVE_SBRK
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
+//Used
+#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
+//Used
 #define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -124,6 +131,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if the system has the type `struct mallinfo'. */
+//Used
 #undef HAVE_STRUCT_MALLINFO
 
 /* Define to 1 if you have the <sys/prctl.h> header file. */
@@ -142,23 +150,27 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if compiler supports __thread */
-//#define HAVE_TLS 0
+//Used
+#undef HAVE_TLS
 
 /* Define to 1 if you have the <ucontext.h> header file. */
 #undef HAVE_UCONTEXT_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H
+//Used
+#define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the <unwind.h> header file. */
 #undef HAVE_UNWIND_H
 
 /* define if your compiler has __attribute__ */
+//Used
 #undef HAVE___ATTRIBUTE__
 
 /* Define to 1 if the system has the type `__int64'. */
-#define HAVE___INT64 1
-//#undef HAVE___INT64
+//#define HAVE___INT64 1
+//Used
+#undef HAVE___INT64
 
 /* prefix where we look for installed files */
 #undef INSTALL_PREFIX
@@ -197,6 +209,7 @@
 //# define PERFTOOLS_DLL_DECL  __declspec(dllexport)
 //# define PERFTOOLS_DLL_DECL_FOR_UNITTESTS  __declspec(dllimport)
 //#endif
+//Used
 #define PERFTOOLS_DLL_DECL
 
 /* printf format code for printing a size_t and ssize_t */
@@ -213,6 +226,7 @@
 #undef PTHREAD_CREATE_JOINABLE
 
 /* Define to 1 if you have the ANSI C header files. */
+//Used
 #define STDC_HEADERS 1
 
 /* the namespace where STL code like vector<> is defined */
@@ -238,9 +252,9 @@
 
 // This must be defined before the windows.h is included.  It's needed
 // for mutex.h, to give access to the TryLock method.
-#ifndef _WIN32_WINNT
-# define _WIN32_WINNT 0x0400
-#endif
+//#ifndef _WIN32_WINNT
+//# define _WIN32_WINNT 0x0400
+//#endif
 
 // TODO(csilvers): include windows/port.h in every relevant source file instead?
 #include "port.h"

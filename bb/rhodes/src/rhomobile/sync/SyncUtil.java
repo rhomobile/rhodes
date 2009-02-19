@@ -339,6 +339,8 @@ public class SyncUtil {
 							.get_sourceId());
 					SyncUtil.printResults(objects);
 				}
+				if ( !thread.isStop() )
+					SyncEngine.getNotificationImpl().fireNotification(id);
 			}
 		}
 		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
