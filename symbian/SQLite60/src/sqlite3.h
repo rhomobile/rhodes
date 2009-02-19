@@ -35,7 +35,7 @@
 #ifndef _SQLITE3_H_
 #define _SQLITE3_H_
 
-#include "tcmalloc/rhomem.h"
+//#include "tcmalloc/rhomem.h"
 
 #include <stdarg.h>     /* Needed for the definition of va_list */
 /*
