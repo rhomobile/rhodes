@@ -7,15 +7,8 @@ class SugarAccountController < Rho::RhoController
 
   #GET /SugarAccount
   def index
-    @SugarAccounts = SugarAccount.find(:all)
-    
     # sort by name in ascending order
-		if System::get_property('platform') != 'Blackberry'    
-      if (@SugarAccounts.length > 0)
-        @SugarAccounts = @SugarAccounts.sort_by {|item| !item.name.nil? ? item.name : ""}
-      end
-    end
-    
+    @SugarAccounts = SugarAccount.find(:all, :order => 'name')
     render
   end
 
