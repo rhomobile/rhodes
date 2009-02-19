@@ -57,6 +57,8 @@
 #include <sys/types.h>
 #include <libc/sys/unistd.h>
 
+TUint32 gSelectedConnectionId = -1;
+
 extern "C"
 {
 	void dosync();
