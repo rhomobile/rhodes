@@ -4,15 +4,8 @@ class SugarMeetingController < Rho::RhoController
 
   #GET /SugarMeeting
   def index
-    @SugarMeetings = SugarMeeting.find(:all)
-    
     # sort by name in ascending order
-		if System::get_property('platform') != 'Blackberry'    
-      if (@SugarMeetings.length > 0)
-        @SugarMeetings = @SugarMeetings.sort_by {|item| !item.name.nil? ? item.name : ""}
-      end
-    end
-  
+    @SugarMeetings = SugarMeeting.find(:all, :order => 'name')  
     render
   end
 
