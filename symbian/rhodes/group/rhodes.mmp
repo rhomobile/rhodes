@@ -46,7 +46,7 @@ USERINCLUDE    ..\..\..\shared
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
 STATICLIBRARY 	   SQLite60.lib
-STATICLIBRARY 	   tcmalloc.lib
+//STATICLIBRARY 	   tcmalloc.lib
 
 SOURCEPATH		..\src
 SOURCE			rhodes.cpp

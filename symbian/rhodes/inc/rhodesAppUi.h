@@ -129,7 +129,7 @@ private:
 	 */
 	CRhodesAppView* iAppView;
 	
-    sqlite3 * iDatabase;
+//    sqlite3 * iDatabase;
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	CAppManager* iAppManager;
