@@ -87,7 +87,7 @@ int process_local_changes() {
 		  int available_remote;
 		  /* fetch new list from sync source */
 	  
-#ifdef __SYMBIAN32__
+#ifdef _SYNC_KILLTHRED//__SYMBIAN32__
 	  /**
 	   * [AA] In case of out of memory problems we need to restart sync thread for each source 
 	   */
@@ -153,7 +153,7 @@ void* sync_engine_main_routine(void* data) {
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
 
-#ifdef __SYMBIAN32__		
+#ifdef _SYNC_KILLTHRED //__SYMBIAN32__		
 		if ( g_cur_source != 0 )
 		{
 			ts.tv_sec += 1;

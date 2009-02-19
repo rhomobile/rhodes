@@ -1,7 +1,7 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+#if defined( _WIN32_WCE )// || defined(__SYMBIAN32__)
 
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC

@@ -149,6 +149,9 @@ TBool CConnectionManager::SetupConnection()
 	        iBearerFilter = EApBearerTypeWLAN;
 	    }
 
+#ifdef __WINSCW__
+		gSelectedConnectionId = 3;
+#else	
 	    // Show IAP selection dialog
 	    if ( gSelectedConnectionId == -1 )
 		{
@@ -169,17 +172,19 @@ TBool CConnectionManager::SetupConnection()
 				 , ETrue
 				);
 	
-			gSelectedConnectionId = settings->RunSettingsL(0, iSelectedConnectionId);
+			TInt nRes = settings->RunSettingsL(0, iSelectedConnectionId);
 			CleanupStack::PopAndDestroy(settings);
 			CleanupStack::PopAndDestroy(aDb);
 
-			if (gSelectedConnectionId != KApUiEventSelected)
+			if (nRes != KApUiEventSelected)
 			{
 				// Exit no selection
 				User::Leave(KErrNotReady);
 			}
+			
+			gSelectedConnectionId = iSelectedConnectionId; 
 		}
-	    
+#endif
 	    iSelectedConnectionId =  gSelectedConnectionId;
 	    
 	    // open the IAP communications database 
