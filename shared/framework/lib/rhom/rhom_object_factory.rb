@@ -219,7 +219,7 @@ module Rhom
                 obj = self.inst_strip_braces(self.object)
                 attrs.each do |attrib,val|
                   attrib = attrib.to_s.gsub(/@/,"")
-                  old_val = self.send attrib.to_sym
+                  old_val = self.send attrib.to_sym unless self.method_name_reserved?(attrib)
                   
                   # Don't save objects with braces to database
                   new_val = self.inst_strip_braces(val)

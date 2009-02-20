@@ -32,13 +32,18 @@ import com.xruby.runtime.builtin.RubyPlatformUtils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public class Rhodes extends Activity implements IRubyPlatformUtils {
 
@@ -46,14 +51,22 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 	private static final String LOG_TAG = "Rhodes";
 	private static final String HOME_URL = "http://127.0.0.1:8080";
 
+	public static final int HTTP_SERVER_STARTED = 1;
+
+	private static final int MAX_PROGRESS = 10000;
+	
 	private WebView webView;
 
 	private String startPage = HOME_URL + "/";
 
+	private boolean isStarted = false;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_PROGRESS);
+		
 		setContentView(R.layout.main);
 
 		webView = (WebView) findViewById(R.id.webview);
@@ -62,25 +75,89 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		webSettings.setSavePassword(false);
 		webSettings.setSaveFormData(false);
 		webSettings.setJavaScriptEnabled(true);
+		webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
 		webSettings.setSupportZoom(false);
 		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webSettings.setLoadsImagesAutomatically(true);
+		webSettings.setSupportMultipleWindows(false);
+		//webSettings.setLoadsImagesAutomatically(true);
 
 		webView.setVerticalScrollBarEnabled(true);
 		webView.setHorizontalScrollBarEnabled(true);
 
+		webView.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+				view.loadUrl(url);
+				// return true to handle the click yourself
+				return true;
+			}
+
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				onStopLoading();
+				super.onPageFinished(view, url);
+			}
+
+			@Override
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				
+				onStartLoading();
+				super.onPageStarted(view, url, favicon);
+			}
+			
+			
+		});
+		
+		webView.setWebChromeClient(new WebChromeClient() {
+
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+				
+				onLoadingProgress(newProgress*100);
+				super.onProgressChanged(view, newProgress);
+			}
+			
+		});
+		
 		Log.i(LOG_TAG, "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
 
 		RubyPlatformUtils.setRubyPlatformUtilsImpl(this);
-		NetworkAccess.setNetworkAccessImpl(new NetworkAccessImpl(getBaseContext()));
-		
+		NetworkAccess.setNetworkAccessImpl(new NetworkAccessImpl(
+				getBaseContext()));
+
 		RhodesInstance.setInstance(this);
-		
+
 		// start http server
 		startService(new Intent(this, RhoHttpService.class));
 	}
+	
+	protected void onStartLoading()
+	{
+		if ( isStarted )
+			this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0 );
+	}
+	
+	protected void onStopLoading()
+	{
+		if ( isStarted )
+			this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS );
+	}
 
+	protected void onLoadingProgress(int curProgress)
+	{
+		if ( isStarted )
+		{
+			if ( curProgress < 0 )
+				curProgress = 0;
+			if ( curProgress > 10000)
+				curProgress = 10000;
+			
+			this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, curProgress );
+		}
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -98,6 +175,16 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		MenuInflater mi = new MenuInflater(getApplication());
 		mi.inflate(R.menu.options, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			this.webView.goBack();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -119,8 +206,8 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		case R.id.navigation_home:
 			this.webView.loadUrl(startPage);
 			return true;
-		
-		case R.id.sync:	
+
+		case R.id.sync:
 			SyncEngine.wakeUp();
 			return true;
 		}
@@ -149,12 +236,14 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 	}
 
 	public void startSyncEngine() {
+		Log.d(LOG_TAG, "startSyncEngine...");
 		// start sync engine
 		startService(new Intent(this, RhoSyncService.class));
 
+		isStarted = true;
+		
 		// load start page
 		startPage = HOME_URL + RhoRuby.getStartPage();
 		this.webView.loadUrl(startPage);
 	}
-
 }
