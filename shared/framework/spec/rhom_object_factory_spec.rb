@@ -62,7 +62,7 @@ describe "RhomObjectFactory" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
 
-    @account.instance_variables.size.should == 36
+    @account.instance_variables.size.should == 37
   end
   
   it "should calculate same djb_hash" do
@@ -111,6 +111,31 @@ describe "RhomObjectFactory" do
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
+  end
+  
+  it "should set <something>_type field for a record" do
+    new_attributes = {"account_type"=>"Partner", "type_acct"=>"Customer"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should == "Mobio India"
+    @new_acct.account_type.should == "Partner"
+    @new_acct.type_acct.should == "Customer"
+  end
+  
+  it "should _NOT_ set 'type' field for a record" do
+    new_attributes = {"type"=>"Partner"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should == "Mobio India"
+    @new_acct.instance_variables.each do |var|
+      var.gsub(/@/,'').match('\btype\b').should be_nil
+    end
   end
   
   it "should update an attribute that was previously nil" do
