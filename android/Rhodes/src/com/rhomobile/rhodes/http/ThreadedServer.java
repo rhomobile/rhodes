@@ -383,12 +383,6 @@ abstract public class ThreadedServer implements Runnable {
 
 						handleConnection(connection);
 
-						try {
-							connection.setSoLinger(false, 0);
-						} catch (Exception e) {
-							Log.e(this.name, e.getMessage());
-						}
-
 						connection.close();
 					} catch (Exception e) {
 						Log.w(this.name, e.getMessage());

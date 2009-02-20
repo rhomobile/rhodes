@@ -213,6 +213,7 @@ public class HttpHeader {
         Writer writer=new OutputStreamWriter(out,"ISO8859_1");
         write(writer,null);
         writer.flush();
+        writer.close();
     }
 
     protected void write(Writer writer) throws IOException

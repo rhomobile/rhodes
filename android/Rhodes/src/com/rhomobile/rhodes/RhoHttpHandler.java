@@ -63,7 +63,6 @@ public class RhoHttpHandler implements IHttpHandler {
 			
 			response.writeHeaders();
 			response.writeInputStream(conn.openInputStream(), conn.getLength());
-			
 		} 
 		catch ( FileNotFoundException fe)
 		{
