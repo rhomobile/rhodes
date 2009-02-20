@@ -505,6 +505,8 @@ public abstract class RhoConnection {
 		contentLength = responseData.available(); 
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 		
+		resHeaders.addProperty("Connection", "close" );
+		
 		return true;
 	}
 	
