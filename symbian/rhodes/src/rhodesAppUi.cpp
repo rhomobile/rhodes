@@ -64,6 +64,10 @@ extern "C"
 	void dosync();
 }
 
+extern "C" void webview_refresh() {
+    //TODO: webview_refresh
+}
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 
