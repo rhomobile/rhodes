@@ -108,6 +108,11 @@ public class HttpListener extends ThreadedServer {
 						} catch (IOException e) {
 							Log.e(this.getClass().getSimpleName(),e.getMessage());
 						}
+						finally
+						{
+							if ( in != null )
+								in.close();
+						}
 					}
 				} 
 				catch (InterruptedIOException e)
