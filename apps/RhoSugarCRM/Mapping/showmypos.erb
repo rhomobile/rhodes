@@ -1,0 +1,107 @@
+<html>
+<head>
+	
+	<% if System::get_property('platform') == 'APPLE' %>
+	
+	  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+	
+		<script src="/shared/js/jquery-1.2.6.min.js"></script>
+	
+		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=aFhmQOzV34FaMlrzhSFVxYpBojI29ArEPZ0oRloa6yEzZOvBgijJhI6gCfudbw--">
+		</script>
+		
+		<script type="text/javascript">
+		
+		var my_current_lat = -1;
+		var my_current_lon = -1;
+		
+		function getMyGeoLocation() {
+			$.get("/system/geolocation",function(data){
+				  data = data.split(";");
+				  my_current_lat = data[1];
+				  my_current_lon = data[2];	
+				
+					generate_mapview();					
+			});
+		}
+		
+			function generate_mapview() {
+
+				// Create a map object
+				var map = new YMap(document.getElementById('map'));
+
+				// Add map type control
+				map.addTypeControl();
+
+				// Add panning control
+				map.addPanControl();
+
+				// Add Slider Zoom Control
+				map.addZoomLong();
+
+				// Set map type to either of: YAHOO_MAP_SAT, YAHOO_MAP_HYB, YAHOO_MAP_REG
+				map.setMapType(YAHOO_MAP_REG);
+
+				// Display the map centered on a geocoded location
+	//			var mypos = new YGeoPoint(37.331689, -122.030731);
+
+				var mypos = new YGeoPoint(my_current_lat, my_current_lon);
+
+				var myposmarker = new YMarker(mypos);
+	//			myposmarker.addLabel("<span style='margin:10px 0 0 0;font-size:70%'>You</span>");
+		    map.addOverlay(myposmarker);
+				map.drawZoomAndCenter(mypos, 5);
+
+	//			map.drawZoomAndCenter("701 First Avenue, SunnyVale, CA", 5);
+		}	
+		
+		</script>
+		
+		<style type="text/css">
+		#map{
+		  height: 300px;
+		  width: 300px;
+		}
+		</style> 
+		
+<% else %>
+
+	<script type="text/javascript">
+		var my_url_name = "";
+      
+		function ws_results(obj) {
+			my_url_name = obj.ResultSet.Result;
+		}
+
+		function update_mapsrc() {
+		   var image_item = document.getElementById("map");
+		   if (my_url_name != "") {
+		     image_item.src = my_url_name;
+		   }
+		}
+	</script>
+
+<% end %>
+
+</head>
+
+<% if System::get_property('platform') == 'APPLE' %>
+	<body onload="getMyGeoLocation()">
+<% else %>
+	<body onload="setTimeout('update_mapsrc()', 1000)">	
+<% end %>	
+	
+	<% if System::get_property('platform') == 'APPLE' %>
+	 <div id="map"></div>	
+	</div>
+	
+	<% else %>
+		<img id="map" src="" height="250" width="250" alt="map image loading..."/>	
+
+	  <!-- do a JSON load which triggers the ws_results function call -->
+	<script type="text/javascript" src="http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250&street=701+First+Avenue&city=Sunnyvale&state=CA"></script>
+
+  <% end %>
+
+</body>
+</html>
