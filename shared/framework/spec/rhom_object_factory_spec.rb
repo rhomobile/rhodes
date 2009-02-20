@@ -113,8 +113,11 @@ describe "RhomObjectFactory" do
     @new_acct.industry.should == "Electronics"
   end
   
-  it "should set <something>_type field for a record" do
-    new_attributes = {"account_type"=>"Partner", "type_acct"=>"Customer"}
+  it "should set <something>_type_<something> or <something>_object_<something> field for a record" do
+    new_attributes = {"account_type"=>"Partner", 
+                      "type_acct"=>"Customer", 
+                      "object_acct"=>"new object",
+                      "acct_object"=>"same object"}
     @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
     @account.update_attributes(new_attributes)
 
@@ -123,6 +126,8 @@ describe "RhomObjectFactory" do
     @new_acct.name.should == "Mobio India"
     @new_acct.account_type.should == "Partner"
     @new_acct.type_acct.should == "Customer"
+    @new_acct.object_acct.should == "new object"
+    @new_acct.acct_object.should == "same object"
   end
   
   it "should _NOT_ set 'type' field for a record" do
