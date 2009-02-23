@@ -45,7 +45,7 @@
 #include "rhoruby/rhoruby.h"
 
 #ifndef ENABLE_RUBY_VM_STAT
-#define ENABLE_RUBY_VM_STAT
+//#define ENABLE_RUBY_VM_STAT
 #endif
 
 #include "stat/stat.h"
@@ -158,14 +158,14 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			
 			HandleCommandL(ECmdAppHome);
 		} 
-		/*else if ( aType == (EEventUser + ECmdAppStartNewSync))
+		else if ( aType == (EEventUser + ECmdAppStartNewSync))
 		{
 			if ( iSyncEngineWrap )
 				delete iSyncEngineWrap;
 			
 			iSyncEngineWrap = CSyncEngineWrap::NewL();
 			iSyncEngineWrap->ResumeThread();
-		}*/
+		}
 		else
 		{
 			// Call the base class implementation

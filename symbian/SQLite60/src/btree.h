@@ -18,6 +18,15 @@
 #ifndef _BTREE_H_
 #define _BTREE_H_
 
+//RHO
+#ifndef SQLITE_THREADSAFE
+#define SQLITE_OMIT_EXPLAIN 1
+#define SQLITE_DISABLE_LFS 1
+#define SQLITE_THREADSAFE 0
+#define SQLITE_DEFAULT_MEMSTATUS 0
+#endif
+//RHO
+
 /* TODO: This definition is just included so other modules compile. It
 ** needs to be revisited.
 */
