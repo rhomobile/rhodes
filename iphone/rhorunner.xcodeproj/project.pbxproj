@@ -34,6 +34,7 @@
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
+		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 /* End PBXBuildFile section */
 
@@ -130,6 +131,8 @@
 		F58E80100F008B3F00E46829 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = ../../../../../../System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
+		F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
+		F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera/PickImageDelegate.m; sourceTree = "<group>"; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
 		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
 		F5DA58FF0E9696F50062A28B /* Test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Test; path = Resources/Test; sourceTree = "<group>"; };
@@ -172,6 +175,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
@@ -330,6 +334,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F5B8FAD10F44E95F00C9AF85 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */,
+				F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */,
+			);
+			name = Camera;
+			sourceTree = "<group>";
+		};
 		F5C106510E917D4A0049A94A /* Dispatcher */ = {
 			isa = PBXGroup;
 			children = (
@@ -461,6 +474,7 @@
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
+				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
