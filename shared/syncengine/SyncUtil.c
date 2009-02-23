@@ -231,7 +231,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 	success = push_remote_data(list[0]->_uri,data,data_size);
 	free(data);
 	
-	return success == SYNC_PUSH_CHANGES_OK ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
+	return success ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
 }
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
@@ -246,7 +246,7 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 		list[count] = SourceCreate(url, id);
 		count++;
 	}
-	sqlite3_reset(op_list_source_ids_statement);
+	finish_db_statement(&op_list_source_ids_statement);
 	unlock_sync_mutex();	
 
 	return count;
@@ -265,7 +265,7 @@ char *get_params_for_source(pSource source, sqlite3 *database) {
 	sqlite3_bind_text(source_params_statement, 2, ask_type, -1, SQLITE_TRANSIENT);
 	sqlite3_step(source_params_statement);
 	params = (char *)sqlite3_column_text(source_params_statement, 0);
-	sqlite3_reset(source_params_statement);
+	finish_db_statement(&source_params_statement);
 	unlock_sync_mutex();
 	
 	remove_op_list_from_database(source, database, ask_type);
@@ -284,7 +284,7 @@ int get_object_count_from_database(sqlite3 *database) {
 	if (success == SQLITE_ROW) {
 		count = sqlite3_column_int(ob_count_statement, 0);
 	}
-	sqlite3_reset(ob_count_statement);
+	finish_db_statement(&ob_count_statement);
     unlock_sync_mutex();	
 	return count;
 }
@@ -316,7 +316,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
     set_db_client_id(database,c_id);
 	}
 	lock_sync_mutex();	
-	sqlite3_reset(client_id_statement);
+	finish_db_statement(&client_id_statement);
 	unlock_sync_mutex();	
 
 	return c_id;
@@ -331,7 +331,7 @@ void set_db_client_id( sqlite3 *database, char *c_id ){
 	sqlite3_bind_text(client_id_insert_statement, 1, c_id, -1, SQLITE_TRANSIENT);
 	sqlite3_step(client_id_insert_statement);
 	printf("Intialized new client_id %s from source...\n", c_id);
-	sqlite3_reset(client_id_insert_statement);
+	finish_db_statement(&client_id_insert_statement);
 
 	unlock_sync_mutex();	
 }
@@ -352,7 +352,7 @@ void update_source_sync_status(sqlite3 *database, pSource source,
 	sqlite3_bind_int(sync_status_statement, 5, status);
 	sqlite3_bind_int(sync_status_statement, 6, source->_source_id);
 	sqlite3_step(sync_status_statement); 
-	sqlite3_reset(sync_status_statement);
+	finish_db_statement(&sync_status_statement);
 	unlock_sync_mutex();	
 }
 
@@ -373,7 +373,7 @@ char *get_db_session(const char* source_url) {
 		sqlite3_step(session_db_statement);
 		
 		session = str_assign((char *)sqlite3_column_text(session_db_statement, 0));
-		sqlite3_reset(session_db_statement);
+		finish_db_statement(&session_db_statement);
 
 		unlock_sync_mutex();	
 	}
@@ -402,7 +402,7 @@ char *get_db_session_by_server(char* source_url) {
         break;
       }
 	  }
-	  sqlite3_reset(session_url_source_statement);
+	  finish_db_statement(&session_url_source_statement);
 
     unlock_sync_mutex();	
 	}
@@ -420,7 +420,7 @@ void delete_db_session( const char* source_url )
 						 &del_session_db_statement);
 		sqlite3_bind_text(del_session_db_statement, 1, source_url, -1, SQLITE_TRANSIENT);
 		sqlite3_step(del_session_db_statement); 
-		sqlite3_reset(del_session_db_statement);
+		finish_db_statement(&del_session_db_statement);
 		unlock_sync_mutex();	
 
 #if defined(_WIN32_WCE)
@@ -446,7 +446,7 @@ int set_db_session(const char* source_url, const char *session) {
 		sqlite3_bind_text(set_session_db_statement, 1, session, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(set_session_db_statement, 2, source_url, -1, SQLITE_TRANSIENT);
 		success = sqlite3_step(set_session_db_statement);
-		sqlite3_reset(set_session_db_statement);
+		finish_db_statement(&set_session_db_statement);
 		unlock_sync_mutex();
 	}
 	return success;
@@ -468,10 +468,10 @@ void reset_sync_db() {
 						 &del_all_client_info_statement);
 	printf("Deleting all objects from db...\n");
 	sqlite3_step(del_all_ob_val_statement);
-	sqlite3_reset(del_all_ob_val_statement);
+	finish_db_statement(&del_all_ob_val_statement);
 	printf("Deleting client info from db...\n");
 	sqlite3_step(del_all_client_info_statement);
-	sqlite3_reset(del_all_client_info_statement);
+	finish_db_statement(&del_all_client_info_statement);
 	
 	unlock_sync_mutex();
 }

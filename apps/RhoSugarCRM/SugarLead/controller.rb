@@ -7,7 +7,8 @@ class SugarLeadController < Rho::RhoController
 
   #GET /SugarLead
   def index
-    @SugarLeads = SugarLead.find(:all)
+    # sort by name in ascending order and only if all items are non-nil to prevent sort error
+    @SugarLeads = SugarLead.find(:all, :order => 'last_name')  
     render
   end
 

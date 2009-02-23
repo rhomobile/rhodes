@@ -1,12 +1,12 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Call
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Call
+	</h1>
 </div>
-<% end %>
 
-<div class="panel">
+<div class="panel" selected="true">
 
-	<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarCall.object)%>">Edit</a>
+	<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarCall.object)%>" target="_self">Edit</a>
  	
    <table class="grid">			
 		  <tr>
@@ -41,7 +41,7 @@
 		
 		  <tr>
 			<td class="gridleft">Description</td>
-			<td class="gridright"><%=@SugarCall.description%></td>
+			<td class="gridright"><%=replace_newlines(@SugarCall.description)%></td>
 		  </tr>
 
    </table>		
@@ -57,6 +57,12 @@
 			<td class="gridright"><%=@SugarCall.assigned_user_name%></td>
 		  </tr>		
    </table>
+
+	<p align="center">
+		<a href="<%=url_for(:action => :delete, :id => @SugarCall.object)%>">
+			<span class="deletebutton">Delete</span>
+		</a>
+	</p>
 					 
 </div>
 

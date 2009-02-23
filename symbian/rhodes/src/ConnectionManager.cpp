@@ -36,6 +36,7 @@
 
 #include <httpstringconstants.h>
 
+extern TUint32 gSelectedConnectionId;
 
 namespace EConnectionStatus
 	{
@@ -148,37 +149,46 @@ TBool CConnectionManager::SetupConnection()
 	        iBearerFilter = EApBearerTypeWLAN;
 	    }
 
+#ifdef __WINSCW__
+		gSelectedConnectionId = 3;
+#else	
 	    // Show IAP selection dialog
-	    /*CActiveApDb* aDb = CActiveApDb::NewL();
-	    CleanupStack::PushL(aDb);
+	    if ( gSelectedConnectionId == -1 )
+		{
+			CActiveApDb* aDb = CActiveApDb::NewL();
+			CleanupStack::PushL(aDb);
+	
+			CApSettingsHandler* settings = CApSettingsHandler::NewLC
+				(
+				   *aDb
+				 , ETrue
+				 , EApSettingsSelListIsPopUp
+				 , EApSettingsSelMenuSelectNormal
+				 , KEApIspTypeAll
+				 , iBearerFilter
+				 , KEApSortNameAscending
+				 , 0
+				 , EVpnFilterBoth
+				 , ETrue
+				);
+	
+			TInt nRes = settings->RunSettingsL(0, iSelectedConnectionId);
+			CleanupStack::PopAndDestroy(settings);
+			CleanupStack::PopAndDestroy(aDb);
 
-	    CApSettingsHandler* settings = CApSettingsHandler::NewLC
-	        (
-	           *aDb
-	         , ETrue
-	         , EApSettingsSelListIsPopUp
-	         , EApSettingsSelMenuSelectNormal
-	         , KEApIspTypeAll
-	         , iBearerFilter
-	         , KEApSortNameAscending
-	         , 0
-	         , EVpnFilterBoth
-	         , ETrue
-	        );
-
-	    TInt iapRet = settings->RunSettingsL(0, iSelectedConnectionId);
-	    CleanupStack::PopAndDestroy(settings);
-	    CleanupStack::PopAndDestroy(aDb);
-
-	    if (iapRet != KApUiEventSelected)
-	    {
-	        // Exit no selection
-	        User::Leave(KErrNotReady);
-	    }
-	    else*/
-
+			if (nRes != KApUiEventSelected)
+			{
+				// Exit no selection
+				User::Leave(KErrNotReady);
+			}
+			
+			gSelectedConnectionId = iSelectedConnectionId; 
+		}
+#endif
+	    iSelectedConnectionId =  gSelectedConnectionId;
+	    
 	    // open the IAP communications database 
-		CCommsDatabase* commDB = CCommsDatabase::NewL(EDatabaseTypeIAP);
+		/*CCommsDatabase* commDB = CCommsDatabase::NewL(EDatabaseTypeIAP);
 		CleanupStack::PushL(commDB);
 
 		// initialize a view 
@@ -206,7 +216,7 @@ TBool CConnectionManager::SetupConnection()
 		CleanupStack::PopAndDestroy(commDBView);
 
 		// pop and destroy the database object
-		CleanupStack::PopAndDestroy(commDB);
+		CleanupStack::PopAndDestroy(commDB);*/
 
     	iNewConnection = ETrue;
     	
@@ -216,9 +226,10 @@ TBool CConnectionManager::SetupConnection()
         User::LeaveIfError(iConnection.Open(iServerSocket, KConnectionTypeDefault));
         // Now we have the iap Id. Use it to connect for the connection
         TCommDbConnPref connectPref;
-        // Setup preferences 
-        connectPref.SetDialogPreference(ECommDbDialogPrefDoNotPrompt);
-        // Sets the CommDb ID of the IAP to use for this connection
+		// Setup preferences 
+		connectPref.SetDialogPreference(ECommDbDialogPrefDoNotPrompt);
+		
+		// Sets the CommDb ID of the IAP to use for this connection
         connectPref.SetIapId(iSelectedConnectionId);
         // Sets direction
         connectPref.SetDirection(ECommDbConnectionDirectionOutgoing);

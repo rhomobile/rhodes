@@ -3,6 +3,8 @@
 #include <sys/signal.h>
 #include <fcntl.h>
 #include <pthreadtypes.h>
+#include <errno.h>
+#include <stdio.h>
 
 char **environ = 0;
 
@@ -73,6 +75,14 @@ int execv(const char *path, char *const argv[]){
   return 0;
 }
 
-/*int _symbian_close(int fd){
-	return close(fd);
-}*/
+int _symbian_close(int fd){
+    errno = EBADF;
+    return 0;
+//	return close(fd);
+}
+
+int _symbian_fclose(FILE* f){
+    errno = EBADF;
+    return 0;
+//	return close(fd);
+}

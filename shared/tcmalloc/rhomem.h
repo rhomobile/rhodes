@@ -1,30 +1,36 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC
 
-#ifndef _SIZE_T_DEFINED
+#if defined( _WIN32_WCE ) && !defined( _SIZE_T_DEFINED)
 typedef unsigned int size_t;
-#define _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED  1
+#endif
+
+#if defined(__SYMBIAN32__) && !defined( _SIZE_T_DECLARED)
+typedef unsigned int size_t;
+#define _SIZE_T_DECLARED  1
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void   __cdecl rho_free(void *);
-void * __cdecl rho_malloc(size_t);
-void * __cdecl rho_calloc(size_t num, size_t size);
-size_t __cdecl rho_msize(void *);
-void * __cdecl rho_realloc(void *, size_t);
+void    rho_free(void *);
+void *  rho_malloc(size_t);
+void *  rho_calloc(size_t num, size_t size);
+size_t  rho_msize(void *);
+void *  rho_realloc(void *, size_t);
 
 #ifdef __cplusplus
 };
 #endif
 
+//#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
 #define malloc(s) rho_malloc(s)
 #define calloc(num, size) rho_calloc(num,size)
@@ -34,4 +40,5 @@ void * __cdecl rho_realloc(void *, size_t);
 #endif //_RHO_NO_MEMDEFINES
 
 #endif// _WIN32_WCE
+
 #endif  // RHO_MEMORY__

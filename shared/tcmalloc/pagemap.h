@@ -78,7 +78,7 @@ class TCMalloc_PageMap1 {
     // that's left is to check for overflow (that is, we don't want to
     // ensure a number y where array_[y] would be an out-of-bounds
     // access).
-    return n <= LENGTH - x;   // an overflow-free way to do "x + n <= LENGTH"
+    return n <= (size_t)(LENGTH - x);   // an overflow-free way to do "x + n <= LENGTH"
   }
 
   void PreallocateMoreMemory() {}
@@ -147,7 +147,7 @@ class TCMalloc_PageMap2 {
       const Number i1 = key >> LEAF_BITS;
 
       // Check for overflow
-      if (i1 >= ROOT_LENGTH)
+      if (i1 >= (Number)ROOT_LENGTH)
         return false;
 
       // Make 2nd level node if necessary
@@ -233,7 +233,7 @@ class TCMalloc_PageMap3 {
       const Number i2 = (key >> LEAF_BITS) & (INTERIOR_LENGTH-1);
 
       // Check for overflow
-      if (i1 >= INTERIOR_LENGTH || i2 >= INTERIOR_LENGTH)
+      if (i1 >= (Number)INTERIOR_LENGTH || i2 >= (Number)INTERIOR_LENGTH)
         return false;
 
       // Make 2nd level node if necessary

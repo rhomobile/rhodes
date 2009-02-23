@@ -45,7 +45,7 @@
 #include "rhoruby/rhoruby.h"
 
 #ifndef ENABLE_RUBY_VM_STAT
-#define ENABLE_RUBY_VM_STAT
+//#define ENABLE_RUBY_VM_STAT
 #endif
 
 #include "stat/stat.h"
@@ -57,9 +57,15 @@
 #include <sys/types.h>
 #include <libc/sys/unistd.h>
 
+TUint32 gSelectedConnectionId = -1;
+
 extern "C"
 {
 	void dosync();
+}
+
+extern "C" void webview_refresh() {
+    //TODO: webview_refresh
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -195,6 +201,11 @@ void CRhodesAppUi::StopThreads()
 // Takes care of command handling.
 // -----------------------------------------------------------------------------
 //
+extern "C"
+	{
+int login(const char* login, const char* password);
+	}
+
 void CRhodesAppUi::HandleCommandL(TInt aCommand)
 	{
 	switch (aCommand)
@@ -216,6 +227,7 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case ESync:
 			{
+			//login("lars","password");
 				dosync();
 				break;
 			}

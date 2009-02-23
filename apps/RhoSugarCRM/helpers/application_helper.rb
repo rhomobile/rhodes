@@ -39,8 +39,28 @@ module ApplicationHelper
     if blank?(value)
       " "
     else
-      "$" + value
+      "$" + sprintf("%.2f", value)
     end   
+  end
+  
+  def display_number(value)
+    if blank?(value)
+      " "
+    else
+      sprintf("%.2f", value)
+    end   
+  end
+  
+  def both_items_present?(value1, value2)
+    !blank?(value1) && !blank?(value2)
+  end
+  
+  def replace_newlines(value)
+    if blank?(value)
+      " "
+    else
+      value.gsub('\n', ' ')
+    end       
   end
   
 end

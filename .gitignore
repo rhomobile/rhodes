@@ -14,6 +14,9 @@ wm/target/*
 wm/build/cleanup.js
 iphone/*/rholog.txt
 
+android/bin/*
+shared/jrhobundle/bin/*
+shared/jruby/bin/*
 bb/.metadata/*
 bb/bin/*
 bb/target/*
@@ -24,6 +27,7 @@ bb/*/.classpath
 *.cso
 *.csl
 *.err
+*.class
 bb/.BB.jdw/*.files
 *.jad
 bb/build/rholog.txt

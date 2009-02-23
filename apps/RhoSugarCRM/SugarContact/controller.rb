@@ -7,7 +7,8 @@ class SugarContactController < Rho::RhoController
 
   #GET /SugarContact
   def index
-    @SugarContacts = SugarContact.find(:all)
+    # sort by name in ascending order
+    @SugarContacts = SugarContact.find(:all, :order => 'last_name')    
     render
   end
 

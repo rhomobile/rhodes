@@ -7,7 +7,8 @@ class SugarOpportunityController < Rho::RhoController
   
   #GET /SugarOpportunity
   def index
-    @SugarOpportunities = SugarOpportunity.find(:all)
+    # sort by name in ascending order  
+    @SugarOpportunities = SugarOpportunity.find(:all, :order => 'name')  
     render
   end
 

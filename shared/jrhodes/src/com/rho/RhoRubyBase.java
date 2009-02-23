@@ -2,6 +2,8 @@ package com.rho;
 
 import java.io.InputStream;
 
+import com.rho.db.PerstLiteAdapter;
+import com.rho.sync.SyncEngine;
 import com.rho.util.Properties;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
@@ -24,10 +26,17 @@ public abstract class RhoRubyBase implements IRhoRuby {
 		
 		RubyRuntime.init(args);
 
+		PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
+		SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+		
 		PlatformRhoRubyStart(szAppPath);
         
 		mainObj = new xruby.ServeME.main();
+				
 		receiver = mainObj.invoke();
+		
+		String str = receiver.asString();
+		System.out.printf(str);
 	}
 	
 	public abstract void PlatformRhoRubyStart(String szAppPath);
@@ -47,7 +56,10 @@ public abstract class RhoRubyBase implements IRhoRuby {
 	 * @see com.rho.IRhoRuby#loadFile(java.lang.String)
 	 */
 	public InputStream loadFile(String path){
-		return mainObj.getClass().getResourceAsStream(path);		
+		if ( RubyPlatformUtils.getPlatform().equalsIgnoreCase("android") )
+			return null; //use assets instead of jar
+		else
+			return mainObj.getClass().getResourceAsStream(path);		
 	}
 
 	/* (non-Javadoc)

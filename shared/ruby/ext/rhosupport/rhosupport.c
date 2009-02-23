@@ -244,10 +244,16 @@ void Init_RhoSupport()
       if ( exist == Qtrue ){
         stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
         if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
+        {
           //freopen( RSTRING_PTR(stdioPath), "w", stdout );
+          char* szPath = RSTRING_PTR(stdioPath);
+          int len = RSTRING_LEN(stdioPath);
 		  logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w+"));
-          rb_gv_set("$stdout", logio);
-          rb_gv_set("$stderr", logio);
+          if ( logio != 0 && logio != Qnil ){
+			  rb_gv_set("$stdout", logio);
+			  rb_gv_set("$stderr", logio);
+          }
+        }
       }
     }
 }

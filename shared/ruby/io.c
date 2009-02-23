@@ -743,9 +743,17 @@ io_binwrite(VALUE str, rb_io_t *fptr, int nosync)
 #if defined(_WIN32_WCE) //TBD: fix this
     if (fptr->fd==fileno(stdout)||fptr->fd==fileno(stderr)) {
       _write(fptr->fd,RSTRING_PTR(str),len);
-      fflush(fptr->fd);
+      if ( fptr->fd==fileno(stdout) )
+    	  fflush(stdout);
+      else
+    	  fflush(stderr);
+      
       return len;
     }
+#elif  defined(__SYMBIAN32__)
+    write(fptr->fd,RSTRING_PTR(str),len);
+    fsync(fptr->fd);
+    return len;
 #endif
 
     if (fptr->wbuf == NULL && !(!nosync && (fptr->mode & FMODE_SYNC))) {
