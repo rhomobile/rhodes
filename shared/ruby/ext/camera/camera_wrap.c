@@ -1532,10 +1532,10 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_WebView
-#define SWIG_name    "WebView"
+#define SWIG_init    Init_Camera
+#define SWIG_name    "Camera"
 
-static VALUE mWebView;
+static VALUE mCamera;
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -1545,10 +1545,8 @@ static VALUE mWebView;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void webview_refresh();
-#define refresh webview_refresh 
-extern void webview_navigate(char* url);
-#define navigate webview_navigate
+extern void take_picture(char* callback_url);
+extern void choose_picture(char* callback_url);
 
 
 SWIGINTERN swig_type_info*
@@ -1605,19 +1603,7 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 SWIGINTERN VALUE
-_wrap_refresh(int argc, VALUE *argv, VALUE self) {
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  refresh();
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_navigate(int argc, VALUE *argv, VALUE self) {
+_wrap_take_picture(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -1628,10 +1614,34 @@ _wrap_navigate(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "navigate" "', argument " "1"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "take_picture" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  navigate(arg1);
+  take_picture(arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_choose_picture(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "choose_picture" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  choose_picture(arg1);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 fail:
@@ -1890,11 +1900,11 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_WebView(void) {
+SWIGEXPORT void Init_Camera(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mWebView = rb_define_module("WebView");
+  mCamera = rb_define_module("Camera");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -1902,7 +1912,7 @@ SWIGEXPORT void Init_WebView(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mWebView, "refresh", _wrap_refresh, -1);
-  rb_define_module_function(mWebView, "navigate", _wrap_navigate, -1);
+  rb_define_module_function(mCamera, "take_picture", _wrap_take_picture, -1);
+  rb_define_module_function(mCamera, "choose_picture", _wrap_choose_picture, -1);
 }
 

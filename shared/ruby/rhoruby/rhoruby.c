@@ -27,6 +27,7 @@ extern void enable_gc_profile(void);
 extern void Init_System(void);
 extern void Init_Phonebook(void);
 extern void Init_WebView(void);
+extern void Init_Camera(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -67,7 +68,8 @@ void RhoRubyStart()
 		Init_System();
 		Init_Phonebook();
 		Init_WebView();
-        
+        Init_Camera();
+		
     Init_RhoSupport();
 
 #ifdef ENABLE_RUBY_VM_STAT
