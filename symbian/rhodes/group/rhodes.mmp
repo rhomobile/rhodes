@@ -46,7 +46,7 @@ USERINCLUDE    ..\..\..\shared
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
 STATICLIBRARY 	   SQLite60.lib
-//STATICLIBRARY 	   tcmalloc.lib
+STATICLIBRARY 	   tcmalloc.lib
 
 SOURCEPATH		..\src
 SOURCE			rhodes.cpp
@@ -144,5 +144,5 @@ SOURCE GeoLocation.cpp ruby_geolocation.cpp
 SOURCEPATH 		..\..\..\shared\unzip
 SOURCE unzip.cpp
 
-SOURCEPATH ..\src
-SOURCE posix_http_client.c
+//SOURCEPATH ..\src
+//SOURCE posix_http_client.c

@@ -1,7 +1,7 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-#if defined( _WIN32_WCE )// || defined(__SYMBIAN32__)
+#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC
@@ -30,6 +30,7 @@ void *  rho_realloc(void *, size_t);
 };
 #endif
 
+//#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
 #define malloc(s) rho_malloc(s)
 #define calloc(num, size) rho_calloc(num,size)

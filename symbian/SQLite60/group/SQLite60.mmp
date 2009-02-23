@@ -66,3 +66,11 @@ SOURCE                                  attach.cpp
 SOURCE                                  analyze.cpp 
 SOURCE                                  alter.cpp 
 SOURCE                                  os_symbian.cpp 
+
+/*
+macro SQLITE_OS_UNIX
+macro HAVE_LOCALTIME_R
+
+SOURCEPATH ..\src
+SOURCE sqlite3.c
+*/

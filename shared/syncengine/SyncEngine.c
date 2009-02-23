@@ -37,7 +37,7 @@ pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_condattr_t sync_details;
 #endif
-static sqlite3 *database;
+static sqlite3 *database = 0;
 char *client_id = NULL;
 
 extern void delete_db_session(const char *source_url);
@@ -48,12 +48,14 @@ extern void triggerSyncDbReset();
 
 #ifdef __SYMBIAN32__
 extern int g_cur_source;
+//#define _SYNC_KILLTHRED 1
 #endif
 
 int process_local_changes() {
+	int nRet = 0;
   if (!stop_running) {
 	  // Process local changes
-	  int i,result,source_length = 0;
+	  int i,result = 0,source_length = 0;
 	  pSource *source_list;
 	  char *ask_params;
 	  source_list = calloc(MAX_SOURCES,sizeof(pSource));
@@ -94,14 +96,15 @@ int process_local_changes() {
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
 			  ask_params = str_assign(get_params_for_source(source_list[g_cur_source], database));
-			  int available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
+			  available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
 			  }
 			  if (ask_params) free(ask_params);
 			  
 			  g_cur_source++;
-			  stop_running = 1; //stop sync thread
+			  //stop_running = 1; //stop sync thread
+			  nRet = 1; //go out of sync cycle
 		  }
 
 		  if ( g_cur_source >= source_length )
@@ -131,7 +134,7 @@ int process_local_changes() {
 	  clear_client_id();
 	  shutdown_database();
   }
-  return 0;
+  return nRet;
 }
 
 /*
@@ -182,7 +185,7 @@ void* sync_engine_main_routine(void* data) {
 		}
 	}
 	pthread_mutex_unlock(&sync_mutex2);
-	
+/*	
 #ifdef __SYMBIAN32__
 	
 	pthread_cond_destroy(&sync_cond);
@@ -190,18 +193,18 @@ void* sync_engine_main_routine(void* data) {
 	pthread_mutex_destroy(&sync_mutex);
 
 	stop_running = 0;
-#endif	
+#endif*/	
 	
 	return NULL;
 }
 #endif
 
 int process_op_list(pSource source, char *type) {
-	int available;
+	int available = 0;
 	int success;
 
 	pSyncOperation *op_list = NULL;
-	op_list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncOperation));
+	op_list = calloc(1,MAX_SINGLE_OP_SIZE*sizeof(pSyncOperation));
 	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
 	if (available > 0) {
 		printf("Found %i available records for %s processing on source %i...\n", available, type, source->_source_id);
@@ -254,6 +257,7 @@ void start_sync_engine(sqlite3 *db) {
     pthread_t       p_thread_id;
     int             return_val;
     int thread_error;
+    
 	database = db;
 	
 #ifndef __SYMBIAN32__	
@@ -294,13 +298,19 @@ void stop_sync_engine() {
 }
 
 void shutdown_database() {
+	lock_sync_mutex();
+#if defined( __SYMBIAN32__ ) && !defined (__GCEE__)
+//emulator issue
+#elif
 	finalize_sync_obj_statements();
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
-  	
-#ifndef __SYMBIAN32__	
+#endif
+	
+//#ifndef __SYMBIAN32__
 	sqlite3_close(database);
-#endif	
+	unlock_sync_mutex();	
+//#endif	
 	printf("Sync engine is shutdown...\n");
 }
 
@@ -410,6 +420,7 @@ int logged_in() {
 		if (session && strlen(session) > 0) {
 			retval = 1;
 			free(session);
+			break;
 		}
 	}
 	free_source_list(source_list, source_length);
