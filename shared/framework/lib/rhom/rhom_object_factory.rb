@@ -41,11 +41,8 @@ module Rhom
               extend ::Rhom::RhomObject
           
               def initialize(obj=nil)
+                self.send("object=".to_sym(), "#{Time.now.to_i}")
                 if obj
-                  # create a temp id for the create type
-                  # TODO: This is duplicative of get_new_obj
-                  temp_objid = djb_hash(obj.values.to_s, 10).to_s
-                  self.send("object=".to_sym(), temp_objid)
                   self.send("source_id=".to_sym(), obj['source_id'].to_s)
                   self.send("update_type=".to_sym(), 'create')
                   obj.each do |key,value|
@@ -76,13 +73,32 @@ module Rhom
                     conditions = {"object"=>strip_braces(args.first.to_s)}
                   end
                   
-                  conditions.merge!(args.first) if args.first.is_a?(Hash)
-                  
+                  # do we have conditions?
+                  # if so, add them to the query
+                  condition_hash = {}
+                  if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
+                    query_conditions = args[1][:conditions].each do |key,value|
+                      condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
+                    end
+                  end
+                  conditions.merge!(condition_hash)
+
                   # process query, create, and update lists in order
                   ["query", "create", "update"].each do |update_type|
                     conditions.merge!({"update_type"=>update_type})
-                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions,
-                                                                    {"order by"=>'object'})
+                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'})
+                    
+                    # fetch the rest of the attributes if we're searching by specific attrib value
+                    if condition_hash and condition_hash.size > 0
+                      full_objects = []
+                      objs.each do |obj|
+                        full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {:object => obj['object'].to_s})
+                      end
+                      objs = full_objects
+                    end
+                    
+                    # build up the object array where each
+                    # row in this array is a rhom_object
                     objs.collect! do |obj|
                       object = obj['object']
                       attrib = obj['attrib']
@@ -99,7 +115,17 @@ module Rhom
                   # convert hash to array
                   list = hash_list.values
                   hash_list = nil
-                  if list.length == 1 and args.first != :all
+                  
+                  # setup order by if provided
+                  order = extract_options(args)
+                  order_value = order[:order] if order and order[:order]
+                  if order_value
+                    order_sym = order_value.to_sym
+                    list.sort! {|x,y| x.send(order_sym) && y.send(order_sym) ? x.send(order_sym) <=> y.send(order_sym) : 0}
+                  end
+                  
+                  # return a single rhom object if searching for one
+                  if args.first == :first or args.first.is_a?(String)
                     return list[0]
                   end
                   list
@@ -120,6 +146,10 @@ module Rhom
                 def ask(question)
                   tmp_obj = get_new_obj(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
                   if question
+                    # We only support one ask at a time!
+                    ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
+                                                              {"source_id"=>get_source_id,
+                                                               "update_type"=>'ask'})
                     ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                               {"source_id"=>get_source_id,
                                                                "object"=>tmp_obj.object,
@@ -184,20 +214,27 @@ module Rhom
               def update_attributes(attrs)
                 result = nil
                 obj = self.inst_strip_braces(self.object)
-                self.instance_variables.each do |method|
-                  method = method.to_s.gsub(/@/,"")
-                  val = self.send method.to_sym
+                attrs.each do |attrib,val|
+                  attrib = attrib.to_s.gsub(/@/,"")
+                  old_val = self.send attrib.to_sym unless self.method_name_reserved?(attrib)
+                  
                   # Don't save objects with braces to database
-                  new_val = self.inst_strip_braces(attrs[method])
+                  new_val = self.inst_strip_braces(val)
+                  
                   # if the object's value doesn't match the database record
                   # then we procede with update
-                  if new_val and val != new_val
-                    unless self.method_name_reserved?(method) or new_val.length == 0
+                  if new_val and old_val != new_val
+                    unless self.method_name_reserved?(attrib) or new_val.length == 0
+                      ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
+                                                                {"source_id"=>self.get_inst_source_id,
+                                                                 "object"=>obj,
+                                                                 "attrib"=>attrib,
+                                                                 "update_type"=>'update'})
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
-                                                                 "attrib"=>method,
+                                                                 "attrib"=>attrib,
                                                                  "value"=>new_val,
                                                                  "update_type"=>'update'})
                     end

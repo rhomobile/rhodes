@@ -34,7 +34,9 @@ public class SyncEngine extends RubyBasic {
 
 	/** The s thread. */
 	private static SyncThread sThread = null;
-
+	private static SyncNotifications sNotifications;
+	
+	
 	// @RubyAllocMethod
 	/**
 	 * Alloc.
@@ -47,6 +49,13 @@ public class SyncEngine extends RubyBasic {
 		return new SyncEngine(RubyRuntime.SyncEngineClass);
 	}
 
+	public static void setNotificationImpl(SyncNotifications pNotify ){
+		sNotifications = pNotify;
+	}
+	public static SyncNotifications getNotificationImpl(){
+		return sNotifications;
+	}
+	
 	// @RubyLevelMethod(name="dosync")
 	/**
 	 * Dosync.
@@ -79,6 +88,21 @@ public class SyncEngine extends RubyBasic {
 		SyncThread.setDbResetDelay(true);
 		wakeUp();
 		return RubyConstant.QNIL; 
+	}
+
+	public static RubyValue set_notification(RubyValue arg1, RubyValue arg2) {
+		int nSourceID = arg1.toInt();
+		String url = arg2.toStr();
+		
+		sNotifications.setNotification(nSourceID, url);
+		return RubyConstant.QNIL;
+	}
+
+	public static RubyValue clear_notification(RubyValue arg1) {
+		int nSourceID = arg1.toInt();
+		
+		sNotifications.clearNotification(nSourceID);
+		return RubyConstant.QNIL;
 	}
 	
 	/**
@@ -152,6 +176,19 @@ public class SyncEngine extends RubyBasic {
 					}
 				});
 
+		klass.getSingletonClass().defineMethod("set_notification",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+						return SyncEngine.set_notification(arg1,arg2);
+					}
+				});
+		klass.getSingletonClass().defineMethod("clear_notification",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+						return SyncEngine.clear_notification(arg1);
+					}
+				});
+		
 	}
 
 	// @RubyLevelMethod(name="lock_sync_mutex")

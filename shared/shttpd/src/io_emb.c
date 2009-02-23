@@ -104,8 +104,14 @@ shttpd_printf(struct shttpd_arg *arg, const char *fmt, ...)
 		len = vsnprintf(buf, buflen, fmt, ap);
 		va_end(ap);
 
-		if (len < 0 || len > buflen)
-			len = buflen;
+        if (len < 0 || len >= buflen){
+#ifdef __SYMBIAN32__
+            len = buflen - 1;
+#else
+            len = buflen;
+#endif
+        }
+
 		arg->out.num_bytes += len;
 	}
 

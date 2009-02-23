@@ -26,7 +26,9 @@ UID		  0x100039CE 0xE6B4F4DF
 
 SYSTEMINCLUDE	 \epoc32\include
 SYSTEMINCLUDE	 \epoc32\include\stdapis
+SYSTEMINCLUDE	 \epoc32\include\libc
 SYSTEMINCLUDE	 \epoc32\include\ecom
+SYSTEMINCLUDE    \epoc32\include\stdapis\glib-2.0
 
 USERINCLUDE	   ..\inc
 USERINCLUDE    ..\help
@@ -39,10 +41,12 @@ USERINCLUDE    ..\..\..\shared\ruby\include
 USERINCLUDE    ..\..\..\shared\ruby\include\ruby
 USERINCLUDE    ..\..\..\shared\ruby\symbian ..\inc\phonebook ..\inc\geolocation
 USERINCLUDE    ..\..\..\shared\unzip
+USERINCLUDE    ..\..\..\shared
 
 STATICLIBRARY 	   rubylib.lib
 STATICLIBRARY      shttpd.lib
 STATICLIBRARY 	   SQLite60.lib
+STATICLIBRARY 	   tcmalloc.lib
 
 SOURCEPATH		..\src
 SOURCE			rhodes.cpp
@@ -66,6 +70,7 @@ SOURCE			SyncOperation.c
 SOURCE			SyncObject.c
 SOURCE			SyncJSONReader.c
 SOURCE			source.c
+SOURCE			Notifications.cpp
 
 SOURCEPATH 		..\..\..\shared\json
 SOURCE			arraylist.c
@@ -117,6 +122,8 @@ LIBRARY                                 pbkeng.lib
 LIBRARY                                 libc.lib 
 LIBRARY                                 libpthread.lib 
 LIBRARY                                 libm.lib
+LIBRARY                                 apsettingshandlerui.lib
+LIBRARY                                 apengine.lib
 
 LANG SC
 
@@ -137,5 +144,5 @@ SOURCE GeoLocation.cpp ruby_geolocation.cpp
 SOURCEPATH 		..\..\..\shared\unzip
 SOURCE unzip.cpp
 
-SOURCEPATH ..\src
-SOURCE posix_http_client.c
+//SOURCEPATH ..\src
+//SOURCE posix_http_client.c

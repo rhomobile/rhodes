@@ -69,6 +69,10 @@ module Rho
       Rho::RhoConfig.start_path
     end
     
+    def get_options_path
+      Rho::RhoConfig.options_path
+    end
+    
     def get_rhobundle_zip_url
       Rho::RhoConfig.rhobundle_zip_url
     end
@@ -84,7 +88,7 @@ module Rho
         get_app(req['application']).send :serve, req, res
         return send_response(res)
       rescue Exception => e
-        return send_error(e.message)
+        return send_error(e)
       end	
     end
 
@@ -95,7 +99,7 @@ module Rho
 			get_app(req['application']).send :serve, req, res
 			return send_response_hash(res)
 		rescue Exception => e
-			return send_error(e.message,500,true)
+			return send_error(e,500,true)
 		end	
     end
 	
@@ -106,7 +110,7 @@ module Rho
 			res['request-body'] = RhoController::renderfile(index_name)
 			return send_response(res)
 		rescue Exception => e
-			return send_error(e.message)
+			return send_error(e)
 		end
 	end
 
@@ -166,7 +170,7 @@ module Rho
 		resp
     end
 	
-    def send_error(msg="",status=500,hash=false)
+    def send_error(exception=nil,status=500,hash=false)
       body=''
       body << <<-_HTML_STRING_
 		<html>
@@ -177,7 +181,8 @@ module Rho
 			<body>
 				<p>
       _HTML_STRING_
-      body << 'Error message: ' << msg		
+      body << 'Error: ' << exception.message << "<br/>" if exception
+      body << 'Trace: ' << exception.backtrace.join("\n") if exception
       body << <<-_HTML_STRING_
 				</p>	
 			</body>
@@ -196,12 +201,21 @@ module Rho
   class RhoConfig
     @@sources = {}
     @@start_path = '/'
+    @@options_path = '/'
     @@rhobundle_zip_url = nil
     @@rhobundle_zip_pwd = nil
     
     class << self
       def sources
         @@sources
+      end
+      
+      def options_path
+        @@options_path
+      end
+            
+      def options_path=(path=nil)
+        @@options_path = path if path
       end
       
       def start_path

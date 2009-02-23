@@ -196,7 +196,7 @@ void xfree(void*);
 #endif
 
 #ifdef __SYMBIAN32__
-#include "symbian.h"
+//#include "symbian.h"
 #endif //__SYMBIAN32__
 
 #if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)

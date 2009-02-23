@@ -30,9 +30,15 @@ VALUE addIntToHash(VALUE hash, const char* key, int val);
 VALUE addStrToHash(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
 
-char* callFramework(VALUE hashReq);
-char* callServeIndex(char* index_name);
+char* getStringFromValue(VALUE val);
+int getStringLenFromValue(VALUE val);
+void  releaseValue(VALUE val);
+
+VALUE callFramework(VALUE hashReq);
+VALUE callServeIndex(char* index_name);
+
 char* callGetStartPage();
+char* callGetOptionsPage();
 char* callGetRhobundleZipUrl();
 
 void RhoRubyStop();

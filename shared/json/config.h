@@ -140,3 +140,7 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
+
+#if defined(_WIN32_WCE)// || defined(__SYMBIAN32__)
+#include "tcmalloc/rhomem.h"
+#endif //_WIN32_WCE

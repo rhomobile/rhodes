@@ -47,7 +47,7 @@ void finalize_sync_op_statements() {
  */
 pSyncOperation SyncOperationCreate(pSyncObject new_sync_object, char *source, char *operation) {
 	pSyncOperation sync = malloc(sizeof(SyncOperation));
-	sync->_sync_object = SyncObjectCopy(new_sync_object);
+	sync->_sync_object = new_sync_object;//SyncObjectCopy(new_sync_object);
 	sync->_operation = str_assign(operation);
 	sync->_source_id = sync->_sync_object->_source_id;
 	sync->_uri = malloc(SYNC_URI_SIZE);
@@ -159,7 +159,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 			   list[i]->_sync_object->_update_type,
 			   list[i]->_uri);
 	}
-	sqlite3_reset(op_list_select_statement);
+	finish_db_statement(&op_list_select_statement);
 
   unlock_sync_mutex();	
 
@@ -175,7 +175,7 @@ void remove_op_list_from_database(pSource source, sqlite3 *database, char *type)
 	sqlite3_bind_text(op_list_delete_statment, 1, type, -1, SQLITE_TRANSIENT);
 	sqlite3_bind_int(op_list_delete_statment, 2, source->_source_id);
 	sqlite3_step(op_list_delete_statment);
-	sqlite3_reset(op_list_delete_statment);
+	finish_db_statement(&op_list_delete_statment);
 	unlock_sync_mutex();	
 }
 
@@ -185,6 +185,8 @@ void free_op_list(pSyncOperation *list, int available) {
 	for(j = 0; j < available; j++) {
 		SyncOperationRelease(list[j]);
 	}
+
+    free(list);
 }
 
 /* 

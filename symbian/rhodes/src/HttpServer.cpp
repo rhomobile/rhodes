@@ -65,7 +65,7 @@ CHttpServer::~CHttpServer()
 	{
 		iClose = true;
 		
-		shttpd_fini(ctx);
+		//shttpd_fini(ctx);
 		
 		thread.Kill( KErrCancel );
 		thread.Close();
@@ -89,7 +89,7 @@ CHttpServer* CHttpServer::NewL()
 void CHttpServer::ConstructL()
 	{
 		//initialize shttpd
-		InitHttpServer();
+		//InitHttpServer();
 		
 		//create suspended thread
 		_LIT(KThreadName, "HttpServerThread");
@@ -141,6 +141,8 @@ TInt CHttpServer::ExecuteL()
 		//Initialize Ruby
 		RhoRubyStart();
 	
+		InitHttpServer();
+		
 		//Send open home event
 		SendWindowEvent( ECmdAppHome );
 		
@@ -171,6 +173,8 @@ TInt CHttpServer::ExecuteL()
 			shttpd_poll(ctx, 1000);
 		}
 
+		shttpd_fini(ctx);
+		
 		RhoRubyStop();
 
 		CleanupStack::PopAndDestroy(activeScheduler);

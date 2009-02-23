@@ -148,8 +148,8 @@ static int
 _CallApplication(HttpContextRef context, RouteRef route) {
 	DBG(("Calling ruby framework\n"));
 		
-	char* res = callFramework(_CreateRequestHash(context,route));
-	
+	VALUE val = callFramework(_CreateRequestHash(context,route));
+	char* res = getStringFromValue(val);
 	if (res) {
 		DBG(("RESPONSE:\n"));
 		_dbg_print_data((UInt8*)res, strlen(res));
@@ -158,6 +158,7 @@ _CallApplication(HttpContextRef context, RouteRef route) {
 		DBG(("Add response to the send buffer"))
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
+		releaseValue(val);
 		return 1;
 	}
 	
@@ -192,8 +193,8 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 int ServeIndex(HttpContextRef context, char* index_name) {
 	DBG(("Calling ruby framework to serve index\n"));
 	
-	char* res = callServeIndex(index_name);
-	
+	VALUE val = callServeIndex(index_name);
+	char* res = getStringFromValue(val);
 	if (res) {
 		DBG(("RESPONSE:\n"));
 		_dbg_print_data((UInt8*)res, strlen(res));
@@ -202,6 +203,7 @@ int ServeIndex(HttpContextRef context, char* index_name) {
 		DBG(("Add response to the send buffer"))
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
+		releaseValue(val);
 		return 1;
 	}
 	

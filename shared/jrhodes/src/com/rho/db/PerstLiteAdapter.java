@@ -601,7 +601,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 		if ( strVer != null && strVer.length() > 0 ){
         	String dbVer = readDBVersion();
 			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) ){
-				org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
+				
+				FileFactory.createFile().delete(DB_FILENAME);
+				//org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
 	            writeDBVersion(strVer);
 			}
         }
@@ -633,7 +635,10 @@ public class PerstLiteAdapter  extends RubyBasic {
         byte buf[] = new byte[20];
 		int len = file.read(0, buf);
 		file.close();
-		return new String(buf,0,len);
+		if ( len > 0 )
+			return new String(buf,0,len);
+		else
+			return null;
 	}
 	
 	void writeDBVersion(String ver){

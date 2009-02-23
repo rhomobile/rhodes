@@ -1,18 +1,18 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Leads
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Leads
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarLeads" title="Leads">
-<a class="button right_button" href="/RhoSugarCRM/SugarLead/new">New</a>
+<ul id="SugarLeads" title="Leads" selected="true">
+<a class="button right_button" href="/RhoSugarCRM/SugarLead/new" target="_self">New</a>
 
 <% @SugarLeads.each do |lead| %>
 
 <li class="overview">
 <%= link_to "#{lead.first_name} #{lead.last_name}", :action => :show, :id => lead.object %>
 <div>
-<%= lead.status %> | <%= lead.account_name %>
+<%= lead.account_name %><%= both_items_present?(lead.account_name, lead.status) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= lead.status %>
 </div>
 </li>
 

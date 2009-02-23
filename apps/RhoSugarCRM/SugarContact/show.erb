@@ -1,12 +1,12 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Contact
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Contact
+	</h1>
 </div>
-<% end %>
 
-<div class="panel" title="Show Contact">
+<div class="panel" title="Show Contact" selected="true">
  
-<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>">Edit</a>
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>" target="_self">Edit</a>
 
 <table class="grid">
   <tr>
@@ -57,7 +57,7 @@
 	</tr>
   <tr>
     <td class="gridleft">Description</td>
-		<td class="gridright"><%= @SugarContact.description %></td>
+		<td class="gridright"><%= replace_newlines(@SugarContact.description) %></td>
 	</tr>
   <tr>
     <td class="gridleft">Email #1</td>
@@ -117,5 +117,11 @@
 			<%=@SugarContact.alt_address_country%></td>
 	</tr>
 </table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarContact.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
 
 </div>

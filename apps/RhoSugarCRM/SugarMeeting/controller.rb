@@ -4,7 +4,8 @@ class SugarMeetingController < Rho::RhoController
 
   #GET /SugarMeeting
   def index
-    @SugarMeetings = SugarMeeting.find(:all)
+    # sort by name in ascending order
+    @SugarMeetings = SugarMeeting.find(:all, :order => 'name')  
     render
   end
 

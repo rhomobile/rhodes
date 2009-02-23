@@ -1,10 +1,14 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class SugarEmployeeController < Rho::RhoController
 
+  include ApplicationHelper
+  
   #GET /SugarEmployee
   def index
-    @SugarEmployees = SugarEmployee.find(:all)
+    # sort by name in ascending order
+    @SugarEmployees = SugarEmployee.find(:all, :order => 'last_name')    
     render
   end
 

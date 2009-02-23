@@ -1,22 +1,22 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Edit Employee
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Edit Employee
+	</h1>
 </div>
-<% end %>
 
 <form title="Edit Employee" 
 	  class="panel" 
 	  id="SugarEmployee_edit_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :update)%>">
+	  action="<%=url_for(:action => :update)%>" selected="true">
+	
 	<fieldset>
 		<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"/>
 		
-		
-	  <div class="row">
-		  <label>Status</label>
-		  <input type="text" name="SugarEmployee[employee_status]" value="<%=@SugarEmployee.employee_status%>"/>
-	  </div>
+		  <div class="row">
+			  <label>Status</label>
+			  <input type="text" name="SugarEmployee[employee_status]" value="<%=@SugarEmployee.employee_status%>"/>
+		  </div>
 	
 		  <div class="row">
 			  <label>First Name</label>
@@ -56,12 +56,10 @@
 		</fieldset>
 
 		<fieldset>
-
-	  <div class="row">
-		  <label>Office phone</label>
-		  <input type="text" name="SugarEmployee[phone_work]" value="<%=@SugarEmployee.phone_work%>"/>
-	  </div>
-	
+		  <div class="row">
+			  <label>Office phone</label>
+			  <input type="text" name="SugarEmployee[phone_work]" value="<%=@SugarEmployee.phone_work%>"/>
+		  </div>	
 
 		  <div class="row">
 			  <label>Mobile</label>
@@ -82,11 +80,11 @@
 			  <label>Home phone</label>
 			  <input type="text" name="SugarEmployee[phone_home]" value="<%=@SugarEmployee.phone_home%>"/>
 		  </div>		
-			</fieldset>
+		</fieldset>
 			
 			<h2>Address</h2>
-					<fieldset>
-				
+			
+		<fieldset>				
 		  <div class="row">
 			  <label>Street</label>
 			  <input type="text" name="SugarEmployee[address_street]" value="<%=@SugarEmployee.address_street%>"/>
@@ -111,25 +109,19 @@
 			  <label>Postal code</label>
 			  <input type="text" name="SugarEmployee[address_postalcode]" value="<%=@SugarEmployee.address_postalcode%>"/>
 		  </div>
-
 			</fieldset>
 			
 			<fieldset>
 		  <div class="row">
 			  <label>Notes</label>
-			  <input type="text" name="SugarEmployee[description]" value="<%=@SugarEmployee.description%>"/>
+			  <input type="text" name="SugarEmployee[description]" value="<%=replace_newlines(@SugarEmployee.description)%>"/>
 		  </div>
 					
 		  <div class="row">
 			  <label>Email</label>
 			  <input type="text" name="SugarEmployee[email1]" value="<%=@SugarEmployee.email1%>"/>
 		  </div>
-		
-	</fieldset>
+		</fieldset>
+	
 	<input type="submit" value="Update"/>
-	<p align="center">
-		<a href="<%=url_for(:action => :delete, :id => @SugarEmployee.object)%>">
-			<font color="#990000">Delete</font>
-		</a>
-	</p>
 </form>

@@ -16,6 +16,15 @@
 #ifndef _SQLITEINT_H_
 #define _SQLITEINT_H_
 
+//RHO
+#ifndef SQLITE_THREADSAFE
+#define SQLITE_OMIT_EXPLAIN 1
+#define SQLITE_DISABLE_LFS 1
+#define SQLITE_THREADSAFE 0
+#define SQLITE_DEFAULT_MEMSTATUS 0
+#endif
+//RHO
+
 /*
 ** The macro unlikely() is a hint that surrounds a boolean
 ** expression that is usually false.  Macro likely() surrounds
