@@ -13,6 +13,7 @@
 		F5177F210EE5C940000EA1A0 /* system_properties.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F1F0EE5C940000EA1A0 /* system_properties.c */; };
 		F5177F220EE5C940000EA1A0 /* system_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5177F200EE5C940000EA1A0 /* system_properties.h */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
+		F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */; };
 		F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C61CA90F3CFE7800207621 /* webview_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
 		F5E3606A0EB6A62A00226287 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360230EB6A62A00226287 /* bignum.c */; };
@@ -112,6 +113,7 @@
 		F5177F1F0EE5C940000EA1A0 /* system_properties.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = system_properties.c; path = ../../shared/ruby/ext/system/system_properties.c; sourceTree = SOURCE_ROOT; };
 		F5177F200EE5C940000EA1A0 /* system_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = system_properties.h; path = ../../shared/ruby/ext/system/system_properties.h; sourceTree = SOURCE_ROOT; };
 		F58E7FE70F008AA600E46829 /* phonebook_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = phonebook_wrap.c; path = ../../shared/ruby/ext/phonebook/phonebook_wrap.c; sourceTree = SOURCE_ROOT; };
+		F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = camera_wrap.c; path = ../../shared/ruby/ext/camera/camera_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5C61CA90F3CFE7800207621 /* webview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webview_wrap.c; path = ../../shared/ruby/ext/webview/webview_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5E360220EB6A62A00226287 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = array.c; path = ../../shared/ruby/array.c; sourceTree = SOURCE_ROOT; };
 		F5E360230EB6A62A00226287 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bignum.c; path = ../../shared/ruby/bignum.c; sourceTree = SOURCE_ROOT; };
@@ -354,6 +356,14 @@
 			path = ../../shared/ruby;
 			sourceTree = SOURCE_ROOT;
 		};
+		F5B8FACD0F44E8F900C9AF85 /* camera */ = {
+			isa = PBXGroup;
+			children = (
+				F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */,
+			);
+			name = camera;
+			sourceTree = "<group>";
+		};
 		F5C61CA60F3CFE5700207621 /* webview */ = {
 			isa = PBXGroup;
 			children = (
@@ -365,6 +375,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				F5B8FACD0F44E8F900C9AF85 /* camera */,
 				F5C61CA60F3CFE5700207621 /* webview */,
 				F58E7FE50F008A8500E46829 /* phonebook */,
 				5C043EB60EF7B7CF0014E5C6 /* rhosupport */,
@@ -609,6 +620,7 @@
 				F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */,
 				5C2E6F470F30E05700CCFE20 /* geolocation_rhowrap.c in Sources */,
 				F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */,
+				F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
