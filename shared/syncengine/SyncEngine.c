@@ -301,7 +301,7 @@ void shutdown_database() {
 	lock_sync_mutex();
 #if defined( __SYMBIAN32__ ) && !defined (__GCEE__)
 //emulator issue
-#elif
+#else
 	finalize_sync_obj_statements();
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
