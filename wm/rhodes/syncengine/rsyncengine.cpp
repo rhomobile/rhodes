@@ -37,10 +37,10 @@ void dosync() {
   if (sync) sync->TriggerSync();
 }
 
-void start_sync() {
+/*void start_sync() {
   CSyncEngine* sync = CSyncEngine::Instance();
   if (sync) sync->StartSync();
-}
+}*/
 
 /*int login(const char*arg1, const char* arg2){
   return db_login(arg1, arg2);
@@ -71,7 +71,7 @@ CSyncEngine::CSyncEngine(void)
   m_hMainWindow = NULL;
   m_database = NULL;
   stop_running = 1;
-  m_delaySync = 0;
+  //m_delaySync = 0;
   m_dbResetDelay = 0;
   m_bSyncInitialized = false;
   m_hDoSyncEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -120,12 +120,12 @@ void CSyncEngine::TriggerSync() {
   //Unlock();
 }
 
-void CSyncEngine::StartSync() {
+/*void CSyncEngine::StartSync() {
   //Lock();
   stop_running = 0;
   ::SetEvent(m_hDoSyncEvent);
   //Unlock();
-}
+}*/
 
 void CSyncEngine::ShowHomePage()
 {
@@ -174,7 +174,7 @@ bool CSyncEngine::StartSyncEngine()
   Unlock();
 
   // Set the delay based on records from the database
-  m_delaySync = get_object_count_from_database(m_database);
+  //m_delaySync = get_object_count_from_database(m_database);
   start_sync_engine(m_database);
   m_bSyncInitialized = true;
   stop_running = 0;
@@ -188,7 +188,7 @@ bool CSyncEngine::PerformSync()
 
   ATLTRACE(_T("Performing sync\n"));
   ::ResetEvent(m_hDoSyncEvent);
-  if (!m_delaySync && !m_dbResetDelay) {
+  if (/*!m_delaySync &&*/ !m_dbResetDelay) {
       //for (int i = 0; i < 10000; i++ )
 	    process_local_changes();
   } else if (m_dbResetDelay) {
@@ -196,9 +196,9 @@ bool CSyncEngine::PerformSync()
 	reset_sync_db();
 	clear_client_id();
 	m_dbResetDelay = 0;
-	m_delaySync = 0;
+	//m_delaySync = 0;
   } else {
-    m_delaySync = 0;
+    //m_delaySync = 0;
   }
 
   //Unlock();

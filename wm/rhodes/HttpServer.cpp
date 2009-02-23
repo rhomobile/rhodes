@@ -37,6 +37,10 @@ CHttpServer::CHttpServer(void)
   m_pStartPage = NULL;
 
   InitHttpServer();
+  {//Initialize tcmaloc in main thread
+   // void* p = malloc(10);
+  //  free(p);
+  }
 	m_thread.Initialize();
   m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   m_thread.AddHandle(m_hEvent, this, NULL);
@@ -74,6 +78,8 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
   if (!m_bRubyInitialized) {
     InitRubyFramework();
+//    InitHttpServer();
+
 	  InitStartPage();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
@@ -86,7 +92,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 
 //    if (logged_in()){
       
-      start_sync();
+      //start_sync();
 //    }  else   if (sync) sync->ShowHomePage();
   }
   shttpd_poll(ctx, 1000);
@@ -101,6 +107,7 @@ HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
   if (m_bRubyInitialized) {
     ATLTRACE(_T("\nShutting-down ruby framework\n"));
+//    shttpd_fini(ctx);
     RhoRubyStop();
   }
   ATLTRACE(_T("Closing http server handle\n"));

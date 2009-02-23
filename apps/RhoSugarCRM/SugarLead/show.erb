@@ -1,12 +1,12 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Lead
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Lead
+	</h1>
 </div>
-<% end %>
 
-<div class="panel" title="Show Lead" >
+<div class="panel" title="Show Lead" selected="true">
  
-<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarLead.object)%>">Edit</a>
+<a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarLead.object)%>" target="_self">Edit</a>
 
 <table class="grid">
 	<tr>
@@ -15,7 +15,7 @@
 	</tr>
 	<tr>
     <td class="gridleft">Lead Source Description</td>
-		<td class="gridright"><%= @SugarLead.lead_source_description %></td>
+		<td class="gridright"><%= replace_newlines(@SugarLead.lead_source_description) %></td>
 	</tr>	
   <tr>
     <td class="gridleft">Referred By</td>
@@ -53,7 +53,7 @@
 	</tr>
   <tr>
     <td class="gridleft">Description</td>
-		<td class="gridright"><%= @SugarLead.description %></td>
+		<td class="gridright"><%= replace_newlines(@SugarLead.description) %></td>
 	</tr>
   <tr>
     <td class="gridleft">Email #1</td>
@@ -69,7 +69,7 @@
 	</tr>
   <tr>
     <td class="gridleft">Status Description</td>
-		<td class="gridright"><%= @SugarLead.status_description %></td>
+		<td class="gridright"><%= replace_newlines(@SugarLead.status_description) %></td>
 	</tr>
   <tr>
     <td class="gridleft">Campaign</td>
@@ -114,5 +114,11 @@
 			<%=@SugarLead.alt_address_country%></td>
 	</tr>
 </table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarLead.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
 
 </div>

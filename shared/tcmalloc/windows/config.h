@@ -158,6 +158,7 @@
 
 /* Define to 1 if the system has the type `__int64'. */
 #define HAVE___INT64 1
+//#undef HAVE___INT64
 
 /* prefix where we look for installed files */
 #undef INSTALL_PREFIX
@@ -191,11 +192,12 @@
    functions/classes. It's safe to define this here because config.h is only
    used internally, to compile the DLL, and every DLL source file #includes
    "config.h" before anything else. */
-#ifndef PERFTOOLS_DLL_DECL
-# define PERFTOOLS_IS_A_DLL  1   /* not set if you're statically linking */
-# define PERFTOOLS_DLL_DECL  __declspec(dllexport)
-# define PERFTOOLS_DLL_DECL_FOR_UNITTESTS  __declspec(dllimport)
-#endif
+//#ifndef PERFTOOLS_DLL_DECL
+//# define PERFTOOLS_IS_A_DLL  1   /* not set if you're statically linking */
+//# define PERFTOOLS_DLL_DECL  __declspec(dllexport)
+//# define PERFTOOLS_DLL_DECL_FOR_UNITTESTS  __declspec(dllimport)
+//#endif
+#define PERFTOOLS_DLL_DECL
 
 /* printf format code for printing a size_t and ssize_t */
 #define PRIdS  "Id"

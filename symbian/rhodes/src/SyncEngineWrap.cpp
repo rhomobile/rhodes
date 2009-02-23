@@ -32,10 +32,12 @@
 #include "HttpConstants.h"
 
 #ifndef ENABLE_RUBY_VM_STAT
-#define ENABLE_RUBY_VM_STAT
+//#define ENABLE_RUBY_VM_STAT
 #endif
 
 #include "stat/stat.h"
+
+//static sqlite3 * iDatabase = 0;
 
 extern "C"
 	{
@@ -58,7 +60,8 @@ extern "C"
 	const char* RhoGetRootPath();
 
 	int login(const char* login, const char* password);
-
+	sqlite3 *get_database();
+	
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
@@ -138,7 +141,7 @@ TInt CSyncEngineWrap::Execute()
 		}
 
 	//Send start new SyncEvent
-	SendWindowEvent(ECmdAppStartNewSync);
+	//SendWindowEvent(ECmdAppStartNewSync);
 
 	return err;
 	}
@@ -184,26 +187,37 @@ TInt CSyncEngineWrap::ExecuteL()
 	return 0;
 	}
 
+extern "C" {
+void rhoInitDatabase(struct sqlite3 *pDb){
+	start_sync_engine(pDb);
+}
+}
+
 void CSyncEngineWrap::StartSyncEngine()
 	{
-	lock_sync_mutex();
+		//lock_sync_mutex();
+		if (!get_database())
+		{
+			char dbpath[KMaxFileName];
+			sprintf(dbpath, "%sdb\\syncdb.sqlite", RhoGetRootPath());
+			sqlite3 * iDatabase = 0;			
+			sqlite3_open(dbpath, &iDatabase);
 
-	char dbpath[KMaxFileName];
-	sprintf(dbpath, "%sdb\\syncdb.sqlite", RhoGetRootPath());
-	sqlite3_open(dbpath, &iDatabase);
-	start_sync_engine(iDatabase);
+			rhoInitDatabase(iDatabase);
+		}
+		//unlock_sync_mutex();
+	
 
-	unlock_sync_mutex();
 	}
 
 void CSyncEngineWrap::StopSyncEngine()
 	{
-	lock_sync_mutex();
+	//lock_sync_mutex();
 
-	if (iDatabase)
-		sqlite3_close(iDatabase);
+	//if (iDatabase)
+		//sqlite3_close(iDatabase);
 
-	unlock_sync_mutex();
+	//unlock_sync_mutex();
 	}
 
 void CSyncEngineWrap::ResumeThread()

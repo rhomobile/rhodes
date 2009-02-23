@@ -62,13 +62,25 @@ describe "RhomObjectFactory" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
 
-    @account.instance_variables.size.should == 36
+    @account.instance_variables.size.should == 37
   end
   
-  it "should calculate same djb_hash" do
+  it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
-    account.object.should == "272128608299468889014"
+    account.save
+    acct = Account.find(:first, :conditions =>{'name'=>'foobarthree'})
+    acct.name.should == 'foobarthree'
+    acct.industry.should == 'entertainment'
+    
+    account = Account.new
+    account.name = 'foobarfour'
+    account.industry = 'solar'
+    account.save
+    
+    acct = Account.find(:first, :conditions =>{'name'=>'foobarfour'})
+    acct.name.should == 'foobarfour'
+    acct.industry.should == 'solar'
   end
   
   it "should create a record" do
@@ -111,6 +123,73 @@ describe "RhomObjectFactory" do
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
+  end
+  
+  it "should set <something>_type_<something> or <something>_object_<something> field for a record" do
+    new_attributes = {"account_type"=>"Partner", 
+                      "type_acct"=>"Customer", 
+                      "object_acct"=>"new object",
+                      "acct_object"=>"same object"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should == "Mobio India"
+    @new_acct.account_type.should == "Partner"
+    @new_acct.type_acct.should == "Customer"
+    @new_acct.object_acct.should == "new object"
+    @new_acct.acct_object.should == "same object"
+  end
+  
+  it "should _NOT_ set 'type' field for a record" do
+    new_attributes = {"type"=>"Partner"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should == "Mobio India"
+    @new_acct.instance_variables.each do |var|
+      var.gsub(/@/,'').match('\btype\b').should be_nil
+    end
+  end
+  
+  it "should update an attribute that was previously nil" do
+    new_attributes = {"new_name"=>"Mobio Europe"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @new_acct.new_name.should == "Mobio Europe"
+    @new_acct.name.should == "Mobio India"
+    @new_acct.industry.should == "Technology"
+  end
+  
+  it "should store only last updated value for attrib" do
+    new_attributes1 = {"new_name"=>"Mobio Europe"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes1)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @new_acct.new_name.should == "Mobio Europe"
+    @new_acct.name.should == "Mobio India"
+    @new_acct.industry.should == "Technology"
+    
+    new_attributes2 = {"new_name"=>"Mobio Asia"}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes2)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    
+    @new_acct.new_name.should == "Mobio Asia"
+    @new_acct.name.should == "Mobio India"
+    @new_acct.industry.should == "Technology"
+    
+    records = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'update')
+    records.length.should == 1
   end
 
   it "should retrieve and modify one record" do
@@ -194,6 +273,12 @@ describe "RhomObjectFactory" do
     @accts.second.industry.should == "Electronics"
     @accts.last.name.should == "vSpring"
     @accts.last.industry.should == "Finance"
+  end
+  
+  it "should return records when order by is nil for some records" do
+    @accts = Account.find(:all, :order => 'billing_address_country')
+    @accts.length.should == 5
+    @accts.first.name.should == "vSpring"
   end
   
   it "should include only selected columns" do

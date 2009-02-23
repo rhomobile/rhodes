@@ -4,6 +4,16 @@ TARGETTYPE                              lib
 UID                                     0x1000008d 0x00000001 
 VENDORID                                0 
 
+USERINCLUDE                             ..\src 
+USERINCLUDE                             .. 
+USERINCLUDE                             ..\..\..\shared
+
+SYSTEMINCLUDE                           \Epoc32\include 
+SYSTEMINCLUDE                           \Epoc32\include\stdapis 
+SYSTEMINCLUDE                           \Epoc32\include\libc 
+
+macro                                   OS_SYMBIAN 
+
 SOURCEPATH                              ..\src 
 SOURCE                                  where.cpp 
 SOURCE                                  vtab.cpp 
@@ -57,10 +67,10 @@ SOURCE                                  analyze.cpp
 SOURCE                                  alter.cpp 
 SOURCE                                  os_symbian.cpp 
 
-USERINCLUDE                             ..\src 
-USERINCLUDE                             .. 
+/*
+macro SQLITE_OS_UNIX
+macro HAVE_LOCALTIME_R
 
-SYSTEMINCLUDE                           \Epoc32\include 
-SYSTEMINCLUDE                           \Epoc32\include\stdapis 
-
-macro                                   OS_SYMBIAN 
+SOURCEPATH ..\src
+SOURCE sqlite3.c
+*/

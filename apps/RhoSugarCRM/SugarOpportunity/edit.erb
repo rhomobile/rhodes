@@ -1,14 +1,14 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Edit Opportunity
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Edit Opportunity
+	</h1>
 </div>
-<% end %>
 
 <form title="Edit Opportunity" 
 	  class="panel" 
 	  id="SugarOpportunity_edit_form" 
 	  method="POST" 
-	  action="<%=url_for(:action => :update)%>">
+	  action="<%=url_for(:action => :update)%>" selected="true">
 	
 	  <fieldset>
 		  <input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
@@ -23,12 +23,6 @@
 			  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
 		  </div>
 
-<!--
-			<div class="row">
-			  <label>Type</label>
-			  <input type="text" name="SugarOpportunity[opportunity_type]" value="<%= blank?(@SugarOpportunity.opportunity_type) ? "" : @SugarOpportunity.opportunity_type %>"/>
-			</div>
--->				
 
    <div class="row">			
       <label>Type</label>
@@ -62,7 +56,7 @@
 
 		  <div class="tallrow" style="height:auto">
 			  <label>Description</label>
-			  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= @SugarOpportunity.description %></textarea>
+			  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarOpportunity.description) %></textarea>
 				<div class="clearer"></div>
 		  </div>
 					
@@ -86,8 +80,13 @@
 		  </div>
 		
 		  <div class="row">
-			  <label>Sales Stage</label>
-			  <input type="text" name="SugarOpportunity[sales_stage]" value="<%=@SugarOpportunity.sales_stage%>"/>
+			  <label>Stage</label>
+				<select id="sales_stage" name="SugarOpportunity[sales_stage]">
+					<% %w(Prospecting Qualification Needs\ Analysis Value\ Proposition Id.\ Decision\ Makers Perception\ Analysis Proposal/Price\ Quote Negotiation/Review Closed\ Won Closed\ Lost).each do |state| %>
+						<% selected = (state == @SugarOpportunity.sales_stage) ? "selected=\"#{@SugarOpportunity.sales_stage}\"" : "" %>
+						<option <%= selected %>><%= state %></option>
+					<% end %>
+					</select>
 		  </div>
 		
 		  <div class="row">
@@ -98,5 +97,4 @@
 	</fieldset>
 	
 	<input type="submit" value="Update"/>
-		
 </form>

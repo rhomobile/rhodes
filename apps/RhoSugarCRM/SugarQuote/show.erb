@@ -1,10 +1,10 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Quote
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Quote
+	</h1>
 </div>
-<% end %>
 
-<div class="panel"> 
+<div class="panel" selected="true"> 
 <a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarQuote.object)%>">Edit</a>
 
 <table class="grid">
@@ -77,12 +77,18 @@
 <table class="grid">
 	<tr>
     <td class="gridleft">Sub total</td>
-		<td class="gridright"><%=display_dollars(@SugarQuote.subtotal)%></td>
+		<td class="gridright"><%=display_number(@SugarQuote.subtotal)%></td>
 	</tr>
 	<tr>
     <td class="gridleft">Total</td>
-		<td class="gridright"><%=display_dollars(@SugarQuote.total)%></td>
+		<td class="gridright"><%=display_number(@SugarQuote.total)%></td>
 	</tr>
 </table>
+
+<p align="center">
+	<a href="<%=url_for(:action => :delete, :id => @SugarQuote.object)%>">
+		<span class="deletebutton">Delete</span>
+	</a>
+</p>
 
 </div>

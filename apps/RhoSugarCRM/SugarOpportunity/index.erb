@@ -1,19 +1,19 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Opportunities
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Opportunities
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarOpportunities" title="Opportunities">
-<a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new">New</a>
+<ul id="SugarOpportunities" title="Opportunities" selected="true">
+<a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new" target="_self">New</a>
 
 <%@SugarOpportunities.each do |x|%>
 
 <li class="overview">
-	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>">
+	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>" target="_self">
 		<%= x.name %>
 		<div>
-		<%= x.sales_stage %>&nbsp;<%= x.probability %>%
+		<%= x.sales_stage %><%= both_items_present?(x.sales_stage, x.probability) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.probability %><%= !blank?(x.probability) ? '%' : "" %>
 		</div>
 	</a>
 </li>

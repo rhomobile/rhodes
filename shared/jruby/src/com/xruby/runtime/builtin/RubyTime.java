@@ -201,7 +201,7 @@ public class RubyTime extends RubyBasic {
     //@RubyLevelMethod(name = "gmt_offset", alias="gmtoff", alias="utc_offset")
     public RubyValue gmt_offset() {
         //int offset = dt.getZone().getOffsetFromLocal(dt.getMillis());
-    	String strZone = date_.getTimeZone().toString();
+    	//String strZone = date_.getTimeZone().toString();
     	int offset = date_.getTimeZone().getOffset(1, 
     			date_.get(Calendar.YEAR), date_.get(Calendar.MONTH), date_.get(Calendar.DATE), 
     			date_.get(Calendar.DAY_OF_WEEK), date_.get(Calendar.MILLISECOND) );

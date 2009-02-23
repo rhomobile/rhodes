@@ -11,4 +11,11 @@ public interface SimpleFile extends IFile {
      * @param noFlush whther synchronous flush is needed
      */
     void open(String path, boolean readOnly, boolean noFlush);
+    
+    /**
+     * Delete file
+     * @param path path to the file
+     */
+    void delete(String path);
+
 }

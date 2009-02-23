@@ -41,11 +41,8 @@ module Rhom
               extend ::Rhom::RhomObject
           
               def initialize(obj=nil)
+                self.send("object=".to_sym(), "#{Time.now.to_i}")
                 if obj
-                  # create a temp id for the create type
-                  # TODO: This is duplicative of get_new_obj
-                  temp_objid = djb_hash(obj.values.to_s, 10).to_s
-                  self.send("object=".to_sym(), temp_objid)
                   self.send("source_id=".to_sym(), obj['source_id'].to_s)
                   self.send("update_type=".to_sym(), 'create')
                   obj.each do |key,value|
@@ -123,7 +120,8 @@ module Rhom
                   order = extract_options(args)
                   order_value = order[:order] if order and order[:order]
                   if order_value
-                    list.sort! {|x,y| x.send(order_value.to_sym) <=> y.send(order_value.to_sym) }
+                    order_sym = order_value.to_sym
+                    list.sort! {|x,y| x.send(order_sym) && y.send(order_sym) ? x.send(order_sym) <=> y.send(order_sym) : 0}
                   end
                   
                   # return a single rhom object if searching for one
@@ -216,20 +214,27 @@ module Rhom
               def update_attributes(attrs)
                 result = nil
                 obj = self.inst_strip_braces(self.object)
-                self.instance_variables.each do |method|
-                  method = method.to_s.gsub(/@/,"")
-                  val = self.send method.to_sym
+                attrs.each do |attrib,val|
+                  attrib = attrib.to_s.gsub(/@/,"")
+                  old_val = self.send attrib.to_sym unless self.method_name_reserved?(attrib)
+                  
                   # Don't save objects with braces to database
-                  new_val = self.inst_strip_braces(attrs[method])
+                  new_val = self.inst_strip_braces(val)
+                  
                   # if the object's value doesn't match the database record
                   # then we procede with update
-                  if new_val and val != new_val
-                    unless self.method_name_reserved?(method) or new_val.length == 0
+                  if new_val and old_val != new_val
+                    unless self.method_name_reserved?(attrib) or new_val.length == 0
+                      ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
+                                                                {"source_id"=>self.get_inst_source_id,
+                                                                 "object"=>obj,
+                                                                 "attrib"=>attrib,
+                                                                 "update_type"=>'update'})
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
-                                                                 "attrib"=>method,
+                                                                 "attrib"=>attrib,
                                                                  "value"=>new_val,
                                                                  "update_type"=>'update'})
                     end

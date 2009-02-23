@@ -1,14 +1,21 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Cases
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Cases
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarCases" title="Cases">
+<ul id="SugarCases" title="Cases" selected="true">
 <a class="button right_button" href="/RhoSugarCRM/SugarCase/new">New</a>
 	
 <%@SugarCases.each do |x|%>
-<li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
+	<li class="overview">
+		<a href="<%= "/RhoSugarCRM/SugarCase/#{x.object}/show" %>" target="_self">
+			<%= x.name %>
+			<div>
+			<%= x.priority %><%= both_items_present?(x.priority, x.status) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.status %>
+			</div>
+		</a>
+	</li>
 <% end %>
 
 </ul>

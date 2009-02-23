@@ -6,6 +6,8 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
+#ifndef __SYMBIAN32__
+
 #if defined(_WIN32_WCE)
 // Fixing compiler error C2039: 'wcsftime' : is not a member of '`global namespace''
 size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm*);
@@ -90,3 +92,21 @@ void clear_notification(int source_id) {
 	} catch(...) {
 	}
 }
+
+#else //__SYMBIAN32__
+
+extern "C"{
+void fire_notification(int source_id) {
+}
+
+void clear_notification(int source_id) {
+}
+
+void set_notification(int source_id, const char *url) {
+}
+
+void free_notifications() {
+}
+}
+
+#endif
