@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ServerHost.h"
+#import "PickImageDelegate.h"
 
 @class WebViewController;
 
@@ -15,6 +16,7 @@
 	IBOutlet UIWindow *window;
 	IBOutlet WebViewController *webViewController;
     ServerHost * serverHost;
+	PickImageDelegate* pickImageDelegate;
 }
 
 @property (nonatomic, retain) UIWindow *window;
