@@ -264,7 +264,8 @@ char *get_params_for_source(pSource source, sqlite3 *database) {
 	sqlite3_bind_int(source_params_statement, 1, source->_source_id);
 	sqlite3_bind_text(source_params_statement, 2, ask_type, -1, SQLITE_TRANSIENT);
 	sqlite3_step(source_params_statement);
-	params = (char *)sqlite3_column_text(source_params_statement, 0);
+	params = str_assign((char *)sqlite3_column_text(source_params_statement, 0));
+ printf("params for source: %s",params);
 	finish_db_statement(&source_params_statement);
 	unlock_sync_mutex();
 	

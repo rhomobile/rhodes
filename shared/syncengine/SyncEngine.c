@@ -95,7 +95,7 @@ int process_local_changes() {
 	   */
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
-			  ask_params = str_assign(get_params_for_source(source_list[g_cur_source], database));
+			  ask_params = get_params_for_source(source_list[g_cur_source], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
@@ -113,7 +113,7 @@ int process_local_changes() {
 #else
 		  for(i = 0; i < source_length && !stop_running; i++)
 		  {
-			  ask_params = str_assign(get_params_for_source(source_list[i], database));
+			  ask_params = get_params_for_source(source_list[i], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
