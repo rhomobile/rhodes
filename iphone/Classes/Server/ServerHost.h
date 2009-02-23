@@ -21,7 +21,10 @@
 	SEL onStartSuccess;
 	SEL onStartFailure;
 	SEL onRefreshView;
+	SEL onNavigateTo;
 	SEL onSetViewHomeUrl;
+	SEL onTakePicture;
+	SEL onChoosePicture;
 	SEL onSetViewOptionsUrl;
 }
 
@@ -30,7 +33,10 @@
 @property (assign) SEL onStartSuccess;
 @property (assign) SEL onStartFailure;
 @property (assign) SEL onRefreshView;
+@property (assign) SEL onNavigateTo;
 @property (assign) SEL onSetViewHomeUrl;
+@property (assign) SEL onTakePicture;
+@property (assign) SEL onChoosePicture;
 @property (assign) SEL onSetViewOptionsUrl;
 
 - (void) start;

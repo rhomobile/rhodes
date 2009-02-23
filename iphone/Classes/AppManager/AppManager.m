@@ -42,6 +42,12 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	return [documentsDirectory stringByAppendingPathComponent:@"apps"];
 }
 
++ (NSString *) getDbPath {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+	return [documentsDirectory stringByAppendingPathComponent:@"db"];
+}
+
 + (NSString *) getApplicationsRosterUrl {
 	return @"http://dev.rhomobile.com/vlad/";
 }
