@@ -65,10 +65,22 @@ describe "RhomObjectFactory" do
     @account.instance_variables.size.should == 37
   end
   
-  it "should calculate same djb_hash" do
+  it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
-    account.object.should == "272128608299468889014"
+    account.save
+    acct = Account.find(:first, :conditions =>{'name'=>'foobarthree'})
+    acct.name.should == 'foobarthree'
+    acct.industry.should == 'entertainment'
+    
+    account = Account.new
+    account.name = 'foobarfour'
+    account.industry = 'solar'
+    account.save
+    
+    acct = Account.find(:first, :conditions =>{'name'=>'foobarfour'})
+    acct.name.should == 'foobarfour'
+    acct.industry.should == 'solar'
   end
   
   it "should create a record" do
