@@ -72,6 +72,10 @@ NSString *localhost = @"http://localhost:8080/";
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
+- (void)onSetViewOptionsUrl:(NSString *)url {
+	[webViewController setViewOptionsUrl:[localhost stringByAppendingPathComponent:url]];
+}
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];
@@ -86,6 +90,7 @@ NSString *localhost = @"http://localhost:8080/";
 	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
+	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
     [serverHost start];
 	
     //Create View

@@ -1,15 +1,22 @@
-<% if System::get_property('platform') != 'APPLE' %>
-<div class="generic_heading">
-  Campaigns
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Campaigns
+	</h1>
 </div>
-<% end %>
 
-<ul id="SugarCampaigns" title="Campaigns">
-<a class="button right_button" href="/RhoSugarCRM/SugarCampaign/new">New</a>
+<ul id="SugarCampaigns" title="Campaigns" selected="true">
+<a class="button right_button" href="/RhoSugarCRM/SugarCampaign/new" target="_self">New</a>
 	
 <%@SugarCampaigns.each do |x|%>
 
-<li><%=link_to "#{x.name}", :action => :show, :id => x.object%></li>
+<li class="overview">
+	<a href="<%= "/RhoSugarCRM/SugarCampaign/#{x.object}/show" %>" target="_self">
+		<%= x.name %>
+		<div>
+		<%= x.status %><%= both_items_present?(x.status, x.budget) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= display_dollars(x.budget) %>
+		</div>
+	</a>
+</li>
 
 <%end%>
 </ul>

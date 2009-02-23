@@ -20,7 +20,10 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		if ( mode != "r" )
 			throw new Error("Read Only!");
 		
-    	m_is = filename.getClass().getResourceAsStream(filename);
+		m_is = filename.getClass().getResourceAsStream(filename);
+		
+		if ( m_is == null )
+			m_is = RubyPlatformUtils.loadFile(filename, mode);
 	}
 	
 	public void close() {

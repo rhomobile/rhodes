@@ -9,26 +9,24 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class RhoHttpService extends Service {
-
-	HttpServer httpServer = new HttpServer();
 	
+	HttpServer httpServer = new HttpServer();
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
 	}
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
-		RhoRuby.setRhoRubyImpl(new RhoRubyImpl());
-		RhoRuby.RhoRubyStart("");
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		// Start HttpServer 
+		// Start HttpServer
 		try {
+			
 			httpServer.configure(new RhoHttpHandler());
 			httpServer.start();
 		} catch (Exception e) {
@@ -39,9 +37,9 @@ public class RhoHttpService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		httpServer.stop();
-		
+
 		RhoRuby.RhoRubyStop();
 	}
 

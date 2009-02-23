@@ -37,4 +37,5 @@ public interface IFile
      * Length of the file
      */
     long length();
+    
 }
