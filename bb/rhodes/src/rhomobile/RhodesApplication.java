@@ -204,7 +204,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};			
 		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
 			public void run() {
-					SyncEngine.wakeUp();
+					String curUrl = (String)_history.lastElement();
+					navigateUrl(curUrl);
 				}
 			};			
     	
@@ -212,7 +213,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
 			menu.add(homeItem);
-			//menu.add(refreshItem);
+			menu.add(refreshItem);
 			menu.add(syncItem);
 		}
 
