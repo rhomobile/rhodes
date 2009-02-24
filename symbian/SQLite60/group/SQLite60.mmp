@@ -40,9 +40,9 @@ SOURCE                                  pager.cpp
 SOURCE                                  os.cpp 
 SOURCE                                  opcodes.cpp 
 SOURCE                                  mutex.cpp 
-SOURCE                                  mem4.cpp 
-SOURCE                                  mem3.cpp 
-SOURCE                                  mem2.cpp 
+//SOURCE                                  mem4.cpp 
+//SOURCE                                  mem3.cpp 
+//SOURCE                                  mem2.cpp 
 SOURCE                                  mem1.cpp 
 SOURCE                                  malloc.cpp 
 SOURCE                                  main.cpp 
