@@ -64,8 +64,23 @@ extern "C"
 	void dosync();
 }
 
-extern "C" void webview_refresh() {
+extern "C" {
+void webview_refresh() {
     //TODO: webview_refresh
+}
+
+void webview_navigate(char* url){
+    //TODO: webview_navigate
+}
+
+void take_picture(char* callback_url) {
+    //TODO: take_picture
+}
+
+void choose_picture(char* callback_url){
+    //TODO: choose_picture
+}
+
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
