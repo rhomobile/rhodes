@@ -73,7 +73,7 @@ EXPORT_C int sqlite3_reset(sqlite3_stmt *pStmt){
     sqlite3_mutex_leave(v->db->mutex);
     
     //RHO
-    sqlite3_clear_bindings(pStmt);
+    //sqlite3_clear_bindings(pStmt);
     //RHO    
     
   }

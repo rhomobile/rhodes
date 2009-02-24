@@ -62,6 +62,7 @@ TUint32 gSelectedConnectionId = -1;
 extern "C"
 {
 	void dosync();
+	void pause_sync( int nPause );	
 }
 
 extern "C" {
@@ -187,6 +188,13 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 	        CEikAppUi::HandleApplicationSpecificEventL(aType, aEvent);
 		}
 	}
+
+void CRhodesAppUi::HandleForegroundEventL(TBool aForeground)
+{
+	CAknAppUi::HandleForegroundEventL(aForeground);
+	
+	pause_sync(!aForeground);
+}
 
 void CRhodesAppUi::StopRubyFramework()
 {
