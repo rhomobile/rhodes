@@ -85,13 +85,13 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		webView.setHorizontalScrollBarEnabled(true);
 
 		webView.setWebViewClient(new WebViewClient() {
-			@Override
+			/*@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
 				view.loadUrl(url);
 				// return true to handle the click yourself
 				return true;
-			}
+			}*/
 
 			@Override
 			public void onPageFinished(WebView view, String url) {
