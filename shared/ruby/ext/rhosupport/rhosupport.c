@@ -36,6 +36,7 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 
 static VALUE loadISeqFromFile(VALUE path)
 {
+    VALUE seq;
 //        fiseq = File.open(fName)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
@@ -43,6 +44,7 @@ static VALUE loadISeqFromFile(VALUE path)
 #endif    
 
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+        //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&start, NULL); 
@@ -69,7 +71,7 @@ static VALUE loadISeqFromFile(VALUE path)
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
-        VALUE seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+        seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);

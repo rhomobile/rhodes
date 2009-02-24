@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="rubylib"
 	ProjectGUID="{AA77BEC0-2A60-4589-A784-7D78F60B35B6}"
 	Keyword="Win32Proj"
@@ -1392,6 +1392,14 @@
 					>
 					<File
 						RelativePath="..\..\shared\ruby\ext\webview\webview_wrap.c"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="camera"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\camera\camera_wrap.c"
 						>
 					</File>
 				</Filter>
