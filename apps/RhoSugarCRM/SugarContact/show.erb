@@ -6,6 +6,14 @@
 
 <div class="panel" title="Show Contact" selected="true">
  
+<% if System::get_property('platform') == 'APPLE' %>
+	<p align="center">
+		<a href="<%= "/RhoSugarCRM/Mapping/#{@SugarContact.object}/showcontact" %>" target="_self">
+			<span class="grayButton">Show Contact on Map</span>
+		</a>
+	</p>
+<% end %>
+
 <a class="button right_button" href="<%=url_for(:action => :edit, :id => @SugarContact.object)%>" target="_self">Edit</a>
 
 <table class="grid">
@@ -118,6 +126,7 @@
 	</tr>
 </table>
 
+<br/>
 <p align="center">
 	<a href="<%=url_for(:action => :delete, :id => @SugarContact.object)%>">
 		<span class="deletebutton">Delete</span>

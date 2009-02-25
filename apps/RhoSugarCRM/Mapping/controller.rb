@@ -1,17 +1,33 @@
 require 'rho/rhocontroller'
+require File.join(__rhoGetCurrentDir(), 'apps','RhoSugarCRM','helpers/application_helper')
 
 class MappingController < Rho::RhoController
+
+  include ApplicationHelper
 
   def index
     render
   end
   
   def showmypos
+    @show_addresses = false
+    @zoom_on_last_contact = false
     render :action => :showmypos, :layout => false
   end
   
-  def showcontactpos
-    render :action => :showcontactpos, :layout => false
+  def showcontact
+    @show_addresses = true
+    @zoom_on_last_contact = true
+    @contact = SugarContact.find(@params['id'])
+    @contacts = [@contact]
+    render :action => :showmypos, :layout => false
+  end
+  
+  def showallcontacts
+    @show_addresses = true
+    @zoom_on_last_contact = false
+    @contacts = SugarContact.find(:all, :order => 'last_name')        
+    render :action => :showmypos, :layout => false    
   end
   
 end

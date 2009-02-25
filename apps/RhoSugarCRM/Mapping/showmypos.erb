@@ -1,29 +1,36 @@
 <html>
 <head>
-	
+	<link href="/RhoSugarCRM/css/base.css" type="text/css" rel="stylesheet"/>		
+		
 	<% if System::get_property('platform') == 'APPLE' %>
-	
 	  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
-	
+		<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
+		<link href="/RhoSugarCRM/css/iphone.css" type="text/css" rel="stylesheet"/>
+		
 		<script src="/shared/js/jquery-1.2.6.min.js"></script>
 	
 		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=aFhmQOzV34FaMlrzhSFVxYpBojI29ArEPZ0oRloa6yEzZOvBgijJhI6gCfudbw--">
 		</script>
 		
 		<script type="text/javascript">
+			var my_current_lat = -1;
+			var my_current_lon = -1;
+			var map_poi = null;
+			var map_poi_text;
 		
-		var my_current_lat = -1;
-		var my_current_lon = -1;
-		
-		function getMyGeoLocation() {
-			$.get("/system/geolocation",function(data){
-				  data = data.split(";");
-				  my_current_lat = data[1];
-				  my_current_lon = data[2];	
+			function getMyGeoLocation() {
+				$.get("/system/geolocation",function(data){
+					  data = data.split(";");
+					  my_current_lat = data[1];
+					  my_current_lon = data[2];	
 				
-					generate_mapview();					
-			});
-		}
+						generate_mapview();
+						
+						// update textual coordinates too
+					  $("geolatitude").text(data[1]);
+					  $("geolongitude").text(data[2]);				
+				});
+			}
 		
 			function generate_mapview() {
 
@@ -43,28 +50,63 @@
 				map.setMapType(YAHOO_MAP_REG);
 
 				// Display the map centered on a geocoded location
-	//			var mypos = new YGeoPoint(37.331689, -122.030731);
-
 				var mypos = new YGeoPoint(my_current_lat, my_current_lon);
-
 				var myposmarker = new YMarker(mypos);
-	//			myposmarker.addLabel("<span style='margin:10px 0 0 0;font-size:70%'>You</span>");
+				myposmarker.openSmartWindow('<div><b>You</b></div>');				
 		    map.addOverlay(myposmarker);
-				map.drawZoomAndCenter(mypos, 5);
 
-	//			map.drawZoomAndCenter("701 First Avenue, SunnyVale, CA", 5);
+		    // now show addresses and geocode on map with labels		
+				<% if @show_addresses %>				
+						<% @contacts.each do |contact| %>
+						  <% if has_valid_mapping_address(contact.primary_address_street, contact.primary_address_city, contact.primary_address_state, contact.primary_address_postalcode) %>   
+						
+              	<% full_address = format_address_for_mapping(contact.primary_address_street, contact.primary_address_city, contact.primary_address_state, contact.primary_address_postalcode, false) %>
+                <% contact_full_name = contact.first_name + " " + contact.last_name %>
+
+					      map_poi = new YMarker("<%= full_address %>");				
+								map_poi_text = new String("<div><b>" + "<%= contact_full_name %>" + "</b></div>");
+								map_poi.openSmartWindow(map_poi_text);
+					      map.addOverlay(map_poi);
+
+						    <% if @zoom_on_last_contact %>
+								  // center around our contact's address
+									map.drawZoomAndCenter("<%= full_address %>", 4);
+							  <% end %>
+								
+							<% end %>
+						<% end %>
+				
+				<% end %>
+	
+	    <% if !@zoom_on_last_contact %>
+			  // center around our position
+				map.drawZoomAndCenter(mypos, 4);
+	    <% end %>
+	
 		}	
-		
 		</script>
 		
 		<style type="text/css">
 		#map{
 		  height: 300px;
-		  width: 300px;
+		  width: 280px;
+			margin: 8px auto;
+		}
+		
+		#coordinates {
+			margin: 10px;
+			font-size: 75%;
+			text-align: center;
 		}
 		</style> 
 		
 <% else %>
+
+	<% if System::get_property('platform') == 'Blackberry' %>
+		<link href="/RhoSugarCRM/css/blackberry.css" type="text/css" rel="stylesheet"/>	
+	<% else %>	
+		<link href="/RhoSugarCRM/css/xhtml.css" type="text/css" rel="stylesheet"/>	
+	<% end %>
 
 	<script type="text/javascript">
 		var my_url_name = "";
@@ -91,9 +133,15 @@
 	<body onload="setTimeout('update_mapsrc()', 1000)">	
 <% end %>	
 	
+<div class="toolbar">
+	<h1 id="pageTitle">
+		GPS Map
+	</h1>
+</div>
+
+<div id="content_container" selected="true">	
 	<% if System::get_property('platform') == 'APPLE' %>
 	 <div id="map"></div>	
-	</div>
 	
 	<% else %>
 		<img id="map" src="" height="250" width="250" alt="map image loading..."/>	
@@ -102,6 +150,14 @@
 	<script type="text/javascript" src="http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250&street=701+First+Avenue&city=Sunnyvale&state=CA"></script>
 
   <% end %>
+
+	<div id="coordinates">
+		GPS Position<br>
+		Latitude: <geolatitude>loading...</geolatitude><br/>
+		Longitude: <geolongitude>loading...</geolongitude><br/>  	
+	</div>
+
+</div>
 
 </body>
 </html>
