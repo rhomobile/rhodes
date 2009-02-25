@@ -48,6 +48,7 @@ char* parseServerFromUrl(char* url);
 unsigned int DJBHash(char* str, unsigned int len);
 
 void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement);
+void finish_db_statement(sqlite3_stmt **statement);
 
 #if defined(__cplusplus)
 }

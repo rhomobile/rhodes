@@ -2,6 +2,7 @@ package com.rhomobile.rhodes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import android.util.Log;
 
@@ -22,14 +23,25 @@ public class RhoHttpHandler implements IHttpHandler {
 		return RHO_HTTP_HANDLER;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void handle(HttpRequest request, HttpResponse response) {
 		Log.i(RHO_HTTP_HANDLER, "handle request");
 		try {
 
-			HttpConnection conn = new HttpConnection(request.getRequestURI());
+			MyRhoConnection conn = new MyRhoConnection(request.getRequestURI());
 			
 			conn.setRequestMethod(request.getMethod());
 
+			if ( request.getContentLength() > 0 )
+				HttpResponse.copy(request.getInputStream(), conn.openOutputStream());
+			
+			//set request headers
+			
+			for (Enumeration e = request.getHeaderKeys() ; e.hasMoreElements() ;) {
+				 String key = (String)e.nextElement();
+		         conn.setRequestProperty(key, request.getHeader( key ) );
+		     }
+			
 			conn.processRequest();
 
 			response.setStatus(conn.getResponseCode(), conn.getResponseMessage());
@@ -51,7 +63,6 @@ public class RhoHttpHandler implements IHttpHandler {
 			
 			response.writeHeaders();
 			response.writeInputStream(conn.openInputStream(), conn.getLength());
-			
 		} 
 		catch ( FileNotFoundException fe)
 		{

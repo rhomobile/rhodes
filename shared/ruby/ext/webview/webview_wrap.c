@@ -1547,6 +1547,62 @@ static VALUE mWebView;
 
 extern void webview_refresh();
 #define refresh webview_refresh 
+extern void webview_navigate(char* url);
+#define navigate webview_navigate
+
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
+{
+  if (TYPE(obj) == T_STRING) {
+    
+
+
+    char *cstr = STR2CSTR(obj);
+    
+    size_t size = RSTRING_LEN(obj) + 1;
+    if (cptr)  {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      }
+    }
+    if (psize) *psize = size;
+    return SWIG_OK;
+  } else {
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *)vptr;
+	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+
+
 
 SWIGINTERN VALUE
 _wrap_refresh(int argc, VALUE *argv, VALUE self) {
@@ -1556,6 +1612,30 @@ _wrap_refresh(int argc, VALUE *argv, VALUE self) {
   refresh();
   return Qnil;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_navigate(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "navigate" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  navigate(arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -1823,5 +1903,6 @@ SWIGEXPORT void Init_WebView(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mWebView, "refresh", _wrap_refresh, -1);
+  rb_define_module_function(mWebView, "navigate", _wrap_navigate, -1);
 }
 

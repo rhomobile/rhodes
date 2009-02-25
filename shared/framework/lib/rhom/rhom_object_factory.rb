@@ -41,11 +41,8 @@ module Rhom
               extend ::Rhom::RhomObject
           
               def initialize(obj=nil)
+                self.send("object=".to_sym(), "#{Time.now.to_i}")
                 if obj
-                  # create a temp id for the create type
-                  # TODO: This is duplicative of get_new_obj
-                  temp_objid = djb_hash(obj.values.to_s, 10).to_s
-                  self.send("object=".to_sym(), temp_objid)
                   self.send("source_id=".to_sym(), obj['source_id'].to_s)
                   self.send("update_type=".to_sym(), 'create')
                   obj.each do |key,value|
@@ -219,7 +216,7 @@ module Rhom
                 obj = self.inst_strip_braces(self.object)
                 attrs.each do |attrib,val|
                   attrib = attrib.to_s.gsub(/@/,"")
-                  old_val = self.send attrib.to_sym
+                  old_val = self.send attrib.to_sym unless self.method_name_reserved?(attrib)
                   
                   # Don't save objects with braces to database
                   new_val = self.inst_strip_braces(val)

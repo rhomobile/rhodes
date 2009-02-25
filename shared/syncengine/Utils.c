@@ -88,3 +88,12 @@ void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement) {
 		printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
 	}
 }
+
+void finish_db_statement(sqlite3_stmt **statement) {
+    if ( !statement || !*statement )
+        return;
+
+    sqlite3_reset(*statement);
+    //sqlite3_finalize(*statement);
+    //*statement = NULL;
+}

@@ -245,14 +245,18 @@ void logout() {
  */
 NSString *get_session(char *url_string) {
 	NSString *session = NULL;
+	NSString *ns_url_string = [[[NSString alloc] initWithUTF8String:url_string] autorelease];
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	if (cookieStore) {
-		NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String: url_string]];
-		NSArray *cookies = [cookieStore cookiesForURL:url];
-		NSString *cookie = [[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"];
-
-		if (cookie) {
-			session = [[[NSString alloc] initWithString:cookie] autorelease];
+	if (cookieStore && ns_url_string) {
+		NSURL *url = [NSURL URLWithString:[ns_url_string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+		// In the case where url_string is not properly encoded, url will be nil
+		if(url) {
+			NSArray *cookies = [cookieStore cookiesForURL:url];
+			NSString *cookie = [[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] objectForKey:@"Cookie"];
+			
+			if (cookie) {
+				session = [[[NSString alloc] initWithString:cookie] autorelease];
+			}
 		}
 	}
 	return session;

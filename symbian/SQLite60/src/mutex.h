@@ -30,6 +30,16 @@
 ** application that links against the SQLite library.
 */
 #else
+
+//RHO
+#ifndef SQLITE_THREADSAFE
+#define SQLITE_OMIT_EXPLAIN 1
+#define SQLITE_DISABLE_LFS 1
+#define SQLITE_THREADSAFE 0
+#define SQLITE_DEFAULT_MEMSTATUS 0
+#endif
+//RHO
+
 /*
 ** Figure out what version of the code to use.  The choices are
 **

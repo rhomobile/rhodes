@@ -28,6 +28,7 @@
 "$(EPOCROOT)Epoc32\data\z\private\10003a3f\apps\rhodes_reg.rsc"	-"!:\private\10003a3f\import\apps\rhodes_reg.rsc"
 "$(EPOCROOT)Epoc32\data\z\resource\apps\rhodes.mif" -"!:\resource\apps\rhodes.mif"
 "..\help\rhodes.hlp"							 -"!:\resource\help\rhodes.hlp"
+"..\..\build\rhologpath.txt"					 -"!:\Data\Rho\rhologpath.txt"
 
 ; Add any installation notes if applicable
 ;"rhodes.txt"		-"!:\private\E6B4F4DF\rhodes.txt"

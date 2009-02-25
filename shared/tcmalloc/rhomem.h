@@ -30,6 +30,7 @@ void *  rho_realloc(void *, size_t);
 };
 #endif
 
+//#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
 #define malloc(s) rho_malloc(s)
 #define calloc(num, size) rho_calloc(num,size)
@@ -39,4 +40,5 @@ void *  rho_realloc(void *, size_t);
 #endif //_RHO_NO_MEMDEFINES
 
 #endif// _WIN32_WCE
+
 #endif  // RHO_MEMORY__

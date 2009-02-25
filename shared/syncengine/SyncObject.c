@@ -73,6 +73,7 @@ pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key,
 	sync->_object = str_assign(object);
 	sync->_value = str_assign(value);
 	sync->_update_type = str_assign(update_type);
+    sync->_db_operation = NULL;
 	return sync;
 }
 
@@ -107,12 +108,12 @@ int exists_in_database(pSyncObject ref) {
 	if (success == SQLITE_ROW) {
 		char *tmp_check = str_assign((char *)sqlite3_column_text(select_statement, 0));
 		if(strcmp(tmp_check, ref->_value) == 0) {
-			sqlite3_reset(select_statement);
+			finish_db_statement(&select_statement);
 			unlock_sync_mutex();	
 			return 1;
 		}
 	}
-	sqlite3_reset(select_statement);
+	finish_db_statement(&select_statement);
 	unlock_sync_mutex();	
 	return 0;
 }
@@ -138,11 +139,11 @@ int insert_into_database(pSyncObject ref) {
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
-            sqlite3_reset(insert_statement);
+            finish_db_statement(&insert_statement);
 			unlock_sync_mutex();	
 			return 0;
 		} 
-		sqlite3_reset(insert_statement);
+		finish_db_statement(&insert_statement);
 		unlock_sync_mutex();	
 		return SYNC_OBJECT_SUCCESS;
 	}
@@ -159,11 +160,11 @@ int delete_from_database(pSyncObject ref) {
 	success = sqlite3_step(delete_statement);
 	if (success != SQLITE_DONE) {
 		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
-        sqlite3_reset(delete_statement);
+        finish_db_statement(&delete_statement);
 		unlock_sync_mutex();	
 		return 1;
 	}
-	sqlite3_reset(delete_statement);
+	finish_db_statement(&delete_statement);
 	unlock_sync_mutex();	
 
 	return 0;
@@ -173,14 +174,15 @@ void free_ob_list(pSyncObject *list, int available) {
 	int k;
 	/* Free up our ob_list */
 	for(k = 0; k < available; k++) {
-		SyncObjectRelease(list[k]);
+        //This fields deleted by JSON
+		//SyncObjectRelease(list[k]);
+        free(list[k]);
 	}
 }
 
 void SyncObjectRelease(pSyncObject ref) {
 	if (ref) {
-        //This fields deleted by JSON
-		/*if (ref->_attrib) {
+		if (ref->_attrib) {
 			free(ref->_attrib);
 		} 
 		if(ref->_object) {
@@ -191,7 +193,10 @@ void SyncObjectRelease(pSyncObject ref) {
 		} 
 		if(ref->_update_type) {
 			free(ref->_update_type);
-		}*/
+		}
+        if(ref->_db_operation)
+            free(ref->_db_operation);
+
 		free(ref);
 	}
 }
