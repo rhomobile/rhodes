@@ -1255,7 +1255,7 @@ void shutdown_poll(struct shttpd_ctx *ctx){
 
 	LL_FOREACH(&ctx->listeners, lp) {
 		l = LL_ENTRY(lp, struct listener, link);
-		shutdown(l->sock, SD_BOTH);
+		//shutdown(l->sock, SD_BOTH);
         closesocket(l->sock);
 	}
 }
