@@ -194,6 +194,11 @@ void CRhodesAppUi::HandleForegroundEventL(TBool aForeground)
 	CAknAppUi::HandleForegroundEventL(aForeground);
 	
 	pause_sync(!aForeground);
+	if (aForeground)
+		iHttpServer->ResumeThread();
+	else
+		iHttpServer->SuspendThread();	
+	
 }
 
 void CRhodesAppUi::StopRubyFramework()

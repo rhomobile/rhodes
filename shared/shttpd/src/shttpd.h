@@ -104,6 +104,8 @@ void shttpd_register_ssi_func(struct shttpd_ctx *ctx, const char *name,
 void shttpd_wakeup(const void *priv);
 int shttpd_join(struct shttpd_ctx *, fd_set *, fd_set *, int *max_fd);
 int  shttpd_socketpair(int sp[2]);
+//RHO
+void shutdown_poll(struct shttpd_ctx *ctx);
 
 #ifdef __cplusplus
 }
