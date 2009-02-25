@@ -87,6 +87,7 @@ private:
 	void HandleCommandL(TInt aCommand);
 
     void HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent);
+    void HandleForegroundEventL(TBool aForeground);
     
     /**
      *  From MEikMenuObserver
@@ -129,7 +130,7 @@ private:
 	 */
 	CRhodesAppView* iAppView;
 	
-    sqlite3 * iDatabase;
+//    sqlite3 * iDatabase;
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	CAppManager* iAppManager;

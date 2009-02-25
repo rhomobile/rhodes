@@ -1115,6 +1115,11 @@ opendb_out:
   return sqlite3ApiExit(0, rc);
 }
 
+extern "C" {
+void rhoInitDatabase(sqlite3 *pDb);
+sqlite3 *get_database();
+}
+
 /*
 ** Open a new database handle.
 */
@@ -1122,8 +1127,16 @@ EXPORT_C int sqlite3_open(
   const char *zFilename, 
   sqlite3 **ppDb 
 ){
-  return openDatabase(zFilename, ppDb,
-                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
+	/*sqlite3 *db = get_database(); 
+	if ( db ){
+		*ppDb = db;
+		return 0;
+	}*/
+	
+	int nRes = openDatabase(zFilename, ppDb,
+				  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
+	//rhoInitDatabase(*ppDb);
+	return nRes;
 }
 
 EXPORT_C int sqlite3_open_v2(

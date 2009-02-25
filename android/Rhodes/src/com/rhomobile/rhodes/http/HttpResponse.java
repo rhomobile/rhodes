@@ -83,7 +83,7 @@ public class HttpResponse extends HttpHeader {
 
 	private static final int IO_BUFFER_SIZE = 4 * 1024;
 
-	private static void copy(InputStream in, OutputStream out)
+	public static void copy(InputStream in, OutputStream out)
 			throws IOException {
 		byte[] b = new byte[IO_BUFFER_SIZE];
 		int read;

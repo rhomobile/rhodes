@@ -59,8 +59,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onSetViewHomeUrl, onSetViewOptionsUrl;
-
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -82,6 +81,12 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+- (void)navigateTo:(NSString*) url {
+	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
+		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:url waitUntilDone:NO];
+	}
+}
+
 - (void)performRefreshView {
 	[self performSelectorOnMainThread:@selector(refreshView)
 						   withObject:NULL waitUntilDone:NO]; 
@@ -91,6 +96,18 @@ static ServerHost* sharedSH = nil;
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
 		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
 	}	
+}
+
+- (void)takePicture:(NSString*) url {
+	if(actionTarget && [actionTarget respondsToSelector:onTakePicture]) {
+		[actionTarget performSelector:onTakePicture withObject:url];
+	}
+}
+
+- (void)choosePicture:(NSString*) url {
+	if(actionTarget && [actionTarget respondsToSelector:onChoosePicture]) {
+		[actionTarget performSelector:onChoosePicture withObject:url];
+	}
 }
 
 - (void)setViewOptionsUrl:(NSString*)url {
@@ -218,7 +235,18 @@ void webview_refresh() {
 	[[ServerHost sharedInstance] refreshView];
 }
 
+void webview_navigate(char* url) {
+	[[ServerHost sharedInstance] navigateTo:[NSString stringWithCString:url]];
+}
+
 void perform_webview_refresh() {
-	[[ServerHost sharedInstance] performRefreshView];
-														
+	[[ServerHost sharedInstance] performRefreshView];														
+}
+
+void take_picture(char* callback_url) {
+	[[ServerHost sharedInstance] takePicture:[NSString stringWithCString:callback_url]];		
+}
+
+void choose_picture(char* callback_url) {
+	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
 }

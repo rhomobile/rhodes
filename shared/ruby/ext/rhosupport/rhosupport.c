@@ -36,6 +36,7 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 
 static VALUE loadISeqFromFile(VALUE path)
 {
+    VALUE seq;
 //        fiseq = File.open(fName)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
@@ -43,6 +44,7 @@ static VALUE loadISeqFromFile(VALUE path)
 #endif    
 
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+        //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&start, NULL); 
@@ -69,7 +71,7 @@ static VALUE loadISeqFromFile(VALUE path)
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
-        VALUE seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+        seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
@@ -244,10 +246,16 @@ void Init_RhoSupport()
       if ( exist == Qtrue ){
         stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
         if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
+        {
           //freopen( RSTRING_PTR(stdioPath), "w", stdout );
+          char* szPath = RSTRING_PTR(stdioPath);
+          int len = RSTRING_LEN(stdioPath);
 		  logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w+"));
-          rb_gv_set("$stdout", logio);
-          rb_gv_set("$stderr", logio);
+          if ( logio != 0 && logio != Qnil ){
+			  rb_gv_set("$stdout", logio);
+			  rb_gv_set("$stderr", logio);
+          }
+        }
       }
     }
 }

@@ -56,7 +56,10 @@ public abstract class RhoRubyBase implements IRhoRuby {
 	 * @see com.rho.IRhoRuby#loadFile(java.lang.String)
 	 */
 	public InputStream loadFile(String path){
-		return mainObj.getClass().getResourceAsStream(path);		
+		if ( RubyPlatformUtils.getPlatform().equalsIgnoreCase("android") )
+			return null; //use assets instead of jar
+		else
+			return mainObj.getClass().getResourceAsStream(path);		
 	}
 
 	/* (non-Javadoc)

@@ -71,6 +71,11 @@ EXPORT_C int sqlite3_reset(sqlite3_stmt *pStmt){
     sqlite3VdbeMakeReady(v, -1, 0, 0, 0);
     assert( (rc & (v->db->errMask))==rc );
     sqlite3_mutex_leave(v->db->mutex);
+    
+    //RHO
+    //sqlite3_clear_bindings(pStmt);
+    //RHO    
+    
   }
   return rc;
 }

@@ -22,6 +22,7 @@ import net.rim.device.api.system.SystemListener;
 import rhomobile.NetworkAccess;
 import rhomobile.location.GeoLocation;
 import rhomobile.sync.SyncEngine;
+import rhomobile.sync.SyncNotifications;
 
 import java.util.Vector;
 
@@ -35,7 +36,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public boolean keyChar(char key, int status, int time) {
 	        if( key == Characters.ENTER ) {
-	        	gotoUrl();
+	        	openLink();
 	        	return true;
 	        }
 			return false;
@@ -60,12 +61,38 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     class CTrackwheelListener implements TrackwheelListener{
 
 		public boolean trackwheelClick(int status, int time) {
-			gotoUrl();
+			openLink();
 			return true;
 		}
 
 		public boolean trackwheelRoll(int amount, int status, int time) {return false;}
 		public boolean trackwheelUnclick(int status, int time) {return false;}
+    }
+    
+    class SyncNotificationsImpl extends SyncNotifications{
+    	public void refreshIfCurrent(String url){
+    		if ( url == null || url.length() == 0 )
+    			return;
+    		
+    		url.replace('\\', '/');
+    		if ( !url.startsWith(_httpRoot) ){
+	    		if ( url.charAt(0) == '/' )
+	    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
+	    		else	
+	    			url = _httpRoot + url;
+    		}
+    		
+    		String curUrl = (String)_history.lastElement();
+    		curUrl.replace('\\', '/');
+    		if ( curUrl.equalsIgnoreCase(url) )
+    			navigateUrl(curUrl);
+    	}
+    	
+    }
+
+    void navigateUrl(String url){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
+        thread.start();                       
     }
     
     void back(){
@@ -76,8 +103,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	String url = (String)_history.elementAt(nPos);
     	_history.removeElementAt(nPos+1);
     	
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
-        thread.start();                       
+    	navigateUrl(url);
     }
     
     void addToHistory(String strUrl ){
@@ -106,7 +132,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		_history.setSize(nPos+1);
     }
     
-    void gotoUrl(){
+    void openLink(){
         Menu menu = _mainScreen.getMenu(0);
     	int size = menu.getSize();
     	for(int i=0; i<size; i++) 
@@ -171,10 +197,23 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 					SyncEngine.wakeUp();
 				}
 			};			
+		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
+			public void run() {
+					navigateHome();
+				}
+			};			
+		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
+			public void run() {
+					String curUrl = (String)_history.lastElement();
+					navigateUrl(curUrl);
+				}
+			};			
     	
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
+			menu.add(homeItem);
+			menu.add(refreshItem);
 			menu.add(syncItem);
 		}
 
@@ -194,6 +233,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
+
+        SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
     	
         _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);
@@ -206,13 +247,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);                        
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
+        navigateHome();
+    }
+    
+    void navigateHome(){
         String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + 
         	RhoRuby.getStartPage();
-        _history.addElement(strStartPage);
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(strStartPage, null, null, null, this);
-        thread.start();                       
+        _history.removeAllElements();
+	    _history.addElement(strStartPage);
+	    navigateUrl(strStartPage);
     }
-          
+    
     public void processConnection(HttpConnection connection, Event e) {
          
         // cancel previous request

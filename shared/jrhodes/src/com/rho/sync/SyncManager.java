@@ -7,14 +7,15 @@ import java.io.OutputStream;
 import javolution.io.UTF8StreamReader;
 
 import com.rho.NetworkAccess;
-import com.rho.RhoConnection;
+import com.rho.IHttpConnection;
+import java.net.HttpURLConnection;
 
 /**
  * The Class SyncManager.
  */
 public class SyncManager {
 
-	private static RhoConnection connection = null;
+	private static HttpURLConnection connection = null;
 	private static char[] m_ReadBuffer = new char[1024];
 	
 	private static final StringBuffer readFully(InputStream in) throws IOException {
@@ -59,11 +60,13 @@ public class SyncManager {
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
 			
+			connection.setRequestMethod(IHttpConnection.GET);
+			
 			//String str = connection.getRequestProperty("Cookie");
-			is = connection.openInputStream();
-			len = connection.getLength();
+			is = connection.getInputStream();
+			len = connection.getContentLength();
 			code = connection.getResponseCode();
-			if (code == RhoConnection.HTTP_OK) {
+			if (code == IHttpConnection.HTTP_OK) {
 				if ( len > 1024*100)
 					return null;
 				
@@ -81,7 +84,7 @@ public class SyncManager {
 				}*/
 			} else {
 				System.out.println("Error retrieving data: " + code);
-				if (code == RhoConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 				return null;
 			}
 		} finally {
@@ -114,10 +117,10 @@ public class SyncManager {
 			makePostRequest(url,data,session);
 
 			int code = connection.getResponseCode();
-			if (code == RhoConnection.HTTP_INTERNAL_ERROR || code == RhoConnection.HTTP_NOT_FOUND) {
+			if (code == IHttpConnection.HTTP_INTERNAL_ERROR || code == IHttpConnection.HTTP_NOT_FOUND) {
 				System.out.println("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
-				if (code == RhoConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 			}
 		} finally {
 			closeConnection();
@@ -136,8 +139,9 @@ public class SyncManager {
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
 			
-			os = connection.openOutputStream();
-			connection.setRequestMethod(RhoConnection.POST);
+			connection.setRequestMethod(IHttpConnection.POST);
+			
+			os = connection.getOutputStream();
 			os.write(data.getBytes());
 			os.flush();
 		} finally {
@@ -147,18 +151,13 @@ public class SyncManager {
 		}
 	}
 
-	public static RhoConnection getConnection() {
+	public static HttpURLConnection getConnection() {
 		return connection;
 	}
 
 	public static void closeConnection(){
 		if ( connection != null ){
-			try{
-				connection.close();
-			}catch(IOException exc){
-				System.out.println("There was an error close connection: "
-						+ exc.getMessage());
-			}
+			connection.disconnect();
 		}
 		
 		connection = null;

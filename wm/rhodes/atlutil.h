@@ -14,9 +14,9 @@
 #pragma once
 #include <stdio.h>
 #include <string.h>
-#ifndef _WIN32_WCE
-#include <crtdbg.h>
-#endif // _WIN32_WCE
+//#ifndef _WIN32_WCE
+//#include <crtdbg.h>
+//#endif // _WIN32_WCE
 #include <stdlib.h>
 #ifndef _WIN32_WCE
 #include <mbstring.h>

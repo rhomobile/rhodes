@@ -393,6 +393,7 @@ void ConvertToUnicode(RFs session, TDes16& aUnicode, const char *str)
 
   int state = CCnvCharacterSetConverter::KStateDefault;
   converter->ConvertToUnicode(aUnicode, ptr, state);
+  delete converter;
 }
 
 /*

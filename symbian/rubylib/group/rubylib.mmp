@@ -130,4 +130,10 @@ SOURCE      stat.c
 SOURCEPATH ..\..\..\shared\ruby\ext\phonebook
 SOURCE      phonebook_wrap.c
 
+SOURCEPATH ..\..\..\shared\ruby\ext\webview
+SOURCE      webview_wrap.c
+
+SOURCEPATH ..\..\..\shared\ruby\ext\camera
+SOURCE      camera_wrap.c
+
 // End of File

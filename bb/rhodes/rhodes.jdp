@@ -38,6 +38,7 @@ src\rhomobile\sync\SyncConstants.java
 src\rhomobile\sync\SyncEngine.java
 src\rhomobile\sync\SyncJSONParser.java
 src\rhomobile\sync\SyncManager.java
+src\rhomobile\sync\SyncNotifications.java
 src\rhomobile\sync\SyncObject.java
 src\rhomobile\sync\SyncOperation.java
 src\rhomobile\sync\SyncSource.java

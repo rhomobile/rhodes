@@ -45,7 +45,7 @@
 #include "rhoruby/rhoruby.h"
 
 #ifndef ENABLE_RUBY_VM_STAT
-#define ENABLE_RUBY_VM_STAT
+//#define ENABLE_RUBY_VM_STAT
 #endif
 
 #include "stat/stat.h"
@@ -57,9 +57,31 @@
 #include <sys/types.h>
 #include <libc/sys/unistd.h>
 
+TUint32 gSelectedConnectionId = -1;
+
 extern "C"
 {
 	void dosync();
+	void pause_sync( int nPause );	
+}
+
+extern "C" {
+void webview_refresh() {
+    //TODO: webview_refresh
+}
+
+void webview_navigate(char* url){
+    //TODO: webview_navigate
+}
+
+void take_picture(char* callback_url) {
+    //TODO: take_picture
+}
+
+void choose_picture(char* callback_url){
+    //TODO: choose_picture
+}
+
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -167,6 +189,13 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 		}
 	}
 
+void CRhodesAppUi::HandleForegroundEventL(TBool aForeground)
+{
+	CAknAppUi::HandleForegroundEventL(aForeground);
+	
+	pause_sync(!aForeground);
+}
+
 void CRhodesAppUi::StopRubyFramework()
 {
 	iHttpServer->StopRubyFramework();
@@ -195,6 +224,11 @@ void CRhodesAppUi::StopThreads()
 // Takes care of command handling.
 // -----------------------------------------------------------------------------
 //
+extern "C"
+	{
+int login(const char* login, const char* password);
+	}
+
 void CRhodesAppUi::HandleCommandL(TInt aCommand)
 	{
 	switch (aCommand)
@@ -216,6 +250,7 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case ESync:
 			{
+			//login("lars","password");
 				dosync();
 				break;
 			}

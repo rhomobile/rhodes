@@ -91,16 +91,30 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
 }
 
 //Hook for ruby call to refresh web view
-extern "C" void webview_refresh() {
+extern "C" {
+void webview_refresh() {
 	_AtlModule.DoViewRefresh();
 }
 
 //Sync hook to refresh the web view
-extern "C" void perform_webview_refresh() {
+void perform_webview_refresh() {
 	webview_refresh();
 }
 
-extern "C" char* get_current_location() {
+void webview_navigate(char* url){
+    //TODO: webview_navigate
+}
+
+char* get_current_location() {
 	return _AtlModule.GetCurrentLocation();
 }
 
+void take_picture(char* callback_url) {
+    //TODO: take_picture
+}
+
+void choose_picture(char* callback_url){
+    //TODO: choose_picture
+}
+
+}
