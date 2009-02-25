@@ -26,6 +26,7 @@ import java.io.InputStream;
 import com.rho.NetworkAccess;
 import com.rho.RhoRuby;
 import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncNotifications;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.xruby.runtime.builtin.IRubyPlatformUtils;
 import com.xruby.runtime.builtin.RubyPlatformUtils;
@@ -237,6 +238,9 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 
 	public void startSyncEngine() {
 		Log.d(LOG_TAG, "startSyncEngine...");
+		
+		SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
+
 		// start sync engine
 		startService(new Intent(this, RhoSyncService.class));
 
@@ -246,4 +250,24 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		startPage = HOME_URL + RhoRuby.getStartPage();
 		this.webView.loadUrl(startPage);
 	}
+	
+    public class SyncNotificationsImpl extends SyncNotifications{
+    	public void refreshIfCurrent(String url){
+    		if ( url == null || url.length() == 0 )
+    			return;
+    		
+    		url.replace('\\', '/');
+    		if ( !url.startsWith(startPage) ){
+	    		if ( url.charAt(0) == '/' )
+	    			url = startPage.substring(0, startPage.length()-1) + url;
+	    		else	
+	    			url = startPage + url;
+    		}
+    		
+    		String curUrl = webView.getUrl();
+    		curUrl.replace('\\', '/');
+    		if ( curUrl.equalsIgnoreCase(url) )
+    			webView.loadUrl(curUrl);
+    	}
+    }
 }
