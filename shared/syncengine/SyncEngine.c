@@ -417,6 +417,7 @@ int login(const char* login, const char* password) {
 		  }else{
 			set_db_session( source_list[i]->_source_url, session );
 			free(session);
+            retval = 1;
 		  }
 		}
 		
