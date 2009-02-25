@@ -211,8 +211,12 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		case R.id.sync:
 			SyncEngine.wakeUp();
 			return true;
+			
+		case R.id.refresh:
+			webView.reload();
+			return true;
 		}
-
+		
 		return false;
 	}
 
