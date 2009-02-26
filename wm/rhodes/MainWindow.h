@@ -5,8 +5,11 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "GetURLDialog.h"
+#include "NetRequest.h"
 
 static const UINT ID_BROWSER = 1;
+static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
+static UINT WM_SELECTPICTURE = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 
 class CMainWindow :
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
@@ -41,6 +44,8 @@ public:
         COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
         COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
+		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
+		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
     END_MSG_MAP()
 
 private:
@@ -61,6 +66,10 @@ private:
     LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
 public:
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
@@ -104,4 +113,8 @@ private:
 	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;
 	char* m_current_url;
+
+private:
+	CNetRequest m_callbackRequest;
+	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
