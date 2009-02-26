@@ -31,6 +31,10 @@
 int stop_running = 0;
 //int delay_sync = 0;
 int db_reset_delay = 0;
+static int g_sync_pause = 0;
+static int g_sync_inprogress = 0;
+static int g_sync_wasinprogress = 0;
+
 #if !defined(_WIN32_WCE)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -51,9 +55,31 @@ extern int g_cur_source;
 //#define _SYNC_KILLTHRED 1
 #endif
 
+void pause_sync( int nPause ){
+    if ( nPause == g_sync_pause )
+        return;
+
+    if ( g_sync_pause )
+        g_sync_wasinprogress = g_sync_inprogress;
+
+    g_sync_pause = nPause;
+    if ( !g_sync_pause && g_sync_wasinprogress ){
+        g_sync_wasinprogress = 0;
+        wake_up_sync_engine();
+    }
+
+    //if ( !g_sync_pause )
+    //    wake_up_sync_engine();
+}
+
+int isContinueSync(){
+    return !g_sync_pause && !stop_running;
+}
+
 int process_local_changes() {
 	int nRet = 0;
-  if (!stop_running) {
+    g_sync_inprogress = 1;
+  if (isContinueSync()) {
 	  // Process local changes
 	  int i,result = 0,source_length = 0;
 	  pSource *source_list;
@@ -62,21 +88,21 @@ int process_local_changes() {
 
 	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
 //#if 0	  
-	  for(i = 0; i < source_length&& !stop_running; i++) {
+	  for(i = 0; i < source_length && isContinueSync(); i++) {
 		  if(client_id == NULL) {
 			  client_id = set_client_id(database, source_list[i]);
 		  }
 		  result = 0;
-		  if ( stop_running )
+		  if ( !isContinueSync() )
 			  break;
 		  result += process_op_list(source_list[i], "update");
-		  if ( stop_running )
+		  if ( !isContinueSync() )
 			  break;
 		  result += process_op_list(source_list[i], "create");
-		  if ( stop_running )
+		  if ( !isContinueSync() )
 			  break;
 		  result += process_op_list(source_list[i], "delete");
-		  if ( stop_running )
+		  if ( !isContinueSync() )
 			  break;
 	  }  
   	
@@ -95,7 +121,7 @@ int process_local_changes() {
 	   */
 		  if ( !stop_running && g_cur_source < source_length )
 		  {
-			  ask_params = str_assign(get_params_for_source(source_list[g_cur_source], database));
+			  ask_params = get_params_for_source(source_list[g_cur_source], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
@@ -111,17 +137,18 @@ int process_local_changes() {
 			  g_cur_source = 0;
 
 #else
-		  for(i = 0; i < source_length && !stop_running; i++)
+		  for(i = 0; i < source_length && isContinueSync(); i++)
 		  {
-			  ask_params = str_assign(get_params_for_source(source_list[i], database));
+			  ask_params = get_params_for_source(source_list[i], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
 			  if(available_remote > 0) {
 				  printf("Successfully processed %i records...\n", available_remote);
-				  if(!stop_running) {
+				  if( isContinueSync() ) {
 					  fire_notification(source_list[i]->_source_id);
 				  }
 			  }
-			  if (ask_params) free(ask_params);
+			  if (ask_params) 
+                  free(ask_params);
 		  }
 #endif	  
 	  }
@@ -129,6 +156,7 @@ int process_local_changes() {
 	  free_source_list(source_list, source_length);
   } 
   
+  g_sync_inprogress = 0;
   if (stop_running) {
 	  printf("process_local_changes: cleanup\n");
 	  clear_client_id();
@@ -299,13 +327,13 @@ void stop_sync_engine() {
 
 void shutdown_database() {
 	lock_sync_mutex();
-#if defined( __SYMBIAN32__ ) && !defined (__GCEE__)
+//#if defined( __SYMBIAN32__ ) && !defined (__GCEE__)
 //emulator issue
-#else
+//#else
 	finalize_sync_obj_statements();
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
-#endif
+//#endif
 	
 //#ifndef __SYMBIAN32__
 	sqlite3_close(database);
@@ -389,6 +417,7 @@ int login(const char* login, const char* password) {
 		  }else{
 			set_db_session( source_list[i]->_source_url, session );
 			free(session);
+            retval = 1;
 		  }
 		}
 		

@@ -87,6 +87,7 @@ private:
 	void HandleCommandL(TInt aCommand);
 
     void HandleApplicationSpecificEventL(TInt aType, const TWsEvent& aEvent);
+    void HandleForegroundEventL(TBool aForeground);
     
     /**
      *  From MEikMenuObserver

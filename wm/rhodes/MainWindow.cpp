@@ -10,6 +10,7 @@
 #include "rhoruby/rhoruby.h"
 
 extern "C" char* wce_wctomb(const wchar_t* w);
+extern "C" void pause_sync( int nPause );
 
 CMainWindow::CMainWindow()
 {
@@ -128,8 +129,17 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    int fActive = LOWORD(wParam); 
+
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
+
+    pause_sync(!fActive);
+
+    if ( fActive )
+        CHttpServer::Instance()->ResumeThread();
+    else
+        CHttpServer::Instance()->FreezeThread();
     return 0;
 }
 

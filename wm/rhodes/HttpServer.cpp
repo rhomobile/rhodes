@@ -48,6 +48,7 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
+  shutdown_poll(ctx);
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
   shttpd_fini(ctx);
@@ -95,7 +96,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
       //start_sync();
 //    }  else   if (sync) sync->ShowHomePage();
   }
-  shttpd_poll(ctx, 1000);
+  shttpd_poll(ctx, 100000);
 
   //GPS
   CGPSController::CheckTimeout();

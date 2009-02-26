@@ -2,6 +2,10 @@
 
 static VALUE mGeoLocation;
 
+extern double geo_latitude();
+extern double geo_longitude();
+extern int geo_known_position();
+
 VALUE wrap_geo_latitude(int argc, VALUE *argv, VALUE self) {
   double result;
   VALUE vresult = Qnil;
@@ -9,8 +13,8 @@ VALUE wrap_geo_latitude(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); goto fail;
   }
-  result = (double)geo_latitude();
-  vresult = rb_float_new((double)(result));
+  result = geo_latitude();
+  vresult = rb_float_new(result);
   return vresult;
 fail:
   return Qnil;
@@ -23,8 +27,8 @@ VALUE wrap_geo_longitude(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); goto fail;
   }
-  result = (double)geo_longitude();
-  vresult = rb_float_new((double)(result));
+  result = geo_longitude();
+  vresult = rb_float_new(result);
   return vresult;
 fail:
   return Qnil;
@@ -37,8 +41,8 @@ VALUE wrap_geo_known_position(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); goto fail;
   }
-  result = (int)geo_known_position();
-  vresult = LONG2NUM((int)(result));
+  result = geo_known_position();
+  vresult = LONG2NUM(result);
   return vresult;
 fail:
   return Qnil;

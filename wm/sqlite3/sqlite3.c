@@ -24,6 +24,7 @@
 #define SQLITE_DISABLE_LFS 1
 #define SQLITE_THREADSAFE 0
 #define SQLITE_DEFAULT_MEMSTATUS 0
+#include "tcmalloc/rhomem.h"
 //RHO
 #define localtime _SQLCRT_localtime
 
