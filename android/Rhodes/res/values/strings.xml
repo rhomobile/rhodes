@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Rhodes</string>
     <string name="home">Home</string>
+    <string name="refresh">Refresh</string>
     <string name="forward">Forward</string>
     <string name="back">Back</string>
     <string name="navigation">Navigation</string>
