@@ -71,4 +71,20 @@ class SugarContactController < Rho::RhoController
     render :action => :new    
   end
   
+  def savetodevice
+    @SugarContact = SugarContact.find(@params['id'])
+    @contact = Hash.new
+
+    @contact['first_name'] = @SugarContact.first_name.nil? ? "" : @SugarContact.first_name
+    @contact['last_name'] = @SugarContact.last_name.nil? ? "" : @SugarContact.last_name
+    @contact['company_name'] = @SugarContact.company_name.nil? ? "" : @SugarContact.company_name
+    @contact['mobile_number'] = @SugarContact.phone_mobile.nil? ? "" : @SugarContact.phone_mobile
+    @contact['home_number'] = @SugarContact.phone_home.nil? ? "" : @SugarContact.phone_home
+    @contact['business_number'] = @SugarContact.phone_work.nil? ? "" : @SugarContact.phone_work
+    @contact['email_address'] = @SugarContact.email1.nil? ? "" : @SugarContact.email1      
+    @DeviceContact = Rho::RhoContact.create!(@contact)
+    
+    redirect :action => :index    
+  end
+  
 end
