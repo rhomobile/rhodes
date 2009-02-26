@@ -1,4 +1,5 @@
 require 'rho/rhocontroller'
+require 'rho/rhocontact'
 require File.join(__rhoGetCurrentDir(), 'apps','Lighthouse','helpers/application_helper')
 
 class SugarContactController < Rho::RhoController
@@ -50,4 +51,24 @@ class SugarContactController < Rho::RhoController
     @SugarContact.destroy
     redirect :action => :index
   end
+  
+  def devicecontacts
+    @DeviceContacts = Rho::RhoContact.find(:all).to_a.sort! {|x,y| x[1]['first_name'] <=> y[1]['first_name'] }    
+    render :action => :devicecontacts
+  end
+  
+  def newfromdevice
+    @SugarContact = SugarContact.new
+    @contact = Rho::RhoContact.find(@params['id'])
+    @SugarContact.first_name = @contact['first_name']
+    @SugarContact.last_name = @contact['last_name']
+    @SugarContact.company_name = @contact['company_name']
+    @SugarContact.phone_mobile = @contact['mobile_number']
+    @SugarContact.phone_home = @contact['home_number']    
+    @SugarContact.phone_work = @contact['business_number']
+    @SugarContact.email1 = @contact['email_address']
+    
+    render :action => :new    
+  end
+  
 end
