@@ -124,7 +124,8 @@ int login(const char *login, const char *password) {
 				if (code != 200) {
 					NSLog(@"An error occured connecting to the sync source: %i returned", code);
 					if (errorCode == NSURLErrorUserCancelledAuthentication || 
-						errorCode == NSURLErrorUserAuthenticationRequired) {
+						errorCode == NSURLErrorUserAuthenticationRequired ||
+						errorCode == NSURLErrorBadServerResponse) {
 						logout();
 					}
 				} else {

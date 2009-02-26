@@ -93,10 +93,8 @@ private:
 
 CRhodesModule _AtlModule;
 
-
-
 //
-extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, 
+extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
     return _AtlModule.WinMain(nShowCmd);
@@ -107,6 +105,7 @@ extern "C" HWND getMainWnd() {
 }
 
 //Hook for ruby call to refresh web view
+
 extern "C" void webview_refresh() {
 	_AtlModule.DoViewRefresh();
 }
@@ -123,4 +122,3 @@ extern "C" void webview_navigate(char* url) {
 extern "C" char* get_current_location() {
 	return _AtlModule.GetCurrentLocation();
 }
-

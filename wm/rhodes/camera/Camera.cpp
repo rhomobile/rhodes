@@ -94,6 +94,8 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 		wsprintf(rhoroot,L"%s%s",root,L"apps\\shared\\db-files");
 		free(root);
 
+		create_folder(rhoroot);
+
 		TCHAR filename[256];
 		generate_filename(filename);
 		

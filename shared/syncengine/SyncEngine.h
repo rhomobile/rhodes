@@ -60,6 +60,7 @@ void lock_sync_mutex();
 void unlock_sync_mutex();	
 void wake_up_sync_engine();
 void clear_client_id();
+void pause_sync( int nPause );
 
 sqlite3 *get_database();
 	

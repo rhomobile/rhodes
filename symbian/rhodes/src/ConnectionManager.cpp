@@ -153,7 +153,7 @@ TBool CConnectionManager::SetupConnection()
 		gSelectedConnectionId = 3;
 #else	
 	    // Show IAP selection dialog
-	    if ( gSelectedConnectionId == -1 )
+	    /*if ( gSelectedConnectionId == -1 )
 		{
 			CActiveApDb* aDb = CActiveApDb::NewL();
 			CleanupStack::PushL(aDb);
@@ -183,12 +183,12 @@ TBool CConnectionManager::SetupConnection()
 			}
 			
 			gSelectedConnectionId = iSelectedConnectionId; 
-		}
+		}*/
 #endif
 	    iSelectedConnectionId =  gSelectedConnectionId;
 	    
 	    // open the IAP communications database 
-		/*CCommsDatabase* commDB = CCommsDatabase::NewL(EDatabaseTypeIAP);
+		CCommsDatabase* commDB = CCommsDatabase::NewL(EDatabaseTypeIAP);
 		CleanupStack::PushL(commDB);
 
 		// initialize a view 
@@ -216,7 +216,7 @@ TBool CConnectionManager::SetupConnection()
 		CleanupStack::PopAndDestroy(commDBView);
 
 		// pop and destroy the database object
-		CleanupStack::PopAndDestroy(commDB);*/
+		CleanupStack::PopAndDestroy(commDB);
 
     	iNewConnection = ETrue;
     	

@@ -279,6 +279,7 @@
 								<string>F58E7FE50F008A8500E46829</string>
 								<string>F5177F150EE5B5D9000EA1A0</string>
 								<string>F5E360C30EB6A76500226287</string>
+								<string>F5E360BA0EB6A6C400226287</string>
 								<string>C6A0FF2B0290797F04C91782</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
@@ -286,8 +287,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>11</integer>
-									<integer>10</integer>
+									<integer>26</integer>
+									<integer>25</integer>
 									<integer>9</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -329,7 +330,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rhoruby.c</string>
+								<string>geolocation_rhowrap.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -337,11 +338,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rhoruby.c</string>
+										<string>geolocation_rhowrap.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F5C3F42A0F4E3653004C1BC0</string>
+										<string>F52572E10F537C0B00A7F9EF</string>
 										<key>history</key>
 										<array>
 											<string>F5E362450EB791EC00226287</string>
@@ -397,7 +398,8 @@
 											<string>F5C61CAC0F3CFEAD00207621</string>
 											<string>F5B8F81D0F4101DB00C9AF85</string>
 											<string>F5B8FB2B0F44FB9400C9AF85</string>
-											<string>F5B8FB2D0F44FB9400C9AF85</string>
+											<string>F52572DF0F537C0B00A7F9EF</string>
+											<string>F52572DB0F537C0400A7F9EF</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -452,6 +454,7 @@
 											<string>F5C61CAF0F3CFEAD00207621</string>
 											<string>F5B8F8200F4101DB00C9AF85</string>
 											<string>F5B8FB2C0F44FB9400C9AF85</string>
+											<string>F52572E00F537C0B00A7F9EF</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -509,9 +512,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F5C3F42B0F4E3653004C1BC0</string>
+				<string>F52572E20F537C0B00A7F9EF</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F5C3F42C0F4E3653004C1BC0</string>
+				<string>F52572E30F537C0B00A7F9EF</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -645,6 +648,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>/Users/vlad/Documents/Projects/rhodes/iphone/rhorubylib/rhorubylib.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -885,7 +889,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>ruby.c</string>
+										<string>geolocation_rhowrap.c</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -941,8 +945,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>F5AD505B0EE60366004768A0</string>
-				<string>F5AD505C0EE60366004768A0</string>
+				<string>F52572DD0F537C0400A7F9EF</string>
+				<string>F52572DE0F537C0400A7F9EF</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -951,7 +955,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C530D57069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

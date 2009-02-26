@@ -38,6 +38,7 @@
 */
 #include "sqliteInt.h"
 
+#include "tcmalloc/rhomem.h"
 /*
 ** All of the static variables used by this module are collected
 ** into a single structure named "mem".  This is to keep the

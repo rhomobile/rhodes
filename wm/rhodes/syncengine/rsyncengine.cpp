@@ -37,6 +37,11 @@ void dosync() {
   if (sync) sync->TriggerSync();
 }
 
+void wake_up_sync_engine() {
+  CSyncEngine* sync = CSyncEngine::Instance();
+  if (sync) sync->TriggerSync();
+}
+
 /*void start_sync() {
   CSyncEngine* sync = CSyncEngine::Instance();
   if (sync) sync->StartSync();

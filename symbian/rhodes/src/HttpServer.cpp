@@ -43,7 +43,7 @@ extern "C"
 	void shttpd_fini(struct shttpd_ctx *);
 	void shttpd_poll(struct shttpd_ctx *, int milliseconds);
 	int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
-	
+	void shutdown_poll(struct shttpd_ctx *);	
 	void rb_gc(void); 
 	
 	int g_need_launch_gc = 0;
@@ -170,7 +170,7 @@ TInt CHttpServer::ExecuteL()
 				rb_gc();
 			}
 			
-			shttpd_poll(ctx, 1000);
+			shttpd_poll(ctx, 100000);
 		}
 
 		shttpd_fini(ctx);
@@ -215,6 +215,7 @@ void CHttpServer::StopThread()
 	{
 	SuspendThread();
 	iClose = true;
+	shutdown_poll(ctx);
 	ResumeThread();
 	}
 
