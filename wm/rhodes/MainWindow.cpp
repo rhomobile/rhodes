@@ -134,7 +134,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
-    pause_sync(!fActive);
+    //pause_sync(!fActive);
 
     if ( fActive )
         CHttpServer::Instance()->ResumeThread();

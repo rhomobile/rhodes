@@ -47,7 +47,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
 
   //void* result = VirtualAlloc(0, size + extra,
   //                            MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-  void* result = malloc(size + extra);
+  void* result = malloc(size + extra);//new unsigned char[size + extra];//malloc(size + extra);
 //printf("VirtualAlloc = %d\n", size + extra);
   if (result == NULL)
     return NULL;
