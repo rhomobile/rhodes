@@ -1,6 +1,8 @@
 h1. Rhodes
 
-The "Rhodes framework":http://github.com/rhomobile/rhodes/tree/master is a platform for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via "RhoSync":http://github.com/rhomobile/rhosync/tree/master). Rhodes is now available for iPhone, Windows Mobile, Research in Motion (Blackberry) and Symbian smartphones.  
+The "Rhodes framework":http://github.com/rhomobile/rhodes/tree/master is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via "RhoSync":http://github.com/rhomobile/rhosync/tree/master). Rhodes is now available for iPhone, Windows Mobile, Research in Motion (Blackberry) and Symbian smartphones.  
+
+Rhodes is available as an open source product under the "GNU Public License": http://gplv3.fsf.org/ for developers prepared to abide by the GPL and open source their own application.  For developers building closed source applications (either within an enterprise or as independent software vendors selling to other companies) we offer a "commercial license":http://rhomobile.com/products/licensing.  Contact sales@rhomobile.com for details
 
 h2. INTRODUCTION  
 
@@ -62,8 +64,10 @@ will generate a controller as the file controller.rb and several views as <actio
 
 h2. MORE RESOURCES
 
-There is a "tutorial available":http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site:http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
+There is a "tutorial available":http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
 
 The "Rhodes spec":http://rhomobile.com/wiki/index.php?title=Rhodes is also available on the "Rhomobile documentation wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile. 
 
-For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile
+For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
+
+For questions on licensing contact "our sales team":mailto:sales@rhomobile.com
