@@ -21,6 +21,7 @@ extern "C" char *strdup(const char * str);
 
 #include "Notifications.h"
 #include "UniversalLock.h"
+#include "tcmalloc/rhomem.h"
 
 static std::map<int,char*> _notifications;
 INIT_LOCK(notify);
