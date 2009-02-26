@@ -212,7 +212,7 @@ public class UrlEncoded extends Hashtable
         byte[] bytes=null;
         try
         {
-            bytes=string.getBytes("ISO8859_1");
+            bytes=string.getBytes("UTF-8");
         }
         catch(UnsupportedEncodingException e)
         {
@@ -262,7 +262,7 @@ public class UrlEncoded extends Hashtable
 
         try
         {
-            return new String(encoded,0,n,"ISO8859_1");
+            return new String(encoded,0,n,"UTF-8");
         }
         catch(UnsupportedEncodingException e)
         {
@@ -311,7 +311,7 @@ public class UrlEncoded extends Hashtable
 
         try
         {
-            return new String(bytes,0,n,"ISO8859_1");
+            return new String(bytes,0,n,"UTF-8");
         }
         catch(UnsupportedEncodingException e)
         {

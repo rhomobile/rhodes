@@ -225,7 +225,7 @@ public class HttpRequest extends HttpHeader {
 				}
 
 				// Convert it to a hash table
-				String content = new String(postBytes, "ISO8859_1");
+				String content = new String(postBytes, "UTF-8");
 				formParameters = new UrlEncoded(content);
 			}
 		}
@@ -235,7 +235,7 @@ public class HttpRequest extends HttpHeader {
 	 * Write the request header to an output stream
 	 */
 	public void write(OutputStream outstream) throws IOException {
-		OutputStreamWriter out = new OutputStreamWriter(outstream, "ISO8859_1");
+		OutputStreamWriter out = new OutputStreamWriter(outstream, "UTF-8");
 
 		out.write(method);
 		out.write(' ');
@@ -485,7 +485,7 @@ public class HttpRequest extends HttpHeader {
 				return "ISO2022KR";
 			return charset;
 		} catch (Exception e) {
-			return "ISO8859_1";
+			return "UTF-8";
 		}
 	}
 
@@ -518,7 +518,7 @@ public class HttpRequest extends HttpHeader {
 		if (reader == null) {
 			try {
 				reader = new BufferedReader(new InputStreamReader(
-						getInputStream(), "ISO8859_1"));
+						getInputStream(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				Log.e(this.getClass().getSimpleName(), e.getMessage());
 				reader = new BufferedReader(new InputStreamReader(
