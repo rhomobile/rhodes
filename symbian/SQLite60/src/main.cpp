@@ -1127,15 +1127,15 @@ EXPORT_C int sqlite3_open(
   const char *zFilename, 
   sqlite3 **ppDb 
 ){
-	sqlite3 *db = get_database(); 
+	/*sqlite3 *db = get_database(); 
 	if ( db ){
 		*ppDb = db;
 		return 0;
-	}
+	}*/
 	
 	int nRes = openDatabase(zFilename, ppDb,
 				  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
-	rhoInitDatabase(*ppDb);
+	//rhoInitDatabase(*ppDb);
 	return nRes;
 }
 

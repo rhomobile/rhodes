@@ -105,7 +105,7 @@ char* CPhonebook::descriptorToStringL(const TDesC& aDescriptor)
 	    HBufC8* buffer = HBufC8::NewLC(length);
 	    buffer->Des().Copy(aDescriptor);
 	 
-	    char* str = new char[length + 1];
+	    char* str = (char*)malloc(length + 1);
 	    Mem::Copy(str, buffer->Ptr(), length);
 	    str[length] = '\0';
 	 
@@ -127,7 +127,7 @@ void CPhonebook::add2hash(VALUE* hash, const char* key, TPtrC& aValue )
     }
         
     if ( value )
-    	delete value;
+    	free( value );
 }
 
 VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id) 

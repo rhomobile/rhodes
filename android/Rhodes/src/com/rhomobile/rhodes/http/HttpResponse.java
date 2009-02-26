@@ -208,7 +208,7 @@ public class HttpResponse extends HttpHeader {
 
 		// Write the headers
 		handled = true;
-		OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1");
+		OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
 		synchronized (writer) {
 			writer.write(version);
 			writer.write(" ");
@@ -324,7 +324,7 @@ public class HttpResponse extends HttpHeader {
 			setContentType("text/html");
 			byte[] buf = ("<HTML><HEAD><TITLE>Error " + code
 					+ "</TITLE><BODY><H2>HTTP ERROR: " + code + " " + msg + "</H2></BODY>\n</HTML>\n")
-					.getBytes("ISO8859_1");
+					.getBytes("UTF-8");
 
 			if (writer != null)
 				writer.flush();
@@ -376,15 +376,15 @@ public class HttpResponse extends HttpHeader {
 	public String getCharacterEncoding() {
 		String encoding = getHeader(ContentType);
 		if (encoding == null || encoding.length() == 0)
-			return "ISO8859_1";
+			return "UTF-8";
 
 		int i = encoding.indexOf(';');
 		if (i < 0)
-			return "ISO8859_1";
+			return "UTF-8";
 
 		i = encoding.indexOf("charset=", i);
 		if (i < 0 || i + 8 >= encoding.length())
-			return "ISO8859_1";
+			return "UTF-8";
 
 		encoding = encoding.substring(i + 8);
 		i = encoding.indexOf(' ');

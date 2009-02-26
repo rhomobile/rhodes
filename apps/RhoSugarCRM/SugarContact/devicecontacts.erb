@@ -1,0 +1,17 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Import Contact
+	</h1>
+</div>
+
+<ul id="DeviceContacts" title="Device Contacts" selected="true">
+<% @DeviceContacts.each do |contact| %>
+	<li class="overview">
+		<%=link_to "#{contact[1]['first_name']} #{contact[1]['last_name']}", :action => :newfromdevice, :id => contact[1]['id']%>
+	<div>
+	<%= contact[1]['mobile_number'] %><%= both_items_present?(contact[1]['mobile_number'], contact[1]['email_address']) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= contact[1]['email_address'] %>
+	</div>
+	</li>
+<% end %>
+
+</ul>
