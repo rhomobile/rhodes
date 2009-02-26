@@ -53,6 +53,7 @@
 	NSString *now = [[[NSDate date] descriptionWithLocale:nil]
 					 stringByReplacingOccurrencesOfString: @":" withString: @"."];
 	now = [now stringByReplacingOccurrencesOfString: @" " withString: @"_"];
+	now = [now stringByReplacingOccurrencesOfString: @"+" withString: @"_"];
 	NSString *filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
 	NSString *fullname = [folder stringByAppendingPathComponent:filename];
 	NSData *pngImage = UIImagePNGRepresentation(theImage);
