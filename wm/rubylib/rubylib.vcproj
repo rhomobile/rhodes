@@ -1395,6 +1395,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="camera"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\camera\camera_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

@@ -5,6 +5,8 @@
 #include "MainWindow.h"
 #include "ServerHost.h"
 
+extern "C" wchar_t* wce_mbtowc(const char* a);
+
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 public :
@@ -55,8 +57,18 @@ public :
 		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
 	}
 
+	void DoViewNavigate(char* url) {
+		LPTSTR wcurl = wce_mbtowc(url);
+		m_appWindow.Navigate2(wcurl);
+		free(wcurl);
+	}
+
 	char* GetCurrentLocation() {
 		return m_appWindow.GetCurrentLocation();
+	}
+
+	HWND GetManWindow() {
+		return m_appWindow.m_hWnd;
 	}
 
     void RunMessageLoop( ) throw( )
@@ -90,6 +102,10 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
     return _AtlModule.WinMain(nShowCmd);
 }
 
+extern "C" HWND getMainWnd() {
+	return _AtlModule.GetManWindow();
+}
+
 //Hook for ruby call to refresh web view
 extern "C" void webview_refresh() {
 	_AtlModule.DoViewRefresh();
@@ -98,6 +114,10 @@ extern "C" void webview_refresh() {
 //Sync hook to refresh the web view
 extern "C" void perform_webview_refresh() {
 	webview_refresh();
+}
+
+extern "C" void webview_navigate(char* url) {
+	_AtlModule.DoViewNavigate(url);
 }
 
 extern "C" char* get_current_location() {

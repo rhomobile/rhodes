@@ -8,8 +8,14 @@
 #include "HttpServer.h"
 #include "AppManager.h"
 #include "rhoruby/rhoruby.h"
+#include "camera/Camera.h"
 
+char* canonicalizeURL(char* path);
+
+#if defined(_WIN32_WCE)
+extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
+#endif
 
 CMainWindow::CMainWindow()
 {
@@ -223,6 +229,50 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() )
 		CAppManager::ReloadRhoBundle(CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
 #endif
+	return 0;
+}
+
+void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
+
+	char* callback = canonicalizeURL(callback_url);
+
+	char* imageuri = NULL, *message;
+	if (status==S_OK) {
+		imageuri = wce_wctomb(image_name);
+		int len = 256+strlen(imageuri);
+		message = (char*) malloc(len);
+		sprintf(message,"status=ok&image_uri=%%2Fshared%%2Fdb-files%%2F%s",imageuri);
+	} else {
+		char* status_message = (status==S_FALSE?"User canceled operation":"Error");
+		int len = 256+strlen(status_message);
+		message = (char*) malloc(len);
+		sprintf(message,"status=%s&message=%s",
+			(status==S_FALSE?"cancel":"error"),status_message);
+	}
+	
+	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
+	char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
+	if ( res ) free(res);
+
+	free(message);
+	if (imageuri) free(imageuri);
+	free(callback);
+
+}
+
+LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	Camera camera;
+	TCHAR image_uri[MAX_PATH];
+	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
+	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+	return 0;
+}
+
+LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	Camera camera;
+	TCHAR image_uri[MAX_PATH];
+	HRESULT status = camera.selectPicture(this->m_hWnd,image_uri);
+	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
 	return 0;
 }
 
