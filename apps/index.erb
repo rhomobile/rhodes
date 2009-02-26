@@ -4,21 +4,25 @@
 	<% if @msg %>
 	  <h4><font color="green"><%=@msg%></font></h4>
 	<% end %>
-	<h4>Sample Apps</h4>
+	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Sample Apps</div>
 	<a href="RhoSugarCRM">Sugar CRM</a><br/>
 	<!-- <a href="RhoSiebel">Siebel Field Service</a><br/>
 		<a href="Basecamp">Basecamp</a><br/> -->
 	<a href="Lighthouse">Lighthouse</a><br/>	
 	<a href="Wikipedia/WikipediaPage">Wikipedia</a><br/>	
 
-	<h4>Device Capabilities</h4>
+	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Device Capabilities</div>
 	<a href="/TestRefresh/Test">TestRefresh</a><br/>
 	<a href="Phonebook">Phonebook List</a><br/>
 	<a href="System">System API</a><br/>
 	Platform:<%= System::get_property('platform')%><br/>
-	<a href="GeoLocation">Your location:</a> <geolocation>loading...</geolocation><br/>
-	Latitude: <geolatitude>loading...</geolatitude><br/>
-	Longitude: <geolongitude>loading...</geolongitude><br/>
+	
+	<% if System::get_property('platform') != 'APPLE' %>
+		<a href="GeoLocation">Your location:</a> <geolocation>loading...</geolocation><br/>
+		Latitude: <geolatitude>loading...</geolatitude><br/>
+		Longitude: <geolongitude>loading...</geolongitude><br/>
+	<% end %>
+	
 	<a href="Settings">Settings</a><br/>
 	<% if SyncEngine::logged_in > 0 %>
 		<a href="/Settings/User/logout">Logout</a>

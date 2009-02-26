@@ -11,6 +11,8 @@
 #if defined(_WIN32_WCE)
 // strdup is implemented as part of ruby CE port
 extern "C" char *strdup(const char * str);
+extern "C" wchar_t* wce_mbtowc(const char* a);
+extern "C" char* wce_wctomb(const wchar_t* w);
 #endif
 
 static CHttpServer* m_instance = NULL;
@@ -48,6 +50,7 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
+  shutdown_poll(ctx);
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
   shttpd_fini(ctx);
@@ -95,7 +98,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
       //start_sync();
 //    }  else   if (sync) sync->ShowHomePage();
   }
-  shttpd_poll(ctx, 1000);
+  shttpd_poll(ctx, 100000);
 
   //GPS
   CGPSController::CheckTimeout();
@@ -137,7 +140,6 @@ bool CHttpServer::InitRubyFramework() {
   return true;
 }
 
-extern "C" wchar_t* wce_mbtowc(const char* a);
 LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
   if (buffer) {
     wchar_t* root  = wce_mbtowc(RhoGetRootPath());
@@ -177,6 +179,27 @@ LPTSTR CHttpServer::GetStartPage() {
 		return m_pStartPage;
 	else
 		return HOME_PAGE_W;
+}
+
+char* canonicalizeURL(char* path) {
+	if (!path) {
+		return wce_wctomb(HOME_PAGE_W);
+	}
+
+	if ( strncmp("http://",path,7)==0 ) {
+		return path;
+	}
+
+	char* slash = "";
+	if ( (*path!='/')&&(*path!='\\') ) {
+		slash = "/";
+	}
+
+	int len = strlen(HOME_PAGE_A)+strlen(slash)+strlen(path);
+	char* url = (char*) malloc(len+1);
+	sprintf(url,"%s%s%s",HOME_PAGE_A,slash,path);
+	
+	return url;
 }
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE

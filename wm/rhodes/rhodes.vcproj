@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="rhodes"
 	ProjectGUID="{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}"
 	RootNamespace="Rhodes"
@@ -612,6 +612,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NetRequest.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Rhodes.cpp"
 				>
 			</File>
@@ -679,6 +683,10 @@
 			</File>
 			<File
 				RelativePath=".\MainWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NetRequest.h"
 				>
 			</File>
 			<File
@@ -762,6 +770,18 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\unzip\unzip.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="camera"
+			>
+			<File
+				RelativePath=".\camera\Camera.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\camera\Camera.h"
 				>
 			</File>
 		</Filter>

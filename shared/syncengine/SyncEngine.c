@@ -400,6 +400,9 @@ int login(const char* login, const char* password) {
 			char* headers = 0;
 			char data[100];
 
+            if ( !(source_list[i]->_source_url) || strlen(source_list[i]->_source_url) == 0 )
+                continue;
+
 		  session = get_db_session_by_server(source_list[i]->_source_url);
 		  if ( session == 0 ){
 				  sprintf(login_url, "%s/client_login", source_list[i]->_source_url);
