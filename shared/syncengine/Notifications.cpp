@@ -21,7 +21,10 @@ extern "C" char *strdup(const char * str);
 
 #include "Notifications.h"
 #include "UniversalLock.h"
+// TODO: temporary fix for compile error
+#ifndef __APPLE__
 #include "tcmalloc/rhomem.h"
+#endif
 
 static std::map<int,char*> _notifications;
 INIT_LOCK(notify);
