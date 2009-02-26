@@ -25,12 +25,11 @@ class ImageController < Rho::RhoController
   end
       
   def camera_callback
-    puts "Route camera callback to appropriate view"
+    puts "Route camera callback to appropriate view"    
     if @params['status'] == 'ok'
-      camera = Image.new({'image_uri'=>@params['image_uri']})
-      camera.save
-      puts "new Image object: " + camera.inspect
-
+      image = Image.new({'image_uri'=>@params['image_uri']})
+      image.save
+      puts "new Image object: " + image.inspect
       WebView::refresh
       #WebView::navigate '/System/Camera/show?'+@request['request-body']
     end  
