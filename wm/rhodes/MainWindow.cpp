@@ -136,6 +136,10 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
     pause_sync(!fActive);
 
+    if ( fActive )
+        CHttpServer::Instance()->ResumeThread();
+    else
+        CHttpServer::Instance()->FreezeThread();
     return 0;
 }
 
