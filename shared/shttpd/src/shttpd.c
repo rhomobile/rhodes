@@ -1249,6 +1249,17 @@ multiplex_worker_sockets(const struct worker *worker, int *max_fd,
 	return (nowait);
 }
 
+void shutdown_poll(struct shttpd_ctx *ctx){
+	struct llhead	*lp;
+	struct listener	*l;
+
+	LL_FOREACH(&ctx->listeners, lp) {
+		l = LL_ENTRY(lp, struct listener, link);
+		//shutdown(l->sock, SD_BOTH);
+        closesocket(l->sock);
+	}
+}
+
 int
 shttpd_join(struct shttpd_ctx *ctx,
 		fd_set *read_set, fd_set *write_set, int *max_fd)

@@ -25,6 +25,7 @@ void *  rho_malloc(size_t);
 void *  rho_calloc(size_t num, size_t size);
 size_t  rho_msize(void *);
 void *  rho_realloc(void *, size_t);
+char *  rho_strdup(const char *);
 
 #ifdef __cplusplus
 };
@@ -36,6 +37,9 @@ void *  rho_realloc(void *, size_t);
 #define calloc(num, size) rho_calloc(num,size)
 #define _msize( p) rho_msize(p)
 #define realloc(p, s) rho_realloc(p,s)
+
+#define strdup(s) rho_strdup(s)
+#define _strdup(s) rho_strdup(s)
 
 #endif //_RHO_NO_MEMDEFINES
 

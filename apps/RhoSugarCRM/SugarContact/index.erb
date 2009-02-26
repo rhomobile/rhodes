@@ -8,13 +8,20 @@
 <a class="button right_button" href="/RhoSugarCRM/SugarContact/new" target="_self">New</a>
 	
 <% @SugarContacts.each do |contact| %>
-
-<li class="overview">
-<%= link_to "#{contact.first_name} #{contact.last_name}", :action => :show, :id => contact.object %>
-<div>
-<%= contact.account_name %><%= both_items_present?(contact.account_name, contact.phone_work) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= contact.phone_work %>
-</div>
-</li>
-
+	<li class="overview">
+	<%= link_to "#{contact.first_name} #{contact.last_name}", :action => :show, :id => contact.object %>
+	<div>
+	<%= contact.account_name %><%= both_items_present?(contact.account_name, contact.phone_work) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= contact.phone_work %>
+	</div>
+	</li>
 <% end %>
+
+<% if System::get_property('platform') == 'APPLE' %>
+	<p align="center">
+		<a href="/RhoSugarCRM/Mapping/showallcontacts" target="_self">
+			<span class="grayButton">Show Contacts on Map</span>
+		</a>
+	</p>
+<% end %>
+
 </ul>

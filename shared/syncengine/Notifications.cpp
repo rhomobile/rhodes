@@ -6,6 +6,7 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
+
 #ifndef __SYMBIAN32__
 
 #if defined(_WIN32_WCE)
@@ -19,14 +20,20 @@ extern "C" char *strdup(const char * str);
 #include <map>
 
 #include "Notifications.h"
+#include "UniversalLock.h"
+// TODO: temporary fix for compile error
+#ifndef __APPLE__
+#include "tcmalloc/rhomem.h"
+#endif
 
 static std::map<int,char*> _notifications;
+INIT_LOCK(notify);
 
 extern "C" void perform_webview_refresh();
 extern "C" char* get_current_location();
 extern "C" char* HTTPResolveUrl(char* url);
 
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 static char* get_url(int source_id) {
 	std::map<int,char*>::iterator it = _notifications.find(source_id);
 	if (it!=_notifications.end()) {
@@ -34,13 +41,16 @@ static char* get_url(int source_id) {
 	}
 	return NULL;
 }
-#else
-#define get_url(source_id) _notifications.find(source_id)->second
-#endif
+//#else
+//#define get_url(source_id) _notifications.find(source_id)->second
+//#endif
 
 void fire_notification(int source_id) {
+    LOCK(notify);
+
 	try {
 		char* url = get_url(source_id);
+ 
 		if (url != NULL) {
 			//execute notification
 			char* current_url = get_current_location();
@@ -54,9 +64,12 @@ void fire_notification(int source_id) {
 		}
 	} catch(...) {
 	}
+    UNLOCK(notify);
 }
 
 void free_notifications() {
+    LOCK(notify);
+
 	try {
 		std::map<int,char*>::iterator it;
 		for ( it=_notifications.begin() ; it != _notifications.end(); it++ ) {
@@ -66,9 +79,12 @@ void free_notifications() {
 		_notifications.clear();
 	} catch(...) {
 	}
+    UNLOCK(notify);
 }
 
 void set_notification(int source_id, const char *url) {
+    LOCK(notify);
+
 	try {
 		if (url) {
 			char* tmp_url = get_url(source_id);
@@ -80,9 +96,12 @@ void set_notification(int source_id, const char *url) {
 		}
 	} catch(...) {
 	}
+    UNLOCK(notify);
 }
 
 void clear_notification(int source_id) {
+    LOCK(notify);
+
 	try {
 		char* tmp_url = get_url(source_id);
 		if (tmp_url) {
@@ -91,6 +110,7 @@ void clear_notification(int source_id) {
 		}
 	} catch(...) {
 	}
+    UNLOCK(notify);
 }
 
 #else //__SYMBIAN32__
