@@ -31,6 +31,8 @@
 
 #include "HttpConstants.h"
 #include "HttpFileManager.h"
+#include "tcmalloc/rhomem.h"
+#include <stdlib.h>
 
 // Supplied as the name of the test program
 _LIT(KHttpClientTestName, "RhoHttpClient");
@@ -441,7 +443,7 @@ char* CHttpEventHandler::GetResponse()
 	if ( iResBodyBuffer && iResBodyBufferPtr.Length() > 0 )
 	{
 		TInt size = iResBodyBufferPtr.Length();
-		str = new char[size + 1];
+		str = (char*)malloc(size + 1);
 	    Mem::Copy(str, iResBodyBuffer->Ptr(), size);
 	    str[size] = '\0';
 	}

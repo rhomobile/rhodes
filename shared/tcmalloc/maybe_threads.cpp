@@ -73,42 +73,42 @@ static int next_key;
 
 int perftools_pthread_key_create(pthread_key_t *key,
                                  void (*destr_function) (void *)) {
-  if (pthread_key_create) {
-    return pthread_key_create(key, destr_function);
-  } else {
+  //if (pthread_key_create) {
+  //  return pthread_key_create(key, destr_function);
+  //} else {
     assert(next_key < MAX_PERTHREAD_VALS);
     *key = (pthread_key_t)(next_key++);
     return 0;
-  }
+  //}
 }
 
 void *perftools_pthread_getspecific(pthread_key_t key) {
-  if (pthread_getspecific) {
-    return pthread_getspecific(key);
-  } else {
+  //if (pthread_getspecific) {
+  //  return pthread_getspecific(key);
+  //} else {
     return perftools_pthread_specific_vals[(int)key];
-  }
+  //}
 }
 
 int perftools_pthread_setspecific(pthread_key_t key, void *val) {
-  if (pthread_setspecific) {
-    return pthread_setspecific(key, val);
-  } else {
+  //if (pthread_setspecific) {
+  //  return pthread_setspecific(key, val);
+  //} else {
     perftools_pthread_specific_vals[(int)key] = val;
     return 0;
-  }
+  //}
 }
 
 static pthread_once_t pthread_once_init = PTHREAD_ONCE_INIT;
 int perftools_pthread_once(pthread_once_t *ctl,
                            void  (*init_routine) (void)) {
-  if (pthread_once) {
-    return pthread_once(ctl, init_routine);
-  } else {
+  //if (pthread_once) {
+  //  return pthread_once(ctl, init_routine);
+  //} else {
     if (memcmp(ctl, &pthread_once_init, sizeof(*ctl)) == 0) {
       init_routine();
       ++*(char*)(ctl);        // make it so it's no longer equal to init
     }
     return 0;
-  }
+  //}
 }
