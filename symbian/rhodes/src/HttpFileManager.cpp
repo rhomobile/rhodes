@@ -26,6 +26,8 @@
 
 #include <eikenv.h>
 #include <e32math.h>  //Rand
+#include "tcmalloc/rhomem.h"
+#include <stdlib.h>
 
 CHttpFileManager::CHttpFileManager()
 	{
@@ -135,7 +137,7 @@ char* CHttpFileManager::ReadResponseFile( TFileName& aFilePath )
 			TPtr8 des (buffer->Des());
 			if ( respFile.Read(des, size) == KErrNone) 
 			{
-				str = new char[size + 1];
+				str = (char*)malloc(size + 1);
 			    Mem::Copy(str, buffer->Ptr(), size);
 			    str[size] = '\0';
 			}

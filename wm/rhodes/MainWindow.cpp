@@ -1,15 +1,22 @@
 // MainWindow.cpp: Defines main window for this application.
 
 #include "stdafx.h"
-#include <webvw.h> 
+#include <webvw.h>
 #include <string>
 #include "resource.h"
 #include "MainWindow.h"
 #include "HttpServer.h"
 #include "AppManager.h"
 #include "rhoruby/rhoruby.h"
+#include "camera/Camera.h"
 
+char* canonicalizeURL(char* path);
+
+#if defined(_WIN32_WCE)
+extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
+#endif
+
 extern "C" void pause_sync( int nPause );
 
 CMainWindow::CMainWindow()
@@ -48,8 +55,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     RECT rcMenuBar = { 0 };
     SIPINFO si = { sizeof(si), 0 };
 
-    // In one step, create an "AtlAxWin" window for the PIEWebBrowser control, 
-    // and also create the control itself. (AtlAxWin is a window class that 
+    // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
+    // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
     m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
@@ -79,8 +86,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     m_menuBar = mbi.hwndMB; // save menu bar HWND
 
     // Compute RECT for initial size and position.
-    // The following code should compute RECT appropriately 
-    // on both Pocket PC and Smartphone. It should function correctly 
+    // The following code should compute RECT appropriately
+    // on both Pocket PC and Smartphone. It should function correctly
     // whether SIP is on or off, and
     // whether device is in portrait or landscape mode.
     // (rcMainWindow was initialized above)
@@ -129,12 +136,12 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    int fActive = LOWORD(wParam); 
+    int fActive = LOWORD(wParam);
 
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
-    pause_sync(!fActive);
+    //pause_sync(!fActive);
 
     if ( fActive )
         CHttpServer::Instance()->ResumeThread();
@@ -236,26 +243,70 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	return 0;
 }
 
+void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
+
+	char* callback = canonicalizeURL(callback_url);
+
+	char* imageuri = NULL, *message;
+	if (status==S_OK) {
+		imageuri = wce_wctomb(image_name);
+		int len = 256+strlen(imageuri);
+		message = (char*) malloc(len);
+		sprintf(message,"status=ok&image_uri=%%2Fshared%%2Fdb-files%%2F%s",imageuri);
+	} else {
+		char* status_message = (status==S_FALSE?"User canceled operation":"Error");
+		int len = 256+strlen(status_message);
+		message = (char*) malloc(len);
+		sprintf(message,"status=%s&message=%s",
+			(status==S_FALSE?"cancel":"error"),status_message);
+	}
+
+	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
+	char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
+	if ( res ) free(res);
+
+	free(message);
+	if (imageuri) free(imageuri);
+	free(callback);
+
+}
+
+LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	Camera camera;
+	TCHAR image_uri[MAX_PATH];
+	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
+	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+	return 0;
+}
+
+LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	Camera camera;
+	TCHAR image_uri[MAX_PATH];
+	HRESULT status = camera.selectPicture(this->m_hWnd,image_uri);
+	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+	return 0;
+}
+
 // **************************************************************************
 //
 // event handlers
 //
 // **************************************************************************
 
-void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL, 
+void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL,
                                               VARIANT * /*pvtFlags*/, VARIANT * pvtTargetFrameName,
-                                              VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/, 
+                                              VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/,
                                               VARIANT_BOOL * /*pvbCancel*/)
 {
     USES_CONVERSION;
     TCHAR szOutput[128];
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
+    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
                     TEXT("0x%08p %s %s\n"), pDisp, OLE2CT(V_BSTR(pvtURL)),
                     VT_ERROR != V_VT(pvtTargetFrameName) ? OLE2CT(V_BSTR(pvtTargetFrameName)) : TEXT("(frame name error)"));
     OutputDebugString(szOutput);
 
-    SetWindowText(TEXT("Untitled")); 
+    SetWindowText(TEXT("Untitled"));
 
     VERIFY(SetEnabledState(IDM_STOP, TRUE));
 }
@@ -265,11 +316,11 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
     USES_CONVERSION;
     TCHAR szOutput[128];
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
+    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
                     TEXT("%s\n"), OLE2CT(bstrTitleText));
     OutputDebugString(szOutput);
 
-    SetWindowText(OLE2CT(bstrTitleText)); 
+    SetWindowText(OLE2CT(bstrTitleText));
 }
 
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
@@ -277,7 +328,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
     USES_CONVERSION;
     TCHAR szOutput[128];
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
+    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
                     TEXT("0x%08p %s\n"), pDisp, OLE2CT(V_BSTR(pvtURL)));
     OutputDebugString(szOutput);
 }
@@ -286,15 +337,15 @@ std::wstring& loadLoadingHtml(std::wstring& str) {
 	FILE *file;
 	wchar_t	buf[1024];
 	std::string fname = RhoGetRootPath();
-	
+
 	fname.append("apps\\loading.html");
-	file = fopen(fname.c_str(), "r"); 
-	
+	file = fopen(fname.c_str(), "r");
+
 	if(file==NULL) {
 		str.append(L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>");
 	} else {
-		while(fgetws(buf, sizeof(buf), file) != NULL) { 
-			str.append(buf);     
+		while(fgetws(buf, sizeof(buf), file) != NULL) {
+			str.append(buf);
 		}
 		fclose(file);
 	}
@@ -310,7 +361,7 @@ void writeToTheDoc(IPIEHTMLDocument2 *document) {
 
 	// Creates a new one-dimensional array
 	sfArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-	
+
 	if (sfArray == NULL || document == NULL) {
 		goto cleanup;
 	}
@@ -352,20 +403,20 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
     TCHAR szOutput[256];
-	
-	LPCTSTR url = OLE2CT(V_BSTR(pvtURL)); 
+
+	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		OutputDebugString(L"Show loading page\n");
 		ShowLoadingPage(pDisp, pvtURL);
 		m_bLoading = false; //show loading page only once
 	}
 
-	if (m_current_url) { 
+	if (m_current_url) {
 		free(m_current_url);
 	}
 	m_current_url = wce_wctomb(url);
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput), 
+    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
 		TEXT("Current URL: %s\n"), url);
     OutputDebugString(szOutput);
 
@@ -400,7 +451,7 @@ BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 //
 // CMainWindow::TranslateAccelerator
 //
-// Required to forward messages to the PIEWebBrowser control (and any other 
+// Required to forward messages to the PIEWebBrowser control (and any other
 // ActiveX controls that may be added to the main window's design).
 //
 // **************************************************************************
@@ -408,7 +459,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
     // Accelerators are only keyboard or mouse messages
     UINT uMsg = pMsg->message;
-    if (!(WM_KEYFIRST   <= uMsg && uMsg <= WM_KEYLAST) && 
+    if (!(WM_KEYFIRST   <= uMsg && uMsg <= WM_KEYLAST) &&
         !(WM_MOUSEFIRST <= uMsg && uMsg <= WM_MOUSELAST))
     {
         return FALSE;
@@ -436,7 +487,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
         return TRUE;
     }
 
-    // If the main window used accelerators, we could have called the global 
+    // If the main window used accelerators, we could have called the global
     // ::TranslateAccelerator() function here, instead of simply returning FALSE.
     return FALSE;
 }

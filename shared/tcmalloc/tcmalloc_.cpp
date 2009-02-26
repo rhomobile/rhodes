@@ -982,6 +982,17 @@ void *  rho_realloc(void *p, size_t s)
     return do_realloc(p,s);
 }
 
+char *  rho_strdup(const char * str)
+{
+    char *tmp;
+    int len = strlen(str) + 1;
+
+    tmp = (char*)do_malloc(len);
+    memcpy(tmp, str, len);
+
+    return tmp;
+}
+
 #ifdef MALLOC_STAT
 void do_malloc_stats() {
   PrintStats(2);

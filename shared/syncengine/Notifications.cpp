@@ -21,6 +21,10 @@ extern "C" char *strdup(const char * str);
 
 #include "Notifications.h"
 #include "UniversalLock.h"
+// TODO: temporary fix for compile error
+#ifndef __APPLE__
+#include "tcmalloc/rhomem.h"
+#endif
 
 static std::map<int,char*> _notifications;
 INIT_LOCK(notify);
@@ -29,7 +33,7 @@ extern "C" void perform_webview_refresh();
 extern "C" char* get_current_location();
 extern "C" char* HTTPResolveUrl(char* url);
 
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 static char* get_url(int source_id) {
 	std::map<int,char*>::iterator it = _notifications.find(source_id);
 	if (it!=_notifications.end()) {
@@ -37,9 +41,9 @@ static char* get_url(int source_id) {
 	}
 	return NULL;
 }
-#else
-#define get_url(source_id) _notifications.find(source_id)->second
-#endif
+//#else
+//#define get_url(source_id) _notifications.find(source_id)->second
+//#endif
 
 void fire_notification(int source_id) {
     LOCK(notify);

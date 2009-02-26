@@ -96,6 +96,13 @@ int _write(int fd, const void *buffer, unsigned count)
 {
     DWORD dw;
     if ( fd < 0 ) {
+      //char* buf = (char*) malloc(count+1);
+	  //memcpy(buf,buffer,count);
+	  //buf[count] = 0;
+	  //printf("%s",buf);
+	  //free(buf);
+	  //dw = count;
+	  //TBD: fix output of the long strings
       dw = fwrite( buffer, 1, count, stdout);
     } else {
       WriteFile( (HANDLE)fd, buffer, count, &dw, NULL );
