@@ -127,6 +127,14 @@
 </table>
 
 <p align="center">
+	<a href="<%= "/RhoSugarCRM/SugarContact/#{@SugarContact.object}/savetodevice" %>" target="_self">
+		<span class="grayButton">Save to Device Contacts</span>
+	</a>
+</p>
+
+<br/>
+
+<p align="center">
 	<a href="<%=url_for(:action => :delete, :id => @SugarContact.object)%>">
 		<span class="deletebutton">Delete</span>
 	</a>
