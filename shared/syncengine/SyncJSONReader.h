@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 	
-int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free);
+int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free, SyncHeader* header);
 
 char *parse_client_id(char *input);
 

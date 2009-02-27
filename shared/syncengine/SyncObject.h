@@ -35,6 +35,11 @@ extern "C" {
 #endif
 
 typedef struct {
+	int			_count;
+	char		_token[100];
+} SyncHeader;
+
+typedef struct {
 	sqlite3*		_database;
 	/* track the database operation to use */
 	char*			_db_operation;

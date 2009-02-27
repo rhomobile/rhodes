@@ -40,6 +40,9 @@ extern "C" {
 #define MAX_SYNC_OBJECTS 2000//100000
 #define MAX_SOURCES 100
 
+#define MAX_SYNC_TRY_COUNT 3
+#define SYNC_PAGE_SIZE     200
+
 /* Sync Object db codes */
 #define SYNC_OBJECT_SUCCESS 0
 #define SYNC_OBJECT_DUPLICATE 1
