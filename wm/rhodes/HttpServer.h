@@ -30,6 +30,7 @@ public:
   //returns same buffer filled w/ path to lading page
   LPTSTR GetLoadingPage(LPTSTR buffer); 
   LPTSTR GetStartPage();
+  LPTSTR GetOptionsPage();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
   const char* GetRhobundleReloadUrl();
@@ -50,7 +51,8 @@ private:
   bool InitRubyFramework();
 
   LPTSTR m_pStartPage;
-  bool InitStartPage();
+  LPTSTR m_pOptionsPage;	
+  bool InitStartandOptionPages();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
   char* m_szRhobundleReloadUrl;

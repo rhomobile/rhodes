@@ -15,6 +15,8 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
 #endif
 
+char* canonicalizeURL(char* path);
+
 static CHttpServer* m_instance = NULL;
 
 CHttpServer* CHttpServer::Create() {
@@ -82,8 +84,8 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
   if (!m_bRubyInitialized) {
     InitRubyFramework();
 //    InitHttpServer();
-
-	  InitStartPage();
+  
+  InitStartandOptionPages();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	m_szRhobundleReloadUrl = callGetRhobundleZipUrl();
@@ -153,21 +155,18 @@ LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
 #define HOME_PAGE_A "http://localhost:8080"
 #define HOME_PAGE_W L"http://localhost:8080/"
 
-bool CHttpServer::InitStartPage() {
+bool CHttpServer::InitStartandOptionPages() {
 	if (m_bRubyInitialized) {
+		char* _page;
 		if (m_pStartPage==NULL) {
-			char* slash = "";
-			char* start_page = callGetStartPage();
-			if (!start_page) {
-				start_page = "";
-			} else if ( (*start_page!='/')&&(*start_page!='\\') ) {
-				slash = "/";
-			}
-			int len = strlen(HOME_PAGE_A)+strlen(slash)+strlen(start_page);
-			char* sp = (char*) malloc(len+1);
-			sprintf(sp,"%s%s%s",HOME_PAGE_A,slash,start_page);
-			m_pStartPage = wce_mbtowc(sp);
-			free(sp);
+			_page = canonicalizeURL(callGetStartPage());
+			m_pStartPage = wce_mbtowc(_page);
+			free(_page);
+		}
+		if (m_pOptionsPage==NULL) {
+			_page = canonicalizeURL(callGetOptionsPage());
+			m_pOptionsPage = wce_mbtowc(_page);
+			free(_page);
 		}
 		return true;
 	}
@@ -177,6 +176,13 @@ bool CHttpServer::InitStartPage() {
 LPTSTR CHttpServer::GetStartPage() {
 	if (m_pStartPage)
 		return m_pStartPage;
+	else
+		return HOME_PAGE_W;
+}
+
+LPTSTR CHttpServer::GetOptionsPage() {
+	if (m_pOptionsPage)
+		return m_pOptionsPage;
 	else
 		return HOME_PAGE_W;
 }
