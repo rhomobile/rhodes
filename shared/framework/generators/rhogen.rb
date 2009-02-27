@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'templater'
-require 'activesupport'
 
 module Rhogen
   extend Templater::Manifold
@@ -50,7 +49,6 @@ module Rhogen
   end
 
   class ModelGenerator < BaseGenerator
-    include ActiveSupport::Inflector
 
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
@@ -100,6 +98,13 @@ module Rhogen
 
     def attributes?
       self.attributes && !self.attributes.empty?
+    end
+    
+    # taken from activesuppport
+    def humanize(lower_case_and_underscored_word)
+      result = lower_case_and_underscored_word.to_s.dup 
+      inflections.humans.each { |(rule, replacement)| break if result.gsub!(rule, replacement) }
+      result.gsub(/_id$/, "").gsub(/_/, " ").capitalize
     end
 
   end
