@@ -165,7 +165,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	NetworkAccess.autoConfigure();
     	
         RhoRuby.RhoRubyStart("");
-		
+
+		SyncEngine.start(null);
+		//GeoLocation.start();
+        
         RhodesApplication app = new RhodesApplication();
         app.enterEventDispatcher();
     }
@@ -177,14 +180,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
 	public void activate() {
-		SyncEngine.start(null);
+//		SyncEngine.start(null);
 		GeoLocation.start();
 		
 		super.activate();
 	}
     
 	public void deactivate() {
-		SyncEngine.stop(null);
+//		SyncEngine.stop(null);
 		GeoLocation.stop();
 		
 		super.deactivate();

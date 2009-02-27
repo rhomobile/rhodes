@@ -28,6 +28,16 @@ import org.json.me.JSONObject;
  */
 public class SyncJSONParser {
 
+	static class SyncHeader
+	{ 
+		int			_count;
+		String		_token;
+		
+		SyncHeader(){
+			_count = -1;
+		}
+	};
+	
 	/**
 	 * Parses the json list.
 	 * 
@@ -35,7 +45,7 @@ public class SyncJSONParser {
 	 * 
 	 * @return the array list
 	 */
-	public static ArrayList parseObjectValues(String input) {
+	public static ArrayList parseObjectValues(String input, SyncHeader header) {
 		ArrayList list = new ArrayList();
 
 		// Iterates over a JSONArray provided by input and parses
@@ -47,8 +57,10 @@ public class SyncJSONParser {
 				if (element == null) {
 					continue;
 				}
-				JSONObject current = (JSONObject) element.get("object_value");
-				if (current != null) {
+				
+				if ( element.has("object_value"))
+				{
+					JSONObject current = (JSONObject) element.get("object_value");
 					String attrib = (String) current.get("attrib");
 					int sourceId = ((Integer) current.get("source_id")).intValue();
 					String object = (String) current.get("object");
@@ -63,7 +75,12 @@ public class SyncJSONParser {
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
 					
 					list.add(newObject);
+				}else if ( element.has("count") ){
+					header._count = element.getInt("count");
+				}else if ( element.has("token") ){
+					header._token = element.getString("token");
 				}
+				
 			}
 
 		} catch (Exception e) {
