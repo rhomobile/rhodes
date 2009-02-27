@@ -269,8 +269,8 @@ describe "RhomObjectFactory" do
     
     @accts.first.name.should == "Aeroprise"
     @accts.first.industry.should == "Technology"
-    @accts.second.name.should == "Mirapath"
-    @accts.second.industry.should == "Electronics"
+    @accts[1].name.should == "Mirapath"
+    @accts[1].industry.should == "Electronics"
     @accts.last.name.should == "vSpring"
     @accts.last.industry.should == "Finance"
   end

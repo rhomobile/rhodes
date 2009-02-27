@@ -51,6 +51,9 @@ public class SyncConstants {
 	/** The Constant MAX_SYNC_OBJECTS. */
 	public static final int MAX_SYNC_OBJECTS = 500;
 
+	public static final int MAX_SYNC_TRY_COUNT = 3;
+	public static final int SYNC_PAGE_SIZE     = 200;
+	
 	// Database Codes
 	/** The Constant SYNC_OBJECT_SUCCESS. */
 	public static final int SYNC_OBJECT_SUCCESS = 0;
