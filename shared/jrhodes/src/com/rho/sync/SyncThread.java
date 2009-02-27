@@ -34,12 +34,13 @@ public class SyncThread implements Runnable {
 	 */
 	SyncThread() {
 		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
-		//SyncUtil.adapter.initialize(null);
-		delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true : false;
+		delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true
+				: false;
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 		System.out.println("SyncEngine is started...");
+		//printStats();
 	}
 
 	/**
@@ -51,15 +52,11 @@ public class SyncThread implements Runnable {
 			sync.notify();
 			
 			SyncManager.closeConnection();
-			/*int nTry = 0;
-			while( nTry < 10 && getState() != STATE_NONE ){
-				try{
-					sync.wait(100);
-					nTry++;
-				} catch (Exception e) {
-					System.out.println("Wait exception:" + e.getMessage());
-				}				
-			}*/
+			/*
+			 * int nTry = 0; while( nTry < 10 && getState() != STATE_NONE ){
+			 * try{ sync.wait(100); nTry++; } catch (Exception e) {
+			 * System.out.println("Wait exception:" + e.getMessage()); } }
+			 */
 		}
 	}
 
@@ -69,8 +66,6 @@ public class SyncThread implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		//SyncUtil.fetch_client_login("lars","password");
-		
 		while (!isStop()) {
 			synchronized (sync) {
 				try {
@@ -87,6 +82,7 @@ public class SyncThread implements Runnable {
 				SyncUtil.adapter.initialize(null);
 				System.out.println("SyncEngine is awake..."
 						+ new Date(System.currentTimeMillis()).toString());
+			//printStats();
 
 				if (!delaySync && !dbResetDelay) {
 					// Thread is simple, process local changes and make sure
@@ -134,6 +130,14 @@ public class SyncThread implements Runnable {
 			//}
 			//return false;
 		//}
+	}
+
+	public static void printStats() {
+		long free = java.lang.Runtime.getRuntime().freeMemory();
+		long total = java.lang.Runtime.getRuntime().totalMemory();
+		System.out.println("Memory stats (free / total) => usage: (" + free
+				+ " bytes / " + total + " bytes) => " + (total - free)
+				+ " bytes");
 	}
 
 	public synchronized int getState() {
