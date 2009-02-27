@@ -16,9 +16,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(_WIN32_WCE)
-#define strdup _strdup
-#endif
+//#if defined(_WIN32_WCE)
+//#define strdup _strdup
+//#endif
 
 #include "debug.h"
 #include "printbuf.h"
