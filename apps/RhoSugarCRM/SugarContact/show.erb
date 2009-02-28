@@ -5,8 +5,8 @@
 </div>
 
 <div class="panel" title="Show Contact" selected="true">
- 
-<% if System::get_property('platform') == 'APPLE' %>
+
+<% if has_valid_mapping_address(@SugarContact.primary_address_street, @SugarContact.primary_address_city, @SugarContact.primary_address_state, @SugarContact.primary_address_postalcode) %>
 	<p align="center">
 		<a href="<%= "/RhoSugarCRM/Mapping/#{@SugarContact.object}/showcontact" %>" target="_self">
 			<span class="grayButton">Show Contact on Map</span>

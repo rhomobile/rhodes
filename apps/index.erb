@@ -13,11 +13,11 @@
 
 	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Device Capabilities</div>
 	<a href="/TestRefresh/Test">TestRefresh</a><br/>
-	<a href="Phonebook">Phonebook List</a><br/>
+<!--	<a href="Phonebook">Phonebook List</a><br/>  -->
 	<a href="System">System API</a><br/>
 	Platform:<%= System::get_property('platform')%><br/>
 	
-	<% if System::get_property('platform') != 'APPLE' %>
+	<% if System::get_property('platform') != 'APPLE' && System::get_property('platform') != 'WINDOWS' %>
 		<a href="GeoLocation">Your location:</a> <geolocation>loading...</geolocation><br/>
 		Latitude: <geolatitude>loading...</geolatitude><br/>
 		Longitude: <geolongitude>loading...</geolongitude><br/>
