@@ -218,7 +218,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
  */
 int push_remote_changes(pSyncOperation *list, int size) {
 	char *data;
-	int i, success = 0;
+	int i, retval = 0;
 	size_t data_size = 0;
 	
 	if (size == 0) return SYNC_PUSH_CHANGES_OK;
@@ -242,10 +242,10 @@ int push_remote_changes(pSyncOperation *list, int size) {
 		}
 	}
 	
-	success = push_remote_data(list[0]->_uri,data,data_size);
+	retval = push_remote_data(list[0]->_uri,data,data_size);
 	free(data);
 	
-	return success ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
+	return retval ? SYNC_PUSH_CHANGES_ERROR : SYNC_PUSH_CHANGES_OK;
 }
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
