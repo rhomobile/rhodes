@@ -93,9 +93,13 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  * Configures AppManager
  */
 - (void) configure {
-	[self copyFromMainBundle:@"apps" replace:YES];
-	[self copyFromMainBundle:@"lib" replace:YES];
-	//[self copyFromMainBundle:@"sqlite3" replace:YES];
+#ifdef DEBUG	
+	bool replaceFiles = YES;
+#else
+	bool replaceFiles = NO;
+#endif	
+	[self copyFromMainBundle:@"apps" replace:replaceFiles];
+	[self copyFromMainBundle:@"lib" replace:replaceFiles];
 	[self copyFromMainBundle:@"db" replace:NO];
 }
 
