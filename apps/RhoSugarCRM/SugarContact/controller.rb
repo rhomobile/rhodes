@@ -87,4 +87,18 @@ class SugarContactController < Rho::RhoController
     redirect :action => :index    
   end
   
+  private
+  
+  def contactexists?(first_name, last_name, company_name, phone_mobile, phone_home, phone_work, email1)
+    @DeviceContacts = Rho::RhoContact.find(:all).to_a.sort! {|x,y| x[1]['first_name'] <=> y[1]['first_name'] }    
+
+    found = false
+    @DeviceContacts.each do |contact|
+      found |= (!contact.first_name.nil? && contact.first_name == first_name && 
+      !contact.last_name.nil? && contact.last_name == last_name && 
+      !contact.company_name.nil? && contact.company_name == company_name)
+    end
+    found
+  end
+  
 end
