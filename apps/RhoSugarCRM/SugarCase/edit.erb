@@ -41,10 +41,9 @@
 		  </div>
 		
 				  <div class="row">
-					  <label>Description</label>
-					  <input type="text" name="SugarCase[description]" value="<%=replace_newlines(@SugarCase.description)%>"/>
+					  <label>Description</label>					
+						<textarea name="SugarCase[description]" rows="5" style="margin:6px;width:90%">"<%=replace_newlines(@SugarCase.description)%>"</textarea>					
 				  </div>
-		
 		
 				  <div class="row">
 					  <label>Resolution</label>
@@ -80,5 +79,5 @@
 		  </div>	
 	</fieldset>
 	
-	<input type="submit" value="Update"/>	
+	<input type="submit" value="Save"/>	
 </form>

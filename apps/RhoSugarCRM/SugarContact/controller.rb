@@ -21,7 +21,14 @@ class SugarContactController < Rho::RhoController
 
   # GET /SugarContact/new
   def new
-    @SugarContact = SugarContact.new
+    @contactdefault = Hash.new
+    @contactdefault['first_name'] = ""
+    @contactdefault['last_name'] = ""
+    @contactdefault['company_name'] = ""
+    @contactdefault['phone_mobile'] = ""
+    @contactdefault['phone_home'] = ""   
+    @contactdefault['phone_work'] = ""
+    @contactdefault['email1'] = ""
     render :action => :new
   end
 
@@ -58,15 +65,15 @@ class SugarContactController < Rho::RhoController
   end
   
   def newfromdevice
-    @SugarContact = SugarContact.new
+    @contactdefault = Hash.new
     @contact = Rho::RhoContact.find(@params['id'])
-    @SugarContact.first_name = @contact['first_name']
-    @SugarContact.last_name = @contact['last_name']
-    @SugarContact.company_name = @contact['company_name']
-    @SugarContact.phone_mobile = @contact['mobile_number']
-    @SugarContact.phone_home = @contact['home_number']    
-    @SugarContact.phone_work = @contact['business_number']
-    @SugarContact.email1 = @contact['email_address']
+    @contactdefault['first_name'] = @contact['first_name']
+    @contactdefault['last_name'] = @contact['last_name']
+    @contactdefault['company_name'] = @contact['company_name']
+    @contactdefault['phone_mobile'] = @contact['mobile_number']
+    @contactdefault['phone_home'] = @contact['home_number']    
+    @contactdefault['phone_work'] = @contact['business_number']
+    @contactdefault['email1'] = @contact['email_address']
     
     render :action => :new    
   end
