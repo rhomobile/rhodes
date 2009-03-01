@@ -158,9 +158,19 @@ module Rhom
                 
                 # deletes all records matching conditions (optionally nil)
                 def delete_all(conditions=nil)
-                  del_conditions = conditions.nil? ? {} : get_conditions_hash(conditions)
-                  del_conditions.merge!({"source_id"=>get_source_id})
-                  ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME, del_conditions)
+                  if conditions
+                    del_conditions = get_conditions_hash(conditions[:conditions])
+                    # find all relevant objects, then delete them
+                    del_objects = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
+                                                                           'object',
+                                                                           del_conditions.merge!({"source_id"=>get_source_id}),
+                                                                           {"distinct"=>true})
+                    del_objects.each do |obj|                                                       
+                      ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME, {'object'=>obj['object']})
+                    end
+                  else
+                    ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME, {"source_id"=>get_source_id})
+                  end
                 end
                     
                 private

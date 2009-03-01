@@ -306,6 +306,22 @@ describe "RhomObjectFactory" do
   it "should delete_all with conditions" do
     Account.delete_all(:conditions => {'name' => 'Mirapath'})
     
-    Account.delete_all(:conditions => {'name' => 'Mirapath'}).length.should == 0
+    @accts = Account.find(:all, :conditions => {'name' => 'Mirapath'})
+    @accts.length.should == 0
+  end
+  
+  it "should delete_all with conditions across objects" do
+    Account.delete_all(:conditions => {'industry' => 'Technology'})
+    
+    @accts = Account.find(:all, :conditions => {'industry' => 'Technology'})
+    @accts.length.should == 0
+    
+    @accts = Account.find(:all)
+    
+    @accts.length.should == 2
+    @accts[0].name.should == "vSpring"
+    @accts[0].industry.should == "Finance"
+    @accts[1].name.should == "Mirapath"
+    @accts[1].industry.should == "Electronics"
   end
 end
