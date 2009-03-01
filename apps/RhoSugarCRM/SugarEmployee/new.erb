@@ -10,9 +10,7 @@
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
 	
-	  <fieldset>
-		<input type="hidden" name="id" value="<%=@SugarEmployee.object%>"/>
-		
+	  <fieldset>		
 		  <div class="row">
 			  <label>Status</label>
 			  <input type="text" name="SugarEmployee[employee_status]"/>

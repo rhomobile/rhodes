@@ -9,9 +9,7 @@
 	  id="SugarMeeting_new_form" 
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
-	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarMeeting.object%>"/>
-		
+	<fieldset>		
 	  <div class="row">
 		  <label>Name</label>
 		  <input type="text" name="SugarMeeting[name]"/>
@@ -83,7 +81,7 @@
 				<% reminder_time_index = 0 %>
 				<% reminder_time_arr = [-1, 60, 300, 600, 900, 1800, 3600]%>
 				<% %w(None 1\ Minute\ Prior 5\ Minutes\ Prior 10\ Minutes\ Prior 15\ Minutes\ Prior 30\ Minutes\ Prior 1\ Hour\ Prior).each do |state| %>
-					<% selected = (reminder_time_arr[reminder_time_index].to_s == @SugarMeeting.reminder_time) ? "selected=\"#{@SugarCall.reminder_time}\"" : "" %>
+					<% selected = "" %>
 					<option <%= selected %> value="<%= reminder_time_arr[reminder_time_index].to_s %>"><%= state %></option>
 					<% reminder_time_index += 1%>
 				<% end %>
