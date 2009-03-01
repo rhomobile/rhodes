@@ -1,0 +1,10 @@
+<ul id="<%= name.pluralize %>" title="<%= class_name.pluralize %>">
+<%%@<%=name.pluralize%>.each do |x|%>
+<%if self.attributes?%>
+<li><%%=link_to "#{x.<%=attributes[0]%>}", :action => :show, :id => x.object%></li>
+<%else%>
+<li>Some list entry...</li>
+<%end%>
+<%%end%>
+<li><font color="blue"><%%=link_to "New <%= class_name %>", :action => :new%></font></li>
+</ul>
