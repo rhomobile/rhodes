@@ -296,4 +296,16 @@ describe "RhomObjectFactory" do
     @accts[0].name.should == "vSpring"
     @accts[0].industry.should be_nil
   end
+  
+  it "should delete_all" do
+    Account.delete_all
+    
+    Account.find(:all).length.should == 0
+  end
+  
+  it "should delete_all with conditions" do
+    Account.delete_all(:conditions => {'name' => 'Mirapath'})
+    
+    Account.delete_all(:conditions => {'name' => 'Mirapath'}).length.should == 0
+  end
 end
