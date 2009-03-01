@@ -4,6 +4,7 @@ task :install_all_gems do
   ['rhodes-build','rhodes-generator','rhodes-framework','rhodes'].each do |dir|
     chdir dir
     puts `rake clobber`
+    #puts `rake manifest`
     puts `rake install_gem`
     puts `rake clobber`
     chdir current_dir

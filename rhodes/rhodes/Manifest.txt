@@ -1,3 +1,5 @@
+.gitignore
+Manifest.txt
 Rakefile
 lib/rhodes.rb
 rhodes.gemspec
