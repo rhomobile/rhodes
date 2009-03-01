@@ -27,7 +27,7 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
   
 end
 
-#require 'newgem/tasks' # load /tasks/*.rake
+require 'newgem/tasks' # load /tasks/*.rake
 # remove test task TODO: why does this run anyway?
 #Rake.application.remove_task(:test)
 Dir['tasks/**/*.rake'].each { |t| load t }
