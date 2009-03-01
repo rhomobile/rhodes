@@ -9,27 +9,25 @@
 	  id="SugarCase_new_form" 
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
-	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarCase.object%>"/>
-		
+	<fieldset>		
 		<div class="row">
 		  <label>Case Number</label>
-		  <input type="text" name="SugarCase[case_number]" value="<%=@SugarCase.case_number%>"/>
+		  <input type="text" name="SugarCase[case_number]"/>
 	  </div>
 		
 		<div class="row">
 		  <label>Priority</label>
-		  <input type="text" name="SugarCase[priority]" value="<%=@SugarCase.priority%>"/>
+		  <input type="text" name="SugarCase[priority]"/>
 	  </div>
 	  
 	  <div class="row">
 		  <label>Status</label>
-		  <input type="text" name="SugarCase[status]" value="<%=@SugarCase.status%>"/>
+		  <input type="text" name="SugarCase[status]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Type</label>
-		  <input type="text" name="SugarCase[type]" value="<%=@SugarCase.type%>"/>
+		  <input type="text" name="SugarCase[type]"/>
 	  </div>
 		</fieldset>
 			
@@ -37,18 +35,18 @@
 	
 		  <div class="row">
 			  <label>Subject</label>
-			  <input type="text" name="SugarCase[name]" value="<%=@SugarCase.name%>"/>
+			  <input type="text" name="SugarCase[name]"/>
 		  </div>
 		
 				  <div class="row">
-					  <label>Description</label>
-					  <input type="text" name="SugarCase[description]" value="<%=replace_newlines(@SugarCase.description)%>"/>
+					  <label>Description</label>					
+						<textarea name="SugarCase[description]" rows="5" style="margin:6px;width:90%"></textarea>					
 				  </div>
 		
 		
 				  <div class="row">
 					  <label>Resolution</label>
-					  <input type="text" name="SugarCase[resolution]" value="<%=@SugarCase.resolution%>"/>
+					  <input type="text" name="SugarCase[resolution]"/>
 				  </div>
 				
 				</fieldset>
@@ -57,13 +55,13 @@
 				
 			  <div class="row">
 				  <label>Assigned to</label>
-				  <input type="text" name="SugarCase[assigned_user_name]" value="<%=@SugarCase.assigned_user_name%>"/>
+				  <input type="text" name="SugarCase[assigned_user_name]"/>
 			  </div>
 
 
 			  <div class="row">
 				  <label>Account Name</label>
-				  <input type="text" name="SugarCase[account_name]" value="<%=@SugarCase.account_name%>"/>
+				  <input type="text" name="SugarCase[account_name]"/>
 			  </div>
 			
 				</fieldset>
@@ -71,12 +69,12 @@
 		<fieldset>		
 		  <div class="row">
 			  <label>Modified On</label>
-			  <input type="text" name="SugarCase[date_modified]" value="<%=@SugarCase.date_modified%>"/>
+			  <input type="text" name="SugarCase[date_modified]"/>
 		  </div>
 		
 		  <div class="row">
 			  <label>Created On</label>
-			  <input type="text" name="SugarCase[date_entered]" value="<%=@SugarCase.date_entered%>"/>
+			  <input type="text" name="SugarCase[date_entered]"/>
 		  </div>	
 		
 	</fieldset>

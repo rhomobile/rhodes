@@ -16,7 +16,7 @@
 			<select id="SugarLead_lead_source" name="SugarLead[lead_source]">
 				<option value="" label=""/>
 				<% %w(Cold\ Call Existing\ Customer Self\ Generated Employee Partner Public\ Relations Direct\ Mail Trade\ Show Web\ Site Word\ of\ mouth Email  Campaign Other).each do |choice| %>
-					<option <% if choice == @SugarLead.lead_source %>selected="selected"<% end %>><%= choice %></option>
+					<option><%= choice %></option>
 				<% end %>
 			</select>
 	  </div>
@@ -26,7 +26,7 @@
 			<select id="SugarLead_campaign_id" name="SugarLead[campaign_id]">
 				<option value="">-- none --</option>
 				<% SugarCampaign.find(:all).each do |campaign| %>
-					<% selected = (@SugarLead.campaign_id == strip_braces(campaign.object)) ? "selected=\"#{strip_braces(campaign.object)}\"" : "" %>
+					<% selected = "" %>
 					<option value="<%= strip_braces(campaign.object) %>" <%= selected %>><%= campaign.name %></option>
 				<% end %>
 			</select>
@@ -35,29 +35,29 @@
 
 	  <div class="tallrow" style="height:auto">
 		  <label>Lead Source Description</label>
-		  <textarea name="SugarLead[lead_source_description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.lead_source_description) %></textarea>
+		  <textarea name="SugarLead[lead_source_description]" rows="5" style="margin:6px;width:90%"></textarea>
 			<div class="clearer"></div>
 	  </div>
 		
 		
 		<div class="row">
 		  <label>Referred By</label>
-		  <input type="text" name="SugarLead[refered_by]" value="<%=@SugarLead.refered_by%>"/>
+		  <input type="text" name="SugarLead[refered_by]"/>
 	  </div>
 
 			<div class="row">
 			  <label>Salutation</label>
-			  <input type="text" name="SugarLead[salutation]" value="<%=@SugarLead.salutation%>"/>
+			  <input type="text" name="SugarLead[salutation]"/>
 		  </div>
 
 			<div class="row">
 			  <label>First Name</label>
-			  <input type="text" name="SugarLead[first_name]" value="<%=@SugarLead.first_name%>"/>
+			  <input type="text" name="SugarLead[first_name]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>Last Name</label>
-			  <input type="text" name="SugarLead[last_name]" value="<%=@SugarLead.last_name%>"/>
+			  <input type="text" name="SugarLead[last_name]"/>
 		  </div>
 
 			 <div class="row">
@@ -65,7 +65,7 @@
 					<select id="SugarAccount_account_id" name="SugarLead[account_id]">
 						<option value="">-- none --</option>
 						<% SugarAccount.find(:all).each do |account| %>
-							<% selected = (@SugarLead.account_id == strip_braces(account.object)) ? "selected=\"#{strip_braces(account.object)}\"" : "" %>
+							<% selected =  "" %>
 							<option value="<%= strip_braces(account.object) %>" <%= selected %>><%= account.name %></option>
 						<% end %>
 					</select>
@@ -73,17 +73,17 @@
 
 		  <div class="row">
 			  <label>Title</label>
-			  <input type="text" name="SugarLead[title]" value="<%=@SugarLead.title%>"/>
+			  <input type="text" name="SugarLead[title]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>Department</label>
-			  <input type="text" name="SugarLead[department]" value="<%=@SugarLead.department%>"/>
+			  <input type="text" name="SugarLead[department]"/>
 		  </div> 
 		
 		  <div class="row">
 			  <label>Do Not Call</label>
-			  <input type="checkbox" name="SugarLead[do_not_call]" value="<%=@SugarLead.do_not_call%>"/>
+			  <input type="checkbox" name="SugarLead[do_not_call]"/>
 		  </div>
 		
 		  <div class="row">
@@ -91,7 +91,7 @@
 				<select id="SugarLead_team_id" name="SugarLead[team_id]">
 					<option value="">-- none --</option>
 					<% SugarTeam.find(:all).each do |team| %>
-						<% selected = (@SugarLead.team_id == strip_braces(team.object)) ? "selected=\"#{strip_braces(team.object)}\"" : "" %>
+						<% selected = "" %>
 						<option value="<%= strip_braces(team.object) %>" <%= selected %>><%= team.name %></option>
 					<% end %>
 				</select>
@@ -102,7 +102,7 @@
 				<select id="SugarLead_assigned_user_id" name="SugarLead[assigned_user_id]">
 					<option value="">-- none --</option>
 					<% SugarUser.find(:all).each do |user| %>
-						<% selected = (@SugarLead.assigned_user_id == strip_braces(user.object)) ? "selected=\"#{strip_braces(user.object)}\"" : "" %>
+						<% selected = "" %>
 						<option value="<%= strip_braces(user.object) %>" <%= selected %>><%= user.user_name %></option>
 					<% end %>
 				</select>
@@ -113,14 +113,14 @@
 			<select id="SugarAccount_status" name="SugarAccount[status]">
 				<option value="" label=""/>
 				<% %w(New Assigned In\ Process Converted Recycled Dead).each do |choice| %>
-					<option <% if choice == @SugarLead.status %>selected="selected"<% end %>><%= choice %></option>
+					<option><%= choice %></option>
 				<% end %>
 			</select>
 			</div>
 			
 		  <div class="tallrow" style="height:auto">
 			  <label>Status Description</label>
-			  <textarea name="SugarLead[status_description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.status_description) %></textarea>
+			  <textarea name="SugarLead[status_description]" rows="5" style="margin:6px;width:90%"></textarea>
 				<div class="clearer"></div>
 		  </div>
 		
@@ -129,27 +129,27 @@
 		<fieldset>
 			  <div class="row">
 				  <label>Office phone</label>
-				  <input type="text" name="SugarLead[phone_work]" value="<%=@SugarLead.phone_work%>"/>
+				  <input type="text" name="SugarLead[phone_work]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Mobile</label>
-				  <input type="text" name="SugarLead[phone_mobile]" value="<%=@SugarLead.phone_mobile%>"/>
+				  <input type="text" name="SugarLead[phone_mobile]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Home</label>
-				  <input type="text" name="SugarLead[phone_home]" value="<%=@SugarLead.phone_home%>"/>
+				  <input type="text" name="SugarLead[phone_home]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Other phone</label>
-				  <input type="text" name="SugarLead[phone_other]" value="<%=@SugarLead.phone_other%>"/>
+				  <input type="text" name="SugarLead[phone_other]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Fax</label>
-				  <input type="text" name="SugarLead[phone_fax]" value="<%=@SugarLead.phone_fax%>"/>
+				  <input type="text" name="SugarLead[phone_fax]"/>
 			  </div>
 
 		</fieldset>
@@ -158,12 +158,12 @@
 
 			  <div class="row">
 				  <label>Email #1</label>
-				  <input type="text" name="SugarLead[email1]" value="<%=@SugarLead.email1%>"/>
+				  <input type="text" name="SugarLead[email1]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Email #2</label>
-				  <input type="text" name="SugarLead[email2]" value="<%=@SugarLead.email2%>"/>
+				  <input type="text" name="SugarLead[email2]"/>
 			  </div>
 
 
@@ -174,27 +174,27 @@
 			<fieldset>
 			  <div class="row">
 				  <label>Street</label>
-				  <input type="text" name="SugarLead[primary_address_street]" value="<%=@SugarLead.primary_address_street%>"/>
+				  <input type="text" name="SugarLead[primary_address_street]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>City</label>
-				  <input type="text" name="SugarLead[primary_address_city]" value="<%=@SugarLead.primary_address_city%>"/>
+				  <input type="text" name="SugarLead[primary_address_city]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>State</label>
-				  <input type="text" name="SugarLead[primary_address_state]" value="<%=@SugarLead.primary_address_state%>"/>
+				  <input type="text" name="SugarLead[primary_address_state]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Postal code</label>
-				  <input type="text" name="SugarLead[primary_address_postalcode]" value="<%=@SugarLead.primary_address_postalcode%>"/>
+				  <input type="text" name="SugarLead[primary_address_postalcode]"/>
 			  </div>
 
 			  <div class="row">
 				  <label>Country</label>
-				  <input type="text" name="SugarLead[primary_address_country]" value="<%=@SugarLead.primary_address_country%>"/>
+				  <input type="text" name="SugarLead[primary_address_country]"/>
 			  </div>
 			</fieldset>
 
@@ -203,34 +203,34 @@
 			<fieldset>
 		  <div class="row">
 			  <label>Street</label>
-			  <input type="text" name="SugarLead[alt_address_street]" value="<%=@SugarLead.alt_address_street%>"/>
+			  <input type="text" name="SugarLead[alt_address_street]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>City</label>
-			  <input type="text" name="SugarLead[alt_address_city]" value="<%=@SugarLead.alt_address_city%>"/>
+			  <input type="text" name="SugarLead[alt_address_city]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>State</label>
-			  <input type="text" name="SugarLead[alt_address_state]" value="<%=@SugarLead.alt_address_state%>"/>
+			  <input type="text" name="SugarLead[alt_address_state]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>Postal code</label>
-			  <input type="text" name="SugarLead[alt_address_postalcode]" value="<%=@SugarLead.alt_address_postalcode%>"/>
+			  <input type="text" name="SugarLead[alt_address_postalcode]"/>
 		  </div>
 
 		  <div class="row">
 			  <label>Country</label>
-			  <input type="text" name="SugarLead[alt_address_country]" value="<%=@SugarLead.alt_address_country%>"/>
+			  <input type="text" name="SugarLead[alt_address_country]"/>
 		  </div>
 		</fieldset>
 
 		<fieldset>
 	  <div class="tallrow" style="height:auto">
 		  <label>Description</label>
-		  <textarea name="SugarLead[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarLead.description) %></textarea>
+		  <textarea name="SugarLead[description]" rows="5" style="margin:6px;width:90%"></textarea>
 			<div class="clearer"></div>
 	  </div>
 		</fieldset>

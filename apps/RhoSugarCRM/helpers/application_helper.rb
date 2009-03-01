@@ -64,18 +64,33 @@ module ApplicationHelper
   end
   
   def format_address_for_mapping(street, city, state, zip, tagforurl)
+    # handle case where fields could be nil
+    mystreet = !street.nil? ? street : ""
+    mycity = !city.nil? ? city : ""
+    mystate = !state.nil? ? state : ""
+    myzip = !zip.nil? ? zip : ""
+    
+    result = ""
     if !tagforurl
-      result = street + ", " + city + ", " + state + " " + zip
+      # build up address string
+      result += (mystreet + ", ") if mystreet.length > 0
+      result += (mycity + ", ") if mycity.length > 0
+      result += (mystate + " ") if mystate.length > 0
+      result += myzip if myzip.length > 0
     else
       # need to URL encode data too
-      result = "&street=" + street + "&city=" + city + "&state=" + state + "&zip=" + zip
+      result += ("&street=" + mystreet) if mystreet.length > 0
+      result += ("&city=" + mycity) if mycity.length > 0
+      result += ("&state=" + mystate) if mystate.length > 0
+      result += ("&zip=" + myzip) if myzip.length > 0      
     end
-    result
+    # remove any extraneous characters that could interfere with proper address matching
+    result = replace_newlines(result)
   end
   
   def has_valid_mapping_address(street, city, state, zip)
-    # we allow an empty zip for now
-    !street.nil? && (street.length > 0) && !city.nil? && (city.length > 0) && !state.nil? && (state.length > 0)
+    # at a minimum, an address must have a state or a zip
+    (!state.nil? && state.length > 0) || (!zip.nil? && zip.length > 0)
   end
   
 end
