@@ -20,7 +20,6 @@ class SugarCaseController < Rho::RhoController
 
   # GET /SugarCase/new
   def new
-    @SugarCase = SugarCase.new
     render :action => :new
   end
 

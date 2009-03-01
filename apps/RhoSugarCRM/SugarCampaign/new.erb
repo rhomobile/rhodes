@@ -9,62 +9,60 @@
 	  id="SugarCampaign_new_form" 
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
-	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarCampaign.object%>"/>
-		
+	<fieldset>		
 	  <div class="row">
 		  <label>Name</label>
-		  <input type="text" name="SugarCampaign[name]" value="<%=@SugarCampaign.name%>"/>
+		  <input type="text" name="SugarCampaign[name]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Date Entered</label>
-		  <input type="text" name="SugarCampaign[date_entered]" value="<%=@SugarCampaign.date_entered%>"/>
+		  <input type="text" name="SugarCampaign[date_entered]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Date Modified</label>
-		  <input type="text" name="SugarCampaign[date_modified]" value="<%=@SugarCampaign.date_modified%>"/>
+		  <input type="text" name="SugarCampaign[date_modified]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Assigned To</label>
-		  <input type="text" name="SugarCampaign[assigned_user_name]" value="<%=@SugarCampaign.assigned_user_name%>"/>
+		  <input type="text" name="SugarCampaign[assigned_user_name]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Team</label>
-		  <input type="text" name="SugarCampaign[team_name]" value="<%=@SugarCampaign.team_name%>"/>
+		  <input type="text" name="SugarCampaign[team_name]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Start Date</label>
-		  <input type="text" name="SugarCampaign[start_date]" value="<%=@SugarCampaign.start_date%>"/>
+		  <input type="text" name="SugarCampaign[start_date]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>End Date</label>
-		  <input type="text" name="SugarCampaign[end_date]" value="<%=@SugarCampaign.end_date%>"/>
+		  <input type="text" name="SugarCampaign[end_date]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Status</label>
-		  <input type="text" name="SugarCampaign[status]" value="<%=@SugarCampaign.status%>"/>
+		  <input type="text" name="SugarCampaign[status]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Budget</label>
-		  <input type="text" name="SugarCampaign[budget]" value="<%=@SugarCampaign.budget%>"/>
+		  <input type="text" name="SugarCampaign[budget]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Exp Revenue</label>
-		  <input type="text" name="SugarCampaign[expected_revenue]" value="<%=@SugarCampaign.expected_revenue%>"/>
+		  <input type="text" name="SugarCampaign[expected_revenue]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Type</label>
-		  <input type="text" name="SugarCampaign[campaign_type]" value="<%=@SugarCampaign.campaign_type%>"/>
+		  <input type="text" name="SugarCampaign[campaign_type]"/>
 	  </div>
 		
 	</fieldset>

@@ -25,10 +25,6 @@
 					  my_current_lon = data[2];	
 				
 						generate_mapview();
-						
-						// update textual coordinates too
-					  $("geolatitude").text(data[1]);
-					  $("geolongitude").text(data[2]);				
 				});
 			}
 		
@@ -115,7 +111,7 @@
 			my_url_name = obj.ResultSet.Result;
 		}
 
-		function update_mapsrc() {
+		function generate_mapview() {
 		   var image_item = document.getElementById("map");
 		   if (my_url_name != "") {
 		     image_item.src = my_url_name;
@@ -130,7 +126,7 @@
 <% if System::get_property('platform') == 'APPLE' %>
 	<body onload="getMyGeoLocation()">
 <% else %>
-	<body onload="setTimeout('update_mapsrc()', 1000)">	
+	<body onload="setTimeout('generate_mapview()', 1000)">	
 <% end %>	
 	
 <div class="toolbar">
@@ -147,15 +143,19 @@
 		<img id="map" src="" height="250" width="250" alt="map image loading..."/>	
 
 	  <!-- do a JSON load which triggers the ws_results function call -->
-	<script type="text/javascript" src="http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250&street=701+First+Avenue&city=Sunnyvale&state=CA"></script>
+  		<% encoded_address = !@contacts[0].nil? ? format_address_for_mapping(@contacts[0].street, @contacts[0].city, @contacts[0].state, @contacts[0].zip, true) : "" %>  
+ 			<% full_url = "http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250" + "#{encoded_address}" %>
+
+ 			<script type="text/javascript" src="<%= full_url %>" ></script>
 
   <% end %>
 
-	<div id="coordinates">
-		GPS Position<br>
-		Latitude: <geolatitude>loading...</geolatitude><br/>
-		Longitude: <geolongitude>loading...</geolongitude><br/>  	
-	</div>
+<div id="coordinates">
+	Your GPS position<br>
+	Latitude: <%= GeoLocation.latitude.to_s %><br/>
+	Longitude: <%= GeoLocation.longitude.to_s %><br/>
+</div>
+	
 
 </div>
 

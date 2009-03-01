@@ -21,7 +21,14 @@ class SugarContactController < Rho::RhoController
 
   # GET /SugarContact/new
   def new
-    @SugarContact = SugarContact.new
+    @contactdefault = Hash.new
+    @contactdefault['first_name'] = ""
+    @contactdefault['last_name'] = ""
+    @contactdefault['company_name'] = ""
+    @contactdefault['phone_mobile'] = ""
+    @contactdefault['phone_home'] = ""   
+    @contactdefault['phone_work'] = ""
+    @contactdefault['email1'] = ""
     render :action => :new
   end
 
@@ -58,17 +65,47 @@ class SugarContactController < Rho::RhoController
   end
   
   def newfromdevice
-    @SugarContact = SugarContact.new
+    @contactdefault = Hash.new
     @contact = Rho::RhoContact.find(@params['id'])
-    @SugarContact.first_name = @contact['first_name']
-    @SugarContact.last_name = @contact['last_name']
-    @SugarContact.company_name = @contact['company_name']
-    @SugarContact.phone_mobile = @contact['mobile_number']
-    @SugarContact.phone_home = @contact['home_number']    
-    @SugarContact.phone_work = @contact['business_number']
-    @SugarContact.email1 = @contact['email_address']
+    @contactdefault['first_name'] = @contact['first_name']
+    @contactdefault['last_name'] = @contact['last_name']
+    @contactdefault['company_name'] = @contact['company_name']
+    @contactdefault['phone_mobile'] = @contact['mobile_number']
+    @contactdefault['phone_home'] = @contact['home_number']    
+    @contactdefault['phone_work'] = @contact['business_number']
+    @contactdefault['email1'] = @contact['email_address']
     
     render :action => :new    
+  end
+  
+  def savetodevice
+    @SugarContact = SugarContact.find(@params['id'])
+    @contact = Hash.new
+
+    @contact['first_name'] = @SugarContact.first_name.nil? ? "" : @SugarContact.first_name
+    @contact['last_name'] = @SugarContact.last_name.nil? ? "" : @SugarContact.last_name
+    @contact['company_name'] = @SugarContact.company_name.nil? ? "" : @SugarContact.company_name
+    @contact['mobile_number'] = @SugarContact.phone_mobile.nil? ? "" : @SugarContact.phone_mobile
+    @contact['home_number'] = @SugarContact.phone_home.nil? ? "" : @SugarContact.phone_home
+    @contact['business_number'] = @SugarContact.phone_work.nil? ? "" : @SugarContact.phone_work
+    @contact['email_address'] = @SugarContact.email1.nil? ? "" : @SugarContact.email1      
+    @DeviceContact = Rho::RhoContact.create!(@contact)
+    
+    redirect :action => :index    
+  end
+  
+  private
+  
+  def contactexists?(first_name, last_name, company_name, phone_mobile, phone_home, phone_work, email1)
+    @DeviceContacts = Rho::RhoContact.find(:all).to_a.sort! {|x,y| x[1]['first_name'] <=> y[1]['first_name'] }    
+
+    found = false
+    @DeviceContacts.each do |contact|
+      found |= (!contact.first_name.nil? && contact.first_name == first_name && 
+      !contact.last_name.nil? && contact.last_name == last_name && 
+      !contact.company_name.nil? && contact.company_name == company_name)
+    end
+    found
   end
   
 end

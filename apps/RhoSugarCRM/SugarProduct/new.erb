@@ -9,62 +9,60 @@
 	  id="SugarProduct_new_form" 
 	  method="POST" 
 	  action="<%=url_for(:action => :create)%>" selected="true">
-	<fieldset>
-		<input type="hidden" name="id" value="<%=@SugarProduct.object%>"/>
-		
+	<fieldset>		
 	  <div class="row">
 		  <label>Name</label>
-		  <input type="text" name="SugarProduct[name]" value="<%=@SugarProduct.name%>"/>
+		  <input type="text" name="SugarProduct[name]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Date Entered</label>
-		  <input type="text" name="SugarProduct[date_entered]" value="<%=@SugarProduct.date_entered%>"/>
+		  <input type="text" name="SugarProduct[date_entered]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Date Modified</label>
-		  <input type="text" name="SugarProduct[date_modified]" value="<%=@SugarProduct.date_modified%>"/>
+		  <input type="text" name="SugarProduct[date_modified]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Description</label>
-		  <input type="text" name="SugarProduct[description]" value="<%=replace_newlines(@SugarProduct.description)%>"/>
+		  <input type="text" name="SugarProduct[description]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Team Name</label>
-		  <input type="text" name="SugarProduct[team_name]" value="<%=@SugarProduct.team_name%>"/>
+		  <input type="text" name="SugarProduct[team_name]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>List Price</label>
-		  <input type="text" name="SugarProduct[list_price]" value="<%=@SugarProduct.list_price%>"/>
+		  <input type="text" name="SugarProduct[list_price]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Cost Price</label>
-		  <input type="text" name="SugarProduct[cost_price]" value="<%=@SugarProduct.cost_price%>"/>
+		  <input type="text" name="SugarProduct[cost_price]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Discount Price</label>
-		  <input type="text" name="SugarProduct[discount_price]" value="<%=@SugarProduct.discount_price%>"/>
+		  <input type="text" name="SugarProduct[discount_price]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Status</label>
-		  <input type="text" name="SugarProduct[status]" value="<%=@SugarProduct.status%>"/>
+		  <input type="text" name="SugarProduct[status]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Website</label>
-		  <input type="text" name="SugarProduct[website]" value="<%=@SugarProduct.website%>"/>
+		  <input type="text" name="SugarProduct[website]"/>
 	  </div>
 	
 	  <div class="row">
 		  <label>Account</label>
-		  <input type="text" name="SugarProduct[account_name]" value="<%=@SugarProduct.account_name%>"/>
+		  <input type="text" name="SugarProduct[account_name]"/>
 	  </div>
 		
 	</fieldset>

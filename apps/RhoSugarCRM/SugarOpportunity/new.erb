@@ -11,23 +11,21 @@
 	  action="<%=url_for(:action => :create)%>" selected="true">
 	
 			  <fieldset>
-				  <input type="hidden" name="id" value="<%=@SugarOpportunity.object%>"/>
-
 				  <div class="row">
 					  <label>Name</label>
-					  <input type="text" name="SugarOpportunity[name]" value="<%=@SugarOpportunity.name%>"/>
+					  <input type="text" name="SugarOpportunity[name]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Account</label>
-					  <input type="text" name="SugarOpportunity[account_name]" value="<%=@SugarOpportunity.account_name%>"/>
+					  <input type="text" name="SugarOpportunity[account_name]"/>
 				  </div>
 
 				   <div class="row">			
 				      <label>Type</label>
 							<select id="opportunity_type" name="SugarOpportunity[opportunity_type]">
 								<% %w(Existing\ Business New\ Business).each do |state| %>
-									<% selected = (state == @SugarOpportunity.opportunity_type) ? "selected=\"#{@SugarOpportunity.opportunity_type}\"" : "" %>
+									<% selected = "" %>
 									<option <%= selected %>><%= state %></option>
 								<% end %>
 							</select>	
@@ -37,7 +35,7 @@
 						  <label>Lead Source</label>
 								<select id="lead_source" name="SugarOpportunity[lead_source]">
 									<% %w(\ Cold\ Call Existing\ Customer Self\ Generated Employee Partner Public\ Relations Direct\ Mail Conference Trade\ Show Web\ Site Word\ of\ mouth Email Campaign Other).each do |state| %>
-										<% selected = (state == @SugarOpportunity.lead_source) ? "selected=\"#{@SugarOpportunity.lead_source}\"" : "" %>
+										<% selected = "" %>
 										<option <%= selected %>><%= state %></option>
 									<% end %>
 								</select>
@@ -45,22 +43,22 @@
 
 				  <div class="row">
 					  <label>Lead Source</label>
-					  <input type="text" name="SugarOpportunity[lead_source]" value="<%=@SugarOpportunity.lead_source%>"/>
+					  <input type="text" name="SugarOpportunity[lead_source]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Campaign</label>
-					  <input type="text" name="SugarOpportunity[campaign_name]" value="<%= blank?(@SugarOpportunity.campaign_name) ? "" : @SugarOpportunity.campaign_name %>"/>
+					  <input type="text" name="SugarOpportunity[campaign_name]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Assigned To</label>
-					  <input type="text" name="SugarOpportunity[assigned_user_name]" value="<%=@SugarOpportunity.assigned_user_name%>"/>
+					  <input type="text" name="SugarOpportunity[assigned_user_name]"/>
 				  </div>
 
 				  <div class="tallrow" style="height:auto">
 					  <label>Description</label>
-					  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"><%= replace_newlines(@SugarOpportunity.description) %></textarea>
+					  <textarea name="SugarOpportunity[description]" rows="5" style="margin:6px;width:90%"></textarea>
 						<div class="clearer"></div>
 				  </div>
 
@@ -70,24 +68,24 @@
 
 				  <div class="row">
 					  <label>Amount</label>
-					  <input type="text" name="SugarOpportunity[amount_usdollar]" value="<%=@SugarOpportunity.amount_usdollar%>"/>
+					  <input type="text" name="SugarOpportunity[amount_usdollar]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Close Date</label>
-					  <input type="text" name="SugarOpportunity[date_closed]" value="<%=@SugarOpportunity.date_closed%>"/>
+					  <input type="text" name="SugarOpportunity[date_closed]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Next Steps</label>
-					  <input type="text" name="SugarOpportunity[next_step]" value="<%=@SugarOpportunity.next_step%>"/>
+					  <input type="text" name="SugarOpportunity[next_step]"/>
 				  </div>
 
 				  <div class="row">
 					  <label>Stage</label>					
 						<select id="sales_stage" name="SugarOpportunity[sales_stage]">
 							<% %w(Prospecting Qualification Needs\ Analysis Value\ Proposition Id.\ Decision\ Makers Perception\ Analysis Proposal/Price\ Quote Negotiation/Review Closed\ Won Closed\ Lost).each do |state| %>
-								<% selected = (state == @SugarOpportunity.sales_stage) ? "selected=\"#{@SugarOpportunity.sales_stage}\"" : "" %>
+								<% selected = "" %>
 								<option <%= selected %>><%= state %></option>
 							<% end %>
 						</select>
@@ -95,7 +93,7 @@
 
 				  <div class="row">
 					  <label>Probability&nbsp;(%)</label>
-					  <input type="text" name="SugarOpportunity[probability]" value="<%=@SugarOpportunity.probability%>"/>
+					  <input type="text" name="SugarOpportunity[probability]"/>
 				  </div>
 
 			</fieldset>
