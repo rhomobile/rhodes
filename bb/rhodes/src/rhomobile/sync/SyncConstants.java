@@ -1,7 +1,7 @@
 /*
  *  rhodes
  *
- *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,6 +51,9 @@ public class SyncConstants {
 	/** The Constant MAX_SYNC_OBJECTS. */
 	public static final int MAX_SYNC_OBJECTS = 500;
 
+	public static final int MAX_SYNC_TRY_COUNT = 3;
+	public static final int SYNC_PAGE_SIZE     = 200;
+	
 	// Database Codes
 	/** The Constant SYNC_OBJECT_SUCCESS. */
 	public static final int SYNC_OBJECT_SUCCESS = 0;

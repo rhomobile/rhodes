@@ -3,7 +3,7 @@
  *  RhoSyncClient
  *  Represents a synchronized object
  *
- *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,11 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+typedef struct {
+	int			_count;
+	char		_token[100];
+} SyncHeader;
 
 typedef struct {
 	sqlite3*		_database;

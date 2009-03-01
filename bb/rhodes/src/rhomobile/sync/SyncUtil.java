@@ -1,7 +1,7 @@
 /*
  *  rhodes
  *
- *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -94,43 +94,53 @@ public class SyncUtil {
 	 * @return the int
 	 */
 	public static int fetchRemoteChanges(SyncSource source, String client_id) {
-		int count = 0;
 		int success=0, deleted=0, inserted=0;
 		long start=0, duration=0;
 		String data = null;
-		try {
-			start = System.currentTimeMillis();
-			String session = get_session(source);
-			data = SyncManager.fetchRemoteData(source.get_sourceUrl()
-					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session, true);
-		} catch (IOException e) {
-			System.out
-					.println("There was an error fetching data from the sync source: "
-							+ e.getMessage());
-		}
-		if (data != null) {
-			ArrayList list = SyncJSONParser.parseObjectValues(data);
-			count = list.size();
-			String type;
-			if (count > 0) {
-				for (int i = 0; i < count; i++) {
-				  type = ((SyncObject)list.get(i)).getDbOperation();
-				  if (type != null) {
-				    if (type.equalsIgnoreCase("insert")) {
-				    	((SyncObject)list.get(i)).insertIntoDatabase();
-				    	inserted++;
-				    } else if (type.equalsIgnoreCase("delete")) {
-				    	((SyncObject)list.get(i)).deleteFromDatabase();
-				    	deleted++;
-				    }
-				  }
-				}
+		SyncJSONParser.SyncHeader header = new SyncJSONParser.SyncHeader();
+	    int nTry = 0, nTotal = 0;
+	    String fetch_url = source.get_sourceUrl() + SyncConstants.SYNC_FORMAT + "&client_id=" + client_id +
+	    	"&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
+
+		start = System.currentTimeMillis();
+		String session = get_session(source);
+	    
+		do{
+			try {
+				data = SyncManager.fetchRemoteData( fetch_url, session, true);
+			} catch (IOException e) {
+				System.out
+						.println("There was an error fetching data from the sync source: "
+								+ e.getMessage());
 			}
-			success = 1;
-		}
+			if (data != null) {
+				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
+				int count = list.size();
+				nTotal += count; 
+				String type;
+				if (count > 0) {
+					for (int i = 0; i < count; i++) {
+					  type = ((SyncObject)list.get(i)).getDbOperation();
+					  if (type != null) {
+					    if (type.equalsIgnoreCase("insert")) {
+					    	((SyncObject)list.get(i)).insertIntoDatabase();
+					    	inserted++;
+					    } else if (type.equalsIgnoreCase("delete")) {
+					    	((SyncObject)list.get(i)).deleteFromDatabase();
+					    	deleted++;
+					    }
+					  }
+					}
+				}
+				success = 1;
+			}else{
+                nTry++;
+			}
+		}while( header._count > 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT);
+		
 		duration = (System.currentTimeMillis() - start) / 1000L;
 		updateSourceSyncStatus(source, inserted, deleted, duration, success);
-		return count;
+		return nTotal;
 	}
 
 	/**
@@ -480,17 +490,24 @@ public class SyncUtil {
 	private static String getSessionByDomain(String url){
 		RubyArray sources = getSourceList();
 
-		URI uri = new URI(url);
-		for( int i = 0; i < sources.size(); i++ )
-		{
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
-			String session = element.get(PerstLiteAdapter.SESSION).toString();
-			URI uriSrc = new URI(sourceUrl);
-			if ( session != null && session.length() > 0 &&
-				 uri.getHost().equalsIgnoreCase(uriSrc.getHost()))
-				return session;
-		}
+		try {
+			URI uri = new URI(url);
+			for( int i = 0; i < sources.size(); i++ )
+			{
+				try{
+					RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+					String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
+					String session = element.get(PerstLiteAdapter.SESSION).toString();
+					if ( sourceUrl == null || sourceUrl.length() == 0 )
+						continue;
+					
+					URI uriSrc = new URI(sourceUrl);
+					if ( session != null && session.length() > 0 &&
+						 uri.getHost().equalsIgnoreCase(uriSrc.getHost()))
+						return session;
+				}catch(URI.MalformedURIException exc){}
+			}
+		}catch( URI.MalformedURIException exc ){}
 		
 		return "";
 	}
@@ -608,6 +625,9 @@ public class SyncUtil {
 			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 
+			if (sourceUrl.length() == 0 )
+				continue;
+			
 			strSession = getSessionByDomain(sourceUrl);
 			if ( strSession.length() == 0 ){
 				try {
