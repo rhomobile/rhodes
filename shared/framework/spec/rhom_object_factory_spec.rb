@@ -2,7 +2,7 @@
 #  rhom_object_factory_spec.rb
 #  rhodes
 #
-#  Copyright (C) 2008 Lars Burgess. All rights reserved.
+#  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -269,8 +269,8 @@ describe "RhomObjectFactory" do
     
     @accts.first.name.should == "Aeroprise"
     @accts.first.industry.should == "Technology"
-    @accts.second.name.should == "Mirapath"
-    @accts.second.industry.should == "Electronics"
+    @accts[1].name.should == "Mirapath"
+    @accts[1].industry.should == "Electronics"
     @accts.last.name.should == "vSpring"
     @accts.last.industry.should == "Finance"
   end

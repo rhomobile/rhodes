@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="61"/>
+			<integer value="74"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -125,13 +125,12 @@
 							<object class="IBUIActivityIndicatorView" id="748625629">
 								<reference key="NSNextResponder" ref="178952735"/>
 								<int key="NSvFlags">1316</int>
-								<string key="NSFrame">{{81, 448}, {20, 20}}</string>
+								<string key="NSFrame">{{82, 447}, {20, 20}}</string>
 								<reference key="NSSuperview" ref="178952735"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<bool key="IBUIAnimating">YES</bool>
-								<int key="IBUIStyle">2</int>
 							</object>
 							<object class="IBUILabel" id="47732215">
 								<reference key="NSNextResponder" ref="178952735"/>
@@ -518,7 +517,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 					</object>
-					<string>{{423, 214}, {320, 480}}</string>
+					<string>{{431, 326}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>RhoRunnerAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>

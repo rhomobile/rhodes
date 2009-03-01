@@ -2,7 +2,7 @@
  *  SyncJSONReader.h
  *  RhoSyncClient
  *
- *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 	
-int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free);
+int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free, SyncHeader* header);
 
 char *parse_client_id(char *input);
 

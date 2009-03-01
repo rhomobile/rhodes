@@ -81,6 +81,7 @@ BEGIN
         MENUITEM "Refresh",                     IDM_REFRESH
         MENUITEM "Stop",                        IDM_STOP
         MENUITEM "Sync",                        IDM_SYNC
+        MENUITEM "Options",                     IDM_OPTIONS
         MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
     END
 END

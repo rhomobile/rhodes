@@ -75,23 +75,29 @@ public class SyncUtil {
 	 * @return the int
 	 */
 	public static int fetchRemoteChanges(SyncSource source, String client_id) {
-		int count = 0;
 		int success=0, deleted=0, inserted=0;
 		long start=0, duration=0;
 		String data = null;
-		try {
+		SyncJSONParser.SyncHeader header = new SyncJSONParser.SyncHeader();
+	    int nTry = 0, nTotal = 0;
+	    String fetch_url = source.get_sourceUrl() + SyncConstants.SYNC_FORMAT + "&client_id=" + client_id +
+	    	"&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
+
 			start = System.currentTimeMillis();
 			String session = get_session(source);
-			data = SyncManager.fetchRemoteData(source.get_sourceUrl()
-					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id, session, true);
+	    
+		do{
+			try {
+				data = SyncManager.fetchRemoteData( fetch_url, session, true);
 		} catch (IOException e) {
 			System.out
 					.println("There was an error fetching data from the sync source: "
 							+ e.getMessage());
 		}
 		if (data != null) {
-			ArrayList list = SyncJSONParser.parseObjectValues(data);
-			count = list.size();
+				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
+				int count = list.size();
+				nTotal += count; 
 			String type;
 			if (count > 0) {
 				for (int i = 0; i < count; i++) {
@@ -108,14 +114,19 @@ public class SyncUtil {
 				}
 			}
 			success = 1;
+			}else{
+                nTry++;
 		}
+		}while( header._count > 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT);
+		
 		duration = (System.currentTimeMillis() - start) / 1000L;
 		updateSourceSyncStatus(source, inserted, deleted, duration, success);
-		return count;
+		return nTotal;
 	}
 
 	/**
 	 * Update the sync source status after each sync run
+	 * 
 	 * @param source
 	 * @param inserted
 	 * @param deleted
@@ -320,6 +331,8 @@ public class SyncUtil {
 							.get_sourceId());
 					SyncUtil.printResults(objects);
 				}
+				if ( !thread.isStop() )
+					SyncEngine.getNotificationImpl().fireNotification(id);
 			}
 		}
 		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
@@ -399,10 +412,10 @@ public class SyncUtil {
 	 */
 	public static int getObjectCountFromDatabase( String dbName ) {
 		RubyArray arr = createArray();
-		arr.add(createString(dbName));//"object_values")); //table name
-		arr.add(createString("*")); //attributes
-		//arr.add(createString("source_id")); //not nil attributes
-		arr.add(RubyConstant.QNIL); //where
+		arr.add(createString(dbName));// "object_values")); //table name
+		arr.add(createString("*")); // attributes
+		// arr.add(createString("source_id")); //not nil attributes
+		arr.add(RubyConstant.QNIL); // where
 
 		RubyHash params = createHash();
 		params.add(createString("count"), RubyConstant.QTRUE);
@@ -459,17 +472,24 @@ public class SyncUtil {
 	private static String getSessionByDomain(String url){
 		RubyArray sources = getSourceList();
 
+		try {
 		URI uri = new URI(url);
 		for( int i = 0; i < sources.size(); i++ )
 		{
+				try{
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			String session = element.get(PerstLiteAdapter.SESSION).toString();
+					if ( sourceUrl == null || sourceUrl.length() == 0 )
+						continue;
+					
 			URI uriSrc = new URI(sourceUrl);
 			if ( session != null && session.length() > 0 &&
 				 uri.getHost().equalsIgnoreCase(uriSrc.getHost()))
 				return session;
+				}catch(URI.MalformedURIException exc){}
 		}
+		}catch( URI.MalformedURIException exc ){}
 		
 		return "";
 	}
@@ -556,12 +576,13 @@ public class SyncUtil {
 				String header_field = connection.getHeaderField(i);
 				System.out.println("Set-Cookie: " + header_field);
 				parseCookie( header_field, cookie );
-				// Hack to make it work on 4.6 device which doesn't parse cookies correctly
-//				if (cookie.strAuth==null) {
-//					String auth = extractToc("auth_token", header_field);
-//					cookie.strAuth = auth;
-//					System.out.println("Extracted auth_token: " + auth);
-//				}
+				// Hack to make it work on 4.6 device which doesn't parse
+				// cookies correctly
+// if (cookie.strAuth==null) {
+// String auth = extractToc("auth_token", header_field);
+// cookie.strAuth = auth;
+// System.out.println("Extracted auth_token: " + auth);
+// }
 				if (cookie.strSession==null) {
 					String rhosync_session = extractToc("rhosync_session", header_field);
 					cookie.strSession = rhosync_session;
@@ -580,13 +601,16 @@ public class SyncUtil {
 		for( int i = 0; i < sources.size(); i++ )
 		{
 			String strSession="";
-			//String strExpire="";
+			// String strExpire="";
 			HttpURLConnection connection = null;
 			
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 
+			if (sourceUrl.length() == 0 )
+				continue;
+			
 			strSession = getSessionByDomain(sourceUrl);
 			if ( strSession.length() == 0 ){
 				try {
@@ -626,9 +650,9 @@ public class SyncUtil {
 	
 	public static String get_client_db_info(String attr) {
 		RubyArray arr = createArray();
-		arr.add(createString("client_info")); //table name
-		arr.add(createString(attr)); //attributes
-		arr.add(RubyConstant.QNIL); //where
+		arr.add(createString("client_info")); // table name
+		arr.add(createString(attr)); // attributes
+		arr.add(RubyConstant.QNIL); // where
 
 		RubyArray results = (RubyArray)adapter.selectFromTable(arr);
 		if ( results.size() > 0 ){

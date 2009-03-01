@@ -13,7 +13,7 @@
  *      "db_operation": "insert"}
  *  }]
  *
- *  Copyright (C) 2008 Lars Burgess. All rights reserved.
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include "SyncJSONReader.h"
 #include "Utils.h"
 
-int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free) {
+int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free, SyncHeader* header) {
 	/* Parsing vars */
 	struct json_object *json;
 	struct array_list *json_list;
@@ -44,7 +44,8 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
 	struct json_object *sub_val;
 	int i, parsed_size, add_to_list = 0;
 	pSyncObject current_parse_object;
-	
+	int nRecords = 0;
+
 	json = json_tokener_parse(input);
 	if ( !json ) return 0;
     if ( json_to_free )
@@ -52,14 +53,20 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
 
 	json_list = json_object_get_array((struct json_object *)json);
 	parsed_size = array_list_length(json_list);
-	if (size < parsed_size) parsed_size = size;
+	if (size < parsed_size) 
+        parsed_size = size;
+
 	for (i = 0; i < parsed_size; i++) {
 		struct json_object *jsonSync = (struct json_object *) array_list_get_idx(json_list, i);		
 		
 		for (entry = json_object_get_object(jsonSync)->head; entry; entry = entry->next) {
 			key = (char *) entry->k;
 			val = (struct json_object *) entry->v;
-			if (strcmp(key, "object_value") == 0) {
+            if (strcmp(key, "count") == 0) {
+                header->_count = atoi( json_object_get_string(val) );
+            }else if (strcmp(key, "token") == 0) {
+                strcpy(header->_token, json_object_get_string(val));
+            }else if (strcmp(key, "object_value") == 0) {
 				/* Initialize a new SyncObject for each object_value found */
 				current_parse_object = (pSyncObject)SyncObjectCreate();
 				
@@ -86,15 +93,16 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
 					}
 				}
 				if (add_to_list) {
-					list[i] = current_parse_object;
+					list[nRecords] = current_parse_object;
 					add_to_list = 0;
+                    nRecords++;
 				}
 				
 			}
 		}
 	}
 
-	return parsed_size;
+    return nRecords < 0 ? 0 : nRecords;
 }
 
 char *parse_client_id(char *input) {

@@ -234,6 +234,11 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
+LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetOptionsPage(), NULL, NULL, NULL, NULL);
+	return 0;
+}
+
 LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE

@@ -125,78 +125,92 @@ const char* load_source_url()
 int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params) {
 	pSyncObject *list;
 	char url_string[4096];
-	int j,available;//,i,source_length;
+	int j, nTotal = 0;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
 	int success=0, size_deleted=0, size_inserted=0;
-	double start=0,duration = 0;
-	available = 0;
+	double start=0, duration = 0;
+    SyncHeader header;
+    int nTry = 0;
+
+    header._count = -1;
+
+    if ( !src->_source_url || strlen(src->_source_url) == 0 )
+        return nTotal;
+
 	save_source_url(src->_source_url);
 	if (params && strlen(params) > 0) {
 		sprintf(url_string, 
-				"%s%s%s&client_id=%s&question=%s", 
+				"%s%s%s&client_id=%s&question=%s&p_size=%d", 
 				src->_source_url,
 				SYNC_ASK_ACTION,
 				SYNC_SOURCE_FORMAT, 
 				client_id,
-				params);
+				params, SYNC_PAGE_SIZE );
 	} else {
 		sprintf(url_string, 
-				"%s%s&client_id=%s", 
+				"%s%s&client_id=%s&p_size=%d", 
 				src->_source_url,
 				SYNC_SOURCE_FORMAT, 
-				client_id);
+				client_id, SYNC_PAGE_SIZE);
 	}
 	start = time(NULL);
-	json_string = fetch_remote_data(url_string);
-	if(json_string && strlen(json_string) > 0) {
-		int size = MAX_SYNC_OBJECTS;
-		//printf("JSON data: %s\n", json_string);
-		// Initialize parsing list and call json parser
-		list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
-		if (list) {
-			struct json_object* json_to_free = 0;
-			available = parse_json_list(list, json_string, size, &json_to_free);
-			printf("Parsed %i records from sync source...\n", available);
-			if(available > 0) {
-				for(j = 0; j < available; j++) {
-					list[j]->_database = database;
-					type = list[j]->_db_operation;
-					if (type) {
-						if(strcmp(type, "insert") == 0) {
-							/*printf("Inserting record %i - %s - %s: %s\n", 
-								   list[j]->_primary_key, list[j]->_object, 
-								   list[j]->_attrib, list[j]->_value);*/
-							insert_into_database(list[j]);
-							size_inserted++;
-						} 
-						else if (strcmp(type, "delete") == 0) {
-							/*printf("Deleting record %i\n", list[j]->_primary_key);*/
-							delete_from_database(list[j]);
-							size_deleted++;
-						} else {
-							printf("Warning: received improper update_type: %s...\n", type);
-						}
-					}
-				}
-			}
-			/* free the in-memory list after populating the database */
-			free_ob_list(list, available);
-			free(list);
 
-			if ( json_to_free )
-				json_object_put(json_to_free);
-		}
-		success = 1;
-		free(json_string);
-	} else {
-		success = 0;
-	}
+    list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
+    if ( list )
+    {
+        do {
+	        json_string = fetch_remote_data(url_string);
+	        if(json_string && strlen(json_string) > 0) {
+		        struct json_object* json_to_free = 0;
+		        int available = parse_json_list(list, json_string, MAX_SYNC_OBJECTS, &json_to_free, &header);
+		        printf("Parsed %i records from sync source...\n", available);
+                nTotal += available;
+		        if(available > 0) {
+			        for(j = 0; j < available; j++) {
+				        list[j]->_database = database;
+				        type = list[j]->_db_operation;
+				        if (type) {
+					        if(strcmp(type, "insert") == 0) {
+						        /*printf("Inserting record %i - %s - %s: %s\n", 
+							           list[j]->_primary_key, list[j]->_object, 
+							           list[j]->_attrib, list[j]->_value);*/
+						        insert_into_database(list[j]);
+						        size_inserted++;
+					        } 
+					        else if (strcmp(type, "delete") == 0) {
+						        /*printf("Deleting record %i\n", list[j]->_primary_key);*/
+						        delete_from_database(list[j]);
+						        size_deleted++;
+					        } else {
+						        printf("Warning: received improper update_type: %s...\n", type);
+					        }
+				        }
+			        }
+		        }
+		        /* free the in-memory list after populating the database */
+		        free_ob_list(list, available);
+
+		        if ( json_to_free )
+			        json_object_put(json_to_free);
+
+	            success = 1;
+	            free(json_string);
+
+	        } else {
+                nTry++;
+	        }
+        }while( header._count > 0 && nTry < MAX_SYNC_TRY_COUNT );
+
+        free(list);
+    }
+
+
 	duration = time(NULL) - start;
 	update_source_sync_status((sqlite3 *)get_database(), 
 							  src, size_inserted, size_deleted, duration, success);
     
-	return available;
+	return nTotal;
 }
 
 /*
@@ -204,7 +218,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
  */
 int push_remote_changes(pSyncOperation *list, int size) {
 	char *data;
-	int i, success = 0;
+	int i, retval = 0;
 	size_t data_size = 0;
 	
 	if (size == 0) return SYNC_PUSH_CHANGES_OK;
@@ -228,10 +242,10 @@ int push_remote_changes(pSyncOperation *list, int size) {
 		}
 	}
 	
-	success = push_remote_data(list[0]->_uri,data,data_size);
+	retval = push_remote_data(list[0]->_uri,data,data_size);
 	free(data);
 	
-	return success ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
+	return retval ? SYNC_PUSH_CHANGES_ERROR : SYNC_PUSH_CHANGES_OK;
 }
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {

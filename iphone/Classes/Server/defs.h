@@ -7,13 +7,15 @@
  *
  */
 
+#ifdef DEBUG
 #define _DEBUG 1
+#endif
 
 #ifdef _DEBUG
 #define	DBG(x)          printf x ;
 #else
 #define	DBG(x)
-#endif /* DEBUG */
+#endif /* _DEBUG */
 
 #define	URI_MAX		16384			/* Default max request size	*/
 
