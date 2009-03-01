@@ -76,11 +76,7 @@ module Rhom
                   # do we have conditions?
                   # if so, add them to the query
                   condition_hash = {}
-                  if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
-                    query_conditions = args[1][:conditions].each do |key,value|
-                      condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
-                    end
-                  end
+                  condition_hash = get_conditions_hash(args[1][:conditions]) if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
                   conditions.merge!(condition_hash)
 
                   # process query, create, and update lists in order
@@ -159,6 +155,13 @@ module Rhom
                     SyncEngine::dosync
                   end
                 end
+                
+                # deletes all records matching conditions (optionally nil)
+                def delete_all(conditions=nil)
+                  del_conditions = conditions.nil? ? {} : get_conditions_hash(conditions)
+                  del_conditions.merge!({"source_id"=>get_source_id})
+                  ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME, del_conditions)
+                end
                     
                 private
                 # returns new model instance with a temp object id
@@ -166,6 +169,19 @@ module Rhom
                   tmp_obj = self.new
                   tmp_obj.send("object=".to_sym(), "{#{obj['object'].to_s}}")
                   tmp_obj
+                end
+                
+                # get hash of conditions in sql form
+                def get_conditions_hash(conditions=nil)
+                  if conditions
+                    condition_hash = {}
+                    conditions.each do |key,value|
+                      condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
+                    end
+                    condition_hash
+                  else
+                    nil
+                  end
                 end
               end #class methods
 	
