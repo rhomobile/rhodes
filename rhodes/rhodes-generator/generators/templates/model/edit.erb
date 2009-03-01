@@ -1,0 +1,21 @@
+<form title="Edit <%= class_name %>" 
+	  class="panel" 
+	  id="<%= name %>_edit_form" 
+	  method="POST" 
+	  action="<%%=url_for(:action => :update)%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
+		<% attributes.each do |attribute| %>
+		  <div class="row">
+			  <label><%=humanize(attribute)%>: </label>
+			  <input type="text" name="<%= name %>[<%= attribute %>]" value="<%%=@<%=name%>.<%=attribute%>%>"/>
+		  </div>
+		<% end %>
+	</fieldset>
+	<input type="submit" value="Update"/>
+	<p align="center">
+		<a href="<%%=url_for(:action => :delete, :id => @<%= name %>.object)%>">
+			<font color="#990000">Delete</font>
+		</a>
+	</p>
+</form>

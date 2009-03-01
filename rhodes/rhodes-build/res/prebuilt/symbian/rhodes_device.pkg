@@ -1,0 +1,39 @@
+; Installation file for rhodes application
+;
+; This is an auto-generated PKG file by Carbide.
+; This file uses variables specific to Carbide builds that will not work
+; on command-line builds. If you want to use this generated PKG file from the
+; command-line tools you will need to modify the variables with the appropriate
+; values: \Symbian\9.2\S60_3rd_FP1\, GCCE, UREL
+;
+;Language - standard language definitions
+&EN
+
+; standard SIS file header
+#{"rhodes"},(0xE6B4F4DF),0,1,2
+
+;Localised Vendor name
+%{"RhoMobile-EN"}
+;Unique Vendor name
+:"RhoMobile"
+
+;Supports Series 60 v 3.0
+[0x101F7961], 0, 0, 0, {"Series60ProductID"}
+
+;Files to install
+;You should change the source paths to match that of your environment
+;<source> <destination>
+"Epoc32\release\gcce\urel\rhodes.exe"		-"!:\sys\bin\rhodes.exe"
+"Epoc32\data\z\resource\apps\rhodes.rsc"		-"!:\resource\apps\rhodes.rsc"
+"Epoc32\data\z\private\10003a3f\apps\rhodes_reg.rsc"	-"!:\private\10003a3f\import\apps\rhodes_reg.rsc"
+"Epoc32\data\z\resource\apps\rhodes.mif" -"!:\resource\apps\rhodes.mif"
+"rhodes.hlp"							 -"!:\resource\help\rhodes.hlp"
+
+; Add any installation notes if applicable
+;"rhodes.txt"		-"!:\private\E6B4F4DF\rhodes.txt"
+
+;required for application to be covered by backup/restore facility 
+"backup_registration.xml"		-"!:\private\E6B4F4DF\backup_registration.xml"
+
+;RhoBundle files
+

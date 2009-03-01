@@ -1,0 +1,11 @@
+desc "install all gems locally"
+task :install_all_gems do
+  current_dir = pwd
+  ['rhodes-build','rhodes-generator','rhodes-framework','rhodes'].each do |dir|
+    chdir dir
+    puts `rake clobber`
+    puts `rake install_gem`
+    puts `rake clobber`
+    chdir current_dir
+  end
+end
