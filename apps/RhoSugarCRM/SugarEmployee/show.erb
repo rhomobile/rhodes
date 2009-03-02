@@ -55,17 +55,17 @@
 		<table class="grid">
 		  <tr>
 			  <td class="gridleft">Office phone</td>
-			  <td class="gridright"><%=@SugarEmployee.phone_work%></td>
+			  <td class="gridright"><%= click_to_call @SugarEmployee.phone_work%></td>
 		  </tr>
 
 		  <tr>
 			  <td class="gridleft">Mobile</td>
-			  <td class="gridright"><%=@SugarEmployee.phone_mobile%></td>
+			  <td class="gridright"><%=click_to_call @SugarEmployee.phone_mobile%></td>
 		  </tr>
 
 		  <tr>
 			  <td class="gridleft">Other</td>
-			  <td class="gridright"><%=@SugarEmployee.phone_other%></td>
+			  <td class="gridright"><%=click_to_call @SugarEmployee.phone_other%></td>
 		  </tr>
 
 		  <tr>
@@ -75,7 +75,7 @@
 
 		  <tr>
 			  <td class="gridleft">Home phone</td>
-			  <td class="gridright"><%=@SugarEmployee.phone_home%></td>
+			  <td class="gridright"><%=click_to_call @SugarEmployee.phone_home%></td>
 		  </tr>		
 			</table>
 
