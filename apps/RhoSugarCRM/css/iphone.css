@@ -1,6 +1,6 @@
 /* change default graphic for toolbar */
 body > .toolbar {
-  background: url(../images/toolbar_new.png) #ff0000 repeat-x;
+  background: url(../images/toolbar_new.png) #000000 repeat-x;
 }
 /* now that we don't use back-buttons, we disable ellipsis on long labels */
 .toolbar > h1 {
