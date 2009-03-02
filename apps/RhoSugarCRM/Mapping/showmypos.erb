@@ -109,6 +109,7 @@
       
 		function ws_results(obj) {
 			my_url_name = obj.ResultSet.Result;
+			generate_mapview();
 		}
 
 		function generate_mapview() {
@@ -126,7 +127,7 @@
 <% if System::get_property('platform') == 'APPLE' %>
 	<body onload="getMyGeoLocation()">
 <% else %>
-	<body onload="setTimeout('generate_mapview()', 1000)">	
+	<body>	
 <% end %>	
 	
 <div class="toolbar">
@@ -141,12 +142,17 @@
 	
 	<% else %>
 		<img id="map" src="" height="250" width="250" alt="map image loading..."/>	
-
+       
 	  <!-- do a JSON load which triggers the ws_results function call -->
-  		<% encoded_address = !@contacts[0].nil? ? format_address_for_mapping(@contacts[0].street, @contacts[0].city, @contacts[0].state, @contacts[0].zip, true) : "" %>  
- 			<% full_url = "http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250" + "#{encoded_address}" %>
-
- 			<script type="text/javascript" src="<%= full_url %>" ></script>
+		<% if @show_addresses %>
+            <% encoded_address = !@contacts[0].nil? ? format_address_for_mapping(@contacts[0].primary_address_street, @contacts[0].primary_address_city, @contacts[0].primary_address_state, @contacts[0].primary_address_postalcode, true) : "" %>
+	  	<% else %>
+	  		<% encoded_address = format_latlon_for_mapping(GeoLocation.latitude.to_s, GeoLocation.longitude.to_s)%>  
+	  	<% end %>
+	  			  		
+		<% full_url = "http://local.yahooapis.com/MapsService/V1/mapImage?appid=YD-4g6HBf0_JX0yq2IsdnV1Ne9JTpKxQ3Miew--&output=json&callback=ws_results&image_height=250&image_width=250" + "#{encoded_address}" %>
+		
+		<script type="text/javascript" src="<%= full_url %>" ></script>
 
   <% end %>
 
@@ -155,7 +161,7 @@
 	Latitude: <%= GeoLocation.latitude.to_s %><br/>
 	Longitude: <%= GeoLocation.longitude.to_s %><br/>
 </div>
-	
+
 
 </div>
 
