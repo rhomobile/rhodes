@@ -1,0 +1,136 @@
+<project name="compileRubySrc" default="all" basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="version" value="0.10" />
+	<property name="vendor" value="RhoMobile" />
+
+  <property name="rubylib.dir" location="../../../rhodes/rhodes-framework/lib" />
+  <property name="sharedapps.dir" location="../../../apps/shared" />
+  <property name="sourceapps.dir" location="../../../apps/Sources" />
+
+  <condition property="apps.dir" value="../../../apps">
+    <not> <isset property="apps.dir"/>  </not>
+  </condition>
+
+  <condition property="compileERB.path" value="compileERB.rb">
+    <not><isset property="compileERB.path"/></not>
+  </condition>
+
+  <condition property="srclib.dir" value="${src.dir}/lib">
+    <not> <isset property="srclib.dir"/> </not>
+  </condition>
+
+  <target name="clean" description="clean build">
+		<delete dir="${src.dir}" />
+		<mkdir dir="${src.dir}" />
+	</target>
+
+	<target name="RhoBundle" depends="clean">
+        <copy todir="${srclib.dir}">
+            <fileset dir="${rubylib.dir}" excludes="${exclude.lib}" >
+                <include name="**/*.rb" />
+                <exclude name="**/erb.rb" />
+                <exclude name="**/find.rb" />
+            </fileset>
+        </copy>
+        <copy todir="${src.dir}/apps">
+          
+            <fileset dir="${apps.dir}" excludes ="${exclude.apps}" >
+<!--            <include name="**/*.rb" />
+                <include name="**/*.erb" />
+                <include name="**/*.html" />
+                <include name="**/*.txt" />
+                <include name="**/*.css" /> -->
+              
+                <exclude name="**/nbproject" />
+                <exclude name="**/.DS_Store" />
+            </fileset>
+        </copy>
+
+        <copy todir="${src.dir}/apps/shared">
+          <fileset dir="../../../apps/shared" excludes ="${exclude.apps}" >
+            <exclude name="**/nbproject" />
+            <exclude name="**/.DS_Store" />
+          </fileset>
+        </copy>
+
+        <copy todir="${src.dir}/apps/Settings">
+          <fileset dir="../../../apps/Settings" excludes ="${exclude.apps}" >
+            <exclude name="**/nbproject" />
+            <exclude name="**/.DS_Store" />
+          </fileset>
+        </copy>
+    
+    </target>
+
+  <target name="createAppManifest" depends="RhoBundle">
+
+    <copy file="createAppManifest.rb" todir="${src.dir}"/>
+
+    <exec executable="${ruby.path}">
+      <arg value="-R${rubylib.dir}" />
+      <arg value="${src.dir}/createAppManifest.rb" />
+    </exec>
+
+    <delete file="${src.dir}/createAppManifest.rb" />
+
+  </target>
+
+  <target name="compileERB" depends="createAppManifest">
+
+    <copy file="${compileERB.path}" todir="${src.dir}"/>
+
+    <exec executable="${ruby.path}">
+      <arg value="-R${rubylib.dir}" />
+      <arg value="${src.dir}/compileERB.rb" />
+    </exec>
+
+    <delete file="${src.dir}/compileERB.rb" />
+
+  </target>
+
+  <target name="bundleCommon" depends="compileERB">
+  </target>
+
+  <target name="bundleDB" depends="bundleCommon">
+    <copy todir="${src.dir}/lib/sqlite3">
+      <fileset dir="../../../rhodes/rhodes-framework/res/sqlite3">
+        <include name="**/*.rb" />
+      </fileset>
+    </copy>
+    <copy todir="${src.dir}/db">
+      <fileset dir="../../../rhodes/rhodes-build/res/prebuilt/common/db">
+        <include name="**/*.sqlite" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compileRB" depends="bundleDB">
+    <copy file="compileRB.rb" todir="${src.dir}"/>
+
+    <exec executable="${ruby.path}">
+        <arg value="-R${rubylib.dir}" />
+        <arg value="${src.dir}/compileRB.rb" />
+    </exec>
+
+    <delete file="${src.dir}/compileRB.rb" />
+
+  </target>
+
+  
+  <target name="deleteRBandERB">
+
+    <delete>
+      <fileset dir="${src.dir}" includes="**/*.rb"/>
+      <fileset dir="${src.dir}" includes="**/*.erb"/>            
+    </delete>
+
+  </target>
+
+  <target name="all" depends="compileRB,deleteRBandERB">
+    <delete file="LogFile.txt" />
+
+  </target>
+
+</project>

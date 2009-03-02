@@ -1,0 +1,16 @@
+<form title="New <%= class_name %>" 
+	  class="panel"
+	  id="<%= name %>_new_form" 
+	  method="POST" 
+	  action="<%%=url_for(:action => :create)%>">
+	<fieldset>
+		<input type="hidden" name="id" value="<%%=@<%= name %>.object%>"/>
+		<% attributes.each do |attribute| %>
+		  <div class="row">
+			  <label><%=humanize(attribute)%>: </label>
+			  <input type="text" name="<%= name %>[<%= attribute %>]"/>
+		  </div>
+		<% end %>
+	</fieldset>
+	<input type="submit" value="Create"/>
+</form>

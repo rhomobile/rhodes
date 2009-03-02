@@ -1,3 +1,0 @@
-configs/account
-configs/case
-configs/employee

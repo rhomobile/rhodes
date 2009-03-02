@@ -1,0 +1,198 @@
+1.42
+	fixed POST problem under Windows
+	added Windows installer
+	couple of minor fixes, sent by shttpd users
+
+1.41
+	-threads option added: SHTTPD core goes multithreaded
+	UNICODE fix for the windows, protect_against_code_disclosure()
+	SSL functionality fixed
+	added tests for all build variations
+
+1.40
+	Multithreaded API changed: added shttpd_create_ctlsock() and
+	shttpd_pass_socket().
+	Added Windows service support.
+	scalable.c example now builds on UNIX.
+	shttpd_listen() is gone.
+
+1.39
+	Windows GUI is gone.
+	New command line options schema.
+	shttpd_set_option() could be used to set options at runtime.
+	shttpd_init() changed: now shttpd_init(int argc, char *argv[])
+	added administrative page.
+	added universal -protect option.
+	added ACL support, based on IP subnets.
+
+1.36
+	API is modified (read: broken again!). shttpd_printf() is added.
+	Embedded POST handling have changed.
+	Fixed IE7 authorization bug.
+	Fixed connection timeout bug.
+	Reorganized CVS tree.
+	Added log window to Windows GUI.
+
+1.35
+	PATH_INFO support is back. Thanks to James Marshall for contribution
+	and testing on his http://www.jmarshall.com/tools/cgiproxy/
+	CGI proxy script.
+
+1.34
+	getcwd() fix for solaris, from Guido Cavezzali
+	Improved Win32 GUI, put file/directory browse buttons.
+	Proper file descriptor close, and FD_CLOEXEC, from Mirko Girotto
+
+1.33	Bugfix. writeremote() timing bug fixed.
+	Refactoring: nread,nwritten in struct io renamed to head, tail.
+	CGI directory bug (introduced after 1.32) fixed, test added to test.sh
+
+1.32
+	Windows CGI bug fix (SYSTEMROOT environment variable issue).
+	CGI interpreter and additional CGI variables can be configured,
+	patch from Gero Kuhlmann.
+	Windows build includes icon file as well.
+	editpass() Windows issue fixed, thanks to Peter Kuo and
+	Christopher Adams.
+
+1.31
+	Refactored the code. Now SHTTPD instance is fully incapsulated
+	within the "context".
+	Windows CGI code refactored.
+	Removed shttpd_watch(), shttpd_setopt(), shttpd_register_mountpoint().
+	Modified shttpd_init()
+	Added shttpd_listen(), shttpd_add(), shttpd_active(), shttpd_accept(),
+	shttpd_get_header(), shttpd_get_env().
+	Added scalable.c, example on how to run SHTTPD in scalable manner.
+
+1.30
+	Removed multithreading. 
+	Reorganised examples, put everythting in one example file. 
+	shttpd_merge_fds(), shttpd_printf(), shttpd_template(), 
+	shttpd_push() are gone.
+	added shttpd_watch().
+	Fixed CGI under Windows.
+	Boolean command line parameters need argument now.
+	CGI code refactored.
+
+1.29
+	added Windows GUI, -DNO_GUI parameter, -g command line switch
+	fixed race condition in connection handling, thanks to Mirko Girotto.
+	No conditional SSL build anymore. SSL functionality is loaded
+	by demand using dynamic linking mechanism.
+
+1.28
+	fixed DoS hole in parseheaders (possible memory leak when the same
+	header in request specified more than once). Thanks to
+	Erwin van Doorn for pointing this out.
+	'-S' option is gone. Setting up '-s' option (or ssl_certificate in the
+	config file) automatically switches shttpd to SSL mode.
+	'-V' option added for realtime statistics monitoring.
+	By default, no logging is done (access log and error log)
+	Windows package is now just zip-ped *.exe and config file, no
+	installer.
+	Fixed bug with POST with no data in embedded configuration,
+	thanks for Peter Kuo for reporting.
+	Fixed PUT handling, thanks to Bright Xu
+
+1.27
+	S_ISDIR patch, strict Linux compilation, thanks to Ying Zhang
+	a bug in embedded POST handling is fixed, thanks to Ying Zhang
+	endpwent() is gone, Linux does not like it.
+	added shttpd_setopt() and shttpd_register_mountpoint(),
+	thanks to Dave Fancella.
+	POST problems solved thanks to Bryan Hanks
+1.26
+	Code refactoring.
+	Fixed environment preparation for CGI  in spawncgi().
+	Support for resume download (Range header).
+	stderr from CGI programs was routed to the client, now it  is not.
+	Also check for authentification timeout is gone.
+1.25
+	Fixed index substitution bug, thanks to Chris.
+	PATH_INFO mechanism is gone also.
+1.24
+	POST support for embedded. Config file support.
+	Changed default expiration time to request time +1 hour.
+	Fixed do_embedded: multiple user calls.
+	Thanks to  Mcken Mak for pointing that out
+1.23
+	Fixed bug with query_string
+1.22
+	Processing of user-defined mimetype file had a bug, fixed.
+	Thanks to Oliver Bottcher for reporting that.
+1.21
+	MSIE bug workaround for authorization. CGI senderr() bug fixed.
+1.20
+	Added -A command line option for editing .htpasswd files,
+	to eliminate the need of `htdigest' utility.
+	Made wrapper function around snprintf().
+1.19
+	Security holes are fixed. Thanks to Adam Zeldis for his
+	excellent code review and report.
+1.18
+	Bug in mysocketpair(), fix suggested by David Weibel
+1.17
+	ARM build did not like headers parisng sscanf() format string,
+	slightly reimplemented. Nicer directory listing, file sizes
+	in human-readable format, thanks to Rasmus Andersson.
+1.16
+	Typo introduced when inetd support was added: shttpd_poll did
+	not set sockaddr length before accept(), fixed.
+	Added shttpd_template()
+	-DEMBEDDED build fixed.
+1.15
+	Fixed PATH_TRANSLATED variable.
+	Implemented -I option (inetd mode), thanks to Toby Peterson
+1.14
+	All HTTP headers are exported to CGI as HTTP_* variables.
+	DOCUMENT_ROOT, SERVER_NAME are exported.
+	CGIs to execute in  their own directories. Thanks to Yair Lenga.
+	-u option now takes login name, not numeric UID.
+	If -u option  is set, setgid() and setuid() are done.
+	Thanks to Ronald Reed.
+	Fixed authorization code to work with IE  added shttpd_protect_url()
+1.13
+	Refactoring.
+	Using standard FILENAME_MAX for paths.
+	Implemented EMBEDDED MT case.
+1.12
+	Added embedded interface
+1.11
+	Rewrite. Not using vectors for parsing.
+	Windows GUI code  was thrown out.
+1.10
+	Support for PUT and DELETE methods.
+	Put check for the method  (function setmethod()).
+	Memory leak fixed in redirect().
+1.9
+	Support for user-defined mime types file
+1.8
+	Basic authentication is gone. Digest auth (MD5) is used instead.
+1.7
+	Directory Listing support.
+	'Kernel' rewritten. there is no global select() anymore.
+	win32 GUI settings are stored in HKCU, thanks Ben Truscott
+1.6
+	Fixed CGI headers output (newline was missed).
+	Thanks to Arno Schuring and Frash.
+1.5
+	After start, change current dir to docroot.
+	Optimized environment build for CGI.
+	Added few more env variables (REMOTE_ADDR, USER_AGENT, PATH_INFO, etc).
+	Access log file opened once at start time, not on every request.
+	Added GUI for Windows
+1.4
+	For regular files, added headers: Content-Length,
+	Date, Last-Modified, Etag.
+	Fixed win32 CGI: passing environment to spawaned script.
+	All replies are now set to HTTP 1.1 instead of HTTP 1.0
+1.3
+	Better error reporting (404, 500).
+	Fixed CGI handling for win32,
+	when CGI file is a native executable, not a script
+1.2
+	Redirecting errors to a file.
+	Fixed 'page contains no data' bug.
+1.1
+	Multiple index files support
