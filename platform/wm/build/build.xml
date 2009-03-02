@@ -12,7 +12,7 @@
 
   <property name="bin.dir" location="../bin" />
   <property name="src.dir" location="${bin.dir}/RhoBundle" />
-  <property name="ruby.path" value="../../win32/target/compiler/RhoRuby.exe" />
+  <property name="ruby.path" value="../../../rhodes/rhodes-build/res/RhoRuby.exe" />
   <property name="sharedAnt.dir" value="../../shared/build" />
   <property name="target.dir" location="../target/wm6p" />
 

@@ -5,11 +5,11 @@
   <property name="version" value="0.10" />
 	<property name="vendor" value="RhoMobile" />
 
-  <property name="rubylib.dir" location="../framework/lib" />
-  <property name="sharedapps.dir" location="../../apps/shared" />
-  <property name="sourceapps.dir" location="../../apps/Sources" />
+  <property name="rubylib.dir" location="../../../rhodes/rhodes-framework/lib" />
+  <property name="sharedapps.dir" location="../../../apps/shared" />
+  <property name="sourceapps.dir" location="../../../apps/Sources" />
 
-  <condition property="apps.dir" value="../../apps">
+  <condition property="apps.dir" value="../../../apps">
     <not> <isset property="apps.dir"/>  </not>
   </condition>
 
@@ -49,14 +49,14 @@
         </copy>
 
         <copy todir="${src.dir}/apps/shared">
-          <fileset dir="../../apps/shared" excludes ="${exclude.apps}" >
+          <fileset dir="../../../apps/shared" excludes ="${exclude.apps}" >
             <exclude name="**/nbproject" />
             <exclude name="**/.DS_Store" />
           </fileset>
         </copy>
 
         <copy todir="${src.dir}/apps/Settings">
-          <fileset dir="../../apps/Settings" excludes ="${exclude.apps}" >
+          <fileset dir="../../../apps/Settings" excludes ="${exclude.apps}" >
             <exclude name="**/nbproject" />
             <exclude name="**/.DS_Store" />
           </fileset>
@@ -95,12 +95,12 @@
 
   <target name="bundleDB" depends="bundleCommon">
     <copy todir="${src.dir}/lib/sqlite3">
-      <fileset dir="../../shared/sqlite3">
+      <fileset dir="../../../rhodes/rhodes-framework/res/sqlite3">
         <include name="**/*.rb" />
       </fileset>
     </copy>
     <copy todir="${src.dir}/db">
-      <fileset dir="../../shared/db">
+      <fileset dir="../../../rhodes/rhodes-build/res/prebuilt/common/db">
         <include name="**/*.sqlite" />
       </fileset>
     </copy>
