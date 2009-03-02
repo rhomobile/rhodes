@@ -79,10 +79,10 @@ module ApplicationHelper
       result += myzip if myzip.length > 0
     else
       # need to URL encode data too
-      result += ("&street=" + mystreet) if mystreet.length > 0
-      result += ("&city=" + mycity) if mycity.length > 0
-      result += ("&state=" + mystate) if mystate.length > 0
-      result += ("&zip=" + myzip) if myzip.length > 0      
+      result += ("&street=" + Rho::RhoSupport.url_encode(mystreet)) if mystreet.length > 0
+      result += ("&city=" + Rho::RhoSupport.url_encode(mycity)) if mycity.length > 0
+      result += ("&state=" + Rho::RhoSupport.url_encode(mystate)) if mystate.length > 0
+      result += ("&zip=" + Rho::RhoSupport.url_encode(myzip)) if myzip.length > 0
     end
     # remove any extraneous characters that could interfere with proper address matching
     result = replace_newlines(result)
@@ -91,6 +91,13 @@ module ApplicationHelper
   def has_valid_mapping_address(street, city, state, zip)
     # at a minimum, an address must have a state or a zip
     (!state.nil? && state.length > 0) || (!zip.nil? && zip.length > 0)
+  end
+  
+  def format_latlon_for_mapping(latitude, longitude)
+    result = ""
+    result += ("&latitude=" + Rho::RhoSupport.url_encode(latitude)) if latitude.length > 0
+    result += ("&longitude=" + Rho::RhoSupport.url_encode(longitude)) if longitude.length > 0
+    result
   end
   
 end
