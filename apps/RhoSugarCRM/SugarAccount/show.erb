@@ -62,7 +62,7 @@
 	</tr>
 	<tr>
     <td class="gridleft">Phone Office</td>
-		<td class="gridright"><a href="<%="tel:#{@SugarAccount.phone_office}"%>"><%= @SugarAccount.phone_office %></a></td>
+		<td class="gridright"><%= click_to_call @SugarAccount.phone_office %></td>
 	</tr>
 
 	<tr>
@@ -70,12 +70,8 @@
 		<td class="gridright"><%=@SugarAccount.phone_fax%></td>
 	</tr>
 	<tr>
-    <td class="gridleft">Phone Office</td>
-		<td class="gridright"><%=@SugarAccount.phone_office%></td>
-	</tr>
-	<tr>
     <td class="gridleft">Other Phone</td>
-		<td class="gridright"><%=@SugarAccount.phone_alternate%></td>
+		<td class="gridright"><%= click_to_call @SugarAccount.phone_alternate%></td>
 	</tr>
 	<tr>
     <td class="gridleft">Employees</td>
