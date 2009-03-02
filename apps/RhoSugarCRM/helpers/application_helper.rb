@@ -39,7 +39,12 @@ module ApplicationHelper
     if blank?(value)
       " "
     else
-      "$" + sprintf("%.2f", value)
+      number = "$" + sprintf("%.2f", value)
+      
+      # use a commify algorithm -- http://snippets.dzone.com/tag/commify
+      number.reverse!
+      number.gsub!(/(\d\d\d)(?=\d)(?!\d*\.)/, '\1,')
+      number.reverse!   
     end   
   end
   
