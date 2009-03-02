@@ -146,7 +146,7 @@
 		-->	 
 		<property name="dir.export.GIT"     value="${bin.dir}/export"/>
         
-		<property name="frameworklib.dir" location="${build.dir}\..\..\shared\framework\lib" />
+		<property name="frameworklib.dir" location="${build.dir}\..\..\..\rhodes\rhodes-framework\lib" />
 		
     </target>
 
