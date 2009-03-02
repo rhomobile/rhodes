@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+
+<project name="Perst11" default="all" basedir=".">
+	<description>Perst 1.1</description>
+
+	<!-- From here on down, you probably don't need to change anything -->
+	<property environment="env"/>
+
+	<property name="jdk.version.source" value="1.2"
+		description="JDK version of source code"/>
+	<property name="jdk.version.class" value="1.2"
+		description="JDK version of generated class files"/>
+
+	<property name="wtk.path" value="/wtk22"
+		description="Path to the Sun WTK (Wireless ToolKit) install" />
+	<property name="wtk.lib" value="${wtk.path}/lib" />
+
+	<property name="jdk11classpath" 
+		description="Either rt.jar from java 1.1, or cldc and midp from J2ME _followed_ by your newer java's rt.jar"
+		value="/jdk1.1.8/lib/classes.zip" />
+	<property name="j2meclasspath"
+		description="cldc, midp from J2ME"
+		value="${wtk.lib}/cldcapi11.jar;${wtk.lib}/midpapi20.jar" />
+	<property name="jsr75classpath"
+		description="jsr75 optional package for J2ME"
+		value="${j2meclasspath};${wtk.lib}/jsr75.jar" />
+
+	<!-- Ensure that all the directories we need exist -->
+	<target name="init">
+		<mkdir dir="classes"/>
+	</target>
+
+	<!-- Delete all compiled classes -->
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="**/*.class" />
+		</delete>
+	</target>
+
+	<!-- Build the code, and the supporting libs -->
+	<target name="compile-sergen" depends="init">
+		<javac
+			srcdir="util" 
+			includes="*.java"
+			destdir="classes/"
+			debug="no"
+		>
+		</javac>
+	</target>
+	<target name="compile" depends="init">
+		<javac
+			srcdir="." 
+			includes="cdc/**/*.java org/**/*.java"
+			destdir="classes/"
+			target="${jdk.version.class}"
+			source="${jdk.version.source}"
+			debug="no"
+			bootclasspath="${jdk11classpath}"
+		>
+		</javac>
+	</target>
+	<target name="compile-rms" depends="init">
+		<javac
+			srcdir="." 
+			includes="rms/**/*.java org/**/*.java com/**/*.java weak/**/*.java"
+			destdir="classes/"
+			target="${jdk.version.class}"
+			source="${jdk.version.source}"
+			debug="no"
+			bootclasspath="${j2meclasspath}"
+		>
+		</javac>
+	</target>
+
+	<target name="compile-jsr75" depends="init">
+		<javac
+			srcdir="." 
+			includes="rms/**/*.java jsr75/**/*.java org/**/*.java com/**/*.java weak/**/*.java"
+			destdir="classes/"
+			target="${jdk.version.class}"
+			source="${jdk.version.source}"
+			debug="no"
+			bootclasspath="${jsr75classpath}"
+		>
+		</javac>
+	</target>
+
+	<target name="compile-fulltext" depends="jar-jsr75">
+		<delete>
+			<fileset dir="." includes="**/*.class" />
+		</delete>
+		<javac
+			srcdir="." 
+			includes="fulltext/**/*.java"
+			destdir="classes/"
+			target="${jdk.version.class}"
+			source="${jdk.version.source}"
+			debug="no"
+		        classpath="../lib/perst-jsr75.jar"
+			bootclasspath="${jsr75classpath}"
+		>
+		</javac>
+	</target>
+
+	<target name="compile-cdc" depends="compile-jsr75">
+		<javac
+			srcdir="." 
+			includes="cdc/**/*.java"
+			destdir="classes/"
+			target="${jdk.version.class}"
+			source="${jdk.version.source}"
+			debug="no"
+		>
+		</javac>
+	</target>
+
+	<target name="jar" depends="clean,compile">
+		<jar
+			destfile="../lib/perst11.jar"
+			basedir="classes/"
+		/>
+	</target>
+
+	<target name="jar-rms" depends="clean,compile-rms">
+		<jar
+			destfile="../lib/perst-rms.jar"
+			basedir="classes/"
+		/>
+	</target>
+
+	<target name="jar-jsr75" depends="clean,compile-cdc">
+		<jar
+			destfile="../lib/perst-jsr75.jar"
+			basedir="classes/"
+		/>
+	</target>
+	<target name="jar-sergen" depends="clean,compile-sergen">
+		<jar
+			destfile="../lib/sergen.jar"
+			basedir="classes/"
+		/>
+	</target>
+
+	<target name="jar-fulltext" depends="clean,compile-fulltext">
+		<jar
+			destfile="../lib/fulltext-cldc11.jar"
+			basedir="classes/"
+		/>
+	</target>
+
+	<target name="all" depends="jar,jar-rms,jar-jsr75,jar-sergen,jar-fulltext">
+	</target>
+
+</project>

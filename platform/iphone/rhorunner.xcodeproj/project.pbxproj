@@ -1,0 +1,627 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
+		05377CEC0E74D6C0003B8BD1 /* HttpContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CE80E74D6C0003B8BD1 /* HttpContext.c */; };
+		05377CED0E74D6C0003B8BD1 /* Server.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CEA0E74D6C0003B8BD1 /* Server.c */; };
+		05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
+		05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 05CF70EA0E78B14D00D41986 /* ServerHost.m */; };
+		05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 05CF724E0E7B16F800D41986 /* HttpMessage.c */; };
+		1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
+		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
+		466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 466B0FCB0F3CFA9400A52314 /* home_btn.png */; };
+		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
+		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
+		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
+		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
+		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
+		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
+		F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D63B0EA92C160062DA57 /* rubysynci.c */; };
+		F563D8080EA95EDC0062DA57 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = F563D7680EA95EDC0062DA57 /* apps */; };
+		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
+		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
+		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
+		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
+		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
+		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
+		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		F563D5600EA8257A0062DA57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		F59F15FF0E9449B8004103B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		F59F16030E9449E5004103B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C043F280EF7C3AD0014E5C6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		05377B3D0E709170003B8BD1 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		05377B3E0E709170003B8BD1 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		05377CE80E74D6C0003B8BD1 /* HttpContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HttpContext.c; path = Server/HttpContext.c; sourceTree = "<group>"; };
+		05377CE90E74D6C0003B8BD1 /* HttpContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpContext.h; path = Server/HttpContext.h; sourceTree = "<group>"; };
+		05377CEA0E74D6C0003B8BD1 /* Server.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Server.c; path = Server/Server.c; sourceTree = "<group>"; };
+		05377CEB0E74D6C0003B8BD1 /* Server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Server.h; path = Server/Server.h; sourceTree = "<group>"; };
+		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		05CF70E90E78B14D00D41986 /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
+		05CF70EA0E78B14D00D41986 /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
+		05CF724E0E7B16F800D41986 /* HttpMessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HttpMessage.c; path = Server/HttpMessage.c; sourceTree = "<group>"; };
+		05CF724F0E7B16F800D41986 /* HttpMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpMessage.h; path = Server/HttpMessage.h; sourceTree = "<group>"; };
+		05CF72930E7F2EAC00D41986 /* defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defs.h; path = Server/defs.h; sourceTree = "<group>"; };
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoRunnerAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoRunnerAppDelegate.m; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* rhorunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rhorunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
+		4618B9A30EB6CEE600444890 /* sqlite3 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sqlite3; path = ../shared/sqlite3; sourceTree = SOURCE_ROOT; };
+		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
+		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
+		466B0FCB0F3CFA9400A52314 /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
+		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
+		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
+		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
+		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
+		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F563D5820EA828580062DA57 /* SyncEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncEngine.h; path = ../shared/syncengine/SyncEngine.h; sourceTree = SOURCE_ROOT; };
+		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		F563D63A0EA92C160062DA57 /* rubysynci.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rubysynci.h; sourceTree = "<group>"; };
+		F563D63B0EA92C160062DA57 /* rubysynci.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rubysynci.c; sourceTree = "<group>"; };
+		F563D7680EA95EDC0062DA57 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = bin/RhoBundle/apps; sourceTree = "<group>"; };
+		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
+		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
+		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
+		F56DF8D60E8D81FD00F6CBE8 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		F57917130E8ACA9E00BBC54D /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = AppManager/AppManager.h; sourceTree = "<group>"; };
+		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
+		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
+		F58E7FD90F008A6A00E46829 /* phonebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phonebook.h; path = Classes/Phonebook/phonebook.h; sourceTree = SOURCE_ROOT; };
+		F58E7FDA0F008A6B00E46829 /* phonebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = phonebook.m; path = Classes/Phonebook/phonebook.m; sourceTree = SOURCE_ROOT; };
+		F58E80100F008B3F00E46829 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = ../../../../../../System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
+		F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
+		F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera/PickImageDelegate.m; sourceTree = "<group>"; };
+		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
+		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
+		F5DA58FF0E9696F50062A28B /* Test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Test; path = Resources/Test; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
+				F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */,
+				F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */,
+				F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05377CEE0E74D6CB003B8BD1 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				F563D5810EA8283A0062DA57 /* SyncEngine */,
+				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
+				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
+				05CF70E90E78B14D00D41986 /* ServerHost.h */,
+				05CF70EA0E78B14D00D41986 /* ServerHost.m */,
+				05377CE90E74D6C0003B8BD1 /* HttpContext.h */,
+				05377CE80E74D6C0003B8BD1 /* HttpContext.c */,
+				05377CEB0E74D6C0003B8BD1 /* Server.h */,
+				05377CEA0E74D6C0003B8BD1 /* Server.c */,
+				05CF72930E7F2EAC00D41986 /* defs.h */,
+			);
+			name = Server;
+			sourceTree = "<group>";
+		};
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F5B8FAD10F44E95F00C9AF85 /* Camera */,
+				F58E7FD80F008A2300E46829 /* Phonebook */,
+				46C744680EAFA99D00CC76F1 /* icon.png */,
+				F563D0310EA5408C0062DA57 /* GeoLocation */,
+				F568940B0E92FC1A004DBB2D /* Rhoruby */,
+				F5C106510E917D4A0049A94A /* Dispatcher */,
+				F579170F0E8AB2A200BBC54D /* AppManager */,
+				05377CEE0E74D6CB003B8BD1 /* Server */,
+				05377B3E0E709170003B8BD1 /* WebViewController.h */,
+				05377B3D0E709170003B8BD1 /* WebViewController.m */,
+				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
+				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
+				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* rhorunner.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				466B0FC90F3CFA8000A52314 /* Icons */,
+				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
+				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4618B9A30EB6CEE600444890 /* sqlite3 */,
+				467E716F0EB6740400E5958D /* db */,
+				467E713F0EB673F000E5958D /* lib */,
+				F563D7680EA95EDC0062DA57 /* apps */,
+				F5DA58FF0E9696F50062A28B /* Test */,
+				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F58E80100F008B3F00E46829 /* AddressBook.framework */,
+				F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */,
+				F563D4130EA6D10F0062DA57 /* CoreLocation.framework */,
+				05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		466B0FC90F3CFA8000A52314 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				4640FE930F410A3400B7975E /* back_btn.png */,
+				4640FE940F410A3400B7975E /* forward_btn.png */,
+				466B0FCB0F3CFA9400A52314 /* home_btn.png */,
+			);
+			name = Icons;
+			sourceTree = "<group>";
+		};
+		F563D0310EA5408C0062DA57 /* GeoLocation */ = {
+			isa = PBXGroup;
+			children = (
+				F563D38D0EA6BC2E0062DA57 /* LocationController.h */,
+				F563D38E0EA6BC2E0062DA57 /* LocationController.m */,
+			);
+			name = GeoLocation;
+			sourceTree = "<group>";
+		};
+		F563D5410EA8240E0062DA57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F563D5450EA8240E0062DA57 /* librhosynclib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F563D5810EA8283A0062DA57 /* SyncEngine */ = {
+			isa = PBXGroup;
+			children = (
+				F563D5820EA828580062DA57 /* SyncEngine.h */,
+				F563D63A0EA92C160062DA57 /* rubysynci.h */,
+				F563D63B0EA92C160062DA57 /* rubysynci.c */,
+			);
+			name = SyncEngine;
+			sourceTree = "<group>";
+		};
+		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
+			isa = PBXGroup;
+			children = (
+				F59F16660E9455B0004103B4 /* rhoruby.h */,
+			);
+			name = Rhoruby;
+			sourceTree = "<group>";
+		};
+		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
+				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		F579170F0E8AB2A200BBC54D /* AppManager */ = {
+			isa = PBXGroup;
+			children = (
+				F56DF7260E8C373800F6CBE8 /* AppLoader.h */,
+				F56DF7270E8C373800F6CBE8 /* AppLoader.m */,
+				F57917130E8ACA9E00BBC54D /* AppManager.h */,
+				F57917140E8ACA9E00BBC54D /* AppManager.m */,
+				F579171F0E8AE1DE00BBC54D /* AppManagerI.h */,
+			);
+			name = AppManager;
+			sourceTree = "<group>";
+		};
+		F58E7FD80F008A2300E46829 /* Phonebook */ = {
+			isa = PBXGroup;
+			children = (
+				F58E7FD90F008A6A00E46829 /* phonebook.h */,
+				F58E7FDA0F008A6B00E46829 /* phonebook.m */,
+			);
+			name = Phonebook;
+			sourceTree = "<group>";
+		};
+		F59F15FC0E9449B8004103B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F59F16000E9449B8004103B4 /* librhorubylib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F5B8FAD10F44E95F00C9AF85 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */,
+				F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */,
+			);
+			name = Camera;
+			sourceTree = "<group>";
+		};
+		F5C106510E917D4A0049A94A /* Dispatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F5C1064E0E917D2A0049A94A /* Dispatcher.h */,
+				F5C1064F0E917D2A0049A94A /* Dispatcher.c */,
+			);
+			name = Dispatcher;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* rhorunner */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
+			buildPhases = (
+				5C0442920EFBE79D0014E5C6 /* ShellScript */,
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				5C043F280EF7C3AD0014E5C6 /* CopyFiles */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F59F16040E9449E5004103B4 /* PBXTargetDependency */,
+				F563D5610EA8257A0062DA57 /* PBXTargetDependency */,
+			);
+			name = rhorunner;
+			productName = rhorunner;
+			productReference = 1D6058910D05DD3D006BFB54 /* rhorunner.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rhorunner" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F59F15FC0E9449B8004103B4 /* Products */;
+					ProjectRef = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
+				},
+				{
+					ProductGroup = F563D5410EA8240E0062DA57 /* Products */;
+					ProjectRef = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* rhorunner */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F563D5450EA8240E0062DA57 /* librhosynclib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhosynclib.a;
+			remoteRef = F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F59F16000E9449B8004103B4 /* librhorubylib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhorubylib.a;
+			remoteRef = F59F15FF0E9449B8004103B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
+				F563D8080EA95EDC0062DA57 /* apps in Resources */,
+				46C744690EAFA99D00CC76F1 /* icon.png in Resources */,
+				467E716E0EB673F000E5958D /* lib in Resources */,
+				467E71720EB6740400E5958D /* db in Resources */,
+				466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */,
+				4640FE950F410A3400B7975E /* back_btn.png in Resources */,
+				4640FE960F410A3400B7975E /* forward_btn.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5C0442920EFBE79D0014E5C6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			comments = "Compile ruby sources";
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd rbuild\nant rhobundle";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */,
+				05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */,
+				05377CEC0E74D6C0003B8BD1 /* HttpContext.c in Sources */,
+				05377CED0E74D6C0003B8BD1 /* Server.c in Sources */,
+				05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */,
+				05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */,
+				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
+				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
+				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
+				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
+				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
+				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
+				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
+				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F563D5610EA8257A0062DA57 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhosynclib;
+			targetProxy = F563D5600EA8257A0062DA57 /* PBXContainerItemProxy */;
+		};
+		F59F16040E9449E5004103B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhorubylib;
+			targetProxy = F59F16030E9449E5004103B4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				OTHER_LDFLAGS = "";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+					"-lrhorubylib",
+					"-lrhosynclib",
+				);
+				PRODUCT_NAME = rhorunner;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+					"-lrhorubylib",
+					"-lrhosynclib",
+				);
+				PRODUCT_NAME = rhorunner;
+				SDKROOT = iphoneos2.1;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IBC_FLATTEN_NIBS = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhosynclib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+					"-lrhosynclib",
+				);
+				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = DefaultProfileUuid;
+				SDKROOT = iphoneos2.1;
+				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhosynclib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CoreServices,
+					"-lrhosynclib",
+				);
+				PREBINDING = NO;
+				SDKROOT = iphoneos2.0;
+				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rhorunner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

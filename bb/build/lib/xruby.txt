@@ -1,1 +1,0 @@
-http://xruby.googlecode.com/svn/trunk

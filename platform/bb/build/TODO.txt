@@ -1,0 +1,123 @@
+0. self.send :object=, "#{temp_objid}"
+It sends "object" instead of "object="
+This works:
+self.send "object=".to_sym(), "#{temp_objid}"
+1. ID vs Method name : v1, v2 = m1, nil
+2. Scope of visibility :
+module Rho
+class Test
+ def m
+   func_from_rho_module # not visible
+ end
+end
+end
+
+SEE ALSO: date\format.rb:
+class Date
+
+  #SECONDS_IN_DAY = 60*60*24
+  #SECONDS_IN_DAY         = Rational(1, 86400)
+
+  module Format # :nodoc:
+  ...
+  end
+
+NOT WORKING  
+1249:       if Format::ZONES.include?(zone)
+WORKING:
+1249:       if Date::Format::ZONES.include?(zone)
+end
+
+
+3. Compiler crash:
+top, parent = T.new.m, nil 
+
+4.SystemCallError:
+rb_define_singleton_method(rb_eSystemCallError, "===", syserr_eqq, 1);
+
+4.0 Problem with call built-in methods:
+year, mon, mday - is VM implemented methods, but xruby treat it as local variables
+  def to_datetime
+    jd = DateTime.__send__(:civil_to_jd, year, mon, mday, DateTime::ITALY)
+    fr = DateTime.__send__(:time_to_day_fraction, hour, min, [sec, 59].min) +
+      nsec.to_r/86400_000_000_000
+    of = utc_offset.to_r/86400
+    DateTime.new!(DateTime.__send__(:jd_to_ajd, jd, fr, of),
+		  of, DateTime::ITALY)
+  end
+Now it works:
+  def to_datetime
+    jd = DateTime.__send__(:civil_to_jd, year(), mon(), mday(), DateTime::ITALY)
+    fr = DateTime.__send__(:time_to_day_fraction, hour(), min(), [sec, 59].min) +
+      nsec.to_r/86400_000_000_000
+    of = utc_offset.to_r/86400
+    DateTime.new!(DateTime.__send__(:jd_to_ajd, jd, fr, of),
+		  of, DateTime::ITALY)
+  end
+
+4.1 Error preverify: 
+  def self.commercial(y=-4712, w=1, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
+    unless (jd = _valid_commercial?(y, w, d, sg)) &&
+	   (fr = _valid_time?(h, min, s))
+      raise ArgumentError, 'invalid date'
+    end
+    if String === of
+      of = (zone_to_diff(of) || 0).to_r/86400
+    end
+    #new!(jd_to_ajd(jd, fr, of), of, sg)
+  end
+if move fr outside unless it works
+
+  def self.commercial(y=-4712, w=1, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
+    fr = _valid_time?(h, min, s)
+    unless (jd = _valid_commercial?(y, w, d, sg)) &&
+	   (fr)
+      raise ArgumentError, 'invalid date'
+    end
+    if String === of
+      of = (zone_to_diff(of) || 0).to_r/86400
+    end
+    new!(jd_to_ajd(jd, fr, of), of, sg)
+  end
+
+4.2 Problem with method parameters :
+Third floor calls with one parameter
+    def civil_to_jd(y, m, d, sg=GREGORIAN) # :nodoc:
+      if m <= 2
+	y -= 1
+	m += 12
+      end
+      a = (y / 100.0).floor
+      b = 2 - a + (a / 4.0).floor
+      jd = (365.25 * (y + 4716)).floor +
+	(30.6001 * (m + 1)).floor +
+	d + b - 1524
+      if jd < sg
+	jd -= b
+      end
+      jd
+    end
+Now it works:
+    def civil_to_jd(y, m, d, sg=GREGORIAN) # :nodoc:
+      if m <= 2
+	y -= 1
+	m += 12
+      end
+      a = (y / 100.0).floor
+      b = 2 - a + (a / 4.0).floor
+      jd = (365.25 * (y + 4716)).floor() +
+	(30.6001 * (m + 1)).floor() +
+	d + b - 1524
+      if jd < sg
+	jd -= b
+      end
+      jd
+    end
+
+5. StringScanner all methods
+
+6. equal?, eql? - RubyNumeric, RubyStruct
+
+7. RubyComplex
+
+8. Rubiniuse

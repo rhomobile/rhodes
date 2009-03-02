@@ -1,0 +1,1 @@
+javadoc -d ../doc11 -nodeprecated -classpath .;\jdk1.1.8\lib\classes.zip -nosince -public org/garret/perst/*.java rms/org/garret/perst/*.java rms/org/garret/perst/impl/*.java jsr75/org/garret/perst/impl/*.java  cdc/org/garret/perst/impl/*.java fulltext/org/garret/perst/fulltext/*.java 

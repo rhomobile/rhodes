@@ -1,0 +1,255 @@
+<html>
+<title>
+Description of using Perst Lite in ProScout
+</title>
+
+<body>
+<h1>
+Description of using Perst Lite in ProScout
+</h1>
+
+<p>
+The following code, with comments and explanatory text, explains how key features of the Perst Lite object-oriented embedded database are used within the ProScout midlet.
+
+<p>
+In Perst Lite, all objects in the database storage should be accessible through a single root object. So, this object should contain collections which keep references to all the application’s top-level objects.
+
+<p>
+In the ProScout example, this root object contains an index of players by last name and two indices of teams: by team ID and name. Also, each persistence-capable object should be derived from the Persistent base class:
+
+<pre>
+public class <a href="../src/Root.java">Root</a> extends Persistent {
+    Index teamId;
+    Index teamName;
+    Index playerLName;
+    ...
+
+    <font color="#008000">// The default constructor (the constructor without parameters, shown</font>
+    <font color="#008000">// below), should not be used for object initialization since it is used</font>
+    <font color="#008000">// to instantiate every object each time it is loaded from the database.</font>
+    <font color="#008000">// So this class should either not have a constructor at all (in which</font>
+    <font color="#008000">// case it will be generated automatically by the compiler), or it should</font>
+    <font color="#008000">// provide an empty default constructor and a constructor used for object</font>
+    <font color="#008000">// initialization (usually the class is passed a reference to the storage</font>
+    <font color="#008000">// since the storage is needed to create Perst collections).</font>
+    
+    public Root() {}
+
+    <font color="#008000">// The constructor below is called once during</font>
+    <font color="#008000">// database initialization. It initializes the root object and</font>
+    <font color="#008000">// creates indices to access teams</font>
+    <font color="#008000">// and players.</font>
+
+    public Root(Storage db) { 
+        super(db);
+        <font color="#008000">// Create unique index for team identifiers</font>
+        teamId = db.createIndex(Types.Int, true);
+        <font color="#008000">// Create unique index for team names</font>
+        teamName = db.createIndex(Types.String, true);
+        <font color="#008000">// Create non-unique index for last name of the players</font>
+        playerLName = db.createIndex(Types.String, false);
+    }
+}
+</pre>
+
+Since MIDP 2.0 doesn't provide reflection, we need to explicitly specify the method for packing/unpacking an object. These methods can be written manually or generated using Perst Lite’s <a href="../../../util/SerGen.java">SerGen</a> utility. In the following example, the methods are written manually:
+
+<pre>
+<font color="#008000">// All persistence-capable classes should be derived from the</font>
+<font color="#008000">// org.garret.perst.Persistent base class.</font>
+
+public class <a href="../src/Player.java">Player</a> extends Persistent {
+    Team   team;
+    String fname;
+    String lname;
+    int    jersey;
+    String address;
+    String city;
+    String state;
+    String zip;
+    String phone;
+    String school;
+    int    gradyear;
+    int    height;
+
+    <font color="#008000">// Serialize the object</font>
+    public void writeObject(IOutputStream out) { 
+        out.writeObject(team);
+        out.writeString(fname);
+        out.writeString(lname);
+        out.writeInt(jersey);
+        out.writeString(address);
+        out.writeString(city);
+        out.writeString(state);
+        out.writeString(zip);
+        out.writeString(phone);
+        out.writeString(school);
+        out.writeInt(gradyear);
+        out.writeInt(height);
+    }
+
+    <font color="#008000">// Deserialize the object</font>
+    public void readObject(IInputStream in) { 
+        team = (Team)in.readObject();
+        fname = in.readString();
+        lname = in.readString();
+        jersey = in.readInt();
+        address = in.readString();
+        city = in.readString();
+        state = in.readString();
+        zip = in.readString();
+        phone = in.readString();
+        school = in.readString();
+        gradyear = in.readInt();
+        height = in.readInt();
+    }
+    ...
+};
+</pre>
+
+First, we need to open a database. This is done using the midlet’s startApp method:
+
+<pre>
+public class <a href="../src/UniAR.java">UniAR</a> extends MIDlet implements CommandListener 
+{
+    ...
+    public void startApp()
+    {
+        <font color="#008000">// Get instance of Perst storage</font>
+        db = StorageFactory.getInstance().createStorage();
+        <font color="#008000">// Open the database with a given database name and specified page</font>
+	<font color="#008000">// pool (database cache) size</font>
+        db.open("uniar.dbs", PAGE_POOL_SIZE);
+        <font color="#008000">// There is one root object in the database. </font>
+        Root root = (Root)db.getRoot();
+        if (root == null) {
+        <font color="#008000">// if root object was not specified, then storage is not yet</font>
+        <font color="#008000">// initialized</font>
+            <font color="#008000">// Perform initialization:</font>
+            <font color="#008000">// ... create root object</font>
+            root = new Root(db);
+            <font color="#008000">// ... register new root object</font>
+            db.setRoot(root); 
+            <font color="#008000">// ... and import data from resource files</font>
+            importData();
+        }
+        ...
+    }
+}
+</pre>
+
+During import we create persistent objects, include them in proper indices and periodically commit transactions (since committing a transaction is an expensive operation, committing after each insertion will cause significant performance degradation):
+
+<pre>
+public class <a href="../src/UniAR.java">UniAR</a> extends MIDlet implements CommandListener 
+{
+    ...
+    void importData()
+    {
+        ...
+        while ((row = readCSVLine(17, in)) != null) {
+            <font color="#008000">// Create new persistence-capable object</font>
+            Team team = new Team(db, row);
+            <font color="#008000">// Put created team object in team ID index</font>
+            root.teamId.put(new Key(team.id), team);
+            <font color="#008000">// Put created team object in team name index</font>
+            root.teamName.put(team.name.toLowerCase(), team);
+            gauge.setValue(++nRows);
+
+            if (nRows % TRANSACTION_PERIOD == 0) {       
+                <font color="#008000">// Since committing a transaction is expensive operation,</font>
+                <font color="#008000">// committing transactions after each insertion will cause</font>
+ 	        <font color="#008000">// significant performance degradation. But we have to periodically</font>
+ 	        <font color="#008000">// perform commits to avoid memory overflow, since all modified and</font>
+	        <font color="#008000">// created persistent objects are held in memory.</font>
+
+                db.commit();
+                <font color="#008000">// We need to re-fetch the root object since committing a</font>
+                <font color="#008000">// transaction caused a cleanup of the object cache to</font>
+                <font color="#008000">// be performed, and references to persistent objects may</font>
+                <font color="#008000">// no longer be valid</font>
+                root = (Root)db.getRoot();
+            }
+            if (nRows == maxRowsToLoad) { 
+                break;
+            }
+        } 
+        ...
+    }
+}
+</pre>
+
+Perst Lite uses a <i>persistence by reachability</i> approach, meaning that a persistence-capable object automatically becomes persistent and is stored in the database during a transaction commit if that object is referenced from some other persistent object (including Perst collections).<p>
+
+Once the database is loaded, it is possible to search objects using one of the indices. Below is an example of searching a team by prefix:
+
+
+<pre>
+class <a href="../src/TeamSearchForm.java">TeamSearchForm</a> extends Form implements CommandListener 
+{ 
+    ...
+    public void commandAction(Command c, Displayable d)
+    {
+        if (c == UniAR.SEARCH_CMD) { 
+            <font color="#008000">// Get storage root object</font>
+            Root root = (Root)uar.db.getRoot();
+            <font color="#008000">// Perform prefix search</font>
+            Iterator iterator = root.teamName.prefixIterator(pattern.getString().toLowerCase());
+            if (iterator.hasNext()) {
+            <font color="#008000">// pass iterator through all located objects to the TeamForm</font>
+		<font color="#008000">// constructor</font>
+                new TeamForm(uar, iterator, uar.menu);
+            } else { 
+                uar.message("No results");
+            }
+        } else { 
+            Display.getDisplay(uar).setCurrent(uar.menu);
+        }
+    }
+}
+</pre>
+
+And <code>TeamForm</code> uses the iterator next() method to traverse the list of the selected teams:
+
+<pre>
+class <a href="../src/TeamForm.java">TeamForm</a> extends Form implements CommandListener 
+{ 
+    ...
+    TeamForm(UniAR uar, Iterator iterator, Displayable parent) {
+        ...
+        this.iterator = iterator;
+        team = (Team)iterator.next();
+        if (iterator != null && iterator.hasNext()) {
+            addCommand(UniAR.NEXT_CMD);
+        }
+    }
+
+    public void commandAction(Command c, Displayable d)
+    {
+        if (c == UniAR.NEXT_CMD) { 
+            new TeamForm(uar, iterator, parent);
+        }
+        ...
+    }
+}
+</href>
+
+Finally, when the application is terminated it should close the database:
+<pre>
+public class <a href="../src/UniAR.java">UniAR</a> extends MIDlet implements CommandListener 
+    ...
+    protected void destroyApp(boolean unconditional) {
+        <font color="#008000">// When the application is terminated, do not forget to close the</font>
+	<font color="#008000">// database</font>
+        db.close();
+    }  
+}
+</pre>
+</body>
+</html>
+  
+
+
+
+
+

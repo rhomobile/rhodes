@@ -1,0 +1,5 @@
+-libraryjars C:\WTK25\lib\mmapi.jar;C:\WTK25\lib\midpapi20.jar;C:\WTK25\lib\wma11.jar;C:\WTK25\lib\cldcapi11.jar
+-injars C:\WTK25\apps\Basketball\bin\Basketball.jar
+-outjar C:\DOCUME~1\Knizhnik\LOCALS~1\Temp\Basketball.jar
+-keep public class * extends javax.microedition.midlet.MIDlet 
+-dontusemixedcaseclassnames
