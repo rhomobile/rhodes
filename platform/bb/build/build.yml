@@ -20,13 +20,13 @@ build:
   rhobundledir: ../RhoBundle
   srcdir: %bindir%/RhoBundle
   preverified: ../preverified
-  rubypath: ../../win32/target/compiler/RhoRuby.exe
+  rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
   rubyVMdir: ../RubyVM
   excludelib: "**/rhom_db_adapter.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
   compileERB: compileERB.rb
-  bblib: lib
+  bblib: ../../../rhodes/rhodes-build/res
   tmpdir: %bindir%/tmp
   
 

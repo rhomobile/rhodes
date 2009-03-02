@@ -1,4 +1,4 @@
-require '../../shared/build/Jake.rb'
+require '../../../rhodes/rhodes-build/lib/jake.rb'
 
 config = Jake.config(File.open('build.yml'))
 
@@ -378,31 +378,20 @@ namespace "run" do
   end
 
   desc "Builds everything, loads and starts sim"
-  task :app  => [ "package:alldev", :mds, :sim ] do
-    sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
-    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+  task :app  => [ "package:all", :mds, :sim ] do
+      sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
+      jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+    
+      puts "sleeping to allow simulator to get started"
+      sleep 25
   
-    puts "sleeping to allow simulator to get started"
-    sleep 15
-
-    command = '"' + jde + "/simulator/fledgecontroller.exe\""
-    args = []
-    args << "/session="+sim
-    args << "\"/execute=LoadCod("+Jake.get_absolute(config["build"]["targetdir"])+")\""
-
-    Jake.run(command,args, jde + "/simulator")
-    $stdout.flush
-    sleep 5
-
-    args = []
-    args << "/session="+sim
-    args << "/execute=Exit(true)"
-    Jake.run(command,args, jde + "/simulator")
-    $stdout.flush
-    sleep 5
-
-    Rake::Task["run:sim"].execute
-    $stdout.flush
+      command = '"' + jde + "/simulator/fledgecontroller.exe\""
+      args = []
+      args << "/session="+sim
+      args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join(config["build"]["targetdir"],"rhodesApp.cod")) + ")\""
+  
+      Jake.run(command,args, jde + "/simulator")
+      $stdout.flush
   end
 
   desc "Sign cod files automatically"
