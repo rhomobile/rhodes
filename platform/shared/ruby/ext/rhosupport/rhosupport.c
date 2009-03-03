@@ -2,6 +2,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/io.h"
+#include "missing/file.h"
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../../stat/stat.h"
 #endif
