@@ -1,13 +1,27 @@
+require 'rake'
+
 desc "install all gems locally"
 task :install_all_gems do
+  run_tasks_in_subdirs(['clobber','install_gem','clobber'])
+end
+
+desc "clean all gems locally"
+task :clobber_all_gems do
+  run_tasks_in_subdirs(['clobber'])
+end
+
+desc "regenerate manifest for all gems"
+task :manifest_all_gems do
+  run_tasks_in_subdirs(['manifest'])
+end
+
+def run_tasks_in_subdirs(tasknames=[])
   current_dir = pwd
   ['rhodes-build','rhodes-generator','rhodes-framework','rhodes'].each do |dir|
     chdir dir
-    puts `rake clobber`
-    # TODO: why does this not work!
-    #puts `rake manifest`
-    puts `rake install_gem`
-    puts `rake clobber`
+    tasknames.each do |name|
+      system "rake #{name}"
+    end
     chdir current_dir
   end
 end
