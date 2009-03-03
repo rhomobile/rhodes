@@ -138,7 +138,7 @@ namespace "build" do
     puts Jake.run(jdehome + "/bin/preverify.exe",args)
     $stdout.flush
 
-    cp config["build"]["preverified"] + "/RhoBundle.jar", config["build"]["rhobundledir"] + "/RhoBundle.jar"
+    cp config["build"]["bindir"] + "/RhoBundle.jar", config["build"]["rhobundledir"] + "/RhoBundle.jar"
 
   end
 
