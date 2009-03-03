@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/generator_spec_helper'
 
 describe Rhogen::AppGenerator do
 
-  app_name = 'NeatApp'
+  app_name = 'neatapp'
 
   it "should complain if no name is specified" do
     lambda {
@@ -22,7 +22,7 @@ describe Rhogen::AppGenerator do
 
   it "should create application.rb, index.erb, and layout.erb files" do
     ['application.rb', 'index.erb', 'layout.erb'].each do |template|
-      @generator.should create("/tmp/#{app_name}/#{template}")
+      @generator.should create("/tmp/#{app_name}/app/#{template}")
     end
   end
 
