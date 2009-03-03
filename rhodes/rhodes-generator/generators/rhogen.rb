@@ -24,8 +24,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new rhodes application.  This will create a new directory with two files:
-      application.rb and index.html
+      Generates a new rhodes application.
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
@@ -34,41 +33,41 @@ module Rhogen
 
     template :application do |template|
       template.source = 'application.rb'
-      template.destination = "#{name.camel_case}/app/application.rb"
+      template.destination = "#{name}/app/application.rb"
     end
 
     template :index do |template|
       template.source = 'index.erb'
-      template.destination = "#{name.camel_case}/app/index.erb"
+      template.destination = "#{name}/app/index.erb"
     end
 
     template :layout do |template|
       template.source = 'layout.erb'
-      template.destination = "#{name.camel_case}/app/layout.erb"
+      template.destination = "#{name}/app/layout.erb"
     end
 
     template :config do |template|
       template.source = 'config.rb'
-      template.destination = "#{name.camel_case}/config.rb"
+      template.destination = "#{name}/config.rb"
     end
 
     template :buildyml do |template|
       template.source = 'build.yml'
-      template.destination = "#{name.camel_case}/build.yml"
+      template.destination = "#{name}/build.yml"
     end
 
     directory :public do |directory|
       directory.source = 'public'
-      directory.destination = "#{name.camel_case}/public/"
+      directory.destination = "#{name}/public/"
     end
 
     empty_directory :images do |directory|
-      directory.destination = "#{name.camel_case}/public/images/"
+      directory.destination = "#{name}/public/images/"
     end
  
     template :rakefile do |template|
       template.source = 'Rakefile'
-      template.destination = "#{name.camel_case}/Rakefile"
+      template.destination = "#{name}/Rakefile"
     end
   end
 
@@ -80,8 +79,15 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new model for a given source.  You must specify name, source_url, and source_id.
-      You can also specify an optional attribute list in the form: 'attribute1', 'attribute2', 'attribute3'...
+      Generates a new model for a rhodes application.
+      
+      You must specify the following:
+        name - model name
+        source_url - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
+        source_id - unique id for this model (i.e. 500, this is only used on the device to uniquely identify the source)
+        
+      Optional arguments:
+        attributes - optional list of string attributes (i.e. name,industry,progress)
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
@@ -135,8 +141,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new source adapter with the given name and attributes.  You must specify name.
-      You can also specify an optional attribute list in the form: 'attribute1', 'attribute2', 'attribute3'...
+      Generates a new source adapter with the given name.
     DESC
 
     first_argument :name, :required => true, :desc => "model name"
