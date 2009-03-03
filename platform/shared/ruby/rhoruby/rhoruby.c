@@ -33,6 +33,7 @@ extern void Init_Camera(void);
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
+extern void RhoSetCurAppPath(VALUE path);
 
 static VALUE  framework;
 static ID framework_mid;
@@ -203,7 +204,9 @@ VALUE callFramework(VALUE hashReq) {
 }
 
 VALUE callServeIndex(char* index_name) {
-	VALUE callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
+    VALUE callres;
+    RhoSetCurAppPath(index_name);
+	callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
 	
 	if (TYPE(callres)!=T_STRING) {
 		printf("Method call result type = %s\n", rb_type_to_s(callres));

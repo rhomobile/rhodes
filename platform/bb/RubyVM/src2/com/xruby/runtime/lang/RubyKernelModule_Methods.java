@@ -97,10 +97,6 @@ klass.defineModuleMethod( "eval", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
 });
-klass.defineModuleMethod( "__load_with_reflection__", new RubyOneArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyKernelModule.loadWithReflection(receiver, arg, block);}
-});
 klass.defineMethod( "class", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.objRubyClass(receiver);}
