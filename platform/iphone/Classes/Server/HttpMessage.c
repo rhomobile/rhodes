@@ -747,9 +747,13 @@ _HTTPGetIndexFile(HttpContextRef context, char* path) {
 			
 			slash = context->_request->_uri[strlen(context->_request->_uri)-1] == '/' ? "" : "/";
 			char location[URI_MAX];
-			HttpSnprintf(location, sizeof(location), "%s%s%s", 
+			if (context->_request->_query) {
+				HttpSnprintf(location, sizeof(location), "%s%s%s?%s", 
+							 context->_request->_uri, slash, indexfile[i],context->_request->_query);	
+			} else {
+				HttpSnprintf(location, sizeof(location), "%s%s%s", 
 						  context->_request->_uri, slash, indexfile[i]);	
-
+			}
 			return HTTPRedirect(context, location);
 		}
 	}
