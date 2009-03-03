@@ -251,7 +251,7 @@ int push_remote_changes(pSyncOperation *list, int size) {
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
 	lock_sync_mutex();
-	prepare_db_statement("SELECT source_id,source_url from sources", 
+	prepare_db_statement("SELECT source_id,source_url from sources order by source_id", 
 						 database, 
 						 &op_list_source_ids_statement);
 	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
