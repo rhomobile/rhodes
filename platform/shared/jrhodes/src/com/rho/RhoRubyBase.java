@@ -14,6 +14,7 @@ public abstract class RhoRubyBase implements IRhoRuby {
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID getStartPath = RubyID.intern("get_start_path");
+	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	RubyValue receiver;
 	xruby.ServeME.main mainObj;
@@ -34,9 +35,6 @@ public abstract class RhoRubyBase implements IRhoRuby {
 		mainObj = new xruby.ServeME.main();
 				
 		receiver = mainObj.invoke();
-		
-		String str = receiver.asString();
-		System.out.printf(str);
 	}
 	
 	public abstract void PlatformRhoRubyStart(String szAppPath);
@@ -65,8 +63,16 @@ public abstract class RhoRubyBase implements IRhoRuby {
 	/* (non-Javadoc)
 	 * @see com.rho.IRhoRuby#processIndexRequest(java.lang.String)
 	 */
-	public RubyValue processIndexRequest(String strIndex ){
+	public RubyValue processIndexRequest(String strIndexArg ){
 		
+                String strIndex = strIndexArg.replace('\\', '/');
+		int nAppsIndex = strIndex.indexOf("/apps/");
+		if ( nAppsIndex >= 0 ){
+			int endIndex = strIndex.indexOf('/', nAppsIndex+6);
+			if ( endIndex >= 0 )
+				RhoSupport.setCurAppPath( strIndex.substring(nAppsIndex, endIndex+1));
+		}
+
 		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createString(strIndex), null, serveIndexID);
 		
 		return value;
@@ -78,6 +84,16 @@ public abstract class RhoRubyBase implements IRhoRuby {
 	public String getStartPage(){
 		
 		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
+		
+		return value.toString();
+	}
+
+        /* (non-Javadoc)
+	 * @see com.rho.IRhoRuby#getOptionsPage()
+	 */
+        public String getOptionsPage(){
+		
+		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
 		
 		return value.toString();
 	}
