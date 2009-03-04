@@ -16,6 +16,7 @@ public class RhoRuby {
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID getStartPath = RubyID.intern("get_start_path");
+	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	static RubyValue receiver;
 	static xruby.ServeME.main mainObj;
@@ -64,6 +65,13 @@ public class RhoRuby {
 	public static String getStartPage(){
 		
 		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
+		
+		return value.toString();
+	}
+
+	public static String getOptionsPage(){
+		
+		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
 		
 		return value.toString();
 	}
