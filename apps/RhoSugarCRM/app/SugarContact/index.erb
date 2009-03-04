@@ -5,7 +5,7 @@
 </div>
 
 <ul id="SugarContacts" title="Contacts" selected="true">
-<a class="button right_button" href="/RhoSugarCRM/SugarContact/new" target="_self">New</a>
+<a class="button right_button" href="SugarContact/new" target="_self">New</a>
 	
 <% @SugarContacts.each do |contact| %>
 	<li class="overview">
@@ -18,7 +18,7 @@
 
 <% if System::get_property('platform') == 'APPLE' %>
 	<p align="center">
-		<a href="/RhoSugarCRM/Mapping/showallcontacts" target="_self">
+		<a href="Mapping/showallcontacts" target="_self">
 			<span class="grayButton">Show Contacts on Map</span>
 		</a>
 	</p>

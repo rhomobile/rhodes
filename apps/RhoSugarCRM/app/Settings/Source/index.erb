@@ -1,0 +1,6 @@
+<ul id="sources" title="Sources">
+	<%@sources.each do |source|%>
+	  <li><%=link_to "#{source.name}: #{source.distinct_objects} records", :action => :edit, :id => "{#{source.source_id}}"%></li>
+	<%end%>
+	<li><a href="/" target="_self">Home</a></li>
+</ul>

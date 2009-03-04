@@ -2,10 +2,13 @@ require 'rho'
 require 'rho/rhocontroller'
 
 class SettingsController < Rho::RhoController
+  
+  def index
+    render
+  end
 
   # GET /User/edit
-  def login
-    #SyncEngine::set_notification(13,"/RhoSugarCRM/SugarOpportunity")
+  def login    
     render :action => :login
   end
 
@@ -32,4 +35,12 @@ class SettingsController < Rho::RhoController
     @msg = "You have been logged out."
     render :action => :login
   end
+  
+  #GET /Reset/do_reset
+   def do_reset
+     SyncEngine::trigger_sync_db_reset
+     @msg = "Database will be deleted on next sync."
+     redirect Rho::RhoConfig.start_path
+   end
+  
 end

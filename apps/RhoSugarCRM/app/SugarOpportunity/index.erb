@@ -5,12 +5,12 @@
 </div>
 
 <ul id="SugarOpportunities" title="Opportunities" selected="true">
-<a class="button right_button" href="/RhoSugarCRM/SugarOpportunity/new" target="_self">New</a>
+<a class="button right_button" href="SugarOpportunity/new" target="_self">New</a>
 
 <%@SugarOpportunities.each do |x|%>
 
 <li class="overview">
-	<a href="<%= "/RhoSugarCRM/SugarOpportunity/#{x.object}/show" %>" target="_self">
+	<a href="<%= "SugarOpportunity/#{x.object}/show" %>" target="_self">
 		<%= x.name %>
 		<div>
 		<%= x.sales_stage %><%= both_items_present?(x.sales_stage, x.probability) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= x.probability %><%= !blank?(x.probability) ? '%' : "" %>

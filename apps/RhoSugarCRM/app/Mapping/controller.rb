@@ -4,10 +4,6 @@ require 'helpers/application_helper'
 class MappingController < Rho::RhoController
 
   include ApplicationHelper
-
-  def index
-    render
-  end
   
   def showmypos
     @show_addresses = false

@@ -8,7 +8,7 @@
 
 <% if has_valid_mapping_address(@SugarContact.primary_address_street, @SugarContact.primary_address_city, @SugarContact.primary_address_state, @SugarContact.primary_address_postalcode) %>
 	<p align="center">
-		<a href="<%= "/RhoSugarCRM/Mapping/#{@SugarContact.object}/showcontact" %>" target="_self">
+		<a href="<%=url_for(:model => 'Mapping', :action => :showcontact, :id => @SugarContact.object)%>"
 			<span class="grayButton">Show Contact on Map</span>
 		</a>
 	</p>
@@ -127,7 +127,7 @@
 </table>
 
 <p align="center">
-	<a href="<%= "/RhoSugarCRM/SugarContact/#{@SugarContact.object}/savetodevice" %>" target="_self">
+	<a href="<%=url_for(:model => 'SugarContact', :action => :savetodevice, :id => @SugarContact.object)%>"		
 		<span class="grayButton">Save to Device Contacts</span>
 	</a>
 </p>

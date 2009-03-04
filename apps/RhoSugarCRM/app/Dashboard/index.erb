@@ -3,14 +3,14 @@
 		<title>Dashboard</title>
 		<% if System::get_property('platform') == 'APPLE' %>
 			<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
-			<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
-			<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
-			<script src="/shared/js/jquery-1.2.6.min.js"></script>
-			<script src="/shared/js/rho.js"></script>	
+			<style type="text/css" media="screen">@import "/public/js/iui/iui.css"; @import "/public/css/rho.css";</style>
+			<script type="application/x-javascript" src="/public/js/iui/iui.js"></script>
+			<script src="/public/js/jquery-1.2.6.min.js"></script>
+			<script src="/public/js/rho.js"></script>	
 					
-            <LINK href="/RhoSugarCRM/css/iphone.css" type="text/css" rel="stylesheet"/>
+            <LINK href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
         <% else %>
-            <LINK href="/RhoSugarCRM/css/xhtml.css" type="text/css" rel="stylesheet"/>
+            <LINK href="/public/css/xhtml.css" type="text/css" rel="stylesheet"/>
 		<% end %>	
 			
   <script type="application/x-javascript">
@@ -157,7 +157,7 @@
 	<% if System::get_property('platform') == 'APPLE' %>	 
        <canvas id="canvas" style="position:absolute;top:40;left:50" width="200" height="200"></canvas>
    <% else %>
-       <img src="/RhoSugarCRM/images/dashboardmockup.png" style="position:absolute;top:40;left:40"/>
+       <img src="/public/images/dashboardmockup.png" style="position:absolute;top:40;left:40"/>
    <% end %>
    
    <div style="position:absolute;top:240;left:50;font-size:120%">
