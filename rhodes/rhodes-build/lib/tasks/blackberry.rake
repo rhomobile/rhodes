@@ -1,23 +1,11 @@
 require File.join(File.dirname(__FILE__),'..','jake.rb')
 
 namespace "config" do
-  task :bb do
-    $config = Jake.config(File.open('build.yml'))  
-    $basedir = pwd
+  task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
-
-    $bindir = File.join($basedir,'bin')
-    $tmpdir = File.join($bindir,'tmp')
-    $targetdir =  File.join($bindir,'target')
     $excludelib = ['**/rhom_db_adapter.rb','**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
-    $srcdir = File.join($bindir, '/RhoBundle')
-    $compileERBbase = File.join(File.dirname(__FILE__),'..','compileERB')
-    $appmanifest = File.join(File.dirname(__FILE__),'..','manifest','createAppManifest.rb')
-    $res = File.join(File.dirname(__FILE__),'..','..','res')
 
-    $prebuilt = File.join($res,'prebuilt')
-    mkdir_p $bindir if not File.exists? $bindir
   end
 end
 
@@ -27,7 +15,7 @@ task :loadframework do
 end
 
 namespace "bundle" do
-  task :bb =>  ["config:bb", "loadframework"] do
+  task :bb =>  ["config:bb", "loadframework", "makedirs"] do
     jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     rm_rf $srcdir

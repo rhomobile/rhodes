@@ -1,27 +1,12 @@
 require File.join(File.dirname(__FILE__),'..','jake.rb')
 
 namespace "config" do
-  task :symbian do
-    $config = Jake.config(File.open('build.yml'))  
-    $basedir = pwd
+  task :symbian => :common do
 
-    $bindir = File.join($basedir,'bin')
-    $srcdir = File.join($bindir, '/RhoBundle')
-    $tmpdir = File.join($bindir,'tmp')
     $targetdir =  File.join($bindir,'target','symbian')
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
 
-    $compileERBbase = File.join(File.dirname(__FILE__),'..','compileERB')
-    $compileRBbase = File.join(File.dirname(__FILE__),'..','compileRB')
-    $appmanifest = File.join(File.dirname(__FILE__),'..','manifest','createAppManifest.rb')
-    $res = File.join(File.dirname(__FILE__),'..','..','res')
-
-    $prebuilt = File.join($res,'prebuilt')
-
-    mkdir_p $bindir if not File.exists? $bindir
-    mkdir_p $targetdir if not File.exists? $targetdir
-    mkdir_p $tmpdir if not File.exists? $tmpdir
   end
 end
 
@@ -31,7 +16,7 @@ task :loadframework do
 end
 
 namespace "bundle" do
-  task :symbian =>  ["config:symbian", "loadframework"] do
+  task :symbian =>  ["config:symbian", "loadframework", "makedirs"] do
 
     rm_rf $srcdir
     mkdir_p $srcdir
