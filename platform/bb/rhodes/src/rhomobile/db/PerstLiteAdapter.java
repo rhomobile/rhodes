@@ -22,6 +22,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
 	public static final RubyString SOURCE_URL = ObjectFactory.createString("source_url");
 	public static final RubyString SESSION = ObjectFactory.createString("session");
+	public static final RubyString TOKEN = ObjectFactory.createString("token");
 	
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
@@ -66,12 +67,21 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		return true;
 	    	}
 	    	
-    		RubyString val1 = (RubyString)(hash.get(orderBy));
+    		RubyValue val1 = hash.get(orderBy);
     		for( int i = 0; i < res.size(); i++ ){
-    			RubyString val2 = (RubyString)(((RubyHash)res.get(i)).get(orderBy));
-    			if ( val1.operator_compare(val2).toInt() <= 0 ){
-    				res.insert(i, hash);
-    				return true;
+    			RubyValue val2 = ((RubyHash)res.get(i)).get(orderBy);
+    			
+    			if ( val1 instanceof RubyString){
+    				RubyValue compRes = ((RubyString)val1).operator_compare(val2); 
+	    			if ( compRes != RubyConstant.QNIL && compRes.toInt() <= 0 ){
+	    				res.insert(i, hash);
+	    				return true;
+	    			}
+    			}else if ( val1 instanceof RubyFixnum && val2 instanceof RubyFixnum ){
+	    			if ( val1.toInt() <= val2.toInt() ){
+	    				res.insert(i, hash);
+	    				return true;
+	    			}
     			}
     		}
     		res.add( hash );
@@ -83,17 +93,20 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static class Table_base extends Table_base1{
 	    int id = 0;
 	    int source_id=0;
+	    String token;
 		
 	    // Serialize the object
 	    public void writeObject(IOutputStream out) {
 	    	out.writeInt(id);
 	        out.writeInt(source_id);
+	        out.writeString(token);
 	    }
 
 	    // Deserialize the object
 	    public void readObject(IInputStream in) {
 	    	id = in.readInt();
 	    	source_id = in.readInt();
+	    	token = in.readString();
 	    }
 		
 	    RubyHash getValueByName(RubyString name){
@@ -104,6 +117,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		res.add( SOURCE_ID, ObjectFactory.createInteger(source_id) );
 	    	if ( bAll || name.equals(ID) )
 	    		res.add( ID, ObjectFactory.createInteger(id) );
+	    	if ( bAll || name.equals(TOKEN) )
+	    		res.add( TOKEN, ObjectFactory.createString(token) );
 	    	
 	    	return res;
 	    }
@@ -121,6 +136,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        val = hash.getValue(SOURCE_ID);
 	        if ( val != RubyConstant.QNIL )
 	        	source_id = val.toInt();
+	        
+	        val = hash.getValue(TOKEN);
+	        if ( val != RubyConstant.QNIL )
+	        	token = val.toString();
+	        
 	    }
 	    
 	}
@@ -158,12 +178,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    Index source_idANDupdate_type;
 		    Index object_idANDattrib;
 		    Index object_idANDupdate_type;
+		    Index source_idANDtoken;
 		    
 		    // Deserialize the object
 		    public void readObject(IInputStream in) {
 		    	source_idANDupdate_type = (Index)in.readObject();
 		    	object_idANDattrib = (Index)in.readObject();
 		    	object_idANDupdate_type = (Index)in.readObject();
+		    	source_idANDtoken = (Index)in.readObject();
 		    }
 
 		    // Serialize the object
@@ -171,6 +193,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        out.writeObject(source_idANDupdate_type);
 		        out.writeObject(object_idANDattrib);
 		        out.writeObject(object_idANDupdate_type);
+		        out.writeObject(source_idANDtoken);
 		    }
 
 		    public TableRoot() {}
@@ -183,6 +206,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        		new int[]{Types.String,Types.String}, false);
 		        object_idANDupdate_type = db.createIndex(
 		        		new int[]{Types.String,Types.String}, false);
+		        source_idANDtoken = db.createIndex(
+		        		new int[]{Types.Int,Types.String}, false);
 		    }
 		    public void clear(){
 		    	Iterator iter = source_idANDupdate_type.iterator();
@@ -199,6 +224,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		iter.remove();
 		    	}
 		    	object_idANDupdate_type.clear();
+
+		    	iter = source_idANDtoken.iterator();
+		    	while(iter.hasNext()){
+		    		
+		    		Table_object_values item = (Table_object_values)iter.next();
+		    		iter.remove();
+		    	}
+		    	source_idANDtoken.clear();
 		    	
 		    	iter = object_idANDattrib.iterator();
 		    	while(iter.hasNext()){
@@ -215,12 +248,15 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.put(new Key( item.object, item.update_type),item);
+		    	source_idANDtoken.put(new Key( new Object[]{new Integer(item.source_id), item.token}),item);		    	
 		    }
 		    public void remove(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
 		    	source_idANDupdate_type.remove(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.remove(new Key( item.object, item.update_type),item);
+		    	source_idANDtoken.remove(new Key( new Object[]{new Integer(item.source_id), item.token}),item);
+		    	
 		    	item.deallocate();
 		    }
 
@@ -233,6 +269,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	RubyValue valObject = where.get(Table_object_values.OBJECT);
 		    	RubyValue valUpdatedType = where.get(Table_object_values.UPDATE_TYPE);
 		    	RubyValue valAttrib = where.get(Table_object_values.ATTRIB);
+		    	RubyValue valToken = where.get(TOKEN);
 
 		    	if ( valAttrib != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
 		    		Key key = new Key(valObject.toStr(),valAttrib.toStr()); 
@@ -242,6 +279,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	if ( valUpdatedType != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
 		    		Key key = new Key(valObject.toStr(),valUpdatedType.toStr()); 
 		    		return object_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
+		    	}
+
+		    	if ( valToken != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valToken.toStr()});
+		    		return source_idANDtoken.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
 		    	
 		    	if ( valObject != RubyConstant.QNIL ){

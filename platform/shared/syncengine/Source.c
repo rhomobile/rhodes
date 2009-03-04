@@ -20,10 +20,11 @@
 
 #include "Source.h"
 
-pSource SourceCreate(char *source_url, int source_id) {
+pSource SourceCreate(char *source_url, int source_id, sqlite_uint64 token) {
 	pSource source = malloc(sizeof(Source));
 	source->_source_url = str_assign(source_url);
 	source->_source_id = source_id;
+    source->_token = token;
 	return source;
 }
 
