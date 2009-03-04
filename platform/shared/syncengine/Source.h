@@ -32,11 +32,12 @@ extern "C" {
 typedef struct {
 	int				_source_id;		/* id corresponding to source */
 	char*			_source_url;	/* url for the source */
+    sqlite_uint64   _token;
 } Source;
 	
 typedef Source* pSource;
 	
-pSource SourceCreate(char *source_url, int source_id);
+pSource SourceCreate(char *source_url, int source_id, sqlite_uint64 token);
 	
 void free_source_list(pSource *list, int length);
 	
