@@ -67,12 +67,21 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		return true;
 	    	}
 	    	
-    		RubyString val1 = (RubyString)(hash.get(orderBy));
+    		RubyValue val1 = hash.get(orderBy);
     		for( int i = 0; i < res.size(); i++ ){
-    			RubyString val2 = (RubyString)(((RubyHash)res.get(i)).get(orderBy));
-    			if ( val1.operator_compare(val2).toInt() <= 0 ){
-    				res.insert(i, hash);
-    				return true;
+    			RubyValue val2 = ((RubyHash)res.get(i)).get(orderBy);
+    			
+    			if ( val1 instanceof RubyString){
+    				RubyValue compRes = ((RubyString)val1).operator_compare(val2); 
+	    			if ( compRes != RubyConstant.QNIL && compRes.toInt() <= 0 ){
+	    				res.insert(i, hash);
+	    				return true;
+	    			}
+    			}else if ( val1 instanceof RubyFixnum && val2 instanceof RubyFixnum ){
+	    			if ( val1.toInt() <= val2.toInt() ){
+	    				res.insert(i, hash);
+	    				return true;
+	    			}
     			}
     		}
     		res.add( hash );
