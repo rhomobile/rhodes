@@ -5,12 +5,12 @@
 </div>
 
 <ul id="SugarCampaigns" title="Campaigns" selected="true">
-<a class="button right_button" href="/RhoSugarCRM/SugarCampaign/new" target="_self">New</a>
+<a class="button right_button" href="SugarCampaign/new" target="_self">New</a>
 	
 <%@SugarCampaigns.each do |x|%>
 
 <li class="overview">
-	<a href="<%= "/RhoSugarCRM/SugarCampaign/#{x.object}/show" %>" target="_self">
+	<a href="<%= "SugarCampaign/#{x.object}/show" %>" target="_self">
 		<%= x.name %>
 		<div>
 		<%= x.status %><%= both_items_present?(x.status, x.budget) ? "<span class='separator'>&nbsp;|&nbsp;</span>" : "" %><%= display_dollars(x.budget) %>

@@ -1,0 +1,38 @@
+<form title="Edit Source" 
+	  class="panel" 
+	  id="source_edit_form" 
+	  method="POST" 
+	  action="<%=url_for(:action => :update)%>">
+	<fieldset>
+		<input type="hidden" name="source[source_id]" value="<%=@source.source_id%>"/>
+		<div class="row">
+			<label>Name</label><span><%=@source.name%></span>
+		</div>
+		<div class="tallrow">
+			<label>URL</label>
+			<input type="text" maxlength="2048" name="source[source_url]" style="margin-right:14px;position:relative;width:90%" value="<%=@source.source_url%>"/>
+		</div>
+		<div class="tallrow">
+			<label>Last Updated</label>
+			<span><%=Time.parse(@source.last_updated).strftime("%B %d, %Y @ %I:%M:%S %p")%></span>
+		</div>
+		<div class="tallrow">
+			<label>Last Sync Summary</label>
+			<span>
+			Inserted: <%=@source.last_inserted_size%> Deleted: <%=@source.last_deleted_size%> Duration: <%=@source.last_sync_duration%> sec
+			</span>
+		</div>
+		<div class="row">
+			<label>Last Sync</label><span>
+			<% if @source.last_sync_success %>
+			  <font color="green">Successful</font>
+			<% else %>
+			  <font color="red">Encountered error</font>
+			<% end %></span>
+		</div>
+		<div class="row">
+			<label>Number of records</label><span><%=@source.distinct_objects%></span>
+		</div>
+	</fieldset>
+	<input type="submit" value="Update"/>
+</form>

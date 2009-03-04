@@ -1,13 +1,13 @@
 <html>
 <head>
-	<link href="/RhoSugarCRM/css/base.css" type="text/css" rel="stylesheet"/>		
+	<link href="/public/css/base.css" type="text/css" rel="stylesheet"/>		
 		
 	<% if System::get_property('platform') == 'APPLE' %>
 	  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
-		<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
-		<link href="/RhoSugarCRM/css/iphone.css" type="text/css" rel="stylesheet"/>
+		<style type="text/css" media="screen">@import "/public/js/iui/iui.css"; @import "/public/css/rho.css";</style>
+		<link href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
 		
-		<script src="/shared/js/jquery-1.2.6.min.js"></script>
+		<script src="/public/js/jquery-1.2.6.min.js"></script>
 	
 		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=aFhmQOzV34FaMlrzhSFVxYpBojI29ArEPZ0oRloa6yEzZOvBgijJhI6gCfudbw--">
 		</script>
@@ -99,9 +99,9 @@
 <% else %>
 
 	<% if System::get_property('platform') == 'Blackberry' %>
-		<link href="/RhoSugarCRM/css/blackberry.css" type="text/css" rel="stylesheet"/>	
+		<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>	
 	<% else %>	
-		<link href="/RhoSugarCRM/css/xhtml.css" type="text/css" rel="stylesheet"/>	
+		<link href="/public/css/xhtml.css" type="text/css" rel="stylesheet"/>	
 	<% end %>
 
 	<script type="text/javascript">
