@@ -2,6 +2,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/io.h"
+#include "missing/file.h"
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../../stat/stat.h"
 #endif
@@ -107,6 +108,38 @@ static const char *const loadable_ext[] = {
     0
 };
 
+static char* g_curAppPath = 0;
+
+void RhoSetCurAppPath(char* path){
+    if ( g_curAppPath ){
+        free(g_curAppPath);
+        g_curAppPath = 0;
+    }
+
+    if ( path && *path ){
+        char* appPath = strdup(path);
+        int i = 0;
+        char* szApp;
+        for( ; i < strlen(appPath); i++ )
+            if ( appPath[i] == '\\' )
+                appPath[i] = '/';
+
+        szApp = strstr( appPath, "/apps/");
+        if ( szApp ){
+            char* szAppEnd = strchr( szApp+6, '/');
+            if ( szAppEnd ){
+                int nLen = szAppEnd-appPath;
+                g_curAppPath = malloc(nLen+1);
+                g_curAppPath[0] = 0;
+                strncpy(g_curAppPath,path,nLen);
+                g_curAppPath[nLen] = 0;
+            }
+        }
+        
+        free(appPath);
+    }
+}
+
 static VALUE find_file(VALUE fname)
 {
     VALUE res;
@@ -144,6 +177,13 @@ static VALUE find_file(VALUE fname)
             rb_str_cat(res,"/",1);
             rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
             rb_str_cat(res,".iseq",5);
+
+            if ( g_curAppPath != 0 && eaccess(RSTRING_PTR(res), R_OK) != 0 ){
+                res = rb_str_new2(g_curAppPath);
+                rb_str_cat(res,"/",1);
+                rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
+                rb_str_cat(res,".iseq",5);
+            }
         //}
     }
 
@@ -178,10 +218,11 @@ VALUE isAlreadyLoaded(VALUE path)
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
-	
+	char* szName = RSTRING_PTR(fname);
+
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
-    if ( strcmp("strscan",RSTRING_PTR(fname))==0 || strcmp("enumerator",RSTRING_PTR(fname))==0 )
+    if ( strcmp("strscan",szName)==0 || strcmp("enumerator",szName)==0 )
         return Qtrue;
 
     path = find_file(fname);

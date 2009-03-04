@@ -9,6 +9,7 @@
     <property name="bin.dir" location="bin"/>
 	<property name="src.dir" location="${bin.dir}/RhoBundle" />
 	<property name="build.dir" location="build"/>
+	<property name="xruby.dir" location="${bin.dir}/../../../../rhodes/rhodes-build/res"/>
     <property name="classes.dir" value="${bin.dir}/classes"/>
     <property name="distribution.dir" value="${bin.dir}/distribution"/>
 	<property name="sharedAnt.dir" value="../build" />
@@ -55,7 +56,7 @@
     	
         <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
           <arg value="-jar" />
-          <arg value="${build.dir}/xruby-0.3.3.jar" />
+          <arg value="${xruby.dir}/xruby-0.3.3.jar" />
           <arg value="-c" />
           <arg value="RhoBundle" />
         </exec>
