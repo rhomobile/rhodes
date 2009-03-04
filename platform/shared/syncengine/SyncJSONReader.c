@@ -65,11 +65,12 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
             if (strcmp(key, "count") == 0) {
                 header->_count = atoi( json_object_get_string(val) );
             }else if (strcmp(key, "token") == 0) {
-                strcpy(header->_token, json_object_get_string(val));
+                header->_token = _atoi64(json_object_get_string(val));
             }else if (strcmp(key, "object_value") == 0) {
 				/* Initialize a new SyncObject for each object_value found */
 				current_parse_object = (pSyncObject)SyncObjectCreate();
-				
+                current_parse_object->_token = header->_token;
+
 				for (sub_entry = json_object_get_object(val)->head;
 					 sub_entry != NULL && sub_entry->k != NULL;
 					 sub_entry = sub_entry->next) {

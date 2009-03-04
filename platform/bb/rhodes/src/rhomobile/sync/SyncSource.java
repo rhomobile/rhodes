@@ -29,6 +29,8 @@ public class SyncSource {
 	/** The _source url. */
 	private String _sourceUrl;
 
+	private String _token = "";
+	
 	/**
 	 * Instantiates a new sync source.
 	 * 
@@ -74,5 +76,13 @@ public class SyncSource {
 	 */
 	public void set_sourceUrl(String url) {
 		_sourceUrl = url;
+	}
+
+	public String get_token() {
+		return _token;
+	}
+
+	public void set_token(String _token) {
+		this._token = _token;
 	}
 }

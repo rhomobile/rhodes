@@ -26,6 +26,7 @@ platform/bb/*/.classpath
 platform/bb/.BB.jdw/*.files
 *.jad
 platform/bb/build/rholog.txt
+platform/bb/preverified
 
 platform/symbian/.metadata/*
 platform/symbian/bin/*
