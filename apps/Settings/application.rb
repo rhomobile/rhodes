@@ -1,4 +1,4 @@
 require 'rho/rhoapplication'
 
-class SettingsApplication < Rho::RhoApplication
+class AppApplication < Rho::RhoApplication
 end

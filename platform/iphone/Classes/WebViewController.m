@@ -15,7 +15,7 @@ NSString *loadingText = @"Loading...";
 
 -(void)navigate:(NSString*)url {
     printf("Navigating to the specifyed URL\n");
- 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
+	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
 }
 
 -(IBAction)goBack {

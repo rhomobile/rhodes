@@ -2,10 +2,6 @@
 <projectDescription>
 	<name>jrhodes</name>
 	<comment></comment>
-	<projects>
-		<project>jrhobundle</project>
-		<project>jruby</project>
-	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
