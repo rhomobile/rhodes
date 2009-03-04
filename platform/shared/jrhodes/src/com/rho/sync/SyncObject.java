@@ -1,5 +1,6 @@
 package com.rho.sync;
 
+import com.rho.db.PerstLiteAdapter;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -28,6 +29,8 @@ public class SyncObject {
 
 	/** The _update type. */
 	private String _updateType;
+
+	private String _token;
 
 	/**
 	 * Instantiates a new sync object.
@@ -105,6 +108,8 @@ public class SyncObject {
 				.createString(this.getValue()));
 		hash.add(SyncUtil.createString("update_type"), SyncUtil
 				.createString(this.getUpdateType()));
+		hash.add( PerstLiteAdapter.TOKEN, SyncUtil
+				.createString(this.get_token()));
 		
 		return hash;
 	}
@@ -223,5 +228,13 @@ public class SyncObject {
 
 	public void setDbOperation(String _db_operation) {
 		this._db_operation = _db_operation;
+	}
+
+	public String get_token() {
+		return _token;
+	}
+
+	public void set_token(String _token) {
+		this._token = _token;
 	}
 }
