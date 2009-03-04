@@ -1,31 +1,17 @@
 require File.join(File.dirname(__FILE__),'..','jake.rb')
 
 namespace "config" do
-  task :iphone do
-    $config = Jake.config(File.open('build.yml'))  
-    $basedir = pwd
+  task :iphone => :common do
     $homedir = `echo ~`.to_s.strip
-    $deploydir = File.join($basedir,'deploy','bb')
-
-    $bindir = File.join($basedir,'bin')
-    $srcdir = File.join($bindir, '/RhoBundle')
-    $tmpdir = File.join($bindir,'tmp')
-    $targetdir =  File.join($bindir,'target')
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
 
-    $compileERBbase = File.join(File.dirname(__FILE__),'..','compileERB')
-    $compileRBbase = File.join(File.dirname(__FILE__),'..','compileRB')
-    $appmanifest = File.join(File.dirname(__FILE__),'..','manifest','createAppManifest.rb')
-    $res = File.join(File.dirname(__FILE__),'..','..','res')
-
-    $prebuilt = File.join($res,'prebuilt')
     $simapp="#{$homedir}/Library/Application Support/iPhone Simulator/User/Applications"
     $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
     $applog = File.join($homedir,$config["env"]["applog"])
-    mkdir_p $bindir if not File.exists? $bindir
+
   end
 end
 
@@ -35,7 +21,7 @@ task :loadframework do
 end
 
 namespace "bundle" do
-  task :iphone =>  ["config:iphone", "loadframework"] do
+  task :iphone =>  ["config:iphone", "loadframework", "makedirs"] do
 
     rm_rf $srcdir
     mkdir_p $srcdir
@@ -89,20 +75,7 @@ end
 namespace "device" do
   desc "Create downloadable app for BlackBerry"
   task :iphone => "bundle:iphone" do
-    if $config["env"]["bbsignpwd"] and $config["env"]["bbsignpwd"] != ""
-      Rake::Task["run:iphone:autosign"].execute
-    else
-      Rake::Task["run:iphone:manualsign"].execute
-    end
-
-    rm_rf $deploydir
-    mkdir_p $deploydir 
-
-    cp File.join($targetdir, "rhodesApp.jad"), $deploydir
-
-    Jake.unjar(File.join($targetdir, "rhodesApp.cod"), $deploydir)
-
-
+ 
   end
 end
 
