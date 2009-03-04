@@ -236,7 +236,7 @@ static void processToken( sqlite_uint64 token, pSource src )
 
         delete_from_database_bytoken(src->_source_id, src->_token);
 	}else if ( token != 0 ){
-        /*
+
 		lock_sync_mutex();	
 		prepare_db_statement("UPDATE sources SET token=? where source_id=?",
 						 (sqlite3 *)get_database(),
@@ -245,7 +245,7 @@ static void processToken( sqlite_uint64 token, pSource src )
         sqlite3_bind_int(update_token_db_statement, 2, src->_source_id);
 		sqlite3_step(update_token_db_statement); 
 		finish_db_statement(&update_token_db_statement);
-		unlock_sync_mutex();*/	
+		unlock_sync_mutex();	
 	}
 }
 
@@ -287,14 +287,13 @@ int push_remote_changes(pSyncOperation *list, int size) {
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
 	lock_sync_mutex();
-	//prepare_db_statement("SELECT source_id,source_url,token from sources order by source_id", 
-	prepare_db_statement("SELECT source_id,source_url from sources order by source_id", 
+	prepare_db_statement("SELECT source_id,source_url,token from sources order by source_id", 
 						 database, 
 						 &op_list_source_ids_statement);
 	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
 		int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
 		char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
-        sqlite_uint64 token = 0;//(int)sqlite3_column_int64(op_list_source_ids_statement, 2);
+        sqlite_uint64 token = (int)sqlite3_column_int64(op_list_source_ids_statement, 2);
 		list[count] = SourceCreate(url, id, token);
 		count++;
 	}
