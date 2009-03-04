@@ -36,7 +36,7 @@ extern "C" {
 
 typedef struct {
 	int			_count;
-	char		_token[100];
+	sqlite_uint64		_token;
 } SyncHeader;
 
 typedef struct {
@@ -50,6 +50,7 @@ typedef struct {
 	char*			_object;
 	char*			_value;
 	char*			_update_type;
+    sqlite_uint64   _token;
 } SyncObject;
 
 typedef SyncObject* pSyncObject;
@@ -68,7 +69,8 @@ int exists_in_database(pSyncObject ref);
 int insert_into_database(pSyncObject ref);
 int delete_from_database(pSyncObject ref);
 void free_ob_list(pSyncObject *list, int available);
-	
+void delete_from_database_bytoken( int srcID, sqlite_uint64 token );
+
 /* Free object */
 void SyncObjectRelease(pSyncObject ref);
 

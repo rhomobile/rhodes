@@ -99,13 +99,16 @@ public class SyncUtil {
 		String data = null;
 		SyncJSONParser.SyncHeader header = new SyncJSONParser.SyncHeader();
 	    int nTry = 0, nTotal = 0;
-	    String fetch_url = source.get_sourceUrl() + SyncConstants.SYNC_FORMAT + "&client_id=" + client_id +
-	    	"&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
 
 		start = System.currentTimeMillis();
 		String session = get_session(source);
 	    
 		do{
+		    String fetch_url = source.get_sourceUrl() + SyncConstants.SYNC_FORMAT + "&client_id=" + client_id +
+	    	"&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
+		    if ( header._token.length() > 0 )
+		    	fetch_url += "&ack_token=" + header._token;
+			
 			try {
 				data = SyncManager.fetchRemoteData( fetch_url, session, true);
 			} catch (IOException e) {
@@ -119,6 +122,9 @@ public class SyncUtil {
 				nTotal += count; 
 				String type;
 				if (count > 0) {
+					
+					processToken( header._token, source );
+					
 					for (int i = 0; i < count; i++) {
 					  type = ((SyncObject)list.get(i)).getDbOperation();
 					  if (type != null) {
@@ -143,6 +149,24 @@ public class SyncUtil {
 		return nTotal;
 	}
 
+	private static void processToken( String token, SyncSource source ){
+		if ( token.length() > 0 && source.get_token().equals(token) ){
+			//Delete non-confirmed records
+
+			RubyHash where = createHash();
+			where.add(createString("source_id"), createInteger(source.get_sourceId()));
+			where.add(PerstLiteAdapter.TOKEN, createString(token));
+			
+			adapter.deleteFromTable(createString("object_values"), where);
+		}else if ( token.length() > 0 ){
+			RubyHash values = SyncUtil.createHash();
+			values.add(PerstLiteAdapter.TOKEN, createString(token));
+			RubyHash where = SyncUtil.createHash();
+			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source.get_sourceId()));
+			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, where);
+		}
+	}
+	
 	/**
 	 * Update the sync source status after each sync run
 	 * @param source
@@ -322,7 +346,11 @@ public class SyncUtil {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
 			SyncSource current = new SyncSource(url, id);
+			if ( token != null && token != RubyConstant.QNIL )
+				current.set_token(token.toString());
+			
 			if ( client_id == null )
 				client_id = get_client_id(current);
 			

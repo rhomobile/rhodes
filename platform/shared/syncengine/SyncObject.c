@@ -23,11 +23,13 @@
 #include "Constants.h"
 #include "Utils.h"
 #include "SyncOperation.h"
+#include "SyncEngine.h"
 
 /* Database access statements */
 static sqlite3_stmt *insert_statement = NULL;
 static sqlite3_stmt *delete_statement = NULL;
 static sqlite3_stmt *select_statement = NULL;
+static sqlite3_stmt *delete_bytoken_statement=NULL;
 
 void finalize_sync_obj_statements() {
 	if (insert_statement) {
@@ -44,6 +46,12 @@ void finalize_sync_obj_statements() {
 		sqlite3_finalize(select_statement);
 		select_statement = NULL;
 	}
+
+	if (delete_bytoken_statement) {
+		sqlite3_finalize(delete_bytoken_statement);
+		delete_bytoken_statement = NULL;
+	}
+
 }
 
 static int new_source_id = -1;
@@ -58,6 +66,7 @@ pSyncObject SyncObjectCreate() {
 	sync->_update_type = NULL;
 	sync->_db_operation = NULL;
 	sync->_primary_key = 0;
+    sync->_token = 0;
 	return sync;
 }
 
@@ -74,6 +83,7 @@ pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key,
 	sync->_value = str_assign(value);
 	sync->_update_type = str_assign(update_type);
     sync->_db_operation = NULL;
+    sync->_token = 0;
 	return sync;
 }
 
@@ -87,6 +97,7 @@ pSyncObject SyncObjectCopy(pSyncObject new_object) {
 	sync->_object = str_assign(new_object->_object);
 	sync->_value = str_assign(new_object->_value);
 	sync->_update_type = str_assign(new_object->_update_type);
+    sync->_token = new_object->_token;
 	return sync;
 }
 
@@ -127,7 +138,7 @@ int insert_into_database(pSyncObject ref) {
 		lock_sync_mutex();	
 
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
-							 update_type) VALUES(?,?,?,?,?,?)",
+							 update_type,token) VALUES(?,?,?,?,?,?,?)",
 							 ref->_database,
 							 &insert_statement);
 		sqlite3_bind_int(insert_statement, 1, ref->_primary_key);
@@ -136,6 +147,7 @@ int insert_into_database(pSyncObject ref) {
         sqlite3_bind_text(insert_statement, 4, ref->_object, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_statement, 5, ref->_value, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_statement, 6, ref->_update_type, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(insert_statement, 7, ref->_token );
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
@@ -168,6 +180,24 @@ int delete_from_database(pSyncObject ref) {
 	unlock_sync_mutex();	
 
 	return 0;
+}
+
+/* delete a specific set of object_values from the database */
+void delete_from_database_bytoken( int srcID, sqlite_uint64 token ) {
+	int success = 0;
+	lock_sync_mutex();	
+	prepare_db_statement("DELETE FROM object_values where id=? and token=?",
+						 (sqlite3 *)get_database(),
+						 &delete_bytoken_statement);
+    sqlite3_bind_int(delete_bytoken_statement, 1, srcID);
+    sqlite3_bind_int64(delete_bytoken_statement, 1, token);
+
+	success = sqlite3_step(delete_bytoken_statement);
+	if (success != SQLITE_DONE) {
+		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg((sqlite3 *)get_database()));
+	}
+	finish_db_statement(&delete_bytoken_statement);
+	unlock_sync_mutex();	
 }
 
 void free_ob_list(pSyncObject *list, int available) {

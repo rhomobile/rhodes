@@ -34,6 +34,7 @@ static sqlite3_stmt *del_all_client_info_statement = NULL;
 static sqlite3_stmt *del_all_ob_val_statement = NULL;
 static sqlite3_stmt *session_url_source_statement=NULL;
 static sqlite3_stmt *set_session_db_statement=NULL;
+static sqlite3_stmt *update_token_db_statement=NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) {
@@ -88,6 +89,10 @@ void finalize_sync_util_statements() {
 		sqlite3_finalize(set_session_db_statement);
 		set_session_db_statement = NULL;
 	}
+	if (update_token_db_statement) {
+		sqlite3_finalize(update_token_db_statement);
+		update_token_db_statement = NULL;
+	}
 
 }
 
@@ -117,6 +122,7 @@ const char* load_source_url()
 	return g_source_url;
 }
 
+static void processToken( sqlite_uint64 token, pSource src );
 /* 
  * Pulls the latest object_values list 
  * for a given source and populates a list
@@ -134,32 +140,39 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
     int nTry = 0;
 
     header._count = -1;
+    header._token = 0;
 
     if ( !src->_source_url || strlen(src->_source_url) == 0 )
         return nTotal;
 
 	save_source_url(src->_source_url);
-	if (params && strlen(params) > 0) {
-		sprintf(url_string, 
-				"%s%s%s&client_id=%s&question=%s&p_size=%d", 
-				src->_source_url,
-				SYNC_ASK_ACTION,
-				SYNC_SOURCE_FORMAT, 
-				client_id,
-				params, SYNC_PAGE_SIZE );
-	} else {
-		sprintf(url_string, 
-				"%s%s&client_id=%s&p_size=%d", 
-				src->_source_url,
-				SYNC_SOURCE_FORMAT, 
-				client_id, SYNC_PAGE_SIZE);
-	}
 	start = time(NULL);
 
     list = malloc(MAX_SYNC_OBJECTS*sizeof(pSyncObject));
     if ( list )
     {
         do {
+	        if (params && strlen(params) > 0) {
+		        sprintf(url_string, 
+				        "%s%s%s&client_id=%s&question=%s&p_size=%d", 
+				        src->_source_url,
+				        SYNC_ASK_ACTION,
+				        SYNC_SOURCE_FORMAT, 
+				        client_id,
+				        params, SYNC_PAGE_SIZE );
+	        } else {
+		        sprintf(url_string, 
+				        "%s%s&client_id=%s&p_size=%d", 
+				        src->_source_url,
+				        SYNC_SOURCE_FORMAT, 
+				        client_id, SYNC_PAGE_SIZE);
+	        }
+            if ( header._token != 0 ){
+                char szToken[30];
+                sprintf(szToken, "&ack_token=%I64u",  header._token );
+                strcat(url_string,szToken);
+            }
+
 	        json_string = fetch_remote_data(url_string);
 	        if(json_string && strlen(json_string) > 0) {
 		        struct json_object* json_to_free = 0;
@@ -167,6 +180,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 		        printf("Parsed %i records from sync source...\n", available);
                 nTotal += available;
 		        if(available > 0) {
+
+                    processToken( header._token, src );
+
 			        for(j = 0; j < available; j++) {
 				        list[j]->_database = database;
 				        type = list[j]->_db_operation;
@@ -213,6 +229,26 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	return nTotal;
 }
 
+static void processToken( sqlite_uint64 token, pSource src )
+{
+    if ( token != 0 && src->_token == token ){
+		//Delete non-confirmed records
+
+        delete_from_database_bytoken(src->_source_id, src->_token);
+	}else if ( token != 0 ){
+        /*
+		lock_sync_mutex();	
+		prepare_db_statement("UPDATE sources SET token=? where source_id=?",
+						 (sqlite3 *)get_database(),
+						 &update_token_db_statement);
+		sqlite3_bind_int64(update_token_db_statement, 1, token);
+        sqlite3_bind_int(update_token_db_statement, 2, src->_source_id);
+		sqlite3_step(update_token_db_statement); 
+		finish_db_statement(&update_token_db_statement);
+		unlock_sync_mutex();*/	
+	}
+}
+
 /*
  * Pushes changes from list to rhosync server
  */
@@ -251,13 +287,15 @@ int push_remote_changes(pSyncOperation *list, int size) {
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	int count = 0;
 	lock_sync_mutex();
+	//prepare_db_statement("SELECT source_id,source_url,token from sources order by source_id", 
 	prepare_db_statement("SELECT source_id,source_url from sources order by source_id", 
 						 database, 
 						 &op_list_source_ids_statement);
 	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
 		int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
 		char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
-		list[count] = SourceCreate(url, id);
+        sqlite_uint64 token = 0;//(int)sqlite3_column_int64(op_list_source_ids_statement, 2);
+		list[count] = SourceCreate(url, id, token);
 		count++;
 	}
 	finish_db_statement(&op_list_source_ids_statement);
