@@ -55,6 +55,13 @@ module Rhom
 		  
               class << self
               
+                def count
+                  ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME,
+                                                           'object',
+                                                           {"source_id"=>get_source_id},
+                                                           {"distinct"=>true}).length
+                end
+              
                 def get_source_id
                   Rho::RhoConfig::sources[self.name.to_s]['source_id'].to_s
                 end

@@ -4,15 +4,15 @@ require 'rho/rhocontroller'
 class SettingsController < Rho::RhoController
   
   def index
+    puts 'inside index'
+    @msg = @params['msg']
     render
   end
 
-  # GET /User/edit
-  def login    
+  def login
     render :action => :login
   end
 
-  # POST /User/login
   def do_login
     if @params['login'] and @params['password']
       success = SyncEngine::login(@params['login'], @params['password'])
@@ -36,11 +36,20 @@ class SettingsController < Rho::RhoController
     render :action => :login
   end
   
-  #GET /Reset/do_reset
-   def do_reset
-     SyncEngine::trigger_sync_db_reset
-     @msg = "Database will be deleted on next sync."
-     redirect Rho::RhoConfig.start_path
-   end
+  def reset
+    render :action => :reset
+  end
   
+  def do_reset
+    SyncEngine::trigger_sync_db_reset
+    @msg = "Database will be deleted on next sync."
+    redirect Rho::RhoConfig.start_path
+  end
+  
+  def do_sync
+    puts 'inside do_sync'
+    SyncEngine::dosync
+    @msg =  "Sync has been triggered."
+    redirect :action => :index, :query => {:msg => @msg}
+  end
 end
