@@ -286,6 +286,12 @@ public class SyncUtil {
 		
 		arr.add(createString("sources"));
 		arr.add(createString("*"));
+		
+		RubyHash order = createHash();
+		order.add(createString("order by"), createString("source_id"));
+		arr.add(RubyConstant.QNIL); // where
+	    arr.add(order);
+	    
 		return (RubyArray) adapter.selectFromTable(arr);
 	}
 
