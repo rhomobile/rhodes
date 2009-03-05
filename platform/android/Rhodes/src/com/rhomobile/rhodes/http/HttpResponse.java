@@ -186,7 +186,7 @@ public class HttpResponse extends HttpHeader {
 
 			if (encoding != null && encoding.equals(HttpHeader.Chunked)) {
 				httpOut.setChunking(true);
-			} else if (length == null) {
+			} else if (length == null || "0".equals(length)) {
 				if (!(HttpHeader.Close.equals(connection)) && chunkByDefault) {
 					setHeader(HttpHeader.TransferEncoding, HttpHeader.Chunked);
 					httpOut.setChunking(true);
@@ -308,6 +308,7 @@ public class HttpResponse extends HttpHeader {
 	 * Sets the status code and a default message for this response.
 	 */
 	public void setStatus(int code, String message) {
+		Log.i(this.getClass().getSimpleName(), "Response, status code:" + code + " msg:" + message);
 		handled = true;
 		status = Integer.toString(code);
 		reason = message;

@@ -83,6 +83,13 @@ public class RhoRuby {
 
 		return null;
 	}
+	
+	static public String getOptionsPage() {
+		if (rhoRuby != null)
+			return rhoRuby.getOptionsPage();
+
+		return null;
+	}
 
 	static public InputStream loadFile(String path) {
 
