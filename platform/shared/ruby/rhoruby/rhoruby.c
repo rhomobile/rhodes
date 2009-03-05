@@ -33,7 +33,7 @@ extern void Init_Camera(void);
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
-extern void RhoSetCurAppPath(VALUE path);
+extern void RhoSetCurAppPath(char* path);
 
 static VALUE  framework;
 static ID framework_mid;
