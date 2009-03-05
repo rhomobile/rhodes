@@ -1,6 +1,6 @@
 <project name="compileRubySrc" default="all" basedir=".">
 
-  <property file="build.properties"/>
+  <property file="${user.home}/rho_build.conf"/>
 
   <property name="version" value="0.10" />
 	<property name="vendor" value="RhoMobile" />

@@ -12,12 +12,8 @@ public class SyncJSONParser {
 
 	static class SyncHeader
 	{ 
-		int			_count;
-		String		_token;
-		
-		SyncHeader(){
-			_count = -1;
-		}
+		int			_count = -1;
+		String		_token = "";
 	};
 	
 	/**
@@ -55,6 +51,7 @@ public class SyncJSONParser {
 					
 					newObject.setDbOperation((String)current.get("db_operation"));
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
+					newObject.set_token(header._token);
 					
 					list.add(newObject);
 				}else if ( element.has("count") ){

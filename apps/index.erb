@@ -1,26 +1,13 @@
 <!-- main index page -->
 <div align="center">
-	<h3>Home</h3>
-	<% if @msg %>
-	  <h4><font color="green"><%=@msg%></font></h4>
-	<% end %>
-	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Sample Apps</div>
-	<a href="RhoSugarCRM/app">Sugar CRM</a><br/>		
-
-	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Device Capabilities</div>
-	<a href="System">System API</a><br/>
-	Platform:<%= System::get_property('platform')%><br/>
+	<div style="margin:20px 0px;font-size:130%;font-weight:bold;color:#ff8800">Welcome to Rhodes!</div>
 	
-	<% if System::get_property('platform') != 'APPLE' && System::get_property('platform') != 'WINDOWS' %>
-		<a href="GeoLocation">Your location:</a> <geolocation>loading...</geolocation><br/>
-		Latitude: <geolatitude>loading...</geolatitude><br/>
-		Longitude: <geolongitude>loading...</geolongitude><br/>
-	<% end %>
-	
-	<a href="Settings">Settings</a><br/>
-	<% if SyncEngine::logged_in > 0 %>
-		<a href="/Settings/User/logout">Logout</a>
-	<%else%>
-		<a href="/Settings/User/login">Login</a>
-	<%end%>
+	<p>
+		Welcome to the Rhodes Framework!  This is the default landing page.  You probably want to create a "rho_build.conf" file in your home directory
+		which configures apps.dir to your application directory.
+	</p>
+	<br/>
+	<p>For example:
+	   apps.dir=/Users/John/firstrhodesapp
+	</p>
 </div>
