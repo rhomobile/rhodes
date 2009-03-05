@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Settings</title>
+		<% if System::get_property('platform') == 'APPLE' %>
+			<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+			<style type="text/css" media="screen">@import "/shared/js/iui/iui.css"; @import "/shared/css/rho.css";</style>
+			<script type="application/x-javascript" src="/shared/js/iui/iui.js"></script>
+			<script src="/shared/js/jquery-1.2.6.min.js"></script>
+			<script src="/shared/js/rho.js"></script>
+		<% end %>
+		
+		<style type="text/css">
+			.tallrow {
+				position: relative;
+				height:84px;
+				border-bottom: 1px solid #999999;
+			  -webkit-border-radius: 0;
+			}
+			.tallrow label {display:block; line-height: 42px;font-weight: bold; margin-left:14px;text-align:left;}
+			.tallrow input:not(input[type|=radio]):not(input[type|=checkbox]) {
+					width:auto;
+			    margin: 0;
+			    padding: 6px;
+			}
+			.tallrow span, .row span {
+				position:relative;
+	    	line-height: 42px;
+				text-align:right;
+				margin-right:10px;
+				margin-top:0;
+			}
+		</style>
+		
+	</head>
+	<body>
+		<%= @content %>
+	</body>
+</html>
