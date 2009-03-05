@@ -3,6 +3,7 @@
      <item android:title="@string/forward" android:id="@+id/navigation_forward" android:icon="@drawable/next" />
      <item android:title="@string/back" android:id="@+id/navigation_back" android:icon="@drawable/back"/>
      <item android:title="@string/refresh" android:id="@+id/refresh"  android:icon="@drawable/refresh"/>
-     <item android:checkable="false" android:title="@string/about" android:icon="@drawable/info" android:id="@+id/about" />
-     <item android:checkable="false" android:title="@string/sync" android:icon="@drawable/sync" android:id="@+id/sync" />
+     <item android:title="@string/sync" android:icon="@drawable/sync" android:id="@+id/sync" />
+     <item android:title="@string/options" android:icon="@drawable/options" android:id="@+id/options" />
+     <item android:title="@string/about" android:icon="@drawable/info" android:id="@+id/about" />
 </menu>
