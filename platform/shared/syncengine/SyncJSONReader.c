@@ -32,7 +32,7 @@
 #include "SyncJSONReader.h"
 #include "Utils.h"
 
-#ifdef __APPLE__ 
+#ifndef _WIN32_WCE
 #define _atoi64 atoll
 #endif
 
