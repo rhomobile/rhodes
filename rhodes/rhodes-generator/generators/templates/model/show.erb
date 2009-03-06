@@ -1,6 +1,19 @@
-<ul id="<%= name.downcase %>" title="Show <%= class_name %>">
+<div class="toolbar">
+	<h1 id="pageTitle">
+		<%%=@<%=name.downcase%>.<%=attributes[0]%>%>
+	</h1>
+</div>
+
+<div class="panel" selected="true">
+
+<a class="button right_button" href="<%%=url_for(:action => :edit, :id => @<%=name.downcase%>.object)%>" target="_self">Edit</a>
+
+<table class="grid">
   <% attributes.each do |attribute| %>
-    <li><%%=@<%=name.downcase%>.<%=attribute%>%></li>
+  <tr>
+	<td class="gridleft"><%=attribute.camelize%></td>
+    <td class="gridright"><%%=@<%=name.downcase%>.<%=attribute%>%></td>
+  </tr>
   <% end %>
-  <li><%%=link_to "Edit #{@<%=name.downcase%>.<%=attributes[0]%>}", :action => :edit, :id => @<%=name.downcase%>.object%></li>
-</ul>
+</table>
+</div>
