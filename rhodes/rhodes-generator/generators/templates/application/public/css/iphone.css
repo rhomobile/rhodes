@@ -330,7 +330,7 @@ fieldset > .row:last-child {
 #preloader {
     display: none;
     background-image: url(/public/images/loading.gif), url(/public/images/selection.png),
-        url(/public/images/blueButton.png), url(/public/images/listArrowSel.png), url(/public/images/listGroup.png);
+        url(/public/images/blueButton.png), url(/public/images/listArrowSel.png);
 }
 
 
@@ -349,7 +349,7 @@ body > .toolbar {
 }
 /* generate a new button to match toolbar */
 .button {
-  -webkit-border-image: url(/public/images/toolButton_new.png) 0 5 0 5;	
+  -webkit-border-image: url(/public/images/right_button.png) 0 5 0 5;	
 }
 table.grid {
 	table-layout: fixed;
