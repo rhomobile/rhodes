@@ -16,6 +16,7 @@ public class SyncNotifications {
 	void fireNotification(int nSourceID){
 		String url = (String)m_idToUrlmap.get(new Integer(nSourceID));
 		refreshIfCurrent(url);
+		clearNotification(nSourceID);
 	}
 	
 	public void refreshIfCurrent(String url){
