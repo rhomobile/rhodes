@@ -216,12 +216,14 @@ public class RhoPhonebook extends RubyBasic {
 		String name = contact.getField(RUBY_PB_FIRST_NAME.asString()) + " "
 				+ contact.getField(RUBY_PB_LAST_NAME.asString());
 
+		boolean isNew = false;
 		if (rbID != null && !"".equals(rbID))// update
 		{
 			uri = ContentUris.withAppendedId(People.CONTENT_URI, Long
 					.parseLong(contact.getField(RUBY_PB_ID.asString())));
 		} else // create
 		{
+			isNew = true;
 			ContentValues person = new ContentValues();
 			person.put(Contacts.People.NAME, name);
 
@@ -230,111 +232,120 @@ public class RhoPhonebook extends RubyBasic {
 		}
 
 		if (uri != null) {
-			ContentValues values = new ContentValues();
 
-			values.put(People.NAME, name);
+			if (!isNew) {
+				ContentValues values = new ContentValues();
+				values.put(People.NAME, name);
 
-			activity.getContentResolver().update(uri, values, null, null);
+				activity.getContentResolver().update(uri, values, null, null);
+			}
 
 			String pathLeaf = (String) uri.getPathSegments().get(
 					uri.getPathSegments().size() - 1);
-			
+
 			contact.setField(RUBY_PB_ID.asString(), pathLeaf);
 
 			// add mobile phone number
-			ContentValues number = new ContentValues();
-			number.put(Contacts.Phones.PERSON_ID, pathLeaf);
-			number.put(Contacts.Phones.NUMBER, contact
-					.getField(RUBY_PB_MOBILE_NUMBER.asString()));
-			number.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
 
-			Uri phoneUpdate = activity.getContentResolver().insert(
-					Contacts.Phones.CONTENT_URI, number);
+			if (!contact.getField(RUBY_PB_MOBILE_NUMBER.asString()).equals("")) {
+				ContentValues number = new ContentValues();
+				number.put(Contacts.Phones.PERSON_ID, pathLeaf);
+				number.put(Contacts.Phones.NUMBER, contact
+						.getField(RUBY_PB_MOBILE_NUMBER.asString()));
+				number.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
 
-			if (phoneUpdate == null) {
-				int retval = activity.getContentResolver().update(
-						People.CONTENT_URI, number, null, null);
+				Uri phoneUpdate = activity.getContentResolver().insert(
+						Contacts.Phones.CONTENT_URI, number);
 
-				if (retval == 0)
-					throw new Exception("Failed to insert mobile number");
+				if (phoneUpdate == null) {
+					int retval = activity.getContentResolver().update(
+							People.CONTENT_URI, number, null, null);
+
+					if (retval == 0)
+						throw new Exception("Failed to insert mobile number");
+				}
 			}
 
 			// add home phone number
-			ContentValues home = new ContentValues();
-			home.put(Contacts.Phones.PERSON_ID, pathLeaf);
-			home.put(Contacts.Phones.NUMBER, contact
-					.getField(RUBY_PB_HOME_NUMBER.asString()));
-			home.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
+			if (!contact.getField(RUBY_PB_HOME_NUMBER.asString()).equals("")) {
+				ContentValues home = new ContentValues();
+				home.put(Contacts.Phones.PERSON_ID, pathLeaf);
+				home.put(Contacts.Phones.NUMBER, contact
+						.getField(RUBY_PB_HOME_NUMBER.asString()));
+				home.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
 
-			Uri homeUpdate = activity.getContentResolver().insert(
-					Contacts.Phones.CONTENT_URI, home);
+				Uri homeUpdate = activity.getContentResolver().insert(
+						Contacts.Phones.CONTENT_URI, home);
 
-			if (homeUpdate == null) {
-				int retval = activity.getContentResolver().update(
-						People.CONTENT_URI, home, null, null);
+				if (homeUpdate == null) {
+					int retval = activity.getContentResolver().update(
+							People.CONTENT_URI, home, null, null);
 
-				if (retval == 0)
-					throw new Exception("Failed to insert home number");
+					if (retval == 0)
+						throw new Exception("Failed to insert home number");
+				}
 			}
-
 			// add work phone number
-			ContentValues work = new ContentValues();
-			work.put(Contacts.Phones.PERSON_ID, pathLeaf);
-			work.put(Contacts.Phones.NUMBER, contact
-					.getField(RUBY_PB_BUSINESS_NUMBER.asString()));
-			work.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_WORK);
+			if (!contact.getField(RUBY_PB_BUSINESS_NUMBER.asString())
+					.equals("")) {
+				ContentValues work = new ContentValues();
+				work.put(Contacts.Phones.PERSON_ID, pathLeaf);
+				work.put(Contacts.Phones.NUMBER, contact
+						.getField(RUBY_PB_BUSINESS_NUMBER.asString()));
+				work.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_WORK);
 
-			Uri workUpdate = activity.getContentResolver().insert(
-					Contacts.Phones.CONTENT_URI, work);
+				Uri workUpdate = activity.getContentResolver().insert(
+						Contacts.Phones.CONTENT_URI, work);
 
-			if (workUpdate == null) {
-				int retval = activity.getContentResolver().update(
-						People.CONTENT_URI, work, null, null);
+				if (workUpdate == null) {
+					int retval = activity.getContentResolver().update(
+							People.CONTENT_URI, work, null, null);
 
-				if (retval == 0)
-					throw new Exception("Failed to insert work number");
+					if (retval == 0)
+						throw new Exception("Failed to insert work number");
+				}
 			}
-
 			// add email
-			ContentValues email = new ContentValues();
-			email.put(Contacts.ContactMethods.PERSON_ID, pathLeaf);
-			email.put(Contacts.ContactMethods.KIND,
-					Contacts.ContactMethods.TYPE_HOME);
+			if (!contact.getField(RUBY_PB_EMAIL_ADDRESS.asString()).equals("")) {
+				ContentValues email = new ContentValues();
+				email.put(Contacts.ContactMethods.PERSON_ID, pathLeaf);
+				email.put(Contacts.ContactMethods.KIND,
+						Contacts.ContactMethods.TYPE_HOME);
 
-			email.put(Contacts.ContactMethods.DATA, contact
-					.getField(RUBY_PB_EMAIL_ADDRESS.asString()));
+				email.put(Contacts.ContactMethods.DATA, contact
+						.getField(RUBY_PB_EMAIL_ADDRESS.asString()));
 
-			email.put(Contacts.ContactMethods.TYPE,
-					Contacts.ContactMethods.CONTENT_EMAIL_ITEM_TYPE);
+				email.put(Contacts.ContactMethods.TYPE,
+						Contacts.ContactMethods.CONTENT_EMAIL_ITEM_TYPE);
 
-			Uri emailUpdate = activity.getContentResolver().insert(
-					Uri.withAppendedPath(uri,
-							Contacts.ContactMethods.CONTENT_URI.getPath()
-									.substring(1)), email);
-			if (emailUpdate == null) {
-				throw new Exception("Failed to insert primary email");
+				Uri emailUpdate = activity.getContentResolver().insert(
+						Uri.withAppendedPath(uri,
+								Contacts.ContactMethods.CONTENT_URI.getPath()
+										.substring(1)), email);
+				if (emailUpdate == null) {
+					throw new Exception("Failed to insert primary email");
+				}
 			}
-
 			// add organization
+			if (!contact.getField(RUBY_PB_COMPANY_NAME.asString()).equals("")) {
+				Uri orgUri = Uri.withAppendedPath(uri,
+						Contacts.Organizations.CONTENT_DIRECTORY);
 
-			Uri orgUri = Uri.withAppendedPath(uri,
-					Contacts.Organizations.CONTENT_DIRECTORY);
+				ContentValues company = new ContentValues();
+				company.put(Contacts.Organizations.PERSON_ID, pathLeaf);
+				company.put(Contacts.Organizations.TYPE,
+						Contacts.Organizations.TYPE_WORK);
 
-			ContentValues company = new ContentValues();
-			company.put(Contacts.Organizations.PERSON_ID, pathLeaf);
-			company.put(Contacts.Organizations.TYPE,
-					Contacts.Organizations.TYPE_WORK);
+				company.put(Contacts.Organizations.COMPANY, contact
+						.getField(RUBY_PB_COMPANY_NAME.asString()));
 
-			company.put(Contacts.Organizations.COMPANY, contact
-					.getField(RUBY_PB_COMPANY_NAME.asString()));
+				Uri companyUpdate = activity.getContentResolver().insert(
+						orgUri, company);
 
-			Uri companyUpdate = activity.getContentResolver().insert(orgUri,
-					company);
-
-			if (companyUpdate == null) {
-				throw new Exception("Failed to insert company");
+				if (companyUpdate == null) {
+					throw new Exception("Failed to insert company");
+				}
 			}
-
 		}
 	}
 

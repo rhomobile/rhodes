@@ -58,9 +58,8 @@ void fire_notification(int source_id) {
 				printf("Executing notification (%s) for source %d\n", url, source_id);
 				perform_webview_refresh();
 			}
-			//erase callback
-			//free(url);
-			//_notifications.erase(source_id);
+			//erase callback so we don't call more than once
+			clear_notification(source_id);
 		}
 	} catch(...) {
 	}
