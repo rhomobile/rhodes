@@ -11,6 +11,7 @@ generators/templates/application/app/application.rb
 generators/templates/application/app/helpers/application_helper.rb
 generators/templates/application/app/index.erb
 generators/templates/application/app/layout.erb
+generators/templates/application/app/loading.html
 generators/templates/application/build.yml
 generators/templates/application/config.rb
 generators/templates/application/public/css/base.css

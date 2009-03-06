@@ -56,6 +56,11 @@ module Rhogen
       template.destination = "#{name}/app/layout.erb"
     end
     
+    template :loading do |template|
+      template.source = 'app/loading.html'
+      template.destination = "#{name}/app/loading.html"
+    end
+    
     directory :helpers do |directory|
       directory.source = 'app/helpers'
       directory.destination = "#{name}/app/helpers"
