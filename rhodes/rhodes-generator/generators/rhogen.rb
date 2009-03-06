@@ -138,8 +138,6 @@ module Rhogen
       template.destination = "app/#{name.camel_case}/controller.rb"
     end
 
-
-
     def attributes?
       self.attributes && !self.attributes.empty?
     end
