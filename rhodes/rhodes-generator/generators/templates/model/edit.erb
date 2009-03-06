@@ -1,8 +1,14 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Edit <%%=@<%=name.downcase%>.<%=attributes[0]%>%>
+	</h1>
+</div>
+
 <form title="Edit <%= class_name %>" 
 	  class="panel" 
 	  id="<%= name.downcase %>_edit_form" 
 	  method="POST" 
-	  action="<%%=url_for(:action => :update)%>">
+	  action="<%%=url_for(:action => :update)%>" selected="true">
 	<fieldset>
 		<input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
 		<% attributes.each do |attribute| %>

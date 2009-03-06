@@ -29,6 +29,7 @@ generators/templates/application/public/images/listArrowSel.png
 generators/templates/application/public/images/listGroup.png
 generators/templates/application/public/images/loading.gif
 generators/templates/application/public/images/pinstripes.png
+generators/templates/application/public/images/right_button.png
 generators/templates/application/public/images/selection.png
 generators/templates/application/public/images/thumb.png
 generators/templates/application/public/images/toggle.png
