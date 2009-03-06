@@ -1,6 +1,0 @@
-<ul id="contacts" title="Contacts">
-<%@contacts.each do |x|%>
-<li><%=link_to "#{x[1]['first_name']} #{x[1]['last_name']}", :action => :show, :id => x[1]['id']%></li>
-<%end%>
-<li><font color="blue"><%=link_to "New Contact", :action => :new%></font></li>
-</ul>
