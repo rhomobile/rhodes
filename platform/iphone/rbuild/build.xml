@@ -39,12 +39,6 @@
 
     <mkdir dir="${target.dir}" />
     <ant dir = "${sharedAnt.dir}"/>
-
-    <copy todir="${src.dir}/apps/shared/js">
-      <fileset dir="../../../apps/shared/js">
-        <include name="**/*" />
-      </fileset>
-    </copy>
   </target>
   
   <target name="rhobundle" depends="RhoBundle"></target>
