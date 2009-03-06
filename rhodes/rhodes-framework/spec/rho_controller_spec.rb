@@ -63,6 +63,11 @@ describe "Rho" do
       @c.url_for(:model => :another_model, :action => :show, :id => '{12}').should == '/application/another_model/{12}/show'
     end
 
+    it "should generate urls for an controller, action, and id" do
+      @c.url_for(:controller => 'another_controller', :action => :show, :id => '{12}').should == '/application/another_controller/{12}/show'
+      @c.url_for(:controller => :another_controller,  :action => :show, :id => '{12}').should == '/application/another_controller/{12}/show'
+    end
+
     it "should generate urls for an application, model, action, and id" do
       @c.url_for(:application => :another_app, :model => :another_model, 
         :action => :show, :id => '{12}').should == '/another_app/another_model/{12}/show'
