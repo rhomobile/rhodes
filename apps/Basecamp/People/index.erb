@@ -1,8 +1,0 @@
-<ul id="peoples" title="Peoples">
-<%@peoples.each do |x|%>
-
-<li><%=link_to "#{x.first_name}", :action => :edit, :id => x.object%></li>
-
-<%end%>
-<li><font color="blue"><%=link_to "New People", :action => :new%></font></li>
-</ul>
