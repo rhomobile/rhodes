@@ -652,7 +652,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		m_storage = StorageFactory.getInstance().createStorage();
 		
         try { 
-        	m_storage.open(DB_FILENAME);
+        	m_storage.open(DB_FILENAME, 0);
         } catch (StorageError x) { 
             throw new RubyException("Failed to create or open database:" + DB_FILENAME + ".Error:" + x.getMessage());
         }
@@ -733,6 +733,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	RubyValue selectFromTable(RubyValue tableName, RubyValue attrib, 
 			RubyValue where, RubyValue params){
+		
 		RubyValue orderBy = null;
 		boolean distinct = false;
 		boolean count = false;
