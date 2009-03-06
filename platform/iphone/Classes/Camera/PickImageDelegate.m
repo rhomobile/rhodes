@@ -79,8 +79,10 @@
 	//it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
-    [[picker parentViewController] dismissModalViewControllerAnimated:YES]; 
-    [picker release]; 
+    //[[picker parentViewController] dismissModalViewControllerAnimated:YES]; 
+    [picker dismissModalViewControllerAnimated:YES];
+	picker.view.hidden = YES;
+    //[picker release]; 
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
@@ -90,8 +92,9 @@
 	[self doCallback:message];
 	
     // Remove the picker interface and release the picker object. 
-    [[picker parentViewController] dismissModalViewControllerAnimated:YES]; 
-    [picker release]; 
+    [picker dismissModalViewControllerAnimated:YES]; 
+	picker.view.hidden = YES;
+    //[picker release]; 
 } 
 
 @end
