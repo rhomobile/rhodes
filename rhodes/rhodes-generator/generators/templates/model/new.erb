@@ -8,7 +8,7 @@
 	  class="panel"
 	  id="<%= name.downcase %>_new_form" 
 	  method="POST" 
-	  action="<%%=url_for(:action => :create)%>">
+	  action="<%%=url_for(:action => :create)%>" selected="true">
 	<fieldset>
 		<input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
 		<% attributes.each do |attribute| %>
