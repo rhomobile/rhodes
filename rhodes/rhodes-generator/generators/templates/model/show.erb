@@ -1,6 +1,6 @@
-<ul id="<%= name %>" title="Show <%= class_name %>">
+<ul id="<%= name.downcase %>" title="Show <%= class_name %>">
   <% attributes.each do |attribute| %>
-    <li><%%=@<%=name%>.<%=attribute%>%></li>
+    <li><%%=@<%=name.downcase%>.<%=attribute%>%></li>
   <% end %>
-  <li><%%=link_to "Edit #{@<%=name%>.<%=attributes[0]%>}", :action => :edit, :id => @<%=name%>.object%></li>
+  <li><%%=link_to "Edit #{@<%=name.downcase%>.<%=attributes[0]%>}", :action => :edit, :id => @<%=name.downcase%>.object%></li>
 </ul>
