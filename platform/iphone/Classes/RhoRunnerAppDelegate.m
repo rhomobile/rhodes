@@ -53,8 +53,10 @@ NSString *localhost = @"http://localhost:8080/";
     picker.sourceType = type;
     picker.delegate = delegateObject; 
     picker.allowsImageEditing = YES; 
-    // Picker is displayed asynchronously. 
-    [controller presentModalViewController:picker animated:YES]; 
+	if ( type == UIImagePickerControllerSourceTypePhotoLibrary )
+		[window addSubview:picker.view];
+	else
+		[controller presentModalViewController:picker animated:YES]; 
     return YES; 
 } 
 
