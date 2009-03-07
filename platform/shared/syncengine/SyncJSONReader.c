@@ -32,6 +32,10 @@
 #include "SyncJSONReader.h"
 #include "Utils.h"
 
+#ifndef _WIN32_WCE
+#define _atoi64 atoll
+#endif
+
 int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free, SyncHeader* header) {
 	/* Parsing vars */
 	struct json_object *json;

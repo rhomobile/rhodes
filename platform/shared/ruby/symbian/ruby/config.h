@@ -197,6 +197,8 @@
 
 #ifdef __GCCE__
 #include <glib/galloca.h>
+#undef FALSE
+#undef TRUE
 #endif //__GCCE32__
 
 #include "tcmalloc/rhomem.h"

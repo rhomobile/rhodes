@@ -186,7 +186,7 @@ int delete_from_database(pSyncObject ref) {
 void delete_from_database_bytoken( int srcID, sqlite_uint64 token ) {
 	int success = 0;
 	lock_sync_mutex();	
-	prepare_db_statement("DELETE FROM object_values where id=? and token=?",
+	prepare_db_statement("DELETE FROM object_values where source_id=? and token=?",
 						 (sqlite3 *)get_database(),
 						 &delete_bytoken_statement);
     sqlite3_bind_int(delete_bytoken_statement, 1, srcID);

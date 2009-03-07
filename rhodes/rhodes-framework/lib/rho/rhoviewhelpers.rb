@@ -80,6 +80,9 @@ module Rho
     # url_for :model => :another_model, :action => :show, :id => '{12}'
     # ==> /application/another_model/{12}/show
     #
+    # url_for :controller => :another_controller, :action => :show, :id => '{12}'
+    # ==> /application/another_controller/{12}/show
+    #
     # url_for :application => :another_app, :model => :another_model, :action => :show, :id => '{12}'
     # ==> /another_app/another_model/{12}/show
     # 
@@ -94,7 +97,7 @@ module Rho
       return '/' if not params.is_a? Hash or params.nil?
 
       application = params[:application] || @request['application']
-      model = params[:model] || @request['model'] 
+      model = params[:controller] || params[:model] || @request['model'] 
       action = params[:action].nil? ? nil : params[:action].to_s
       id = params[:id].nil? ? nil : params[:id].to_s
       query = query_to_s(params[:query])

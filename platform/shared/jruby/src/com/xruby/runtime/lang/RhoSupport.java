@@ -1,11 +1,13 @@
 package com.xruby.runtime.lang;
 
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyPlatformUtils;
 
 public class RhoSupport {
 
 	public static RubyModule SystemModule;
+	private static String    m_strCurAppPath;
 	
 	public static void init(){
 
@@ -16,6 +18,10 @@ public class RhoSupport {
 		RubyRuntime.KernelModule.defineModuleMethod( "__rhoGetCurrentDir", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return RhoGetCurrentDir(receiver);}
+		});
+		RubyRuntime.KernelModule.defineModuleMethod( "__load_with_reflection__", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return loadWithReflection(receiver, arg, block);}
 		});
 		
 		SystemModule = RubyAPI.defineModule("System");
@@ -104,5 +110,50 @@ public class RhoSupport {
     	
     	return RubyConstant.QNIL;
     }
+    
+    //@RubyLevelMethod(name="__load_with_reflection__", module=true)
+    public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
+        String required_file = arg.toStr();
+        String name = RhoSupport.createMainClassName(required_file);
+        try {
+        	
+        	Class c = null;
+            try {
+            	c = Class.forName(name);
+            } catch (ClassNotFoundException e) {
+            }
+            if ( c == null ){
+            	name = RhoSupport.createMainClassName(m_strCurAppPath+required_file);
+            	c = Class.forName(name);
+            	
+            	arg = ObjectFactory.createString(m_strCurAppPath+required_file);
+            }
+            
+            Object o = c.newInstance();
+            RubyProgram p = (RubyProgram) o;
+
+            //$".push(file_name) unless $".include?(file_name)
+            RubyValue var = GlobalVariables.get("$\"");
+            if ( var != RubyConstant.QNIL ){
+	            RubyArray a = (RubyArray)var;
+	            if (a.include(arg) == RubyConstant.QFALSE) {
+	                a.push(arg);
+	            }
+            }
+            
+            p.invoke();
+            return RubyConstant.QTRUE;
+        } catch (ClassNotFoundException e) {
+            return RubyConstant.QFALSE;
+        } catch (InstantiationException e) {
+            return RubyConstant.QFALSE;
+        } catch (IllegalAccessException e) {
+            return RubyConstant.QFALSE;
+        }
+    }
+
+	public static void setCurAppPath(String curAppPath) {
+		m_strCurAppPath = curAppPath;
+	}
     
 }

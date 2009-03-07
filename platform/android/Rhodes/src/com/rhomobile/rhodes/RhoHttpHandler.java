@@ -30,6 +30,8 @@ public class RhoHttpHandler implements IHttpHandler {
 
 			MyRhoConnection conn = new MyRhoConnection(request.getRequestURI());
 			
+			Log.i(RHO_HTTP_HANDLER, "Process URI: " + request.getRequestURI());
+			
 			conn.setRequestMethod(request.getMethod());
 
 			if ( request.getContentLength() > 0 )

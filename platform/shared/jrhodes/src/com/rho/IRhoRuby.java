@@ -15,9 +15,11 @@ public interface IRhoRuby {
 
 	public abstract InputStream loadFile(String path);
 
-	public abstract RubyValue processIndexRequest(String strIndex);
+	public abstract RubyValue processIndexRequest(String strIndexArg);
 
 	public abstract String getStartPage();
+	
+	public abstract String getOptionsPage();
 
 	public abstract RubyValue processRequest(Properties reqHash,
 			Properties reqHeaders, Properties resHeaders) throws IOException;

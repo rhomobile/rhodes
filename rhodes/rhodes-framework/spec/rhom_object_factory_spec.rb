@@ -65,6 +65,10 @@ describe "RhomObjectFactory" do
     @account.instance_variables.size.should == 37
   end
   
+  it "should get count of objects" do
+    Account.count.should == 5
+  end
+  
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)

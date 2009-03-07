@@ -667,35 +667,6 @@ public class RubyKernelModule {
         return RubyConstant.QTRUE;*/
     }
     
-    //@RubyLevelMethod(name="__load_with_reflection__", module=true)
-    public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
-        String required_file = arg.toStr();
-        String name = RhoSupport.createMainClassName(required_file);
-        try {
-            Class c = Class.forName(name);
-            Object o = c.newInstance();
-            RubyProgram p = (RubyProgram) o;
-
-            //$".push(file_name) unless $".include?(file_name)
-            RubyValue var = GlobalVariables.get("$\"");
-            if ( var != RubyConstant.QNIL ){
-	            RubyArray a = (RubyArray)var;
-	            if (a.include(arg) == RubyConstant.QFALSE) {
-	                a.push(arg);
-	            }
-            }
-            
-            p.invoke();
-            return RubyConstant.QTRUE;
-        } catch (ClassNotFoundException e) {
-            return RubyConstant.QFALSE;
-        } catch (InstantiationException e) {
-            return RubyConstant.QFALSE;
-        } catch (IllegalAccessException e) {
-            return RubyConstant.QFALSE;
-        }
-    }
-    
     //@RubyLevelMethod(name="binding", module=true)
     public static RubyValue binding(RubyValue receiver, RubyArray args) {
         //compiler will do the magic and insert Binding object

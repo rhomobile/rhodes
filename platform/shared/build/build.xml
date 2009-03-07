@@ -1,13 +1,11 @@
 <project name="compileRubySrc" default="all" basedir=".">
 
-  <property file="build.properties"/>
+  <property file="${user.home}/rho_build.conf"/>
 
   <property name="version" value="0.10" />
 	<property name="vendor" value="RhoMobile" />
 
   <property name="rubylib.dir" location="../../../rhodes/rhodes-framework/lib" />
-  <property name="sharedapps.dir" location="../../../apps/shared" />
-  <property name="sourceapps.dir" location="../../../apps/Sources" />
 
   <condition property="apps.dir" value="../../../apps">
     <not> <isset property="apps.dir"/>  </not>
@@ -27,6 +25,7 @@
 	</target>
 
 	<target name="RhoBundle" depends="clean">
+	<echo>USER.HOME: ${user.home}, APPS.DIR: ${apps.dir}</echo>
         <copy todir="${srclib.dir}">
             <fileset dir="${rubylib.dir}" excludes="${exclude.lib}" >
                 <include name="**/*.rb" />
@@ -34,32 +33,22 @@
                 <exclude name="**/find.rb" />
             </fileset>
         </copy>
+	<mkdir dir="${src.dir}/apps"/>
         <copy todir="${src.dir}/apps">
           
             <fileset dir="${apps.dir}" excludes ="${exclude.apps}" >
-<!--            <include name="**/*.rb" />
+                <include name="**/*.rb" />
                 <include name="**/*.erb" />
                 <include name="**/*.html" />
                 <include name="**/*.txt" />
-                <include name="**/*.css" /> -->
+                <include name="**/*.css" />
+		<include name="**/*.png" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
               
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
             </fileset>
-        </copy>
-
-        <copy todir="${src.dir}/apps/shared">
-          <fileset dir="../../../apps/shared" excludes ="${exclude.apps}" >
-            <exclude name="**/nbproject" />
-            <exclude name="**/.DS_Store" />
-          </fileset>
-        </copy>
-
-        <copy todir="${src.dir}/apps/Settings">
-          <fileset dir="../../../apps/Settings" excludes ="${exclude.apps}" >
-            <exclude name="**/nbproject" />
-            <exclude name="**/.DS_Store" />
-          </fileset>
         </copy>
     
     </target>

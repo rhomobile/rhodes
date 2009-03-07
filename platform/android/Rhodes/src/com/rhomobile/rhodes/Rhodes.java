@@ -211,6 +211,13 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		case R.id.sync:
 			SyncEngine.wakeUp();
 			return true;
+		
+		case R.id.options:
+			String curUrl = RhoRuby.getOptionsPage();
+			curUrl = HOME_URL + "/" +
+				curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
+			this.webView.loadUrl(curUrl);
+			return true;	
 			
 		case R.id.refresh:
 			webView.reload();
