@@ -1,8 +1,0 @@
-<ul id="service_requests" title="ServiceRequests">
-<%@service_requests.each do |x|%>
-
-<li><%=link_to "#{x.subject}", :action => :edit, :id => x.object%></li>
-
-<%end%>
-<li><font color="blue"><%=link_to "New ServiceRequest", :action => :new%></font></li>
-</ul>

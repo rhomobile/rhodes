@@ -33,6 +33,8 @@ extern "C" void perform_webview_refresh();
 extern "C" char* get_current_location();
 extern "C" char* HTTPResolveUrl(char* url);
 
+static void _clear_notification(int source_id);
+
 //#if defined(_WIN32_WCE)
 static char* get_url(int source_id) {
 	std::map<int,char*>::iterator it = _notifications.find(source_id);
@@ -58,9 +60,8 @@ void fire_notification(int source_id) {
 				printf("Executing notification (%s) for source %d\n", url, source_id);
 				perform_webview_refresh();
 			}
-			//erase callback
-			//free(url);
-			//_notifications.erase(source_id);
+			//erase callback so we don't call more than once
+			_clear_notification(source_id);
 		}
 	} catch(...) {
 	}
@@ -99,9 +100,7 @@ void set_notification(int source_id, const char *url) {
     UNLOCK(notify);
 }
 
-void clear_notification(int source_id) {
-    LOCK(notify);
-
+static void _clear_notification(int source_id) {
 	try {
 		char* tmp_url = get_url(source_id);
 		if (tmp_url) {
@@ -110,7 +109,13 @@ void clear_notification(int source_id) {
 		}
 	} catch(...) {
 	}
-    UNLOCK(notify);
+}
+
+void clear_notification(int source_id) {
+    // Don't lock notify here, we hide the function instead
+	LOCK(notify);
+	_clear_notification(source_id); 
+	UNLOCK(notify);
 }
 
 #else //__SYMBIAN32__

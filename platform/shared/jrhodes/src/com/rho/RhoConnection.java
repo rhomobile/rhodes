@@ -622,7 +622,7 @@ public abstract class RhoConnection {
 		if (!requestProcessed) {
 			String strErr = "";
 			
-			if ( "GET".equals(this.method) && httpGetFile() ){
+			if ( /*"GET".equals(this.method) &&*/ httpGetFile() ){
 				
 			}else if ( dispatch() ){
 			}else{

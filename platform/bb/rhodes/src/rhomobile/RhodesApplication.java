@@ -195,11 +195,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     class CMainScreen extends MainScreen{
 
-		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
-			public void run() {
-					SyncEngine.wakeUp();
-				}
-			};			
 		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
 			public void run() {
 					navigateHome();
@@ -211,6 +206,20 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 					navigateUrl(curUrl);
 				}
 			};			
+		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+			public void run() {
+					SyncEngine.wakeUp();
+				}
+			};			
+		private MenuItem optionsItem = new MenuItem("Options", 200000, 10) {
+			public void run() {
+					String curUrl = RhoRuby.getOptionsPage();
+					curUrl = _httpRoot + 
+						curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
+					
+					navigateUrl(curUrl);
+				}
+			};			
     	
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
@@ -218,6 +227,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			menu.add(homeItem);
 			menu.add(refreshItem);
 			menu.add(syncItem);
+			menu.add(optionsItem);
 		}
 
 		public boolean onClose() {

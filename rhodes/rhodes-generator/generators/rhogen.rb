@@ -31,21 +31,6 @@ module Rhogen
 
     first_argument :name, :required => true, :desc => "application name"
 
-    template :application do |template|
-      template.source = 'application.rb'
-      template.destination = "#{name}/app/application.rb"
-    end
-
-    template :index do |template|
-      template.source = 'index.erb'
-      template.destination = "#{name}/app/index.erb"
-    end
-
-    template :layout do |template|
-      template.source = 'layout.erb'
-      template.destination = "#{name}/app/layout.erb"
-    end
-
     template :config do |template|
       template.source = 'config.rb'
       template.destination = "#{name}/config.rb"
@@ -55,14 +40,40 @@ module Rhogen
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
+    
+    template :application do |template|
+      template.source = 'app/application.rb'
+      template.destination = "#{name}/app/application.rb"
+    end
+
+    template :index do |template|
+      template.source = 'app/index.erb'
+      template.destination = "#{name}/app/index.erb"
+    end
+    
+    template :layout do |template|
+      template.source = 'app/layout.erb'
+      template.destination = "#{name}/app/layout.erb"
+    end
+    
+    template :loading do |template|
+      template.source = 'app/loading.html'
+      template.destination = "#{name}/app/loading.html"
+    end
+    
+    directory :helpers do |directory|
+      directory.source = 'app/helpers'
+      directory.destination = "#{name}/app/helpers"
+    end
+    
+    directory :settings do |directory|
+      directory.source = 'app/Settings'
+      directory.destination = "#{name}/app/Settings/"
+    end
 
     directory :public do |directory|
       directory.source = 'public'
       directory.destination = "#{name}/public/"
-    end
-
-    empty_directory :images do |directory|
-      directory.destination = "#{name}/public/images/"
     end
  
     template :rakefile do |template|
@@ -126,8 +137,6 @@ module Rhogen
       template.source = 'controller.rb'
       template.destination = "app/#{name.camel_case}/controller.rb"
     end
-
-
 
     def attributes?
       self.attributes && !self.attributes.empty?
