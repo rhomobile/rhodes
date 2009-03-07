@@ -134,7 +134,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	int j, nTotal = 0;//,i,source_length;
 	char *json_string;
 	char *type = NULL;
-	int success=0, size_deleted=0, size_inserted=0;
+	int success=0, size_deleted=0, size_inserted=0, repeat=1;
 	double start=0, duration = 0;
     SyncHeader header;
     int nTry = 0;
@@ -153,6 +153,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
     {
         do {
 	        if (params && strlen(params) > 0) {
+				// Don't repeat if we're calling ask method
+				repeat=0;
 		        sprintf(url_string, 
 				        "%s%s%s&client_id=%s&question=%s&p_size=%d", 
 				        src->_source_url,
@@ -216,7 +218,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	        } else {
                 nTry++;
 	        }
-        }while( header._count > 0 && nTry < MAX_SYNC_TRY_COUNT );
+        }while( header._count > 0 && nTry < MAX_SYNC_TRY_COUNT && repeat);
 
         free(list);
     }
