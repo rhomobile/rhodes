@@ -33,6 +33,7 @@ import com.xruby.runtime.builtin.RubyPlatformUtils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -159,6 +160,17 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		}
 	}
 	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		
+		//Intent svcSync = new Intent(this, RhoSyncService.class);
+		//stopService(svcSync);
+
+		//Intent svc = new Intent(this, RhoHttpService.class);
+		//stopService(svc);
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
