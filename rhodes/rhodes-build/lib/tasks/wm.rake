@@ -68,17 +68,6 @@ end
 namespace "device" do
   desc "Create downloadable app for windows mobile"
   task :wm => "bundle:wm" do
-
-
-  end
-end
-
-namespace "run" do
-  namespace "wm" do
-  
-    desc "Run app in iphone Sim"
-    task :app  => ["bundle:wm"] do
- 
       src = File.join($prebuilt,"wm","wm6.7z")
 
       seven = File.join($res,"7z.exe")
@@ -108,6 +97,17 @@ namespace "run" do
 
       mv "rhodes.inf", $bindir
       mv "rhodes.cab", $targetdir
+
+  end
+end
+
+namespace "run" do
+  namespace "wm" do
+  
+    desc "Run app in iphone Sim"
+    task :app  => ["device:wm"] do
+ 
+
 
       Thread.new { system($config["env"]["paths"]["wmemu"]) }
 
