@@ -35,7 +35,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
     SHCAMERACAPTURE shcc;
 
     wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-    wsprintf(pszFilename,L"%s%s",root,L"apps\\shared\\db-files");
+    wsprintf(pszFilename,L"%s%s",root,L"apps\\public\\db-files");
     free(root);
 
 	create_folder(pszFilename);
@@ -91,7 +91,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 
 		TCHAR rhoroot[MAX_PATH];
 		wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-		wsprintf(rhoroot,L"%s%s",root,L"apps\\shared\\db-files");
+		wsprintf(rhoroot,L"%s%s",root,L"apps\\public\\db-files");
 		free(root);
 
 		create_folder(rhoroot);

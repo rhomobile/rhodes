@@ -62,6 +62,7 @@ int push_remote_data(char* url, char* data, size_t data_size);
 //void start_sync();
 void delete_winmo_session(const char *url_string);
 void triggerSyncDbReset();
+void perform_notification(char* callback, char* params);
 
 #ifdef __cplusplus
 } //extern "C" {

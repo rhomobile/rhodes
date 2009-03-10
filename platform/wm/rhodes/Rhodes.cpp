@@ -122,3 +122,8 @@ extern "C" void webview_navigate(char* url) {
 extern "C" char* get_current_location() {
 	return _AtlModule.GetCurrentLocation();
 }
+
+extern "C" char* webview_current_location() {
+	return get_current_location();
+}
+
