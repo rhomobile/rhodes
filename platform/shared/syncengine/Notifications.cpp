@@ -26,45 +26,45 @@ extern "C" char *strdup(const char * str);
 #include "tcmalloc/rhomem.h"
 #endif
 
-static std::map<int,char*> _notifications;
+static std::map<int,notification_t*> _notifications;
 INIT_LOCK(notify);
 
-extern "C" void perform_webview_refresh();
+extern "C" void perform_notification(char* callback, char* params);
 extern "C" char* get_current_location();
 extern "C" char* HTTPResolveUrl(char* url);
 
 static void _clear_notification(int source_id);
-
-//#if defined(_WIN32_WCE)
-static char* get_url(int source_id) {
-	std::map<int,char*>::iterator it = _notifications.find(source_id);
+	
+static notification_t* get_notification(int source_id) {
+	std::map<int,notification_t*>::iterator it = _notifications.find(source_id);
 	if (it!=_notifications.end()) {
 		return it->second;
 	}
 	return NULL;
 }
-//#else
-//#define get_url(source_id) _notifications.find(source_id)->second
-//#endif
 
-void fire_notification(int source_id) {
+void fire_notification(int source_id,int sucess) {
     LOCK(notify);
 
 	try {
-		char* url = get_url(source_id);
- 
-		if (url != NULL) {
-			//execute notification
-			char* current_url = get_current_location();
-			if (current_url && (strcmp(current_url,url)==0)) {
-				printf("Executing notification (%s) for source %d\n", url, source_id);
-				perform_webview_refresh();
+		notification_t* pn = get_notification(source_id);
+		if (pn) {
+			if (pn->url) {
+				//compose message
+				const char* status = sucess ? "ok" : "error";
+				int msglen = 100+(pn->params?strlen(pn->params):0);
+				char* message = (char*)malloc(msglen+1);
+				snprintf(message,msglen,"status=%s&%s",status,(pn->params?pn->params:""));
+				//execute notification
+				perform_notification(pn->url,message);
+				free(message);
 			}
 			//erase callback so we don't call more than once
 			_clear_notification(source_id);
 		}
 	} catch(...) {
 	}
+	
     UNLOCK(notify);
 }
 
@@ -72,41 +72,52 @@ void free_notifications() {
     LOCK(notify);
 
 	try {
-		std::map<int,char*>::iterator it;
+		std::map<int,notification_t*>::iterator it;
 		for ( it=_notifications.begin() ; it != _notifications.end(); it++ ) {
-			printf("Freeing notification (%s) for source %d\n", (char*)((*it).second), it->first);
-			free((char*)((*it).second));
+			_clear_notification(it->first);
 		}
 		_notifications.clear();
 	} catch(...) {
 	}
+	
     UNLOCK(notify);
 }
 
-void set_notification(int source_id, const char *url) {
+void set_notification(int source_id, const char *url, char* params) {
     LOCK(notify);
 
 	try {
 		if (url) {
-			char* tmp_url = get_url(source_id);
-			if (tmp_url) free(tmp_url);
-			tmp_url = HTTPResolveUrl(strdup(url));
-			printf("Resolved [%s] in [%s]\n", url, tmp_url);								 
-			printf("Setting notification (%s) for source %d\n", tmp_url, source_id);
-			_notifications[source_id] = tmp_url;
+			notification_t* notification = (notification_t*) malloc(sizeof(notification_t));
+			_clear_notification(source_id);
+			notification->url = HTTPResolveUrl(strdup(url));
+			notification->params = strdup(params);
+			printf("Resolved [%s] in [%s]\n", url, notification->url);								 
+			printf("Setting notification (%s) for source %d\n", notification->url, source_id);			
+			_notifications[source_id] = notification;
 		}
 	} catch(...) {
 	}
+	
     UNLOCK(notify);
+}
+
+void free_notification_t(notification_t* pn) {
+	if (pn) {
+		if (pn->url) {
+			free(pn->url);
+		}
+		if (pn->params) {
+			free(pn->params);
+		}
+		free(pn);
+	}
 }
 
 static void _clear_notification(int source_id) {
 	try {
-		char* tmp_url = get_url(source_id);
-		if (tmp_url) {
-			free(tmp_url);
-			_notifications.erase(source_id);
-		}
+		free_notification_t(get_notification(source_id));		
+		_notifications.erase(source_id);
 	} catch(...) {
 	}
 }

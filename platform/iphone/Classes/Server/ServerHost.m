@@ -20,6 +20,8 @@
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 
+extern char* get_current_location();
+
 #pragma mark -
 #pragma mark Constant Definitions
 
@@ -241,6 +243,10 @@ void webview_navigate(char* url) {
 
 void perform_webview_refresh() {
 	[[ServerHost sharedInstance] performRefreshView];														
+}
+
+char* webview_current_location() {
+	return get_current_location();
 }
 
 void take_picture(char* callback_url) {

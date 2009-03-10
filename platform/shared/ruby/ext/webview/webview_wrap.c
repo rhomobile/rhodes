@@ -1549,6 +1549,8 @@ extern void webview_refresh();
 #define refresh webview_refresh 
 extern void webview_navigate(char* url);
 #define navigate webview_navigate
+extern char* webview_current_location();
+#define current_location webview_current_location
 
 
 SWIGINTERN swig_type_info*
@@ -1604,6 +1606,30 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
 SWIGINTERN VALUE
 _wrap_refresh(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
@@ -1636,6 +1662,22 @@ _wrap_navigate(int argc, VALUE *argv, VALUE self) {
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_current_location(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)current_location();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -1904,5 +1946,6 @@ SWIGEXPORT void Init_WebView(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mWebView, "refresh", _wrap_refresh, -1);
   rb_define_module_function(mWebView, "navigate", _wrap_navigate, -1);
+  rb_define_module_function(mWebView, "current_location", _wrap_current_location, -1);
 }
 
