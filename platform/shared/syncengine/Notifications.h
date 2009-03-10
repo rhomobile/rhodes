@@ -14,9 +14,15 @@
 extern "C" {
 #endif
 
-	void fire_notification(int source_id);
+	typedef struct __notification_t {
+		char* url;
+		char* params;
+	} notification_t;
+	void free_notification_t(notification_t* pn);
+	
+	void fire_notification(int source_id,int sucess);
 	void free_notifications();	
-	void set_notification(int source_id, const char *url);
+	void set_notification(int source_id, const char *url, char* params);
 	void clear_notification(int source_id);
 
 #if defined(__cplusplus)

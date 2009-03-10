@@ -1,7 +1,26 @@
 #import "WebViewController.h"
 #include "rhoruby.h"
+#include "UniversalLock.h"
 
 static char currentLocation[4096] = "";
+
+//INIT_LOCK(current_location); // racing condition on thid lock, need to fix it somehow
+
+void set_current_location(CFStringRef location) {
+	//LOCK(current_location);
+	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
+	char* fragment = strstr(currentLocation,"#");
+	if (fragment) *fragment = 0; //cut out fragment
+	printf("Current location: %s\n",currentLocation);
+	//UNLOCK(current_location);
+}
+
+
+char* get_current_location() {
+	//LOCK(current_location);
+	return currentLocation;
+	//UNLOCK(current_location);
+}
 
 @implementation WebViewController
 
@@ -86,10 +105,7 @@ NSString *loadingText = @"Loading...";
 	}
 	
 	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
-	char* fragment = strstr(currentLocation,"#");
-	if (fragment) *fragment = 0; //cut out fragment
-	printf("Current location: %s\n",currentLocation);
+	set_current_location((CFStringRef)location);
 	
 	/*self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
 	 
@@ -109,7 +125,4 @@ NSString *loadingText = @"Loading...";
 
 @end
 
-char* get_current_location() {
-	return currentLocation;
-}
 

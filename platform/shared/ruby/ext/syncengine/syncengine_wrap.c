@@ -1553,7 +1553,7 @@ extern int login(const char *login, const char *password);
 extern int logged_in();
 extern void logout();
 extern void trigger_sync_db_reset();
-extern void set_notification(int source_id, const char *url);
+extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
 
 
@@ -1802,14 +1802,18 @@ SWIGINTERN VALUE
 _wrap_set_notification(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -1821,11 +1825,18 @@ _wrap_set_notification(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_notification" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  set_notification(arg1,(char const *)arg2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "set_notification" "', argument " "3"" of type '" "char *""'");
+  }
+  arg3 = (char *)(buf3);
+  set_notification(arg1,(char const *)arg2,arg3);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 

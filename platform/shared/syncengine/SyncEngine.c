@@ -145,7 +145,7 @@ int process_local_changes() {
 				  printf("Successfully processed %i records...\n", available_remote);
 			  }
 			  if( isContinueSync() ) {
-				  fire_notification(source_list[i]->_source_id);
+				  fire_notification(source_list[i]->_source_id,available_remote);
 			  }
 			  if (ask_params) 
                   free(ask_params);
