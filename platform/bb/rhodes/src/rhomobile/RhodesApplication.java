@@ -71,8 +71,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
     
     class SyncNotificationsImpl extends SyncNotifications{
-    	public void refreshIfCurrent(String url){
-    		if ( url == null || url.length() == 0 )
+    	public void performNotification(String url, String body){
+    		
+    		postUrl(url, body);
+    		
+/*    		if ( url == null || url.length() == 0 )
     			return;
     		
     		url.replace('\\', '/');
@@ -86,13 +89,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		String curUrl = (String)_history.lastElement();
     		curUrl.replace('\\', '/');
     		if ( curUrl.equalsIgnoreCase(url) )
-    			navigateUrl(curUrl);
+    			navigateUrl(curUrl);*/
+    		
     	}
     	
     }
 
     void navigateUrl(String url){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
+        thread.start();                       
+    }
+
+    void postUrl(String url, String body){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, body.getBytes(), null, this);
         thread.start();                       
     }
     

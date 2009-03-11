@@ -22,10 +22,13 @@ import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyTwoArgMethod;
+import com.xruby.runtime.lang.RubyVarArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.builtin.RubyArray;
 
 /**
  * The Class SyncEngine.
@@ -90,11 +93,19 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QNIL; 
 	}
 
-	public static RubyValue set_notification(RubyValue arg1, RubyValue arg2) {
-		int nSourceID = arg1.toInt();
-		String url = arg2.toStr();
+	public static RubyValue set_notification(RubyArray args) {
 		
-		sNotifications.setNotification(nSourceID, url);
+		if ( args.size() != 3 )
+			throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'SyncEngine': wrong number of arguments (" + 
+					args.length() + " for 3)");
+        
+		int nSourceID = args.get(0).toInt();
+		String url = args.get(1).toStr();
+		String params = "";
+		if ( args.get(2) != RubyConstant.QNIL )
+			params = args.get(2).toStr();
+		
+		sNotifications.setNotification(nSourceID, url, params);
 		return RubyConstant.QNIL;
 	}
 
@@ -177,9 +188,9 @@ public class SyncEngine extends RubyBasic {
 				});
 
 		klass.getSingletonClass().defineMethod("set_notification",
-				new RubyTwoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-						return SyncEngine.set_notification(arg1,arg2);
+				new RubyVarArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+						return SyncEngine.set_notification(args);
 					}
 				});
 		klass.getSingletonClass().defineMethod("clear_notification",
