@@ -26,6 +26,9 @@ public class SyncNotifications {
 	void fireNotification(int nSourceID, int success){
 		Notification obj = (Notification)m_idToUrlmap.get(new Integer(nSourceID));
 		
+		if ( obj == null )
+			return;
+		
 		String body = "status=" + (success > 0 ?"ok":"error") + "&" + obj.m_params; 
 		performNotification(obj.m_url, body );
 		clearNotification(nSourceID);
