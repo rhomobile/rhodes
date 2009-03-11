@@ -43,7 +43,7 @@
 }
 
 - (void)useImage:(UIImage*)theImage { 
-	NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/shared/db-files"];
+	NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/public/db-files"];
 	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if (![fileManager fileExistsAtPath:folder]) {
@@ -61,7 +61,7 @@
 	NSString* message;
 	if([pngImage writeToFile:fullname atomically:YES]) {
 		// Send new image uri to the view
-		message = [@"status=ok&image_uri=%2Fshared%2Fdb-files%2F" stringByAppendingString:filename];
+		message = [@"status=ok&image_uri=%2Fpublic%2Fdb-files%2F" stringByAppendingString:filename];
 	} else {
 		// Notify view about error
 		message = @"status=error&message=Can't write image to the storage.";

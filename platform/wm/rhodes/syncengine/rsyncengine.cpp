@@ -6,8 +6,10 @@
 #include <string>
 #include "../resource.h"
 #include "../HttpServer.h"
+#include "../NetRequest.h"
 #include "SyncEngine.h"
 #include "SyncUtil.h"
+#include "Notifications.h"
 #include "rsyncengine.h"
 #include "rhoruby/rhoruby.h"
 
@@ -535,4 +537,30 @@ void triggerSyncDbReset() {
 	sync->TriggerDbReset();
 	sync->TriggerSync();
   }
+}
+
+DWORD WINAPI notification_thread_proc(LPVOID lpParameter) {
+	notification_t* pn = (notification_t*)lpParameter;
+	if (pn) {
+		CNetRequest callbackRequest;
+		char* callback = pn->url;
+		char* message = pn->params;
+		char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
+		char* res = callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
+		if ( res ) free(res);
+		free_notification_t(pn);
+	}
+	return 1;
+}
+
+void perform_notification(char* callback, char* params) {
+	if (callback && params) {
+		notification_t* pn = (notification_t*)malloc(sizeof(notification_t));
+		pn->url = strdup(callback);
+		pn->params = strdup(params);
+		HANDLE thread = CreateThread( NULL, 0, notification_thread_proc, (LPVOID)pn, 0, NULL);
+		if (!thread) {
+			free_notification_t(pn);
+		}
+	}
 }
