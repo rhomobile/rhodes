@@ -34,6 +34,7 @@ src\rhomobile\RhodesApplication.java
 src\rhomobile\RhoPhonebook.java
 src\rhomobile\RhoRuby.java
 src\rhomobile\SecondaryResourceFetchThread.java
+src\rhomobile\sync\SyncBlob.java
 src\rhomobile\sync\SyncConstants.java
 src\rhomobile\sync\SyncEngine.java
 src\rhomobile\sync\SyncJSONParser.java

@@ -10,5 +10,5 @@ public interface SimpleFile extends IFile {
      * @param readOnly if file is readonly
      * @param noFlush whther synchronous flush is needed
      */
-    void open(String path, boolean readOnly, boolean noFlush);
+    void open(String path, boolean readOnly, boolean noFlush)throws StorageError;
 }
