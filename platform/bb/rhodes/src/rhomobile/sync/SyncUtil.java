@@ -19,7 +19,7 @@
 package rhomobile.sync;
 
 import java.io.IOException;
-
+import java.io.ByteArrayInputStream;
 import javax.microedition.io.HttpConnection;
 
 import rhomobile.URI;
@@ -42,7 +42,13 @@ public class SyncUtil {
 
 	/** The adapter. */
 	public static PerstLiteAdapter adapter = null;
+    public static byte[]  m_byteBuffer = new byte[4096];
 
+    public static void init(){
+		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
+		SyncBlob.DBCallback callback = new SyncBlob.DBCallback();
+		SyncUtil.adapter.setDbCallback(callback);
+    }
 	/**
 	 * Creates the array.
 	 * 
@@ -124,19 +130,22 @@ public class SyncUtil {
 				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
 				int count = list.size();
 				nTotal += count;
-				String type;
 				if (count > 0) {
 
 					processToken(header._token, source);
 
 					for (int i = 0; i < count; i++) {
-						type = ((SyncObject) list.get(i)).getDbOperation();
-						if (type != null) {
-							if (type.equalsIgnoreCase("insert")) {
-								((SyncObject) list.get(i)).insertIntoDatabase();
+						SyncObject syncObj = ((SyncObject) list.get(i)); 
+						String dbOp = syncObj.getDbOperation();
+						if (dbOp != null) {
+							
+							if (dbOp.equalsIgnoreCase("insert")) {
+								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+								
+								syncObj.insertIntoDatabase();
 								inserted++;
-							} else if (type.equalsIgnoreCase("delete")) {
-								((SyncObject) list.get(i)).deleteFromDatabase();
+							} else if (dbOp.equalsIgnoreCase("delete")) {
+								syncObj.deleteFromDatabase();
 								deleted++;
 							}
 						}
@@ -221,7 +230,7 @@ public class SyncUtil {
 		arr.add(where);
 		return (RubyArray) adapter.selectFromTable(arr);
 	}
-
+	
 	/**
 	 * Gets the op list from database.
 	 * 
@@ -305,6 +314,9 @@ public class SyncUtil {
 		where.add(createString("update_type"), createString(askType));
 		arr.add(where);
 		RubyArray list = (RubyArray) adapter.selectFromTable(arr);
+		if ( list.size() == 0 )
+			return "";
+		
 		// There should only be one result
 		RubyHash element = (RubyHash) list.at(createInteger(0));
 		String params = element.get(createString("value")).asString();
@@ -351,9 +363,15 @@ public class SyncUtil {
 			String object = element.get(createString("object")).asString();
 			String updateType = element.get(createString("update_type"))
 					.asString();
+			
+			String type = "";
+			val = element.get(createString("type"));
+			if ( val != null && val != RubyConstant.QNIL)
+				type = val.asString();
+			
 			int sourceId = element.get(createString("source_id")).toInt();
 			results.add(new SyncObject(attrib, sourceId, object, value,
-					updateType));
+					updateType, type));
 		}
 		return results;
 	}
@@ -386,7 +404,7 @@ public class SyncUtil {
 		RubyArray sources = SyncUtil.getSourceList();
 
 		String client_id = null;
-		for (int i = 0; i < sources.size() && !thread.isStop(); i++) {
+		for (int i = 0; i < 1 /*sources.size()*/ && !thread.isStop(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
@@ -452,12 +470,18 @@ public class SyncUtil {
 		}
 		System.out.println("Found " + list.size()
 				+ " available records for processing...");
+		
+		ArrayList listBlobs = SyncBlob.extractBlobs(list);
+		
 		if (pushRemoteChanges(source, list, clientId) != SyncConstants.SYNC_PUSH_CHANGES_OK) {
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		} else {
+			if ( SyncBlob.pushRemoteBlobs(source, listBlobs, clientId) == SyncConstants.SYNC_PUSH_CHANGES_OK )
 			// We're done processsing, remove from database so we
 			// don't process again
-			removeOpListFromDatabase(type, source);
+				removeOpListFromDatabase(type, source);
+			else
+				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		}
 		return success;
 	}
@@ -487,20 +511,27 @@ public class SyncUtil {
 				data.append("&");
 			}
 		}
+		ByteArrayInputStream dataStream = null;
 		try {
 			// Construct the post url
 			url = source.get_sourceUrl() + "/"
 					+ ((SyncOperation) list.get(0)).get_operation()
 					+ "?client_id=" + clientId;
 			String session = get_session(source);
-			success = SyncManager.pushRemoteData(url, data.toString(), session,
-					true);
+			
+			dataStream = new ByteArrayInputStream(data.toString().getBytes()); 
+			success = SyncManager.pushRemoteData(url, dataStream, session,true);
 		} catch (IOException e) {
 			System.out.println("There was an error pushing changes: "
 					+ e.getMessage());
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		}
 
+		if ( dataStream != null ){
+			try{dataStream.close();}catch(IOException exc){}
+			dataStream = null;
+		}
+		
 		return success == SyncConstants.SYNC_PUSH_CHANGES_OK ? SyncConstants.SYNC_PUSH_CHANGES_OK
 				: SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 	}
@@ -722,10 +753,12 @@ public class SyncUtil {
 
 			strSession = getSessionByDomain(sourceUrl);
 			if (strSession.length() == 0) {
+				ByteArrayInputStream dataStream = null;
 				try {
-					SyncManager.makePostRequest(sourceUrl + "/client_login",
-							"login=" + strUser + "&password=" + strPwd
-									+ "&remember_me=1", "");
+					String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
+					dataStream = new ByteArrayInputStream(body.getBytes()); 
+					
+					SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "");
 
 					connection = SyncManager.getConnection();
 					int code = connection.getResponseCode();
@@ -743,6 +776,12 @@ public class SyncUtil {
 							.println("There was an error fetch_client_login: "
 									+ e.getMessage());
 				} finally {
+					
+					if ( dataStream != null ){
+						try{dataStream.close();}catch(IOException exc){}
+						dataStream = null;
+					}
+					
 					SyncManager.closeConnection();
 					connection = null;
 				}

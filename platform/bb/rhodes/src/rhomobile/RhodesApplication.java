@@ -22,6 +22,7 @@ import net.rim.device.api.system.SystemListener;
 import rhomobile.NetworkAccess;
 import rhomobile.location.GeoLocation;
 import rhomobile.sync.SyncEngine;
+import rhomobile.sync.SyncUtil;
 import rhomobile.sync.SyncNotifications;
 
 import java.util.Vector;
@@ -163,6 +164,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      **************************************************************************/
     public static void main(String[] args) {
     	NetworkAccess.autoConfigure();
+    	
+    	SyncUtil.init();
     	
         RhoRuby.RhoRubyStart("");
 

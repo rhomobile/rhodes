@@ -49,6 +49,8 @@ public class SyncObject {
 	private String _updateType;
 	
 	private String _token;
+	
+	private String _type;
 
 	/**
 	 * Instantiates a new sync object.
@@ -60,12 +62,13 @@ public class SyncObject {
 	 * @param updateType the update type
 	 */
 	public SyncObject(String attrib, int sourceId, String object, String value,
-			String updateType) {
+			String updateType, String type) {
 		this._attrib = attrib;
 		this._sourceId = sourceId;
 		this._object = object;
 		this._value = value;
 		this._updateType = updateType;
+		_type = type;
 	}
 
 	/**
@@ -128,6 +131,8 @@ public class SyncObject {
 				.createString(this.getUpdateType()));
 		hash.add( PerstLiteAdapter.TOKEN, SyncUtil
 				.createString(this.get_token()));
+		hash.add( PerstLiteAdapter.TYPE, SyncUtil
+				.createString(this.get_type()));
 		
 		return hash;
 	}
@@ -254,5 +259,13 @@ public class SyncObject {
 
 	public void set_token(String _token) {
 		this._token = _token;
+	}
+
+	public String get_type() {
+		return _type;
+	}
+
+	public void set_type(String _type) {
+		this._type = _type;
 	}
 }
