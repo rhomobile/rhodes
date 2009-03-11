@@ -40,9 +40,6 @@ generators/templates/application/public/images/toolButton_new.png
 generators/templates/application/public/images/toolbar.png
 generators/templates/application/public/images/whiteButton.png
 generators/templates/application/public/js/application.js
-generators/templates/application/public/js/iui/LICENSE.txt
-generators/templates/application/public/js/iui/iui.css
-generators/templates/application/public/js/iui/iui.js
 generators/templates/application/public/js/jquery-1.2.6.min.js
 generators/templates/application/public/js/rho.js
 generators/templates/application/public/js/rhogeolocation-wm.js
