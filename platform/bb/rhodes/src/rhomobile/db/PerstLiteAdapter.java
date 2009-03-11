@@ -189,6 +189,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    
 		public String getValueField(){ return value; }
 		public String getTypeField(){ return type; }
+		public String getUpdateTypeField(){ return update_type; }
 		
 		public static class TableRoot extends TableRootBase { 
 		    Index source_idANDupdate_type;
