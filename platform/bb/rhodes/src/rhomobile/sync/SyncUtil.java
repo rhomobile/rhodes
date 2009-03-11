@@ -404,7 +404,7 @@ public class SyncUtil {
 		RubyArray sources = SyncUtil.getSourceList();
 
 		String client_id = null;
-		for (int i = 0; i < 1 /*sources.size()*/ && !thread.isStop(); i++) {
+		for (int i = 0; i < sources.size() && !thread.isStop(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
@@ -445,7 +445,7 @@ public class SyncUtil {
 					SyncUtil.printResults(objects);
 				}
 				if (!thread.isStop())
-					SyncEngine.getNotificationImpl().fireNotification(id);
+					SyncEngine.getNotificationImpl().fireNotification(id, available);
 			}
 		}
 		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
