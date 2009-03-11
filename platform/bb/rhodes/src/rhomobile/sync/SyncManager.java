@@ -27,9 +27,9 @@ import javax.microedition.io.HttpConnection;
 
 import javolution.io.UTF8StreamReader;
 
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.builtin.RubyString;
-import com.xruby.runtime.lang.RubyValue;
+//import com.xruby.runtime.builtin.ObjectFactory;
+//import com.xruby.runtime.builtin.RubyString;
+//import com.xruby.runtime.lang.RubyValue;
 
 import rhomobile.NetworkAccess;
 
@@ -72,51 +72,60 @@ public class SyncManager {
 			throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		InputStream is = null;
-		int code = 0;
-		if (checkSession && (session == null || session.length() == 0)) return null;
-		
-		try {
-			long len = 0;
-			int ch = 0;
-			closeConnection();
-			connection = NetworkAccess.connect(url);
-			if ( session != null &&  session.length() > 0 )
-				connection.setRequestProperty("Cookie", session);
 			
-			//String str = connection.getRequestProperty("Cookie");
-			is = connection.openInputStream();
-			len = connection.getLength();
-			code = connection.getResponseCode();
-			if (code == HttpConnection.HTTP_OK) {
-				if ( len > 1024*100)
-					return null;
-				
-				buffer = readFully(is);
-				/*if (len != -1) {
-					for (int i = 0; i < len; i++) {
-						if ((ch = is.read()) != -1) {
-							buffer.append((char) ch);
-						}
-					}
-				} else {
-					while ((ch = is.read()) != -1) {
-						buffer.append((char) ch);
-					}
-				}*/
-			} else {
-				System.out.println("Error retrieving data: " + code);
-				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
+		try{
+			
+			is = openRemoteStream( url, session, checkSession );
+			if ( is == null )
 				return null;
-			}
-		} finally {
+			
+			long len = connection.getLength();
+	
+			if ( len > 1024*100)
+				return null;
+			
+			buffer = readFully(is);
+		}finally{
+			if ( is != null )
+				is.close();
+			
+			closeConnection();
+		}
+		
+		return buffer.toString();
+	}
+
+	public static InputStream openRemoteStream(String url, String session, boolean checkSession) 
+		throws IOException {
+		InputStream is = null;
+		int code = 0;
+		if (checkSession && (session == null || session.length() == 0)) 
+			return null;
+		
+		closeConnection();
+		connection = NetworkAccess.connect(url);
+		if ( session != null &&  session.length() > 0 )
+			connection.setRequestProperty("Cookie", session);
+		
+		is = connection.openInputStream();
+		code = connection.getResponseCode();
+		
+		if (code != HttpConnection.HTTP_OK) 
+		{
 			if (is != null) {
 				is.close();
 			}
 			closeConnection();
+			
+			System.out.println("Error retrieving data: " + code);
+			if (code == HttpConnection.HTTP_UNAUTHORIZED) 
+				SyncUtil.logout();
+			return null;
 		}
-		return buffer.toString();
-	}
 
+		return is;
+	}
+	
 	/**
 	 * Push remote data.
 	 * 
@@ -130,7 +139,7 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static int pushRemoteData(String url, String data, String session, boolean checkSession)
+	public static int pushRemoteData(String url, InputStream data, String session, boolean checkSession)
 			throws IOException {
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
@@ -149,8 +158,20 @@ public class SyncManager {
 
 		return success;
 	}
+
+	private static final int bufferedRead(byte[] a, InputStream in) throws IOException {
+		int bytesRead = 0;
+		while (bytesRead < (a.length)) {
+			int read = in.read(a);//, bytesRead, (a.length - bytesRead));
+			if (read < 0) {
+				break;
+			}
+			bytesRead += read;
+		}
+		return bytesRead;
+	}
 	
-	public static void makePostRequest(String url, String data, String session)
+	public static void makePostRequest(String url, InputStream data, String session)
 			throws IOException {
 		// Performs a post to url with post body provided by data
 		OutputStream os = null;
@@ -162,9 +183,22 @@ public class SyncManager {
 			
 			os = connection.openOutputStream();
 			connection.setRequestMethod(HttpConnection.POST);
-			os.write(data.getBytes());
+
+			synchronized (SyncUtil.m_byteBuffer) {			
+				int nRead = 0;
+	    		do{
+	    			nRead = bufferedRead(SyncUtil.m_byteBuffer,data);
+	    			if ( nRead > 0 )
+	    				os.write(SyncUtil.m_byteBuffer, 0, nRead);
+	    		}while( nRead > 0 );
+			}
+			
+			//os.write(data);
 			os.flush();
-		} finally {
+		}catch(IOException exc){
+			throw exc;
+		}
+		finally {
 			if (os != null) {
 				os.close();
 			}

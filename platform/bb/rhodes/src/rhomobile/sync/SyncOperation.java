@@ -29,6 +29,7 @@ public class SyncOperation {
 	/** The _post body. */
 	private String _postBody;
 
+	private SyncObject _object;
 	/**
 	 * Instantiates a new sync operation.
 	 * 
@@ -38,6 +39,8 @@ public class SyncOperation {
 	public SyncOperation(String operation, SyncObject object) {
 		_operation = operation;
 		_postBody = setSyncPostBody(object);
+		_object = object;
+		
 		System.out.println("Formatted post strig: " + _postBody);
 	}
 
@@ -109,10 +112,18 @@ public class SyncOperation {
 			this.filterAttrib(body, "object", object.getObject());
 		}
 
-		if (object.getValue() != null) {
+		if ( object.get_type() != null && object.get_type().startsWith("blob")){
+			body.append("&");
+			this.filterAttrib(body, "type", "blob");
+		}else if (object.getValue() != null) {
 			body.append("&");
 			this.filterAttrib(body, "value", object.getValue());
 		}
+		
 		return body.toString();
+	}
+
+	public SyncObject get_object() {
+		return _object;
 	}
 }

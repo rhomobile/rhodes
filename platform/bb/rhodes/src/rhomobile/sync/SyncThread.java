@@ -32,7 +32,7 @@ public class SyncThread implements Runnable {
 	/** The sync. */
 	private String sync = "sync";
 
-	private static boolean delaySync = false;
+	//private static boolean delaySync = false;
 	private static boolean dbResetDelay = false;
 
 	/** The Constant SYNC_WAIT_INTERVAL. */
@@ -50,9 +50,13 @@ public class SyncThread implements Runnable {
 	 * Instantiates a new sync thread.
 	 */
 	SyncThread() {
-		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
-		delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true
-				: false;
+		//SyncUtil.adapter = PerstLiteAdapter.alloc(null);
+		//SyncBlob.DBCallback callback = new SyncBlob.DBCallback();
+		//SyncUtil.adapter.setDbCallback(callback);
+		
+		//delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true
+		//		: false;
+		
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
@@ -101,7 +105,7 @@ public class SyncThread implements Runnable {
 					+ new Date(System.currentTimeMillis()).toString());
 			//printStats();
 
-			if (!delaySync && !dbResetDelay) {
+			if (/*!delaySync &&*/ !dbResetDelay) {
 				// Thread is simple, process local changes and make sure
 				// there are no errors before waiting for SYNC_WAIT_INTERVAL
 				setState(STATE_SYNC);
@@ -113,9 +117,9 @@ public class SyncThread implements Runnable {
 			} else if (dbResetDelay) {
 				SyncUtil.resetSyncDb();
 				dbResetDelay = false;
-				delaySync = false;
+				//delaySync = false;
 			} else {
-				delaySync = false;
+				//delaySync = false;
 			}
 
 			// }
@@ -134,7 +138,7 @@ public class SyncThread implements Runnable {
 	public void wakeUpSyncEngine() {
 		if (getState() == STATE_PAUSE) {
 			synchronized (sync) {
-				delaySync = false;
+				//delaySync = false;
 				sync.notify();
 				sync.notify();
 			}

@@ -23,12 +23,19 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString SOURCE_URL = ObjectFactory.createString("source_url");
 	public static final RubyString SESSION = ObjectFactory.createString("session");
 	public static final RubyString TOKEN = ObjectFactory.createString("token");
+	public static final RubyString TYPE = ObjectFactory.createString("type");
 	
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
 	private static final String DB_FILENAME = "syncdb.dbs";
 	private static final String DB_VERSION_FNAME = "version";
 
+	private IDbCallback m_callback;
+
+	public void setDbCallback(IDbCallback callback) {
+		m_callback = callback;
+	}
+	
 	public static class Table_base1 extends Persistent{
 	    public Table_base1(){}
 	    public Table_base1(Storage db, RubyHash hash){
@@ -88,6 +95,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	return true;
 	    }
 	    
+	}
+	
+	public interface IDbCallback {
+		public void OnDeleteAllFromTable(String tableName);
+		public void OnDeleteFromTable(String tableName, Table_base1 item);
 	}
 	
 	public static class Table_base extends Table_base1{
@@ -168,17 +180,22 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    String object="";
 	    String value="";
 	    String update_type="";
-
+	    String type = "";
+	    
 		private static final RubyString ATTRIB = ObjectFactory.createString("attrib");
 		private static final RubyString OBJECT = ObjectFactory.createString("object");
 		private static final RubyString VALUE = ObjectFactory.createString("value");
 		private static final RubyString UPDATE_TYPE = ObjectFactory.createString("update_type");
 	    
+		public String getValueField(){ return value; }
+		public String getTypeField(){ return type; }
+		
 		public static class TableRoot extends TableRootBase { 
 		    Index source_idANDupdate_type;
 		    Index object_idANDattrib;
 		    Index object_idANDupdate_type;
 		    Index source_idANDtoken;
+		    Index id;
 		    
 		    // Deserialize the object
 		    public void readObject(IInputStream in) {
@@ -186,6 +203,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	object_idANDattrib = (Index)in.readObject();
 		    	object_idANDupdate_type = (Index)in.readObject();
 		    	source_idANDtoken = (Index)in.readObject();
+		    	id = (Index)in.readObject();
 		    }
 
 		    // Serialize the object
@@ -194,6 +212,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        out.writeObject(object_idANDattrib);
 		        out.writeObject(object_idANDupdate_type);
 		        out.writeObject(source_idANDtoken);
+		        out.writeObject(id);
 		    }
 
 		    public TableRoot() {}
@@ -208,6 +227,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        		new int[]{Types.String,Types.String}, false);
 		        source_idANDtoken = db.createIndex(
 		        		new int[]{Types.Int,Types.String}, false);
+		        
+		        id = db.createIndex(Types.Int, true);		        
+	        
 		    }
 		    public void clear(){
 		    	Iterator iter = source_idANDupdate_type.iterator();
@@ -232,6 +254,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		iter.remove();
 		    	}
 		    	source_idANDtoken.clear();
+
+		    	iter = id.iterator();
+		    	while(iter.hasNext()){
+		    		
+		    		Table_object_values item = (Table_object_values)iter.next();
+		    		iter.remove();
+		    	}
+		    	id.clear();
 		    	
 		    	iter = object_idANDattrib.iterator();
 		    	while(iter.hasNext()){
@@ -248,7 +278,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.put(new Key( item.object, item.update_type),item);
-		    	source_idANDtoken.put(new Key( new Object[]{new Integer(item.source_id), item.token}),item);		    	
+		    	source_idANDtoken.put(new Key( new Object[]{new Integer(item.source_id), item.token}),item);
+		    	id.put(new Key(item.id), item);
 		    }
 		    public void remove(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
@@ -256,6 +287,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.remove(new Key( item.object, item.update_type),item);
 		    	source_idANDtoken.remove(new Key( new Object[]{new Integer(item.source_id), item.token}),item);
+		    	id.remove(new Key(item.id),item);
 		    	
 		    	item.deallocate();
 		    }
@@ -270,7 +302,11 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    	RubyValue valUpdatedType = where.get(Table_object_values.UPDATE_TYPE);
 		    	RubyValue valAttrib = where.get(Table_object_values.ATTRIB);
 		    	RubyValue valToken = where.get(TOKEN);
+		    	RubyValue valID = where.get(ID);
 
+		    	if ( valID != RubyConstant.QNIL )
+		    		return id.iterator(new Key(valID.toInt()), new Key(valID.toInt()), Index.ASCENT_ORDER);
+		    	
 		    	if ( valAttrib != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
 		    		Key key = new Key(valObject.toStr(),valAttrib.toStr()); 
 		    		return object_idANDattrib.iterator( key, key, Index.ASCENT_ORDER);
@@ -313,6 +349,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	out.writeString(object);
 	    	out.writeString(value);
 	    	out.writeString(update_type);	    	
+	    	out.writeString(type);
 	    }
 
 	    // Deserialize the object
@@ -323,6 +360,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	object = in.readString();
 	    	value = in.readString();
 	    	update_type = in.readString();
+	    	type = in.readString();
 	    }
 
 	    RubyHash getValueByName(RubyString name){
@@ -337,6 +375,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		res.add( VALUE, ObjectFactory.createString(value) );
 	    	if ( bAll || name.equals(UPDATE_TYPE) )
 	    		res.add( UPDATE_TYPE, ObjectFactory.createString(update_type) );
+	    	if ( bAll || name.equals(TYPE) )
+	    		res.add( TYPE, ObjectFactory.createString(type) );
 	    	
 	    	return res;
 	    }
@@ -356,7 +396,10 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        	value = val.toStr();	               
 	        val = hash.getValue(UPDATE_TYPE);
 	        if ( val != RubyConstant.QNIL )
-	        	update_type = val.toStr();	        
+	        	update_type = val.toStr();
+	        val = hash.getValue(TYPE);
+	        if ( val != RubyConstant.QNIL )
+	        	type = val.toStr();	        
 	    }
 	    
 	    public Table_object_values(){}
@@ -642,8 +685,15 @@ public class PerstLiteAdapter  extends RubyBasic {
     	//Check version
 		if ( strVer != null && strVer.length() > 0 ){
         	String dbVer = readDBVersion();
-			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) ){
+			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) )
+			{
 				org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
+				if ( m_callback != null ){
+					m_callback.OnDeleteAllFromTable(Table_client_info.name());
+					m_callback.OnDeleteAllFromTable(Table_object_values.name());
+					m_callback.OnDeleteAllFromTable(Table_sources.name());					
+				}
+				
 	            writeDBVersion(strVer);
 			}
         }
@@ -651,7 +701,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		m_storage = StorageFactory.getInstance().createStorage();
 		
         try { 
-        	m_storage.open(DB_FILENAME);
+        	m_storage.open(DB_FILENAME,0);
         } catch (StorageError x) { 
             throw new RubyException("Failed to create or open database:" + DB_FILENAME + ".Error:" + x.getMessage());
         }
@@ -797,6 +847,9 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public synchronized RubyValue deleteAllFromTable(RubyValue tableName) {
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
+			if ( m_callback != null )
+				m_callback.OnDeleteAllFromTable(tableName.toStr());
+			
 			m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);
 			tblRoot.clear();
 			m_storage.commit();
@@ -815,6 +868,10 @@ public class PerstLiteAdapter  extends RubyBasic {
 			while(iter != null && iter.hasNext()){
 				Table_base1 item = (Table_base1)iter.next();
 				if ( item != null ){
+					
+					if ( m_callback != null )
+						m_callback.OnDeleteFromTable(tableName.toStr(), item);
+					
 					tblRoot.remove(item);
 				}
 			}

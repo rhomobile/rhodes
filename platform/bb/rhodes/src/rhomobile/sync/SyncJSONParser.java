@@ -64,8 +64,12 @@ public class SyncJSONParser {
 					String value = obValue == JSONObject.NULL ? null : (String) obValue;
 					
 					String updateType = (String) current.get("update_type");
+					String type = "";
+					if ( current.has("type"))
+						type = (String) current.get("type");
+					
 					SyncObject newObject = new SyncObject(attrib, sourceId,	object, 
-							value, updateType);
+							value, updateType, type);
 					
 					newObject.setDbOperation((String)current.get("db_operation"));
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());

@@ -23,8 +23,9 @@ public class Jsr75File implements SimpleFile
     private long           currPos;
     private long           fileSize;
     private boolean        noFlush;
-
+    
     private static final int ZERO_BUF_SIZE = 4096;
+    
     private static Vector m_arRoots;
     private static String m_strRhoPath;
     
@@ -148,7 +149,7 @@ public class Jsr75File implements SimpleFile
     }
     
 	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
-    static String getRhoPath() throws IOException{
+    public static String getRhoPath() throws IOException{
     	if ( m_strRhoPath != null )
     		return m_strRhoPath;
     	
@@ -165,6 +166,41 @@ public class Jsr75File implements SimpleFile
     	createDir( m_strRhoPath );
     	
     	return m_strRhoPath;
+    }
+
+    public static String getDirPath(String strDir) throws IOException{
+    	String strRoot = getRhoPath();
+    	if ( strRoot == null )
+    		throw new IOException("Could not find storage");
+    	
+    	String strDirPath = strRoot + strDir + "/";
+    	createDir( strDirPath );
+    	
+    	return strDirPath;
+    }
+    
+    private static void deleteFilesInFolder(FileConnection fcFolder){
+    	
+    	try{
+			Enumeration enumFiles = fcFolder.list();
+			
+	        while ( enumFiles.hasMoreElements() ) {
+	            String fileName = (String)enumFiles.nextElement();
+	            String fullFileName = fcFolder.getURL() + fileName;
+	            	
+	            try{ 
+					FileConnection fc2 = (FileConnection) Connector.open(fullFileName);
+					if ( fc2.isDirectory() )
+						deleteFilesInFolder(fc2);
+					
+					try{fc2.delete();}finally{ fc2.close();};
+				}catch( IOException exc) {
+					log(exc.getMessage());
+	        	}
+	        }
+    	}catch(IOException exc){
+    		log(exc.getMessage());
+    	}
     }
     
     public static void delete(String path) 
@@ -185,16 +221,35 @@ public class Jsr75File implements SimpleFile
             }
         }
         
+        FileConnection fc = null;
         try { 
-        	FileConnection fc = (FileConnection)Connector.open(url,Connector.READ_WRITE);
+        	fc = (FileConnection)Connector.open(url,Connector.READ_WRITE);
+			if ( fc.isDirectory() )
+				deleteFilesInFolder(fc);
+        	
         	fc.delete();
         } catch (IOException x) { 
         	log("Exception: " + x.getMessage());
             //throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
-        }        
+        }finally{
+        	if (fc !=null)
+        		try{
+        			fc.close();
+        		}catch(IOException exc){
+        			
+        		}
+        }
     }
+
+    public OutputStream getOutStream(){ return out; }
+    public InputStream getInputStream()throws IOException{
+    	if ( in  == null )
+    		in = fconn.openInputStream();
+    	
+    	return in; 
+   }
     
-    public void open(String path, boolean readOnly, boolean noFlush) 
+    public void open(String path, boolean readOnly, boolean noFlush)throws StorageError 
     {
         String url = path;
         this.noFlush = noFlush;
