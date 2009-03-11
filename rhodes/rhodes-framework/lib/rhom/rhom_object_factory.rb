@@ -138,8 +138,8 @@ module Rhom
                   find(args)
                 end
   
-                def set_notification(url)
-                  SyncEngine.set_notification(get_source_id.to_i,url)
+                def set_notification(url,params)
+                  SyncEngine.set_notification(get_source_id.to_i,url,params)
                 end
                 
                 def clear_notification
