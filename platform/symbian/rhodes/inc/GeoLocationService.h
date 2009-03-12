@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name		: GeoLocation.h
+ Name		: GeoLocationService.h
  Author	  : Anton Antonov
  Version	 : 1.0
- Copyright   : Copyright (C) 2008 Rhomobile. All rights reserved.
-
+ Copyright   :  Copyright (C) 2008 Rhomobile. All rights reserved.
+ 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -17,26 +17,26 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- Description : CGeoLocation declaration
+
+ Description : CGeoLocationService declaration
  ============================================================================
  */
 
-#ifndef GEOLOCATION_H
-#define GEOLOCATION_H
+#ifndef GEOLOCATIONSERVICE_H
+#define GEOLOCATIONSERVICE_H
 
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
-#include <aknnotewrappers.h>
-#include <lbs.h>
-#include <lbspositioninfo.h>
+
+class CGeoLocation;
 // CLASS DECLARATION
 
 /**
- *  CGeoLocation
+ *  CGeoLocationService
  * 
  */
-class CGeoLocation : public CBase
+class CGeoLocationService : public CBase
 	{
 public:
 	// Constructors and destructor
@@ -44,46 +44,43 @@ public:
 	/**
 	 * Destructor.
 	 */
-	~CGeoLocation();
+	~CGeoLocationService();
 
 	/**
 	 * Two-phased constructor.
 	 */
-	static CGeoLocation* NewL(const TDesC& aAppName);
+	static CGeoLocationService* NewL();
 
 	/**
 	 * Two-phased constructor.
 	 */
-	static CGeoLocation* NewLC(const TDesC& aAppName);
+	static CGeoLocationService* NewLC();
 
-    // from CActive
-    void DoCancel();
-    void RunL();
+	void StopThread();
+	
+	TInt Execute();
+	
+	void ResumeThread();
 
-    void InitLocationServer();
-    
-    TBool GetCurrentPostionL(TReal& aLatitude, TReal& aLongitude);
+	void SuspendThread();
+
 private:
 
+	TInt ExecuteL();
 	/**
 	 * Constructor for performing 1st stage construction
 	 */
-	CGeoLocation();
+	CGeoLocationService();
 
 	/**
 	 * EPOC default constructor for performing 2nd stage construction
 	 */
-	void ConstructL(const TDesC& aAppName);
-	
-	
+	void ConstructL();
 
-private:	
-	TPositionInfo iPositionInfo;
-	TInt iError;
-	RPositionServer iLocationServer;
-	RPositioner iPositioner;
-	HBufC* iAppName;
-	TRequestStatus iStatus;
+	CGeoLocation* iGeoLocation;
+	
+	RThread thread;
+	bool iClose;
 	};
 
-#endif // GEOLOCATION_H
+#endif // GEOLOCATIONSERVICE_H

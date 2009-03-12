@@ -28,7 +28,8 @@ enum TRhodesPanics
 	{
 	ERhodesUi = 1,
 	ERhodesHttpServerInit,
-	ERhodesSyncEngineInit
+	ERhodesSyncEngineInit,
+	ERhodesGeolocationInit
 	// add further panics here
 	};
 
