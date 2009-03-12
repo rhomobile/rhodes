@@ -73,7 +73,7 @@ namespace "bundle" do
 end
 
 namespace "device" do
-  desc "Create downloadable app for BlackBerry"
+  desc "Create downloadable app for iPhone"
   task :iphone => "bundle:iphone" do
  
   end
@@ -82,7 +82,7 @@ end
 namespace "run" do
   namespace "iphone" do
   
-    desc "Run app in iphone Sim"
+    desc "Run app in iPhone Sim"
     task :app  => ["bundle:iphone"] do
        simrhodes = File.join($simapp,$guid)
        rm_rf simrhodes

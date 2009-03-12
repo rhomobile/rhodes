@@ -104,7 +104,7 @@ end
 namespace "run" do
   namespace "wm" do
   
-    desc "Run app in iphone Sim"
+    desc "Run app in WM Sim"
     task :app  => ["device:wm"] do
  
 
