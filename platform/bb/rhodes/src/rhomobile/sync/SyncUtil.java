@@ -477,9 +477,11 @@ public class SyncUtil {
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		} else {
 			if ( SyncBlob.pushRemoteBlobs(source, listBlobs, clientId) == SyncConstants.SYNC_PUSH_CHANGES_OK )
-			// We're done processsing, remove from database so we
-			// don't process again
+			{
+				// We're done processsing, remove from database so we
+				// don't process again
 				removeOpListFromDatabase(type, source);
+			}
 			else
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		}
@@ -520,7 +522,8 @@ public class SyncUtil {
 			String session = get_session(source);
 			
 			dataStream = new ByteArrayInputStream(data.toString().getBytes()); 
-			success = SyncManager.pushRemoteData(url, dataStream, session,true);
+			success = SyncManager.pushRemoteData(url, dataStream, session,true,
+					"application/x-www-form-urlencoded");
 		} catch (IOException e) {
 			System.out.println("There was an error pushing changes: "
 					+ e.getMessage());
@@ -758,7 +761,8 @@ public class SyncUtil {
 					String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
 					dataStream = new ByteArrayInputStream(body.getBytes()); 
 					
-					SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "");
+					SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "",
+							"application/x-www-form-urlencoded");
 
 					connection = SyncManager.getConnection();
 					int code = connection.getResponseCode();
