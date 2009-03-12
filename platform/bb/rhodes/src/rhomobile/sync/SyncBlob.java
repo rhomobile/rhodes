@@ -18,7 +18,7 @@ public class SyncBlob {
 	public static final int POSTSYNC_STAGE = 2;
 	public static final int REQUEST_STAGE = 3;
 
-	private static String makeBlobFolderName()throws IOException{
+	public static String makeBlobFolderName()throws IOException{
 		String fName = Jsr75File.getDirPath("blobs");
 		
 		return fName;
