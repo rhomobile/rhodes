@@ -21,33 +21,88 @@
  ============================================================================
  */
 
+#include <rhodes.rsg>
 #include "GeoLocation.h"
 
 CGeoLocation::CGeoLocation()
 	{
-	// No implementation required
-	}
+    }
 
 CGeoLocation::~CGeoLocation()
 	{
+		DoCancel();
+		iPositioner.Close();
+	    iLocationServer.Close();
+	    delete iAppName;
 	}
 
-CGeoLocation* CGeoLocation::NewLC()
+CGeoLocation* CGeoLocation::NewLC(const TDesC& aAppName)
 	{
 	CGeoLocation* self = new (ELeave)CGeoLocation();
 	CleanupStack::PushL(self);
-	self->ConstructL();
+	self->ConstructL(aAppName);
 	return self;
 	}
 
-CGeoLocation* CGeoLocation::NewL()
+CGeoLocation* CGeoLocation::NewL(const TDesC& aAppName)
 	{
-	CGeoLocation* self=CGeoLocation::NewLC();
+	CGeoLocation* self=CGeoLocation::NewLC(aAppName);
 	CleanupStack::Pop(); // self;
 	return self;
 	}
 
-void CGeoLocation::ConstructL()
+void CGeoLocation::ConstructL(const TDesC& aAppName)
 	{
-
+	    iAppName = aAppName.AllocL();
 	}
+
+void CGeoLocation::InitLocationServer()
+	{
+	
+    // connect to location server
+    User::LeaveIfError(iLocationServer.Connect());
+    // open positioner
+    User::LeaveIfError(iPositioner.Open(iLocationServer));
+    // set our application as location requestor
+    User::LeaveIfError(iPositioner.SetRequestor(
+        CRequestor::ERequestorService, CRequestor::EFormatApplication, *iAppName));
+    // set maximum allowed time for a location request
+    TTimeIntervalMicroSeconds timeOut(30000000); // 30 sec
+    TPositionUpdateOptions updateOptions;
+    updateOptions.SetUpdateTimeOut(timeOut);
+    User::LeaveIfError(iPositioner.SetUpdateOptions(updateOptions));
+	
+	}
+
+TBool CGeoLocation::GetCurrentPostionL(TReal& aLatitude, TReal& aLongitude)
+    {
+    // request current location
+    iPositioner.NotifyPositionUpdate(iPositionInfo, iStatus);
+    User::WaitForRequest(iStatus);
+
+    // process result
+    if (iError == KErrNone)
+        {
+        // success, return given position
+        TPosition pos;
+        iPositionInfo.GetPosition(pos);
+        aLatitude = pos.Latitude();
+        aLongitude = pos.Longitude();
+        return ETrue;
+        }
+    // fail
+    return EFalse;
+    }
+
+void CGeoLocation::DoCancel()
+    {
+    // cancel location request
+    iPositioner.CancelRequest(EPositionerNotifyPositionUpdate);
+    }
+
+void CGeoLocation::RunL()
+    {
+    // request ended, store error code and dismiss wait dialog
+    iError = iStatus.Int();
+    }
+
