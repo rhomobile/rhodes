@@ -22,6 +22,8 @@ RubyVM
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
+src\rhomobile\camera\Camera.java
+src\rhomobile\camera\CameraScreen.java
 src\rhomobile\DateTimeTokenizer.java
 src\rhomobile\db\PerstLiteAdapter.java
 src\rhomobile\location\GeoLocation.java
