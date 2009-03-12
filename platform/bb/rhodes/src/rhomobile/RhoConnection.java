@@ -618,14 +618,16 @@ public class RhoConnection implements HttpConnection {
 					resHeaders.addProperty( strKey, arValues.get(i).toString() );
 					
 			}
-			if ( resBody != null && resBody != RubyConstant.QNIL ){
-				String strBody = resBody.toRubyString().toString();
-				log(strBody);
+			String strBody = "";
+			
+			if ( resBody != null && resBody != RubyConstant.QNIL )
+				strBody = resBody.toRubyString().toString();
 				
-				responseData = new ByteArrayInputStream(strBody.getBytes()); 
-				if ( responseData != null )
-					contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
-			}
+			log(strBody);
+			
+			responseData = new ByteArrayInputStream(strBody.getBytes()); 
+			if ( responseData != null )
+				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
 		}
 	}
 	

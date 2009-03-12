@@ -73,17 +73,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     class SyncNotificationsImpl extends SyncNotifications{
     	public void performNotification(String url, String body){
     		
-    		if ( url == null || url.length() == 0 )
-    			return;
-    		
-    		url.replace('\\', '/');
-    		if ( !url.startsWith(_httpRoot) ){
-	    		if ( url.charAt(0) == '/' )
-	    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
-	    		else	
-	    			url = _httpRoot + url;
-    		}
-
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
     		postUrl(url, body, headers);
@@ -97,13 +86,31 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
     }
 
+    String canonizeUrl( String url ){
+		if ( url == null || url.length() == 0 )
+			return "";
+		
+		url.replace('\\', '/');
+		if ( !url.startsWith(_httpRoot) ){
+    		if ( url.charAt(0) == '/' )
+    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
+    		else	
+    			url = _httpRoot + url;
+		}
+		
+		return url;
+    }
+    
     void navigateUrl(String url){
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, null, null, this);
+    	
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+        		canonizeUrl(url), null, null, null, this);
         thread.start();                       
     }
 
     void postUrl(String url, String body, HttpHeaders headers){
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, headers, body.getBytes(), null, this);
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+        		canonizeUrl(url), headers, body.getBytes(), null, this);
         thread.start();                       
     }
     
@@ -170,6 +177,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     private final String _httpRoot = "http://localhost:8080/";
     
+    private static RhodesApplication _instance;
+    
+    public static RhodesApplication getInstance(){ return _instance; }
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -183,8 +193,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		SyncEngine.start(null);
 		//GeoLocation.start();
         
-        RhodesApplication app = new RhodesApplication();
-        app.enterEventDispatcher();
+		_instance = new RhodesApplication();
+		_instance.enterEventDispatcher();
     }
     
     void doClose(){
@@ -216,8 +226,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};			
 		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
 			public void run() {
-					String curUrl = (String)_history.lastElement();
-					navigateUrl(curUrl);
+				refreshCurrentPage();
 				}
 			};			
 		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
@@ -275,6 +284,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);                        
         
         navigateHome();
+    }
+
+    public void refreshCurrentPage(){
+		navigateUrl(getCurrentPageUrl());
+    }
+    
+    public String getCurrentPageUrl(){
+    	return (String)_history.lastElement();
     }
     
     void navigateHome(){
