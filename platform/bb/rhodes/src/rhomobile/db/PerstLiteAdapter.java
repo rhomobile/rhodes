@@ -229,7 +229,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		        source_idANDtoken = db.createIndex(
 		        		new int[]{Types.Int,Types.String}, false);
 		        
-		        id = db.createIndex(Types.Int, true);		        
+		        id = db.createIndex(Types.Int, false);		        
 	        
 		    }
 		    public void clear(){
