@@ -74,6 +74,14 @@ public class SyncJSONParser {
 					newObject.setDbOperation((String)current.get("db_operation"));
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
 					newObject.set_token(header._token);
+
+					/*
+					if ( i == 0 ){
+						newObject.set_type("blob.url");
+						newObject.setValue("http://img.lenta.ru/news/2009/03/11/acid/picture.jpg");
+						newObject.setUpdateType("create");
+					}
+					*/
 					
 					list.add(newObject);
 				}else if ( element.has("count") ){

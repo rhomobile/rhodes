@@ -139,12 +139,12 @@ public class SyncManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static int pushRemoteData(String url, InputStream data, String session, boolean checkSession)
-			throws IOException {
+	public static int pushRemoteData(String url, InputStream data, String session, boolean checkSession,
+			String contentType ) throws IOException {
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		try {
-			makePostRequest(url,data,session);
+			makePostRequest(url,data,session,contentType);
 
 			int code = connection.getResponseCode();
 			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
@@ -171,8 +171,9 @@ public class SyncManager {
 		return bytesRead;
 	}
 	
-	public static void makePostRequest(String url, InputStream data, String session)
-			throws IOException {
+	public static void makePostRequest(String url, InputStream data, String session, 
+			String contentType )throws IOException 
+	{
 		// Performs a post to url with post body provided by data
 		OutputStream os = null;
 		try {
@@ -180,6 +181,8 @@ public class SyncManager {
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
+			if ( contentType != null && contentType.length() > 0 )
+				connection.setRequestProperty("content-type", contentType);
 			
 			os = connection.openOutputStream();
 			connection.setRequestMethod(HttpConnection.POST);
@@ -192,7 +195,7 @@ public class SyncManager {
 	    				os.write(SyncUtil.m_byteBuffer, 0, nRead);
 	    		}while( nRead > 0 );
 			}
-			
+
 			//os.write(data);
 			os.flush();
 		}catch(IOException exc){
