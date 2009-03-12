@@ -96,9 +96,7 @@ module Rhogen
         name - model name
         source_url - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
         source_id - unique id for this model (i.e. 500, this is only used on the device to uniquely identify the source)
-        
-      Optional arguments:
-        attributes - optional list of string attributes (i.e. name,industry,progress)
+        attributes - list of one or more string attributes (i.e. name,industry,progress)
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
@@ -106,7 +104,7 @@ module Rhogen
     first_argument :name, :required => true, :desc => "model name"
     second_argument :source_url, :required => true, :desc => "source url"
     third_argument :source_id, :required => true, :desc => "source id"
-    fourth_argument :attributes, :as => :array, :default => [], :required => false, :desc => "array of attributes (only string suppported right now)"
+    fourth_argument :attributes, :as => :array, :required => true, :desc => "array of attributes (only string suppported right now)"
 
     template :config do |template|
       template.source = 'config.rb'
