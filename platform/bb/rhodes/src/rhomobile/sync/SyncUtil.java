@@ -110,8 +110,10 @@ public class SyncUtil {
 		String session = get_session(source);
 
 		do {
-			String fetch_url = source.get_sourceUrl()
-					+ SyncConstants.SYNC_FORMAT + "&client_id=" + client_id
+			String fetch_url = source.get_sourceUrl() +
+					((params != null && params.length() > 0) ? "/ask" : "") +
+					SyncConstants.SYNC_FORMAT +
+					"&client_id=" + client_id
 					+ "&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
 			if (params != null && params.length() > 0) {
 				fetch_url += "&question=" + params;
