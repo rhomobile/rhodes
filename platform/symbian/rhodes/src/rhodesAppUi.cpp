@@ -39,6 +39,7 @@
 
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
+#include "GeoLocationService.h"
 
 #include "AppManager.h"
 
@@ -62,26 +63,8 @@ TUint32 gSelectedConnectionId = -1;
 extern "C"
 {
 	void dosync();
-	void pause_sync( int nPause );	
-}
-
-extern "C" {
-void webview_refresh() {
-    //TODO: webview_refresh
-}
-
-void webview_navigate(char* url){
-    //TODO: webview_navigate
-}
-
-void take_picture(char* callback_url) {
-    //TODO: take_picture
-}
-
-void choose_picture(char* callback_url){
-    //TODO: choose_picture
-}
-
+	void pause_sync( int nPause );
+	int login(const char* login, const char* password);
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -109,6 +92,10 @@ void CRhodesAppUi::ConstructL()
 	//start sunc engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
 
+	//start geolocation service 
+	iGeoLocationService = CGeoLocationService::NewL();
+	iGeoLocationService->ResumeThread();
+	
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE	
 	iAppManager = CAppManager::NewL(this);
 #endif	
@@ -150,6 +137,12 @@ CRhodesAppUi::~CRhodesAppUi()
 		{
 		delete iSyncEngineWrap;
 		iSyncEngineWrap = NULL;
+		}
+	
+	if ( iGeoLocationService )
+		{
+		delete iGeoLocationService;
+		iGeoLocationService = NULL;
 		}
 	
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
@@ -220,6 +213,8 @@ void CRhodesAppUi::StopThreads()
 	if ( iSyncEngineWrap )
 		iSyncEngineWrap->TerminateThread();
 
+	if ( iGeoLocationService )
+		iGeoLocationService->StopThread();
 	sleep(2);
 	
 	}
@@ -255,7 +250,6 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case ESync:
 			{
-			//login("lars","password");
 				dosync();
 				break;
 			}

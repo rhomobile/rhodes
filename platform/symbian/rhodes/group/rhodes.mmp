@@ -124,6 +124,7 @@ LIBRARY                                 libpthread.lib
 LIBRARY                                 libm.lib
 LIBRARY                                 apsettingshandlerui.lib
 LIBRARY                                 apengine.lib
+LIBRARY                                 Lbs.lib
 
 LANG SC
 
@@ -146,3 +147,9 @@ SOURCE unzip.cpp
 
 //SOURCEPATH ..\src
 //SOURCE posix_http_client.c
+SOURCEPATH ..\src
+SOURCE GeoLocationService.cpp
+SOURCEPATH ..\src\webview
+SOURCE webview.c
+SOURCEPATH ..\src\camera
+SOURCE camera.c
