@@ -86,7 +86,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
     }
 
-    String canonizeUrl( String url ){
+    String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
 			return "";
 		
@@ -104,13 +104,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     void navigateUrl(String url){
     	
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonizeUrl(url), null, null, null, this);
+        		canonicalizeURL(url), null, null, null, this);
         thread.start();                       
     }
 
     void postUrl(String url, String body, HttpHeaders headers){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonizeUrl(url), headers, body.getBytes(), null, this);
+        		canonicalizeURL(url), headers, body.getBytes(), null, this);
         thread.start();                       
     }
     
