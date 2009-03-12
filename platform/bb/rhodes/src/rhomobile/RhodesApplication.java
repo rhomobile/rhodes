@@ -73,9 +73,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     class SyncNotificationsImpl extends SyncNotifications{
     	public void performNotification(String url, String body){
     		
-    		postUrl(url, body);
-    		
-/*    		if ( url == null || url.length() == 0 )
+    		if ( url == null || url.length() == 0 )
     			return;
     		
     		url.replace('\\', '/');
@@ -85,8 +83,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		else	
 	    			url = _httpRoot + url;
     		}
+
+    		HttpHeaders headers = new HttpHeaders();
+    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+    		postUrl(url, body, headers);
     		
-    		String curUrl = (String)_history.lastElement();
+/*    		String curUrl = (String)_history.lastElement();
     		curUrl.replace('\\', '/');
     		if ( curUrl.equalsIgnoreCase(url) )
     			navigateUrl(curUrl);*/
@@ -100,8 +102,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         thread.start();                       
     }
 
-    void postUrl(String url, String body){
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, null, body.getBytes(), null, this);
+    void postUrl(String url, String body, HttpHeaders headers){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, headers, body.getBytes(), null, this);
         thread.start();                       
     }
     

@@ -52,11 +52,12 @@ public class SyncBlob {
 	private static final int bufferedRead(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
 		while (bytesRead < (a.length)) {
-			int read = in.read( a, 0, a.length );
+			int read = in.read();// a, 0, a.length );
 			if (read < 0) {
 				break;
 			}
-			bytesRead += read;
+			a[bytesRead] = (byte)read;
+			bytesRead ++;
 		}
 		return bytesRead;
 	}
@@ -156,7 +157,8 @@ public class SyncBlob {
 						+ "?client_id=" + clientId + "&" + op.get_postBody();// + "&type=blob";
 				
 				String session = SyncUtil.get_session(source);
-				success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true);
+				success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true,
+						"application/octet-stream" );
 			} catch (IOException e) {
 				System.out.println("There was an error pushing changes: "
 						+ e.getMessage());
@@ -196,6 +198,9 @@ public class SyncBlob {
 			
 			PerstLiteAdapter.Table_object_values obj = (PerstLiteAdapter.Table_object_values)item;
 			if ( !obj.getTypeField().equals("blob.file") )
+				return;
+			
+			if ( obj.getUpdateTypeField().equals("create") || obj.getUpdateTypeField().equals("update") )
 				return;
 			
 			String url = obj.getValueField();
