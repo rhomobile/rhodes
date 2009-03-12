@@ -9,26 +9,32 @@ import com.xruby.runtime.lang.RubyValue;
 
 import net.rim.device.api.ui.UiApplication;
 
+class CallCameraScreen implements Runnable {
+	private String _callback;
+	CallCameraScreen(String callback) {
+		_callback = callback;
+	}
+	public void run(){
+		//Initialize the screen.
+        CameraScreen cameraScreen = new CameraScreen(_callback);
+        //Push this screen to display it to the user.
+        UiApplication.getUiApplication().pushScreen( cameraScreen );
+	}
+}
+
 public class Camera extends RubyBasic {
 
 	Camera(RubyClass c) {
 		super(c);
 	}
-
+	
 	public static RubyValue take_picture(RubyValue arg) {
 		String callback = arg.toStr();
 		
 		System.out.println("Calling take_picture");
 		System.out.println("Callback: " + callback);
 		
-		UiApplication.getUiApplication().invokeLater(new Runnable(){
-			public void run(){
-				//Initialize the screen.
-		        CameraScreen cameraScreen = new CameraScreen();
-		        //Push this screen to display it to the user.
-		        UiApplication.getUiApplication().pushScreen( cameraScreen );
-			}
-		});
+		UiApplication.getUiApplication().invokeLater(new CallCameraScreen(callback));
         
 		return RubyConstant.QNIL;
 	}

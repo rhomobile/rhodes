@@ -5,7 +5,7 @@ import java.util.Date;
 import java.io.IOException;
 
 import rhomobile.sync.SyncBlob;
-import rhomobile.sync.SyncUtil;
+import rhomobile.RhodesApplication;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
@@ -18,6 +18,7 @@ import net.rim.device.api.ui.component.RichTextField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.i18n.SimpleDateFormat;
+import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.util.StringUtilities;
 
 import javax.microedition.media.Manager;
@@ -46,12 +47,18 @@ public class CameraScreen extends MainScreen {
     /** A reference to the current screen for listeners. */
 	private CameraScreen _cameraScreen;
 
+	/** Callback URL **/
+	private String _callbackUrl;
+	
 	/**
 	 * Constructor.
 	 * @param raw A byte array representing an image.
 	 */
-	public CameraScreen()
+	public CameraScreen(String callbackUrl)
 	{
+		//
+		_callbackUrl = canonicalizeURL(callbackUrl);
+
 		//A reference to this object, to be used in listeners.
 		_cameraScreen = this;
 
@@ -75,6 +82,16 @@ public class CameraScreen extends MainScreen {
         }        
 	}
 
+	String canonicalizeURL(String url) {
+		if (!url.startsWith("http://")) {
+			String slash = "/";
+			if (url.startsWith("\\") || url.startsWith("/")) {
+				slash = "";
+			}
+			return "http://localhost:8080" + slash + url;
+		}
+		return url;
+	}
     /**
      * Initializes the Player, VideoControl and VideoField.
      */
@@ -389,7 +406,11 @@ public class CameraScreen extends MainScreen {
 	     */
 		public void fieldChanged(Field field, int context)
 		{
+        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+    		HttpHeaders headers = new HttpHeaders();
+    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 			Jsr75File file = new Jsr75File();
+			
             try
             {
                 //A null encoding indicates that the camera should
@@ -411,15 +432,19 @@ public class CameraScreen extends MainScreen {
             	byte[] image = _videoControl.getSnapshot(encoding);
             	//Write image data
             	file.getOutStream().write(image,0,image.length);
+            	image = null;
+            	
+            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
             	
             } catch(Exception e) {
-                Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
+            	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
+            	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
             } finally {
     			try{
     				file.close();
     			}catch(Exception exc){}
     			
-            	UiApplication.getUiApplication().popScreen( _cameraScreen );            	
+            	app.popScreen( _cameraScreen );            	
             }
 		}
 	}
@@ -434,7 +459,11 @@ public class CameraScreen extends MainScreen {
 	     */
 		public void fieldChanged(Field field, int context)
 		{
-			UiApplication.getUiApplication().popScreen( _cameraScreen );
+        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+    		HttpHeaders headers = new HttpHeaders();
+    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+    		app.postUrl(_callbackUrl, "status=cancel&message=User canceled operation", headers);
+			app.popScreen( _cameraScreen );
 		}
 	}
 }
