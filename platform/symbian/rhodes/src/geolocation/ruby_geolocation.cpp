@@ -20,14 +20,19 @@
  ============================================================================
  */
 
+#include <e32def.h>
+
 extern "C" {
 
+TReal g_geo_latitude = 0.0;
+TReal g_geo_longitude = 0.0;
+
 double _geo_latitude() {
-	return 0.5;
+	return g_geo_latitude;
 }
 
 double _geo_longitude() {
-	return 0.8;
+	return g_geo_longitude;
 }
 
 }

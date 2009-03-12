@@ -50,6 +50,7 @@ src\rhomobile\sync\SyncUtil.java
 src\rhomobile\sync\Tokenizer.java
 src\rhomobile\URI.java
 src\rhomobile\Utilities.java
+src\rhomobile\WebView.java
 ]
 HaveAlxImports=0
 HaveDefs=0

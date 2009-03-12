@@ -29,6 +29,7 @@
 class CRhodesAppView;
 class CHttpServer;
 class CSyncEngineWrap;
+class CGeoLocationService;
 class CAppManager;
 
 struct sqlite3;
@@ -123,7 +124,7 @@ private:
 
 	CHttpServer* iHttpServer;
 	CSyncEngineWrap* iSyncEngineWrap;
-
+	CGeoLocationService* iGeoLocationService;
 	/**
 	 * The application view
 	 * Owned by CRhodesAppUi

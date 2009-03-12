@@ -490,7 +490,7 @@ _shttpd_get_mime_type(struct shttpd_ctx *ctx,
  * Return 0 if index file has been found, -1 if not found
  */
 static int
-find_index_file(struct conn *c, char *path, size_t maxpath, struct stat *stp)
+find_index_file(struct conn *c, char *path, size_t maxpath, struct stat *stp, char* bufIndex)
 {
 	char		buf[FILENAME_MAX];
 	const char	*s = c->ctx->options[OPT_INDEX_FILES];
@@ -502,6 +502,12 @@ find_index_file(struct conn *c, char *path, size_t maxpath, struct stat *stp)
 		if (_shttpd_stat(buf, stp) == 0) {
 			_shttpd_strlcpy(path, buf, maxpath);
 			_shttpd_get_mime_type(c->ctx, s, len, &c->mime_type);
+
+            if ( bufIndex ){
+                strncpy(bufIndex, s, len);
+                bufIndex[len] = 0;
+            }
+
 			return (0);
 		}
 	}
@@ -594,32 +600,31 @@ decide_what_to_do(struct conn *c)
 		_shttpd_send_authorization_request(c);
 	} else
 #endif /* NO_AUTH */
-  if ((route = rho_dispatch(c,path)) != NULL) {
-    union variant callback;
-    callback.v_func = (void (*)(void))rho_serve;
-		_shttpd_setup_embedded_stream(c, callback, route);
-  } else
-	if (c->method == METHOD_PUT) {
-		c->status = _shttpd_stat(path, &st) == 0 ? 200 : 201;
+    if ((route = rho_dispatch(c,path)) != NULL) {
+        union variant callback;
+        callback.v_func = (void (*)(void))rho_serve;
+		    _shttpd_setup_embedded_stream(c, callback, route);
+    } else if (c->method == METHOD_PUT) {
+	    c->status = _shttpd_stat(path, &st) == 0 ? 200 : 201;
 
-    if (c->ch.range._v.v_vec.len > 0) {
-			_shttpd_send_server_error(c, 501,
-			    "PUT Range Not Implemented");
-		} else if ((rc = _shttpd_put_dir(path)) == 0) {
-			_shttpd_send_server_error(c, 200, "OK");
-		} else if (rc == -1) {
-			_shttpd_send_server_error(c, 500, "PUT Directory Error");
-		} else if (c->rem.content_len == 0) {
-			_shttpd_send_server_error(c, 411, "Length Required");
-		} else if ((c->loc.chan.fd = _shttpd_open(path, O_WRONLY | O_BINARY |
-		    O_CREAT | O_NONBLOCK | O_TRUNC, 0644)) == -1) {
-			_shttpd_send_server_error(c, 500, "PUT Error");
-		} else {
-			DBG(("PUT file [%s]", c->uri));
-			c->loc.io_class = &_shttpd_io_file;
-			c->loc.flags |= FLAG_W | FLAG_ALWAYS_READY ;
-		}
-	} else if (c->method == METHOD_DELETE) {
+        if (c->ch.range._v.v_vec.len > 0) {
+		    _shttpd_send_server_error(c, 501,
+		        "PUT Range Not Implemented");
+	    } else if ((rc = _shttpd_put_dir(path)) == 0) {
+		    _shttpd_send_server_error(c, 200, "OK");
+	    } else if (rc == -1) {
+		    _shttpd_send_server_error(c, 500, "PUT Directory Error");
+	    } else if (c->rem.content_len == 0) {
+		    _shttpd_send_server_error(c, 411, "Length Required");
+	    } else if ((c->loc.chan.fd = _shttpd_open(path, O_WRONLY | O_BINARY |
+	        O_CREAT | O_NONBLOCK | O_TRUNC, 0644)) == -1) {
+		    _shttpd_send_server_error(c, 500, "PUT Error");
+	    } else {
+		    DBG(("PUT file [%s]", c->uri));
+		    c->loc.io_class = &_shttpd_io_file;
+		    c->loc.flags |= FLAG_W | FLAG_ALWAYS_READY ;
+	    }
+    } else if (c->method == METHOD_DELETE) {
 		DBG(("DELETE [%s]", c->uri));
 		if (_shttpd_remove(path) == 0)
 			_shttpd_send_server_error(c, 200, "OK");
@@ -627,21 +632,37 @@ decide_what_to_do(struct conn *c)
 			_shttpd_send_server_error(c, 500, "DELETE Error");
 	} else if (get_path_info(c, path, &st) != 0) {
 		_shttpd_send_server_error(c, 404, "Not Found");
-	} else if (S_ISDIR(st.st_mode) && path[strlen(path) - 1] != '/') {
-		(void) _shttpd_snprintf(path, sizeof(path),
-			"Moved Permanently\r\nLocation: %s/", c->uri);
-		_shttpd_send_server_error(c, 301, path);
-	} else if (S_ISDIR(st.st_mode) &&
-	    find_index_file(c, path, sizeof(path) - 1, &st) == -1 &&
-	    !IS_TRUE(c->ctx, OPT_DIR_LIST)) {
-		_shttpd_send_server_error(c, 403, "Directory Listing Denied");
-	} else if (S_ISDIR(st.st_mode) && IS_TRUE(c->ctx, OPT_DIR_LIST)) {
-		if ((c->loc.chan.dir.path = _shttpd_strdup(path)) != NULL)
-			_shttpd_get_dir(c);
-		else
-			_shttpd_send_server_error(c, 500, "GET Directory Error");
-	} else if (S_ISDIR(st.st_mode) && !IS_TRUE(c->ctx, OPT_DIR_LIST)) {
-		_shttpd_send_server_error(c, 403, "Directory listing denied");
+    } else if (S_ISDIR(st.st_mode) ) {//&& path[strlen(path) - 1] != '/') {
+        char bufIndex[50];//Index Name
+
+        if ( path[strlen(path) - 1] != '/' )
+            strcat(path,"/");
+
+        if ( find_index_file(c, path, sizeof(path) - 1, &st, bufIndex) >= 0 )
+        {
+		    (void) _shttpd_snprintf(path, sizeof(path),
+                "Moved Permanently\r\nLocation: %s%s%s", c->uri, 
+                    c->uri[strlen(c->uri) - 1] != '/' ? "/" : "", bufIndex);
+            if ( c->query != 0 && *(c->query) != 0 ){
+                strcat(path,"?");
+                strcat(path,c->query);
+            }
+		    _shttpd_send_server_error(c, 301, path);
+            return;
+        }
+
+        if (S_ISDIR(st.st_mode) &&
+	        //find_index_file(c, path, sizeof(path) - 1, &st) == -1 &&
+	        !IS_TRUE(c->ctx, OPT_DIR_LIST)) {
+		    _shttpd_send_server_error(c, 403, "Directory Listing Denied");
+	    } else if (S_ISDIR(st.st_mode) && IS_TRUE(c->ctx, OPT_DIR_LIST)) {
+		    if ((c->loc.chan.dir.path = _shttpd_strdup(path)) != NULL)
+			    _shttpd_get_dir(c);
+		    else
+			    _shttpd_send_server_error(c, 500, "GET Directory Error");
+	    } else if (S_ISDIR(st.st_mode) && !IS_TRUE(c->ctx, OPT_DIR_LIST)) {
+		    _shttpd_send_server_error(c, 403, "Directory listing denied");
+        }
 #if !defined(NO_CGI)
 	} else if (_shttpd_match_extension(path,
 	    c->ctx->options[OPT_CGI_EXTENSIONS])) {
@@ -663,22 +684,22 @@ decide_what_to_do(struct conn *c)
 			_shttpd_do_ssi(c);
 		}
 #endif /* NO_CGI */
-  } else if ( isindex(c,path) ) {
-    union variant callback;
-    callback.v_func = (void (*)(void))rho_serve_index;
-	_shttpd_setup_embedded_stream(c, callback, _shttpd_strdup(path));
-  } 
+    } else if ( isindex(c,path) ) {
+        union variant callback;
+        callback.v_func = (void (*)(void))rho_serve_index;
+	    _shttpd_setup_embedded_stream(c, callback, _shttpd_strdup(path));
+    } 
 #ifndef __SYMBIAN32__ //This is a bug in loading css in Symbian browser
-  else if (c->ch.ims._v.v_time && st.st_mtime <= c->ch.ims._v.v_time) {
+    else if (c->ch.ims._v.v_time && st.st_mtime <= c->ch.ims._v.v_time) {
 		_shttpd_send_server_error(c, 304, "Not Modified");
-  } 
+    } 
 #endif //__SYMBIAN32__
-  else if ((c->loc.chan.fd = _shttpd_open(path,
+    else if ((c->loc.chan.fd = _shttpd_open(path,
 	    O_RDONLY | O_BINARY, 0644)) != -1) {
 		_shttpd_get_file(c, &st);
-  } else {
+    } else {
 		_shttpd_send_server_error(c, 500, "Internal Error");
-  }
+    }
 }
 
 static int

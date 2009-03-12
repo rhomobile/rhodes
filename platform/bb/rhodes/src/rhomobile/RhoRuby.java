@@ -32,6 +32,7 @@ public class RhoRuby {
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
         GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
         Camera.initMethods(RubyRuntime.CameraClass);
+        WebView.initMethods(RubyRuntime.WebViewClass);
         
 		mainObj = new xruby.ServeME.main();
 		receiver = mainObj.invoke();
