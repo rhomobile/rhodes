@@ -102,7 +102,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         thread.start();                       
     }
 
-    void postUrl(String url, String body, HttpHeaders headers){
+    public void postUrl(String url, String body, HttpHeaders headers){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(url, headers, body.getBytes(), null, this);
         thread.start();                       
     }
