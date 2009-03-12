@@ -168,7 +168,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
    
     private Vector _history;
     
-    private final String _httpRoot = "http://localhost:8080/apps/";
+    private final String _httpRoot = "http://localhost:8080/";
     
     /***************************************************************************
      * Main.

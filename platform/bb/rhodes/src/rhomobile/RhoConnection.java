@@ -22,6 +22,8 @@ import com.xruby.runtime.lang.RhoSupport;
 public class RhoConnection implements HttpConnection {
 	/** Request URI **/
 	URI uri;
+	URI uri_external;
+	
 	/** Method - GET, POST, HEAD **/
 	String method;
     /** Numeric code returned from HTTP response header. */
@@ -42,8 +44,11 @@ public class RhoConnection implements HttpConnection {
 	
 	/** Construct connection using URI **/
     
-    public RhoConnection(URI uri) {
-    	this.uri = uri;
+    public RhoConnection(URI _uri) {
+    	uri = new URI(_uri.toString());
+    	uri_external = _uri;
+    	
+    	uri.setPath("/apps" + uri.getPath());
     }
     
 	public long getDate() throws IOException {
@@ -175,8 +180,8 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public String getURL() {
-		log("getURL: " + uri.toString());
-		return uri.toString();
+		log("getURL: " + uri_external.toString());
+		return uri_external.toString();
 	}
 
 	public void setRequestMethod(String method) throws IOException {
@@ -338,7 +343,16 @@ public class RhoConnection implements HttpConnection {
 	void respondMoved( String location ){
 		responseCode = HTTP_MOVED_PERM;
 		responseMsg = "Moved Permanently";
-		resHeaders.addProperty("Location", location);
+		
+		String strLoc = location;
+		if ( strLoc.startsWith("/apps"))
+			strLoc = strLoc.substring(5);
+		
+		String strQuery = uri.getQueryString();
+		if ( strQuery != null && strQuery.length() > 0 )
+			strLoc += "?" + strQuery;
+		
+		resHeaders.addProperty("Location", strLoc );
 		contentLength = 0;
 	}
 
@@ -377,7 +391,7 @@ public class RhoConnection implements HttpConnection {
 		return "";
 	}
 	
-	static final String[] m_arIndexes = {"index_erb", "index.html", "index.htm"};
+	static final String[] m_arIndexes = {"index_erb.iseq", "index.html", "index.htm"};
 	
 	public static int findIndex(String strUrl){
 		String filename;
@@ -403,7 +417,11 @@ public class RhoConnection implements HttpConnection {
 		
 		for( int i = 0; i < m_arIndexes.length; i++ ){
 			String name = uri.getPath() + slash + m_arIndexes[i];
-			if ( RhoSupport.findClass(name) != null || RhoRuby.loadFile(name) != null ){
+			String nameClass = name;
+			if ( nameClass.endsWith(".iseq"))
+				nameClass = nameClass.substring(0, nameClass.length()-5);
+			
+			if ( RhoSupport.findClass(nameClass) != null || RhoRuby.loadFile(name) != null ){
 				strIndex = name;
 				break;
 			}
@@ -419,8 +437,8 @@ public class RhoConnection implements HttpConnection {
 	protected boolean httpServeFile(String strContType)throws IOException{
 		
 		String strPath = uri.getPath();
-		if ( !strPath.startsWith("/apps") )
-			strPath = "/apps" + strPath; 
+		//if ( !strPath.startsWith("/apps") )
+		//	strPath = "/apps" + strPath; 
 			
 		if ( strContType.equals("application/javascript")){
 			//responseData = RhoRuby.loadFile(strPath);
@@ -454,15 +472,15 @@ public class RhoConnection implements HttpConnection {
 	
 			if( RhoSupport.findClass(strTemp + "controller") != null )
 				return false;
-			
+
 			int nPos = findIndex(uri.getPath());
 			if ( nPos >= 0 ){
-				RubyValue res = RhoRuby.processIndexRequest( 
-						uri.getPath() + (nPos == 0 ? ".iseq" : "") ); //erb-compiled should load from class
+				String url = uri.getPath();// + (nPos == 0 ? ".iseq" : "");
+				RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
 				processResponse(res);
 				return true;
 			}
-	
+			
 			if( httpGetIndexFile() )
 				return true;
 		}

@@ -99,8 +99,11 @@ public class SyncThread implements Runnable {
 				}
 			}
 
+			if ( isStop() )
+				break;
+			
 			// synchronized (sync) {
-			SyncUtil.adapter.initialize(null);
+			//SyncUtil.adapter.initialize(null);
 			System.out.println("SyncEngine is awake..."
 					+ new Date(System.currentTimeMillis()).toString());
 			//printStats();
