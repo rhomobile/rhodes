@@ -25,4 +25,6 @@
 ..\rhodes\src\rhomobile\sync\Tokenizer.java
 ..\rhodes\src\rhomobile\sync\SyncNotifications.java
 ..\rhodes\src\rhomobile\sync\SyncBlob.java
+..\rhodes\src\rhomobile\camera\Camera.java
+..\rhodes\src\rhomobile\camera\CameraScreen.java
 
