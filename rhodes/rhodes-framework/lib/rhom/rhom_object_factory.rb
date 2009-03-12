@@ -157,8 +157,7 @@ module Rhom
                                                               {"source_id"=>get_source_id,
                                                                "object"=>tmp_obj.object,
                                                                "attrib"=>'question',
-                                                               #"value"=>Rho::RhoSupport.url_encode(question),
-                                                               "value"=>question,
+                                                               "value"=>Rho::RhoSupport.url_encode(question),
                                                                "update_type"=>'ask'})
                     SyncEngine::dosync
                   end
