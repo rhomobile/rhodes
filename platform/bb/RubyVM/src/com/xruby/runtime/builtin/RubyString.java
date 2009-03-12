@@ -1305,10 +1305,10 @@ public class RubyString extends RubyBasic {
     }
 
     //@RubyLevelMethod(name="unpack")
-    /*public RubyValue unpack(RubyValue arg) {
+    public RubyValue unpack(RubyValue arg) {
         RubyString format = ((RubyString) arg);
         return ArrayPacker.unpack(toString(), format.toString());
-    }*/
+    }
 
     //RHO_COMMENT
     //@RubyLevelMethod(name="encoding")

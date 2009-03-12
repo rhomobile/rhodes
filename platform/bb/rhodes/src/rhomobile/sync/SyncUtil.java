@@ -104,7 +104,7 @@ public class SyncUtil {
 		long start = 0, duration = 0;
 		String data = null;
 		SyncJSONParser.SyncHeader header = new SyncJSONParser.SyncHeader();
-		int nTry = 0, nTotal = 0;
+		int nTry = 0, nTotal = -1;
 
 		start = System.currentTimeMillis();
 		String session = get_session(source);
@@ -129,6 +129,8 @@ public class SyncUtil {
 			if (data != null) {
 				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
 				int count = list.size();
+				if ( nTotal < 0 )
+					nTotal = 0;
 				nTotal += count;
 				if (count > 0) {
 
