@@ -10,6 +10,12 @@ describe Rhogen::ModelGenerator do
       @generator = Rhogen::ModelGenerator.new('/tmp', {})
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
+  
+  it "should require attributes" do
+    lambda {
+      @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "", 10)
+    }.should raise_error(::Templater::TooFewArgumentsError)
+  end
 
   before do
     @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address")
