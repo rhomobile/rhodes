@@ -87,6 +87,7 @@ public class RubyRuntime {
     public static RubyClass PhonebookClass;
     public static RubyClass PBRecordClass;
     public static RubyClass GeoLocationClass;
+    public static RubyClass CameraClass;    
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -240,6 +241,7 @@ public class RubyRuntime {
         PhonebookClass = RubyAPI.defineClass("Phonebook", RubyRuntime.ObjectClass);
         PBRecordClass = RubyAPI.defineClass("PBRecord", RubyRuntime.ObjectClass);
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);        
+        CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);        
 //      RhoPhonebook.initMethods(PhonebookClass);
         
 //
