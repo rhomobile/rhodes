@@ -274,25 +274,29 @@ public class Jsr75File implements SimpleFile
         this.noFlush = noFlush;
         log(path);
         if (!url.startsWith("file:")) { 
-            if (url.startsWith("/")) { 
+            /*if (url.startsWith("/")) { 
                 url = "file:///" + path;
-            } else { 
+            } else {*/ 
            
             	try{
-	            	String strRhoPath = getRhoPath();
-	            	url = strRhoPath + path;
+	            	url = getRhoPath();
+	            	if ( path.charAt(0) == '/' || path.charAt(0) == '\\' )
+	            		url += path.substring(1);
+	            	else
+	            		url += path;
+	            	
             	} catch (IOException x) { 
                  	log("Exception: " + x.getMessage());
                      throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
                  }              	
-            }
+           // }
         }
         
         try { 
             if (fconn == null) {
                 fconn = (FileConnection)Connector.open(url,Connector.READ_WRITE);
                 // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                if (!fconn.exists()) { 
+                if (!fconn.exists() && !readOnly ) { 
                     fconn.create();  // create the file if it doesn't exist
                 }
             }

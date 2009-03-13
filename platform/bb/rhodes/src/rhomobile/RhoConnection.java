@@ -10,6 +10,9 @@ import java.io.OutputStream;
 
 import javax.microedition.io.HttpConnection;
 
+import org.garret.perst.impl.Jsr75File;
+import org.garret.perst.StorageError;
+
 import rhomobile.location.GeoLocation;
 
 
@@ -41,6 +44,7 @@ public class RhoConnection implements HttpConnection {
     /** Input/Output streams **/
 	private /*ByteArray*/InputStream responseData = null;
 	private ByteArrayOutputStream postData = new ByteArrayOutputStream();
+	private Jsr75File m_file = null;
 	
 	/** Construct connection using URI **/
     
@@ -307,6 +311,13 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public void close() throws IOException {
+		if ( m_file != null ){
+			m_file.close();
+			m_file = null;
+		}else if (responseData != null)
+			responseData.close();
+		
+		responseData = null;
 	}
 
 	public DataOutputStream openDataOutputStream() throws IOException {
@@ -371,7 +382,15 @@ public class RhoConnection implements HttpConnection {
 		contentLength = 0;
 	}
 	
-	static String getContentType( String path ){
+	String getContentType(){
+		String contType = reqHeaders.getProperty("Content-Type");
+		if ( contType == null || contType.length() == 0 )
+			contType = reqHeaders.getProperty("content-type");
+		
+		if ( contType != null && contType.length() > 0 )
+			return contType;
+			
+		String path = uri.getPath();
 		int nPoint = path.lastIndexOf('.');
 		String strExt = "";
 		if ( nPoint > 0 )
@@ -439,7 +458,7 @@ public class RhoConnection implements HttpConnection {
 		String strPath = uri.getPath();
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
-			
+
 		if ( strContType.equals("application/javascript")){
 			//responseData = RhoRuby.loadFile(strPath);
 			//if ( responseData == null )
@@ -448,7 +467,22 @@ public class RhoConnection implements HttpConnection {
 		}
 		else	
 			responseData = RhoRuby.loadFile(strPath);
-	
+
+		if (responseData == null){
+			Jsr75File file = new Jsr75File();
+			
+			try{
+				file.open(strPath, true, true);
+				responseData = file.getInputStream();
+				m_file = file;
+			}catch(StorageError exc){
+				file.close();
+			}catch(IOException exc){
+				file.close();
+			}
+			
+		}
+		
 		if (responseData== null)
 			return false;
 		
@@ -463,7 +497,7 @@ public class RhoConnection implements HttpConnection {
 	
 	protected boolean httpGetFile()throws IOException{
 		
-		String strContType = getContentType(uri.getPath());
+		String strContType = getContentType();
 		if ( strContType.length() == 0 )
 		{
 			String strTemp = uri.getPath();
