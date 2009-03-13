@@ -8,17 +8,28 @@ import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.container.MainScreen;
 
 class CallCameraScreen implements Runnable {
+	public static final int CAMERA_SCREEN = 1;
+	public static final int IMAGE_BROWSER_SCREEN = 2;
+	
 	private String _callback;
-	CallCameraScreen(String callback) {
+	private int _screenType;
+	
+	CallCameraScreen(int screenType, String callback) {
+		_screenType = screenType;
 		_callback = callback;
 	}
 	public void run(){
 		//Initialize the screen.
-        CameraScreen cameraScreen = new CameraScreen(_callback);
+		MainScreen screen;
+		if (_screenType == CAMERA_SCREEN)
+        	screen = new CameraScreen(_callback);
+		else
+			screen = new ImageBrowserScreen(_callback);		
         //Push this screen to display it to the user.
-        UiApplication.getUiApplication().pushScreen( cameraScreen );
+        UiApplication.getUiApplication().pushScreen(screen);
 	}
 }
 
@@ -31,17 +42,18 @@ public class Camera extends RubyBasic {
 	public static RubyValue take_picture(RubyValue arg) {
 		String callback = arg.toStr();
 		
-		System.out.println("Calling take_picture");
-		System.out.println("Callback: " + callback);
-		
-		UiApplication.getUiApplication().invokeLater(new CallCameraScreen(callback));
+		UiApplication.getUiApplication().invokeLater(
+				new CallCameraScreen(CallCameraScreen.CAMERA_SCREEN,callback));
         
 		return RubyConstant.QNIL;
 	}
 
 	public static RubyValue choose_picture(RubyValue arg) {
-//		String callback = arg.toStr();
-		System.out.println("Calling choose_picture");
+		String callback = arg.toStr();
+
+		UiApplication.getUiApplication().invokeLater(
+				new CallCameraScreen(CallCameraScreen.IMAGE_BROWSER_SCREEN,callback));
+
 		return RubyConstant.QNIL;
 	}
 	
