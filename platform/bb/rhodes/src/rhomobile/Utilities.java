@@ -26,7 +26,7 @@ public class Utilities {
 			if ( "localhost".equals(uri.getHost())) {
 				conn = new RhoConnection(uri);
 			} else {
-				//conn = (HttpConnection) Connector.open(url);
+				// conn = (HttpConnection) Connector.open(url);
 				conn = NetworkAccess.connect(url);
 				// conn = NetworkAccess.connect(url);
 			}
@@ -92,4 +92,26 @@ public class Utilities {
 
 		return conn;
 	}
+	
+	public static String replaceAll(String content, String that, String withthat) { 
+		int from = 0; 
+		StringBuffer sb = new StringBuffer(); 
+		int index = -1; 
+		
+		while(true) { 
+			index = content.indexOf(that,from); 
+			if(index!=-1) { 
+				sb = new StringBuffer(); 
+				String upto = content.substring(0,index); 
+				sb.append(upto+withthat); 
+				String lastbit = content.substring(index+that.length(),content.length()); 
+				sb.append(lastbit); 
+				content = sb.toString(); 
+				from = index+that.length(); 
+			} else { 
+				break; 
+			} 
+		} 
+		return content; 
+	} 	
 }

@@ -398,6 +398,10 @@ public class RhoConnection implements HttpConnection {
 		
 		if ( strExt.equals("png") )
 			return "image/png";
+		else if ( strExt.equals("jpeg") )
+			return "image/jpeg";
+		else if ( strExt.equals("jpg") )
+			return "image/jpg";
 		else if ( strExt.equals("js") )
 			return "application/javascript";
 		else if ( strExt.equals("css") )
@@ -470,17 +474,26 @@ public class RhoConnection implements HttpConnection {
 
 		if (responseData == null){
 			Jsr75File file = new Jsr75File();
-			
+			String strFileName = strPath;
+			if ( strFileName.startsWith("/apps") )
+				strFileName = strPath.substring(5);
+			  
 			try{
-				file.open(strPath, true, true);
+				file.open(strFileName, true, true);
 				responseData = file.getInputStream();
+				if (responseData != null) {
+					contentLength = (int) file.length();
+				}
 				m_file = file;
 			}catch(StorageError exc){
 				file.close();
 			}catch(IOException exc){
 				file.close();
+			}			
+		} else {
+			if (responseData != null) {
+				contentLength = responseData.available(); 
 			}
-			
 		}
 		
 		if (responseData== null)
@@ -489,7 +502,6 @@ public class RhoConnection implements HttpConnection {
 		if ( strContType.length() > 0 )
 			resHeaders.addProperty("Content-Type", strContType );
 		
-		contentLength = responseData.available(); 
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 		
 		return true;
