@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import rhomobile.sync.SyncBlob;
 import rhomobile.RhodesApplication;
+import rhomobile.Utilities;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
@@ -410,6 +411,8 @@ public class CameraScreen extends MainScreen {
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 			Jsr75File file = new Jsr75File();
+			boolean error = false;
+			String fname = "";
 			
             try
             {
@@ -425,7 +428,7 @@ public class CameraScreen extends MainScreen {
                     ext += _encodings[_encodingField.getSelectedIndex()].getFormat();
                 }
                 
-            	String fname = makeFileName(ext);
+            	fname = makeFileName(ext);
             	file.open(fname, false, false);
             	
                 //Retrieve the raw image from the VideoControl
@@ -433,19 +436,28 @@ public class CameraScreen extends MainScreen {
             	//Write image data
             	file.getOutStream().write(image,0,image.length);
             	image = null;
-            	
-            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
-            	
+
+            	String root = Jsr75File.getRhoPath();
+            	fname = "/" + fname.substring(root.length());
+            	fname = Utilities.replaceAll(fname,"/","%2F");
             } catch(Exception e) {
-            	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
+            	error = true;
             	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
             } finally {
     			try{
     				file.close();
-    			}catch(Exception exc){}
-    			
-            	app.popScreen( _cameraScreen );            	
+    			}catch(Exception exc){}         	
             }
+
+            if (error) {
+            	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
+            	System.out.println("Callback with error: status=error&message=Error" );
+            } else {            	
+            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
+            	System.out.println("Callback with uri: status=ok&image_uri="+fname);
+            }
+
+        	app.popScreen( _cameraScreen );
 		}
 	}
 	

@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import rhomobile.sync.SyncBlob;
 import rhomobile.RhodesApplication;
+import rhomobile.Utilities;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
@@ -236,28 +237,33 @@ public class ImageBrowserScreen extends MainScreen {
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 			Jsr75File srcFile = new Jsr75File();
 			Jsr75File destFile = new Jsr75File();
-
+			boolean error = false;
+			String fname = "";
+			
             try
             {
             	String imageName = (String)_images.elementAt(_currentImage);
             	int i = imageName.lastIndexOf('.');
                 String ext = imageName.substring(i);
 
-            	String fname = makeFileName(ext);
+            	fname = makeFileName(ext);
             	System.out.println("Selected file new name: " + fname);
 
     			//open file
     			srcFile.open(imageName, false, false);
     			//load image bytes into memory
     			byte raw[] = new byte[(int)srcFile.length()];
+            	srcFile.getInputStream().read(raw);
             	
             	destFile.open(fname, false, false);
             	//Write image data
             	destFile.getOutStream().write(raw,0,raw.length);
             	
-            	//app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
+            	String root = Jsr75File.getRhoPath();
+            	fname = "/" + fname.substring(root.length());
+            	fname = Utilities.replaceAll(fname,"/","%2F");
             } catch(Exception e) {
-            	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
+            	error = true;
             	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
             } finally {
     			try {
@@ -266,9 +272,17 @@ public class ImageBrowserScreen extends MainScreen {
     			try {
     				destFile.close();
     			} catch(Exception exc) {}
-
-            	app.popScreen( _imageBrowserScreen );
             }
+            
+            if (error) {
+            	app.postUrl(_callbackUrl, "status=error&message=Error", headers); 
+            	System.out.println("Callback with error: status=error&message=Error" );
+            } else {            	
+            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers); 
+            	System.out.println("Callback with uri: status=ok&image_uri="+fname);
+            }
+
+        	app.popScreen( _imageBrowserScreen );
 		}
 	}
 
