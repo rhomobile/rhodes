@@ -57,7 +57,7 @@ public class CameraScreen extends MainScreen {
 	public CameraScreen(String callbackUrl)
 	{
 		//
-		_callbackUrl = canonicalizeURL(callbackUrl);
+		_callbackUrl = callbackUrl;
 
 		//A reference to this object, to be used in listeners.
 		_cameraScreen = this;
@@ -82,16 +82,16 @@ public class CameraScreen extends MainScreen {
         }        
 	}
 
-	String canonicalizeURL(String url) {
-		if (!url.startsWith("http://")) {
-			String slash = "/";
-			if (url.startsWith("\\") || url.startsWith("/")) {
-				slash = "";
-			}
-			return "http://localhost:8080" + slash + url;
-		}
-		return url;
-	}
+//	String canonicalizeURL(String url) {
+//		if (!url.startsWith("http://")) {
+//			String slash = "/";
+//			if (url.startsWith("\\") || url.startsWith("/")) {
+//				slash = "";
+//			}
+//			return "http://localhost:8080" + slash + url;
+//		}
+//		return url;
+//	}
     /**
      * Initializes the Player, VideoControl and VideoField.
      */
@@ -388,7 +388,7 @@ public class CameraScreen extends MainScreen {
 	}
 
 	/**
-	 * A listener used for the "Cancel" button.
+	 * A listener used for the "Take picture" button.
 	 */
 	private class SaveListener implements FieldChangeListener
 	{

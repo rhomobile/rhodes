@@ -179,6 +179,25 @@ public class Jsr75File implements SimpleFile
     	return strDirPath;
     }
     
+    public static void listFolder(String uri, Vector result) {
+    	FileConnection fc = null;
+    	try {
+    		fc = (FileConnection)Connector.open(uri,Connector.READ);
+    		Enumeration enumFiles = fc.list("*",true);
+    		while ( enumFiles.hasMoreElements() ) {
+    			result.addElement(uri+"/"+enumFiles.nextElement());
+    		}   		
+    	} catch (IOException x) { 
+        	log("Exception in listFolder: " + x.getMessage());
+        } finally {
+        	if (fc !=null) {
+        		try {
+        			fc.close();
+        		} catch(Exception exc) {}
+        	}
+        }
+    }
+    
     private static void deleteFilesInFolder(FileConnection fcFolder){
     	
     	try{
