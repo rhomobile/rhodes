@@ -105,18 +105,21 @@ public class SyncUtil {
 		String data = null;
 		SyncJSONParser.SyncHeader header = new SyncJSONParser.SyncHeader();
 		int nTry = 0, nTotal = -1;
+		boolean repeat = true;
 
 		start = System.currentTimeMillis();
 		String session = get_session(source);
 
 		do {
 			String fetch_url = source.get_sourceUrl() +
-					((params != null && params.length() > 0) ? "/ask" : "") +
+					((params != null && params.length() > 0) ? SyncConstants.SYNC_ASK_ACTION : "") +
 					SyncConstants.SYNC_FORMAT +
 					"&client_id=" + client_id
 					+ "&p_size=" + SyncConstants.SYNC_PAGE_SIZE;
 			if (params != null && params.length() > 0) {
 				fetch_url += "&question=" + params;
+				// Don't repeat if we're calling ask method
+				repeat = false;
 			}
 			if (header._token.length() > 0)
 				fetch_url += "&ack_token=" + header._token;
@@ -159,7 +162,7 @@ public class SyncUtil {
 			} else {
 				nTry++;
 			}
-		} while (header._count > 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT);
+		} while (header._count > 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT && repeat);
 
 		duration = (System.currentTimeMillis() - start) / 1000L;
 		updateSourceSyncStatus(source, inserted, deleted, duration, success);

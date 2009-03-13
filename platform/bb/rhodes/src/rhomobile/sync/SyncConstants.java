@@ -29,6 +29,8 @@ public class SyncConstants {
 	/** The Constant SYNC_FORMAT. */
 	public static final String SYNC_FORMAT = "?format=json";
 
+	public static final String SYNC_ASK_ACTION = "/ask";
+	
 	// Table Names
 	/** The Constant OBJECTS_TABLE. */
 	public static final String OBJECTS_TABLE = "object_values";
