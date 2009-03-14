@@ -214,15 +214,19 @@ public class ImageBrowserScreen extends MainScreen {
 	 */
 	private class SelectListener implements FieldChangeListener
 	{
-		private String makeFileName(String strExt)throws IOException {
+		private String makeFileName(String ext)throws IOException {
 
-			String fName = SyncBlob.makeBlobFolderName();
+			String fullname = SyncBlob.makeBlobFolderName();
 			SimpleDateFormat format =
 				new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
-			fName += "image_" + format.format(new Date()) + strExt;
+			
+			String name = format.format(new Date());
+			name = Utilities.replaceAll(name,"/","_");
+			fullname += "image_" + name + ext;
 
-			return fName;
+			return fullname;
 		}
+		
 	    /**
 	     * Save file, send notification, and return to the main camera screen.
 	     */
