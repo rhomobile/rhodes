@@ -257,7 +257,7 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 		imageuri = wce_wctomb(image_name);
 		int len = 256+strlen(imageuri);
 		message = (char*) malloc(len);
-		sprintf(message,"status=ok&image_uri=%%2Fshared%%2Fdb-files%%2F%s",imageuri);
+		sprintf(message,"status=ok&image_uri=%%2Fpublic%%2Fdb-files%%2F%s",imageuri);
 	} else {
 		char* status_message = (status==S_FALSE?"User canceled operation":"Error");
 		int len = 256+strlen(status_message);
