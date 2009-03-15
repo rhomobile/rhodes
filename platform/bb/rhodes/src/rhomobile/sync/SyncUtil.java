@@ -147,7 +147,7 @@ public class SyncUtil {
 						if (dbOp != null) {
 							
 							if (dbOp.equalsIgnoreCase("insert")) {
-								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
 								
 								syncObj.insertIntoDatabase();
 								inserted++;

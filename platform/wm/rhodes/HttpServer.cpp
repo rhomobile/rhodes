@@ -66,7 +66,7 @@ CHttpServer::~CHttpServer(void)
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
   if ( m_szRhobundleReloadUrl )
-	  delete m_szRhobundleReloadUrl;
+	  free( m_szRhobundleReloadUrl );
 #endif
 }
 
@@ -88,7 +88,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
   InitStartandOptionPages();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	m_szRhobundleReloadUrl = callGetRhobundleZipUrl();
+	m_szRhobundleReloadUrl = str_assign( callGetRhobundleZipUrl() );
 #endif
     ATLTRACE(L"Starting SYNC\n");
 

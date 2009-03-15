@@ -273,30 +273,46 @@ VALUE RhoPreparePath(VALUE path){
 	return path;
 }
 
+static void Init_RhoLog();
+static void Init_RhoBlobs();
 void Init_RhoSupport()
 {
     rb_define_global_function("require", rb_require_compiled, 1);
     rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
     rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
 
+    Init_RhoLog();
+    //Init_RhoBlobs();
+}
+
+static void Init_RhoBlobs()
+{
+  VALUE path = __rhoGetCurrentDir();
+  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("blobs"));
+
+  if ( rb_funcall(rb_cDir, rb_intern("exist?"), 1, path)==Qfalse )
+    rb_funcall(rb_cDir, rb_intern("mkdir"), 1, path);
+
+}
+
+static void Init_RhoLog()
+{
+  VALUE path = __rhoGetCurrentDir();
+  VALUE stdioPath, exist, logio;
+  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("rhologpath.txt"));
+  exist = rb_funcall(rb_cFile, rb_intern("exist?"), 1, path);
+  if ( exist == Qtrue ){
+    stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
+    if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
     {
-      VALUE path = __rhoGetCurrentDir();
-      VALUE stdioPath, exist, logio;
-      rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("rhologpath.txt"));
-      exist = rb_funcall(rb_cFile, rb_intern("exist?"), 1, path);
-      if ( exist == Qtrue ){
-        stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
-        if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
-        {
-          //freopen( RSTRING_PTR(stdioPath), "w", stdout );
-          char* szPath = RSTRING_PTR(stdioPath);
-          int len = RSTRING_LEN(stdioPath);
-		  logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w+"));
-          if ( logio != 0 && logio != Qnil ){
-			  rb_gv_set("$stdout", logio);
-			  rb_gv_set("$stderr", logio);
-          }
-        }
+      //freopen( RSTRING_PTR(stdioPath), "w", stdout );
+      char* szPath = RSTRING_PTR(stdioPath);
+      int len = RSTRING_LEN(stdioPath);
+	  logio = rb_funcall(rb_cFile, rb_intern("new"), 2, stdioPath, rb_str_new2("w+"));
+      if ( logio != 0 && logio != Qnil ){
+		  rb_gv_set("$stdout", logio);
+		  rb_gv_set("$stderr", logio);
       }
     }
+  }
 }

@@ -158,6 +158,10 @@
 #define PENDING_LOCK    3
 #define EXCLUSIVE_LOCK  4
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 ** File Locking Notes:  (Mostly about windows but also some info for Unix)
 **
@@ -355,5 +359,9 @@ sqlite3_vfs *sqlite3OsDefaultVfs(void);
  int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize);
 
  int winFileControl(sqlite3_file *id, int op, void *pArg);
+
+#ifdef __cplusplus
+}  /* End of the 'extern "C"' block */
+#endif
 
 #endif /* _SQLITE_OS_H_ */

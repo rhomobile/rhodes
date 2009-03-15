@@ -51,6 +51,7 @@ typedef struct {
 	char*			_value;
 	char*			_update_type;
     sqlite_uint64   _token;
+    char*			_type;
 } SyncObject;
 
 typedef SyncObject* pSyncObject;
@@ -62,7 +63,7 @@ pSyncObject SyncObjectCreate();
 /* Initialize sync object with values */
 pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key, 
 									   char *attrib, int source_id, char *object, 
-									   char *value, char *update_type);
+									   char *value, char *update_type, char* type);
 	
 pSyncObject SyncObjectCopy(pSyncObject new_object);
 int exists_in_database(pSyncObject ref);

@@ -75,14 +75,13 @@ public class SyncJSONParser {
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
 					newObject.set_token(header._token);
 
-					/*
-					if ( i == 0 ){
-						newObject.set_type("blob.url");
-						newObject.setValue("http://img.lenta.ru/news/2009/03/11/acid/picture.jpg");
-						newObject.setUpdateType("create");
-					}
-					*/
 					
+					/*if ( i == 0 ){
+						newObject.set_type("blob.file");
+						newObject.setValue("picture.jpg");
+						newObject.setUpdateType("create");
+					}*/
+										
 					list.add(newObject);
 				}else if ( element.has("count") ){
 					header._count = element.getInt("count");

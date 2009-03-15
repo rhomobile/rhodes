@@ -12,18 +12,18 @@ import rhomobile.db.PerstLiteAdapter;
 import rhomobile.db.PerstLiteAdapter.Table_base1;
 
 public class SyncBlob {
-
-	public static final int SYNC_NONE = 0;
+/*
+	public static final int SYNC_STAGE_NONE = 0;
 	public static final int SYNC_STAGE = 1;
 	public static final int POSTSYNC_STAGE = 2;
 	public static final int REQUEST_STAGE = 3;
-
+*/
 	public static String makeBlobFolderName()throws IOException{
 		String fName = Jsr75File.getDirPath("blobs");
 		
 		return fName;
 	}
-	
+/*	
 	private static String makeFileName(SyncObject syncObj)throws IOException{
 		
 		String fName = makeBlobFolderName();
@@ -116,7 +116,7 @@ public class SyncBlob {
 			SyncManager.closeConnection();
 		}
 		
-	}
+	}*/
 
 	public static ArrayList extractBlobs(ArrayList list){
 		ArrayList listBlobs = new ArrayList();
@@ -142,7 +142,7 @@ public class SyncBlob {
 	
 	public static int pushRemoteBlobs(SyncSource source, ArrayList list, String clientId) {
 		
-		int success = 0;
+		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		for (int i = 0; i < list.size() && success != SyncConstants.SYNC_PUSH_CHANGES_ERROR; i++) {
 			SyncOperation op = (SyncOperation) list.get(i);
 			SyncObject obj = op.get_object();
@@ -152,13 +152,16 @@ public class SyncBlob {
 			try {
 				file.open(obj.getValue(), true, true);
 				
-				// Construct the post url
-				String url = source.get_sourceUrl() + "/" + op.get_operation()
-						+ "?client_id=" + clientId + "&" + op.get_postBody();// + "&type=blob";
-				
-				String session = SyncUtil.get_session(source);
-				success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true,
-						"application/octet-stream" );
+				if ( file.length() > 0 )
+				{
+					// Construct the post url
+					String url = source.get_sourceUrl() + "/" + op.get_operation()
+							+ "?client_id=" + clientId + "&" + op.get_postBody();// + "&type=blob";
+					
+					String session = SyncUtil.get_session(source);
+					success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true,
+							"application/octet-stream" );
+				}
 			} catch (IOException e) {
 				System.out.println("There was an error pushing changes: "
 						+ e.getMessage());
@@ -200,8 +203,8 @@ public class SyncBlob {
 			if ( !obj.getTypeField().equals("blob.file") )
 				return;
 			
-			if ( obj.getUpdateTypeField().equals("create") || obj.getUpdateTypeField().equals("update") )
-				return;
+//			if ( obj.getUpdateTypeField().equals("create") || obj.getUpdateTypeField().equals("update") )
+//				return;
 			
 			String url = obj.getValueField();
 			if ( url == null || url.length() == 0 )

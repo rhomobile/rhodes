@@ -1019,6 +1019,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\syncengine\SyncBlob.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\syncengine\SyncBlob.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\syncengine\SyncEngine.c"
 				>
 			</File>

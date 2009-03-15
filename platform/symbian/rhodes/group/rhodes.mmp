@@ -71,6 +71,7 @@ SOURCE			SyncObject.c
 SOURCE			SyncJSONReader.c
 SOURCE			source.c
 SOURCE			Notifications.cpp
+SOURCE			SyncBlob.c
 
 SOURCEPATH 		..\..\..\shared\json
 SOURCE			arraylist.c

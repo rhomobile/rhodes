@@ -99,8 +99,27 @@ void set_sync_post_body(pSyncOperation op) {
 		strcat(target, buffer);
 	} 
 	
-	/* check if value exists */
-	if (op->_sync_object->_value) {
+    if ( op->_sync_object->_type && strcmp(op->_sync_object->_type,"blob.file") == 0 ){
+        char* szPath = (char *)op->_sync_object->_value;
+        if ( szPath ){
+            char* szName = strrchr(szPath,'/');
+            if ( !szName )
+                szName = strrchr(szPath,'\\');
+            if ( szName )
+                szName++;
+            else
+                szName = szPath;
+
+	        strcat(target, "&");
+	        sprintf(buffer, attr_format, "value", szName );
+	        strcat(target, buffer);
+        }
+
+		strcat(target, "&");
+		sprintf(buffer, attr_format, "type", "blob");
+		strcat(target, buffer);
+
+    }else if (op->_sync_object->_value) {
 		strcat(target, "&");
 		sprintf(buffer, attr_format,
 				"value", (char *)op->_sync_object->_value);
@@ -112,39 +131,41 @@ void set_sync_post_body(pSyncOperation op) {
 }
 
 /* Retrieves the current list of objects for remote processing */
-int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *type) {
+int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_count, pSource source, char *op_type) {
 	pSyncOperation current_op;
 	int i,count = 0;
 
   lock_sync_mutex();	
 
-	prepare_db_statement("SELECT attrib, source_id, object, value, update_type \
+	prepare_db_statement("SELECT attrib, source_id, object, value, type \
 						 FROM object_values where source_id=? and update_type =?",
 						 database,
 						 &op_list_select_statement);
 	sqlite3_bind_int(op_list_select_statement, 1, source->_source_id);
-	sqlite3_bind_text(op_list_select_statement, 2, type, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(op_list_select_statement, 2, op_type, -1, SQLITE_TRANSIENT);
 	/* Step through each row and create the sync operation value */
 	while(sqlite3_step(op_list_select_statement) == SQLITE_ROW) {
-		char *tmp_operation,*tmp_attrib,*tmp_object,*tmp_value;
+		char *tmp_operation,*tmp_attrib,*tmp_object,*tmp_value, *tmp_type;
 		int tmp_source_id;
 		pSyncObject tmp_sync_object;
 
 		if (count >= max_count) { break; }
-		if (strcmp(type, "create") == 0){
+		if (strcmp(op_type, "create") == 0){
 			tmp_operation = UPDATE_TYPE_CREATE;
-		} else if (strcmp(type, "update") == 0) {
+		} else if (strcmp(op_type, "update") == 0) {
 			tmp_operation = UPDATE_TYPE_UPDATE;
-		} else if (strcmp(type, "delete") == 0) {
+		} else if (strcmp(op_type, "delete") == 0) {
 			tmp_operation = UPDATE_TYPE_DELETE;
 		}
 		tmp_attrib = (char *)sqlite3_column_text(op_list_select_statement, 0);
 		tmp_source_id = (int)sqlite3_column_int(op_list_select_statement, 1);
 		tmp_object = (char *)sqlite3_column_text(op_list_select_statement, 2);
 		tmp_value = (char *)sqlite3_column_text(op_list_select_statement, 3);
+        tmp_type = (char *)sqlite3_column_text(op_list_select_statement, 4);
+
 		tmp_sync_object = (pSyncObject)SyncObjectCreateWithValues(NULL, -1, tmp_attrib, 
 																  tmp_source_id, tmp_object, 
-																  tmp_value, type);
+																  tmp_value, op_type, tmp_type);
 		
 		current_op = (pSyncOperation)SyncOperationCreate(tmp_sync_object, source->_source_url, tmp_operation);
 		list[count] = current_op;
@@ -181,6 +202,10 @@ void remove_op_list_from_database(pSource source, sqlite3 *database, char *type)
 
 void free_op_list(pSyncOperation *list, int available) {
 	int j;
+
+    if ( !list )
+        return;
+
 	/* Free up our op_list */
 	for(j = 0; j < available; j++) {
 		SyncOperationRelease(list[j]);

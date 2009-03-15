@@ -24,6 +24,7 @@
 #include "Utils.h"
 #include "SyncOperation.h"
 #include "SyncEngine.h"
+#include "SyncBlob.h"
 
 /* Database access statements */
 static sqlite3_stmt *insert_statement = NULL;
@@ -67,12 +68,13 @@ pSyncObject SyncObjectCreate() {
 	sync->_db_operation = NULL;
 	sync->_primary_key = 0;
     sync->_token = 0;
+    sync->_type = NULL;
 	return sync;
 }
 
 pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key, 
 									  char *attrib, int source_id, char *object, 
-									  char *value, char *update_type) {
+									  char *value, char *update_type, char* type) {
 	pSyncObject sync;
 	sync = malloc(sizeof(SyncObject));
 	sync->_database = db;
@@ -84,6 +86,7 @@ pSyncObject SyncObjectCreateWithValues(sqlite3* db, int primary_key,
 	sync->_update_type = str_assign(update_type);
     sync->_db_operation = NULL;
     sync->_token = 0;
+    sync->_type = str_assign(type);
 	return sync;
 }
 
@@ -98,6 +101,7 @@ pSyncObject SyncObjectCopy(pSyncObject new_object) {
 	sync->_value = str_assign(new_object->_value);
 	sync->_update_type = str_assign(new_object->_update_type);
     sync->_token = new_object->_token;
+    sync->_type = str_assign(new_object->_type);
 	return sync;
 }
 
@@ -138,16 +142,18 @@ int insert_into_database(pSyncObject ref) {
 		lock_sync_mutex();	
 
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
-							 update_type,token) VALUES(?,?,?,?,?,?,?)",
+							 update_type,token,type) VALUES(?,?,?,?,?,?,?,?)",
 							 ref->_database,
 							 &insert_statement);
 		sqlite3_bind_int(insert_statement, 1, ref->_primary_key);
 		sqlite3_bind_text(insert_statement, 2, ref->_attrib, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_int(insert_statement, 3, ref->_source_id);
         sqlite3_bind_text(insert_statement, 4, ref->_object, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(insert_statement, 5, ref->_value, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert_statement, 5, ref->_value, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_statement, 6, ref->_update_type, -1, SQLITE_TRANSIENT);
         sqlite3_bind_int64(insert_statement, 7, ref->_token );
+		sqlite3_bind_text(insert_statement, 8, ref->_type, -1, SQLITE_TRANSIENT);
+
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
 			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
@@ -226,6 +232,10 @@ void SyncObjectRelease(pSyncObject ref) {
 		}
         if(ref->_db_operation)
             free(ref->_db_operation);
+
+		if(ref->_type) {
+			free(ref->_type);
+		}
 
 		free(ref);
 	}

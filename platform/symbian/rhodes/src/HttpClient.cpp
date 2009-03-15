@@ -122,7 +122,8 @@ void CHttpClient::ConstructL()
 		//iTransObs->SetVerbose( ETrue );
 	}
 
-void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize)
+void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, 
+		const TUint8* aBody, TInt aBodySize, char* szContentType)
 {
 	iNotUsingFile = ETrue;
 	
@@ -148,7 +149,7 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrl
 	if ( iTransObs->Verbose() )
 		iTransObs->Console()->Printf(_L("InvokeHttpMethodL:\n"));
 	
-	InvokeHttpMethodL(aCommand);
+	InvokeHttpMethodL(aCommand, szContentType);
 	
 	iTransObs->SetUsingFile(ETrue); //enable by default
 	
@@ -163,7 +164,7 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrl
 }
 
 //Invoke http method
-void CHttpClient::InvokeHttpMethodL(TInt aCommand)
+void CHttpClient::InvokeHttpMethodL(TInt aCommand, char* szContentType)
 	{
 		RStringF method;
 		iHasARequestBody = EFalse;
@@ -226,6 +227,12 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand)
 				
 				// Add headers appropriate to all methods
 				SetHeaderL(hdr, HTTP::EUserAgent, KUserAgent);
+				
+				if ( szContentType ){
+					TPtrC8 ptr8((const TUint8*)szContentType);
+					SetHeaderL(hdr, HTTP::EContentType, ptr8);
+				}
+				
 				//SetHeaderL(hdr, HTTP::ECookie, KAccept);
 				//SetHeaderL(hdr, HTTP::EConnection, KConnection);
 				

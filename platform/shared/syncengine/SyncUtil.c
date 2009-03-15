@@ -6,9 +6,10 @@
 #include "Constants.h"
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
+#include "SyncBlob.h"
 
 extern char* fetch_remote_data(char *url);
-extern int push_remote_data(char* url, char* data, size_t data_size);
+extern int push_remote_data(char* url, char* data, size_t data_size, char* contentType);
 extern void delete_db_session(const char *url_string);
 extern char *get_database();
 extern char *get_client_id();
@@ -193,6 +194,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 						        /*printf("Inserting record %i - %s - %s: %s\n", 
 							           list[j]->_primary_key, list[j]->_object, 
 							           list[j]->_attrib, list[j]->_value);*/
+
 						        insert_into_database(list[j]);
 						        size_inserted++;
 					        } 
@@ -280,10 +282,10 @@ int push_remote_changes(pSyncOperation *list, int size) {
 		}
 	}
 	
-	retval = push_remote_data(list[0]->_uri,data,data_size);
+	retval = push_remote_data(list[0]->_uri,data,data_size,"application/x-www-form-urlencoded");
 	free(data);
 	
-	return retval ? SYNC_PUSH_CHANGES_ERROR : SYNC_PUSH_CHANGES_OK;
+    return retval;// ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
 }
 
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {

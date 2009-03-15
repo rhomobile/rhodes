@@ -58,6 +58,7 @@
 #include <sys/types.h>
 #include <libc/sys/unistd.h>
 
+#include "Utils.h" //From syncengine
 TUint32 gSelectedConnectionId = -1;
 
 extern "C"
@@ -152,7 +153,7 @@ CRhodesAppUi::~CRhodesAppUi()
 		iAppManager = NULL;
 		}
 	if ( szRhoBundleZipUrl )
-		delete szRhoBundleZipUrl;
+		free( szRhoBundleZipUrl );
 #endif	
 	}
 
@@ -256,6 +257,7 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 		case EHelp:
 			{
 
+			//login("lars", "password");
 			CArrayFix<TCoeHelpContext>* buf = CCoeAppUi::AppHelpContextL();
 			HlpLauncher::LaunchHelpApplicationL(iEikonEnv->WsSession(), buf);
 			}
@@ -359,7 +361,7 @@ void CRhodesAppUi::DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane)
 		if ( iRhoBundleReloadEnabled )
 		{
 			iRhoBundleReloadEnabled = false;
-			szRhoBundleZipUrl = callGetRhobundleZipUrl();
+			szRhoBundleZipUrl = str_assign( callGetRhobundleZipUrl() );
 		}
 
 		if ( !szRhoBundleZipUrl )

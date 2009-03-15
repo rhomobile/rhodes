@@ -112,7 +112,25 @@ public class SyncOperation {
 			this.filterAttrib(body, "object", object.getObject());
 		}
 
-		if ( object.get_type() != null && object.get_type().startsWith("blob")){
+		if ( object.get_type() != null && object.get_type().equals("blob.file"))
+		{
+			String strPath = object.getValue(); 
+			
+			if ( strPath != null ){
+				int nSlash = strPath.lastIndexOf('/');
+				String fileName = "";
+				if ( nSlash < 0 )
+					nSlash = strPath.lastIndexOf('\\');
+				
+				if ( nSlash >= 0 )
+					fileName = strPath.substring(nSlash+1);
+				else
+					fileName = strPath;
+						
+				body.append("&");
+				this.filterAttrib(body, "value", fileName);
+			}
+			
 			body.append("&");
 			this.filterAttrib(body, "type", "blob");
 		}else if (object.getValue() != null) {
