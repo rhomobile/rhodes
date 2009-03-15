@@ -174,13 +174,20 @@ int push_remote_data(char* url, char* data, size_t data_size,char* contentType) 
 		NSError *error = nil;
 		NSHTTPURLResponse *response;
 		NSString *linkString = [[NSString alloc] initWithUTF8String:url];
-		NSString *postBody = [[NSString alloc] initWithUTF8String:data];
+		NSMutableData *postBody = [NSMutableData dataWithBytes:data length:data_size];
+		int nlen = [postBody length];
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setHTTPMethod:@"POST"];
+		
+		if (contentType){
+			NSString *temp = [[NSString alloc] initWithUTF8String:contentType];
+			[request setValue:temp forHTTPHeaderField:@"Content-Type"];
+		}
+		
 		if (session) {
 			[request setValue:session forHTTPHeaderField:@"Cookie"];
 		}
-		[request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
+		[request setHTTPBody:postBody];
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) {
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
