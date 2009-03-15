@@ -41,6 +41,8 @@
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
 		46F854B60EE9A61F00718F10 /* Source.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F854B40EE9A61F00718F10 /* Source.c */; };
 		46F854B70EE9A61F00718F10 /* Source.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F854B50EE9A61F00718F10 /* Source.h */; };
+		5C9542FC0F6D7E2F0035C51B /* SyncBlob.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C9542FA0F6D7E2F0035C51B /* SyncBlob.c */; };
+		5C9542FD0F6D7E2F0035C51B /* SyncBlob.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9542FB0F6D7E2F0035C51B /* SyncBlob.h */; };
 		F563D5C10EA82D820062DA57 /* SyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F563D5BF0EA82D820062DA57 /* SyncManager.h */; };
 		F563D5C20EA82D820062DA57 /* SyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D5C00EA82D820062DA57 /* SyncManager.m */; };
 		F5B8F8260F4101FB00C9AF85 /* Notifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5B8F8250F4101FB00C9AF85 /* Notifications.cpp */; };
@@ -84,6 +86,8 @@
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
 		46F854B40EE9A61F00718F10 /* Source.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Source.c; sourceTree = "<group>"; };
 		46F854B50EE9A61F00718F10 /* Source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Source.h; sourceTree = "<group>"; };
+		5C9542FA0F6D7E2F0035C51B /* SyncBlob.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SyncBlob.c; sourceTree = "<group>"; };
+		5C9542FB0F6D7E2F0035C51B /* SyncBlob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncBlob.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhosynclib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhosynclib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F563D5BF0EA82D820062DA57 /* SyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncManager.h; sourceTree = SOURCE_ROOT; };
 		F563D5C00EA82D820062DA57 /* SyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncManager.m; sourceTree = SOURCE_ROOT; };
@@ -133,6 +137,8 @@
 		46E921090E9BF3E700F14AC8 /* syncengine */ = {
 			isa = PBXGroup;
 			children = (
+				5C9542FA0F6D7E2F0035C51B /* SyncBlob.c */,
+				5C9542FB0F6D7E2F0035C51B /* SyncBlob.h */,
 				F5B8F8250F4101FB00C9AF85 /* Notifications.cpp */,
 				46F854B40EE9A61F00718F10 /* Source.c */,
 				46F854B50EE9A61F00718F10 /* Source.h */,
@@ -219,6 +225,7 @@
 				F563D5C10EA82D820062DA57 /* SyncManager.h in Headers */,
 				4672CEF40EBA65D500E028F0 /* SyncUtil.h in Headers */,
 				46F854B70EE9A61F00718F10 /* Source.h in Headers */,
+				5C9542FD0F6D7E2F0035C51B /* SyncBlob.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +287,7 @@
 				4672CEF30EBA65D500E028F0 /* SyncUtil.c in Sources */,
 				46F854B60EE9A61F00718F10 /* Source.c in Sources */,
 				F5B8F8260F4101FB00C9AF85 /* Notifications.cpp in Sources */,
+				5C9542FC0F6D7E2F0035C51B /* SyncBlob.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
