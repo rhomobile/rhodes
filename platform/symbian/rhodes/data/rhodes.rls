@@ -34,6 +34,8 @@
 
 #define qtn_sync "Sync"
 
+#define qtn_options "Options"
+
 #define qtn_reload_rhobundle "Reload RhoBundle"
 
 #define qtn_loc_resource_file_1 "\\resource\\apps\\rhodes"

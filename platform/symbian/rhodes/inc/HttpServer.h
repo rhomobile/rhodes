@@ -76,6 +76,7 @@ public:
 	 */
 	TInt Execute(); 
 
+	struct shttpd_ctx* GetHttpdContext();
 private:
 
 	/**

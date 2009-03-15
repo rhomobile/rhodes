@@ -37,14 +37,21 @@
 
 #include "stat/stat.h"
 
+CHttpServer* g_http_server = NULL; 
+
 extern "C" 
 {
 	struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
 	void shttpd_fini(struct shttpd_ctx *);
 	void shttpd_poll(struct shttpd_ctx *, int milliseconds);
 	int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
+	const char* shttpd_get_index_names(struct shttpd_ctx *ctx);
+	
 	void shutdown_poll(struct shttpd_ctx *);	
 	void rb_gc(void); 
+	char* rho_resolve_url(char* url, const char* root,const char *index_names);
+
+	const char* RhoGetRootPath();
 	
 	int g_need_launch_gc = 0;
 }
@@ -88,6 +95,7 @@ CHttpServer* CHttpServer::NewL()
 
 void CHttpServer::ConstructL()
 	{
+		g_http_server = this;
 		//initialize shttpd
 		//InitHttpServer();
 		
@@ -235,3 +243,20 @@ void CHttpServer::InitHttpServer()
 	  	
 //	  	shttpd_set_option(ctx, "root", APPS_PATH);
 	}
+
+struct shttpd_ctx* CHttpServer::GetHttpdContext()
+	{
+		return ctx;
+	}
+
+extern "C" char* HTTPResolveUrl(char* url) {
+	char* ret = NULL;
+	if (g_http_server) {
+		struct shttpd_ctx* ctx = g_http_server->GetHttpdContext();
+		char httproot[1024];
+		const char *rootpath = RhoGetRootPath();
+		sprintf(httproot,"%sapps",rootpath);
+		ret = rho_resolve_url(url, httproot, shttpd_get_index_names(ctx));
+	}
+	return ret?ret:(char*)"";
+}
