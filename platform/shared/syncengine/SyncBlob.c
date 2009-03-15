@@ -59,6 +59,53 @@ int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync);
 int sqlite3OsClose(sqlite3_file *pId);
 #endif
 
+#ifndef __APPLE__
+static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
+    sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
+    int nFlagsOut = 0;
+    sqlite3_file *pFile = (sqlite3_file *)calloc(pVfs->szOsFile,1);
+
+    int rc = sqlite3OsOpen(pVfs,fName,pFile,SQLITE_OPEN_READONLY,&nFlagsOut);
+    if ( rc == SQLITE_OK ){
+        sqlite_int64 nFileSize = 0;
+        rc = sqlite3OsFileSize(pFile,&nFileSize);
+        if ( rc == SQLITE_OK && nFileSize > 0 ){
+            char* buffer = (char*)malloc((int)nFileSize);
+
+            rc = sqlite3OsRead(pFile,buffer,(int)nFileSize,0);
+            if ( rc == SQLITE_OK ){
+                *resbuffer = buffer;
+                *resnFileSize = (int)nFileSize;
+            }
+            else
+                free(buffer);
+        }
+
+        sqlite3OsClose(pFile);
+    }
+
+    free(pFile);
+
+    return rc == SQLITE_OK ? 1 : 0;
+}
+
+static int rhoDeleteFile( char* pFilePath ){
+    int rc = SQLITE_OK;
+    if ( pFilePath && *pFilePath ){
+        sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
+        rc = sqlite3OsDelete(pVfs, pFilePath, 0);
+    }
+
+    return rc == SQLITE_OK ? 1 : 0;
+}
+#else
+static int rhoDeleteFile( char* pFilePath ){
+    return 0;
+}
+static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
+    return 0;
+}
+#endif //__APPLE__
 /*
 static char* makeFileName(pSyncObject ref, char* buffer)
 {
@@ -195,32 +242,20 @@ int SyncBlob_pushRemoteBlobs(pSyncOperation *list, int size)
     for( i = 0; i < size && result == SYNC_PUSH_CHANGES_OK; i++ )
     {
         char* fName = list[i]->_sync_object->_value;
+        char* buffer = 0;
+        int nFileSize = 0;
+        int rc = rhoReadFile(fName, &buffer, &nFileSize );
 
-        sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
-        int nFlagsOut = 0;
-        sqlite3_file *pFile = (sqlite3_file *)calloc(pVfs->szOsFile,1);
+        if ( rc == 1 && nFileSize && buffer){
 
-        int rc = sqlite3OsOpen(pVfs,fName,pFile,SQLITE_OPEN_READONLY,&nFlagsOut);
-        if ( rc == SQLITE_OK ){
-            sqlite_int64 nFileSize = 0;
-            rc = sqlite3OsFileSize(pFile,&nFileSize);
-            if ( rc == SQLITE_OK && nFileSize > 0 ){
-                char* buffer = (char*)malloc((int)nFileSize);
+            sprintf(url_string, "%s&%s", list[i]->_uri, list[i]->_post_body );
 
-                rc = sqlite3OsRead(pFile,buffer,(int)nFileSize,0);
-                if ( rc == SQLITE_OK ){
+            /*result =*/ push_remote_data( url_string, buffer, nFileSize, "application/octet-stream" );
 
-                    sprintf(url_string, "%s&%s", list[i]->_uri, list[i]->_post_body );
-
-                    /*result =*/ push_remote_data( url_string, buffer, (int)nFileSize, "application/octet-stream" );
-                }
-                free(buffer);
-            }
-
-            sqlite3OsClose(pFile);
         }
 
-        free(pFile);
+        if ( buffer )
+            free(buffer);
     }
 
     return result;
@@ -237,9 +272,6 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     type = (char*)sqlite3_value_text(*(ppArgs+1));
     if ( type && strcmp(type,"blob.file") == 0 ){
         char* pFilePath = (char*)sqlite3_value_text(*(ppArgs));
-        if ( pFilePath && *pFilePath ){
-            sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
-            rc = sqlite3OsDelete(pVfs, pFilePath, 0);
-        }
+        rc = rhoDeleteFile(pFilePath);
     }
 }
