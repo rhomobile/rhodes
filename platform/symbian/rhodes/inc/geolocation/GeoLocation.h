@@ -24,6 +24,7 @@
 #ifndef GEOLOCATION_H
 #define GEOLOCATION_H
 
+#ifdef SYM_GEOLOCATION
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
@@ -85,5 +86,6 @@ private:
 	HBufC* iAppName;
 	TRequestStatus iStatus;
 	};
+#endif
 
 #endif // GEOLOCATION_H

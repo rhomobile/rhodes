@@ -31,6 +31,7 @@ enum TRhodesIds
 	EAbout,
 	EStat,
 	ESync,
+	EOptions,
 	EReloadRhobundle,
 	ECmdAppNavigate,
     ECmdAppReload,

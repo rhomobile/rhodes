@@ -124,7 +124,10 @@ private:
 
 	CHttpServer* iHttpServer;
 	CSyncEngineWrap* iSyncEngineWrap;
+	
+#ifdef SYM_GEOLOCATION	
 	CGeoLocationService* iGeoLocationService;
+#endif	
 	/**
 	 * The application view
 	 * Owned by CRhodesAppUi

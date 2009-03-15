@@ -39,8 +39,9 @@
 
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
+#ifdef SYM_GEOLOCATION
 #include "GeoLocationService.h"
-
+#endif
 #include "AppManager.h"
 
 #include "rhoruby/rhoruby.h"
@@ -65,7 +66,6 @@ extern "C"
 {
 	void dosync();
 	void pause_sync( int nPause );
-	int login(const char* login, const char* password);
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -93,9 +93,11 @@ void CRhodesAppUi::ConstructL()
 	//start sunc engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
 
+#ifdef SYM_GEOLOCATION	
 	//start geolocation service 
 	iGeoLocationService = CGeoLocationService::NewL();
 	iGeoLocationService->ResumeThread();
+#endif	
 	
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE	
 	iAppManager = CAppManager::NewL(this);
@@ -140,11 +142,13 @@ CRhodesAppUi::~CRhodesAppUi()
 		iSyncEngineWrap = NULL;
 		}
 	
+#ifdef SYM_GEOLOCATION	
 	if ( iGeoLocationService )
 		{
 		delete iGeoLocationService;
 		iGeoLocationService = NULL;
 		}
+#endif	
 	
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	if ( iAppManager )
@@ -165,6 +169,7 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 				iSyncEngineWrap->ResumeThread();
 			
 			iAppView->InitStartPage();
+			iAppView->InitOptions();
 			
 			HandleCommandL(ECmdAppHome);
 		} 
@@ -214,8 +219,10 @@ void CRhodesAppUi::StopThreads()
 	if ( iSyncEngineWrap )
 		iSyncEngineWrap->TerminateThread();
 
+#ifdef SYM_GEOLOCATION	
 	if ( iGeoLocationService )
 		iGeoLocationService->StopThread();
+#endif	
 	sleep(2);
 	
 	}
@@ -225,10 +232,6 @@ void CRhodesAppUi::StopThreads()
 // Takes care of command handling.
 // -----------------------------------------------------------------------------
 //
-extern "C"
-	{
-int login(const char* login, const char* password);
-	}
 
 void CRhodesAppUi::HandleCommandL(TInt aCommand)
 	{
@@ -256,8 +259,6 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 			}
 		case EHelp:
 			{
-
-			//login("lars", "password");
 			CArrayFix<TCoeHelpContext>* buf = CCoeAppUi::AppHelpContextL();
 			HlpLauncher::LaunchHelpApplicationL(iEikonEnv->WsSession(), buf);
 			}
