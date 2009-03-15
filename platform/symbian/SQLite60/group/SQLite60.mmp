@@ -37,7 +37,7 @@ SOURCE                                  prepare.cpp
 SOURCE                                  pragma.cpp 
 SOURCE                                  parse.cpp 
 SOURCE                                  pager.cpp 
-SOURCE                                  os.cpp 
+SOURCE                                  os.c 
 SOURCE                                  opcodes.cpp 
 SOURCE                                  mutex.cpp 
 //SOURCE                                  mem4.cpp 

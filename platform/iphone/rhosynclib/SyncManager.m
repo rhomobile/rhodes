@@ -160,7 +160,7 @@ int login(const char *login, const char *password) {
 /*
  * Pushes changes from list to rhosync server
  */
-int push_remote_data(char* url, char* data, size_t data_size) {
+int push_remote_data(char* url, char* data, size_t data_size,char* contentType) {
 	int retval = SYNC_PUSH_CHANGES_OK;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	if (data_size == 0 || data == NULL) {

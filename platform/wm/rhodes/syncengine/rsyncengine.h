@@ -58,7 +58,8 @@ extern "C" {
 #endif
 
 char* fetch_remote_data(char* url);
-int push_remote_data(char* url, char* data, size_t data_size);
+//unsigned char* fetch_remote_rawdata(char* url, unsigned long* pnSize);
+int push_remote_data(char* url, char* data, size_t data_size,char* contentType);
 //void start_sync();
 void delete_winmo_session(const char *url_string);
 void triggerSyncDbReset();

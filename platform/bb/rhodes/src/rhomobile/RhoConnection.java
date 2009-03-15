@@ -464,10 +464,11 @@ public class RhoConnection implements HttpConnection {
 		//	strPath = "/apps" + strPath; 
 
 		if ( strContType.equals("application/javascript")){
-			//responseData = RhoRuby.loadFile(strPath);
-			//if ( responseData == null )
-			String str = "";
-			responseData = new ByteArrayInputStream(str.getBytes());
+			responseData = RhoRuby.loadFile(strPath);
+			if ( responseData == null ){
+				String str = "";
+				responseData = new ByteArrayInputStream(str.getBytes());
+			}
 		}
 		else	
 			responseData = RhoRuby.loadFile(strPath);

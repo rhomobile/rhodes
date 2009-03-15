@@ -363,7 +363,8 @@ void free_url_components(URL_COMPONENTS *uri) {
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
 char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
-				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL) {
+				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL,
+                  char* contentType = NULL) {
   char       *cstr = NULL;
   char		 *session = NULL;
   std::string data = "";
@@ -373,6 +374,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
   LPWSTR      urlw;
   HINTERNET   hInet, hConnection, hRequest;
   LPTSTR      pszFunction = NULL;
+  DWORD res = 0;
 
   if ( url==NULL || strlen(url)==0 ) return NULL;
 
@@ -435,6 +437,13 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
 
     free_url_components(&uri);
 
+    if ( contentType ){
+        wchar_t header[100];
+        wsprintf(header,L"Content-Type: %hs\r\n", contentType );
+        res = HttpAddRequestHeaders(hRequest,header,-1,HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE);
+        res = GetLastError();
+    }
+
     //Send data
     if ( HttpSendRequest( hRequest, NULL, 0, body, body_size) ) {
       wchar_t res[10];
@@ -458,7 +467,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
 	        HttpQueryInfo(hRequest, HTTP_QUERY_RAW_HEADERS, NULL, &dwSize, NULL);
 	        if( dwSize != 0 )
 	        {
-		        cstr = new char [dwSize+1];
+		        cstr = (char*)malloc(dwSize+1);
 		        // Call HttpQueryInfo again to get the headers.
 		        bOk = (bool) HttpQueryInfoA(hRequest, HTTP_QUERY_RAW_HEADERS, (LPVOID) cstr, &dwSize, NULL);
           }
@@ -470,12 +479,13 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
             bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
           }
 		      if ( bGetRawData && pdwDataSize ){
-			      cstr = new char [*pdwDataSize];
-            memcpy (cstr, data.c_str(), *pdwDataSize);
+                  *pdwDataSize = data.size();
+			      cstr = (char*)malloc(*pdwDataSize);
+                  memcpy (cstr, data.c_str(), *pdwDataSize);
 		      }
 		      else {
 			      //make a copy of recieved data
-			      cstr = new char [data.size()+1];
+			      cstr = (char*)malloc(data.size()+1);
 			      strcpy (cstr, data.c_str());
             //cstr = new char [data.GetLength()+1];
             //strcpy (cstr, data.GetString());
@@ -499,14 +509,18 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
   free(urlw);
   return cstr;
 }
+/*
+unsigned char* fetch_remote_rawdata(char* url, unsigned long* pnSize) {
+  return (unsigned char*)remote_data(L"GET", url, NULL, 0, false, true, true, pnSize );
+}*/
 
 char* fetch_remote_data(char* url) {
   return remote_data(L"GET", url, NULL, 0, false, false, true);
 }
 
-int push_remote_data(char* url, char* data, size_t data_size) {
-  char* res = remote_data(L"POST", url, data, data_size, false, false, true);
-  int  nRes = res==NULL ? 0 : 1;
+int push_remote_data(char* url, char* data, size_t data_size, char* contentType) {
+  char* res = remote_data(L"POST", url, data, data_size, false, false, true, NULL, contentType);
+  int  nRes = res==NULL ? SYNC_PUSH_CHANGES_ERROR : SYNC_PUSH_CHANGES_OK;
   if ( res )
       free(res);
   return nRes;

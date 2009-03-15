@@ -95,10 +95,10 @@ public:
 
 	
 	//Invoke http method
-	void InvokeHttpMethodL(TInt aCommand);
+	void InvokeHttpMethodL(TInt aCommand, char* szContentType);
 
 	//Invoke http method
-	void InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize);
+	void InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrlSize, const TUint8* aBody, TInt aBodySize, char* szContentType);
 
 	//Toggle verbose mode
 	void ToggleVerbose();

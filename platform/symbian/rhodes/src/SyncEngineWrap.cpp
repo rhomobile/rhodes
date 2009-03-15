@@ -30,6 +30,7 @@
 #include "HttpClient.h"
 #include "HttpFileManager.h"
 #include "HttpConstants.h"
+#include "Constants.h"
 
 #ifndef ENABLE_RUBY_VM_STAT
 //#define ENABLE_RUBY_VM_STAT
@@ -261,7 +262,7 @@ extern "C"
 		if (cookie)
 			free(cookie);
 
-		gHttpClient->InvokeHttpMethodL(CHttpConstants::EGet, (const TUint8*) url, strlen(url), NULL, 0);
+		gHttpClient->InvokeHttpMethodL(CHttpConstants::EGet, (const TUint8*) url, strlen(url), NULL, 0, NULL);
 
 		retval = gHttpClient->GetResponse();
 
@@ -270,35 +271,35 @@ extern "C"
 		return retval;
 	}
 
-	int push_remote_data(char* url, char* data, size_t data_size)
+	int push_remote_data(char* url, char* data, size_t data_size,char* contentType)
 	{
-		int retval = 0;
+		int retval = SYNC_PUSH_CHANGES_ERROR;
 		char* szData = 0;
 		char* cookie = 0;
 
 		CHttpClient* gHttpClient = NULL;
 
-		cookie = get_db_session(url);
+		cookie = get_db_session(load_source_url());
 
 		if (!cookie && !strstr(url, "clientcreate"))
-			return 0;
+			return SYNC_PUSH_CHANGES_ERROR;
 		
 		gHttpClient = CHttpClient::NewL();
 		
 		gHttpClient->SetCookie(cookie);
-
+		
 		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost,
 				(const TUint8*) url, 
 				strlen(url), 
 				(const TUint8*) data,
-				data_size);
+				data_size, contentType);
 
 		szData = gHttpClient->GetResponse();
 
-		retval = szData ? 1 : 0;
+		retval = szData ? SYNC_PUSH_CHANGES_OK : SYNC_PUSH_CHANGES_ERROR;
 
 		if (szData)
-			delete szData;
+			free(szData);
 
 		delete gHttpClient;
 		
@@ -314,7 +315,7 @@ extern "C"
 				(const TUint8*) url, 
 				strlen(url), 
 				(const TUint8*) data, 
-				strlen(data));
+				strlen(data), NULL);
 
 		session = gHttpClient->GetCookie();
 
@@ -350,13 +351,13 @@ extern "C"
 	 return responseBody;
 	 }
 	 
-	 int push_remote_data(char* url, char* data, size_t data_size) 
+	 int push_remote_data(char* url, char* data, size_t data_size,char* contentType) 
 	 {
 	 int retval = 0;
 	 char* responseBody = 0;
 	 char* cookie = 0;
 	 
-	 cookie = get_db_session(url);
+	 cookie = get_db_session(load_source_url());
 	 
 	 if ( !cookie && !strstr(url, "clientcreate") ) {
 	 return 0;

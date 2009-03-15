@@ -1502,7 +1502,7 @@ _wrap_sqlite3_trace(int argc, VALUE *argv, VALUE self) {
     return vresult;
 }
 
-
+void setup_delete_db_callback(sqlite3 * db);
 static VALUE
 _wrap_sqlite3_open(int argc, VALUE *argv, VALUE self) {
     char *arg1 = (char *) 0 ;
@@ -1517,7 +1517,8 @@ _wrap_sqlite3_open(int argc, VALUE *argv, VALUE self) {
         arg2 = (sqlite3**)malloc( sizeof( sqlite3* ) );
     }
     result = (int)sqlite3_open((char const *)arg1,arg2);
-    
+    setup_delete_db_callback(*arg2);
+
     vresult = INT2NUM(result);
     {
         VALUE ary;

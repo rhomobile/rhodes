@@ -68,7 +68,7 @@ void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
 			free(rootw);
 
 		if ( zipData )
-			delete zipData;
+			free( zipData );
 	}
 }
 

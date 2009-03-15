@@ -19,7 +19,7 @@
 
 extern void Init_SyncEngine(void);
 
-//#define COMPILER 1
+#define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
  ruby_incpush(getenv("RUBYLIB"));
@@ -125,4 +125,10 @@ void Init_SyncEngine(void) {
 }
 
 void Init_Phonebook(){
+}
+
+void Init_Camera(){
+}
+
+void Init_WebView(){
 }

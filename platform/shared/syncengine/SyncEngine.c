@@ -27,6 +27,7 @@
 #include "SyncManagerI.h"
 #include "Constants.h"
 #include "Notifications.h"
+#include "SyncBlob.h"
 
 int stop_running = 0;
 //int delay_sync = 0;
@@ -232,25 +233,31 @@ int process_op_list(pSource source, char *type) {
 	int success;
 
 	pSyncOperation *op_list = NULL;
+    pSyncOperation *opblob_list = NULL;
+    int opblob_list_count = 0;
 	op_list = calloc(1,MAX_SINGLE_OP_SIZE*sizeof(pSyncOperation));
 	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
 	if (available > 0) {
 		printf("Found %i available records for %s processing on source %i...\n", available, type, source->_source_id);
 	}
-	
+
+    opblob_list_count = SyncBlob_extractBlobs(op_list, available, &opblob_list);
+    available -= opblob_list_count;
+
 	success = push_remote_changes(op_list, available);
 	if(success == SYNC_PUSH_CHANGES_OK) {
-		if(available > 0) {
-			remove_op_list_from_database(source, database, type);
-		}
+		if ( SyncBlob_pushRemoteBlobs(opblob_list, opblob_list_count) == SYNC_PUSH_CHANGES_OK && available+opblob_list_count > 0 )
+		{
+		    remove_op_list_from_database(source, database, type);
+        }
 	} else {
 		printf("There was an error processing records, not removing from database yet...\n");
-		free_op_list(op_list, available);
-		return 1;
 	}
 	
 	free_op_list(op_list, available);
-	return 0;
+    free_op_list(opblob_list, opblob_list_count);
+
+    return success == SYNC_PUSH_CHANGES_OK ? 0 : 1;
 }
 
 sqlite3 *get_database() {
@@ -259,6 +266,25 @@ sqlite3 *get_database() {
 
 char *get_client_id() {
 	return client_id;
+}
+
+static char* szTrigger = 
+"CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values\n"
+"FOR EACH ROW\n"
+"BEGIN\n"
+"SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.type,OLD.update_type);\n"
+"END;";
+
+void setup_delete_db_callback(sqlite3 * db)
+{
+    char* errmsg = 0;
+    int rc = sqlite3_create_function( db, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
+      SyncBlob_DeleteCallback, 0, 0 );
+
+    rc = sqlite3_exec(db, szTrigger,  NULL, NULL, &errmsg);
+
+    if ( errmsg )
+        sqlite3_free(errmsg);
 }
 
 #if !defined(_WIN32_WCE)
@@ -287,7 +313,8 @@ void start_sync_engine(sqlite3 *db) {
     int thread_error;
     
 	database = db;
-	
+    setup_delete_db_callback(db);
+
 #ifndef __SYMBIAN32__	
 	// Initialize thread
     return_val = pthread_attr_init(&attr);
@@ -345,6 +372,8 @@ void shutdown_database() {
 #else
 void start_sync_engine(sqlite3 *db) {	
 	database = db;
+
+    setup_delete_db_callback(db);
 }
 void shutdown_database() {
 	finalize_sync_obj_statements();
