@@ -24,6 +24,8 @@
 
 #include "GeoLocationService.h"
 
+#ifdef SYM_GEOLOCATION
+
 #include "rhodes.pan"
 #include <eikenv.h>
 #include "rhodesApplication.h"
@@ -146,3 +148,4 @@ void CGeoLocationService::SuspendThread()
 	{
 		thread.Suspend();
 	}
+#endif

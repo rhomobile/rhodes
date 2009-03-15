@@ -25,6 +25,8 @@
 #ifndef GEOLOCATIONSERVICE_H
 #define GEOLOCATIONSERVICE_H
 
+#ifdef SYM_GEOLOCATION
+
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
@@ -82,5 +84,6 @@ private:
 	RThread thread;
 	bool iClose;
 	};
+#endif
 
 #endif // GEOLOCATIONSERVICE_H

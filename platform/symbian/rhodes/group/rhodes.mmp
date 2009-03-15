@@ -132,7 +132,12 @@ LANG SC
 VENDORID	  	  0
 SECUREID		  0xE6B4F4DF
 
+#ifdef SYM_GEOLOCATION
+CAPABILITY        Location, LocalServices NetworkServices ReadUserData UserEnvironment WriteUserData
+#else
 CAPABILITY        LocalServices NetworkServices ReadUserData UserEnvironment WriteUserData
+#endif
+
 EPOCSTACKSIZE     80000
 EPOCHEAPSIZE      0x800000 0x1900000
 
@@ -151,6 +156,6 @@ SOURCE unzip.cpp
 SOURCEPATH ..\src
 SOURCE GeoLocationService.cpp
 SOURCEPATH ..\src\webview
-SOURCE webview.c
+SOURCE webview.cpp
 SOURCEPATH ..\src\camera
 SOURCE camera.c
