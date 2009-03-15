@@ -14,44 +14,46 @@ int push_remote_data(char* url, char* data, size_t data_size,char* contentType);
 static int sqlite3OsWrite(sqlite3_file *id, const void *pBuf, int amt, int offset){
   return id->pMethods->xWrite(id, pBuf, amt, offset);
 }*/
+
+#ifndef __APPLE__
 #ifndef __SYMBIAN32__
 static int sqlite3OsOpen(
-  sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  sqlite3_file *pFile, 
-  int flags, 
-  int *pFlagsOut
+						 sqlite3_vfs *pVfs, 
+						 const char *zPath, 
+						 sqlite3_file *pFile, 
+						 int flags, 
+						 int *pFlagsOut
 ){
-  return pVfs->xOpen(pVfs, zPath, pFile, flags, pFlagsOut);
+	return pVfs->xOpen(pVfs, zPath, pFile, flags, pFlagsOut);
 }
 
 static int sqlite3OsRead(sqlite3_file *id, void *pBuf, int amt, int offset){
-  return id->pMethods->xRead(id, pBuf, amt, offset);
+	return id->pMethods->xRead(id, pBuf, amt, offset);
 }
 
 static int sqlite3OsFileSize(sqlite3_file *id, sqlite_int64 *pSize){
-  return id->pMethods->xFileSize(id, pSize);
+	return id->pMethods->xFileSize(id, pSize);
 }
 
 static int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return pVfs->xDelete(pVfs, zPath, dirSync);
+	return pVfs->xDelete(pVfs, zPath, dirSync);
 }
 
 static int sqlite3OsClose(sqlite3_file *pId){
-  int rc = SQLITE_OK;
-  if( pId->pMethods ){
-    rc = pId->pMethods->xClose(pId);
-    pId->pMethods = 0;
-  }
-  return rc;
+	int rc = SQLITE_OK;
+	if( pId->pMethods ){
+		rc = pId->pMethods->xClose(pId);
+		pId->pMethods = 0;
+	}
+	return rc;
 }
 #else
 int sqlite3OsOpen(
-  sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  sqlite3_file *pFile, 
-  int flags, 
-  int *pFlagsOut
+				  sqlite3_vfs *pVfs, 
+				  const char *zPath, 
+				  sqlite3_file *pFile, 
+				  int flags, 
+				  int *pFlagsOut
 );
 int sqlite3OsRead(sqlite3_file *id, void *pBuf, int amt, int offset);
 int sqlite3OsFileSize(sqlite3_file *id, sqlite_int64 *pSize);
@@ -59,7 +61,6 @@ int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync);
 int sqlite3OsClose(sqlite3_file *pId);
 #endif
 
-#ifndef __APPLE__
 static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
     sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
     int nFlagsOut = 0;
