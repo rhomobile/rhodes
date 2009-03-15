@@ -100,11 +100,37 @@ static int rhoDeleteFile( char* pFilePath ){
     return rc == SQLITE_OK ? 1 : 0;
 }
 #else
+#include <stdio.h>
+#include <sys/stat.h>
+
 static int rhoDeleteFile( char* pFilePath ){
-    return 0;
+    int rc = remove(pFilePath);
+    return rc == 0 ? 1 : 0;
 }
-static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
-    return 0;
+
+static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize ){
+    int rc = 0;
+    int retCode = 0;
+    FILE* file = fopen(pFilePath,"w");
+    if (file){
+        struct stat st;
+        memset(&st,0, sizeof(st));
+        rc = stat(pFilePath, &st);
+        if ( rc == 0 && st.st_size > 0 ){
+            char* buffer = (char*)malloc(st.st_size);
+
+            rc = fread(buffer, sizeof(char), st.st_size, file );
+            if ( rc == st.st_size ){
+                *resbuffer = buffer;
+                *resnFileSize = st.st_size;
+                retCode = 1;
+            }
+        }
+
+        fclose(file);
+    }
+
+    return retCode;
 }
 #endif //__APPLE__
 /*
