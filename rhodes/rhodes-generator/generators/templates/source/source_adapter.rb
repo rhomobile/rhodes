@@ -1,7 +1,7 @@
-class <%=name%> < SourceAdapter
+class <%=name.camelize%> < SourceAdapter
   
-  def initialize(source)
-    super(source)
+  def initialize(source,credential)
+    super(source,credential)
   end
 
   def login
