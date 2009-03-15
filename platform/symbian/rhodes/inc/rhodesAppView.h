@@ -32,6 +32,10 @@
 class CRhodesAppUi;
 class CSpecialLoadObserver;
 //class CAppSoftkeysObserver;
+class CRhodesAppView;
+
+//pointer to the CRhodesAppView object, used by method written in pure C
+extern CRhodesAppView* g_RhodesAppView;
 
 // CLASS DECLARATION
 class CRhodesAppView : public CCoeControl, MCoeControlObserver, MBrCtlDataLoadSupplier
@@ -68,7 +72,10 @@ public:
      * Load url
      */
     void LoadUrl(const TDesC& aUrl);
-
+    void LoadUrl(char* aUrl);
+    
+    void Refresh();
+    char* GetCurrentPageUrl();
     
     
 public:
@@ -114,6 +121,8 @@ public:
      * Init start page
      */
     void InitStartPage();
+    
+    void InitOptions();
 
 protected:
 
@@ -192,6 +201,9 @@ private: //data
         //Softkeys Observer
         //CAppSoftkeysObserver* iAppSoftkeysObserver;
         TBuf<1024> iStartPage;
+        
+        TBuf<1024> iOptionsPage;
+        
 	};
 
 #endif // __RHODESAPPVIEW_h__

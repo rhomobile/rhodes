@@ -119,6 +119,11 @@ RESOURCE MENU_PANE r_menu
 				},
 		MENU_ITEM
 				{
+				command = EOptions;
+				txt = qtn_options;
+				},		
+		MENU_ITEM
+				{
 				command = EReloadRhobundle;
 				txt = qtn_reload_rhobundle;
 				},		

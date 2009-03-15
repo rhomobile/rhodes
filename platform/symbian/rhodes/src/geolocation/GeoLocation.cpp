@@ -24,6 +24,8 @@
 #include <rhodes.rsg>
 #include "GeoLocation.h"
 
+#ifdef SYM_GEOLOCATION
+
 CGeoLocation::CGeoLocation()
 	{
     }
@@ -105,4 +107,4 @@ void CGeoLocation::RunL()
     // request ended, store error code and dismiss wait dialog
     iError = iStatus.Int();
     }
-
+#endif

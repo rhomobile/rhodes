@@ -47,10 +47,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+CRhodesAppView* g_RhodesAppView = NULL;
+
 extern "C" {
 
 char* callGetStartPage();
-
+char* callGetOptionsPage();
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -88,6 +90,9 @@ CRhodesAppView* CRhodesAppView::NewLC(const TRect& aRect, CRhodesAppUi * aAppUI)
 //
 void CRhodesAppView::ConstructL(const TRect& aRect)
 	{
+	//save a pointer to our self
+	g_RhodesAppView = this;
+	
 	// Create a window for this application view
 	CreateWindowL();
 
@@ -137,6 +142,10 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	    CleanupStack::PopAndDestroy(1); // file
 	}
     CleanupStack::PopAndDestroy(1); // rfs
+	
+    iBrCtlInterface->HandleCommandL(TBrCtlDefs::ECommandIdBase + TBrCtlDefs::ECommandClearHistory);
+    iBrCtlInterface->ClearCache();
+    
     }
 
 // -----------------------------------------------------------------------------
@@ -197,6 +206,35 @@ void CRhodesAppView::InitStartPage()
   	
 	free(sp);
 }
+
+void CRhodesAppView::InitOptions()
+	{
+		char* slash = "";
+		char* options_page = callGetOptionsPage();
+		if (!options_page) {
+		options_page = "";
+		} else if ( (*options_page!='/')&&(*options_page!='\\') ) {
+			slash = "/";
+		}
+		int len = strlen("http://127.0.0.1:8080")+strlen(slash)+strlen(options_page);
+		char* sp = (char*) malloc(len+1);
+		sprintf(sp,"http://127.0.0.1:8080%s%s",slash,options_page);
+
+		RFs session;
+		User::LeaveIfError(session.Connect());
+		
+		CCnvCharacterSetConverter *converter = CCnvCharacterSetConverter::NewL();
+	  	converter->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, session);
+	  
+	  	TPtrC8 ptr((const unsigned char*)sp);
+
+	  	int state = CCnvCharacterSetConverter::KStateDefault;
+	  	converter->ConvertToUnicode(iOptionsPage, ptr, state);
+		
+	  	session.Close();
+	  	
+		free(sp);
+	}
 
 // -----------------------------------------------------------------------------
 // CRhodesAppView::Draw()
@@ -335,6 +373,15 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         			}
         		break;
         	}
+	        case EOptions:
+			{
+				if (iBrCtlInterface)
+					{
+						iBrCtlInterface->LoadUrlL(iOptionsPage);
+					    iBrCtlInterface->ClearCache();
+					}
+				break;
+			}	
 	        /*case EAknSoftkeyCancel:
         	{
         		CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();
@@ -406,6 +453,64 @@ void CRhodesAppView::LoadUrl(const TDesC& aUrl)
 			iBrCtlInterface->LoadUrlL(aUrl);
 	}
 
+void CRhodesAppView::LoadUrl(char* aUrl)
+	{
+		TPtrC8 ptr(reinterpret_cast<const TUint8*>(aUrl));
+	    HBufC* buffer = HBufC::NewL(ptr.Length());
+	    buffer->Des().Copy(ptr);
+	    
+	    TPtrC aDescriptor;
+		aDescriptor.Set(*buffer);
+		
+	    LoadUrl(aDescriptor);
+	    delete buffer;
+	
+	}
+
+// ----------------------------------------------------
+// CRhodesAppView::GetCurrentUrl()
+// ----------------------------------------------------
+//
+char* CRhodesAppView::GetCurrentPageUrl()
+	{
+		if ( iBrCtlInterface == NULL )
+			CreateBasicBrowserControlL();
+			
+		if ( iBrCtlInterface != NULL )
+			{
+			HBufC* pBuf = iBrCtlInterface->PageInfoLC(TBrCtlDefs::EPageInfoUrl);
+			TPtrC aDescriptor;
+			aDescriptor.Set(*pBuf);
+			
+			TInt length = aDescriptor.Length();
+		 
+			HBufC8* buffer = HBufC8::NewLC(length);
+			buffer->Des().Copy(aDescriptor);
+		 
+			char* str = new char[length + 1];
+			Mem::Copy(str, buffer->Ptr(), length);
+			str[length] = '\0';
+		 
+			CleanupStack::PopAndDestroy(buffer);
+		 
+			return str;
+			}
+		return NULL;
+	}
+
+// ----------------------------------------------------
+// CRhodesAppView::Refresh()
+// ----------------------------------------------------
+//
+
+void CRhodesAppView::Refresh()
+	{
+		if ( iBrCtlInterface == NULL )
+			CreateBasicBrowserControlL();
+			
+		if ( iBrCtlInterface != NULL )
+			iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandReload);
+	}
 
 // ----------------------------------------------------
 // CRhodesAppView::OfferKeyEventL(const 
