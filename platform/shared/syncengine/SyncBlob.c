@@ -108,10 +108,14 @@ static int rhoDeleteFile( char* pFilePath ){
     return rc == 0 ? 1 : 0;
 }
 
+const char* RhoGetRootPath() ;
 static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize ){
     int rc = 0;
     int retCode = 0;
-    FILE* file = fopen(pFilePath,"w");
+	//char path[1000];
+	//path[0]=0;
+	//sprintf(path,"%s%s", RhoGetRootPath(), pFilePath);
+    FILE* file = fopen(pFilePath,"r");
     if (file){
         struct stat st;
         memset(&st,0, sizeof(st));
