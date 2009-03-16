@@ -116,7 +116,7 @@ void set_sync_post_body(pSyncOperation op) {
         }
 
 		strcat(target, "&");
-		sprintf(buffer, attr_format, "type", "blob");
+		sprintf(buffer, attr_format, "attrib_type", "blob");
 		strcat(target, buffer);
 
     }else if (op->_sync_object->_value) {

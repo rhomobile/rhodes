@@ -372,7 +372,7 @@ public class SyncUtil {
 					.asString();
 			
 			String type = "";
-			val = element.get(createString("type"));
+			val = element.get(createString("attrib_type"));
 			if ( val != null && val != RubyConstant.QNIL)
 				type = val.asString();
 			

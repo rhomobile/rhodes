@@ -23,7 +23,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString SOURCE_URL = ObjectFactory.createString("source_url");
 	public static final RubyString SESSION = ObjectFactory.createString("session");
 	public static final RubyString TOKEN = ObjectFactory.createString("token");
-	public static final RubyString TYPE = ObjectFactory.createString("type");
+	public static final RubyString TYPE = ObjectFactory.createString("attrib_type");
 	
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	

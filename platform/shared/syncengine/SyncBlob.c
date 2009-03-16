@@ -325,6 +325,6 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     type = (char*)sqlite3_value_text(*(ppArgs+1));
     if ( type && strcmp(type,"blob.file") == 0 ){
         char* pFilePath = (char*)sqlite3_value_text(*(ppArgs));
-        //rc = rhoDeleteFile(pFilePath);
+        rc = rhoDeleteFile(pFilePath);
     }
 }
