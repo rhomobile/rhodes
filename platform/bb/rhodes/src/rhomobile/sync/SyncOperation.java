@@ -132,7 +132,7 @@ public class SyncOperation {
 			}
 			
 			body.append("&");
-			this.filterAttrib(body, "type", "blob");
+			this.filterAttrib(body, "attrib_type", "blob");
 		}else if (object.getValue() != null) {
 			body.append("&");
 			this.filterAttrib(body, "value", object.getValue());

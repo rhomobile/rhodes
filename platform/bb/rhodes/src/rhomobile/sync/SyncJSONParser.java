@@ -65,8 +65,8 @@ public class SyncJSONParser {
 					
 					String updateType = (String) current.get("update_type");
 					String type = "";
-					if ( current.has("type"))
-						type = (String) current.get("type");
+					if ( current.has("attrib_type"))
+						type = (String) current.get("attrib_type");
 					
 					SyncObject newObject = new SyncObject(attrib, sourceId,	object, 
 							value, updateType, type);
@@ -75,7 +75,6 @@ public class SyncJSONParser {
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
 					newObject.set_token(header._token);
 
-					
 					/*if ( i == 0 ){
 						newObject.set_type("blob.file");
 						newObject.setValue("picture.jpg");
