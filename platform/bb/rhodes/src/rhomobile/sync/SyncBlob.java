@@ -160,7 +160,7 @@ public class SyncBlob {
 					
 					String session = SyncUtil.get_session(source);
 					success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true,
-							"application/octet-stream" );
+							"multipart/form-data" );
 				}
 			} catch (IOException e) {
 				System.out.println("There was an error pushing changes: "
