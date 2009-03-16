@@ -133,18 +133,131 @@ void clear_notification(int source_id) {
 
 #else //__SYMBIAN32__
 
-extern "C"{
-void fire_notification(int source_id) {
+#include <pthread.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdapis/stdio.h>
+
+#include "Constants.h"
+#include "Notifications.h"
+#include "UniversalLock.h"
+
+static notification_t** _notifications;
+
+static notification_t** get_notifications() 
+{
+	static int isInitialized = 0;
+	if ( !isInitialized )
+	{
+		isInitialized = 1;
+		_notifications = (notification_t**)calloc(MAX_SOURCES,sizeof(notification_t*));
+	}
+	
+	return _notifications;
 }
 
-void clear_notification(int source_id) {
+INIT_LOCK(notify);
+
+extern "C" void perform_notification(char* callback, char* params);
+extern "C" char* get_current_location();
+extern "C" char* HTTPResolveUrl(char* url);
+
+static void _clear_notification(int source_id);
+	
+static notification_t* get_notification(int source_id) {
+	
+	if ( source_id < MAX_SOURCES && source_id >= 0 )
+		return get_notifications()[source_id];
+	else
+		return NULL;
 }
 
-void set_notification(int source_id, const char *url) {
+void fire_notification(int source_id,int sucess) {
+    LOCK(notify);
+
+	try {
+		notification_t* pn = get_notification(source_id);
+		if (pn) {
+			if (pn->url) {
+				//compose message
+				const char* status = sucess ? "ok" : "error";
+				int msglen = 100+(pn->params?strlen(pn->params):0);
+				char* message = (char*)malloc(msglen+1);
+				snprintf(message,msglen,"status=%s&%s",status,(pn->params?pn->params:""));
+				//execute notification
+				perform_notification(pn->url,message);
+				free(message);
+			}
+			//erase callback so we don't call more than once
+			_clear_notification(source_id);
+		}
+	} catch(...) {
+	}
+	
+    UNLOCK(notify);
 }
 
 void free_notifications() {
+    LOCK(notify);
+
+	try {
+		int i = 0;
+		for ( ; i < MAX_SOURCES; i++ ) {
+			_clear_notification(i);
+ 		}
+		memset(get_notifications(), 0, MAX_SOURCES * sizeof(notification_t*));
+	} catch(...) {
+	}
+	
+    UNLOCK(notify);
 }
+
+void set_notification(int source_id, const char *url, char* params) {
+    LOCK(notify);
+
+	try {
+		if (url) {
+			notification_t* notification = (notification_t*) malloc(sizeof(notification_t));
+			_clear_notification(source_id);
+			notification->url = HTTPResolveUrl(strdup(url));
+			notification->params = params ? strdup(params) : NULL;
+			printf("Resolved [%s] in [%s]\n", url, notification->url);								 
+			printf("Setting notification (%s) for source %d\n", notification->url, source_id);			
+			get_notifications()[source_id] = notification;
+		}
+	} catch(...) {
+	}
+	
+    UNLOCK(notify);
+}
+
+void free_notification_t(notification_t* pn) {
+	if (pn) {
+		if (pn->url) {
+			free(pn->url);
+		}
+		if (pn->params) {
+			free(pn->params);
+		}
+		free(pn);
+	}
+}
+
+static void _clear_notification(int source_id) {
+	try {
+		notification_t * pnt = get_notification(source_id);
+		if ( pnt )
+			free_notification_t(pnt);		
+		get_notifications()[source_id]=0;
+	} catch(...) {
+	}
+}
+
+void clear_notification(int source_id) {
+    // Don't lock notify here, we hide the function instead
+	LOCK(notify);
+	_clear_notification(source_id); 
+	UNLOCK(notify);
 }
 
 #endif

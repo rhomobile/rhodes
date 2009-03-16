@@ -1,3 +1,21 @@
+/*
+ *  rhodes
+ *
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.rho.sync;
 
 /**
@@ -11,6 +29,7 @@ public class SyncOperation {
 	/** The _post body. */
 	private String _postBody;
 
+	private SyncObject _object;
 	/**
 	 * Instantiates a new sync operation.
 	 * 
@@ -20,6 +39,8 @@ public class SyncOperation {
 	public SyncOperation(String operation, SyncObject object) {
 		_operation = operation;
 		_postBody = setSyncPostBody(object);
+		_object = object;
+		
 		System.out.println("Formatted post strig: " + _postBody);
 	}
 
@@ -91,11 +112,36 @@ public class SyncOperation {
 			this.filterAttrib(body, "object", object.getObject());
 		}
 
-		if (object.getValue() != null) {
+		if ( object.get_type() != null && object.get_type().equals("blob.file"))
+		{
+			String strPath = object.getValue(); 
+			
+			if ( strPath != null ){
+				int nSlash = strPath.lastIndexOf('/');
+				String fileName = "";
+				if ( nSlash < 0 )
+					nSlash = strPath.lastIndexOf('\\');
+				
+				if ( nSlash >= 0 )
+					fileName = strPath.substring(nSlash+1);
+				else
+					fileName = strPath;
+						
+				body.append("&");
+				this.filterAttrib(body, "value", fileName);
+			}
+			
+			body.append("&");
+			this.filterAttrib(body, "type", "blob");
+		}else if (object.getValue() != null) {
 			body.append("&");
 			this.filterAttrib(body, "value", object.getValue());
 		}
+		
 		return body.toString();
 	}
-}
 
+	public SyncObject get_object() {
+		return _object;
+	}
+}
