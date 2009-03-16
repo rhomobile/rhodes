@@ -17,5 +17,12 @@ public interface SimpleFile extends IFile {
      * @param path path to the file
      */
     void delete(String path);
+    
+    /**
+     * 
+     * @param path
+     * @return
+     */
+    String getDirPath(String path);
 
 }

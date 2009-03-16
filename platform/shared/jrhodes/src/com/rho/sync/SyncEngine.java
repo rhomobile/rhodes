@@ -1,3 +1,21 @@
+/*
+ *  rhodes
+ *
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.rho.sync;
 
 import com.xruby.runtime.lang.RubyBasic;
@@ -8,6 +26,9 @@ import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.lang.RubyVarArgMethod;
+import com.xruby.runtime.lang.RubyException;
 
 /**
  * The Class SyncEngine.
@@ -71,11 +92,19 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QNIL; 
 	}
 
-	public static RubyValue set_notification(RubyValue arg1, RubyValue arg2) {
-		int nSourceID = arg1.toInt();
-		String url = arg2.toStr();
+	public static RubyValue set_notification(RubyArray args) {
 		
-		sNotifications.setNotification(nSourceID, url);
+		if ( args.size() != 3 )
+			throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'SyncEngine': wrong number of arguments (" + 
+					args.length() + " for 3)");
+        
+		int nSourceID = args.get(0).toInt();
+		String url = args.get(1).toStr();
+		String params = "";
+		if ( args.get(2) != RubyConstant.QNIL )
+			params = args.get(2).toStr();
+		
+		sNotifications.setNotification(nSourceID, url, params);
 		return RubyConstant.QNIL;
 	}
 
@@ -86,7 +115,6 @@ public class SyncEngine extends RubyBasic {
 		return RubyConstant.QNIL;
 	}
 
-	
 	/**
 	 * Inits the methods.
 	 * 
@@ -159,9 +187,9 @@ public class SyncEngine extends RubyBasic {
 				});
 
 		klass.getSingletonClass().defineMethod("set_notification",
-				new RubyTwoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-						return SyncEngine.set_notification(arg1,arg2);
+				new RubyVarArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+						return SyncEngine.set_notification(args);
 					}
 				});
 		klass.getSingletonClass().defineMethod("clear_notification",
@@ -256,4 +284,3 @@ public class SyncEngine extends RubyBasic {
 		return this;
 	}
 }
-

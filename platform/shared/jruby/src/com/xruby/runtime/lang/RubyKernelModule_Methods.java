@@ -295,4 +295,18 @@ klass.defineModuleMethod( "Integer", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyKernelModule.toInteger(receiver, arg);}
 });
+ 
+klass.defineModuleMethod( "srand", new RubyNoOrOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return RubyRandom.srand(receiver);}
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyRandom.srand(receiver, arg);}
+});
+klass.defineModuleMethod( "rand", new RubyNoOrOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return RubyRandom.rand(receiver);}
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyRandom.rand(receiver, arg);}
+});
+
 }}

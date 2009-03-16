@@ -10,5 +10,7 @@
     <string name="exit">Exit</string>
     <string name="sync">Sync</string>
     <string name="options">Options</string>
+    <string name="no_files">This directory is empty</string>
+    <string name="to_top">..</string>
     <string name="about_rhodes">Rhodes Version 1.0.0\n\nAuthor: Anton Antonov\n\nSupport: all@rhomobile.com\n\n(c) Copyright (C) 2008 Rhomobile. All rights reserved.</string>
 </resources>

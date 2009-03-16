@@ -1,6 +1,7 @@
 package com.rhomobile.rhodes;
 
 import com.rho.RhoRuby;
+import com.rho.sync.SyncUtil;
 import com.rhomobile.rhodes.http.HttpServer;
 
 import android.app.Service;
@@ -26,6 +27,7 @@ public class RhoHttpService extends Service {
 	public void onStart(Intent intent, int startId) {
 		// Start HttpServer
 		try {
+			SyncUtil.init();
 			
 			httpServer.configure(new RhoHttpHandler());
 			httpServer.start();

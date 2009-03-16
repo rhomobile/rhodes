@@ -34,7 +34,7 @@ public class NetworkAccessImpl implements INetworkAccess {
 		urlc.setDoInput(true);
 		urlc.setUseCaches(false);
 		urlc.setAllowUserInteraction(false);
-		urlc.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=" + "UTF-8");
+		urlc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		return urlc;
 	}
 

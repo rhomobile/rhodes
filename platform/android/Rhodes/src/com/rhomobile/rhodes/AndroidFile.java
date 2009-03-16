@@ -1,6 +1,6 @@
 package com.rhomobile.rhodes;
 
-import j2me.io.File;
+import java.io.File;
 
 import java.io.FileWriter;
 import java.io.RandomAccessFile;
@@ -9,8 +9,31 @@ import java.io.IOException;
 import org.garret.perst.SimpleFile;
 import org.garret.perst.StorageError;
 
+import android.content.res.Resources;
+import android.util.Log;
+
 public class AndroidFile implements SimpleFile {
-	final public static String RHODES_ROOT_DIR = "/sdcard/";
+	final public static String RHODES_ROOT_DIR = "/sdcard/rhomobile/";
+
+	static private String rootDir = null;
+
+	public AndroidFile() {
+		try {
+			if (rootDir == null) {
+				Resources appR = RhodesInstance.getInstance()
+						.getApplicationContext().getResources();
+				CharSequence app_name = appR.getText(appR.getIdentifier(
+						"app_name", "string", RhodesInstance.getInstance()
+								.getApplicationContext().getPackageName()));
+
+				rootDir = RHODES_ROOT_DIR + app_name + "/";
+				File sddir = new File(rootDir);
+				sddir.mkdirs();
+			}
+		} catch (Exception e) {
+			Log.e(getClass().getSimpleName(), e.getMessage());
+		}
+	}
 
 	public void write(long pos, byte[] buf) {
 		try {
@@ -51,18 +74,19 @@ public class AndroidFile implements SimpleFile {
 	public void open(String filePath, boolean readOnly, boolean noFlush) {
 		this.noFlush = noFlush;
 		try {
-			file = new RandomAccessFile(RHODES_ROOT_DIR + filePath,
-					readOnly ? "r" : "rw");
+
+			file = new RandomAccessFile(rootDir + filePath, readOnly ? "r"
+					: "rw");
 
 		} catch (IOException x) {
 
 			try {
 				// try to create file
-				FileWriter f = new FileWriter(RHODES_ROOT_DIR + filePath);
+				FileWriter f = new FileWriter(rootDir + filePath);
 				f.close();
 
-				file = new RandomAccessFile(RHODES_ROOT_DIR + filePath,
-						readOnly ? "r" : "rw");
+				file = new RandomAccessFile(rootDir + filePath, readOnly ? "r"
+						: "rw");
 
 			} catch (IOException e) {
 				throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
@@ -80,10 +104,20 @@ public class AndroidFile implements SimpleFile {
 
 	public void delete(String path) {
 		try {
-			File file = new File(RHODES_ROOT_DIR + path);
+			File file = new File(rootDir + path);
 			file.delete();
 		} catch (Exception e) {
 		}
+	}
+
+	public String getDirPath(String path) {
+		try {
+			File sddir = new File(rootDir + path);
+			sddir.mkdirs();
+		} catch (Exception e) {
+		}
+
+		return rootDir + path;
 	}
 
 	protected RandomAccessFile file;

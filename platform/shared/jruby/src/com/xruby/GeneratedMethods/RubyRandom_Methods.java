@@ -4,7 +4,7 @@ import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.builtin.RubyRandom;
 public class RubyRandom_Methods{
 public static void initMethods( RubyModule klass){
-
+/*
 klass.defineMethod( "srand", new RubyNoOrOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyRandom.srand(receiver);}
@@ -17,4 +17,5 @@ klass.defineMethod( "rand", new RubyNoOrOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyRandom.rand(receiver, arg);}
 });
+*/
 }}

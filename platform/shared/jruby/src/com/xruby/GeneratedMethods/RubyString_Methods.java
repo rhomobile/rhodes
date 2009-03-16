@@ -101,10 +101,10 @@ klass.defineMethod( "sub!", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).sub_danger(args, block);}
 });
-/*klass.defineMethod( "unpack", new RubyOneArgMethod(){ 
+klass.defineMethod( "unpack", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).unpack(arg);}
-});*/
+});
 klass.defineMethod( "sub", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).sub(args, block);}
