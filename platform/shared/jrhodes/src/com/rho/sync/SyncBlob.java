@@ -168,7 +168,7 @@ public class SyncBlob {
 					//success = SyncManager.pushRemoteData(url, file.getInputStream(), session, true,
 					//		"application/octet-stream" );
 					success = SyncManager.pushRemoteData(url, file, session, true,
-							"application/octet-stream" );
+							"multipart/form-data" );
 				}
 			} catch (IOException e) {
 				System.out.println("There was an error pushing changes: "
@@ -183,7 +183,6 @@ public class SyncBlob {
 					try {
 						file.close();
 					} catch (IOException e) {
-						e.printStackTrace();
 					}
 				file = null;
 			}
