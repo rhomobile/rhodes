@@ -1,3 +1,21 @@
+/*
+ *  rhodes
+ *
+ *  Copyright (C) 2008 Rhomobile, Inc. All rights reserved.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.rho.sync;
 
 import j2me.util.ArrayList;
@@ -46,13 +64,24 @@ public class SyncJSONParser {
 					String value = obValue == JSONObject.NULL ? null : (String) obValue;
 					
 					String updateType = (String) current.get("update_type");
+					String type = "";
+					if ( current.has("type"))
+						type = (String) current.get("type");
+					
 					SyncObject newObject = new SyncObject(attrib, sourceId,	object, 
-							value, updateType);
+							value, updateType, type);
 					
 					newObject.setDbOperation((String)current.get("db_operation"));
 					newObject.setPrimaryKey(((Integer) current.get("id")).intValue());
 					newObject.set_token(header._token);
 					
+					
+					/*if ( i == 0 ){
+						newObject.set_type("blob.file");
+						newObject.setValue("picture.jpg");
+						newObject.setUpdateType("create");
+					}*/
+										
 					list.add(newObject);
 				}else if ( element.has("count") ){
 					header._count = element.getInt("count");

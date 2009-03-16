@@ -144,4 +144,9 @@ public class CharacterMe {
         }
         return type;
     }
+    
+    public static boolean isDigit(int c) {
+        return c >= '0' && c <= '9';
+	}
+
 }
