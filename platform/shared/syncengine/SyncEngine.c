@@ -267,7 +267,7 @@ sqlite3 *get_database() {
 char *get_client_id() {
 	return client_id;
 }
-
+/*
 static char* szTrigger = 
 "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values\n"
 "FOR EACH ROW\n"
@@ -285,6 +285,13 @@ void setup_delete_db_callback(sqlite3 * db)
 
     if ( errmsg )
         sqlite3_free(errmsg);
+}
+*/
+
+void setup_delete_db_callback(sqlite3 * db)
+{
+    int rc = sqlite3_create_function( db, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
+      SyncBlob_DeleteCallback, 0, 0 );
 }
 
 #if !defined(_WIN32_WCE)
