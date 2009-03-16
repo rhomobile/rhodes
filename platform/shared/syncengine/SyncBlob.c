@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "SyncBlob.h"
 #include "Constants.h"
@@ -61,7 +62,7 @@ int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync);
 int sqlite3OsClose(sqlite3_file *pId);
 #endif
 
-static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
+static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize, int nOffset ){
     sqlite3_vfs* pVfs = sqlite3_vfs_find(0);
     int nFlagsOut = 0;
     sqlite3_file *pFile = (sqlite3_file *)calloc(pVfs->szOsFile,1);
@@ -71,12 +72,12 @@ static int rhoReadFile( char* fName, char** resbuffer, int* resnFileSize ){
         sqlite_int64 nFileSize = 0;
         rc = sqlite3OsFileSize(pFile,&nFileSize);
         if ( rc == SQLITE_OK && nFileSize > 0 ){
-            char* buffer = (char*)malloc((int)nFileSize);
+            char* buffer = (char*)malloc((int)nFileSize+*resnFileSize);
 
-            rc = sqlite3OsRead(pFile,buffer,(int)nFileSize,0);
+            rc = sqlite3OsRead(pFile,buffer+nOffset,(int)nFileSize,0);
             if ( rc == SQLITE_OK ){
                 *resbuffer = buffer;
-                *resnFileSize = (int)nFileSize;
+                *resnFileSize += (int)nFileSize;
             }
             else
                 free(buffer);
@@ -100,16 +101,15 @@ static int rhoDeleteFile( char* pFilePath ){
     return rc == SQLITE_OK ? 1 : 0;
 }
 #else
-#include <stdio.h>
-#include <sys/stat.h>
 
 static int rhoDeleteFile( char* pFilePath ){
     int rc = remove(pFilePath);
     return rc == 0 ? 1 : 0;
 }
 
-const char* RhoGetRootPath() ;
-static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize ){
+//const char* RhoGetRootPath() ;
+
+static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize, int nOffset ){
     int rc = 0;
     int retCode = 0;
 	//char path[1000];
@@ -121,12 +121,12 @@ static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize ){
         memset(&st,0, sizeof(st));
         rc = stat(pFilePath, &st);
         if ( rc == 0 && st.st_size > 0 ){
-            char* buffer = (char*)malloc(st.st_size);
+            char* buffer = (char*)malloc(st.st_size + *resnFileSize);
 
-            rc = fread(buffer, sizeof(char), st.st_size, file );
+            rc = fread(buffer+nOffset, sizeof(char), st.st_size, file );
             if ( rc == st.st_size ){
                 *resbuffer = buffer;
-                *resnFileSize = st.st_size;
+                *resnFileSize += st.st_size;
                 retCode = 1;
             }
         }
@@ -137,6 +137,7 @@ static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize ){
     return retCode;
 }
 #endif //__APPLE__
+
 /*
 static char* makeFileName(pSyncObject ref, char* buffer)
 {
@@ -264,6 +265,16 @@ int SyncBlob_extractBlobs(pSyncOperation* op_list, int op_list_count, pSyncOpera
     return opblob_list_count;
 }
 
+static const char* szMultipartPrefix = 
+    "--A6174410D6AD474183FDE48F5662FCC5\r\n"
+    "Content-Disposition: form-data; name=\"blob\"\r\n"
+    "Content-Type: application/octet-stream\r\n";
+static const char* szMultipartPostfix = 
+    "----A6174410D6AD474183FDE48F5662FCC5--\r\n";
+
+static char* szMultipartContType = 
+    "multipart/form-data; boundary=--A6174410D6AD474183FDE48F5662FCC5";
+
 int SyncBlob_pushRemoteBlobs(pSyncOperation *list, int size)
 {
     int result = SYNC_PUSH_CHANGES_OK;
@@ -274,14 +285,25 @@ int SyncBlob_pushRemoteBlobs(pSyncOperation *list, int size)
     {
         char* fName = list[i]->_sync_object->_value;
         char* buffer = 0;
-        int nFileSize = 0;
-        int rc = rhoReadFile(fName, &buffer, &nFileSize );
+        int nFileSize = strlen(szMultipartPrefix) + strlen(szMultipartPostfix);
+        int rc = rhoReadFile(fName, &buffer, &nFileSize, strlen(szMultipartPrefix) );
 
         if ( rc == 1 && nFileSize && buffer){
 
             sprintf(url_string, "%s&%s", list[i]->_uri, list[i]->_post_body );
 
-            /*result =*/ push_remote_data( url_string, buffer, nFileSize, "application/octet-stream" );
+            memcpy(buffer, szMultipartPrefix, strlen(szMultipartPrefix) );
+            memcpy(buffer+nFileSize-strlen(szMultipartPostfix), szMultipartPostfix, strlen(szMultipartPostfix) );
+/*
+            strcpy(buffer,
+                "--A6174410D6AD474183FDE48F5662FCC5\r\n"
+                "Content-Disposition: form-data; name=\"files\"; filename=\"file1.txt\" \r\n"
+                "Content-Type: application/octet-stream\r\n"
+                "TEST"
+                "----A6174410D6AD474183FDE48F5662FCC5--\r\n" );
+            nFileSize = strlen(buffer);*/
+            /*result =*/ push_remote_data( url_string, buffer, nFileSize, szMultipartContType );
+            //push_remote_data( url_string, buffer, nFileSize, "application/octet-stream" );
 
         }
 
