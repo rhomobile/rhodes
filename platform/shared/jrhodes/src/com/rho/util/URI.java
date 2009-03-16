@@ -1365,6 +1365,10 @@ package com.rho.util;
     return m_path;
   }
 
+  public void setPath(String path) {
+	    m_path = path;
+  }
+  
  /**
   * Get the query string for this URI.
   *

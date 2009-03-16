@@ -119,8 +119,8 @@ public class HttpListener extends ThreadedServer {
                 {
                     //ignore
                 }
-                catch (Exception e) {
 					// If no respones - must have a request error
+				catch (Exception e) {
 					if (response == null) {
 						// try to write BAD_REQUEST
 						response = new HttpResponse(connection

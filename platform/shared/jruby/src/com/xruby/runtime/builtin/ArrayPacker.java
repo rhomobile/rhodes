@@ -5,12 +5,19 @@
 
 package com.xruby.runtime.builtin;
 
-/*import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
+import j2me.lang.CharacterMe;
 
 class ArrayPacker {
+	
+	public static final int Integer_SIZE = 32;
+	public static final int Short_SIZE = 16;
+	public static final int Byte_SIZE = 8;
+	public static final int Long_SIZE = 64;
+	
     //uv_to_utf8:
     //Copyright (C) 1993-2003 Yukihiro Matsumoto
     //TODO java may has library to do this.
@@ -56,17 +63,17 @@ class ArrayPacker {
         }
         throw new RubyException(RubyRuntime.RangeErrorClass, "pack(U): value out of range");
     }
-*/
-   // private static final long utf8_limits[] = {
-    //    0x0,            /* 1 */
-    //    0x80,           /* 2 */
-    //    0x800,          /* 3 */
-    //    0x10000,            /* 4 */
-    //    0x200000,           /* 5 */
-    //    0x4000000,          /* 6 */
-    //    0x80000000,         /* 7 */
-    //};
-/*
+
+    private static final long utf8_limits[] = {
+        0x0,            /* 1 */
+        0x80,           /* 2 */
+        0x800,          /* 3 */
+        0x10000,            /* 4 */
+        0x200000,           /* 5 */
+        0x4000000,          /* 6 */
+        0x80000000,         /* 7 */
+    };
+
     //utf8_to_uv:
     //Copyright (C) 1993-2003 Yukihiro Matsumoto
     private static long[] utf8_to_uv(String str, int p, long lenp) {
@@ -115,7 +122,7 @@ class ArrayPacker {
         }
         return new long[] {uv, lenp};
     }
-
+/*
     private static String qpencode(String str, int len) {
         throw new RubyException("Not implemented");
     }
@@ -123,6 +130,7 @@ class ArrayPacker {
     private static String encodes(String str, int todo, char type) {
         throw new RubyException("Not implemented");
     }
+*/
 
     public static RubyArray unpack(String str, String format) {
         int len;
@@ -158,7 +166,7 @@ class ArrayPacker {
                 if (natstr.indexOf(type) >= 0) {
                     p++;
                 } else {
-                    throw new RubyException(RubyRuntime.ArgumentErrorClass, String.format("'%c' allowed only after types %s", type, natstr));
+                    throw new RubyException(RubyRuntime.ArgumentErrorClass, "'" + type + "' allowed only after types " + natstr);
                 }
             }
 
@@ -170,7 +178,7 @@ class ArrayPacker {
                 p++;
             } else if (Character.isDigit(t)) {
                 int end = p;
-                while (end < format.length() - 1 && Character.isDigit(format.indexOf(end + 1))) {
+                while (end < format.length() - 1 && CharacterMe.isDigit(format.indexOf(end + 1))) {
                     end++;
                 }
                 len = Integer.parseInt(format.substring(p, end + 1), 10);
@@ -207,7 +215,7 @@ class ArrayPacker {
                 case 's':
                     while (len-- > 0) {
                         short tmp = 0;
-                        for (int j = 0; j < Short.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Short_SIZE / Byte_SIZE; ++j) {
                             char c = str.charAt(s++);
                             tmp += (c << (j * 8));
                         }
@@ -220,7 +228,7 @@ class ArrayPacker {
                 case 'l':
                     while (len-- > 0) {
                         int tmp = 0;
-                        for (int j = 0; j < Integer.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Integer_SIZE / Byte_SIZE; ++j) {
                             char c = str.charAt(s++);
                             tmp += (c << (j * 8));
                         }
@@ -230,11 +238,11 @@ class ArrayPacker {
                     break;
 
                 case 'q':
-                    if (str.length() < Long.SIZE / Byte.SIZE) {
+                    if (str.length() < Long_SIZE / Byte_SIZE) {
                         ary.add(RubyConstant.QNIL);
                     } else {
                         long l = 0;
-                        for (int j = 0; j < Long.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Long_SIZE / Byte_SIZE; ++j) {
                             long c = str.charAt(s++);
                             l += (c << (j * 8));
                         }
@@ -252,7 +260,7 @@ class ArrayPacker {
                 case 'd':
                     while (len-- > 0) {
                         long tmp = 0;
-                        for (int j = 0; j < Long.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Long_SIZE / Byte_SIZE; ++j) {
                             long c = str.charAt(s++);
                             tmp += (c << (j * 8));
                         }
@@ -277,7 +285,7 @@ class ArrayPacker {
                 case 'N':
                     while (len-- > 0 && s < send) {
                         long tmp = 0;
-                        for (int j = Integer.SIZE / Byte.SIZE - 1; j >= 0; --j) {
+                        for (int j = Integer_SIZE / Byte_SIZE - 1; j >= 0; --j) {
                             long c = str.charAt(s++);
                             tmp += (c << (j * 8));
                         }
@@ -292,7 +300,7 @@ class ArrayPacker {
 
         return ary;
     }
-
+/*
     public static StringBuilder pack(RubyArray array, String format) {
         int len = 0;
         int items = array.size();
@@ -779,5 +787,5 @@ class ArrayPacker {
         }
 
         return result;
-    }
-}*/
+    }*/
+}
