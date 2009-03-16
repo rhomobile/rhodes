@@ -137,7 +137,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 
   lock_sync_mutex();	
 
-	prepare_db_statement("SELECT attrib, source_id, object, value, type \
+	prepare_db_statement("SELECT attrib, source_id, object, value, attrib_type \
 						 FROM object_values where source_id=? and update_type =?",
 						 database,
 						 &op_list_select_statement);
