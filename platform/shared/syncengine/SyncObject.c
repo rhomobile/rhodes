@@ -142,7 +142,7 @@ int insert_into_database(pSyncObject ref) {
 		lock_sync_mutex();	
 
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
-							 update_type,token,type) VALUES(?,?,?,?,?,?,?,?)",
+							 update_type,token,attrib_type) VALUES(?,?,?,?,?,?,?,?)",
 							 ref->_database,
 							 &insert_statement);
 		sqlite3_bind_int(insert_statement, 1, ref->_primary_key);

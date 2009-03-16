@@ -272,7 +272,7 @@ static char* szTrigger =
 "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values\n"
 "FOR EACH ROW\n"
 "BEGIN\n"
-"SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.type,OLD.update_type);\n"
+"SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type,OLD.update_type);\n"
 "END;";
 
 void setup_delete_db_callback(sqlite3 * db)
