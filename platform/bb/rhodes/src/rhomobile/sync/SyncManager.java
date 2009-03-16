@@ -171,6 +171,15 @@ public class SyncManager {
 		return bytesRead;
 	}
 	
+	static String szMultipartContType = 
+	    "multipart/form-data; boundary=--A6174410D6AD474183FDE48F5662FCC5";
+	static String szMultipartPrefix = 
+	    "--A6174410D6AD474183FDE48F5662FCC5\r\n"+
+	    "Content-Disposition: form-data; name=\"blob\"\r\n"+
+	    "Content-Type: application/octet-stream\r\n";
+	static String szMultipartPostfix = 
+	    "----A6174410D6AD474183FDE48F5662FCC5--\r\n";
+	
 	public static void makePostRequest(String url, InputStream data, String session, 
 			String contentType )throws IOException 
 	{
@@ -181,12 +190,24 @@ public class SyncManager {
 			connection = NetworkAccess.connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
-			if ( contentType != null && contentType.length() > 0 )
-				connection.setRequestProperty("content-type", contentType);
+			
+			boolean bMultipart = false;
+			if ( contentType != null && contentType.length() > 0 ){
+				if ( contentType.equalsIgnoreCase("multipart/form-data")){
+					connection.setRequestProperty("content-type", szMultipartContType);
+					bMultipart = true;
+				}
+				else
+					connection.setRequestProperty("content-type", contentType);
+			}
 			
 			os = connection.openOutputStream();
 			connection.setRequestMethod(HttpConnection.POST);
 
+			if (bMultipart){
+				os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
+			}
+				
 			synchronized (SyncUtil.m_byteBuffer) {			
 				int nRead = 0;
 	    		do{
@@ -196,6 +217,10 @@ public class SyncManager {
 	    		}while( nRead > 0 );
 			}
 
+			if (bMultipart){
+				os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
+			}
+			
 			//os.write(data);
 			os.flush();
 		}catch(IOException exc){
