@@ -95,16 +95,17 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
 						current_parse_object->_attrib = json_object_get_string(sub_val);
 					} else if (strcmp(sub_key, "db_operation") == 0) {
 						current_parse_object->_db_operation = json_object_get_string(sub_val);
-					} else if (strcmp(sub_key, "type") == 0) {
+					} else if (strcmp(sub_key, "attrib_type") == 0) {
 						current_parse_object->_type = json_object_get_string(sub_val);
 					}
 
 				}
-                
-				/*if ( nRecords == 0 )
+                /*
+				if ( nRecords == 0 )
                 {
 					current_parse_object->_type = str_assign("blob.file");
-					current_parse_object->_value = str_assign("\\Data\\Rho\\test.png");
+					current_parse_object->_value = str_assign("\\Program Files\\rhodes\\rho\\test.png");
+                    //current_parse_object->_value = str_assign("\\Data\\Rho\\test.png");
 					current_parse_object->_update_type = str_assign("create");
 				}*/
 
