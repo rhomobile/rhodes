@@ -302,7 +302,7 @@ int SyncBlob_pushRemoteBlobs(pSyncOperation *list, int size)
                 "TEST"
                 "----A6174410D6AD474183FDE48F5662FCC5--\r\n" );
             nFileSize = strlen(buffer);*/
-            /*result =*/ push_remote_data( url_string, buffer, nFileSize, szMultipartContType );
+            result = push_remote_data( url_string, buffer, nFileSize, szMultipartContType );
             //push_remote_data( url_string, buffer, nFileSize, "application/octet-stream" );
 
         }
