@@ -1,0 +1,39 @@
+#need config:common tasks
+load '../../../rhodes/rhodes-build/lib/tasks/common.rake'
+#picks up bundle:wm task for build rhobundle
+load '../../../rhodes/rhodes-build/lib/tasks/wm.rake'
+
+#remove tasks that are used for end user builds
+remove_task "device:wm"
+remove_task "run:wm:app"
+
+#move us to the working directory
+chdir "..", :verbose => false
+
+#change location of build.yml for common tasks
+$buildyml = "build/build.yml"
+
+desc "Build RhoBundle"
+task :bundle => "bundle:wm"
+
+desc "Build for WM6"
+task :build => :bundle do
+  vcbuild = $config[] #XXX
+  cabwiz = $config[] #XXX
+
+  puts `#{vcbuild} /M4 rhodes.sln "Release|Windows Mobile 6 Professional SDK (ARMV4I)"`
+
+  chdir "build"
+
+  puts `cscript build_inf.js rhodes.inf wm6`
+  puts `#{cabwiz} rhodes.inf`
+  puts `cscript cleanup.js`
+
+  #move cab and inf to target bindir
+  #XXX
+ 
+  rm 'cleanup.js'
+
+  chdir '..'
+  
+end
