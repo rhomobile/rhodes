@@ -1,6 +1,8 @@
+$buildyml = "build.yml"
+
 namespace "config" do
   task :common do
-    $config = Jake.config(File.open('build.yml'))  
+    $config = Jake.config(File.open($buildyml))  
     $basedir = pwd
     $bindir = File.join($basedir,'bin')
     $tmpdir = File.join($bindir,'tmp')
@@ -28,3 +30,14 @@ namespace "bundle" do
   task :common do
   end
 end
+
+Rake::TaskManager.class_eval do
+  def remove_task(task_name)
+    @tasks.delete(task_name.to_s)
+  end
+end
+ 
+def remove_task(task_name)
+  Rake.application.remove_task(task_name)
+end
+
