@@ -525,6 +525,7 @@
 
         <echo message="Cleaning up dirs..."/>
         <delete dir="${bin.dir}"/>
+        <delete dir="${build.target}"/>
         <delete dir="${dir.sis}" includes="*.sis, *.SIS, *.sisx, *.rnd" />
         
         <mkdir dir="${bin.dir}"/>
