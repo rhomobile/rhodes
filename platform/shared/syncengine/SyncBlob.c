@@ -272,7 +272,7 @@ int SyncBlob_extractBlobs(pSyncOperation* op_list, int op_list_count, pSyncOpera
 static const char* szMultipartPrefix = 
    "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
    "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
-   "Content-Type: octet-stream\r\n\r\n";
+   "Content-Type: application/octet-stream\r\n\r\n";
     //"Content-Transfer-Encoding: binary\r\n\r\n";
 static const char* szMultipartPostfix = 
     "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
