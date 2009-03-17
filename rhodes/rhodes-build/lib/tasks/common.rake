@@ -7,14 +7,15 @@ namespace "config" do
     $bindir = File.join($basedir,'bin')
     $tmpdir = File.join($bindir,'tmp')
     $targetdir =  File.join($bindir,'target')
-
     $srcdir = File.join($bindir, '/RhoBundle')
+    
+    filedir = File.expand_path File.dirname(__FILE__)
 
-    $compileERBbase = File.join(File.dirname(__FILE__),'..','compileERB')
-    $compileRBbase = File.join(File.dirname(__FILE__),'..','compileRB')
+    $compileERBbase = File.join(filedir,'..','compileERB')
+    $compileRBbase = File.join(filedir,'..','compileRB')
 
-    $appmanifest = File.join(File.dirname(__FILE__),'..','manifest','createAppManifest.rb')
-    $res = File.join(File.dirname(__FILE__),'..','..','res')
+    $appmanifest = File.join(filedir,'..','manifest','createAppManifest.rb')
+    $res = File.join(filedir,'..','..','res')
     $prebuilt = File.join($res,'prebuilt')
 
   end
