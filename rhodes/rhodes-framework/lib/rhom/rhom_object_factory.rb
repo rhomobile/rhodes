@@ -231,12 +231,13 @@ module Rhom
                   val = self.inst_strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
                   unless self.method_name_reserved?(method) or val.nil?
-                    result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
-                                                              {"source_id"=>self.get_inst_source_id,
-                                                               "object"=>obj,
-                                                               "attrib"=>method,
-                                                               "value"=>val,
-                                                               "update_type"=>'create'})
+                    fields = {"source_id"=>self.get_inst_source_id,
+                              "object"=>obj,
+                              "attrib"=>method,
+                              "value"=>val,
+                              "update_type"=>'create'}
+                    fields = method == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                    result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME, fields)                                     
                   end
                 end
                 result
