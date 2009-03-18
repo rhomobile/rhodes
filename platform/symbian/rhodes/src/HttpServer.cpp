@@ -182,7 +182,7 @@ TInt CHttpServer::ExecuteL()
 				rb_gc();
 			}
 			
-			shttpd_poll(ctx, 1000);
+			shttpd_poll(ctx, 100000);
 		}
 
 		shttpd_fini(ctx);
