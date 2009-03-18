@@ -131,6 +131,18 @@ class ArrayPacker {
         throw new RubyException("Not implemented");
     }
 */
+    private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    private static final int[] b64_xtable = new int[256];
+    static{
+    	
+	    // b64_xtable for decoding Base 64
+	    for (int i = 0; i < 256; i++) {
+	        b64_xtable[i] = -1;
+	    }
+	    for (int i = 0; i < 64; i++) {
+	        b64_xtable[(int)b64_table.charAt(i)] = i;
+	    }
+    }
     
     public static RubyArray unpack(String str, String format) {
         int len;
@@ -293,6 +305,77 @@ class ArrayPacker {
                     }
                     break;
 
+                case 'm': //base64
+                    int length = send*3/4;
+                    StringBuffer lElem = new StringBuffer(length);
+                    
+                    int a = -1, b = -1, c = 0, d;
+                    int s1 = -1;
+                	
+                    if (len > send - s) len = send - s;
+                    while (len > 0 && s < send) {
+                        a = b = c = d = -1;
+                        
+                        // obtain a
+                        s1 = str.charAt(s++);
+                        while (((a = b64_xtable[s1]) == -1) && s + 1 < send) {
+                        	s1 = str.charAt(s++);
+                        }
+                        if (a == -1) break;
+                        
+                        // obtain b
+                        s1 = str.charAt(s++);
+                        while (((b = b64_xtable[s1]) == -1) && s + 1 < send ) {
+                        	s1 = str.charAt(s++);
+                        }
+                        if (b == -1) break;
+                        
+                        // obtain c
+                        s1 = str.charAt(s++);
+                        while (((c = b64_xtable[s1]) == -1) && s + 1 < send) {
+                            if (s1 == '=') break;
+                            s1 = str.charAt(s++);
+                        }
+                        if ((s1 == '=') || c == -1) {
+                            if (s1 == '=') {
+                            	s--;
+                                //encode.position(encode.position() - 1);
+                            }
+                            break;
+                        }
+                        
+                        // obtain d
+                        s1 = str.charAt(s++);
+                        while (((d = b64_xtable[s1]) == -1) && s + 1 < send) {
+                            if (s1 == '=') break;
+                            s1 = str.charAt(s++);
+                        }
+                        if ((s1 == '=') || d == -1) {
+                            if (s1 == '=') {
+                            	s--;
+                                //encode.position(encode.position() - 1);
+                            }
+                            break;
+                        }
+
+                        // calculate based on a, b, c and d
+                        lElem.append( (char)((a << 2 | b >> 4) & 255) );
+                        lElem.append( (char)((b << 4 | c >> 2) & 255) );
+                        lElem.append( (char)((c << 6 | d) & 255) );
+                    }
+                    
+                    if (a != -1 && b != -1) {
+                        if (c == -1 && s == '=') {
+                        	lElem.append( (char)((a << 2 | b >> 4) & 255) );
+                        } else if(c != -1 && s == '=') {
+                        	lElem.append( (char)((a << 2 | b >> 4) & 255) );
+                        	lElem.append( (char)((b << 4 | c >> 2) & 255) );
+                        }
+                    }
+                    
+                    ary.add( ObjectFactory.createString(lElem) );
+                    break;
+                    
                 default:
                     break;
             }

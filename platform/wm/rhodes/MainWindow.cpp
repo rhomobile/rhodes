@@ -216,7 +216,11 @@ LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    m_spIWebBrowser2->Refresh();
+//    m_spIWebBrowser2->Refresh();
+
+	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
+	Navigate2(wcurl);
+	free(wcurl);
     return 0;
 }
 
