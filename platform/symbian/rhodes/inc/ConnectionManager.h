@@ -96,6 +96,8 @@ private:
 	 */
 	void ConstructL();
 	
+	TInt SelectIAP();
+	
 private: //Data
 	
 	CRepository	*	iRepository;
