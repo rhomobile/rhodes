@@ -66,7 +66,14 @@ public class Collections
     
     public static void reverse(List list)
     {
-            //TODO: reverse
-            throw new RuntimeException("Not Implemented");
+    	int length = list.size();
+
+    	if ( length < 2 )
+    		return;
+    	
+        for (int i = 0; i <= length >> 1; i++) {
+        	list.set(i, list.get(length - i - 1) );
+        	list.set(length - i - 1, list.get(i) );
+        }
     }
 }
