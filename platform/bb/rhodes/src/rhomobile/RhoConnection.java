@@ -617,7 +617,7 @@ public class RhoConnection implements HttpConnection {
 		reqHash.setProperty( "model", model);
 
 		reqHash.setProperty("request-method", this.method);
-		reqHash.setProperty("request-uri", uri.toString());
+		reqHash.setProperty("request-uri", uri.getPath());
 		reqHash.setProperty("request-query", uri.getQueryString());
 		
 		if ( postData != null && postData.size() > 0 ){
