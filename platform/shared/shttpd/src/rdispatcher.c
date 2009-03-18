@@ -4,7 +4,11 @@
 #include "llist.h"
 #include "rhoruby.h"
 
+#ifdef __SYMBIAN32__
+static char* localhost = "http://127.0.0.1:8080";
+#else
 static char* localhost = "http://localhost:8080";
+#endif
 
 #ifdef __SYMBIAN32__      
       extern int g_need_launch_gc;
@@ -266,7 +270,7 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
-
+  
   if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg") )
     return NULL;
 
@@ -378,6 +382,7 @@ void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 }
 
 void rho_serve(struct shttpd_arg *arg) {
+	
 	//const char	*s;
     struct rho_read_state {
         size_t	cl;		 /* Content-Length	*/

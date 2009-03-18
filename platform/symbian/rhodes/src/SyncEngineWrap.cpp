@@ -327,20 +327,6 @@ extern "C"
 		delete gHttpClient;
 	}
 
-	void perform_notification(char* callback, char* params)
-	{
-        CHttpClient* gHttpClient = CHttpClient::NewL();
-
-		gHttpClient->InvokeHttpMethodL(CHttpConstants::EPost,
-				(const TUint8*) callback, 
-				strlen(callback), 
-				(const TUint8*) params, 
-				strlen(params),
-				NULL);
-
-		delete gHttpClient;
-	}
-	
 	/*
 	 * Commented posix version
 	 * 
