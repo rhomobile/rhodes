@@ -172,10 +172,10 @@ public class SyncManager {
 	}
 	
 	static String szMultipartPrefix = 
-	    "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
-	    "Content-Disposition: form-data; name=\"blob\"\r\n"+
-	    "Content-Type: application/octet-stream\r\n"+
-	    "Content-Transfer-Encoding: binary\r\n\r\n";
+	   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
+	   "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"+
+	   "Content-Type: application/octet-stream\r\n\r\n";
+	
 	static String szMultipartPostfix = 
 	    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
