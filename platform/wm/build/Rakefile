@@ -7,19 +7,35 @@ load '../../../rhodes/rhodes-build/lib/tasks/wm.rake'
 remove_task "device:wm"
 remove_task "run:wm:app"
 
-#move us to the working directory
-chdir "..", :verbose => false
 
-#change location of build.yml for common tasks
-$buildyml = "build/build.yml"
+$builddir = pwd
 
 desc "Build RhoBundle"
-task :bundle => "bundle:wm"
+task :bundle do
+  Rake::Task["config:wm"].invoke
+  chdir ".."
+  Rake::Task["loadframework"].invoke
+  Rake::Task["makedirs"].invoke
+
+  $basedir =  $config["env"]["paths"]["appdir"]
+  chdir $basedir
+  
+  Rake::Task["bundle:wm"].execute
+  chdir $builddir
+  cp_r 'bin','..'
+  rm_rf 'bin'
+  
+end
 
 desc "Build for WM6"
 task :build => :bundle do
-  vcbuild = $config[] #XXX
-  cabwiz = $config[] #XXX
+
+  vcbuild = $config["env"]["paths"]["vcbuild"]
+  cabwiz = $config["env"]["paths"]["cabwiz"]
+
+  #move us to the working directory
+  chdir $builddir
+  chdir "..", :verbose => false
 
   puts `#{vcbuild} /M4 rhodes.sln "Release|Windows Mobile 6 Professional SDK (ARMV4I)"`
 
@@ -30,7 +46,10 @@ task :build => :bundle do
   puts `cscript cleanup.js`
 
   #move cab and inf to target bindir
-  #XXX
+  puts pwd
+  puts $targetdir
+  mv 'rhodes.cab', '../bin/target'
+  mv 'rhodes.inf', '../bin/target'
  
   rm 'cleanup.js'
 

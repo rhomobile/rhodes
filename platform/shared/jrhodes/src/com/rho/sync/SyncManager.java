@@ -150,14 +150,16 @@ public class SyncManager {
 		return bytesRead;
 	}
 	
-	static String szMultipartContType = 
-	    "multipart/form-data; boundary=--A6174410D6AD474183FDE48F5662FCC5";
 	static String szMultipartPrefix = 
-	    "--A6174410D6AD474183FDE48F5662FCC5\r\n"+
+	    "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
 	    "Content-Disposition: form-data; name=\"blob\"\r\n"+
-	    "Content-Type: application/octet-stream\r\n";
+	    "Content-Type: application/octet-stream\r\n"+
+	    "Content-Transfer-Encoding: binary\r\n\r\n";
 	static String szMultipartPostfix = 
-	    "----A6174410D6AD474183FDE48F5662FCC5--\r\n";
+	    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
+
+	static String szMultipartContType = 
+	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 	
 	public static void makePostRequest(String url, InputStream data, String session, 
 			String contentType )throws IOException 

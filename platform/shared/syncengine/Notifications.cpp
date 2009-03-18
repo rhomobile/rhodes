@@ -95,7 +95,7 @@ void set_notification(int source_id, const char *url, char* params) {
 			notification->url = HTTPResolveUrl(strdup(url));
 			notification->params = strdup(params);
 			printf("Resolved [%s] in [%s]\n", url, notification->url);								 
-			printf("Setting notification (%s) for source %d\n", notification->url, source_id);			
+            printf("Setting notification (%s) for source %d, params: %s\n", notification->url, source_id, params);
 			_notifications[source_id] = notification;
 		}
 	} catch(...) {
