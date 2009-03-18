@@ -36,6 +36,12 @@
 
 #include <httpstringconstants.h>
 
+#include <stdio.h>
+#include <string.h>
+
+#include <aknlists.h>		// CAknSinglePopupMenuStyleListBox
+#include <CommDb.h>
+
 extern TUint32 gSelectedConnectionId;
 
 namespace EConnectionStatus
@@ -43,6 +49,13 @@ namespace EConnectionStatus
 	TInt Disconnected = 5;
 	}
 
+class TIapData
+{
+public:
+	TBuf<128> iName;
+	TUint32 iIap;
+ 
+};
 
 CConnectionManager::CConnectionManager()
 	{
@@ -52,6 +65,89 @@ CConnectionManager::CConnectionManager()
 CConnectionManager::~CConnectionManager()
 	{
 	}
+
+TInt CConnectionManager::SelectIAP()
+{
+	CArrayFixFlat<TIapData>* iEApList=new (ELeave) CArrayFixFlat<TIapData>(2) ;
+	TInt stack=0;
+	// Make listitems. and PUSH it
+	CAknSinglePopupMenuStyleListBox* list = new(ELeave) CAknSinglePopupMenuStyleListBox;
+	CleanupStack::PushL(list);
+	stack++; 
+ 
+	// Create popup list and PUSH it.
+	CAknPopupList* popupList = CAknPopupList::NewL(list,
+		R_AVKON_SOFTKEYS_OK_CANCEL, AknPopupLayouts::EMenuWindow);
+	CleanupStack::PushL(popupList);stack++; 
+ 
+	CDesCArrayFlat* items = new (ELeave) CDesCArrayFlat(5);
+	CleanupStack::PushL(items);stack++; 
+	// initialize listbox.
+	list->ConstructL(popupList, CEikListBox::ELeftDownInViewRect);
+	list->CreateScrollBarFrameL(ETrue);
+	list->ScrollBarFrame()->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff,
+		CEikScrollBarFrame::EAuto);
+ 
+ 
+	TBuf<52> iapfromtable;
+	TInt err = KErrNone;
+ 
+	CCommsDatabase* iCommsDB=CCommsDatabase::NewL(EDatabaseTypeIAP);
+	CleanupStack::PushL(iCommsDB);stack++; 
+#ifdef __SERIES60_3X__
+	CCommsDbTableView* gprsTable = iCommsDB->OpenIAPTableViewMatchingBearerSetLC(
+			iBearerFilter == EApBearerTypeWLAN 
+				? ECommDbBearerWLAN 
+				: ECommDbBearerGPRS|ECommDbBearerWLAN|ECommDbBearerVirtual,
+		ECommDbConnectionDirectionOutgoing); 
+#else
+	CCommsDbTableView* gprsTable = iCommsDB->OpenIAPTableViewMatchingBearerSetLC(
+		ECommDbBearerGPRS|ECommDbBearerVirtual,
+		ECommDbConnectionDirectionOutgoing); 
+#endif
+	User::LeaveIfError(gprsTable->GotoFirstRecord());
+	TInt i=0;
+	TUint32 id;
+	TIapData eap;	
+ 
+	TInt cur =0; //current value
+	do
+	{
+		gprsTable->ReadTextL(TPtrC(COMMDB_NAME), iapfromtable);
+		gprsTable->ReadUintL(TPtrC(COMMDB_ID), id);
+		items->AppendL(iapfromtable);
+		eap.iIap = id;
+		eap.iName.Copy(iapfromtable);
+		iEApList->AppendL(eap);
+ 
+		err = gprsTable->GotoNextRecord();
+		i++;
+	}
+	while (err == KErrNone);
+	CleanupStack::PopAndDestroy(2); stack--; 
+ 
+	// Set listitems.
+	CTextListBoxModel* model = list->Model();
+	model->SetItemTextArray(items);
+	model->SetOwnershipType(ELbmOwnsItemArray);
+	CleanupStack::Pop();    
+ 
+	popupList->SetTitleL(_L("Access Point"));
+	list->SetListBoxObserver(popupList);
+	TInt popupOk = popupList->ExecuteLD();
+	CleanupStack::Pop();    
+	TInt iap=0;
+	if (popupOk)
+	{	
+		TInt index = list->CurrentItemIndex();
+		iap=(*iEApList)[index].iIap;
+ 
+	}
+	CleanupStack::PopAndDestroy();  
+	iEApList->Reset();
+	delete iEApList;
+	return iap;
+}
 
 CConnectionManager* CConnectionManager::NewLC()
 	{
@@ -149,75 +245,13 @@ TBool CConnectionManager::SetupConnection()
 	        iBearerFilter = EApBearerTypeWLAN;
 	    }
 
-#ifdef __WINSCW__
-		gSelectedConnectionId = 3;
-#else	
-	    // Show IAP selection dialog
-	    /*if ( gSelectedConnectionId == -1 )
-		{
-			CActiveApDb* aDb = CActiveApDb::NewL();
-			CleanupStack::PushL(aDb);
-	
-			CApSettingsHandler* settings = CApSettingsHandler::NewLC
-				(
-				   *aDb
-				 , ETrue
-				 , EApSettingsSelListIsPopUp
-				 , EApSettingsSelMenuSelectNormal
-				 , KEApIspTypeAll
-				 , iBearerFilter
-				 , KEApSortNameAscending
-				 , 0
-				 , EVpnFilterBoth
-				 , ETrue
-				);
-	
-			TInt nRes = settings->RunSettingsL(0, iSelectedConnectionId);
-			CleanupStack::PopAndDestroy(settings);
-			CleanupStack::PopAndDestroy(aDb);
 
-			if (nRes != KApUiEventSelected)
-			{
-				// Exit no selection
-				User::Leave(KErrNotReady);
-			}
-			
-			gSelectedConnectionId = iSelectedConnectionId; 
-		}*/
-#endif
+	    // Show IAP selection dialog
+	    if ( gSelectedConnectionId == -1 )
+	    	gSelectedConnectionId = SelectIAP();
+	    
 	    iSelectedConnectionId =  gSelectedConnectionId;
 	    
-	    // open the IAP communications database 
-		CCommsDatabase* commDB = CCommsDatabase::NewL(EDatabaseTypeIAP);
-		CleanupStack::PushL(commDB);
-
-		// initialize a view 
-		CCommsDbConnectionPrefTableView* commDBView = 
-		commDB->OpenConnectionPrefTableInRankOrderLC(ECommDbConnectionDirectionUnknown);
-
-		// go to the first record 
-		User::LeaveIfError(commDBView->GotoFirstRecord());
-
-		CCommsDbConnectionPrefTableView::TCommDbIapBearer bearer;
-		bearer.iBearerSet = iBearerFilter;
-		
-		// Declare a prefTableView Object.
-		CCommsDbConnectionPrefTableView::TCommDbIapConnectionPref pref;
-
-		pref.iBearer = bearer;
-		pref.iDirection = ECommDbConnectionDirectionOutgoing;
-		
-		// read the connection preferences 
-		commDBView->ReadConnectionPreferenceL(pref);
-
-		iSelectedConnectionId = pref.iBearer.iIapId; 
-		
-		// pop and destroy the IAP View 
-		CleanupStack::PopAndDestroy(commDBView);
-
-		// pop and destroy the database object
-		CleanupStack::PopAndDestroy(commDB);
-
     	iNewConnection = ETrue;
     	
         // IAP Selected

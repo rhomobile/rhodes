@@ -20,12 +20,16 @@
  */
 
 #include "HttpServer.h"
+
 #include "rhodes.pan"
 #include <eikenv.h>
 #include "rhodesApplication.h"
 #include "rhodesAppUI.h"
 
 #include <e32math.h>  //Rand
+#include <AknGlobalNote.h>
+
+#include "tcmalloc/rhomem.h"
 
 #include "rhoruby/rhoruby.h"
 #include <stdio.h>
@@ -250,7 +254,8 @@ struct shttpd_ctx* CHttpServer::GetHttpdContext()
 	}
 
 extern "C" char* HTTPResolveUrl(char* url) {
-	char* ret = NULL;
+	const char* empty_str = "";
+    char* ret = NULL;
 	if (g_http_server) {
 		struct shttpd_ctx* ctx = g_http_server->GetHttpdContext();
 		char httproot[1024];
@@ -258,5 +263,5 @@ extern "C" char* HTTPResolveUrl(char* url) {
 		sprintf(httproot,"%sapps",rootpath);
 		ret = rho_resolve_url(url, httproot, shttpd_get_index_names(ctx));
 	}
-	return ret?ret:(char*)"";
+	return ret ? ret : strdup(empty_str);
 }

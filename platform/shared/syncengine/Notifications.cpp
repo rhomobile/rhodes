@@ -133,6 +133,8 @@ void clear_notification(int source_id) {
 
 #else //__SYMBIAN32__
 
+#include "tcmalloc/rhomem.h"
+
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>

@@ -367,7 +367,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         	{
         		if (iBrCtlInterface)
         			{
-        				//_LIT(KHomePage, "http://127.0.0.1:8080/");
+						//_LIT(KHomePage, "http://127.0.0.1:8080/");
         				iBrCtlInterface->LoadUrlL(iStartPage);
         				iBrCtlInterface->ClearCache();
         			}
