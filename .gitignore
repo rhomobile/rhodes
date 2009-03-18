@@ -40,6 +40,12 @@ ABLD.BAT
 #*.hlp
 *.hrh
 
+platform/android/.metadata/*
+platform/android/Rhodes/assets
+platform/android/Rhodes/bin
+platform/android/Rhodes/libs
+platform/shared/*/bin
+
 #*.jar
 *.cod
 *.debug

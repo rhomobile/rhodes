@@ -328,4 +328,12 @@ describe "RhomObjectFactory" do
     @accts[1].name.should == "Mirapath"
     @accts[1].industry.should == "Electronics"
   end
+  
+  it "should support blob file type" do
+    @acct = Account.new({'image_uri'=>"/db/images/mynewimage.png"})
+    @acct.name = "my new acct"
+    @acct.save
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :attrib_type => "blob.file")
+    @res.length.should == 1
+  end
 end

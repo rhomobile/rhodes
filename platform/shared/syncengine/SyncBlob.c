@@ -112,14 +112,16 @@ static int rhoDeleteFile( char* pFilePath ){
 static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize, int nOffset ){
     int rc = 0;
     int retCode = 0;
-	//char path[1000];
-	//path[0]=0;
-	//sprintf(path,"%s%s", RhoGetRootPath(), pFilePath);
-    FILE* file = fopen(pFilePath,"r");
+	char path[1024];
+	path[0]=0;
+	sprintf(path,"%sapps%s", RhoGetRootPath(), pFilePath);
+	printf("FULL PATH: %s", path);
+    //FILE* file = fopen(pFilePath,"r");
+	FILE* file = fopen(path,"r");
     if (file){
         struct stat st;
         memset(&st,0, sizeof(st));
-        rc = stat(pFilePath, &st);
+        rc = stat(path, &st);
         if ( rc == 0 && st.st_size > 0 ){
             char* buffer = (char*)malloc(st.st_size + *resnFileSize);
 
@@ -265,15 +267,18 @@ int SyncBlob_extractBlobs(pSyncOperation* op_list, int op_list_count, pSyncOpera
     return opblob_list_count;
 }
 
+// We don't care about the filename (it is sent in the uri params).
+// However, multipart-form post to rails seems to fail if we don't provide it.
 static const char* szMultipartPrefix = 
-    "--A6174410D6AD474183FDE48F5662FCC5\r\n"
-    "Content-Disposition: form-data; name=\"blob\"\r\n"
-    "Content-Type: application/octet-stream\r\n";
+   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
+   "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
+   "Content-Type: application/octet-stream\r\n\r\n";
+    //"Content-Transfer-Encoding: binary\r\n\r\n";
 static const char* szMultipartPostfix = 
-    "----A6174410D6AD474183FDE48F5662FCC5--\r\n";
+    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
 static char* szMultipartContType = 
-    "multipart/form-data; boundary=--A6174410D6AD474183FDE48F5662FCC5";
+    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 
 int SyncBlob_pushRemoteBlobs(pSyncOperation *list, int size)
 {
