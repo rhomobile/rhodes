@@ -42,6 +42,7 @@ extern "C" {
 
 #define MAX_SYNC_TRY_COUNT 3
 #define SYNC_PAGE_SIZE     200
+#define LAST_SYNC_TOKEN    1
 
 /* Sync Object db codes */
 #define SYNC_OBJECT_SUCCESS 0

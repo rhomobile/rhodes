@@ -176,10 +176,10 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
                 strcat(url_string,szToken);
             }*/
             
-            if ( src->_token == 1 )
+            if ( src->_token == LAST_SYNC_TOKEN )
                 strcat(url_string, "&token=last" );
             else
-                processToken( 1, src );
+                processToken( LAST_SYNC_TOKEN, src );
 
 	        json_string = fetch_remote_data(url_string);
 	        if(json_string && strlen(json_string) > 0) {
