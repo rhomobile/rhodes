@@ -43,8 +43,6 @@ body > .toolbar {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    border-bottom: 1px solid #2d3642;
-    border-top: 1px solid #6d84a2;
     padding: 10px;
     height: 45px;
     background: url(/public/images/toolbar.png) #6d84a2 repeat-x;
