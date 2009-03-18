@@ -77,6 +77,17 @@ int isContinueSync(){
     return !g_sync_pause && !stop_running;
 }
 
+int get_start_source(pSource * source_list, int source_length ){
+    int i = 0;
+
+    for(i = 0; i < source_length; i++) {
+        if (source_list[i]->_token == LAST_SYNC_TOKEN )
+            return i;
+    }
+
+    return 0;
+}
+
 int process_local_changes() {
 	int nRet = 0;
     g_sync_inprogress = 1;
@@ -85,11 +96,13 @@ int process_local_changes() {
 	  int i,result = 0,source_length = 0;
 	  pSource *source_list;
 	  char *ask_params;
+      int nStartSrc = 0;
 	  source_list = calloc(MAX_SOURCES,sizeof(pSource));
 
 	  source_length = get_sources_from_database(source_list, database, MAX_SOURCES);
+      nStartSrc = get_start_source(source_list, source_length );
 //#if 0	  
-	  for(i = 0; i < source_length && isContinueSync(); i++) {
+	  for(i = nStartSrc; i < source_length && isContinueSync(); i++) {
 		  if(client_id == NULL) {
 			  client_id = set_client_id(database, source_list[i]);
 		  }
@@ -138,7 +151,7 @@ int process_local_changes() {
 			  g_cur_source = 0;
 
 #else
-		  for(i = 0; i < source_length && isContinueSync(); i++)
+		  for(i = nStartSrc; i < source_length && isContinueSync(); i++)
 		  {
 			  ask_params = get_params_for_source(source_list[i], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params);
