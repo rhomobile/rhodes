@@ -97,10 +97,8 @@ public abstract class RhoConnection {
 			if (path != null) {
 				int s0 = path.lastIndexOf('/');
 				int s1 = path.lastIndexOf('\\');
-				if (s1 > s0)
-					s0 = s1;
-				if (s0 < 0)
-					s0 = 0;
+				if (s1>s0) s0=s1;
+				if (s0<0) s0 = 0;
 				return path.substring(s0);
 			}
 		}
@@ -690,7 +688,7 @@ public abstract class RhoConnection {
 		reqHash.setProperty("model", model);
 
 		reqHash.setProperty("request-method", this.method);
-		reqHash.setProperty("request-uri", uri.toString());
+		reqHash.setProperty("request-uri", uri.getPath());
 		reqHash.setProperty("request-query", uri.getQueryString());
 
 		if (postData != null && postData.size() > 0) {
