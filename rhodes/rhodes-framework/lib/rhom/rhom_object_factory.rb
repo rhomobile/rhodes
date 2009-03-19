@@ -91,7 +91,6 @@ module Rhom
                     conditions.merge!({"update_type"=>update_type})
                     objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'})
 
-                    puts 'objs1.size: ' + objs.size.to_s                    
                     # fetch the rest of the attributes if we're searching by specific attrib value
                     if condition_hash and condition_hash.size > 0
                       full_objects = []
@@ -101,7 +100,6 @@ module Rhom
                       objs = full_objects
                     end
 
-                    puts 'objs2.size: ' + objs.size.to_s
                     # build up the object array where each
                     # row in this array is a rhom_object
                     objs.collect! do |obj|
@@ -116,7 +114,6 @@ module Rhom
                       nil # remove the element from the array
                     end
                     
-                    puts 'hash_list.size' + hash_list.size.to_s
                   end
 
                   # convert hash to array
