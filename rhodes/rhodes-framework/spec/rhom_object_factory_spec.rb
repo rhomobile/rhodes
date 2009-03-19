@@ -192,7 +192,7 @@ describe "RhomObjectFactory" do
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
     
-    records = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'update')
+    records = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'update')
     records.length.should == 1
   end
 
@@ -216,7 +216,7 @@ describe "RhomObjectFactory" do
   it "should respond to ask" do
     question = 'Rhodes'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -226,7 +226,7 @@ describe "RhomObjectFactory" do
   it "should respond to ask with last question only" do
     question = 'Rhodes'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -235,7 +235,7 @@ describe "RhomObjectFactory" do
     question = 'Ruby on Rails'
     question_encoded = 'Ruby%20on%20Rails'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -246,7 +246,7 @@ describe "RhomObjectFactory" do
     question = 'where am i?'
     question_encoded = 'where%20am%20i%3F'
     Account.ask(question)
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :update_type => 'ask')
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
     @res.length.should == 1
     
     @res[0]['attrib'].should == 'question'
@@ -333,7 +333,7 @@ describe "RhomObjectFactory" do
     @acct = Account.new({'image_uri'=>"/db/images/mynewimage.png"})
     @acct.name = "my new acct"
     @acct.save
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', :attrib_type => "blob.file")
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'attrib_type' => "blob.file")
     @res.length.should == 1
   end
 end
