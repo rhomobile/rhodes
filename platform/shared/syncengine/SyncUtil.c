@@ -140,6 +140,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
     SyncHeader header;
     int nTry = 0;
 
+    header._count = -1;
+    header._token = 0;
+
     if ( !src->_source_url || strlen(src->_source_url) == 0 )
         return nTotal;
 
@@ -150,9 +153,6 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
     if ( list )
     {
         do {
-            header._count = -1;
-            header._token = 0;
-
 	        if (params && strlen(params) > 0) {
 				// Don't repeat if we're calling ask method
 				repeat=0;
@@ -170,27 +170,21 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 				        SYNC_SOURCE_FORMAT, 
 				        client_id, SYNC_PAGE_SIZE);
 	        }
-            /*if ( header._token != 0 ){
+            if ( header._token != 0 ){
                 char szToken[30];
                 sprintf(szToken, "&ack_token=%I64u",  header._token );
                 strcat(url_string,szToken);
-            }*/
-            
-            if ( src->_token == LAST_SYNC_TOKEN )
-                strcat(url_string, "&token=last" );
-            else
-                processToken( LAST_SYNC_TOKEN, src );
+            }
 
 	        json_string = fetch_remote_data(url_string);
 	        if(json_string && strlen(json_string) > 0) {
 		        struct json_object* json_to_free = 0;
 		        int available = parse_json_list(list, json_string, MAX_SYNC_OBJECTS, &json_to_free, &header);
 		        printf("Parsed %i records from sync source...\n", available);
-
-                processToken( header._token, src );
-
                 nTotal += available;
 		        if(available > 0) {
+
+                    processToken( header._token, src );
 
 			        for(j = 0; j < available; j++) {
 				        list[j]->_database = database;
@@ -226,7 +220,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	        } else {
                 nTry++;
 	        }
-        }while( header._count > 0 && nTry < MAX_SYNC_TRY_COUNT && repeat);
+        }while( header._count != 0 && nTry < MAX_SYNC_TRY_COUNT && repeat);
 
         free(list);
     }
@@ -241,26 +235,22 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 
 static void processToken( sqlite_uint64 token, pSource src )
 {
-    /*if ( token > 1 && src->_token == token ){
+    if ( token != 0 && src->_token == token ){
 		//Delete non-confirmed records
 
         delete_from_database_bytoken(src->_source_id, src->_token);
-    }else { */
-        //if ( token != 0 )
-        //{
-		    lock_sync_mutex();	
-		    prepare_db_statement("UPDATE sources SET token=? where source_id=?",
-						     (sqlite3 *)get_database(),
-						     &update_token_db_statement);
-		    sqlite3_bind_int64(update_token_db_statement, 1, token);
-            sqlite3_bind_int(update_token_db_statement, 2, src->_source_id);
-		    sqlite3_step(update_token_db_statement); 
-		    finish_db_statement(&update_token_db_statement);
-		    unlock_sync_mutex();	
-        //}
-        src->_token = token;
-//	}
+	}else if ( token != 0 ){
 
+		lock_sync_mutex();	
+		prepare_db_statement("UPDATE sources SET token=? where source_id=?",
+						 (sqlite3 *)get_database(),
+						 &update_token_db_statement);
+		sqlite3_bind_int64(update_token_db_statement, 1, token);
+        sqlite3_bind_int(update_token_db_statement, 2, src->_source_id);
+		sqlite3_step(update_token_db_statement); 
+		finish_db_statement(&update_token_db_statement);
+		unlock_sync_mutex();	
+	}
 }
 
 /*

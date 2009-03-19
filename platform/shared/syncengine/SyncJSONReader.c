@@ -51,7 +51,8 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
 	int nRecords = 0;
 
 	json = json_tokener_parse(input);
-	if ( !json ) return 0;
+	if ( !json || is_error(json) ) 
+        return 0;
     if ( json_to_free )
         *json_to_free = json;
 
