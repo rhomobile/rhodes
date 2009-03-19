@@ -154,5 +154,5 @@ task :set_version, [:version] do |t,args|
       f.write origfile
     end
   end
-  
+  Rake::Task[:get_version].invoke  
 end
