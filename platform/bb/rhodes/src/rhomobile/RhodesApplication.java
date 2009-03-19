@@ -124,15 +124,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	navigateUrl(url);
     }
 
-    void addToHistory(String strUrl ){
+    void addToHistory(String strUrl, String refferer ){
     	int nPos = -1;
     	for( int i = _history.size()-1; i >= 0; i-- ){
     		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
     			nPos = i;
     			break;
     		}
-    		String strUrl1 = strUrl + "/index";
+    		/*String strUrl1 = strUrl + "/index";
     		if ( strUrl1.equalsIgnoreCase((String)_history.elementAt(i)) ){
+    			nPos = i;
+    			break;
+    		}*/
+    		if ( refferer != null && refferer.equalsIgnoreCase((String)_history.elementAt(i)) ){
     			nPos = i;
     			break;
     		}
@@ -146,8 +150,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		else
     			_history.addElement(strUrl);
     	}
-    	else
+    	else{
     		_history.setSize(nPos+1);
+    		_history.setElementAt(strUrl, _history.size()-1 );
+    	}
     }
 
     void openLink(){
@@ -360,7 +366,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                 if ( urlRequestedEvent.getPostData() == null ||
                 	 urlRequestedEvent.getPostData().length == 0 )
-                	addToHistory(absoluteUrl);
+                	addToHistory(absoluteUrl, null );
 
                 PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl,
                                                                                    urlRequestedEvent.getHeaders(),
@@ -419,7 +425,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             if ( !absoluteUrl.startsWith(_httpRoot) )
                             	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
-                        	addToHistory(absoluteUrl);
+                        	addToHistory(absoluteUrl,referrer);
                             Object eventSource = e.getSource();
                             if (eventSource instanceof HttpConnection) {
                                 referrer = ((HttpConnection)eventSource).getRequestProperty(REFERER);
