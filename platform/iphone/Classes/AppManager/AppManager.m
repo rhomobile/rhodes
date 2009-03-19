@@ -93,7 +93,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  * Configures AppManager
  */
 - (void) configure {
-#ifdef DEBUG	
+#if TARGET_IPHONE_SIMULATOR	//DEBUG
 	bool replaceFiles = YES;
 #else
 	bool replaceFiles = NO;
