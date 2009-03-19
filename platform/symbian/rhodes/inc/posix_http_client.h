@@ -22,7 +22,8 @@ typedef struct _UrlInfo
 
 int sendHttpRequest(const char * url, 
 		const char* cookie,
-		const char* requestBody, 
+		const char* requestBody,
+		const char* contentType,
 		int bodySize, 
 		char** responseBody, //[out] 
 		char** authCookie, //[out]
