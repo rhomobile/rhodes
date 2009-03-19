@@ -22,7 +22,7 @@
 #include <assert.h>
 
 extern "C" {
-
+	
 void* notification_callback(void *parm);
 
 typedef struct {
@@ -55,9 +55,10 @@ void perform_notification(char* callback, char* params) {
 
 void* notification_callback(void *parm) {
 	notification_params_t* thread_params = (notification_params_t*) parm;
-
+	
 	if (thread_params) {
 		// Create and install the active scheduler
+		
 		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
 		CleanupStack::PushL(activeScheduler);
 		CActiveScheduler::Install(activeScheduler);
