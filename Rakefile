@@ -99,3 +99,60 @@ task :get_version do
   puts "  Rhodes Framework: " + rframever
   puts "  Rhodes Generator: " + rgenver
 end
+
+desc "Set version"
+task :set_version, [:version] do |t,args|
+  throw "You must pass in version" if args.version.nil?
+  ver = args.version.split(/\./)
+  major = ver[0]
+  minor = ver[1]
+  build = ver[2]
+  
+  throw "Invalid version format. Must be in the format of: major.minor.build" if major.nil? or minor.nil? or build.nil?
+
+  verstring = major+"."+minor+"."+build
+  origfile = ""
+
+  File.open("platform/bb/build/build.yml","r") { |f| origfile = f.read }
+  File.open("platform/bb/build/build.yml","w") do |f| 
+    f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
+  end
+
+  File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
+  File.open("platform/iphone/Info.plist","w") do |f| 
+    f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n  <string>#{verstring}</string>")
+  end
+
+  File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }
+  File.open("platform/symbian/build/release.properties","w") do |f|
+    origfile.gsub!(/release\.major=(\d+)/,"release.major=#{major}")
+    origfile.gsub!(/release\.minor=(\d+)/,"release.minor=#{minor}")
+    origfile.gsub!(/build\.number=(\d+)/,"build.number=#{build}")
+    f.write origfile
+  end
+
+  File.open("platform/android/Rhodes/AndroidManifest.xml","r") { |f| origfile = f.read }
+  File.open("platform/android/Rhodes/AndroidManifest.xml","w") do |f|
+    origfile.match(/versionCode="(\d+)"/)
+    vercode = $1.to_i + 1
+    origfile.gsub!(/versionCode="(\d+)"/,"versionCode=\"#{vercode}\"")
+    origfile.gsub!(/versionName="(\d+\.\d+\.*\d*)"/,"versionName=\"#{verstring}\"")
+
+    f.write origfile
+  end
+
+  ["rhodes/rhodes/lib/rhodes.rb",
+   "rhodes/rhodes-build/lib/version.rb",
+   "rhodes/rhodes-framework/lib/version.rb",
+   "rhodes/rhodes-framework/lib/rhodes.rb",
+   "rhodes/rhodes-generator/lib/version.rb"].each do |versionfile|
+  
+    File.open(versionfile,"r") { |f| origfile = f.read }
+    File.open(versionfile,"w") do |f|
+      origfile.gsub!(/VERSION = '(\d+\.\d+\.*\d*)'/, "VERSION = '#{verstring}'")
+      origfile.gsub!(/DBVERSION = '(\d+\.\d+\.*\d*)'/, "DBVERSION = '#{verstring}'")
+      f.write origfile
+    end
+  end
+  
+end
