@@ -90,16 +90,18 @@ module Rhom
                   ["query", "create", "update"].each do |update_type|
                     conditions.merge!({"update_type"=>update_type})
                     objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'})
-                    
+
+                    puts 'objs1.size: ' + objs.size.to_s                    
                     # fetch the rest of the attributes if we're searching by specific attrib value
                     if condition_hash and condition_hash.size > 0
                       full_objects = []
                       objs.each do |obj|
-                        full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {:object => obj['object'].to_s})
+                        full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {'object' => obj['object'].to_s})
                       end
                       objs = full_objects
                     end
-                    
+
+                    puts 'objs2.size: ' + objs.size.to_s
                     # build up the object array where each
                     # row in this array is a rhom_object
                     objs.collect! do |obj|
@@ -113,6 +115,8 @@ module Rhom
                       hash_list[object].send("#{attrib}=".to_sym(), value) if not method_name_reserved?(attrib)
                       nil # remove the element from the array
                     end
+                    
+                    puts 'hash_list.size' + hash_list.size.to_s
                   end
 
                   # convert hash to array
@@ -193,7 +197,7 @@ module Rhom
                   if conditions
                     condition_hash = {}
                     conditions.each do |key,value|
-                      condition_hash.merge!(:attrib => key.to_s, :value => value.to_s)
+                      condition_hash.merge!('attrib' => key.to_s, 'value' => value.to_s)
                     end
                     condition_hash
                   else
