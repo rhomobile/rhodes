@@ -172,7 +172,23 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			iAppView->InitOptions();
 			
 			HandleCommandL(ECmdAppHome);
-		} 
+		}
+		else if ( aType == (EEventUser + ECmdAppReload))
+		{ 
+			HandleCommandL(ECmdAppReload);
+		}
+		else if ( aType == (EEventUser + ECmdAppNavigate2Url))
+		{ 
+			if ( aEvent.EventData() )
+			{
+				char* url = ((char**)aEvent.EventData())[0];
+				if ( url )
+				{
+					iAppView->LoadUrl(url);
+					free(url);
+				}
+			}
+		}
 		else if ( aType == (EEventUser + ECmdAppStartNewSync))
 		{
 			if ( iSyncEngineWrap )

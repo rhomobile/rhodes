@@ -70,7 +70,8 @@ int parse_url(const char *url, UrlInfo *urlinfo)
 
 int sendHttpRequest(const char * url, 
 					const char* cookie,
-					const char* requestBody, 
+					const char* requestBody,
+					const char* contentType,
 					int bodySize, 
 					char** responseBody, //[out] 
 					char** authCookie, //[out]
@@ -149,10 +150,11 @@ int sendHttpRequest(const char * url,
 				"Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\n"
 				"Keep-Alive: 300\r\n"
 				"Connection: keep-alive\r\n"
-				"Content-Type: application/x-www-form-urlencoded\r\n", 
+				"Content-Type: %s\r\n", 
 				isPost ? "POST" : "GET",
 				url, 
-				urlInfo.host);
+				urlInfo.host,
+				contentType ? contentType : "application/x-www-form-urlencoded");
 
 	
 	if (cookie)
