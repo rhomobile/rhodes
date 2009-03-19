@@ -172,7 +172,11 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	        }
             if ( header._token != 0 ){
                 char szToken[30];
+#if defined(_WIN32_WCE)
                 sprintf(szToken, "&ack_token=%I64u",  header._token );
+#else
+				sprintf(szToken, "&ack_token=%llu",  header._token );
+#endif
                 strcat(url_string,szToken);
             }
 
