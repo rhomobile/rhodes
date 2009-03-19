@@ -39,6 +39,7 @@ enum TRhodesIds
     ECmdAppForward,
     ECmdAppRestoreSetting,
     ECmdAppHome,
+    ECmdAppNavigate2Url,
     ECmdAppStartNewSync,
     ECmdShowDebugWindow
 	};

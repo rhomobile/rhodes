@@ -43,6 +43,7 @@
 
 #include <commdb.h>
 
+#include "tcmalloc/rhomem.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -487,7 +488,7 @@ char* CRhodesAppView::GetCurrentPageUrl()
 			HBufC8* buffer = HBufC8::NewLC(length);
 			buffer->Des().Copy(aDescriptor);
 		 
-			char* str = new char[length + 1];
+			char* str = (char*)malloc(length + 1);
 			Mem::Copy(str, buffer->Ptr(), length);
 			str[length] = '\0';
 		 
