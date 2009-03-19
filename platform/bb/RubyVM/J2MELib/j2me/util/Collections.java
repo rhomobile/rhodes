@@ -71,9 +71,10 @@ public class Collections
     	if ( length < 2 )
     		return;
     	
-        for (int i = 0; i <= length >> 1; i++) {
+        for (int i = 0; i < length >> 1; i++) {
+        	Object temp = list.get(i);
         	list.set(i, list.get(length - i - 1) );
-        	list.set(length - i - 1, list.get(i) );
+        	list.set(length - i - 1, temp );
         }
     }
 }
