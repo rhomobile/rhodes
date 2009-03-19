@@ -24,6 +24,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	public static final RubyString SESSION = ObjectFactory.createString("session");
 	public static final RubyString TOKEN = ObjectFactory.createString("token");
 	public static final RubyString TYPE = ObjectFactory.createString("attrib_type");
+	private static final RubyString VALUE = ObjectFactory.createString("value");
 	
 	public static final RubyString ALL = ObjectFactory.createString("*");
 	
@@ -46,6 +47,10 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    	return ObjectFactory.createHash();
 	    }
 	    public void setValues(RubyHash hash){
+	    }
+	    
+	    public boolean compareValue(RubyValue whereValue){
+	    	return true;
 	    }
 	    
 	    public boolean addOrdered( RubyArray res, RubyValue attrib, 
@@ -184,7 +189,6 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    
 		private static final RubyString ATTRIB = ObjectFactory.createString("attrib");
 		private static final RubyString OBJECT = ObjectFactory.createString("object");
-		private static final RubyString VALUE = ObjectFactory.createString("value");
 		private static final RubyString UPDATE_TYPE = ObjectFactory.createString("update_type");
 	    
 		public String getValueField(){ return value; }
@@ -192,7 +196,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		public String getUpdateTypeField(){ return update_type; }
 		
 		public static class TableRoot extends TableRootBase { 
-		    Index source_idANDupdate_type;
+		    Index source_idANDupdate_typeANDattrib;
 		    Index object_idANDattrib;
 		    Index object_idANDupdate_type;
 		    Index source_idANDtoken;
@@ -200,7 +204,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    
 		    // Deserialize the object
 		    public void readObject(IInputStream in) {
-		    	source_idANDupdate_type = (Index)in.readObject();
+		    	source_idANDupdate_typeANDattrib = (Index)in.readObject();
 		    	object_idANDattrib = (Index)in.readObject();
 		    	object_idANDupdate_type = (Index)in.readObject();
 		    	source_idANDtoken = (Index)in.readObject();
@@ -209,7 +213,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 
 		    // Serialize the object
 		    public void writeObject(IOutputStream out) { 
-		        out.writeObject(source_idANDupdate_type);
+		        out.writeObject(source_idANDupdate_typeANDattrib);
 		        out.writeObject(object_idANDattrib);
 		        out.writeObject(object_idANDupdate_type);
 		        out.writeObject(source_idANDtoken);
@@ -220,8 +224,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    public TableRoot(Storage db) { 
 		        super(db);
 		        
-		        source_idANDupdate_type = db.createIndex(
-		        		new int[]{Types.Int,Types.String}, false);
+		        source_idANDupdate_typeANDattrib = db.createIndex(
+		        		new int[]{Types.Int,Types.String,Types.String}, false);
 		        object_idANDattrib = db.createIndex(
 		        		new int[]{Types.String,Types.String}, false);
 		        object_idANDupdate_type = db.createIndex(
@@ -233,12 +237,12 @@ public class PerstLiteAdapter  extends RubyBasic {
 	        
 		    }
 		    public void clear(){
-		    	Iterator iter = source_idANDupdate_type.iterator();
+		    	Iterator iter = source_idANDupdate_typeANDattrib.iterator();
 		    	while(iter.hasNext()){
 		    		Table_object_values item = (Table_object_values)iter.next();
 		    		iter.remove();
 		    	}
-		    	source_idANDupdate_type.clear();
+		    	source_idANDupdate_typeANDattrib.clear();
 
 		    	iter = object_idANDupdate_type.iterator();
 		    	while(iter.hasNext()){
@@ -276,7 +280,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    
 		    public void put(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
-		    	source_idANDupdate_type.put(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
+		    	source_idANDupdate_typeANDattrib.put(new Key( new Object[]{
+		    			new Integer(item.source_id), item.update_type, item.attrib}),item);
 		    	object_idANDattrib.put(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.put(new Key( item.object, item.update_type),item);
 		    	source_idANDtoken.put(new Key( new Object[]{new Integer(item.source_id), item.token}),item);
@@ -284,7 +289,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    }
 		    public void remove(Table_base1 itemB){
 		    	Table_object_values item = (Table_object_values)itemB;
-		    	source_idANDupdate_type.remove(new Key( new Object[]{new Integer(item.source_id), item.update_type}),item);
+		    	source_idANDupdate_typeANDattrib.remove(new Key( new Object[]{
+		    			new Integer(item.source_id), item.update_type, item.attrib}),item);
 		    	object_idANDattrib.remove(new Key( item.object, item.attrib),item);
 		    	object_idANDupdate_type.remove(new Key( item.object, item.update_type),item);
 		    	source_idANDtoken.remove(new Key( new Object[]{new Integer(item.source_id), item.token}),item);
@@ -294,7 +300,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    }
 
 		    public Iterator iterator(){
-		    	return source_idANDupdate_type.iterator();
+		    	return id.iterator();
 		    }
 		    
 		    public Iterator iterator( RubyHash where){
@@ -327,14 +333,20 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		Key key = new Key(new Object[]{valObject.toStr()}); 
 		    		return object_idANDattrib.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
+
+		    	if ( valUpdatedType != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL && valAttrib != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valUpdatedType.toStr(), valAttrib.toStr()});
+		    		return source_idANDupdate_typeANDattrib.iterator( key, key, Index.ASCENT_ORDER);
+		    	}
 		    	
 		    	if ( valUpdatedType != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL ){
 		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valUpdatedType.toStr()});
-		    		return source_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
+		    		return source_idANDupdate_typeANDattrib.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
+		    	
 		    	if ( valSourceID != RubyConstant.QNIL ){
 		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt())});
-		    		return source_idANDupdate_type.iterator( key, key, Index.ASCENT_ORDER);
+		    		return source_idANDtoken.iterator( key, key, Index.ASCENT_ORDER);
 		    	}
 		    	
 		    	return null;
@@ -380,6 +392,16 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    		res.add( TYPE, ObjectFactory.createString(type) );
 	    	
 	    	return res;
+	    }
+	    
+	    public boolean compareValue(RubyValue whereValue){
+	    	if ( whereValue == null )
+	    		return true;
+	    	
+	    	if ( whereValue == RubyConstant.QNIL )
+	    		return  value.length() == 0;
+	    	
+	    	return whereValue.toStr().equals(value);
 	    }
 	    
 	    public static String name(){return "object_values";}
@@ -797,14 +819,23 @@ public class PerstLiteAdapter  extends RubyBasic {
 		int nCount = 0;
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
-			Iterator iter = (where != null && where != RubyConstant.QNIL) ? 
-					tblRoot.iterator((RubyHash)where) :
-					tblRoot.iterator();
+			Iterator iter = null;
+			RubyValue whereValue = null;
+			
+			if (where != null && where != RubyConstant.QNIL ){
+				RubyHash whereHash = (RubyHash)where;
+				iter = tblRoot.iterator(whereHash);
+				if ( whereHash.has_key(VALUE) == RubyConstant.QTRUE )
+					whereValue = ((RubyHash)where).get(VALUE);
+			}
+			else
+				iter = tblRoot.iterator();
 					
 			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
 			while(iter != null && iter.hasNext()){
 				Table_base1 item = (Table_base1)iter.next();
-				nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
+				if ( item.compareValue(whereValue) )
+					nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
 			}
 		}
 		
