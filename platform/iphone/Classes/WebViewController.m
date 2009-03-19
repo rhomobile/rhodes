@@ -83,14 +83,14 @@ NSString *loadingText = @"Loading...";
 - (void)webViewDidStartLoad:(UIWebView *)webview
 {
 	// starting the load, show the activity indicator in the status bar
-	[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = YES;
+	//[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = YES;
 	[self active];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview
 {
 	// finished loading, hide the activity indicator in the status bar
-	[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
+	//[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
 	[self inactive];
 	
 	if ([webView canGoBack]) {
