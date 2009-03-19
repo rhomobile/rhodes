@@ -46,18 +46,26 @@ NSString *localhost = @"http://localhost:8080/";
 							 usingDelegate:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
 							 sourceType:(UIImagePickerControllerSourceType)type
 { 
-    if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) 
+	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) 
 		|| (delegateObject == nil) || (controller == nil)) 
-        return NO; 
-    UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
-    picker.sourceType = type;
-    picker.delegate = delegateObject; 
-    picker.allowsImageEditing = YES; 
-	if ( type == UIImagePickerControllerSourceTypePhotoLibrary )
-		[window addSubview:picker.view];
-	else
-		[controller presentModalViewController:picker animated:YES]; 
-    return YES; 
+		return NO; 
+	
+	@try {
+		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
+		picker.sourceType = type;
+		picker.delegate = delegateObject; 
+		picker.allowsImageEditing = YES; 
+		if ( type == UIImagePickerControllerSourceTypePhotoLibrary ) {
+			[window addSubview:picker.view];
+		} else {
+			[controller presentModalViewController:picker animated:YES]; 
+		}
+	} @catch(id theException) {
+		NSLog(@"%@", theException);
+		return NO;
+	}
+	
+	return YES;
 } 
 
 - (void)onTakePicture:(NSString*) url {
