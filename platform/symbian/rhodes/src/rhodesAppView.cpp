@@ -29,6 +29,7 @@
 
 //#include "AppSoftkeysObserver.h"
 #include "SpecialLoadObserver.h"
+#include "BrCtlLoadEventObserver.h"
 
 #include <eiklabel.h>
 #include <avkon.hrh>
@@ -45,15 +46,48 @@
 
 #include "tcmalloc/rhomem.h"
 #include <stdio.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "UniversalLock.h"
 
 CRhodesAppView* g_RhodesAppView = NULL;
 
 extern "C" {
 
-char* callGetStartPage();
-char* callGetOptionsPage();
+	char* g_current_url = NULL;
+
+	INIT_LOCK(change_url);
+
+	char* webview_current_location() {
+	    LOCK(change_url);
+
+	    char* retval = NULL;
+	    try {
+	    	retval = strdup(g_current_url);
+	    }catch(...){
+	    }
+	    UNLOCK(change_url);
+	    
+	    return retval;
+	}
+
+	void webview_set_current_location(char* url) {
+		LOCK(change_url);
+		
+		if ( g_current_url )
+			free(g_current_url);
+		
+		g_current_url = url;
+		
+		UNLOCK(change_url);
+	}
+
+
+	char* callGetStartPage();
+	char* callGetOptionsPage();
+
 }
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -108,6 +142,8 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	//iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
+	iCBrCtlLoadEventObserver = CCBrCtlLoadEventObserver::NewL(this);
+	
 	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw | TBrCtlDefs::ECapabilityCursorNavigation |
 	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys ;
 
@@ -115,6 +151,8 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 
 	if ( iBrCtlInterface != NULL )
 		{
+			iBrCtlInterface->AddLoadEventObserverL(iCBrCtlLoadEventObserver);
+		
 			TRect rect( Position(), Size() );
 		    iBrCtlInterface->SetRect( rect );
 		    iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsSmallScreen, 1);
@@ -173,6 +211,11 @@ CRhodesAppView::~CRhodesAppView()
 		//	delete iAppSoftkeysObserver;
 		
 		delete iSpecialLoadObserver;
+		
+		iBrCtlInterface->RemoveLoadEventObserver(iCBrCtlLoadEventObserver);
+		
+		if ( iCBrCtlLoadEventObserver )
+			delete iCBrCtlLoadEventObserver;
 	}
 
 

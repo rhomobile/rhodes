@@ -35,11 +35,12 @@ NSString *localhost = @"http://localhost:8080/";
 }
 
 - (void)onNavigateTo:(NSString *)url {
-	[webViewController navigate:[self normalizeUrl:url]];
+	[webViewController navigateRedirect:url];
 }
 
 - (void)onSetViewHomeUrl:(NSString *)url {
-	[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
+	//[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
+	[webViewController setViewHomeUrl:url];
 }
 
 -(BOOL)startCameraPickerFromViewController:(UIViewController*)controller 
@@ -83,7 +84,8 @@ NSString *localhost = @"http://localhost:8080/";
 }
 
 - (void)onSetViewOptionsUrl:(NSString *)url {
-	[webViewController setViewOptionsUrl:[localhost stringByAppendingPathComponent:url]];
+	//[webViewController setViewOptionsUrl:[localhost stringByAppendingPathComponent:url]];
+	[webViewController setViewOptionsUrl:url];
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	

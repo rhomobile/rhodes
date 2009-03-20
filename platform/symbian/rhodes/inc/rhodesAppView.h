@@ -31,6 +31,7 @@
 //FORWARD DECLARATION
 class CRhodesAppUi;
 class CSpecialLoadObserver;
+class CCBrCtlLoadEventObserver;
 //class CAppSoftkeysObserver;
 class CRhodesAppView;
 
@@ -197,7 +198,7 @@ private: //data
 
         // Special Load Observer
         CSpecialLoadObserver* iSpecialLoadObserver;
-        
+        CCBrCtlLoadEventObserver* iCBrCtlLoadEventObserver;
         //Softkeys Observer
         //CAppSoftkeysObserver* iAppSoftkeysObserver;
         TBuf<1024> iStartPage;
