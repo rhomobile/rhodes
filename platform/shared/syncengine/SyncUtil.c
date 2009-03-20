@@ -129,7 +129,7 @@ static void processToken( sqlite_uint64 token, pSource src );
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
-int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params) {
+int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params, int* bStopSync) {
 	pSyncObject *list;
 	char url_string[4096];
 	int j, nTotal = 0;//,i,source_length;
@@ -180,15 +180,20 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
                 strcat(url_string,szToken);
             }
 
+            header._count = -1;
+            header._token = 0;
+
 	        json_string = fetch_remote_data(url_string);
 	        if(json_string && strlen(json_string) > 0) {
 		        struct json_object* json_to_free = 0;
+
 		        int available = parse_json_list(list, json_string, MAX_SYNC_OBJECTS, &json_to_free, &header);
 		        printf("Parsed %i records from sync source...\n", available);
+
+                processToken( header._token, src );
+
                 nTotal += available;
 		        if(available > 0) {
-
-                    processToken( header._token, src );
 
 			        for(j = 0; j < available; j++) {
 				        list[j]->_database = database;
@@ -234,6 +239,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	update_source_sync_status((sqlite3 *)get_database(), 
 							  src, size_inserted, size_deleted, duration, success);
     
+    *bStopSync = header._count == -1;
 	return nTotal;
 }
 

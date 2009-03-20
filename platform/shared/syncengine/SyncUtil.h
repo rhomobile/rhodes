@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 void finalize_sync_util_statements();
-int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params);
+int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *params, int* bStopSync);
 int push_remote_changes(pSyncOperation *list, int size);
 int get_sources_from_database(pSource *list, sqlite3 *database, int max_size);
 char *get_params_for_source(pSource source, sqlite3 *database);
