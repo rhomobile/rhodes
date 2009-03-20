@@ -504,7 +504,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -525,6 +525,7 @@
 					"-lrhosynclib",
 				);
 				PRODUCT_NAME = rhorunner;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F0FD5D75-49BB-467F-AEA7-1CB1D2B70991";
 			};
 			name = Debug;
 		};
@@ -532,7 +533,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
@@ -550,6 +551,7 @@
 					"-lrhosynclib",
 				);
 				PRODUCT_NAME = rhorunner;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F0FD5D75-49BB-467F-AEA7-1CB1D2B70991";
 				SDKROOT = iphoneos2.1;
 			};
 			name = Release;
