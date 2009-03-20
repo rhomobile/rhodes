@@ -19,7 +19,8 @@ enum {METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD};
 	
 int HttpSnprintf(char *buf, size_t buflen, const char *fmt, ...);    
 const char* HTTPGetMethod(int m);
-    
+
+int HTTPUrlDecode(const char *src, int src_len, char *dst, int dst_len);    
 int HTTPParseRequest(HttpContextRef context);
 int HTTPProcessMessage(HttpContextRef context);
 int HTTPRedirect(HttpContextRef context, char* location);

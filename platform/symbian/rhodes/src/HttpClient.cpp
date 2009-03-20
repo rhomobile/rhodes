@@ -267,14 +267,6 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, char* szContentType)
 				// Add headers and body data for methods that use request bodies
 				if (iHasARequestBody)
 					{
-					// Content type header
-					TBuf8<CHttpConstants::KMaxContentTypeSize> contTypeBuf;
-					contTypeBuf.Copy(_L("application/x-www-form-urlencoded"));
-					RStringF contTypeStr = iConnectionManager->GetHTTPSession().StringPool().OpenFStringL(contTypeBuf);
-					THTTPHdrVal contType(contTypeStr);
-					hdr.SetFieldL(iConnectionManager->GetHTTPSession().StringPool().StringF(HTTP::EContentType,RHTTPSession::GetTable()), contType);
-					contTypeStr.Close();
-					
 					MHTTPDataSupplier* dataSupplier = this;
 					iTrans.Request().SetBody(*dataSupplier);
 					}

@@ -19,6 +19,7 @@
 @property (assign) NSString *viewOptionsUrl;
 
 -(void)navigate:(NSString*)url;
+-(void)navigateRedirect:(NSString*)url;
 
 -(void)setActivityInfo:(NSString *)labelText;
 

@@ -358,8 +358,7 @@ int HTTPParseRequest(HttpContextRef context) {
     return ret;
 }
 
-static int
-_HTTPUrlDecode(const char *src, int src_len, char *dst, int dst_len)
+int HTTPUrlDecode(const char *src, int src_len, char *dst, int dst_len)
 {
 	int	i, j, a, b;
 #define	HEXTOI(x)  (isdigit(x) ? x - '0' : x - 'W')
@@ -864,8 +863,8 @@ HTTPProcessMessage(HttpContextRef context) {
 	if ((context->_request->_query = strchr(context->_request->_uri, '?')) != NULL)
 		*context->_request->_query++ = '\0';
 	
-	_HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
-				   context->_request->_uri, strlen(context->_request->_uri) + 1);
+	HTTPUrlDecode(context->_request->_uri, strlen(context->_request->_uri), 
+				  context->_request->_uri, strlen(context->_request->_uri) + 1);
 
 	{
 		char path[URI_MAX];
