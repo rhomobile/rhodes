@@ -162,4 +162,4 @@ SOURCE webview.cpp
 SOURCEPATH ..\src\camera
 SOURCE camera.c
 SOURCEPATH ..\src
-SOURCE notification.cpp
+SOURCE notification.cpp BrCtlLoadEventObserver.cpp
