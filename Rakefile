@@ -156,3 +156,41 @@ task :set_version, [:version] do |t,args|
   end
   Rake::Task[:get_version].invoke  
 end
+
+desc "Update prebuild binaries on windows"
+task :prebuild_win do
+  basedir = pwd
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    rake = "cmd.exe /c rake"
+    ant = "ant.bat"
+  else
+    rake = "rake"
+    ant = "ant"
+  end
+
+  chdir 'platform/bb/build'
+  puts `#{rake} build:all`
+
+  throw "blackberry rhodes.jar missing" if not File.exists? '../preverified/rhodes.jar'
+  throw "blackberry RubyVM.jar missing" if not File.exists? '../preverified/RubyVM.jar'
+
+  cp "MANIFEST.MF", "../../../rhodes/rhodes-build/res/prebuilt/bb"
+  cp "rhodesApp.alx", "../../../rhodes/rhodes-build/res/prebuilt/bb"
+  cp "../preverified/rhodes.jar", "../../../rhodes/rhodes-build/res/prebuilt/bb" 
+  cp "../preverified/RubyVM.jar", "../../../rhodes/rhodes-build/res/prebuilt/bb" 
+
+  chdir basedir
+end
+
+desc "Update prebuild binaries on mac"
+task :prebuild_mac do
+  basedir = pwd
+  rake = "rake"
+  ant = "ant"
+
+  chdir 'platform/iphone/rbuild'
+  puts `#{ant} runapp`
+  
+
+  chdir basedir
+end
