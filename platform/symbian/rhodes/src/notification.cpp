@@ -9,6 +9,7 @@
 #include <eikenv.h>
 #include "HttpClient.h"
 #include "HttpConstants.h"
+#include <aknglobalnote.h>
 
 #include "tcmalloc/rhomem.h"
 
@@ -22,6 +23,24 @@
 #include <assert.h>
 
 extern "C" {
+
+void showMessageBox(const char* str)
+{
+	if ( str )
+	{
+		CAknGlobalNote* iGlobalNote = CAknGlobalNote::NewL(); //Initialize the note
+		CleanupStack::PushL(iGlobalNote);
+	
+		TPtrC8 ptr(reinterpret_cast<const TUint8*>(str));
+		HBufC* buffer = HBufC::NewL(ptr.Length());
+		buffer->Des().Copy(ptr);
+		
+		iGlobalNote->ShowNoteL(EAknGlobalInformationNote, buffer->Des());
+		CleanupStack::PopAndDestroy(); // globalNote
+		
+		delete buffer;
+	}
+}
 	
 void* notification_callback(void *parm);
 
@@ -58,6 +77,9 @@ void* notification_callback(void *parm) {
 	
 	if (thread_params) {
 		// Create and install the active scheduler
+	
+		showMessageBox(thread_params->callback);
+		showMessageBox(thread_params->params);
 		
 		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
 		CleanupStack::PushL(activeScheduler);
