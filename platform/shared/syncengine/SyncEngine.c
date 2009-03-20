@@ -155,7 +155,7 @@ int process_local_changes() {
 #else
           int bStopSync = 0;
 
-		  for(i = nStartSrc; i < 1/*source_length*/ && isContinueSync() && !bStopSync; i++)
+		  for(i = nStartSrc; i < source_length && isContinueSync() && !bStopSync; i++)
 		  {
 			  ask_params = get_params_for_source(source_list[i], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params, &bStopSync );
