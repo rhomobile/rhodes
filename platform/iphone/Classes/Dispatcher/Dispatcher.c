@@ -179,6 +179,15 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 			} else if (route->_model && !strcmp(route->_model,"syncdb")) {
 				wake_up_sync_engine();
 				return HTTPSendReply(context,"OK"); 	
+			} else if (route->_model && !strcmp(route->_model,"redirect_to")) {
+				if (context->_request->_query && !strncmp("url=",context->_request->_query,4)) {
+					char* location = context->_request->_query+4;
+					int len = strlen(location);
+					HTTPUrlDecode(location, len, location, len+1);
+					return HTTPRedirect(context, location);
+				} else {
+					return HTTPRedirect(context, "/app/");
+				}
 			}
 		}
 	} else if (route->_application && !strcmp(route->_application,"shared")) {

@@ -37,6 +37,13 @@ NSString *loadingText = @"Loading...";
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
 }
 
+-(void)navigateRedirect:(NSString*)url {
+	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
+	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
+	NSString* redirctor = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirctor]]];
+}
+
 -(IBAction)goBack {
 	[webView goBack];
 }
@@ -47,13 +54,15 @@ NSString *loadingText = @"Loading...";
 
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
-		[self navigate:viewHomeUrl];
+		//[self navigate:viewHomeUrl];
+		[self navigateRedirect:viewHomeUrl];
 	}
 }
 
 -(IBAction)goOptions {
 	if (viewOptionsUrl != NULL) {
-		[self navigate:viewOptionsUrl];
+		//[self navigate:viewOptionsUrl];
+		[self navigateRedirect:viewOptionsUrl];
 	}
 }
 

@@ -285,8 +285,9 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>4</integer>
-									<integer>3</integer>
+									<integer>18</integer>
+									<integer>17</integer>
+									<integer>9</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -329,7 +330,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rhoruby.c</string>
+								<string>system_properties.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -337,11 +338,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rhoruby.c</string>
+										<string>system_properties.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F578533D0F58AADC00CEE64E</string>
+										<string>F58FC47A0F7414C2003B3A6E</string>
 										<key>history</key>
 										<array>
 											<string>F5E362450EB791EC00226287</string>
@@ -383,22 +384,20 @@
 											<string>F5E363290EB7A24600226287</string>
 											<string>F5E3632B0EB7A24600226287</string>
 											<string>F5A502030EE4D37200D98D1E</string>
-											<string>F5177F290EE5C968000EA1A0</string>
 											<string>F5177F2A0EE5C968000EA1A0</string>
 											<string>F5177F2B0EE5C968000EA1A0</string>
 											<string>F5177F2C0EE5C968000EA1A0</string>
-											<string>F5177F2E0EE5C968000EA1A0</string>
 											<string>F5BC395E0EE5EAE000A6B9DD</string>
 											<string>F5BC395F0EE5EAE000A6B9DD</string>
 											<string>F5BC39600EE5EAE000A6B9DD</string>
 											<string>F5BC39630EE5EAE000A6B9DD</string>
 											<string>F5AD506D0EE61365004768A0</string>
-											<string>F5C61CAB0F3CFEAD00207621</string>
 											<string>F5C61CAC0F3CFEAD00207621</string>
 											<string>F5B8F81D0F4101DB00C9AF85</string>
-											<string>F5B8FB2B0F44FB9400C9AF85</string>
 											<string>F578533B0F58AADC00CEE64E</string>
-											<string>F52572DF0F537C0B00A7F9EF</string>
+											<string>F58FC3610F7308C7003B3A6E</string>
+											<string>F58FC3620F7308C7003B3A6E</string>
+											<string>F58FC3670F7308C7003B3A6E</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -442,7 +441,6 @@
 											<string>F5E362A70EB7932900226287</string>
 											<string>F5E363330EB7A24600226287</string>
 											<string>F5E363340EB7A24600226287</string>
-											<string>F5177F300EE5C968000EA1A0</string>
 											<string>F5177F310EE5C968000EA1A0</string>
 											<string>F5177F340EE5C968000EA1A0</string>
 											<string>F5177F350EE5C968000EA1A0</string>
@@ -452,7 +450,6 @@
 											<string>F5AD50710EE61365004768A0</string>
 											<string>F5C61CAF0F3CFEAD00207621</string>
 											<string>F5B8F8200F4101DB00C9AF85</string>
-											<string>F5B8FB2C0F44FB9400C9AF85</string>
 											<string>F578533C0F58AADC00CEE64E</string>
 										</array>
 									</dict>
@@ -511,9 +508,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F578533E0F58AADC00CEE64E</string>
+				<string>F58FC47B0F7414C2003B3A6E</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F578533F0F58AADC00CEE64E</string>
+				<string>F58FC47C0F7414C2003B3A6E</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -647,8 +644,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>/Users/vlad/Documents/Projects/rhodes/iphone/rhorubylib/rhorubylib.xcodeproj</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
+		<string>/Users/vlad/Documents/Projects/rhodes/platform/iphone/rhorubylib/rhorubylib.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 127 1440 751 0 0 1440 878 </string>
@@ -881,14 +878,12 @@
 							<key>Dock</key>
 							<array>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>geolocation_rhowrap.c</string>
+										<string></string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -909,6 +904,8 @@
 							<string>253pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -944,8 +941,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>F52572DD0F537C0400A7F9EF</string>
-				<string>F52572DE0F537C0400A7F9EF</string>
+				<string>F58FC4780F7414C1003B3A6E</string>
+				<string>F58FC4790F7414C1003B3A6E</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
