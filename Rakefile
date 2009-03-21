@@ -180,6 +180,19 @@ task :prebuild_win do
   cp "../preverified/RubyVM.jar", "../../../rhodes/rhodes-build/res/prebuilt/bb" 
 
   chdir basedir
+  chdir 'platform/wm/build'
+
+  zip = File.join(basedir,'rhodes/rhodes-build/res/7z.exe')
+
+  puts `#{rake} compile`
+
+  chdir '../bin'
+  throw "windows build missing" if not File.exists? 'Windows Mobile 6 Professional SDK (ARMV4I)'
+  
+  puts `#{zip} a -mx=9 -r wm6.7z "Windows Mobile 6 Professional SDK (ARMV4I)"`
+  throw "windows zip missing" if not File.exists? 'wm6.7z'
+  
+  cp "wm6.7z", "../../../rhodes/rhodes-build/res/prebuilt/wm"
 end
 
 desc "Update prebuild binaries on mac"
