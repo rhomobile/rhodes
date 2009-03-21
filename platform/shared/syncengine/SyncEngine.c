@@ -104,7 +104,7 @@ int process_local_changes() {
 
       nStartSrc = get_start_source(source_list, source_length );
 //#if 0	  
-	  for(i = nStartSrc; i < 1/*source_length*/ && isContinueSync(); i++) {
+	  for(i = nStartSrc; i < source_length && isContinueSync(); i++) {
 		  if(client_id == NULL) {
 			  client_id = set_client_id(database, source_list[i]);
 		  }
