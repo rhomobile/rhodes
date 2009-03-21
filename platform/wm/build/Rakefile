@@ -10,9 +10,12 @@ remove_task "run:wm:app"
 
 $builddir = pwd
 
-desc "Build RhoBundle"
-task :bundle do
+task :config do
   Rake::Task["config:wm"].invoke
+end
+
+desc "Build RhoBundle"
+task :bundle => :config do
   chdir ".."
   Rake::Task["loadframework"].invoke
   Rake::Task["makedirs"].invoke
@@ -27,19 +30,22 @@ task :bundle do
   
 end
 
-desc "Build for WM6"
-task :build => :bundle do
-
+task :compile => :config do
   vcbuild = $config["env"]["paths"]["vcbuild"]
-  cabwiz = $config["env"]["paths"]["cabwiz"]
-
   #move us to the working directory
   chdir $builddir
   chdir "..", :verbose => false
 
   puts `#{vcbuild} /M4 rhodes.sln "Release|Windows Mobile 6 Professional SDK (ARMV4I)"`
 
-  chdir "build"
+end
+
+desc "Build for WM6"
+task :build => [:bundle,:compile] do
+
+  cabwiz = $config["env"]["paths"]["cabwiz"]
+
+  chdir $builddir
 
   puts `cscript build_inf.js rhodes.inf wm6`
   puts `#{cabwiz} rhodes.inf`
