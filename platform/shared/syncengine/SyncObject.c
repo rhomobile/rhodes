@@ -135,10 +135,10 @@ int exists_in_database(pSyncObject ref) {
 
 /* insert object into database, returns SYNC_OBJECT_DUPLICATE, SYNC_OBJECT_ERROR, or SYNC_OBJECT_SUCCESS */
 int insert_into_database(pSyncObject ref) {
-  int success;
-	if (exists_in_database(ref)) {
-		return SYNC_OBJECT_DUPLICATE;
-	} else {
+    int success;
+//	if (exists_in_database(ref)) {
+//		return SYNC_OBJECT_DUPLICATE;
+//	} else {
 		lock_sync_mutex();	
 
 		prepare_db_statement("INSERT INTO object_values (id, attrib, source_id, object, value, \
@@ -164,7 +164,7 @@ int insert_into_database(pSyncObject ref) {
 		finish_db_statement(&insert_statement);
 		unlock_sync_mutex();	
 		return SYNC_OBJECT_SUCCESS;
-	}
+//	}
 }
 
 /* delete a specific set of object_values from the database */
@@ -196,7 +196,7 @@ void delete_from_database_bytoken( int srcID, sqlite_uint64 token ) {
 						 (sqlite3 *)get_database(),
 						 &delete_bytoken_statement);
     sqlite3_bind_int(delete_bytoken_statement, 1, srcID);
-    sqlite3_bind_int64(delete_bytoken_statement, 1, token);
+    sqlite3_bind_int64(delete_bytoken_statement, 2, token);
 
 	success = sqlite3_step(delete_bytoken_statement);
 	if (success != SQLITE_DONE) {
