@@ -193,6 +193,47 @@ task :prebuild_win do
   throw "windows zip missing" if not File.exists? 'wm6.7z'
   
   cp "wm6.7z", "../../../rhodes/rhodes-build/res/prebuilt/wm"
+
+  chdir basedir
+  chdir "platform/symbian/build"
+  filecontents = ""
+  File.open("build.properties","r") { |f| filecontents = f.read }
+  File.open("build.properties","w") do |f|
+    filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=GCCE UREL")
+    f.write filecontents
+  end
+  if filecontents.match(/S60_3rd_FP1=(.+)/)
+    epoc32 = $1
+  else
+    epoc32 = "\\Symbian\\9.2\\S60_3rd_FP1\\"
+  end
+
+  epoc32.gsub!(/\\\\/,"\\")  
+
+  puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+  puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
+  throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
+
+  prebuilt = "../../../rhodes/rhodes-build/res/prebuild/symbian/"
+
+  rm_rf prebuilt + "Epoc32"
+
+  mkdir_p prebuilt + "Epoc32/data/z/private/10003a3f"
+  mkdir_p prebuilt + "Epoc32/data/z/resource"
+  mkdir_p prebuilt + "Epoc32/data/z/system"
+  mkdir_p prebuilt + "Epoc32/release/gcce/urel"
+
+  cp_r epoc32 + "Epoc32\\data\\z\\private\\10003a3f\\apps\\", prebuilt + "Epoc32/data/z/private/10003a3f/", :verbose => true
+  cp_r epoc32 + "Epoc32\\data\\z\\resource\\apps\\", prebuilt + "Epoc32/data/z/resource/"
+  cp_r epoc32 + "Epoc32\\data\\z\\system\\data\\", prebuilt + "Epoc32/data/z/system/"
+  cp_r epoc32 + "Epoc32\\release\\gcce\\urel\\rhodes.exe", prebuilt + "Epoc32/release/gcce/urel/"
+  
+
+
+  File.open("build.properties","w") do |f|
+    filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
+    f.write filecontents
+  end
 end
 
 desc "Update prebuild binaries on mac"
