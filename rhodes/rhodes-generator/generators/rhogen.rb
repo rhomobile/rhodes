@@ -105,6 +105,7 @@ module Rhogen
     second_argument :source_url, :required => true, :desc => "source url"
     third_argument :source_id, :required => true, :desc => "source id"
     fourth_argument :attributes, :as => :array, :required => true, :desc => "array of attributes (only string suppported right now)"
+    argument(4, :type, {:required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"})
 
     template :config do |template|
       template.source = 'config.rb'
