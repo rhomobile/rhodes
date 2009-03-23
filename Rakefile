@@ -234,6 +234,20 @@ task :prebuild_win do
     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
     f.write filecontents
   end
+
+  
+  
+  puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+  puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\winscw\\deb\\rhodes.exe")
+  throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\winscw\\udeb\\rhodes.exe"))
+
+  mkdir_p prebuilt + "Epoc32/winscw/c/Data/Rho"
+  mkdir_p prebuilt + "Epoc32/release/winscw/udeb"
+
+  cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
+  cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
+
+
 end
 
 desc "Update prebuild binaries on mac"
