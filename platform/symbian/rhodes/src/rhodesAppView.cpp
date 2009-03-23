@@ -44,19 +44,17 @@
 
 #include <commdb.h>
 
-#include "tcmalloc/rhomem.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "UniversalLock.h"
-
 CRhodesAppView* g_RhodesAppView = NULL;
 
 extern "C" {
+	#include "UniversalLock.h"
 
-	char* g_current_url = NULL;
+	static char* g_current_url = NULL;
 
 	INIT_LOCK(change_url);
 
@@ -74,11 +72,12 @@ extern "C" {
 	}
 
 	void webview_set_current_location(char* url) {
+		
 		LOCK(change_url);
 		
 		if ( g_current_url )
-			free(g_current_url);
-		
+			delete[] (g_current_url);
+
 		g_current_url = url;
 		
 		UNLOCK(change_url);
@@ -531,7 +530,7 @@ char* CRhodesAppView::GetCurrentPageUrl()
 			HBufC8* buffer = HBufC8::NewLC(length);
 			buffer->Des().Copy(aDescriptor);
 		 
-			char* str = (char*)malloc(length + 1);
+			char* str = new char[length + 1];
 			Mem::Copy(str, buffer->Ptr(), length);
 			str[length] = '\0';
 		 

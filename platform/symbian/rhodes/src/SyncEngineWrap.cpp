@@ -44,8 +44,6 @@ extern "C"
 	{
 #include "sqlite3.h"
 
-	void showMessageBox(const char* str);
-	
 	void start_sync_engine(sqlite3 *db);
 	void stop_sync_engine();
 
@@ -250,8 +248,6 @@ extern "C"
 		char* retval = 0;
 		CHttpClient* gHttpClient = NULL;
 
-		showMessageBox(url);
-		
 		cookie = get_db_session(load_source_url());
 
 		if (!cookie && !strstr(url, "clientcreate"))
@@ -270,8 +266,6 @@ extern "C"
 
 		retval = gHttpClient->GetResponse();
 
-		showMessageBox(retval);
-		
 		delete gHttpClient;
 		
 		return retval;
