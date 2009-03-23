@@ -70,6 +70,8 @@
 
 	<!-- testing on emulator -->
 	<target name="build-apps"       depends="init-apps, clean-apps, appbuild, run-app"/>
+
+    <target name="build-prebuilt"  depends="init, clean, build-no-checkout, compile"/>
 	
     <!--
     ========================================================================
