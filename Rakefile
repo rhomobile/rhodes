@@ -214,7 +214,7 @@ task :prebuild_win do
   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
 
-  prebuilt = "../../../rhodes/rhodes-build/res/prebuild/symbian/"
+  prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/symbian/"
 
   rm_rf prebuilt + "Epoc32"
 
