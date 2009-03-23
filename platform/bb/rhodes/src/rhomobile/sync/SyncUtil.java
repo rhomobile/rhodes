@@ -99,7 +99,7 @@ public class SyncUtil {
 	 * @param params
 	 * @return
 	 */
-	public static int fetchRemoteChanges(SyncSource source, String client_id, String params) {
+	public static SyncFetchResult fetchRemoteChanges(SyncSource source, String client_id, String params) {
 		int success = 0, deleted = 0, inserted = 0;
 		long start = 0, duration = 0;
 		String data = null;
@@ -124,6 +124,11 @@ public class SyncUtil {
 			if (header._token.length() > 0)
 				fetch_url += "&ack_token=" + header._token;
 
+			if ( source.get_token().length() == 0 || source.get_token().equals("0") )
+				processToken("1", source );
+
+			header = new SyncJSONParser.SyncHeader();
+			
 			try {
 				data = SyncManager.fetchRemoteData(fetch_url, session, true);
 			} catch (IOException e) {
@@ -133,13 +138,14 @@ public class SyncUtil {
 			}
 			if (data != null) {
 				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
+				
+				processToken(header._token, source);
+				
 				int count = list.size();
 				if ( nTotal < 0 )
 					nTotal = 0;
 				nTotal += count;
 				if (count > 0) {
-
-					processToken(header._token, source);
 
 					for (int i = 0; i < count; i++) {
 						SyncObject syncObj = ((SyncObject) list.get(i)); 
@@ -162,15 +168,17 @@ public class SyncUtil {
 			} else {
 				nTry++;
 			}
-		} while (header._count > 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT && repeat);
+		} while (header._count != 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT && repeat);
 
 		duration = (System.currentTimeMillis() - start) / 1000L;
 		updateSourceSyncStatus(source, inserted, deleted, duration, success);
-		return nTotal;
+		
+		return new SyncFetchResult(nTotal,header._count == -1);
 	}
 
 	private static void processToken(String token, SyncSource source) {
-		if (token.length() > 0 && source.get_token().equals(token)) {
+		if ( token.length() > 0 && !token.equals("0") && !token.equals("1") &&  
+			 source.get_token().equals(token)) {
 			// Delete non-confirmed records
 
 			RubyHash where = createHash();
@@ -179,7 +187,10 @@ public class SyncUtil {
 			where.add(PerstLiteAdapter.TOKEN, createString(token));
 
 			adapter.deleteFromTable(createString("object_values"), where);
-		} else if (token.length() > 0) {
+		} else //if (token.length() > 0) 
+		{
+			source.set_token(token);
+			
 			RubyHash values = SyncUtil.createHash();
 			values.add(PerstLiteAdapter.TOKEN, createString(token));
 			RubyHash where = SyncUtil.createHash();
@@ -402,6 +413,33 @@ public class SyncUtil {
 		}
 	}
 
+	private static int get_start_source( RubyArray sources )
+	{
+		for (int i = 0; i < sources.size(); i++) {
+			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
+			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
+			if (token != null && token != RubyConstant.QNIL)
+			{
+				String strToken = token.toStr();
+				if ( strToken.length() > 0 && !strToken.equals("0") )
+					return i;
+			}
+		}
+		
+		return 0;
+	}
+	
+	static class SyncFetchResult {
+		int available = 0;
+		boolean stopSync = false;
+		
+		SyncFetchResult() {}
+		SyncFetchResult( int avail, boolean bStop ) {
+			available = avail;
+			stopSync = bStop;
+		}
+	};
+	
 	/**
 	 * Process local changes.
 	 * 
@@ -411,14 +449,17 @@ public class SyncUtil {
 		RubyArray sources = SyncUtil.getSourceList();
 
 		String client_id = null;
-		for (int i = 0; i < sources.size() && !thread.isStop(); i++) {
+		int nStartSrc = get_start_source(sources);
+		SyncFetchResult syncResult = new SyncFetchResult();
+		
+		for (int i = nStartSrc; i < sources.size() && !thread.isStop() && !syncResult.stopSync; i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
 			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
 			SyncSource current = new SyncSource(url, id);
 			if (token != null && token != RubyConstant.QNIL)
-				current.set_token(token.toString());
+				current.set_token(token.toStr());
 
 			if (client_id == null)
 				client_id = get_client_id(current);
@@ -443,8 +484,8 @@ public class SyncUtil {
 						.println("Remote update failed, not continuing with sync...");
 			} else {
 				String askParams = SyncUtil.getParamsForSource(current);
-				int available = SyncUtil.fetchRemoteChanges(current, client_id, askParams);
-				System.out.println("Successfully processed " + available
+				syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams);
+				System.out.println("Successfully processed " + syncResult.available
 						+ " records...");
 				if (SyncConstants.DEBUG) {
 					RubyArray objects = SyncUtil.getObjectValueList(current
@@ -452,7 +493,7 @@ public class SyncUtil {
 					SyncUtil.printResults(objects);
 				}
 				if (!thread.isStop())
-					SyncEngine.getNotificationImpl().fireNotification(id, available);
+					SyncEngine.getNotificationImpl().fireNotification(id, syncResult.available);
 			}
 		}
 		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
