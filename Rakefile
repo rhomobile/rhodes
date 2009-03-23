@@ -1,10 +1,6 @@
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
 # run "rake -T" to see list of available tasks
 
-chdir 'rhodes', :verbose => false
-load 'Rakefile'
-chdir '..', :verbose => false
-
 desc "Get versions"
 task :get_version do
   bbver = "unknown"
