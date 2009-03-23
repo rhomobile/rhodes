@@ -24,7 +24,7 @@
 
 extern "C" {
 
-void showMessageBox(const char* str)
+/*void showMessageBox(const char* str)
 {
 	if ( str )
 	{
@@ -40,7 +40,7 @@ void showMessageBox(const char* str)
 		
 		delete buffer;
 	}
-}
+}*/
 	
 void* notification_callback(void *parm);
 
@@ -78,9 +78,6 @@ void* notification_callback(void *parm) {
 	if (thread_params) {
 		// Create and install the active scheduler
 	
-		showMessageBox(thread_params->callback);
-		showMessageBox(thread_params->params);
-		
 		CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;
 		CleanupStack::PushL(activeScheduler);
 		CActiveScheduler::Install(activeScheduler);

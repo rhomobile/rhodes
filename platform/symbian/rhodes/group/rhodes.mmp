@@ -123,8 +123,6 @@ LIBRARY                                 pbkeng.lib
 LIBRARY                                 libc.lib 
 LIBRARY                                 libpthread.lib 
 LIBRARY                                 libm.lib
-LIBRARY                                 apsettingshandlerui.lib
-LIBRARY                                 apengine.lib
 LIBRARY                                 Lbs.lib
 LIBRARY                                 eiksrv.lib
 LIBRARY                                 aknnotify.lib
