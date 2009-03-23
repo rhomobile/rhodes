@@ -179,6 +179,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 #endif
                 strcat(url_string,szToken);
             }
+            
+            if ( src->_token == 0 )
+                processToken( 1, src );
 
             header._count = -1;
             header._token = 0;
@@ -245,11 +248,13 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 
 static void processToken( sqlite_uint64 token, pSource src )
 {
-    if ( token != 0 && src->_token == token ){
+    if ( token > 1 && src->_token == token ){
 		//Delete non-confirmed records
 
         delete_from_database_bytoken(src->_source_id, src->_token);
-	}else if ( token != 0 ){
+	}else// if ( token != 0 )
+    {
+        src->_token = token;
 
 		lock_sync_mutex();	
 		prepare_db_statement("UPDATE sources SET token=? where source_id=?",
@@ -307,7 +312,7 @@ int get_sources_from_database(pSource *list, sqlite3 *database, int max_size) {
 	while(sqlite3_step(op_list_source_ids_statement) == SQLITE_ROW && count < max_size) {
 		int id = (int)sqlite3_column_int(op_list_source_ids_statement, 0);
 		char *url = (char *)sqlite3_column_text(op_list_source_ids_statement, 1);
-        sqlite_uint64 token = (int)sqlite3_column_int64(op_list_source_ids_statement, 2);
+        sqlite_uint64 token = sqlite3_column_int64(op_list_source_ids_statement, 2);
 		list[count] = SourceCreate(url, id, token);
 		count++;
 	}
