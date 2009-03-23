@@ -1,0 +1,151 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+IDR_MAIN_MENUBAR RCDATA 
+BEGIN
+    0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff, 
+    0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
+END
+
+IDR_GETURL_MENUBAR RCDATA 
+BEGIN
+    0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff, 
+    0xfffe, 0x0002, 0x0004, 0x0010, 0x2714, 0x0000, 0xffff
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAIN_MENU MENU 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Back",                        IDM_BACK
+        MENUITEM "Forward",                     IDM_FORWARD
+        MENUITEM "Home",                        IDM_HOME
+        MENUITEM "Open URL...",                 IDM_OPENURL
+        MENUITEM "Refresh",                     IDM_REFRESH
+        MENUITEM "Stop",                        IDM_STOP
+        MENUITEM "Sync",                        IDM_SYNC
+        MENUITEM "Options",                     IDM_OPTIONS
+        MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_GETURLDIALOG DIALOG  0, 0, 156, 129
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE 0x80000000L
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Enter URL, full path, or UNC location:",IDC_STATIC_PROMPT,4,4,92,20
+    EDITTEXT        IDC_EDIT_URL,4,24,92,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_GETURLDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_EXIT                "Exit"
+    IDS_MENU                "Menu"
+    IDS_OK                  "OK"
+    IDS_CANCEL              "Cancel"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,41 @@
+desc "install all gems locally"
+task :install do
+  run_tasks_in_subdirs(['install_gem','clobber'])
+end
+
+desc "alias for install"
+task :install_all_gems => :install do
+end
+
+desc "clean all gems locally"
+task :clobber do
+  run_tasks_in_subdirs(['clobber'])
+end
+
+desc "alias for clobber"
+task :clobber_all_gems => :clobber do
+end
+
+desc "regenerate manifest for all gems"
+task :manifest do
+  run_tasks_in_subdirs(['manifest'])
+end
+
+desc "alias for manifest"
+task :manifest_all_gems => :manifest do
+end
+
+def run_tasks_in_subdirs(tasknames=[])
+  current_dir = pwd
+  ['rhodes-build','rhodes-generator','rhodes-framework','rhodes'].each do |dir|
+    chdir dir
+    tasknames.each do |name|
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        system("cmd.exe /c rake #{name}")
+      else
+        system "rake #{name}"
+      end
+    end
+    chdir current_dir
+  end
+end
