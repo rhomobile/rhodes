@@ -255,9 +255,19 @@ task :prebuild_mac do
   basedir = pwd
   rake = "rake"
   ant = "ant"
+  prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/iphone/"
 
   chdir 'platform/iphone/rbuild'
   puts `#{ant} runapp`
+  
+  throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
+  
+  
+  rm_rf prebuilt + "sim/rhorunner.app"
+  cp_r  "../build/Debug-iphonesimulator/rhorunner.app", prebuilt + "sim/"
+  
+  rm_f prebuilt + "sim/rhorunner.app/lib"
+  rm_f prebuilt + "sim/rhorunner.app/apps"
   
 
   chdir basedir
