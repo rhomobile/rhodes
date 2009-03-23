@@ -263,6 +263,7 @@ task :prebuild_mac do
   cp_r  "../build/Debug-iphonesimulator/rhorunner.app", prebuilt + "sim/"
   
   rm_rf prebuilt + "sim/rhorunner.app/apps"
+  rm_rf prebuilt + "sim/rhorunner.app/lib"
   
 
   chdir basedir
