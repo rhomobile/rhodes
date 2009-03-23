@@ -253,6 +253,39 @@ describe "RhomObjectFactory" do
     @res[0]['value'].should == question_encoded
   end
   
+  it "should store all ask db operations as query" do
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Contact.ask(question) 
+   
+    @contact = Contact.find(:first)
+    @contact.update_attributes({"question"=>"i am here"})
+    
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' => 'query', 'source_id' => 350})
+    @res.length.should == 1
+    @res[0]['attrib'].should == 'question'
+    @res[0]['value'].should == 'i am here'
+    
+    ['create','update','delete'].each do |u_type|
+      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 350})
+      @res.length.should == 0
+    end
+  end
+  
+  it "should delete ask records without delete sync operation" do
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Contact.ask(question) 
+   
+    @contact = Contact.find(:first)
+    @contact.destroy
+    
+    ['query','create','update','delete'].each do |u_type|
+      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 350})
+      @res.length.should == 0
+    end
+  end
+  
   it "should find with conditions" do
     @accts = Account.find(:all, :conditions => {'industry' => 'Technology'})
     @accts.length.should == 3
