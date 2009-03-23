@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" void showMessageBox(const char* str);
-
 void SendWindowEvent(TInt aEvent, const char* data)
 {
 	// Create a window server event
@@ -39,17 +37,11 @@ void SendWindowEvent(TInt aEvent, const char* data)
 
 extern "C" {
 void webview_refresh() {
-	showMessageBox("webview_refresh");
 	SendWindowEvent(ECmdAppReload, NULL);
 }
 
 void webview_navigate(char* url){
-	showMessageBox("webview_navigate");
-	showMessageBox(url);
 	SendWindowEvent(ECmdAppNavigate2Url, url);
 }
-
-// see rhodesAppView
-//char* webview_current_location()
 
 }
