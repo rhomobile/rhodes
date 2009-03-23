@@ -13,6 +13,11 @@ task :manifest do
   run_tasks_in_subdirs(['manifest'])
 end
 
+desc "release all gems"
+task :release, [:version] do |t,args|
+  run_tasks_in_subdirs(["release VERSION=#{args.version}"])
+end
+
 def run_tasks_in_subdirs(tasknames=[])
   current_dir = pwd
   ['rhodes-build','rhodes-generator','rhodes-framework','rhodes'].each do |dir|
