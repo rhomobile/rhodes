@@ -1,0 +1,33 @@
+%w[rubygems rake rake/clean fileutils newgem].each { |f| require f }
+$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
+require 'lib/rhodes.rb'
+require '../deps.rb'
+
+task :default => [:spec, :features]
+
+# Generate all the Rake tasks
+# Run 'rake -T' to see list of generated tasks (from gem root directory)
+$hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
+  p.developer('Rhomobile Dev', 'dev@rhomobile.com')
+  p.changes              = p.paragraphs_of("../History.txt", 0..1).join("\n\n")  if File.exists? "../History.txt"
+  #p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
+  p.rubyforge_name       = p.name # TODO this is default value
+  p.extra_deps         = $rhodesdeps + [
+    ['rhodes-framework'],
+    ['rhodes-generator'],
+    ['rhodes-build']
+  ]
+  
+  p.clean_globs |= %w[**/.DS_Store tmp *.log]
+  path = (p.rubyforge_name == p.name) ? p.rubyforge_name : "\#{p.rubyforge_name}/\#{p.name}"
+  p.remote_rdoc_dir = File.join(path.gsub(/^#{p.rubyforge_name}\/?/,''), 'rdoc')
+  p.rsync_args = '-av --delete --ignore-errors'
+  p.test_globs = ''
+  p.summary = "rhodes #{Rhodes::VERSION}"
+  
+end
+
+require 'newgem/tasks' # load /tasks/*.rake
+# remove test task TODO: why does this run anyway?
+#Rake.application.remove_task(:test)
+Dir['tasks/**/*.rake'].each { |t| load t }
