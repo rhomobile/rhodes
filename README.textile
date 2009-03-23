@@ -37,7 +37,7 @@ h2. DIRECTORY STRUCTURE
 
 The Rhodes directory structure is outlined below.  In a default Rhodes application, there are several subdirectories inside of an app directory, one for each model or synced data object. For example, there might be subdirectories called Account, Employee, and Case. Each model subdirectory contains a controller in the file controller.rb. These subdirectories each contain a set of template files as Embedded Ruby (ERB) files. These control how data from the model is displayed and what links are available to other actions. Note that this structure is reminiscent of Rails and MERB's structure, but is a bit simpler by design.
 
-	  /myapp (or whatever you call the directory where you do the git clone)
+	  /appname
 	    build.yml (contains the settings for running builds)
 	    config.rb (contains settings for setting the default start and options path)
 	    Rakefile
