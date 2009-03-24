@@ -45,7 +45,7 @@ The Rhodes directory structure is outlined below.  In a default Rhodes applicati
 	      /css
 	      /images
 	      /js
-	    /app (there will be other directories below Rhodes but this is what we care about)
+	    /app
 	      index.erb
 	      layout.erb
 	      loading.html  
