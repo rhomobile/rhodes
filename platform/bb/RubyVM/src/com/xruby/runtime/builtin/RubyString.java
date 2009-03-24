@@ -165,6 +165,11 @@ public class RubyString extends RubyBasic {
         return ObjectFactory.createFixnum(sb_.length());
     }
 
+    //@RubyLevelMethod(name="bytesize")
+    public RubyFixnum rubyBytesize() {
+        return ObjectFactory.createFixnum(sb_.length());
+    }
+    
     //@RubyLevelMethod(name="intern", alias="to_sym")
     public RubySymbol intern() {
         if (this.sb_.length() <= 0) {
