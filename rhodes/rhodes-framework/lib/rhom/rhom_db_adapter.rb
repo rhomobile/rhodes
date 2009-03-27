@@ -91,10 +91,20 @@ module Rhom
       def string_from_key_vals(values, delim)
         vals = ""
         values.each do |key,value|
-          val = value.is_a?(String) ? "'#{value}'" : "#{value}"
-          vals << " #{key} = #{val}#{delim}"
+          vals << " #{key} = #{get_value_for_sql_stmt(value)}#{delim}"
         end
         vals
+      end
+      
+      # generates a value for sql statement
+      def get_value_for_sql_stmt(value)
+        if value.is_a?(String)
+          "'#{value}'"
+        elsif value.nil?
+          "NULL"
+        else
+          "#{value}"
+        end
       end
     
       # support for select statements
@@ -134,7 +144,7 @@ module Rhom
         vals = ""
         if table and values
           values.each do |key,val|
-            value = val.is_a?(Fixnum) ? "#{val}," : "'#{val}',"
+            value = get_value_for_sql_stmt(val)+","
             cols << "#{key},"
             vals << value
           end
