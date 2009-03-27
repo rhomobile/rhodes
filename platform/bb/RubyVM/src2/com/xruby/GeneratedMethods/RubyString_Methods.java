@@ -160,6 +160,11 @@ klass.defineMethod( "length", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).rubyLength();}
 });
+klass.defineMethod( "bytesize", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).rubyBytesize();}
+});
+
 klass.defineMethod( "capitalize!", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).capitalizeBang();}
