@@ -1,0 +1,362 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5C1256360F7CE08900C87274 /* central_freelist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C12561E0F7CE08900C87274 /* central_freelist.cpp */; };
+		5C1256370F7CE08900C87274 /* central_freelist.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C12561F0F7CE08900C87274 /* central_freelist.h */; };
+		5C1256380F7CE08900C87274 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256200F7CE08900C87274 /* common.cpp */; };
+		5C1256390F7CE08900C87274 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256210F7CE08900C87274 /* common.h */; };
+		5C12563A0F7CE08900C87274 /* internal_logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256220F7CE08900C87274 /* internal_logging.cpp */; };
+		5C12563B0F7CE08900C87274 /* internal_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256230F7CE08900C87274 /* internal_logging.h */; };
+		5C12563C0F7CE08900C87274 /* linked_list.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256240F7CE08900C87274 /* linked_list.h */; };
+		5C12563D0F7CE08900C87274 /* maybe_threads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256250F7CE08900C87274 /* maybe_threads.cpp */; };
+		5C12563E0F7CE08900C87274 /* maybe_threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256260F7CE08900C87274 /* maybe_threads.h */; };
+		5C12563F0F7CE08900C87274 /* packed-cache-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256270F7CE08900C87274 /* packed-cache-inl.h */; };
+		5C1256400F7CE08900C87274 /* page_heap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256280F7CE08900C87274 /* page_heap.cpp */; };
+		5C1256410F7CE08900C87274 /* page_heap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256290F7CE08900C87274 /* page_heap.h */; };
+		5C1256420F7CE08900C87274 /* page_heap_allocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C12562A0F7CE08900C87274 /* page_heap_allocator.h */; };
+		5C1256430F7CE08900C87274 /* pagemap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C12562B0F7CE08900C87274 /* pagemap.h */; };
+		5C1256440F7CE08900C87274 /* rhomem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C12562C0F7CE08900C87274 /* rhomem.h */; };
+		5C1256450F7CE08900C87274 /* span.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C12562D0F7CE08900C87274 /* span.cpp */; };
+		5C1256460F7CE08900C87274 /* span.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C12562E0F7CE08900C87274 /* span.h */; };
+		5C1256470F7CE08900C87274 /* static_vars.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C12562F0F7CE08900C87274 /* static_vars.cpp */; };
+		5C1256480F7CE08900C87274 /* static_vars.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256300F7CE08900C87274 /* static_vars.h */; };
+		5C1256490F7CE08900C87274 /* system-alloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256310F7CE08900C87274 /* system-alloc.h */; };
+		5C12564A0F7CE08900C87274 /* tcmalloc_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256320F7CE08900C87274 /* tcmalloc_.cpp */; };
+		5C12564B0F7CE08900C87274 /* tcmalloc_guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256330F7CE08900C87274 /* tcmalloc_guard.h */; };
+		5C12564C0F7CE08900C87274 /* thread_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256340F7CE08900C87274 /* thread_cache.cpp */; };
+		5C12564D0F7CE08900C87274 /* thread_cache.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256350F7CE08900C87274 /* thread_cache.h */; };
+		5C1256510F7CE0BF00C87274 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256500F7CE0BF00C87274 /* config.h */; };
+		5C1256570F7CE0D500C87274 /* basictypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256520F7CE0D500C87274 /* basictypes.h */; };
+		5C1256580F7CE0D500C87274 /* commandlineflags.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256530F7CE0D500C87274 /* commandlineflags.h */; };
+		5C1256590F7CE0D500C87274 /* logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256540F7CE0D500C87274 /* logging.h */; };
+		5C12565A0F7CE0D500C87274 /* spinlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256550F7CE0D500C87274 /* spinlock.h */; };
+		5C12565B0F7CE0D500C87274 /* thread_annotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256560F7CE0D500C87274 /* thread_annotations.h */; };
+		5C1256E70F7CF0AA00C87274 /* atomicops-internals-macosx.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256E40F7CF0AA00C87274 /* atomicops-internals-macosx.h */; };
+		5C1256E80F7CF0AA00C87274 /* dynamic_annotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C1256E50F7CF0AA00C87274 /* dynamic_annotations.h */; };
+		5C1256E90F7CF0AA00C87274 /* spinlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1256E60F7CF0AA00C87274 /* spinlock.cpp */; };
+		5C12571F0F7CF95000C87274 /* dynamic_annotations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C12571E0F7CF95000C87274 /* dynamic_annotations.cpp */; };
+		5C1257250F7CF9DE00C87274 /* system-alloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1257240F7CF9DE00C87274 /* system-alloc.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5C12561E0F7CE08900C87274 /* central_freelist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = central_freelist.cpp; path = ../../shared/tcmalloc/central_freelist.cpp; sourceTree = SOURCE_ROOT; };
+		5C12561F0F7CE08900C87274 /* central_freelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = central_freelist.h; path = ../../shared/tcmalloc/central_freelist.h; sourceTree = SOURCE_ROOT; };
+		5C1256200F7CE08900C87274 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = ../../shared/tcmalloc/common.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256210F7CE08900C87274 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../../shared/tcmalloc/common.h; sourceTree = SOURCE_ROOT; };
+		5C1256220F7CE08900C87274 /* internal_logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = internal_logging.cpp; path = ../../shared/tcmalloc/internal_logging.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256230F7CE08900C87274 /* internal_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = internal_logging.h; path = ../../shared/tcmalloc/internal_logging.h; sourceTree = SOURCE_ROOT; };
+		5C1256240F7CE08900C87274 /* linked_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = linked_list.h; path = ../../shared/tcmalloc/linked_list.h; sourceTree = SOURCE_ROOT; };
+		5C1256250F7CE08900C87274 /* maybe_threads.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = maybe_threads.cpp; path = ../../shared/tcmalloc/maybe_threads.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256260F7CE08900C87274 /* maybe_threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = maybe_threads.h; path = ../../shared/tcmalloc/maybe_threads.h; sourceTree = SOURCE_ROOT; };
+		5C1256270F7CE08900C87274 /* packed-cache-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "packed-cache-inl.h"; path = "../../shared/tcmalloc/packed-cache-inl.h"; sourceTree = SOURCE_ROOT; };
+		5C1256280F7CE08900C87274 /* page_heap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = page_heap.cpp; path = ../../shared/tcmalloc/page_heap.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256290F7CE08900C87274 /* page_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = page_heap.h; path = ../../shared/tcmalloc/page_heap.h; sourceTree = SOURCE_ROOT; };
+		5C12562A0F7CE08900C87274 /* page_heap_allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = page_heap_allocator.h; path = ../../shared/tcmalloc/page_heap_allocator.h; sourceTree = SOURCE_ROOT; };
+		5C12562B0F7CE08900C87274 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pagemap.h; path = ../../shared/tcmalloc/pagemap.h; sourceTree = SOURCE_ROOT; };
+		5C12562C0F7CE08900C87274 /* rhomem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhomem.h; path = ../../shared/tcmalloc/rhomem.h; sourceTree = SOURCE_ROOT; };
+		5C12562D0F7CE08900C87274 /* span.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = span.cpp; path = ../../shared/tcmalloc/span.cpp; sourceTree = SOURCE_ROOT; };
+		5C12562E0F7CE08900C87274 /* span.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = span.h; path = ../../shared/tcmalloc/span.h; sourceTree = SOURCE_ROOT; };
+		5C12562F0F7CE08900C87274 /* static_vars.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = static_vars.cpp; path = ../../shared/tcmalloc/static_vars.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256300F7CE08900C87274 /* static_vars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = static_vars.h; path = ../../shared/tcmalloc/static_vars.h; sourceTree = SOURCE_ROOT; };
+		5C1256310F7CE08900C87274 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "system-alloc.h"; path = "../../shared/tcmalloc/system-alloc.h"; sourceTree = SOURCE_ROOT; };
+		5C1256320F7CE08900C87274 /* tcmalloc_.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tcmalloc_.cpp; path = ../../shared/tcmalloc/tcmalloc_.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256330F7CE08900C87274 /* tcmalloc_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tcmalloc_guard.h; path = ../../shared/tcmalloc/tcmalloc_guard.h; sourceTree = SOURCE_ROOT; };
+		5C1256340F7CE08900C87274 /* thread_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = thread_cache.cpp; path = ../../shared/tcmalloc/thread_cache.cpp; sourceTree = SOURCE_ROOT; };
+		5C1256350F7CE08900C87274 /* thread_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thread_cache.h; path = ../../shared/tcmalloc/thread_cache.h; sourceTree = SOURCE_ROOT; };
+		5C1256500F7CE0BF00C87274 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../shared/tcmalloc/iphone/config.h; sourceTree = SOURCE_ROOT; };
+		5C1256520F7CE0D500C87274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basictypes.h; path = ../../shared/tcmalloc/base/basictypes.h; sourceTree = SOURCE_ROOT; };
+		5C1256530F7CE0D500C87274 /* commandlineflags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = commandlineflags.h; path = ../../shared/tcmalloc/base/commandlineflags.h; sourceTree = SOURCE_ROOT; };
+		5C1256540F7CE0D500C87274 /* logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = logging.h; path = ../../shared/tcmalloc/base/logging.h; sourceTree = SOURCE_ROOT; };
+		5C1256550F7CE0D500C87274 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spinlock.h; path = ../../shared/tcmalloc/base/spinlock.h; sourceTree = SOURCE_ROOT; };
+		5C1256560F7CE0D500C87274 /* thread_annotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thread_annotations.h; path = ../../shared/tcmalloc/base/thread_annotations.h; sourceTree = SOURCE_ROOT; };
+		5C1256E40F7CF0AA00C87274 /* atomicops-internals-macosx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "atomicops-internals-macosx.h"; path = "../../shared/tcmalloc/base/atomicops-internals-macosx.h"; sourceTree = SOURCE_ROOT; };
+		5C1256E50F7CF0AA00C87274 /* dynamic_annotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic_annotations.h; path = ../../shared/tcmalloc/base/dynamic_annotations.h; sourceTree = SOURCE_ROOT; };
+		5C1256E60F7CF0AA00C87274 /* spinlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spinlock.cpp; path = ../../shared/tcmalloc/base/spinlock.cpp; sourceTree = SOURCE_ROOT; };
+		5C12571E0F7CF95000C87274 /* dynamic_annotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic_annotations.cpp; path = ../../shared/tcmalloc/base/dynamic_annotations.cpp; sourceTree = SOURCE_ROOT; };
+		5C1257240F7CF9DE00C87274 /* system-alloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "system-alloc.cpp"; path = "../../shared/tcmalloc/system-alloc.cpp"; sourceTree = SOURCE_ROOT; };
+		D2AAC046055464E500DB518D /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D289987405E68DCB004EDB86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* tcmalloc */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = tcmalloc;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				5C12564F0F7CE0A000C87274 /* base */,
+				5C12564E0F7CE09700C87274 /* iphone */,
+				5C12561E0F7CE08900C87274 /* central_freelist.cpp */,
+				5C12561F0F7CE08900C87274 /* central_freelist.h */,
+				5C1256200F7CE08900C87274 /* common.cpp */,
+				5C1256210F7CE08900C87274 /* common.h */,
+				5C1256220F7CE08900C87274 /* internal_logging.cpp */,
+				5C1256230F7CE08900C87274 /* internal_logging.h */,
+				5C1256240F7CE08900C87274 /* linked_list.h */,
+				5C1256250F7CE08900C87274 /* maybe_threads.cpp */,
+				5C1256260F7CE08900C87274 /* maybe_threads.h */,
+				5C1256270F7CE08900C87274 /* packed-cache-inl.h */,
+				5C1256280F7CE08900C87274 /* page_heap.cpp */,
+				5C1256290F7CE08900C87274 /* page_heap.h */,
+				5C12562A0F7CE08900C87274 /* page_heap_allocator.h */,
+				5C12562B0F7CE08900C87274 /* pagemap.h */,
+				5C12562C0F7CE08900C87274 /* rhomem.h */,
+				5C12562D0F7CE08900C87274 /* span.cpp */,
+				5C12562E0F7CE08900C87274 /* span.h */,
+				5C12562F0F7CE08900C87274 /* static_vars.cpp */,
+				5C1256300F7CE08900C87274 /* static_vars.h */,
+				5C1256310F7CE08900C87274 /* system-alloc.h */,
+				5C1257240F7CF9DE00C87274 /* system-alloc.cpp */,
+				5C1256320F7CE08900C87274 /* tcmalloc_.cpp */,
+				5C1256330F7CE08900C87274 /* tcmalloc_guard.h */,
+				5C1256340F7CE08900C87274 /* thread_cache.cpp */,
+				5C1256350F7CE08900C87274 /* thread_cache.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC046055464E500DB518D /* libtcmalloc.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5C12564E0F7CE09700C87274 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				5C1256500F7CE0BF00C87274 /* config.h */,
+			);
+			name = iphone;
+			sourceTree = "<group>";
+		};
+		5C12564F0F7CE0A000C87274 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				5C12571E0F7CF95000C87274 /* dynamic_annotations.cpp */,
+				5C1256E40F7CF0AA00C87274 /* atomicops-internals-macosx.h */,
+				5C1256E50F7CF0AA00C87274 /* dynamic_annotations.h */,
+				5C1256E60F7CF0AA00C87274 /* spinlock.cpp */,
+				5C1256520F7CE0D500C87274 /* basictypes.h */,
+				5C1256530F7CE0D500C87274 /* commandlineflags.h */,
+				5C1256540F7CE0D500C87274 /* logging.h */,
+				5C1256550F7CE0D500C87274 /* spinlock.h */,
+				5C1256560F7CE0D500C87274 /* thread_annotations.h */,
+			);
+			name = base;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC043055464E500DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C1256370F7CE08900C87274 /* central_freelist.h in Headers */,
+				5C1256390F7CE08900C87274 /* common.h in Headers */,
+				5C12563B0F7CE08900C87274 /* internal_logging.h in Headers */,
+				5C12563C0F7CE08900C87274 /* linked_list.h in Headers */,
+				5C12563E0F7CE08900C87274 /* maybe_threads.h in Headers */,
+				5C12563F0F7CE08900C87274 /* packed-cache-inl.h in Headers */,
+				5C1256410F7CE08900C87274 /* page_heap.h in Headers */,
+				5C1256420F7CE08900C87274 /* page_heap_allocator.h in Headers */,
+				5C1256430F7CE08900C87274 /* pagemap.h in Headers */,
+				5C1256440F7CE08900C87274 /* rhomem.h in Headers */,
+				5C1256460F7CE08900C87274 /* span.h in Headers */,
+				5C1256480F7CE08900C87274 /* static_vars.h in Headers */,
+				5C1256490F7CE08900C87274 /* system-alloc.h in Headers */,
+				5C12564B0F7CE08900C87274 /* tcmalloc_guard.h in Headers */,
+				5C12564D0F7CE08900C87274 /* thread_cache.h in Headers */,
+				5C1256510F7CE0BF00C87274 /* config.h in Headers */,
+				5C1256570F7CE0D500C87274 /* basictypes.h in Headers */,
+				5C1256580F7CE0D500C87274 /* commandlineflags.h in Headers */,
+				5C1256590F7CE0D500C87274 /* logging.h in Headers */,
+				5C12565A0F7CE0D500C87274 /* spinlock.h in Headers */,
+				5C12565B0F7CE0D500C87274 /* thread_annotations.h in Headers */,
+				5C1256E70F7CF0AA00C87274 /* atomicops-internals-macosx.h in Headers */,
+				5C1256E80F7CF0AA00C87274 /* dynamic_annotations.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D2AAC045055464E500DB518D /* tcmalloc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "tcmalloc" */;
+			buildPhases = (
+				D2AAC043055464E500DB518D /* Headers */,
+				D2AAC044055464E500DB518D /* Sources */,
+				D289987405E68DCB004EDB86 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tcmalloc;
+			productName = tcmalloc;
+			productReference = D2AAC046055464E500DB518D /* libtcmalloc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "tcmalloc" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* tcmalloc */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC045055464E500DB518D /* tcmalloc */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2AAC044055464E500DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C1256360F7CE08900C87274 /* central_freelist.cpp in Sources */,
+				5C1256380F7CE08900C87274 /* common.cpp in Sources */,
+				5C12563A0F7CE08900C87274 /* internal_logging.cpp in Sources */,
+				5C12563D0F7CE08900C87274 /* maybe_threads.cpp in Sources */,
+				5C1256400F7CE08900C87274 /* page_heap.cpp in Sources */,
+				5C1256450F7CE08900C87274 /* span.cpp in Sources */,
+				5C1256470F7CE08900C87274 /* static_vars.cpp in Sources */,
+				5C12564A0F7CE08900C87274 /* tcmalloc_.cpp in Sources */,
+				5C12564C0F7CE08900C87274 /* thread_cache.cpp in Sources */,
+				5C1256E90F7CF0AA00C87274 /* spinlock.cpp in Sources */,
+				5C12571F0F7CF95000C87274 /* dynamic_annotations.cpp in Sources */,
+				5C1257250F7CF9DE00C87274 /* system-alloc.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91EC08733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../../shared/tcmalloc,
+					../../shared/iphone,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = tcmalloc;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+			};
+			name = Debug;
+		};
+		1DEB91ED08733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../shared/tcmalloc,
+					../../shared/iphone,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = tcmalloc;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+			};
+			name = Release;
+		};
+		1DEB91F008733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Debug;
+		};
+		1DEB91F108733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "tcmalloc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91EC08733DB70010E9CD /* Debug */,
+				1DEB91ED08733DB70010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "tcmalloc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91F008733DB70010E9CD /* Debug */,
+				1DEB91F108733DB70010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

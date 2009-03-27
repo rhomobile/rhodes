@@ -53,6 +53,11 @@
 #ifdef _WIN32_WCE
 #include <new.h>
 #endif //_WIN32_WCE
+
+#ifdef __APPLE__
+#include <new>
+#endif //__APPLE__
+
 #include <string.h>               // for memchr
 #include <stdlib.h>               // for getenv
 #include "base/basictypes.h"

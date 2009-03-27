@@ -1,7 +1,7 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+//#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC
@@ -14,6 +14,11 @@ typedef unsigned int size_t;
 #if defined(__SYMBIAN32__) && !defined( _SIZE_T_DECLARED)
 typedef unsigned int size_t;
 #define _SIZE_T_DECLARED  1
+#endif
+
+#if defined(__APPLE__) && !defined( _SIZE_T)
+typedef unsigned int size_t;
+#define _SIZE_T  1
 #endif
 
 #ifdef __cplusplus
@@ -43,6 +48,6 @@ char *  rho_strdup(const char *);
 
 #endif //_RHO_NO_MEMDEFINES
 
-#endif// _WIN32_WCE
+//#endif// _WIN32_WCE
 
 #endif  // RHO_MEMORY__
