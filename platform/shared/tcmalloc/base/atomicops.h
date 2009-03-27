@@ -351,6 +351,7 @@ inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
   return base::subtle::Release_Load(ptr);
 }
 
+#undef BASE_HAS_ATOMIC64
 #ifdef BASE_HAS_ATOMIC64
 
 // 64-bit Acquire/Release operations to be deprecated.
