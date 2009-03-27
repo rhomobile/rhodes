@@ -133,6 +133,8 @@ class ArrayPacker {
 */
     private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private static final int[] b64_xtable = new int[256];
+    private static final String sHexDigits = "0123456789abcdef0123456789ABCDEFx";
+    
     static{
     	
 	    // b64_xtable for decoding Base 64
@@ -224,6 +226,25 @@ class ArrayPacker {
                     }
                     break;
 
+                case 'H':
+                {
+                	int bits = 0;
+                	StringBuffer lElem = new StringBuffer(len);
+                	
+                    for (int lCurByte = 0; lCurByte < len; lCurByte++) {
+                        if ((lCurByte & 1) != 0)
+                            bits <<= 4;
+                        else
+                            bits = str.charAt(s++);
+                        
+                        char c = sHexDigits.charAt((bits >>> 4) & 15);
+                        lElem.append( c );
+                    }
+                    
+                    ary.add(ObjectFactory.createString(lElem)); 
+                    
+                    break;
+                }    
                 case 's':
                     while (len-- > 0) {
                         short tmp = 0;
