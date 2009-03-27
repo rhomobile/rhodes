@@ -244,3 +244,5 @@
 #define RUBY_ARCHLIB "/lib"
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
+
+#include "tcmalloc/rhomem.h"

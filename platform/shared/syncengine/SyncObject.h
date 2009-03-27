@@ -29,6 +29,7 @@
 #endif
 
 #include <stdlib.h>
+#include "tcmalloc/rhomem.h"
 
 #if defined(__cplusplus)
 extern "C" {
