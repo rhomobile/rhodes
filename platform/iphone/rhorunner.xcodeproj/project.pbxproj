@@ -40,6 +40,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5C12568B0F7CEA9200C87274 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D /* libtcmalloc.a */;
+			remoteInfo = tcmalloc;
+		};
+		5C1256A80F7CEC8100C87274 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D /* tcmalloc */;
+			remoteInfo = tcmalloc;
+		};
 		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
@@ -109,6 +123,7 @@
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
+		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F5342A9C0F658E42003FD158 /* UniversalLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniversalLock.h; path = ../shared/syncengine/UniversalLock.h; sourceTree = SOURCE_ROOT; };
 		F5342ACF0F65BF7D003FD158 /* HttpCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpCallback.h; sourceTree = "<group>"; };
@@ -211,6 +226,7 @@
 				466B0FC90F3CFA8000A52314 /* Icons */,
 				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
 				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
+				5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -262,6 +278,14 @@
 				466B0FCB0F3CFA9400A52314 /* home_btn.png */,
 			);
 			name = Icons;
+			sourceTree = "<group>";
+		};
+		5C1256880F7CEA9200C87274 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C12568C0F7CEA9200C87274 /* libtcmalloc.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F563D0310EA5408C0062DA57 /* GeoLocation */ = {
@@ -375,6 +399,7 @@
 			dependencies = (
 				F59F16040E9449E5004103B4 /* PBXTargetDependency */,
 				F563D5610EA8257A0062DA57 /* PBXTargetDependency */,
+				5C1256A90F7CEC8100C87274 /* PBXTargetDependency */,
 			);
 			name = rhorunner;
 			productName = rhorunner;
@@ -400,6 +425,10 @@
 					ProductGroup = F563D5410EA8240E0062DA57 /* Products */;
 					ProjectRef = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
 				},
+				{
+					ProductGroup = 5C1256880F7CEA9200C87274 /* Products */;
+					ProjectRef = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -409,6 +438,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		5C12568C0F7CEA9200C87274 /* libtcmalloc.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtcmalloc.a;
+			remoteRef = 5C12568B0F7CEA9200C87274 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F563D5450EA8240E0062DA57 /* librhosynclib.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -487,6 +523,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5C1256A90F7CEC8100C87274 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tcmalloc;
+			targetProxy = 5C1256A80F7CEC8100C87274 /* PBXContainerItemProxy */;
+		};
 		F563D5610EA8257A0062DA57 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhosynclib;
@@ -517,12 +558,14 @@
 					CFNetwork,
 					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
 					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
 				);
 				PRODUCT_NAME = rhorunner;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F0FD5D75-49BB-467F-AEA7-1CB1D2B70991";
@@ -538,17 +581,20 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CoreServices,
 					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
 				);
 				PRODUCT_NAME = rhorunner;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F0FD5D75-49BB-467F-AEA7-1CB1D2B70991";

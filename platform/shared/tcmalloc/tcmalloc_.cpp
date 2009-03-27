@@ -143,6 +143,13 @@ using tcmalloc::StackTrace;
 using tcmalloc::Static;
 using tcmalloc::ThreadCache;
 
+#ifdef __APPLE__
+void _iphone_assert(int exp){
+	if (!exp)
+		exit(1);
+}
+#endif //__APPLE__
+
 // __THROW is defined in glibc systems.  It means, counter-intuitively,
 // "This function will never throw an exception."  It's an optional
 // optimization tool, but we may need to use it to match glibc prototypes.
