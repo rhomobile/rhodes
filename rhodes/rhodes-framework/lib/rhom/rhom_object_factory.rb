@@ -235,7 +235,7 @@ module Rhom
                   # Don't save objects with braces to database
                   val = self.inst_strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
-                  unless self.method_name_reserved?(method) or val.nil?
+                  unless self.method_name_reserved?(method)
                     fields = {"source_id"=>self.get_inst_source_id,
                               "object"=>obj,
                               "attrib"=>method,
@@ -263,8 +263,8 @@ module Rhom
                   
                   # if the object's value doesn't match the database record
                   # then we procede with update
-                  if new_val and old_val != new_val
-                    unless self.method_name_reserved?(attrib) or new_val.length == 0
+                  if old_val != new_val
+                    unless self.method_name_reserved?(attrib)
                       ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
