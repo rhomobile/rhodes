@@ -82,6 +82,12 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 			switch(nColType){
 				case SQLITE_NULL:
 					break;
+                case SQLITE_INTEGER:
+                {
+                    int nVal = sqlite3_column_int(statement, nCol);
+                    colValue = INT2NUM(nVal);
+                    break;
+                }
 				default:{
 					char *text = (char *)sqlite3_column_text(statement, nCol);
 					colValue = rb_str_new2(text);
@@ -96,7 +102,6 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	}
 	
 	sqlite3_finalize(statement);
-	//free(statement);
 	
 	return arRes;
 }
