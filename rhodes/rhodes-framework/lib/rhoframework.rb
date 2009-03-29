@@ -3,19 +3,19 @@ begin
     require 'date/format'
     require 'time'
 
-    require 'sqlite3/constants'
-    require 'sqlite3/errors'
-    require 'sqlite3/pragmas'
+   # require 'sqlite3/constants'
+   # require 'sqlite3/errors'
+   # require 'sqlite3/pragmas'
     
-    require 'sqlite3/resultset'
-    require 'sqlite3/statement'
+   # require 'sqlite3/resultset'
+   # require 'sqlite3/statement'
     
-    require 'date'
-    require 'sqlite3/translator'
+   # require 'date'
+   # require 'sqlite3/translator'
     
-    require 'sqlite3/value'
+   # require 'sqlite3/value'
 
-    require 'sqlite3/database'
+   # require 'sqlite3/database'
     require 'rhom/rhom_db_adapter'
 	
     require 'rhom/rhom_object'
