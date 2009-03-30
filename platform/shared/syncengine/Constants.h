@@ -41,7 +41,12 @@ extern "C" {
 #define MAX_SOURCES 100
 
 #define MAX_SYNC_TRY_COUNT 3
+
+#ifdef __SYMBIAN32__
 #define SYNC_PAGE_SIZE     200
+#else
+#define SYNC_PAGE_SIZE     1000
+#endif 
 
 /* Sync Object db codes */
 #define SYNC_OBJECT_SUCCESS 0

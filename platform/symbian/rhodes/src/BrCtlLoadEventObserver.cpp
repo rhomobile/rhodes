@@ -32,11 +32,13 @@ CCBrCtlLoadEventObserver::HandleBrowserLoadEventL(TBrCtlDefs::TBrCtlLoadEvent aL
                                                           TUint aSize, 
                                                           TUint16 aTransactionId) 
     {
-		if ( TBrCtlDefs::EEventLoadFinished == aLoadEvent ){
+		/*if ( TBrCtlDefs::EEventLoadFinished == aLoadEvent ){
 			
 			if ( iContainer )
+			{
 				webview_set_current_location( iContainer->GetCurrentPageUrl() );
-		}
+			}
+		}*/
     }
 
 CCBrCtlLoadEventObserver::CCBrCtlLoadEventObserver() {

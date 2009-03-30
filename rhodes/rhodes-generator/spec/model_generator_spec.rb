@@ -16,6 +16,11 @@ describe Rhogen::ModelGenerator do
       @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "", 10)
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
+  
+  it "should use type argument" do
+    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address", "ask")
+    @generator.arguments[4].should == "ask"
+  end
 
   before do
     @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address")

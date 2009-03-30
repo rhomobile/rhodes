@@ -3,17 +3,9 @@ task :install do
   run_tasks_in_subdirs(['install_gem','clobber'])
 end
 
-desc "alias for install"
-task :install_all_gems => :install do
-end
-
 desc "clean all gems locally"
 task :clobber do
   run_tasks_in_subdirs(['clobber'])
-end
-
-desc "alias for clobber"
-task :clobber_all_gems => :clobber do
 end
 
 desc "regenerate manifest for all gems"
@@ -21,8 +13,9 @@ task :manifest do
   run_tasks_in_subdirs(['manifest'])
 end
 
-desc "alias for manifest"
-task :manifest_all_gems => :manifest do
+desc "release all gems"
+task :release, [:version] do |t,args|
+  run_tasks_in_subdirs(["release VERSION=#{args.version}"])
 end
 
 def run_tasks_in_subdirs(tasknames=[])
