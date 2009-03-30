@@ -149,8 +149,8 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, const TUint8* aUrl, TInt aUrl
 	if ( iTransObs->Verbose() )
 		iTransObs->Console()->Printf(_L("InvokeHttpMethodL:\n"));
 	
-	InvokeHttpMethodL(aCommand, szContentType);
 	
+	InvokeHttpMethodL(aCommand, szContentType);
 	iTransObs->SetUsingFile(ETrue); //enable by default
 	
 	if( iUri )
@@ -228,11 +228,6 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, char* szContentType)
 				// Add headers appropriate to all methods
 				SetHeaderL(hdr, HTTP::EUserAgent, KUserAgent);
 				
-				if ( szContentType ){
-					TPtrC8 ptr8((const TUint8*)szContentType);
-					SetHeaderL(hdr, HTTP::EContentType, ptr8);
-				}
-				
 				//SetHeaderL(hdr, HTTP::ECookie, KAccept);
 				//SetHeaderL(hdr, HTTP::EConnection, KConnection);
 				
@@ -267,6 +262,29 @@ void CHttpClient::InvokeHttpMethodL(TInt aCommand, char* szContentType)
 				// Add headers and body data for methods that use request bodies
 				if (iHasARequestBody)
 					{
+					// Content type header
+					TBuf8<CHttpConstants::KMaxContentTypeSize> contTypeBuf;
+					
+					if ( szContentType )
+					{
+						TPtrC8 ptr(reinterpret_cast<const TUint8*>(szContentType));
+						HBufC* buffer = HBufC::NewL(ptr.Length());
+						buffer->Des().Copy(ptr);
+						
+						contTypeBuf.Copy(buffer->Des());
+						
+						delete buffer;
+					}
+					else 
+					{
+						contTypeBuf.Copy( _L("application/x-www-form-urlencoded"));
+					}
+					
+					RStringF contTypeStr = iConnectionManager->GetHTTPSession().StringPool().OpenFStringL(contTypeBuf);
+					THTTPHdrVal contType(contTypeStr);
+					hdr.SetFieldL(iConnectionManager->GetHTTPSession().StringPool().StringF(HTTP::EContentType,RHTTPSession::GetTable()), contType);
+					contTypeStr.Close();
+					
 					MHTTPDataSupplier* dataSupplier = this;
 					iTrans.Request().SetBody(*dataSupplier);
 					}
