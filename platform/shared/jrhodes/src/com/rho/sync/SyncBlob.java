@@ -10,9 +10,8 @@ import org.garret.perst.SimpleFile;
 import org.garret.perst.StorageError;
 import org.garret.perst.impl.FileFactory;
 
+import com.rho.db.IDbCallback;
 import com.rho.util.URI;
-import com.rho.db.PerstLiteAdapter;
-import com.rho.db.PerstLiteAdapter.Table_base1;
 
 public class SyncBlob {
 /*
@@ -191,10 +190,10 @@ public class SyncBlob {
 		return success;
 	}
 	
-	public static class DBCallback implements PerstLiteAdapter.IDbCallback{
+	public static class DBCallback implements IDbCallback{
 
 		public void OnDeleteAllFromTable(String tableName) {
-			if ( !tableName.equals(PerstLiteAdapter.Table_object_values.name()) )
+			/*if ( !tableName.equals(PerstLiteAdapter.Table_object_values.name()) )
 				return;
 
 			try{
@@ -203,11 +202,11 @@ public class SyncBlob {
 			}catch(StorageError exc){
 			}catch(IOException exc){
 				
-			}
+			}*/
 		}
 
-		public void OnDeleteFromTable(String tableName, Table_base1 item) {
-			if ( !(item instanceof PerstLiteAdapter.Table_object_values))
+		public void OnDeleteFromTable(String tableName) {
+			/*if ( !(item instanceof PerstLiteAdapter.Table_object_values))
 				return;
 			
 			PerstLiteAdapter.Table_object_values obj = (PerstLiteAdapter.Table_object_values)item;
@@ -225,7 +224,7 @@ public class SyncBlob {
 				FileFactory.createFile().delete(url);
 			}catch(StorageError exc){
 				
-			}
+			}*/
 		}
 		
 	}

@@ -56,10 +56,11 @@ public class SyncManager {
 			if ( is == null )
 				return null;
 			
-			long len = connection.getContentLength();
+			//long len = connection.getContentLength();
 			
-				if ( len > 1024*100)
-					return null;
+			//BB
+			//	if ( len > 1024*100)
+			//		return null;
 				
 				buffer = readFully(is);
 		}finally{
