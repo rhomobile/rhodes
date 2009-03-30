@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.homepage = %q{http://www.rhomobile.com/}
   s.rdoc_options = ["--main", "../../README.rdoc", "--line-numbers"]
-  s.rubyforge_project = %q{rhodes}
+  s.rubyforge_project = %q{rhodes-framework}
   s.rubygems_version = "#{RhodesFramework::VERSION}"
   s.summary = "rhodes-framework #{RhodesFramework::VERSION}"
 end

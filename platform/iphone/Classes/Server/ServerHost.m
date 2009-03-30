@@ -79,7 +79,7 @@ static ServerHost* sharedSH = nil;
 
 - (void)refreshView {
 	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
-		[actionTarget performSelector:onRefreshView];
+		[actionTarget performSelectorOnMainThread:onRefreshView withObject:NULL waitUntilDone:NO];
 	}
 }
 

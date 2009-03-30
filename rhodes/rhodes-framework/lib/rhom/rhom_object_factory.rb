@@ -208,15 +208,18 @@ module Rhom
               def destroy
                 result = nil
                 obj = self.inst_strip_braces(self.object)
+                update_type=self.get_update_type_by_source('delete')
                 if obj
                   # first delete the record from viewable list
                   result = ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
                                                             {"object"=>obj})
-                  # now add delete operation
-                  result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
-                                                            {"source_id"=>self.get_inst_source_id,
-                                                             "object"=>obj,
-                                                             "update_type"=>'delete'})
+                  if update_type
+                    # now add delete operation
+                    result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
+                                                              {"source_id"=>self.get_inst_source_id,
+                                                               "object"=>obj,
+                                                               "update_type"=>update_type})
+                  end
                 end
                 result
               end
@@ -226,17 +229,18 @@ module Rhom
                 result = nil
                 # iterate over each instance variable and insert create row to table
 				        obj = self.inst_strip_braces(self.object)
+				        update_type=self.get_update_type_by_source('create')
                 self.instance_variables.each do |method|
                   method = method.to_s.gsub(/@/,"")
                   # Don't save objects with braces to database
                   val = self.inst_strip_braces(self.send(method.to_sym))
                   # add rows excluding object, source_id and update_type
-                  unless self.method_name_reserved?(method) or val.nil?
+                  unless self.method_name_reserved?(method)
                     fields = {"source_id"=>self.get_inst_source_id,
                               "object"=>obj,
                               "attrib"=>method,
                               "value"=>val,
-                              "update_type"=>'create'}
+                              "update_type"=>update_type}
                     fields = method == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
                     result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME, fields)                                     
                   end
@@ -249,6 +253,7 @@ module Rhom
               def update_attributes(attrs)
                 result = nil
                 obj = self.inst_strip_braces(self.object)
+                update_type=self.get_update_type_by_source('update')
                 attrs.each do |attrib,val|
                   attrib = attrib.to_s.gsub(/@/,"")
                   old_val = self.send attrib.to_sym unless self.method_name_reserved?(attrib)
@@ -258,20 +263,20 @@ module Rhom
                   
                   # if the object's value doesn't match the database record
                   # then we procede with update
-                  if new_val and old_val != new_val
-                    unless self.method_name_reserved?(attrib) or new_val.length == 0
+                  if old_val != new_val
+                    unless self.method_name_reserved?(attrib)
                       ::Rhom::RhomDbAdapter::delete_from_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
                                                                  "attrib"=>attrib,
-                                                                 "update_type"=>'update'})
+                                                                 "update_type"=>update_type})
                       # update sync list
                       result = ::Rhom::RhomDbAdapter::insert_into_table(::Rhom::TABLE_NAME,
                                                                 {"source_id"=>self.get_inst_source_id,
                                                                  "object"=>obj,
                                                                  "attrib"=>attrib,
                                                                  "value"=>new_val,
-                                                                 "update_type"=>'update'})
+                                                                 "update_type"=>update_type})
                     end
                   end
                 end
@@ -280,6 +285,17 @@ module Rhom
 	
               def get_inst_source_id
                 Rho::RhoConfig::sources[self.class.name.to_s]['source_id'].to_s
+              end
+              
+              def get_update_type_by_source(update_type)
+                source_type = Rho::RhoConfig::sources[self.class.name.to_s]['type']
+                if source_type and source_type == "ask" and update_type == 'delete'
+                  nil
+                elsif source_type and source_type == "ask"
+                  "query"
+                else
+                  update_type
+                end
               end
               
               def inst_strip_braces(str=nil)

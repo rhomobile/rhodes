@@ -171,6 +171,28 @@ describe "RhomObjectFactory" do
     @new_acct.industry.should == "Technology"
   end
   
+  it "should update an attribute to nil" do
+    new_attributes = {"name"=>nil}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should be_nil
+    @new_acct.industry.should == "Technology"
+  end
+  
+  it "should update an attribute to empty string" do
+    new_attributes = {"name"=>""}
+    @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account.update_attributes(new_attributes)
+    
+    @new_acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+
+    @new_acct.name.should == ""
+    @new_acct.industry.should == "Technology"
+  end
+  
   it "should store only last updated value for attrib" do
     new_attributes1 = {"new_name"=>"Mobio Europe"}
     @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
@@ -251,6 +273,39 @@ describe "RhomObjectFactory" do
     
     @res[0]['attrib'].should == 'question'
     @res[0]['value'].should == question_encoded
+  end
+  
+  it "should store all ask db operations as query" do
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Contact.ask(question) 
+   
+    @contact = Contact.find(:first)
+    @contact.update_attributes({"question"=>"i am here"})
+    
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' => 'query', 'source_id' => 350})
+    @res.length.should == 1
+    @res[0]['attrib'].should == 'question'
+    @res[0]['value'].should == 'i am here'
+    
+    ['create','update','delete'].each do |u_type|
+      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 350})
+      @res.length.should == 0
+    end
+  end
+  
+  it "should delete ask records without delete sync operation" do
+    question = 'where am i?'
+    question_encoded = 'where%20am%20i%3F'
+    Contact.ask(question) 
+   
+    @contact = Contact.find(:first)
+    @contact.destroy
+    
+    ['query','create','update','delete'].each do |u_type|
+      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 350})
+      @res.length.should == 0
+    end
   end
   
   it "should find with conditions" do
