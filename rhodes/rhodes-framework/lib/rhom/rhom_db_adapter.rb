@@ -18,7 +18,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #$:.unshift(File.join(File.dirname(__FILE__), '../../'))
-require 'sqlite3/database'
+# require 'sqlite3/database'
+require 'rhodes'
 
 module Rhom
   class RhomDbAdapter
@@ -37,7 +38,7 @@ module Rhom
     
       # closes the database if and only if it is open
       def close
-        if @@database and not @@database.closed?
+        if @@database #and not @@database.closed?
           @@database.close
           @@database = nil
         else
@@ -60,10 +61,10 @@ module Rhom
             SyncEngine::lock_sync_mutex
             # execute sql statement inside of transaction
             # result is returned as an array of hashes
-            @@database.transaction unless @@database.transaction_active?
-            @@database.results_as_hash = true
+            # @@database.transaction unless @@database.transaction_active?
+            # @@database.results_as_hash = true
             result = @@database.execute sql
-            @@database.commit
+            # @@database.commit
             SyncEngine::unlock_sync_mutex
           rescue Exception => e
             puts "exception when running query: #{e}"

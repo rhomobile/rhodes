@@ -302,7 +302,7 @@
 					../../shared/iphone,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = tcmalloc;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
