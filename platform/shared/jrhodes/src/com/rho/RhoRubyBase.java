@@ -2,7 +2,6 @@ package com.rho;
 
 import java.io.InputStream;
 
-import com.rho.db.PerstLiteAdapter;
 import com.rho.sync.SyncEngine;
 import com.rho.util.Properties;
 import com.xruby.runtime.lang.*;
@@ -27,9 +26,7 @@ public abstract class RhoRubyBase implements IRhoRuby {
 		
 		RubyRuntime.init(args);
 
-		PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
-		SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
-		
+		//PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
 		PlatformRhoRubyStart(szAppPath);
         
 		mainObj = new xruby.ServeME.main();
