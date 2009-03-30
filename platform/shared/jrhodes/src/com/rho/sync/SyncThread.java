@@ -2,8 +2,6 @@ package com.rho.sync;
 
 import java.util.Date;
 
-import com.rho.db.PerstLiteAdapter;
-
 /**
  * The Class SyncThread.
  */

@@ -1,6 +1,6 @@
 package com.rho.sync;
 
-import com.rho.db.PerstLiteAdapter;
+import com.rho.db.IDBAdapter;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -111,9 +111,9 @@ public class SyncObject {
 				.createString(this.getValue()));
 		hash.add(SyncUtil.createString("update_type"), SyncUtil
 				.createString(this.getUpdateType()));
-		hash.add( PerstLiteAdapter.TOKEN, SyncUtil
+		hash.add( SyncUtil.createString("token"), SyncUtil
 				.createString(this.get_token()));
-		hash.add( PerstLiteAdapter.TYPE, SyncUtil
+		hash.add( SyncUtil.createString("attrib_type"), SyncUtil
 				.createString(this.get_type()));
 		
 		return hash;
