@@ -11,7 +11,7 @@ namespace "config" do
       $aapt = "aapt.exe"
       $apkbuilder = "apkbuilder.bat"
       $rhoruby = "RhoRuby.exe"
-      $emulator = "emulator.exe"
+      $emulator = "cmd /c emulator.exe"
       $adb = "adb.exe"
     else
       $dx = "dx"
@@ -129,18 +129,29 @@ namespace "run" do
 
       sdimage = File.join($basedir,"rhosdcard.iso")
 
+      puts `#{$adb} start-server`
+      sleep 5
+
       Thread.new { system("#{$emulator} -sdcard \"#{sdimage}\"") }
 
-      sleep 2
-
+      sleep 10
+      
       puts "Waiting for emulator to get started"
+      $stdout.flush
       puts `#{$adb} wait-for-device`
       sleep 20
       apkfile = File.join($targetdir,"Rhodes-debug.apk")    
 
       puts "Loading package into emulator"
-      puts `#{$adb} install -r "#{apkfile}"`
-
+      theoutput = `#{$adb} install -r "#{apkfile}"`
+      count = 0
+      while theoutput.to_s.match(/Error Type/) and count < 15 do
+        puts "Failed to load (possibly because emulator not done launching)- retrying"
+	$stdout.flush
+	sleep 5
+	count += 1
+	theoutput = `#{$adb} install -r "#{apkfile}"`
+      end
       puts "Loading complete, you may now run the application"      
       
     end
