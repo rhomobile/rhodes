@@ -85,6 +85,13 @@ namespace "bundle" do
 
       chdir $tmpdir
       makesis = File.join(tools,"makesis.exe")
+      pkgfile = ""
+      File.open("rhodes_tmp.pkg","r") { |f| pkgfile = f.read }
+      modifiedpkg = ""
+      pkgfile.each do |line|
+        modifiedpkg << line if not line.match(/^;/)
+      end 
+      File.open("rhodes_tmp.pkg","w") { |f| f.write modifiedpkg }
       puts `"#{makesis}" rhodes_tmp.pkg`
     chdir $basedir
 

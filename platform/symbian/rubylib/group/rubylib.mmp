@@ -118,6 +118,8 @@ SOURCE strscan.c
 SOURCEPATH ..\..\..\shared\ruby\ext\system
 SOURCE system_properties.c
 SOURCE system_wrap.c
+SOURCE network.c
+
 SOURCEPATH ..\..\..\shared\ruby\ext\rhosupport
 SOURCE rhosupport.c
 
