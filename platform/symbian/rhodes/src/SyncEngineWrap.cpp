@@ -62,7 +62,8 @@ extern "C"
 
 	int login(const char* login, const char* password);
 	sqlite3 *get_database();
-	
+
+#include "tcmalloc/rhomem.h"
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
