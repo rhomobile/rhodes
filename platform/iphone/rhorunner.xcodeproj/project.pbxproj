@@ -21,6 +21,7 @@
 		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
 		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
 		466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 466B0FCB0F3CFA9400A52314 /* home_btn.png */; };
+		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
@@ -120,6 +121,7 @@
 		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		466B0FCB0F3CFA9400A52314 /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
+		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
@@ -167,6 +169,7 @@
 				F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */,
 				F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */,
 				F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */,
+				4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +263,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4678FCA80F8185920054340C /* SystemConfiguration.framework */,
 				F58E80100F008B3F00E46829 /* AddressBook.framework */,
 				F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */,
 				F563D4130EA6D10F0062DA57 /* CoreLocation.framework */,
@@ -568,7 +572,7 @@
 					"-ltcmalloc",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F0FD5D75-49BB-467F-AEA7-1CB1D2B70991";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6B88C3ED-F351-4F92-AFD1-C03087800104";
 			};
 			name = Debug;
 		};

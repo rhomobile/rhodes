@@ -18,7 +18,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #import <UIKit/UIKit.h>
+#import <sys/socket.h>
+#import <netinet/in.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <SystemConfiguration/SCNetworkReachability.h>
 #import <Foundation/Foundation.h>
 #include "Constants.h"
 #include "SyncJSONReader.h"
@@ -28,6 +31,18 @@
 extern int logged_in();
 extern void logout();
 extern NSString *get_session();
+extern int has_network_impl();
+extern int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags);
+
+/*
+ An enumeration that defines the return values of the network state
+ of the device.
+ */
+typedef enum {
+	NotReachable = 0,
+	ReachableViaCarrierDataNetwork,
+	ReachableViaWiFiNetwork
+} NetworkStatus;
 
 /* 
  * Pulls the latest object_values list 
@@ -175,7 +190,6 @@ int push_remote_data(char* url, char* data, size_t data_size,char* contentType) 
 		NSHTTPURLResponse *response;
 		NSString *linkString = [[NSString alloc] initWithUTF8String:url];
 		NSMutableData *postBody = [NSMutableData dataWithBytes:data length:data_size];
-		int nlen = [postBody length];
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setHTTPMethod:@"POST"];
 		
@@ -268,4 +282,60 @@ NSString *get_session(char *url_string) {
 		}
 	}
 	return session;
+}
+
+// Determines network connectivity
+int has_network_impl() {
+	SCNetworkReachabilityFlags defaultRouteFlags;
+	int defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
+	if (defaultRouteIsAvailable == 1) {
+		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
+			// Ad-Hoc network, not available
+			return 0;
+		}
+		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
+			// Cell network available
+			return 1;
+		}
+		// WIFI available
+		return 1;
+	}
+	return 0;
+}
+
+int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
+{
+	struct sockaddr_in zeroAddress;
+	BOOL isReachable = FALSE;
+	int reachable = 0;
+	SCNetworkReachabilityRef defaultRouteReachability;
+	NSString *hostNameOrAddress; 
+	bzero(&zeroAddress, sizeof(zeroAddress));
+	zeroAddress.sin_len = sizeof(zeroAddress);
+	zeroAddress.sin_family = AF_INET;
+	
+	defaultRouteReachability = SCNetworkReachabilityCreateWithAddress(NULL, (struct sockaddr *)&zeroAddress);
+	hostNameOrAddress = @"0.0.0.0";
+	
+	SCNetworkReachabilityFlags flags;
+	BOOL gotFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
+	if (!gotFlags) {
+        return reachable;
+    }
+    
+	isReachable = flags & kSCNetworkReachabilityFlagsReachable;
+	BOOL noConnectionRequired = !(flags & kSCNetworkReachabilityFlagsConnectionRequired);
+	if ((flags & kSCNetworkReachabilityFlagsIsWWAN)) {
+		noConnectionRequired = YES;
+	}
+	
+	reachable = (isReachable && noConnectionRequired) ? 1 : 0;
+	
+	// Callers of this method might want to use the reachability flags, so if an 'out' parameter
+	// was passed in, assign the reachability flags to it.
+	if (outFlags) {
+		*outFlags = flags;
+	}
+	CFRelease(defaultRouteReachability);
+	return reachable;
 }
