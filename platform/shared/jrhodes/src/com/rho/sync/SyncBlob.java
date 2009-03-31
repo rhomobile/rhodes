@@ -12,6 +12,12 @@ import org.garret.perst.impl.FileFactory;
 
 import com.rho.db.IDbCallback;
 import com.rho.util.URI;
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.builtin.RubyString;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyValue;
 
 public class SyncBlob {
 /*
@@ -193,7 +199,7 @@ public class SyncBlob {
 	public static class DBCallback implements IDbCallback{
 
 		public void OnDeleteAllFromTable(String tableName) {
-			/*if ( !tableName.equals(PerstLiteAdapter.Table_object_values.name()) )
+			if ( !tableName.equals("object_values") )
 				return;
 
 			try{
@@ -202,29 +208,33 @@ public class SyncBlob {
 			}catch(StorageError exc){
 			}catch(IOException exc){
 				
-			}*/
+			}
 		}
 
-		public void OnDeleteFromTable(String tableName) {
-			/*if ( !(item instanceof PerstLiteAdapter.Table_object_values))
+		public void OnDeleteFromTable(String tableName, RubyArray rows2Delete) {
+			if ( !tableName.equals("object_values") || rows2Delete == null)
 				return;
 			
-			PerstLiteAdapter.Table_object_values obj = (PerstLiteAdapter.Table_object_values)item;
-			if ( !obj.getTypeField().equals("blob.file") )
-				return;
-			
-//			if ( obj.getUpdateTypeField().equals("create") || obj.getUpdateTypeField().equals("update") )
-//				return;
-			
-			String url = obj.getValueField();
-			if ( url == null || url.length() == 0 )
-				return;
-			
-			try{
-				FileFactory.createFile().delete(url);
-			}catch(StorageError exc){
+			for ( int i = 0; i < rows2Delete.size(); i++ )
+			{
+				RubyHash hash = (RubyHash)rows2Delete.get(i);
 				
-			}*/
+				RubyValue val = hash.getValue(ObjectFactory.createString("type"));
+		        if ( val != RubyConstant.QNIL )
+		        {
+		        	if ( !val.asString().equals("blob.file"))
+		        		return;
+		        }
+				
+				String url = hash.getValue(ObjectFactory.createString("value")).asString();
+				if ( url == null || url.length() == 0 )
+					return;
+				
+				try{
+					FileFactory.createFile().delete(url);
+				}catch(StorageError exc){
+				}
+			}
 		}
 		
 	}
