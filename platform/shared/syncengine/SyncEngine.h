@@ -70,6 +70,7 @@ void stop_sync_engine();
 void shutdown_database();
 
 int logged_in();
+int has_network_impl();
 
 #if defined(__cplusplus)
 }
