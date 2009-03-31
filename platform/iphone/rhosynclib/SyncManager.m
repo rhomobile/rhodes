@@ -320,6 +320,7 @@ int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
 	SCNetworkReachabilityFlags flags;
 	BOOL gotFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
 	if (!gotFlags) {
+		CFRelease(defaultRouteReachability);
         return reachable;
     }
     
