@@ -113,6 +113,11 @@ task :set_version, [:version] do |t,args|
   File.open("platform/bb/build/build.yml","w") do |f| 
     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   end
+  
+  File.open("rhodes/rhodes-generator/generators/templates/application/build.yml","r") { |f| origfile = f.read }
+  File.open("rhodes/rhodes-generator/generators/templates/application/build.yml","w") do |f| 
+    f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
+  end
 
   File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
   File.open("platform/iphone/Info.plist","w") do |f| 
