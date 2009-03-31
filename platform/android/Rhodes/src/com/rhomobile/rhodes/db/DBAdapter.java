@@ -46,7 +46,7 @@ public class DBAdapter extends RubyBasic implements IDBAdapter {
 					.toString().replace(".", "") : "");
 		} catch (Exception e) {
 		}
-
+		
 		if (storage == null)
 			storage = new RhoDB(RhodesInstance.getInstance());
 
@@ -55,6 +55,19 @@ public class DBAdapter extends RubyBasic implements IDBAdapter {
 		} catch (Exception e) {
 			return null;
 		}
+		
+		try {
+		    
+			if ( this.callback != null && storage.isNewVersion() ){
+				this.callback.OnDeleteAllFromTable("client_info");
+				this.callback.OnDeleteAllFromTable("object_values");
+				this.callback.OnDeleteAllFromTable("sources");
+			}
+		}
+		catch (Exception e) {
+		}
+
+
 		return this;
 	}
 
@@ -252,18 +265,12 @@ public class DBAdapter extends RubyBasic implements IDBAdapter {
 	 * @see com.rhomobile.rhodes.db.IDBAdapter#deleteAllFromTable(com.xruby.runtime.lang.RubyValue)
 	 */
 	public synchronized RubyValue deleteAllFromTable(RubyValue table) {
-		/*
-		 * TableRootBase tblRoot = getTableRoot(tableName); if ( tblRoot != null ){
-		 * if ( m_callback != null )
-		 * m_callback.OnDeleteAllFromTable(tableName.toStr());
-		 * 
-		 * m_storage.setProperty("perst.concurrent.iterator",Boolean.TRUE);
-		 * tblRoot.clear(); m_storage.commit();
-		 * m_storage.setProperty("perst.concurrent.iterator",Boolean.FALSE); }
-		 */
-
+		
 		if ( table!= null && table != RubyConstant.QNIL ){
-			
+
+			if ( this.callback != null )
+				this.callback.OnDeleteAllFromTable(table.toStr());
+
 			String query = "delete * from " + table;
 			storage.executeSql(query);
 		}
@@ -281,6 +288,16 @@ public class DBAdapter extends RubyBasic implements IDBAdapter {
 			RubyValue condition) {
 		
 		if ( table!= null && table != RubyConstant.QNIL && condition != null && condition != RubyConstant.QNIL ){
+			
+			if ( this.callback != null )
+			{
+				RubyArray rows2Delete = (RubyArray)storage.executeSql(false, table.asString(), "*", null,
+							( condition != null && condition != RubyConstant.QNIL) 
+								? vals2str( (RubyHash) condition, " AND")
+								: null);
+				
+				this.callback.OnDeleteFromTable(table.asString(), rows2Delete);
+			}
 			
 			String query = "delete from " + table
 			+ (( condition != null && condition != RubyConstant.QNIL) 
