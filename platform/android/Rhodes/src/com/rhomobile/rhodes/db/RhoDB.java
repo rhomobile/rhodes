@@ -32,7 +32,8 @@ public class RhoDB {
 	private SQLiteDatabase db;
 	private Context ctx;
 	private int dbVersion;
-
+	private boolean newVersion = false;
+	
 	public RhoDB(Context ctx) {
 		this.ctx = ctx;
 		dbVersion = DATABASE_VERSION;
@@ -43,7 +44,7 @@ public class RhoDB {
 			db = ctx.openOrCreateDatabase(DATABASE_NAME, SQLiteDatabase.OPEN_READWRITE, null);
 			
 			if ( version != null )
-				dbVersion = -26;//version.intValue();
+				dbVersion = version.intValue();
 			
 			if (dbVersion != db.getVersion()) {
 				db.close();
@@ -58,6 +59,8 @@ public class RhoDB {
 	private void createDb() throws SQLException, Exception 
 	{
 		try {
+			newVersion = true;
+			
 			db = ctx.openOrCreateDatabase(DATABASE_NAME,
 					SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY, 
 					null);
@@ -96,6 +99,10 @@ public class RhoDB {
 		}
 	}
 	
+	public boolean isNewVersion() {
+		return newVersion;
+	}
+
 	public void beginTransaction()
 	{
 		if ( db == null )

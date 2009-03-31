@@ -382,7 +382,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         	{
         		if (iBrCtlInterface)
     			{
-					iBrCtlInterface->ClearCache();
+					//iBrCtlInterface->ClearCache();
 		            TBrCtlDefs::TBrCtlElementType type = iBrCtlInterface->FocusedElementType();
 		            
 		            if(type == TBrCtlDefs::EElementActivatedInputBox )
@@ -393,7 +393,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	        {
 	            if (iBrCtlInterface)
 	            {
-					iBrCtlInterface->ClearCache();
+					//iBrCtlInterface->ClearCache();
 	                iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandBack);
 	            }
 	            break;
