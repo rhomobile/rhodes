@@ -109,4 +109,9 @@ void* notification_callback(void *parm) {
 	return NULL;
 }
 
+//TODO: This is stubbed until we implement!
+int has_network_impl() {
+	return 1;
+}
+
 }//extern "C"
