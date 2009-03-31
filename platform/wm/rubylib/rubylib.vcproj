@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="rubylib"
 	ProjectGUID="{AA77BEC0-2A60-4589-A784-7D78F60B35B6}"
 	Keyword="Win32Proj"
@@ -1358,6 +1358,14 @@
 				<Filter
 					Name="system"
 					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\system\network.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\system\network.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\shared\ruby\ext\system\system_properties.c"
 						>
