@@ -78,7 +78,7 @@ CHttpServer::~CHttpServer()
 		
 		//shttpd_fini(ctx);
 		
-		thread.Kill( KErrCancel );
+		//thread.Kill( KErrCancel );
 		thread.Close();
 	}
 
@@ -185,9 +185,9 @@ TInt CHttpServer::ExecuteL()
 			shttpd_poll(ctx, 100000);
 		}
 
-		shttpd_fini(ctx);
+		//shttpd_fini(ctx);
 		
-		RhoRubyStop();
+		//RhoRubyStop();
 
 		CleanupStack::PopAndDestroy(activeScheduler);
 		
@@ -225,10 +225,12 @@ void CHttpServer::SuspendThread()
 
 void CHttpServer::StopThread()
 	{
-	SuspendThread();
+	//SuspendThread();
+	thread.Kill( KErrCancel );
 	iClose = true;
 	shutdown_poll(ctx);
-	ResumeThread();
+	shttpd_fini(ctx);
+	//ResumeThread();
 	}
 
 void CHttpServer::InitHttpServer()
