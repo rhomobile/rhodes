@@ -211,7 +211,7 @@ CRhodesAppView::~CRhodesAppView()
 		
 		delete iSpecialLoadObserver;
 		
-		iBrCtlInterface->RemoveLoadEventObserver(iCBrCtlLoadEventObserver);
+		//iBrCtlInterface->RemoveLoadEventObserver(iCBrCtlLoadEventObserver);
 		
 		if ( iCBrCtlLoadEventObserver )
 			delete iCBrCtlLoadEventObserver;
