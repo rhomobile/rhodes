@@ -246,7 +246,13 @@ TBool CConnectionManager::SetupConnection()
 	    }
 
 #ifdef __WINSCW__
-	    gSelectedConnectionId = 3; //SYM emulator: should not ask about access point
+//SYM emulator: should not ask about access point
+#ifdef __S60_32__ 
+	    gSelectedConnectionId = 1; //FP2 
+#else
+	    gSelectedConnectionId = 3; //FP1
+#endif
+	    
 #endif	    
 
 	    // Show IAP selection dialog
