@@ -22,7 +22,7 @@
 #ifndef __SYNCENGINE__
 #define __SYNCENGINE__
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #include <sqlite3.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -45,7 +45,7 @@ extern "C" {
 
 extern int stop_running;
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 pthread_cond_t sync_cond;
 pthread_mutex_t sync_mutex;
 #endif

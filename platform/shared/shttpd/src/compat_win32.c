@@ -10,7 +10,7 @@
 
 #include "defs.h"
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 static SERVICE_STATUS		ss; 
 static SERVICE_STATUS_HANDLE	hStatus; 
 static SERVICE_DESCRIPTION	service_descr = {"Web server"};
@@ -488,7 +488,7 @@ _shttpd_spawn_process(struct conn *c, const char *prog, char *envblk,
 
 #endif /* !NO_CGI */
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(_LIB)
 
 #define	ID_TRAYICON	100
 #define	ID_QUIT		101
@@ -514,7 +514,7 @@ WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_LBUTTONUP:
 		case WM_LBUTTONDBLCLK:
 			hMenu = CreatePopupMenu();
-			AppendMenu(hMenu, 0, ID_QUIT, "Exit SHTTPD");
+			AppendMenu(hMenu, 0, ID_QUIT, L"Exit SHTTPD");
 			GetCursorPos(&pt);
 			TrackPopupMenu(hMenu, 0, pt.x, pt.y, 0, hWnd, NULL);
 			DestroyMenu(hMenu);

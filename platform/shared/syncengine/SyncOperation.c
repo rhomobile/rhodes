@@ -19,6 +19,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "SyncOperation.h"
 #include "Constants.h"
 #include "SyncEngine.h"

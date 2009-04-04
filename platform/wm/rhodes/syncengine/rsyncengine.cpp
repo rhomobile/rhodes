@@ -1,5 +1,7 @@
 #include "../stdafx.h"
+#if defined(_WIN32_WCE)
 #include <connmgr.h>
+#endif
 #include <wininet.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -259,6 +261,7 @@ HANDLE hConnection = NULL;
 
 bool SetupInternetConnection(LPCTSTR url)
 {
+#if defined (_WIN32_WCE)
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;
@@ -330,6 +333,9 @@ bool SetupInternetConnection(LPCTSTR url)
 	}
 	ATLTRACE(L"Failed to connect\n");
 	return false;
+#else
+	return true;
+#endif
 }
 
 void alloc_url_components(URL_COMPONENTS *uri, char *url) {

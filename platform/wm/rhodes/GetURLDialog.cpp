@@ -18,6 +18,7 @@ CGetURLDialog::~CGetURLDialog()
 
 LRESULT CGetURLDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     VERIFY(SHInitDialog(&shidi));
 
@@ -34,17 +35,18 @@ LRESULT CGetURLDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
                                                SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
 
     VERIFY(SetDlgItemText(IDC_EDIT_URL, TEXT("http://")));
-
+#endif //_WIN32_WCE
     return 1;  // Let the system set the focus
 }
 
 LRESULT CGetURLDialog::OnHotKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
     if (VK_TBACK == HIWORD(lParam)) // Smartphone-only
     {
         SHSendBackToFocusWindow(uMsg, wParam, lParam);
     }
-
+#endif //_WIN32_WCE
     return 0;
 }
 

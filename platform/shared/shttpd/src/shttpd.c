@@ -984,10 +984,12 @@ read_stream(struct stream *stream)
 	else if (!(stream->flags & FLAG_DONT_CLOSE))
 		_shttpd_stop_stream(stream);
 
+	/*
 	DBG(("read_stream (%d %s): read %d/%d/%lu bytes (errno %d)",
 	    stream->conn->rem.chan.sock,
 	    stream->io_class ? stream->io_class->name : "(null)",
 	    n, len, (unsigned long) stream->io.total, ERRNO));
+	*/
 
 	/*
 	 * Close the local stream if everything was read
@@ -1724,6 +1726,7 @@ static const struct opt {
 	{OPT_AUTH_GPASSWD, "auth_gpass", "Global passwords file", NULL, NULL},
 	{OPT_AUTH_PUT, "auth_PUT", "PUT,DELETE auth file", NULL, NULL},
 #endif /* !NO_AUTH */
+#if !defined(_LIB)
 #if defined(_WIN32) && !defined(_WIN32_WCE)
 	{OPT_SERVICE, "service", "Manage WinNNT service (install"
 	    "|uninstall)", NULL, _shttpd_set_nt_service},
@@ -1733,6 +1736,7 @@ static const struct opt {
 	{OPT_INETD, "inetd", "Inetd mode", "no", set_inetd},
 	{OPT_UID, "uid", "\tRun as user", NULL, set_uid},
 #endif /* _WIN32 */
+#endif
 	{OPT_ACCESS_LOG, "access_log", "Access log file", NULL, set_alog},
 	{OPT_ERROR_LOG, "error_log", "Error log file", NULL, set_elog},
 	{OPT_MIME_TYPES, "mime_types", "Additional mime types list", NULL,NULL},
