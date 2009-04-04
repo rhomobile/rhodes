@@ -1,3 +1,8 @@
+#if defined (WIN32)
+#define _CRT_NON_CONFORMING_SWPRINTFS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #ifdef __SYMBIAN32__
 #define ZIP_STD
 #endif

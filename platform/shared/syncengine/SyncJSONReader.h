@@ -21,10 +21,11 @@
 #ifndef __SYNCJSONREADER__
 #define __SYNCJSONREADER__
 
-#include "json.h"
-#include "SyncObject.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "json.h"
+#include "SyncObject.h"
 
 #if defined(__cplusplus)
 extern "C" {

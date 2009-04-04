@@ -1,3 +1,7 @@
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <sys/types.h>
 #include <time.h>
 #include <stdio.h>

@@ -2,6 +2,8 @@
 #include "../HttpServer.h"
 #include "LocationController.h"
 
+#if defined(_WIN32_WCE)
+
 //To test GPS on emulator, use FakeGPS (coming from WM6 SDK refresh) 
 
 CGPSDevice * CGPSDevice::s_pInstance = NULL;
@@ -393,29 +395,42 @@ void show_geolocation(struct shttpd_arg *arg) {
 
 	arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
+#endif //_WIN32_WCE
 
 extern "C"{
 double geo_latitude() {
-  CGPSController* gps = CGPSController::Instance();
+#if defined(_WIN32_WCE)
+	CGPSController* gps = CGPSController::Instance();
 	gps->TurnGpsOn();
 	gps->UpdateTimeout();
 
 	return gps->GetLatitude();
+#else
+	return 0.0;
+#endif
 }
 
 double geo_longitude() {
+#if defined(_WIN32_WCE)
   CGPSController* gps = CGPSController::Instance();
 	gps->TurnGpsOn();
 	gps->UpdateTimeout();
 
 	return gps->GetLongitude();
+#else
+	return 0.0;
+#endif
 }
 
 int geo_known_position() {
-  CGPSController* gps = CGPSController::Instance();
+#if defined(_WIN32_WCE)
+	CGPSController* gps = CGPSController::Instance();
 	gps->TurnGpsOn();
 	gps->UpdateTimeout();
 
 	return gps->IsKnownPosition();
+#else
+	return 0;
+#endif
 }
 }

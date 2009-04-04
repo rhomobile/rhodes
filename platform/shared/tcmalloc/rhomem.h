@@ -6,7 +6,7 @@
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC
 
-#if defined( _WIN32_WCE ) && !defined( _SIZE_T_DEFINED)
+#if (defined( _WIN32_WCE ) || defined( WIN32 )) && !defined( _SIZE_T_DEFINED)
 typedef unsigned int size_t;
 #define _SIZE_T_DEFINED  1
 #endif

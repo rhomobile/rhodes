@@ -4,16 +4,19 @@
 #include "rhoruby/rhoruby.h"
 #include "HttpServer.h"
 #include "syncengine/rsyncengine.h"
+#if defined(_WIN32_WCE)
 #include "geolocation/LocationController.h"
+#endif
 #include "SyncEngine.h"
 #include "rdispatcher.h"
 
 #if defined(_WIN32_WCE)
 // strdup is implemented as part of ruby CE port
 extern "C" char *strdup(const char * str);
+#endif
+
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
-#endif
 
 char* canonicalizeURL(char* path);
 
@@ -58,8 +61,10 @@ CHttpServer::~CHttpServer(void)
   shttpd_fini(ctx);
   ATLTRACE(_T("Http server thread shutdown\n"));
 
+#if defined(_WIN32_WCE)
   CGPSController* pGPS = CGPSController::Instance();
   pGPS->DeleteInstance();
+#endif
   if (m_pStartPage) {
 	  free(m_pStartPage);
   }
@@ -102,8 +107,10 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
   }
   shttpd_poll(ctx, 100000);
 
+#if defined(_WIN32_WCE)
   //GPS
   CGPSController::CheckTimeout();
+#endif
 
   return S_OK;
 }
@@ -129,8 +136,10 @@ bool CHttpServer::InitHttpServer()
   const char *rootpath = RhoGetRootPath();
   sprintf(httproot,"%sapps",rootpath);
   shttpd_set_option(ctx, "root",httproot);
-  //
+
+#if defined(_WIN32_WCE)
   shttpd_register_uri(ctx, "/system/geolocation", &show_geolocation, NULL);
+#endif
 
   return true;
 }

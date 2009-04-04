@@ -21,7 +21,7 @@
 #ifndef __UTILS__
 #define __UTILS__
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 #include <sqlite3.h>
 #else
 #include "sqlite3.h"
@@ -40,7 +40,9 @@ extern "C" {
 /*
  * TODO: This should be included in stdlib.h?
  */
+#if defined(_WIN32_WCE)
 char* itoa (int n);
+#endif
 	
 /* Allocate a string based on size of data */
 char* str_assign(char* data);
