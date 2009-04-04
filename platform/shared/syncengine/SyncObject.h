@@ -22,7 +22,7 @@
 #ifndef __SYNCOBJECT__
 #define __SYNCOBJECT__
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 #include <sqlite3.h>
 #else
 #include "sqlite3.h"

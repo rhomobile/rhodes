@@ -11,6 +11,8 @@
 #ifndef DEFS_HEADER_DEFINED
 #define	DEFS_HEADER_DEFINED
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "std_includes.h"
 #include "llist.h"
 #include "io.h"

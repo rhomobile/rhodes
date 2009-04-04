@@ -21,6 +21,7 @@ CNetRequest::~CNetRequest(void) {
 
 bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 {
+#if defined (_WIN32_WCE)
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;
@@ -92,6 +93,9 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 	}
 	ATLTRACE(L"Failed to connect\n");
 	return false;
+#else
+	return true;
+#endif //_WIN32_WCE
 }
 
 void CNetRequest::alloc_url_components(URL_COMPONENTS *uri, char *url) {

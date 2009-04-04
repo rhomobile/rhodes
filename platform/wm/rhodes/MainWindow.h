@@ -3,6 +3,10 @@
 #pragma once
 
 #include "stdafx.h"
+#if !defined(_WIN32_WCE)
+#include <exdispid.h>
+#include <exdisp.h>
+#endif
 #include "resource.h"
 #include "GetURLDialog.h"
 #include "NetRequest.h"
@@ -12,7 +16,11 @@ static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 
 class CMainWindow :
+#if defined(_WIN32_WCE)
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
+#else
+    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
+#endif
     public IDispEventImpl<ID_BROWSER, CMainWindow>
 {
 public:
@@ -106,11 +114,15 @@ private:
     // cached copy of hosted control's IWebBrowser2 interface pointer
     CComPtr<IWebBrowser2> m_spIWebBrowser2;
 
+#if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
+#endif //_WIN32_WCE
 
+#if defined(_WIN32_WCE)
     // Used to manage SIP state. Also used to adjust window for SIP.
     SHACTIVATEINFO m_sai;
+#endif
 
 	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;

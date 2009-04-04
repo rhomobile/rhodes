@@ -17,17 +17,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "Utils.h"
 
 /*
  * TODO: This should be included in stdlib.h?
  */
+#if defined(_WIN32_WCE)
 char* itoa (int n) {
 	char* result = malloc(17);
 	sprintf(result, "%d", n);
 	return result;
 }
+#endif
 
 /* Allocate a string based on size of data */
 char* str_assign(char* data) {

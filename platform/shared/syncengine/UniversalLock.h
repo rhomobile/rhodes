@@ -2,7 +2,7 @@
 #define __RHO_UNIVERSAL_LOCK
 
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 
 #define INIT_LOCK(name)\
 static int __g_mutex_init_##name = 0;\

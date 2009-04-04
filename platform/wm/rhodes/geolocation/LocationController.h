@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined (_WIN32_WCE)
+
 #include <gpsapi.h>
 
 interface IGPSController
@@ -84,5 +86,7 @@ private:
 	CGPSController();
 };
 
+#endif //_WIN32_WCE
 
 void show_geolocation(struct shttpd_arg *arg);
+

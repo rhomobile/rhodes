@@ -57,6 +57,9 @@ void RhoRubyStart()
     
 		RUBY_INIT_STACK;
 		ruby_init();
+#if defined(WIN32)
+		rb_w32_sysinit(NULL,NULL);
+#endif
 
 #if defined(DEBUG)
 		enable_gc_profile();
@@ -107,8 +110,10 @@ void RhoRubyStart()
 	}	
 }
 
-#ifdef WINCE
+#if defined(WIN32)
+#if defined(_WIN32_WCE)
 extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
+#endif
 static int _root_loaded = 0;
 static char _rootpath[MAX_PATH];
 const char* RhoGetRootPath() {
@@ -116,14 +121,13 @@ const char* RhoGetRootPath() {
   if (_root_loaded) {
     return _rootpath;
   }
-
   if( (len = GetModuleFileNameA(NULL,_rootpath,MAX_PATH)) == 0 )
   {
     strcpy(_rootpath,".");
   }
   else
   {
-    while( !(_rootpath[len] == _T('\\')  || _rootpath[len] == _T('/')) )
+    while( !(_rootpath[len] == '\\'  || _rootpath[len] == '/') )
       len--;
     _rootpath[len]=0;
     sprintf(_rootpath,"%s\\rho\\",_rootpath);
@@ -132,7 +136,7 @@ const char* RhoGetRootPath() {
   return _rootpath;
 }
 
-#endif// WINCE
+#endif// WIN32
 
 void RhoRubyStop()
 {

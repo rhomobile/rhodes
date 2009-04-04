@@ -489,7 +489,9 @@ rb_w32_sysinit(int *argc, char ***argv)
     //
     // subvert cmd.exe's feeble attempt at command line parsing
     //
+#if !defined(_LIB)
     *argc = rb_w32_cmdvector(GetCommandLine(), argv);
+#endif
 
     //
     // Now set up the correct time stuff
@@ -501,7 +503,9 @@ rb_w32_sysinit(int *argc, char ***argv)
 
     init_func();
 
+#if !defined(_LIB)
     init_stdhandle();
+#endif
 
     InitializeCriticalSection(&select_mutex);
 
@@ -4697,7 +4701,7 @@ rb_w32_unlink(const char *path)
 }
 #endif // _WIN32_WCE
 
-#if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+#if !defined(__BORLANDC__) && !defined(_WIN32_WCE) && !defined(WIN32) 
 int
 rb_w32_isatty(int fd)
 {

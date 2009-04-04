@@ -280,6 +280,10 @@ st_lookup(st_table *table, register st_data_t key, st_data_t *value)
 {
     unsigned int hash_val, bin_pos;
     register st_table_entry *ptr;
+	
+	if (!table) {
+		return 0;
+	}
 
     if (table->entries_packed) {
         int i;

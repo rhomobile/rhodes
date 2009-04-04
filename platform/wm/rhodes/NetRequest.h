@@ -1,7 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#if defined(_WIN32_WCE)
 #include <connmgr.h>
+#endif
 #include <wininet.h>
 
 class CNetRequest

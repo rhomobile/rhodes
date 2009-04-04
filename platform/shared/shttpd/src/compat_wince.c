@@ -27,6 +27,8 @@
  * but not on Windows CE
  */
 
+#if defined(_WIN32_WCE)
+
 #ifdef _MSC_VER
 /* Level 4 warnings caused by windows.h */
 #pragma warning(disable : 4214) // nonstandard extension used : bit field types other than int
@@ -1591,3 +1593,5 @@ _DEFUN (strftime, (s, maxsize, format, tim_p),
 
   return count;
 }
+
+#endif //_WIN32_WCE

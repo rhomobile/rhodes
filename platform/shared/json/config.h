@@ -49,7 +49,7 @@
 #define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_STRINGS_H 1
 #endif
 
@@ -63,32 +63,32 @@
 /* #undef HAVE_STRNDUP */
 
 /* Define to 1 if you have the <syslog.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 #define HAVE_SYSLOG_H 1
 #endif
 
 /* Define to 1 if you have the <sys/param.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_SYS_PARAM_H 1
 #endif
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_SYS_STAT_H 1
 #endif
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_SYS_TYPES_H 1
 #endif
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_UNISTD_H 1
 #endif
 
 /* Define to 1 if you have the `vasprintf' function. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_VASPRINTF 1
 #endif
 
@@ -96,12 +96,12 @@
 #define HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_VSNPRINTF 1
 #endif
 
 /* Define to 1 if you have the `vsyslog' function. */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #define HAVE_VSYSLOG 1
 #endif
 
@@ -142,3 +142,7 @@
 /* #undef size_t */
 
 #include "tcmalloc/rhomem.h"
+
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif

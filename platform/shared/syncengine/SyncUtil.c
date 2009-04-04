@@ -1,3 +1,7 @@
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <sys/types.h>
 #include <time.h>
 #include <stdio.h>
@@ -16,7 +20,7 @@ extern char *get_client_id();
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) || defined(WIN32)
 extern void delete_winmo_session(const char *url_string);
 extern char *get_winmo_session_size(const char *url_string);
 #define stricmp _stricmp
@@ -172,7 +176,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	        }
             if ( header._token != 0 ){
                 char szToken[30];
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) || defined(WIN32)
                 sprintf(szToken, "&ack_token=%I64u",  header._token );
 #else
 				sprintf(szToken, "&ack_token=%llu",  header._token );
@@ -494,7 +498,7 @@ void delete_db_session( const char* source_url )
 		finish_db_statement(&del_session_db_statement);
 		unlock_sync_mutex();	
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) || defined(WIN32)
 		// Delete from winmo cookies
 		delete_winmo_session(source_url);
 #endif
