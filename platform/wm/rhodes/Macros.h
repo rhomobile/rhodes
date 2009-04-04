@@ -18,8 +18,9 @@
     if(!(fBool)) { hr = (E_FAIL); goto _ErrorLabel;} 
 
 
+#if defined (_WIN32_WCE) 
 #define ARRAYSIZE(s) (sizeof(s) / sizeof(s[0]))
-
+#endif
 
 #define RELEASE_OBJ(s)  \
     if (s != NULL)      \

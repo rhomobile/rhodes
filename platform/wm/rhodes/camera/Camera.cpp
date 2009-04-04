@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 #include <atlstr.h>
+#if defined(_WIN32_WCE)
 #include <aygshell.h>
+#endif
 #include <atltime.h>
 #include "rhoruby/rhoruby.h"
 #include "../MainWindow.h"
@@ -18,6 +20,8 @@ extern "C" HWND getMainWnd();
 extern "C" char *strdup(const char * str);
 extern "C" wchar_t* wce_mbtowc(const char* a);
 #endif
+
+#if defined(_WIN32_WCE)
 
 static bool copy_file(LPTSTR from, LPTSTR to);
 static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
@@ -197,13 +201,19 @@ void create_folder(LPTSTR Path)
 	CreateDirectory(DirName, NULL);
 }
 
+#endif //_WIN32_WCE
+
 void take_picture(char* callback_url) {
+#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_TAKEPICTURE,0,(LPARAM)strdup(callback_url));
+#endif
 }
 
 void choose_picture(char* callback_url) {
+#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_SELECTPICTURE,0,(LPARAM)strdup(callback_url));
+#endif
 }
 

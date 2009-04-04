@@ -56,11 +56,19 @@
 #include <stdio.h>           /* need this to override stdio's (v)snprintf */
 #include <crtdefs.h>
 #include <assert.h>
+
+#if defined(WIN32) && !defined(_WIN32_WCE)
+#include <crtdbg.h>
+#define ASSERT _ASSERT
+#endif
+
 //#include <altcecrt.h>
 #define _RHO_NO_MEMDEFINES 1
+#if defined(_WIN32_WCE)
 #include "wince.h"
+#endif
 #include "process.h"
-#include <assert.h>
+//#include <assert.h>
 
 _CRTIMP size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm *);
 //void abort();

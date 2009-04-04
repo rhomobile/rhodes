@@ -18,7 +18,11 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#if !defined(_WIN32_WCE)
+#if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 #include <sys/time.h>
 #endif
 
@@ -36,7 +40,7 @@ static int g_sync_pause = 0;
 static int g_sync_inprogress = 0;
 static int g_sync_wasinprogress = 0;
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)
 pthread_cond_t sync_cond  = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t sync_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t sync_mutex2 = PTHREAD_MUTEX_INITIALIZER;
@@ -190,7 +194,7 @@ int process_local_changes() {
  * found, sync operation is created and executed against the 
  * rhosync service.
  */
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 void* sync_engine_main_routine(void* data) {
 	printf("Starting sync engine main routine...\n");
 	pthread_mutex_lock(&sync_mutex2);
@@ -311,7 +315,7 @@ void setup_delete_db_callback(sqlite3 * db)
 	SyncBlob_DeleteCallback, 0, 0 );
 }
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(WIN32)
 /* exposed function to acquire lock on sync mutex */
 void lock_sync_mutex() {
 	pthread_mutex_lock(&sync_mutex);
@@ -465,7 +469,7 @@ int login(const char* login, const char* password) {
 				
 				  save_source_url( source_list[i]->_source_url );
 				  retval = makeLoginRequest( login_url, data );
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) || defined(WIN32)
 				// just using db as a placeholder for winmo since 
 				// we can't delete the session
 				set_db_session( source_list[i]->_source_url, "exists" );

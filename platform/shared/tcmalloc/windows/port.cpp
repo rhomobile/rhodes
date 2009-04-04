@@ -260,7 +260,9 @@ void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
 }
 
 //void abort(){}
+#if defined(_WIN32_WCE)
 void assert(int exp){
     if (!exp)
         exit(-1);
 }
+#endif

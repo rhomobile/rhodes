@@ -50,7 +50,7 @@
 
 #include "config.h"
 //#include <string>
-#ifdef _WIN32_WCE
+#if defined(_WIN32_WCE) || defined(WIN32) 
 #include <new.h>
 #endif //_WIN32_WCE
 

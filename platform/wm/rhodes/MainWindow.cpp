@@ -1,21 +1,26 @@
 // MainWindow.cpp: Defines main window for this application.
 
 #include "stdafx.h"
+#if defined(_WIN32_WCE)
 #include <webvw.h>
+#endif
 #include <string>
+#if !defined(_WIN32_WCE)
+#pragma warning(disable : 4995)
+#include <strsafe.h>
+#endif
 #include "resource.h"
 #include "MainWindow.h"
 #include "HttpServer.h"
 #include "AppManager.h"
 #include "rhoruby/rhoruby.h"
+#if defined(_WIN32_WCE)
 #include "camera/Camera.h"
-
+#endif
 char* canonicalizeURL(char* path);
 
-#if defined(_WIN32_WCE)
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
-#endif
 
 extern "C" void pause_sync( int nPause );
 
@@ -23,8 +28,10 @@ CMainWindow::CMainWindow()
 {
 	m_bLoading = true;
 	m_bRhobundleReloadEnabled = true;
+#if defined(_WIN32_WCE)
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
+#endif
 	m_current_url = NULL;
 }
 
@@ -50,19 +57,30 @@ void CMainWindow::Navigate(BSTR URL) {
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     HRESULT hr = S_OK;
+#if defined(_WIN32_WCE)
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
-    RECT rcMainWindow = { 0 };
-    RECT rcMenuBar = { 0 };
     SIPINFO si = { sizeof(si), 0 };
+    RECT rcMenuBar = { 0 };
+#endif
+	RECT rcMainWindow = { 0,0,320,470 };
 
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
+#if defined(_WIN32_WCE)
     m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
-                     TEXT("Microsoft.PIEDocView"), // ProgID of the control
+					 TEXT("Microsoft.PIEDocView"), // ProgID of the control
                      WS_CHILD | WS_VISIBLE | WS_BORDER, 0,
                      ID_BROWSER);
+#else
+	m_browser.Create(m_hWnd,
+                     CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
+					 TEXT("Shell.Explorer"), // ProgID of the control
+                     WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
+                     ID_BROWSER);
+#endif
+
     CBR(m_browser.m_hWnd != NULL);
 
     // cache IWebBrowser2 interface pointer
@@ -77,6 +95,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
     m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
 
+#if defined(_WIN32_WCE)
     // Create a menubar
     // (mbi was initialized above)
     mbi.hwndParent = m_hWnd;
@@ -85,7 +104,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     CBR(SHCreateMenuBar(&mbi));
     m_menuBar = mbi.hwndMB; // save menu bar HWND
 
-    // Compute RECT for initial size and position.
+	// Compute RECT for initial size and position.
     // The following code should compute RECT appropriately
     // on both Pocket PC and Smartphone. It should function correctly
     // whether SIP is on or off, and
@@ -104,20 +123,23 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     {
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
     }
+#endif
 
     MoveWindow(&rcMainWindow);
 
-    ASSERT(SUCCEEDED(hr));
+    _ASSERT(SUCCEEDED(hr));
 Error:
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+#if defined (_WIN32_WCE)
     m_menuBar = NULL;
+#endif
 
     // Tear down connection points while controls are still alive.
-    VERIFY(SUCCEEDED(AtlAdviseSinkMap(this, false)));
+    ATLVERIFY(SUCCEEDED(AtlAdviseSinkMap(this, false)));
 
     m_spIWebBrowser2 = NULL;
     m_browser = NULL;
@@ -138,6 +160,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 {
     int fActive = LOWORD(wParam);
 
+#if defined(_WIN32_WCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
@@ -147,13 +170,17 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         CHttpServer::Instance()->ResumeThread();
     else
         CHttpServer::Instance()->FreezeThread();
+#endif
+
     return 0;
 }
 
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
     // Notify shell of our WM_SETTINGCHANGE message
     SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
+#endif
     return 0;
 }
 
@@ -193,7 +220,7 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
 			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
 		}
-		#else
+		#elif defined(_WIN32_WCE)			
 			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
 			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
 		#endif
@@ -281,18 +308,22 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 }
 
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+#if defined (_WIN32_WCE)
 	Camera camera;
 	TCHAR image_uri[MAX_PATH];
 	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
 	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+#endif
 	return 0;
 }
 
 LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+#if defined (_WIN32_WCE)
 	Camera camera;
 	TCHAR image_uri[MAX_PATH];
 	HRESULT status = camera.selectPicture(this->m_hWnd,image_uri);
 	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+#endif
 	return 0;
 }
 
@@ -317,7 +348,7 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
 
     SetWindowText(TEXT("Untitled"));
 
-    VERIFY(SetEnabledState(IDM_STOP, TRUE));
+    ATLVERIFY(SetEnabledState(IDM_STOP, TRUE));
 }
 
 void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
@@ -342,6 +373,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
     OutputDebugString(szOutput);
 }
 
+#if defined(_WIN32_WCE)
 std::wstring& loadLoadingHtml(std::wstring& str) {
 	FILE *file;
 	wchar_t	buf[1024];
@@ -407,6 +439,7 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
         }
     }
 }
+#endif //_WIN32_WCE
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
@@ -416,7 +449,9 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		OutputDebugString(L"Show loading page\n");
+#if defined(_WIN32_WCE)
 		ShowLoadingPage(pDisp, pvtURL);
+#endif //_WIN32_WCE
 		m_bLoading = false; //show loading page only once
 	}
 
@@ -429,18 +464,18 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		TEXT("Current URL: %s\n"), url);
     OutputDebugString(szOutput);
 
-    VERIFY(SetEnabledState(IDM_STOP, FALSE));
+    ATLVERIFY(SetEnabledState(IDM_STOP, FALSE));
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 {
     if (CSC_NAVIGATEBACK == lCommand)
     {
-        VERIFY(SetEnabledState(IDM_BACK, bEnable));
+        ATLVERIFY(SetEnabledState(IDM_BACK, bEnable));
     }
     else if (CSC_NAVIGATEFORWARD == lCommand)
     {
-        VERIFY(SetEnabledState(IDM_FORWARD, bEnable));
+        ATLVERIFY(SetEnabledState(IDM_FORWARD, bEnable));
     }
 }
 
@@ -451,9 +486,13 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 // **************************************************************************
 BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 {
+#if defined(_WIN32_WCE)
     HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
     BOOL bRetVal = EnableMenuItem(hMenu, uMenuItemID, bEnable ? MF_ENABLED : MF_GRAYED);
     return (bRetVal != 0xFFFFFFFF);
+#else
+	return TRUE;
+#endif
 }
 
 // **************************************************************************
@@ -500,3 +539,35 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     // ::TranslateAccelerator() function here, instead of simply returning FALSE.
     return FALSE;
 }
+
+#if !defined(_WIN32_WCE)
+/* char -> wchar_t */
+wchar_t* wce_mbtowc(const char* a)
+{
+	int length;
+	wchar_t *wbuf;
+
+	length = MultiByteToWideChar(CP_ACP, 0, 
+		a, -1, NULL, 0);
+	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
+	MultiByteToWideChar(CP_ACP, 0,
+		a, -1, wbuf, length);
+
+	return wbuf;
+}
+
+/* wchar_t -> char */
+char* wce_wctomb(const wchar_t* w)
+{
+	DWORD charlength;
+	char* pChar;
+
+	charlength = WideCharToMultiByte(CP_ACP, 0, w,
+					-1, NULL, 0, NULL, NULL);
+	pChar = (char*)malloc(charlength+1);
+	WideCharToMultiByte(CP_ACP, 0, w,
+		-1, pChar, charlength, NULL, NULL);
+
+	return pChar;
+}
+#endif //_WIN32_WCE
