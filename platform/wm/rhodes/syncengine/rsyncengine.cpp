@@ -584,3 +584,8 @@ void perform_notification(char* callback, char* params) {
 		}
 	}
 }
+
+//TODO: This is stubbed until we implement!
+int has_network_impl() {
+	return 1;
+}

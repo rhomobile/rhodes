@@ -311,8 +311,8 @@ void setup_delete_db_callback(sqlite3 * db)
 
 void setup_delete_db_callback(sqlite3 * db)
 {
-    int rc = sqlite3_create_function( db, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
-      SyncBlob_DeleteCallback, 0, 0 );
+    sqlite3_create_function( db, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
+	SyncBlob_DeleteCallback, 0, 0 );
 }
 
 #if !defined(_WIN32_WCE) && !defined(WIN32)

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 
+import com.xruby.runtime.lang.RubyException;
+
 import android.util.Log;
 
 public class HttpListener extends ThreadedServer {
@@ -119,8 +121,25 @@ public class HttpListener extends ThreadedServer {
                 {
                     //ignore
                 }
+				catch ( RubyException er ){
+					er.printStackTrace();
+					Log.e(getClass().getSimpleName(), er.getMessage() != null ? er.getMessage() : "Unknown Ruby Exception" );
+					
+					if (response == null) {
+						// try to write BAD_REQUEST
+						response = new HttpResponse(connection
+								.getOutputStream(), null);
+
+						response.setHeader(HttpHeader.Connection,
+								HttpHeader.Close);
+						response.sendError(HttpResponse.SC_BAD_REQUEST);
+					}
+				}
 					// If no respones - must have a request error
 				catch (Exception e) {
+					
+					Log.e(getClass().getSimpleName(), e.getMessage() != null ? e.getMessage() : "Unknown Server Error" );
+					
 					if (response == null) {
 						// try to write BAD_REQUEST
 						response = new HttpResponse(connection

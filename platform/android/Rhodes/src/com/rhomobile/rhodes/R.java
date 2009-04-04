@@ -55,6 +55,8 @@ public final class R {
         public static final int about_rhodes=0x7f04000c;
         public static final int app_name=0x7f040000;
         public static final int back=0x7f040004;
+        public static final int db_schema=0x7f04000d;
+        public static final int deleteTrigger=0x7f04000e;
         public static final int exit=0x7f040007;
         public static final int forward=0x7f040003;
         public static final int home=0x7f040001;

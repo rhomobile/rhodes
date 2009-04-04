@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4678FCCC0F8187A10054340C /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = 4678FCCA0F8187A10054340C /* network.c */; };
+		4678FCCD0F8187A10054340C /* network.h in Headers */ = {isa = PBXBuildFile; fileRef = 4678FCCB0F8187A10054340C /* network.h */; };
 		5C043EB80EF7B7FB0014E5C6 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C043EB70EF7B7FB0014E5C6 /* rhosupport.c */; };
 		5C2E6F470F30E05700CCFE20 /* geolocation_rhowrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C2E6F460F30E05700CCFE20 /* geolocation_rhowrap.c */; };
 		F5177F180EE5B624000EA1A0 /* system_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F170EE5B624000EA1A0 /* system_wrap.c */; };
@@ -106,6 +108,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4678FCCA0F8187A10054340C /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../shared/ruby/ext/system/network.c; sourceTree = SOURCE_ROOT; };
+		4678FCCB0F8187A10054340C /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../shared/ruby/ext/system/network.h; sourceTree = SOURCE_ROOT; };
 		5C043EB70EF7B7FB0014E5C6 /* rhosupport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhosupport.c; path = ext/rhosupport/rhosupport.c; sourceTree = "<group>"; };
 		5C2E6F460F30E05700CCFE20 /* geolocation_rhowrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_rhowrap.c; path = ext/geolocation/geolocation_rhowrap.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -252,6 +256,8 @@
 		F5177F150EE5B5D9000EA1A0 /* system */ = {
 			isa = PBXGroup;
 			children = (
+				4678FCCA0F8187A10054340C /* network.c */,
+				4678FCCB0F8187A10054340C /* network.h */,
 				F5177F1F0EE5C940000EA1A0 /* system_properties.c */,
 				F5177F200EE5C940000EA1A0 /* system_properties.h */,
 				F5177F170EE5B624000EA1A0 /* system_wrap.c */,
@@ -499,6 +505,7 @@
 				F5E362410EB785C100226287 /* crt_externs.h in Headers */,
 				F5E362990EB7927100226287 /* thread_pthread.h in Headers */,
 				F5177F220EE5C940000EA1A0 /* system_properties.h in Headers */,
+				4678FCCD0F8187A10054340C /* network.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,6 +628,7 @@
 				5C2E6F470F30E05700CCFE20 /* geolocation_rhowrap.c in Sources */,
 				F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */,
 				F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */,
+				4678FCCC0F8187A10054340C /* network.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import com.rho.IHttpConnection;
-import com.rho.db.PerstLiteAdapter;
+import com.rho.db.DBAdapterFactory;
+import com.rho.db.IDBAdapter;
 import com.rho.util.URI;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
@@ -23,11 +24,11 @@ import com.xruby.runtime.lang.RubyValue;
 public class SyncUtil {
 
 	/** The adapter. */
-	public static PerstLiteAdapter adapter = null;
+	public static IDBAdapter adapter = null;
     public static byte[]  m_byteBuffer = new byte[4096];
 
     public static void init(){
-		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
+		SyncUtil.adapter = DBAdapterFactory.alloc();
 		SyncBlob.DBCallback callback = new SyncBlob.DBCallback();
 		SyncUtil.adapter.setDbCallback(callback);
     }
@@ -136,7 +137,6 @@ public class SyncUtil {
 							
 							if (dbOp.equalsIgnoreCase("insert")) {
 //								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
-								
 								syncObj.insertIntoDatabase();
 				    	inserted++;
 							} else if (dbOp.equalsIgnoreCase("delete")) {
@@ -166,7 +166,7 @@ public class SyncUtil {
 			RubyHash where = createHash();
 			where.add(createString("source_id"), createInteger(source
 					.get_sourceId()));
-			where.add(PerstLiteAdapter.TOKEN, createString(token));
+			where.add(createString("token"), createString(token));
 			
 			adapter.deleteFromTable(createString("object_values"), where);
 		} else //if (token.length() > 0) 
@@ -174,9 +174,9 @@ public class SyncUtil {
 			source.set_token(token);
 			
 			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.TOKEN, createString(token));
+			values.add(createString("token"), createString(token));
 			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source
+			where.add(createString("source_id"), createInteger(source
 					.get_sourceId()));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
 					values, where);
@@ -196,18 +196,18 @@ public class SyncUtil {
 			int deleted, long duration, int success) {
 		RubyHash values = SyncUtil.createHash();
 		long now = System.currentTimeMillis() / 1000;
-		values.add(PerstLiteAdapter.Table_sources.LAST_UPDATED,
+		values.add(createString("last_updated"),
 				createInteger(now));
-		values.add(PerstLiteAdapter.Table_sources.LAST_INSERTED_SIZE,
+		values.add(createString("last_inserted_size"),
 				createInteger(inserted));
-		values.add(PerstLiteAdapter.Table_sources.LAST_DELETED_SIZE,
+		values.add(createString("last_deleted_size"),
 				createInteger(deleted));
-		values.add(PerstLiteAdapter.Table_sources.LAST_SYNC_DURATION,
+		values.add(createString("last_sync_duration"),
 				createInteger(duration));
-		values.add(PerstLiteAdapter.Table_sources.LAST_SYNC_SUCCESS,
+		values.add(createString("last_sync_success"),
 				createInteger(success));
 		RubyHash where = SyncUtil.createHash();
-		where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source
+		where.add(createString("source_id"), createInteger(source
 				.get_sourceId()));
 		adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
 				values, where);
@@ -399,7 +399,7 @@ public class SyncUtil {
 	{
 		for (int i = 0; i < sources.size(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
+			RubyValue token = element.get(SyncUtil.createString("token"));
 			if (token != null && token != RubyConstant.QNIL)
 			{
 				String strToken = token.toStr();
@@ -436,9 +436,9 @@ public class SyncUtil {
 		
 		for (int i = nStartSrc; i < sources.size() && !thread.isStop() && !syncResult.stopSync; i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
-			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
+			String url = element.get(SyncUtil.createString("source_url")).toString();
+			int id = element.get(SyncUtil.createString("source_id")).toInt();
+			RubyValue token = element.get(SyncUtil.createString("token"));
 			SyncSource current = new SyncSource(url, id);
 			if ( token != null && token != RubyConstant.QNIL )
 				current.set_token(token.toStr());
@@ -623,10 +623,10 @@ public class SyncUtil {
 	public static String get_session(SyncSource source) {
 		RubyArray arr = createArray();
 		arr.add(createString("sources"));
-		arr.add(PerstLiteAdapter.SESSION);
+		arr.add(createString("session"));
 		
 		RubyHash where = SyncUtil.createHash();
-		where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source
+		where.add(createString("source_id"), createInteger(source
 				.get_sourceId()));
 		arr.add(where);
 		RubyArray res = (RubyArray) adapter.selectFromTable(arr);
@@ -635,7 +635,7 @@ public class SyncUtil {
 		
 		RubyHash element = (RubyHash) res.at(SyncUtil.createInteger(0));
 		
-		return element.get(PerstLiteAdapter.SESSION).toString();
+		return element.get(createString("session")).toString();
 	}
 	
 	private static String getSessionByDomain(String url){
@@ -647,17 +647,23 @@ public class SyncUtil {
 				try{
 					RubyHash element = (RubyHash) sources.at(SyncUtil
 							.createInteger(i));
-					String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL)
+					String sourceUrl = element.get(createString("source_url"))
 							.toString();
-					String session = element.get(PerstLiteAdapter.SESSION)
+					String session = element.get(createString("session"))
 							.toString();
 					if ( sourceUrl == null || sourceUrl.length() == 0 )
 						continue;
 					
 			URI uriSrc = new URI(sourceUrl);
-					if (session != null && session.length() > 0
-							&& uri.getHost().equalsIgnoreCase(uriSrc.getHost()))
+					if (session != null && session.length() > 0 )
+					{
+						String host1 = uri.getHost();
+						String host2 = uriSrc.getHost();
+				
+						if ( host1.equalsIgnoreCase(host2))
 				return session;
+					}
+				
 				} catch (URI.MalformedURIException exc) {
 				}
 			}
@@ -777,9 +783,9 @@ public class SyncUtil {
 			HttpURLConnection connection = null;
 			
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL)
+			String sourceUrl = element.get(createString("source_url"))
 					.toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			int id = element.get(createString("source_id")).toInt();
 
 			if (sourceUrl.length() == 0 )
 				continue;
@@ -822,9 +828,9 @@ public class SyncUtil {
 			}
 
 			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, createString(strSession));
+			values.add(createString("session"), createString(strSession));
 			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			where.add(createString("source_id"), createInteger(id));
 			
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
 					values, where);
@@ -853,8 +859,8 @@ public class SyncUtil {
 		RubyArray sources = SyncUtil.getSourceList();
 		for (int i = 0; i < sources.size(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			String url = element.get(createString("source_url")).toString();
+			int id = element.get(createString("source_id")).toInt();
 			SyncSource current = new SyncSource(url, id);
 			if (get_session(current).length() > 0) {
 				success = true;
@@ -867,11 +873,11 @@ public class SyncUtil {
 		RubyArray sources = SyncUtil.getSourceList();
 		for (int i = 0; i < sources.size(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			int id = element.get(createString("source_id")).toInt();
 			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, SyncUtil.createString(""));
+			values.add(createString("session"), SyncUtil.createString(""));
 			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			where.add(createString("source_id"), createInteger(id));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
 					values, where);
 		}
