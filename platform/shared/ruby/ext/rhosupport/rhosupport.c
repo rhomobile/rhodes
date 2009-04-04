@@ -275,14 +275,16 @@ VALUE RhoPreparePath(VALUE path){
 
 static void Init_RhoLog();
 static void Init_RhoBlobs();
+
 void Init_RhoSupport()
 {
-    rb_define_global_function("require", rb_require_compiled, 1);
-    rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
-    rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
-
-    Init_RhoLog();
-    //Init_RhoBlobs();
+	rb_define_global_function("require", rb_require_compiled, 1);
+	rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
+	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
+	rb_define_global_function("load", rb_require_compiled, 1);
+	
+	Init_RhoLog();
+	//Init_RhoBlobs();
 }
 
 static void Init_RhoBlobs()
