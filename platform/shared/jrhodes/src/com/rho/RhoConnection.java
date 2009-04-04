@@ -692,7 +692,7 @@ public abstract class RhoConnection {
 		reqHash.setProperty("request-query", uri.getQueryString());
 
 		if (postData != null && postData.size() > 0) {
-			log(postData.toString());
+			//log(postData.toString());
 			reqHash.setProperty("request-body", postData.toString());
 		}
 
@@ -746,7 +746,7 @@ public abstract class RhoConnection {
 			if (resBody != null && resBody != RubyConstant.QNIL)
 				strBody = resBody.toRubyString().toString();
 
-			log(strBody);
+			//log(strBody);
 
 			responseData = new ByteArrayInputStream(strBody.getBytes());
 			if (responseData != null)
@@ -756,6 +756,6 @@ public abstract class RhoConnection {
 	}
 
 	private void log(String txt) {
-		System.out.println(txt);
+		//System.out.println(txt);
 	}
 }

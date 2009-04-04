@@ -1,5 +1,5 @@
 env:
-  version: 1.0.0
+  version: 1.0.2
   vendor: rhomobile
   bbver: 4.6
   applog: rholog.txt
@@ -24,5 +24,6 @@ env:
     wmemu: C:/Program Files/Microsoft Device Emulator/1.0/dvcemumanager.exe
     symbiantools: C:/PROGRA~1/COMMON~1/Symbian/Tools
     symroot: C:/Symbian/9.2/S60_3rd_FP1
+    android: C:/android-sdk-windows-1.1_r1
 
 

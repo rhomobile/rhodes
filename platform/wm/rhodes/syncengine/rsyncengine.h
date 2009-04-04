@@ -62,6 +62,7 @@ char* fetch_remote_data(char* url);
 int push_remote_data(char* url, char* data, size_t data_size,char* contentType);
 //void start_sync();
 void delete_winmo_session(const char *url_string);
+int has_network_impl();
 void triggerSyncDbReset();
 void perform_notification(char* callback, char* params);
 

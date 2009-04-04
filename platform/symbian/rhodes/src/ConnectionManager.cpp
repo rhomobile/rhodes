@@ -245,6 +245,15 @@ TBool CConnectionManager::SetupConnection()
 	        iBearerFilter = EApBearerTypeWLAN;
 	    }
 
+#ifdef __WINSCW__
+//SYM emulator: should not ask about access point
+#ifdef __S60_32__ 
+	    gSelectedConnectionId = 1; //FP2 
+#else
+	    gSelectedConnectionId = 3; //FP1
+#endif
+	    
+#endif	    
 
 	    // Show IAP selection dialog
 	    if ( gSelectedConnectionId == -1 )

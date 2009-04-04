@@ -1,0 +1,159 @@
+require File.join(File.dirname(__FILE__),'..','jake.rb')
+
+namespace "config" do
+  task :android => :common do
+
+    $deploydir = File.join($basedir,'deploy','android')
+    $excludelib = ['**/rhom_db_adapter.rb','**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      $dx = "dx.bat"
+      $aapt = "aapt.exe"
+      $apkbuilder = "apkbuilder.bat"
+      $rhoruby = "RhoRuby.exe"
+      $emulator = "cmd /c emulator.exe"
+      $adb = "adb.exe"
+    else
+      $dx = "dx"
+      $aapt = "aapt"
+      $apkbuilder = "apkbuilder"
+      $rhoruby = "RubyMac"
+      $emulator = "emulator"
+      $adb = "adb"
+    end
+
+  end
+end
+
+task :loadframework do
+  require 'rhodes-framework'
+  puts $rhodeslib
+end
+
+namespace "bundle" do
+  task :android =>  ["config:android", "loadframework", "makedirs"] do
+    android = $config["env"]["paths"]["android"]
+
+    rm_rf $srcdir
+    mkdir_p $srcdir
+    mkdir_p File.join($srcdir,'apps')
+
+    compileERB = File.join($compileERBbase,'bb.rb')
+    rubypath =  File.join($res,$rhoruby)
+    xruby =  File.join($res,'xruby-0.3.3.jar')
+
+    dest = $srcdir 
+    chdir $rhodeslib
+    Dir.glob("*").each { |f| 
+      src = f
+      cp_r src,dest
+    }
+    chdir dest
+    Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
+    Dir.glob("**/erb.rb").each {|f| rm f}
+    Dir.glob("**/find.rb").each {|f| rm f}
+    $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
+
+    chdir $basedir
+#throw "ME"
+    cp_r 'app',File.join($srcdir,'apps')
+    cp_r 'public', File.join($srcdir,'apps')
+    cp   'config.rb', File.join($srcdir,'apps')
+    #cp   'index.erb', File.join($srcdir,'apps')
+    #cp   'layout.erb', File.join($srcdir,'apps')
+    #cp   'loading.html', File.join($srcdir,'apps')
+    cp   $appmanifest, $srcdir
+    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
+    rm   File.join($srcdir,'createAppManifest.rb')
+    cp   compileERB, $srcdir
+    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/bb.rb` 
+
+    chdir $bindir
+    puts `java -jar #{xruby} -c RhoBundle`
+    chdir $srcdir
+    Dir.glob("**/*.rb") { |f| rm f }
+    Dir.glob("**/*.erb") { |f| rm f }
+    puts `jar uf ../RhoBundle.jar apps/*.*`
+    mkdir_p "../assets"
+    cp_r "apps","../assets"
+    cp File.join($prebuilt,"android","loading.html"), "../assets/apps"
+    
+    chdir $basedir
+    
+    rm_rf $targetdir
+    mkdir_p $targetdir
+
+    chdir $bindir
+  
+    classes = File.join($prebuilt,"android","classes")
+    rubyvm = File.join($prebuilt,"android","jrubyvm.jar")
+    rhodes = File.join($prebuilt,"android","jrhodes.jar")
+    rhobundle = File.join($bindir,"RhoBundle.jar")
+    dexfile = File.join($bindir,"classes.dex")
+
+    puts "Running dx utility"
+    puts `#{$dx} --dex "--output=#{dexfile}" #{classes} #{rubyvm} #{rhodes} #{rhobundle}`
+
+    manifest = File.join($prebuilt,"android","AndroidManifest.xml")
+    resource = File.join($prebuilt,"android","res")
+    assets = File.join($bindir,"assets")
+    androidjar = File.join(android,"android.jar")
+    resourcepkg = File.join($bindir,"rhodes.ap_")
+
+    puts "Packaging Assets and Jars"
+    puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
+
+    apkfile = File.join($targetdir,"Rhodes-debug.apk")    
+
+    puts "Building APK file"
+    puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
+
+    chdir $basedir
+  end
+end
+
+namespace "device" do
+  desc "Create downloadable app for android"
+  task :android => "bundle:android" do
+  end
+end
+
+namespace "run" do
+  namespace "android" do
+    desc "Run app in Android Sim"
+    task :app  => ["bundle:android"] do
+      src = File.join($prebuilt,"android","rhosdcard.7z")
+      seven = File.join($res,"7z.exe")
+
+      puts `#{seven} x -y #{src}`
+
+      sdimage = File.join($basedir,"rhosdcard.iso")
+
+      puts `#{$adb} start-server`
+      sleep 5
+
+      Thread.new { system("#{$emulator} -sdcard \"#{sdimage}\"") }
+
+      sleep 10
+      
+      puts "Waiting for emulator to get started"
+      $stdout.flush
+      puts `#{$adb} wait-for-device`
+      sleep 20
+      apkfile = File.join($targetdir,"Rhodes-debug.apk")    
+
+      puts "Loading package into emulator"
+      theoutput = `#{$adb} install -r "#{apkfile}"`
+      count = 0
+      while theoutput.to_s.match(/Error Type/) and count < 15 do
+        puts "Failed to load (possibly because emulator not done launching)- retrying"
+	$stdout.flush
+	sleep 5
+	count += 1
+	theoutput = `#{$adb} install -r "#{apkfile}"`
+      end
+      puts "Loading complete, you may now run the application"      
+      
+    end
+  end
+end

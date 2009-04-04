@@ -1546,6 +1546,7 @@ static VALUE mSystem;
 
 
 extern char* get_property(char* property);
+extern VALUE has_network();
 
 
 SWIGINTERN swig_type_info*
@@ -1648,6 +1649,22 @@ _wrap_get_property(int argc, VALUE *argv, VALUE self) {
   return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_has_network(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)has_network();
+  vresult = result;
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -1915,5 +1932,6 @@ SWIGEXPORT void Init_System(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mSystem, "get_property", _wrap_get_property, -1);
+  rb_define_module_function(mSystem, "has_network", _wrap_has_network, -1);
 }
 
