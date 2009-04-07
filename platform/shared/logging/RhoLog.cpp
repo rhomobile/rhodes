@@ -70,30 +70,4 @@ void LogMessage::flushLog(){
         general::CRhoFatalError().processFatalError();
 }
 
-void InitRhoLog(const char* szRootPath){
-
-    general::CFilePath oLogPath( szRootPath );
-
-    //Set defaults
-#ifdef RHO_DEBUG
-    LOGCONF().setMinSeverity( 0 );
-    LOGCONF().setLogToOutput(true);
-    LOGCONF().setEnabledCategories("*");
-    LOGCONF().setDisabledCategories("");
-#else //!RHO_DEBUG
-    LOGCONF().setMinSeverity( L_ERROR );
-    LOGCONF().setLogToOutput(false);
-    LOGCONF().setEnabledCategories("");
-#endif//!RHO_DEBUG
-
-    LOGCONF().setLogPrefix(true);
-
-    LOGCONF().setLogToFile(true);
-    LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
-    LOGCONF().setMaxLogFileSize(1024*50);
-
-    //load configuration if exist
-    LOGCONF().loadFromFile(oLogPath.makeFullPath("RhoLogConf.txt").c_str());
-}
-
 }

@@ -120,7 +120,7 @@ static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize, in
 	char path[1024];
 	path[0]=0;
 	sprintf(path,"%sapps%s", RhoGetRootPath(), pFilePath);
-	RAWLOGC_INFO1("FULL PATH: %s", path);
+	RAWLOGC_INFO1("SyncBlob","FULL PATH: %s", path);
     //FILE* file = fopen(pFilePath,"r");
 	FILE* file = fopen(path,"r");
     if (file){

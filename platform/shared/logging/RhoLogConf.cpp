@@ -3,6 +3,7 @@
 #include "RhoLogSink.h"
 #include "common/StringConverter.h"
 #include "common/RhoFile.h"
+#include "common/RhoFilePath.h"
 
 namespace rho{
 LogSettings g_LogSettings;
@@ -190,4 +191,30 @@ void LogSettings::setDisabledCategories( const char* szCatList ){
     m_strDisabledCategories = szCatList;
 }
 
+}
+
+extern "C" void InitRhoLog(const char* szRootPath){
+	
+	rho::general::CFilePath oLogPath( szRootPath );
+	
+    //Set defaults
+#ifdef RHO_DEBUG
+    LOGCONF().setMinSeverity( 0 );
+    LOGCONF().setLogToOutput(true);
+    LOGCONF().setEnabledCategories("*");
+    LOGCONF().setDisabledCategories("");
+#else //!RHO_DEBUG
+    LOGCONF().setMinSeverity( L_ERROR );
+    LOGCONF().setLogToOutput(false);
+    LOGCONF().setEnabledCategories("");
+#endif//!RHO_DEBUG
+	
+    LOGCONF().setLogPrefix(true);		
+	
+    LOGCONF().setLogToFile(true);
+    LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
+    LOGCONF().setMaxLogFileSize(1024*50);
+	
+    //load configuration if exist
+    LOGCONF().loadFromFile(oLogPath.makeFullPath("RhoLogConf.txt").c_str());
 }

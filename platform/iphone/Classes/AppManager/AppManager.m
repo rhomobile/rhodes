@@ -101,6 +101,11 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
 	[self copyFromMainBundle:@"lib" replace:replaceFiles];
 	[self copyFromMainBundle:@"db" replace:NO];
+	
+#if TARGET_IPHONE_SIMULATOR	//DEBUG	
+	[self copyFromMainBundle:@"RhoLogConf.txt" replace:replaceFiles];	
+#endif	
+	
 }
 
 @end

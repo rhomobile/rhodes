@@ -159,11 +159,16 @@ static ServerHost* sharedSH = nil;
 	return sqlite3_open([path UTF8String], &database);
 }
 
+extern void InitRhoLog(const char* szRootPath);
+extern const char* RhoGetRootPath();
+
 -(void) start {
 	//Create and configure AppManager
 	appManager = [AppManager instance]; 
 	[appManager configure];
 
+	InitRhoLog(RhoGetRootPath());
+	
 	//Start Sync engine
 	[self initializeDatabaseConn];
 	// Startup the sync engine thread
