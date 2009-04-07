@@ -163,18 +163,23 @@ int process_local_changes() {
 #else
           int bStopSync = 0;
 
-		  for(i = nStartSrc; i < source_length && isContinueSync() && !bStopSync; i++)
+		  for(i = nStartSrc; i < source_length && isContinueSync(); i++)
 		  {
-			  ask_params = get_params_for_source(source_list[i], database);
-			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params, &bStopSync );
-			  if(available_remote > 0) {
-				  RAWLOG_INFO1("Successfully processed %i records...", available_remote);
-			  }
+              if ( !bStopSync ){
+			      ask_params = get_params_for_source(source_list[i], database);
+			      available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params, &bStopSync );
+			      if(available_remote > 0) {
+				      RAWLOG_INFO1("Successfully processed %i records...", available_remote);
+			      }
+
+			      if (ask_params) 
+                      free(ask_params);
+              }else
+                  available_remote = 0;
+
 			  if( isContinueSync() ) {
 				  fire_notification(source_list[i]->_source_id,available_remote);
 			  }
-			  if (ask_params) 
-                  free(ask_params);
 		  }
 #endif	  
 	  }
