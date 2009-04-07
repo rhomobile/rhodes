@@ -137,3 +137,16 @@ void Init_WebView(){
 VALUE has_network(){
     return Qfalse;
 }
+
+void rhoPlainLogArg(const char* file, int line, int severity, const char* szCategory,
+                    const char* format, va_list ap ){
+}
+
+void rhoPlainLogVar(const char* file, int line, int severity, const char* szCategory,
+                 const char* format, ... ){
+}
+
+int rhoPlainLog(const char* file, int line, int severity, const char* szCategory,
+                  const char* msg ){
+    return 1;
+}

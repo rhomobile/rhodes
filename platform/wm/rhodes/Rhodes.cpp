@@ -97,15 +97,13 @@ private:
 
 CRhodesModule _AtlModule;
 //void runAllLogTests();
-namespace rho{
-void InitRhoLog(const char* szRootPath);
-}
+extern "C" void InitRhoLog(const char* szRootPath);
 extern "C" const char* RhoGetRootPath();
 //
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
-    rho::InitRhoLog(RhoGetRootPath());
+    InitRhoLog(RhoGetRootPath());
 //    runAllLogTests();
 
     return _AtlModule.WinMain(nShowCmd);
