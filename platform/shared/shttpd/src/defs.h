@@ -11,7 +11,9 @@
 #ifndef DEFS_HEADER_DEFINED
 #define	DEFS_HEADER_DEFINED
 
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif //_CRT_SECURE_NO_WARNINGS
 
 #include "std_includes.h"
 #include "llist.h"
@@ -20,13 +22,16 @@
 #include "config.h"
 #include "shttpd.h"
 
+#include "common/RhoDefs.h"
 #define	NELEMS(ar)	(sizeof(ar) / sizeof(ar[0]))
 
-#ifdef _DEBUG
-#define	DBG(x)	do { printf x ; putchar('\n'); fflush(stdout); } while (0)
+extern void __shttpd_trace(const char* format, ... );
+#ifdef RHO_DEBUG
+#define	DBG(x) __shttpd_trace x ;
+//do { printf x ; putchar('\n'); fflush(stdout); } while (0)
 #else
 #define	DBG(x)
-#endif /* DEBUG */
+#endif  RHO_DEBUG 
 
 /*
  * Darwin prior to 7.0 and Win32 do not have socklen_t

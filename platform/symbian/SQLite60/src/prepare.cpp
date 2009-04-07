@@ -669,7 +669,7 @@ int sqlite3Reprepare(Vdbe *p){
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-EXPORT_C int sqlite3_prepare(
+SQLITE3_EXPORT_C int sqlite3_prepare(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -678,7 +678,7 @@ EXPORT_C int sqlite3_prepare(
 ){
   return sqlite3LockAndPrepare(db,zSql,nBytes,0,ppStmt,pzTail);
 }
-EXPORT_C int sqlite3_prepare_v2(
+SQLITE3_EXPORT_C int sqlite3_prepare_v2(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -741,7 +741,7 @@ static int sqlite3Prepare16(
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-EXPORT_C int sqlite3_prepare16(
+SQLITE3_EXPORT_C int sqlite3_prepare16(
   sqlite3 *db,              /* Database handle. */ 
   const void *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -750,7 +750,7 @@ EXPORT_C int sqlite3_prepare16(
 ){
   return sqlite3Prepare16(db,zSql,nBytes,0,ppStmt,pzTail);
 }
-EXPORT_C int sqlite3_prepare16_v2(
+SQLITE3_EXPORT_C int sqlite3_prepare16_v2(
   sqlite3 *db,              /* Database handle. */ 
   const void *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */

@@ -1,4 +1,4 @@
-#include <windows.h>
+/*#include <windows.h>
 #include <tchar.h>
 #include "assert.h"
 
@@ -9,3 +9,4 @@ void assert( int expression )
 		exit(2);
 }
 
+*/

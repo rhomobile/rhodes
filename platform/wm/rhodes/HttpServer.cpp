@@ -9,7 +9,9 @@
 #endif
 #include "SyncEngine.h"
 #include "rdispatcher.h"
+#include "shttpd.h"
 
+IMPLEMENT_LOGCLASS(CHttpServer,"HttpServer");
 #if defined(_WIN32_WCE)
 // strdup is implemented as part of ruby CE port
 extern "C" char *strdup(const char * str);
@@ -59,7 +61,7 @@ CHttpServer::~CHttpServer(void)
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
   shttpd_fini(ctx);
-  ATLTRACE(_T("Http server thread shutdown\n"));
+  LOG(INFO) + "Http server thread shutdown";
 
 #if defined(_WIN32_WCE)
   CGPSController* pGPS = CGPSController::Instance();
@@ -95,7 +97,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	m_szRhobundleReloadUrl = str_assign( callGetRhobundleZipUrl() );
 #endif
-    ATLTRACE(L"Starting SYNC\n");
+    LOG(INFO) + "Starting SYNC";
 
     CSyncEngine* sync = CSyncEngine::Instance();
     if (sync) sync->ShowHomePage();
@@ -118,18 +120,18 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
   if (m_bRubyInitialized) {
-    ATLTRACE(_T("\nShutting-down ruby framework\n"));
+    LOG(INFO) + "Shutting-down ruby framework";
 //    shttpd_fini(ctx);
     RhoRubyStop();
   }
-  ATLTRACE(_T("Closing http server handle\n"));
+  LOG(INFO) + "Closing http server handle";
   ::CloseHandle(hHandle);
   return S_OK;
 }
 
 bool CHttpServer::InitHttpServer()
 {
-  ATLTRACE(_T("Init http server\n"));
+  LOG(INFO) + "Init http server";
   ctx = shttpd_init(0,NULL);
   //
   char httproot[MAX_PATH];
@@ -138,14 +140,14 @@ bool CHttpServer::InitHttpServer()
   shttpd_set_option(ctx, "root",httproot);
 
 #if defined(_WIN32_WCE)
-  shttpd_register_uri(ctx, "/system/geolocation", &show_geolocation, NULL);
+  shttpd_register_uri(ctx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
 #endif
 
   return true;
 }
 
 bool CHttpServer::InitRubyFramework() {
-  ATLTRACE(_T("Init ruby framework\n"));
+  LOG(INFO) + "Init ruby framework";
   RhoRubyStart();
   m_bRubyInitialized = true;
   return true;

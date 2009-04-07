@@ -836,7 +836,7 @@ char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...){
 ** Print into memory obtained from sqlite3_malloc().  Omit the internal
 ** %-conversion extensions.
 */
-EXPORT_C char *sqlite3_vmprintf(const char *zFormat, va_list ap){
+SQLITE3_EXPORT_C char *sqlite3_vmprintf(const char *zFormat, va_list ap){
   char *z;
   char zBase[SQLITE_PRINT_BUF_SIZE];
   StrAccum acc;
@@ -850,7 +850,7 @@ EXPORT_C char *sqlite3_vmprintf(const char *zFormat, va_list ap){
 ** Print into memory obtained from sqlite3_malloc()().  Omit the internal
 ** %-conversion extensions.
 */
-EXPORT_C char *sqlite3_mprintf(const char *zFormat, ...){
+SQLITE3_EXPORT_C char *sqlite3_mprintf(const char *zFormat, ...){
   va_list ap;
   char *z;
   va_start(ap, zFormat);
@@ -865,7 +865,7 @@ EXPORT_C char *sqlite3_mprintf(const char *zFormat, ...){
 ** are not able to use a "," as the decimal point in place of "." as
 ** specified by some locales.
 */
-EXPORT_C char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
+SQLITE3_EXPORT_C char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
   char *z;
   va_list ap;
   StrAccum acc;

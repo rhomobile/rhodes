@@ -25,7 +25,7 @@ extern char *json_hex_chars;
 
 /* forward structure definitions */
 
-typedef int boolean;
+typedef unsigned char boolean;
 struct printbuf;
 struct lh_table;
 struct array_list;

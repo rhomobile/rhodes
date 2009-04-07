@@ -69,7 +69,7 @@
 ** Setting the auth function to NULL disables this hook.  The default
 ** setting of the auth function is NULL.
 */
-EXPORT_C int sqlite3_set_authorizer(
+SQLITE3_EXPORT_C int sqlite3_set_authorizer(
   sqlite3 *db,
   int (*xAuth)(void*,int,const char*,const char*,const char*,const char*),
   void *pArg

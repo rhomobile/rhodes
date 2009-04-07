@@ -24,7 +24,7 @@
 ** collating sequences are registered or if an authorizer function is
 ** added or changed.
 */
-EXPORT_C int sqlite3_expired(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_expired(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
   return p==0 || p->expired;
 }
@@ -38,7 +38,7 @@ EXPORT_C int sqlite3_expired(sqlite3_stmt *pStmt){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-EXPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt){
   int rc;
   if( pStmt==0 ){
     rc = SQLITE_OK;
@@ -60,7 +60,7 @@ EXPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-EXPORT_C int sqlite3_reset(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_reset(sqlite3_stmt *pStmt){
   int rc;
   if( pStmt==0 ){
     rc = SQLITE_OK;
@@ -84,7 +84,7 @@ EXPORT_C int sqlite3_reset(sqlite3_stmt *pStmt){
 /*
 ** Set all the parameters in the compiled SQL statement to NULL.
 */
-EXPORT_C int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
   int i;
   int rc = SQLITE_OK;
   Vdbe *v = (Vdbe*)pStmt;
@@ -101,7 +101,7 @@ EXPORT_C int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
 ** The following routines extract information from a Mem or sqlite3_value
 ** structure.
 */
-EXPORT_C const void *sqlite3_value_blob(sqlite3_value *pVal){
+SQLITE3_EXPORT_C const void *sqlite3_value_blob(sqlite3_value *pVal){
   Mem *p = (Mem*)pVal;
   if( p->flags & (MEM_Blob|MEM_Str) ){
     sqlite3VdbeMemExpandBlob(p);
@@ -112,36 +112,36 @@ EXPORT_C const void *sqlite3_value_blob(sqlite3_value *pVal){
     return sqlite3_value_text(pVal);
   }
 }
-EXPORT_C int sqlite3_value_bytes(sqlite3_value *pVal){
+SQLITE3_EXPORT_C int sqlite3_value_bytes(sqlite3_value *pVal){
   return sqlite3ValueBytes(pVal, SQLITE_UTF8);
 }
-EXPORT_C int sqlite3_value_bytes16(sqlite3_value *pVal){
+SQLITE3_EXPORT_C int sqlite3_value_bytes16(sqlite3_value *pVal){
   return sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
 }
-EXPORT_C double sqlite3_value_double(sqlite3_value *pVal){
+SQLITE3_EXPORT_C double sqlite3_value_double(sqlite3_value *pVal){
   return sqlite3VdbeRealValue((Mem*)pVal);
 }
-EXPORT_C int sqlite3_value_int(sqlite3_value *pVal){
+SQLITE3_EXPORT_C int sqlite3_value_int(sqlite3_value *pVal){
   return sqlite3VdbeIntValue((Mem*)pVal);
 }
-EXPORT_C sqlite_int64 sqlite3_value_int64(sqlite3_value *pVal){
+SQLITE3_EXPORT_C sqlite_int64 sqlite3_value_int64(sqlite3_value *pVal){
   return sqlite3VdbeIntValue((Mem*)pVal);
 }
-EXPORT_C const unsigned char *sqlite3_value_text(sqlite3_value *pVal){
+SQLITE3_EXPORT_C const unsigned char *sqlite3_value_text(sqlite3_value *pVal){
   return (const unsigned char *)sqlite3ValueText(pVal, SQLITE_UTF8);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C const void *sqlite3_value_text16(sqlite3_value* pVal){
+SQLITE3_EXPORT_C const void *sqlite3_value_text16(sqlite3_value* pVal){
   return sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
 }
-EXPORT_C const void *sqlite3_value_text16be(sqlite3_value *pVal){
+SQLITE3_EXPORT_C const void *sqlite3_value_text16be(sqlite3_value *pVal){
   return sqlite3ValueText(pVal, SQLITE_UTF16BE);
 }
-EXPORT_C const void *sqlite3_value_text16le(sqlite3_value *pVal){
+SQLITE3_EXPORT_C const void *sqlite3_value_text16le(sqlite3_value *pVal){
   return sqlite3ValueText(pVal, SQLITE_UTF16LE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-EXPORT_C int sqlite3_value_type(sqlite3_value* pVal){
+SQLITE3_EXPORT_C int sqlite3_value_type(sqlite3_value* pVal){
   return pVal->type;
 }
 
@@ -149,7 +149,7 @@ EXPORT_C int sqlite3_value_type(sqlite3_value* pVal){
 ** The following routines are used by user-defined functions to specify
 ** the function result.
 */
-EXPORT_C void sqlite3_result_blob(
+SQLITE3_EXPORT_C void sqlite3_result_blob(
   sqlite3_context *pCtx, 
   const void *z, 
   int n, 
@@ -159,35 +159,35 @@ EXPORT_C void sqlite3_result_blob(
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetStr(&pCtx->s, (const char*)z, n, 0, xDel);
 }
-EXPORT_C void sqlite3_result_double(sqlite3_context *pCtx, double rVal){
+SQLITE3_EXPORT_C void sqlite3_result_double(sqlite3_context *pCtx, double rVal){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetDouble(&pCtx->s, rVal);
 }
-EXPORT_C void sqlite3_result_error(sqlite3_context *pCtx, const char *z, int n){
+SQLITE3_EXPORT_C void sqlite3_result_error(sqlite3_context *pCtx, const char *z, int n){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   pCtx->isError = 1;
   sqlite3VdbeMemSetStr(&pCtx->s, z, n, SQLITE_UTF8, SQLITE_TRANSIENT);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, int n){
+SQLITE3_EXPORT_C void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, int n){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   pCtx->isError = 1;
   sqlite3VdbeMemSetStr(&pCtx->s, (const char*)z, n, SQLITE_UTF16NATIVE, SQLITE_TRANSIENT);
 }
 #endif
-EXPORT_C void sqlite3_result_int(sqlite3_context *pCtx, int iVal){
+SQLITE3_EXPORT_C void sqlite3_result_int(sqlite3_context *pCtx, int iVal){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetInt64(&pCtx->s, (i64)iVal);
 }
-EXPORT_C void sqlite3_result_int64(sqlite3_context *pCtx, i64 iVal){
+SQLITE3_EXPORT_C void sqlite3_result_int64(sqlite3_context *pCtx, i64 iVal){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetInt64(&pCtx->s, iVal);
 }
-EXPORT_C void sqlite3_result_null(sqlite3_context *pCtx){
+SQLITE3_EXPORT_C void sqlite3_result_null(sqlite3_context *pCtx){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetNull(&pCtx->s);
 }
-EXPORT_C void sqlite3_result_text(
+SQLITE3_EXPORT_C void sqlite3_result_text(
   sqlite3_context *pCtx, 
   const char *z, 
   int n,
@@ -197,7 +197,7 @@ EXPORT_C void sqlite3_result_text(
   sqlite3VdbeMemSetStr(&pCtx->s, z, n, SQLITE_UTF8, xDel);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C void sqlite3_result_text16(
+SQLITE3_EXPORT_C void sqlite3_result_text16(
   sqlite3_context *pCtx, 
   const void *z, 
   int n, 
@@ -206,7 +206,7 @@ EXPORT_C void sqlite3_result_text16(
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetStr(&pCtx->s, (const char*)z, n, SQLITE_UTF16NATIVE, xDel);
 }
-EXPORT_C void sqlite3_result_text16be(
+SQLITE3_EXPORT_C void sqlite3_result_text16be(
   sqlite3_context *pCtx, 
   const void *z, 
   int n, 
@@ -215,7 +215,7 @@ EXPORT_C void sqlite3_result_text16be(
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetStr(&pCtx->s, (const char*)z, n, SQLITE_UTF16BE, xDel);
 }
-EXPORT_C void sqlite3_result_text16le(
+SQLITE3_EXPORT_C void sqlite3_result_text16le(
   sqlite3_context *pCtx, 
   const void *z, 
   int n, 
@@ -225,23 +225,23 @@ EXPORT_C void sqlite3_result_text16le(
   sqlite3VdbeMemSetStr(&pCtx->s, (const char*)z, n, SQLITE_UTF16LE, xDel);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-EXPORT_C void sqlite3_result_value(sqlite3_context *pCtx, sqlite3_value *pValue){
+SQLITE3_EXPORT_C void sqlite3_result_value(sqlite3_context *pCtx, sqlite3_value *pValue){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemCopy(&pCtx->s, pValue);
 }
-EXPORT_C void sqlite3_result_zeroblob(sqlite3_context *pCtx, int n){
+SQLITE3_EXPORT_C void sqlite3_result_zeroblob(sqlite3_context *pCtx, int n){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetZeroBlob(&pCtx->s, n);
 }
 
 /* Force an SQLITE_TOOBIG error. */
-EXPORT_C void sqlite3_result_error_toobig(sqlite3_context *pCtx){
+SQLITE3_EXPORT_C void sqlite3_result_error_toobig(sqlite3_context *pCtx){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetZeroBlob(&pCtx->s, SQLITE_MAX_LENGTH+1);
 }
 
 /* An SQLITE_NOMEM error. */
-EXPORT_C void sqlite3_result_error_nomem(sqlite3_context *pCtx){
+SQLITE3_EXPORT_C void sqlite3_result_error_nomem(sqlite3_context *pCtx){
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
   sqlite3VdbeMemSetNull(&pCtx->s);
   pCtx->isError = 1;
@@ -391,7 +391,7 @@ int sqlite3_step(sqlite3_stmt *pStmt){
   return rc;
 }
 #else
-EXPORT_C int sqlite3_step(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_step(sqlite3_stmt *pStmt){
   int rc = SQLITE_MISUSE;
   if( pStmt ){
     int cnt = 0;
@@ -433,7 +433,7 @@ EXPORT_C int sqlite3_step(sqlite3_stmt *pStmt){
 ** Extract the user data from a sqlite3_context structure and return a
 ** pointer to it.
 */
-EXPORT_C void *sqlite3_user_data(sqlite3_context *p){
+SQLITE3_EXPORT_C void *sqlite3_user_data(sqlite3_context *p){
   assert( p && p->pFunc );
   return p->pFunc->pUserData;
 }
@@ -464,7 +464,7 @@ void sqlite3InvalidFunction(
 ** context is allocated on the first call.  Subsequent calls return the
 ** same context that was returned on prior calls.
 */
-EXPORT_C void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
+SQLITE3_EXPORT_C void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
   Mem *pMem;
   assert( p && p->pFunc && p->pFunc->xStep );
   assert( sqlite3_mutex_held(p->s.db->mutex) );
@@ -487,7 +487,7 @@ EXPORT_C void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
 ** Return the auxilary data pointer, if any, for the iArg'th argument to
 ** the user-function defined by pCtx.
 */
-EXPORT_C void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
+SQLITE3_EXPORT_C void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
   VdbeFunc *pVdbeFunc;
 
   assert( sqlite3_mutex_held(pCtx->s.db->mutex) );
@@ -503,7 +503,7 @@ EXPORT_C void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
 ** argument to the user-function defined by pCtx. Any previous value is
 ** deleted by calling the delete function specified when it was set.
 */
-EXPORT_C void sqlite3_set_auxdata(
+SQLITE3_EXPORT_C void sqlite3_set_auxdata(
   sqlite3_context *pCtx, 
   int iArg, 
   void *pAux, 
@@ -551,7 +551,7 @@ failed:
 ** implementations should keep their own counts within their aggregate
 ** context.
 */
-EXPORT_C int sqlite3_aggregate_count(sqlite3_context *p){
+SQLITE3_EXPORT_C int sqlite3_aggregate_count(sqlite3_context *p){
   assert( p && p->pFunc && p->pFunc->xStep );
   return p->pMem->n;
 }
@@ -559,7 +559,7 @@ EXPORT_C int sqlite3_aggregate_count(sqlite3_context *p){
 /*
 ** Return the number of columns in the result set for the statement pStmt.
 */
-EXPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
   return pVm ? pVm->nResColumn : 0;
 }
@@ -568,7 +568,7 @@ EXPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt){
 ** Return the number of values available from the current row of the
 ** currently executing statement pStmt.
 */
-EXPORT_C int sqlite3_data_count(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_data_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
   if( pVm==0 || !pVm->resOnStack ) return 0;
   return pVm->nResColumn;
@@ -639,7 +639,7 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
 ** The following routines are used to access elements of the current row
 ** in the result set.
 */
-EXPORT_C const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
   const void *val;
   val = sqlite3_value_blob( columnMem(pStmt,i) );
   /* Even though there is no encoding conversion, value_blob() might
@@ -649,49 +649,49 @@ EXPORT_C const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C int sqlite3_column_bytes(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C int sqlite3_column_bytes(sqlite3_stmt *pStmt, int i){
   int val = sqlite3_value_bytes( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C int sqlite3_column_bytes16(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C int sqlite3_column_bytes16(sqlite3_stmt *pStmt, int i){
   int val = sqlite3_value_bytes16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C double sqlite3_column_double(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C double sqlite3_column_double(sqlite3_stmt *pStmt, int i){
   double val = sqlite3_value_double( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C int sqlite3_column_int(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C int sqlite3_column_int(sqlite3_stmt *pStmt, int i){
   int val = sqlite3_value_int( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, int i){
   sqlite_int64 val = sqlite3_value_int64( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, int i){
   const unsigned char *val = sqlite3_value_text( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
-EXPORT_C sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, int i){
   sqlite3_value *pOut = columnMem(pStmt, i);
   columnMallocFailure(pStmt);
   return pOut;
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C const void *sqlite3_column_text16(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C const void *sqlite3_column_text16(sqlite3_stmt *pStmt, int i){
   const void *val = sqlite3_value_text16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return val;
 }
 #endif /* SQLITE_OMIT_UTF16 */
-EXPORT_C int sqlite3_column_type(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C int sqlite3_column_type(sqlite3_stmt *pStmt, int i){
   int iType = sqlite3_value_type( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
   return iType;
@@ -755,12 +755,12 @@ static const void *columnName(
 ** Return the name of the Nth column of the result set returned by SQL
 ** statement pStmt.
 */
-EXPORT_C const char *sqlite3_column_name(sqlite3_stmt *pStmt, int N){
+SQLITE3_EXPORT_C const char *sqlite3_column_name(sqlite3_stmt *pStmt, int N){
   return (const char*)columnName(
       pStmt, N, (const void*(*)(Mem*))sqlite3_value_text, COLNAME_NAME);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
+SQLITE3_EXPORT_C const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
   return columnName(
       pStmt, N, (const void*(*)(Mem*))sqlite3_value_text16, COLNAME_NAME);
 }
@@ -770,12 +770,12 @@ EXPORT_C const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Return the column declaration type (if applicable) of the 'i'th column
 ** of the result set of SQL statement pStmt.
 */
-EXPORT_C const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, int N){
+SQLITE3_EXPORT_C const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, int N){
   return (const char*)columnName(
       pStmt, N, (const void*(*)(Mem*))sqlite3_value_text, COLNAME_DECLTYPE);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
+SQLITE3_EXPORT_C const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
   return columnName(
       pStmt, N, (const void*(*)(Mem*))sqlite3_value_text16, COLNAME_DECLTYPE);
 }
@@ -899,7 +899,7 @@ static int bindText(
 /*
 ** Bind a blob value to an SQL statement variable.
 */
-EXPORT_C int sqlite3_bind_blob(
+SQLITE3_EXPORT_C int sqlite3_bind_blob(
   sqlite3_stmt *pStmt, 
   int i, 
   const void *zData, 
@@ -908,7 +908,7 @@ EXPORT_C int sqlite3_bind_blob(
 ){
   return bindText(pStmt, i, zData, nData, xDel, 0);
 }
-EXPORT_C int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
+SQLITE3_EXPORT_C int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
   int rc;
   Vdbe *p = (Vdbe *)pStmt;
   sqlite3_mutex_enter(p->db->mutex);
@@ -919,10 +919,10 @@ EXPORT_C int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
   sqlite3_mutex_leave(p->db->mutex);
   return rc;
 }
-EXPORT_C int sqlite3_bind_int(sqlite3_stmt *p, int i, int iValue){
+SQLITE3_EXPORT_C int sqlite3_bind_int(sqlite3_stmt *p, int i, int iValue){
   return sqlite3_bind_int64(p, i, (i64)iValue);
 }
-EXPORT_C int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
+SQLITE3_EXPORT_C int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
   int rc;
   Vdbe *p = (Vdbe *)pStmt;
   sqlite3_mutex_enter(p->db->mutex);
@@ -933,7 +933,7 @@ EXPORT_C int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue)
   sqlite3_mutex_leave(p->db->mutex);
   return rc;
 }
-EXPORT_C int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
   int rc;
   Vdbe *p = (Vdbe*)pStmt;
   sqlite3_mutex_enter(p->db->mutex);
@@ -941,7 +941,7 @@ EXPORT_C int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
   sqlite3_mutex_leave(p->db->mutex);
   return rc;
 }
-EXPORT_C int sqlite3_bind_text( 
+SQLITE3_EXPORT_C int sqlite3_bind_text( 
   sqlite3_stmt *pStmt, 
   int i, 
   const char *zData, 
@@ -951,7 +951,7 @@ EXPORT_C int sqlite3_bind_text(
   return bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
 }
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C int sqlite3_bind_text16(
+SQLITE3_EXPORT_C int sqlite3_bind_text16(
   sqlite3_stmt *pStmt, 
   int i, 
   const void *zData, 
@@ -961,7 +961,7 @@ EXPORT_C int sqlite3_bind_text16(
   return bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF16NATIVE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-EXPORT_C int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
+SQLITE3_EXPORT_C int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
   int rc;
   Vdbe *p = (Vdbe *)pStmt;
   sqlite3_mutex_enter(p->db->mutex);
@@ -972,7 +972,7 @@ EXPORT_C int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value 
   sqlite3_mutex_leave(p->db->mutex);
   return rc;
 }
-EXPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
+SQLITE3_EXPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
   int rc;
   Vdbe *p = (Vdbe *)pStmt;
   sqlite3_mutex_enter(p->db->mutex);
@@ -988,7 +988,7 @@ EXPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
 ** Return the number of wildcards that can be potentially bound to.
 ** This routine is added to support DBD::SQLite.  
 */
-EXPORT_C int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
   return p ? p->nVar : 0;
 }
@@ -1022,7 +1022,7 @@ static void createVarMap(Vdbe *p){
 **
 ** The result is always UTF-8.
 */
-EXPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
+SQLITE3_EXPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
   Vdbe *p = (Vdbe*)pStmt;
   if( p==0 || i<1 || i>p->nVar ){
     return 0;
@@ -1036,7 +1036,7 @@ EXPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
 ** with that name.  If there is no variable with the given name,
 ** return 0.
 */
-EXPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
+SQLITE3_EXPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
   Vdbe *p = (Vdbe*)pStmt;
   int i;
   if( p==0 ){
@@ -1059,7 +1059,7 @@ EXPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName
 ** If the two statements contain a different number of bindings, then
 ** an SQLITE_ERROR is returned.
 */
-EXPORT_C int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+SQLITE3_EXPORT_C int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
   int i, rc = SQLITE_OK;
@@ -1088,6 +1088,6 @@ EXPORT_C int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pT
 ** the first argument to the sqlite3_prepare() that was used to create
 ** the statement in the first place.
 */
-EXPORT_C sqlite3 *sqlite3_db_handle(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C sqlite3 *sqlite3_db_handle(sqlite3_stmt *pStmt){
   return pStmt ? ((Vdbe*)pStmt)->db : 0;
 }

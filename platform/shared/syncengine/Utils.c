@@ -23,6 +23,10 @@
 
 #include "Utils.h"
 
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncUtil"
 /*
  * TODO: This should be included in stdlib.h?
  */
@@ -90,7 +94,7 @@ void prepare_db_statement(char *sql, sqlite3 *db, sqlite3_stmt **statement) {
         return;
 
 	if (sqlite3_prepare_v2(db, sql, -1, statement, NULL) != SQLITE_OK) {
-		printf("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
+		RAWLOG_ERROR1("Error: failed to prepare statement with message '%s'.", sqlite3_errmsg(db));
 	}
 }
 

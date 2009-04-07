@@ -1,13 +1,14 @@
 #pragma once
 
-#include "stdafx.h"
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
 #endif
 #include <wininet.h>
 
+#include "logging/RhoLog.h"
 class CNetRequest
 {
+    DEFINE_LOGCLASS;
 public:
 	CNetRequest(bool local = true);
 	virtual ~CNetRequest(void);

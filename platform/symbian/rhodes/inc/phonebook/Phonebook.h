@@ -29,6 +29,7 @@
 #include <e32base.h>
 
 #include "rhoruby/rhoruby.h"
+//#include "logging/RhoLog.h"
 
 #include <cntitem.h>
 
@@ -44,6 +45,8 @@ class CContactItem;
  */
 class CPhonebook : public CBase
 	{
+    //DEFINE_LOGCLASS;
+    
 public:
 	// Constructors and destructor
 

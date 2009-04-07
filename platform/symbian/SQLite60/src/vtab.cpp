@@ -52,7 +52,7 @@ static int createModule(
 /*
 ** External API function used to create a new virtual-table module.
 */
-EXPORT_C int sqlite3_create_module(
+SQLITE3_EXPORT_C int sqlite3_create_module(
   sqlite3 *db,                    /* Database in which module is registered */
   const char *zName,              /* Name assigned to this module */
   const sqlite3_module *pModule,  /* The definition of the module */
@@ -64,7 +64,7 @@ EXPORT_C int sqlite3_create_module(
 /*
 ** External API function used to create a new virtual-table module.
 */
-EXPORT_C int sqlite3_create_module_v2(
+SQLITE3_EXPORT_C int sqlite3_create_module_v2(
   sqlite3 *db,                    /* Database in which module is registered */
   const char *zName,              /* Name assigned to this module */
   const sqlite3_module *pModule,  /* The definition of the module */
@@ -524,7 +524,7 @@ int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
 ** valid to call this function from within the xCreate() or xConnect() of a
 ** virtual table module.
 */
-EXPORT_C int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
+SQLITE3_EXPORT_C int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   Parse sParse;
 
   int rc = SQLITE_OK;

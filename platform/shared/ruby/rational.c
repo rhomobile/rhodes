@@ -16,6 +16,11 @@
 #define NDEBUG
 #include <assert.h>
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+//RHO
+
 #ifndef RATIONAL_NAME
 #define RATIONAL_NAME "Rational"
 #endif

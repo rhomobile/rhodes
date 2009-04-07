@@ -99,7 +99,7 @@
 ** to recognize the end of a trigger can be omitted.  All we have to do
 ** is look for a semicolon that is not part of an string or comment.
 */
-EXPORT_C int sqlite3_complete(const char *zSql){
+SQLITE3_EXPORT_C int sqlite3_complete(const char *zSql){
   u8 state = 0;   /* Current state, using numbers defined in header comment */
   u8 token;       /* Value of the next token */
 
@@ -253,7 +253,7 @@ EXPORT_C int sqlite3_complete(const char *zSql){
 ** above, except that the parameter is required to be UTF-16 encoded, not
 ** UTF-8.
 */
-EXPORT_C int sqlite3_complete16(const void *zSql){
+SQLITE3_EXPORT_C int sqlite3_complete16(const void *zSql){
   sqlite3_value *pVal;
   char const *zSql8;
   int rc = SQLITE_NOMEM;

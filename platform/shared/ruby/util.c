@@ -833,7 +833,12 @@ ruby_getcwd(void)
 
 #ifdef DEBUG
 #include "stdio.h"
-#define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
+//RHO
+void rhoRubyFatalError(x);
+#define Bug(x) {rhoRubyFatalError(x);}
+//#define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
+//RHO
+
 #endif
 
 #include "stdlib.h"

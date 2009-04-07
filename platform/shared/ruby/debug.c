@@ -16,6 +16,13 @@
 #include "eval_intern.h"
 #include "vm_core.h"
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+int rhoRubyVFPrintf(FILE *, const char *, va_list);
+#define fprintf rhoRubyFPrintf
+#define vfprintf rhoRubyVFPrintf
+//RHO
+
 /* for gdb */
 static const union {
     enum ruby_special_consts    special_consts;

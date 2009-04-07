@@ -7,10 +7,13 @@
 #include "atlutil-vc08.h" //Using local copy, as 'standard' atlutil has errors
 #endif
 
-#include "shttpd.h"
+#include "logging/RhoLog.h"
 
+struct shttpd_ctx;
 class CHttpServer : public IWorkerThreadClient
 {
+  DEFINE_LOGCLASS;
+
   HANDLE m_hEvent;
 
 public:

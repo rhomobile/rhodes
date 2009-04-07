@@ -42,6 +42,8 @@
 #include <aknlists.h>		// CAknSinglePopupMenuStyleListBox
 #include <CommDb.h>
 
+//#include "logging/RhoPlainLog.h"
+
 extern TUint32 gSelectedConnectionId;
 
 namespace EConnectionStatus

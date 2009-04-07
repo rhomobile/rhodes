@@ -11,6 +11,10 @@
 #include "SyncJSONReader.h"
 #include "SyncUtil.h"
 #include "SyncBlob.h"
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncUtil"
 
 extern char* fetch_remote_data(char *url);
 extern int push_remote_data(char* url, char* data, size_t data_size, char* contentType);
@@ -195,7 +199,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 		        struct json_object* json_to_free = 0;
 
 		        int available = parse_json_list(list, json_string, MAX_SYNC_OBJECTS, &json_to_free, &header);
-		        printf("Parsed %i records from sync source...\n", available);
+		        RAWLOG_INFO1("Parsed %i records from sync source...", available);
 
                 processToken( header._token, src );
 
@@ -219,7 +223,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 						        delete_from_database(list[j]);
 						        size_deleted++;
 					        } else {
-						        printf("Warning: received improper update_type: %s...\n", type);
+						        RAWLOG_INFO1("Warning: received improper update_type: %s...", type);
 					        }
 				        }
 			        }
@@ -339,7 +343,7 @@ char *get_params_for_source(pSource source, sqlite3 *database) {
 	sqlite3_bind_text(source_params_statement, 2, ask_type, -1, SQLITE_TRANSIENT);
 	sqlite3_step(source_params_statement);
 	params = str_assign((char *)sqlite3_column_text(source_params_statement, 0));
-	printf("params for source: %s\n",params);
+	RAWLOG_INFO1("params for source: %s",params);
 	finish_db_statement(&source_params_statement);
 	unlock_sync_mutex();
 	
@@ -380,7 +384,7 @@ char *set_client_id(sqlite3 *database, pSource source) {
 	unlock_sync_mutex();	
 
 	if (c_id != NULL && strlen(c_id) > 0) {
-		printf("Using client_id %s from database...\n", c_id);
+		RAWLOG_INFO1("Using client_id %s from database...", c_id);
 	} else {
 		sprintf(url_string, "%s/clientcreate%s", source->_source_url, SYNC_SOURCE_FORMAT);
 		json_string = fetch_remote_data(url_string);
@@ -405,7 +409,7 @@ void set_db_client_id( sqlite3 *database, char *c_id ){
 						 &client_id_insert_statement);
 	sqlite3_bind_text(client_id_insert_statement, 1, c_id, -1, SQLITE_TRANSIENT);
 	sqlite3_step(client_id_insert_statement);
-	printf("Intialized new client_id %s from source...\n", c_id);
+	RAWLOG_INFO1("Intialized new client_id %s from source...", c_id);
 	finish_db_statement(&client_id_insert_statement);
 
 	unlock_sync_mutex();	
@@ -533,7 +537,7 @@ int set_db_session(const char* source_url, const char *session) {
  */
 void reset_sync_db() {
 	lock_sync_mutex();	
-	printf("Resetting sync db...\n");
+	RAWLOG_INFO("Resetting sync db...");
 	
 	prepare_db_statement("delete from object_values",
 						 (sqlite3 *)get_database(),
@@ -541,10 +545,10 @@ void reset_sync_db() {
 	prepare_db_statement("delete from client_info",
 						 (sqlite3 *)get_database(),
 						 &del_all_client_info_statement);
-	printf("Deleting all objects from db...\n");
+	RAWLOG_INFO("Deleting all objects from db...");
 	sqlite3_step(del_all_ob_val_statement);
 	finish_db_statement(&del_all_ob_val_statement);
-	printf("Deleting client info from db...\n");
+	RAWLOG_INFO("Deleting client info from db...");
 	sqlite3_step(del_all_client_info_statement);
 	finish_db_statement(&del_all_client_info_statement);
 	

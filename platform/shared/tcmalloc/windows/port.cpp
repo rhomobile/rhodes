@@ -41,8 +41,14 @@
 #include <stdarg.h>    // for va_list, va_start, va_end
 #include <windows.h>
 #include "port.h"
-#include "base/logging.h"
+//#include "base/logging.h"
 #include "system-alloc.h"
+//RHO
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "TCMalloc"
+//RHO
 
 // -----------------------------------------------------------------------
 // Basic libraries
@@ -77,7 +83,7 @@ int getpagesize() {
 }
 
 extern "C" PERFTOOLS_DLL_DECL void* __sbrk(ptrdiff_t increment) {
-  LOG(FATAL, "Windows doesn't implement sbrk!\n");
+  RAWLOG_FATAL("Windows doesn't implement sbrk!");
   return NULL;
 }
 
@@ -207,7 +213,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
 
   void* result = VirtualAlloc(0, size + extra,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-//printf("VirtualAlloc = %d\n", size + extra);
+  RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
 
   if (result == NULL)
     return NULL;
@@ -250,7 +256,7 @@ void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
       const char *fname = found.cFileName;
       if ((strlen(fname) >= prefix_length) &&
           (memcmp(fname, prefix, prefix_length) == 0)) {
-        RAW_VLOG(0, "Removing old heap profile %s\n", fname);
+        RAWTRACE1("Removing old heap profile ", fname );
         // TODO(csilvers): we really need to unlink dirname + fname
         _unlink(fname);
       }
@@ -258,11 +264,3 @@ void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
     FindClose(hFind);
   }
 }
-
-//void abort(){}
-#if defined(_WIN32_WCE)
-void assert(int exp){
-    if (!exp)
-        exit(-1);
-}
-#endif

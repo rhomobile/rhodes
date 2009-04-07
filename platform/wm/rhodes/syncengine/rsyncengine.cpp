@@ -14,6 +14,7 @@
 #include "Notifications.h"
 #include "rsyncengine.h"
 #include "rhoruby/rhoruby.h"
+IMPLEMENT_LOGCLASS(CSyncEngine,"SyncEngine");
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
@@ -99,7 +100,7 @@ CSyncEngine::~CSyncEngine(void)
 
 	m_thread.RemoveHandle(m_hEvent);
 	m_thread.Shutdown();
-  ATLTRACE(_T("Sync engine thread shutdown\n"));
+    LOG(INFO) + "Sync engine thread shutdown";
   DeleteCriticalSection(&m_critical_section);
 }
 
@@ -151,7 +152,7 @@ HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
     //WaitForSingleObject(m_hDoSyncEvent,INFINITE);
   }//else
 
-  ATLTRACE(_T("Wait Sync timeout\n"));
+  LOG(INFO) + "Wait Sync timeout";
   WaitForSingleObject(m_hDoSyncEvent,WAIT_TIME_SECONDS*1000);
   
   PerformSync();
@@ -163,10 +164,10 @@ HRESULT CSyncEngine::Execute(DWORD_PTR dwParam, HANDLE hObject)
 HRESULT CSyncEngine::CloseHandle(HANDLE hHandle)
 {
   if (m_bSyncInitialized) {
-    ATLTRACE(_T("\nShutting-down sync engine\n"));
+    LOG(INFO) + "Shutting-down sync engine";
     StopSyncEngine();
   }
-  ATLTRACE(_T("Closing sync engine handles\n"));
+  LOG(INFO) + "Closing sync engine handles";
   ::CloseHandle(hHandle);
   ::CloseHandle(m_hDoSyncEvent);
   return S_OK;
@@ -174,7 +175,7 @@ HRESULT CSyncEngine::CloseHandle(HANDLE hHandle)
 
 bool CSyncEngine::StartSyncEngine()
 {
-  ATLTRACE(_T("Starting sync engine\n"));
+  LOG(INFO) + "Starting sync engine";
   char dbpath[MAX_PATH];
   sprintf(dbpath,"%sdb\\syncdb.sqlite",RhoGetRootPath());
 
@@ -195,7 +196,7 @@ bool CSyncEngine::PerformSync()
 {
   //Lock();
 
-  ATLTRACE(_T("Performing sync\n"));
+  LOG(INFO) + "Performing sync";
   ::ResetEvent(m_hDoSyncEvent);
   if (/*!m_delaySync &&*/ !m_dbResetDelay) {
       //for (int i = 0; i < 10000; i++ )
@@ -218,7 +219,7 @@ bool CSyncEngine::StopSyncEngine()
 {
   Lock();
 
-  ATLTRACE(_T("Stopping sync engine\n"));
+  LOG(INFO) + "Stopping sync engine";
   if (m_database)
     sqlite3_close(m_database);
 
@@ -259,7 +260,7 @@ void ErrorMessage(LPTSTR pszFunction)
 
 HANDLE hConnection = NULL;
 
-bool SetupInternetConnection(LPCTSTR url)
+/*static*/ bool CSyncEngine::SetupInternetConnection(LPCTSTR url)
 {
 #if defined (_WIN32_WCE)
 	int iNetwork;
@@ -272,12 +273,12 @@ bool SetupInternetConnection(LPCTSTR url)
 		hResult=ConnMgrConnectionStatus(hConnection,&dwStatus);
 		if( SUCCEEDED(hResult) )
 		{
-			ATLTRACE(L"Internet connection exist, use it\n");
+			LOG(INFO) + "Internet connection exist, use it";
 			if( dwStatus & CONNMGR_STATUS_CONNECTED )
 				return true;
 		}
 		ConnMgrReleaseConnection(hConnection, FALSE);
-		ATLTRACE(L"Internet connection droped, open new one\n");
+		LOG(INFO) + "Internet connection droped, open new one";
 		hConnection = NULL;
 	}
 
@@ -291,7 +292,7 @@ bool SetupInternetConnection(LPCTSTR url)
 
 	//while( SUCCEEDED(ConnMgrEnumDestinations(iNetwork++, &DestInfo)))
 	{	
-		ATLTRACE(L"Try establish Internet connection \n");
+		LOG(INFO) + "Try establish Internet connection";
 		// actually try to establish the connection
 		CONNMGR_CONNECTIONINFO ConnInfo;
 
@@ -310,7 +311,7 @@ bool SetupInternetConnection(LPCTSTR url)
 		int count = 0;
 		while(SUCCEEDED(hResult) && count++ < 60 )
 		{
-			ATLTRACE(L"Wait for connect (%d).\n",count);
+			LOG(INFO) + "Wait for connect (" + count + ")";
 			DWORD dwResult = WaitForSingleObject( hConnection, 1000); 
 			if (dwResult == (WAIT_OBJECT_0))
 			{ 
@@ -319,7 +320,7 @@ bool SetupInternetConnection(LPCTSTR url)
 				{
 					if( dwStatus & CONNMGR_STATUS_CONNECTED )
 					{
-						ATLTRACE(L"Connected\n");
+						LOG(INFO) + "Connected";
 						return true;
 					}
 					if( dwStatus & CONNMGR_STATUS_WAITINGCONNECTION )
@@ -331,7 +332,7 @@ bool SetupInternetConnection(LPCTSTR url)
 			}
 		}
 	}
-	ATLTRACE(L"Failed to connect\n");
+	LOG(ERROR) + "Failed to connect";
 	return false;
 #else
 	return true;
@@ -368,9 +369,9 @@ void free_url_components(URL_COMPONENTS *uri) {
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
-char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
-				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL,
-                  char* contentType = NULL) {
+/*static*/ char* CSyncEngine::remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
+				  bool bGetHeaders, bool bGetRawData/* = false*/, bool bCheckSession /*= false*/, DWORD* pdwDataSize /*= NULL*/,
+                  char* contentType/* = NULL*/) {
   char       *cstr = NULL;
   char		 *session = NULL;
   std::string data = "";
@@ -395,7 +396,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
 	  }
 	  if (session) free(session);
 
-    if( !SetupInternetConnection(urlw) ) {
+    if( !CSyncEngine::SetupInternetConnection(urlw) ) {
       break;
     }
 
@@ -412,7 +413,7 @@ char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size,
       break;
     }
 
-    ATLTRACE(L"Connecting to url: %s\n",(LPWSTR)sBuf);
+    LOG(INFO) + "Connecting to url: " + (LPCWSTR)sBuf;
 
     URL_COMPONENTS uri;
     alloc_url_components(&uri,url);
@@ -521,11 +522,11 @@ unsigned char* fetch_remote_rawdata(char* url, unsigned long* pnSize) {
 }*/
 
 char* fetch_remote_data(char* url) {
-  return remote_data(L"GET", url, NULL, 0, false, false, true);
+  return CSyncEngine::remote_data(L"GET", url, NULL, 0, false, false, true);
 }
 
 int push_remote_data(char* url, char* data, size_t data_size, char* contentType) {
-  char* res = remote_data(L"POST", url, data, data_size, false, false, true, NULL, contentType);
+  char* res = CSyncEngine::remote_data(L"POST", url, data, data_size, false, false, true, NULL, contentType);
   int  nRes = res==NULL ? SYNC_PUSH_CHANGES_ERROR : SYNC_PUSH_CHANGES_OK;
   if ( res )
       free(res);
@@ -534,7 +535,7 @@ int push_remote_data(char* url, char* data, size_t data_size, char* contentType)
 }
 
 int makeLoginRequest(char* url, char* data ){
-  char* res = remote_data(L"POST", url, data, strlen(data), false, false, false);
+  char* res = CSyncEngine::remote_data(L"POST", url, data, strlen(data), false, false, false);
   int  nRes = res==NULL ? 0 : 1;
   if ( res )
       free(res);

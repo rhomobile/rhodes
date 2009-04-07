@@ -1,7 +1,9 @@
 #ifndef SYS_STAT_H
 #define SYS_STAT_H 1
 
+#ifndef SYS_TYPES_H
 #include <sys/types.h>
+#endif //SYS_TYPES_H
 
 #define _S_IFMT         0170000         /* file type mask */
 #define _S_IFDIR        0040000         /* directory */
