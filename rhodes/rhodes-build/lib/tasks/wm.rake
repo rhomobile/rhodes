@@ -17,7 +17,9 @@ namespace "bundle" do
   task :wm =>  ["config:wm", "loadframework", "makedirs"] do
 
     rm_rf $srcdir
+    rm_rf $bindir
     mkdir_p $srcdir
+    mkdir_p $bindir
     mkdir_p File.join($srcdir,'apps')
 
     rubypath =  File.join($res,'RhoRuby.exe')
