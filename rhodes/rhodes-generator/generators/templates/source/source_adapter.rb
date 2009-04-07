@@ -17,6 +17,7 @@ class <%=name.camelize%> < SourceAdapter
 
   def sync
     # usually this generic code does the job
+    user_id=@source.current_user.id
     @result.entry_list.each do |x|
       x.name_value_list.each do |y|
         o=ObjectValue.new
