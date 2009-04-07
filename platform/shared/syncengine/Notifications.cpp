@@ -18,6 +18,7 @@
 //size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm*);
 // strdup is implemented as part of ruby CE port
 extern "C" char *strdup(const char * str);
+#include <winbase.h>
 #endif
 
 #if defined(_WIN32_WCE) || defined(WIN32)
@@ -25,7 +26,6 @@ extern "C" int _shttpd_snprintf(char *buf, size_t buflen, const char *fmt, ...);
 #define snprintf _shttpd_snprintf
 #endif
 
-#include <winbase.h>
 #include <time.h>
 #include <string>
 #include <map>

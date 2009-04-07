@@ -18,7 +18,11 @@
 #else
 #endif
 
-#ifdef _DEBUG
+#ifdef OS_MACOSX
+#include <TargetConditionals.h>
+#endif //OS_MACOSX
+
+#if defined( _DEBUG ) || defined (TARGET_IPHONE_SIMULATOR)
 #define RHO_DEBUG 1
 #endif
 

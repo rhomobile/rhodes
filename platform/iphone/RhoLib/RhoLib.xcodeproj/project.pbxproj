@@ -1,0 +1,296 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5C71626F0F8B7E170096B6AA /* RhoDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162640F8B7E170096B6AA /* RhoDefs.h */; };
+		5C7162700F8B7E170096B6AA /* RhoFatalError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162650F8B7E170096B6AA /* RhoFatalError.h */; };
+		5C7162710F8B7E170096B6AA /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7162660F8B7E170096B6AA /* RhoFile.cpp */; };
+		5C7162720F8B7E170096B6AA /* RhoFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162670F8B7E170096B6AA /* RhoFile.h */; };
+		5C7162730F8B7E170096B6AA /* RhoFilePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162680F8B7E170096B6AA /* RhoFilePath.h */; };
+		5C7162740F8B7E170096B6AA /* RhoMutexLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162690F8B7E170096B6AA /* RhoMutexLock.h */; };
+		5C7162750F8B7E170096B6AA /* RhoPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71626A0F8B7E170096B6AA /* RhoPort.h */; };
+		5C7162760F8B7E170096B6AA /* RhoStd.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71626B0F8B7E170096B6AA /* RhoStd.h */; };
+		5C7162770F8B7E170096B6AA /* RhoSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71626C0F8B7E170096B6AA /* RhoSystem.h */; };
+		5C7162780F8B7E170096B6AA /* RhoTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71626D0F8B7E170096B6AA /* RhoTime.h */; };
+		5C7162790F8B7E170096B6AA /* StringConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71626E0F8B7E170096B6AA /* StringConverter.h */; };
+		5C7162830F8B7E330096B6AA /* RhoLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C71627A0F8B7E330096B6AA /* RhoLog.cpp */; };
+		5C7162840F8B7E330096B6AA /* RhoLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71627B0F8B7E330096B6AA /* RhoLog.h */; };
+		5C7162850F8B7E330096B6AA /* RhoLogCat.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71627C0F8B7E330096B6AA /* RhoLogCat.h */; };
+		5C7162860F8B7E330096B6AA /* RhoLogConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C71627D0F8B7E330096B6AA /* RhoLogConf.cpp */; };
+		5C7162870F8B7E330096B6AA /* RhoLogConf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C71627E0F8B7E330096B6AA /* RhoLogConf.h */; };
+		5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */; };
+		5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162800F8B7E330096B6AA /* RhoLogSink.h */; };
+		5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */; };
+		5C71628B0F8B7E330096B6AA /* RhoPlainLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162820F8B7E330096B6AA /* RhoPlainLog.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5C7162640F8B7E170096B6AA /* RhoDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoDefs.h; path = ../../shared/common/RhoDefs.h; sourceTree = SOURCE_ROOT; };
+		5C7162650F8B7E170096B6AA /* RhoFatalError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFatalError.h; path = ../../shared/common/RhoFatalError.h; sourceTree = SOURCE_ROOT; };
+		5C7162660F8B7E170096B6AA /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
+		5C7162670F8B7E170096B6AA /* RhoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFile.h; path = ../../shared/common/RhoFile.h; sourceTree = SOURCE_ROOT; };
+		5C7162680F8B7E170096B6AA /* RhoFilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFilePath.h; path = ../../shared/common/RhoFilePath.h; sourceTree = SOURCE_ROOT; };
+		5C7162690F8B7E170096B6AA /* RhoMutexLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMutexLock.h; path = ../../shared/common/RhoMutexLock.h; sourceTree = SOURCE_ROOT; };
+		5C71626A0F8B7E170096B6AA /* RhoPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPort.h; path = ../../shared/common/RhoPort.h; sourceTree = SOURCE_ROOT; };
+		5C71626B0F8B7E170096B6AA /* RhoStd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoStd.h; path = ../../shared/common/RhoStd.h; sourceTree = SOURCE_ROOT; };
+		5C71626C0F8B7E170096B6AA /* RhoSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoSystem.h; path = ../../shared/common/RhoSystem.h; sourceTree = SOURCE_ROOT; };
+		5C71626D0F8B7E170096B6AA /* RhoTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoTime.h; path = ../../shared/common/RhoTime.h; sourceTree = SOURCE_ROOT; };
+		5C71626E0F8B7E170096B6AA /* StringConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConverter.h; path = ../../shared/common/StringConverter.h; sourceTree = SOURCE_ROOT; };
+		5C71627A0F8B7E330096B6AA /* RhoLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoLog.cpp; path = ../../shared/logging/RhoLog.cpp; sourceTree = SOURCE_ROOT; };
+		5C71627B0F8B7E330096B6AA /* RhoLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLog.h; path = ../../shared/logging/RhoLog.h; sourceTree = SOURCE_ROOT; };
+		5C71627C0F8B7E330096B6AA /* RhoLogCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLogCat.h; path = ../../shared/logging/RhoLogCat.h; sourceTree = SOURCE_ROOT; };
+		5C71627D0F8B7E330096B6AA /* RhoLogConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoLogConf.cpp; path = ../../shared/logging/RhoLogConf.cpp; sourceTree = SOURCE_ROOT; };
+		5C71627E0F8B7E330096B6AA /* RhoLogConf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLogConf.h; path = ../../shared/logging/RhoLogConf.h; sourceTree = SOURCE_ROOT; };
+		5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoLogSink.cpp; path = ../../shared/logging/RhoLogSink.cpp; sourceTree = SOURCE_ROOT; };
+		5C7162800F8B7E330096B6AA /* RhoLogSink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLogSink.h; path = ../../shared/logging/RhoLogSink.h; sourceTree = SOURCE_ROOT; };
+		5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPlainLog.cpp; path = ../../shared/logging/RhoPlainLog.cpp; sourceTree = SOURCE_ROOT; };
+		5C7162820F8B7E330096B6AA /* RhoPlainLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPlainLog.h; path = ../../shared/logging/RhoPlainLog.h; sourceTree = SOURCE_ROOT; };
+		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D289987405E68DCB004EDB86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* RhoLib */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = RhoLib;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				5C7162600F8B7DEE0096B6AA /* common */,
+				5C7162630F8B7DF40096B6AA /* logging */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC046055464E500DB518D /* librholib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5C7162600F8B7DEE0096B6AA /* common */ = {
+			isa = PBXGroup;
+			children = (
+				5C7162640F8B7E170096B6AA /* RhoDefs.h */,
+				5C7162650F8B7E170096B6AA /* RhoFatalError.h */,
+				5C7162660F8B7E170096B6AA /* RhoFile.cpp */,
+				5C7162670F8B7E170096B6AA /* RhoFile.h */,
+				5C7162680F8B7E170096B6AA /* RhoFilePath.h */,
+				5C7162690F8B7E170096B6AA /* RhoMutexLock.h */,
+				5C71626A0F8B7E170096B6AA /* RhoPort.h */,
+				5C71626B0F8B7E170096B6AA /* RhoStd.h */,
+				5C71626C0F8B7E170096B6AA /* RhoSystem.h */,
+				5C71626D0F8B7E170096B6AA /* RhoTime.h */,
+				5C71626E0F8B7E170096B6AA /* StringConverter.h */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		5C7162630F8B7DF40096B6AA /* logging */ = {
+			isa = PBXGroup;
+			children = (
+				5C71627A0F8B7E330096B6AA /* RhoLog.cpp */,
+				5C71627B0F8B7E330096B6AA /* RhoLog.h */,
+				5C71627C0F8B7E330096B6AA /* RhoLogCat.h */,
+				5C71627D0F8B7E330096B6AA /* RhoLogConf.cpp */,
+				5C71627E0F8B7E330096B6AA /* RhoLogConf.h */,
+				5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */,
+				5C7162800F8B7E330096B6AA /* RhoLogSink.h */,
+				5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */,
+				5C7162820F8B7E330096B6AA /* RhoPlainLog.h */,
+			);
+			name = logging;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC043055464E500DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C71626F0F8B7E170096B6AA /* RhoDefs.h in Headers */,
+				5C7162700F8B7E170096B6AA /* RhoFatalError.h in Headers */,
+				5C7162720F8B7E170096B6AA /* RhoFile.h in Headers */,
+				5C7162730F8B7E170096B6AA /* RhoFilePath.h in Headers */,
+				5C7162740F8B7E170096B6AA /* RhoMutexLock.h in Headers */,
+				5C7162750F8B7E170096B6AA /* RhoPort.h in Headers */,
+				5C7162760F8B7E170096B6AA /* RhoStd.h in Headers */,
+				5C7162770F8B7E170096B6AA /* RhoSystem.h in Headers */,
+				5C7162780F8B7E170096B6AA /* RhoTime.h in Headers */,
+				5C7162790F8B7E170096B6AA /* StringConverter.h in Headers */,
+				5C7162840F8B7E330096B6AA /* RhoLog.h in Headers */,
+				5C7162850F8B7E330096B6AA /* RhoLogCat.h in Headers */,
+				5C7162870F8B7E330096B6AA /* RhoLogConf.h in Headers */,
+				5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */,
+				5C71628B0F8B7E330096B6AA /* RhoPlainLog.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D2AAC045055464E500DB518D /* RhoLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "RhoLib" */;
+			buildPhases = (
+				D2AAC043055464E500DB518D /* Headers */,
+				D2AAC044055464E500DB518D /* Sources */,
+				D289987405E68DCB004EDB86 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RhoLib;
+			productName = RhoLib;
+			productReference = D2AAC046055464E500DB518D /* librholib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoLib" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* RhoLib */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC045055464E500DB518D /* RhoLib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2AAC044055464E500DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C7162710F8B7E170096B6AA /* RhoFile.cpp in Sources */,
+				5C7162830F8B7E330096B6AA /* RhoLog.cpp in Sources */,
+				5C7162860F8B7E330096B6AA /* RhoLogConf.cpp in Sources */,
+				5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */,
+				5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91EC08733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = rholib;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = ../../shared;
+			};
+			name = Debug;
+		};
+		1DEB91ED08733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = rholib;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = ../../shared;
+			};
+			name = Release;
+		};
+		1DEB91F008733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Debug;
+		};
+		1DEB91F108733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "RhoLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91EC08733DB70010E9CD /* Debug */,
+				1DEB91ED08733DB70010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91F008733DB70010E9CD /* Debug */,
+				1DEB91F108733DB70010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
