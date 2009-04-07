@@ -68,7 +68,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D /* RhoLib */;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
 			remoteInfo = RhoLib;
 		};
 		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
