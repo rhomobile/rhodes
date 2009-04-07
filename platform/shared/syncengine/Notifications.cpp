@@ -15,7 +15,7 @@
 
 #if defined(_WIN32_WCE)
 // Fixing compiler error C2039: 'wcsftime' : is not a member of '`global namespace''
-size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm*);
+//size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm*);
 // strdup is implemented as part of ruby CE port
 extern "C" char *strdup(const char * str);
 #endif
@@ -25,12 +25,18 @@ extern "C" int _shttpd_snprintf(char *buf, size_t buflen, const char *fmt, ...);
 #define snprintf _shttpd_snprintf
 #endif
 
+#include <winbase.h>
+#include <time.h>
 #include <string>
 #include <map>
 
 #include "Notifications.h"
 #include "UniversalLock.h"
 #include "tcmalloc/rhomem.h"
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Notifications"
 
 static std::map<int,notification_t*> _notifications;
 INIT_LOCK(notify);
@@ -98,8 +104,8 @@ void set_notification(int source_id, const char *url, char* params) {
 			_clear_notification(source_id);
 			notification->url = HTTPResolveUrl(strdup(url));
 			notification->params = strdup(params);
-			printf("Resolved [%s] in [%s]\n", url, notification->url);								 
-            printf("Setting notification (%s) for source %d, params: %s\n", notification->url, source_id, params);
+			RAWLOG_INFO2("Resolved [%s] in [%s]\n", url, notification->url);								 
+            RAWLOG_INFO3("Setting notification (%s) for source %d, params: %s\n", notification->url, source_id, params);
 			_notifications[source_id] = notification;
 		}
 	} catch(...) {
@@ -147,6 +153,11 @@ void clear_notification(int source_id) {
 #include "Constants.h"
 #include "Notifications.h"
 #include "UniversalLock.h"
+#include "logging/RhoPlainLog.h"
+//TODO: rewrite based on std classes
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Notifications"
 
 static notification_t** _notifications;
 
@@ -227,8 +238,8 @@ void set_notification(int source_id, const char *url, char* params) {
 			_clear_notification(source_id);
 			notification->url = HTTPResolveUrl(strdup(url));
 			notification->params = params ? strdup(params) : NULL;
-			printf("Resolved [%s] in [%s]\n", url, notification->url);								 
-			printf("Setting notification (%s) for source %d\n", notification->url, source_id);			
+			RAWLOG_INFO2("Resolved [%s] in [%s]\n", url, notification->url);								 
+            RAWLOG_INFO3("Setting notification (%s) for source %d, params: %s\n", notification->url, source_id, params);
 			get_notifications()[source_id] = notification;
 		}
 	} catch(...) {

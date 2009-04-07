@@ -3,6 +3,7 @@
 #if defined (_WIN32_WCE)
 
 #include <gpsapi.h>
+#include "logging/RhoLog.h"
 
 interface IGPSController
 {
@@ -12,6 +13,7 @@ interface IGPSController
 
 class CGPSDevice
 {
+  DEFINE_LOGCLASS;
 private:
     //Singleton instance
     static CGPSDevice * s_pInstance;
@@ -53,6 +55,7 @@ public:
 };
 
 class CGPSController : public IGPSController {
+    DEFINE_LOGCLASS;
 	CRITICAL_SECTION m_critical_section;
 	double m_latitude;
 	double m_longitude;
@@ -67,6 +70,7 @@ public:
 	static void DeleteInstance();
 	static void CheckTimeout();
 	virtual ~CGPSController();
+    static void show_geolocation(struct shttpd_arg *arg);
 
 public:
     virtual HRESULT SetGPSPosition( GPS_POSITION gps_Position );
@@ -88,5 +92,4 @@ private:
 
 #endif //_WIN32_WCE
 
-void show_geolocation(struct shttpd_arg *arg);
 

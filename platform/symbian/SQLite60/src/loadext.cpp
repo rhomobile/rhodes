@@ -382,7 +382,7 @@ static int sqlite3LoadExtension(
   db->aExtension[db->nExtension-1] = handle;
   return SQLITE_OK;
 }
-EXPORT_C int sqlite3_load_extension(
+SQLITE3_EXPORT_C int sqlite3_load_extension(
   sqlite3 *db,          /* Load the extension into this database connection */
   const char *zFile,    /* Name of the shared library containing extension */
   const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
@@ -412,7 +412,7 @@ void sqlite3CloseExtensions(sqlite3 *db){
 ** Enable or disable extension loading.  Extension loading is disabled by
 ** default so as not to open security holes in older applications.
 */
-EXPORT_C int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
+SQLITE3_EXPORT_C int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
   sqlite3_mutex_enter(db->mutex);
   if( onoff ){
     db->flags |= SQLITE_LoadExtension;
@@ -440,7 +440,7 @@ static struct {
 ** Register a statically linked extension that is automatically
 ** loaded by every new database connection.
 */
-EXPORT_C int sqlite3_auto_extension(void *xInit){
+SQLITE3_EXPORT_C int sqlite3_auto_extension(void *xInit){
   int i;
   int rc = SQLITE_OK;
   sqlite3_mutex *mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_MASTER);
@@ -468,7 +468,7 @@ EXPORT_C int sqlite3_auto_extension(void *xInit){
 /*
 ** Reset the automatic extension loading mechanism.
 */
-EXPORT_C void sqlite3_reset_auto_extension(void){
+SQLITE3_EXPORT_C void sqlite3_reset_auto_extension(void){
   sqlite3_mutex *mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_MASTER);
   sqlite3_mutex_enter(mutex);
   sqlite3_free(autoext.aExt);

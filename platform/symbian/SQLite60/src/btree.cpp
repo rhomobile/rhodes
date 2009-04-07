@@ -58,7 +58,7 @@ static int sqlite3SharedCacheEnabled = 0;
 ** The shared cache setting effects only future calls to
 ** sqlite3_open(), sqlite3_open16(), or sqlite3_open_v2().
 */
-EXPORT_C int sqlite3_enable_shared_cache(int enable){
+SQLITE3_EXPORT_C int sqlite3_enable_shared_cache(int enable){
   sqlite3SharedCacheEnabled = enable;
   return SQLITE_OK;
 }

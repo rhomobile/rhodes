@@ -51,6 +51,7 @@ extern int *(*__WinCE_Errno_Pointer_Function)(void);
 
 char *strerror(int errnum);
 
+#ifndef _TM_DEFINED
 struct tm {
 	int tm_sec;     /* seconds after the minute - [0,59] */
 	int tm_min;     /* minutes after the hour - [0,59] */
@@ -62,6 +63,8 @@ struct tm {
 	int tm_yday;    /* days since January 1 - [0,365] */
 	int tm_isdst;   /* daylight savings time flag */
 };
+#define _TM_DEFINED
+#endif//_TM_DEFINED
 
 struct tm *gmtime(const time_t *TimeP); /* for future use */
 struct tm *localtime(const time_t *TimeP);

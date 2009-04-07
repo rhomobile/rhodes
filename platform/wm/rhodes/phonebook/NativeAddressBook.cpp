@@ -6,6 +6,10 @@
 #include <pimstore.h>
 #include <comutil.h>
 
+IMPLEMENT_LOGCLASS(CABRecord,"ABRecord");
+IMPLEMENT_LOGCLASS(CABOutlookRecord,"ABOutlookRecord");
+IMPLEMENT_LOGCLASS(CNativeAddressBook,"NativeAddressBook");
+
 LPCSTR bstr2str(BSTR s) {
 	_bstr_t bstr(s);
 	return (LPCSTR)bstr;
@@ -28,12 +32,12 @@ void CABRecord::enumValues(ab_callback_t proc,void* param) {
 }
 
 void CABRecord::dump() {
-	printf("//Record dump ================================================\n");
+	LOG(INFO) + "Record dump ================================================";
 	std::map<std::string,std::string>::iterator it;
 	for ( it = m_props.begin(); it != m_props.end(); it++ ) {
-		printf("[%s] -> [%s]\n",(*it).first.c_str(),(*it).second.c_str());
+		LOG(INFO) + "[" + (*it).first.c_str() + "] -> [" + (*it).second.c_str() + "]";
 	}
-	printf("//End of record dump =========================================\n");
+	LOG(INFO) + "End of record dump =========================================";
 }
 
 //=============================================================================
@@ -185,7 +189,7 @@ CABRecord* CNativeAddressBook::getRecord(char* id) {
 	char recordType[20];
 	long recordId;
 	if ( sscanf(id, "{%s %ld}", recordType, &recordId) == 2 ) {
-		printf("get Record %d of %s type\n",recordId,recordType);
+		LOG(INFO) + "get Record " + recordId + " of " + recordType +" type";
 		if (strcmp(recordType,"outlook")==0) {
 			return getOutlookRecord(recordId);
 		}
@@ -210,7 +214,7 @@ int CNativeAddressBook::initOutlookAB() {
 	// subsequent valid calls return S_FALSE
     /*if (hr != S_OK) {
         // CoInitializeEx failed.
-        ATLTRACE(L"CoInitializeEx failed.");
+        LOG(ERROR) + "CoInitializeEx failed.";
         return false;  // Replace with specific error handling.;
     }*/
 
@@ -221,7 +225,7 @@ int CNativeAddressBook::initOutlookAB() {
         (void **)&pUnknown);
     if (hr != S_OK) {
         // CoCreateInstance failed.
-        ATLTRACE(L"CoCreateInstance failed.");
+        LOG(ERROR) + "CoCreateInstance failed.";
         CoUninitialize();
         return false;  // Replace with specific error handling.;
     }
@@ -229,7 +233,7 @@ int CNativeAddressBook::initOutlookAB() {
     hr = pUnknown->QueryInterface(__uuidof(IPOutlookApp)/*IID_IPOutlookApp*/, (void**)&m_outlookApp); 
     if (hr != S_OK) {
         // QueryInterface failed.
-        ATLTRACE(L"QueryInterface failed.");
+        LOG(ERROR) + "QueryInterface failed.";
         CoUninitialize();
         return false;  // Replace with specific error handling.;
     }
@@ -237,7 +241,7 @@ int CNativeAddressBook::initOutlookAB() {
     hr = m_outlookApp->Logon(NULL);
     if (hr != S_OK) {
         // Logon failed.
-        ATLTRACE(L"Logon failed.");
+        LOG(ERROR) + "Logon failed.";
         m_outlookApp->Release();
         CoUninitialize();
         return false;  // Replace with specific error handling.;
@@ -265,7 +269,7 @@ bool CNativeAddressBook::getOutlookItems() {
 		HRESULT res = m_outlookApp->GetDefaultFolder(olFolderContacts, &polFolder);
 		if (res != S_OK) {
 			// QueryInterface failed.
-			ATLTRACE(L"GetDefaultFolder failed.");
+			LOG(ERROR) + "GetDefaultFolder failed.";
 			return false;
 		}
 
@@ -273,7 +277,7 @@ bool CNativeAddressBook::getOutlookItems() {
 		if (res != S_OK) {
 			// QueryInterface failed.
 			polFolder->Release();
-			ATLTRACE(L"get_Items failed.");
+			LOG(ERROR) + "get_Items failed.";
 			return false;
 		}
 

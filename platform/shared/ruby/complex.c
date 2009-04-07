@@ -15,6 +15,11 @@
 #define COMPLEX_NAME "Complex"
 #endif
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+//RHO
+
 #define ZERO INT2FIX(0)
 #define ONE INT2FIX(1)
 #define TWO INT2FIX(2)

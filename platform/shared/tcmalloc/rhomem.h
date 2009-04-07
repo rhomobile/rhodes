@@ -2,6 +2,7 @@
 #define RHO_MEMORY__
 
 //#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+#include <stdlib.h>
 
 #ifndef _RHO_NO_MEMDEFINES
 #undef _CRTDBG_MAP_ALLOC
@@ -33,7 +34,7 @@ void *  rho_realloc(void *, size_t);
 char *  rho_strdup(const char *);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 //#define _recalloc(p, n, s) rho_realloc(p, n*s)

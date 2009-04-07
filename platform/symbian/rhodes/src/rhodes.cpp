@@ -23,6 +23,11 @@
 #include <eikstart.h>
 #include "rhodesApplication.h"
 
+namespace rho{
+void InitRhoLog(const char* szRootPath);
+}
+extern "C" const char* RhoGetRootPath();
+
 LOCAL_C CApaApplication* NewApplication()
 	{
 	return new CRhodesApplication;
@@ -30,6 +35,7 @@ LOCAL_C CApaApplication* NewApplication()
 
 GLDEF_C TInt E32Main()
 	{
+    rho::InitRhoLog(RhoGetRootPath());
 	return EikStart::RunApplication( NewApplication );
 	}
 

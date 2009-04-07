@@ -33,6 +33,10 @@
 #include "Notifications.h"
 #include "SyncBlob.h"
 
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncEngine"
 int stop_running = 0;
 //int delay_sync = 0;
 int db_reset_delay = 0;
@@ -128,7 +132,7 @@ int process_local_changes() {
   	
 	  if (result > 0) 
 	  {
-		  printf("Remote update failed, not continuing with sync...\n");
+		  RAWLOG_INFO("Remote update failed, not continuing with sync...");
 	  } 
 	  else 
 	  {
@@ -144,7 +148,7 @@ int process_local_changes() {
 			  ask_params = get_params_for_source(source_list[g_cur_source], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[g_cur_source], ask_params);
 			  if(available_remote > 0) {
-				  printf("Successfully processed %i records...\n", available_remote);
+				  RAWLOG_INFO1("Successfully processed %i records...", available_remote);
 			  }
 			  if (ask_params) free(ask_params);
 			  
@@ -164,7 +168,7 @@ int process_local_changes() {
 			  ask_params = get_params_for_source(source_list[i], database);
 			  available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params, &bStopSync );
 			  if(available_remote > 0) {
-				  printf("Successfully processed %i records...\n", available_remote);
+				  RAWLOG_INFO1("Successfully processed %i records...", available_remote);
 			  }
 			  if( isContinueSync() ) {
 				  fire_notification(source_list[i]->_source_id,available_remote);
@@ -180,7 +184,7 @@ int process_local_changes() {
   
   g_sync_inprogress = 0;
   if (stop_running) {
-	  printf("process_local_changes: cleanup\n");
+	  RAWLOG_INFO("process_local_changes: cleanup");
 	  clear_client_id();
 	  shutdown_database();
   }
@@ -196,7 +200,7 @@ int process_local_changes() {
  */
 #if !defined(_WIN32_WCE) && !defined(WIN32)
 void* sync_engine_main_routine(void* data) {
-	printf("Starting sync engine main routine...\n");
+	RAWLOG_INFO("Starting sync engine main routine...");
 	pthread_mutex_lock(&sync_mutex2);
 	while(!stop_running) {
 		struct timespec   ts;
@@ -219,9 +223,9 @@ void* sync_engine_main_routine(void* data) {
 		ts.tv_sec += WAIT_TIME_SECONDS;
 #endif
 		
-		printf("Sync engine blocked for %d seconds...\n",WAIT_TIME_SECONDS);
+		RAWLOG_INFO1("Sync engine blocked for %d seconds...",WAIT_TIME_SECONDS);
 		pthread_cond_timedwait(&sync_cond, &sync_mutex2, &ts);
-		printf("Sync engine continues w/ current operations...\n");
+		RAWLOG_INFO("Sync engine continues with current operations...");
 	
 		if(!db_reset_delay) {
 			if(process_local_changes()) {
@@ -259,7 +263,7 @@ int process_op_list(pSource source, char *type) {
 	op_list = calloc(1,MAX_SINGLE_OP_SIZE*sizeof(pSyncOperation));
 	available = get_op_list_from_database(op_list, database, MAX_SINGLE_OP_SIZE, source, type);
 	if (available > 0) {
-		printf("Found %i available records for %s processing on source %i...\n", available, type, source->_source_id);
+		RAWLOG_INFO3("Found %i available records for %s processing on source %i...", available, type, source->_source_id);
 	}
 
     opblob_list_count = SyncBlob_extractBlobs(op_list, available, &opblob_list);
@@ -272,7 +276,7 @@ int process_op_list(pSource source, char *type) {
 		    remove_op_list_from_database(source, database, type);
         }
 	} else {
-		printf("There was an error processing records, not removing from database yet...\n");
+		RAWLOG_INFO("There was an error processing records, not removing from database yet...");
 	}
 	
 	free_op_list(op_list, available);
@@ -327,7 +331,7 @@ void unlock_sync_mutex() {
 }
 
 void wake_up_sync_engine() {
-	printf("Waking up sync engine...\n");
+	RAWLOG_INFO("Waking up sync engine...");
 	pthread_cond_broadcast(&sync_cond);
 }
 
@@ -374,7 +378,7 @@ void start_sync_engine(sqlite3 *db) {
 }
 
 void stop_sync_engine() {
-	printf("Shutting down sync engine routine...\n");
+	RAWLOG_INFO("Shutting down sync engine routine...");
 	stop_running = 1;
 	pthread_cond_broadcast(&sync_cond);
 	free_notifications();
@@ -394,7 +398,7 @@ void shutdown_database() {
 	sqlite3_close(database);
 	unlock_sync_mutex();	
 //#endif	
-	printf("Sync engine is shutdown...\n");
+	RAWLOG_INFO("Sync engine is shutdown...");
 }
 
 #else
@@ -408,7 +412,7 @@ void shutdown_database() {
 	finalize_sync_util_statements();
 	finalize_sync_op_statements();
 
-	printf("Sync engine is shutdown...\n");
+	RAWLOG_INFO("Sync engine is shutdown...");
 }
 #endif //!defined(_WIN32_WCE)
 
@@ -484,7 +488,7 @@ int login(const char* login, const char* password) {
 		free_source_list(source_list, source_length);
 	}
 	else {
-		printf("Unable to login: 'login' or 'password' parameter is not specified.\n");
+		RAWLOG_INFO("Unable to login: 'login' or 'password' parameter is not specified.");
 	}
 	return retval;
 }

@@ -18,6 +18,9 @@
 #define STRICT
 #endif
 
+#include "logging/RhoATLTrace.h"
+#define __DBGAPI_H__
+
 #if defined (_WIN32_WCE)
 #include <ceconfig.h>
 #endif
@@ -64,7 +67,6 @@
 #include <atlcom.h>
 #include <atlwin.h>
 #include <atlhost.h>
-#include <assert.h>
 //#include <atlsiface.h>
 
 #if defined (_WIN32_WCE) 
@@ -120,3 +122,4 @@ using namespace ATL;
 #endif
 
 #include "tcmalloc/rhomem.h"
+#include "logging/RhoLog.h"

@@ -10,6 +10,7 @@
 #include "missing/file.h"
 #endif
 
+#include "logging/RhoPlainLog.h"
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();
@@ -297,7 +298,66 @@ static void Init_RhoBlobs()
 
 }
 
-static void Init_RhoLog()
+static VALUE
+rb_RhoLogWrite(VALUE rhoLog, VALUE str)
+{
+    char* szStr = 0;
+    str = rb_obj_as_string(str);
+
+    szStr = RSTRING_PTR(str);
+    //Skip just newline string
+    if ( strcmp(szStr,"\r\n") != 0 && strcmp(szStr,"\n") != 0 )
+        rhoPlainLog("",0,L_INFO,"APP",RSTRING_PTR(str));
+}
+
+void rhoRubyFatalError(const char* szError){
+    rhoPlainLog("",0,L_FATAL,"RubyVM",szError);
+}
+
+int rhoRubyVFPrintf(FILE *file, const char *format, va_list ap){
+    int nRes = 1;
+    if ( file == stderr || file == stdout ){
+        int severity = L_INFO;
+        if ( file == stderr ){
+            if ( strstr(format,"[FATAL]") )
+                severity = L_FATAL;
+            else
+                severity = L_ERROR;
+        }
+
+        rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+    }
+    else
+        nRes = vfprintf(file,format,ap);
+
+    return nRes;
+}
+
+int rhoRubyFPrintf(FILE *file, const char *format, ...){
+    int nRes = 1;
+    va_list ap;
+    va_start(ap, format);
+    nRes = rhoRubyVFPrintf(file,format,ap);
+    va_end(ap);
+
+    return nRes;
+}
+
+static VALUE rb_RhoLogClass;
+static void Init_RhoLog(){
+
+    VALUE appLog, appErrLog;
+
+    rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
+    rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
+
+    appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
+    
+    rb_gv_set("$stdout", appLog);
+    rb_gv_set("$stderr", appLog);
+}
+
+static void Init_RhoLog2()
 {
   VALUE path = __rhoGetCurrentDir();
   VALUE stdioPath, exist, logio;
@@ -319,4 +379,20 @@ static void Init_RhoLog()
       }
     }
   }
+}
+void rhoGCReport(VALUE valReport)
+{
+    char *report = RSTRING_PTR(valReport);
+    char *p, *e = report+strlen(report);
+    RAWTRACEC("RubyGC","GC Started.Profile report:");
+
+    while(report < e) {
+        p = strchr(report,'\n');
+        if (p!=NULL) {
+            *p = '\0';
+        }
+        RAWTRACEC("RubyGC",report);
+        report += strlen(report)+1;
+    }
+    RAWTRACEC("RubyGC","--profile eof--");
 }

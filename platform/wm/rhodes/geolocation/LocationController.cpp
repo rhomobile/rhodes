@@ -1,8 +1,11 @@
 #include "../stdafx.h"
 #include "../HttpServer.h"
 #include "LocationController.h"
+#include "shttpd.h"
 
 #if defined(_WIN32_WCE)
+IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
+IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
 
 //To test GPS on emulator, use FakeGPS (coming from WM6 SDK refresh) 
 
@@ -85,7 +88,7 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
         else if (dwRet == WAIT_OBJECT_0 + 2)
             break;
         else
-            ASSERT(0);
+            RHO_ASSERT(0);
 
     } while( TRUE );
 
@@ -364,7 +367,7 @@ void CGPSController::Unlock() {
 
 
 
-void show_geolocation(struct shttpd_arg *arg) {
+/*static*/void CGPSController::show_geolocation(struct shttpd_arg *arg) {
 	char location[256];
 
 	CGPSController* gps = CGPSController::Instance();
@@ -382,7 +385,7 @@ void show_geolocation(struct shttpd_arg *arg) {
 		strcpy(location,"reading...;reading...;reading...");
 	}
 
-	printf("Location: %s\n",location);
+	LOG(INFO) + "Location: " + location;
 
 	shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
 	shttpd_printf(arg, "Content-Length: %lu\r\n", strlen(location));

@@ -40,8 +40,10 @@ public :
         {
             return S_FALSE;
         }
+
+        m_pServerHost = new CServerHost();
         // Starting local server
-        m_serverHost.Start(m_appWindow.m_hWnd);
+        m_pServerHost->Start(m_appWindow.m_hWnd);
         // Navigate to the home page
         //TCHAR _laodingpage[MAX_PATH];
 		//LPTSTR lp = CHttpServer::Instance()->GetLoadingPage(_laodingpage);
@@ -83,20 +85,29 @@ public :
             }
         }
         // Stop local server
-        m_serverHost.Stop();
+        m_pServerHost->Stop();
+        delete m_pServerHost;
+        m_pServerHost = NULL;
     }
 
 private:
     CMainWindow m_appWindow;
-    CServerHost m_serverHost;
+    CServerHost* m_pServerHost;
 };
 
 CRhodesModule _AtlModule;
-
+//void runAllLogTests();
+namespace rho{
+void InitRhoLog(const char* szRootPath);
+}
+extern "C" const char* RhoGetRootPath();
 //
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
+    rho::InitRhoLog(RhoGetRootPath());
+//    runAllLogTests();
+
     return _AtlModule.WinMain(nShowCmd);
 }
 

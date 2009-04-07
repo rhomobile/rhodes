@@ -277,7 +277,7 @@ static void applyAffinity(
 **
 ** This is an EXPERIMENTAL api and is subject to change or removal.
 */
-EXPORT_C int sqlite3_value_numeric_type(sqlite3_value *pVal){
+SQLITE3_EXPORT_C int sqlite3_value_numeric_type(sqlite3_value *pVal){
   Mem *pMem = (Mem*)pVal;
   applyNumericAffinity(pMem);
   storeTypeInfo(pMem, 0);

@@ -12,6 +12,11 @@
 #include "ruby/ruby.h"
 #include "dln.h"
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+//RHO
+
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif

@@ -7247,6 +7247,10 @@ SQLITE_PRIVATE void sqlite3HashClear(Hash*);
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+/*int rhoPlainLog(const char* file, int line, int severity, const char* szCategory,
+                  const char* msg );
+#define assert(exp) ( (void) ((exp) || rhoPlainLog(__FILE__, __LINE__, 4, "", #exp )) )
+*/
 #include <stddef.h>
 
 /*

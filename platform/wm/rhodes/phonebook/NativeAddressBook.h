@@ -5,10 +5,12 @@
 #include <vector>
 
 #include <pimstore.h>
+#include "logging/RhoLog.h"
 
 typedef void (*ab_callback_t)(const char*, const char*, void*);
 
 class CABRecord {
+    DEFINE_LOGCLASS;
 public:
 	CABRecord() {}
 	virtual ~CABRecord() {}
@@ -37,6 +39,7 @@ protected:
 };
 
 class CABOutlookRecord : public CABRecord {
+    DEFINE_LOGCLASS;
 public:
 	CABOutlookRecord(IContact* pContact);
 	virtual ~CABOutlookRecord();
@@ -56,6 +59,7 @@ private:
 
 class CNativeAddressBook
 {
+    DEFINE_LOGCLASS;
 public:
 	CNativeAddressBook();
 	virtual ~CNativeAddressBook();

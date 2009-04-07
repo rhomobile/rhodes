@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "SyncObject.h"
 
+#include "logging/RhoPlainLog.h"
 //unsigned char* fetch_remote_rawdata(char* url, unsigned long* pnSize);
 extern const char* RhoGetRootPath();
 int push_remote_data(char* url, char* data, size_t data_size,char* contentType);
@@ -119,7 +120,7 @@ static int rhoReadFile( char* pFilePath, char** resbuffer, int* resnFileSize, in
 	char path[1024];
 	path[0]=0;
 	sprintf(path,"%sapps%s", RhoGetRootPath(), pFilePath);
-	printf("FULL PATH: %s", path);
+	RAWLOGC_INFO1("FULL PATH: %s", path);
     //FILE* file = fopen(pFilePath,"r");
 	FILE* file = fopen(path,"r");
     if (file){

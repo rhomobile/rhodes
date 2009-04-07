@@ -60,7 +60,12 @@
 #include <libc/sys/unistd.h>
 
 #include "Utils.h" //From syncengine
+//#include "logging/RhoPlainLog.h"
+//IMPLEMENT_LOGCLASS(CRhodesAppUi,"RhodesAppUi");
 TUint32 gSelectedConnectionId = -1;
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhodesAppUi"
 
 extern "C"
 {
@@ -78,6 +83,9 @@ extern "C"
 //
 void CRhodesAppUi::ConstructL()
 	{
+	//LOG(INFO) + "ConstructL";
+	//RAWLOG_INFO("ConstructL");
+	
 	// Initialise app UI with standard value.
 	BaseConstructL(CAknAppUi::EAknEnableSkin);
 
@@ -90,7 +98,7 @@ void CRhodesAppUi::ConstructL()
 	iHttpServer = CHttpServer::NewL();
 	iHttpServer->ResumeThread();
 
-	//start sunc engine
+	//start sync engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
 
 #ifdef SYM_GEOLOCATION	

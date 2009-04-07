@@ -26,9 +26,9 @@ const char sqlite3_version[] = SQLITE_VERSION;
 /*
 ** The version of the library
 */
-EXPORT_C const char *sqlite3_libversion(void){ return sqlite3_version; }
-EXPORT_C int sqlite3_libversion_number(void){ return SQLITE_VERSION_NUMBER; }
-EXPORT_C int sqlite3_threadsafe(void){ return SQLITE_THREADSAFE; }
+SQLITE3_EXPORT_C const char *sqlite3_libversion(void){ return sqlite3_version; }
+SQLITE3_EXPORT_C int sqlite3_libversion_number(void){ return SQLITE_VERSION_NUMBER; }
+SQLITE3_EXPORT_C int sqlite3_threadsafe(void){ return SQLITE_THREADSAFE; }
 
 /*
 ** If the following function pointer is not NULL and if
@@ -91,28 +91,28 @@ static int nocaseCollatingFunc(
 /*
 ** Return the ROWID of the most recent insert
 */
-EXPORT_C sqlite_int64 sqlite3_last_insert_rowid(sqlite3 *db){
+SQLITE3_EXPORT_C sqlite_int64 sqlite3_last_insert_rowid(sqlite3 *db){
   return db->lastRowid;
 }
 
 /*
 ** Return the number of changes in the most recent call to sqlite3_exec().
 */
-EXPORT_C int sqlite3_changes(sqlite3 *db){
+SQLITE3_EXPORT_C int sqlite3_changes(sqlite3 *db){
   return db->nChange;
 }
 
 /*
 ** Return the number of changes since the database handle was opened.
 */
-EXPORT_C int sqlite3_total_changes(sqlite3 *db){
+SQLITE3_EXPORT_C int sqlite3_total_changes(sqlite3 *db){
   return db->nTotalChange;
 }
 
 /*
 ** Close an existing SQLite database
 */
-EXPORT_C int sqlite3_close(sqlite3 *db){
+SQLITE3_EXPORT_C int sqlite3_close(sqlite3 *db){
   HashElem *i;
   int j;
 
@@ -367,7 +367,7 @@ int sqlite3InvokeBusyHandler(BusyHandler *p){
 ** This routine sets the busy callback for an Sqlite database to the
 ** given callback function with the given argument.
 */
-EXPORT_C int sqlite3_busy_handler(
+SQLITE3_EXPORT_C int sqlite3_busy_handler(
   sqlite3 *db,
   int (*xBusy)(void*,int),
   void *pArg
@@ -389,7 +389,7 @@ EXPORT_C int sqlite3_busy_handler(
 ** given callback function with the given argument. The progress callback will
 ** be invoked every nOps opcodes.
 */
-EXPORT_C void sqlite3_progress_handler(
+SQLITE3_EXPORT_C void sqlite3_progress_handler(
   sqlite3 *db, 
   int nOps,
   int (*xProgress)(void*), 
@@ -416,7 +416,7 @@ EXPORT_C void sqlite3_progress_handler(
 ** This routine installs a default busy handler that waits for the
 ** specified number of milliseconds before returning 0.
 */
-EXPORT_C int sqlite3_busy_timeout(sqlite3 *db, int ms){
+SQLITE3_EXPORT_C int sqlite3_busy_timeout(sqlite3 *db, int ms){
   if( sqlite3SafetyCheck(db) ){
     return SQLITE_MISUSE;
   }
@@ -432,7 +432,7 @@ EXPORT_C int sqlite3_busy_timeout(sqlite3 *db, int ms){
 /*
 ** Cause any pending operation to stop at its earliest opportunity.
 */
-EXPORT_C void sqlite3_interrupt(sqlite3 *db){
+SQLITE3_EXPORT_C void sqlite3_interrupt(sqlite3 *db){
   if( db && (db->magic==SQLITE_MAGIC_OPEN || db->magic==SQLITE_MAGIC_BUSY) ){
     db->u1.isInterrupted = 1;
   }
@@ -533,7 +533,7 @@ int sqlite3CreateFunc(
 /*
 ** Create new user functions.
 */
-EXPORT_C int sqlite3_create_function(
+SQLITE3_EXPORT_C int sqlite3_create_function(
   sqlite3 *db,
   const char *zFunctionName,
   int nArg,
@@ -553,7 +553,7 @@ EXPORT_C int sqlite3_create_function(
 }
 
 #ifndef SQLITE_OMIT_UTF16
-EXPORT_C int sqlite3_create_function16(
+SQLITE3_EXPORT_C int sqlite3_create_function16(
   sqlite3 *db,
   const void *zFunctionName,
   int nArg,
@@ -589,7 +589,7 @@ EXPORT_C int sqlite3_create_function16(
 ** A global function must exist in order for name resolution to work
 ** properly.
 */
-EXPORT_C int sqlite3_overload_function(
+SQLITE3_EXPORT_C int sqlite3_overload_function(
   sqlite3 *db,
   const char *zName,
   int nArg
@@ -615,7 +615,7 @@ EXPORT_C int sqlite3_overload_function(
 ** trace is a pointer to a function that is invoked at the start of each
 ** SQL statement.
 */
-EXPORT_C void *sqlite3_trace(sqlite3 *db, void (*xTrace)(void*,const char*), void *pArg){
+SQLITE3_EXPORT_C void *sqlite3_trace(sqlite3 *db, void (*xTrace)(void*,const char*), void *pArg){
   void *pOld;
   sqlite3_mutex_enter(db->mutex);
   pOld = db->pTraceArg;
@@ -632,7 +632,7 @@ EXPORT_C void *sqlite3_trace(sqlite3 *db, void (*xTrace)(void*,const char*), voi
 ** profile is a pointer to a function that is invoked at the conclusion of
 ** each SQL statement that is run.
 */
-EXPORT_C void *sqlite3_profile(
+SQLITE3_EXPORT_C void *sqlite3_profile(
   sqlite3 *db,
   void (*xProfile)(void*,const char*,sqlite_uint64),
   void *pArg
@@ -653,7 +653,7 @@ EXPORT_C void *sqlite3_profile(
 ** If the invoked function returns non-zero, then the commit becomes a
 ** rollback.
 */
-EXPORT_C void *sqlite3_commit_hook(
+SQLITE3_EXPORT_C void *sqlite3_commit_hook(
   sqlite3 *db,              /* Attach the hook to this database */
   int (*xCallback)(void*),  /* Function to invoke on each commit */
   void *pArg                /* Argument to the function */
@@ -671,7 +671,7 @@ EXPORT_C void *sqlite3_commit_hook(
 ** Register a callback to be invoked each time a row is updated,
 ** inserted or deleted using this database connection.
 */
-EXPORT_C void *sqlite3_update_hook(
+SQLITE3_EXPORT_C void *sqlite3_update_hook(
   sqlite3 *db,              /* Attach the hook to this database */
   void (*xCallback)(void*,int,char const *,char const *,sqlite_int64),
   void *pArg                /* Argument to the function */
@@ -689,7 +689,7 @@ EXPORT_C void *sqlite3_update_hook(
 ** Register a callback to be invoked each time a transaction is rolled
 ** back by this database connection.
 */
-EXPORT_C void *sqlite3_rollback_hook(
+SQLITE3_EXPORT_C void *sqlite3_rollback_hook(
   sqlite3 *db,              /* Attach the hook to this database */
   void (*xCallback)(void*), /* Callback function */
   void *pArg                /* Argument to the function */
@@ -782,7 +782,7 @@ int sqlite3BtreeFactory(
 ** Return UTF-8 encoded English language explanation of the most recent
 ** error.
 */
-EXPORT_C const char *sqlite3_errmsg(sqlite3 *db){
+SQLITE3_EXPORT_C const char *sqlite3_errmsg(sqlite3 *db){
   const char *z;
   if( !db ){
     return sqlite3ErrStr(SQLITE_NOMEM);
@@ -805,7 +805,7 @@ EXPORT_C const char *sqlite3_errmsg(sqlite3 *db){
 ** Return UTF-16 encoded English language explanation of the most recent
 ** error.
 */
-EXPORT_C const void *sqlite3_errmsg16(sqlite3 *db){
+SQLITE3_EXPORT_C const void *sqlite3_errmsg16(sqlite3 *db){
   /* Because all the characters in the string are in the unicode
   ** range 0x00-0xFF, if we pad the big-endian string with a 
   ** zero byte, we can obtain the little-endian string with
@@ -850,7 +850,7 @@ EXPORT_C const void *sqlite3_errmsg16(sqlite3 *db){
 ** Return the most recent error code generated by an SQLite routine. If NULL is
 ** passed to this function, we assume a malloc() failed during sqlite3_open().
 */
-EXPORT_C int sqlite3_errcode(sqlite3 *db){
+SQLITE3_EXPORT_C int sqlite3_errcode(sqlite3 *db){
   if( !db || db->mallocFailed ){
     return SQLITE_NOMEM;
   }
@@ -1123,7 +1123,7 @@ sqlite3 *get_database();
 /*
 ** Open a new database handle.
 */
-EXPORT_C int sqlite3_open(
+SQLITE3_EXPORT_C int sqlite3_open(
   const char *zFilename, 
   sqlite3 **ppDb 
 ){
@@ -1139,7 +1139,7 @@ EXPORT_C int sqlite3_open(
 	return nRes;
 }
 
-EXPORT_C int sqlite3_open_v2(
+SQLITE3_EXPORT_C int sqlite3_open_v2(
   const char *filename,   /* Database filename (UTF-8) */
   sqlite3 **ppDb,         /* OUT: SQLite db handle */
   int flags,              /* Flags */
@@ -1153,7 +1153,7 @@ EXPORT_C int sqlite3_open_v2(
 /*
 ** Open a new database handle.
 */
-EXPORT_C int sqlite3_open16(
+SQLITE3_EXPORT_C int sqlite3_open16(
   const void *zFilename, 
   sqlite3 **ppDb
 ){
@@ -1187,7 +1187,7 @@ EXPORT_C int sqlite3_open16(
 /*
 ** Register a new collation sequence with the database handle db.
 */
-EXPORT_C int sqlite3_create_collation(
+SQLITE3_EXPORT_C int sqlite3_create_collation(
   sqlite3* db, 
   const char *zName, 
   int enc, 
@@ -1206,7 +1206,7 @@ EXPORT_C int sqlite3_create_collation(
 /*
 ** Register a new collation sequence with the database handle db.
 */
-EXPORT_C int sqlite3_create_collation_v2(
+SQLITE3_EXPORT_C int sqlite3_create_collation_v2(
   sqlite3* db, 
   const char *zName, 
   int enc, 
@@ -1227,7 +1227,7 @@ EXPORT_C int sqlite3_create_collation_v2(
 /*
 ** Register a new collation sequence with the database handle db.
 */
-EXPORT_C int sqlite3_create_collation16(
+SQLITE3_EXPORT_C int sqlite3_create_collation16(
   sqlite3* db, 
   const char *zName, 
   int enc, 
@@ -1253,7 +1253,7 @@ EXPORT_C int sqlite3_create_collation16(
 ** Register a collation sequence factory callback with the database handle
 ** db. Replace any previously installed collation sequence factory.
 */
-EXPORT_C int sqlite3_collation_needed(
+SQLITE3_EXPORT_C int sqlite3_collation_needed(
   sqlite3 *db, 
   void *pCollNeededArg, 
   void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*)
@@ -1274,7 +1274,7 @@ EXPORT_C int sqlite3_collation_needed(
 ** Register a collation sequence factory callback with the database handle
 ** db. Replace any previously installed collation sequence factory.
 */
-EXPORT_C int sqlite3_collation_needed16(
+SQLITE3_EXPORT_C int sqlite3_collation_needed16(
   sqlite3 *db, 
   void *pCollNeededArg, 
   void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*)
@@ -1296,7 +1296,7 @@ EXPORT_C int sqlite3_collation_needed16(
 ** This function is now an anachronism. It used to be used to recover from a
 ** malloc() failure, but SQLite now does this automatically.
 */
-EXPORT_C int sqlite3_global_recover(void){
+SQLITE3_EXPORT_C int sqlite3_global_recover(void){
   return SQLITE_OK;
 }
 #endif
@@ -1309,7 +1309,7 @@ EXPORT_C int sqlite3_global_recover(void){
 **
 ******* THIS IS AN EXPERIMENTAL API AND IS SUBJECT TO CHANGE ******
 */
-EXPORT_C int sqlite3_get_autocommit(sqlite3 *db){
+SQLITE3_EXPORT_C int sqlite3_get_autocommit(sqlite3 *db){
   return db->autoCommit;
 }
 
@@ -1331,7 +1331,7 @@ int sqlite3Corrupt(void){
 ** SQLite no longer uses thread-specific data so this routine is now a
 ** no-op.  It is retained for historical compatibility.
 */
-EXPORT_C void sqlite3_thread_cleanup(void){
+SQLITE3_EXPORT_C void sqlite3_thread_cleanup(void){
 }
 
 /*
@@ -1453,7 +1453,7 @@ error_out:
 /*
 ** Sleep for a little while.  Return the amount of time slept.
 */
-EXPORT_C int sqlite3_sleep(int ms){
+SQLITE3_EXPORT_C int sqlite3_sleep(int ms){
   sqlite3_vfs *pVfs;
   int rc;
   pVfs = sqlite3_vfs_find(0);
@@ -1468,7 +1468,7 @@ EXPORT_C int sqlite3_sleep(int ms){
 /*
 ** Enable or disable the extended result codes.
 */
-EXPORT_C int sqlite3_extended_result_codes(sqlite3 *db, int onoff){
+SQLITE3_EXPORT_C int sqlite3_extended_result_codes(sqlite3 *db, int onoff){
   sqlite3_mutex_enter(db->mutex);
   db->errMask = onoff ? 0xffffffff : 0xff;
   sqlite3_mutex_leave(db->mutex);
@@ -1478,7 +1478,7 @@ EXPORT_C int sqlite3_extended_result_codes(sqlite3 *db, int onoff){
 /*
 ** Invoke the xFileControl method on a particular database.
 */
-EXPORT_C int sqlite3_file_control(sqlite3 *db, const char *zDbName, int op, void *pArg){
+SQLITE3_EXPORT_C int sqlite3_file_control(sqlite3 *db, const char *zDbName, int op, void *pArg){
   int rc = SQLITE_ERROR;
   int iDb;
   sqlite3_mutex_enter(db->mutex);

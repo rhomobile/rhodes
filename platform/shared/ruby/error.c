@@ -22,6 +22,14 @@
 #define EXIT_SUCCESS 0
 #endif
 
+//RHO
+#include "logging/RhoPlainLog.h"
+int rhoRubyFPrintf(FILE *, const char *, ...);
+int rhoRubyVFPrintf(FILE *, const char *, va_list);
+#define fprintf rhoRubyFPrintf
+#define vfprintf rhoRubyVFPrintf
+//RHO
+
 extern const char ruby_description[];
 
 static int
@@ -202,16 +210,24 @@ static void
 report_bug(const char *file, int line, const char *fmt, va_list args)
 {
     char buf[BUFSIZ];
-    FILE *out = stderr;
+//    FILE *out = stderr;
     int len = err_position_0(buf, BUFSIZ, file, line);
 
-    if (fwrite(buf, 1, len, out) == len ||
+ //RHO
+    buf[len] = 0;
+    rhoPlainLogVar("",0,L_ERROR,"RubyVM","%s [BUG]",buf);
+    rhoPlainLogArg("",0,L_ERROR,"RubyVM",fmt,args);
+    rhoPlainLogVar("",0,L_ERROR,"RubyVM","Description: %s",ruby_description);
+
+    rb_vm_bugreport();
+/*    if (fwrite(buf, 1, len, out) == len ||
 	fwrite(buf, 1, len, (out = stdout)) == len) {
 	fputs("[BUG] ", out);
 	vfprintf(out, fmt, args);
 	fprintf(out, "\n%s\n\n", ruby_description);
 	rb_vm_bugreport();
-    }
+    }*/
+//RHO
 }
 
 void

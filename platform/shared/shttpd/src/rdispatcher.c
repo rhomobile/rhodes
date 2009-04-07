@@ -4,6 +4,11 @@
 #include "llist.h"
 #include "rhoruby.h"
 
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RDispatcher"
+
 #ifdef __SYMBIAN32__
 static char* localhost = "http://127.0.0.1:8080";
 #else
@@ -289,7 +294,7 @@ void* rho_dispatch(struct conn *c, const char* path) {
         _shttpd_snprintf(filename,sizeof(filename),"%s%s%s",path,slash,"controller.iseq");
 
         if ((_shttpd_stat(filename, &st) == 0)&&(!S_ISDIR(st.st_mode))) {
-          printf("Run controller on this url: %s\n", c->uri);
+          RAWLOG_INFO1("Run controller on this url: %s", c->uri);
           return route;
         }
       }

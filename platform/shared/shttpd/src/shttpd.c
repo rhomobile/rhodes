@@ -1983,3 +1983,10 @@ shttpd_init(int argc, char *argv[])
 
 	return (ctx);
 }
+#include "logging/RhoPlainLog.h"
+void __shttpd_trace(const char* format, ... ){
+    va_list ap;
+    va_start(ap, format);
+    rhoPlainLogArg("",0,L_TRACE,"shttpd", format, ap);
+    va_end(ap);
+}

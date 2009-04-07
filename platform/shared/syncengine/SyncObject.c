@@ -26,6 +26,11 @@
 #include "SyncEngine.h"
 #include "SyncBlob.h"
 
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncObject"
+
 /* Database access statements */
 static sqlite3_stmt *insert_statement = NULL;
 static sqlite3_stmt *delete_statement = NULL;
@@ -156,7 +161,7 @@ int insert_into_database(pSyncObject ref) {
 
 		success = sqlite3_step(insert_statement);
 		if (success == SQLITE_ERROR) {
-			printf("Error: failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
+			RAWLOG_ERROR1("Failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
             finish_db_statement(&insert_statement);
 			unlock_sync_mutex();	
 			return 0;
@@ -177,7 +182,7 @@ int delete_from_database(pSyncObject ref) {
 	sqlite3_bind_int(delete_statement, 1, ref->_primary_key);
 	success = sqlite3_step(delete_statement);
 	if (success != SQLITE_DONE) {
-		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
+		RAWLOG_ERROR1("Failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
         finish_db_statement(&delete_statement);
 		unlock_sync_mutex();	
 		return 1;
@@ -200,7 +205,7 @@ void delete_from_database_bytoken( int srcID, sqlite_uint64 token ) {
 
 	success = sqlite3_step(delete_bytoken_statement);
 	if (success != SQLITE_DONE) {
-		printf("Error: failed to delete from database with message '%s'.", sqlite3_errmsg((sqlite3 *)get_database()));
+		RAWLOG_ERROR1("Failed to delete from database with message '%s'.", sqlite3_errmsg((sqlite3 *)get_database()));
 	}
 	finish_db_statement(&delete_bytoken_statement);
 	unlock_sync_mutex();	
