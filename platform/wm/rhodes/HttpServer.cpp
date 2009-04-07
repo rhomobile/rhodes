@@ -44,6 +44,7 @@ CHttpServer::CHttpServer(void)
 
   m_bRubyInitialized = false;
   m_pStartPage = NULL;
+  m_pOptionsPage = NULL;
 
   InitHttpServer();
   {//Initialize tcmaloc in main thread
@@ -70,7 +71,9 @@ CHttpServer::~CHttpServer(void)
   if (m_pStartPage) {
 	  free(m_pStartPage);
   }
-
+  if (m_pOptionsPage) {
+      free(m_pOptionsPage);
+  }
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
   if ( m_szRhobundleReloadUrl )
 	  free( m_szRhobundleReloadUrl );

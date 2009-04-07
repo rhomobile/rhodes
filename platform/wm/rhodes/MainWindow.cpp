@@ -62,6 +62,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
     SIPINFO si = { sizeof(si), 0 };
     RECT rcMenuBar = { 0 };
+#else
+	HMENU hmenu;
+//	MENUBARINFO mbi = { sizeof(MENUBARINFO) };
+	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
+	int nSpiBorder = 0;
 #endif
 	RECT rcMainWindow = { 0,0,320,470 };
 
@@ -80,6 +85,24 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 					 TEXT("Shell.Explorer"), // ProgID of the control
                      WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
                      ID_BROWSER);
+
+    hmenu = LoadMenu ( _AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDR_MENU_PC) );	
+	SetMenu (hmenu);
+
+	{
+		LPTSTR root = wce_mbtowc(RhoGetRootPath());
+		TCHAR ini[MAX_PATH];
+		wsprintf(ini,L"%s%s",root,L"rhodes.conf");
+		rcMainWindow.right = ::GetPrivateProfileInt(L"ClientArea",L"width",320,ini);
+		rcMainWindow.bottom = ::GetPrivateProfileInt(L"ClientArea",L"height",470,ini);
+		free(ini);
+	}
+
+	//GetMenuBarInfo(m_hWnd,OBJID_MENU,0,&mbi);	
+	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
+	rcMainWindow.bottom += ncm.iMenuHeight+ncm.iCaptionHeight+ncm.iBorderWidth*8;
+	rcMainWindow.right += ncm.iScrollWidth;
+	rcMainWindow.right += ncm.iBorderWidth*6;
 #endif
 
     CBR(m_browser.m_hWnd != NULL);
@@ -153,8 +176,12 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
-    return 0;
+    TCHAR szOutput[128];
+    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
+                    TEXT("Seting browser client area size to: %d x %d\n"), LOWORD(lParam), HIWORD(lParam));
+    OutputDebugString(szOutput);
+	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
+	return 0;
 }
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
