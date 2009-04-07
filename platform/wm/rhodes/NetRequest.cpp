@@ -3,6 +3,7 @@
 #include "SyncUtil.h"
 #include "syncengine/rsyncengine.h"
 #include "NetRequest.h"
+IMPLEMENT_LOGCLASS(CNetRequest,"NetRequest");
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
@@ -32,12 +33,12 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 		hResult=ConnMgrConnectionStatus(m_hConnection,&dwStatus);
 		if( SUCCEEDED(hResult) )
 		{
-			ATLTRACE(L"Internet connection exist, use it\n");
+			LOG(INFO) + "Internet connection exist, use it";
 			if( dwStatus & CONNMGR_STATUS_CONNECTED )
 				return true;
 		}
 		ConnMgrReleaseConnection(m_hConnection, FALSE);
-		ATLTRACE(L"Internet connection droped, open new one\n");
+		LOG(INFO) + "Internet connection droped, open new one";
 		m_hConnection = NULL;
 	}
 
@@ -51,7 +52,7 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 
 	//while( SUCCEEDED(ConnMgrEnumDestinations(iNetwork++, &DestInfo)))
 	{	
-		ATLTRACE(L"Try establish Internet connection \n");
+		LOG(INFO) + "Try establish Internet connection";
 		// actually try to establish the connection
 		CONNMGR_CONNECTIONINFO ConnInfo;
 
@@ -70,7 +71,7 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 		int count = 0;
 		while(SUCCEEDED(hResult) && count++ < 60 )
 		{
-			ATLTRACE(L"Wait for connect (%d).\n",count);
+			LOG(INFO) + "Wait for connect (" + count + ")";
 			DWORD dwResult = WaitForSingleObject(m_hConnection, 1000); 
 			if (dwResult == (WAIT_OBJECT_0))
 			{ 
@@ -79,7 +80,7 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 				{
 					if( dwStatus & CONNMGR_STATUS_CONNECTED )
 					{
-						ATLTRACE(L"Connected\n");
+						LOG(INFO) + "Connected";
 						return true;
 					}
 					if( dwStatus & CONNMGR_STATUS_WAITINGCONNECTION )
@@ -91,7 +92,7 @@ bool CNetRequest::SetupInternetConnection(LPCTSTR url)
 			}
 		}
 	}
-	ATLTRACE(L"Failed to connect\n");
+	LOG(ERROR) + "Failed to connect";
 	return false;
 #else
 	return true;
@@ -203,7 +204,7 @@ char* CNetRequest::doRequest(LPWSTR verb, char* url,
 			break;
 		}
 
-		ATLTRACE(L"Connecting to url: %s\n",(LPWSTR)sBuf);
+        LOG(INFO) + "Connecting to url: " + (LPCWSTR)sBuf;
 
 		URL_COMPONENTS uri;
 		alloc_url_components(&uri,url);

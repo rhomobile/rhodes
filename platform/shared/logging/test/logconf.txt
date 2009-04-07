@@ -1,0 +1,10 @@
+MinSeverity  = 1  
+
+LogToOutput=1
+LogToFile=1
+LogFilePath=mylog.txt
+MaxLogFileSize=20
+
+LogPrefix=1
+LogCategories=MyClass1,MyClass2
+ExcludeLogCategories=MyClass3

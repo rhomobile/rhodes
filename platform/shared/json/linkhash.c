@@ -19,15 +19,19 @@
 #include <limits.h>
 
 #include "linkhash.h"
+//RHO
+#include "logging/RhoPlainLog.h"
 
 void lh_abort(const char *msg, ...)
 {
 	va_list ap;
 	va_start(ap, msg);
-	vprintf(msg, ap);
+//	vprintf(msg, ap);
+    rhoPlainLogArg("",0,L_FATAL,"JSON",msg,ap);
 	va_end(ap);
-	exit(1);
+//	exit(1);
 }
+//RHO
 
 unsigned long lh_ptr_hash(void *k)
 {

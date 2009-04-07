@@ -36,7 +36,7 @@ struct Incrblob {
 /*
 ** Open a blob handle.
 */
-EXPORT_C int sqlite3_blob_open(
+SQLITE3_EXPORT_C int sqlite3_blob_open(
   sqlite3* db,            /* The database connection */
   const char *zDb,        /* The attached database containing the blob */
   const char *zTable,     /* The table containing the blob */
@@ -255,7 +255,7 @@ blob_open_out:
 ** Close a blob handle that was previously created using
 ** sqlite3_blob_open().
 */
-EXPORT_C int sqlite3_blob_close(sqlite3_blob *pBlob){
+SQLITE3_EXPORT_C int sqlite3_blob_close(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
   int rc;
 
@@ -315,14 +315,14 @@ static int blobReadWrite(
 /*
 ** Read data from a blob handle.
 */
-EXPORT_C int sqlite3_blob_read(sqlite3_blob *pBlob, void *z, int n, int iOffset){
+SQLITE3_EXPORT_C int sqlite3_blob_read(sqlite3_blob *pBlob, void *z, int n, int iOffset){
   return blobReadWrite(pBlob, z, n, iOffset, sqlite3BtreeData);
 }
 
 /*
 ** Write data to a blob handle.
 */
-EXPORT_C int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
+SQLITE3_EXPORT_C int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
   return blobReadWrite(pBlob, (void *)z, n, iOffset, sqlite3BtreePutData);
 }
 
@@ -332,7 +332,7 @@ EXPORT_C int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int i
 ** The Incrblob.nByte field is fixed for the lifetime of the Incrblob
 ** so no mutex is required for access.
 */
-EXPORT_C int sqlite3_blob_bytes(sqlite3_blob *pBlob){
+SQLITE3_EXPORT_C int sqlite3_blob_bytes(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
   return p->nByte;
 }

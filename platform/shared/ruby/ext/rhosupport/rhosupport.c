@@ -10,6 +10,7 @@
 #include "missing/file.h"
 #endif
 
+#include "logging/RhoPlainLog.h"
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();
@@ -140,20 +141,48 @@ void RhoSetCurAppPath(char* path){
     }
 }
 
+static VALUE checkRhoBundleInPath(VALUE fname)
+{
+    VALUE res = fname;
+    const char* szName = RSTRING_PTR(fname);
+    char* pRhoBundle = strstr(szName, "RhoBundle");
+    char* slash = 0;
+    char* slash1 = 0;
+    if ( !pRhoBundle )
+        return res;
+
+    slash = strchr(pRhoBundle,'/');
+    if ( !slash )
+        slash = strchr(pRhoBundle,'\\');
+    if ( !slash )
+        return res;
+
+    slash1 = strchr(slash+1,'/');
+    if ( !slash1 )
+        slash1 = strchr(slash+1,'\\');
+    if ( !slash1 )
+        return res;
+
+    if ( strncmp(slash1+1,"app",3)==0 )
+        slash1 += 4;
+
+    return rb_str_new2(slash1+1);
+}
+
 static VALUE find_file(VALUE fname)
 {
     VALUE res;
     int nOK = 0;
 
-    FilePathValue(fname);
-
     if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,".iseq",5);
-    }
-    else{
+    }else{
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
+        VALUE dir;
+        fname = checkRhoBundleInPath(fname);
+
         //TODO: support document relative require
         /*if (RARRAY_LEN(load_path)>1){
             for( ; i < RARRAY_LEN(load_path); i++ ){
@@ -171,7 +200,7 @@ static VALUE find_file(VALUE fname)
             if ( !nOK )
                 return 0;
         }else{*/
-            VALUE dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
+            dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
             res = rb_str_dup(dir);
             rb_str_cat(res,"/",1);
@@ -218,7 +247,10 @@ VALUE isAlreadyLoaded(VALUE path)
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
-	char* szName = RSTRING_PTR(fname);
+    char* szName = 0;
+//    FilePathValue(fname);
+
+	szName = RSTRING_PTR(fname);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
@@ -297,7 +329,66 @@ static void Init_RhoBlobs()
 
 }
 
-static void Init_RhoLog()
+static VALUE
+rb_RhoLogWrite(VALUE rhoLog, VALUE str)
+{
+    char* szStr = 0;
+    str = rb_obj_as_string(str);
+
+    szStr = RSTRING_PTR(str);
+    //Skip just newline string
+    if ( strcmp(szStr,"\r\n") != 0 && strcmp(szStr,"\n") != 0 )
+        rhoPlainLog("",0,L_INFO,"APP",RSTRING_PTR(str));
+}
+
+void rhoRubyFatalError(const char* szError){
+    rhoPlainLog("",0,L_FATAL,"RubyVM",szError);
+}
+
+int rhoRubyVFPrintf(FILE *file, const char *format, va_list ap){
+    int nRes = 1;
+    if ( file == stderr || file == stdout ){
+        int severity = L_INFO;
+        if ( file == stderr ){
+            if ( strstr(format,"[FATAL]") )
+                severity = L_FATAL;
+            else
+                severity = L_ERROR;
+        }
+
+        rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+    }
+    else
+        nRes = vfprintf(file,format,ap);
+
+    return nRes;
+}
+
+int rhoRubyFPrintf(FILE *file, const char *format, ...){
+    int nRes = 1;
+    va_list ap;
+    va_start(ap, format);
+    nRes = rhoRubyVFPrintf(file,format,ap);
+    va_end(ap);
+
+    return nRes;
+}
+
+static VALUE rb_RhoLogClass;
+static void Init_RhoLog(){
+
+    VALUE appLog, appErrLog;
+
+    rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
+    rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
+
+    appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
+    
+    rb_gv_set("$stdout", appLog);
+    rb_gv_set("$stderr", appLog);
+}
+
+static void Init_RhoLog2()
 {
   VALUE path = __rhoGetCurrentDir();
   VALUE stdioPath, exist, logio;
@@ -319,4 +410,20 @@ static void Init_RhoLog()
       }
     }
   }
+}
+void rhoGCReport(VALUE valReport)
+{
+    char *report = RSTRING_PTR(valReport);
+    char *p, *e = report+strlen(report);
+    RAWTRACEC("RubyGC","GC Started.Profile report:");
+
+    while(report < e) {
+        p = strchr(report,'\n');
+        if (p!=NULL) {
+            *p = '\0';
+        }
+        RAWTRACEC("RubyGC",report);
+        report += strlen(report)+1;
+    }
+    RAWTRACEC("RubyGC","--profile eof--");
 }

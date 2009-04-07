@@ -10,6 +10,7 @@ $:.unshift(File.join(File.dirname(__FILE__), '..'))
  
 # Use the rubygem for local testing
 require 'spec/stubs'
+require 'sqlite3/database'
 require 'rho/rho'
 require 'rhom/rhom'
 

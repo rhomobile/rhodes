@@ -17,6 +17,11 @@
 #include "iseq.h"
 #include "eval_intern.h"
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+//RHO
+
 #include "vm_insnhelper.h"
 #include "vm_insnhelper.c"
 #include "vm_exec.h"

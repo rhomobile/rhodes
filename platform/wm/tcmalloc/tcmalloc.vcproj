@@ -808,10 +808,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\shared\tcmalloc\internal_logging.cpp"
-			>
-		</File>
-		<File
 			RelativePath="..\..\shared\tcmalloc\internal_logging.h"
 			>
 		</File>

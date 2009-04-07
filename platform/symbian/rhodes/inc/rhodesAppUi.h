@@ -25,6 +25,8 @@
 // INCLUDES
 #include <aknappui.h>
 
+//#include "logging/RhoLog.h"
+
 // FORWARD DECLARATIONS
 class CRhodesAppView;
 class CHttpServer;
@@ -41,6 +43,8 @@ struct sqlite3;
  */
 class CRhodesAppUi : public CAknAppUi
 	{
+    //DEFINE_LOGCLASS;
+    
 public:
 	// Constructors and destructor
 

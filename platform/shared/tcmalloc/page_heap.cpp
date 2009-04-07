@@ -310,7 +310,7 @@ static double PagesToMB(uint64_t pages) {
 }
 
 void PageHeap::Dump(TCMalloc_Printer* out) {
-  int nonempty_sizes = 0;
+/*  int nonempty_sizes = 0;
   for (int s = 0; s < kMaxPages; s++) {
     if (!DLL_IsEmpty(&free_[s].normal) || !DLL_IsEmpty(&free_[s].returned)) {
       nonempty_sizes++;
@@ -367,7 +367,7 @@ void PageHeap::Dump(TCMalloc_Printer* out) {
               PagesToMB(n_pages + r_pages),
               PagesToMB(total_normal + total_returned),
               PagesToMB(r_pages),
-              PagesToMB(total_returned));
+              PagesToMB(total_returned)); */
 }
 
 static void RecordGrowth(size_t growth) {

@@ -62,7 +62,7 @@ VALUE getallPhonebookRecords(void* pb) {
 			CABRecord* record = records.back();
 			const char* rid = record->getValue("id").c_str();
 			if (rid) {
-				printf("Adding record %s\n", rid);
+				LOGC(TRACE,"Phonebook") + "Adding record " + rid;
 				addHashToHash(hash,rid,_getRecord(record));
 			}
 			delete record;
@@ -144,7 +144,7 @@ int saveRecord(void* pb, void* record) {
 #if defined (_WIN32_WCE)
 	if (record) {
 		CABRecord* r = (CABRecord*)record;
-		printf("About to save:\n");
+		LOGC(INFO,"Phonebook") + "About to save:";
 		r->dump();
 		r->save();
 		delete  r;

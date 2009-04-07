@@ -18,6 +18,9 @@
 #include "../stat/stat.h"
 #endif
 
+#include "logging/RhoPlainLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
@@ -193,16 +196,13 @@ VALUE callFramework(VALUE hashReq) {
     VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
 	
 	if (TYPE(callres)!=T_STRING) {
-		printf("Method call result type = %s\n", rb_type_to_s(callres));
+		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
 
     rb_gc_register_mark_object(callres);
 	//TBD: need to cleanup memory
 	rb_gc();
-#if defined(DEBUG)
-	print_profile_report();
-#endif
 
 	return callres;
 }
@@ -213,16 +213,13 @@ VALUE callServeIndex(char* index_name) {
 	callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
 	
 	if (TYPE(callres)!=T_STRING) {
-		printf("Method call result type = %s\n", rb_type_to_s(callres));
+		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
     rb_gc_register_mark_object(callres);
 
 	//TBD: need to cleanup memory
 	rb_gc();
-#if defined(DEBUG)
-	print_profile_report();
-#endif
 	
 	return callres;
 }
@@ -233,18 +230,12 @@ char* callGetStartPage() {
 	VALUE callres = rb_funcall(framework, framework_mid3, 0, Qnil);
 	
 	if (TYPE(callres)!=T_STRING) {
-		printf("Method's get_start_page result type = %s\n", rb_type_to_s(callres));
+		RAWLOG_INFO1("Method's get_start_page result type = %s", rb_type_to_s(callres));
 		return "/";
 	}
 	
 	//TBD: need to cleanup memory
-#ifndef __SYMBIAN32__	
-	rb_gc();
-#endif	
-	
-#if defined(DEBUG)
-	print_profile_report();
-#endif
+	//rb_gc();
 	
 	szRes = RSTRING_PTR(callres);
 	return szRes;
@@ -256,18 +247,12 @@ char* callGetOptionsPage() {
 	VALUE callres = rb_funcall(framework, framework_mid4, 0, Qnil);
 	
 	if (TYPE(callres)!=T_STRING) {
-		printf("Method's get_options_page result type = %s\n", rb_type_to_s(callres));
+		RAWLOG_INFO1("Method's get_options_page result type = %s", rb_type_to_s(callres));
 		return "/";
 	}
 	
 	//TBD: need to cleanup memory
-#ifndef __SYMBIAN32__	
-	rb_gc();
-#endif	
-	
-#if defined(DEBUG)
-	print_profile_report();
-#endif
+	//rb_gc();
 	
 	szRes = RSTRING_PTR(callres);
 	return szRes;
@@ -279,18 +264,12 @@ char* callGetRhobundleZipUrl() {
 	VALUE callres = rb_funcall(framework, framework_mid5, 0, Qnil);
 	
 	if (TYPE(callres)!=T_STRING) {
-		printf("Method's get_rhobundle_zip_url result type = %s\n", rb_type_to_s(callres));
+		RAWLOG_INFO1("Method's get_rhobundle_zip_url result type = %s", rb_type_to_s(callres));
 		return NULL;
 	}
 	
 	//TBD: need to cleanup memory
-#ifndef __SYMBIAN32__	
 	rb_gc();
-#endif	
-	
-#if defined(DEBUG)
-	print_profile_report();
-#endif
 	
 	szRes = RSTRING_PTR(callres);
 	return szRes;

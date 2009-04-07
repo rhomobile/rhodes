@@ -85,7 +85,7 @@ static void enterMem(void){
 /*
 ** Return the amount of memory currently checked out.
 */
-EXPORT_C sqlite3_int64 sqlite3_memory_used(void){
+SQLITE3_EXPORT_C sqlite3_int64 sqlite3_memory_used(void){
   sqlite3_int64 n;
   enterMem();
   n = mem.nowUsed;
@@ -98,7 +98,7 @@ EXPORT_C sqlite3_int64 sqlite3_memory_used(void){
 ** checked out since either the beginning of this process
 ** or since the most recent reset.
 */
-EXPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
+SQLITE3_EXPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
   sqlite3_int64 n;
   enterMem();
   n = mem.mxUsed;
@@ -112,7 +112,7 @@ EXPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
 /*
 ** Change the alarm callback
 */
-EXPORT_C int sqlite3_memory_alarm(
+SQLITE3_EXPORT_C int sqlite3_memory_alarm(
   void(*xCallback)(void *pArg, sqlite3_int64 used,int N),
   void *pArg,
   sqlite3_int64 iThreshold
@@ -146,7 +146,7 @@ static void sqlite3MemsysAlarm(int nByte){
 /*
 ** Allocate nBytes of memory
 */
-EXPORT_C void *sqlite3_malloc(int nBytes){
+SQLITE3_EXPORT_C void *sqlite3_malloc(int nBytes){
   sqlite3_int64 *p = 0;
   if( nBytes>0 ){
     enterMem();
@@ -174,7 +174,7 @@ EXPORT_C void *sqlite3_malloc(int nBytes){
 /*
 ** Free memory.
 */
-EXPORT_C void sqlite3_free(void *pPrior){
+SQLITE3_EXPORT_C void sqlite3_free(void *pPrior){
   sqlite3_int64 *p;
   int nByte;
   if( pPrior==0 ){
@@ -193,7 +193,7 @@ EXPORT_C void sqlite3_free(void *pPrior){
 /*
 ** Change the size of an existing memory allocation
 */
-EXPORT_C void *sqlite3_realloc(void *pPrior, int nBytes){
+SQLITE3_EXPORT_C void *sqlite3_realloc(void *pPrior, int nBytes){
   int nOld;
   sqlite3_int64 *p;
   if( pPrior==0 ){

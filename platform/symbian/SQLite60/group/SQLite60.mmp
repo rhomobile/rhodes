@@ -7,10 +7,11 @@ VENDORID                                0
 USERINCLUDE                             ..\src 
 USERINCLUDE                             .. 
 USERINCLUDE                             ..\..\..\shared
+USERINCLUDE                             ..\..\..\shared\common
 
 SYSTEMINCLUDE                           \Epoc32\include 
 SYSTEMINCLUDE                           \Epoc32\include\stdapis 
-SYSTEMINCLUDE                           \Epoc32\include\libc 
+//SYSTEMINCLUDE                           \Epoc32\include\libc 
 
 macro                                   OS_SYMBIAN 
 

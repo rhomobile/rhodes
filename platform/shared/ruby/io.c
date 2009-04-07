@@ -739,7 +739,7 @@ io_binwrite(VALUE str, rb_io_t *fptr, int nosync)
 
     len = RSTRING_LEN(str);
     if ((n = len) <= 0) return n;
-
+/*
 #if defined(_WIN32_WCE) //TBD: fix this
     if (fptr->fd==fileno(stdout)||fptr->fd==fileno(stderr)) {
       _write(fptr->fd,RSTRING_PTR(str),len);
@@ -755,7 +755,7 @@ io_binwrite(VALUE str, rb_io_t *fptr, int nosync)
     fsync(fptr->fd);
     return len;
 #endif
-
+*/
     if (fptr->wbuf == NULL && !(!nosync && (fptr->mode & FMODE_SYNC))) {
         fptr->wbuf_off = 0;
         fptr->wbuf_len = 0;

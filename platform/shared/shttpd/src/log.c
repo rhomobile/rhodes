@@ -9,7 +9,26 @@
  */
 
 #include "defs.h"
+#include "logging/RhoPlainLog.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "shttpd"
+
+void
+_shttpd_elog(int flags, struct conn *c, const char *fmt, ...)
+{
+    va_list	ap;
+
+    RAWLOG_ERROR2( "[client %s] \"%s\" ",
+        c ? inet_ntoa(c->sa.u.sin.sin_addr) : "-",
+        c && c->request ? c->request : "-" );
+
+    va_start(ap, fmt);
+    rhoPlainLogArg("",0, (flags & E_FATAL ? L_FATAL : L_ERROR), DEFAULT_LOGCATEGORY, fmt, ap );
+    va_end(ap);
+}
+
+#if 0
 /*
  * Log function
  */
@@ -51,6 +70,7 @@ _shttpd_elog(int flags, struct conn *c, const char *fmt, ...)
 	if (flags & E_FATAL)
 		exit(EXIT_FAILURE);
 }
+#endif //0
 
 void
 _shttpd_log_access(FILE *fp, const struct conn *c)

@@ -10,6 +10,7 @@
 **********************************************************************/
 
 #undef RUBY_EXPORT
+#define RHO_MEMORY__
 #include "ruby.h"
 #include "debug.h"
 #ifdef HAVE_LOCALE_H
@@ -73,7 +74,7 @@ main(int argc, char **argv)
 	RUBY_INIT_STACK;
 	ruby_init();
     Init_strscan();
-	Init_sqlite3_api();
+	//Init_sqlite3_api();
     Init_SyncEngine();
     Init_System();
     //Init_prelude();
@@ -131,4 +132,21 @@ void Init_Camera(){
 }
 
 void Init_WebView(){
+}
+
+VALUE has_network(){
+    return Qfalse;
+}
+
+void rhoPlainLogArg(const char* file, int line, int severity, const char* szCategory,
+                    const char* format, va_list ap ){
+}
+
+void rhoPlainLogVar(const char* file, int line, int severity, const char* szCategory,
+                 const char* format, ... ){
+}
+
+int rhoPlainLog(const char* file, int line, int severity, const char* szCategory,
+                  const char* msg ){
+    return 1;
 }

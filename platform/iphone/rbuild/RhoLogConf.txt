@@ -1,0 +1,4 @@
+MinSeverity  = 0  
+LogToOutput=1
+LogCategories=*
+ExcludeLogCategories=

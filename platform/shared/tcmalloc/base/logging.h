@@ -160,7 +160,7 @@ enum { DEBUG_MODE = 1 };
 #define DCHECK_GT(val1, val2)  CHECK_GT(val1, val2)
 #endif
 
-
+/*
 #ifdef ERROR
 #undef ERROR      // may conflict with ERROR macro on windows
 #endif
@@ -224,5 +224,6 @@ const RawFD kIllegalRawFD = -1;   // what open returns if it fails
 RawFD RawOpenForWriting(const char* filename);   // uses default permissions
 void RawWrite(RawFD fd, const char* buf, size_t len);
 void RawClose(RawFD fd);
+*/
 
 #endif // _LOGGING_H_

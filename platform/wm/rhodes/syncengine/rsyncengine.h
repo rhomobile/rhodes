@@ -1,5 +1,4 @@
 #pragma once
-#include "../stdafx.h"
 
 #if (_MSC_VER == 1400)
 #include "../atlutil.h" //Using local copy, as 'standard' atlutil has errors
@@ -7,11 +6,13 @@
 #include "../atlutil-vc08.h" //Using local copy, as 'standard' atlutil has errors
 #endif
 
-#include "shttpd.h"
-#include "sqlite3.h"
+#include "logging/RhoLog.h"
 
+struct sqlite3;
 class CSyncEngine : public IWorkerThreadClient
 {
+  DEFINE_LOGCLASS;
+
   HANDLE m_hEvent;
   HANDLE m_hDoSyncEvent;
   CRITICAL_SECTION m_critical_section;
@@ -34,6 +35,11 @@ public:
   void TriggerSync();
 //  void StartSync();
   void TriggerDbReset();
+
+    static bool SetupInternetConnection(LPCTSTR url);
+    static char* remote_data(LPWSTR verb, char* url, char* body, size_t body_size, 
+				  bool bGetHeaders, bool bGetRawData = false, bool bCheckSession = false, DWORD* pdwDataSize = NULL,
+                  char* contentType = NULL);
 
 private:
   CSyncEngine(void);

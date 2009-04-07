@@ -42,6 +42,8 @@
 
 #include <rhodes.rsg>
 
+//IMPLEMENT_LOGCLASS(CPhonebook,"Phonebook");
+
 CPhonebook::CPhonebook()
 	{
 	// No implementation required
@@ -122,7 +124,7 @@ void CPhonebook::add2hash(VALUE* hash, const char* key, TPtrC& aValue )
         
     if ( key && value )
 	{
-		printf("Adding field [%s:%s]\n", key, value);
+		//LOG(INFO) + "Adding field [" + key + ":" + value + "]";
 		addStrToHash(*hash, key, value, strlen(value));
     }
         
@@ -135,7 +137,7 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
 	VALUE hash = createHash();
 	
 	// Get field ID
-	printf("Adding field [id:%s]\n", id);
+	//LOG(INFO) + "Adding field [id:" + id + "]";
 	addStrToHash(hash, RUBY_PB_ID, id, strlen(id));
 	
 	// Get first name
@@ -268,7 +270,7 @@ VALUE CPhonebook::getallPhonebookRecords()
         
         if (rid) 
     	{
-			printf("Adding record %s\n", rid);
+			//LOG(INFO) + "Adding record " + rid;
 			CContactItemFieldSet& fieldSet = contact->CardFields();
 			addHashToHash(hash,rid,getFields(fieldSet, rid));
 		}
