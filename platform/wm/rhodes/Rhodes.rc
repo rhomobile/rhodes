@@ -86,6 +86,24 @@ BEGIN
     END
 END
 
+IDR_MENU_PC MENUEX 
+BEGIN
+    POPUP "Menu",                           65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "Back",                        IDM_BACK
+        MENUITEM "Forward",                     IDM_FORWARD
+        MENUITEM "Home",                        IDM_HOME
+//        MENUITEM "Open URL...",                 IDM_OPENURL
+        MENUITEM "Refresh",                     IDM_REFRESH
+        MENUITEM "Stop",                        IDM_STOP
+        MENUITEM "Sync",                        IDM_SYNC
+        MENUITEM "Options",                     IDM_OPTIONS
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+        MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
+#endif
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
