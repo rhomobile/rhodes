@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\wm\sqlite3"
+				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\wm\sqlite3;..\..\shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;STATIC_LINKED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
