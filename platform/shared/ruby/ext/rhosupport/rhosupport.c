@@ -141,20 +141,48 @@ void RhoSetCurAppPath(char* path){
     }
 }
 
+static VALUE checkRhoBundleInPath(VALUE fname)
+{
+    VALUE res = fname;
+    const char* szName = RSTRING_PTR(fname);
+    char* pRhoBundle = strstr(szName, "RhoBundle");
+    char* slash = 0;
+    char* slash1 = 0;
+    if ( !pRhoBundle )
+        return res;
+
+    slash = strchr(pRhoBundle,'/');
+    if ( !slash )
+        slash = strchr(pRhoBundle,'\\');
+    if ( !slash )
+        return res;
+
+    slash1 = strchr(slash+1,'/');
+    if ( !slash1 )
+        slash1 = strchr(slash+1,'\\');
+    if ( !slash1 )
+        return res;
+
+    if ( strncmp(slash1+1,"app",3)==0 )
+        slash1 += 4;
+
+    return rb_str_new2(slash1+1);
+}
+
 static VALUE find_file(VALUE fname)
 {
     VALUE res;
     int nOK = 0;
 
-    FilePathValue(fname);
-
     if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,".iseq",5);
-    }
-    else{
+    }else{
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
+        VALUE dir;
+        fname = checkRhoBundleInPath(fname);
+
         //TODO: support document relative require
         /*if (RARRAY_LEN(load_path)>1){
             for( ; i < RARRAY_LEN(load_path); i++ ){
@@ -172,7 +200,7 @@ static VALUE find_file(VALUE fname)
             if ( !nOK )
                 return 0;
         }else{*/
-            VALUE dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
+            dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
             res = rb_str_dup(dir);
             rb_str_cat(res,"/",1);
@@ -219,7 +247,10 @@ VALUE isAlreadyLoaded(VALUE path)
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
-	char* szName = RSTRING_PTR(fname);
+    char* szName = 0;
+//    FilePathValue(fname);
+
+	szName = RSTRING_PTR(fname);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
