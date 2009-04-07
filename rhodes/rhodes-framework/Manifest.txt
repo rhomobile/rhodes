@@ -55,6 +55,7 @@ rhodes.gemspec
 spec/app_manifest.txt
 spec/configs/account.rb
 spec/configs/case.rb
+spec/configs/contact.rb
 spec/configs/employee.rb
 spec/rho_controller_spec.rb
 spec/rho_spec.rb
