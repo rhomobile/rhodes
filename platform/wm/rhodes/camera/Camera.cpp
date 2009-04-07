@@ -79,7 +79,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
 }
 
 HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
-	ASSERT(pszFilename);
+	RHO_ASSERT(pszFilename);
 	OPENFILENAMEEX ofn = {0};
 
 	ofn.lStructSize     = sizeof(ofn);
@@ -123,8 +123,8 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 }
 
 bool copy_file(LPTSTR from, LPTSTR to) {
-	ASSERT(from);
-	ASSERT(to);
+	RHO_ASSERT(from);
+	RHO_ASSERT(to);
 
 	SHFILEOPSTRUCT SHFileOp;
 	CString source(from);
@@ -166,7 +166,7 @@ LPTSTR get_file_name(LPTSTR from, LPTSTR to) {
 }
 
 LPTSTR generate_filename(LPTSTR filename) {
-	ASSERT(filename);
+	RHO_ASSERT(filename);
 
 	CTime time(CTime::GetCurrentTime());
 	tm tl, tg;

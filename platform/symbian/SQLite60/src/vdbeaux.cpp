@@ -60,7 +60,7 @@ void sqlite3VdbeSetSql(Vdbe *p, const char *z, int n){
 /*
 ** Return the SQL associated with a prepared statement
 */
-EXPORT_C const char *sqlite3_sql(sqlite3_stmt *pStmt){
+SQLITE3_EXPORT_C const char *sqlite3_sql(sqlite3_stmt *pStmt){
   return ((Vdbe *)pStmt)->zSql;
 }
 

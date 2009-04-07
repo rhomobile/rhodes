@@ -50,6 +50,8 @@
 #ifdef _WIN32
 
 #define WIN32_LEAN_AND_MEAN  /* We always want minimal includes */
+#define __DBGAPI_H__
+
 #include <windows.h>
 #include <io.h>              /* because we so often use open/close/etc */
 #include <stdarg.h>          /* for va_list */
@@ -57,20 +59,16 @@
 #include <crtdefs.h>
 #include <assert.h>
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
-#include <crtdbg.h>
-#define ASSERT _ASSERT
-#endif
-
 //#include <altcecrt.h>
 #define _RHO_NO_MEMDEFINES 1
 #if defined(_WIN32_WCE)
 #include "wince.h"
 #endif
 #include "process.h"
-//#include <assert.h>
+#define ASSERT assert
 
-_CRTIMP size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm *);
+#include <time.h>
+//_CRTIMP size_t __cdecl wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm *);
 //void abort();
 
 // 4018: signed/unsigned mismatch is common (and ok for signed_i < unsigned_i)
@@ -222,7 +220,8 @@ extern PERFTOOLS_DLL_DECL int snprintf(char *str, size_t size,
                                        const char *format, ...);
 extern PERFTOOLS_DLL_DECL int safe_vsnprintf(char *str, size_t size,
                                              const char *format, va_list ap);
-#define vsnprintf(str, size, format, ap)  safe_vsnprintf(str, size, format, ap)
+//#undef vsnprintf
+//#define vsnprintf(str, size, format, ap)  safe_vsnprintf(str, size, format, ap)
 
 #define PRIx64  "I64x"
 #define SCNx64  "I64x"

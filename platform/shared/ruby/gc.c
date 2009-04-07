@@ -23,6 +23,13 @@
 #include <setjmp.h>
 #include <sys/types.h>
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+
+static VALUE gc_profile_result(void);
+//RHO
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -2390,6 +2397,13 @@ rb_gc(void)
     rb_objspace_t *objspace = &rb_objspace;
     garbage_collect(objspace);
     gc_finalize_deferred(objspace);
+
+    //RHO
+#ifdef _DEBUG
+    rhoGCReport(gc_profile_result());
+#endif //_DEBUG
+    //RHO
+
 }
 
 /*
@@ -2783,22 +2797,6 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
     rb_io_write(out, gc_profile_result());
 
     return Qnil;
-}
-
-//trv-dbg
-void print_profile_report() {
-  char *report = RSTRING_PTR(gc_profile_result());
-  char *p, *e = report+strlen(report);
-	printf("Profile report:\r\n");
-  while(report < e) {
-    p = strchr(report,'\n');
-    if (p!=NULL) {
-       *p = '\0';
-    }
-    printf("%s\n",report);
-    report+=strlen(report)+1;
-  }
-	printf("--profile eof--\n");
 }
 
 /*

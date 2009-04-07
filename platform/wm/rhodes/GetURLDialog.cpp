@@ -20,13 +20,13 @@ LRESULT CGetURLDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 {
 #if defined(_WIN32_WCE)
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
-    VERIFY(SHInitDialog(&shidi));
+    RHO_ASSERT(SHInitDialog(&shidi));
 
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_GETURL_MENUBAR; // ID of toolbar resource
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-    VERIFY(SHCreateMenuBar(&mbi));
+    RHO_ASSERT(SHCreateMenuBar(&mbi));
 
     // For devices that have a back key (i.e. Smartphones),
     // override the back key since we have an edit control 
@@ -34,7 +34,7 @@ LRESULT CGetURLDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
                                     MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
                                                SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
 
-    VERIFY(SetDlgItemText(IDC_EDIT_URL, TEXT("http://")));
+    RHO_ASSERT(SetDlgItemText(IDC_EDIT_URL, TEXT("http://")));
 #endif //_WIN32_WCE
     return 1;  // Let the system set the focus
 }

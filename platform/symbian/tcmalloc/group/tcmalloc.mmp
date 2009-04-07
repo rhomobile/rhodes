@@ -13,11 +13,14 @@ UID			 0
 
 SYSTEMINCLUDE   \epoc32\include
 SYSTEMINCLUDE   \epoc32\include\stdapis
-SYSTEMINCLUDE   \epoc32\include\libc
+
+macro _RHO_NO_MEMDEFINES
 
 USERINCLUDE	 ..\..\..\shared\tcmalloc
 USERINCLUDE	 ..\..\..\shared\tcmalloc\base
 USERINCLUDE	 ..\..\..\shared\tcmalloc\symbian
+USERINCLUDE	 ..\..\..\shared
+USERINCLUDE	 ..\..\..\shared\common
 
 SOURCEPATH ..\..\..\shared\tcmalloc
 SOURCE central_freelist.cpp common.cpp internal_logging.cpp page_heap.cpp span.cpp static_vars.cpp tcmalloc_.cpp thread_cache.cpp

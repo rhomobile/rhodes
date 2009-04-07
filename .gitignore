@@ -5,6 +5,7 @@ platform/iphone/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
 platform/iphone/tcmalloc/build/*
+platform/iphone/RhoLib/build/*
 platform/iphone/bin/*
 platform/mac/bin/*
 platform/iphone/*/*.link

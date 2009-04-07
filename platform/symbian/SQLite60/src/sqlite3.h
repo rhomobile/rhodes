@@ -45,12 +45,12 @@
 extern "C" {
 #endif
 
-#ifndef EXPORT_C
-#define EXPORT_C
+#ifndef SQLITE3_EXPORT_C
+#define SQLITE3_EXPORT_C
 #endif
 
-#ifndef IMPORT_C
-#define IMPORT_C
+#ifndef SQLITE3_IMPORT_C
+#define SQLITE3_IMPORT_C
 #endif
 
 /*
@@ -120,8 +120,8 @@ extern "C" {
 ** constants within the DLL.
 */
 extern const char sqlite3_version[];
-IMPORT_C const char *sqlite3_libversion(void);
-IMPORT_C int sqlite3_libversion_number(void);
+SQLITE3_IMPORT_C const char *sqlite3_libversion(void);
+SQLITE3_IMPORT_C int sqlite3_libversion_number(void);
 
 
 void LogMessage(char *message);
@@ -146,7 +146,7 @@ void LogMessage(char *message);
 ** is guaranteed to be threadsafe, only when it is guaranteed not
 ** to be.
 */
-IMPORT_C int sqlite3_threadsafe(void);
+SQLITE3_IMPORT_C int sqlite3_threadsafe(void);
 
 /*
 ** CAPI3REF: Database Connection Handle {F12000}
@@ -217,7 +217,7 @@ typedef sqlite_uint64 sqlite3_uint64;
 ** same thread or in different threads) when this routine is called,
 ** then the behavior is undefined and is almost certainly undesirable.
 */
-IMPORT_C int sqlite3_close(sqlite3 *);
+SQLITE3_IMPORT_C int sqlite3_close(sqlite3 *);
 
 /*
 ** The type for a callback function.
@@ -284,7 +284,7 @@ typedef int (*sqlite3_callback)(void*,int,char**, char**);
 ** some other [SQLITE_OK | return code] if there is an error.  
 ** The particular return value depends on the type of error.  {END}
 */
-IMPORT_C int sqlite3_exec(
+SQLITE3_IMPORT_C int sqlite3_exec(
   sqlite3*,                                  /* An open database */
   const char *sql,                           /* SQL to be evaluted */
   int (*callback)(void*,int,char**,char**),  /* Callback function */
@@ -773,7 +773,7 @@ struct sqlite3_vfs {
 ** codes on and off. {F12205} Extended result codes are off by default for
 ** backwards compatibility with older versions of SQLite.
 */
-IMPORT_C int sqlite3_extended_result_codes(sqlite3*, int onoff);
+SQLITE3_IMPORT_C int sqlite3_extended_result_codes(sqlite3*, int onoff);
 
 /*
 ** CAPI3REF: Last Insert Rowid {F12220}
@@ -810,7 +810,7 @@ IMPORT_C int sqlite3_extended_result_codes(sqlite3*, int onoff);
 ** while this routine is running and thus changes the last insert rowid,
 ** then the return value of this routine is undefined.
 */
-IMPORT_C sqlite3_int64 sqlite3_last_insert_rowid(sqlite3*);
+SQLITE3_IMPORT_C sqlite3_int64 sqlite3_last_insert_rowid(sqlite3*);
 
 /*
 ** CAPI3REF: Count The Number Of Rows Modified {F12240}
@@ -849,7 +849,7 @@ IMPORT_C sqlite3_int64 sqlite3_last_insert_rowid(sqlite3*);
 ** while this routine is running then the return value of this routine
 ** is undefined.
 */
-IMPORT_C int sqlite3_changes(sqlite3*);
+SQLITE3_IMPORT_C int sqlite3_changes(sqlite3*);
 
 /*
 ** CAPI3REF: Total Number Of Rows Modified {F12260}
@@ -877,7 +877,7 @@ IMPORT_C int sqlite3_changes(sqlite3*);
 ** while this routine is running then the return value of this routine
 ** is undefined. {END}
 */
-IMPORT_C int sqlite3_total_changes(sqlite3*);
+SQLITE3_IMPORT_C int sqlite3_total_changes(sqlite3*);
 
 /*
 ** CAPI3REF: Interrupt A Long-Running Query {F12270}
@@ -903,7 +903,7 @@ IMPORT_C int sqlite3_total_changes(sqlite3*);
 ** {F12276} A call to sqlite3_interrupt() has no effect on SQL statements
 ** that are started after sqlite3_interrupt() returns.
 */
-IMPORT_C void sqlite3_interrupt(sqlite3*);
+SQLITE3_IMPORT_C void sqlite3_interrupt(sqlite3*);
 
 /*
 ** CAPI3REF: Determine If An SQL Statement Is Complete {F10510}
@@ -929,8 +929,8 @@ IMPORT_C void sqlite3_interrupt(sqlite3*);
 ** in between the BEGIN and END keywords of a CREATE TRIGGER statement.
 ** {END}
 */
-IMPORT_C int sqlite3_complete(const char *sql);
-IMPORT_C int sqlite3_complete16(const void *sql);
+SQLITE3_IMPORT_C int sqlite3_complete(const char *sql);
+SQLITE3_IMPORT_C int sqlite3_complete16(const void *sql);
 
 /*
 ** CAPI3REF: Register A Callback To Handle SQLITE_BUSY Errors {F12310}
@@ -1005,7 +1005,7 @@ IMPORT_C int sqlite3_complete16(const void *sql);
 ** handler in the other connection.  {F12332} The busy handler is invoked
 ** in the thread that was running when the lock contention occurs.
 */
-IMPORT_C int sqlite3_busy_handler(sqlite3*, int(*)(void*,int), void*);
+SQLITE3_IMPORT_C int sqlite3_busy_handler(sqlite3*, int(*)(void*,int), void*);
 
 /*
 ** CAPI3REF: Set A Busy Timeout {F12340}
@@ -1025,7 +1025,7 @@ IMPORT_C int sqlite3_busy_handler(sqlite3*, int(*)(void*,int), void*);
 ** (using [sqlite3_busy_handler()]) prior to calling
 ** this routine, that other busy handler is cleared.
 */
-IMPORT_C int sqlite3_busy_timeout(sqlite3*, int ms);
+SQLITE3_IMPORT_C int sqlite3_busy_timeout(sqlite3*, int ms);
 
 /*
 ** CAPI3REF: Convenience Routines For Running Queries {F12370}
@@ -1075,7 +1075,7 @@ IMPORT_C int sqlite3_busy_timeout(sqlite3*, int ms);
 ** {F12373} The return value of this routine is the same as
 ** from [sqlite3_exec()].
 */
-IMPORT_C int sqlite3_get_table(
+SQLITE3_IMPORT_C int sqlite3_get_table(
   sqlite3*,              /* An open database */
   const char *sql,       /* SQL to be executed */
   char ***resultp,       /* Result written to a char *[]  that this points to */
@@ -1083,7 +1083,7 @@ IMPORT_C int sqlite3_get_table(
   int *ncolumn,          /* Number of result columns written here */
   char **errmsg          /* Error msg written here */
 );
-IMPORT_C void sqlite3_free_table(char **result);
+SQLITE3_IMPORT_C void sqlite3_free_table(char **result);
 
 /*
 ** CAPI3REF: Formatted String Printing Functions {F17400}
@@ -1178,9 +1178,9 @@ IMPORT_C void sqlite3_free_table(char **result);
 ** addition that after the string has been read and copied into
 ** the result, [sqlite3_free()] is called on the input string. {END}
 */
-IMPORT_C char *sqlite3_mprintf(const char*,...);
-IMPORT_C char *sqlite3_vmprintf(const char*, va_list);
-IMPORT_C char *sqlite3_snprintf(int,char*,const char*, ...);
+SQLITE3_IMPORT_C char *sqlite3_mprintf(const char*,...);
+SQLITE3_IMPORT_C char *sqlite3_vmprintf(const char*, va_list);
+SQLITE3_IMPORT_C char *sqlite3_snprintf(int,char*,const char*, ...);
 
 /*
 ** CAPI3REF: Memory Allocation Subsystem {F17300}
@@ -1254,9 +1254,9 @@ IMPORT_C char *sqlite3_snprintf(int,char*,const char*, ...);
 ** they are reported back as [SQLITE_CANTOPEN] or
 ** [SQLITE_IOERR] rather than [SQLITE_NOMEM].
 */
-IMPORT_C void *sqlite3_malloc(int);
-IMPORT_C void *sqlite3_realloc(void*, int);
-IMPORT_C void sqlite3_free(void*);
+SQLITE3_IMPORT_C void *sqlite3_malloc(int);
+SQLITE3_IMPORT_C void *sqlite3_realloc(void*, int);
+SQLITE3_IMPORT_C void sqlite3_free(void*);
 
 /*
 ** CAPI3REF: Memory Allocator Statistics {F17370}
@@ -1285,8 +1285,8 @@ IMPORT_C void sqlite3_free(void*);
 ** sqlite3_memory_highwater() is zero, then the highwater mark is
 ** unchanged.
 */
-IMPORT_C sqlite3_int64 sqlite3_memory_used(void);
-IMPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
+SQLITE3_IMPORT_C sqlite3_int64 sqlite3_memory_used(void);
+SQLITE3_IMPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
 
 /*
 ** CAPI3REF: Compile-Time Authorization Callbacks {F12500}
@@ -1350,7 +1350,7 @@ IMPORT_C sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
 ** [sqlite3_prepare()] or its variants.  {F12523} Authorization is not
 ** performed during statement evaluation in [sqlite3_step()]. {END}
 */
-IMPORT_C int sqlite3_set_authorizer(
+SQLITE3_IMPORT_C int sqlite3_set_authorizer(
   sqlite3*,
   int (*xAuth)(void*,int,const char*,const char*,const char*,const char*),
   void *pUserData
@@ -1453,8 +1453,8 @@ IMPORT_C int sqlite3_set_authorizer(
 ** The sqlite3_profile() API is currently considered experimental and
 ** is subject to change.
 */
-IMPORT_C void *sqlite3_trace(sqlite3*, void(*xTrace)(void*,const char*), void*);
-IMPORT_C void *sqlite3_profile(sqlite3*,
+SQLITE3_IMPORT_C void *sqlite3_trace(sqlite3*, void(*xTrace)(void*,const char*), void*);
+SQLITE3_IMPORT_C void *sqlite3_profile(sqlite3*,
    void(*xProfile)(void*,const char*,sqlite3_uint64), void*);
 
 /*
@@ -1491,7 +1491,7 @@ IMPORT_C void *sqlite3_profile(sqlite3*,
 ** can be used, for example, to implement the "Cancel" button on a
 ** progress dialog box in a GUI.
 */
-IMPORT_C void sqlite3_progress_handler(sqlite3*, int, int(*)(void*), void*);
+SQLITE3_IMPORT_C void sqlite3_progress_handler(sqlite3*, int, int(*)(void*), void*);
 
 /*
 ** CAPI3REF: Opening A New Database Connection {F12700}
@@ -1566,15 +1566,15 @@ IMPORT_C void sqlite3_progress_handler(sqlite3*, int, int(*)(void*), void*);
 ** characters must be converted to UTF-8 prior to passing them into
 ** [sqlite3_open()] or [sqlite3_open_v2()].
 */
-IMPORT_C int sqlite3_open(
+SQLITE3_IMPORT_C int sqlite3_open(
   const char *filename,   /* Database filename (UTF-8) */
   sqlite3 **ppDb          /* OUT: SQLite db handle */
 );
-IMPORT_C int sqlite3_open16(
+SQLITE3_IMPORT_C int sqlite3_open16(
   const void *filename,   /* Database filename (UTF-16) */
   sqlite3 **ppDb          /* OUT: SQLite db handle */
 );
-IMPORT_C int sqlite3_open_v2(
+SQLITE3_IMPORT_C int sqlite3_open_v2(
   const char *filename,   /* Database filename (UTF-8) */
   sqlite3 **ppDb,         /* OUT: SQLite db handle */
   int flags,              /* Flags */
@@ -1614,9 +1614,9 @@ IMPORT_C int sqlite3_open_v2(
 ** the error code returned by this function is associated with the same
 ** error as the strings returned by [sqlite3_errmsg()] and [sqlite3_errmsg16()].
 */
-IMPORT_C int sqlite3_errcode(sqlite3 *db);
-IMPORT_C const char *sqlite3_errmsg(sqlite3*);
-IMPORT_C const void *sqlite3_errmsg16(sqlite3*);
+SQLITE3_IMPORT_C int sqlite3_errcode(sqlite3 *db);
+SQLITE3_IMPORT_C const char *sqlite3_errmsg(sqlite3*);
+SQLITE3_IMPORT_C const void *sqlite3_errmsg16(sqlite3*);
 
 /*
 ** CAPI3REF: SQL Statement Object {F13000}
@@ -1716,28 +1716,28 @@ typedef struct sqlite3_stmt sqlite3_stmt;
 ** </li>
 ** </ol>
 */
-IMPORT_C int sqlite3_prepare(
+SQLITE3_IMPORT_C int sqlite3_prepare(
   sqlite3 *db,            /* Database handle */
   const char *zSql,       /* SQL statement, UTF-8 encoded */
   int nByte,              /* Maximum length of zSql in bytes. */
   sqlite3_stmt **ppStmt,  /* OUT: Statement handle */
   const char **pzTail     /* OUT: Pointer to unused portion of zSql */
 );
-IMPORT_C int sqlite3_prepare_v2(
+SQLITE3_IMPORT_C int sqlite3_prepare_v2(
   sqlite3 *db,            /* Database handle */
   const char *zSql,       /* SQL statement, UTF-8 encoded */
   int nByte,              /* Maximum length of zSql in bytes. */
   sqlite3_stmt **ppStmt,  /* OUT: Statement handle */
   const char **pzTail     /* OUT: Pointer to unused portion of zSql */
 );
-IMPORT_C int sqlite3_prepare16(
+SQLITE3_IMPORT_C int sqlite3_prepare16(
   sqlite3 *db,            /* Database handle */
   const void *zSql,       /* SQL statement, UTF-16 encoded */
   int nByte,              /* Maximum length of zSql in bytes. */
   sqlite3_stmt **ppStmt,  /* OUT: Statement handle */
   const void **pzTail     /* OUT: Pointer to unused portion of zSql */
 );
-IMPORT_C int sqlite3_prepare16_v2(
+SQLITE3_IMPORT_C int sqlite3_prepare16_v2(
   sqlite3 *db,            /* Database handle */
   const void *zSql,       /* SQL statement, UTF-16 encoded */
   int nByte,              /* Maximum length of zSql in bytes. */
@@ -1762,7 +1762,7 @@ IMPORT_C int sqlite3_prepare16_v2(
 ** interfaces [sqlite3_prepare()] or [sqlite3_prepare16()], this
 ** function returns NULL.
 */
-IMPORT_C const char *sqlite3_sql(sqlite3_stmt *pStmt);
+SQLITE3_IMPORT_C const char *sqlite3_sql(sqlite3_stmt *pStmt);
 
 /*
 ** CAPI3REF:  Dynamically Typed Value Object  {F15000}
@@ -1860,15 +1860,15 @@ typedef struct sqlite3_context sqlite3_context;
 ** {F13543} [SQLITE_MISUSE] is returned if these routines are called on a
 ** virtual machine that is the wrong state or which has already been finalized.
 */
-IMPORT_C int sqlite3_bind_blob(sqlite3_stmt*, int, const void*, int n, void(*)(void*));
-IMPORT_C int sqlite3_bind_double(sqlite3_stmt*, int, double);
-IMPORT_C int sqlite3_bind_int(sqlite3_stmt*, int, int);
-IMPORT_C int sqlite3_bind_int64(sqlite3_stmt*, int, sqlite3_int64);
-IMPORT_C int sqlite3_bind_null(sqlite3_stmt*, int);
-IMPORT_C int sqlite3_bind_text(sqlite3_stmt*, int, const char*, int n, void(*)(void*));
-IMPORT_C int sqlite3_bind_text16(sqlite3_stmt*, int, const void*, int, void(*)(void*));
-IMPORT_C int sqlite3_bind_value(sqlite3_stmt*, int, const sqlite3_value*);
-IMPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt*, int, int n);
+SQLITE3_IMPORT_C int sqlite3_bind_blob(sqlite3_stmt*, int, const void*, int n, void(*)(void*));
+SQLITE3_IMPORT_C int sqlite3_bind_double(sqlite3_stmt*, int, double);
+SQLITE3_IMPORT_C int sqlite3_bind_int(sqlite3_stmt*, int, int);
+SQLITE3_IMPORT_C int sqlite3_bind_int64(sqlite3_stmt*, int, sqlite3_int64);
+SQLITE3_IMPORT_C int sqlite3_bind_null(sqlite3_stmt*, int);
+SQLITE3_IMPORT_C int sqlite3_bind_text(sqlite3_stmt*, int, const char*, int n, void(*)(void*));
+SQLITE3_IMPORT_C int sqlite3_bind_text16(sqlite3_stmt*, int, const void*, int, void(*)(void*));
+SQLITE3_IMPORT_C int sqlite3_bind_value(sqlite3_stmt*, int, const sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt*, int, int n);
 
 /*
 ** CAPI3REF: Number Of Host Parameters {F13600}
@@ -1890,7 +1890,7 @@ IMPORT_C int sqlite3_bind_zeroblob(sqlite3_stmt*, int, int n);
 ** prior to this routine returning.  Otherwise the results are undefined
 ** and probably undesirable.
 */
-IMPORT_C int sqlite3_bind_parameter_count(sqlite3_stmt*);
+SQLITE3_IMPORT_C int sqlite3_bind_parameter_count(sqlite3_stmt*);
 
 /*
 ** CAPI3REF: Name Of A Host Parameter {F13620}
@@ -1911,7 +1911,7 @@ IMPORT_C int sqlite3_bind_parameter_count(sqlite3_stmt*);
 ** originally specified as UTF-16 in [sqlite3_prepare16()] or
 ** [sqlite3_prepare16_v2()].
 */
-IMPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt*, int);
+SQLITE3_IMPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt*, int);
 
 /*
 ** CAPI3REF: Index Of A Parameter With A Given Name {F13640}
@@ -1921,7 +1921,7 @@ IMPORT_C const char *sqlite3_bind_parameter_name(sqlite3_stmt*, int);
 ** If no parameter with the given name is found, return 0.
 ** {F13644} Parameter names must be UTF8.
 */
-IMPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt*, const char *zName);
+SQLITE3_IMPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt*, const char *zName);
 
 /*
 ** CAPI3REF: Reset All Bindings On A Prepared Statement {F13660}
@@ -1931,7 +1931,7 @@ IMPORT_C int sqlite3_bind_parameter_index(sqlite3_stmt*, const char *zName);
 ** [sqlite3_stmt | prepared statement]. {F13662} Use this routine to
 ** reset all host parameters to NULL.
 */
-IMPORT_C int sqlite3_clear_bindings(sqlite3_stmt*);
+SQLITE3_IMPORT_C int sqlite3_clear_bindings(sqlite3_stmt*);
 
 /*
 ** CAPI3REF: Number Of Columns In A Result Set {F13710}
@@ -1941,7 +1941,7 @@ IMPORT_C int sqlite3_clear_bindings(sqlite3_stmt*);
 ** if pStmt is an SQL statement that does not return data (for 
 ** example an UPDATE).
 */
-IMPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt);
+SQLITE3_IMPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt);
 
 /*
 ** CAPI3REF: Column Names In A Result Set {F13720}
@@ -1964,8 +1964,8 @@ IMPORT_C int sqlite3_column_count(sqlite3_stmt *pStmt);
 ** (for example during a conversion from UTF-8 to UTF-16) then a
 ** NULL pointer is returned.
 */
-IMPORT_C const char *sqlite3_column_name(sqlite3_stmt*, int N);
-IMPORT_C const void *sqlite3_column_name16(sqlite3_stmt*, int N);
+SQLITE3_IMPORT_C const char *sqlite3_column_name(sqlite3_stmt*, int N);
+SQLITE3_IMPORT_C const void *sqlite3_column_name16(sqlite3_stmt*, int N);
 
 /*
 ** CAPI3REF: Source Of Data In A Query Result {F13740}
@@ -2006,12 +2006,12 @@ IMPORT_C const void *sqlite3_column_name16(sqlite3_stmt*, int N);
 ** prepared statement and column at the same time then the results are
 ** undefined.
 */
-IMPORT_C const char *sqlite3_column_database_name(sqlite3_stmt*,int);
-IMPORT_C const void *sqlite3_column_database_name16(sqlite3_stmt*,int);
-IMPORT_C const char *sqlite3_column_table_name(sqlite3_stmt*,int);
-IMPORT_C const void *sqlite3_column_table_name16(sqlite3_stmt*,int);
-IMPORT_C const char *sqlite3_column_origin_name(sqlite3_stmt*,int);
-IMPORT_C const void *sqlite3_column_origin_name16(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const char *sqlite3_column_database_name(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const void *sqlite3_column_database_name16(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const char *sqlite3_column_table_name(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const void *sqlite3_column_table_name16(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const char *sqlite3_column_origin_name(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const void *sqlite3_column_origin_name16(sqlite3_stmt*,int);
 
 /*
 ** CAPI3REF: Declared Datatype Of A Query Result {F13760}
@@ -2042,8 +2042,8 @@ IMPORT_C const void *sqlite3_column_origin_name16(sqlite3_stmt*,int);
 ** is associated with individual values, not with the containers
 ** used to hold those values.
 */
-IMPORT_C const char *sqlite3_column_decltype(sqlite3_stmt *, int i);
-IMPORT_C const void *sqlite3_column_decltype16(sqlite3_stmt*,int);
+SQLITE3_IMPORT_C const char *sqlite3_column_decltype(sqlite3_stmt *, int i);
+SQLITE3_IMPORT_C const void *sqlite3_column_decltype16(sqlite3_stmt*,int);
 
 /* 
 ** CAPI3REF:  Evaluate An SQL Statement {F13200}
@@ -2115,7 +2115,7 @@ IMPORT_C const void *sqlite3_column_decltype16(sqlite3_stmt*,int);
 ** more specific [SQLITE_ERROR | result codes] are returned directly
 ** by sqlite3_step().  The use of the "v2" interface is recommended.
 */
-IMPORT_C int sqlite3_step(sqlite3_stmt*);
+SQLITE3_IMPORT_C int sqlite3_step(sqlite3_stmt*);
 
 /*
 ** CAPI3REF: Number of columns in a result set {F13770}
@@ -2131,7 +2131,7 @@ IMPORT_C int sqlite3_step(sqlite3_stmt*);
 ** called on the [sqlite3_stmt | prepared statement] for the first time,
 ** this routine returns zero.
 */
-IMPORT_C int sqlite3_data_count(sqlite3_stmt *pStmt);
+SQLITE3_IMPORT_C int sqlite3_data_count(sqlite3_stmt *pStmt);
 
 /*
 ** CAPI3REF: Fundamental Datatypes {F10265}
@@ -2309,16 +2309,16 @@ IMPORT_C int sqlite3_data_count(sqlite3_stmt *pStmt);
 ** pointer.  Subsequent calls to [sqlite3_errcode()] will return
 ** [SQLITE_NOMEM].
 */
-IMPORT_C const void *sqlite3_column_blob(sqlite3_stmt*, int iCol);
-IMPORT_C int sqlite3_column_bytes(sqlite3_stmt*, int iCol);
-IMPORT_C int sqlite3_column_bytes16(sqlite3_stmt*, int iCol);
-IMPORT_C double sqlite3_column_double(sqlite3_stmt*, int iCol);
-IMPORT_C int sqlite3_column_int(sqlite3_stmt*, int iCol);
-IMPORT_C sqlite3_int64 sqlite3_column_int64(sqlite3_stmt*, int iCol);
-IMPORT_C const unsigned char *sqlite3_column_text(sqlite3_stmt*, int iCol);
-IMPORT_C const void *sqlite3_column_text16(sqlite3_stmt*, int iCol);
-IMPORT_C int sqlite3_column_type(sqlite3_stmt*, int iCol);
-IMPORT_C sqlite3_value *sqlite3_column_value(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C const void *sqlite3_column_blob(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C int sqlite3_column_bytes(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C int sqlite3_column_bytes16(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C double sqlite3_column_double(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C int sqlite3_column_int(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C sqlite3_int64 sqlite3_column_int64(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C const unsigned char *sqlite3_column_text(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C const void *sqlite3_column_text16(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C int sqlite3_column_type(sqlite3_stmt*, int iCol);
+SQLITE3_IMPORT_C sqlite3_value *sqlite3_column_value(sqlite3_stmt*, int iCol);
 
 /*
 ** CAPI3REF: Destroy A Prepared Statement Object {F13300}
@@ -2338,7 +2338,7 @@ IMPORT_C sqlite3_value *sqlite3_column_value(sqlite3_stmt*, int iCol);
 ** depending on the circumstances, and the 
 ** [SQLITE_ERROR | result code] returned will be [SQLITE_ABORT].
 */
-IMPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt);
+SQLITE3_IMPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt);
 
 /*
 ** CAPI3REF: Reset A Prepared Statement Object {F13330}
@@ -2350,7 +2350,7 @@ IMPORT_C int sqlite3_finalize(sqlite3_stmt *pStmt);
 ** the [sqlite3_bind_blob | sqlite3_bind_*() API] retain their values.
 ** Use [sqlite3_clear_bindings()] to reset the bindings.
 */
-IMPORT_C int sqlite3_reset(sqlite3_stmt *pStmt);
+SQLITE3_IMPORT_C int sqlite3_reset(sqlite3_stmt *pStmt);
 
 /*
 ** CAPI3REF: Create Or Redefine SQL Functions {F16100}
@@ -2410,7 +2410,7 @@ IMPORT_C int sqlite3_reset(sqlite3_stmt *pStmt);
 ** the implementation most closely matches the way in which the
 ** SQL function is used.
 */
-IMPORT_C int sqlite3_create_function(
+SQLITE3_IMPORT_C int sqlite3_create_function(
   sqlite3 *,
   const char *zFunctionName,
   int nArg,
@@ -2420,7 +2420,7 @@ IMPORT_C int sqlite3_create_function(
   void (*xStep)(sqlite3_context*,int,sqlite3_value**),
   void (*xFinal)(sqlite3_context*)
 );
-IMPORT_C int sqlite3_create_function16(
+SQLITE3_IMPORT_C int sqlite3_create_function16(
   sqlite3*,
   const void *zFunctionName,
   int nArg,
@@ -2453,12 +2453,12 @@ IMPORT_C int sqlite3_create_function16(
 ** the use of these functions.  To help encourage people to avoid
 ** using these functions, we are not going to tell you want they do.
 */
-IMPORT_C int sqlite3_aggregate_count(sqlite3_context*);
-IMPORT_C int sqlite3_expired(sqlite3_stmt*);
-IMPORT_C int sqlite3_transfer_bindings(sqlite3_stmt*, sqlite3_stmt*);
-IMPORT_C int sqlite3_global_recover(void);
-IMPORT_C void sqlite3_thread_cleanup(void);
-IMPORT_C int sqlite3_memory_alarm(void(*)(void*,sqlite3_int64,int),void*,sqlite3_int64);
+SQLITE3_IMPORT_C int sqlite3_aggregate_count(sqlite3_context*);
+SQLITE3_IMPORT_C int sqlite3_expired(sqlite3_stmt*);
+SQLITE3_IMPORT_C int sqlite3_transfer_bindings(sqlite3_stmt*, sqlite3_stmt*);
+SQLITE3_IMPORT_C int sqlite3_global_recover(void);
+SQLITE3_IMPORT_C void sqlite3_thread_cleanup(void);
+SQLITE3_IMPORT_C int sqlite3_memory_alarm(void(*)(void*,sqlite3_int64,int),void*,sqlite3_int64);
 
 /*
 ** CAPI3REF: Obtaining SQL Function Parameter Values {F15100}
@@ -2506,18 +2506,18 @@ IMPORT_C int sqlite3_memory_alarm(void(*)(void*,sqlite3_int64,int),void*,sqlite3
 ** that ran [sqlite3_column_value()].
 **
 */
-IMPORT_C const void *sqlite3_value_blob(sqlite3_value*);
-IMPORT_C int sqlite3_value_bytes(sqlite3_value*);
-IMPORT_C int sqlite3_value_bytes16(sqlite3_value*);
-IMPORT_C double sqlite3_value_double(sqlite3_value*);
-IMPORT_C int sqlite3_value_int(sqlite3_value*);
-IMPORT_C sqlite3_int64 sqlite3_value_int64(sqlite3_value*);
-IMPORT_C const unsigned char *sqlite3_value_text(sqlite3_value*);
-IMPORT_C const void *sqlite3_value_text16(sqlite3_value*);
-IMPORT_C const void *sqlite3_value_text16le(sqlite3_value*);
-IMPORT_C const void *sqlite3_value_text16be(sqlite3_value*);
-IMPORT_C int sqlite3_value_type(sqlite3_value*);
-IMPORT_C int sqlite3_value_numeric_type(sqlite3_value*);
+SQLITE3_IMPORT_C const void *sqlite3_value_blob(sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_value_bytes(sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_value_bytes16(sqlite3_value*);
+SQLITE3_IMPORT_C double sqlite3_value_double(sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_value_int(sqlite3_value*);
+SQLITE3_IMPORT_C sqlite3_int64 sqlite3_value_int64(sqlite3_value*);
+SQLITE3_IMPORT_C const unsigned char *sqlite3_value_text(sqlite3_value*);
+SQLITE3_IMPORT_C const void *sqlite3_value_text16(sqlite3_value*);
+SQLITE3_IMPORT_C const void *sqlite3_value_text16le(sqlite3_value*);
+SQLITE3_IMPORT_C const void *sqlite3_value_text16be(sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_value_type(sqlite3_value*);
+SQLITE3_IMPORT_C int sqlite3_value_numeric_type(sqlite3_value*);
 
 /*
 ** CAPI3REF: Obtain Aggregate Function Context {F16210}
@@ -2543,7 +2543,7 @@ IMPORT_C int sqlite3_value_numeric_type(sqlite3_value*);
 ** This routine must be called from the same thread in which
 ** the aggregate SQL function is running.
 */
-IMPORT_C void *sqlite3_aggregate_context(sqlite3_context*, int nBytes);
+SQLITE3_IMPORT_C void *sqlite3_aggregate_context(sqlite3_context*, int nBytes);
 
 /*
 ** CAPI3REF: User Data For Functions {F16240}
@@ -2557,7 +2557,7 @@ IMPORT_C void *sqlite3_aggregate_context(sqlite3_context*, int nBytes);
 ** {U16243} This routine must be called from the same thread in which
 ** the application-defined function is running.
 */
-IMPORT_C void *sqlite3_user_data(sqlite3_context*);
+SQLITE3_IMPORT_C void *sqlite3_user_data(sqlite3_context*);
 
 /*
 ** CAPI3REF: Function Auxiliary Data {F16270}
@@ -2599,8 +2599,8 @@ IMPORT_C void *sqlite3_user_data(sqlite3_context*);
 ** These routines must be called from the same thread in which
 ** the SQL function is running.
 */
-IMPORT_C void *sqlite3_get_auxdata(sqlite3_context*, int N);
-IMPORT_C void sqlite3_set_auxdata(sqlite3_context*, int N, void*, void (*)(void*));
+SQLITE3_IMPORT_C void *sqlite3_get_auxdata(sqlite3_context*, int N);
+SQLITE3_IMPORT_C void sqlite3_set_auxdata(sqlite3_context*, int N, void*, void (*)(void*));
 
 
 /*
@@ -2721,21 +2721,21 @@ typedef void (*sqlite3_destructor_type)(void*);
 ** than the one containing the application-defined function that recieved
 ** the [sqlite3_context] pointer, the results are undefined.
 */
-IMPORT_C void sqlite3_result_blob(sqlite3_context*, const void*, int, void(*)(void*));
-IMPORT_C void sqlite3_result_double(sqlite3_context*, double);
-IMPORT_C void sqlite3_result_error(sqlite3_context*, const char*, int);
-IMPORT_C void sqlite3_result_error16(sqlite3_context*, const void*, int);
-IMPORT_C void sqlite3_result_error_toobig(sqlite3_context*);
-IMPORT_C void sqlite3_result_error_nomem(sqlite3_context*);
-IMPORT_C void sqlite3_result_int(sqlite3_context*, int);
-IMPORT_C void sqlite3_result_int64(sqlite3_context*, sqlite3_int64);
-IMPORT_C void sqlite3_result_null(sqlite3_context*);
-IMPORT_C void sqlite3_result_text(sqlite3_context*, const char*, int, void(*)(void*));
-IMPORT_C void sqlite3_result_text16(sqlite3_context*, const void*, int, void(*)(void*));
-IMPORT_C void sqlite3_result_text16le(sqlite3_context*, const void*, int,void(*)(void*));
-IMPORT_C void sqlite3_result_text16be(sqlite3_context*, const void*, int,void(*)(void*));
-IMPORT_C void sqlite3_result_value(sqlite3_context*, sqlite3_value*);
-IMPORT_C void sqlite3_result_zeroblob(sqlite3_context*, int n);
+SQLITE3_IMPORT_C void sqlite3_result_blob(sqlite3_context*, const void*, int, void(*)(void*));
+SQLITE3_IMPORT_C void sqlite3_result_double(sqlite3_context*, double);
+SQLITE3_IMPORT_C void sqlite3_result_error(sqlite3_context*, const char*, int);
+SQLITE3_IMPORT_C void sqlite3_result_error16(sqlite3_context*, const void*, int);
+SQLITE3_IMPORT_C void sqlite3_result_error_toobig(sqlite3_context*);
+SQLITE3_IMPORT_C void sqlite3_result_error_nomem(sqlite3_context*);
+SQLITE3_IMPORT_C void sqlite3_result_int(sqlite3_context*, int);
+SQLITE3_IMPORT_C void sqlite3_result_int64(sqlite3_context*, sqlite3_int64);
+SQLITE3_IMPORT_C void sqlite3_result_null(sqlite3_context*);
+SQLITE3_IMPORT_C void sqlite3_result_text(sqlite3_context*, const char*, int, void(*)(void*));
+SQLITE3_IMPORT_C void sqlite3_result_text16(sqlite3_context*, const void*, int, void(*)(void*));
+SQLITE3_IMPORT_C void sqlite3_result_text16le(sqlite3_context*, const void*, int,void(*)(void*));
+SQLITE3_IMPORT_C void sqlite3_result_text16be(sqlite3_context*, const void*, int,void(*)(void*));
+SQLITE3_IMPORT_C void sqlite3_result_value(sqlite3_context*, sqlite3_value*);
+SQLITE3_IMPORT_C void sqlite3_result_zeroblob(sqlite3_context*, int n);
 
 /*
 ** CAPI3REF: Define New Collating Sequences {F16600}
@@ -2787,14 +2787,14 @@ IMPORT_C void sqlite3_result_zeroblob(sqlite3_context*, int n);
 ** they are overridden by later calls to the collation creation functions
 ** or when the [sqlite3*] database handle is closed using [sqlite3_close()].
 */
-IMPORT_C int sqlite3_create_collation(
+SQLITE3_IMPORT_C int sqlite3_create_collation(
   sqlite3*, 
   const char *zName, 
   int eTextRep, 
   void*,
   int(*xCompare)(void*,int,const void*,int,const void*)
 );
-IMPORT_C int sqlite3_create_collation_v2(
+SQLITE3_IMPORT_C int sqlite3_create_collation_v2(
   sqlite3*, 
   const char *zName, 
   int eTextRep, 
@@ -2802,7 +2802,7 @@ IMPORT_C int sqlite3_create_collation_v2(
   int(*xCompare)(void*,int,const void*,int,const void*),
   void(*xDestroy)(void*)
 );
-IMPORT_C int sqlite3_create_collation16(
+SQLITE3_IMPORT_C int sqlite3_create_collation16(
   sqlite3*, 
   const char *zName, 
   int eTextRep, 
@@ -2839,12 +2839,12 @@ IMPORT_C int sqlite3_create_collation16(
 ** [sqlite3_create_collation()], [sqlite3_create_collation16()], or
 ** [sqlite3_create_collation_v2()].
 */
-IMPORT_C int sqlite3_collation_needed(
+SQLITE3_IMPORT_C int sqlite3_collation_needed(
   sqlite3*, 
   void*, 
   void(*)(void*,sqlite3*,int eTextRep,const char*)
 );
-IMPORT_C int sqlite3_collation_needed16(
+SQLITE3_IMPORT_C int sqlite3_collation_needed16(
   sqlite3*, 
   void*,
   void(*)(void*,sqlite3*,int eTextRep,const void*)
@@ -2857,7 +2857,7 @@ IMPORT_C int sqlite3_collation_needed16(
 ** The code to implement this API is not available in the public release
 ** of SQLite.
 */
-IMPORT_C int sqlite3_key(
+SQLITE3_IMPORT_C int sqlite3_key(
   sqlite3 *db,                   /* Database to be rekeyed */
   const void *pKey, int nKey     /* The key */
 );
@@ -2870,7 +2870,7 @@ IMPORT_C int sqlite3_key(
 ** The code to implement this API is not available in the public release
 ** of SQLite.
 */
-IMPORT_C int sqlite3_rekey(
+SQLITE3_IMPORT_C int sqlite3_rekey(
   sqlite3 *db,                   /* Database to be rekeyed */
   const void *pKey, int nKey     /* The new key */
 );
@@ -2890,7 +2890,7 @@ IMPORT_C int sqlite3_rekey(
 ** {F10534} SQLite implements this interface by calling the xSleep()
 ** method of the default [sqlite3_vfs] object. {END}
 */
-IMPORT_C int sqlite3_sleep(int);
+SQLITE3_IMPORT_C int sqlite3_sleep(int);
 
 /*
 ** CAPI3REF:  Name Of The Folder Holding Temporary Files {F10310}
@@ -2928,7 +2928,7 @@ SQLITE_EXTERN char *sqlite3_temp_directory;
 ** connection while this routine is running, then the return value
 ** is undefined. {END}
 */
-IMPORT_C int sqlite3_get_autocommit(sqlite3*);
+SQLITE3_IMPORT_C int sqlite3_get_autocommit(sqlite3*);
 
 /*
 ** CAPI3REF:  Find The Database Handle Of A Prepared Statement {F13120}
@@ -2941,7 +2941,7 @@ IMPORT_C int sqlite3_get_autocommit(sqlite3*);
 ** the first argument to the [sqlite3_prepare_v2()] or its variants
 ** that was used to create the statement in the first place.
 */
-IMPORT_C sqlite3 *sqlite3_db_handle(sqlite3_stmt*);
+SQLITE3_IMPORT_C sqlite3 *sqlite3_db_handle(sqlite3_stmt*);
 
 
 /*
@@ -2975,8 +2975,8 @@ IMPORT_C sqlite3 *sqlite3_db_handle(sqlite3_stmt*);
 **
 ** These are experimental interfaces and are subject to change.
 */
-IMPORT_C void *sqlite3_commit_hook(sqlite3*, int(*)(void*), void*);
-IMPORT_C void *sqlite3_rollback_hook(sqlite3*, void(*)(void *), void*);
+SQLITE3_IMPORT_C void *sqlite3_commit_hook(sqlite3*, int(*)(void*), void*);
+SQLITE3_IMPORT_C void *sqlite3_rollback_hook(sqlite3*, void(*)(void *), void*);
 
 /*
 ** CAPI3REF: Data Change Notification Callbacks {F12970}
@@ -3008,7 +3008,7 @@ IMPORT_C void *sqlite3_rollback_hook(sqlite3*, void(*)(void *), void*);
 ** {F12984} If another function was previously registered, its pArg value
 ** is returned.  {F12985} Otherwise NULL is returned.
 */
-IMPORT_C void *sqlite3_update_hook(
+SQLITE3_IMPORT_C void *sqlite3_update_hook(
   sqlite3*, 
   void(*)(void *,int ,char const *,char const *,sqlite3_int64),
   void*
@@ -3047,7 +3047,7 @@ IMPORT_C void *sqlite3_update_hook(
 ** future releases of SQLite.  Applications that care about shared
 ** cache setting should set it explicitly.
 */
-IMPORT_C int sqlite3_enable_shared_cache(int);
+SQLITE3_IMPORT_C int sqlite3_enable_shared_cache(int);
 
 /*
 ** CAPI3REF:  Attempt To Free Heap Memory {F17340}
@@ -3060,7 +3060,7 @@ IMPORT_C int sqlite3_enable_shared_cache(int);
 ** the number of bytes actually freed, which might be more or less
 ** than the amount requested.
 */
-IMPORT_C int sqlite3_release_memory(int);
+SQLITE3_IMPORT_C int sqlite3_release_memory(int);
 
 /*
 ** CAPI3REF:  Impose A Limit On Heap Size {F17350}
@@ -3095,7 +3095,7 @@ IMPORT_C int sqlite3_release_memory(int);
 ** version 3.5.0 there is no mechanism for limiting the heap usage for
 ** individual threads.
 */
-IMPORT_C void sqlite3_soft_heap_limit(int);
+SQLITE3_IMPORT_C void sqlite3_soft_heap_limit(int);
 
 /*
 ** CAPI3REF:  Extract Metadata About A Column Of A Table {F12850}
@@ -3161,7 +3161,7 @@ IMPORT_C void sqlite3_soft_heap_limit(int);
 ** This API is only available if the library was compiled with the
 ** SQLITE_ENABLE_COLUMN_METADATA preprocessor symbol defined.
 */
-IMPORT_C int sqlite3_table_column_metadata(
+SQLITE3_IMPORT_C int sqlite3_table_column_metadata(
   sqlite3 *db,                /* Connection handle */
   const char *zDbName,        /* Database name or NULL */
   const char *zTableName,     /* Table name */
@@ -3196,7 +3196,7 @@ IMPORT_C int sqlite3_table_column_metadata(
 ** Extension loading must be enabled using [sqlite3_enable_load_extension()]
 ** prior to calling this API or an error will be returned.
 */
-IMPORT_C int sqlite3_load_extension(
+SQLITE3_IMPORT_C int sqlite3_load_extension(
   sqlite3 *db,          /* Load the extension into this database connection */
   const char *zFile,    /* Name of the shared library containing extension */
   const char *zProc,    /* Entry point.  Derived from zFile if 0 */
@@ -3216,7 +3216,7 @@ IMPORT_C int sqlite3_load_extension(
 ** with onoff==1 to turn extension loading on
 ** and call it with onoff==0 to turn it back off again. {END}
 */
-IMPORT_C int sqlite3_enable_load_extension(sqlite3 *db, int onoff);
+SQLITE3_IMPORT_C int sqlite3_enable_load_extension(sqlite3 *db, int onoff);
 
 /*
 ** CAPI3REF: Make Arrangements To Automatically Load An Extension {F12640}
@@ -3244,7 +3244,7 @@ IMPORT_C int sqlite3_enable_load_extension(sqlite3 *db, int onoff);
 ** This interface is experimental and is subject to change or
 ** removal in future releases of SQLite.
 */
-IMPORT_C int sqlite3_auto_extension(void *xEntryPoint);
+SQLITE3_IMPORT_C int sqlite3_auto_extension(void *xEntryPoint);
 
 
 /*
@@ -3260,7 +3260,7 @@ IMPORT_C int sqlite3_auto_extension(void *xEntryPoint);
 ** This interface is experimental and is subject to change or
 ** removal in future releases of SQLite.
 */
-IMPORT_C void sqlite3_reset_auto_extension(void);
+SQLITE3_IMPORT_C void sqlite3_reset_auto_extension(void);
 
 
 /*
@@ -3404,7 +3404,7 @@ struct sqlite3_index_info {
 ** virtual tables on the module, or before using preexisting virtual
 ** tables of the module.
 */
-IMPORT_C int sqlite3_create_module(
+SQLITE3_IMPORT_C int sqlite3_create_module(
   sqlite3 *db,               /* SQLite connection to register module with */
   const char *zName,         /* Name of the module */
   const sqlite3_module *,    /* Methods for the module */
@@ -3416,7 +3416,7 @@ IMPORT_C int sqlite3_create_module(
 ** except that it allows a destructor function to be specified. It is
 ** even more experimental than the rest of the virtual tables API.
 */
-IMPORT_C int sqlite3_create_module_v2(
+SQLITE3_IMPORT_C int sqlite3_create_module_v2(
   sqlite3 *db,               /* SQLite connection to register module with */
   const char *zName,         /* Name of the module */
   const sqlite3_module *,    /* Methods for the module */
@@ -3467,7 +3467,7 @@ struct sqlite3_vtab_cursor {
 ** to declare the format (the names and datatypes of the columns) of
 ** the virtual tables they implement.
 */
-IMPORT_C int sqlite3_declare_vtab(sqlite3*, const char *zCreateTable);
+SQLITE3_IMPORT_C int sqlite3_declare_vtab(sqlite3*, const char *zCreateTable);
 
 /*
 ** Virtual tables can provide alternative implementations of functions
@@ -3485,7 +3485,7 @@ IMPORT_C int sqlite3_declare_vtab(sqlite3*, const char *zCreateTable);
 ** This API should be considered part of the virtual table interface,
 ** which is experimental and subject to change.
 */
-IMPORT_C int sqlite3_overload_function(sqlite3*, const char *zFuncName, int nArg);
+SQLITE3_IMPORT_C int sqlite3_overload_function(sqlite3*, const char *zFuncName, int nArg);
 
 /*
 ** The interface to the virtual-table mechanism defined above (back up
@@ -3536,7 +3536,7 @@ typedef struct sqlite3_blob sqlite3_blob;
 ** <todo>We should go through and mark all interfaces that behave this
 ** way with a similar statement</todo>
 */
-IMPORT_C int sqlite3_blob_open(
+SQLITE3_IMPORT_C int sqlite3_blob_open(
   sqlite3*,
   const char *zDb,
   const char *zTable,
@@ -3564,7 +3564,7 @@ IMPORT_C int sqlite3_blob_open(
 ** {F17839} The BLOB is closed unconditionally.  Even if this routine returns
 ** an error code, the BLOB is still closed.
 */
-IMPORT_C int sqlite3_blob_close(sqlite3_blob *);
+SQLITE3_IMPORT_C int sqlite3_blob_close(sqlite3_blob *);
 
 /*
 ** CAPI3REF:  Return The Size Of An Open BLOB {F17805}
@@ -3572,7 +3572,7 @@ IMPORT_C int sqlite3_blob_close(sqlite3_blob *);
 ** {F16806} Return the size in bytes of the blob accessible via the open 
 ** [sqlite3_blob | blob-handle] passed as an argument.
 */
-IMPORT_C int sqlite3_blob_bytes(sqlite3_blob *);
+SQLITE3_IMPORT_C int sqlite3_blob_bytes(sqlite3_blob *);
 
 /*
 ** CAPI3REF:  Read Data From A BLOB Incrementally {F17850}
@@ -3590,7 +3590,7 @@ IMPORT_C int sqlite3_blob_bytes(sqlite3_blob *);
 ** [SQLITE_ERROR | SQLite error code] or an
 ** [SQLITE_IOERR_READ | extended error code] is returned.
 */
-IMPORT_C int sqlite3_blob_read(sqlite3_blob *, void *z, int n, int iOffset);
+SQLITE3_IMPORT_C int sqlite3_blob_read(sqlite3_blob *, void *z, int n, int iOffset);
 
 /*
 ** CAPI3REF:  Write Data Into A BLOB Incrementally {F17870}
@@ -3614,7 +3614,7 @@ IMPORT_C int sqlite3_blob_read(sqlite3_blob *, void *z, int n, int iOffset);
 ** [SQLITE_ERROR | SQLite error code] or an
 ** [SQLITE_IOERR_READ | extended error code] is returned.
 */
-IMPORT_C int sqlite3_blob_write(sqlite3_blob *, const void *z, int n, int iOffset);
+SQLITE3_IMPORT_C int sqlite3_blob_write(sqlite3_blob *, const void *z, int n, int iOffset);
 
 /*
 ** CAPI3REF:  Virtual File System Objects {F11200}
@@ -3646,9 +3646,9 @@ IMPORT_C int sqlite3_blob_write(sqlite3_blob *, const void *z, int n, int iOffse
 ** {F11221} If the default VFS is unregistered, another VFS is chosen as
 ** the default.  The choice for the new VFS is arbitrary.
 */
-IMPORT_C sqlite3_vfs *sqlite3_vfs_find(const char *zVfsName);
-IMPORT_C int sqlite3_vfs_register(sqlite3_vfs*, int makeDflt);
-IMPORT_C int sqlite3_vfs_unregister(sqlite3_vfs*);
+SQLITE3_IMPORT_C sqlite3_vfs *sqlite3_vfs_find(const char *zVfsName);
+SQLITE3_IMPORT_C int sqlite3_vfs_register(sqlite3_vfs*, int makeDflt);
+SQLITE3_IMPORT_C int sqlite3_vfs_unregister(sqlite3_vfs*);
 
 /*
 ** CAPI3REF: Mutexes {F17000}
@@ -3758,11 +3758,11 @@ IMPORT_C int sqlite3_vfs_unregister(sqlite3_vfs*);
 **
 ** See also: [sqlite3_mutex_held()] and [sqlite3_mutex_notheld()].
 */
-IMPORT_C sqlite3_mutex *sqlite3_mutex_alloc(int);
-IMPORT_C void sqlite3_mutex_free(sqlite3_mutex*);
-IMPORT_C void sqlite3_mutex_enter(sqlite3_mutex*);
-IMPORT_C int sqlite3_mutex_try(sqlite3_mutex*);
-IMPORT_C void sqlite3_mutex_leave(sqlite3_mutex*);
+SQLITE3_IMPORT_C sqlite3_mutex *sqlite3_mutex_alloc(int);
+SQLITE3_IMPORT_C void sqlite3_mutex_free(sqlite3_mutex*);
+SQLITE3_IMPORT_C void sqlite3_mutex_enter(sqlite3_mutex*);
+SQLITE3_IMPORT_C int sqlite3_mutex_try(sqlite3_mutex*);
+SQLITE3_IMPORT_C void sqlite3_mutex_leave(sqlite3_mutex*);
 
 /*
 ** CAPI3REF: Mutex Verifcation Routines {F17080}
@@ -3795,8 +3795,8 @@ IMPORT_C void sqlite3_mutex_leave(sqlite3_mutex*);
 ** the appropriate thing to do.  {F17086} The sqlite3_mutex_notheld() 
 ** interface should also return 1 when given a NULL pointer.
 */
-IMPORT_C int sqlite3_mutex_held(sqlite3_mutex*);
-IMPORT_C int sqlite3_mutex_notheld(sqlite3_mutex*);
+SQLITE3_IMPORT_C int sqlite3_mutex_held(sqlite3_mutex*);
+SQLITE3_IMPORT_C int sqlite3_mutex_notheld(sqlite3_mutex*);
 
 /*
 ** CAPI3REF: Mutex Types {F17001}
@@ -3836,21 +3836,21 @@ IMPORT_C int sqlite3_mutex_notheld(sqlite3_mutex*);
 **
 ** See also: [SQLITE_FCNTL_LOCKSTATE]
 */
-IMPORT_C int sqlite3_file_control(sqlite3*, const char *zDbName, int op, void*);
+SQLITE3_IMPORT_C int sqlite3_file_control(sqlite3*, const char *zDbName, int op, void*);
 
-IMPORT_C int sqlite3_openTest(
+SQLITE3_IMPORT_C int sqlite3_openTest(
   const char *zFilename 
 );
 
-IMPORT_C int sqlite3_bind_double_ref(sqlite3_stmt *stmt, int iCol, double *val);
+SQLITE3_IMPORT_C int sqlite3_bind_double_ref(sqlite3_stmt *stmt, int iCol, double *val);
 
-IMPORT_C int sqlite3_bind_int64_ref(sqlite3_stmt *stmt, int iCol, sqlite_int64 *val);
+SQLITE3_IMPORT_C int sqlite3_bind_int64_ref(sqlite3_stmt *stmt, int iCol, sqlite_int64 *val);
 
-IMPORT_C void sqlite3_column_double_ref(sqlite3_stmt *stmt, int iCol, double *val);
+SQLITE3_IMPORT_C void sqlite3_column_double_ref(sqlite3_stmt *stmt, int iCol, double *val);
 
-IMPORT_C void sqlite3_column_int64_ref(sqlite3_stmt *stmt, int iCol, sqlite_int64 *val);
+SQLITE3_IMPORT_C void sqlite3_column_int64_ref(sqlite3_stmt *stmt, int iCol, sqlite_int64 *val);
 
-IMPORT_C unsigned int sqlite3_strlen(char *ptr);
+SQLITE3_IMPORT_C unsigned int sqlite3_strlen(char *ptr);
 
 /*
 ** Undo the hack that converts floating point types to integer for

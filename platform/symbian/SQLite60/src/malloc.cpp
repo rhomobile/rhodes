@@ -35,7 +35,7 @@ static void softHeapLimitEnforcer(
 ** Set the soft heap-size limit for the current thread. Passing a
 ** zero or negative value indicates no limit.
 */
-EXPORT_C void sqlite3_soft_heap_limit(int n){
+SQLITE3_EXPORT_C void sqlite3_soft_heap_limit(int n){
   sqlite3_uint64 iLimit;
   int overage;
   if( n<0 ){
@@ -57,7 +57,7 @@ EXPORT_C void sqlite3_soft_heap_limit(int n){
 /*
 ** Release memory held by SQLite instances created by the current thread.
 */
-EXPORT_C int sqlite3_release_memory(int n){
+SQLITE3_EXPORT_C int sqlite3_release_memory(int n){
 #ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
   return sqlite3PagerReleaseMemory(n);
 #else

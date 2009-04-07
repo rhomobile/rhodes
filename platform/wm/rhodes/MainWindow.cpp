@@ -17,6 +17,7 @@
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
+IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 char* canonicalizeURL(char* path);
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
@@ -133,7 +134,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // whether SIP is on or off, and
     // whether device is in portrait or landscape mode.
     // (rcMainWindow was initialized above)
-    VERIFY(SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0));
+    RHO_ASSERT(SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0));
 
     // (rcMenuBar was initialized above)
     m_menuBar.GetWindowRect(&rcMenuBar);
@@ -150,7 +151,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     MoveWindow(&rcMainWindow);
 
-    _ASSERT(SUCCEEDED(hr));
+    RHO_ASSERT(SUCCEEDED(hr));
 Error:
     return SUCCEEDED(hr) ? 0 : -1;
 }
@@ -162,7 +163,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 #endif
 
     // Tear down connection points while controls are still alive.
-    ATLVERIFY(SUCCEEDED(AtlAdviseSinkMap(this, false)));
+    RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
 
     m_spIWebBrowser2 = NULL;
     m_browser = NULL;
@@ -366,26 +367,18 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
                                               VARIANT_BOOL * /*pvbCancel*/)
 {
     USES_CONVERSION;
-    TCHAR szOutput[128];
+    LOG(TRACE) + "OnBeforeNavigate2: " + OLE2CT(V_BSTR(pvtURL));
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
-                    TEXT("0x%08p %s %s\n"), pDisp, OLE2CT(V_BSTR(pvtURL)),
-                    VT_ERROR != V_VT(pvtTargetFrameName) ? OLE2CT(V_BSTR(pvtTargetFrameName)) : TEXT("(frame name error)"));
-    OutputDebugString(szOutput);
 
     SetWindowText(TEXT("Untitled"));
 
-    ATLVERIFY(SetEnabledState(IDM_STOP, TRUE));
+    RHO_ASSERT(SetEnabledState(IDM_STOP, TRUE));
 }
 
 void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 {
     USES_CONVERSION;
-    TCHAR szOutput[128];
-
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
-                    TEXT("%s\n"), OLE2CT(bstrTitleText));
-    OutputDebugString(szOutput);
+    LOG(TRACE) + "OnBrowserTitleChange: " + OLE2CT(bstrTitleText);
 
     SetWindowText(OLE2CT(bstrTitleText));
 }
@@ -393,11 +386,7 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-    TCHAR szOutput[128];
-
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
-                    TEXT("0x%08p %s\n"), pDisp, OLE2CT(V_BSTR(pvtURL)));
-    OutputDebugString(szOutput);
+    LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
 #if defined(_WIN32_WCE)
@@ -471,11 +460,10 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-    TCHAR szOutput[256];
 
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
-		OutputDebugString(L"Show loading page\n");
+		LOG(TRACE) + "Show loading page";
 #if defined(_WIN32_WCE)
 		ShowLoadingPage(pDisp, pvtURL);
 #endif //_WIN32_WCE
@@ -487,22 +475,20 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	}
 	m_current_url = wce_wctomb(url);
 
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
-		TEXT("Current URL: %s\n"), url);
-    OutputDebugString(szOutput);
+    LOG(TRACE) + "OnDocumentComplete: " + url;
 
-    ATLVERIFY(SetEnabledState(IDM_STOP, FALSE));
+    RHO_ASSERT(SetEnabledState(IDM_STOP, FALSE));
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 {
     if (CSC_NAVIGATEBACK == lCommand)
     {
-        ATLVERIFY(SetEnabledState(IDM_BACK, bEnable));
+        RHO_ASSERT(SetEnabledState(IDM_BACK, bEnable));
     }
     else if (CSC_NAVIGATEFORWARD == lCommand)
     {
-        ATLVERIFY(SetEnabledState(IDM_FORWARD, bEnable));
+        RHO_ASSERT(SetEnabledState(IDM_FORWARD, bEnable));
     }
 }
 

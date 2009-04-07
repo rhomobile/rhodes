@@ -26,6 +26,10 @@
 #include "SyncOperation.h"
 #include "Constants.h"
 #include "SyncEngine.h"
+#include "logging/RhoPlainLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncOperation"
 
 extern void save_source_url(const char* source_url);
 extern char *get_client_id();
@@ -130,7 +134,7 @@ void set_sync_post_body(pSyncOperation op) {
 		strcat(target, buffer);
 	}
 	
-	printf("Formatted post string: %s\n", target);
+	RAWLOG_INFO1("Formatted post string: %s", target);
 	strcpy((char *)op->_post_body, target);
 }
 
@@ -176,7 +180,7 @@ int get_op_list_from_database(pSyncOperation *list, sqlite3* database, int max_c
 		count++;
 	} 
 	for (i = 0; i < count; i++) {
-		printf("Adding sync operation (attrib, source_id, object, value, update_type, uri): %s, %i, %s, %s, %s, %s\n", 
+		RAWLOG_INFO6("Adding sync operation (attrib, source_id, object, value, update_type, uri): %s, %i, %s, %s, %s, %s\n", 
 			   list[i]->_sync_object->_attrib, 
 			   list[i]->_sync_object->_source_id, 
 			   list[i]->_sync_object->_object, 

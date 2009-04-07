@@ -10,6 +10,7 @@
 #include "resource.h"
 #include "GetURLDialog.h"
 #include "NetRequest.h"
+#include "logging/RhoLog.h"
 
 static const UINT ID_BROWSER = 1;
 static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
@@ -23,6 +24,7 @@ class CMainWindow :
 #endif
     public IDispEventImpl<ID_BROWSER, CMainWindow>
 {
+    DEFINE_LOGCLASS;
 public:
     CMainWindow();
     ~CMainWindow();
