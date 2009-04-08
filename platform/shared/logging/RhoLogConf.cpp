@@ -49,6 +49,11 @@ void LogSettings::getLogTextW(StringW& strTextW){
         oFile.readStringW(strTextW);
 }
 
+int LogSettings::getLogTextPos()
+{
+    return m_pFileSink ? m_pFileSink->getCurPos() : -1;
+}
+
 void LogSettings::loadFromString(const char* szSettings){
     if ( !szSettings && !*szSettings )
         return;

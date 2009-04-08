@@ -10,6 +10,7 @@ class LogCategory;
 
 struct ILogSink{
     virtual void writeLogMessage( String& strMsg ) = 0;
+    virtual int getCurPos() = 0;
 };
 
 class LogSettings{
@@ -64,7 +65,7 @@ public:
     void loadFromString(const char* szSettings);
 
     void getLogTextW(StringW& strTextW);
-
+    int  getLogTextPos();
 private:
 
     void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen );
