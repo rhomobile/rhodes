@@ -22,6 +22,8 @@ public:
     CLogFileSink(const LogSettings& oSettings);
 
     void writeLogMessage( String& strMsg );
+    int getCurPos();
+
 private:
     void loadLogPosition();
     void saveLogPosition();
@@ -34,6 +36,7 @@ public:
     CLogOutputSink(const LogSettings& oSettings) : m_oLogConf(oSettings){}
 
     void writeLogMessage( String& strMsg );
+    int getCurPos(){ return -1; }
 };
 
 }

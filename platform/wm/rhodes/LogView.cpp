@@ -23,11 +23,39 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     rho::StringW strText;
     LOGCONF().getLogTextW(strText);
+    strText += L"\r\n";
     SetDlgItemText(IDC_LOGEDIT, strText.c_str() );
+
+    int nPos = LOGCONF().getLogTextPos();
+    if ( nPos < 0 )
+        nPos = strText.length();
+
+    int nLine = SendDlgItemMessage(IDC_LOGEDIT,EM_LINEFROMCHAR,nPos,0);
+    SendDlgItemMessage(IDC_LOGEDIT,EM_LINESCROLL,0,nLine);
 #endif //OS_WINCE
 
 	bHandled = TRUE;
 	return 1;  // Let the system set the focus
+}
+
+LRESULT CLogView::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+{
+    HDC hdcStatic = (HDC) wParam; 
+    HWND hwndStatic = (HWND) lParam;
+
+    if ( !m_hBrush )
+        m_hBrush = CreateSolidBrush(RGB(255,255,255));
+
+    bHandled = TRUE;
+    return (LRESULT)m_hBrush;
+}
+
+void CLogView::OnFinalMessage(HWND /*hWnd*/)
+{
+    if ( m_hBrush )
+        DeleteObject(m_hBrush);
+
+    m_hBrush = NULL;
 }
 
 LRESULT CLogView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)

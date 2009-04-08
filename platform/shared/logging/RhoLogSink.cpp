@@ -49,6 +49,11 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
     saveLogPosition();
 }
 
+int CLogFileSink::getCurPos()
+{
+    return m_nCirclePos;
+}
+
 void CLogFileSink::loadLogPosition(){
     if ( !m_pPosFile )
         m_pPosFile = new general::CRhoFile();
