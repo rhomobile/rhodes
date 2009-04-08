@@ -27,6 +27,7 @@ public:
     unsigned int size();
 
     void readString(String& strData);
+    void readStringW(StringW& strTextW);
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );

@@ -43,6 +43,12 @@ void LogSettings::loadFromFile(const char* szFilePath){
     }
 }
 
+void LogSettings::getLogTextW(StringW& strTextW){
+    general::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+        oFile.readStringW(strTextW);
+}
+
 void LogSettings::loadFromString(const char* szSettings){
     if ( !szSettings && !*szSettings )
         return;
@@ -161,12 +167,13 @@ void LogSettings::setLogFilePath(const char* szLogFilePath){
     }
 }
 
-void LogSettings::sinkLogMessage( const char* data, unsigned int len ){
-    if ( isLogToOutput() )
-        m_pOutputSink->writeLogMessage(data, len);
-
+void LogSettings::sinkLogMessage( String& strMsg ){
     if ( isLogToFile() )
-        m_pFileSink->writeLogMessage(data, len);
+        m_pFileSink->writeLogMessage(strMsg);
+
+    //Should be at the end
+    if ( isLogToOutput() )
+        m_pOutputSink->writeLogMessage(strMsg);
 }
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{

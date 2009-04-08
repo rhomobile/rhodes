@@ -21,7 +21,7 @@ class CLogFileSink : public ILogSink{
 public:
     CLogFileSink(const LogSettings& oSettings);
 
-    void writeLogMessage( const char* data, unsigned int len );
+    void writeLogMessage( String& strMsg );
 private:
     void loadLogPosition();
     void saveLogPosition();
@@ -33,7 +33,7 @@ class CLogOutputSink : public ILogSink{
 public:
     CLogOutputSink(const LogSettings& oSettings) : m_oLogConf(oSettings){}
 
-    void writeLogMessage( const char* data, unsigned int len );
+    void writeLogMessage( String& strMsg );
 };
 
 }

@@ -56,14 +56,14 @@ void LogMessage::flushLog(){
     if ( m_strMessage.length() > 0 ){
         if ( m_strMessage[m_strMessage.length()-1] != '\n' )
             m_strMessage += LOG_NEWLINE;
-        else if ( m_strMessage.length() > 1 && m_strMessage[m_strMessage.length()-2] == '\r' )
-            m_strMessage.erase(m_strMessage.length()-2,1);
+        //else if ( m_strMessage.length() > 1 && m_strMessage[m_strMessage.length()-2] == '\r' )
+        //    m_strMessage.erase(m_strMessage.length()-2,1);
     }
 
 
     {
         general::CMutexLock oLock(m_FlushLock);
-        getLogConf().sinkLogMessage( m_strMessage.c_str(), m_strMessage.size() );
+        getLogConf().sinkLogMessage( m_strMessage );
     }
 
     if ( m_severity == L_FATAL ) //TODO: may be save fatal info in separate place

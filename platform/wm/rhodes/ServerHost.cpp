@@ -1,4 +1,8 @@
+#include "stdafx.h"
+
 #include "ServerHost.h"
+#include "HttpServer.h"
+#include "syncengine/rsyncengine.h"
 
 CServerHost::CServerHost()
 {
