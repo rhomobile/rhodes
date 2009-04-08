@@ -21,11 +21,14 @@
 
 // INCLUDE FILES
 #include <coemain.h>
+#include <akncommondialogs.h>
+
 #include <eikbtgpc.h>
 #include <rhodes.rsg>
 #include "rhodesApplication.h"
 #include "rhodesAppView.h"
 #include "rhodesAppUI.h"
+#include "RhoCamera.h"
 
 //#include "AppSoftkeysObserver.h"
 #include "SpecialLoadObserver.h"
@@ -36,6 +39,13 @@
 #include <avkon.rsg>
 
 #include "rhodes.hrh"
+
+#include <w32std.h>   
+#include <coemain.h>   
+#include <aknsutils.h>   
+#include <aknnavide.h>   
+#include <barsread.h>   
+#include <akntabgrp.h> 
 
 #include <BrCtlInterface.h>
 #include <CHARCONV.H>
@@ -49,12 +59,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+_LIT(KTitle, "Select image file");
+
 CRhodesAppView* g_RhodesAppView = NULL;
+
+// Constants   
+const TInt KErrorMsgXPos = 0;   
+const TInt KErrorMsgYPos = 50;   
+const TInt KErrorMaxWidth = 160;   
+const TInt KRedColor = 35; 
+const TInt KWhiteColor = 0;
+
+#define HOME_URL "http://127.0.0.1:8080"
 
 extern "C" {
 	#include "UniversalLock.h"
 
-	static char* g_current_url = NULL;
+	void perform_notification(char* callback, char* params);
+	
+	char* g_current_url = NULL;
 
 	INIT_LOCK(change_url);
 
@@ -136,6 +159,17 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	// Activate the window, which makes it ready to be drawn
 	ActivateL();
 	
+	callbackUrl = NULL;
+	iBitmap = NULL;
+	iOffScreenBitmap = NULL;
+	iFbsBitGc = NULL;
+	iBmpDevice = NULL;
+	
+	iRhoCamera = CRhoCamera::NewL(this, aRect);
+	
+	// This should be called after the windows has been activated   
+	CreateOffScreenBitmapL();   
+	
 	iCommandBase = TBrCtlDefs::ECommandIdBase;
 	
 	//iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
@@ -183,7 +217,7 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	
     iBrCtlInterface->HandleCommandL(TBrCtlDefs::ECommandIdBase + TBrCtlDefs::ECommandClearHistory);
     iBrCtlInterface->ClearCache();
-    
+    	
     }
 
 // -----------------------------------------------------------------------------
@@ -203,6 +237,21 @@ CRhodesAppView::CRhodesAppView()
 //
 CRhodesAppView::~CRhodesAppView()
 	{
+		if (iOffScreenBitmap)   
+	        delete iOffScreenBitmap;   
+	    if (iFbsBitGc)   
+	        delete iFbsBitGc;   
+	    if (iBmpDevice)       
+	        delete iBmpDevice;   
+	       
+	    iBitmap = NULL;
+	    
+		if ( iRhoCamera )
+			{
+			delete iRhoCamera;
+			iRhoCamera = NULL;
+			}
+	    
 		if (iBrCtlInterface)
 	        delete iBrCtlInterface;
 		
@@ -217,6 +266,71 @@ CRhodesAppView::~CRhodesAppView()
 			delete iCBrCtlLoadEventObserver;
 	}
 
+void CRhodesAppView::DrawImage(CWindowGc& aGc,   
+    const TRect& aRect) const   
+    {   
+    TSize bmpSizeInPixels( iBitmap->SizeInPixels() );   
+    TInt xDelta = (aRect.Width() - bmpSizeInPixels.iWidth) / 2;   
+    TInt yDelta = (aRect.Height() - bmpSizeInPixels.iHeight) / 2;   
+    TPoint pos( xDelta, yDelta ); // displacement vector   
+    pos += aRect.iTl; // bitmap top left corner position   
+   
+    // Drawing viewfinder image to bitmap   
+    iFbsBitGc->BitBlt( pos, iBitmap, TRect( TPoint( 0, 0 ), bmpSizeInPixels ));   
+   
+    // Draws bitmap with indicators on the screen   
+    TSize size( iOffScreenBitmap->SizeInPixels() );   
+    aGc.BitBlt( TPoint(0,0), iOffScreenBitmap, TRect( TPoint(0,0), size ) );   
+    }
+
+void CRhodesAppView::CreateOffScreenBitmapL()   
+    {   
+    iOffScreenBitmap = new (ELeave) CWsBitmap( iCoeEnv->WsSession() );   
+       
+    TSize size = Rect().Size();   
+   
+    TInt createError = iOffScreenBitmap->Create( size, iRhoCamera->DisplayMode());   
+    User::LeaveIfError( createError );   
+   
+    iFbsBitGc = CFbsBitGc::NewL(); //graphic context   
+    iBmpDevice = CFbsBitmapDevice::NewL(iOffScreenBitmap);   
+    iFbsBitGc->Activate(iBmpDevice);   
+    iFbsBitGc->SetBrushColor( AKN_LAF_COLOR( KWhiteColor ) );   
+   
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();   
+    CFbsBitmap* bitmap = AknsUtils::GetCachedBitmap( skin,    
+        KAknsIIDQsnBgAreaMain);   
+    if ( bitmap )    
+        {   
+        iFbsBitGc->BitBlt( TPoint(0,0), bitmap );   
+        }   
+   
+    iOffScreenBitmapCreated = ETrue;   
+    } 
+
+void CRhodesAppView::DrawImageNow(CFbsBitmap* aBitmap)   
+    {   
+    iBitmap = aBitmap;   
+    DrawNow();   
+    }
+
+void CRhodesAppView::ReDrawOffScreenBitmap()   
+    {   
+    iOffScreenBitmapCreated = ETrue;   
+   
+    iFbsBitGc->SetBrushColor( AKN_LAF_COLOR( KWhiteColor ) );   
+    iFbsBitGc->Clear();   
+   
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();   
+    CFbsBitmap* bitmap = AknsUtils::GetCachedBitmap( skin,    
+        KAknsIIDQsnBgAreaMain );   
+    if ( bitmap )    
+        {   
+        iFbsBitGc->BitBlt( TPoint(0,0), bitmap );   
+        }   
+   
+    DrawNow();  // clear screen    
+    }
 
 void CRhodesAppView::InitStartPage()
 {
@@ -286,13 +400,44 @@ void CRhodesAppView::InitOptions()
 //
 void CRhodesAppView::Draw(const TRect& aRect) const
 	{
+		TRect drawingRect = Rect(); 
 		// Get the standard graphics context
 		CWindowGc& gc = SystemGc();
+		TBool drawImage = EFalse;
 		
-		gc.SetPenStyle(CGraphicsContext::ESolidPen);
-	    gc.SetBrushColor(KRgbWhite);
-	    gc.SetBrushStyle(CGraphicsContext::ESolidBrush);
-	    gc.DrawRect(aRect);	}
+		if ( iOffScreenBitmapCreated )   
+			{   
+				if ( iBitmap) //Viewfinding ongoing   
+					{   
+					drawImage = ETrue;
+					MAknsSkinInstance* skin = AknsUtils::SkinInstance();   
+					CFbsBitmap* bitmap = AknsUtils::GetCachedBitmap( skin,    
+						KAknsIIDQsnBgAreaMain );   
+					if ( bitmap )    
+						{   
+						gc.BitBlt( TPoint(0,0), bitmap);   
+						}   
+					else   
+						{   
+						// Draws bitmap with indicators on the screen   
+						TSize size( iOffScreenBitmap->SizeInPixels() );   
+						gc.BitBlt( TPoint(0,0), iOffScreenBitmap,    
+							TRect( TPoint(0,0), size ) );   
+						
+						gc.BitBlt( TPoint(0,0), iOffScreenBitmap);
+						
+						}      
+					}
+			}
+
+		if ( !drawImage )
+			{
+			gc.SetPenStyle(CGraphicsContext::ESolidPen);
+			gc.SetBrushColor(KRgbWhite);
+			gc.SetBrushStyle(CGraphicsContext::ESolidBrush);
+			gc.DrawRect(aRect);	
+			}    
+	}
 
 // -----------------------------------------------------------------------------
 // CRhodesAppView::SizeChanged()
@@ -425,6 +570,22 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 					}
 				break;
 			}	
+	        case ECmdTakePicture:
+	        	{
+	        	iRhoCamera->StopViewFinder();
+				iRhoCamera->StartViewFinderL();
+	        	break;
+	        	}
+	        case ECmdChoosePicture:
+	        	{
+	        	ChoosePicture();	
+	        	break;
+	        	}
+	        case ECmdSetCurrentUrl:
+	        	{
+	        	webview_set_current_location( GetCurrentPageUrl() );
+	        	break;
+	        	}
 	        /*case EAknSoftkeyCancel:
         	{
         		CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();
@@ -530,7 +691,7 @@ char* CRhodesAppView::GetCurrentPageUrl()
 			HBufC8* buffer = HBufC8::NewLC(length);
 			buffer->Des().Copy(aDescriptor);
 		 
-			char* str = new char[length + 1];
+			char* str = (char*)malloc(length + 1);
 			Mem::Copy(str, buffer->Ptr(), length);
 			str[length] = '\0';
 		 
@@ -620,5 +781,66 @@ void CRhodesAppView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
         }
     }
 }
+
+char* CRhodesAppView::CanonicalizeURL(const char* path)
+	{
+		if (!path) {
+			return strdup(HOME_URL);
+		}
+
+		if ( strncmp("http://",path,7)==0 ) {
+			return strdup(path);
+		}
+
+		char* slash = "";
+		if ( (*path!='/')&&(*path!='\\') ) {
+			slash = "/";
+		}
+
+		int len = strlen(HOME_URL)+strlen(slash)+strlen(path);
+		char* url = (char*) malloc(len+1);
+		sprintf(url,"%s%s%s",HOME_URL,slash,path);
+		
+		return url;
+	}
+
+void CRhodesAppView::ChoosePicture()
+	{
+		if ( GetCallbackUrl() )
+		{
+			TFileName file(KNullDesC);
+			char params[500] = {0};
+								
+			if ( AknCommonDialogs::RunSelectDlgLD(file, R_FILE_SELECTION_DIALOG, KTitle))
+				{
+					//send callback
+					TInt length = file.Length();
+						 
+					HBufC8* buffer = HBufC8::NewLC(length);
+					buffer->Des().Copy(file);
+				 
+					char* fileName = (char*)malloc(length + 1);
+					Mem::Copy(fileName, buffer->Ptr(), length);
+					fileName[length] = '\0';
+				 
+					CleanupStack::PopAndDestroy(buffer);
+					
+					sprintf(params,"status=ok&image_uri=%s",fileName);
+					free(fileName);
+										
+					char* tmp = CanonicalizeURL( GetCallbackUrl() );
+					perform_notification(tmp, params);
+					free(tmp);
+				}
+			else
+				{
+					sprintf(params,"status=cancel&message=%s","User canceled operation");
+										
+					char* tmp = CanonicalizeURL( GetCallbackUrl() );
+					perform_notification(tmp, params);
+					free(tmp);
+				}
+		}
+	}
 // End of File
 

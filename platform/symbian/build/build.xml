@@ -457,8 +457,8 @@
         </exec>
         
         
-        <!-- Remove the temporary pkg file -->
-        <delete file="${dir.sis}/rhodes_tmp.pkg" />
+        <!-- Remove the temporary pkg file-->
+        <delete file="${dir.sis}/rhodes_tmp.pkg" /> 
 
         <!-- Copy & rename SIS file to output dir -->
         <copy file="${dir.sis}/rhodes_tmp.sis" tofile="${dir.output}/${package.name}.sis"/>   
@@ -562,6 +562,7 @@
             <arg line="bldfiles"/>
         </exec>
 	  
+	  <!--
         <echo message="Calling REALLYCLEAN for tcmalloc..."/>
         <echo message="output to file: ${log.build}"/>
         <exec dir="${dir.tcmalloc.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
@@ -601,6 +602,7 @@
             <arg value="abld.bat"/>
             <arg line="reallyclean"/>
         </exec>
+        -->
 	</target>
 	
 	<target name="rhobundle" depends="init, clean">

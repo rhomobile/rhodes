@@ -33,6 +33,7 @@ class CHttpServer;
 class CSyncEngineWrap;
 class CGeoLocationService;
 class CAppManager;
+class CRhoCamera;
 
 struct sqlite3;
 // CLASS DECLARATION
