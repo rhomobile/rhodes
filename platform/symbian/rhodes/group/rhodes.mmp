@@ -28,6 +28,7 @@ SYSTEMINCLUDE	 \epoc32\include
 SYSTEMINCLUDE	 \epoc32\include\stdapis
 //SYSTEMINCLUDE	 \epoc32\include\libc
 SYSTEMINCLUDE	 \epoc32\include\ecom
+SYSTEMINCLUDE	 \epoc32\include\icl
 SYSTEMINCLUDE    \epoc32\include\stdapis\glib-2.0
 
 SYSTEMINCLUDE    \epoc32\include\stlport
@@ -40,14 +41,13 @@ MACRO _STLP_USE_MALLOC
 USERINCLUDE	   ..\inc
 USERINCLUDE    ..\help
 
-USERINCLUDE    ..\inc\phonebook ..\inc\geolocation
 USERINCLUDE    ..\..\SQLite60\src
 USERINCLUDE    ..\..\..\shared\json
 USERINCLUDE    ..\..\..\shared\syncengine
 USERINCLUDE    ..\..\..\shared\ruby
 USERINCLUDE    ..\..\..\shared\ruby\include
 USERINCLUDE    ..\..\..\shared\ruby\include\ruby
-USERINCLUDE    ..\..\..\shared\ruby\symbian
+USERINCLUDE    ..\..\..\shared\ruby\symbian ..\inc\phonebook ..\inc\geolocation
 USERINCLUDE    ..\..\..\shared\unzip
 USERINCLUDE    ..\..\..\shared
 USERINCLUDE    ..\..\..\shared\common
@@ -63,6 +63,7 @@ SOURCEPATH		..\src
 SOURCE			rhodes.cpp
 SOURCE			rhodesApplication.cpp
 SOURCE			rhodesAppView.cpp
+SOURCE 			RhoCamera.cpp
 SOURCE			rhodesAppUi.cpp
 SOURCE			rhodesDocument.cpp
 SOURCE 			HttpServer.cpp
@@ -138,6 +139,13 @@ LIBRARY                                 Lbs.lib
 LIBRARY                                 eiksrv.lib
 LIBRARY                                 aknnotify.lib
 
+LIBRARY                                 ecam.lib
+LIBRARY                                 PlatformEnv.lib
+LIBRARY                                 ImageConversion.lib
+LIBRARY                                 fbscli.lib
+LIBRARY                                 aknskins.lib
+LIBRARY                                 CommonDialogs.lib
+
 LANG SC
 
 VENDORID	  	  0
@@ -168,7 +176,5 @@ SOURCEPATH ..\src
 SOURCE GeoLocationService.cpp
 SOURCEPATH ..\src\webview
 SOURCE webview.cpp
-SOURCEPATH ..\src\camera
-SOURCE camera.c
 SOURCEPATH ..\src
-SOURCE notification.cpp BrCtlLoadEventObserver.cpp
+SOURCE camera\camera.cpp notification.cpp BrCtlLoadEventObserver.cpp

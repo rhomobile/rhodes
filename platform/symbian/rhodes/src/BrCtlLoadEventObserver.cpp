@@ -24,21 +24,25 @@
 
 #include "BrCtlLoadEventObserver.h"
 #include "RhodesAppView.h"
+#include "rhodes.hrh"
 
 extern "C" void webview_set_current_location(char* url);
+
+//extern void SendWindowEvent(TInt aEvent, const char* data);
 
 void 
 CCBrCtlLoadEventObserver::HandleBrowserLoadEventL(TBrCtlDefs::TBrCtlLoadEvent aLoadEvent,
                                                           TUint aSize, 
                                                           TUint16 aTransactionId) 
     {
-		/*if ( TBrCtlDefs::EEventLoadFinished == aLoadEvent ){
+		if ( TBrCtlDefs::EEventLoadFinished == aLoadEvent ){
 			
-			if ( iContainer )
+			/*if ( iContainer )
 			{
 				webview_set_current_location( iContainer->GetCurrentPageUrl() );
 			}
-		}*/
+			SendWindowEvent( ECmdSetCurrentUrl, NULL );*/
+		}
     }
 
 CCBrCtlLoadEventObserver::CCBrCtlLoadEventObserver() {

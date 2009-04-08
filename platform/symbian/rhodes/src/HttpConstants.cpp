@@ -31,3 +31,5 @@ _DEFINE_LIT(CHttpConstants, KHttpOUT, "\\data\\rho\\http\\out\\");
 _DEFINE_LIT(CHttpConstants, KFileIncompletePrefix, "___");
 _DEFINE_LIT(CHttpConstants, KFileSystemRoot,"\\");
 _DEFINE_LIT(CHttpConstants, KDateFormat,"%D%M%Y%/0%1%/1%2%/2%3%/3 %:0%H%:1%T%:2%S.%C%:3");
+
+_DEFINE_LIT(CHttpConstants, KImagesDir, "\\data\\rho\\images\\");

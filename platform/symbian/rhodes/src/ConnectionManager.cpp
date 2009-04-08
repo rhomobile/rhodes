@@ -112,7 +112,7 @@ TInt CConnectionManager::SelectIAP()
 	TUint32 id;
 	TIapData eap;	
  
-	TInt cur =0; //current value
+	//TInt cur =0; //current value
 	do
 	{
 		gprsTable->ReadTextL(TPtrC(COMMDB_NAME), iapfromtable);
