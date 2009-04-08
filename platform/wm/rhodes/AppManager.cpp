@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "AppManager.h"
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE

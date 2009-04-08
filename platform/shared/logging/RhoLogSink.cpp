@@ -15,7 +15,9 @@ CLogFileSink::CLogFileSink(const LogSettings& oSettings) : m_oLogConf(oSettings)
 
 }
 
-void CLogFileSink::writeLogMessage( const char* data, unsigned int len ){
+void CLogFileSink::writeLogMessage( String& strMsg ){
+    int len = strMsg.length();
+
     if ( !m_pFile )    
         m_pFile = new general::CRhoFile();
 
@@ -36,7 +38,7 @@ void CLogFileSink::writeLogMessage( const char* data, unsigned int len ){
         }
     }
 
-    int nWritten = m_pFile->write( data, len );
+    int nWritten = m_pFile->write( strMsg.c_str(), len );
     m_pFile->flush();
 
     if ( m_nCirclePos >= 0 )
@@ -79,15 +81,18 @@ void CLogFileSink::saveLogPosition(){
     m_pPosFile->movePosToStart();
 }
 
-void CLogOutputSink::writeLogMessage( const char* data, unsigned int len ){
+void CLogOutputSink::writeLogMessage( String& strMsg )
+{
+    if ( strMsg.length() > 1 && strMsg[strMsg.length()-2] == '\r' )
+        strMsg.erase(strMsg.length()-2,1);
 
 #if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
-        ::OutputDebugStringA(data);
-        printf(data);
+        ::OutputDebugStringA(strMsg.c_str());
+        printf(strMsg.c_str());
 #elif defined( OS_SYMBIAN )
-        RDebug::Printf(data);
+        RDebug::Printf(strMsg.c_str());
 #else
-        printf(data);
+        printf(strMsg.c_str());
 #endif
 
 }

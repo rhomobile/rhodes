@@ -7,8 +7,12 @@
 #define IDR_MAIN_MENU                   105
 #define IDR_MAIN_MENUBAR                106
 #define IDR_GETURL_MENUBAR              107
+#define IDD_LOGVIEW                     108
+#define IDD_LOGVIEW_WIDE                109
+#define IDR_LOGMENUBAR                  110
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
+#define IDC_LOGEDIT                     1003
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -31,14 +35,16 @@
 #define ID_EXIT                         40016
 #define ID_MENU                         40017
 #define ID_MENU_HELLO                   40018
+#define IDM_EXIT                        40019
+#define IDM_LOG                         40020
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40019
-#define _APS_NEXT_CONTROL_VALUE         1003
-#define _APS_NEXT_SYMED_VALUE           108
+#define _APS_NEXT_RESOURCE_VALUE        111
+#define _APS_NEXT_COMMAND_VALUE         40021
+#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

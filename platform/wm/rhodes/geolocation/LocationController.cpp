@@ -1,4 +1,5 @@
-#include "../stdafx.h"
+#include "stdafx.h"
+
 #include "../HttpServer.h"
 #include "LocationController.h"
 #include "shttpd.h"
