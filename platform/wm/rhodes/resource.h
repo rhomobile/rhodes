@@ -10,9 +10,17 @@
 #define IDD_LOGVIEW                     108
 #define IDD_LOGVIEW_WIDE                109
 #define IDR_LOGMENUBAR                  110
+#define IDD_LOGOPTIONS                  111
+#define IDR_LOGOPTIONSMENUBAR           112
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
+#define IDC_COMBO1                      1005
+#define IDC_CBXLEVELS                   1005
+#define IDC_EDIT1                       1006
+#define IDC_MSGCLASSES                  1006
+#define IDC_EDIT2                       1007
+#define IDC_MSGEXCLUDE                  1007
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -42,9 +50,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        111
+#define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40021
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

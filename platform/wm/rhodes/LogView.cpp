@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "LogView.h"
+#include "LogOptionsDlg.h"
 
 #include "logging/RhoLog.h"
 
@@ -73,6 +74,9 @@ LRESULT CLogView::OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandle
 
 LRESULT CLogView::OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    CLogOptionsDlg oLogOptions;
+    oLogOptions.DoModal(m_hWnd);
+
 	return 0;
 }
 

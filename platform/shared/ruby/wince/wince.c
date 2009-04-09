@@ -14,7 +14,7 @@
 #include "ruby\config.h"
 #include <errno.h>
 #include <process.h>
-#include "ruby.h"
+//#include "ruby.h"
 
 /* global for GetCommandLineA */
 char *_commandLine;

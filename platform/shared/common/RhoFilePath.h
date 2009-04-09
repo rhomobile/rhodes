@@ -28,6 +28,19 @@ public:
         return res;
     }
 
+    String changeBaseName( const char* szFileName )
+    {
+        const char* base = findLastSlash();
+        if ( base && *(base+1) ){
+            String res( m_szPath, base-m_szPath+1);
+            res += szFileName;
+
+            return res;
+        }
+
+        return makeFullPath(szFileName);
+    }
+
 private:
 
     const char* findLastSlash(){

@@ -136,10 +136,10 @@
 #include "thread_cache.h"
 
 //RHO
-#include "logging/RhoPlainLog.h"
+//#include "logging/RhoPlainLog.h"
 
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "TCMalloc"
+//#undef DEFAULT_LOGCATEGORY
+//#define DEFAULT_LOGCATEGORY "TCMalloc"
 //RHO
 
 using tcmalloc::PageHeap;
@@ -616,16 +616,17 @@ static void ReportLargeAlloc(Length num_pages, void* result) {
 //namespace {
 void InvalidFree(void* ptr) {
     ptr;
+    //TODO:InvalidFree logging
   //CRASH("Attempt to free invalid pointer: %p\n", ptr);
-    RAWLOG_ERROR1("Attempt to free invalid pointer: %p", ptr);
+    //RAWLOG_ERROR1("Attempt to free invalid pointer: %p", ptr);
 }
 
 void* InvalidRealloc(void* old_ptr, size_t new_size) {
     old_ptr; new_size;
 //  CRASH2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")\n",
 //        old_ptr, new_size);
-    RAWLOG_ERROR2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")",
-        old_ptr, new_size);
+    //RAWLOG_ERROR2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")",
+    //    old_ptr, new_size);
 
   return NULL;
 }

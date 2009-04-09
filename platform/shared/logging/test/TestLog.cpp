@@ -122,8 +122,8 @@ void shouldSaveLogConfToFile(){
 void shouldLoadLogConfFromString(){
     rho::LogSettings oConf;
 
-/*    oConf.loadFromString(
-        "MinSeverity  = 1  \n"
+    oConf.loadFromString(
+        "MinSeverity  = 2  \n"
         "LogToOutput=1\r\n"
         "LogToFile=1\r\n"
         "LogFilePath=mylog.txt\r\n"
@@ -131,8 +131,8 @@ void shouldLoadLogConfFromString(){
         "LogPrefix=1\r\n"
         "LogCategories=MyClass1,MyClass2\r\n"
         "ExcludeLogCategories=MyClass3\r\n"
-    );*/
-    oConf.loadFromFile("logconf.txt");
+    );
+    //oConf.loadFromFile("logconf.txt");
 
     if ( oConf.getMinSeverity() != L_WARNING )
         LOG(INFO) + "ERROR: oConf.getMinSeverity() != WARNING";

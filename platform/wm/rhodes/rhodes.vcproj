@@ -803,6 +803,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LogOptionsDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LogView.cpp"
 				>
 			</File>
@@ -890,6 +894,10 @@
 			</File>
 			<File
 				RelativePath=".\HttpServer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LogOptionsDlg.h"
 				>
 			</File>
 			<File

@@ -44,7 +44,7 @@
 //#include "base/logging.h"
 #include "system-alloc.h"
 //RHO
-#include "logging/RhoPlainLog.h"
+//#include "logging/RhoPlainLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "TCMalloc"
@@ -83,7 +83,7 @@ int getpagesize() {
 }
 
 extern "C" PERFTOOLS_DLL_DECL void* __sbrk(ptrdiff_t increment) {
-  RAWLOG_FATAL("Windows doesn't implement sbrk!");
+//  RAWLOG_FATAL("Windows doesn't implement sbrk!");
   return NULL;
 }
 
@@ -213,7 +213,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
 
   void* result = VirtualAlloc(0, size + extra,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-  RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
+  //RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
 
   if (result == NULL)
     return NULL;
@@ -247,7 +247,7 @@ void DumpSystemAllocatorStats(TCMalloc_Printer* printer) {
 // Google codebase.
 
 // A replacement for HeapProfiler::CleanupOldProfiles.
-void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
+/*void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
   WIN32_FIND_DATAA found;  // that final A is for Ansi (as opposed to Unicode)
   HANDLE hFind = FindFirstFileA(full_glob, &found);   // A is for Ansi
   if (hFind != INVALID_HANDLE_VALUE) {
@@ -263,4 +263,4 @@ void DeleteMatchingFiles(const char* prefix, const char* full_glob) {
     } while (FindNextFileA(hFind, &found) != FALSE);  // A is for Ansi
     FindClose(hFind);
   }
-}
+}*/
