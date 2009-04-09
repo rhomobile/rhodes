@@ -3,20 +3,12 @@
 #
 
 CC = /usr/bin/gcc
-CFLAGS = -O2 -g -Wall -Wno-parentheses
+CFLAGS = -O2 -g -Wall -Wno-parentheses -DRUBY_EXPORT -DRUBY_LIB=\"linux/ruby/config.h\"
 INCLUDE = -I../shared/ruby/linux/ruby -I../shared/ruby/include
 COMPILE = $(CC) $(CFLAGS) $(INCLUDE) -c
 LNK_OPTIONS = 
 SRC_DIR = ../shared/ruby
 OBJFILES := $(patsubst $(SRC_DIR)/%.c,$(SRC_DIR)/%.o,$(wildcard $(SRC_DIR)/*.c))
-
-#
-# INCLUDE directories for rubylinux
-#
-
-
-# -I../shared/ruby/linux/ruby -I../shared/ruby/include/ruby
-
 
 #
 # Build rubylinux
