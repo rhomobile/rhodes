@@ -183,14 +183,14 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			
 			HandleCommandL(ECmdAppHome);
 		}
-		else if ( aType == (EEventUser + ECmdAppReload))
+		/*else if ( aType == (EEventUser + ECmdAppReload))
 		{ 
 			HandleCommandL(ECmdAppReload);
 		}
 		else if ( aType == (EEventUser + ECmdSetCurrentUrl))
 		{ 
 			HandleCommandL(ECmdSetCurrentUrl);
-		}
+		}*/
 		else if ( aType == (EEventUser + ECmdAppNavigate2Url))
 		{ 
 			if ( aEvent.EventData() )
