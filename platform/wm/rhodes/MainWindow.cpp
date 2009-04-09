@@ -80,15 +80,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
                      WS_CHILD | WS_VISIBLE | WS_BORDER, 0,
                      ID_BROWSER);
 #else
-	m_browser.Create(m_hWnd,
-                     CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
-					 TEXT("Shell.Explorer"), // ProgID of the control
-                     WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
-                     ID_BROWSER);
-
-    hmenu = LoadMenu ( _AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDR_MENU_PC) );	
-	SetMenu (hmenu);
-
 	{
 		LPTSTR root = wce_mbtowc(RhoGetRootPath());
 		TCHAR ini[MAX_PATH];
@@ -98,9 +89,21 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		free(ini);
 	}
 
+	m_browser.Create(m_hWnd,
+                     CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
+					 TEXT("Shell.Explorer"), // ProgID of the control
+                     WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
+                     ID_BROWSER);
+
+    hmenu = LoadMenu ( _AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDR_MENU_PC) );	
+	SetMenu (hmenu);
+
+	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
+
 	//GetMenuBarInfo(m_hWnd,OBJID_MENU,0,&mbi);	
 	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
-	rcMainWindow.bottom += ncm.iMenuHeight+ncm.iCaptionHeight+ncm.iBorderWidth*8;
+	m_menuBarHeight = ncm.iMenuHeight+ncm.iBorderWidth*4+2;
+	rcMainWindow.bottom += ncm.iMenuHeight+ncm.iCaptionHeight+ncm.iBorderWidth*8+m_menuBarHeight;
 	rcMainWindow.right += ncm.iScrollWidth;
 	rcMainWindow.right += ncm.iBorderWidth*6;
 #endif
@@ -176,11 +179,17 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    TCHAR szOutput[128];
-    StringCchPrintf(szOutput, ARRAYSIZE(szOutput),
-                    TEXT("Seting browser client area size to: %d x %d\n"), LOWORD(lParam), HIWORD(lParam));
-    OutputDebugString(szOutput);
+#if !defined(_WIN32_WCE)
+	USES_CONVERSION;
+	LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight);
+	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight);
+	if (m_menuBar.m_hWnd) {
+		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
+	}
+#else
 	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
+#endif
+
 	return 0;
 }
 
@@ -306,6 +315,27 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 #endif
 	return 0;
 }
+
+#if !defined(_WIN32_WCE)
+LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CMenu menu;
+	CMenu sub;
+	RECT  rect;
+
+	m_browser.GetWindowRect(&rect);
+
+	VERIFY(menu.LoadMenu(IDR_MAIN_MENU));
+	sub.Attach(menu.GetSubMenu(0));
+    sub.TrackPopupMenu(
+            TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+			rect.right-1, 
+			rect.bottom-1,
+			m_hWnd);
+	sub.Detach();
+
+	return 0;
+}
+#endif
 
 void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
 

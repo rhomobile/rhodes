@@ -86,9 +86,9 @@ BEGIN
     END
 END
 
-IDR_MENU_PC MENUEX 
+IDR_MENU_PC MENU 
 BEGIN
-    POPUP "Menu",                           65535,MFT_STRING,MFS_ENABLED
+    POPUP "Menu"
     BEGIN
         MENUITEM "Back",                        IDM_BACK
         MENUITEM "Forward",                     IDM_FORWARD
@@ -98,9 +98,7 @@ BEGIN
         MENUITEM "Stop",                        IDM_STOP
         MENUITEM "Sync",                        IDM_SYNC
         MENUITEM "Options",                     IDM_OPTIONS
-#ifdef ENABLE_DYNAMIC_RHOBUNDLE
         MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
-#endif
     END
 END
 

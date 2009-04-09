@@ -21,7 +21,7 @@
 #define IDM_OPENURL                     40006
 #define IDM_REFRESH                     40007
 #define IDM_STOP                        40008
-#define ID_Menu                         40009
+#define IDM_POPUP_MENU                  40009
 #define ID_SYNC                         40010
 #define IDM_SYNC                        40011
 #define ID__RELOADRHOBUNDLE             40012
