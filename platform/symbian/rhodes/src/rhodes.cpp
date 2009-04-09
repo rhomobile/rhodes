@@ -25,6 +25,7 @@
 
 extern "C" void InitRhoLog(const char* szRootPath);
 extern "C" const char* RhoGetRootPath();
+extern "C" void runAllProfilingTests();
 
 LOCAL_C CApaApplication* NewApplication()
 	{
@@ -34,6 +35,9 @@ LOCAL_C CApaApplication* NewApplication()
 GLDEF_C TInt E32Main()
 	{
     InitRhoLog(RhoGetRootPath());
+    
+    //runAllProfilingTests();
+    
 	return EikStart::RunApplication( NewApplication );
 	}
 

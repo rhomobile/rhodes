@@ -9,6 +9,8 @@ namespace general{
 class CBaseTime{
 public:
     CBaseTime(){ memset( &m_nativeTime, 0, sizeof(m_nativeTime) ); }
+    CBaseTime(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; }
+    const CBaseTime& operator=(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; return *this; }
 
     void setToCurTime(){
         time( &m_nativeTime );
@@ -35,6 +37,57 @@ public:
     }
 
 };
+
+class CTimeInterval {
+public:
+    CTimeInterval() : m_nativeTime(0){}
+
+    String toString(){
+        char timeBuf[22];
+
+        int nMin = m_nativeTime/(60*1000);
+        int nSec = (m_nativeTime - nMin*(60*1000))/1000;
+        int mSec = m_nativeTime - nSec*1000 - nMin*(60*1000);
+
+        int nSize = sprintf(timeBuf, "%d:%02d:%03d", nMin, nSec, mSec );
+        timeBuf[nSize] = 0;
+        return String(timeBuf);
+    }
+
+    CTimeInterval minus(const CTimeInterval& time)const{
+        CTimeInterval res;
+        res.m_nativeTime = m_nativeTime - time.m_nativeTime;
+        return res;
+    }
+
+    CTimeInterval& operator+=(const CTimeInterval& time){
+        m_nativeTime += time.m_nativeTime;
+        return *this;
+    }
+
+    static CTimeInterval getCurrentTime(){
+        CTimeInterval res;
+
+#if defined( OS_WINDOWS ) || defined(OS_WINCE)
+        res.m_nativeTime = GetTickCount();
+#else
+        struct timeval tv;
+        gettimeofday( &tv, NULL );
+        res.m_nativeTime = (unsigned long)((tv.tv_sec) * 1000 + tv.tv_usec / 1000);
+#endif
+
+        return res;
+    }
+
+    bool isEmpty()const{ return m_nativeTime == 0 ; }
+    
+private:
+	unsigned long m_nativeTime;
+};
+
+inline CTimeInterval operator-(const CTimeInterval& time1, const CTimeInterval& time2){
+    return time1.minus(time2);
+}
 
 #if 0
 class CBaseTime{
