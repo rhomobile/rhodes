@@ -76,8 +76,8 @@ public:
     void LoadUrl(const TDesC& aUrl);
     void LoadUrl(char* aUrl);
     
-    void Refresh();
-    char* GetCurrentPageUrl();
+    //void Refresh();
+    //char* GetCurrentPageUrl();
     
     void DrawImageNow(CFbsBitmap* aBitmap);
     
@@ -220,7 +220,6 @@ private: //data
 
         // Special Load Observer
         CSpecialLoadObserver* iSpecialLoadObserver;
-        CCBrCtlLoadEventObserver* iCBrCtlLoadEventObserver;
         //Softkeys Observer
         //CAppSoftkeysObserver* iAppSoftkeysObserver;
         TBuf<1024> iStartPage;

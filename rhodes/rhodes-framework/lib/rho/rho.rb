@@ -152,6 +152,12 @@ module Rho
         tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
         data << "#{tmp}: #{value}" << CRLF
       }
+	data << "Pragma: no-cache" << CRLF
+	data << "Cache-Control: must-revalidate" << CRLF
+	data << "Cache-Control: no-cache" << CRLF
+	data << "Cache-Control: no-store" << CRLF
+	data << "Expires: 0" << CRLF
+
       data << CRLF
       data << res['request-body']
       data
