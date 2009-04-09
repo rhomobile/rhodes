@@ -32,7 +32,6 @@
 
 //#include "AppSoftkeysObserver.h"
 #include "SpecialLoadObserver.h"
-#include "BrCtlLoadEventObserver.h"
 
 #include <eiklabel.h>
 #include <avkon.hrh>
@@ -73,40 +72,8 @@ const TInt KWhiteColor = 0;
 #define HOME_URL "http://127.0.0.1:8080"
 
 extern "C" {
-	#include "UniversalLock.h"
-
 	void perform_notification(char* callback, char* params);
-	
-	char* g_current_url = NULL;
-
-	INIT_LOCK(change_url);
-
-	char* webview_current_location() {
-	    LOCK(change_url);
-
-	    char* retval = NULL;
-	    try {
-	    	retval = strdup(g_current_url);
-	    }catch(...){
-	    }
-	    UNLOCK(change_url);
-	    
-	    return retval;
-	}
-
-	void webview_set_current_location(char* url) {
-		
-		LOCK(change_url);
-		
-		if ( g_current_url )
-			delete[] (g_current_url);
-
-		g_current_url = url;
-		
-		UNLOCK(change_url);
-	}
-
-
+	void webview_refresh();
 	char* callGetStartPage();
 	char* callGetOptionsPage();
 
@@ -175,8 +142,6 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	//iAppSoftkeysObserver = CAppSoftkeysObserver::NewL(this);
 	iSpecialLoadObserver = CSpecialLoadObserver::NewL();
 	
-	iCBrCtlLoadEventObserver = CCBrCtlLoadEventObserver::NewL(this);
-	
 	iBrCtlCapabilities = TBrCtlDefs::ECapabilityDisplayScrollBar | TBrCtlDefs::ECapabilityLoadHttpFw | TBrCtlDefs::ECapabilityCursorNavigation |
 	                     TBrCtlDefs::ECapabilityGraphicalPage | TBrCtlDefs::ECapabilityAccessKeys ;
 
@@ -184,8 +149,6 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 
 	if ( iBrCtlInterface != NULL )
 		{
-			iBrCtlInterface->AddLoadEventObserverL(iCBrCtlLoadEventObserver);
-		
 			TRect rect( Position(), Size() );
 		    iBrCtlInterface->SetRect( rect );
 		    iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsSmallScreen, 1);
@@ -214,10 +177,7 @@ void CRhodesAppView::ConstructL(const TRect& aRect)
 	    CleanupStack::PopAndDestroy(1); // file
 	}
     CleanupStack::PopAndDestroy(1); // rfs
-	
-    iBrCtlInterface->HandleCommandL(TBrCtlDefs::ECommandIdBase + TBrCtlDefs::ECommandClearHistory);
-    iBrCtlInterface->ClearCache();
-    	
+	    	
     }
 
 // -----------------------------------------------------------------------------
@@ -260,10 +220,6 @@ CRhodesAppView::~CRhodesAppView()
 		
 		delete iSpecialLoadObserver;
 		
-		//iBrCtlInterface->RemoveLoadEventObserver(iCBrCtlLoadEventObserver);
-		
-		if ( iCBrCtlLoadEventObserver )
-			delete iCBrCtlLoadEventObserver;
 	}
 
 void CRhodesAppView::DrawImage(CWindowGc& aGc,   
@@ -493,10 +449,10 @@ void CRhodesAppView::CancelLoad()
 //
 void CRhodesAppView::HandleCommandL(TInt aCommand)
 	{
-		if ( iBrCtlInterface )
+		/*if ( iBrCtlInterface )
 		{
 			iBrCtlInterface->ClearCache();
-		}
+		}*/
 		
 	    switch ( aCommand )
 	    {
@@ -517,11 +473,13 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	        }
 	        case ECmdAppReload:
 	        {
-	            if (iBrCtlInterface)
+	            /*if (iBrCtlInterface)
 	            {
 	                iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandReload);
-	            }
-	            break;
+	            }*/
+				webview_refresh();
+				
+				break;
 	        }
 	        case EAknSoftkeyBack:
         	{
@@ -557,7 +515,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         			{
 						//_LIT(KHomePage, "http://127.0.0.1:8080/");
         				iBrCtlInterface->LoadUrlL(iStartPage);
-        				iBrCtlInterface->ClearCache();
+        				//iBrCtlInterface->ClearCache();
         			}
         		break;
         	}
@@ -566,7 +524,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 				if (iBrCtlInterface)
 					{
 						iBrCtlInterface->LoadUrlL(iOptionsPage);
-					    iBrCtlInterface->ClearCache();
+					    //iBrCtlInterface->ClearCache();
 					}
 				break;
 			}	
@@ -579,11 +537,6 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	        case ECmdChoosePicture:
 	        	{
 	        	ChoosePicture();	
-	        	break;
-	        	}
-	        case ECmdSetCurrentUrl:
-	        	{
-	        	webview_set_current_location( GetCurrentPageUrl() );
 	        	break;
 	        	}
 	        /*case EAknSoftkeyCancel:
@@ -640,7 +593,7 @@ void CRhodesAppView::CreateBasicBrowserControlL()
 	            NULL, 
 	            NULL);
 	        
-	        iBrCtlInterface->ClearCache();
+	        //iBrCtlInterface->ClearCache();
 		}
 	}
 
@@ -654,12 +607,19 @@ void CRhodesAppView::LoadUrl(const TDesC& aUrl)
 			CreateBasicBrowserControlL();
 		
 		if ( iBrCtlInterface != NULL )
-			iBrCtlInterface->LoadUrlL(aUrl);
+			{
+				iBrCtlInterface->HandleCommandL(TBrCtlDefs::ECommandIdBase + TBrCtlDefs::ECommandClearHistory);
+			    iBrCtlInterface->ClearCache();
+				iBrCtlInterface->LoadUrlL(aUrl, -1, TBrCtlDefs::ECacheModeNoCache);
+				
+				//iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandReload);
+			}
 	}
 
 void CRhodesAppView::LoadUrl(char* aUrl)
 	{
-		TPtrC8 ptr(reinterpret_cast<const TUint8*>(aUrl));
+		char* url = CanonicalizeURL(aUrl);
+		TPtrC8 ptr(reinterpret_cast<const TUint8*>(url));
 	    HBufC* buffer = HBufC::NewL(ptr.Length());
 	    buffer->Des().Copy(ptr);
 	    
@@ -668,6 +628,7 @@ void CRhodesAppView::LoadUrl(char* aUrl)
 		
 	    LoadUrl(aDescriptor);
 	    delete buffer;
+	    free(url);
 	
 	}
 
@@ -675,7 +636,7 @@ void CRhodesAppView::LoadUrl(char* aUrl)
 // CRhodesAppView::GetCurrentUrl()
 // ----------------------------------------------------
 //
-char* CRhodesAppView::GetCurrentPageUrl()
+/*char* CRhodesAppView::GetCurrentPageUrl()
 	{
 		if ( iBrCtlInterface == NULL )
 			CreateBasicBrowserControlL();
@@ -701,13 +662,13 @@ char* CRhodesAppView::GetCurrentPageUrl()
 			}
 		return NULL;
 	}
-
+*/
 // ----------------------------------------------------
 // CRhodesAppView::Refresh()
 // ----------------------------------------------------
 //
 
-void CRhodesAppView::Refresh()
+/*void CRhodesAppView::Refresh()
 	{
 		if ( iBrCtlInterface == NULL )
 			CreateBasicBrowserControlL();
@@ -715,7 +676,7 @@ void CRhodesAppView::Refresh()
 		if ( iBrCtlInterface != NULL )
 			iBrCtlInterface->HandleCommandL(iCommandBase + TBrCtlDefs::ECommandReload);
 	}
-
+*/
 // ----------------------------------------------------
 // CRhodesAppView::OfferKeyEventL(const 
 //               TKeyEvent& aKeyEvent,TEventCode aType)
