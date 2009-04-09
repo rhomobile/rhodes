@@ -341,7 +341,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared"
+				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared;../../shared/wtl80/include"
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -803,6 +803,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\menubar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NetRequest.cpp"
 				>
 			</File>
@@ -893,6 +897,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\menubar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NetRequest.h"
 				>
 			</File>
@@ -930,13 +938,6 @@
 			<File
 				RelativePath=".\geolocation\LocationController.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\geolocation\LocationController.h"
@@ -1016,13 +1017,6 @@
 			<File
 				RelativePath=".\camera\Camera.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\camera\Camera.h"
