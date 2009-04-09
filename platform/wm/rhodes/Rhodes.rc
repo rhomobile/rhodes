@@ -87,29 +87,32 @@ BEGIN
     END
 END
 
-IDR_LOGMENUBAR MENU
+IDR_LOGMENUBAR MENU 
 BEGIN
-    MENUITEM "Back",                     IDM_BACK
-    MENUITEM "Options",                  IDM_OPTIONS
+    MENUITEM "Back",                        IDM_BACK
+    MENUITEM "Options",                     IDM_OPTIONS
 END
 
-IDR_MENU_PC MENU
- BEGIN
-    POPUP "Menu",
-     BEGIN
+IDR_LOGOPTIONSMENUBAR MENU 
+BEGIN
+    MENUITEM "OK",                          IDOK
+    MENUITEM "Cancel",                      IDCANCEL
+END
+
+IDR_MENU_PC MENU 
+BEGIN
+    POPUP "Menu"
+    BEGIN
         MENUITEM "Back",                        IDM_BACK
         MENUITEM "Forward",                     IDM_FORWARD
         MENUITEM "Home",                        IDM_HOME
-//        MENUITEM "Open URL...",                 IDM_OPENURL
         MENUITEM "Refresh",                     IDM_REFRESH
         MENUITEM "Stop",                        IDM_STOP
         MENUITEM "Sync",                        IDM_SYNC
         MENUITEM "Options",                     IDM_OPTIONS
-#ifdef ENABLE_DYNAMIC_RHOBUNDLE
-        MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
-#endif
-     END
+    END
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -128,6 +131,7 @@ END
 IDD_LOGVIEW DIALOG  0, 0, 156, 129
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE 0x80000000L
+CAPTION "Log"
 FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_LOGEDIT,7,7,120,106,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
@@ -138,6 +142,19 @@ STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif"
 BEGIN
+END
+
+IDD_LOGOPTIONS DIALOG  0, 0, 187, 94
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log options"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Level:",IDC_STATIC,7,4,39,8
+    COMBOBOX        IDC_CBXLEVELS,59,4,69,57,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_MSGCLASSES,7,34,173,14,ES_AUTOHSCROLL
+    LTEXT           "Message classes(* for all):",IDC_STATIC,7,23,173,8
+    LTEXT           "Exclude message classes:",IDC_STATIC,7,53,86,8
+    EDITTEXT        IDC_MSGEXCLUDE,7,66,173,14,ES_AUTOHSCROLL
 END
 
 
@@ -171,6 +188,14 @@ BEGIN
         RIGHTMARGIN, 203
         TOPMARGIN, 7
         BOTTOMMARGIN, 122
+    END
+
+    IDD_LOGOPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 87
     END
 END
 #endif    // APSTUDIO_INVOKED

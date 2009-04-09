@@ -77,5 +77,6 @@ extern LogSettings g_LogSettings;
 }
 
 inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
+extern "C" void InitRhoLog(const char* szRootPath);
 
 #endif //_RHOLOGCONF_H_

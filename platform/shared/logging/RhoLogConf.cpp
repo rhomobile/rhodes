@@ -5,6 +5,8 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 
+static const char* CONF_FILENAME = "RhoLogConf.txt";
+
 namespace rho{
 LogSettings g_LogSettings;
 
@@ -30,7 +32,13 @@ void LogSettings::saveToFile(const char* szFilePath){
     saveToString(strData);
 
     general::CRhoFile oFile;
-    oFile.open( szFilePath, general::CRhoFile::OpenForWrite);
+    if ( szFilePath && *szFilePath )
+        oFile.open(  szFilePath , general::CRhoFile::OpenForWrite);
+    else{
+	    rho::general::CFilePath oLogPath( getLogFilePath().c_str() );
+        oFile.open( oLogPath.changeBaseName(CONF_FILENAME).c_str(), general::CRhoFile::OpenForWrite);
+    }
+
     oFile.write( strData.c_str(), strData.size() );
 }
 
@@ -228,5 +236,5 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setMaxLogFileSize(1024*50);
 	
     //load configuration if exist
-    LOGCONF().loadFromFile(oLogPath.makeFullPath("RhoLogConf.txt").c_str());
+    LOGCONF().loadFromFile(oLogPath.makeFullPath(CONF_FILENAME).c_str());
 }
