@@ -36,9 +36,6 @@ void SendWindowEvent(TInt aEvent, const char* data)
 }
 
 extern "C" {
-void webview_refresh() {
-	SendWindowEvent(ECmdAppReload, NULL);
-}
 
 void webview_navigate(char* url){
 	SendWindowEvent(ECmdAppNavigate2Url, url);

@@ -254,6 +254,7 @@
 	    <property name="dir.cert" 			 value="${dir.symbian}/rhodes/sis/cert"/>
 
        	<property name="dir.tcmalloc.build"    value="${dir.symbian}/tcmalloc/group"/>	    
+		<property name="dir.RhoLib.build"    value="${dir.symbian}/RhoLib/group"/>	    
 		<property name="dir.rhodes.build"    value="${dir.symbian}/rhodes/group"/>
        	<property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
 		<property name="dir.SQLite60.build"  value="${dir.symbian}/SQLite60/group"/>
@@ -292,6 +293,7 @@
 	    <property name="dir.sis"             value="${dir.symbian}/rhodes/sis"/>
 	    
             <property name="dir.tcmalloc.build"    value="${dir.symbian}/tcmalloc/group"/>
+            <property name="dir.RhoLib.build"    value="${dir.symbian}/RhoLib/group"/>
 		<property name="dir.rhodes.build"    value="${dir.symbian}/rhodes/group"/>
     	      <property name="dir.shttpd.build"    value="${dir.symbian}/shttpd/group"/>
 		<property name="dir.SQLite60.build"  value="${dir.symbian}/SQLite60/group"/>
@@ -367,6 +369,15 @@
             <arg value="abld.bat"/>
 		    <arg line="build ${build.target}"/>
 		</exec>
+
+        <echo message="Compiling RhoLib..."/>
+        <echo message="output to file: ${log.build}"/>
+        <exec dir="${dir.RhoLib.build}" executable="cmd" failonerror="true" output="${log.build}" append="true">
+            <arg value="/c"/>
+            <arg value="abld.bat"/>
+		    <arg line="build ${build.target}"/>
+		</exec>
+        
         
         <echo message="Compiling rubylib..."/>
         <echo message="output to file: ${log.build}"/>
@@ -549,6 +560,12 @@
         <exec dir="${dir.tcmalloc.build}" executable="bldmake" failonerror="true">
             <arg line="bldfiles"/>
         </exec>
+
+	  <echo message="Creating ABLD.BAT: 'bldmake bldfiles'..."/>
+        <exec dir="${dir.RhoLib.build}" executable="bldmake" failonerror="true">
+            <arg line="bldfiles"/>
+        </exec>
+
         <exec dir="${dir.rubylib.build}" executable="bldmake" failonerror="true">
             <arg line="bldfiles"/>
         </exec>
@@ -566,6 +583,14 @@
         <echo message="Calling REALLYCLEAN for tcmalloc..."/>
         <echo message="output to file: ${log.build}"/>
         <exec dir="${dir.tcmalloc.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
+            <arg value="/c"/>
+            <arg value="abld.bat"/>
+            <arg line="reallyclean"/>
+        </exec>
+
+        <echo message="Calling REALLYCLEAN for RhoLib..."/>
+        <echo message="output to file: ${log.build}"/>
+        <exec dir="${dir.RhoLib.build}" executable="cmd" failonerror="true"  output="${log.build}" append="true">  
             <arg value="/c"/>
             <arg value="abld.bat"/>
             <arg line="reallyclean"/>
