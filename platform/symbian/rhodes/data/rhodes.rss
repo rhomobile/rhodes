@@ -30,6 +30,8 @@ NAME RHOD	// 4 letter ID
 #include <appinfo.rh>
 #include "rhodes.hrh"
 #include "rhodes.rls"
+#include <CommonDialogs.hrh> // Enumerations
+#include <CommonDialogs.rh> // Resource structures
 
 //  RESOURCE DEFINITIONS
 // -----------------------------------------------------------------------------
@@ -208,6 +210,26 @@ RESOURCE DIALOG r_about_query_dialog
 			control = AVKON_MESSAGE_QUERY
 				{
 				};
+			}
+		};
+	}
+
+//
+// File Select Dialog
+
+RESOURCE FILESELECTIONDIALOG r_file_selection_dialog
+	{
+	title = "Select image file:";
+	root_path = "C:\\Data\\Images\\";
+	default_folder = "C:\\Data\\Images\\";
+	filters =
+		{
+		FILTER
+			{
+			filter_type = EAttributeFilter;
+			filter_style = EExclusiveFilter;
+			filter_data =
+				{"SH", "R"}; // Excludes system, hidden and read-only attributes
 			}
 		};
 	}

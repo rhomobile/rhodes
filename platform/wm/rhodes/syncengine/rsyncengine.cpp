@@ -1,4 +1,5 @@
-#include "../stdafx.h"
+#include "stdafx.h"
+
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
 #endif

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "HttpServer.h"
-#include "syncengine/rsyncengine.h"
-
+class CHttpServer;
+class CSyncEngine;
 class CServerHost
 {
 public:

@@ -60,7 +60,8 @@
 #include <sys/syscall.h>
 #define WRITE_TO_STDERR(buf, len) syscall(SYS_write, STDERR_FILENO, buf, len)
 #else
-#define WRITE_TO_STDERR(buf, len) write(STDERR_FILENO, buf, len)
+#define WRITE_TO_STDERR(buf, len) printf(buf)
+//write(STDERR_FILENO, buf, len)
 #endif
 
 

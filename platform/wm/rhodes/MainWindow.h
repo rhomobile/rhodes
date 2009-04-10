@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "stdafx.h"
 #if !defined(_WIN32_WCE)
 #include <exdispid.h>
 #include <exdisp.h>
@@ -48,7 +47,8 @@ public:
         MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
         MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-        COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnExitCommand)
+        COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
+        COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
         COMMAND_ID_HANDLER(IDM_BACK, OnBackCommand)
         COMMAND_ID_HANDLER(IDM_FORWARD, OnForwardCommand)
         COMMAND_ID_HANDLER(IDM_HOME, OnHomeCommand)
@@ -57,6 +57,7 @@ public:
         COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
         COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
         COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
+        COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
 #if !defined(_WIN32_WCE)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
@@ -83,6 +84,7 @@ private:
     LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 #if !defined(_WIN32_WCE)
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -141,6 +143,7 @@ private:
 	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;
 	char* m_current_url;
+    char* m_szStartPage;
 
 private:
 	CNetRequest m_callbackRequest;

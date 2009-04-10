@@ -3,6 +3,8 @@
 
 #include "RhoPort.h"
 
+#ifdef __cplusplus
+
 namespace rho{
 namespace general{
 
@@ -50,5 +52,29 @@ private:
 
 }
 }
+
+#else
+
+#if !defined(OS_WINCE) && !defined(OS_WINDOWS)
+
+#define RHO_INIT_LOCK(name)\
+static int __g_mutex_init_##name = 0;\
+pthread_mutex_t __g_mutex_##name = PTHREAD_MUTEX_INITIALIZER;
+
+#define RHO_LOCK(name) {if(!__g_mutex_init_##name){pthread_mutex_init(&__g_mutex_##name, NULL);__g_mutex_init_##name=1;} pthread_mutex_lock(&__g_mutex_##name);}
+#define RHO_UNLOCK(name) pthread_mutex_unlock(&__g_mutex_##name);
+
+#else
+
+#define RHO_INIT_LOCK(name)\
+static int __g_cs_init_##name = 0;\
+CRITICAL_SECTION __g_cs_##name;
+
+#define RHO_LOCK(name) {if(!__g_cs_init_##name){InitializeCriticalSection(&__g_cs_##name);__g_cs_init_##name=1;} EnterCriticalSection(&__g_cs_##name);}
+#define RHO_UNLOCK(name) LeaveCriticalSection(&__g_cs_##name);
+
+#endif
+
+#endif //__cplusplus
 
 #endif //_RHOMUTEXLOCK_H_

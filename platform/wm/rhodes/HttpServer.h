@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 
 #if (_MSC_VER == 1400)
 #include "atlutil.h" //Using local copy, as 'standard' atlutil has errors

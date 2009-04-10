@@ -39,6 +39,7 @@
 
 #include "HttpServer.h"
 #include "SyncEngineWrap.h"
+
 #ifdef SYM_GEOLOCATION
 #include "GeoLocationService.h"
 #endif
@@ -101,6 +102,7 @@ void CRhodesAppUi::ConstructL()
 	//start sync engine
 	iSyncEngineWrap = CSyncEngineWrap::NewL(); 
 
+	
 #ifdef SYM_GEOLOCATION	
 	//start geolocation service 
 	iGeoLocationService = CGeoLocationService::NewL();
@@ -181,10 +183,14 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 			
 			HandleCommandL(ECmdAppHome);
 		}
-		else if ( aType == (EEventUser + ECmdAppReload))
+		/*else if ( aType == (EEventUser + ECmdAppReload))
 		{ 
 			HandleCommandL(ECmdAppReload);
 		}
+		else if ( aType == (EEventUser + ECmdSetCurrentUrl))
+		{ 
+			HandleCommandL(ECmdSetCurrentUrl);
+		}*/
 		else if ( aType == (EEventUser + ECmdAppNavigate2Url))
 		{ 
 			if ( aEvent.EventData() )
@@ -196,6 +202,22 @@ void CRhodesAppUi::HandleApplicationSpecificEventL(TInt aType, const TWsEvent& a
 					free(url);
 				}
 			}
+		}
+		else if ( aType == (EEventUser + ECmdTakePicture))
+		{ 
+			char* url = ((char**)aEvent.EventData())[0];
+			if ( url )
+				iAppView->SetCallbackUrl(url);
+			
+			HandleCommandL(ECmdTakePicture);
+		}
+		else if ( aType == (EEventUser + ECmdChoosePicture))
+		{ 
+			char* url = ((char**)aEvent.EventData())[0];
+			if ( url )
+				iAppView->SetCallbackUrl(url);
+					
+			HandleCommandL(ECmdChoosePicture);
 		}
 		else if ( aType == (EEventUser + ECmdAppStartNewSync))
 		{

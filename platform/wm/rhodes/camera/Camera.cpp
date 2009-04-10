@@ -1,5 +1,5 @@
-#include "../stdafx.h"
-#include <atlstr.h>
+#include "stdafx.h"
+
 #if defined(_WIN32_WCE)
 #include <aygshell.h>
 #endif

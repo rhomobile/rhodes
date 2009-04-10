@@ -15,6 +15,9 @@
 #include <windows.h>
 #include <time.h>
 
+#define LOG_NEWLINE "\r\n"
+#define LOG_NEWLINELEN 2
+
 //typedef __int32 int32;
 //typedef unsigned __int32 uint32;
 //typedef __int64 int64;
@@ -30,6 +33,9 @@
 #undef ASSERT
 #define ASSERT RHO_ASSERT
 
+#define LOG_NEWLINE "\n"
+#define LOG_NEWLINELEN 1
+
 //typedef int32_t int32;
 //typedef uint32_t uint32;
 //typedef int64_t int64;
@@ -44,8 +50,6 @@
 #define	vswnprintf vswprintf
 
 #endif //OS_WINCE
-
-#define LOG_NEWLINE "\n"
 
 //#include "tcmalloc/rhomem.h"
 

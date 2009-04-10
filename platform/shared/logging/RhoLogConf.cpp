@@ -5,6 +5,8 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 
+static const char* CONF_FILENAME = "RhoLogConf.txt";
+
 namespace rho{
 LogSettings g_LogSettings;
 
@@ -30,7 +32,13 @@ void LogSettings::saveToFile(const char* szFilePath){
     saveToString(strData);
 
     general::CRhoFile oFile;
-    oFile.open( szFilePath, general::CRhoFile::OpenForWrite);
+    if ( szFilePath && *szFilePath )
+        oFile.open(  szFilePath , general::CRhoFile::OpenForWrite);
+    else{
+	    rho::general::CFilePath oLogPath( getLogFilePath().c_str() );
+        oFile.open( oLogPath.changeBaseName(CONF_FILENAME).c_str(), general::CRhoFile::OpenForWrite);
+    }
+
     oFile.write( strData.c_str(), strData.size() );
 }
 
@@ -41,6 +49,17 @@ void LogSettings::loadFromFile(const char* szFilePath){
         oFile.readString(strSettings);
         loadFromString( strSettings.c_str() );
     }
+}
+
+void LogSettings::getLogTextW(StringW& strTextW){
+    general::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+        oFile.readStringW(strTextW);
+}
+
+int LogSettings::getLogTextPos()
+{
+    return m_pFileSink ? m_pFileSink->getCurPos() : -1;
 }
 
 void LogSettings::loadFromString(const char* szSettings){
@@ -161,12 +180,13 @@ void LogSettings::setLogFilePath(const char* szLogFilePath){
     }
 }
 
-void LogSettings::sinkLogMessage( const char* data, unsigned int len ){
-    if ( isLogToOutput() )
-        m_pOutputSink->writeLogMessage(data, len);
-
+void LogSettings::sinkLogMessage( String& strMsg ){
     if ( isLogToFile() )
-        m_pFileSink->writeLogMessage(data, len);
+        m_pFileSink->writeLogMessage(strMsg);
+
+    //Should be at the end
+    if ( isLogToOutput() )
+        m_pOutputSink->writeLogMessage(strMsg);
 }
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
@@ -216,5 +236,5 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setMaxLogFileSize(1024*50);
 	
     //load configuration if exist
-    LOGCONF().loadFromFile(oLogPath.makeFullPath("RhoLogConf.txt").c_str());
+    LOGCONF().loadFromFile(oLogPath.makeFullPath(CONF_FILENAME).c_str());
 }

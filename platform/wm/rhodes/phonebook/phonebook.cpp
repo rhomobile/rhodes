@@ -6,7 +6,7 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
-#include "../stdafx.h"
+#include "stdafx.h"
 
 #include "rhoruby/rhoruby.h"
 #include "phonebook.h"

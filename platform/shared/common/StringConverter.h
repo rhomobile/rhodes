@@ -38,19 +38,19 @@ inline String convertToStringA( wchar_t* szValue ){
     return convertToStringA( (const wchar_t*)szValue );
 }
 
-template<>  inline String convertToStringA<StringW>( const StringW& strValue ){ 
-    String res;
-    int nSize = wcstombs( NULL, strValue.c_str(), 0 );
+template<>  inline String convertToStringA<StringW>( const StringW& strValue ){
+    return convertToStringA(strValue.c_str());
+}
+
+inline void convertToStringW( const char* szValue, StringW& res ){ 
+    int nSize = mbstowcs( NULL, szValue, 0 );
     if ( nSize >= 0 ){
-        char* buf = new char[nSize+1];
-        int nRes = wcstombs( buf, strValue.c_str(), nSize );
+        res.resize(nSize);
+        int nRes = mbstowcs( &res[0], szValue, nSize );
         if ( nRes >= 0 ){
-            buf[nRes] = 0;
-            res = buf; 
+            res[nRes] = 0;
         }
     }
-
-    return res;
 }
 
 /*template<>  inline void convertFromStringA<StringW>( const char* szValue, StringW& value ){ value = StringW(szValue); }

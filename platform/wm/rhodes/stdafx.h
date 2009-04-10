@@ -68,6 +68,8 @@
 #include <atlwin.h>
 #include <atlhost.h>
 //#include <atlsiface.h>
+#include <atlstr.h>
+#include <atlcoll.h>
 
 #if defined (_WIN32_WCE) 
 #include <pvdispid.h>

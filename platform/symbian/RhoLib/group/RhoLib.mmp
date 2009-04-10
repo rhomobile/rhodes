@@ -33,3 +33,8 @@ SOURCE       RhoLogConf.cpp
 SOURCE       RhoPlainLog.cpp
 SOURCE       RhoLogSink.cpp
 
+SOURCEPATH   ..\..\..\shared\statistic
+SOURCE       RhoProfiler.cpp
+
+//SOURCEPATH   ..\..\..\shared\statistic\test
+//SOURCE       TestProfiling.cpp

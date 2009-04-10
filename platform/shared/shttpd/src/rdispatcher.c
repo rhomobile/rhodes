@@ -6,6 +6,8 @@
 
 #include "logging/RhoPlainLog.h"
 
+#include "common/RhoMutexLock.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RDispatcher"
 
@@ -18,7 +20,16 @@ static char* localhost = "http://localhost:8080";
 #ifdef __SYMBIAN32__      
       extern int g_need_launch_gc;
 #endif
-      
+
+#ifdef __SYMBIAN32__      
+char* g_current_url = NULL;
+RHO_INIT_LOCK(change_url);
+
+//forward declaration
+void webview_set_current_location(char* url);      
+#endif
+
+
 typedef struct __Route {
   char* _url;
 	char* _application;
@@ -279,6 +290,11 @@ void* rho_dispatch(struct conn *c, const char* path) {
   if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg") )
     return NULL;
 
+#ifdef __SYMBIAN32__
+  if ( strstr(_shttpd_known_http_methods[c->method].ptr, "GET" ) )
+	  webview_set_current_location(c->uri);
+#endif
+  
   if ((route = _alloc_route(c->uri)) != NULL) {
     if (_parse_route(route)) {
       struct stat	st;
@@ -509,3 +525,42 @@ void rho_serve_index(struct shttpd_arg *arg) {
 	//free(arg->user_data);
 	//arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
+
+#ifdef __SYMBIAN32__
+//this is platform specific function
+extern void webview_navigate(char* url);
+
+char* webview_current_location() {
+		char* retval = NULL;
+		
+		RHO_LOCK(change_url);
+
+		retval = strdup(g_current_url);
+	    
+	    RHO_UNLOCK(change_url);
+	    
+	    return retval;
+	}
+
+void webview_set_current_location(char* url) {
+	
+	RHO_LOCK(change_url);
+	
+	if ( g_current_url )
+		free(g_current_url);
+
+	g_current_url = strdup(url);
+	
+	RHO_UNLOCK(change_url);
+}
+
+void webview_refresh() {
+	
+	char* url = webview_current_location();
+	if ( url )
+	{
+		webview_navigate(url);
+		free(url);
+	}
+}
+#endif

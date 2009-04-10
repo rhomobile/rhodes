@@ -1,2 +1,0 @@
-= rhodes framework
- * See rhodes/README.rdoc for more information
