@@ -20,7 +20,7 @@ task :all, :continue do |t,args|
     file.chomp!
     o_file = "#{src_dir}/#{file}"
     objfiles << "#{o_file}.o"
-    if not File.exists?("#{o_file}.o") or File.mtime("#{o_file}.c") > File.mtime("#{o_file}.o")
+    if not FileUtils.uptodate?("#{o_file}.o", "#{o_file}.c")
       cmd = "#{compile} -o #{o_file}.o #{o_file}.c"
       puts cmd
       code = system cmd
