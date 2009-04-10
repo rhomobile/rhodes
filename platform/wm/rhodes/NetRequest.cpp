@@ -173,7 +173,7 @@ char* CNetRequest::doRequest(LPWSTR verb, char* url,
 	}
 
 	urlw = wce_mbtowc(url);
-	headersw = wce_mbtowc(headers);
+	headersw = headers ? wce_mbtowc(headers) : NULL;
 	hInet = hConnection = hRequest = NULL;
 
 	do {
@@ -274,6 +274,7 @@ char* CNetRequest::doRequest(LPWSTR verb, char* url,
 						bRead = InternetReadFile(hRequest, &sBuf, sizeof(sBuf), &dwBytesRead);
 					}
 					if ( bGetRawData && pdwDataSize ) {
+						*pdwDataSize = data.size();
 						cstr = new char [*pdwDataSize];
 						memcpy (cstr, data.c_str(), *pdwDataSize);
 					} else {
