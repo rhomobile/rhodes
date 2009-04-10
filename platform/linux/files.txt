@@ -1,5 +1,5 @@
 array
-ascii
+enc/ascii
 bignum
 blockinlining
 class
@@ -69,9 +69,9 @@ thread
 thread_pthread
 time
 transcode
-unicode
-us_ascii
-utf_8
+enc/unicode
+enc/us_ascii
+enc/utf_8
 util
 variable
 version
