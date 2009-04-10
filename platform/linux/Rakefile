@@ -1,0 +1,24 @@
+# Builds rubylinux executable
+
+cc = "gcc"
+cflags = "-O2 -g -Wall -Wno-parentheses"
+incl = "-Iinc -I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared -I../shared/ruby/rhoruby"
+compile = "#{cc} #{cflags} #{incl} -DRUBY_EXPORT -c "
+src_dir = "../shared/ruby"
+
+task :default => :all
+
+desc "Build all ruby sources"
+task :all do
+  File.open("files.txt").each_line do |file|
+    file.chomp!
+    cmd = "#{compile} -o #{src_dir}/#{file}.o #{src_dir}/#{file}.c"
+    puts cmd
+    system cmd
+  end
+end
+
+desc "Clean all artifacts"
+task :clean do
+	system("find #{src_dir} -name *.o | xargs rm")
+end
