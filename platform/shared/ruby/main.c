@@ -13,6 +13,7 @@
 #define RHO_MEMORY__
 #include "ruby.h"
 #include "debug.h"
+#include <sqlite3.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -111,6 +112,9 @@ const char* RhoGetRootPath()
 }
 
 #endif //!COMPILER
+
+void setup_delete_db_callback(sqlite3 * db) {
+}
 
 void lock_sync_mutex() {
 }

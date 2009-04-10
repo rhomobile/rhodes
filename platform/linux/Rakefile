@@ -2,10 +2,14 @@
 
 cc = "gcc"
 cflags = "-O2 -g -Wall -Wno-parentheses"
+lnk_flags = "-L. -rdynamic -Wl,-export-dynamic"
 incl = "-Iinc -I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared -I../shared/ruby/rhoruby"
 compile = "#{cc} #{cflags} #{incl} -DRUBY_EXPORT -c "
+link = "#{cc} #{lnk_flags}"
+out = "-lpthread -lrt -ldl -lcrypt -lm -o rubylinux"
 src_dir = "../shared/ruby"
 code = true
+objfiles = []
 
 task :default => :all
 
@@ -14,6 +18,7 @@ task :all, :continue do |t,args|
   File.open("files.txt").each_line do |file|
     file.chomp!
     o_file = "#{src_dir}/#{file}"
+    objfiles << "#{o_file}.o"
     if not File.exists?("#{o_file}.o") or File.mtime("#{o_file}.c") > File.mtime("#{o_file}.o")
       cmd = "#{compile} -o #{o_file}.o #{o_file}.c"
       puts cmd
@@ -23,6 +28,11 @@ task :all, :continue do |t,args|
     end
     abort("Aborting due to compile errors...") if not code and not args.continue
   end
+  
+  cmd = "#{link} #{objfiles.join(" ")} #{out}"
+  puts cmd
+  code = system cmd
+  abort("Aborting due to compile errors...") if not code
 end
 
 desc "Clean all artifacts"
