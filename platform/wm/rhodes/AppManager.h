@@ -12,7 +12,7 @@ public:
 	 * @param szZipPassword - zip password if required
 	 */
 	static void ReloadRhoBundle(const char* szUrl, const char* szZipPassword);
-	
+	static bool RemoveFolder(LPCTSTR szPath);
 };
 
 #endif

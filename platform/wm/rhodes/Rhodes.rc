@@ -99,21 +99,6 @@ BEGIN
     MENUITEM "Cancel",                      IDCANCEL
 END
 
-IDR_MENU_PC MENU 
-BEGIN
-    POPUP "Menu"
-    BEGIN
-        MENUITEM "Back",                        IDM_BACK
-        MENUITEM "Forward",                     IDM_FORWARD
-        MENUITEM "Home",                        IDM_HOME
-        MENUITEM "Refresh",                     IDM_REFRESH
-        MENUITEM "Stop",                        IDM_STOP
-        MENUITEM "Sync",                        IDM_SYNC
-        MENUITEM "Options",                     IDM_OPTIONS
-    END
-END
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog

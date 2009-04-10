@@ -342,8 +342,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS"
+				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared;../../shared/wtl80/include"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
@@ -815,6 +815,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\menubar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NetRequest.cpp"
 				>
 			</File>
@@ -910,6 +914,10 @@
 			</File>
 			<File
 				RelativePath=".\MainWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\menubar.h"
 				>
 			</File>
 			<File
