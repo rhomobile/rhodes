@@ -34,6 +34,7 @@ class CSpecialLoadObserver;
 class CCBrCtlLoadEventObserver;
 //class CAppSoftkeysObserver;
 class CRhodesAppView;
+class CRhoCamera;
 
 //pointer to the CRhodesAppView object, used by method written in pure C
 extern CRhodesAppView* g_RhodesAppView;
@@ -75,8 +76,10 @@ public:
     void LoadUrl(const TDesC& aUrl);
     void LoadUrl(char* aUrl);
     
-    void Refresh();
-    char* GetCurrentPageUrl();
+    //void Refresh();
+    //char* GetCurrentPageUrl();
+    
+    void DrawImageNow(CFbsBitmap* aBitmap);
     
     
 public:
@@ -125,8 +128,26 @@ public:
     
     void InitOptions();
 
+    void SetCallbackUrl( char* url)
+    	{
+			callbackUrl = url;
+    	}
+    
+    const char* GetCallbackUrl() const
+		{
+			return callbackUrl;
+		}
+    
+    char* CanonicalizeURL(const char* path);
+    
 protected:
 
+	void CreateOffScreenBitmapL();
+	
+	void ReDrawOffScreenBitmap();
+	
+    void DrawImage(CWindowGc& aGc, const TRect& aRect) const;
+    
 	/**
     * From CoeControl,SizeChanged.
     */
@@ -186,6 +207,7 @@ private:
 	 */
 	CRhodesAppView();
 
+	void ChoosePicture();
 private: //data 
         // Pointer to the browser control interface
         CBrCtlInterface* iBrCtlInterface;
@@ -198,13 +220,21 @@ private: //data
 
         // Special Load Observer
         CSpecialLoadObserver* iSpecialLoadObserver;
-        CCBrCtlLoadEventObserver* iCBrCtlLoadEventObserver;
         //Softkeys Observer
         //CAppSoftkeysObserver* iAppSoftkeysObserver;
         TBuf<1024> iStartPage;
         
         TBuf<1024> iOptionsPage;
+
+        CRhoCamera* iRhoCamera;
         
+        CFbsBitmap* iBitmap; 
+		CWsBitmap* iOffScreenBitmap; 
+		CFbsBitGc* iFbsBitGc; 
+		CFbsBitmapDevice* iBmpDevice;
+		
+		TBool iOffScreenBitmapCreated;
+		char* callbackUrl;
 	};
 
 #endif // __RHODESAPPVIEW_h__

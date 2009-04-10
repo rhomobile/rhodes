@@ -66,6 +66,7 @@ public:
 	// format for output of data/time values
 	_DECLARE_LIT(KDateFormat,"%D%M%Y%/0%1%/1%2%/2%3%/3 %:0%H%:1%T%:2%S.%C%:3");
 
+	_DECLARE_LIT(KImagesDir, "\\data\\rho\\images\\");
 	};
 
 #endif /*HTTPCONSTANTS_H_*/

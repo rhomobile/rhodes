@@ -1,6 +1,7 @@
 // MainWindow.cpp: Defines main window for this application.
 
 #include "stdafx.h"
+
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
@@ -17,6 +18,8 @@
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
+#include "LogView.h"
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 char* canonicalizeURL(char* path);
 
@@ -34,11 +37,16 @@ CMainWindow::CMainWindow()
     m_sai.cbSize = sizeof(m_sai);
 #endif
 	m_current_url = NULL;
+    m_szStartPage = NULL;
 }
 
 CMainWindow::~CMainWindow()
 {
-	free(m_current_url);
+    if ( m_current_url )
+	    free(m_current_url);
+
+    if ( m_szStartPage )
+        free(m_szStartPage);
 }
 
 void CMainWindow::Navigate2(BSTR URL) {
@@ -63,8 +71,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     SIPINFO si = { sizeof(si), 0 };
     RECT rcMenuBar = { 0 };
 #else
-	HMENU hmenu;
-//	MENUBARINFO mbi = { sizeof(MENUBARINFO) };
 	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
 	int nSpiBorder = 0;
 #endif
@@ -94,16 +100,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 					 TEXT("Shell.Explorer"), // ProgID of the control
                      WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
                      ID_BROWSER);
-
-    hmenu = LoadMenu ( _AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDR_MENU_PC) );	
-	SetMenu (hmenu);
-
 	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
 
-	//GetMenuBarInfo(m_hWnd,OBJID_MENU,0,&mbi);	
 	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
 	m_menuBarHeight = ncm.iMenuHeight+ncm.iBorderWidth*4+2;
-	rcMainWindow.bottom += ncm.iMenuHeight+ncm.iCaptionHeight+ncm.iBorderWidth*8+m_menuBarHeight;
+	rcMainWindow.bottom += ncm.iCaptionHeight+ncm.iBorderWidth*8+m_menuBarHeight;
 	rcMainWindow.right += ncm.iScrollWidth;
 	rcMainWindow.right += ncm.iBorderWidth*6;
 #endif
@@ -235,7 +236,9 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    m_spIWebBrowser2->GoBack();
+    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
+        m_spIWebBrowser2->GoBack();
+
     return 0;
 }
 
@@ -251,7 +254,7 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	{
 		m_bRhobundleReloadEnabled = false;
 
-		#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+		#if defined(ENABLE_DYNAMIC_RHOBUNDLE) && defined(_WIN32_WCE)
 		if ( !CHttpServer::Instance()->GetRhobundleReloadUrl() ) //disable RhoBundle reload url
 		{
 			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
@@ -275,6 +278,14 @@ LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     {
         m_spIWebBrowser2->Navigate(getURLDialog.GetURL(), NULL, NULL, NULL, NULL);
     }
+    return 0;
+}
+
+LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CLogView oLogView;
+    oLogView.DoModal(m_hWnd);
+
     return 0;
 }
 
@@ -310,8 +321,11 @@ LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() )
+	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() ) {
 		CAppManager::ReloadRhoBundle(CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
+	} else {
+		MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
+	}
 #endif
 	return 0;
 }
@@ -397,8 +411,9 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
                                               VARIANT_BOOL * /*pvbCancel*/)
 {
     USES_CONVERSION;
-    LOG(TRACE) + "OnBeforeNavigate2: " + OLE2CT(V_BSTR(pvtURL));
+    LPCTSTR szURL = OLE2CT(V_BSTR(pvtURL));
 
+    LOG(TRACE) + "OnBeforeNavigate2: " + szURL ;
 
     SetWindowText(TEXT("Untitled"));
 
@@ -498,11 +513,15 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		ShowLoadingPage(pDisp, pvtURL);
 #endif //_WIN32_WCE
 		m_bLoading = false; //show loading page only once
-	}
+    }else{
+        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
+            m_szStartPage = wce_wctomb(url);
+    }
 
 	if (m_current_url) {
 		free(m_current_url);
 	}
+
 	m_current_url = wce_wctomb(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
@@ -512,11 +531,11 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 {
-    if (CSC_NAVIGATEBACK == lCommand)
+    /*if (CSC_NAVIGATEBACK == lCommand)
     {
         RHO_ASSERT(SetEnabledState(IDM_BACK, bEnable));
     }
-    else if (CSC_NAVIGATEFORWARD == lCommand)
+    else */if (CSC_NAVIGATEFORWARD == lCommand)
     {
         RHO_ASSERT(SetEnabledState(IDM_FORWARD, bEnable));
     }
@@ -553,6 +572,23 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     if (!(WM_KEYFIRST   <= uMsg && uMsg <= WM_KEYLAST) &&
         !(WM_MOUSEFIRST <= uMsg && uMsg <= WM_MOUSELAST))
     {
+
+#ifdef OS_WINCE
+        if ( uMsg == WM_HOTKEY )
+        {
+            int idHotKey = (int) pMsg->wParam; 
+            int fuModifiers = (UINT) LOWORD(pMsg->lParam); 
+            int uVirtKey = (UINT) HIWORD(pMsg->lParam);
+
+            if ( uVirtKey == VK_ESCAPE ){
+                if ( fuModifiers&MOD_KEYUP )
+                    PostMessageW(WM_COMMAND,MAKEWPARAM(IDM_BACK,1),NULL);
+
+                return TRUE;
+            }
+        }
+#endif //OS_WINCE
+
         return FALSE;
     }
 

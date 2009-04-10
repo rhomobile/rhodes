@@ -9,7 +9,8 @@ namespace rho {
 class LogCategory;
 
 struct ILogSink{
-    virtual void writeLogMessage( const char* data, unsigned int len ) = 0;
+    virtual void writeLogMessage( String& strMsg ) = 0;
+    virtual int getCurPos() = 0;
 };
 
 class LogSettings{
@@ -55,13 +56,16 @@ public:
     const String& getDisabledCategories(){ return m_strDisabledCategories; }
     bool isCategoryEnabled(const LogCategory& cat)const;
 
-    void sinkLogMessage( const char* data, unsigned int len );
+    void sinkLogMessage( String& strMsg );
 
     void saveToFile(const char* szFilePath);
     void saveToString(String& strData);
 
     void loadFromFile(const char* szFilePath);
     void loadFromString(const char* szSettings);
+
+    void getLogTextW(StringW& strTextW);
+    int  getLogTextPos();
 private:
 
     void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen );
@@ -73,5 +77,6 @@ extern LogSettings g_LogSettings;
 }
 
 inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
+extern "C" void InitRhoLog(const char* szRootPath);
 
 #endif //_RHOLOGCONF_H_

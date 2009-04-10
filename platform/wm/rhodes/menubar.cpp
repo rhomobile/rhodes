@@ -1,6 +1,6 @@
-#if !defined(_WIN32_WCE)
-
 #include "stdafx.h"
+
+#if !defined(_WIN32_WCE)
 
 #include "resource.h"
 #include "menubar.h"

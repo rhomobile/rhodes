@@ -64,6 +64,7 @@
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -342,9 +343,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared;../../shared/wtl80/include"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -438,6 +440,7 @@
 				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared"
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -720,6 +723,7 @@
 				AdditionalIncludeDirectories="../../shared/shttpd/src/;../../shared/ruby;../../shared/syncengine;../../shared/json;../sqlite3;../../shared/unzip;../../shared"
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -796,6 +800,14 @@
 			</File>
 			<File
 				RelativePath=".\HttpServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LogOptionsDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LogView.cpp"
 				>
 			</File>
 			<File
@@ -886,6 +898,14 @@
 			</File>
 			<File
 				RelativePath=".\HttpServer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LogOptionsDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LogView.h"
 				>
 			</File>
 			<File
@@ -1005,6 +1025,38 @@
 			<File
 				RelativePath="..\..\shared\unzip\unzip.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\shared\unzip\unzip.h"

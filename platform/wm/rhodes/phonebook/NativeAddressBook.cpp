@@ -1,4 +1,5 @@
-#include "../stdafx.h"
+#include "stdafx.h"
+
 #include "ext/phonebook/phonebook.h" 
 #include "NativeAddressBook.h"
 

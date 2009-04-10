@@ -1,4 +1,5 @@
 #include "RhoFile.h"
+#include "common/StringConverter.h"
 
 #if defined(OS_WINCE)
 #include "wince/sys/types.h"
@@ -47,6 +48,19 @@ namespace general{
         strData.resize(nSize);
         nSize = fread(&strData[0], 1, nSize, m_file);
         strData[nSize] = 0;
+    }
+
+    void CRhoFile::readStringW(StringW& strTextW)
+    {
+        if ( !isOpened() )
+            return;
+
+        int nSize = size();
+        char* buf = (char*)malloc(nSize+1);
+        nSize = fread(buf, 1, nSize, m_file);
+        buf[nSize] = 0;
+        general::convertToStringW(buf,strTextW);
+        free(buf);
     }
 
     void CRhoFile::flush(){

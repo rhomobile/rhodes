@@ -16,7 +16,7 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
-#include <crtdbg.h>
+//#include <crtdbg.h>
 
 extern void Init_SyncEngine(void);
 
@@ -65,8 +65,10 @@ main(int argc, char **argv)
     setlocale(LC_CTYPE, "");
 #endif
 
+#ifdef WIN32
     SetEnvironmentVariable("RUBYOPT","");
     SetEnvironmentVariable("RUBYLIB","");
+#endif //WIN32
 
 //    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);

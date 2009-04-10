@@ -24,6 +24,44 @@
 
 #define _UID3 0xE6B4F4DF
 
+enum TEngineState 
+    { 
+    EEngineIdle, 
+    ESnappingPicture, 
+    EStartToSaveImage, 
+    EConvertingImage, 
+    EConverted 
+    };
+
+enum TCameraState 
+    { 
+    ECameraLandscapeMode, 
+    ECameraPortraitMode 
+    }; 
+
+// Indicators 
+enum TCameraIndicators 
+    { 
+    ECameraQualityHighUid,  //Must be zero. 
+    ECameraQualityNormalUid,//Default in shared data 
+    ECameraQualityEcoUid, 
+    ECameraZoom2Uid,        //First zoom level, 
+    ECameraZoom4Uid,        //Second zoom level... 
+    ECameraZoomLimit        //Must be right after the zoom levels 
+    }; 
+
+enum TCameraReasons 
+    { 
+    ECameraNoReasonSB = 0, 
+    ECameraBatteryLow, 
+    ECameraPhoneCallHandling, 
+    ECameraDataCallHandling, 
+    ECameraTimeout, 
+    ECameraHwFailure, 
+    ECameraOverflow, 
+    ECameraInUse 
+    }; 
+
 // rhodes enumerate command codes
 enum TRhodesIds
 	{
@@ -41,6 +79,9 @@ enum TRhodesIds
     ECmdAppHome,
     ECmdAppNavigate2Url,
     ECmdAppStartNewSync,
+    ECmdTakePicture,
+    ECmdChoosePicture,
+    ECmdSetCurrentUrl,
     ECmdShowDebugWindow
 	};
 
