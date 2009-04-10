@@ -1406,7 +1406,7 @@ INSN_ENTRY(send){
 	vm_send_optimize(GET_CFP(), &mn, &flag, &num, &id, klass);
     }
 
-    CALL_METHOD(num, blockptr, flag, id, mn, recv);
+    CALL_METHOD(num, blockptr, flag, id, mn, recv, klass);
 
 #line 1412 "vm.inc"
   PUSH(val);
@@ -1446,7 +1446,7 @@ INSN_ENTRY(invokesuper){
     vm_search_superclass(GET_CFP(), GET_ISEQ(), recv, TOPN(num), &id, &klass);
     mn = rb_method_node(klass, id);
 
-    CALL_METHOD(num, blockptr, flag, id, mn, recv);
+    CALL_METHOD(num, blockptr, flag, id, mn, recv, klass);
 
 #line 1452 "vm.inc"
   PUSH(val);
@@ -1739,8 +1739,8 @@ INSN_ENTRY(setinlinecache){
   USAGE_ANALYSIS_OPERAND(BIN(setinlinecache), 0, dst);
 {
 #line 1222 "insns.def"
+	int ruby_vm_const_missing_count = 0;
     IC ic = GET_CONST_INLINE_CACHE(dst);
-
     ic->ic_value = val;
     ic->ic_vmstat = GET_VM_STATE_VERSION() - ruby_vm_const_missing_count;
     ruby_vm_const_missing_count = 0;
@@ -2836,4 +2836,5 @@ INSN_ENTRY(answer){
 #undef INSN_LABEL
 #undef LABEL_IS_SC
   END_INSN(answer);}}}
+
 
