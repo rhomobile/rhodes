@@ -57,7 +57,9 @@ namespace "bundle" do
     chdir $srcdir
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
-
     chdir $basedir
+    chdir dest
+    rm_f File.join(dest,"rhobundle.zip")
+    puts `zip rhobundle.zip -r *`
   end
 end
