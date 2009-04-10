@@ -5,16 +5,23 @@ cflags = "-O2 -g -Wall -Wno-parentheses"
 incl = "-Iinc -I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared -I../shared/ruby/rhoruby"
 compile = "#{cc} #{cflags} #{incl} -DRUBY_EXPORT -c "
 src_dir = "../shared/ruby"
+code = true
 
 task :default => :all
 
 desc "Build all ruby sources"
-task :all do
+task :all, :continue do |t,args|
   File.open("files.txt").each_line do |file|
     file.chomp!
-    cmd = "#{compile} -o #{src_dir}/#{file}.o #{src_dir}/#{file}.c"
-    puts cmd
-    system cmd
+    o_file = "#{src_dir}/#{file}"
+    if not File.exists?("#{o_file}.o") or File.mtime("#{o_file}.c") > File.mtime("#{o_file}.o")
+      cmd = "#{compile} -o #{o_file}.o #{o_file}.c"
+      puts cmd
+      code = system cmd
+    else
+      puts "skipping #{o_file}.c"
+    end
+    abort("Aborting due to compile errors...") if not code and not args.continue
   end
 end
 
