@@ -38,4 +38,5 @@ end
 desc "Clean all artifacts"
 task :clean do
 	system("find #{src_dir} -name *.o | xargs rm")
+	system("rm rubylinux")
 end
