@@ -6,7 +6,8 @@ lnk_flags = "-L. -rdynamic -Wl,-export-dynamic"
 incl = "-Iinc -I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared -I../shared/ruby/rhoruby"
 compile = "#{cc} #{cflags} #{incl} -DRUBY_EXPORT -c "
 link = "#{cc} #{lnk_flags}"
-out = "-lsqlite3 -lpthread -lrt -ldl -lcrypt -lm -o rubylinux"
+target = "target/compiler/rubylinux"
+out = "-lsqlite3 -lpthread -lrt -ldl -lcrypt -lm -o #{target}"
 src_dir = "../shared/ruby"
 code = true
 objfiles = []
@@ -38,5 +39,5 @@ end
 desc "Clean all artifacts"
 task :clean do
 	system("find #{src_dir} -name *.o | xargs rm")
-	system("rm rubylinux")
+	system("rm #{target}")
 end
