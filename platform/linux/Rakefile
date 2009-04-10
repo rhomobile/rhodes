@@ -33,11 +33,14 @@ task :all, :continue do |t,args|
   cmd = "#{link} #{objfiles.join(" ")} #{out}"
   puts cmd
   code = system cmd
-  abort("Aborting due to compile errors...") if not code
+  abort("Aborting due to link errors...") if not code
 end
 
 desc "Clean all artifacts"
 task :clean do
-	system("find #{src_dir} -name *.o | xargs rm")
-	system("rm #{target}")
+  current = FileUtils.pwd
+  FileUtils.chdir src_dir
+  puts FileUtils.rm Dir.glob(File.join("**","*.o"))
+  FileUtils.chdir current
+  puts FileUtils.rm_f target
 end
