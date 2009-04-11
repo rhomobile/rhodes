@@ -37,7 +37,14 @@ bool CAppManager::RemoveFolder(LPCTSTR szPath) {
 	return false;
 }
 
-void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
+bool CAppManager::RestartClient(HWND hwnd) {
+	TCHAR module[MAX_PATH];
+	GetModuleFileName(NULL,module,MAX_PATH);
+	HINSTANCE res = ShellExecute(hwnd, L"open", module, L"-restarting", NULL, SW_SHOWNORMAL);
+	return false;
+}
+
+void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZipPassword)
 {
 	if ( szUrl )
 	{
@@ -46,7 +53,6 @@ void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
 		CNetRequest request;
 		char* zipData = request.doRequest( L"GET",const_cast<char*>(szUrl),NULL,0,NULL,0,false,true,false,&dwDataSize);
 
-		//TODO: Add error handling
 		if ( zipData && dwDataSize > 0 )
 		{
 			LPWSTR rootw = wce_mbtowc(RhoGetRootPath());
@@ -61,6 +67,7 @@ void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
 				}
 			}
 
+			//TODO: Add error handling to unzip code
 			if( ret ) {
 				ZIPENTRY ze; 
 				// Open zip file
@@ -88,21 +95,25 @@ void CAppManager::ReloadRhoBundle(const char* szUrl, const char* szZipPassword)
 					}
 				
 					CloseZip(hz);
-
+					
 					//Show MessageBox
-					MessageBox(NULL, _T("Rhobundle has been updated successfully.\n\nPlease restart application."), _T("Information"), MB_OK | MB_ICONINFORMATION );
+					MessageBox(hwnd, _T("Rhobundle has been updated successfully.\nApplication will be restarted."), _T("Information"), MB_OK | MB_ICONINFORMATION );
+					//Restart client
+					RestartClient(hwnd); 
+					//Close main window and client
+					::PostMessage(hwnd,WM_CLOSE,0,0);
 				} else {
-					MessageBox(NULL, _T("Can't unzip loaded rhobundle."), _T("Stop"), MB_OK | MB_ICONSTOP );
+					MessageBox(hwnd, _T("Can't unzip loaded rhobundle."), _T("Stop"), MB_OK | MB_ICONSTOP );
 				}
 			} else {
-				MessageBox(NULL, _T("Can't remove old version of rhobundle. However, it may be corrupted. Exit application and reinstall rhobundle manualy."), _T("Stop"), MB_OK | MB_ICONSTOP );
+				MessageBox(hwnd, _T("Can't remove old version of rhobundle. However, it may be corrupted. Exit application and reinstall rhobundle manualy."), _T("Stop"), MB_OK | MB_ICONSTOP );
 			}
 
 			if ( rootw )
 				free(rootw);
 
 		} else {
-			MessageBox(NULL, _T("Error loading rhobundle."), _T("Stop"), MB_OK | MB_ICONSTOP );
+			MessageBox(hwnd, _T("Error loading rhobundle."), _T("Stop"), MB_OK | MB_ICONSTOP );
 		}
 
 		if ( zipData )

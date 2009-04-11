@@ -10,6 +10,24 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 public :
+	bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( ) {
+		m_nRestarting = 1;
+
+		TCHAR szTokens[] = _T("-/");
+		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
+		while (lpszToken != NULL)
+		{
+			if (WordCmpI(lpszToken, _T("Restarting"))==0)
+			{
+				m_nRestarting = 10;
+				break;
+			}
+			lpszToken = FindOneOf(lpszToken, szTokens);
+		}
+
+		return __super::ParseCommandLine(lpCmdLine, pnRetCode);
+	}
+
     // This method is called immediately before entering the message loop.
     // It contains initialization code for the application.
     // Returns:
@@ -27,12 +45,20 @@ public :
 
         // Allow only one instance of the application.
         // the "| 0x01" activates the correct owned window of the previous instance's main window
-        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
-        if (hWnd)
-        {
-            SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
-            return S_FALSE;
-        }
+		HWND hWnd = NULL;
+		for (int wait = 0; wait < m_nRestarting; wait++) {
+			hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+			if (hWnd && m_nRestarting > 1) {
+				Sleep(1000);
+			} else {
+				break;
+			}
+		}
+		if (hWnd)
+		{
+			SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
+			return S_FALSE;
+		}
 
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"));
@@ -93,6 +119,7 @@ public :
 private:
     CMainWindow m_appWindow;
     CServerHost* m_pServerHost;
+	int m_nRestarting;
 };
 
 CRhodesModule _AtlModule;
@@ -100,13 +127,16 @@ CRhodesModule _AtlModule;
 extern "C" void InitRhoLog(const char* szRootPath);
 extern "C" const char* RhoGetRootPath();
 //
+bool g_restartOnExit = false;
+//
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
-    InitRhoLog(RhoGetRootPath());
-//    runAllLogTests();
+//
+	InitRhoLog(RhoGetRootPath());
+//	runAllLogTests();
 
-    return _AtlModule.WinMain(nShowCmd);
+	return _AtlModule.WinMain(nShowCmd);
 }
 
 extern "C" HWND getMainWnd() {
