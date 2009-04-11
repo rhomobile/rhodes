@@ -322,7 +322,7 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 {
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() ) {
-		CAppManager::ReloadRhoBundle(CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
+		CAppManager::ReloadRhoBundle(m_hWnd,CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
 	} else {
 		MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
 	}
