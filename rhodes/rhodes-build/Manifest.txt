@@ -10,6 +10,7 @@ lib/tasks/android.rake
 lib/tasks/blackberry.rake
 lib/tasks/common.rake
 lib/tasks/iphone.rake
+lib/tasks/linux.rake
 lib/tasks/rhodes-build.rb
 lib/tasks/rspec.rake
 lib/tasks/symbian.rake
