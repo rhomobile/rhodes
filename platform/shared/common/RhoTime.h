@@ -3,6 +3,10 @@
 
 #include "RhoPort.h"
 
+#if !defined( OS_WINDOWS ) && !defined(OS_WINCE)
+#include <sys/time.h>
+#endif
+
 namespace rho{
 namespace general{
 
