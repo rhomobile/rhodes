@@ -744,7 +744,6 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
 				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
