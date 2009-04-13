@@ -1,5 +1,8 @@
 package org.garret.perst.impl;
 import  org.garret.perst.*;
+import com.rho.IFile;
+import com.rho.FileFactory;
+import com.rho.SimpleFile;
 
 // Rc4Cipher - the RC4 encryption method
 //

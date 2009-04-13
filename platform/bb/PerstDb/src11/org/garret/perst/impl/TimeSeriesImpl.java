@@ -1,6 +1,7 @@
 package org.garret.perst.impl;
 import  org.garret.perst.*;
 import java.util.*;
+import com.rho.StorageError;
 
 public class TimeSeriesImpl extends PersistentResource implements TimeSeries { 
     public void add(TimeSeriesTick tick) { 

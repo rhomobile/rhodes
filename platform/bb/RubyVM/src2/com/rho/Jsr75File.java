@@ -1,7 +1,5 @@
-package org.garret.perst.impl;
+package com.rho;
 //import net.rim.device.api.system.DeviceInfo;
-
-import org.garret.perst.*;
 
 import java.io.IOException;
 //import java.io.EOFException;
@@ -19,10 +17,11 @@ public class Jsr75File implements SimpleFile
     private InputStream    in;
     private OutputStream   out;
     private long           inPos;
-    private long           outPos;
-    private long           currPos;
-    private long           fileSize;
+    private long           outPos = 0;
+    private long           currPos = 0;
+    private long           fileSize = 0;
     private boolean        noFlush;
+    private boolean        m_bOpened = false;
     
     private static final int ZERO_BUF_SIZE = 4096;
     
@@ -30,7 +29,7 @@ public class Jsr75File implements SimpleFile
     private static String m_strRhoPath;
     
 	static private void log(String txt) {
-		System.out.println(txt);
+		System.out.println("FileSystem: " + txt);
 	}
 
 	static void createDir( String strDir  )throws IOException{
@@ -168,15 +167,18 @@ public class Jsr75File implements SimpleFile
     	return m_strRhoPath;
     }
 
-    public static String getDirPath(String strDir) throws IOException{
+    public String getDirPath(String strDir) throws IOException{
     	String strRoot = getRhoPath();
     	if ( strRoot == null )
     		throw new IOException("Could not find storage");
     	
-    	String strDirPath = strRoot + strDir + "/";
-    	createDir( strDirPath );
+    	if ( strDir != null && strDir.length() > 0 ){
+    		String strDirPath = strRoot + strDir + "/";
+    		createDir( strDirPath );
+    		return strDirPath;
+    	}
     	
-    	return strDirPath;
+    	return strRoot;
     }
     
     public static void listFolder(String uri, Vector result) {
@@ -222,7 +224,7 @@ public class Jsr75File implements SimpleFile
     	}
     }
     
-    public static void delete(String path) 
+    public void delete(String path) 
     {
         String url = path;
         if (!url.startsWith("file:")) { 
@@ -235,7 +237,7 @@ public class Jsr75File implements SimpleFile
 	            	url = strRhoPath + path;
             	} catch (IOException x) { 
                  	log("Exception: " + x.getMessage());
-                     throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+                     //throw new IOException(StorageError.FILE_ACCESS_ERROR, x);
                  }              	
             }
         }
@@ -267,7 +269,11 @@ public class Jsr75File implements SimpleFile
     	
     	return in; 
    }
-    
+   
+    public boolean isOpened(){
+    	return m_bOpened;
+    }
+
     public void open(String path, boolean readOnly, boolean noFlush)throws StorageError 
     {
         String url = path;
@@ -301,6 +307,7 @@ public class Jsr75File implements SimpleFile
                 }
             }
             fileSize = fconn.fileSize();
+            m_bOpened = true;
             if (!readOnly) {
                 //fconn.setWritable(true);	                    
             	
@@ -315,6 +322,18 @@ public class Jsr75File implements SimpleFile
         inPos = 0;
     }
 
+    public String readString(){
+    	if ( !isOpened() || fileSize == 0 )
+    		return new String("");
+    	
+	    byte[] data = new byte[(int)fileSize];
+	    int len = read(0,data);
+	    if ( len == 0 )
+	        return new String("");
+
+	    return new String(data,0,len);
+    }
+    
     public int read(long pos, byte[] b)
     {
         int len = b.length;
@@ -354,6 +373,13 @@ public class Jsr75File implements SimpleFile
         } 
     }
 
+    public void truncate(int nSize)throws IOException{
+    	if ( fconn != null ){
+    		fconn.truncate(nSize);
+    		fileSize = nSize;
+    	}
+    }
+    
     public void write(long pos, byte[] b)
     {
         int len = b.length;
@@ -399,6 +425,7 @@ public class Jsr75File implements SimpleFile
 
     public void close() { 
         try {
+        	m_bOpened = false;
             if (in != null) { 
                 in.close();
                 in = null;

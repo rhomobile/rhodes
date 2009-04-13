@@ -121,5 +121,15 @@ namespace general{
 
         return 0;
     }
+
+    void CRhoFile::deleteFile( const char* szFilePath ){
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+        StringW wFileName;
+        general::convertToStringW(szFilePath,wFileName);
+        DeleteFile(wFileName.c_str());
+#else
+        remove(szFilePath);
+#endif
+    }
 }
 }

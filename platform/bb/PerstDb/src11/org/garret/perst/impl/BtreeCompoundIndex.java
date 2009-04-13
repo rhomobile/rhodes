@@ -2,6 +2,7 @@ package org.garret.perst.impl;
 import  org.garret.perst.*;
 
 import java.util.*;
+import com.rho.StorageError;
 
 class BtreeCompoundIndex extends Btree implements Index { 
     int[]    types;

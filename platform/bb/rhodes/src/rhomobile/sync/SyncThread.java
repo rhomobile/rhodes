@@ -20,12 +20,17 @@ package rhomobile.sync;
 
 import java.util.Date;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import rhomobile.db.PerstLiteAdapter;
 
 /**
  * The Class SyncThread.
  */
 public class SyncThread implements Runnable {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncThread");
 
 	/** The quit. */
 	// private boolean quit = false;
@@ -60,7 +65,8 @@ public class SyncThread implements Runnable {
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
-		System.out.println("SyncEngine is started...");
+		
+		LOG.INFO("SyncEngine is started...");
 		//printStats();
 	}
 
@@ -73,11 +79,6 @@ public class SyncThread implements Runnable {
 			sync.notify();
 
 			SyncManager.closeConnection();
-			/*
-			 * int nTry = 0; while( nTry < 10 && getState() != STATE_NONE ){
-			 * try{ sync.wait(100); nTry++; } catch (Exception e) {
-			 * System.out.println("Wait exception:" + e.getMessage()); } }
-			 */
 		}
 	}
 
@@ -95,7 +96,7 @@ public class SyncThread implements Runnable {
 						sync.wait(SYNC_WAIT_INTERVAL);
 					}
 				} catch (Exception e) {
-					System.out.println("Wait exception:" + e.getMessage());
+					LOG.INFO("Wait exception:" + e.getMessage());
 				}
 			}
 
@@ -104,8 +105,7 @@ public class SyncThread implements Runnable {
 			
 			// synchronized (sync) {
 			//SyncUtil.adapter.initialize(null);
-			System.out.println("SyncEngine is awake..."
-					+ new Date(System.currentTimeMillis()).toString());
+			LOG.INFO("SyncEngine is awake...");
 			//printStats();
 
 			if (/*!delaySync &&*/ !dbResetDelay) {
@@ -113,8 +113,7 @@ public class SyncThread implements Runnable {
 				// there are no errors before waiting for SYNC_WAIT_INTERVAL
 				setState(STATE_SYNC);
 				if (SyncUtil.processLocalChanges(this) != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
-					System.out
-							.println("There was an error processing local changes");
+					LOG.ERROR("There was an error processing local changes");
 					break;
 				}
 			} else if (dbResetDelay) {
@@ -128,9 +127,9 @@ public class SyncThread implements Runnable {
 			// }
 		}
 		setState(STATE_NONE);
-		System.out.println("Shutting down SyncEngine...");
+		LOG.INFO("Shutting down SyncEngine...");
 		// SyncUtil.adapter.close();
-		System.out.println("SyncEngine is shutdown...");
+		LOG.INFO("SyncEngine is shutdown...");
 	}
 
 	/**
@@ -159,7 +158,8 @@ public class SyncThread implements Runnable {
 	public static void printStats() {
 		long free = java.lang.Runtime.getRuntime().freeMemory();
 		long total = java.lang.Runtime.getRuntime().totalMemory();
-		System.out.println("Memory stats (free / total) => usage: (" + free
+		
+		LOG.INFO("Memory stats (free / total) => usage: (" + free
 				+ " bytes / " + total + " bytes) => " + (total - free)
 				+ " bytes");
 	}

@@ -31,6 +31,7 @@ public:
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );
+    static void         deleteFile( const char* szFilePath );
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);

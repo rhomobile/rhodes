@@ -20,10 +20,13 @@ import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
 
 import rhomobile.NetworkAccess;
+import rhomobile.camera.CameraScreen;
+import rhomobile.camera.ImageBrowserScreen;
 import rhomobile.location.GeoLocation;
 import rhomobile.sync.SyncEngine;
 import rhomobile.sync.SyncUtil;
 import rhomobile.sync.SyncNotifications;
+import com.rho.*;
 
 import java.util.Vector;
 
@@ -189,6 +192,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      * Main.
      **************************************************************************/
     public static void main(String[] args) {
+    	
+    	RhoLogger.InitRhoLog();
+    	//TestRhoLog test = new TestRhoLog();
+    	//test.runAllTests();
+    	
     	NetworkAccess.autoConfigure();
 
     	SyncUtil.init();
@@ -206,6 +214,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		SyncEngine.stop(null);
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
+        
+        RhoLogger.close();
     }
 
 	public void activate() {
@@ -248,6 +258,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 					navigateUrl(curUrl);
 				}
 			};
+		private MenuItem logItem = new MenuItem("Log", 200000, 10) {
+			public void run() {
+					LogScreen screen = new LogScreen();
+			        //Push this screen to display it to the user.
+			        UiApplication.getUiApplication().pushScreen(screen);
+				}
+			};
 
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
@@ -256,6 +273,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			menu.add(refreshItem);
 			menu.add(syncItem);
 			menu.add(optionsItem);
+			menu.add(logItem);
 		}
 
 		public boolean onClose() {

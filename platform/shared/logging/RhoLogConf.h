@@ -3,6 +3,7 @@
 
 #include "common/RhoStd.h"
 #include "RhoPlainLog.h"
+#include "common/RhoMutexLock.h"
 
 namespace rho {
 
@@ -11,6 +12,7 @@ class LogCategory;
 struct ILogSink{
     virtual void writeLogMessage( String& strMsg ) = 0;
     virtual int getCurPos() = 0;
+    virtual void clear() = 0;
 };
 
 class LogSettings{
@@ -19,6 +21,7 @@ class LogSettings{
 
     bool        m_bLogToFile;
     String      m_strLogFilePath;
+    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
 
     bool        m_bLogPrefix;
@@ -27,6 +30,9 @@ class LogSettings{
 
     ILogSink*   m_pFileSink;
     ILogSink*   m_pOutputSink;
+
+    static general::CMutex m_FlushLock;
+    static general::CMutex m_CatLock;
 
 public:
     LogSettings();
@@ -43,6 +49,9 @@ public:
 
     const String& getLogFilePath()const{ return m_strLogFilePath;}
     void setLogFilePath(const char* szLogFilePath);
+
+    const String& getLogConfFilePath()const{ return m_strLogConfFilePath;}
+    void setLogConfFilePath(const char* szLogConfFilePath){ m_strLogConfFilePath = szLogConfFilePath; }
 
     void setMaxLogFileSize(unsigned int nMaxSize){m_nMaxLogFileSize = nMaxSize; }
     unsigned int getMaxLogFileSize()const{ return m_nMaxLogFileSize; }
@@ -66,6 +75,8 @@ public:
 
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
+
+    void clearLog();
 private:
 
     void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen );
