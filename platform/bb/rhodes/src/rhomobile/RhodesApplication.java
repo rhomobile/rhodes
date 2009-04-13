@@ -196,6 +196,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	RhoLogger.InitRhoLog();
     	//TestRhoLog test = new TestRhoLog();
     	//test.runAllTests();
+    	//TestProfiler.runAllTests();
     	
     	NetworkAccess.autoConfigure();
 
