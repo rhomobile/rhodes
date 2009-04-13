@@ -1,5 +1,6 @@
 package org.garret.perst.impl;
 import  org.garret.perst.*;
+import com.rho.IFile;
 
 abstract class PagePool 
 { 

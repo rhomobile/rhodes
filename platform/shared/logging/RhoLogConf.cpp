@@ -8,6 +8,9 @@
 static const char* CONF_FILENAME = "RhoLogConf.txt";
 
 namespace rho{
+general::CMutex LogSettings::m_FlushLock;
+general::CMutex LogSettings::m_CatLock;
+
 LogSettings g_LogSettings;
 
 LogSettings::LogSettings(){ 
@@ -32,19 +35,16 @@ void LogSettings::saveToFile(const char* szFilePath){
     saveToString(strData);
 
     general::CRhoFile oFile;
-    if ( szFilePath && *szFilePath )
-        oFile.open(  szFilePath , general::CRhoFile::OpenForWrite);
-    else{
-	    rho::general::CFilePath oLogPath( getLogFilePath().c_str() );
-        oFile.open( oLogPath.changeBaseName(CONF_FILENAME).c_str(), general::CRhoFile::OpenForWrite);
-    }
+    oFile.open(  szFilePath && *szFilePath ? szFilePath : getLogConfFilePath().c_str(), 
+        general::CRhoFile::OpenForWrite);
 
     oFile.write( strData.c_str(), strData.size() );
 }
 
 void LogSettings::loadFromFile(const char* szFilePath){
     general::CRhoFile oFile;
-    if ( oFile.open( szFilePath, general::CRhoFile::OpenReadOnly) ){
+    if ( oFile.open( szFilePath && *szFilePath ? szFilePath : getLogConfFilePath().c_str(), 
+            general::CRhoFile::OpenReadOnly) ){
         String strSettings;
         oFile.readString(strSettings);
         loadFromString( strSettings.c_str() );
@@ -171,6 +171,8 @@ void LogSettings::saveToString(String& strData){
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
     if ( m_strLogFilePath.compare(szLogFilePath) != 0 ){
+        general::CMutexLock oLock(m_FlushLock);
+
         m_strLogFilePath = szLogFilePath; 
 
         if ( m_pFileSink ){
@@ -180,7 +182,18 @@ void LogSettings::setLogFilePath(const char* szLogFilePath){
     }
 }
 
+void LogSettings::clearLog(){
+    general::CMutexLock oLock(m_FlushLock);
+
+    if ( m_pFileSink ){
+        m_pFileSink->clear();
+    }
+
+}
+
 void LogSettings::sinkLogMessage( String& strMsg ){
+    general::CMutexLock oLock(m_FlushLock);
+
     if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
 
@@ -191,6 +204,7 @@ void LogSettings::sinkLogMessage( String& strMsg ){
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
     //TODO: Optimize categories search : add map
+    general::CMutexLock oLock(m_CatLock);
 
     if ( m_strDisabledCategories.length() > 0 && strstr(m_strDisabledCategories.c_str(), cat.getName().c_str() ) != 0 )
         return false;
@@ -202,11 +216,13 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 }
 
 void LogSettings::setEnabledCategories( const char* szCatList ){
+    general::CMutexLock oLock(m_CatLock);
 
     m_strEnabledCategories = szCatList;
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
+    general::CMutexLock oLock(m_CatLock);
 
     m_strDisabledCategories = szCatList;
 }
@@ -236,5 +252,6 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setMaxLogFileSize(1024*50);
 	
     //load configuration if exist
-    LOGCONF().loadFromFile(oLogPath.makeFullPath(CONF_FILENAME).c_str());
+    LOGCONF().setLogConfFilePath(oLogPath.makeFullPath(CONF_FILENAME).c_str());
+    LOGCONF().loadFromFile("");
 }

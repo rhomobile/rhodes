@@ -2,6 +2,7 @@ package org.garret.perst.impl;
 import  org.garret.perst.*;
 import  java.util.Date;
 import  java.util.NoSuchElementException;
+import com.rho.StorageError;
 
 public class Btree extends PersistentResource implements Index { 
     int       root;

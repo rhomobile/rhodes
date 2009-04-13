@@ -1,4 +1,4 @@
-package org.garret.perst;
+package com.rho;
 
 /**
  * Exception throw by storage implementation
