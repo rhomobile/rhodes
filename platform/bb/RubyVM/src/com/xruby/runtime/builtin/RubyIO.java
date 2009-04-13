@@ -118,10 +118,10 @@ public class RubyIO extends RubyBasic {
 
     		this.writeInvocation(ObjectFactory.createString(line));
 
-    		int len = line.length();
+/*    		int len = line.length();
     		if (len == 0 || line.charAt(len - 1) != '\n') {
     			this.writeInvocation(DEFAULT_RS);
-    		}
+    		}*/
     	}
 
     	return RubyConstant.QNIL;

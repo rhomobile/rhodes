@@ -1,6 +1,4 @@
-package org.garret.perst.impl;
-import org.garret.perst.*;
-import java.io.*;
+package com.rho;
 
 public class FileFactory 
 { 
@@ -15,7 +13,7 @@ public class FileFactory
 //        } catch (ClassNotFoundException x) {
             try {
                 systemClass = Class.forName("javax.microedition.io.file.FileConnection");
-                wrapperClass = Class.forName("org.garret.perst.impl.Jsr75File");
+                wrapperClass = Class.forName("com.rho.Jsr75File");
             } catch (ClassNotFoundException x2) {  
                 try { 
                     systemClass = Class.forName("javax.microedition.rms.RecordStore");

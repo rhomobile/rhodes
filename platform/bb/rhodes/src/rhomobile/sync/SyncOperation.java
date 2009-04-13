@@ -18,10 +18,15 @@
  */
 package rhomobile.sync;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 /**
  * The Class SyncOperation.
  */
 public class SyncOperation {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncOperation");
 	
 	/** The _operation. */
 	private String _operation;
@@ -41,7 +46,7 @@ public class SyncOperation {
 		_postBody = setSyncPostBody(object);
 		_object = object;
 		
-		System.out.println("Formatted post strig: " + _postBody);
+		LOG.TRACE("Formatted post strig: " + _postBody);
 	}
 
 	/**

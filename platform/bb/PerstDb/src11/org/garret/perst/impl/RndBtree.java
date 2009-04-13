@@ -2,6 +2,7 @@
 package org.garret.perst.impl;
 import  org.garret.perst.*;
 import  java.util.*;
+import com.rho.StorageError;
 
 public class RndBtree extends PersistentResource implements Index { 
     int       height;

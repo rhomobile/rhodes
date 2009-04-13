@@ -1,5 +1,6 @@
 package org.garret.perst;
 
+import com.rho.IFile;
 /**
  * This implementation of <code>IFile</code> interface can be used
  * to make Perst an main-memory database. It should be used when pagePoolSize

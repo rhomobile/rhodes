@@ -34,11 +34,16 @@ import com.xruby.runtime.builtin.RubyInteger;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+import com.rho.Tokenizer;
 
 /**
  * The Class SyncUtil.
  */
 public class SyncUtil {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncUtil");
 
 	/** The adapter. */
 	public static PerstLiteAdapter adapter = null;
@@ -132,10 +137,9 @@ public class SyncUtil {
 			try {
 				data = SyncManager.fetchRemoteData(fetch_url, session, true);
 			} catch (IOException e) {
-				System.out
-						.println("There was an error fetching data from the sync source: "
-								+ e.getMessage());
+				LOG.ERROR("There was an error fetching data from the sync source", e);
 			}
+			
 			if (data != null) {
 				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
 				
@@ -260,7 +264,8 @@ public class SyncUtil {
 	 * @return the op list from database
 	 */
 	public static ArrayList getOpListFromDatabase(String type, SyncSource source) {
-		System.out.println("Checking database for " + type + " operations...");
+		LOG.INFO("Checking database for " + type + " operations...");
+		
 		RubyArray arr = createArray();
 		RubyHash where = createHash();
 		String operation = null;
@@ -272,7 +277,7 @@ public class SyncUtil {
 		arr.add(where);
 		RubyArray rows = (RubyArray) adapter.selectFromTable(arr);
 		ArrayList objects = getSyncObjectList(rows);
-		System.out.println("Found " + objects.size() + " records for " + type
+		LOG.INFO("Found " + objects.size() + " records for " + type
 				+ " processing...");
 		ArrayList results = new ArrayList();
 
@@ -290,8 +295,7 @@ public class SyncUtil {
 			SyncObject current = (SyncObject) objects.get(i);
 			SyncOperation newOperation = new SyncOperation(operation, current);
 			results.add(newOperation);
-			System.out
-					.println("Adding sync operation (attrib, source_id, object, value, update_type, uri): "
+			LOG.INFO("Adding sync operation (attrib, source_id, object, value, update_type, uri): "
 							+ current.getAttrib()
 							+ ", "
 							+ current.getSourceId()
@@ -452,49 +456,55 @@ public class SyncUtil {
 		int nStartSrc = get_start_source(sources);
 		SyncFetchResult syncResult = new SyncFetchResult();
 		
-		for (int i = nStartSrc; i < sources.size() && !thread.isStop() && !syncResult.stopSync; i++) {
+		for (int i = nStartSrc; i < sources.size() && !thread.isStop(); i++) {
 			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
 			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
 			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
-			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
-			SyncSource current = new SyncSource(url, id);
-			if (token != null && token != RubyConstant.QNIL)
-				current.set_token(token.toStr());
-
-			if (client_id == null)
-				client_id = get_client_id(current);
-
-			if (thread.isStop())
-				break;
-
-			System.out.println("URL: " + current.get_sourceUrl());
 			int success = 0;
-			success += processOpList(current, "create", client_id);
-			if (thread.isStop())
-				break;
-			success += processOpList(current, "update", client_id);
-			if (thread.isStop())
-				break;
-			success += processOpList(current, "delete", client_id);
-			if (thread.isStop())
-				break;
-
-			if (success > 0) {
-				System.out
-						.println("Remote update failed, not continuing with sync...");
-			} else {
-				String askParams = SyncUtil.getParamsForSource(current);
-				syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams);
-				System.out.println("Successfully processed " + syncResult.available
-						+ " records...");
-				if (SyncConstants.DEBUG) {
-					RubyArray objects = SyncUtil.getObjectValueList(current
-							.get_sourceId());
-					SyncUtil.printResults(objects);
+			
+			if ( !syncResult.stopSync ){
+				RubyValue token = element.get(PerstLiteAdapter.TOKEN);
+				SyncSource current = new SyncSource(url, id);
+				if (token != null && token != RubyConstant.QNIL)
+					current.set_token(token.toStr());
+	
+				if (client_id == null)
+					client_id = get_client_id(current);
+	
+				if (thread.isStop())
+					break;
+	
+				LOG.INFO("URL: " + current.get_sourceUrl());
+				success += processOpList(current, "create", client_id);
+				if (thread.isStop())
+					break;
+				success += processOpList(current, "update", client_id);
+				if (thread.isStop())
+					break;
+				success += processOpList(current, "delete", client_id);
+				if (thread.isStop())
+					break;
+	
+				if (success > 0) {
+					LOG.ERROR("Remote update failed, not continuing with sync...");
+				} else {
+					String askParams = SyncUtil.getParamsForSource(current);
+					syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams);
+					LOG.INFO("Successfully processed " + syncResult.available
+							+ " records...");
+					if (SyncConstants.DEBUG) {
+						RubyArray objects = SyncUtil.getObjectValueList(current
+								.get_sourceId());
+						SyncUtil.printResults(objects);
+					}
+					
+					success = syncResult.available; 
 				}
-				if (!thread.isStop())
-					SyncEngine.getNotificationImpl().fireNotification(id, syncResult.available);
 			}
+			
+			if (!thread.isStop())
+				SyncEngine.getNotificationImpl().fireNotification(id, success);
+			
 		}
 		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
 	}
@@ -516,8 +526,7 @@ public class SyncUtil {
 		if (list.size() == 0) {
 			return success;
 		}
-		System.out.println("Found " + list.size()
-				+ " available records for processing...");
+		LOG.INFO("Found " + list.size()	+ " available records for processing...");
 		
 		ArrayList listBlobs = SyncBlob.extractBlobs(list);
 		
@@ -573,8 +582,7 @@ public class SyncUtil {
 			success = SyncManager.pushRemoteData(url, dataStream, session,true,
 					"application/x-www-form-urlencoded");
 		} catch (IOException e) {
-			System.out.println("There was an error pushing changes: "
-					+ e.getMessage());
+			LOG.ERROR("There was an error pushing changes", e );
 			success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		}
 
@@ -630,9 +638,7 @@ public class SyncUtil {
 					adapter.insertIntoTable(
 							createString(SyncConstants.CLIENT_INFO), hash);
 			} catch (IOException e) {
-				System.out
-						.println("There was an error fetching data from the sync source: "
-								+ e.getMessage());
+				LOG.ERROR("There was an error fetching data from the sync source: ", e);
 			}
 		}
 		return client_id;
@@ -764,7 +770,7 @@ public class SyncUtil {
 
 			if (strField.equalsIgnoreCase("Set-Cookie")) {
 				String header_field = connection.getHeaderField(i);
-				System.out.println("Set-Cookie: " + header_field);
+				LOG.INFO("Set-Cookie: " + header_field);
 				parseCookie(header_field, cookie);
 				// Hack to make it work on 4.6 device which doesn't parse
 				// cookies correctly
@@ -777,8 +783,7 @@ public class SyncUtil {
 					String rhosync_session = extractToc("rhosync_session",
 							header_field);
 					cookie.strSession = rhosync_session;
-					System.out.println("Extracted rhosync_session: "
-							+ rhosync_session);
+					LOG.INFO("Extracted rhosync_session: " + rhosync_session);
 				}
 			}
 		}
@@ -819,14 +824,12 @@ public class SyncUtil {
 						strSession = cookie.strAuth + ";" + cookie.strSession
 								+ ";";
 					} else {
-						System.out.println("Error posting data: " + code);
+						LOG.ERROR("Error posting data: " + code);
 						success = false;
 					}
 
 				} catch (IOException e) {
-					System.out
-							.println("There was an error fetch_client_login: "
-									+ e.getMessage());
+					LOG.ERROR("There was an error fetch_client_login: ", e );
 				} finally {
 					
 					if ( dataStream != null ){

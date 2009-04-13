@@ -2,6 +2,7 @@ package org.garret.perst.impl;
 import  org.garret.perst.*;
 
 import java.util.*;
+import com.rho.StorageError;
 
 public class ThickIndex extends PersistentResource implements Index { 
     private Index index;

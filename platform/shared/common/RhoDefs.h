@@ -27,5 +27,6 @@
 #endif
 
 #define RHO_STRIP_LOG 0
+#define RHO_STRIP_PROFILER 0
 
 #endif //_RHODEFS_H_

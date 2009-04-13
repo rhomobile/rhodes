@@ -1,5 +1,6 @@
 package org.garret.perst;
 
+import com.rho.StorageError;
 /**
  * Base class for persistent capable objects supporting locking
  */
