@@ -24,9 +24,15 @@ import net.rim.device.api.i18n.SimpleDateFormat;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Bitmap;
 
-import org.garret.perst.impl.Jsr75File;
+import com.rho.Jsr75File;
+
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 public class ImageBrowserScreen extends MainScreen {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("ImageBrowserScreen");
+	
 	private static final int IMAGE_SCALING = 7;
 	
     /** A reference to the current screen for listeners. */
@@ -89,7 +95,7 @@ public class ImageBrowserScreen extends MainScreen {
 			//Convert the byte array to a Bitmap image.
 			image = Bitmap.createBitmapFromBytes( raw, 0, -1, IMAGE_SCALING );
 		} catch(Exception e) {
-			System.out.println("Can't load " + uri);
+			LOG.ERROR("Can't load " + uri, e);
 		} finally {
 			try {
 				file.close();
@@ -251,7 +257,7 @@ public class ImageBrowserScreen extends MainScreen {
                 String ext = imageName.substring(i);
 
             	fname = makeFileName(ext);
-            	System.out.println("Selected file new name: " + fname);
+            	LOG.INFO("Selected file new name: " + fname);
 
     			//open file
     			srcFile.open(imageName, false, false);
@@ -279,11 +285,11 @@ public class ImageBrowserScreen extends MainScreen {
             }
             
             if (error) {
+            	LOG.ERROR("Callback with error: status=error&message=Error");
             	app.postUrl(_callbackUrl, "status=error&message=Error", headers); 
-            	System.out.println("Callback with error: status=error&message=Error" );
-            } else {            	
+            } else {
+            	LOG.INFO("Callback with uri: status=ok&image_uri="+fname);
             	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers); 
-            	System.out.println("Callback with uri: status=ok&image_uri="+fname);
             }
 
         	app.popScreen( _imageBrowserScreen );

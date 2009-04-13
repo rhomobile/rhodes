@@ -51,7 +51,18 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
 
 int CLogFileSink::getCurPos()
 {
-    return m_nCirclePos;
+    return m_nCirclePos >= 0 ? m_nCirclePos : m_nFileLogSize;
+}
+
+void CLogFileSink::clear(){
+    if ( m_pFile )    {
+        delete m_pFile;
+        m_pFile = NULL;
+    }
+
+    general::CRhoFile().deleteFile(getLogConf().getLogFilePath().c_str());
+    String strPosPath = getLogConf().getLogFilePath() + "_pos";
+    general::CRhoFile().deleteFile(strPosPath.c_str());
 }
 
 void CLogFileSink::loadLogPosition(){

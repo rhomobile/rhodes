@@ -23,10 +23,15 @@ import j2me.util.ArrayList;
 import org.json.me.JSONArray;
 import org.json.me.JSONObject;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 /**
  * The Class SyncJSONParser.
  */
 public class SyncJSONParser {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncJSONParser");
 
 	static class SyncHeader
 	{ 
@@ -91,8 +96,7 @@ public class SyncJSONParser {
 			}
 
 		} catch (Exception e) {
-			System.out.println("There was an error processing the json list: "
-					+ e.getMessage());
+			LOG.ERROR("There was an error processing the json list", e);
 		}
 		return list;
 	}
@@ -109,8 +113,7 @@ public class SyncJSONParser {
 				client_id = (String) client.get("client_id");
 
 		} catch (Exception e) {
-			System.out.println("There was an error processing the json list: "
-					+ e.getMessage());
+			LOG.FATAL("There was an error processing the json list", e);
 		}
 		return client_id;
 	}

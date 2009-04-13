@@ -4,14 +4,21 @@ import j2me.util.ArrayList;
 
 import java.io.InputStream;
 import java.io.IOException;
-import org.garret.perst.impl.Jsr75File;
-import org.garret.perst.StorageError;
+import com.rho.StorageError;
+import com.rho.SimpleFile;
+import com.rho.FileFactory;
+
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 import rhomobile.URI;
 import rhomobile.db.PerstLiteAdapter;
 import rhomobile.db.PerstLiteAdapter.Table_base1;
 
 public class SyncBlob {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncBlob");
+	
 /*
 	public static final int SYNC_STAGE_NONE = 0;
 	public static final int SYNC_STAGE = 1;
@@ -19,7 +26,7 @@ public class SyncBlob {
 	public static final int REQUEST_STAGE = 3;
 */
 	public static String makeBlobFolderName()throws IOException{
-		String fName = Jsr75File.getDirPath("blobs");
+		String fName = FileFactory.createFile().getDirPath("blobs");
 		
 		return fName;
 	}
@@ -147,7 +154,7 @@ public class SyncBlob {
 			SyncOperation op = (SyncOperation) list.get(i);
 			SyncObject obj = op.get_object();
 			
-			Jsr75File file = new Jsr75File();
+			SimpleFile file = FileFactory.createFile();
 			
 			try {
 				file.open(obj.getValue(), true, true);
@@ -163,12 +170,10 @@ public class SyncBlob {
 							"multipart/form-data" );
 				}
 			} catch (IOException e) {
-				System.out.println("There was an error pushing changes: "
-						+ e.getMessage());
+				LOG.ERROR("There was an error pushing changes", e);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			} catch ( StorageError e){
-				System.out.println("There was an error open file: " + obj.getValue() + "; Error:"
-						+ e.getMessage());
+				LOG.ERROR("There was an error open file: " + obj.getValue(), e);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}finally{
 				if ( file != null )
@@ -188,7 +193,7 @@ public class SyncBlob {
 
 			try{
 				String fName = makeBlobFolderName();
-				Jsr75File.delete(fName);
+				FileFactory.createFile().delete(fName);
 			}catch(StorageError exc){
 			}catch(IOException exc){
 				
@@ -211,7 +216,7 @@ public class SyncBlob {
 				return;
 			
 			try{
-				Jsr75File.delete(url);
+				FileFactory.createFile().delete(url);
 			}catch(StorageError exc){
 				
 			}

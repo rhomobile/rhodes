@@ -133,6 +133,9 @@ int process_local_changes() {
 	  if (result > 0) 
 	  {
 		  RAWLOG_INFO("Remote update failed, not continuing with sync...");
+
+		  for(i = nStartSrc; i < source_length && isContinueSync(); i++)
+    		  fire_notification(source_list[i]->_source_id,0);
 	  } 
 	  else 
 	  {

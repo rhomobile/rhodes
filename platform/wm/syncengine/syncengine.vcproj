@@ -1010,8 +1010,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\shared\ruby\wince;..\..\shared\json;..\sqlite3;..\..\shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="..\..\shared\json;..\sqlite3;..\..\shared"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

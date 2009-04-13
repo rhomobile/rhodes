@@ -707,8 +707,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared/tcmalloc;../../shared/tcmalloc/windows;../../shared/ruby/wince;../../shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="../../shared/tcmalloc;../../shared/tcmalloc/windows;../../shared"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WIN32;_WINDOWS;_LIB;_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

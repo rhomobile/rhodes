@@ -9,6 +9,8 @@ class CLogView :
 	public CDialogImpl<CLogView>
 {
     HBRUSH m_hBrush;
+
+    void loadLogText();
 public:
     CLogView() : m_hBrush ( NULL ){}
 	~CLogView(){}
@@ -22,6 +24,8 @@ BEGIN_MSG_MAP(CLogView)
     MESSAGE_HANDLER(WM_CTLCOLOREDIT,OnCtlColor)
     COMMAND_ID_HANDLER(IDM_BACK, OnBack)
     COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptions)
+    COMMAND_ID_HANDLER(IDM_REFRESH, OnRefresh)
+    COMMAND_ID_HANDLER(IDM_CLEAR, OnClear)
 END_MSG_MAP()
 //	CHAIN_MSG_MAP(CAxDialogImpl<CLogView>)
 
@@ -34,6 +38,9 @@ END_MSG_MAP()
 
 	LRESULT OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
