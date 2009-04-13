@@ -1,6 +1,6 @@
 package org.garret.perst.impl;
 
-import org.garret.perst.StorageError;
+import com.rho.StorageError;
 import java.io.UnsupportedEncodingException;
 
 //

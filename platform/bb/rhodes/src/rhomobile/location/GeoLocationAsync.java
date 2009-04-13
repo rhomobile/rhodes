@@ -2,7 +2,12 @@ package rhomobile.location;
 
 import javax.microedition.location.*;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 public class GeoLocationAsync {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("GeoLocationAsync");
 
 	private LocationProvider m_lp = null;
 	private String m_strLog = "";
@@ -30,19 +35,19 @@ public class GeoLocationAsync {
 					  m_bDetermined = true;
 					}
 				}else
-					log("GetLocation - getQualifiedCoordinates: return null.");
+					LOG.INFO("GetLocation - getQualifiedCoordinates: return null.");
 			}else
-				log("GetLocation - getLocation: return null.");
+				LOG.INFO("GetLocation - getLocation: return null.");
 			
 		}
 
 		public void providerStateChanged(LocationProvider provider, int newState) {
 //http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=744
 			if ( newState == LocationProvider.TEMPORARILY_UNAVAILABLE ){
-				log("providerStateChanged:" + "TEMPORARILY_UNAVAILABLE");
+				LOG.INFO("providerStateChanged: TEMPORARILY_UNAVAILABLE");
 			//	m_bDetermined = false;
 			}else if ( newState == LocationProvider.OUT_OF_SERVICE ){
-				log("providerStateChanged:" + "OUT_OF_SERVICE");
+				LOG.INFO("providerStateChanged: OUT_OF_SERVICE");
 			//	m_bDetermined = false;
 			}
 		}
@@ -57,14 +62,8 @@ public class GeoLocationAsync {
 			checkAlive();
 		}catch(LocationException ex)
 		{
-			log("GeoLocation error:" + ex.getMessage() + ";" + errorStrDontSupport );
+			LOG.ERROR(errorStrDontSupport,ex);
 		}
-	}
-
-	private void log(String strMsg ){
-		System.out.println(strMsg);
-		//m_strLog += strMsg;
-		//m_strLog += "\r\n<br/>";
 	}
 
 	private void checkAlive(){
@@ -72,7 +71,7 @@ public class GeoLocationAsync {
 		long nNow = now.getTime();
 		if ( m_nDeterminedTime == 0 || (nNow - m_nDeterminedTime>1000*60*5)){ //5 minutes
 			if ( m_lp != null ){
-				log("setLocationListener");
+				LOG.INFO("setLocationListener");
 				m_lp.setLocationListener(null, 0, 0, 0);
 				m_lp.reset();
 				m_lp.setLocationListener(new LocationListenerImpl(), 50, 10, 20);

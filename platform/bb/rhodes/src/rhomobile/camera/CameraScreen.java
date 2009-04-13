@@ -26,10 +26,17 @@ import javax.microedition.media.Manager;
 import javax.microedition.media.Player;
 import javax.microedition.media.control.VideoControl;
 
-import org.garret.perst.impl.Jsr75File;
+import com.rho.SimpleFile;
+import com.rho.FileFactory;
+
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 public class CameraScreen extends MainScreen {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("Camera");
+	
     /** The camera's video controller. */
     private VideoControl _videoControl;
 
@@ -413,7 +420,7 @@ public class CameraScreen extends MainScreen {
         	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-			Jsr75File file = new Jsr75File();
+			SimpleFile file = FileFactory.createFile();
 			boolean error = false;
 			String fname = "";
 			
@@ -440,11 +447,12 @@ public class CameraScreen extends MainScreen {
             	file.getOutStream().write(image,0,image.length);
             	image = null;
 
-            	String root = Jsr75File.getRhoPath();
+            	String root = file.getDirPath("");
             	fname = "/" + fname.substring(root.length());
             	fname = Utilities.replaceAll(fname,"/","%2F");
             } catch(Exception e) {
             	error = true;
+            	LOG.ERROR(e);
             	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
             } finally {
     			try{
@@ -453,11 +461,11 @@ public class CameraScreen extends MainScreen {
             }
 
             if (error) {
+            	LOG.ERROR("Callback with error: status=error&message=Error");
             	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
-            	System.out.println("Callback with error: status=error&message=Error" );
-            } else {            	
+            } else {
+            	LOG.INFO("Callback with uri: status=ok&image_uri="+fname);
             	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
-            	System.out.println("Callback with uri: status=ok&image_uri="+fname);
             }
 
         	app.popScreen( _cameraScreen );

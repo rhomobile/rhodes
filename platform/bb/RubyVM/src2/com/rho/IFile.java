@@ -1,4 +1,4 @@
-package org.garret.perst;
+package com.rho;
 
 /**
  * Interface of file.
@@ -37,4 +37,5 @@ public interface IFile
      * Length of the file
      */
     long length();
+    
 }

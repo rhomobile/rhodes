@@ -12,7 +12,6 @@
 ..\PerstDb\src11\org\garret\perst\ConcurrentModificationException.java
 ..\PerstDb\src11\org\garret\perst\EmbeddedLink.java
 ..\PerstDb\src11\org\garret\perst\GenericIndex.java
-..\PerstDb\src11\org\garret\perst\IFile.java
 ..\PerstDb\src11\org\garret\perst\IInputStream.java
 ..\PerstDb\src11\org\garret\perst\impl\AltBtree.java
 ..\PerstDb\src11\org\garret\perst\impl\AltPersistentSet.java
@@ -26,7 +25,6 @@
 ..\PerstDb\src11\org\garret\perst\impl\Bytes.java
 ..\PerstDb\src11\org\garret\perst\impl\ClassDescriptor.java
 ..\PerstDb\src11\org\garret\perst\impl\DefaultPersistentComparator.java
-..\PerstDb\src11\org\garret\perst\impl\FileFactory.java
 ..\PerstDb\src11\org\garret\perst\impl\GenericSort.java
 ..\PerstDb\src11\org\garret\perst\impl\GenericSortArray.java
 ..\PerstDb\src11\org\garret\perst\impl\KDTree.java
@@ -86,12 +84,10 @@
 ..\PerstDb\src11\org\garret\perst\Relation.java
 ..\PerstDb\src11\org\garret\perst\Resolver.java
 ..\PerstDb\src11\org\garret\perst\Set.java
-..\PerstDb\src11\org\garret\perst\SimpleFile.java
 ..\PerstDb\src11\org\garret\perst\SortedCollection.java
 ..\PerstDb\src11\org\garret\perst\SpatialIndex.java
 ..\PerstDb\src11\org\garret\perst\SpatialIndexR2.java
 ..\PerstDb\src11\org\garret\perst\Storage.java
-..\PerstDb\src11\org\garret\perst\StorageError.java
 ..\PerstDb\src11\org\garret\perst\StorageFactory.java
 ..\PerstDb\src11\org\garret\perst\StorageListener.java
 ..\PerstDb\src11\org\garret\perst\ThreadSafeIterator.java

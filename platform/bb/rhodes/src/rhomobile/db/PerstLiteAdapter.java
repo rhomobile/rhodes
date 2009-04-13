@@ -5,13 +5,13 @@ import org.garret.perst.IOutputStream;
 import org.garret.perst.Index;
 import org.garret.perst.Iterator;
 import org.garret.perst.Persistent;
-import org.garret.perst.SimpleFile;
+import com.rho.SimpleFile;
 import org.garret.perst.Storage;
-import org.garret.perst.StorageError;
+import com.rho.StorageError;
 import org.garret.perst.StorageFactory;
 import org.garret.perst.Types;
 import org.garret.perst.Key;
-import org.garret.perst.impl.FileFactory;
+import com.rho.FileFactory;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 
@@ -710,7 +710,7 @@ public class PerstLiteAdapter  extends RubyBasic {
         	String dbVer = readDBVersion();
 			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) )
 			{
-				org.garret.perst.impl.Jsr75File.delete(DB_FILENAME);
+				FileFactory.createFile().delete(DB_FILENAME);
 				if ( m_callback != null ){
 					m_callback.OnDeleteAllFromTable(Table_client_info.name());
 					m_callback.OnDeleteAllFromTable(Table_object_values.name());

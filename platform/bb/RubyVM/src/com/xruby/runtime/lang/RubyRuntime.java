@@ -403,13 +403,13 @@ public class RubyRuntime {
     }
 
     private static void updateStdout() {
-        RubyIO io = new RubyFile(new OutputStreamExecutor(System.out), RubyRuntime.IOClass);
+        RubyIO io = new RubyFile(new OutputStreamExecutor(false), RubyRuntime.IOClass);
         RubyAPI.setTopLevelConstant(io, "STDOUT");
         GlobalVariables.set(io, "$stdout");
     }
 
     private static void updateStderr() {
-        RubyIO io = new RubyFile(new OutputStreamExecutor(System.err), RubyRuntime.IOClass);
+        RubyIO io = new RubyFile(new OutputStreamExecutor(true), RubyRuntime.IOClass);
         RubyAPI.setTopLevelConstant(io, "STDERR");
         GlobalVariables.set(io, "$stderr");
     }

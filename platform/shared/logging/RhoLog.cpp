@@ -10,7 +10,6 @@ const char*const LogSeverityNames[L_NUM_SEVERITIES] = {
 };
 
 namespace rho {
-general::CMutex LogMessage::m_FlushLock;
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category ) : 
     m_severity(severity), m_category(category), m_oLogConf(oSettings){
@@ -31,7 +30,7 @@ bool LogMessage::isEnabled()const{
 
 void LogMessage::addPrefix(const char* file, int line){
     //(log level, local date time, thread_id, file basename, line)
-    //[I time f5d4fbb0 RhoLog.cpp:11]
+    //I time f5d4fbb0 RhoLog.cpp:11|
 
     if ( m_severity == L_FATAL )
         *this + LogSeverityNames[m_severity];
@@ -60,11 +59,7 @@ void LogMessage::flushLog(){
         //    m_strMessage.erase(m_strMessage.length()-2,1);
     }
 
-
-    {
-        general::CMutexLock oLock(m_FlushLock);
-        getLogConf().sinkLogMessage( m_strMessage );
-    }
+    getLogConf().sinkLogMessage( m_strMessage );
 
     if ( m_severity == L_FATAL ) //TODO: may be save fatal info in separate place
         general::CRhoFatalError().processFatalError();

@@ -6,7 +6,12 @@ import javax.microedition.location.Location;
 import javax.microedition.location.LocationException;
 import javax.microedition.location.LocationProvider;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 public class GeoLocationImpl implements Runnable {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("GeoLocationImpl");
 
 	private final int HORIZONTAL_ACCURANCE = 500;
 	private final int REQUEST_TIMEOUT = 60;
@@ -43,7 +48,7 @@ public class GeoLocationImpl implements Runnable {
 			}			
 		}catch(LocationException ex)
 		{
-			log("GeoLocation error:" + ex.getMessage() + ";" + errorStrDontSupport );
+			LOG.ERROR(errorStrDontSupport, ex);
 		}
 		
 	}
@@ -54,10 +59,10 @@ public class GeoLocationImpl implements Runnable {
 		try{
 			loc = m_lp.getLocation(REQUEST_TIMEOUT); //seconds
 		}catch(InterruptedException ex){ //Interrupted by user
-			log("GetLocation - getLocation:InterruptedException " + ex.getMessage());
+			LOG.ERROR("getLocation:InterruptedException", ex);
 		}catch(Exception ex)
 		{
-			log("GetLocation - getLocation:LocationException: "+ ex.getMessage() + ";" + errorStrLocationException );
+			LOG.ERROR("getLocation:LocationException: errorStrLocationException", ex );
 		}
 		
 		if ( loc != null ){
@@ -70,9 +75,9 @@ public class GeoLocationImpl implements Runnable {
 				  m_bDetermined = true;
 				}
 			}else
-				log("GetLocation - getQualifiedCoordinates: return null.");
+				LOG.INFO("GetLocation - getQualifiedCoordinates: return null.");
 		}else
-			log("GetLocation - getLocation: return null.");
+			LOG.INFO("GetLocation - getLocation: return null.");
 	}
 	
 	public synchronized double GetLatitude(){
@@ -104,15 +109,9 @@ public class GeoLocationImpl implements Runnable {
 		}
 	}
 	
-	private void log(String strMsg ){
-		System.out.println(strMsg);
-		//m_strLog += strMsg;
-		//m_strLog += "\r\n<br/>";
-	}
-	
 	public void run() {
 		
-		log("GeoLocation is started...");
+		LOG.INFO("GeoLocation is started...");
 		
 		while (!isStop()) {
 			setState(STATE_LOCATING);
@@ -125,12 +124,12 @@ public class GeoLocationImpl implements Runnable {
 						sync.wait(WAIT_INTERVAL);
 					}
 				} catch (Exception e) {
-					log("Wait exception:" + e.getMessage());
+					LOG.INFO("Wait exception:" + e.getMessage());
 				}
 			}
 		}
 		setState(STATE_NONE);
-		log("GeoLocation is shutdown...");
+		LOG.INFO("GeoLocation is shutdown...");
 	}
 	
 	public void wakeUp() {

@@ -18,6 +18,8 @@
  */
 package rhomobile.sync;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyValue;
 import rhomobile.db.PerstLiteAdapter;
@@ -26,6 +28,8 @@ import rhomobile.db.PerstLiteAdapter;
  * The Class SyncObject.
  */
 public class SyncObject {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncObject");
 	
 	/* track the database operation to use */	
 	private String _db_operation;
@@ -82,8 +86,7 @@ public class SyncObject {
 					.createString(SyncConstants.OBJECTS_TABLE), this
 					.getHashFromValues());
 		} catch (Exception e) {
-			System.out.println("There was an error inserting the record: "
-					+ e.getMessage());
+			LOG.ERROR("There was an error inserting the record", e);
 			return SyncConstants.SYNC_OBJECT_ERROR;
 		}
 		return SyncConstants.SYNC_OBJECT_SUCCESS;

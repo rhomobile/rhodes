@@ -5,6 +5,9 @@ import java.io.IOException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import net.rim.device.api.servicebook.ServiceBook;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.system.DeviceInfo;
@@ -13,6 +16,8 @@ import net.rim.device.api.system.RadioInfo;
 //import net.rim.device.api.ui.component.Dialog;
 
 public class NetworkAccess {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("NetworkAccess");
 
 	private static String URLsuffix;
 	private static String WAPsuffix;
@@ -78,7 +83,8 @@ public class NetworkAccess {
 								continue;
 							if (srs[i].getCid().equals("IPPP")
 									&& srs[i].getName().equals("IPPP for BIBS")) {
-								log("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
+								LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
+								
 								URLsuffix = ";deviceside=false;ConnectionType=mds-public";
 								networkConfigured = true;
 								break;
@@ -130,10 +136,10 @@ public class NetworkAccess {
 				server = server.substring(0, fragment);
 			}
 
-			System.out.println(server + param);
+			LOG.INFO(server + param);
 			http = (HttpConnection) Connector.open(server + param);
 		} catch (IOException ioe) {
-			System.out.println("Open exception: " + ioe.getMessage());
+			LOG.ERROR("Connector.open exception", ioe );
 			if (http != null)
 				http.close();
 			http = null;
@@ -142,10 +148,6 @@ public class NetworkAccess {
 		return http;
 	}
 
-	private static void log(String txt) {
-		 System.out.println(txt);
-	}
-	
 	private NetworkAccess() {
 	}
 	/*

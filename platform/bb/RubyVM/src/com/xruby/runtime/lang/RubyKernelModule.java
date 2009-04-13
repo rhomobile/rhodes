@@ -26,10 +26,16 @@ import j2me.util.Iterator;
 
 import j2me.lang.MathEx;
 import j2me.lang.PrintStreamMe;
+
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.*;
 
 //@RubyLevelModule(name="Kernel")
 public class RubyKernelModule {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RubyKernelModule");
+	
 	//@RubyLevelMethod(name="==", alias={"equal?", "eql?"})
 	public static RubyValue opEqual(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createBoolean(receiver == arg);
@@ -243,7 +249,7 @@ public class RubyKernelModule {
 
 		if (null != args) {
 			RubyBinding binding = new RubyBinding();
-			System.out.println(receiver);
+			LOG.INFO("instanceEval reciever:" + receiver.toString());
 			binding.setScope((RubyModule) receiver);
 			binding.setSelf(receiver);
 			return eval(args.get(0).toStr(), binding);
@@ -540,7 +546,8 @@ public class RubyKernelModule {
     	RubyValue str = RubyAPI.callNoArgMethod(arg, null, RubyID.inspectID);
     	RubyString value = str.toRubyString();
     	value.appendString("\n");
-    	System.out.print(value.toString());
+    	//System.out.print(value.toString());
+    	LOG.INFO(value.toString());
     	return RubyConstant.QNIL;
     }
     
@@ -552,7 +559,8 @@ public class RubyKernelModule {
     		RubyValue str = RubyAPI.callNoArgMethod(arg, null, RubyID.inspectID);
     		RubyString value = (RubyString) str;
     		value.appendString("\n");
-    		System.out.print(value.toString());
+    		//System.out.print(value.toString());
+    		LOG.INFO(value.toString());
     	}
     	return RubyConstant.QNIL;
     }
