@@ -1,5 +1,7 @@
 package com.xruby.runtime.lang;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 
@@ -22,6 +24,14 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return loadWithReflection(receiver, arg, block);}
 		});
+		RubyRuntime.KernelModule.defineModuleMethod( "rhoInfo", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return rhoInfo(receiver, arg, block);}
+		});
+		RubyRuntime.KernelModule.defineModuleMethod( "rhoError", new RubyVarArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+				return rhoError(receiver, args, block);}
+		});
 		
 		SystemModule = RubyAPI.defineModule("System");
 		SystemModule.defineModuleMethod( "get_property", new RubyOneArgMethod(){ 
@@ -31,6 +41,20 @@ public class RhoSupport {
 		
 	}
 
+	private static final RhoLogger RHOLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RHO");
+	
+    public static RubyValue rhoInfo(RubyValue receiver, RubyValue arg, RubyBlock block) {
+        String msg = arg.toStr();
+        RHOLOG.INFO(msg);
+        return RubyConstant.QNIL;
+    }
+    public static RubyValue rhoError(RubyValue receiver, RubyArray args, RubyBlock block) {
+        //String msg = arg.toStr();
+        //RHOLOG.ERROR(msg);
+        return RubyConstant.QNIL;
+    }
+    
     public static String createMainClassName(String required_file) {
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {

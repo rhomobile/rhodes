@@ -23,7 +23,7 @@ public:
 
     void writeLogMessage( String& strMsg );
     int getCurPos();
-
+    void clear();
 private:
     void loadLogPosition();
     void saveLogPosition();
@@ -37,6 +37,7 @@ public:
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
+    void clear(){}
 };
 
 }

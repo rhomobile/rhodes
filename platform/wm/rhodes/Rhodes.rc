@@ -90,7 +90,12 @@ END
 IDR_LOGMENUBAR MENU 
 BEGIN
     MENUITEM "Back",                        IDM_BACK
-    MENUITEM "Options",                     IDM_OPTIONS
+    POPUP "Menu"
+    BEGIN
+        MENUITEM "Options",                     IDM_OPTIONS
+        MENUITEM "Refresh",                     IDM_REFRESH
+        MENUITEM "Clear",                       IDM_CLEAR
+    END
 END
 
 IDR_LOGOPTIONSMENUBAR MENU 

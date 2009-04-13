@@ -10,12 +10,14 @@ import java.io.OutputStream;
 
 import javax.microedition.io.HttpConnection;
 
-import org.garret.perst.impl.Jsr75File;
-import org.garret.perst.StorageError;
+import com.rho.SimpleFile;
+import com.rho.FileFactory;
+import com.rho.StorageError;
 
 import rhomobile.location.GeoLocation;
 
-
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
@@ -23,6 +25,9 @@ import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RhoSupport;
 
 public class RhoConnection implements HttpConnection {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhoConnection");
+	
 	/** Request URI **/
 	URI uri;
 	URI uri_external;
@@ -44,7 +49,7 @@ public class RhoConnection implements HttpConnection {
     /** Input/Output streams **/
 	private /*ByteArray*/InputStream responseData = null;
 	private ByteArrayOutputStream postData = new ByteArrayOutputStream();
-	private Jsr75File m_file = null;
+	private SimpleFile m_file = null;
 	
 	/** Construct connection using URI **/
     
@@ -56,17 +61,17 @@ public class RhoConnection implements HttpConnection {
     }
     
 	public long getDate() throws IOException {
-		log("getDate");
+		LOG.TRACE("getDate");
 		return getHeaderFieldDate("date", 0);
 	}
 
 	public long getExpiration() throws IOException {
-		log("getExpiration");
+		LOG.TRACE("getExpiration");
 		return getHeaderFieldDate("expires", 0);
 	}
 
 	public String getFile() {
-		log("getFile");
+		LOG.TRACE("getFile");
 		if (uri!=null) {
 			String path = uri.getPath();
 			if (path!=null) {
@@ -81,13 +86,13 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public String getHeaderField(String name) throws IOException {
-		log("getHeaderField: " + name);
+		LOG.TRACE("getHeaderField: " + name);
 		processRequest();
 		return resHeaders.getPropertyIgnoreCase(name);
 	}
 
 	public String getHeaderField(int index) throws IOException {
-		log("getHeaderField: " + index);
+		LOG.TRACE("getHeaderField: " + index);
 		processRequest();
         if (index >= resHeaders.size()) {
             return null;
@@ -96,7 +101,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public long getHeaderFieldDate(String name, long def) throws IOException {
-		log("getHeaderFieldDate: " + name);
+		LOG.TRACE("getHeaderFieldDate: " + name);
 		processRequest();
         try {
             return DateTimeTokenizer.parse(getHeaderField(name));
@@ -111,7 +116,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public int getHeaderFieldInt(String name, int def) throws IOException {
-		log("getHeaderFieldInt: " + name);
+		LOG.TRACE("getHeaderFieldInt: " + name);
 		processRequest();
         try {
             return Integer.parseInt(getHeaderField(name));
@@ -124,7 +129,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public String getHeaderFieldKey(int index) throws IOException {
-		log("getHeaderFieldKey: " + index);
+		LOG.TRACE("getHeaderFieldKey: " + index);
 		processRequest();
         if (index >= resHeaders.size())
             return null;
@@ -132,64 +137,64 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public String getHost() {
-		log("getHost: " + uri.getHost());
+		LOG.TRACE("getHost: " + uri.getHost());
 		return uri.getHost();
 	}
 
 	public long getLastModified() throws IOException {
-		log("getLastModified");
+		LOG.TRACE("getLastModified");
 		return getHeaderFieldDate("last-modified", 0);
 	}
 
 	public int getPort() {
-		log("getPort: " + uri.getPort());
+		LOG.TRACE("getPort: " + uri.getPort());
 		return uri.getPort();
 	}
 
 	public String getProtocol() {
-		log("getProtocol: " + uri.getScheme());
+		LOG.TRACE("getProtocol: " + uri.getScheme());
 		return uri.getScheme();
 	}
 
 	public String getQuery() {
-		log("getQuery: " + uri.getQueryString());
+		LOG.TRACE("getQuery: " + uri.getQueryString());
 		return uri.getQueryString();
 	}
 
 	public String getRef() {
-		log("getRef: " + uri.getFragment());
+		LOG.TRACE("getRef: " + uri.getFragment());
 		return uri.getFragment();
 	}
 
 	public String getRequestMethod() {
-		log("getRequestMethod: " + method);
+		LOG.TRACE("getRequestMethod: " + method);
 		return method;
 	}
 
 	public String getRequestProperty(String key) {
-		log("getRequestProperty: " + key);
+		LOG.TRACE("getRequestProperty: " + key);
         return reqHeaders.getPropertyIgnoreCase(key);
 	}
 
 	public int getResponseCode() throws IOException {
-		log("getResponseCode" + responseCode);
+		LOG.TRACE("getResponseCode" + responseCode);
 		processRequest();
 		return responseCode;
 	}
 
 	public String getResponseMessage() throws IOException {
-		log("getResponseMessage: " + responseMsg);
+		LOG.TRACE("getResponseMessage: " + responseMsg);
 		processRequest();
 		return responseMsg;
 	}
 
 	public String getURL() {
-		log("getURL: " + uri_external.toString());
+		LOG.TRACE("getURL: " + uri_external.toString());
 		return uri_external.toString();
 	}
 
 	public void setRequestMethod(String method) throws IOException {
-		log("setRequestMethod: " + method);
+		LOG.TRACE("setRequestMethod: " + method);
         /*
 		 * The request method can not be changed once the output stream has been
 		 * opened.
@@ -208,7 +213,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public void setRequestProperty(String key, String value) throws IOException {
-		log("setRequestProperty: key = " + key + "; value = " + value);
+		LOG.TRACE("setRequestProperty: key = " + key + "; value = " + value);
 		int index = 0;
 
 		/*
@@ -250,7 +255,7 @@ public class RhoConnection implements HttpConnection {
 	 *            the value for the request header field.
 	 */
     protected void setRequestField(String key, String value) {
-		log("setRequestField: key = " + key + "; value = " + value);
+    	LOG.TRACE("setRequestField: key = " + key + "; value = " + value);
 
         /*
 		 * If application setRequestProperties("Connection", "close") then we
@@ -274,7 +279,7 @@ public class RhoConnection implements HttpConnection {
     }
     
 	public String getEncoding() {
-		log("getEncloding");
+		LOG.TRACE("getEncloding");
         try {
             return getHeaderField("content-encoding");
         } catch (IOException x) {
@@ -283,7 +288,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public long getLength() {
-		log("getLength: " + contentLength);
+		LOG.TRACE("getLength: " + contentLength);
 		try {
 			processRequest();
 		} catch (IOException ioe) {
@@ -293,7 +298,7 @@ public class RhoConnection implements HttpConnection {
 	}
 
 	public String getType() {
-		log("getType");
+		LOG.TRACE("getType");
         try {
             return getHeaderField("content-type");
         } catch (IOException x) {
@@ -474,7 +479,7 @@ public class RhoConnection implements HttpConnection {
 			responseData = RhoRuby.loadFile(strPath);
 
 		if (responseData == null){
-			Jsr75File file = new Jsr75File();
+			SimpleFile file = FileFactory.createFile();
 			String strFileName = strPath;
 			if ( strFileName.startsWith("/apps") )
 				strFileName = strPath.substring(5);
@@ -621,7 +626,7 @@ public class RhoConnection implements HttpConnection {
 		reqHash.setProperty("request-query", uri.getQueryString());
 		
 		if ( postData != null && postData.size() > 0 ){
-			log(postData.toString());
+			LOG.TRACE(postData.toString());
 			reqHash.setProperty("request-body", postData.toString());
 		}
 		
@@ -670,7 +675,7 @@ public class RhoConnection implements HttpConnection {
 			if ( resBody != null && resBody != RubyConstant.QNIL )
 				strBody = resBody.toRubyString().toString();
 				
-			log(strBody);
+			LOG.TRACE(strBody);
 			
 			responseData = new ByteArrayInputStream(strBody.getBytes()); 
 			if ( responseData != null )
@@ -678,8 +683,5 @@ public class RhoConnection implements HttpConnection {
 		}
 	}
 	
-	private void log(String txt) {
-		System.out.println(txt);
-	}
 }
 

@@ -14,6 +14,7 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
+RubyVM
 ]
 ExcludeFromBuildAll=0
 [Files
@@ -31,7 +32,6 @@ ExcludeFromBuildAll=0
 ..\src11\org\garret\perst\ConcurrentModificationException.java
 ..\src11\org\garret\perst\EmbeddedLink.java
 ..\src11\org\garret\perst\GenericIndex.java
-..\src11\org\garret\perst\IFile.java
 ..\src11\org\garret\perst\IInputStream.java
 ..\src11\org\garret\perst\impl\AltBtree.java
 ..\src11\org\garret\perst\impl\AltPersistentSet.java
@@ -45,7 +45,6 @@ ExcludeFromBuildAll=0
 ..\src11\org\garret\perst\impl\Bytes.java
 ..\src11\org\garret\perst\impl\ClassDescriptor.java
 ..\src11\org\garret\perst\impl\DefaultPersistentComparator.java
-..\src11\org\garret\perst\impl\FileFactory.java
 ..\src11\org\garret\perst\impl\GenericSort.java
 ..\src11\org\garret\perst\impl\GenericSortArray.java
 ..\src11\org\garret\perst\impl\KDTree.java
@@ -105,12 +104,10 @@ ExcludeFromBuildAll=0
 ..\src11\org\garret\perst\Relation.java
 ..\src11\org\garret\perst\Resolver.java
 ..\src11\org\garret\perst\Set.java
-..\src11\org\garret\perst\SimpleFile.java
 ..\src11\org\garret\perst\SortedCollection.java
 ..\src11\org\garret\perst\SpatialIndex.java
 ..\src11\org\garret\perst\SpatialIndexR2.java
 ..\src11\org\garret\perst\Storage.java
-..\src11\org\garret\perst\StorageError.java
 ..\src11\org\garret\perst\StorageFactory.java
 ..\src11\org\garret\perst\StorageListener.java
 ..\src11\org\garret\perst\ThreadSafeIterator.java

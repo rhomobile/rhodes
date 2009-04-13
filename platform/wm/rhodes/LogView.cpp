@@ -22,21 +22,43 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     mbi.dwFlags    = SHCMBF_HMENU;
     RHO_ASSERT(SHCreateMenuBar(&mbi));
 
-    rho::StringW strText;
-    LOGCONF().getLogTextW(strText);
-    strText += L"\r\n";
-    SetDlgItemText(IDC_LOGEDIT, strText.c_str() );
+//    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
 
-    int nPos = LOGCONF().getLogTextPos();
-    if ( nPos < 0 )
-        nPos = strText.length();
-
-    int nLine = SendDlgItemMessage(IDC_LOGEDIT,EM_LINEFROMCHAR,nPos,0);
-    SendDlgItemMessage(IDC_LOGEDIT,EM_LINESCROLL,0,nLine);
+    loadLogText();
 #endif //OS_WINCE
 
 	bHandled = TRUE;
 	return 1;  // Let the system set the focus
+}
+
+void CLogView::loadLogText(){
+    rho::StringW strText;
+    LOGCONF().getLogTextW(strText);
+    //strText += L"\r\n";
+    SetDlgItemText(IDC_LOGEDIT, strText.c_str() );
+
+    int nPos = LOGCONF().getLogTextPos();
+    int nLine = SendDlgItemMessage(IDC_LOGEDIT,EM_LINEFROMCHAR,nPos,0);
+    SendDlgItemMessage(IDC_LOGEDIT,EM_LINESCROLL,0,nLine);
+    SendDlgItemMessage(IDC_LOGEDIT,EM_SETSEL,nPos,nPos);
+}
+
+LRESULT CLogView::OnRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled){
+    loadLogText();
+    Invalidate();
+
+    bHandled = TRUE;
+    return 0;
+}
+
+LRESULT CLogView::OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled){
+
+    LOGCONF().clearLog();
+    loadLogText();
+    Invalidate();
+
+    bHandled = TRUE;
+    return 0;
 }
 
 LRESULT CLogView::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
@@ -69,6 +91,7 @@ LRESULT CLogView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& 
 LRESULT CLogView::OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	EndDialog(wID);
+    bHandled = TRUE;
 	return 0;
 }
 

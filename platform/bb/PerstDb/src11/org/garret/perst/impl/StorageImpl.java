@@ -3,6 +3,10 @@ package org.garret.perst.impl;
 import org.garret.perst.*;
 import java.util.*;
 import java.io.*;
+import com.rho.StorageError;
+import com.rho.IFile;
+import com.rho.SimpleFile;
+import com.rho.FileFactory;
 
 public class StorageImpl implements Storage { 
     /**

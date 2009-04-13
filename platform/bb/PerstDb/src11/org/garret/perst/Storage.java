@@ -2,6 +2,7 @@ package org.garret.perst;
 
 import java.util.*;
 import org.garret.perst.impl.ThreadTransactionContext;
+import com.rho.IFile;
 
 /**
  * Object storage

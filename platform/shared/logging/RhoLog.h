@@ -3,7 +3,6 @@
 
 #include "RhoLogConf.h"
 #include "common/StringConverter.h"
-#include "common/RhoMutexLock.h"
 #include "RhoLogCat.h"
 #include "common/RhoFatalError.h"
 
@@ -60,7 +59,6 @@ private:
     String m_strMessage;
 
     LogFormat m_lastFmt;
-    static general::CMutex m_FlushLock;
 
     LogSettings& m_oLogConf;
 public:

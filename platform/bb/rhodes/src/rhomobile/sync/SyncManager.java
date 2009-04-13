@@ -25,6 +25,9 @@ import java.io.OutputStream;
 //import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import javolution.io.UTF8StreamReader;
 
 //import com.xruby.runtime.builtin.ObjectFactory;
@@ -37,6 +40,8 @@ import rhomobile.NetworkAccess;
  * The Class SyncManager.
  */
 public class SyncManager {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("SyncManager");
 
 	private static HttpConnection connection = null;
 	private static char[] m_ReadBuffer = new char[1024];
@@ -117,7 +122,7 @@ public class SyncManager {
 			}
 			closeConnection();
 			
-			System.out.println("Error retrieving data: " + code);
+			LOG.ERROR("Error retrieving data: " + code);
 			if (code == HttpConnection.HTTP_UNAUTHORIZED) 
 				SyncUtil.logout();
 			return null;
@@ -148,7 +153,7 @@ public class SyncManager {
 
 			int code = connection.getResponseCode();
 			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
-				System.out.println("Error posting data: " + code);
+				LOG.ERROR("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 			}
@@ -244,8 +249,7 @@ public class SyncManager {
 			try{
 				connection.close();
 			}catch(IOException exc){
-				System.out.println("There was an error close connection: "
-						+ exc.getMessage());
+				LOG.ERROR("There was an error close connection", exc);
 			}
 		}
 		
