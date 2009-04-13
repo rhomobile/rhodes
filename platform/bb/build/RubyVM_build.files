@@ -227,8 +227,9 @@
 ..\RubyVM\src2\com\rho\SimpleFile.java
 ..\RubyVM\src2\com\rho\StorageError.java
 ..\RubyVM\src2\com\rho\StringScanner.java
-..\RubyVM\src2\com\rho\TestRhoLog.java
 ..\RubyVM\src2\com\rho\Tokenizer.java
+..\RubyVM\src2\com\rho\RhoProfiler.java
+..\RubyVM\src2\com\rho\RhoEmptyProfiler.java
 ..\RubyVM\src2\com\xruby\GeneratedMethods\ObjectSpace_Methods.java
 ..\RubyVM\src2\com\xruby\GeneratedMethods\RubyArray_Methods.java
 ..\RubyVM\src2\com\xruby\GeneratedMethods\RubyBignum_Methods.java
