@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B448A0F946589003CB43A /* RhoConf.cpp */; };
+		5C6B448D0F946589003CB43A /* RhoConf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6B448B0F946589003CB43A /* RhoConf.h */; };
+		5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B452A0F9468E2003CB43A /* RhoProfiler.cpp */; };
+		5C6B452D0F9468E2003CB43A /* RhoProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6B452B0F9468E2003CB43A /* RhoProfiler.h */; };
 		5C71626F0F8B7E170096B6AA /* RhoDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162640F8B7E170096B6AA /* RhoDefs.h */; };
 		5C7162700F8B7E170096B6AA /* RhoFatalError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162650F8B7E170096B6AA /* RhoFatalError.h */; };
 		5C7162710F8B7E170096B6AA /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7162660F8B7E170096B6AA /* RhoFile.cpp */; };
@@ -30,6 +34,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C6B448A0F946589003CB43A /* RhoConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConf.cpp; path = ../../shared/common/RhoConf.cpp; sourceTree = SOURCE_ROOT; };
+		5C6B448B0F946589003CB43A /* RhoConf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoConf.h; path = ../../shared/common/RhoConf.h; sourceTree = SOURCE_ROOT; };
+		5C6B452A0F9468E2003CB43A /* RhoProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoProfiler.cpp; path = ../../shared/statistic/RhoProfiler.cpp; sourceTree = SOURCE_ROOT; };
+		5C6B452B0F9468E2003CB43A /* RhoProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoProfiler.h; path = ../../shared/statistic/RhoProfiler.h; sourceTree = SOURCE_ROOT; };
 		5C7162640F8B7E170096B6AA /* RhoDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoDefs.h; path = ../../shared/common/RhoDefs.h; sourceTree = SOURCE_ROOT; };
 		5C7162650F8B7E170096B6AA /* RhoFatalError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFatalError.h; path = ../../shared/common/RhoFatalError.h; sourceTree = SOURCE_ROOT; };
 		5C7162660F8B7E170096B6AA /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
@@ -77,6 +85,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5C6B45280F9468C5003CB43A /* statistic */,
 				5C7162600F8B7DEE0096B6AA /* common */,
 				5C7162630F8B7DF40096B6AA /* logging */,
 			);
@@ -91,9 +100,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5C6B45280F9468C5003CB43A /* statistic */ = {
+			isa = PBXGroup;
+			children = (
+				5C6B452A0F9468E2003CB43A /* RhoProfiler.cpp */,
+				5C6B452B0F9468E2003CB43A /* RhoProfiler.h */,
+			);
+			name = statistic;
+			sourceTree = "<group>";
+		};
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C6B448A0F946589003CB43A /* RhoConf.cpp */,
+				5C6B448B0F946589003CB43A /* RhoConf.h */,
 				5C7162640F8B7E170096B6AA /* RhoDefs.h */,
 				5C7162650F8B7E170096B6AA /* RhoFatalError.h */,
 				5C7162660F8B7E170096B6AA /* RhoFile.cpp */,
@@ -154,6 +174,8 @@
 				5C7162870F8B7E330096B6AA /* RhoLogConf.h in Headers */,
 				5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */,
 				5C71628B0F8B7E330096B6AA /* RhoPlainLog.h in Headers */,
+				5C6B448D0F946589003CB43A /* RhoConf.h in Headers */,
+				5C6B452D0F9468E2003CB43A /* RhoProfiler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,6 +226,8 @@
 				5C7162860F8B7E330096B6AA /* RhoLogConf.cpp in Sources */,
 				5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */,
 				5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */,
+				5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */,
+				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
