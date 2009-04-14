@@ -221,6 +221,7 @@
 ..\RubyVM\src2\com\rho\Jsr75File.java
 ..\RubyVM\src2\com\rho\RhoEmptyLogger.java
 ..\RubyVM\src2\com\rho\RhoLogConf.java
+..\RubyVM\src2\com\rho\RhoConf.java
 ..\RubyVM\src2\com\rho\RhoLogFileSink.java
 ..\RubyVM\src2\com\rho\RhoLogger.java
 ..\RubyVM\src2\com\rho\RhoLogOutputSink.java

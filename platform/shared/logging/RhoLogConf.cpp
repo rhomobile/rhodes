@@ -51,10 +51,6 @@ void LogSettings::saveToFile(){
     RHOCONF().saveToFile();
 }
 
-void LogSettings::loadFromFile(){
-    loadFromConf(RHOCONF());
-}
-
 void LogSettings::loadFromConf(rho::general::RhoSettings& oRhoConf){
     if ( oRhoConf.isExist( "MinSeverity" ) )
         setMinSeverity( oRhoConf.getInt("MinSeverity") );
@@ -155,6 +151,7 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
-	
-    LOGCONF().loadFromFile();
+
+    RHOCONF().loadFromFile();
+    LOGCONF().loadFromConf(RHOCONF());
 }
