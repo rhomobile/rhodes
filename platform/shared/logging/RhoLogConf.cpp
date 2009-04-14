@@ -34,6 +34,12 @@ void LogSettings::getLogTextW(StringW& strTextW){
         oFile.readStringW(strTextW);
 }
 
+void LogSettings::getLogText(String& strText){
+    general::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+        oFile.readString(strText);
+}
+
 int LogSettings::getLogTextPos()
 {
     return m_pFileSink ? m_pFileSink->getCurPos() : -1;
