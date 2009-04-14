@@ -26,7 +26,7 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		5C7164970F8BA5720096B6AA /* RhoLogConf.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5C7164960F8BA5720096B6AA /* RhoLogConf.txt */; };
+		5C6B44730F946504003CB43A /* rhodes_conf.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5C6B44720F946504003CB43A /* rhodes_conf.txt */; };
 		F5342AD10F65BF7D003FD158 /* HttpCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F5342AD00F65BF7D003FD158 /* HttpCallback.m */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
@@ -143,8 +143,8 @@
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
+		5C6B44720F946504003CB43A /* rhodes_conf.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rhodes_conf.txt; path = rbuild/rhodes_conf.txt; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
-		5C7164960F8BA5720096B6AA /* RhoLogConf.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = RhoLogConf.txt; path = bin/RhoBundle/RhoLogConf.txt; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F5342A9C0F658E42003FD158 /* UniversalLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniversalLock.h; path = ../shared/syncengine/UniversalLock.h; sourceTree = SOURCE_ROOT; };
 		F5342ACF0F65BF7D003FD158 /* HttpCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpCallback.h; sourceTree = "<group>"; };
@@ -245,7 +245,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				5C7164960F8BA5720096B6AA /* RhoLogConf.txt */,
+				5C6B44720F946504003CB43A /* rhodes_conf.txt */,
 				466B0FC90F3CFA8000A52314 /* Icons */,
 				5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */,
 				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
@@ -521,7 +521,7 @@
 				4640FE950F410A3400B7975E /* back_btn.png in Resources */,
 				4640FE960F410A3400B7975E /* forward_btn.png in Resources */,
 				461B5A880F82D89700B08CB9 /* gears.png in Resources */,
-				5C7164970F8BA5720096B6AA /* RhoLogConf.txt in Resources */,
+				5C6B44730F946504003CB43A /* rhodes_conf.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

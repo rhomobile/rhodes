@@ -39,7 +39,7 @@
 
     <mkdir dir="${target.dir}" />
     <ant dir = "${sharedAnt.dir}"/>
-	<copy file="RhoLogConf.txt" todir="${src.dir}"/>
+	<copy file="rhodes_conf.txt" todir="${src.dir}"/>
   </target>
   
   <target name="rhobundle" depends="RhoBundle"></target>
