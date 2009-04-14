@@ -70,6 +70,7 @@ public:
 
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
+    void getLogText(String& strText);
 
     void clearLog();
 
