@@ -7,6 +7,7 @@
 
 namespace rho {
 
+namespace general{ class RhoSettings; }
 class LogCategory;
 
 struct ILogSink{
@@ -21,7 +22,7 @@ class LogSettings{
 
     bool        m_bLogToFile;
     String      m_strLogFilePath;
-    String      m_strLogConfFilePath;
+//    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
 
     bool        m_bLogPrefix;
@@ -50,8 +51,8 @@ public:
     const String& getLogFilePath()const{ return m_strLogFilePath;}
     void setLogFilePath(const char* szLogFilePath);
 
-    const String& getLogConfFilePath()const{ return m_strLogConfFilePath;}
-    void setLogConfFilePath(const char* szLogConfFilePath){ m_strLogConfFilePath = szLogConfFilePath; }
+//    const String& getLogConfFilePath()const{ return m_strLogConfFilePath;}
+//    void setLogConfFilePath(const char* szLogConfFilePath){ m_strLogConfFilePath = szLogConfFilePath; }
 
     void setMaxLogFileSize(unsigned int nMaxSize){m_nMaxLogFileSize = nMaxSize; }
     unsigned int getMaxLogFileSize()const{ return m_nMaxLogFileSize; }
@@ -67,20 +68,16 @@ public:
 
     void sinkLogMessage( String& strMsg );
 
-    void saveToFile(const char* szFilePath);
-    void saveToString(String& strData);
-
-    void loadFromFile(const char* szFilePath);
-    void loadFromString(const char* szSettings);
-
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
 
     void clearLog();
-private:
 
-    void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen );
-    void loadProperty( const char* start, int len );
+    void saveToFile();
+    void loadFromFile();
+
+    void loadFromConf(rho::general::RhoSettings& oRhoConf);
+
 };
 
 extern LogSettings g_LogSettings;

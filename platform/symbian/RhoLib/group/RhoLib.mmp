@@ -26,6 +26,7 @@ USERINCLUDE	 ..\..\..\shared\logging
 
 SOURCEPATH   ..\..\..\shared\common
 SOURCE       RhoFile.cpp
+SOURCE       RhoConf.cpp
 
 SOURCEPATH   ..\..\..\shared\logging
 SOURCE       RhoLog.cpp
