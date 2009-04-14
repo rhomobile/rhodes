@@ -6,7 +6,6 @@ public class RhoLogConf {
 
     boolean     m_bLogToFile = false;
     String      m_strLogFilePath = "";
-    String      m_strLogConfFilePath = "";
     int         m_nMaxLogFileSize = 0;
 
     boolean     m_bLogPrefix = false;
@@ -25,8 +24,36 @@ public class RhoLogConf {
 		//TODO: should we close log file? some threads may still logging 
 	}
 	
-	void setLogConfFilePath(String path){ m_strLogConfFilePath = path; }
-	String getLogConfFilePath(){ return m_strLogConfFilePath; }
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
+	
+    public void saveToFile(){
+        RHOCONF().setInt("MinSeverity", getMinSeverity() );
+        RHOCONF().setBool("LogToOutput", isLogToOutput() );
+        RHOCONF().setBool("LogToFile", isLogToFile() );
+        RHOCONF().setString("LogFilePath", getLogFilePath() );
+        RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
+        RHOCONF().setString("LogCategories", getEnabledCategories() );
+        RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
+
+        RHOCONF().saveToFile();
+    }
+    
+    void loadFromConf(RhoConf oRhoConf){
+        if ( oRhoConf.isExist( "MinSeverity" ) )
+            setMinSeverity( oRhoConf.getInt("MinSeverity") );
+        if ( oRhoConf.isExist( "LogToOutput") )
+            setLogToOutput( oRhoConf.getBool("LogToOutput") );
+        if ( oRhoConf.isExist( "LogToFile") )
+            setLogToFile( oRhoConf.getBool("LogToFile"));
+        if ( oRhoConf.isExist( "LogFilePath") )
+            setLogFilePath( oRhoConf.getString("LogFilePath") );
+        if ( oRhoConf.isExist( "MaxLogFileSize") )
+            setMaxLogFileSize( oRhoConf.getInt("MaxLogFileSize") );
+        if ( oRhoConf.isExist( "LogCategories") )
+            setEnabledCategories( oRhoConf.getString("LogCategories") );
+        if (oRhoConf.isExist( "ExcludeLogCategories") )
+            setDisabledCategories( oRhoConf.getString("ExcludeLogCategories") );
+    }
 	
     public int getMinSeverity(){ return m_nMinSeverity; }
     public void setMinSeverity(int nMinSeverity){ m_nMinSeverity = nMinSeverity; }
@@ -87,120 +114,6 @@ public class RhoLogConf {
         if ( isLogToOutput() )
             m_pOutputSink.writeLogMessage(strMsg);
     	
-    }
-
-    public void saveToFile(String szFilePath){
-        String strData = saveToString();
-    	SimpleFile oFile = null;
-
-    	try{
-	        oFile = FileFactory.createFile();
-	        
-        	oFile.open( szFilePath != null && szFilePath.length()>0 ? szFilePath : this.getLogConfFilePath(),
-        			false, false);
-        	oFile.truncate(0);
-	        oFile.write( 0, strData.getBytes() );
-	        oFile.close();
-    	}catch(Exception exc){
-    		if ( oFile != null )
-    			oFile.close();
-    	}
-        
-    }
-    
-    void loadFromFile(String szFilePath){
-    	SimpleFile oFile = null;
-    	try{
-	        oFile = FileFactory.createFile();
-	        oFile.open( szFilePath != null && szFilePath.length()>0 ? szFilePath : this.getLogConfFilePath(),
-	        		true, false);
-	        
-	        if ( oFile.isOpened() ){
-	            String strSettings = oFile.readString();
-	            oFile.close();
-	            loadFromString( strSettings );
-	        }
-	        
-    	}catch(Exception exc){
-    		if ( oFile != null )
-    			oFile.close();
-    	}
-    }
-    
-    String saveToString(){
-    	String strData = ""; 
-        strData += "MinSeverity=";
-        strData += getMinSeverity();
-        strData += "\n";
-
-        strData += "LogToOutput=";
-        strData += isLogToOutput()?1:0;
-        strData += "\n";
-
-        strData += "LogToFile=";
-        strData += isLogToFile()?1:0;
-        strData += "\n";
-
-        strData += "LogFilePath=";
-        strData += getLogFilePath();
-        strData += "\n";
-
-        strData += "MaxLogFileSize=";
-        strData += getMaxLogFileSize();
-        strData += "\n";
-
-        strData += "LogCategories=";
-        strData += getEnabledCategories();
-        strData += "\n";
-
-        strData += "ExcludeLogCategories=";
-        strData += getDisabledCategories();
-        strData += "\n";
-        
-        return strData;
-    }
-    
-    void loadFromString(String szSettings){
-		Tokenizer stringtokenizer = new Tokenizer(szSettings, "\n");
-		while (stringtokenizer.hasMoreTokens()) {
-			String tok = stringtokenizer.nextToken();
-			tok = tok.trim();
-			if (tok.length() == 0) {
-				continue;
-			}
-			int i = tok.indexOf('=');
-			String name;
-			String value;
-			if (i > 0) {
-				name = tok.substring(0, i);
-				value = tok.substring(i + 1);
-			} else {
-				name = tok;
-				value = "";
-			}
-			name = name.trim();
-			value = value.trim();
-			
-			setPropertyByName(name,value);
-		}
-	}
-
-    void setPropertyByName(String name, String value ){
-
-        if ( name.equalsIgnoreCase("MinSeverity") )
-            setMinSeverity(Integer.parseInt(value));
-        else if ( name.equalsIgnoreCase("LogToOutput") )
-            setLogToOutput( Integer.parseInt(value) == 0 ? false : true);
-        else if ( name.equalsIgnoreCase("LogToFile") )
-            setLogToFile( Integer.parseInt(value) == 0 ? false : true);
-        else if ( name.equalsIgnoreCase("LogFilePath") )
-            setLogFilePath( value );
-        else if ( name.equalsIgnoreCase("MaxLogFileSize") )
-            setMaxLogFileSize( Integer.parseInt(value) );
-        else if ( name.equalsIgnoreCase("LogCategories") )
-            setEnabledCategories( value );
-        else if ( name.equalsIgnoreCase("ExcludeLogCategories") )
-            setDisabledCategories( value );
     }
     
     int  getLogTextPos(){

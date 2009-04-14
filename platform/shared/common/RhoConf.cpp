@@ -129,7 +129,7 @@ void   RhoSettings::setInt(const char* szName, int nVal){
 }
 
 void   RhoSettings::setBool(const char* szName, bool bVal){
-    m_mapValues[szName] = general::convertToStringA(bVal);
+    setInt(szName, bVal?1:0);
 }
 
 bool   RhoSettings::isExist(const char* szName){
@@ -144,5 +144,4 @@ extern "C" void InitRhoConf(const char* szRootPath){
 	rho::general::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
-    RHOCONF().loadFromFile();
 }

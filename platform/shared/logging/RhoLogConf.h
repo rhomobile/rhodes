@@ -74,8 +74,6 @@ public:
     void clearLog();
 
     void saveToFile();
-    void loadFromFile();
-
     void loadFromConf(rho::general::RhoSettings& oRhoConf);
 
 };
