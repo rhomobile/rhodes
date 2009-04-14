@@ -120,10 +120,11 @@ private:
 class NullMessage {
 public:
     NullMessage(){}
-};
 
-template<class T>
-inline NullMessage& operator+(NullMessage &str, const T &value) { return str; }
+    template<class T>
+    inline NullMessage& operator+(const T &value) { return *this; }
+
+};
 
 class NullMessageFatal {
 public:

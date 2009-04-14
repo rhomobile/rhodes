@@ -47,19 +47,19 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOGC_INFO6( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4,arg5,arg6 )
 
 #else
-#define RAWLOGC_INFO(category,msg) (void(0))
-#define RAWLOGC_INFO1(category,msg,arg1) (void(0))
-#define RAWLOGC_INFO2(category,msg,arg1,arg2) (void(0))
-#define RAWLOGC_INFO3(category,msg,arg1,arg2,arg3) (void(0))
-#define RAWLOGC_INFO4(category,msg,arg1,arg2,arg3,arg4) (void(0))
-#define RAWLOGC_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) (void(0))
+#define RAWLOGC_INFO(category,msg) RAWLOG_NONE
+#define RAWLOGC_INFO1(category,msg,arg1) RAWLOG_NONE
+#define RAWLOGC_INFO2(category,msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOGC_INFO3(category,msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOGC_INFO4(category,msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
+#define RAWLOGC_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOG_NONE
 
-#define RAWLOG_INFO(msg) (void(0))
-#define RAWLOG_INFO1(msg,arg1) (void(0))
-#define RAWLOG_INFO2(msg,arg1,arg2) (void(0))
-#define RAWLOG_INFO3(msg,arg1,arg2,arg3) (void(0))
-#define RAWLOG_INFO3(msg,arg1,arg2,arg4) (void(0))
-#define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) (void(0))
+#define RAWLOG_INFO(msg) RAWLOG_NONE
+#define RAWLOG_INFO1(msg,arg1) RAWLOG_NONE
+#define RAWLOG_INFO2(msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOG_INFO3(msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOG_INFO3(msg,arg1,arg2,arg4) RAWLOG_NONE
+#define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOG_NONE
 #endif
 
 #if RHO_STRIP_LOG <= ERROR
@@ -73,15 +73,15 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOGC_ERROR2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOGC_ERROR3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
 #else
-#define RAWLOGC_ERROR(category,msg) (void(0))
-#define RAWLOGC_ERROR1(category,msg,arg1) (void(0))
-#define RAWLOGC_ERROR2(category,msg,arg1,arg2) (void(0))
-#define RAWLOGC_ERROR3(category,msg,arg1,arg2,arg3) (void(0))
+#define RAWLOGC_ERROR(category,msg) RAWLOG_NONE
+#define RAWLOGC_ERROR1(category,msg,arg1) RAWLOG_NONE
+#define RAWLOGC_ERROR2(category,msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOGC_ERROR3(category,msg,arg1,arg2,arg3) RAWLOG_NONE
 
-#define RAWLOG_ERROR(msg) (void(0))
-#define RAWLOG_ERROR1(msg,arg1) (void(0))
-#define RAWLOG_ERROR2(msg,arg1,arg2) (void(0))
-#define RAWLOG_ERROR3(msg,arg1,arg2,arg3) (void(0))
+#define RAWLOG_ERROR(msg) RAWLOG_NONE
+#define RAWLOG_ERROR1(msg,arg1) RAWLOG_NONE
+#define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOG_NONE
 #endif
 
 #if RHO_STRIP_LOG <= FATAL
@@ -93,13 +93,13 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_FATAL1(msg,arg1) RAWLOGC_FATAL1( DEFAULT_LOGCATEGORY, msg, arg1 )
 #define RAWLOG_FATAL2(msg,arg1,arg2) RAWLOGC_FATAL2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #else
-#define RAWLOGC_FATAL(category,msg) (void(0))
-#define RAWLOGC_FATAL1(category,msg,arg1) (void(0))
-#define RAWLOGC_FATAL2(category,msg,arg1,arg2) (void(0))
+#define RAWLOGC_FATAL(category,msg) RAWLOG_NONE
+#define RAWLOGC_FATAL1(category,msg,arg1) RAWLOG_NONE
+#define RAWLOGC_FATAL2(category,msg,arg1,arg2) RAWLOG_NONE
 
-#define RAWLOG_FATAL(msg) (void(0))
-#define RAWLOG_FATAL1(msg,arg1) (void(0))
-#define RAWLOG_FATAL2(msg,arg1,arg2) (void(0))
+#define RAWLOG_FATAL(msg) RAWLOG_NONE
+#define RAWLOG_FATAL1(msg,arg1) RAWLOG_NONE
+#define RAWLOG_FATAL2(msg,arg1,arg2) RAWLOG_NONE
 #endif
 
 #if defined (RHO_DEBUG) && RHO_STRIP_LOG <= L_TRACE
