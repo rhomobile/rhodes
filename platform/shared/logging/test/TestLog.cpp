@@ -1,4 +1,5 @@
 #include "../RhoLog.h"
+#include "common/RhoConf.h"
 
 void runTests();
 extern "C" void testPlainLog();
@@ -116,13 +117,13 @@ void shouldLogFileCycle(){
 }
 
 void shouldSaveLogConfToFile(){
-    LOGCONF().saveToFile("logconf2.txt");
+    LOGCONF().saveToFile();//"logconf2.txt");
 }
 
 void shouldLoadLogConfFromString(){
-    rho::LogSettings oConf;
+    rho::general::RhoSettings oRhoConf;
 
-    oConf.loadFromString(
+    oRhoConf.loadFromString(
         "MinSeverity  = 2  \n"
         "LogToOutput=1\r\n"
         "LogToFile=1\r\n"
@@ -132,6 +133,8 @@ void shouldLoadLogConfFromString(){
         "LogCategories=MyClass1,MyClass2\r\n"
         "ExcludeLogCategories=MyClass3\r\n"
     );
+    rho::LogSettings oConf;
+    oConf.loadFromConf(oRhoConf);
     //oConf.loadFromFile("logconf.txt");
 
     if ( oConf.getMinSeverity() != L_WARNING )

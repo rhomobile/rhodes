@@ -761,6 +761,14 @@
 			Name="common"
 			>
 			<File
+				RelativePath="..\..\shared\common\RhoConf.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoConf.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoDefs.h"
 				>
 			</File>

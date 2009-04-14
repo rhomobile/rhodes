@@ -20,7 +20,7 @@ public:
 
     String makeFullPath(const char* szFileName){
         String res = m_szPath;
-        if ( !findLastSlash() )
+        if ( res.length() > 0 && !findLastSlash() )
             res += "/";
 
         res += szFileName;

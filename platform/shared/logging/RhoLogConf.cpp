@@ -1,11 +1,9 @@
 #include "RhoLogConf.h"
 #include "RhoLogCat.h"
 #include "RhoLogSink.h"
-#include "common/StringConverter.h"
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
-
-static const char* CONF_FILENAME = "RhoLogConf.txt";
+#include "common/RhoConf.h"
 
 namespace rho{
 general::CMutex LogSettings::m_FlushLock;
@@ -30,27 +28,6 @@ LogSettings::~LogSettings(){
     delete m_pOutputSink;
 }
 
-void LogSettings::saveToFile(const char* szFilePath){
-    String strData;
-    saveToString(strData);
-
-    general::CRhoFile oFile;
-    oFile.open(  szFilePath && *szFilePath ? szFilePath : getLogConfFilePath().c_str(), 
-        general::CRhoFile::OpenForWrite);
-
-    oFile.write( strData.c_str(), strData.size() );
-}
-
-void LogSettings::loadFromFile(const char* szFilePath){
-    general::CRhoFile oFile;
-    if ( oFile.open( szFilePath && *szFilePath ? szFilePath : getLogConfFilePath().c_str(), 
-            general::CRhoFile::OpenReadOnly) ){
-        String strSettings;
-        oFile.readString(strSettings);
-        loadFromString( strSettings.c_str() );
-    }
-}
-
 void LogSettings::getLogTextW(StringW& strTextW){
     general::CRhoFile oFile;
     if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
@@ -62,111 +39,37 @@ int LogSettings::getLogTextPos()
     return m_pFileSink ? m_pFileSink->getCurPos() : -1;
 }
 
-void LogSettings::loadFromString(const char* szSettings){
-    if ( !szSettings && !*szSettings )
-        return;
+void LogSettings::saveToFile(){
+    RHOCONF().setInt("MinSeverity", getMinSeverity() );
+    RHOCONF().setBool("LogToOutput", isLogToOutput() );
+    RHOCONF().setBool("LogToFile", isLogToFile() );
+    RHOCONF().setString("LogFilePath", getLogFilePath() );
+    RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
+    RHOCONF().setString("LogCategories", getEnabledCategories() );
+    RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
 
-    const char* start = szSettings;
-
-    while(start!=0){
-        int len = 0;
-
-        const char* end = end = strchr(start,'\n');
-        if (end){
-            if ( end > start && *(end-1) == '\r' )
-                len = end-start-1;
-            else
-                len = end-start;
-        }else {
-            len = (int)strlen(start);
-        }
-
-        loadProperty( start, len );
-
-        start = end ? end + 1 : end;
-    }
+    RHOCONF().saveToFile();
 }
 
-void LogSettings::loadProperty( const char* start, int len ){
-    int nNameLen = 0;
-    while(*start==' '){ start++; len--;}
-
-    int i = 0;
-    for( i = 0; i < len; i++ ){
-        if ( start[i] == '=' ){
-            if ( i > 0 ){
-                int s = i-1;
-                for(; s >= 0 && start[s]==' '; s-- );
-
-                nNameLen = s+1;
-                break;
-            }else 
-                break;
-        }
-    }
-
-    if ( nNameLen == 0 )
-        return;
-
-    const char* szValue = start + i+1;
-    int nValueLen = len - (i+1);
-
-    while(*szValue==' '&& nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && szValue[nValueLen-1]==' ') nValueLen--;
-
-    setPropertyByName(start, nNameLen, szValue, nValueLen );
+void LogSettings::loadFromFile(){
+    loadFromConf(RHOCONF());
 }
 
-void LogSettings::setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen ){
-    String name(szName,nNameLen);
-    String value(szValue,nValueLen);
-
-    if ( strcasecmp(name.c_str(), "MinSeverity") == 0 )
-        setMinSeverity(atoi(value.c_str()));
-    else if ( strcasecmp(name.c_str(), "LogToOutput") == 0 )
-        setLogToOutput( atoi(value.c_str()) == 0 ? false : true);
-    else if ( strcasecmp(name.c_str(), "LogToFile") == 0 )
-        setLogToFile( atoi(value.c_str()) == 0 ? false : true);
-    else if ( strcasecmp(name.c_str(), "LogFilePath") == 0 )
-        setLogFilePath( value.c_str() );
-    else if ( strcasecmp(name.c_str(), "MaxLogFileSize") == 0 )
-        setMaxLogFileSize( atoi(value.c_str()) );
-    else if ( strcasecmp(name.c_str(), "LogCategories") == 0 )
-        setEnabledCategories( value.c_str() );
-    else if ( strcasecmp(name.c_str(), "ExcludeLogCategories") == 0 )
-        setDisabledCategories( value.c_str() );
-
-}
-
-void LogSettings::saveToString(String& strData){
-    strData += "MinSeverity=";
-    strData += general::convertToStringA(getMinSeverity());
-    strData += "\n";
-
-    strData += "LogToOutput=";
-    strData += general::convertToStringA(isLogToOutput());
-    strData += "\n";
-
-    strData += "LogToFile=";
-    strData += general::convertToStringA(isLogToFile());
-    strData += "\n";
-
-    strData += "LogFilePath=";
-    strData += getLogFilePath();
-    strData += "\n";
-
-    strData += "MaxLogFileSize=";
-    strData += general::convertToStringA(getMaxLogFileSize());
-    strData += "\n";
-
-    strData += "LogCategories=";
-    strData += getEnabledCategories();
-    strData += "\n";
-
-    strData += "ExcludeLogCategories=";
-    strData += getDisabledCategories();
-    strData += "\n";
-
+void LogSettings::loadFromConf(rho::general::RhoSettings& oRhoConf){
+    if ( oRhoConf.isExist( "MinSeverity" ) )
+        setMinSeverity( oRhoConf.getInt("MinSeverity") );
+    if ( oRhoConf.isExist( "LogToOutput") )
+        setLogToOutput( oRhoConf.getBool("LogToOutput") );
+    if ( oRhoConf.isExist( "LogToFile") )
+        setLogToFile( oRhoConf.getBool("LogToFile"));
+    if ( oRhoConf.isExist( "LogFilePath") )
+        setLogFilePath( oRhoConf.getString("LogFilePath").c_str() );
+    if ( oRhoConf.isExist( "MaxLogFileSize") )
+        setMaxLogFileSize( oRhoConf.getInt("MaxLogFileSize") );
+    if ( oRhoConf.isExist( "LogCategories") )
+        setEnabledCategories( oRhoConf.getString("LogCategories").c_str() );
+    if (oRhoConf.isExist( "ExcludeLogCategories") )
+        setDisabledCategories( oRhoConf.getString("ExcludeLogCategories").c_str() );
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -230,7 +133,9 @@ void LogSettings::setDisabledCategories( const char* szCatList ){
 }
 
 extern "C" void InitRhoLog(const char* szRootPath){
-	
+
+    InitRhoConf(szRootPath);
+
 	rho::general::CFilePath oLogPath( szRootPath );
 	
     //Set defaults
@@ -251,7 +156,5 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
 	
-    //load configuration if exist
-    LOGCONF().setLogConfFilePath(oLogPath.makeFullPath(CONF_FILENAME).c_str());
-    LOGCONF().loadFromFile("");
+    LOGCONF().loadFromFile();
 }

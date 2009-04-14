@@ -53,7 +53,7 @@ void CLogOptionsDlg::saveOptions()
     LOGCONF().setMinSeverity(nLevel);
     LOGCONF().setEnabledCategories( CStringA(strClasses));
     LOGCONF().setDisabledCategories( CStringA(strExcludes) );
-    LOGCONF().saveToFile(NULL);
+    LOGCONF().saveToFile();
 }
 
 LRESULT CLogOptionsDlg::OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

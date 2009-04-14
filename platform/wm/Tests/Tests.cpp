@@ -4,12 +4,12 @@ extern "C" void InitRhoLog(const char* path);
 
 int wmain(int argc, wchar_t* argv[])
 {
-
-//    runAllLogTests();
-
     InitRhoLog("");
 
-	runAllProfilingTests();
+    runAllLogTests();
+
+
+//	runAllProfilingTests();
     return 0;
 }
 
