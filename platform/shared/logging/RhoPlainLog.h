@@ -31,7 +31,7 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 
 #define RAWLOG_NONE ((void)0)
 
-#if RHO_STRIP_LOG <= INFO
+#if RHO_STRIP_LOG <= L_INFO
 #define RAWLOGC_INFO(category,msg) rhoPlainLog(__FILE__, __LINE__, L_INFO, category, msg )
 #define RAWLOGC_INFO1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_INFO, category, msg, arg1 )
 #define RAWLOGC_INFO2(category,msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_INFO, category, msg, arg1,arg2 )
@@ -62,7 +62,7 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOG_NONE
 #endif
 
-#if RHO_STRIP_LOG <= ERROR
+#if RHO_STRIP_LOG <= L_ERROR
 #define RAWLOGC_ERROR(category,msg) rhoPlainLog(__FILE__, __LINE__, L_ERROR, category, msg )
 #define RAWLOGC_ERROR1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1 )
 #define RAWLOGC_ERROR2(category,msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1,arg2 )
@@ -84,7 +84,7 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOG_NONE
 #endif
 
-#if RHO_STRIP_LOG <= FATAL
+#if RHO_STRIP_LOG <= L_FATAL
 #define RAWLOGC_FATAL(category,msg) rhoPlainLog(__FILE__, __LINE__, L_FATAL, category, msg )
 #define RAWLOGC_FATAL1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_FATAL, category, msg, arg1 )
 #define RAWLOGC_FATAL2(category,msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_FATAL, category, msg, arg1,arg2 )
