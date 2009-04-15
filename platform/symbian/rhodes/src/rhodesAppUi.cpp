@@ -63,7 +63,7 @@
 #include "Utils.h" //From syncengine
 //#include "logging/RhoPlainLog.h"
 //IMPLEMENT_LOGCLASS(CRhodesAppUi,"RhodesAppUi");
-TUint32 gSelectedConnectionId = -1;
+TUint32 gSelectedConnectionId = (TUint32)-1;
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesAppUi"
@@ -327,8 +327,8 @@ void CRhodesAppUi::HandleCommandL(TInt aCommand)
 		case EStat:
 			{
 			CAknMessageQueryDialog* dlg = new (ELeave)CAknMessageQueryDialog();
-			dlg->PrepareLC(R_STAT_QUERY_DIALOG);
 			HBufC* title = iEikonEnv->AllocReadResourceLC(R_STAT_DIALOG_TITLE);
+			dlg->PrepareLC(R_STAT_QUERY_DIALOG);
 			dlg->QueryHeading()->SetTextL(*title);
 			CleanupStack::PopAndDestroy(); //title
 			char buf[500] = {0};

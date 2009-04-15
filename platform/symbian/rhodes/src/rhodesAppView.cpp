@@ -22,6 +22,12 @@
 // INCLUDE FILES
 #include <coemain.h>
 #include <akncommondialogs.h>
+#include <avkon.hrh>
+#include <aknmessagequerydialog.h>
+#include <aknnotewrappers.h>
+#include <stringloader.h>
+
+#include "logging/RhoLog.h"
 
 #include <eikbtgpc.h>
 #include <rhodes.rsg>
@@ -32,6 +38,8 @@
 
 //#include "AppSoftkeysObserver.h"
 #include "SpecialLoadObserver.h"
+
+#include "LogOptionsDialog.h"
 
 #include <eiklabel.h>
 #include <avkon.hrh>
@@ -57,6 +65,8 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "logging/RhoLog.h"
 
 _LIT(KTitle, "Select image file");
 
@@ -356,9 +366,11 @@ void CRhodesAppView::InitOptions()
 //
 void CRhodesAppView::Draw(const TRect& aRect) const
 	{
+		CWindowGc& gc = SystemGc();
+		
 		TRect drawingRect = Rect(); 
 		// Get the standard graphics context
-		CWindowGc& gc = SystemGc();
+		
 		TBool drawImage = EFalse;
 		
 		if ( iOffScreenBitmapCreated )   
@@ -539,6 +551,43 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
 	        	ChoosePicture();	
 	        	break;
 	        	}
+			case ELoggingOptions:
+				{
+					
+					iBrCtlInterface->SetDimmed( ETrue);
+					iBrCtlInterface->MakeVisible( EFalse );
+					iBrCtlInterface->DrawNow();
+					
+					 CLogOptionsDialog::RunDlgLD();
+					 
+					 iBrCtlInterface->SetDimmed( EFalse );
+					 iBrCtlInterface->MakeVisible( ETrue );
+					 iBrCtlInterface->DrawNow();
+					 
+					 break;
+				}
+			case ELogView:
+				{
+					rho::String strText;
+					LOGCONF().getLogText(strText);
+						
+					TPtrC8 ptr8((TUint8*)strText.c_str());
+					HBufC *msg = HBufC::NewLC(ptr8.Length());
+					msg->Des().Copy(ptr8);
+
+					CAknMessageQueryDialog* dlg = CAknMessageQueryDialog::NewL(*msg);
+					dlg->PrepareLC(R_STAT_QUERY_DIALOG);
+					HBufC* title = iEikonEnv->AllocReadResourceLC(R_LOG_VIEW_DIALOG_TITLE);
+					dlg->QueryHeading()->SetTextL(*title);
+					CleanupStack::PopAndDestroy(); //title
+					
+					dlg->SetExtentToWholeScreen();
+					dlg->RunLD();
+					
+					CleanupStack::PopAndDestroy(msg);
+										
+					break;
+				}
 	        /*case EAknSoftkeyCancel:
         	{
         		CEikButtonGroupContainer* current = CEikButtonGroupContainer::Current();

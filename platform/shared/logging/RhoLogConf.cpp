@@ -123,13 +123,19 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 void LogSettings::setEnabledCategories( const char* szCatList ){
     general::CMutexLock oLock(m_CatLock);
 
-    m_strEnabledCategories = szCatList;
+    if ( szCatList && *szCatList )
+    	m_strEnabledCategories = szCatList;
+    else
+    	m_strEnabledCategories = "";
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
     general::CMutexLock oLock(m_CatLock);
 
-    m_strDisabledCategories = szCatList;
+    if ( szCatList && *szCatList )
+    	m_strDisabledCategories = szCatList;
+    else
+    	m_strDisabledCategories = "";
 }
 
 }
