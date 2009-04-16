@@ -97,13 +97,13 @@ public class RhoLogConf {
     synchronized boolean isCategoryEnabled(String cat){
         //TODO: Optimize categories search : add map
 
-        if ( m_strDisabledCategories.indexOf(cat) > 0 )
+        if ( m_strDisabledCategories.indexOf(cat) >= 0 )
             return false;
 
         if ( m_strEnabledCategories.length() == 0 )
             return false;
 
-        return m_strEnabledCategories.equals("*") || m_strEnabledCategories.indexOf(cat) > 0;
+        return m_strEnabledCategories.equals("*") || m_strEnabledCategories.indexOf(cat) >= 0;
     }
 
     void sinkLogMessage( String strMsg ){
