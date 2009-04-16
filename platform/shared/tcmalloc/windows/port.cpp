@@ -62,7 +62,7 @@ int safe_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
 }
 
 // mingw defines its own snprintf, though msvc does not
-#ifndef __MINGW32__
+/*#ifndef __MINGW32__
 int snprintf(char *str, size_t size, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
@@ -70,7 +70,7 @@ int snprintf(char *str, size_t size, const char *format, ...) {
   va_end(ap);
   return r;
 }
-#endif
+#endif*/
 
 int getpagesize() {
   static int pagesize = 0;
