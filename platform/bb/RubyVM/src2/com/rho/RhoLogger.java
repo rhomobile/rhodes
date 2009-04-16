@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class RhoLogger {
 	public static final boolean RHO_STRIP_LOG = false;
-	public static final boolean RHO_DEBUG = true;
+	public static final boolean RHO_DEBUG = false;
 
 	private static final int L_TRACE = 0;
 	private static final int L_INFO = 1;
