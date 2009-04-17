@@ -20,6 +20,7 @@ namespace "bundle" do
     rm_rf $bindir
     mkdir_p $srcdir
     mkdir_p $bindir
+    mkdir_p $targetdir
     mkdir_p File.join($srcdir,'apps')
 
     rubypath =  File.join($res,'RhoRuby.exe')
