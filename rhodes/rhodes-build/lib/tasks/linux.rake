@@ -58,8 +58,19 @@ namespace "bundle" do
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
     chdir $basedir
-    chdir dest
-    rm_f File.join(dest,"rhobundle.zip")
+  end
+  
+  task :desktop => "bundle:zip" do
+    chdir $srcdir
+    rm_f File.join($srcdir,"rhobundle.zip")
     puts `zip rhobundle.zip -r *`
+  end
+end
+
+namespace "desktop" do
+  task :win32, [:simpath] => "bundle:linux" do
+    chdir $srcdir
+    rm_f File.join($srcdir,"rhodes-simulator.zip")
+    puts `zip rhodes-simulator.zip -r * #{args.simpath}`
   end
 end
