@@ -35,7 +35,7 @@ public class LogOptionsScreen extends MainScreen {
 		RhoLogger.getLogConf().setEnabledCategories(m_enabledCat.getText());
 		RhoLogger.getLogConf().setDisabledCategories(m_disabledCat.getText());
 		
-		RhoLogger.getLogConf().saveToFile(null);
+		RhoLogger.getLogConf().saveToFile();
 		
 		return super.onSave();
 	}

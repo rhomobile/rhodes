@@ -108,7 +108,11 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 #elif defined( OS_SYMBIAN )
         RDebug::Printf(strMsg.c_str());
 #else
-        printf(strMsg.c_str());
+        //printf(strMsg.c_str());
+        for( int n = 0; n < strMsg.length(); n+= 100 )
+            fwrite(strMsg.c_str()+n, 1, min(100,strMsg.length()-n) , stdout );
+
+        fflush(stdout);
 #endif
 
 }

@@ -70,12 +70,11 @@ public:
 
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
+    void getLogText(String& strText);
 
     void clearLog();
 
     void saveToFile();
-    void loadFromFile();
-
     void loadFromConf(rho::general::RhoSettings& oRhoConf);
 
 };

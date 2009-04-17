@@ -177,4 +177,4 @@ SOURCE GeoLocationService.cpp
 SOURCEPATH ..\src\webview
 SOURCE webview.cpp
 SOURCEPATH ..\src
-SOURCE camera\camera.cpp notification.cpp
+SOURCE camera\camera.cpp notification.cpp LogOptionsDialog.cpp

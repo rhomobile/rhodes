@@ -34,6 +34,12 @@ void LogSettings::getLogTextW(StringW& strTextW){
         oFile.readStringW(strTextW);
 }
 
+void LogSettings::getLogText(String& strText){
+    general::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+        oFile.readString(strText);
+}
+
 int LogSettings::getLogTextPos()
 {
     return m_pFileSink ? m_pFileSink->getCurPos() : -1;
@@ -49,10 +55,6 @@ void LogSettings::saveToFile(){
     RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
 
     RHOCONF().saveToFile();
-}
-
-void LogSettings::loadFromFile(){
-    loadFromConf(RHOCONF());
 }
 
 void LogSettings::loadFromConf(rho::general::RhoSettings& oRhoConf){
@@ -121,13 +123,19 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 void LogSettings::setEnabledCategories( const char* szCatList ){
     general::CMutexLock oLock(m_CatLock);
 
-    m_strEnabledCategories = szCatList;
+    if ( szCatList && *szCatList )
+    	m_strEnabledCategories = szCatList;
+    else
+    	m_strEnabledCategories = "";
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
     general::CMutexLock oLock(m_CatLock);
 
-    m_strDisabledCategories = szCatList;
+    if ( szCatList && *szCatList )
+    	m_strDisabledCategories = szCatList;
+    else
+    	m_strDisabledCategories = "";
 }
 
 }
@@ -155,6 +163,7 @@ extern "C" void InitRhoLog(const char* szRootPath){
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
-	
-    LOGCONF().loadFromFile();
+
+    RHOCONF().loadFromFile();
+    LOGCONF().loadFromConf(RHOCONF());
 }

@@ -6,8 +6,9 @@
 #else
 #include <stdio.h>
 #include <stdarg.h>
-
 #endif 
+
+#include "common/RhoDefs.h"
 
 extern "C" void rhoPlainLogArg(const char* file, int line, int severity, const char* szCategory,
                  const char* format, va_list ap );
@@ -18,7 +19,7 @@ extern "C" int rhoPlainLog(const char* file, int line, int severity, const char*
 
 namespace rho {
 
-#ifdef  _DEBUG
+#if defined (RHO_DEBUG) && RHO_STRIP_LOG <= L_TRACE
 class CTraceFileAndLineInfo
 {
 public:
@@ -91,7 +92,7 @@ private:
 #define ATLTRACE
 #define ATLTRACE2
 
-#endif  // _DEBUG
+#endif  // RHO_DEBUG
 
 }
 
