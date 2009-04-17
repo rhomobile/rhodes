@@ -1,4 +1,4 @@
-package org.garret.perst;
+package com.rho;
 
 /**
  * Interface of simple file. Simple file can be automaticaslly opened by database given file path and access mode.

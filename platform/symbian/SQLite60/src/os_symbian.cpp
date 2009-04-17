@@ -1,46 +1,22 @@
-/*
-** 2008 February 09
-**
-** The author disclaims copyright to this source code.  In place of
-** a legal notice, here is a blessing:
-**
-**    May you do good and not evil.
-**    May you find forgiveness for yourself and forgive others.
-**    May you share freely, never taking more than you give.
-**
-******************************************************************************
-**
-** This file contains code that is specific to windows.
-*/
-#include "sqliteInt.h"
-#if OS_SYMBIAN               /* This file is used for symbian only */
+#include "sqlite3.h"
+#include "os_symbian.h"
 
-#define MAX_PATH 260
-/*
-** A Note About Memory Allocation:
-**
-** This driver uses malloc()/free() directly rather than going through
-** the SQLite-wrappers sqlite3_malloc()/sqlite3_free().  Those wrappers
-** are designed for use on embedded systems where memory is scarce and
-** malloc failures happen frequently.  Win32 does not typically run on
-** embedded systems, and when it does the developers normally have bigger
-** problems to worry about than running out of memory.  So there is not
-** a compelling need to use the wrappers.
-**
-** But there is a good reason to not use the wrappers.  If we use the
-** wrappers then we will get simulated malloc() failures within this
-** driver.  And that causes all kinds of problems for our tests.  We
-** could enhance SQLite to deal with simulated malloc failures within
-** the OS driver, but the code to deal with those failure would not
-** be exercised on Linux (which does not need to malloc() in the driver)
-** and so we would have difficulty writing coverage tests for that
-** code.  Better to leave the code out, we think.
-**
-** The point of this discussion is as follows:  When creating a new
-** OS layer for an embedded system, if you use this file as an example,
-** avoid the use of malloc()/free().  Those routines work ok on windows
-** desktops but not so well in embedded systems.
-*/
+#define SYM_MAX_PATH 260
+#define SYM_NO_LOCK         0
+#define SYM_SHARED_LOCK     1
+#define SYM_RESERVED_LOCK   2
+#define SYM_PENDING_LOCK    3
+#define SYM_EXCLUSIVE_LOCK  4
+
+#ifndef SQLITE_DEFAULT_SECTOR_SIZE
+# define SQLITE_DEFAULT_SECTOR_SIZE 512
+#endif
+
+#ifndef SQLITE_TEMP_FILE_PREFIX
+# define SQLITE_TEMP_FILE_PREFIX "etilqs_"
+#endif
+
+#include <assert.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -51,6 +27,9 @@
 #include <bautils.h>
 #include <unistd.h>
 
+extern "C" 
+{
+	
 /*
 ** Macros used to determine whether or not to use threads.
 */
@@ -59,18 +38,15 @@
 #endif
 
 /*
-** Include code that is common to all os_*.c files
-*/
-#include "os_common.h"
-
-/*
-** The symbianFile structure is a subclass of sqlite3_file* specific to the win32
+** The symbianFile structure is a subclass of sqlite3_file* specific to the sym32
 ** portability layer.
 */
 
 typedef struct symbianFile symbianFile;
 struct symbianFile {
-	int isOpen;
+  sqlite3_io_methods const *pMethod;  /* Always the first entry */
+  
+  int isOpen;
   unsigned char locktype; /* Type of lock currently held on this file */
   short sharedLockByte;   /* Randomly chosen byte used as a shared lock */
   char fileName[512];
@@ -83,18 +59,25 @@ struct symbianFile {
 ** by the sqlite3_io_methods object.
 ******************************************************************************/
 
+#define symDlOpen  0
+#define symDlError 0
+#define symDlSym   0
+#define symDlClose 0
+
+sqlite3_vfs *sqlite3SymVfs(void);
+
 /*
 ** Close a file.
 **
 ** It is reported that an attempt to close a handle might sometimes
-** fail.  This is a very unreasonable result, but windows is notorious
+** fail.  This is a very unreasonable result, but symdows is notorious
 ** for being unreasonable so I do not doubt that it might happen.  If
 ** the close fails, we pause for 100 milliseconds and try again.  As
 ** many as MX_CLOSE_ATTEMPT attempts to close the handle are made before
 ** giving up and returning an error.
 */
 #define MX_CLOSE_ATTEMPT 3
-int winClose(sqlite3_file *id){
+int symClose(sqlite3_file *id){
   int rc, cnt = 0;
   symbianFile *pFile = (symbianFile*)id;
   pFile->file.Close();
@@ -114,7 +97,7 @@ int winClose(sqlite3_file *id){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-int winRead(
+int symRead(
   sqlite3_file *id,          /* File to read from */
   void *pBuf,                /* Write content into this buffer */
   int amt,                   /* Number of bytes to read */
@@ -124,7 +107,6 @@ int winRead(
   size_t got;
   symbianFile *pFile = (symbianFile*)id;
   assert( id!=0 );
-  SimulateIOError(return SQLITE_IOERR_READ);
   TInt tOffset = (TInt)offset;
   rc = pFile->file.Seek(ESeekStart, tOffset);
   if( rc!= KErrNone){
@@ -169,7 +151,7 @@ int winRead(
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-int winWrite(
+int symWrite(
   sqlite3_file *id,         /* File to write into */
   const void *pBuf,         /* The bytes to be written */
   int amt,                  /* Number of bytes to write */
@@ -178,8 +160,6 @@ int winWrite(
   int rc;
   symbianFile *pFile = (symbianFile*)id;
   assert( id!=0 );
-  SimulateIOError(return SQLITE_IOERR_WRITE);
-  SimulateDiskfullError(return SQLITE_FULL);
   TInt tOffset = (TInt)offset;
   rc = pFile->file.Seek(ESeekStart, tOffset);
   if( rc!= KErrNone){
@@ -199,7 +179,7 @@ int winWrite(
 /*
 ** Truncate an open file to a specified size
 */
-int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
+int symTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   symbianFile *pFile = (symbianFile*)id;
 
   if (pFile->file.SetSize(nByte) != KErrNone)
@@ -210,27 +190,11 @@ int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   return SQLITE_OK;
 }
 
-#ifdef SQLITE_TEST
-/*
-** Count the number of fullsyncs and normal syncs.  This is used to test
-** that syncs and fullsyncs are occuring at the right times.
-*/
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
-#endif
-
 /*
 ** Make sure all writes to a particular file are committed to disk.
 */
-int winSync(sqlite3_file *id, int flags){
+int symSync(sqlite3_file *id, int flags){
   symbianFile *pFile = (symbianFile*)id;
-  OSTRACE3("SYNC %d lock=%d\n", pFile->h, pFile->locktype);
-#ifdef SQLITE_TEST
-  if( flags & SQLITE_SYNC_FULL ){
-    sqlite3_fullsync_count++;
-  }
-  sqlite3_sync_count++;
-#endif
   
   TInt retval = pFile->file.Flush();
   if (retval != KErrNone)
@@ -244,7 +208,7 @@ int winSync(sqlite3_file *id, int flags){
 /*
 ** Determine the current size of a file in bytes
 */
-int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
+int symFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
   symbianFile *pFile = (symbianFile*)id;
 
   TInt size = 0;
@@ -261,17 +225,17 @@ int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
 
 /*
 ** Lock the file with the lock specified by parameter locktype - one
-** of the following:
+** of the follosymg:
 **
-**     (1) SHARED_LOCK
-**     (2) RESERVED_LOCK
-**     (3) PENDING_LOCK
-**     (4) EXCLUSIVE_LOCK
+**     (1) SYM_SHARED_LOCK
+**     (2) SYM_RESERVED_LOCK
+**     (3) SYM_PENDING_LOCK
+**     (4) SYM_EXCLUSIVE_LOCK
 **
 ** Sometimes when requesting one lock state, additional lock states
 ** are inserted in between.  The locking might fail on one of the later
 ** transitions leaving the lock state different from what it started but
-** still short of its goal.  The following chart shows the allowed
+** still short of its goal.  The follosymg chart shows the allowed
 ** transitions and the inserted intermediate states:
 **
 **    UNLOCKED -> SHARED
@@ -280,22 +244,19 @@ int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
 **    RESERVED -> (PENDING) -> EXCLUSIVE
 **    PENDING -> EXCLUSIVE
 **
-** This routine will only increase a lock.  The winUnlock() routine
+** This routine will only increase a lock.  The symUnlock() routine
 ** erases all locks at once and returns us immediately to locking level 0.
 ** It is not possible to lower the locking level one step at a time.  You
 ** must go straight to locking level 0.
 */
-int winLock(sqlite3_file *id, int locktype){
+int symLock(sqlite3_file *id, int locktype){
   int rc = SQLITE_OK;    /* Return code from subroutines */
-  int res = 1;           /* Result of a windows lock call */
+  int res = 1;           /* Result of a symdows lock call */
   int newLocktype;       /* Set pFile->locktype to this value before exiting */
   int gotPendingLock = 0;/* True if we acquired a PENDING lock this time */
   symbianFile *pFile = (symbianFile*)id;
 
   assert( pFile!=0 );
-  OSTRACE5("LOCK %d %d was %d(%d)\n",
-          pFile->h, locktype, pFile->locktype, pFile->sharedLockByte);
-
   // one smartphone only one application can control the database
 
   TInt size = 0;
@@ -309,19 +270,19 @@ int winLock(sqlite3_file *id, int locktype){
 ** file by this or any other process. If such a lock is held, return
 ** non-zero, otherwise zero.
 */
-int winCheckReservedLock(sqlite3_file *id){
-  int rc;
+int symCheckReservedLock(sqlite3_file *id, int *pResOut){
+  int rc = 0;
   symbianFile *pFile = (symbianFile*)id;
   assert( pFile!=0 );
-  if( pFile->locktype>=RESERVED_LOCK ){
+  if( pFile->locktype>=SYM_RESERVED_LOCK ){
     rc = 1;
-    OSTRACE3("TEST WR-LOCK %d %d (local)\n", pFile->h, rc);
   }else{
 	  TInt size = 0;
 	  if (pFile->file.Size(size) == KErrNone) rc = 1;
-    OSTRACE3("TEST WR-LOCK %d %d (remote)\n", pFile->h, rc);
   }
-  return rc;
+  
+  *pResOut = rc;
+  return SQLITE_OK;
 }
 
 /*
@@ -335,7 +296,7 @@ int winCheckReservedLock(sqlite3_file *id){
 ** is NO_LOCK.  If the second argument is SHARED_LOCK then this routine
 ** might return SQLITE_IOERR;
 */
-int winUnlock(sqlite3_file *id, int locktype){
+int symUnlock(sqlite3_file *id, int locktype){
   int type;
   symbianFile *pFile = (symbianFile*)id;
   int rc = SQLITE_OK;
@@ -346,7 +307,7 @@ int winUnlock(sqlite3_file *id, int locktype){
 /*
 ** Control and query of the open file handle.
 */
-int winFileControl(sqlite3_file *id, int op, void *pArg){
+int symFileControl(sqlite3_file *id, int op, void *pArg){
   switch( op ){
     case SQLITE_FCNTL_LOCKSTATE: {
       *(int*)pArg = ((symbianFile*)id)->locktype;
@@ -366,14 +327,14 @@ int winFileControl(sqlite3_file *id, int op, void *pArg){
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-int winSectorSize(sqlite3_file *id){
+int symSectorSize(sqlite3_file *id){
   return SQLITE_DEFAULT_SECTOR_SIZE;
 }
 
 /*
 ** Return a vector of device characteristics.
 */
-int winDeviceCharacteristics(sqlite3_file *id){
+int symDeviceCharacteristics(sqlite3_file *id){
   return 0;
 }
 
@@ -396,10 +357,269 @@ void ConvertToUnicode(RFs session, TDes16& aUnicode, const char *str)
   delete converter;
 }
 
+int symOpen(
+  sqlite3_vfs *pVfs,        /* Not used */
+  const char *zName,        /* Name of the file (UTF-8) */
+  sqlite3_file *id,         /* Write the SQLite file handle here */
+  int flags,                /* Open mode flags */
+  int *pOutFlags            /* Status return flags */
+);
+
+
+/*
+** Delete the named file.
+**
+** Note that symdows does not allow a file to be deleted if some other
+** process has it open.  Sometimes a virus scanner or indexing program
+** will open a journal file shortly after it is created in order to do
+** whatever does.  While this other process is holding the
+** file open, we will be unable to delete it.  To work around this
+** problem, we delay 100 milliseconds and try to delete again.  Up
+** to MX_DELETION_ATTEMPTs deletion attempts are run before giving
+** up and returning an error.
+*/
+#define MX_DELETION_ATTEMPTS 5
+int symDelete(
+  sqlite3_vfs *pVfs,          /* Not used on sym32 */
+  const char *zFilename,      /* Name of file to delete */
+  int syncDir                 /* Not used on sym32 */
+){
+  TBuf16<SYM_MAX_PATH> filename;
+
+  RFs session;
+  session.Connect();
+  ConvertToUnicode(session, filename, zFilename);
+  BaflUtils::DeleteFile(session, filename);
+  session.Close();
+  return SQLITE_OK;
+}
+
+/*
+** Check the existance and status of a file.
+*/
+int symAccess(
+  sqlite3_vfs *pVfs,         /* Not used on sym32 */
+  const char *zFilename,     /* Name of file to check */
+  int flags,                  /* Type of test to make on this file */
+  int *pResOut
+){
+  TBuf16<SYM_MAX_PATH> filename;
+
+  RFs session;
+  session.Connect();
+  ConvertToUnicode(session, filename, zFilename);
+  int ret = BaflUtils::FileExists(session, filename);
+  session.Close();
+
+  *pResOut = ret;
+  
+  return SQLITE_OK;
+}
+
+int symRandomness(sqlite3_vfs *pVfs, int nBuf, char *zBuf);
+
+int randomByte(void){
+  unsigned char t;
+
+  /* All threads share a single random number generator.
+  ** This structure is the current state of the generator.
+  */
+  static struct {
+    unsigned char isInit;          /* True if initialized */
+    unsigned char i, j;            /* State variables */
+    unsigned char s[256];          /* State variables */
+  } prng;
+
+  /* Initialize the state of the random number generator once,
+  ** the first time this routine is called.  The seed value does
+  ** not need to contain a lot of randomness since we are not
+  ** trying to do secure encryption or anything like that...
+  **
+  ** Nothing in this file or anywhere else in SQLite does any kind of
+  ** encryption.  The RC4 algorithm is being used as a PRNG (pseudo-random
+  ** number generator) not as an encryption device.
+  */
+  if( !prng.isInit ){
+    int i;
+    char k[256];
+    prng.j = 0;
+    prng.i = 0;
+    symRandomness(sqlite3_vfs_find(0), 256, k);
+    for(i=0; i<256; i++){
+      prng.s[i] = i;
+    }
+    for(i=0; i<256; i++){
+      prng.j += prng.s[i] + k[i];
+      t = prng.s[prng.j];
+      prng.s[prng.j] = prng.s[i];
+      prng.s[i] = t;
+    }
+    prng.isInit = 1;
+  }
+
+  /* Generate and return single random byte
+  */
+  prng.i++;
+  t = prng.s[prng.i];
+  prng.j += t;
+  prng.s[prng.i] = prng.s[prng.j];
+  prng.s[prng.j] = t;
+  t += prng.s[prng.i];
+  return prng.s[t];
+}
+
+/*
+** Return N random bytes.
+*/
+void sqlite3Randomness(int N, void *pBuf){
+  unsigned char *zBuf = (unsigned char*)pBuf;
+  static sqlite3_mutex *mutex = 0;
+  if( mutex==0 ){
+    mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_PRNG);
+  }
+  sqlite3_mutex_enter(mutex);
+  while( N-- ){
+    *(zBuf++) = randomByte();
+  }
+  sqlite3_mutex_leave(mutex);
+}
+
+
+/*
+** Create a temporary file name in zBuf.  zBuf must be big enough to
+** hold at pVfs->mxPathname characters.
+*/
+int symGetTempname(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
+  static char zChars[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789";
+  int i, j;
+  char zTempPath[SYM_MAX_PATH+1];
+  if( sqlite3_temp_directory ){
+    sqlite3_snprintf(SYM_MAX_PATH-30, zTempPath, "%s", sqlite3_temp_directory);
+  }
+  else
+  {
+  }
+  
+  for(i=strlen(zTempPath); i>0 && zTempPath[i-1]=='\\'; i--){}
+  zTempPath[i] = 0;
+  sqlite3_snprintf(nBuf-30, zBuf,
+                   "%s\\"SQLITE_TEMP_FILE_PREFIX, zTempPath);
+  j = strlen(zBuf);
+  sqlite3Randomness(20, &zBuf[j]);
+  for(i=0; i<20; i++, j++){
+    zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
+  }
+  zBuf[j] = 0;
+  return SQLITE_OK; 
+}
+
+/*
+** Turn a relative pathname into a full pathname.  Write the full
+** pathname into zOut[].  zOut[] will be at least pVfs->mxPathname
+** bytes in size.
+*/
+int symFullPathname(
+  sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+  const char *zRelative,        /* Possibly relative input path */
+  int nFull,                    /* Size of output buffer in bytes */
+  char *zFull                   /* Output buffer */
+){
+
+  /* symCE has no concept of a relative pathname, or so I am told. */
+  sqlite3_snprintf(pVfs->mxPathname, zFull, "%s", zRelative);
+  return SQLITE_OK;
+}
+
+  
+/*
+** Write up to nBuf bytes of randomness into zBuf.
+*/
+int symRandomness(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
+
+	int i;
+	for (i=0; i<nBuf; ++i)
+	{
+		zBuf[i] = rand() % 255;
+	}
+	return nBuf;
+}
+
+
+/*
+** Sleep for a little while.  Return the amount of time slept.
+*/
+int symSleep(sqlite3_vfs *pVfs, int microsec){
+	return sleep(microsec / 1000);
+}
+
+/*
+** Find the current time (in Universal Coordinated Time).  Write the
+** current time and date as a Julian Day number into *prNow and
+** return 0.  Return 1 if the time and date cannot be found.
+*/
+int symCurrentTime(sqlite3_vfs *pVfs, double *prNow){
+  double now;
+
+  now = time(NULL);
+  *prNow = now;
+
+  return 0;
+}
+
+int symGetLastError(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
+  return 0;
+}
+
+#define SYMBIANVFS(zVfsName, pVfsAppData) {                  \
+    1,                    /* iVersion */                    \
+	sizeof(symbianFile),     /* szOsFile */                    \
+	SYM_MAX_PATH,         /* mxPathname */                  \
+    0,                    /* pNext */                       \
+    zVfsName,             /* zName */                       \
+    (void *)pVfsAppData,  /* pAppData */                    \
+    symOpen,             /* xOpen */                       \
+    symDelete,           /* xDelete */                     \
+    symAccess,           /* xAccess */                     \
+    symFullPathname,     /* xFullPathname */               \
+    symDlOpen,           /* xDlOpen */                     \
+    symDlError,          /* xDlError */                    \
+    symDlSym,            /* xDlSym */                      \
+    symDlClose,          /* xDlClose */                    \
+    symRandomness,       /* xRandomness */                 \
+    symSleep,            /* xSleep */                      \
+    symCurrentTime,      /* xCurrentTime */                \
+    symGetLastError      /* xGetLastError */               \
+  }
+
+const sqlite3_io_methods symIoMethod = {
+  1,                        /* iVersion */
+  symClose,
+  symRead,
+  symWrite,
+  symTruncate,
+  symSync,
+  symFileSize,
+  symLock,
+  symUnlock,
+  symCheckReservedLock,
+  symFileControl,
+  symSectorSize,
+  symDeviceCharacteristics
+};
+
+sqlite3_vfs symVfs = SYMBIANVFS("unix", 0);
+
+sqlite3_vfs *sqlite3SymVfs(void){
+	return &symVfs;
+}
+
 /*
 ** Open a file.
 */
-int winOpen(
+int symOpen(
   sqlite3_vfs *pVfs,        /* Not used */
   const char *zName,        /* Name of the file (UTF-8) */
   sqlite3_file *id,         /* Write the SQLite file handle here */
@@ -407,13 +627,17 @@ int winOpen(
   int *pOutFlags            /* Status return flags */
 ){
   symbianFile *pFile = (symbianFile*)id;
-  TBuf16<MAX_PATH> filename;
+  memset(pFile, 0, sizeof(symbianFile));
+  
+  TBuf16<SYM_MAX_PATH> filename;
   TInt nPos = 1; 
   _LIT16(Slash,"\\");
   _LIT16(BackSlash,"/");
   
+  pFile->pMethod = &symIoMethod;
+  
   pFile->isOpen = 0;
-  memset(pFile, 0, sizeof(*pFile));
+  
   strcpy(pFile->fileName, zName);
   pFile->session.Connect();
   pFile->session.ShareAuto();
@@ -445,8 +669,6 @@ int winOpen(
 	ret = pFile->file.Open(pFile->session, filename, EFileStream | EFileRead | EFileShareAny);
   }
 
-  OpenCounter(+1);
-
   if (ret != KErrNone)
   {
 	  return SQLITE_IOERR;
@@ -456,173 +678,5 @@ int winOpen(
   return SQLITE_OK;
 }
 
-/*
-** Delete the named file.
-**
-** Note that windows does not allow a file to be deleted if some other
-** process has it open.  Sometimes a virus scanner or indexing program
-** will open a journal file shortly after it is created in order to do
-** whatever does.  While this other process is holding the
-** file open, we will be unable to delete it.  To work around this
-** problem, we delay 100 milliseconds and try to delete again.  Up
-** to MX_DELETION_ATTEMPTs deletion attempts are run before giving
-** up and returning an error.
-*/
-#define MX_DELETION_ATTEMPTS 5
-int winDelete(
-  sqlite3_vfs *pVfs,          /* Not used on win32 */
-  const char *zFilename,      /* Name of file to delete */
-  int syncDir                 /* Not used on win32 */
-){
-  SimulateIOError(return SQLITE_IOERR_DELETE);
-  TBuf16<MAX_PATH> filename;
 
-  RFs session;
-  session.Connect();
-  ConvertToUnicode(session, filename, zFilename);
-  BaflUtils::DeleteFile(session, filename);
-  OSTRACE2("DELETE \"%s\"\n", zFilename);
-  session.Close();
-  return SQLITE_OK;
 }
-
-/*
-** Check the existance and status of a file.
-*/
-int winAccess(
-  sqlite3_vfs *pVfs,         /* Not used on win32 */
-  const char *zFilename,     /* Name of file to check */
-  int flags                  /* Type of test to make on this file */
-){
-  TBuf16<MAX_PATH> filename;
-
-  RFs session;
-  session.Connect();
-  ConvertToUnicode(session, filename, zFilename);
-  int ret = BaflUtils::FileExists(session, filename);
-  session.Close();
-
-  return ret;
-}
-
-
-/*
-** Create a temporary file name in zBuf.  zBuf must be big enough to
-** hold at pVfs->mxPathname characters.
-*/
-int winGetTempname(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-  static char zChars[] =
-    "abcdefghijklmnopqrstuvwxyz"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "0123456789";
-  int i, j;
-  char zTempPath[MAX_PATH+1];
-  if( sqlite3_temp_directory ){
-    sqlite3_snprintf(MAX_PATH-30, zTempPath, "%s", sqlite3_temp_directory);
-  }
-  else
-  {
-  }
-  
-  for(i=strlen(zTempPath); i>0 && zTempPath[i-1]=='\\'; i--){}
-  zTempPath[i] = 0;
-  sqlite3_snprintf(nBuf-30, zBuf,
-                   "%s\\"SQLITE_TEMP_FILE_PREFIX, zTempPath);
-  j = strlen(zBuf);
-  sqlite3Randomness(20, &zBuf[j]);
-  for(i=0; i<20; i++, j++){
-    zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
-  }
-  zBuf[j] = 0;
-  OSTRACE2("TEMP FILENAME: %s\n", zBuf);
-  return SQLITE_OK; 
-}
-
-/*
-** Turn a relative pathname into a full pathname.  Write the full
-** pathname into zOut[].  zOut[] will be at least pVfs->mxPathname
-** bytes in size.
-*/
-int winFullPathname(
-  sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zRelative,        /* Possibly relative input path */
-  int nFull,                    /* Size of output buffer in bytes */
-  char *zFull                   /* Output buffer */
-){
-
-  /* WinCE has no concept of a relative pathname, or so I am told. */
-  sqlite3_snprintf(pVfs->mxPathname, zFull, "%s", zRelative);
-  return SQLITE_OK;
-}
-
-  #define winDlOpen  0
-  #define winDlError 0
-  #define winDlSym   0
-  #define winDlClose 0
-
-
-/*
-** Write up to nBuf bytes of randomness into zBuf.
-*/
-int winRandomness(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-
-	int i;
-	for (i=0; i<nBuf; ++i)
-	{
-		zBuf[i] = rand() % 255;
-	}
-	return nBuf;
-}
-
-
-/*
-** Sleep for a little while.  Return the amount of time slept.
-*/
-int winSleep(sqlite3_vfs *pVfs, int microsec){
-	return sleep(microsec / 1000);
-}
-
-/*
-** The following variable, if set to a non-zero value, becomes the result
-** returned from sqlite3OsCurrentTime().  This is used for testing.
-*/
-#ifdef SQLITE_TEST
-int sqlite3_current_time = 0;
-#endif
-
-/*
-** Find the current time (in Universal Coordinated Time).  Write the
-** current time and date as a Julian Day number into *prNow and
-** return 0.  Return 1 if the time and date cannot be found.
-*/
-int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
-  double now;
-
-  now = time(NULL);
-  *prNow = now;
-
-  return 0;
-}
-
-
-/*
-** Return a pointer to the sqlite3DefaultVfs structure.   We use
-** a function rather than give the structure global scope because
-** some compilers (MSVC) do not allow forward declarations of
-** initialized structures.
-*/
-sqlite3_vfs *sqlite3OsDefaultVfs(void){
-  static sqlite3_vfs winVfs = {
-    1,                 /* iVersion */
-    -1,   /* szOsFile */
-    MAX_PATH,          /* mxPathname */
-    0,                 /* pNext */
-    "symbian",           /* zName */
-    0,                 /* pAppData */
-    };
-  
-  winVfs.szOsFile = sizeof(symbianFile);
-  return &winVfs;
-}
-
-#endif /* OS_SYMBIAN */
