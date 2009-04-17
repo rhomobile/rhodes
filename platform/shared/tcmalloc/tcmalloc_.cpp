@@ -616,6 +616,8 @@ static void ReportLargeAlloc(Length num_pages, void* result) {
 //namespace {
 void InvalidFree(void* ptr) {
     ptr;
+  printf("TCMALLOC: InvalidFree\n");
+
     //TODO:InvalidFree logging
   //CRASH("Attempt to free invalid pointer: %p\n", ptr);
     //RAWLOG_ERROR1("Attempt to free invalid pointer: %p", ptr);
@@ -623,6 +625,7 @@ void InvalidFree(void* ptr) {
 
 void* InvalidRealloc(void* old_ptr, size_t new_size) {
     old_ptr; new_size;
+    printf("TCMALLOC: InvalidRealloc\n");
 //  CRASH2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")\n",
 //        old_ptr, new_size);
     //RAWLOG_ERROR2("Attempt to realloc invalid pointer: %p (realloc to %" PRIuS ")",

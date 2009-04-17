@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <libc/sys/unistd.h>
 #include "port.h"
+#include <stdio.h>
 
 static SpinLock alloc_lock(SpinLock::LINKER_INITIALIZED);
 pthread_mutex_t __initmutex = PTHREAD_MUTEX_INITIALIZER;
@@ -24,6 +25,7 @@ void SpinLock::Unlock() {
     pthread_mutex_unlock(&mutex_);
 }
 
+static long long g_nTotalMemory = 0;
 // This is mostly like MmapSysAllocator::Alloc, except it does these weird
 // munmap's in the middle of the page, which is forbidden in windows.
 extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
@@ -48,7 +50,10 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
   //void* result = VirtualAlloc(0, size + extra,
   //                            MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
   void* result = malloc(size + extra);//new unsigned char[size + extra];//malloc(size + extra);
-//printf("VirtualAlloc = %d\n", size + extra);
+
+  g_nTotalMemory += size + extra;
+  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, g_nTotalMemory/(1024*1024));
+
   if (result == NULL)
     return NULL;
 
