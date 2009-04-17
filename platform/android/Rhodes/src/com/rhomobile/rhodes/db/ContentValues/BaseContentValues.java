@@ -29,7 +29,7 @@ public class BaseContentValues {
         
         val = hash.getValue(SOURCE_ID);
         if ( val != RubyConstant.QNIL )
-        	values.put(SOURCE_ID.asString(), val.toInt());
+        	values.put(SOURCE_ID.asString(), ((long) val.toInt()) & 0xFFFFFFFFL );
         
         val = hash.getValue(TOKEN);
         if ( val != RubyConstant.QNIL )

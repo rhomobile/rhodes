@@ -8,7 +8,6 @@ import com.rhomobile.rhodes.db.ContentValues.SourcesContentValues;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -21,7 +20,7 @@ import android.util.Log;
 
 public class RhoDB {
 
-	private static final int DATABASE_VERSION = 100;//1.0.0
+	private static final int DATABASE_VERSION = 101;//1.0.0
 	private static final String DATABASE_NAME = "rho_syncdb";
 	private static final String LOG_TAG = "RhoDB";
 
