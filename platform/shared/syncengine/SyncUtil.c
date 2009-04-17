@@ -211,6 +211,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
                 nTotal += available;
 		        if(available > 0) {
 
+                    char *zErr;
+                    int nRes = sqlite3_exec(database, "BEGIN;",0,0,&zErr);
 			        for(j = 0; j < available; j++) {
 				        list[j]->_database = database;
 				        type = list[j]->_db_operation;
@@ -232,6 +234,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 					        }
 				        }
 			        }
+                    sqlite3_exec(database, "END;",0,0,&zErr);
 		        }
 		        /* free the in-memory list after populating the database */
 		        free_ob_list(list, available);
