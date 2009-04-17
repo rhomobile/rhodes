@@ -49,7 +49,7 @@ public:
 	/**
 	 * Destructor.
 	 */
-	~CHttpEventHandler();
+	virtual ~CHttpEventHandler();
 
 	/**
 	 * Two-phased constructor.

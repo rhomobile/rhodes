@@ -65,7 +65,9 @@ enum TCameraReasons
 // rhodes enumerate command codes
 enum TRhodesIds
 	{
-	EHelp = 1, // start value must not be 0
+	EAknExFormPageCtrlIdPage01 = 1, // start value must not be 0
+	EAknExFormPageCtrlIdPage02,
+	EHelp, 
 	EAbout,
 	EStat,
 	ESync,
@@ -82,7 +84,23 @@ enum TRhodesIds
     ECmdTakePicture,
     ECmdChoosePicture,
     ECmdSetCurrentUrl,
+    ELogLevelChoiceListId,
+    EMessageClassesLabel,
+    EMessageClassesId,
+    EExcludeMessageClassesLabel,
+    EExcludeMessageClassesId,
+    EPlatformLogging,
+    ELoggingOptionsHeaderId,
+    ELoggingOptions,
+    ELogView,
+    EFakeLabel,
+    EMessageLoggingLeveleLabel,
     ECmdShowDebugWindow
 	};
+
+/** Maximum text field width */
+#define EFieldMax 200
+/** Displayed text field width */
+#define EFieldWidth 200
 
 #endif // __RHODES_HRH__

@@ -62,7 +62,7 @@ int safe_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
 }
 
 // mingw defines its own snprintf, though msvc does not
-#ifndef __MINGW32__
+/*#ifndef __MINGW32__
 int snprintf(char *str, size_t size, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
@@ -70,7 +70,7 @@ int snprintf(char *str, size_t size, const char *format, ...) {
   va_end(ap);
   return r;
 }
-#endif
+#endif*/
 
 int getpagesize() {
   static int pagesize = 0;
@@ -189,7 +189,7 @@ pthread_key_t PthreadKeyCreate(void (*destr_fn)(void*)) {
 // These functions replace system-alloc.cc
 
 static SpinLock alloc_lock(SpinLock::LINKER_INITIALIZED);
-
+static __int64 g_nTotalMemory = 0;
 // This is mostly like MmapSysAllocator::Alloc, except it does these weird
 // munmap's in the middle of the page, which is forbidden in windows.
 extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
@@ -214,6 +214,8 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
   void* result = VirtualAlloc(0, size + extra,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
   //RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
+  g_nTotalMemory += size + extra;
+  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, g_nTotalMemory/(1024*1024));
 
   if (result == NULL)
     return NULL;

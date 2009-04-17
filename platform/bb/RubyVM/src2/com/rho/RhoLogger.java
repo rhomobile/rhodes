@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class RhoLogger {
 	public static final boolean RHO_STRIP_LOG = false;
-	public static final boolean RHO_DEBUG = true;
+	public static final boolean RHO_DEBUG = false;
 
 	private static final int L_TRACE = 0;
 	private static final int L_INFO = 1;
@@ -14,8 +14,6 @@ public class RhoLogger {
 	private static final int L_NUM_SEVERITIES = 5;
 	
 	private String LogSeverityNames[] = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
-	
-	private static String CONF_FILENAME = "RhoLogConf.txt";
 	
 	private String m_category;
 	private static RhoLogConf m_oLogConf;
@@ -193,10 +191,7 @@ public class RhoLogger {
 	
     public static void InitRhoLog(){
     	
-    	String szRootPath = "";
-    	try{
-    		szRootPath = FileFactory.createFile().getDirPath("");
-    	}catch(Exception exc){}
+        RhoConf.InitRhoConf();
     	
     	m_oLogConf = new RhoLogConf();
         //Set defaults
@@ -214,37 +209,16 @@ public class RhoLogger {
     	
     	m_oLogConf.setLogToFile(true);
     	m_oLogConf.setMaxLogFileSize(1024*50);
+    	if ( RhoConf.getInstance().getRhoRootPath().length() > 0 )
+	    	m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + "RhoLog.txt" );
 
-    	loadFromConfFromJar();
-    	
-    	if ( szRootPath.length() > 0 ){
-	    	m_oLogConf.setLogFilePath( szRootPath + "RhoLog.txt" );
-	        //load configuration if exist
-	    	m_oLogConf.setLogConfFilePath(szRootPath + CONF_FILENAME);
-	    	//
-	    	//m_oLogConf.saveToFile("");
-	    	//
-	    	m_oLogConf.loadFromFile("");
-    	}
+        //load configuration if exist
+    	//
+    	//m_oLogConf.saveToFile("");
+    	//
+	    	
+    	RhoConf.getInstance().loadConf();
+    	m_oLogConf.loadFromConf(RhoConf.getInstance());
     }
     
-    private static void loadFromConfFromJar(){
-    	 java.io.InputStream fstream = m_oLogConf.getClass().getResourceAsStream(
-    			 "/" + CONF_FILENAME);
-    	 if ( fstream == null )
-    		 return;
-    	 
-    	 try{
-	 	     byte[] data = new byte[fstream.available()];
-		     int len = fstream.read(data);
-		     if ( len == 0 )
-		        return;
-	
-		     String strSettings = new String(data,0,len);
-		     m_oLogConf.loadFromString(strSettings);
-    	 }catch(java.io.IOException exc){
-    		 
-    	 }
-    }
-	
 }

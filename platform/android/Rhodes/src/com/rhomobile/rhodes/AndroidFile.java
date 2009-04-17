@@ -6,8 +6,7 @@ import java.io.FileWriter;
 import java.io.RandomAccessFile;
 import java.io.IOException;
 
-import org.garret.perst.SimpleFile;
-import org.garret.perst.StorageError;
+import com.rho.SimpleFile;
 
 import android.content.res.Resources;
 import android.util.Log;
@@ -39,8 +38,8 @@ public class AndroidFile implements SimpleFile {
 		try {
 			file.seek(pos);
 			file.write(buf, 0, buf.length);
-		} catch (IOException x) {
-			throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+		} catch (Exception e) {
+			Log.e(getClass().getSimpleName(), e.getMessage());
 		}
 	}
 
@@ -48,17 +47,18 @@ public class AndroidFile implements SimpleFile {
 		try {
 			file.seek(pos);
 			return file.read(buf, 0, buf.length);
-		} catch (IOException x) {
-			throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+		} catch (Exception e) {
+			Log.e(getClass().getSimpleName(), e.getMessage());
 		}
+		return 0;
 	}
 
 	public void sync() {
 		if (!noFlush) {
 			try {
 				file.getFD().sync();
-			} catch (IOException x) {
-				throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+			} catch (IOException e) {
+				Log.e(getClass().getSimpleName(), e.getMessage());
 			}
 		}
 	}
@@ -66,8 +66,8 @@ public class AndroidFile implements SimpleFile {
 	public void close() {
 		try {
 			file.close();
-		} catch (IOException x) {
-			throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+		} catch (IOException e) {
+			Log.e(getClass().getSimpleName(), e.getMessage());
 		}
 	}
 
@@ -89,7 +89,7 @@ public class AndroidFile implements SimpleFile {
 						: "rw");
 
 			} catch (IOException e) {
-				throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+				Log.e(getClass().getSimpleName(), e.getMessage());
 			}
 		}
 	}

@@ -243,6 +243,7 @@ src2\com\rho\FileFactory.java
 src2\com\rho\IFile.java
 src2\com\rho\IRhoLogSink.java
 src2\com\rho\Jsr75File.java
+src2\com\rho\RhoConf.java
 src2\com\rho\RhoEmptyLogger.java
 src2\com\rho\RhoEmptyProfiler.java
 src2\com\rho\RhoLogConf.java

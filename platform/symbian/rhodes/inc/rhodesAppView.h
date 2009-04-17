@@ -234,6 +234,7 @@ private: //data
 		CFbsBitmapDevice* iBmpDevice;
 		
 		TBool iOffScreenBitmapCreated;
+		
 		char* callbackUrl;
 	};
 
