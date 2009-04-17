@@ -1,9 +1,9 @@
-package org.garret.perst.impl;
+package com.rho;
 
-import org.garret.perst.*;
+import java.io.IOException;
 
 public class FileFactory {
-	public static SimpleFile createFile() {
+	public static SimpleFile createFile() throws IOException {
 		Class systemClass;
 		Class wrapperClass;
 		// RHO COMMENT
@@ -23,14 +23,14 @@ public class FileFactory {
 					wrapperClass = Class
 							.forName("org.garret.perst.impl.RmsFile");
 				} catch (ClassNotFoundException x3) {
-					throw new StorageError(StorageError.FILE_ACCESS_ERROR, x3);
+					throw new IOException(x3.getMessage());
 				}
 			}
 		}
 		try {
 			return (SimpleFile) wrapperClass.newInstance();
 		} catch (Exception x) {
-			throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
+			throw new IOException(x.getMessage());
 		}
 	}
 }

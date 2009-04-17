@@ -21,7 +21,7 @@
 	Drop Table If Exists [object_values];
 	CREATE TABLE 'object_values' (
 	 'id' INTEGER PRIMARY KEY NOT NULL,
-	 'token' INTEGER default NULL,
+	 'token' varchar(30) default NULL,
 	 'source_id' int(11) default NULL,
 	 'attrib' varchar(255) default NULL,
 	 'object' varchar(255) default NULL,
@@ -31,7 +31,7 @@
 	Drop Table If Exists [sources];
 	CREATE TABLE 'sources' (
 	'id' INTEGER PRIMARY KEY,
-	'token' INTEGER default NULL,
+	'token' varchar(30) default NULL,
 	'source_id' int(11) default -1,
 	'source_url' VARCHAR(255) default NULL,
 	'session' VARCHAR(255) default NULL,
