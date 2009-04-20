@@ -12,18 +12,20 @@ public final class R {
     }
     public static final class drawable {
         public static final int back=0x7f020000;
-        public static final int home=0x7f020001;
-        public static final int icon=0x7f020002;
-        public static final int info=0x7f020003;
-        public static final int next=0x7f020004;
-        public static final int options=0x7f020005;
-        public static final int refresh=0x7f020006;
-        public static final int sync=0x7f020007;
+        public static final int exit=0x7f020001;
+        public static final int home=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int info=0x7f020004;
+        public static final int next=0x7f020005;
+        public static final int options=0x7f020006;
+        public static final int refresh=0x7f020007;
+        public static final int sync=0x7f020008;
     }
     public static final class id {
         public static final int about=0x7f060011;
         public static final int buttonLayout=0x7f060004;
         public static final int cancelButton=0x7f060008;
+        public static final int exit=0x7f060012;
         public static final int filesList=0x7f060006;
         public static final int lookIn=0x7f060003;
         public static final int navigation_back=0x7f06000d;
