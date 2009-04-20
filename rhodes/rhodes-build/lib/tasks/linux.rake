@@ -68,9 +68,17 @@ namespace "bundle" do
 end
 
 namespace "desktop" do
-  task :win32, [:simpath] => "bundle:linux" do
+  task :win32, [:simpath] => "bundle:linux" do |t,args|
     chdir $srcdir
     rm_f File.join($srcdir,"rhodes-simulator.zip")
-    puts `zip rhodes-simulator.zip -r * #{args.simpath}`
+    mkdir "tmp"
+    cp_r "#{args.simpath}/rho", "tmp/"
+    cp_r "#{$srcdir}/apps", "tmp/rho/"
+    cp_r "#{$srcdir}/lib", "tmp/rho/"
+    cp_r "#{args.simpath}/rhodes.exe", "tmp/"
+    chdir "tmp"
+    puts `zip ../rhodes-simulator.zip -r *`
+    chdir $srcdir
+    rm_rf "tmp"
   end
 end
