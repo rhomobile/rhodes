@@ -197,7 +197,17 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		case KeyEvent.KEYCODE_BACK:
 			this.webView.goBack();
 			return true;
+		case KeyEvent.KEYCODE_HOME:
+			Intent svcSync = new Intent(this, RhoSyncService.class);
+			stopService(svcSync);
+
+			Intent svc = new Intent(this, RhoHttpService.class);
+			stopService(svc);
+			
+			this.finish();
+			return true;
 		}
+		
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -226,6 +236,16 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 
 		case R.id.sync:
 			SyncEngine.wakeUp();
+			return true;
+
+		case R.id.exit:
+			Intent svcSync = new Intent(this, RhoSyncService.class);
+			stopService(svcSync);
+
+			Intent svc = new Intent(this, RhoHttpService.class);
+			stopService(svc);
+			
+			this.finish();
 			return true;
 
 		case R.id.options:
