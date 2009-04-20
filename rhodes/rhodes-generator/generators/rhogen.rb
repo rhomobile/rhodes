@@ -30,6 +30,7 @@ module Rhogen
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
     first_argument :name, :required => true, :desc => "application name"
+    second_argument :zip_url, :required => false, :desc => "optional url to zipfile download of bundle"
 
     template :config do |template|
       template.source = 'config.rb'
