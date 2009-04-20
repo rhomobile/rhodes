@@ -60,7 +60,7 @@ namespace "bundle" do
     chdir $basedir
   end
   
-  task :desktop => "bundle:zip" do
+  task :desktop => "bundle:linux" do
     chdir $srcdir
     rm_f File.join($srcdir,"rhobundle.zip")
     puts `zip rhobundle.zip -r *`
