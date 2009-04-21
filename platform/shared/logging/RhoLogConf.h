@@ -68,6 +68,7 @@ public:
 
     void sinkLogMessage( String& strMsg );
 
+    void getLogText(String& strText);
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
 

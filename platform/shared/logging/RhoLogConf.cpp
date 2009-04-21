@@ -28,6 +28,12 @@ LogSettings::~LogSettings(){
     delete m_pOutputSink;
 }
 
+void LogSettings::getLogText(String& strText){
+	general::CRhoFile oFile;
+	if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+			oFile.readString(strText);
+}
+
 void LogSettings::getLogTextW(StringW& strTextW){
     general::CRhoFile oFile;
     if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
@@ -43,7 +49,9 @@ void LogSettings::saveToFile(){
     RHOCONF().setInt("MinSeverity", getMinSeverity() );
     RHOCONF().setBool("LogToOutput", isLogToOutput() );
     RHOCONF().setBool("LogToFile", isLogToFile() );
+#if !defined(OS_MACOSX)	
     RHOCONF().setString("LogFilePath", getLogFilePath() );
+#endif	
     RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
     RHOCONF().setString("LogCategories", getEnabledCategories() );
     RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );

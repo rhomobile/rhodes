@@ -16,6 +16,7 @@
 #import "HttpMessage.h"
 #import "Dispatcher.h"
 #import "AppLoader.h"
+#import "config.h"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
 
@@ -93,18 +94,29 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  * Configures AppManager
  */
 - (void) configure {
+	
 #if TARGET_IPHONE_SIMULATOR	//DEBUG
 	bool replaceFiles = YES;
 #else
-	bool replaceFiles = NO;
+	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	char* currentVersion = config_getString("currentVersion");
+    bool replaceFiles = NO;
+	if ( strcmp(version, currentVersion) ) {
+		config_setString("currentVersion", version);
+		config_save();
+		replaceFiles = YES;
+	}
+	free(currentVersion);	
 #endif	
+	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
 	[self copyFromMainBundle:@"lib" replace:replaceFiles];
-	[self copyFromMainBundle:@"db" replace:NO];
+	[self copyFromMainBundle:@"db" replace:NO];  //TBD: need to check db version reset db if different
 	
-#if TARGET_IPHONE_SIMULATOR	//DEBUG	
-	[self copyFromMainBundle:@"rhodes_conf.txt" replace:replaceFiles];	
-#endif	
+//#if TARGET_IPHONE_SIMULATOR	//DEBUG	
+//	[self copyFromMainBundle:@"rhodes_conf.txt" replace:replaceFiles];	
+//#endif	
 	
 }
 
