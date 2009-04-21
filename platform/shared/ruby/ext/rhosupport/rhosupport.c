@@ -332,6 +332,7 @@ static void Init_RhoBlobs()
 static VALUE
 rb_RhoLogWrite(VALUE rhoLog, VALUE str)
 {
+#if RHO_STRIP_LOG <= L_INFO
     char* szStr = 0;
     str = rb_obj_as_string(str);
 
@@ -339,6 +340,10 @@ rb_RhoLogWrite(VALUE rhoLog, VALUE str)
     //Skip just newline string
     if ( strcmp(szStr,"\r\n") != 0 && strcmp(szStr,"\n") != 0 )
         rhoPlainLog("",0,L_INFO,"APP",RSTRING_PTR(str));
+#else
+#endif
+
+    return Qnil;
 }
 
 void rhoRubyFatalError(const char* szError){
@@ -356,7 +361,21 @@ int rhoRubyVFPrintf(FILE *file, const char *format, va_list ap){
                 severity = L_ERROR;
         }
 
-        rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+        if ( severity == L_INFO )
+#if RHO_STRIP_LOG <= L_INFO
+            rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+#else
+            ;
+#endif
+        else if ( severity == L_ERROR )
+#if RHO_STRIP_LOG <= L_ERROR
+            rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+#else
+            ;
+#endif
+        else
+            rhoPlainLogArg("",0,severity,"RubyVM",format,ap);
+
     }
     else
         nRes = vfprintf(file,format,ap);

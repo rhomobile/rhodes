@@ -26,6 +26,13 @@
 #define RHO_DEBUG 1
 #endif
 
+#define L_TRACE   0
+#define L_INFO    1
+#define L_WARNING 2
+#define L_ERROR   3
+#define L_FATAL   4
+#define L_NUM_SEVERITIES  5
+
 #define RHO_STRIP_LOG 0
 #define RHO_STRIP_PROFILER 0
 

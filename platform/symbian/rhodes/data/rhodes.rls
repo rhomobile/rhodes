@@ -36,6 +36,8 @@
 
 #define qtn_options "Options"
 
+#define qtn_logging_options "Platform Logging"
+
 #define qtn_reload_rhobundle "Reload RhoBundle"
 
 #define qtn_loc_resource_file_1 "\\resource\\apps\\rhodes"
@@ -83,4 +85,7 @@
 //d: Contact database not found 
 rls_string STRING_r_contacts_db_not_found "Contact database not found"
 
+#define qtn_logging_options_form_label_page1 "Log View"
+
+#define qtn_logging_options_form_label_page2 "Settings"
 // End of File

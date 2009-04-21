@@ -26,7 +26,7 @@
 #define	NELEMS(ar)	(sizeof(ar) / sizeof(ar[0]))
 
 extern void __shttpd_trace(const char* format, ... );
-#ifdef RHO_DEBUG
+#if defined (RHO_DEBUG) && RHO_STRIP_LOG <= L_TRACE
 #define	DBG(x) __shttpd_trace x ;
 //do { printf x ; putchar('\n'); fflush(stdout); } while (0)
 #else

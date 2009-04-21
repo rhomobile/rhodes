@@ -44,6 +44,7 @@ static sqlite3_stmt *del_all_ob_val_statement = NULL;
 static sqlite3_stmt *session_url_source_statement=NULL;
 static sqlite3_stmt *set_session_db_statement=NULL;
 static sqlite3_stmt *update_token_db_statement=NULL;
+static sqlite3_stmt *update_all_tokens_db_statement=NULL;
 
 void finalize_sync_util_statements() {
 	if (op_list_source_ids_statement) {
@@ -101,6 +102,10 @@ void finalize_sync_util_statements() {
 	if (update_token_db_statement) {
 		sqlite3_finalize(update_token_db_statement);
 		update_token_db_statement = NULL;
+	}
+	if (update_all_tokens_db_statement) {
+		sqlite3_finalize(update_all_tokens_db_statement);
+		update_all_tokens_db_statement = NULL;
 	}
 
 }
@@ -206,6 +211,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
                 nTotal += available;
 		        if(available > 0) {
 
+                    //char *zErr;
+                    //int nRes = sqlite3_exec(database, "BEGIN;",0,0,&zErr);
 			        for(j = 0; j < available; j++) {
 				        list[j]->_database = database;
 				        type = list[j]->_db_operation;
@@ -227,6 +234,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 					        }
 				        }
 			        }
+                    //sqlite3_exec(database, "END;",0,0,&zErr);
 		        }
 		        /* free the in-memory list after populating the database */
 		        free_ob_list(list, available);
@@ -545,12 +553,21 @@ void reset_sync_db() {
 	prepare_db_statement("delete from client_info",
 						 (sqlite3 *)get_database(),
 						 &del_all_client_info_statement);
+	prepare_db_statement("UPDATE sources SET token=?",
+					    (sqlite3 *)get_database(),
+					    &update_all_tokens_db_statement);
+
 	RAWLOG_INFO("Deleting all objects from db...");
 	sqlite3_step(del_all_ob_val_statement);
 	finish_db_statement(&del_all_ob_val_statement);
 	RAWLOG_INFO("Deleting client info from db...");
 	sqlite3_step(del_all_client_info_statement);
 	finish_db_statement(&del_all_client_info_statement);
-	
+
+	RAWLOG_INFO("Clear tokens in source table...");
+	sqlite3_bind_int64(update_all_tokens_db_statement, 1, 0);
+	sqlite3_step(update_all_tokens_db_statement); 
+	finish_db_statement(&update_all_tokens_db_statement);
+
 	unlock_sync_mutex();
 }

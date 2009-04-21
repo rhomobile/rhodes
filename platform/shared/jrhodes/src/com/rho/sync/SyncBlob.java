@@ -6,10 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-import org.garret.perst.SimpleFile;
-import org.garret.perst.StorageError;
-import org.garret.perst.impl.FileFactory;
-
+import com.rho.FileFactory;
 import com.rho.db.IDbCallback;
 import com.rho.util.URI;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -179,11 +176,7 @@ public class SyncBlob {
 				System.out.println("There was an error pushing changes: "
 						+ e.getMessage());
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
-			} catch ( StorageError e){
-				System.out.println("There was an error open file: " + obj.getValue() + "; Error:"
-						+ e.getMessage());
-				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
-			}finally{
+			} finally{
 				if ( file != null )
 					try {
 						file.close();
@@ -205,7 +198,6 @@ public class SyncBlob {
 			try{
 				String fName = makeBlobFolderName();
 				FileFactory.createFile().delete(fName);
-			}catch(StorageError exc){
 			}catch(IOException exc){
 				
 			}
@@ -232,7 +224,7 @@ public class SyncBlob {
 				
 				try{
 					FileFactory.createFile().delete(url);
-				}catch(StorageError exc){
+				}catch(Exception exc){
 				}
 			}
 		}

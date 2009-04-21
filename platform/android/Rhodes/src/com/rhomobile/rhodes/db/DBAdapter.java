@@ -78,25 +78,46 @@ public class DBAdapter extends RubyBasic implements IDBAdapter {
 	 * @see com.rhomobile.rhodes.db.IDBAdapter#insertIntoTable(com.xruby.runtime.lang.RubyValue,
 	 *      com.xruby.runtime.lang.RubyValue)
 	 */
-	public synchronized RubyValue insertIntoTable(RubyValue tableName,
-			RubyValue mapValues) {
-		String table = tableName.toStr();
+	public synchronized RubyValue insertIntoTable(RubyValue table, RubyValue values) {
 
-		if (table.equalsIgnoreCase(RhoDB.CLIENT_INFO_TABLE))
-			storage.insert(table, new ClientInfoContentValues(
-					(RubyHash) mapValues));
-		else if (table.equalsIgnoreCase(RhoDB.OBJECT_VALUES_TABLE))
-			storage.insert(table, new ObjectValuesContentValues(
-					(RubyHash) mapValues));
-		else if (table.equalsIgnoreCase(RhoDB.SOURCES_TABLE))
-			storage.insert(table,
-					new SourcesContentValues((RubyHash) mapValues));
-		else
-			throw new RubyException("Unknown database name:" + table);
+		if ( table!= null && table != RubyConstant.QNIL && values != null && values != RubyConstant.QNIL ){
+			
+			storage.executeSql(createInsertStatement(table, (RubyHash)values));
+		}
 
 		return new RubyArray();
 	}
 
+	private String createInsertStatement(RubyValue table, RubyHash values) 
+	{
+		String retval = "insert into " + table;
+
+		String columns = "";
+		String valuesStr = "";
+		if (values != null) {
+			RubyArray keys = values.keys();
+			for (int i = 0; i < keys.size(); i++) {
+				RubyValue key = keys.get(i);
+				RubyValue val = values.get(key);
+				String type = val.getRubyClass().getName();
+				
+				String escapedValue = "";
+				if ( type.equals("String"))
+					escapedValue = "'" + escapeSQL(val.asString()) + "'";
+				else
+					escapedValue = val.asString();
+				
+				valuesStr += " " + escapedValue + ( i < (keys.size() - 1) ? "," : "" );
+				columns += " " + key + ( i < (keys.size() - 1) ? "," : "" );
+			}
+		}
+		retval += " (" + columns + ") values (" + valuesStr + " )";
+
+		return retval;
+		
+	}
+	
+	
 	// @RubyLevelMethod(name="selectFromTable")
 	/*
 	 * (non-Javadoc)

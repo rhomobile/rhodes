@@ -1,10 +1,9 @@
 package rhomobile.db;
 
-import org.garret.perst.IInputStream;
-import org.garret.perst.IOutputStream;
-import org.garret.perst.Index;
-import org.garret.perst.Iterator;
-import org.garret.perst.Persistent;
+import org.garret.perst.*;
+
+import com.rho.RhoEmptyProfiler;
+import com.rho.RhoProfiler;
 import com.rho.SimpleFile;
 import org.garret.perst.Storage;
 import com.rho.StorageError;
@@ -17,6 +16,8 @@ import com.xruby.runtime.lang.*;
 
 //@RubyLevelClass(name="DbAdapter")
 public class PerstLiteAdapter  extends RubyBasic {
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 	
 	public static final RubyString ID = ObjectFactory.createString("id");
 	public static final RubyString SOURCE_ID = ObjectFactory.createString("source_id");
@@ -178,6 +179,8 @@ public class PerstLiteAdapter  extends RubyBasic {
 	    public abstract Iterator iterator( RubyHash where);
 	    public abstract Iterator iterator();
 	    
+	    public abstract IPersistent[] getArrayOfValues( RubyHash where);
+	    
 	}	
 	
 	public static class Table_object_values extends Table_base { 
@@ -301,6 +304,55 @@ public class PerstLiteAdapter  extends RubyBasic {
 
 		    public Iterator iterator(){
 		    	return id.iterator();
+		    }
+		    
+		    public IPersistent[] getArrayOfValues( RubyHash where){
+		    	RubyValue valSourceID = where.get(SOURCE_ID);
+		    	RubyValue valObject = where.get(Table_object_values.OBJECT);
+		    	RubyValue valUpdatedType = where.get(Table_object_values.UPDATE_TYPE);
+		    	RubyValue valAttrib = where.get(Table_object_values.ATTRIB);
+		    	RubyValue valToken = where.get(TOKEN);
+		    	RubyValue valID = where.get(ID);
+
+		    	if ( valID != RubyConstant.QNIL )
+		    		return id.get(new Key(valID.toInt()), new Key(valID.toInt()) );
+		    	
+		    	if ( valAttrib != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
+		    		Key key = new Key(valObject.toStr(),valAttrib.toStr()); 
+		    		return object_idANDattrib.get( key, key);
+		    	}
+
+		    	if ( valUpdatedType != RubyConstant.QNIL && valObject != RubyConstant.QNIL ){
+		    		Key key = new Key(valObject.toStr(),valUpdatedType.toStr()); 
+		    		return object_idANDupdate_type.get( key, key);
+		    	}
+
+		    	if ( valToken != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valToken.toStr()});
+		    		return source_idANDtoken.get( key, key);
+		    	}
+		    	
+		    	if ( valObject != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{valObject.toStr()}); 
+		    		return object_idANDattrib.get( key, key);
+		    	}
+
+		    	if ( valUpdatedType != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL && valAttrib != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valUpdatedType.toStr(), valAttrib.toStr()});
+		    		return source_idANDupdate_typeANDattrib.get( key, key);
+		    	}
+		    	
+		    	if ( valUpdatedType != RubyConstant.QNIL && valSourceID != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt()),valUpdatedType.toStr()});
+		    		return source_idANDupdate_typeANDattrib.get( key, key);
+		    	}
+		    	
+		    	if ( valSourceID != RubyConstant.QNIL ){
+		    		Key key = new Key(new Object[]{new Integer(valSourceID.toInt())});
+		    		return source_idANDtoken.get( key, key);
+		    	}
+		    	
+		    	return null;
 		    }
 		    
 		    public Iterator iterator( RubyHash where){
@@ -498,6 +550,14 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		return null;
 		    	return source_id.iterator(new Key(val.toInt()), new Key(val.toInt()), Index.ASCENT_ORDER);
 		    }
+		    
+		    public IPersistent[] getArrayOfValues( RubyHash where){
+		    	RubyValue val = where.get(SOURCE_ID);
+		    	if ( val == RubyConstant.QNIL )
+		    		return null;
+		    	return source_id.get(new Key(val.toInt()), new Key(val.toInt()));
+		    }
+		    
 		}	
 		
 	    public static String name(){return "sources";}
@@ -638,6 +698,13 @@ public class PerstLiteAdapter  extends RubyBasic {
 		    		return null;
 		    	return client_id.iterator(new Key(val.toString()), new Key(val.toString()), Index.ASCENT_ORDER);
 		    }
+		    
+		    public IPersistent[] getArrayOfValues( RubyHash where){
+		    	RubyValue val = where.get(CLIENT_ID);
+		    	if ( val == RubyConstant.QNIL )
+		    		return null;
+		    	return client_id.get(new Key(val.toString()), new Key(val.toString()));
+		    }		    
 		}	
 		
 	    public static String name(){return "client_info";}
@@ -802,6 +869,7 @@ public class PerstLiteAdapter  extends RubyBasic {
 	
 	RubyValue selectFromTable(RubyValue tableName, RubyValue attrib, 
 			RubyValue where, RubyValue params){
+		
 		RubyValue orderBy = null;
 		boolean distinct = false;
 		boolean count = false;
@@ -819,23 +887,55 @@ public class PerstLiteAdapter  extends RubyBasic {
 		int nCount = 0;
 		TableRootBase tblRoot = getTableRoot(tableName);
 		if ( tblRoot != null ){
-			Iterator iter = null;
-			RubyValue whereValue = null;
 			
-			if (where != null && where != RubyConstant.QNIL ){
+			if ( !distinct && where != null && where != RubyConstant.QNIL &&
+					tblRoot instanceof Table_object_values.TableRoot ){
 				RubyHash whereHash = (RubyHash)where;
-				iter = tblRoot.iterator(whereHash);
-				if ( whereHash.has_key(VALUE) == RubyConstant.QTRUE )
-					whereValue = ((RubyHash)where).get(VALUE);
-			}
-			else
-				iter = tblRoot.iterator();
+				
+				PROF.START("Select objects");
+				IPersistent[] vals = tblRoot.getArrayOfValues(whereHash);
+				if ( count )
+					nCount = vals.length;
+				else{
+					if ( orderBy != null ){
+						Arrays.sort(vals, new Comparator() {
+							public int compare(Object a, Object b) {
+								return ((Table_object_values)a).object.equals( ((Table_object_values)b).object ) ? 0 : 1;
+							} 
+						}); 
+					}
 					
-			RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
-			while(iter != null && iter.hasNext()){
-				Table_base1 item = (Table_base1)iter.next();
-				if ( item.compareValue(whereValue) )
-					nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
+					PROF.START("Create ruby result");
+					for( int i = 0; i < vals.length; i++ ){
+						RubyHash hash = ((Table_object_values)vals[i]).getValueByName((RubyString)attrib);
+						res.add(hash);
+					}
+					PROF.STOP("Create ruby result");
+					
+				}
+				
+				PROF.STOP("Select objects");
+				
+			}else
+			{
+				Iterator iter = null;
+				RubyValue whereValue = null;
+	
+				if (where != null && where != RubyConstant.QNIL ){
+					RubyHash whereHash = (RubyHash)where;
+					iter = tblRoot.iterator(whereHash);
+					if ( whereHash.has_key(VALUE) == RubyConstant.QTRUE )
+						whereValue = ((RubyHash)where).get(VALUE);
+				}
+				else
+					iter = tblRoot.iterator();
+						
+				RubyHash distinctMap = distinct ? ObjectFactory.createHash() : null;
+				while(iter != null && iter.hasNext()){
+					Table_base1 item = (Table_base1)iter.next();
+					if ( item.compareValue(whereValue) )
+						nCount += item.addOrdered( res, attrib, orderBy, distinctMap, count ) ? 1:0;
+				}
 			}
 		}
 		
