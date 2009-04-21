@@ -27,9 +27,28 @@ char* get_current_location() {
 NSString *loadingText = @"Loading...";
 
 @synthesize viewHomeUrl, viewOptionsUrl;
+@synthesize actionTarget, onShowLog;
 
 -(void)viewDidLoad {
 	[super viewDidLoad];
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	bool logEnabled = [defaults boolForKey:@"log_enabled_preference"];
+	
+	if (logEnabled && toolbar) {
+		NSArray *items = toolbar.items;
+
+		// create a bordered style button with custom title
+		UIBarButtonItem *item = [[UIBarButtonItem alloc] 
+			initWithTitle:@"Log"
+			style:UIBarButtonItemStyleBordered	
+			target:self
+			action:@selector(actionShowLog:)];
+		items = [items arrayByAddingObject:item];
+		
+		[toolbar setItems:items animated: YES];
+		[item release];
+	}
 }
 
 -(void)navigate:(NSString*)url {
@@ -130,6 +149,13 @@ NSString *loadingText = @"Loading...";
 - (void)runSync
 {
 	wake_up_sync_engine();
+}
+
+- (void)actionShowLog:(id)sender
+{
+	if(actionTarget && [actionTarget respondsToSelector:onShowLog]) {
+		[actionTarget performSelector:onShowLog];
+	}	
 }
 
 @end

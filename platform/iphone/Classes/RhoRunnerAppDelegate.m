@@ -88,7 +88,32 @@ NSString *localhost = @"http://localhost:8080/";
 	[webViewController setViewOptionsUrl:url];
 }
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {	
+- (void)onShowLog {
+	if (logViewController!=NULL) {
+		[window addSubview:logViewController.view];
+		logViewController.view.hidden = NO;
+	}
+}
+
+- (void)onShowLogOptions {
+	if (logOptionsController!=NULL) {
+		[window addSubview:logOptionsController.view];
+		logOptionsController.view.hidden = NO;
+	}
+}
+
+- (void)applicationDidFinishLaunching:(UIApplication *)application {
+	
+	// Log View
+	logViewController = [[LogViewController alloc] init];
+	logViewController->actionTarget = self;
+	logViewController->onShowLogOptions = @selector(onShowLogOptions);
+
+	logOptionsController = [[LogOptionsController alloc] init];
+	
+	webViewController->actionTarget = self;
+	webViewController->onShowLog = @selector(onShowLog);
+	
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];
 	
