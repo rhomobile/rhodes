@@ -28,12 +28,6 @@ LogSettings::~LogSettings(){
     delete m_pOutputSink;
 }
 
-void LogSettings::getLogText(String& strText){
-	general::CRhoFile oFile;
-	if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
-			oFile.readString(strText);
-}
-
 void LogSettings::getLogTextW(StringW& strTextW){
     general::CRhoFile oFile;
     if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
