@@ -19,12 +19,14 @@ public class NetworkAccess {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("NetworkAccess");
 
-	private static String URLsuffix;
-	private static String WAPsuffix;
+	private static String URLsuffix = "";
+	private static String WIFIsuffix;
+	
+//	private static String WAPsuffix;
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
 
-	public static String getSuffix() {
+	/*public static String getSuffix() {
 		if (!networkConfigured)
 			autoConfigure();
 		if (!networkConfigured)
@@ -35,13 +37,13 @@ public class NetworkAccess {
 			return URLsuffix;
 		else
 			return "";
-	}
+	}*/
 
 	public static void autoConfigure() {
 		networkConfigured = false;
 		bes = false;
 		URLsuffix = null;
-		WAPsuffix = null;
+/*		WAPsuffix = null;
 		String wip = null;// Configuration.getGatewayIP();
 
 		if (wip != null) {
@@ -54,49 +56,63 @@ public class NetworkAccess {
 			}
 			networkConfigured = true;
 		} else {
-			AUTO: {
-				if (DeviceInfo.isSimulator()) {
-					URLsuffix = ";deviceside=true";
-					networkConfigured = true;
-					break AUTO;
+			AUTO: {*/
+			
+			
+		if (DeviceInfo.isSimulator()) {
+			URLsuffix = ";deviceside=true";
+			networkConfigured = true;
+		}else{
+			ServiceBook sb = ServiceBook.getSB();
+			if (sb != null) {
+				ServiceRecord[] wifis = sb.findRecordsByCid("WPTCP");
+				for ( int i = 0; i < wifis.length; i++ ){
+					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
+						continue;
+					
+					WIFIsuffix = ";interface=wifi"; 
+						//";deviceside=true;ConnectionUID=" + 
+						//wifis[i].getUid();
+					
+					LOG.INFO("WIFI :" + WIFIsuffix );
+					
+					break;
 				}
-
-				ServiceBook sb = ServiceBook.getSB();
-				if (sb != null) {
-					ServiceRecord[] srs = sb.getRecords();
-					// search for BES transport
+				
+				ServiceRecord[] srs = sb.getRecords();
+				// search for BES transport
+				for (int i = 0; i < srs.length; i++) {
+					if (srs[i].isDisabled() || !srs[i].isValid())
+						continue;
+					if (srs[i].getCid().equals("IPPP")
+							&& srs[i].getName().equals("Desktop")) {
+						URLsuffix = "";
+						networkConfigured = true;
+						bes = true;
+						break;
+					}
+				}
+				// search for BIS-B transport
+				if (URLsuffix == null) {
 					for (int i = 0; i < srs.length; i++) {
 						if (srs[i].isDisabled() || !srs[i].isValid())
 							continue;
 						if (srs[i].getCid().equals("IPPP")
-								&& srs[i].getName().equals("Desktop")) {
-							URLsuffix = "";
+								&& srs[i].getName().equals("IPPP for BIBS")) {
+							LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
+							
+							URLsuffix = ";deviceside=false;ConnectionType=mds-public";
 							networkConfigured = true;
-							bes = true;
 							break;
-						}
-					}
-					// search for BIS-B transport
-					if (URLsuffix == null) {
-						for (int i = 0; i < srs.length; i++) {
-							if (srs[i].isDisabled() || !srs[i].isValid())
-								continue;
-							if (srs[i].getCid().equals("IPPP")
-									&& srs[i].getName().equals("IPPP for BIBS")) {
-								LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
-								
-								URLsuffix = ";deviceside=false;ConnectionType=mds-public";
-								networkConfigured = true;
-								break;
-							}
 						}
 					}
 				}
 			}
-			if (networkConfigured == false) {
-				URLsuffix = ";deviceside=true";
-				networkConfigured = true;
-			}
+		}
+		
+		if (networkConfigured == false) {
+			URLsuffix = ";deviceside=true";
+			networkConfigured = true;
 		}
 
 	}
@@ -116,35 +132,49 @@ public class NetworkAccess {
 	public static HttpConnection connect(String server) throws IOException {
 		HttpConnection http = null;
 		// Check the network status before continuing.
-		if (((net.rim.device.api.system.RadioInfo.getNetworkService() & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0)
-				|| (URLsuffix == null && WAPsuffix == null)) {
-			throw new IOException("Network Data Service Not Available");
-		}
 		// Setup connection parameters
-		String param = null;
+/*		String param = null;
 		if (WAPsuffix != null && WAPsuffix.length() > 0) {
 			param = WAPsuffix;
 		} else if (URLsuffix != null && URLsuffix.length() > 0) {
 			param = URLsuffix;
 		} else {
 			param = "";
-		}
-		// Connect
-		try {
-			int fragment = server.indexOf('#');
-			if (-1 != fragment) {
-				server = server.substring(0, fragment);
-			}
+		}*/
 
-			LOG.INFO(server + param);
-			http = (HttpConnection) Connector.open(server + param);
-		} catch (IOException ioe) {
-			LOG.ERROR("Connector.open exception", ioe );
-			if (http != null)
-				http.close();
-			http = null;
-			throw ioe;
+		int fragment = server.indexOf('#');
+		if (-1 != fragment) {
+			server = server.substring(0, fragment);
 		}
+		
+		//Try wifi first
+		if ( WIFIsuffix != null ){
+			try {
+				LOG.INFO(server + WIFIsuffix);
+				http = (HttpConnection) Connector.open(server + WIFIsuffix);
+			} catch (IOException ioe) {
+				LOG.INFO("WIFI connection faild: " + ioe.getMessage() );
+			}
+		}
+		
+		if ( http == null ){
+			int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
+			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
+				throw new IOException("Network Data Service Not Available");
+			}
+			
+			try {
+				LOG.INFO(server + URLsuffix);
+				http = (HttpConnection) Connector.open(server + URLsuffix);
+			} catch (IOException ioe) {
+				LOG.ERROR("Connector.open exception", ioe );
+				if (http != null)
+					http.close();
+				http = null;
+				throw ioe;
+			}
+		}
+		
 		return http;
 	}
 

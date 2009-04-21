@@ -71,6 +71,7 @@ public:
     void getLogText(String& strText);
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
+    void getLogText(String& strText);
 
     void clearLog();
 

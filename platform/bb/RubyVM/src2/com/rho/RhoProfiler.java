@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class RhoProfiler {
 
-	public static boolean RHO_STRIP_PROFILER = false;
+	public static boolean RHO_STRIP_PROFILER = true;
 	
 	private static final RhoLogger LOG = new RhoLogger("PROFILER");
 	

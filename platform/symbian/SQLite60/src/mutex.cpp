@@ -1,34 +1,6 @@
-/*
-** 2007 August 14
-**
-** The author disclaims copyright to this source code.  In place of
-** a legal notice, here is a blessing:
-**
-**    May you do good and not evil.
-**    May you find forgiveness for yourself and forgive others.
-**    May you share freely, never taking more than you give.
-**
-*************************************************************************
-** This file contains the C functions that implement mutexes.
-**
-** The implementation in this file does not provide any mutual
-** exclusion and is thus suitable for use only in applications
-** that use SQLite in a single thread.  But this implementation
-** does do a lot of error checking on mutexes to make sure they
-** are called correctly and at appropriate times.  Hence, this
-** implementation is suitable for testing.
-** debugging purposes
-**
-** $Id: mutex.c,v 1.16 2007/09/10 16:13:00 danielk1977 Exp $
-*/
-#include "sqliteInt.h"
+#include "sqlite3.h"
 
-#ifdef SQLITE_MUTEX_NOOP_DEBUG
-/*
-** In this implementation, mutexes do not provide any mutual exclusion.
-** But the error checking is provided.  This implementation is useful
-** for test purposes.
-*/
+#include <assert.h>
 
 /*
 ** The mutex object
@@ -49,7 +21,7 @@ sqlite3_mutex *sqlite3_mutex_alloc(int id){
   switch( id ){
     case SQLITE_MUTEX_FAST:
     case SQLITE_MUTEX_RECURSIVE: {
-      pNew = sqlite3_malloc(sizeof(*pNew));
+      pNew = (sqlite3_mutex *)sqlite3_malloc(sizeof(*pNew));
       if( pNew ){
         pNew->id = id;
         pNew->cnt = 0;
@@ -123,4 +95,3 @@ int sqlite3_mutex_held(sqlite3_mutex *p){
 int sqlite3_mutex_notheld(sqlite3_mutex *p){
   return p==0 || p->cnt==0;
 }
-#endif /* SQLITE_MUTEX_NOOP_DEBUG */

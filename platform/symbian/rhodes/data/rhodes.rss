@@ -104,11 +104,11 @@ RESOURCE MENU_PANE r_menu
 				txt=qtn_menu_navigate; 
 				},		
 		// added the new Options menu command here
-		MENU_ITEM
+		/*MENU_ITEM
 				{
 				command = EHelp;
 				txt = qtn_help;
-				},
+				},*/
 		MENU_ITEM
 				{
 				command = EAbout;
@@ -123,6 +123,12 @@ RESOURCE MENU_PANE r_menu
 				{
 				command = EOptions;
 				txt = qtn_options;
+				},
+		MENU_ITEM
+				{
+				cascade = r_menu_logging;
+				command = EPlatformLogging;
+				txt = qtn_logging_options;
 				},		
 		MENU_ITEM
 				{
@@ -182,6 +188,24 @@ RESOURCE MENU_PANE r_menu_navigate
         };
     }
 
+RESOURCE MENU_PANE r_menu_logging
+    {
+    items=
+        {
+        MENU_ITEM 
+        	{ 
+        	command=ELogView; 
+        	txt=qtn_logging_options_form_label_page1; 
+        	},
+ 
+        MENU_ITEM 
+        	{ 
+        	command=ELoggingOptions; 
+        	txt=qtn_logging_options_form_label_page2; 
+        	}
+        };
+    }
+
 // -----------------------------------------------------------------------------
 //
 // About dialog resource.
@@ -201,6 +225,7 @@ RESOURCE DIALOG r_about_query_dialog
 			itemflags = EEikDlgItemNonFocusing;
 			control = AVKON_HEADING
 				{
+				label = "Log View";
 				};
 			},
 		DLG_LINE
@@ -210,6 +235,150 @@ RESOURCE DIALOG r_about_query_dialog
 			control = AVKON_MESSAGE_QUERY
 				{
 				};
+			}
+		};
+	}
+
+// -----------------------------------------------------------------------------
+//
+// Logging options dialog resource.
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE DIALOG r_logging_options_dialog
+    {
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+		{
+		DLG_LINE 
+			{
+			type = EAknCtPopupHeadingPane;
+			id = EAknMessageQueryHeaderId;
+			itemflags = EEikDlgItemNonFocusing;
+			control = AVKON_HEADING
+				{
+					label="Logging Settings";
+				};
+			},
+		DLG_LINE
+		 {
+		 id = EMessageClassesLabel;
+		 type = EEikCtLabel;
+		 control = LABEL
+			{
+			standard_font=EikLabelUnderline;
+			horiz_align=EEikLabelAlignHLeft;
+			txt = "Message classes(* for all):";
+			};
+		 },		
+		DLG_LINE
+			{
+			type = EEikCtEdwin; 
+			id = EMessageClassesId;
+			control=EDWIN
+				{
+				flags = EAknEditorFlagDefault;
+				width = 240;
+				}; 
+			},
+		DLG_LINE
+			{
+			id = EExcludeMessageClassesLabel;
+			type = EEikCtLabel;
+			control = LABEL
+				{
+				standard_font=EikLabelUnderline;
+				horiz_align=EEikLabelAlignHLeft;
+				txt = "Exclude message classes:";
+				};
+			 },		
+		DLG_LINE
+			{
+			type = EEikCtEdwin; 
+			id = EExcludeMessageClassesId;
+			control=EDWIN
+				{
+				flags = EAknEditorFlagDefault;
+				width = 240;
+				}; 
+			},
+		DLG_LINE
+		 {
+		 id = EMessageLoggingLeveleLabel;
+		 type = EEikCtLabel;
+		 control = LABEL
+			{
+			standard_font=EikLabelUnderline;
+			horiz_align=EEikLabelAlignHLeft;
+			txt = "Logging Level:";
+			};
+		 },
+		 DLG_LINE
+			{
+			type = EEikCtListBox;
+			id = ELogLevelChoiceListId;
+			control = LISTBOX
+				{
+				flags = EAknListBoxSelectionList;
+				height=4;
+				array_id = r_array_logging_level;
+				};
+			},
+		DLG_LINE
+			{
+			type = EAknCtMessageQuery;
+			id = EAknMessageQueryContentId;
+			control = AVKON_MESSAGE_QUERY
+				{
+				};
+			}					
+		};
+    }
+
+RESOURCE ARRAY r_log_view_form
+    {
+    items=
+		{
+		DLG_LINE 
+			{
+			type = EAknCtPopupHeadingPane;
+			id = EAknMessageQueryHeaderId;
+			itemflags = EEikDlgItemNonFocusing;
+			control = AVKON_HEADING
+				{
+				};
+			},
+		DLG_LINE
+			{
+			type = EAknCtMessageQuery;
+			id = EAknMessageQueryContentId;
+			control = AVKON_MESSAGE_QUERY
+				{
+				};
+			}
+		};
+	}
+
+RESOURCE ARRAY r_array_logging_level
+	{
+	items =
+		{
+		LBUF
+			{
+			txt = "Trace";
+			},
+		LBUF
+			{
+			txt = "Info";
+			},
+		LBUF
+			{
+			txt = "Warning";
+			},
+		LBUF
+			{
+			txt = "Error";
 			}
 		};
 	}
@@ -276,6 +445,7 @@ RESOURCE DIALOG r_stat_query_dialog
 RESOURCE TBUF32 r_caption_string { buf=qtn_caption_string; }
 RESOURCE TBUF32 r_about_dialog_title { buf=qtn_about_dialog_title; }
 RESOURCE TBUF32 r_stat_dialog_title { buf=qtn_stat_dialog_title; }
+RESOURCE TBUF32 r_log_view_dialog_title { buf=qtn_logging_options_form_label_page1; }
 RESOURCE TBUF r_about_dialog_text { buf=qtn_about_dialog_text; }
 RESOURCE TBUF32 r_update_rhobundle_dialog_title { buf=qtn_update_rhobundle_dialog_title; }
 RESOURCE TBUF r_update_rhobundle_dialog_text { buf=qtn_update_rhobundle_dialog_text; }

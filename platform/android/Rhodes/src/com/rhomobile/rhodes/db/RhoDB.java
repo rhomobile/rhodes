@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.db;
 
+import java.io.File;
+
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.db.ContentValues.BaseContentValues;
 import com.rhomobile.rhodes.db.ContentValues.ClientInfoContentValues;
@@ -8,7 +10,6 @@ import com.rhomobile.rhodes.db.ContentValues.SourcesContentValues;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -16,13 +17,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Environment;
 import android.util.Log;
 
-public class RhoDB {
+public class RhoDB extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 100;//1.0.0
-	private static final String DATABASE_NAME = "rho_syncdb";
+	
+	private static final String DATABASE_NAME = "rho_sync.db";
+	private static final String DATABASE_PATH_EXTERNAL = "/sdcard/rhomobile/rho_sync.db";
+	private static final String DATABASE_PATH_LOCAL = "rho_sync.db";
+	
 	private static final String LOG_TAG = "RhoDB";
 
 	public static final String CLIENT_INFO_TABLE = "client_info";
@@ -32,38 +39,55 @@ public class RhoDB {
 	private SQLiteDatabase db;
 	private Context ctx;
 	private int dbVersion;
+	private String dbPathToUse;
+	private boolean useLocal = false;
 	private boolean newVersion = false;
+	private boolean isInitializing = false;
 	
 	public RhoDB(Context ctx) {
+		super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+		
 		this.ctx = ctx;
 		dbVersion = DATABASE_VERSION;
+		
+		File sdcard = Environment.getExternalStorageDirectory();
+		
+		File destination = new File(sdcard, "rhomobile");
+		if (destination.mkdir()) {
+			Log.d("RhoDB", "Application data directory created");
+		}
+		
+		if (destination.exists()) {
+			useLocal = false;
+			dbPathToUse = DATABASE_PATH_EXTERNAL;
+		} else {
+			useLocal = true;
+			dbPathToUse = DATABASE_PATH_LOCAL;
+		}
 	}
 
 	public void openDb(Integer version) throws SQLException, Exception {
 		try {
-			db = ctx.openOrCreateDatabase(DATABASE_NAME, SQLiteDatabase.OPEN_READWRITE, null);
+			db = this.getWritableDatabase();//ctx.openOrCreateDatabase(DATABASE_NAME, SQLiteDatabase.OPEN_READWRITE, null);
 			
 			if ( version != null )
 				dbVersion = version.intValue();
 			
 			if (dbVersion != db.getVersion()) {
-				db.close();
-				ctx.deleteDatabase(DATABASE_NAME);
-				createDb();
+				onCreate(db);
 			}
 		} catch (Exception e) {
-			createDb();
+			Log.e("RhoDB", e.getMessage());
 		}
 	}
 	
-	private void createDb() throws SQLException, Exception 
+	@Override
+	public void onCreate(SQLiteDatabase db_)
 	{
 		try {
 			newVersion = true;
 			
-			db = ctx.openOrCreateDatabase(DATABASE_NAME,
-					SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY, 
-					null);
+			db = db_;
 			
 			db.beginTransaction();
 			
@@ -84,14 +108,10 @@ public class RhoDB {
 		catch (SQLException e) {
 			Log.e(LOG_TAG, e.getMessage());
 			db = null;
-			
-			throw e;
 		}
 		catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage());
 			db = null;
-			
-			throw e;
 		}
 		finally {
 			if ( db != null )
@@ -99,6 +119,40 @@ public class RhoDB {
 		}
 	}
 	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.w("RhoDB", "Upgrading database from version " + oldVersion + " to " + newVersion
+				+ ", which will destroy all old data");
+		
+		onCreate(db);
+	}
+	
+	@Override
+	public synchronized SQLiteDatabase getWritableDatabase() {
+		if(useLocal) {
+			return super.getWritableDatabase();
+		}
+	
+		if (db != null && db.isOpen() && !db.isReadOnly()) {
+			return db; // The database is already open for business
+		}
+
+		if (isInitializing) {
+			throw new IllegalStateException("getWritableDatabase called recursively");
+		}
+
+		SQLiteDatabase mDatabase = null;
+	
+		try {
+			isInitializing = true;
+			mDatabase = SQLiteDatabase.openOrCreateDatabase(dbPathToUse, null);
+			onOpen(mDatabase);
+			return mDatabase;
+		} finally {
+			isInitializing = false;
+		}
+	}	
+		
 	public boolean isNewVersion() {
 		return newVersion;
 	}
@@ -244,6 +298,9 @@ public class RhoDB {
 			db.execSQL(sql);
 			
 			db.setTransactionSuccessful();
+		}
+		catch ( Exception e ){
+			Log.e("RhoDB", e.getMessage());
 		}
 		finally {
 			endTransaction();

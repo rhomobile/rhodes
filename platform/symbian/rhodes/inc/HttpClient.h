@@ -71,7 +71,7 @@ public:
 	/**
 	 * Destructor.
 	 */
-	~CHttpClient();
+	virtual ~CHttpClient();
 
 	enum THttpClientPanics
 		{
