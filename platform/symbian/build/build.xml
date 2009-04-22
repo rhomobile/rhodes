@@ -182,7 +182,9 @@
     	<echo message="Cleaning rho apps dir..."/>
         <delete dir="${apps.root}"/>
         <mkdir dir="${apps.root}"/>
-        
+
+        <echo message="Delete rhodes.exe..."/>
+        <delete file="${epocroot}\epoc32\release\winscw\udeb\rhodes.exe"/>
     </target>
     
     <!--
