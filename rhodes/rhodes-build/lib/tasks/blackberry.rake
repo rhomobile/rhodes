@@ -115,6 +115,9 @@ namespace "device" do
 
     Jake.unjar(File.join($targetdir, "rhodesApp.cod"), $deploydir)
 
+    rm_rf $targetdir
+    mv $deploydir, $targetdir
+
 
   end
 end
@@ -178,7 +181,7 @@ namespace "run" do
       args << "-c"
       args << "-a"
       args << "-p"
-      args << '"' + config["build"]["bbsignpwd"] +'"'
+      args << '"' + $config["env"]["bbsignpwd"] +'"'
       args << "-r"
       args << $targetdir
   
