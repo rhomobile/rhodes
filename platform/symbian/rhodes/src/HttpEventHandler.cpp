@@ -135,6 +135,12 @@ void CHttpEventHandler::MHFRunL(RHTTPTransaction aTransaction, const THTTPEvent&
 			}
 			else
 			{
+				if ( resp.HasBody() ){
+					iResBodyBuffer = HBufC8::NewMaxL(1);
+					iResBodyBufferPtr.Set(iResBodyBuffer->Des());
+					iResBodyBufferPtr[0] = 0;
+				}
+					
 				if (iVerbose)
 					iTest->Console()->Printf(_L("Response status is bad\n"));
 			}
@@ -446,7 +452,8 @@ char* CHttpEventHandler::GetResponse()
 		str = (char*)malloc(size + 1);
 	    Mem::Copy(str, iResBodyBuffer->Ptr(), size);
 	    str[size] = '\0';
-	}
+	}else if ( iResBodyBuffer )
+		str = (char*)calloc(1,1);
 	
 	if ( iResBodyBuffer )
 		delete iResBodyBuffer;
