@@ -160,7 +160,7 @@ int insert_into_database(pSyncObject ref) {
 		sqlite3_bind_text(insert_statement, 8, ref->_type, -1, SQLITE_TRANSIENT);
 
 		success = sqlite3_step(insert_statement);
-		if (success == SQLITE_ERROR) {
+		if (success != SQLITE_OK && success != SQLITE_DONE) {
 			RAWLOG_ERROR1("Failed to insert into the database with message '%s'.", sqlite3_errmsg(ref->_database));
             finish_db_statement(&insert_statement);
 			unlock_sync_mutex();	
@@ -181,7 +181,7 @@ int delete_from_database(pSyncObject ref) {
 						 &delete_statement);
 	sqlite3_bind_int(delete_statement, 1, ref->_primary_key);
 	success = sqlite3_step(delete_statement);
-	if (success != SQLITE_DONE) {
+	if (success != SQLITE_OK && success != SQLITE_DONE) {
 		RAWLOG_ERROR1("Failed to delete from database with message '%s'.", sqlite3_errmsg(ref->_database));
         finish_db_statement(&delete_statement);
 		unlock_sync_mutex();	
@@ -204,7 +204,7 @@ void delete_from_database_bytoken( int srcID, sqlite_uint64 token ) {
     sqlite3_bind_int64(delete_bytoken_statement, 2, token);
 
 	success = sqlite3_step(delete_bytoken_statement);
-	if (success != SQLITE_DONE) {
+	if (success != SQLITE_OK && success != SQLITE_DONE) {
 		RAWLOG_ERROR1("Failed to delete from database with message '%s'.", sqlite3_errmsg((sqlite3 *)get_database()));
 	}
 	finish_db_statement(&delete_bytoken_statement);

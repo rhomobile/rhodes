@@ -119,7 +119,7 @@ void CHttpServer::ConstructL()
 		//KMinHeapSize, 256*KMinHeapSize
 		TInt res = thread.Create(threadName, ThreadEntryPoint, 
 				//0x1000000, 0x5000, 0x1000000,
-				80000, 0x100000, 0x1000000,
+				80000, 0x5000, 0x1000000,
 				this);
 		
 		if ( res != KErrNone )
