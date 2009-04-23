@@ -185,7 +185,6 @@
 
         <echo message="Delete rhodes.exe..."/>
         <delete file="${epocroot}\epoc32\release\winscw\udeb\rhodes.exe"/>
-
     </target>
     
     <!--
