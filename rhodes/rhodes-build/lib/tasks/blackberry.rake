@@ -138,6 +138,7 @@ namespace "run" do
       args << "/data-port=0x4d44"
       args << "/data-port=0x4d4e"
       args << "/pin=0x2100000A"
+      args << "/fs-sdcard"
       args << "\"/app-param=JvmDebugFile:"+ File.join($basedir,'applog.txt') +'"'
   
       Thread.new { Jake.run(command,args,jde + "/simulator",true) }
