@@ -104,7 +104,7 @@ public class SyncUtil {
 	 * @param params
 	 * @return
 	 */
-	public static SyncFetchResult fetchRemoteChanges(SyncSource source, String client_id, String params) {
+	public static SyncFetchResult fetchRemoteChanges(SyncSource source, String client_id, String params,SyncThread thread) {
 		int success = 0, deleted = 0, inserted = 0;
 		long start = 0, duration = 0;
 		String data = null;
@@ -141,17 +141,21 @@ public class SyncUtil {
 			}
 			
 			if (data != null) {
+		        LOG.INFO("Start parsing data." );
+				
 				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
+				int count = list.size();
+				
+		        LOG.INFO("Parsed " + count + " records from sync source..." );
 				
 				processToken(header._token, source);
 				
-				int count = list.size();
 				if ( nTotal < 0 )
 					nTotal = 0;
 				nTotal += count;
 				if (count > 0) {
 
-					for (int i = 0; i < count; i++) {
+					for (int i = 0; !thread.isStop() && i < count; i++) {
 						SyncObject syncObj = ((SyncObject) list.get(i)); 
 						String dbOp = syncObj.getDbOperation();
 						if (dbOp != null) {
@@ -170,12 +174,16 @@ public class SyncUtil {
 				}
 				success = 1;
 			} else {
+		        LOG.INFO("Recieved null data from sync server. Try again :" + nTry );
+				
 				nTry++;
 			}
-		} while (header._count != 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT && repeat);
+		} while (!thread.isStop() && header._count != 0 && nTry < SyncConstants.MAX_SYNC_TRY_COUNT && repeat);
 
 		duration = (System.currentTimeMillis() - start) / 1000L;
 		updateSourceSyncStatus(source, inserted, deleted, duration, success);
+
+        LOG.INFO("Fetch finish for source:" + source.get_sourceUrl() );
 		
 		return new SyncFetchResult(nTotal,header._count == -1);
 	}
@@ -489,7 +497,7 @@ public class SyncUtil {
 					LOG.ERROR("Remote update failed, not continuing with sync...");
 				} else {
 					String askParams = SyncUtil.getParamsForSource(current);
-					syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams);
+					syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams, thread);
 					LOG.INFO("Successfully processed " + syncResult.available
 							+ " records...");
 					if (SyncConstants.DEBUG) {
