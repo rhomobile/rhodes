@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes.camera;
 
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import android.hardware.Camera;
@@ -20,7 +21,13 @@ public class ImageCaptureCallback implements PictureCallback {
 		try {
 			Log.v(getClass().getSimpleName(), "onPictureTaken=" + data
 					+ " length = " + data.length);
-			filoutputStream.write(data);
+			
+			FileOutputStream buf = new FileOutputStream(filePath);
+            buf.write(data);
+            buf.flush();
+            buf.close();
+            
+			//filoutputStream.write(data);
 			filoutputStream.flush();
 			filoutputStream.close();
 			
