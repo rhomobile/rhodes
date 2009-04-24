@@ -158,7 +158,7 @@ CAPABILITY        LocalServices NetworkServices ReadUserData UserEnvironment Wri
 #endif
 
 EPOCSTACKSIZE     80000
-EPOCHEAPSIZE      0x800000 0x1900000
+EPOCHEAPSIZE      0x100000 0x2400000
 
 // End of File
 SOURCEPATH ..\src\phonebook

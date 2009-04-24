@@ -203,11 +203,13 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
     //pause_sync(!fActive);
-
+/* TBD: Commented this out because it was called before http server started 
+        We need to fix this properly
     if ( fActive )
         CHttpServer::Instance()->ResumeThread();
     else
         CHttpServer::Instance()->FreezeThread();
+*/
 #endif
 
     return 0;

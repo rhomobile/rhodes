@@ -33,7 +33,11 @@
 #include "Utils.h"
 
 #if !defined(_WIN32_WCE) && !defined(WIN32) 
-#define _atoi64 atoll
+	#define _atoi64 atoll
+#endif
+
+#if defined(__SYMBIAN32__)
+	long long int my_atoll(const char *instr);
 #endif
 
 int parse_json_list(pSyncObject *list, char *input, int size, struct json_object** json_to_free, SyncHeader* header) {
@@ -70,7 +74,11 @@ int parse_json_list(pSyncObject *list, char *input, int size, struct json_object
             if (strcmp(key, "count") == 0) {
                 header->_count = atoi( json_object_get_string(val) );
             }else if (strcmp(key, "token") == 0) {
-                header->_token = _atoi64(json_object_get_string(val));
+				#if defined(__SYMBIAN32__)
+					header->_token = my_atoll(json_object_get_string(val));
+				#else
+					header->_token = _atoi64(json_object_get_string(val));
+				#endif
             }else if (strcmp(key, "object_value") == 0) {
 				/* Initialize a new SyncObject for each object_value found */
 				current_parse_object = (pSyncObject)SyncObjectCreate();
@@ -157,3 +165,21 @@ char *parse_client_id(char *input) {
 
 	return c_id;
 }
+
+#if defined(__SYMBIAN32__)
+/**
+ * This function was created to parse long long positive values (tokens) from RhoSync server
+ */
+long long int my_atoll(const char *instr)
+{
+  long long int retval;
+  int i;
+
+  retval = 0;
+  for (; *instr; instr++) {
+    retval = 10*retval + (*instr - '0');
+  }
+  return retval;
+}
+
+#endif
