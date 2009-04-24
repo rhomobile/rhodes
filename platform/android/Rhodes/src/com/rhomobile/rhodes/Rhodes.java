@@ -27,6 +27,7 @@ import com.rho.RhoRuby;
 import com.rho.sync.SyncEngine;
 import com.rho.sync.SyncNotifications;
 import com.rhomobile.rhodes.http.HttpHeader;
+import com.rhomobile.rhodes.http.HttpServer;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.xruby.runtime.builtin.IRubyPlatformUtils;
 import com.xruby.runtime.builtin.RubyPlatformUtils;
@@ -51,7 +52,7 @@ import android.webkit.WebViewClient;
 public class Rhodes extends Activity implements IRubyPlatformUtils {
 
 	private static final String LOG_TAG = "Rhodes";
-	private static final String HOME_URL = "http://127.0.0.1:8080";
+	private static String HOME_URL = "http://127.0.0.1:8080";
 
 	public static final int HTTP_SERVER_STARTED = 1;
 
@@ -128,6 +129,11 @@ public class Rhodes extends Activity implements IRubyPlatformUtils {
 		Log.i(LOG_TAG, "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
 
+		HttpServer.DEFAULT_PORT = HttpServer.findFreePort(); 
+		
+		HOME_URL = "http://127.0.0.1:" + HttpServer.DEFAULT_PORT.toString();
+		startPage = HOME_URL + "/";
+				
 		RubyPlatformUtils.setRubyPlatformUtilsImpl(this);
 		NetworkAccess.setNetworkAccessImpl(new NetworkAccessImpl(
 				getBaseContext()));

@@ -316,12 +316,12 @@ public class HttpRequest extends HttpHeader {
 						} catch (Exception e) {
 							Log.w(this.getClass().getSimpleName(), e
 									.getMessage());
-							serverPort = 80;
+							serverPort = HttpServer.DEFAULT_PORT;
 						}
 					}
 					serverName = serverName.substring(0, colon);
 				} else
-					serverPort = 80;
+					serverPort = HttpServer.DEFAULT_PORT;
 			} else if (address != null && address.getInetAddress() != null)
 				serverName = address.getInetAddress().getHostName();
 

@@ -14,7 +14,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".camera.FileList"></activity>
-        <activity android:name=".camera.ImageCapture"></activity>
+        <activity android:screenOrientation="landscape" android:name=".camera.ImageCapture"></activity>
         <service android:name=".RhoHttpService" />
         <service android:name=".RhoSyncService" />
     </application>
