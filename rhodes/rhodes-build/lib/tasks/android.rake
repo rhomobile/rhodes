@@ -103,10 +103,6 @@ namespace "bundle" do
     puts "Packaging Assets and Jars"
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
 
-    apkfile = File.join($targetdir,"Rhodes-debug.apk")    
-
-    puts "Building APK file"
-    puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
 
     chdir $basedir
   end
@@ -115,6 +111,15 @@ end
 namespace "device" do
   desc "Create downloadable app for android"
   task :android => "bundle:android" do
+      chdir $bindir
+
+      dexfile = File.join($bindir,"classes.dex")
+      apkfile = File.join($targetdir,"Rhodes.apk")
+      resourcepkg = File.join($bindir,"rhodes.ap_")
+
+      puts "Building APK file"
+      puts `#{$apkbuilder} "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
+      chdir $basedir
   end
 end
 
@@ -122,6 +127,17 @@ namespace "run" do
   namespace "android" do
     desc "Run app in Android Sim"
     task :app  => ["bundle:android"] do
+
+      chdir $bindir
+
+      dexfile = File.join($bindir,"classes.dex")
+      apkfile = File.join($targetdir,"Rhodes-debug.apk")
+      resourcepkg = File.join($bindir,"rhodes.ap_")
+
+      puts "Building APK file"
+      puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
+      chdir $basedir
+
       src = File.join($prebuilt,"android","rhosdcard.7z")
       seven = File.join($res,"7z.exe")
 
