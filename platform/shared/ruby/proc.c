@@ -1917,7 +1917,7 @@ Init_Binding(void)
     rb_undef_method(CLASS_OF(rb_cBinding), "new");
     rb_define_method(rb_cBinding, "clone", binding_clone, 0);
     rb_define_method(rb_cBinding, "dup", binding_dup, 0);
-    rb_define_method(rb_cBinding, "eval", bind_eval, -1);
+    //rb_define_method(rb_cBinding, "eval", bind_eval, -1);
     rb_define_global_function("binding", rb_f_binding, 0);
 }
 
