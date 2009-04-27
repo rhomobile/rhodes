@@ -17,6 +17,7 @@ extern const char* RhoGetRootPath();
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
 VALUE RhoPreparePath(VALUE path);
+VALUE rb_iseq_eval(VALUE iseqval);
 
 VALUE __rhoGetCurrentDir(void)
 {
@@ -270,7 +271,8 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
         seq = loadISeqFromFile(path);
 
-        *result = rb_funcall(seq, rb_intern("eval"), 0 );
+        //*result = rb_funcall(seq, rb_intern("eval"), 0 );
+        *result = rb_iseq_eval(seq);
 
         return Qtrue;
     }

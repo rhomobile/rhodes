@@ -1340,7 +1340,7 @@ Init_ISeq(void)
     rb_define_method(rb_cISeq, "disasm", ruby_iseq_disasm, 0);
     rb_define_method(rb_cISeq, "disassemble", ruby_iseq_disasm, 0);
     rb_define_method(rb_cISeq, "to_a", iseq_to_a, 0);
-    rb_define_method(rb_cISeq, "eval", iseq_eval, 0);
+    //rb_define_method(rb_cISeq, "eval", iseq_eval, 0);
 
     /* disable this feature because there is no verifier. */
     //RHO	
