@@ -550,6 +550,7 @@ int set_db_session(const char* source_url, const char *session) {
  * (deletes all object_values and client_info rows)
  */
 void reset_sync_db() {
+
 	lock_sync_mutex();	
 	RAWLOG_INFO("Resetting sync db...");
 	
@@ -575,5 +576,17 @@ void reset_sync_db() {
 	sqlite3_step(update_all_tokens_db_statement); 
 	finish_db_statement(&update_all_tokens_db_statement);
 
+    {
+        sqlite3_stmt *vacuum_statement = NULL;
+
+        RAWLOG_INFO("Vacuum database...");
+	    prepare_db_statement("VACUUM",
+						     (sqlite3 *)get_database(),
+						     &vacuum_statement);
+        sqlite3_step(vacuum_statement); 
+        sqlite3_finalize(vacuum_statement);
+    }
+
 	unlock_sync_mutex();
 }
+
