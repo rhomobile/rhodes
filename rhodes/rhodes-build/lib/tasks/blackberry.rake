@@ -115,6 +115,9 @@ namespace "device" do
 
     Jake.unjar(File.join($targetdir, "rhodesApp.cod"), $deploydir)
 
+    rm_rf $targetdir
+    mv $deploydir, $targetdir
+
 
   end
 end
@@ -135,6 +138,7 @@ namespace "run" do
       args << "/data-port=0x4d44"
       args << "/data-port=0x4d4e"
       args << "/pin=0x2100000A"
+      args << "/fs-sdcard"
       args << "\"/app-param=JvmDebugFile:"+ File.join($basedir,'applog.txt') +'"'
   
       Thread.new { Jake.run(command,args,jde + "/simulator",true) }
@@ -178,7 +182,7 @@ namespace "run" do
       args << "-c"
       args << "-a"
       args << "-p"
-      args << '"' + config["build"]["bbsignpwd"] +'"'
+      args << '"' + $config["env"]["bbsignpwd"] +'"'
       args << "-r"
       args << $targetdir
   

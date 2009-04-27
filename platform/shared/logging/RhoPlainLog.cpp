@@ -4,7 +4,7 @@ extern "C"{
 const char* __rawDefaultCategory = "";
 
 static rho::general::CMutex g_plainBufferLock;
-static char g_plainBuffer[400];
+static char g_plainBuffer[2000];
 
 void rhoPlainLogArg(const char* file, int line, LogSeverity severity, const char* szCategory,
                     const char* format, va_list ap ){

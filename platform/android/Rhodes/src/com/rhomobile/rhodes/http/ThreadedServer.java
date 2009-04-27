@@ -222,11 +222,13 @@ abstract public class ThreadedServer implements Runnable {
 
 	protected ServerSocket newServerSocket(InetAddrPort address,
 			int acceptQueueSize) throws java.io.IOException {
-		if (address == null)
-			return new ServerSocket(0, acceptQueueSize);
+		//if (address == null)
+		//	return new ServerSocket(0, acceptQueueSize);
 
-		return new ServerSocket(address.getPort(), acceptQueueSize, address
-				.getInetAddress());
+		return new ServerSocket(HttpServer.DEFAULT_PORT, acceptQueueSize);
+		
+		//return new ServerSocket(address.getPort(), acceptQueueSize, address
+		//		.getInetAddress());
 	}
 
 	private synchronized void newThread() {

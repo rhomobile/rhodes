@@ -26,7 +26,8 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
-	//private Uri target = Media.EXTERNAL_CONTENT_URI;
+
+	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -70,14 +71,19 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
 			try {
 				String filename = "Image_" + timeStampFormat.format(new Date());
-				ContentValues values = new ContentValues();
+				ContentValues values = new ContentValues(5);
 				values.put(Media.TITLE, filename);
+				values.put(Media.DISPLAY_NAME, filename);
+				values.put(Media.DATE_TAKEN, new Date().getTime());
+				values.put(Media.MIME_TYPE, "image/jpeg");
 				values.put(Media.DESCRIPTION, "Image capture by camera");
+
 				Uri uri = getContentResolver().insert(
 						Media.EXTERNAL_CONTENT_URI, values);
 				// String filename = timeStampFormat.format(new Date());
 				iccb = new ImageCaptureCallback(getContentResolver()
-						.openOutputStream(uri), FileList.BASE_CAMERA_DIR + filename);
+						.openOutputStream(uri), FileList.BASE_CAMERA_DIR
+						+ filename  +".jpg");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				Log.e(getClass().getSimpleName(), ex.getMessage(), ex);

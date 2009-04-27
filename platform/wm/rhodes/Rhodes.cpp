@@ -6,6 +6,7 @@
 #include "ServerHost.h"
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
+extern char* canonicalizeURL(char* path);
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
@@ -86,9 +87,14 @@ public :
 	}
 
 	void DoViewNavigate(char* url) {
-		LPTSTR wcurl = wce_mbtowc(url);
-		m_appWindow.Navigate2(wcurl);
-		free(wcurl);
+		char* canonical_url = canonicalizeURL(url);
+		if (canonical_url) {
+			::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_NAVIGATE,(LPARAM)wce_mbtowc(canonical_url));
+			free(canonical_url);
+		}
+		//LPTSTR wcurl = wce_mbtowc(url);
+		//m_appWindow.Navigate2(wcurl);
+		//free(wcurl);
 	}
 
 	char* GetCurrentLocation() {
