@@ -78,11 +78,15 @@ void CLogFileSink::loadLogPosition(){
         return;
 
     String strPos;
+    m_pPosFile->movePosToStart();
     m_pPosFile->readString(strPos);
     if ( strPos.length() == 0 )
         return;
 
     m_nCirclePos = atoi(strPos.c_str());
+    if ( m_nCirclePos < 0 || m_nCirclePos > m_nFileLogSize )
+    	m_nCirclePos = -1;
+    
     if ( m_nCirclePos >= 0 )
         m_pFile->setPosTo( m_nCirclePos );
 }
@@ -91,10 +95,16 @@ void CLogFileSink::saveLogPosition(){
     if ( m_nCirclePos < 0 )
         return;
 
+    if ( m_nCirclePos > getLogConf().getMaxLogFileSize() )
+    	return;
+    
     String strPos = general::convertToStringA(m_nCirclePos);
+    for( int i = strPos.length(); i < 10; i++ )
+    	strPos += ' ';
+    
+    m_pPosFile->movePosToStart();
     m_pPosFile->write( strPos.c_str(), strPos.length() );
     m_pPosFile->flush();
-    m_pPosFile->movePosToStart();
 }
 
 void CLogOutputSink::writeLogMessage( String& strMsg )
@@ -103,8 +113,14 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
         strMsg.erase(strMsg.length()-2,1);
 
 #if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
-        ::OutputDebugStringA(strMsg.c_str());
-        printf(strMsg.c_str());
+		const char* szMsg = strMsg.c_str(); 
+		::OutputDebugStringA(strMsg.c_str());
+//        printf(strMsg.c_str());
+        for( int n = 0; n < strMsg.length(); n+= 100 )
+            fwrite(strMsg.c_str()+n, 1, min(100,strMsg.length()-n) , stdout );
+
+        fflush(stdout);
+        
 #elif defined( OS_SYMBIAN )
         RDebug::Printf(strMsg.c_str());
 #elif defined( OS_MACOSX )

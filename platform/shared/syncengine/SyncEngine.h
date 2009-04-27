@@ -63,11 +63,12 @@ void clear_client_id();
 void pause_sync( int nPause );
 
 sqlite3 *get_database();
-	
+
 /* Main entry point to the sync engine */
 void start_sync_engine(sqlite3 *db);
 void stop_sync_engine();
 void shutdown_database();
+int isContinueSync();
 
 int logged_in();
 int has_network_impl();

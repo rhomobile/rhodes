@@ -391,11 +391,13 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 
   do {
 	  // Don't make a connection attempt if there is no session
-    session = get_db_session(load_source_url());
+      session = get_db_session(load_source_url());
 	  if ( bCheckSession && !session && !strstr(url, "clientcreate") ) {
-	    break;
+          cstr = (char*)calloc(1,1);
+	      break;
 	  }
-	  if (session) free(session);
+	  if (session) 
+          free(session);
 
     if( !CSyncEngine::SetupInternetConnection(urlw) ) {
       break;
@@ -457,6 +459,8 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
       wchar_t res[10];
       DWORD dwLen = 10;
       DWORD nIndex = 0;
+      cstr = (char*)calloc(1,1); //We get response, but it may be error, so init it to empty string
+
       bool bOk = false;
       if( HttpQueryInfo(hRequest,HTTP_QUERY_STATUS_CODE,res,&dwLen,&nIndex) ){
         if ( wcscmp(res,L"200") == 0 )

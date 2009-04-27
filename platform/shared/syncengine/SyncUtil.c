@@ -23,6 +23,7 @@ extern char *get_database();
 extern char *get_client_id();
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
+extern int isContinueSync();
 
 #if defined(_WIN32_WCE) || defined(WIN32)
 extern void delete_winmo_session(const char *url_string);
@@ -192,9 +193,9 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 #endif
                 strcat(url_string,szToken);
             }
-            
+
             if ( src->_token == 0 )
-                processToken( 1, src );
+                processToken( 1, src );            
 
             header._count = -1;
             header._token = 0;
@@ -212,8 +213,8 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 		        if(available > 0) {
 
                     //char *zErr;
-                    //int nRes = sqlite3_exec(database, "BEGIN;",0,0,&zErr);
-			        for(j = 0; j < available; j++) {
+                    //int nRes = sqlite3_exec(database, "BEGIN IMMEDIATE;",0,0,&zErr);
+			        for(j = 0; isContinueSync() && j < available; j++) {
 				        list[j]->_database = database;
 				        type = list[j]->_db_operation;
 				        if (type) {
@@ -246,9 +247,14 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	            free(json_string);
 
 	        } else {
-                nTry++;
+                if ( !json_string )
+                    nTry++;
+                else{
+                    free(json_string);
+                    break;// We get some error response from server
+                }
 	        }
-        }while( header._count != 0 && nTry < MAX_SYNC_TRY_COUNT && repeat);
+        }while( isContinueSync() && header._count != 0 && nTry < MAX_SYNC_TRY_COUNT && repeat);
 
         free(list);
     }
@@ -257,7 +263,7 @@ int fetch_remote_changes(sqlite3 *database, char *client_id, pSource src, char *
 	duration = time(NULL) - start;
 	update_source_sync_status((sqlite3 *)get_database(), 
 							  src, size_inserted, size_deleted, duration, success);
-    
+
     *bStopSync = header._count == -1;
 	return nTotal;
 }
@@ -544,6 +550,7 @@ int set_db_session(const char* source_url, const char *session) {
  * (deletes all object_values and client_info rows)
  */
 void reset_sync_db() {
+
 	lock_sync_mutex();	
 	RAWLOG_INFO("Resetting sync db...");
 	
@@ -565,9 +572,21 @@ void reset_sync_db() {
 	finish_db_statement(&del_all_client_info_statement);
 
 	RAWLOG_INFO("Clear tokens in source table...");
-	sqlite3_bind_int64(update_all_tokens_db_statement, 1, 0);
+    sqlite3_bind_int64(update_all_tokens_db_statement, 1, 0);
 	sqlite3_step(update_all_tokens_db_statement); 
 	finish_db_statement(&update_all_tokens_db_statement);
 
+    {
+        sqlite3_stmt *vacuum_statement = NULL;
+
+        RAWLOG_INFO("Vacuum database...");
+	    prepare_db_statement("VACUUM",
+						     (sqlite3 *)get_database(),
+						     &vacuum_statement);
+        sqlite3_step(vacuum_statement); 
+        sqlite3_finalize(vacuum_statement);
+    }
+
 	unlock_sync_mutex();
 }
+

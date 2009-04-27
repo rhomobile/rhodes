@@ -85,11 +85,15 @@ public class SyncManager {
 				return null;
 			
 			long len = connection.getLength();
+			LOG.INFO("fetchRemoteData data size:" + len );
 	
 //			if ( len > 1024*100)
 //				return null;
 			
 			buffer = readFully(is);
+			
+			LOG.INFO("fetchRemoteData data readFully.");
+			
 		}finally{
 			if ( is != null )
 				is.close();
@@ -109,11 +113,14 @@ public class SyncManager {
 		
 		closeConnection();
 		connection = NetworkAccess.connect(url);
+		
 		if ( session != null &&  session.length() > 0 )
 			connection.setRequestProperty("Cookie", session);
 		
 		is = connection.openInputStream();
 		code = connection.getResponseCode();
+
+		LOG.INFO("getResponseCode : " + code);
 		
 		if (code != HttpConnection.HTTP_OK) 
 		{
