@@ -301,6 +301,16 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     return 0;
 }
 
+LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+	LPTSTR wcurl = (LPTSTR)hWndCtl;
+	if (wcurl) {
+		Navigate2(wcurl);
+		free(wcurl);
+	}
+    return 0;
+}
+
 LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_spIWebBrowser2->Stop();

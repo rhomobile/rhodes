@@ -332,8 +332,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Windows Mobile 6 Standard SDK (ARMV4I)"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -356,11 +356,12 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\sqlite3;..\..\shared"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -840,8 +841,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Windows Mobile 6 Standard SDK (ARMV4I)"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -864,10 +865,11 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\sqlite3;..\..\shared"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="3"
 			/>
 			<Tool

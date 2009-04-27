@@ -54,6 +54,7 @@ public:
         COMMAND_ID_HANDLER(IDM_HOME, OnHomeCommand)
         COMMAND_ID_HANDLER(IDM_OPENURL, OnOpenURLCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
+		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
         COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
         COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
@@ -81,6 +82,7 @@ private:
     LRESULT OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
