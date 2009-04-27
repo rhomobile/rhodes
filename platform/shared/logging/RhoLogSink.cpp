@@ -107,6 +107,8 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
         printf(strMsg.c_str());
 #elif defined( OS_SYMBIAN )
         RDebug::Printf(strMsg.c_str());
+#elif defined( OS_MACOSX )
+		printf(strMsg.c_str());
 #else
         //printf(strMsg.c_str());
         for( int n = 0; n < strMsg.length(); n+= 100 )
