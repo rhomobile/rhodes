@@ -68,6 +68,8 @@
 
 #include "logging/RhoLog.h"
 
+#include "ports_mngt.h"
+
 _LIT(KTitle, "Select image file");
 
 CRhodesAppView* g_RhodesAppView = NULL;
@@ -78,8 +80,6 @@ const TInt KErrorMsgYPos = 50;
 const TInt KErrorMaxWidth = 160;   
 const TInt KRedColor = 35; 
 const TInt KWhiteColor = 0;
-
-#define HOME_URL "http://127.0.0.1:8080"
 
 extern "C" {
 	void perform_notification(char* callback, char* params);
@@ -307,9 +307,9 @@ void CRhodesAppView::InitStartPage()
 	} else if ( (*start_page!='/')&&(*start_page!='\\') ) {
 		slash = "/";
 	}
-	int len = strlen("http://127.0.0.1:8080")+strlen(slash)+strlen(start_page);
+	int len = strlen(get_home_url())+strlen(slash)+strlen(start_page);
 	char* sp = (char*) malloc(len+1);
-	sprintf(sp,"http://127.0.0.1:8080%s%s",slash,start_page);
+	sprintf(sp,"%s%s%s",get_home_url(),slash,start_page);
 
 	RFs session;
 	User::LeaveIfError(session.Connect());
@@ -322,9 +322,6 @@ void CRhodesAppView::InitStartPage()
   	int state = CCnvCharacterSetConverter::KStateDefault;
   	converter->ConvertToUnicode(iStartPage, ptr, state);
 	
-//  	_LIT(KHomePage, "http://127.0.0.1:8080/");
-//  	iStartPage = KHomePage;
-  	
   	session.Close();
   	
 	free(sp);
@@ -339,9 +336,9 @@ void CRhodesAppView::InitOptions()
 		} else if ( (*options_page!='/')&&(*options_page!='\\') ) {
 			slash = "/";
 		}
-		int len = strlen("http://127.0.0.1:8080")+strlen(slash)+strlen(options_page);
+		int len = strlen(get_home_url())+strlen(slash)+strlen(options_page);
 		char* sp = (char*) malloc(len+1);
-		sprintf(sp,"http://127.0.0.1:8080%s%s",slash,options_page);
+		sprintf(sp,"%s%s%s",get_home_url(),slash,options_page);
 
 		RFs session;
 		User::LeaveIfError(session.Connect());
@@ -525,9 +522,7 @@ void CRhodesAppView::HandleCommandL(TInt aCommand)
         	{
         		if (iBrCtlInterface)
         			{
-						//_LIT(KHomePage, "http://127.0.0.1:8080/");
         				iBrCtlInterface->LoadUrlL(iStartPage);
-        				//iBrCtlInterface->ClearCache();
         			}
         		break;
         	}
@@ -795,7 +790,7 @@ void CRhodesAppView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 char* CRhodesAppView::CanonicalizeURL(const char* path)
 	{
 		if (!path) {
-			return strdup(HOME_URL);
+			return strdup(get_home_url());
 		}
 
 		if ( strncmp("http://",path,7)==0 ) {
@@ -807,9 +802,9 @@ char* CRhodesAppView::CanonicalizeURL(const char* path)
 			slash = "/";
 		}
 
-		int len = strlen(HOME_URL)+strlen(slash)+strlen(path);
+		int len = strlen(get_home_url())+strlen(slash)+strlen(path);
 		char* url = (char*) malloc(len+1);
-		sprintf(url,"%s%s%s",HOME_URL,slash,path);
+		sprintf(url,"%s%s%s",get_home_url(),slash,path);
 		
 		return url;
 	}

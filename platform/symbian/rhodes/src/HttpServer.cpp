@@ -41,6 +41,8 @@
 
 #include "stat/stat.h"
 
+#include "ports_mngt.h"
+
 CHttpServer* g_http_server = NULL; 
 
 extern "C" 
@@ -48,6 +50,8 @@ extern "C"
 	struct shttpd_ctx *shttpd_init(int argc, char *argv[]);
 	void shttpd_fini(struct shttpd_ctx *);
 	void shttpd_poll(struct shttpd_ctx *, int milliseconds);
+	int	set_ports(struct shttpd_ctx *ctx, const char *p);
+
 	int shttpd_set_option(struct shttpd_ctx *, const char *opt, const char *val);
 	const char* shttpd_get_index_names(struct shttpd_ctx *ctx);
 	
@@ -244,6 +248,8 @@ void CHttpServer::InitHttpServer()
 	    
 	    sprintf(httproot,"%sapps",rootpath);
 	    shttpd_set_option(ctx, "root",httproot);
+	    
+	    set_ports(ctx, get_free_listening_port());
 	    //
 	    //shttpd_register_uri(ctx, "/system/geolocation", &show_geolocation, NULL);
 	  	
