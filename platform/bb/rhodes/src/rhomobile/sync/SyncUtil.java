@@ -907,7 +907,16 @@ public class SyncUtil {
 	}
 
 	public static void resetSyncDb() {
-		adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
+		
+		LOG.INFO("Deleting all objects from db...");
 		adapter.deleteAllFromTable(createString(SyncConstants.OBJECTS_TABLE));
+
+		LOG.INFO("Deleting client info from db...");
+		adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
+		
+		LOG.INFO("Clear tokens in source table...");
+		RubyHash values = SyncUtil.createHash();
+		values.add(PerstLiteAdapter.TOKEN, createString(""));
+		adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, null);
 	}
 }

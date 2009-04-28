@@ -321,10 +321,17 @@ void setup_delete_db_callback(sqlite3 * db)
 }
 */
 
+static int onDBBusy(void* data,int nTry){
+    RAWLOG_ERROR("SQLITE_BUSY");
+    return 0;
+}
+
 void setup_delete_db_callback(sqlite3 * db)
 {
     sqlite3_create_function( db, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
 	SyncBlob_DeleteCallback, 0, 0 );
+
+    sqlite3_busy_handler(db, onDBBusy, 0 );
 }
 
 #if !defined(_WIN32_WCE) && !defined(WIN32)
