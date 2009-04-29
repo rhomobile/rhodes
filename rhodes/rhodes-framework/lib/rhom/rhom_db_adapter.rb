@@ -122,8 +122,7 @@ module Rhom
           if params and params['distinct']
             query = "select distinct #{columns} from #{table} where #{where_str(condition)}"
           elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{where_str(condition)} \
-                     order by #{params['order by']}"
+            query = "select #{columns} from #{table} where #{where_str(condition)} order by #{params['order by']}"
           else
             query = "select #{columns} from #{table} where #{where_str(condition)}"
           end
@@ -194,3 +193,7 @@ module Rhom
     end # class methods
   end # RhomDbAdapter
 end # Rhom
+
+at_exit do
+	Rhom::RhomDbAdapter::close
+end

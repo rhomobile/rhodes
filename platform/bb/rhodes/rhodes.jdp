@@ -14,18 +14,18 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
-PerstLite
+Hsqldb
 RhoBundle
 RubyVM
 ]
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
+src\com\rho\Jsr75File.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraScreen.java
 src\rhomobile\camera\ImageBrowserScreen.java
 src\rhomobile\DateTimeTokenizer.java
-src\rhomobile\db\PerstLiteAdapter.java
 src\rhomobile\location\GeoLocation.java
 src\rhomobile\location\GeoLocationAsync.java
 src\rhomobile\location\GeoLocationImpl.java
@@ -73,4 +73,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=0
-Version=1.40
+Version=1.51

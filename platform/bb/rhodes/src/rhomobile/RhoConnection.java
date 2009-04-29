@@ -11,8 +11,7 @@ import java.io.OutputStream;
 import javax.microedition.io.HttpConnection;
 
 import com.rho.SimpleFile;
-import com.rho.FileFactory;
-import com.rho.StorageError;
+import com.rho.RhoClassFactory;
 
 import rhomobile.location.GeoLocation;
 
@@ -479,22 +478,23 @@ public class RhoConnection implements HttpConnection {
 			responseData = RhoRuby.loadFile(strPath);
 
 		if (responseData == null){
-			SimpleFile file = FileFactory.createFile();
-			String strFileName = strPath;
-			if ( strFileName.startsWith("/apps") )
-				strFileName = strPath.substring(5);
 			  
+			SimpleFile file = null;
 			try{
+				file = RhoClassFactory.createFile();
+				String strFileName = strPath;
+				if ( strFileName.startsWith("/apps") )
+					strFileName = strPath.substring(5);
+				
 				file.open(strFileName, true, true);
 				responseData = file.getInputStream();
 				if (responseData != null) {
 					contentLength = (int) file.length();
 				}
 				m_file = file;
-			}catch(StorageError exc){
-				file.close();
-			}catch(IOException exc){
-				file.close();
+			}catch(Exception exc){
+				if ( file != null )
+					file.close();
 			}			
 		} else {
 			if (responseData != null) {

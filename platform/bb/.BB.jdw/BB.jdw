@@ -11,13 +11,13 @@ DependenciesInWorkspace=0
 <runtime>
 ]
 [Projects
-..\PerstDb\blackberry_jde\PerstLite.jdp
+..\Hsqldb\Hsqldb.jdp
 ..\RhoBundle\RhoBundle.jdp
 ..\rhodes\rhodes.jdp
 ..\RubyVM\RubyVM.jdp
 ]
 [ReleaseActiveProjects
-..\PerstDb\blackberry_jde\PerstLite.jdp
+..\Hsqldb\Hsqldb.jdp
 ..\RhoBundle\RhoBundle.jdp
 ..\rhodes\rhodes.jdp
 ..\RubyVM\RubyVM.jdp

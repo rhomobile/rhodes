@@ -18,6 +18,8 @@
  */
 package rhomobile.sync;
 
+import com.rho.db.*;
+
 /**
  * The Class SyncSource.
  */
@@ -37,9 +39,10 @@ public class SyncSource {
 	 * @param sourceUrl the source url
 	 * @param sourceId the source id
 	 */
-	public SyncSource(String sourceUrl, int sourceId) {
-		_sourceUrl = sourceUrl;
-		_sourceId = sourceId;
+	public SyncSource(IDBResult sources, int nItem) {
+		_sourceUrl = sources.getString(nItem, SyncConstants.COL_SOURCEURL);
+		_sourceId = sources.getInt(nItem, SyncConstants.COL_SOURCEID);
+		_token = sources.getString(nItem, SyncConstants.COL_TOKEN);
 	}
 
 	/**
@@ -60,27 +63,18 @@ public class SyncSource {
 		return _sourceUrl;
 	}
 
-	/**
-	 * Sets the _source id.
-	 * 
-	 * @param id the new _source id
-	 */
+	public String get_token() {
+		return _token;
+	}
+	
+	/*
 	public void set_sourceId(int id) {
 		_sourceId = id;
 	}
 
-	/**
-	 * Sets the _source url.
-	 * 
-	 * @param url the new _source url
-	 */
 	public void set_sourceUrl(String url) {
 		_sourceUrl = url;
-	}
-
-	public String get_token() {
-		return _token;
-	}
+	}*/
 
 	public void set_token(String _token) {
 		this._token = _token;
