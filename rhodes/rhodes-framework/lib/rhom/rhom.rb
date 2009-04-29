@@ -21,7 +21,7 @@
 
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
-if defined? RHO_ME
+if defined? RHO_DBME
 	require 'rhom/rhom_db_adapterME'
 else
 	require 'rhom/rhom_db_adapter'

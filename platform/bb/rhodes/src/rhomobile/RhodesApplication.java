@@ -279,7 +279,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public boolean onClose() {
 			doClose();
-			return super.onClose();
+			super.onClose();
+			System.exit(0);
+			return true;
 		}
 
 		public boolean onMenu(int instance) {

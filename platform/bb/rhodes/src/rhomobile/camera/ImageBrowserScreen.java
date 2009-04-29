@@ -220,7 +220,7 @@ public class ImageBrowserScreen extends MainScreen {
 	 */
 	private class SelectListener implements FieldChangeListener
 	{
-		private String makeFileName(String ext)throws IOException {
+		private String makeFileName(String ext)throws Exception {
 
 			String fullname = SyncBlob.makeBlobFolderName();
 			SimpleDateFormat format =

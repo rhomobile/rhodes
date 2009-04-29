@@ -27,7 +27,7 @@ import javax.microedition.media.Player;
 import javax.microedition.media.control.VideoControl;
 
 import com.rho.SimpleFile;
-import com.rho.FileFactory;
+import com.rho.RhoClassFactory;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -400,7 +400,7 @@ public class CameraScreen extends MainScreen {
 	 */
 	private class SaveListener implements FieldChangeListener
 	{
-		private String makeFileName(String ext)throws IOException {
+		private String makeFileName(String ext)throws Exception {
 			
 			String fullname = SyncBlob.makeBlobFolderName();
 			SimpleDateFormat format = 
@@ -420,12 +420,14 @@ public class CameraScreen extends MainScreen {
         	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-			SimpleFile file = FileFactory.createFile();
 			boolean error = false;
 			String fname = "";
 			
+			SimpleFile file = null;
             try
             {
+    			file = RhoClassFactory.createFile();
+            	
                 //A null encoding indicates that the camera should
                 //use the default snapshot encoding.
                 String encoding = null;
@@ -456,7 +458,8 @@ public class CameraScreen extends MainScreen {
             	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
             } finally {
     			try{
-    				file.close();
+    				if ( file != null )
+    					file.close();
     			}catch(Exception exc){}         	
             }
 

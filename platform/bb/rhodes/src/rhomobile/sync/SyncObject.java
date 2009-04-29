@@ -20,9 +20,9 @@ package rhomobile.sync;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.lang.RubyValue;
-import rhomobile.db.PerstLiteAdapter;
+//import com.xruby.runtime.builtin.RubyHash;
+//import com.xruby.runtime.lang.RubyValue;
+import com.rho.db.*;
 
 /**
  * The Class SyncObject.
@@ -74,6 +74,16 @@ public class SyncObject {
 		this._updateType = updateType;
 		_type = type;
 	}
+	
+	public SyncObject(IDBResult list, int nItem){
+		_attrib = list.getString(nItem, SyncConstants.COL_ATTRIB);
+		_sourceId = list.getInt(nItem, SyncConstants.COL_SOURCEID);
+		_object = list.getString(nItem, SyncConstants.COL_OBJECT);
+		_value = list.getString(nItem, SyncConstants.COL_VALUE);
+		_updateType = list.getString(nItem, SyncConstants.COL_UPDATETYPE);
+		_type = list.getString(nItem, SyncConstants.COL_ATTRIBTYPE);
+	}
+	
 
 	/**
 	 * Dehydrate.
@@ -82,10 +92,15 @@ public class SyncObject {
 	 */
 	public int insertIntoDatabase() {
 		try {
-			SyncUtil.adapter.insertIntoTable(SyncUtil
-					.createString(SyncConstants.OBJECTS_TABLE), this
-					.getHashFromValues());
-		} catch (Exception e) {
+			Object[] values = { new Integer(_primaryKey),_attrib,new Integer(_sourceId),_object,_value,_updateType,_token,_type};
+			
+			SyncUtil.adapter.executeSQL("INSERT INTO object_values (id, attrib, source_id, object, value,"+
+					 "update_type,token,attrib_type) VALUES(?,?,?,?,?,?,?,?)", values);
+			
+			//insertIntoTable(SyncUtil
+			//		.createString(SyncConstants.OBJECTS_TABLE), this
+			//		.getHashFromValues());
+		} catch (DBException e) {
 			LOG.ERROR("There was an error inserting the record", e);
 			return SyncConstants.SYNC_OBJECT_ERROR;
 		}
@@ -93,11 +108,17 @@ public class SyncObject {
 	}
 
 	public void deleteFromDatabase() {
-		RubyHash hash = SyncUtil.createHash();
+		try {
+			Object[] values = {new Integer(_primaryKey)};
+			SyncUtil.adapter.executeSQL("DELETE FROM object_values where id=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error delete the record", e);
+		}
+		/*RubyHash hash = SyncUtil.createHash();
 		hash.add(SyncUtil.createString("id"), SyncUtil
 				.createInteger(this.getPrimaryKey()));
 		SyncUtil.adapter.deleteFromTable(SyncUtil
-				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
+				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);*/
 	}
 	
 	/**
@@ -106,11 +127,18 @@ public class SyncObject {
 	 * @param id the id
 	 */
 	public static void deleteFromDatabaseBySource(int id) {
-		RubyHash hash = SyncUtil.createHash();
+		try {
+			Object[] values = {new Integer(id)};
+			SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error delete the record", e);
+		}
+		
+		/*RubyHash hash = SyncUtil.createHash();
 		hash.add(SyncUtil.createString("source_id"), SyncUtil
 				.createInteger((long) id));
 		SyncUtil.adapter.deleteFromTable(SyncUtil
-				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);
+				.createString(SyncConstants.OBJECTS_TABLE), (RubyValue) hash);*/
 	}
 
 	/**
@@ -118,7 +146,7 @@ public class SyncObject {
 	 * 
 	 * @return the hash from values
 	 */
-	private RubyHash getHashFromValues() {
+	/*private RubyHash getHashFromValues() {
 		RubyHash hash = SyncUtil.createHash();
 		hash.add(SyncUtil.createString("id"), SyncUtil
 				.createInteger(this.getPrimaryKey()));
@@ -138,7 +166,7 @@ public class SyncObject {
 				.createString(this.get_type()));
 		
 		return hash;
-	}
+	}*/
 
 	/**
 	 * Gets the attrib.

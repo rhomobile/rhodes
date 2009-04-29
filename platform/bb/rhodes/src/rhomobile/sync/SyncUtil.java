@@ -21,22 +21,12 @@ package rhomobile.sync;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import javax.microedition.io.HttpConnection;
-
 import rhomobile.URI;
-
 import j2me.util.ArrayList;
-
-import rhomobile.db.PerstLiteAdapter;
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.builtin.RubyInteger;
-import com.xruby.runtime.builtin.RubyString;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyValue;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.Tokenizer;
+import com.rho.db.*;
 
 /**
  * The Class SyncUtil.
@@ -46,55 +36,14 @@ public class SyncUtil {
 		new RhoLogger("SyncUtil");
 
 	/** The adapter. */
-	public static PerstLiteAdapter adapter = null;
+	public static DBAdapter adapter = null;
     public static byte[]  m_byteBuffer = new byte[4096];
 
     public static void init(){
-		SyncUtil.adapter = PerstLiteAdapter.alloc(null);
+		SyncUtil.adapter = DBAdapter.getInstance();
 		SyncBlob.DBCallback callback = new SyncBlob.DBCallback();
 		SyncUtil.adapter.setDbCallback(callback);
     }
-	/**
-	 * Creates the array.
-	 * 
-	 * @return the ruby array
-	 */
-	public static RubyArray createArray() {
-		return new RubyArray();
-	}
-
-	/**
-	 * Creates the hash.
-	 * 
-	 * @return the ruby hash
-	 */
-	public static RubyHash createHash() {
-		return ObjectFactory.createHash();
-	}
-
-	/**
-	 * Creates the integer.
-	 * 
-	 * @param val
-	 *            the val
-	 * 
-	 * @return the ruby integer
-	 */
-	public static RubyInteger createInteger(long val) {
-		return ObjectFactory.createInteger(val);
-	}
-
-	/**
-	 * Creates the string.
-	 * 
-	 * @param val
-	 *            the val
-	 * 
-	 * @return the ruby string
-	 */
-	public static RubyString createString(String val) {
-		return ObjectFactory.createString(val);
-	}
 
 	/**
 	 * Fetch the changes for a given source
@@ -193,23 +142,37 @@ public class SyncUtil {
 			 source.get_token().equals(token)) {
 			// Delete non-confirmed records
 
-			RubyHash where = createHash();
+			try {
+				Object[] values = {new Integer(source.get_sourceId()), token};
+				SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=? and token=?", values);
+			}catch (DBException e) {
+				LOG.ERROR("There was an error delete object_values record by token", e);
+			}
+			
+			/*RubyHash where = createHash();
 			where.add(createString("source_id"), createInteger(source
 					.get_sourceId()));
 			where.add(PerstLiteAdapter.TOKEN, createString(token));
 
-			adapter.deleteFromTable(createString("object_values"), where);
+			adapter.deleteFromTable(createString("object_values"), where);*/
 		} else //if (token.length() > 0) 
 		{
 			source.set_token(token);
 			
-			RubyHash values = SyncUtil.createHash();
+			try {
+				Object[] values = {token, new Integer(source.get_sourceId())};
+				SyncUtil.adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
+			}catch (DBException e) {
+				LOG.ERROR("There was an error update token in sources record", e);
+			}
+			
+			/*RubyHash values = SyncUtil.createHash();
 			values.add(PerstLiteAdapter.TOKEN, createString(token));
 			RubyHash where = SyncUtil.createHash();
 			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source
 					.get_sourceId()));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-					values, where);
+					values, where);*/
 		}
 	}
 
@@ -224,7 +187,17 @@ public class SyncUtil {
 	 */
 	private static void updateSourceSyncStatus(SyncSource source, int inserted,
 			int deleted, long duration, int success) {
-		RubyHash values = SyncUtil.createHash();
+		try {
+			long now = System.currentTimeMillis() / 1000;
+			Object[] values = {new Long(now), new Integer(inserted), new Integer(deleted), new Long(duration), new Integer(success),
+					new Integer(source.get_sourceId()) };
+			SyncUtil.adapter.executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?,"+
+					 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		/*RubyHash values = SyncUtil.createHash();
 		long now = System.currentTimeMillis() / 1000;
 		values.add(PerstLiteAdapter.Table_sources.LAST_UPDATED,
 				createInteger(now));
@@ -240,7 +213,7 @@ public class SyncUtil {
 		where.add(PerstLiteAdapter.SOURCE_ID, createInteger(source
 				.get_sourceId()));
 		adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-				values, where);
+				values, where);*/
 	}
 
 	/**
@@ -251,14 +224,24 @@ public class SyncUtil {
 	 * 
 	 * @return the object value list
 	 */
-	public static RubyArray getObjectValueList(int id) {
-		RubyArray arr = createArray();
+	public static IDBResult getObjectValueList(int id) {
+		
+		try {
+			Object[] values = { new Integer(id) };
+			return adapter.executeSQL("SELECT * FROM object_values WHERE source_id=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		//TODO: getObjectValueList
+		return DBAdapter.createResult();
+		/*RubyArray arr = createArray();
 		RubyHash where = createHash();
 		arr.add(createString("object_values"));
 		arr.add(createString("*"));
 		where.add(createString("source_id"), createInteger(id));
 		arr.add(where);
-		return (RubyArray) adapter.selectFromTable(arr);
+		return (RubyArray) adapter.selectFromTable(arr);*/
 	}
 	
 	/**
@@ -274,21 +257,32 @@ public class SyncUtil {
 	public static ArrayList getOpListFromDatabase(String type, SyncSource source) {
 		LOG.INFO("Checking database for " + type + " operations...");
 		
-		RubyArray arr = createArray();
+		/*RubyArray arr = createArray();
 		RubyHash where = createHash();
-		String operation = null;
 		arr.add(createString("object_values"));
 		arr.add(createString("*"));
 		where.add(createString("update_type"), createString(type));
 		where.add(createString("source_id"), createInteger(source
 				.get_sourceId()));
 		arr.add(where);
-		RubyArray rows = (RubyArray) adapter.selectFromTable(arr);
-		ArrayList objects = getSyncObjectList(rows);
-		LOG.INFO("Found " + objects.size() + " records for " + type
-				+ " processing...");
+		RubyArray rows = (RubyArray) adapter.selectFromTable(arr);*/
+		
 		ArrayList results = new ArrayList();
+		IDBResult rows;
+		
+		try {
+			Object[] values = { new Integer(source.get_sourceId()), type };
+			rows = SyncUtil.adapter.executeSQL("SELECT * FROM object_values WHERE source_id=? AND update_type=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+			return results;
+		}
+		
+		ArrayList objects = getSyncObjectList(rows);
+		LOG.INFO("Found " + objects.size() + " records for " + type	+ " processing...");
 
+		String operation = null;
+		
 		if (type != null) {
 			if (type.equalsIgnoreCase("create")) {
 				operation = SyncConstants.UPDATE_TYPE_CREATE;
@@ -321,11 +315,18 @@ public class SyncUtil {
 	}
 
 	public static void removeOpListFromDatabase(String type, SyncSource source) {
-		RubyHash where = createHash();
+		try {
+			Object[] values = { type, new Integer(source.get_sourceId()) };
+			SyncUtil.adapter.executeSQL("DELETE FROM object_values WHERE update_type=? and source_id=?", values);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		/*RubyHash where = createHash();
 		where.add(createString("update_type"), createString(type));
 		where.add(createString("source_id"), createInteger(source
 				.get_sourceId()));
-		adapter.deleteFromTable(createString("object_values"), where);
+		adapter.deleteFromTable(createString("object_values"), where);*/
 	}
 
 	/**
@@ -335,7 +336,26 @@ public class SyncUtil {
 	 * @return
 	 */
 	public static String getParamsForSource(SyncSource source) {
+		
 		String askType = "ask";
+		String params = "";
+		try {
+			Object[] values = { new Integer(source.get_sourceId()), askType };
+			IDBResult rows = SyncUtil.adapter.executeSQL(
+					"SELECT value FROM object_values WHERE source_id=? AND update_type=?", values);
+			
+			if ( rows.getCount() > 0 ){
+				params = rows.getStringByIdx(0,0);
+				removeOpListFromDatabase(askType, source);
+			}
+			
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+
+		return params;
+		
+/*		String askType = "ask";
 		RubyHash where = createHash();
 		RubyArray arr = createArray();
 		arr.add(createString("object_values"));
@@ -351,7 +371,7 @@ public class SyncUtil {
 		RubyHash element = (RubyHash) list.at(createInteger(0));
 		String params = element.get(createString("value")).asString();
 		removeOpListFromDatabase(askType, source);
-		return params;
+		return params;*/
 	}
 
 	/**
@@ -359,8 +379,16 @@ public class SyncUtil {
 	 * 
 	 * @return the source list
 	 */
-	public static RubyArray getSourceList() {
-		RubyArray arr = createArray();
+	public static IDBResult getSourceList() {
+		try {
+			 return adapter.executeSQL( "SELECT * FROM sources ORDER BY source_id", null);
+			
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+
+		return DBAdapter.createResult();
+		/*RubyArray arr = createArray();
 		if (adapter == null)
 			return arr;
 
@@ -372,7 +400,7 @@ public class SyncUtil {
 		arr.add(RubyConstant.QNIL); // where
 		arr.add(order);
 
-		return (RubyArray) adapter.selectFromTable(arr);
+		return (RubyArray) adapter.selectFromTable(arr);*/
 	}
 
 	/**
@@ -383,9 +411,12 @@ public class SyncUtil {
 	 * 
 	 * @return the sync object list
 	 */
-	public static ArrayList getSyncObjectList(RubyArray list) {
+	public static ArrayList getSyncObjectList(IDBResult list) {
 		ArrayList results = new ArrayList();
-		for (int i = 0; i < list.size(); i++) {
+		for( int i = 0; i < list.getCount(); i++)
+			results.add(new SyncObject( list, i ));
+		
+		/*for (int i = 0; i < list.size(); i++) {
 			RubyHash element = (RubyHash) list.at(createInteger(i));
 			String attrib = element.get(createString("attrib")).asString();
 			RubyValue val = element.get(createString("value"));
@@ -402,7 +433,7 @@ public class SyncUtil {
 			int sourceId = element.get(createString("source_id")).toInt();
 			results.add(new SyncObject(attrib, sourceId, object, value,
 					updateType, type));
-		}
+		}*/
 		return results;
 	}
 
@@ -412,30 +443,24 @@ public class SyncUtil {
 	 * @param objects
 	 *            the objects
 	 */
-	public static void printResults(RubyArray objects) {
+	public static void printResults(IDBResult objects) 
+	{
 		// Debug code to print results
-		for (int j = 0; j < objects.size(); j++) {
-			RubyHash objectElement = (RubyHash) objects.at(SyncUtil
-					.createInteger(j));
-			String value = objectElement.get(SyncUtil.createString("value"))
-					.toString();
-			String attrib = objectElement.get(SyncUtil.createString("attrib"))
-					.toString();
+		for (int j = 0; j < objects.getCount(); j++) 
+		{
+			String value = objects.getString(j, SyncConstants.COL_VALUE);
+			String attrib = objects.getString(j, SyncConstants.COL_ATTRIB);
+			
 			System.out.println("value[" + j + "][" + attrib + "]: " + value);
 		}
 	}
 
-	private static int get_start_source( RubyArray sources )
+	private static int get_start_source( IDBResult sources )
 	{
-		for (int i = 0; i < sources.size(); i++) {
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			RubyValue token = element.get(PerstLiteAdapter.TOKEN);
-			if (token != null && token != RubyConstant.QNIL)
-			{
-				String strToken = token.toStr();
-				if ( strToken.length() > 0 && !strToken.equals("0") )
-					return i;
-			}
+		for (int i = 0; i < sources.getCount(); i++) {
+			String strToken = sources.getString(i, SyncConstants.COL_TOKEN);
+			if ( strToken.length() > 0 && !strToken.equals("0") )
+				return i;
 		}
 		
 		return 0;
@@ -458,23 +483,19 @@ public class SyncUtil {
 	 * @return the int
 	 */
 	public static int processLocalChanges(SyncThread thread) {
-		RubyArray sources = SyncUtil.getSourceList();
+		IDBResult sources = SyncUtil.getSourceList();
 
 		String client_id = null;
 		int nStartSrc = get_start_source(sources);
 		SyncFetchResult syncResult = new SyncFetchResult();
 		
-		for (int i = nStartSrc; i < sources.size() && !thread.isStop(); i++) {
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+		for (int i = nStartSrc; i < sources.getCount() && !thread.isStop(); i++) 
+		{
+			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
 			int success = 0;
 			
 			if ( !syncResult.stopSync ){
-				RubyValue token = element.get(PerstLiteAdapter.TOKEN);
-				SyncSource current = new SyncSource(url, id);
-				if (token != null && token != RubyConstant.QNIL)
-					current.set_token(token.toStr());
+				SyncSource current = new SyncSource(sources, i);
 	
 				if (client_id == null)
 					client_id = get_client_id(current);
@@ -501,8 +522,7 @@ public class SyncUtil {
 					LOG.INFO("Successfully processed " + syncResult.available
 							+ " records...");
 					if (SyncConstants.DEBUG) {
-						RubyArray objects = SyncUtil.getObjectValueList(current
-								.get_sourceId());
+						IDBResult objects = SyncUtil.getObjectValueList(current.get_sourceId());
 						SyncUtil.printResults(objects);
 					}
 					
@@ -608,7 +628,15 @@ public class SyncUtil {
 	 * @return size of objectValues table
 	 */
 	public static int getObjectCountFromDatabase(String dbName) {
-		RubyArray arr = createArray();
+		try {
+			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT count(*) from " + dbName, null);
+			return rows.getIntByIdx(0,0);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		return 0;
+		/*RubyArray arr = createArray();
 		arr.add(createString(dbName));// "object_values")); //table name
 		arr.add(createString("*")); // attributes
 		// arr.add(createString("source_id")); //not nil attributes
@@ -619,11 +647,11 @@ public class SyncUtil {
 		arr.add(params);
 
 		RubyInteger results = (RubyInteger) adapter.selectFromTable(arr);
-		return results == null ? 0 : results.toInt();
+		return results == null ? 0 : results.toInt();*/
 	}
 
 	public static String get_client_id(SyncSource source) {
-		String client_id = get_client_db_info("client_id");
+		String client_id = get_db_client_id();
 		if (client_id.length() == 0) {
 			String data = null;
 			try {
@@ -634,18 +662,18 @@ public class SyncUtil {
 				if (data != null)
 					client_id = SyncJSONParser.parseClientID(data);
 
-				RubyHash hash = SyncUtil.createHash();
-				hash.add(SyncUtil.createString("client_id"),
-						createString(client_id));
-
+				//RubyHash hash = SyncUtil.createHash();
+				//hash.add(SyncUtil.createString("client_id"),createString(client_id));
+				Object[] values = { client_id };
+				
 				if (getObjectCountFromDatabase(SyncConstants.CLIENT_INFO) > 0)
-					adapter.updateIntoTable(
-							createString(SyncConstants.CLIENT_INFO), hash,
-							RubyConstant.QNIL);
+					SyncUtil.adapter.executeSQL("UPDATE client_info SET client_id=?", values);
+					//adapter.updateIntoTable(createString(SyncConstants.CLIENT_INFO), hash,RubyConstant.QNIL);
 				else
-					adapter.insertIntoTable(
-							createString(SyncConstants.CLIENT_INFO), hash);
-			} catch (IOException e) {
+					SyncUtil.adapter.executeSQL("INSERT INTO client_info (client_id) VALUES (?)", values);
+					//adapter.insertIntoTable(createString(SyncConstants.CLIENT_INFO), hash);
+					
+			} catch (Exception e) {
 				LOG.ERROR("There was an error fetching data from the sync source: ", e);
 			}
 		}
@@ -653,7 +681,18 @@ public class SyncUtil {
 	}
 
 	public static String get_session(SyncSource source) {
-		RubyArray arr = createArray();
+		String session = "";
+		try {
+			Object[] values = { new Integer(source.get_sourceId()) };
+			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT session FROM sources WHERE source_id=?", values);
+			session = rows.getStringByIdx(0,0);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		return session;
+		
+		/*RubyArray arr = createArray();
 		arr.add(createString("sources"));
 		arr.add(PerstLiteAdapter.SESSION);
 
@@ -667,22 +706,18 @@ public class SyncUtil {
 
 		RubyHash element = (RubyHash) res.at(SyncUtil.createInteger(0));
 
-		return element.get(PerstLiteAdapter.SESSION).toString();
+		return element.get(PerstLiteAdapter.SESSION).toString();*/
 	}
 
 	private static String getSessionByDomain(String url) {
-		RubyArray sources = getSourceList();
+		IDBResult sources = getSourceList();
 
 		try {
 			URI uri = new URI(url);
-			for (int i = 0; i < sources.size(); i++) {
+			for (int i = 0; i < sources.getCount(); i++) {
 				try {
-					RubyHash element = (RubyHash) sources.at(SyncUtil
-							.createInteger(i));
-					String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL)
-							.toString();
-					String session = element.get(PerstLiteAdapter.SESSION)
-							.toString();
+					String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
+					String session = sources.getString(i, SyncConstants.COL_SESSION);
 					if (sourceUrl == null || sourceUrl.length() == 0)
 						continue;
 
@@ -801,16 +836,14 @@ public class SyncUtil {
 
 	public static boolean fetch_client_login(String strUser, String strPwd) {
 		boolean success = true;
-		RubyArray sources = getSourceList();
-		for (int i = 0; i < sources.size(); i++) {
+		IDBResult sources = getSourceList();
+		for (int i = 0; i < sources.getCount(); i++) {
 			String strSession = "";
 			// String strExpire="";
 			HttpConnection connection = null;
 
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String sourceUrl = element.get(PerstLiteAdapter.SOURCE_URL)
-					.toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
+			String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
+			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
 
 			if (sourceUrl.length() == 0)
 				continue;
@@ -849,21 +882,39 @@ public class SyncUtil {
 					connection = null;
 				}
 			}
-
+/*
 			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, createString(strSession));
+			values.add(SyncConstants.SESSION, createString(strSession));
 			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			where.add(SyncConstants.SOURCE_ID, createInteger(id));
 
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-					values, where);
+					values, where);*/
+			try {
+				Object[] values = { strSession, new Integer(id) };
+				adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
+			}catch (DBException e) {
+				LOG.ERROR("There was an error update session in sources record", e);
+			}
+				
 		}
 
 		return success;
 	}
 
-	public static String get_client_db_info(String attr) {
-		RubyArray arr = createArray();
+	public static String get_db_client_id() {
+		
+		String client_id = "";
+		try {
+			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT client_id FROM client_info", null);
+			client_id = rows.getStringByIdx(0,0);
+		}catch (DBException e) {
+			LOG.ERROR("There was an error update token in sources record", e);
+		}
+		
+		return client_id;
+		
+		/*RubyArray arr = createArray();
 		arr.add(createString("client_info")); // table name
 		arr.add(createString(attr)); // attributes
 		arr.add(RubyConstant.QNIL); // where
@@ -874,17 +925,16 @@ public class SyncUtil {
 			RubyValue value = item.getValue(createString(attr));
 			return value.toString();
 		}
-		return "";
+		return "";*/
 	}
 
-	public static boolean logged_in() {
+	public static boolean logged_in() 
+	{
 		boolean success = false;
-		RubyArray sources = SyncUtil.getSourceList();
-		for (int i = 0; i < sources.size(); i++) {
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			String url = element.get(PerstLiteAdapter.SOURCE_URL).toString();
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
-			SyncSource current = new SyncSource(url, id);
+		IDBResult sources = SyncUtil.getSourceList();
+		for (int i = 0; i < sources.getCount(); i++) 
+		{
+			SyncSource current = new SyncSource(sources,i);
 			if (get_session(current).length() > 0) {
 				success = true;
 			}
@@ -892,31 +942,49 @@ public class SyncUtil {
 		return success;
 	}
 
-	public static void logout() {
-		RubyArray sources = SyncUtil.getSourceList();
-		for (int i = 0; i < sources.size(); i++) {
-			RubyHash element = (RubyHash) sources.at(SyncUtil.createInteger(i));
-			int id = element.get(PerstLiteAdapter.SOURCE_ID).toInt();
-			RubyHash values = SyncUtil.createHash();
-			values.add(PerstLiteAdapter.SESSION, SyncUtil.createString(""));
+	public static void logout() 
+	{
+		IDBResult sources = getSourceList();
+		for (int i = 0; i < sources.getCount(); i++) 
+		{
+			try {
+				Object[] values = { "", new Integer( sources.getInt(i, SyncConstants.COL_SOURCEID)) };
+				adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
+			}catch (DBException e) {
+				LOG.ERROR("Logout: There was an error update session in sources record", e);
+			}
+			
+			/*RubyHash values = SyncUtil.createHash();
+			values.add(SyncConstants.SESSION, SyncUtil.createString(""));
 			RubyHash where = SyncUtil.createHash();
-			where.add(PerstLiteAdapter.SOURCE_ID, createInteger(id));
+			where.add(SyncConstants.SOURCE_ID, createInteger(id));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-					values, where);
+					values, where);*/
 		}
 	}
 
 	public static void resetSyncDb() {
 		
-		LOG.INFO("Deleting all objects from db...");
-		adapter.deleteAllFromTable(createString(SyncConstants.OBJECTS_TABLE));
-
-		LOG.INFO("Deleting client info from db...");
-		adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
+		try {
 		
-		LOG.INFO("Clear tokens in source table...");
-		RubyHash values = SyncUtil.createHash();
-		values.add(PerstLiteAdapter.TOKEN, createString(""));
-		adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, null);
+			LOG.INFO("Deleting all objects from db...");
+			//adapter.deleteAllFromTable(createString(SyncConstants.OBJECTS_TABLE));
+			adapter.executeSQL("delete from object_values", null);
+			LOG.INFO("Deleting client info from db...");
+//			adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
+			adapter.executeSQL("delete from client_info", null);
+			
+			LOG.INFO("Clear tokens in source table...");
+			Object[] values = { "" };
+			adapter.executeSQL("UPDATE sources SET token=?", values);
+			
+/*			RubyHash values = SyncUtil.createHash();
+			values.add(SyncConstants.TOKEN, createString(""));
+			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, null);*/
+			
+		}catch (DBException e) {
+			LOG.ERROR("Logout: There was an error update session in sources record", e);
+		}
+		
 	}
 }

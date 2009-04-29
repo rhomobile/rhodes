@@ -122,7 +122,7 @@ class ArrayPacker {
         }
         return new long[] {uv, lenp};
     }
-/*
+
     private static String qpencode(String str, int len) {
         throw new RubyException("Not implemented");
     }
@@ -130,7 +130,7 @@ class ArrayPacker {
     private static String encodes(String str, int todo, char type) {
         throw new RubyException("Not implemented");
     }
-*/
+
     private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private static final int[] b64_xtable = new int[256];
     private static final String sHexDigits = "0123456789abcdef0123456789ABCDEFx";
@@ -404,8 +404,8 @@ class ArrayPacker {
 
         return ary;
     }
-/*
-    public static StringBuilder pack(RubyArray array, String format) {
+
+    public static StringBuffer pack(RubyArray array, String format) {
         int len = 0;
         int items = array.size();
         int idx = 0;
@@ -413,7 +413,7 @@ class ArrayPacker {
         String ptr;
         RubyValue from;
 
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
 
         int p = 0;
         while (p < format.length()) {
@@ -439,7 +439,7 @@ class ArrayPacker {
                 if (natstr.indexOf(type) >= 0) {
                     p++;
                 } else {
-                    throw new RubyException(RubyRuntime.ArgumentErrorClass, String.format("'%c' allowed only after types %s", type, natstr));
+                    throw new RubyException(RubyRuntime.ArgumentErrorClass, "'" + type + "' allowed only after types " + natstr );
                 }
             }
 
@@ -448,7 +448,7 @@ class ArrayPacker {
                 p++;
             } else if (Character.isDigit(t)) {
                 int end = p;
-                while (end < format.length() - 1 && Character.isDigit(format.indexOf(end + 1))) {
+                while (end < format.length() - 1 && CharacterMe.isDigit(format.indexOf(end + 1))) {
                     end++;
                 }
                 len = Integer.parseInt(format.substring(p, end + 1), 10);
@@ -581,7 +581,7 @@ class ArrayPacker {
 
                             int pos1 = 0;
                             for (i = 0; i++ < len; pos1++) {
-                                if (Character.isLetter(ptr.charAt(pos1))) {
+                                if (CharacterMe.isLetter(ptr.charAt(pos1))) {
                                     byte_ |= (((ptr.charAt(pos1) & 15) + 9) & 15) << 4;
                                 } else {
                                     byte_ |= (ptr.charAt(pos1) & 15) << 4;
@@ -619,7 +619,7 @@ class ArrayPacker {
 
                             int pos1 = 0;
                             for (i = 0; i++ < len; pos1++) {
-                                if (Character.isLetter(ptr.charAt(pos1))) {
+                                if (CharacterMe.isLetter(ptr.charAt(pos1))) {
                                     byte_ |= ((ptr.charAt(pos1) & 15) + 9) & 15;
                                 } else {
                                     byte_ |= ptr.charAt(pos1) & 15;
@@ -672,7 +672,7 @@ class ArrayPacker {
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         int i = from.toInt();
-                        for (int j = 0; j < Short.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Short_SIZE / Byte_SIZE; ++j) {
                             result.append((char) ((i >> (j * 8) & 0xff)));
                         }
                     }
@@ -689,7 +689,7 @@ class ArrayPacker {
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         int i = from.toInt();
-                        for (int j = 0; j < Integer.SIZE / Byte.SIZE; ++j) {
+                        for (int j = 0; j < Integer_SIZE / Byte_SIZE; ++j) {
                             result.append((char) ((i >> (j * 8) & 0xff)));
                         }
                     }
@@ -705,7 +705,7 @@ class ArrayPacker {
 
                         long l = RubyTypesUtil.convertToJavaLong(from);
 
-                        for (int i = 0; i < Long.SIZE / Byte.SIZE; ++i) {
+                        for (int i = 0; i < Long_SIZE / Byte_SIZE; ++i) {
                             result.append((char) ((l >> (i * 8) & 0xff)));
                         }
                     }
@@ -723,7 +723,7 @@ class ArrayPacker {
 
                         long l = RubyTypesUtil.convertToJavaLong(from);
 
-                        for (int i = Integer.SIZE / Byte.SIZE - 1; i >= 0 ; --i) {
+                        for (int i = Integer_SIZE / Byte_SIZE - 1; i >= 0 ; --i) {
                             result.append((char) ((l >> (i * 8) & 0xff)));
                         }
                     }
@@ -752,11 +752,11 @@ class ArrayPacker {
                         } else if (from instanceof RubyBignum) {
                             f = (((RubyBignum) from).getInternal().longValue() & 0xffffffffffffffffL);
                         } else {
-                            throw new RubyException(RubyRuntime.RuntimeErrorClass, String.format("can't convert %s into Integer", from.getRubyClass().getName()));
+                            throw new RubyException(RubyRuntime.RuntimeErrorClass, "can't convert " + from.getRubyClass().getName() + " into Integer" );
                         }
 
                         int bits = Float.floatToIntBits(f);
-                        for (int i = 0; i < Integer.SIZE / Byte.SIZE; ++i) {
+                        for (int i = 0; i < Integer_SIZE / Byte_SIZE; ++i) {
                             result.append((char) ((bits >> (i * 8) & 0xff)));
                         }
                     }
@@ -780,7 +780,7 @@ class ArrayPacker {
 
                         long bits = Double.doubleToLongBits(d);
 
-                        for (int i = 0; i < Long.SIZE / Byte.SIZE; ++i) {
+                        for (int i = 0; i < Long_SIZE / Byte_SIZE; ++i) {
                             result.append((char) ((bits >> (i * 8) & 0xff)));
                         }
                     }
@@ -891,5 +891,5 @@ class ArrayPacker {
         }
 
         return result;
-    }*/
+    }
 }

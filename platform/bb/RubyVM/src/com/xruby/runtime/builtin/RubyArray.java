@@ -1134,13 +1134,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         throw new RubyException("not implemented");
     }
 
-    //RHO_COMMENT
-    //TODO: pack
     //@RubyLevelMethod(name="pack")
-    /*public RubyValue pack(RubyValue arg) {
+    public RubyValue pack(RubyValue arg) {
         String format = ((RubyString) arg).toString();
         return ObjectFactory.createString(ArrayPacker.pack(this, format));
-    }*/
+    }
     
 }
 

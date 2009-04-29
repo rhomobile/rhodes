@@ -4,16 +4,15 @@ import j2me.util.ArrayList;
 
 import java.io.InputStream;
 import java.io.IOException;
-import com.rho.StorageError;
 import com.rho.SimpleFile;
-import com.rho.FileFactory;
+import com.rho.RhoClassFactory;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
 import rhomobile.URI;
-import rhomobile.db.PerstLiteAdapter;
-import rhomobile.db.PerstLiteAdapter.Table_base1;
+import com.rho.db.*;
+import com.xruby.runtime.builtin.RubyArray;
 
 public class SyncBlob {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -25,8 +24,8 @@ public class SyncBlob {
 	public static final int POSTSYNC_STAGE = 2;
 	public static final int REQUEST_STAGE = 3;
 */
-	public static String makeBlobFolderName()throws IOException{
-		String fName = FileFactory.createFile().getDirPath("blobs");
+	public static String makeBlobFolderName()throws Exception{
+		String fName = RhoClassFactory.createFile().getDirPath("blobs");
 		
 		return fName;
 	}
@@ -154,9 +153,10 @@ public class SyncBlob {
 			SyncOperation op = (SyncOperation) list.get(i);
 			SyncObject obj = op.get_object();
 			
-			SimpleFile file = FileFactory.createFile();
-			
+			SimpleFile file = null;
 			try {
+				file = RhoClassFactory.createFile();
+				
 				file.open(obj.getValue(), true, true);
 				
 				if ( file.length() > 0 )
@@ -172,12 +172,13 @@ public class SyncBlob {
 			} catch (IOException e) {
 				LOG.ERROR("There was an error pushing changes", e);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
-			} catch ( StorageError e){
+			} catch ( Exception e){
 				LOG.ERROR("There was an error open file: " + obj.getValue(), e);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 			}finally{
 				if ( file != null )
-					file.close();
+					try{ file.close(); }catch(IOException exc2){}
+					
 				file = null;
 			}
 		}
@@ -185,23 +186,27 @@ public class SyncBlob {
 		return success;
 	}
 	
-	public static class DBCallback implements PerstLiteAdapter.IDbCallback{
+	public static class DBCallback implements IDBCallback{
 
+		public void OnDeleteAll() {
+			OnDeleteAllFromTable(SyncConstants.OBJECTS_TABLE);
+		}
+		
 		public void OnDeleteAllFromTable(String tableName) {
-			if ( !tableName.equals(PerstLiteAdapter.Table_object_values.name()) )
+			if ( !tableName.equals(SyncConstants.OBJECTS_TABLE) )
 				return;
 
 			try{
 				String fName = makeBlobFolderName();
-				FileFactory.createFile().delete(fName);
-			}catch(StorageError exc){
-			}catch(IOException exc){
+				RhoClassFactory.createFile().delete(fName);
+			}catch(Exception exc){
 				
 			}
 		}
 
-		public void OnDeleteFromTable(String tableName, Table_base1 item) {
-			if ( !(item instanceof PerstLiteAdapter.Table_object_values))
+		public void OnDeleteFromTable(String tableName, Object rows2Delete) {
+			//TODO: OnDeleteFromTable
+			/*if ( !(item instanceof PerstLiteAdapter.Table_object_values))
 				return;
 			
 			PerstLiteAdapter.Table_object_values obj = (PerstLiteAdapter.Table_object_values)item;
@@ -219,7 +224,7 @@ public class SyncBlob {
 				FileFactory.createFile().delete(url);
 			}catch(StorageError exc){
 				
-			}
+			}*/
 		}
 		
 	}
