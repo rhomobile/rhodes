@@ -14,10 +14,10 @@ klass.defineMethod( "pop", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyArray)receiver).pop();}
 });
-/*klass.defineMethod( "pack", new RubyOneArgMethod(){ 
+klass.defineMethod( "pack", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyArray)receiver).pack(arg);}
-});*/
+});
 klass.defineMethod( "<=>", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyArray)receiver).compare(arg);}
