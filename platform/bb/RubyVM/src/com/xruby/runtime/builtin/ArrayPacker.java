@@ -122,7 +122,7 @@ class ArrayPacker {
         }
         return new long[] {uv, lenp};
     }
-/*
+
     private static String qpencode(String str, int len) {
         throw new RubyException("Not implemented");
     }
@@ -130,7 +130,7 @@ class ArrayPacker {
     private static String encodes(String str, int todo, char type) {
         throw new RubyException("Not implemented");
     }
-*/
+
     private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private static final int[] b64_xtable = new int[256];
     private static final String sHexDigits = "0123456789abcdef0123456789ABCDEFx";
@@ -404,8 +404,9 @@ class ArrayPacker {
 
         return ary;
     }
-/*
-    public static StringBuilder pack(RubyArray array, String format) {
+
+    public static StringBuffer pack(RubyArray array, String format)
+    {
         int len = 0;
         int items = array.size();
         int idx = 0;
@@ -413,16 +414,19 @@ class ArrayPacker {
         String ptr;
         RubyValue from;
 
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
 
         int p = 0;
-        while (p < format.length()) {
+        while (p < format.length())
+        {
             char type = format.charAt(p++);
 
             if (type == ' ') continue;
 
-            if (format.indexOf(p) == '#') {
-                while (p < format.length() && format.charAt(p) != '\n') {
+            if (format.indexOf(p) == '#')
+            {
+                while (p < format.length() && format.charAt(p) != '\n')
+                {
                     p++;
                 }
                 continue;
@@ -434,29 +438,40 @@ class ArrayPacker {
             else
                 t = format.charAt(p);
 
-            if (t == '_' || t == '!') {
+            if (t == '_' || t == '!')
+            {
                 final String natstr = "sSiIlL";
-                if (natstr.indexOf(type) >= 0) {
+                if (natstr.indexOf(type) >= 0)
+                {
                     p++;
-                } else {
-                    throw new RubyException(RubyRuntime.ArgumentErrorClass, String.format("'%c' allowed only after types %s", type, natstr));
+                }
+                else
+                {
+                    throw new RubyException(RubyRuntime.ArgumentErrorClass, "'" + type + "' allowed only after types " + natstr);
                 }
             }
 
-            if (t == '*') {
+            if (t == '*')
+            {
                 len = "@Xxu".indexOf(t) >= 0 ? 0 : items;
                 p++;
-            } else if (Character.isDigit(t)) {
+            }
+            else if (Character.isDigit(t))
+            {
                 int end = p;
-                while (end < format.length() - 1 && Character.isDigit(format.indexOf(end + 1))) {
+                while (end < format.length() - 1 && CharacterMe.isDigit(format.indexOf(end + 1)))
+                {
                     end++;
                 }
                 len = Integer.parseInt(format.substring(p, end + 1), 10);
-            } else {
+            }
+            else
+            {
                 len = 1;
             }
 
-            switch (type) {
+            switch (type)
+            {
                 case 'A':
                 case 'a':
                 case 'Z':
@@ -469,201 +484,250 @@ class ArrayPacker {
                     else
                         throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
-                    if (from == RubyConstant.QNIL) {
+                    if (from == RubyConstant.QNIL)
+                    {
                         ptr = "";
                         plen = 0;
-                    } else {
-                        ptr = ((RubyString) from).toString();
+                    }
+                    else
+                    {
+                        ptr = ((RubyString)from).toString();
                         plen = ptr.length();
                     }
 
-                    if (format.charAt(p - 1) == '*') {
+                    if (format.charAt(p - 1) == '*')
+                    {
                         len = plen;
                     }
 
-                    switch (type) {
+                    switch (type)
+                    {
                         case 'a':
                         case 'A':
-                        case 'Z': {
-                            if (plen >= len) {
-                                result.append(ptr.substring(0, len));
-                                if (format.charAt(p - 1) == '*' && type == 'Z')
-                                    result.append('\0');
-                            } else {
-                                result.append(ptr.substring(0, plen));
-                                len -= plen;
-                                while (len-- > 0) {
-                                    result.append(' ');
+                        case 'Z':
+                            {
+                                if (plen >= len)
+                                {
+                                    result.append(ptr.substring(0, len));
+                                    if (format.charAt(p - 1) == '*' && type == 'Z')
+                                        result.append('\0');
+                                }
+                                else
+                                {
+                                    result.append(ptr.substring(0, plen));
+                                    len -= plen;
+                                    while (len-- > 0)
+                                    {
+                                        result.append(' ');
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
 
-                        case 'b': {
-                            int byte_ = 0;
-                            int i, j = 0;
+                        case 'b':
+                            {
+                                int byte_ = 0;
+                                int i, j = 0;
 
-                            if (len > plen) {
-                                j = (len - plen + 1) / 2;
-                                len = plen;
+                                if (len > plen)
+                                {
+                                    j = (len - plen + 1) / 2;
+                                    len = plen;
+                                }
+
+                                int pos1 = 0;
+                                for (i = 0; i++ < len; pos1++)
+                                {
+                                    if ((ptr.charAt(pos1) & 1) != 0)
+                                    {
+                                        byte_ |= 128;
+                                    }
+
+                                    if ((i & 7) != 0)
+                                    {
+                                        byte_ >>= 1;
+                                    }
+                                    else
+                                    {
+                                        char c = (char)(byte_ & 0xff);
+                                        result.append(c);
+                                        byte_ = 0;
+                                    }
+
+                                    if ((len & 7) != 0)
+                                    {
+                                        char c;
+                                        byte_ >>= 7 - (len & 7);
+                                        c = (char)(byte_ & 0xff);
+                                        result.append(c);
+                                    }
+                                    len = j;
+                                    while (len-- > 0)
+                                    {
+                                        result.append('\0');
+                                    }
+                                }
                             }
+                            break;
 
-                            int pos1 = 0;
-                            for (i = 0; i++ < len; pos1++) {
-                                if ((ptr.charAt(pos1) & 1) != 0) {
-                                    byte_ |= 128;
+                        case 'B':
+                            {
+                                int byte_ = 0;
+                                int i, j = 0;
+
+                                if (len > plen)
+                                {
+                                    j = (len - plen + 1) / 2;
+                                    len = plen;
                                 }
 
-                                if ((i & 7) != 0) {
-                                    byte_ >>= 1;
-                                } else {
-                                    char c = (char) (byte_ & 0xff);
-                                    result.append(c);
-                                    byte_ = 0;
+                                int pos1 = 0;
+                                for (i = 0; i++ < len; pos1++)
+                                {
+                                    byte_ |= (ptr.charAt(pos1) & 1);
+                                    if ((i & 7) != 0)
+                                        byte_ <<= 1;
+                                    else
+                                    {
+                                        char c = (char)(byte_ & 0xff);
+                                        result.append(c);
+                                        byte_ = 0;
+                                    }
                                 }
 
-                                if ((len & 7) != 0) {
+                                if ((len & 7) != 0)
+                                {
                                     char c;
-                                    byte_ >>= 7 - (len & 7);
-                                    c = (char) (byte_ & 0xff);
+                                    byte_ <<= 7 - (len & 7);
+                                    c = (char)(byte_ & 0xff);
                                     result.append(c);
                                 }
+
                                 len = j;
-                                while (len-- > 0) {
+                                while (len-- > 0)
+                                {
                                     result.append('\0');
                                 }
                             }
-                        }
-                        break;
+                            break;
 
-                        case 'B': {
-                            int byte_ = 0;
-                            int i, j = 0;
+                        case 'h':
+                            {
+                                int byte_ = 0;
+                                int i, j = 0;
+                                if (len > plen)
+                                {
+                                    j = (len - plen + 1) / 2;
+                                    len = plen;
+                                }
 
-                            if (len > plen) {
-                                j = (len - plen + 1) / 2;
-                                len = plen;
-                            }
+                                int pos1 = 0;
+                                for (i = 0; i++ < len; pos1++)
+                                {
+                                    if (CharacterMe.isLetter(ptr.charAt(pos1)))
+                                    {
+                                        byte_ |= (((ptr.charAt(pos1) & 15) + 9) & 15) << 4;
+                                    }
+                                    else
+                                    {
+                                        byte_ |= (ptr.charAt(pos1) & 15) << 4;
+                                    }
 
-                            int pos1 = 0;
-                            for (i = 0; i++ < len; pos1++) {
-                                byte_ |= (ptr.charAt(pos1) & 1);
-                                if ((i & 7) != 0)
-                                    byte_ <<= 1;
-                                else {
-                                    char c = (char) (byte_ & 0xff);
+                                    if ((i & 1) != 0)
+                                    {
+                                        byte_ >>= 4;
+                                    }
+                                    else
+                                    {
+                                        char c = (char)(byte_ & 0xff);
+                                        result.append(c);
+                                        byte_ = 0;
+                                    }
+                                }
+
+                                if ((len & 1) != 0)
+                                {
+                                    char c = (char)(byte_ & 0xff);
                                     result.append(c);
-                                    byte_ = 0;
-                                }
-                            }
-
-                            if ((len & 7) != 0) {
-                                char c;
-                                byte_ <<= 7 - (len & 7);
-                                c = (char) (byte_ & 0xff);
-                                result.append(c);
-                            }
-
-                            len = j;
-                            while (len-- > 0) {
-                                result.append('\0');
-                            }
-                        }
-                        break;
-
-                        case 'h': {
-                            int byte_ = 0;
-                            int i, j = 0;
-                            if (len > plen) {
-                                j = (len - plen + 1) / 2;
-                                len = plen;
-                            }
-
-                            int pos1 = 0;
-                            for (i = 0; i++ < len; pos1++) {
-                                if (Character.isLetter(ptr.charAt(pos1))) {
-                                    byte_ |= (((ptr.charAt(pos1) & 15) + 9) & 15) << 4;
-                                } else {
-                                    byte_ |= (ptr.charAt(pos1) & 15) << 4;
                                 }
 
-                                if ((i & 1) != 0) {
-                                    byte_ >>= 4;
-                                } else {
-                                    char c = (char) (byte_ & 0xff);
+                                len = j;
+                                while (len-- > 0)
+                                {
+                                    result.append('\0');
+                                }
+                            }
+                            break;
+
+                        case 'H':
+                            {
+                                int byte_ = 0;
+                                int i, j = 0;
+
+                                if (len > plen)
+                                {
+                                    j = (len - plen + 1) / 2;
+                                    len = plen;
+                                }
+
+                                int pos1 = 0;
+                                for (i = 0; i++ < len; pos1++)
+                                {
+                                    if (CharacterMe.isLetter(ptr.charAt(pos1)))
+                                    {
+                                        byte_ |= ((ptr.charAt(pos1) & 15) + 9) & 15;
+                                    }
+                                    else
+                                    {
+                                        byte_ |= ptr.charAt(pos1) & 15;
+                                    }
+
+                                    if ((i & 1) != 0)
+                                    {
+                                        byte_ <<= 4;
+                                    }
+                                    else
+                                    {
+                                        char c = (char)(byte_ & 0xff);
+                                        result.append(c);
+                                        byte_ = 0;
+                                    }
+                                }
+
+                                if ((len & 1) != 0)
+                                {
+                                    char c = (char)(byte_ & 0xff);
                                     result.append(c);
-                                    byte_ = 0;
-                                }
-                            }
-
-                            if ((len & 1) != 0) {
-                                char c = (char) (byte_ & 0xff);
-                                result.append(c);
-                            }
-
-                            len = j;
-                            while (len-- > 0) {
-                                result.append('\0');
-                            }
-                        }
-                        break;
-
-                        case 'H': {
-                            int byte_ = 0;
-                            int i, j = 0;
-
-                            if (len > plen) {
-                                j = (len - plen + 1) / 2;
-                                len = plen;
-                            }
-
-                            int pos1 = 0;
-                            for (i = 0; i++ < len; pos1++) {
-                                if (Character.isLetter(ptr.charAt(pos1))) {
-                                    byte_ |= ((ptr.charAt(pos1) & 15) + 9) & 15;
-                                } else {
-                                    byte_ |= ptr.charAt(pos1) & 15;
                                 }
 
-                                if ((i & 1) != 0) {
-                                    byte_ <<= 4;
-                                } else {
-                                    char c = (char) (byte_ & 0xff);
-                                    result.append(c);
-                                    byte_ = 0;
+                                len = j;
+                                while (len-- > 0)
+                                {
+                                    result.append('\0');
                                 }
                             }
-
-                            if ((len & 1) != 0) {
-                                char c = (char) (byte_ & 0xff);
-                                result.append(c);
-                            }
-
-                            len = j;
-                            while (len-- > 0) {
-                                result.append('\0');
-                            }
-                        }
-                        break;
+                            break;
                     }
                     break;
 
                 case 'c':
                 case 'C':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         if (items-- > 0)
                             from = array.get(idx++);
                         else
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         int i = from.toInt();
-                        result.append((char) (i & 0xff));
+                        result.append((char)(i & 0xff));
                     }
                     break;
 
                 case 's':
                 case 'S':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
 
 
                         if (items-- > 0)
@@ -672,8 +736,9 @@ class ArrayPacker {
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         int i = from.toInt();
-                        for (int j = 0; j < Short.SIZE / Byte.SIZE; ++j) {
-                            result.append((char) ((i >> (j * 8) & 0xff)));
+                        for (int j = 0; j < Short_SIZE / Byte_SIZE; ++j)
+                        {
+                            result.append((char)((i >> (j * 8) & 0xff)));
                         }
                     }
                     break;
@@ -682,22 +747,25 @@ class ArrayPacker {
                 case 'I':
                 case 'l':
                 case 'L':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         if (items-- > 0)
                             from = array.get(idx++);
                         else
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         int i = from.toInt();
-                        for (int j = 0; j < Integer.SIZE / Byte.SIZE; ++j) {
-                            result.append((char) ((i >> (j * 8) & 0xff)));
+                        for (int j = 0; j < Integer_SIZE / Byte_SIZE; ++j)
+                        {
+                            result.append((char)((i >> (j * 8) & 0xff)));
                         }
                     }
                     break;
 
                 case 'q':// signed quad (64bit) int
                 case 'Q'://unsigned quad (64bit) int
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         if (items-- > 0)
                             from = array.get(idx++);
                         else
@@ -705,8 +773,9 @@ class ArrayPacker {
 
                         long l = RubyTypesUtil.convertToJavaLong(from);
 
-                        for (int i = 0; i < Long.SIZE / Byte.SIZE; ++i) {
-                            result.append((char) ((l >> (i * 8) & 0xff)));
+                        for (int i = 0; i < Long_SIZE / Byte_SIZE; ++i)
+                        {
+                            result.append((char)((l >> (i * 8) & 0xff)));
                         }
                     }
                     break;
@@ -715,7 +784,8 @@ class ArrayPacker {
                     break;
 
                 case 'N': // int (network byte-order)
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         if (items-- > 0)
                             from = array.get(idx++);
                         else
@@ -723,8 +793,9 @@ class ArrayPacker {
 
                         long l = RubyTypesUtil.convertToJavaLong(from);
 
-                        for (int i = Integer.SIZE / Byte.SIZE - 1; i >= 0 ; --i) {
-                            result.append((char) ((l >> (i * 8) & 0xff)));
+                        for (int i = Integer_SIZE / Byte_SIZE - 1; i >= 0; --i)
+                        {
+                            result.append((char)((l >> (i * 8) & 0xff)));
                         }
                     }
                     break;
@@ -737,7 +808,8 @@ class ArrayPacker {
 
                 case 'f':
                 case 'F':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         float f;
 
                         if (items-- > 0)
@@ -745,19 +817,27 @@ class ArrayPacker {
                         else
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
-                        if (from instanceof RubyFixnum) {
-                            f = (long) (((RubyFixnum) from).toInt() & 0xffffffff);
-                        } else if (from instanceof RubyFloat) {
-                            f = ((long) ((RubyFloat) from).toFloat() & 0xffffffffffffffffL);
-                        } else if (from instanceof RubyBignum) {
-                            f = (((RubyBignum) from).getInternal().longValue() & 0xffffffffffffffffL);
-                        } else {
-                            throw new RubyException(RubyRuntime.RuntimeErrorClass, String.format("can't convert %s into Integer", from.getRubyClass().getName()));
+                        if (from instanceof RubyFixnum)
+                        {
+                            f = (long)(((RubyFixnum)from).toInt() & 0xffffffff);
+                        }
+                        else if (from instanceof RubyFloat)
+                        {
+                            f = ((long)((RubyFloat)from).toFloat() & 0xffffffffffffffffL);
+                        }
+                        else if (from instanceof RubyBignum)
+                        {
+                            f = (((RubyBignum)from).getInternal().longValue() & 0xffffffffffffffffL);
+                        }
+                        else
+                        {
+                            throw new RubyException(RubyRuntime.RuntimeErrorClass, "can't convert " + from.getRubyClass().getName() + " into Integer");
                         }
 
                         int bits = Float.floatToIntBits(f);
-                        for (int i = 0; i < Integer.SIZE / Byte.SIZE; ++i) {
-                            result.append((char) ((bits >> (i * 8) & 0xff)));
+                        for (int i = 0; i < Integer_SIZE / Byte_SIZE; ++i)
+                        {
+                            result.append((char)((bits >> (i * 8) & 0xff)));
                         }
                     }
                     break;
@@ -770,7 +850,8 @@ class ArrayPacker {
 
                 case 'd':
                 case 'D':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         if (items-- > 0)
                             from = array.get(idx++);
                         else
@@ -780,8 +861,9 @@ class ArrayPacker {
 
                         long bits = Double.doubleToLongBits(d);
 
-                        for (int i = 0; i < Long.SIZE / Byte.SIZE; ++i) {
-                            result.append((char) ((bits >> (i * 8) & 0xff)));
+                        for (int i = 0; i < Long_SIZE / Byte_SIZE; ++i)
+                        {
+                            result.append((char)((bits >> (i * 8) & 0xff)));
                         }
                     }
                     break;
@@ -793,14 +875,16 @@ class ArrayPacker {
                     break;
 
                 case 'x': // null byte
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         result.append('\0');
                     }
                     break;
 
                 case 'X': // back up byte
                     plen = result.length();
-                    if (plen < len) {
+                    if (plen < len)
+                    {
                         throw new RubyException(RubyRuntime.ArgumentErrorClass, "X outside of string");
                     }
                     result.delete(plen - len, plen);
@@ -808,16 +892,20 @@ class ArrayPacker {
 
                 case '@':
                     len -= result.length();
-                    if (len > 0) {
-                        while (len-- > 0) {
+                    if (len > 0)
+                    {
+                        while (len-- > 0)
+                        {
                             result.append('\0');
                         }
                     }
 
                     len = -len;
-                    if (len > 0) {
+                    if (len > 0)
+                    {
                         plen = result.length();
-                        if (plen < len) {
+                        if (plen < len)
+                        {
                             throw new RubyException(RubyRuntime.ArgumentErrorClass, "X outside of string");
                         }
                         result.delete(plen - len, plen);
@@ -828,12 +916,14 @@ class ArrayPacker {
                     throw new RubyException(RubyRuntime.ArgumentErrorClass, "% is not supported");
 
                 case 'U':
-                    while (len-- > 0) {
+                    while (len-- > 0)
+                    {
                         char[] buf = new char[8];
 
                         from = array.get(idx++);
                         long l = RubyTypesUtil.convertToJavaLong(from);
-                        if (l < 0) {
+                        if (l < 0)
+                        {
                             throw new RubyException(RubyRuntime.RangeErrorClass, "pack(U): value (" + from + ") out of range");
                         }
                         int le = uv_to_utf8(buf, l);
@@ -847,17 +937,24 @@ class ArrayPacker {
                     ptr = from.toString();
                     plen = ptr.length();
 
-                    if (len <= 2) {
+                    if (len <= 2)
+                    {
                         len = 45;
-                    } else {
+                    }
+                    else
+                    {
                         len = len / 3 * 3;
                     }
 
-                    while (plen > 0) {
+                    while (plen > 0)
+                    {
                         int todo;
-                        if (plen > len) {
+                        if (plen > len)
+                        {
                             todo = len;
-                        } else {
+                        }
+                        else
+                        {
                             todo = plen;
                         }
 
@@ -868,15 +965,16 @@ class ArrayPacker {
                     break;
 
                 case 'M': // quoted-printable encoded string
-                {
-                    String str = ((RubyString) array.get(idx++)).toString();
-                    if (len <= 1) {
-                        len = 72;
-                    }
+                    {
+                        String str = ((RubyString)array.get(idx++)).toString();
+                        if (len <= 1)
+                        {
+                            len = 72;
+                        }
 
-                    result.append(qpencode(str, len));
-                }
-                break;
+                        result.append(qpencode(str, len));
+                    }
+                    break;
 
                 case 'P': // pointer to packed byte string
                 case 'p': // pointer to string
@@ -891,5 +989,5 @@ class ArrayPacker {
         }
 
         return result;
-    }*/
+    }
 }
