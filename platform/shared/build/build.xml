@@ -50,6 +50,9 @@
               
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
+                <exclude name="applog.txt" />
+                <exclude name=".git/**" />
+                <exclude name="bin/**" />
             </fileset>
         </copy>
     
