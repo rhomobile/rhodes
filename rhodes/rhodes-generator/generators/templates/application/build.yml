@@ -1,5 +1,5 @@
 env:
-  version: 1.0.8
+  version: 1.0.9
   vendor: rhomobile
   bbver: 4.6
   applog: rholog.txt
