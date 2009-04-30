@@ -9,7 +9,7 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
-import com.rhomobile.rhodes.Rhodes;
+import com.rhomobile.rhodes.Platform;
 import com.rhomobile.rhodes.RhodesInstance;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyString;
@@ -21,7 +21,7 @@ import com.xruby.runtime.lang.*;
 public class RhoPhonebook extends RubyBasic {
 
 	private ContactList contactList = new ContactList();
-	private Rhodes activity;
+	private Platform activity;
 	private Cursor cursor;
 
 	static final RubyString RUBY_PB_ID = ObjectFactory.createString("id");

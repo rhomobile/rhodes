@@ -2,40 +2,53 @@ package rhomobile;
 
 import java.io.InputStream;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
-//import java.io.ByteArrayInputStream;
-//import com.rho.sync.SyncEngine; 
-import rhomobile.db.PerstLiteAdapter;
+import com.rho.db.DBAdapter;
 import rhomobile.sync.SyncEngine;
 import rhomobile.location.GeoLocation;
 import rhomobile.camera.Camera;
+//import net.rim.device.api.system.CodeModuleManager;
 
 public class RhoRuby {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhoRuby");
+	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID getStartPath = RubyID.intern("get_start_path");
 	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	static RubyValue receiver;
-	static xruby.ServeME.main mainObj;
+	static RubyProgram mainObj;
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
 		
 		RubyRuntime.init(args);
 
-        PerstLiteAdapter.initMethods(RubyRuntime.DBAdapterClass);
+        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
         SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
         GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
         Camera.initMethods(RubyRuntime.CameraClass);
         WebView.initMethods(RubyRuntime.WebViewClass);
         
-		mainObj = new xruby.ServeME.main();
-		receiver = mainObj.invoke();
+        try{
+        	//Class mainRuby = Class.forName("xruby.ServeME.main");
+        	
+    		mainObj = new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
+    		receiver = mainObj.invoke();
+        	
+        /*}catch(ClassNotFoundException exc){
+        	LOG.ERROR("Cannot create ServeME object", exc);*/
+        }catch(Throwable exc){
+        	LOG.ERROR("Cannot create ServeME object", exc);
+        }
 	}
 	
 	public static void RhoRubyStop(){

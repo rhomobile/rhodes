@@ -18,12 +18,8 @@
  */
 package rhomobile.sync;
 
-import java.util.Date;
-
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-
-import rhomobile.db.PerstLiteAdapter;
 
 /**
  * The Class SyncThread.
@@ -93,6 +89,7 @@ public class SyncThread implements Runnable {
 				try {
 					if (!isStop()) {
 						setState(STATE_PAUSE);
+						LOG.INFO("SyncEngine wait for " + SYNC_WAIT_INTERVAL + " msec");
 						sync.wait(SYNC_WAIT_INTERVAL);
 					}
 				} catch (Exception e) {

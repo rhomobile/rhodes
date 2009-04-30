@@ -112,11 +112,15 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
 	[self copyFromMainBundle:@"lib" replace:replaceFiles];
+#if TARGET_IPHONE_SIMULATOR	
 	[self copyFromMainBundle:@"db" replace:NO];  //TBD: need to check db version reset db if different
+#else
+	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
+#endif	
 	
-//#if TARGET_IPHONE_SIMULATOR	//DEBUG	
-//	[self copyFromMainBundle:@"rhodes_conf.txt" replace:replaceFiles];	
-//#endif	
+#if TARGET_IPHONE_SIMULATOR	//DEBUG	
+	[self copyFromMainBundle:@"rhoconfig.txt" replace:replaceFiles];	
+#endif	
 	
 }
 

@@ -174,4 +174,17 @@ public class RhoSupport {
 		m_strCurAppPath = curAppPath;
 	}
     
+	
+	public static String getRhoDBVersion(){
+		String strVer = "";
+		RubyValue val = RubyRuntime.ObjectClass.getConstant("Rhodes");
+		if ( val != null && val != RubyConstant.QNIL && val instanceof RubyModule){
+			RubyModule module = (RubyModule)val;
+			RubyValue ver = module.getConstant("DBVERSION");
+			if ( ver != null && ver != RubyConstant.QNIL )
+				strVer = ver.toStr();
+		}
+		
+		return strVer;
+	}
 }

@@ -29,6 +29,8 @@ import com.xruby.runtime.lang.RubyVarArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyInteger;
+import com.xruby.runtime.builtin.ObjectFactory;
 
 /**
  * The Class SyncEngine.
@@ -59,6 +61,19 @@ public class SyncEngine extends RubyBasic {
 		return sNotifications;
 	}
 	
+	//public static RubyArray createArray() {
+	//	return new RubyArray();
+	//}
+	//public static RubyHash createHash() {
+	//	return ObjectFactory.createHash();
+	//}
+	public static RubyInteger createInteger(long val) {
+		return ObjectFactory.createInteger(val);
+	}
+	//public static RubyString createString(String val) {
+	//	return ObjectFactory.createString(val);
+	//}
+	
 	// @RubyLevelMethod(name="dosync")
 	/**
 	 * Dosync.
@@ -74,12 +89,12 @@ public class SyncEngine extends RubyBasic {
 
 	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
 		boolean bRes = SyncUtil.fetch_client_login(arg1.toString(), arg2.toString());
-		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
+		return bRes ? createInteger(1L) : createInteger(0L); 
 	}
 	
 	public static RubyValue logged_in() {
 		boolean bRes = SyncUtil.logged_in();
-		return bRes ? SyncUtil.createInteger(1L) : SyncUtil.createInteger(0L); 
+		return bRes ? createInteger(1L) : createInteger(0L); 
 	}
 	
 	public static RubyValue logout() {
