@@ -250,8 +250,7 @@ LRESULT CMainWindow::OnForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     return 0;
 }
 
-LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+void CMainWindow::SetRhobundleReloadMenu() {
 	if ( m_bRhobundleReloadEnabled )
 	{
 		m_bRhobundleReloadEnabled = false;
@@ -267,8 +266,32 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
 		#endif
 	}
+}
 
+LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SetRhobundleReloadMenu();
 	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetStartPage(), NULL, NULL, NULL, NULL);
+	return 0;
+}
+
+LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SetRhobundleReloadMenu();
+	
+	LPTSTR startPage = NULL;
+	rho::String lastPage = RHOCONF().getString("LastVisitedPage");
+	LPTSTR lastPageW = NULL;
+	if (lastPage.length() > 0) {
+		startPage = lastPageW = wce_mbtowc(lastPage.c_str());
+	} else {
+		startPage = CHttpServer::Instance()->GetStartPage();
+	}
+	m_spIWebBrowser2->Navigate(startPage, NULL, NULL, NULL, NULL);
+	if (lastPageW) {
+		free(lastPageW);
+	}
+	
 	return 0;
 }
 
@@ -517,7 +540,8 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-
+	
+	BOOL store_current_url = RHOCONF().getBool("KeepTrackOfLastVisitedPage") && !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -535,6 +559,11 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	}
 
 	m_current_url = wce_wctomb(url);
+	
+	if( store_current_url ) {
+		RHOCONF().setString("LastVisitedPage",m_current_url);
+		RHOCONF().saveToFile();
+	}
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
