@@ -12,7 +12,9 @@
 #define DEFAULT_LOGCATEGORY "RDispatcher"
 
 #ifdef __SYMBIAN32__
-static char* localhost = "http://127.0.0.1:8080";
+
+extern char* get_home_url();
+
 #else
 static char* localhost = "http://localhost:8080";
 #endif
@@ -276,9 +278,16 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 		}
 	}
 	
+#ifdef __SYMBIAN32__	
+	full_len = strlen(get_home_url())+strlen(tmp_url)+1;
+	ret = malloc(full_len);
+	_shttpd_snprintf(ret, full_len, "%s%s", get_home_url(), tmp_url);	
+#else		
 	full_len = strlen(localhost)+strlen(tmp_url)+1;
 	ret = malloc(full_len);
 	_shttpd_snprintf(ret, full_len, "%s%s", localhost, tmp_url);	
+#endif	
+
 	free(tmp_url);
 	
 	return ret;

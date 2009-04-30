@@ -2,13 +2,13 @@ package com.rhomobile.rhodes;
 
 public class RhodesInstance {
 	
-	private static Rhodes instance;
+	private static Platform instance;
 
-	public static Rhodes getInstance() {
+	public static Platform getInstance() {
 		return instance;
 	}
 
-	public static void setInstance(Rhodes instance) {
+	public static void setInstance(Platform instance) {
 		if ( RhodesInstance.instance == null )
 			RhodesInstance.instance = instance;
 	}

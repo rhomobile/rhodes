@@ -28,7 +28,7 @@ const struct vec _shttpd_known_http_methods[] = {
 	{"HEAD",	4},
 	{NULL,		0}
 };
-
+	
 /*
  * This structure tells how HTTP headers must be parsed.
  * Used by parse_headers() function.
@@ -919,7 +919,7 @@ pass_socket(struct shttpd_ctx *ctx, int sock, int is_ssl)
 	(void) send(lazy->ctl[1], (void *) buf, sizeof(buf), 0);
 }
 
-static int
+int
 set_ports(struct shttpd_ctx *ctx, const char *p)
 {
 	int		sock, len, is_ssl, port;

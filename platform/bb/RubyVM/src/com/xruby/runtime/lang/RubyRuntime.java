@@ -81,7 +81,8 @@ public class RubyRuntime {
     public static RubyClass StringIOClass;
     
     //RHO
-    public static RubyClass DBAdapterClass;
+	private static RubyModule SQLite3Module;
+    public static RubyClass DatabaseClass;
     public static RubyClass SyncEngineClass;
     public static RubyClass StringScannerClass;
     public static RubyClass PhonebookClass;
@@ -231,7 +232,9 @@ public class RubyRuntime {
         ExceptionClass = RubyAPI.defineClass("Exception", RubyRuntime.ObjectClass);
         RubyExceptionValue_Methods.initMethods(ExceptionClass);
 
-        DBAdapterClass = RubyAPI.defineClass("DbAdapter", RubyRuntime.ObjectClass);
+		SQLite3Module = RubyAPI.defineModule("SQLite3");
+		DatabaseClass = SQLite3Module.defineClass("Database", RubyRuntime.ObjectClass);
+//        DBAdapterClass = RubyAPI.defineClass("DbAdapter", RubyRuntime.ObjectClass);
 //        PerstLiteAdapter.initMethods(DBAdapterClass);
         
         SyncEngineClass = RubyAPI.defineClass("SyncEngine", RubyRuntime.ObjectClass);

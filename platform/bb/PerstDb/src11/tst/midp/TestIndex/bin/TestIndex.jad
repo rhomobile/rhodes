@@ -1,9 +1,0 @@
-MIDlet-1: TestIndex, TestIndex.png, TestIndex
-MIDlet-Jar-Size: 266251
-MIDlet-Jar-URL: TestIndex.jar
-MIDlet-Name: TestIndex
-MIDlet-Permissions: javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.file.write
-MIDlet-Vendor: knizhnik@garret.ru
-MIDlet-Version: 1.0
-MicroEdition-Configuration: CLDC-1.1
-MicroEdition-Profile: MIDP-1.0

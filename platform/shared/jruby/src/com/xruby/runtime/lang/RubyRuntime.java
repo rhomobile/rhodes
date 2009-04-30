@@ -368,6 +368,7 @@ public class RubyRuntime {
 
         //RHO_ADED
         RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_ME");
+        RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_DBME");
         //
         
         updateStdout();

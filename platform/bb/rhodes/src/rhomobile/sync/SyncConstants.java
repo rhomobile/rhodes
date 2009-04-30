@@ -18,6 +18,7 @@
  */
 package rhomobile.sync;
 
+import com.xruby.runtime.builtin.*;
 /**
  * The Class SyncConstants.
  */
@@ -39,6 +40,16 @@ public class SyncConstants {
 	public static final String SOURCES_TABLE = "sources";
 
 	public static final String CLIENT_INFO = "client_info";
+	
+	public static final String COL_ATTRIB = "attrib";
+	public static final String COL_SOURCEID = "source_id";
+	public static final String COL_OBJECT = "object";
+	public static final String COL_VALUE = "value";
+	public static final String COL_UPDATETYPE = "update_type";
+	public static final String COL_ATTRIBTYPE = "attrib_type";
+	public static final String COL_TOKEN = "token";
+	public static final String COL_SOURCEURL = "source_url";
+	public static final String COL_SESSION = "session";
 	
 	// Sync OP Types
 	/** The Constant UPDATE_TYPE_UPDATE. */
