@@ -50,6 +50,19 @@ private:
     void operator=(const CMutexLock&);
 };
 
+class CLocalMutexLock {
+public:
+    explicit CLocalMutexLock() : m_Mutex() { m_Mutex.Lock(); }
+    ~CLocalMutexLock() { m_Mutex.Unlock(); }
+private:
+    CMutex m_Mutex;
+
+    // Disallow "evil" constructors
+    CLocalMutexLock(const CLocalMutexLock&);
+    void operator=(const CLocalMutexLock&);
+};
+
+
 }
 }
 
