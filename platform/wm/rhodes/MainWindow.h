@@ -10,6 +10,7 @@
 #include "GetURLDialog.h"
 #include "NetRequest.h"
 #include "logging/RhoLog.h"
+#include "common/RhoConf.h"
 #if defined(WIN32)
 #include "menubar.h"
 #endif
@@ -60,6 +61,7 @@ public:
         COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
+		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
 #if !defined(_WIN32_WCE)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 #endif
@@ -88,6 +90,8 @@ private:
 	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 #if !defined(_WIN32_WCE)
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 #endif
@@ -146,6 +150,8 @@ private:
 	bool m_bRhobundleReloadEnabled;
 	char* m_current_url;
     char* m_szStartPage;
+
+	void SetRhobundleReloadMenu();
 
 private:
 	CNetRequest m_callbackRequest;
