@@ -165,13 +165,10 @@ extern const char* RhoGetRootPath();
 -(void) start {
 	//Create 
 	appManager = [AppManager instance]; 
-
-	//Init log and settings
-	InitRhoLog(RhoGetRootPath());
-	
 	//Configure AppManager
 	[appManager configure];
-
+	//Init log and settings
+	InitRhoLog(RhoGetRootPath());
 	//Start Sync engine
 	[self initializeDatabaseConn];
 	// Startup the sync engine thread

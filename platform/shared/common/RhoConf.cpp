@@ -3,7 +3,7 @@
 #include "RhoFilePath.h"
 #include "StringConverter.h"
 
-static const char* CONF_FILENAME = "rhodes_conf.txt";
+static const char* CONF_FILENAME = "rhoconfig.txt";
 
 namespace rho{
 namespace general{
