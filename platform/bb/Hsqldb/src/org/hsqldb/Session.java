@@ -407,6 +407,7 @@ public class Session implements SessionInterface {
      * @throws  HsqlException
      */
     boolean addDeleteAction(Table table, Row row) throws HsqlException {
+    	m_bNeedCommit = !isNestedTransaction;
 
         if (!isAutoCommit || isNestedTransaction) {
             Transaction t = new Transaction(true, table, row, actionTimestamp);
@@ -419,7 +420,6 @@ public class Session implements SessionInterface {
             table.removeRowFromStore(row);
         }
 
-        m_bNeedCommit = true;
         return false;
     }
 
@@ -431,20 +431,24 @@ public class Session implements SessionInterface {
      * @throws  HsqlException
      */
     boolean addInsertAction(Table table, Row row) throws HsqlException {
+    	
+    	m_bNeedCommit = !isNestedTransaction;
 
         if (!isAutoCommit || isNestedTransaction) {
-            Transaction t = new Transaction(false, table, row,
-                                            actionTimestamp);
-
-            rowActionList.add(t);
-            database.txManager.addTransaction(this, t);
-
+        	//RHO
+        	if ( isNestedTransaction ){
+	            Transaction t = new Transaction(false, table, row,
+	                                            actionTimestamp);
+	
+	            rowActionList.add(t);
+	            database.txManager.addTransaction(this, t);
+        	}
+        	
             return true;
         } else {
             table.commitRowToStore(row);
         }
 
-        m_bNeedCommit = true;
         return false;
     }
 
