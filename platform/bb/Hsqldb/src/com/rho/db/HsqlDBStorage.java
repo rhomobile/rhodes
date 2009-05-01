@@ -89,4 +89,14 @@ public class HsqlDBStorage implements IDBStorage {
 		}
 	}
 	
+	public void startTransaction()throws DBException
+	{
+		m_dbSess.setAutoCommit(false);
+	}
+	
+	public void commit()throws DBException
+	{
+		m_dbSess.setAutoCommit(true);
+	}
+	
 }

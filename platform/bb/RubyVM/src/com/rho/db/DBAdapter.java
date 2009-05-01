@@ -148,6 +148,16 @@ public class DBAdapter extends RubyBasic {
 		"CREATE INDEX by_type ON object_values (attrib_type)";
     }
     
+    public void startTransaction()throws DBException
+    {
+    	m_dbStorage.startTransaction();
+    }
+    
+    public void commit()throws DBException
+    {
+    	m_dbStorage.commit();
+    }
+    
     private void openDB(String strDBName)
     {
     	if ( m_bIsOpen )
