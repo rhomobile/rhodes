@@ -1,6 +1,7 @@
 #import "WebViewController.h"
-#include "rhoruby.h"
-#include "UniversalLock.h"
+#import "rhoruby.h"
+#import "UniversalLock.h"
+#import "config.h"
 
 static char currentLocation[4096] = "";
 
@@ -13,6 +14,12 @@ void set_current_location(CFStringRef location) {
 	if (fragment) *fragment = 0; //cut out fragment
 	printf("Current location: %s\n",currentLocation);
 	//UNLOCK(current_location);
+
+	if (config_getBool("KeepTrackOfLastVisitedPage")) {
+		config_setString("LastVisitedPage",currentLocation);
+		config_save();
+	}
+	
 }
 
 
