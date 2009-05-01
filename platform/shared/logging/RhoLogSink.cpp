@@ -107,32 +107,29 @@ void CLogFileSink::saveLogPosition(){
     m_pPosFile->flush();
 }
 
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 void CLogOutputSink::writeLogMessage( String& strMsg )
 {
     if ( strMsg.length() > 1 && strMsg[strMsg.length()-2] == '\r' )
         strMsg.erase(strMsg.length()-2,1);
 
+    const char* szMsg = strMsg.c_str(); 
+
 #if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
-		const char* szMsg = strMsg.c_str(); 
-		::OutputDebugStringA(strMsg.c_str());
-//        printf(strMsg.c_str());
-        for( int n = 0; n < strMsg.length(); n+= 100 )
-            fwrite(strMsg.c_str()+n, 1, min(100,strMsg.length()-n) , stdout );
-
-        fflush(stdout);
-        
+		::OutputDebugStringA(szMsg);
 #elif defined( OS_SYMBIAN )
-        RDebug::Printf(strMsg.c_str());
-#elif defined( OS_MACOSX )
-		printf(strMsg.c_str());
-#else
-        //printf(strMsg.c_str());
-        for( int n = 0; n < strMsg.length(); n+= 100 )
-            fwrite(strMsg.c_str()+n, 1, min(100,strMsg.length()-n) , stdout );
-
-        fflush(stdout);
+        TPtrC8 des((const TUint8*)szMsg);
+      	RDebug::RawPrint(des);
+        return;
 #endif
 
+    for( int n = 0; n < strMsg.length(); n+= 100 )
+        fwrite(szMsg+n, 1, min(100,strMsg.length()-n) , stdout );
+
+    fflush(stdout);
 }
 
 }
