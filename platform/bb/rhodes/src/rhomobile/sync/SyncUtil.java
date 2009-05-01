@@ -104,21 +104,32 @@ public class SyncUtil {
 				nTotal += count;
 				if (count > 0) {
 
-					for (int i = 0; !thread.isStop() && i < count; i++) {
-						SyncObject syncObj = ((SyncObject) list.get(i)); 
-						String dbOp = syncObj.getDbOperation();
-						if (dbOp != null) {
-							
-							if (dbOp.equalsIgnoreCase("insert")) {
-//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+					try{
+						LOG.INFO("Start write data to DB" );
+						adapter.startTransaction();
+						for (int i = 0; !thread.isStop() && i < count; i++) {
+							SyncObject syncObj = ((SyncObject) list.get(i)); 
+							String dbOp = syncObj.getDbOperation();
+							if (dbOp != null) {
 								
-								syncObj.insertIntoDatabase();
-								inserted++;
-							} else if (dbOp.equalsIgnoreCase("delete")) {
-								syncObj.deleteFromDatabase();
-								deleted++;
+								if (dbOp.equalsIgnoreCase("insert")) {
+	//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+									
+									syncObj.insertIntoDatabase();
+									inserted++;
+								} else if (dbOp.equalsIgnoreCase("delete")) {
+									syncObj.deleteFromDatabase();
+									deleted++;
+								}
 							}
 						}
+						adapter.commit();
+						LOG.INFO("Finish write data to DB" );
+					}catch(DBException exc){
+						LOG.ERROR("Failed write to database", exc);
+						header._count = -1;
+						success = 0;
+						break;
 					}
 				}
 				success = 1;
@@ -161,7 +172,7 @@ public class SyncUtil {
 			
 			try {
 				Object[] values = {token, new Integer(source.get_sourceId())};
-				SyncUtil.adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
+				adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
 			}catch (DBException e) {
 				LOG.ERROR("There was an error update token in sources record", e);
 			}
