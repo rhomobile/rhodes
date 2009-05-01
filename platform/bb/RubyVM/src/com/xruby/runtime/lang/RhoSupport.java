@@ -38,6 +38,10 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return get_property(receiver, arg);}
 		});
+		SystemModule.defineModuleMethod( "has_network", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return has_network(receiver);}
+		});
 		
 	}
 
@@ -129,6 +133,12 @@ public class RhoSupport {
     	return RubyConstant.QNIL;
     }
 
+    //@RubyLevelMethod(name="has_network", module=true)
+    public static RubyValue has_network(RubyValue receiver) {
+    	//TODO: has_network
+    	return RubyConstant.QTRUE;
+    }
+    
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)
     public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
         String required_file = arg.toStr();
