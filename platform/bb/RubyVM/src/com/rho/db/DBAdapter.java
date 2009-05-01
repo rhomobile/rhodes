@@ -125,7 +125,7 @@ public class DBAdapter extends RubyBasic {
 		"client_id VARCHAR(255) PRIMARY KEY,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
-		" id INTEGER PRIMARY KEY,"+
+		" id INTEGER default NULL,"+
 		" token varchar(30) default NULL,"+
 		" source_id int default NULL,"+
 		" attrib varchar(255) default NULL,"+
