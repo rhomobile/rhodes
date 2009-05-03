@@ -36,6 +36,8 @@ public class DBAdapter extends RubyBasic {
 	
 	public void setDbCallback(IDBCallback callback){
 		m_dbCallback = callback;
+		
+		m_dbStorage.setDbCallback(callback);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{

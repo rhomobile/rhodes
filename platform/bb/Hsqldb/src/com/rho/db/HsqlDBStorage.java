@@ -8,10 +8,12 @@ import com.xruby.runtime.lang.RubyValue;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
 
-public class HsqlDBStorage implements IDBStorage {
+public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 
 	private Session m_dbSess;
 	private FileUtilBB m_fs;
+	private IDBCallback m_dbCallback;
+	private HsqlDBRowResult m_rowResult = new HsqlDBRowResult();
 	
 	public HsqlDBStorage(){
 		m_fs = FileUtilBB.getDefaultInstance(); 
@@ -46,6 +48,7 @@ public class HsqlDBStorage implements IDBStorage {
 			props.setProperty(HsqlDatabaseProperties.hsqldb_default_table_type, "cached");
 	
 			m_dbSess = DatabaseManager.newSession(DatabaseURL.S_FILE, strDbName, "SA", "", props);
+			m_dbSess.setDeleteCallback(this);
 			
 			if ( !m_fs.exists(strDbName + ".data") )
 			{
@@ -57,6 +60,34 @@ public class HsqlDBStorage implements IDBStorage {
 		}
 	}
 
+/*    static class HsqlDeleteTrigger implements org.hsqldb.Trigger {
+
+        public void fire(int i, String name, String table, Object[] row1,
+                         Object[] row2) {
+            throw new RuntimeException("Missing Trigger class!");
+        }
+    }
+*/ 
+	
+	public void onDeleteRow(Table table, Row row) {
+		if ( m_dbCallback == null )
+			return;
+		
+		m_rowResult.init(table, row);
+		m_dbCallback.OnDeleteFromTable(table.getName().name, m_rowResult );
+	}
+
+	public void setDbCallback(IDBCallback callback)
+	{
+		m_dbCallback = callback;
+		if ( m_dbSess != null )
+			m_dbSess.setDeleteCallback(this);
+		
+//		m_dbSess.sqlExecuteDirectNoPreChecks(
+//			"CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW QUEUE 0 CALL \"com.rho.HsqlDBStorage.HsqlDeleteTrigger\"");
+//		m_dbSess.commitSchema();
+	}
+	
 	public void close() throws DBException {
 		try{
 			if ( m_dbSess != null )
