@@ -9,7 +9,7 @@ public class RhoConf {
     private java.util.Hashtable m_mapValues = new java.util.Hashtable();
     
     private static RhoConf m_Instance;
-	private static String CONF_FILENAME = "rhodes_conf.txt";
+	private static String CONF_FILENAME = "rhoconfig.txt";
     
     public static RhoConf getInstance(){return m_Instance;}
     
@@ -101,7 +101,7 @@ public class RhoConf {
     	return strData;
     }
 
-    String getString(String szName){
+    public String getString(String szName){
     	String value = (String)m_mapValues.get(szName);
     	if ( value != null )
     		return value;
@@ -109,7 +109,7 @@ public class RhoConf {
         return "";
     }
 
-    int getInt(String szName){
+    public int getInt(String szName){
     	String value = (String)m_mapValues.get(szName);
     	if ( value != null && value.length() > 0 )
     		return Integer.parseInt(value);
@@ -117,19 +117,19 @@ public class RhoConf {
         return 0;
     }
 
-    boolean  getBool(String szName){
+    public boolean  getBool(String szName){
         return getInt(szName) == 0 ? false : true;
     }
 
-    void   setString(String szName, String str){
+    public void   setString(String szName, String str){
     	m_mapValues.put(szName,str);
     }
 
-    void   setInt(String szName, int nVal){
+    public void   setInt(String szName, int nVal){
     	m_mapValues.put(szName,Integer.toString(nVal));
     }
 
-    void   setBool(String szName, boolean bVal){
+    public void   setBool(String szName, boolean bVal){
         setInt(szName, bVal ? 1 : 0 );
     }
 
