@@ -1,5 +1,6 @@
 ..\Hsqldb\src\com\rho\db\FileUtilBB.java
 ..\Hsqldb\src\com\rho\db\HsqlDBResult.java
+..\Hsqldb\src\com\rho\db\HsqlDBRowResult.java
 ..\Hsqldb\src\com\rho\db\HsqlDBStorage.java
 ..\Hsqldb\src\com\rho\db\Journal.java
 ..\Hsqldb\src\com\rho\db\RandomAccessFile.java
