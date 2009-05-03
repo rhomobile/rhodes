@@ -7,6 +7,8 @@ import javax.microedition.io.HttpConnection;
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
 
+import com.rho.RhoConf;
+
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
@@ -116,6 +118,27 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         thread.start();                       
     }
 
+    void saveCurrentLocation(String url) {
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			RhoConf.getInstance().setString("LastVisitedPage",url);
+			RhoConf.getInstance().saveToFile();
+			System.out.println("Saved LastVisitedPage: " + url);
+		}   	
+    }
+
+    boolean restoreLocation() {
+    	System.out.println("======= Restore Location to LastVisitedPage ============");
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			String url = RhoConf.getInstance().getString("LastVisitedPage");
+			if (url.length()>0) {
+				System.out.println("Navigating to LastVisitedPage: " + url);
+				this.navigateUrl(url);
+				return true;
+			}
+		} 
+		return false;
+    }
+   
     void back(){
     	if ( _history.size() <= 1 )
     		return;
@@ -124,6 +147,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	String url = (String)_history.elementAt(nPos);
     	_history.removeElementAt(nPos+1);
 
+    	saveCurrentLocation(url);
+    	
     	navigateUrl(url);
     }
 
@@ -157,6 +182,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		_history.setSize(nPos+1);
     		_history.setElementAt(strUrl, _history.size()-1 );
     	}
+    	saveCurrentLocation(strUrl);
     }
 
     void openLink(){
@@ -309,7 +335,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
 
-        navigateHome();
+        if(!restoreLocation()) {
+        	navigateHome();
+        }
     }
 
     public void refreshCurrentPage(){
