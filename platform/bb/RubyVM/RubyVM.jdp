@@ -24,6 +24,9 @@ src\com\rho\db\IDBResult.java
 src\com\rho\db\IDBStorage.java
 src\com\rho\IFile.java
 src\com\rho\IRhoLogSink.java
+src\com\rho\net\IHttpConnection.java
+src\com\rho\net\INetworkAccess.java
+src\com\rho\net\URI.java
 src\com\rho\RhoClassFactory.java
 src\com\rho\RhoConf.java
 src\com\rho\RhoEmptyLogger.java
@@ -35,6 +38,17 @@ src\com\rho\RhoLogOutputSink.java
 src\com\rho\RhoProfiler.java
 src\com\rho\SimpleFile.java
 src\com\rho\StringScanner.java
+src\com\rho\sync\SyncBlob.java
+src\com\rho\sync\SyncConstants.java
+src\com\rho\sync\SyncEngine.java
+src\com\rho\sync\SyncJSONParser.java
+src\com\rho\sync\SyncManager.java
+src\com\rho\sync\SyncNotifications.java
+src\com\rho\sync\SyncObject.java
+src\com\rho\sync\SyncOperation.java
+src\com\rho\sync\SyncSource.java
+src\com\rho\sync\SyncThread.java
+src\com\rho\sync\SyncUtil.java
 src\com\rho\TestProfiler.java
 src\com\rho\TestRhoLog.java
 src\com\rho\Tokenizer.java

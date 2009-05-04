@@ -12,8 +12,6 @@ import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyID;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 //@RubyLevelClass(name="Numeric")
 public abstract class RubyNumeric extends RubyValue {

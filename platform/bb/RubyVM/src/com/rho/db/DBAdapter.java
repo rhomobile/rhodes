@@ -1,6 +1,5 @@
 package com.rho.db;
 
-import java.io.IOException;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
@@ -36,6 +35,8 @@ public class DBAdapter extends RubyBasic {
 	
 	public void setDbCallback(IDBCallback callback){
 		m_dbCallback = callback;
+		
+		m_dbStorage.setDbCallback(callback);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
@@ -146,6 +147,16 @@ public class DBAdapter extends RubyBasic {
 		"last_sync_success int default 0);"+
 		"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
 		"CREATE INDEX by_type ON object_values (attrib_type)";
+    }
+    
+    public void startTransaction()throws DBException
+    {
+    	m_dbStorage.startTransaction();
+    }
+    
+    public void commit()throws DBException
+    {
+    	m_dbStorage.commit();
     }
     
     private void openDB(String strDBName)

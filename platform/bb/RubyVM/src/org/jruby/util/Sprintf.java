@@ -29,8 +29,6 @@ package org.jruby.util;
 
 import j2me.math.HugeInt;
 //import java.text.DecimalFormatSymbols;
-import j2me.util.List;
-import j2me.util.Locale;
 
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;

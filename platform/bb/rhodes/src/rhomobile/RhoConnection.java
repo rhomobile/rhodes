@@ -22,6 +22,8 @@ import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RhoSupport;
+import com.rho.net.URI;
+import com.rho.sync.SyncEngine;
 
 public class RhoConnection implements HttpConnection {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -550,7 +552,7 @@ public class RhoConnection implements HttpConnection {
 				showGeoLocation();
 				return true;
 			}else if ( model.equalsIgnoreCase("syncdb") ){
-				rhomobile.sync.SyncEngine.wakeUp();
+				SyncEngine.wakeUp();
 				respondOK();
 				return true;
 			}

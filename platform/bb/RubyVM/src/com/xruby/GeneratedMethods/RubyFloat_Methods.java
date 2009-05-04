@@ -1,6 +1,5 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.builtin.RubyFloat;
 public class RubyFloat_Methods{
 public static void initMethods( RubyClass klass){

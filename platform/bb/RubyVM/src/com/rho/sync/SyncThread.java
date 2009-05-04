@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -46,7 +46,8 @@ public class SyncThread implements Runnable {
 	private static final int STATE_DOSTOP = 4;
 
 	private int m_nState = STATE_NONE;
-
+	private Thread m_thread;
+	
 	/**
 	 * Instantiates a new sync thread.
 	 */
@@ -58,9 +59,8 @@ public class SyncThread implements Runnable {
 		//delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true
 		//		: false;
 		
-		Thread thread = new Thread(this);
-		thread.setPriority(Thread.MIN_PRIORITY);
-		thread.start();
+		m_thread = new Thread(this);
+		m_thread.start();
 		
 		LOG.INFO("SyncEngine is started...");
 		//printStats();
@@ -71,11 +71,28 @@ public class SyncThread implements Runnable {
 	 */
 	public void quit() {
 		synchronized (sync) {
-			setState(STATE_DOSTOP);
-			sync.notify();
-
-			SyncManager.closeConnection();
+			if ( getState() != STATE_NONE ){
+				setState(STATE_DOSTOP);
+				sync.notify();
+			}
 		}
+		
+		SyncManager.closeConnection();
+		
+		try{
+			int nTry = 0;
+			while( nTry < 10 && getState() != STATE_NONE ){
+				Thread.sleep(100);
+				nTry++;
+			}
+			
+			if ( getState() != STATE_NONE )
+				m_thread.interrupt();
+			
+		}catch(Exception exc){
+			
+		}
+		
 	}
 
 	/*
@@ -84,6 +101,8 @@ public class SyncThread implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+		
 		while (!isStop()) {
 			synchronized (sync) {
 				try {

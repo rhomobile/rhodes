@@ -19,8 +19,6 @@
 
 package org.apache.oro.util;
 
-import java.util.*;
-
 /**
  * This class is a GenericCache subclass implementing an LRU
  * (Least Recently Used) cache replacement policy.  In other words,

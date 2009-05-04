@@ -10,7 +10,6 @@ import j2me.util.ArrayList;
 import j2me.util.Iterator;
 import j2me.util.List;
 import j2me.lang.SystemMe;
-import com.xruby.runtime.lang.RubyOneArgMethod;
 import org.apache.oro.io.GlobFilenameFilter;
 
 import com.xruby.runtime.lang.RubyBasic;
@@ -20,8 +19,6 @@ import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 ////@RubyLevelClass(name="Dir", modules="Enumerable")
 public class RubyDir extends RubyBasic {

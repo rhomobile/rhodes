@@ -2,9 +2,9 @@ package rhomobile.camera;
 
 import java.util.Vector;
 import java.util.Date;
-import java.io.IOException;
+//import java.io.IOException;
 
-import rhomobile.sync.SyncBlob;
+import com.rho.sync.SyncBlob;
 import rhomobile.RhodesApplication;
 import rhomobile.Utilities;
 

@@ -7,8 +7,6 @@ package com.xruby.runtime.builtin;
 
 import org.apache.oro.text.regex.MatchResult;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 //@RubyLevelClass(name="MatchData")
 public class RubyMatchData extends RubyBasic {

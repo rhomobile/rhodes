@@ -6,7 +6,7 @@
 package com.xruby.runtime.lang;
 
 import com.xruby.runtime.builtin.RubyArray;
-import j2me.lang.*;
+import j2me.lang.Cloneable;
 
 public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
     private int access_;

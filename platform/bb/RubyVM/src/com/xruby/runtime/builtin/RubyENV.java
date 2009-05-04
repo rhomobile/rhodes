@@ -6,8 +6,6 @@ import j2me.lang.SystemMe;
 
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelObject;
 
 ////@RubyLevelObject(name="ENV", objectClass="Object")
 public class RubyENV {
