@@ -508,6 +508,9 @@ public class SyncUtil {
 			if ( !syncResult.stopSync ){
 				SyncSource current = new SyncSource(sources, i);
 	
+				if ( current.get_sourceUrl().length() == 0 )
+					continue;
+				
 				if (client_id == null)
 					client_id = get_client_id(current);
 	
