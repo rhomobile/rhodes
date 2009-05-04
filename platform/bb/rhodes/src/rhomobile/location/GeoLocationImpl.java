@@ -33,6 +33,7 @@ public class GeoLocationImpl implements Runnable {
 	
 	private String sync = "sync";
 	private int m_nState = STATE_NONE;
+	private Thread m_thread;
 	
 	public GeoLocationImpl() {
 		Criteria cr= new Criteria();
@@ -42,9 +43,8 @@ public class GeoLocationImpl implements Runnable {
 			m_lp = LocationProvider.getInstance(cr);
 			
 			if ( m_lp!=null ){
-				Thread thread = new Thread(this);
-				thread.setPriority(Thread.MIN_PRIORITY);
-				thread.start();
+				m_thread = new Thread(this);
+				m_thread.start();
 			}			
 		}catch(LocationException ex)
 		{
@@ -101,17 +101,34 @@ public class GeoLocationImpl implements Runnable {
 	
 	public void quit() {
 		synchronized (sync) {
-			setState(STATE_DOSTOP);
-			sync.notify();
+			if ( getState() != STATE_NONE ){
+				setState(STATE_DOSTOP);
+				sync.notify();
+			}
+		}
+		
+		if ( m_lp != null )
+			m_lp.reset();
 			
-			if ( m_lp != null )
-				m_lp.reset();
+		try{
+			int nTry = 0;
+			while( nTry < 10 && getState() != STATE_NONE ){
+				Thread.sleep(100);
+				nTry++;
+			}
+			
+			if ( getState() != STATE_NONE )
+				m_thread.interrupt();
+			
+		}catch(Exception exc){
+			
 		}
 	}
 	
 	public void run() {
 		
 		LOG.INFO("GeoLocation is started...");
+		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 		
 		while (!isStop()) {
 			setState(STATE_LOCATING);
@@ -128,8 +145,9 @@ public class GeoLocationImpl implements Runnable {
 				}
 			}
 		}
-		setState(STATE_NONE);
 		LOG.INFO("GeoLocation is shutdown...");
+		
+		setState(STATE_NONE);
 	}
 	
 	public void wakeUp() {

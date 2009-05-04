@@ -8,7 +8,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import com.rho.db.DBAdapter;
-import rhomobile.sync.SyncEngine;
+import com.rho.sync.SyncEngine;
 import rhomobile.location.GeoLocation;
 import rhomobile.camera.Camera;
 //import net.rim.device.api.system.CodeModuleManager;

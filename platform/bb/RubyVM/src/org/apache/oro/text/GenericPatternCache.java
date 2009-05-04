@@ -19,8 +19,6 @@
 
 package org.apache.oro.text;
 
-import java.util.*;
-
 import org.apache.oro.text.regex.*;
 import org.apache.oro.util.*;
 

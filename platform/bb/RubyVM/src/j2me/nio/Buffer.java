@@ -8,7 +8,6 @@
  */
 package j2me.nio;
 
-import j2me.nio.*;
 /**
  * Clean-room implementation of Buffer to support 
  * <code>javolution.util.Struct</code> when <code>java.nio</code> is

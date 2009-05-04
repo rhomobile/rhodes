@@ -1,6 +1,5 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.builtin.RubyFileTestModule;
 public class RubyFileTestModule_Methods{
 public static void initMethods( RubyModule klass){

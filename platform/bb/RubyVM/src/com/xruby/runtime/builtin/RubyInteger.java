@@ -15,7 +15,6 @@ import com.xruby.runtime.lang.RubyValue;
 //import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 //import com.xruby.runtime.lang.annotation.UndefMethod;
 
-import com.xruby.runtime.lang.RubyClass;
 /*@RubyLevelClass(
 		name="Integer", 
 		superclass="Numeric",

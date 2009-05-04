@@ -23,10 +23,6 @@ public class RubyAPI {
         return ClassFactory.defineClass(name, superclass);
     }
 
-    protected static void assert(boolean bTrue){
-    	AssertMe.assert(bTrue);
-    }
-    
     /* For compiler */
     public static RubyClass defineClass(String name, RubyValue superclass) {
         if (null != superclass && !(superclass instanceof RubyClass)) {
@@ -171,7 +167,7 @@ public class RubyAPI {
 
     //receiver is implicit self
     public static RubyValue callMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid) {
-        assert(null == args || args.size() > 1);//use callOneArgMethod if has only one arg
+    	AssertMe.rho_assert(null == args || args.size() > 1);//use callOneArgMethod if has only one arg
         RubyMethod m = receiver.findMethod(mid);
         if (null != m && !UndefMethod.isUndef(m)) {
             return m.invoke(receiver, args, block);
@@ -192,7 +188,7 @@ public class RubyAPI {
     //method call with *one* argument and no block (use the other one if no arg (arg == null)!)
     //This make code (especially reverse engineered ones) more readable.
     public static RubyValue callOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid) {
-        assert(null != arg);
+    	AssertMe.rho_assert(null != arg);
         RubyMethod m = receiver.findMethod(mid);
         if (null != m && !UndefMethod.isUndef(m)) {
             return m.invoke(receiver, arg, block);
@@ -202,7 +198,7 @@ public class RubyAPI {
     }
     
     public static RubyValue callTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) {
-        assert(null != arg0 && null != arg1);
+    	AssertMe.rho_assert(null != arg0 && null != arg1);
         RubyMethod m = receiver.findMethod(mid);
         if (null != m && !UndefMethod.isUndef(m)) {
             return m.invoke(receiver, arg0, arg1, block);
@@ -223,7 +219,7 @@ public class RubyAPI {
     //method call with *one* argument and no block (use the other one if no arg (arg == null)!)
     //This make code (especially reverse engineered ones) more readable.
     public static RubyValue callPublicOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid) {
-    	assert(null != arg);
+    	AssertMe.rho_assert(null != arg);
     	RubyMethod m = receiver.findPublicMethod(mid);
     	if (null != m && !UndefMethod.isUndef(m)) {
     		return m.invoke(receiver, arg, block);
@@ -233,7 +229,7 @@ public class RubyAPI {
     }
     
     public static RubyValue callPublicTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) {
-    	assert(null != arg0 && null != arg1);
+    	AssertMe.rho_assert(null != arg0 && null != arg1);
     	RubyMethod m = receiver.findPublicMethod(mid);
     	if (null != m && !UndefMethod.isUndef(m)) {
     		return m.invoke(receiver, arg0, arg1, block);
@@ -244,7 +240,7 @@ public class RubyAPI {
 
     //TODO should pass owner to work with protected method
     public static RubyValue callPublicMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid) {
-        assert(null == args || args.size() > 1);//use callPublicOneArgMethod if has only one arg
+    	AssertMe.rho_assert(null == args || args.size() > 1);//use callPublicOneArgMethod if has only one arg
         RubyMethod m = receiver.findPublicMethod(mid);
         if (null != m && !UndefMethod.isUndef(m)) {
             return m.invoke(receiver, args, block);
@@ -264,7 +260,7 @@ public class RubyAPI {
     }
 
     public static RubyValue callSuperOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, MethodBlockBase mbb) {
-        assert(null != arg);
+    	AssertMe.rho_assert(null != arg);
         RubyClass c = (RubyClass) mbb.getScope();
         RubyMethod m = c.findSuperMethod(mbb.getID());
         if (null == m || UndefMethod.isUndef(m)) {
@@ -275,7 +271,7 @@ public class RubyAPI {
     }
     
     public static RubyValue callSuperTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, MethodBlockBase mbb) {
-        assert(null != arg0 && null != arg1);
+    	AssertMe.rho_assert(null != arg0 && null != arg1);
         RubyClass c = (RubyClass) mbb.getScope();
         RubyMethod m = c.findSuperMethod(mbb.getID());
         if (null == m || UndefMethod.isUndef(m)) {
@@ -286,7 +282,7 @@ public class RubyAPI {
     }
 
     public static RubyValue callSuperMethod(RubyValue receiver, RubyArray args, RubyBlock block, MethodBlockBase mbb) {
-        assert(null == args || args.size() > 1);//use callSuperOneArgMethod if has only one arg
+    	AssertMe.rho_assert(null == args || args.size() > 1);//use callSuperOneArgMethod if has only one arg
         RubyClass c = (RubyClass) mbb.getScope();
         RubyMethod m = c.findSuperMethod(mbb.getID());
         if (null == m || UndefMethod.isUndef(m)) {

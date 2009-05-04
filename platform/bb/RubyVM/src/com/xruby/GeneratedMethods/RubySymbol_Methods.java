@@ -1,6 +1,5 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.RubySymbol;
 public class RubySymbol_Methods{
 public static void initMethods( RubyClass klass){

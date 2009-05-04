@@ -12,7 +12,6 @@ package j2me.io;
 import j2me.lang.UnsupportedOperationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.*;
 
 public class FileInputStream extends InputStream {
     

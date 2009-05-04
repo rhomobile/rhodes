@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -90,30 +90,21 @@ public class SyncObject {
 	 * 
 	 * @return the int
 	 */
-	public int insertIntoDatabase() {
-		try {
-			Object[] values = { new Integer(_primaryKey),_attrib,new Integer(_sourceId),_object,_value,_updateType,_token,_type};
-			
-			SyncUtil.adapter.executeSQL("INSERT INTO object_values (id, attrib, source_id, object, value,"+
-					 "update_type,token,attrib_type) VALUES(?,?,?,?,?,?,?,?)", values);
-			
-			//insertIntoTable(SyncUtil
-			//		.createString(SyncConstants.OBJECTS_TABLE), this
-			//		.getHashFromValues());
-		} catch (DBException e) {
-			LOG.ERROR("There was an error inserting the record", e);
-			return SyncConstants.SYNC_OBJECT_ERROR;
-		}
+	public int insertIntoDatabase() throws DBException{
+		Object[] values = { new Integer(_primaryKey),_attrib,new Integer(_sourceId),_object,_value,_updateType,_token,_type};
+		
+		SyncUtil.adapter.executeSQL("INSERT INTO object_values (id, attrib, source_id, object, value,"+
+				 "update_type,token,attrib_type) VALUES(?,?,?,?,?,?,?,?)", values);
+		
+		//insertIntoTable(SyncUtil
+		//		.createString(SyncConstants.OBJECTS_TABLE), this
+		//		.getHashFromValues());
 		return SyncConstants.SYNC_OBJECT_SUCCESS;
 	}
 
-	public void deleteFromDatabase() {
-		try {
-			Object[] values = {new Integer(_primaryKey)};
-			SyncUtil.adapter.executeSQL("DELETE FROM object_values where id=?", values);
-		}catch (DBException e) {
-			LOG.ERROR("There was an error delete the record", e);
-		}
+	public void deleteFromDatabase() throws DBException{
+		Object[] values = {new Integer(_primaryKey)};
+		SyncUtil.adapter.executeSQL("DELETE FROM object_values where id=?", values);
 		/*RubyHash hash = SyncUtil.createHash();
 		hash.add(SyncUtil.createString("id"), SyncUtil
 				.createInteger(this.getPrimaryKey()));

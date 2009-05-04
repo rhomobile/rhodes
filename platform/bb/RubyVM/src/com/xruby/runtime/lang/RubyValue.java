@@ -15,7 +15,6 @@ import j2me.util.Map;
 
 import j2me.lang.Cloneable;
 //import j2me.lang.CloneNotSupportedException;
-import j2me.lang.AssertMe;
 
 /*
 'return' inside a block will cause return in the method, for example:
@@ -93,11 +92,6 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         return v;
     }
 */
-    protected void assert(boolean bTrue)
-    {
-    	AssertMe.assert(bTrue);
-    }
-    
     public boolean equals(Object o) {
         if (this == o) {
             return true;

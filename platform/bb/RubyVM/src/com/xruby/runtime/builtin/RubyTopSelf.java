@@ -11,26 +11,25 @@ import com.xruby.runtime.lang.RubyValue;
 //import com.xruby.runtime.lang.annotation.RubyLevelObject;
 
 import j2me.lang.AssertMe;
-import com.xruby.runtime.lang.RubyClass;
 
 //@RubyLevelObject(objectClass="Object")
 public class RubyTopSelf {
     //@RubyLevelMethod(name="include", singleton=true)
     public static RubyValue include(RubyValue receiver) {
-    	AssertMe.assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
+    	AssertMe.rho_assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
         return RubyRuntime.ObjectClass;
     }
 
     //@RubyLevelMethod(name="include", singleton=true)
     public static RubyValue include(RubyValue receiver, RubyValue arg) {
-    	AssertMe.assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
+    	AssertMe.rho_assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
         RubyRuntime.ObjectClass.include(arg);
         return RubyRuntime.ObjectClass;
     }
 
     //@RubyLevelMethod(name="include", singleton=true)
     public static RubyValue include(RubyValue receiver, RubyArray args) {
-    	AssertMe.assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
+    	AssertMe.rho_assert(RubyRuntime.TOP_LEVEL_SELF_VALUE == receiver);
         RubyRuntime.ObjectClass.include(args);
         return RubyRuntime.ObjectClass;
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package rhomobile;
+package com.rho.net;
 
 /** URI class. This class is the Xerces URI class.
  *

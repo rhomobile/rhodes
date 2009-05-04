@@ -1,8 +1,8 @@
-package rhomobile.sync;
+package com.rho.sync;
 
 import j2me.util.ArrayList;
 
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.io.IOException;
 import com.rho.SimpleFile;
 import com.rho.RhoClassFactory;
@@ -10,9 +10,9 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-import rhomobile.URI;
+//import com.rho.net.URI;
 import com.rho.db.*;
-import com.xruby.runtime.builtin.RubyArray;
+//import com.xruby.runtime.builtin.RubyArray;
 
 public class SyncBlob {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -200,31 +200,32 @@ public class SyncBlob {
 				String fName = makeBlobFolderName();
 				RhoClassFactory.createFile().delete(fName);
 			}catch(Exception exc){
-				
+				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
 			}
 		}
 
-		public void OnDeleteFromTable(String tableName, Object rows2Delete) {
-			//TODO: OnDeleteFromTable
-			/*if ( !(item instanceof PerstLiteAdapter.Table_object_values))
+		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
+		{
+			if ( !SyncConstants.OBJECTS_TABLE.equalsIgnoreCase(tableName) )
 				return;
 			
-			PerstLiteAdapter.Table_object_values obj = (PerstLiteAdapter.Table_object_values)item;
-			if ( !obj.getTypeField().equals("blob.file") )
+			if ( ! rows2Delete.getString(0, SyncConstants.COL_ATTRIBTYPE).equals("blob.file") )
 				return;
-			
-//			if ( obj.getUpdateTypeField().equals("create") || obj.getUpdateTypeField().equals("update") )
-//				return;
-			
-			String url = obj.getValueField();
+
+			String strUpdateType = rows2Delete.getString(0, SyncConstants.COL_UPDATETYPE);
+			if ( strUpdateType.equals("create") || strUpdateType.equals("update") )
+				return;
+
+			String url = rows2Delete.getString(0, SyncConstants.COL_VALUE);
 			if ( url == null || url.length() == 0 )
 				return;
 			
 			try{
-				FileFactory.createFile().delete(url);
-			}catch(StorageError exc){
-				
-			}*/
+			    SimpleFile oFile = RhoClassFactory.createFile();
+			    oFile.delete(url);
+			}catch(Exception exc){
+				LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
+			}
 		}
 		
 	}

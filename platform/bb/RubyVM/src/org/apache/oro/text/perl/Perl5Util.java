@@ -19,7 +19,6 @@
 
 package org.apache.oro.text.perl;
 
-import java.util.*;
 import j2me.util.*;
 
 import org.apache.oro.text.*;

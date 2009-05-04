@@ -9,8 +9,6 @@ import j2me.math.HugeInt;
 import j2me.lang.MathEx;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 ////@RubyLevelClass(name="Fixnum", superclass="Integer")
 public class RubyFixnum extends RubyInteger {

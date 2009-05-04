@@ -300,7 +300,7 @@ public class CharacterDataLatin1 {
     static {
                 { // THIS CODE WAS AUTOMATICALLY CREATED BY GenerateCharacter:
             char[] data = A_DATA.toCharArray();
-            AssertMe.assert (data.length == (256 * 2));
+            AssertMe.rho_assert (data.length == (256 * 2));
             int i = 0, j = 0;
             while (i < (256 * 2)) {
                 int entry = data[i++] << 16;

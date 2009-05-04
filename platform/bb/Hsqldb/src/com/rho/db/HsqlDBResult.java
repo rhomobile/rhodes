@@ -117,7 +117,7 @@ public class HsqlDBResult implements IDBResult
 	public int getInt(int nItem, String colname){ return getIntByIdx(nItem, findColIndex(colname) ); }
 	public String getString(int nItem, String colname){ return getStringByIdx(nItem, findColIndex(colname) ); }
 
-	private Object getColvalueByIdx(int nItem, int nCol)
+	Object getColvalueByIdx(int nItem, int nCol)
 	{
 		if ( nCol < 0 || nCol >= getColCount() )
 			throw new IndexOutOfBoundsException("HsqlDBResult.getStringByIdx : " + nCol + ". Count : " + getColCount() );
@@ -134,7 +134,7 @@ public class HsqlDBResult implements IDBResult
 		m_nCurIndex = 0;
 	}
 	
-	private Object[] getItem(int nItem){
+	Object[] getItem(int nItem){
 		if ( m_current == null || nItem < 0 || nItem >= getCount() )
 			return null;
 
@@ -147,11 +147,9 @@ public class HsqlDBResult implements IDBResult
 		}
 
 		return m_current.data;  
-		
-//		throw new java.lang.RuntimeException("Random access to Result: Not implemented");
 	}
 	
-	private int findColIndex(String colname )
+	int findColIndex(String colname )
 	{
 		for( int i = 0; i < getColCount(); i++ )
 		{

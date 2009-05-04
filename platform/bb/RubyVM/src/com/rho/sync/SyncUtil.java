@@ -16,12 +16,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import javax.microedition.io.HttpConnection;
-import rhomobile.URI;
+import com.rho.net.IHttpConnection;
+import com.rho.net.URI;
 import j2me.util.ArrayList;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -104,21 +104,32 @@ public class SyncUtil {
 				nTotal += count;
 				if (count > 0) {
 
-					for (int i = 0; !thread.isStop() && i < count; i++) {
-						SyncObject syncObj = ((SyncObject) list.get(i)); 
-						String dbOp = syncObj.getDbOperation();
-						if (dbOp != null) {
-							
-							if (dbOp.equalsIgnoreCase("insert")) {
-//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+					try{
+						LOG.INFO("Start write data to DB" );
+						adapter.startTransaction();
+						for (int i = 0; !thread.isStop() && i < count; i++) {
+							SyncObject syncObj = ((SyncObject) list.get(i)); 
+							String dbOp = syncObj.getDbOperation();
+							if (dbOp != null) {
 								
-								syncObj.insertIntoDatabase();
-								inserted++;
-							} else if (dbOp.equalsIgnoreCase("delete")) {
-								syncObj.deleteFromDatabase();
-								deleted++;
+								if (dbOp.equalsIgnoreCase("insert")) {
+	//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
+									
+									syncObj.insertIntoDatabase();
+									inserted++;
+								} else if (dbOp.equalsIgnoreCase("delete")) {
+									syncObj.deleteFromDatabase();
+									deleted++;
+								}
 							}
 						}
+						adapter.commit();
+						LOG.INFO("Finish write data to DB" );
+					}catch(DBException exc){
+						LOG.ERROR("Failed write to database", exc);
+						header._count = -1;
+						success = 0;
+						break;
 					}
 				}
 				success = 1;
@@ -161,7 +172,7 @@ public class SyncUtil {
 			
 			try {
 				Object[] values = {token, new Integer(source.get_sourceId())};
-				SyncUtil.adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
+				adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
 			}catch (DBException e) {
 				LOG.ERROR("There was an error update token in sources record", e);
 			}
@@ -497,6 +508,9 @@ public class SyncUtil {
 			if ( !syncResult.stopSync ){
 				SyncSource current = new SyncSource(sources, i);
 	
+				if ( current.get_sourceUrl().length() == 0 )
+					continue;
+				
 				if (client_id == null)
 					client_id = get_client_id(current);
 	
@@ -802,7 +816,7 @@ public class SyncUtil {
 		return null;
 	}
 
-	private static ParsedCookie makeCookie(HttpConnection connection)
+	private static ParsedCookie makeCookie(IHttpConnection connection)
 			throws IOException {
 		ParsedCookie cookie = new ParsedCookie();
 
@@ -840,7 +854,7 @@ public class SyncUtil {
 		for (int i = 0; i < sources.getCount(); i++) {
 			String strSession = "";
 			// String strExpire="";
-			HttpConnection connection = null;
+			IHttpConnection connection = null;
 
 			String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
 			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
@@ -860,7 +874,7 @@ public class SyncUtil {
 
 					connection = SyncManager.getConnection();
 					int code = connection.getResponseCode();
-					if (code == HttpConnection.HTTP_OK) {
+					if (code == IHttpConnection.HTTP_OK) {
 						ParsedCookie cookie = makeCookie(connection);
 						strSession = cookie.strAuth + ";" + cookie.strSession
 								+ ";";

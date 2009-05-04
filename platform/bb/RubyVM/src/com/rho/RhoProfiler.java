@@ -8,7 +8,7 @@ public class RhoProfiler {
 	
 	private static final RhoLogger LOG = new RhoLogger("PROFILER");
 	
-    private class CCounter
+    private static class CCounter
     {
         long  m_startTime;
         boolean m_bWasStarted;

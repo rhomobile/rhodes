@@ -1,7 +1,5 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
-import com.xruby.runtime.builtin.RubyRandom;
 public class RubyRandom_Methods{
 public static void initMethods( RubyModule klass){
 /*

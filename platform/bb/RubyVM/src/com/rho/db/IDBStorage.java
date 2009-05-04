@@ -9,4 +9,9 @@ public interface IDBStorage {
 	public abstract IDBResult createResult();
 	
 	public abstract void deleteAllFiles(String strPath)throws Exception;
+	
+	public abstract void startTransaction()throws DBException;
+	public abstract void commit()throws DBException;
+	
+	public abstract void setDbCallback(IDBCallback callback);
 }

@@ -19,7 +19,6 @@
 
 package org.apache.oro.text.regex;
 
-import java.util.*;
 import j2me.util.*;
 /**
  * The Util class is a holder for useful static utility methods that can
