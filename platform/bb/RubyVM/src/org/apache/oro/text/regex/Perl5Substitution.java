@@ -19,8 +19,6 @@
 
 package org.apache.oro.text.regex;
 
-import java.util.*;
-
 /**
  * Perl5Substitution implements a Substitution consisting of a
  * literal string, but allowing Perl5 variable interpolation referencing

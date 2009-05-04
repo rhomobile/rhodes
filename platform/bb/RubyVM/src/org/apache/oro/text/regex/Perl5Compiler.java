@@ -19,7 +19,6 @@
 
 package org.apache.oro.text.regex;
 
-import java.util.*;
 import j2me.util.*;
 import j2me.lang.CharacterMe;
 

@@ -16,25 +16,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-//import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
-
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-
 import javolution.io.UTF8StreamReader;
-
-//import com.xruby.runtime.builtin.ObjectFactory;
-//import com.xruby.runtime.builtin.RubyString;
-//import com.xruby.runtime.lang.RubyValue;
-
-import rhomobile.NetworkAccess;
+import com.rho.net.IHttpConnection;
+import com.rho.RhoClassFactory;
 
 /**
  * The Class SyncManager.
@@ -43,7 +34,7 @@ public class SyncManager {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("SyncManager");
 
-	private static HttpConnection connection = null;
+	private static IHttpConnection connection = null;
 	private static char[] m_ReadBuffer = new char[1024];
 	
 	private static final StringBuffer readFully(InputStream in) throws IOException {
@@ -112,7 +103,7 @@ public class SyncManager {
 			return null;
 		
 		closeConnection();
-		connection = NetworkAccess.connect(url);
+		connection = RhoClassFactory.getNetworkAccess().connect(url);
 		
 		if ( session != null &&  session.length() > 0 )
 			connection.setRequestProperty("Cookie", session);
@@ -122,7 +113,7 @@ public class SyncManager {
 
 		LOG.INFO("getResponseCode : " + code);
 		
-		if (code != HttpConnection.HTTP_OK) 
+		if (code != IHttpConnection.HTTP_OK) 
 		{
 			if (is != null) {
 				is.close();
@@ -130,7 +121,7 @@ public class SyncManager {
 			closeConnection();
 			
 			LOG.ERROR("Error retrieving data: " + code);
-			if (code == HttpConnection.HTTP_UNAUTHORIZED) 
+			if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 				SyncUtil.logout();
 			return null;
 		}
@@ -159,10 +150,10 @@ public class SyncManager {
 			makePostRequest(url,data,session,contentType);
 
 			int code = connection.getResponseCode();
-			if (code == HttpConnection.HTTP_INTERNAL_ERROR || code == HttpConnection.HTTP_NOT_FOUND) {
+			if (code == IHttpConnection.HTTP_INTERNAL_ERROR || code == IHttpConnection.HTTP_NOT_FOUND) {
 				LOG.ERROR("Error posting data: " + code);
 				success = SyncConstants.SYNC_PUSH_CHANGES_ERROR;
-				if (code == HttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED) SyncUtil.logout();
 			}
 		} finally {
 			closeConnection();
@@ -201,7 +192,7 @@ public class SyncManager {
 		OutputStream os = null;
 		try {
 			closeConnection();
-			connection = NetworkAccess.connect(url);
+			connection = RhoClassFactory.getNetworkAccess().connect(url);
 			if ( session != null &&  session.length() > 0 )
 				connection.setRequestProperty("Cookie", session);
 			
@@ -216,7 +207,7 @@ public class SyncManager {
 			}
 			
 			os = connection.openOutputStream();
-			connection.setRequestMethod(HttpConnection.POST);
+			connection.setRequestMethod(IHttpConnection.POST);
 
 			if (bMultipart){
 				os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
@@ -247,7 +238,7 @@ public class SyncManager {
 		}
 	}
 
-	public static HttpConnection getConnection() {
+	public static IHttpConnection getConnection() {
 		return connection;
 	}
 

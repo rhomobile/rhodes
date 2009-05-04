@@ -8,9 +8,6 @@ package com.xruby.runtime.builtin;
 import java.io.IOException;
 //import java.nio.channels.Pipe;
 import j2me.util.Iterator;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyVarArgMethod;
 
 import com.xruby.runtime.lang.GlobalVariables;
 import com.xruby.runtime.lang.RubyAPI;

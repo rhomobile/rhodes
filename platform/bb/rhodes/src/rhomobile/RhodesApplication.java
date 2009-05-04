@@ -7,6 +7,7 @@ import javax.microedition.io.HttpConnection;
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
 
+import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -23,13 +24,13 @@ import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
 
-import rhomobile.NetworkAccess;
+import com.rho.net.INetworkAccess;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
 import rhomobile.location.GeoLocation;
-import rhomobile.sync.SyncEngine;
-import rhomobile.sync.SyncUtil;
-import rhomobile.sync.SyncNotifications;
+import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncUtil;
+import com.rho.sync.SyncNotifications;
 import com.rho.*;
 
 import java.util.Vector;
@@ -230,9 +231,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	//TestRhoLog test = new TestRhoLog();
     	//test.runAllTests();
     	//TestProfiler.runAllTests();
+    	try{
+    		RhoClassFactory.getNetworkAccess().configure();
+    	}catch(IOException exc){
+    		LOG.ERROR(exc.getMessage());
+    	}
     	
-    	NetworkAccess.autoConfigure();
-
     	SyncUtil.init();
 
         RhoRuby.RhoRubyStart("");
@@ -251,6 +255,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
         
+    	try{
+    		RhoClassFactory.getNetworkAccess().close();
+    	}catch(IOException exc){
+    		LOG.ERROR(exc.getMessage());
+    	}
+    		
         RhoLogger.close();
     }
 

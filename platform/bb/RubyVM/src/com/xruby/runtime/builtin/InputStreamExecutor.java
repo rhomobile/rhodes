@@ -1,8 +1,5 @@
 package com.xruby.runtime.builtin;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 import com.xruby.runtime.lang.RubyValue;
 import java.io.InputStream;
 import java.io.IOException;

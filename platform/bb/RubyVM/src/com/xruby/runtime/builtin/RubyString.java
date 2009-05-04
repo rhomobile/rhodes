@@ -220,7 +220,7 @@ public class RubyString extends RubyBasic {
     }
 
     private String replace(String source, int start, int end, String replacement) {
-        assert(start <= source.length() - 1);
+        AssertMe.rho_assert(start <= source.length() - 1);
 
         if (end < start) {
             end = start + 1;

@@ -6,11 +6,12 @@
 package com.xruby.runtime.builtin;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
+//import com.xruby.runtime.lang.annotation.RubyLevelClass;
+//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import j2me.util.*;
 import j2me.lang.Iterable;
+import j2me.lang.AssertMe;
 
 ////@RubyLevelClass(name="Array", modules="Enumerable")
 public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
@@ -230,7 +231,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
 
     //create a new Array containing every element from index to the end
     public RubyValue collect(int index) {
-        assert(index >= 0);
+        AssertMe.rho_assert(index >= 0);
 
         final int size = array_.size() - index;
         if (size < 0) {

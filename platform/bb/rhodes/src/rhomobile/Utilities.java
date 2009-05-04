@@ -3,12 +3,16 @@ package rhomobile;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.microedition.io.Connector;
+//import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.io.http.HttpProtocolConstants;
 import net.rim.device.api.util.StringUtilities;
+
+import com.rho.RhoClassFactory;
+import com.rho.net.URI;
+import com.rho.net.bb.BBHttpConnection;
 
 /**
  * 
@@ -27,7 +31,8 @@ public class Utilities {
 				conn = new RhoConnection(uri);
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
-				conn = NetworkAccess.connect(url);
+				BBHttpConnection httpConn = (BBHttpConnection)(RhoClassFactory.getNetworkAccess().connect(url)); 
+				conn = httpConn.getConn();
 				// conn = NetworkAccess.connect(url);
 			}
 				

@@ -1,13 +1,13 @@
 package rhomobile.location;
 
-import rhomobile.RhoPhonebook;
-import rhomobile.sync.SyncEngine;
+//import rhomobile.RhoPhonebook;
+//import com.rho.sync.SyncEngine;
 
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyRuntime;
+//import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.builtin.ObjectFactory;
 

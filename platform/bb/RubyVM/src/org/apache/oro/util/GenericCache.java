@@ -19,7 +19,6 @@
 
 package org.apache.oro.util;
 
-import java.util.*;
 import j2me.util.*;
 
 /**

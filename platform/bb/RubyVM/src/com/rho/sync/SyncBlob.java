@@ -1,8 +1,8 @@
-package rhomobile.sync;
+package com.rho.sync;
 
 import j2me.util.ArrayList;
 
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.io.IOException;
 import com.rho.SimpleFile;
 import com.rho.RhoClassFactory;
@@ -10,9 +10,9 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-import rhomobile.URI;
+//import com.rho.net.URI;
 import com.rho.db.*;
-import com.xruby.runtime.builtin.RubyArray;
+//import com.xruby.runtime.builtin.RubyArray;
 
 public class SyncBlob {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 

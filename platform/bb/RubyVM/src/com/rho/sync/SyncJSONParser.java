@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import j2me.util.ArrayList;
 

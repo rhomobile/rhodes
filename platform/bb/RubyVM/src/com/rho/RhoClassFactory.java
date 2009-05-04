@@ -1,6 +1,8 @@
 package com.rho;
 
 import com.rho.db.*;
+import com.rho.net.*;
+import java.io.IOException;
 
 public class RhoClassFactory 
 { 
@@ -27,4 +29,26 @@ public class RhoClassFactory
         
         return (IDBStorage)wrapperClass.newInstance();
     }
+    
+    static INetworkAccess m_NAInstance;
+    public static INetworkAccess getNetworkAccess() throws IOException
+    {
+    	try{
+	    	if ( m_NAInstance == null )
+	    	{    	
+		        Class wrapperClass;
+		        try {
+		            wrapperClass = Class.forName("com.rho.net.bb.NetworkAccess");
+		        } catch (ClassNotFoundException exc) {  
+		            throw exc;
+		        }
+		        
+		        m_NAInstance = (INetworkAccess)wrapperClass.newInstance();
+	    	}
+    	}catch(Exception exc){
+	    	throw new IOException(exc.getMessage());
+	    }
+	    return m_NAInstance;
+    }
+    
 }

@@ -40,7 +40,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
     }
 
     private boolean open(String filename, String mode) {
-        AssertMe.assert (null == file_);
+        AssertMe.rho_assert (null == file_);
 		File f = new File(filename);
 		long length =  f.length();
         try {

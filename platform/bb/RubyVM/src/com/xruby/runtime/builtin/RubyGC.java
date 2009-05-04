@@ -6,8 +6,6 @@
 package com.xruby.runtime.builtin;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelModule;
 
 ////@RubyLevelModule(name="GC")
 public class RubyGC {

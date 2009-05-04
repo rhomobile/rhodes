@@ -16,12 +16,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rhomobile.sync;
+package com.rho.sync;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import javax.microedition.io.HttpConnection;
-import rhomobile.URI;
+import com.rho.net.IHttpConnection;
+import com.rho.net.URI;
 import j2me.util.ArrayList;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -816,7 +816,7 @@ public class SyncUtil {
 		return null;
 	}
 
-	private static ParsedCookie makeCookie(HttpConnection connection)
+	private static ParsedCookie makeCookie(IHttpConnection connection)
 			throws IOException {
 		ParsedCookie cookie = new ParsedCookie();
 
@@ -854,7 +854,7 @@ public class SyncUtil {
 		for (int i = 0; i < sources.getCount(); i++) {
 			String strSession = "";
 			// String strExpire="";
-			HttpConnection connection = null;
+			IHttpConnection connection = null;
 
 			String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
 			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
@@ -874,7 +874,7 @@ public class SyncUtil {
 
 					connection = SyncManager.getConnection();
 					int code = connection.getResponseCode();
-					if (code == HttpConnection.HTTP_OK) {
+					if (code == IHttpConnection.HTTP_OK) {
 						ParsedCookie cookie = makeCookie(connection);
 						strSession = cookie.strAuth + ";" + cookie.strSession
 								+ ";";
