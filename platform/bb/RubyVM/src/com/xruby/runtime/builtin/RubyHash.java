@@ -6,9 +6,6 @@
 package com.xruby.runtime.builtin;
 
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
-import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 
 import j2me.util.HashMap;
 import j2me.util.Iterator;

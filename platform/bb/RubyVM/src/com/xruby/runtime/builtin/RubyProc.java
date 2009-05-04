@@ -14,11 +14,6 @@ import com.xruby.runtime.lang.RubyVarArgMethod;
 //import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 import com.xruby.runtime.lang.RubyMethod;
 
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyClass;
-//import java.lang.reflect.Field;
-
 //@RubyLevelClass(name="Proc")
 public class RubyProc extends RubyBinding {
     private final RubyBlock value_;

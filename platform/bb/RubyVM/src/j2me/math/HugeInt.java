@@ -1,6 +1,8 @@
 package j2me.math;
 
-import j2me.lang.*;
+import j2me.lang.Comparable;
+import j2me.lang.Number;
+import j2me.lang.MathEx;
 
 public class HugeInt extends Number implements Comparable {
     int signum;
@@ -637,7 +639,7 @@ public class HugeInt extends Number implements Comparable {
     }
 
     public HugeInt and(HugeInt val) {
-    	int[] result = new int[Math.max(intLength(), val.intLength())];
+    	int[] result = new int[MathEx.max(intLength(), val.intLength())];
     	for (int i=0; i<result.length; i++)
     	    result[i] = (int) (getInt(result.length-i-1)
     				& val.getInt(result.length-i-1));
@@ -646,7 +648,7 @@ public class HugeInt extends Number implements Comparable {
         }
 
     public HugeInt or(HugeInt val) {
-    	int[] result = new int[Math.max(intLength(), val.intLength())];
+    	int[] result = new int[MathEx.max(intLength(), val.intLength())];
     	for (int i=0; i<result.length; i++)
     	    result[i] = (int) (getInt(result.length-i-1)
     				| val.getInt(result.length-i-1));
@@ -655,7 +657,7 @@ public class HugeInt extends Number implements Comparable {
         }
 
     public HugeInt xor(HugeInt val) {
-    	int[] result = new int[Math.max(intLength(), val.intLength())];
+    	int[] result = new int[MathEx.max(intLength(), val.intLength())];
     	for (int i=0; i<result.length; i++)
     	    result[i] = (int) (getInt(result.length-i-1)
     				^ val.getInt(result.length-i-1));
@@ -672,7 +674,7 @@ public class HugeInt extends Number implements Comparable {
     }
 
     public HugeInt andNot(HugeInt val) {
-        int[] result = new int[Math.max(intLength(), val.intLength())];
+        int[] result = new int[MathEx.max(intLength(), val.intLength())];
         for (int i=0; i<result.length; i++)
             result[i] = (int) (getInt(result.length-i-1)
                                 & ~val.getInt(result.length-i-1));
@@ -914,7 +916,7 @@ public class HugeInt extends Number implements Comparable {
         for (int i = intLength-1; i >= 0; i--) {
             result[i] = a[b--] & 0xff;
             int bytesRemaining = b - keep + 1;
-            int bytesToTransfer = Math.min(3, bytesRemaining);
+            int bytesToTransfer = MathEx.min(3, bytesRemaining);
             for (int j=8; j <= 8*bytesToTransfer; j += 8)
                 result[i] |= ((a[b--] & 0xff) << j);
         }

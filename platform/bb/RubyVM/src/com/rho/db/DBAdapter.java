@@ -1,6 +1,5 @@
 package com.rho.db;
 
-import java.io.IOException;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;

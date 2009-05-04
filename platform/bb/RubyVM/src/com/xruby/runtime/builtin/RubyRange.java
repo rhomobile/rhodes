@@ -5,11 +5,7 @@
 
 package com.xruby.runtime.builtin;
 
-import com.xruby.runtime.builtin.RubyProc.Invoke;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.annotation.RubyAllocMethod;
-import com.xruby.runtime.lang.annotation.RubyLevelClass;
-import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 //@RubyLevelClass(name="Range")
 public class RubyRange extends RubyBasic {

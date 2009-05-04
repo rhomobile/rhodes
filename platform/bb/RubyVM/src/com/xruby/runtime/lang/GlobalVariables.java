@@ -168,7 +168,7 @@ public class GlobalVariables {
     }
 
     public static RubyValue get(String name) {
-        AssertMe.assert('$' == name.charAt(0));
+        AssertMe.rho_assert('$' == name.charAt(0));
 
         GlobalVariable v = (GlobalVariable)values_.get(name);
         if (null != v) {
@@ -194,7 +194,7 @@ public class GlobalVariables {
 
     //TODO '$! = 2'  should raise exception: assigning non-exception to $! (TypeError)
     public static RubyValue set(RubyValue value, String name) {
-        AssertMe.assert('$' == name.charAt(0));
+        AssertMe.rho_assert('$' == name.charAt(0));
         GlobalVariable gv = (GlobalVariable)values_.get(name);
         if (gv == null) {
         	values_.put(name, new DefaultGlobalVariable(value));
@@ -224,8 +224,8 @@ public class GlobalVariables {
     }
 
     public static void alias(String newName, String oldName) {
-        AssertMe.assert('$' == newName.charAt(0));
-        AssertMe.assert('$' == oldName.charAt(0));
+        AssertMe.rho_assert('$' == newName.charAt(0));
+        AssertMe.rho_assert('$' == oldName.charAt(0));
 
         GlobalVariable v = (GlobalVariable)values_.get(oldName);
         if (null != v) {

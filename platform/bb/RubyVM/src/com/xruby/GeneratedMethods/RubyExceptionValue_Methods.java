@@ -1,6 +1,5 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.RubyExceptionValue;
 public class RubyExceptionValue_Methods{
 public static void initMethods( RubyClass klass){
