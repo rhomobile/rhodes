@@ -8,6 +8,8 @@ import javax.microedition.io.HttpConnection;
 //import org.garret.perst.StorageFactory;
 
 import com.rho.RhoConf;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -38,6 +40,9 @@ import java.util.Vector;
  */
 final public class RhodesApplication extends UiApplication implements RenderingApplication{
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhodesApplication");
+	
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -122,16 +127,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
 			RhoConf.getInstance().setString("LastVisitedPage",url);
 			RhoConf.getInstance().saveToFile();
-			System.out.println("Saved LastVisitedPage: " + url);
+			LOG.TRACE("Saved LastVisitedPage: " + url);
 		}   	
     }
 
     boolean restoreLocation() {
-    	System.out.println("======= Restore Location to LastVisitedPage ============");
+    	LOG.TRACE("Restore Location to LastVisitedPage");
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
 			String url = RhoConf.getInstance().getString("LastVisitedPage");
 			if (url.length()>0) {
-				System.out.println("Navigating to LastVisitedPage: " + url);
+				LOG.TRACE("Navigating to LastVisitedPage: " + url);
 				this.navigateUrl(url);
 				return true;
 			}
@@ -217,9 +222,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     /***************************************************************************
      * Main.
      **************************************************************************/
-    public static void main(String[] args) {
-    	
+    public static void main(String[] args)
+    {
     	RhoLogger.InitRhoLog();
+    	System.out.println("Rhodes STARTED");
+    	
     	//TestRhoLog test = new TestRhoLog();
     	//test.runAllTests();
     	//TestProfiler.runAllTests();
@@ -235,6 +242,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
+		
+		System.out.println("Rhodes EXIT");
     }
 
     void doClose(){
@@ -305,9 +314,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public boolean onClose() {
 			doClose();
-			super.onClose();
-			System.exit(0);
-			return true;
+			return super.onClose();
+			//System.exit(0);
+			//return true;
 		}
 
 		public boolean onMenu(int instance) {
