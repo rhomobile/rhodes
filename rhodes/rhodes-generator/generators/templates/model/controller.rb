@@ -8,7 +8,7 @@ class <%= class_name %>Controller < Rho::RhoController
     render
   end
 
-  # GET /<%= class_name %>/1
+  # GET /<%= class_name %>/{1}
   def show
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     render :action => :show
@@ -20,7 +20,7 @@ class <%= class_name %>Controller < Rho::RhoController
     render :action => :new
   end
 
-  # GET /<%= class_name %>/1/edit
+  # GET /<%= class_name %>/{1}/edit
   def edit
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     render :action => :edit
@@ -33,14 +33,14 @@ class <%= class_name %>Controller < Rho::RhoController
     redirect :action => :index
   end
 
-  # POST /<%= class_name %>/1/update
+  # POST /<%= class_name %>/{1}/update
   def update
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     @<%= name.downcase %>.update_attributes(@params['<%= name.downcase %>'])
     redirect :action => :index
   end
 
-  # POST /<%= class_name %>/1/delete
+  # POST /<%= class_name %>/{1}/delete
   def delete
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     @<%= name.downcase %>.destroy
