@@ -1,7 +1,6 @@
-%w[rubygems rake rake/clean fileutils newgem].each { |f| require f }
+%w[rubygems rake rake/clean fileutils newgem spec/rake/spectask].each { |f| require f }
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/version.rb'
-require 'rhodes-build'
 
 task :default => [:spec]
 

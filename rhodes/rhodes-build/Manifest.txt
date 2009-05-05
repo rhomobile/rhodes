@@ -128,6 +128,8 @@ res/prebuilt/common/db/syncdb.sqlite
 res/prebuilt/iphone/sim/rhorunner.app/Info.plist
 res/prebuilt/iphone/sim/rhorunner.app/MainWindow.nib
 res/prebuilt/iphone/sim/rhorunner.app/PkgInfo
+res/prebuilt/iphone/sim/rhorunner.app/Settings.bundle/Root.plist
+res/prebuilt/iphone/sim/rhorunner.app/Settings.bundle/en.lproj/Root.strings
 res/prebuilt/iphone/sim/rhorunner.app/back_btn.png
 res/prebuilt/iphone/sim/rhorunner.app/db/syncdb.sqlite
 res/prebuilt/iphone/sim/rhorunner.app/forward_btn.png
