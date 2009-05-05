@@ -51,6 +51,7 @@
 
 #define WIN32_LEAN_AND_MEAN  /* We always want minimal includes */
 #define __DBGAPI_H__
+#define _RHO_NO_MEMDEFINES 1
 
 #include <windows.h>
 #include <io.h>              /* because we so often use open/close/etc */
@@ -60,7 +61,6 @@
 #include <assert.h>
 
 //#include <altcecrt.h>
-#define _RHO_NO_MEMDEFINES 1
 #if defined(_WIN32_WCE)
 #include "wince.h"
 #endif

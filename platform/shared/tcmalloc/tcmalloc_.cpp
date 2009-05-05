@@ -615,8 +615,9 @@ static void ReportLargeAlloc(Length num_pages, void* result) {
 // handling for these routines.
 //namespace {
 void InvalidFree(void* ptr) {
-    ptr;
-  printf("TCMALLOC: InvalidFree\n");
+    //ptr;
+    printf("TCMALLOC: InvalidFree\n");
+    free(ptr);
 
     //TODO:InvalidFree logging
   //CRASH("Attempt to free invalid pointer: %p\n", ptr);
@@ -661,8 +662,12 @@ inline void* do_malloc_pages(Length num_pages) {
 inline void* do_malloc(size_t size) {
   void* ret = NULL;
 
-  if (!g_pTCMallocGuard)
-      g_pTCMallocGuard = new TCMallocGuard();
+  if (!g_pTCMallocGuard){
+      void* pmem  = malloc(sizeof(TCMallocGuard));
+
+      g_pTCMallocGuard = new ((void*)pmem) TCMallocGuard;
+          //new TCMallocGuard();
+  }
 
   // The following call forces module initialization
   ThreadCache* heap = ThreadCache::GetCache();
@@ -704,7 +709,15 @@ static inline ThreadCache* GetCacheIfPresent() {
 // This lets you call back to a given function pointer if ptr is invalid.
 // It is used primarily by windows code which wants a specialized callback.
 inline void do_free_with_callback(void* ptr, void (*invalid_free_fn)(void*)) {
-  if (ptr == NULL) return;
+  if (ptr == NULL) 
+      return;
+
+  if ( !g_pTCMallocGuard )
+  {
+      free(ptr);
+      return;
+  }
+
   ASSERT(Static::pageheap() != NULL);  // Should not call free() before malloc()
   const PageID p = reinterpret_cast<uintptr_t>(ptr) >> kPageShift;
   Span* span = NULL;
@@ -939,21 +952,26 @@ inline struct mallinfo do_mallinfo() {
   return info;
 }
 #endif  // #ifndef HAVE_STRUCT_MALLINFO
-/*
-static SpinLock set_new_handler_lock(SpinLock::LINKER_INITIALIZED);
 
-inline void* cpp_alloc(size_t size, bool nothrow) {
+static SpinLock set_new_handler_lock(SpinLock::LINKER_INITIALIZED);
+#include <new.h>
+#include <exception>
+
+void* cpp_alloc(size_t size, bool nothrow) {
   for (;;) {
     void* p = do_malloc(size);
 #ifdef PREANSINEW
     return p;
 #else
     if (p == NULL) {  // allocation failed
+        if (nothrow) return 0;
+        throw std::bad_alloc();
+
       // Get the current new handler.  NB: this function is not
       // thread-safe.  We make a feeble stab at making it so here, but
       // this lock only protects against tcmalloc interfering with
       // itself, not with other libraries calling set_new_handler.
-      std::new_handler nh;
+/*      std::new_handler nh;
       {
         SpinLockHolder h(&set_new_handler_lock);
         nh = std::set_new_handler(0);
@@ -972,13 +990,13 @@ inline void* cpp_alloc(size_t size, bool nothrow) {
       } catch (const std::bad_alloc&) {
         if (!nothrow) throw;
         return p;
-      }
+      } */
     } else {  // allocation success
       return p;
-    }
+    } 
 #endif
   }
-}*/
+}
 
 //}  // end unnamed namespace
 
