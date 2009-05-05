@@ -3,7 +3,7 @@
 #include "RhoFilePath.h"
 #include "StringConverter.h"
 
-static const char* CONF_FILENAME = "rhoconfig.txt";
+static const char* CONF_FILENAME = "apps/rhoconfig.txt";
 
 namespace rho{
 namespace general{
@@ -78,8 +78,8 @@ void RhoSettings::loadProperty( const char* start, int len ){
     const char* szValue = start + i+1;
     int nValueLen = len - (i+1);
 
-    while(*szValue==' '&& nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && szValue[nValueLen-1]==' ') nValueLen--;
+    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
+    while(nValueLen > 0 && szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"') nValueLen--;
 
     setPropertyByName(start, nNameLen, szValue, nValueLen );
 }

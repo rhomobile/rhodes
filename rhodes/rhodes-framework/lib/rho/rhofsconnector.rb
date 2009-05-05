@@ -15,6 +15,10 @@ module Rho
       def get_app_manifest_filename
         File.join(__rhoGetCurrentDir(), 'apps/app_manifest.txt')
       end
+      
+      def get_rhoconfig_filename
+        File.join(__rhoGetCurrentDir(), 'apps/rhoconfig.txt')
+      end
 
       def get_model_path(appname, modelname)
         File.join(__rhoGetCurrentDir(), 'apps/'+appname+'/'+modelname+'/')
