@@ -10,7 +10,7 @@ module Rho
 	
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
-      load Rho::RhoFSConnector.get_rhoconfig_filename
+      #load Rho::RhoFSConnector.get_rhoconfig_filename
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
