@@ -1,16 +1,14 @@
-require 'rho'
-
 # Startup page for your application
-Rho::RhoConfig.start_path = '/app'
+start_path = '/app'
 
 # Path to the options page (in this case handled by javascript)
-Rho::RhoConfig.options_path = '/app?settings=true'
+options_path = '/app?settings=true'
 
 # Location of bundle url (i.e. from rhohub.com)
-Rho::RhoConfig.rhobundle_zip_url = '<%=zip_url%>'
+rhobundle_zip_url = '<%=zip_url%>'
 
 # Optional password to access bundle (usually not required)
-Rho::RhoConfig.rhobundle_zip_pwd = nil
+rhobundle_zip_pwd = nil
 
 # Rhodes runtime properties
 MinSeverity  = 0

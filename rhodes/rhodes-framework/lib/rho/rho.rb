@@ -10,7 +10,7 @@ module Rho
 	
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
-      #load Rho::RhoFSConnector.get_rhoconfig_filename
+      process_rhoconfig
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
@@ -29,6 +29,16 @@ module Rho
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename).each do |line|
         require File.join(File.dirname(app_manifest_filename), line.chop)
+      end
+    end
+    
+    # Return the directories where we need to load configuration files
+    def process_rhoconfig
+      File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
+        parts = line.chop.split('=')
+        key = parts[0]
+        value = parts[1..parts.length-1].join('=') if parts and parts.length > 1
+        Rho::RhoConfig.config[key.strip] = value.strip!.gsub(/'|"/,'') if key and value
       end
     end
     
@@ -207,47 +217,23 @@ module Rho
   
   # Generic configuration class which accepts hashes with unique keys
   class RhoConfig
+    
     @@sources = {}
-    @@start_path = '/'
-    @@options_path = '/'
-    @@rhobundle_zip_url = nil
-    @@rhobundle_zip_pwd = nil
+    @@config = {'start_path' => '/', 
+                'options_path' => '/'}
     
     class << self
+      def method_missing(name, *args)
+        varname = name.to_s.sub(/=/,'')
+        @@config[varname]
+      end
+      
       def sources
         @@sources
       end
       
-      def options_path
-        @@options_path
-      end
-            
-      def options_path=(path=nil)
-        @@options_path = path if path
-      end
-      
-      def start_path
-        @@start_path
-      end
-            
-      def start_path=(path=nil)
-        @@start_path = path if path
-      end
-      
-      def rhobundle_zip_url
-        @@rhobundle_zip_url
-      end
-            
-      def rhobundle_zip_url=(url=nil)
-        @@rhobundle_zip_url = url
-      end
-      
-      def rhobundle_zip_pwd
-        @@rhobundle_zip_pwd
-      end
-            
-      def rhobundle_zip_pwd=(pwd=nil)
-        @@rhobundle_zip_pwd = pwd
+      def config
+        @@config
       end
       
       def add_source(modelname, new_source=nil)
