@@ -33,8 +33,8 @@ module Rhogen
     second_argument :zip_url, :required => false, :desc => "optional url to zipfile download of bundle"
 
     template :config do |template|
-      template.source = 'config.rb'
-      template.destination = "#{name}/config.rb"
+      template.source = 'rhoconfig.txt'
+      template.destination = "#{name}/rhoconfig.txt"
     end
 
     template :buildyml do |template|

@@ -44,7 +44,7 @@ Spec::Rake::SpecTask.new do |t|
   t.rcov_opts = ['--include',
                  '"lib/rhom/*,lib/rho/*"',
                  '-x',
-                 'spec,gems,sqlite3/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,config.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb',
+                 'spec,gems,sqlite3/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb',
                  '--text-report',
                  '--html']
 end
