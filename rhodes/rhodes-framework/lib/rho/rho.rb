@@ -219,7 +219,8 @@ module Rho
   class RhoConfig
     
     @@sources = {}
-    @@config = {}
+    @@config = {'start_path' => '/', 
+                'options_path' => '/'}
     
     class << self
       def method_missing(name, *args)
