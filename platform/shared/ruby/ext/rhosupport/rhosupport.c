@@ -184,8 +184,8 @@ static VALUE find_file(VALUE fname)
         VALUE dir;
         fname = checkRhoBundleInPath(fname);
 
-        //TODO: support document relative require
-        /*if (RARRAY_LEN(load_path)>1){
+        //TODO: support document relative require in case of multiple apps
+        if (RARRAY_LEN(load_path)>1){
             for( ; i < RARRAY_LEN(load_path); i++ ){
                 VALUE dir = RARRAY_PTR(load_path)[i];
                 res = rb_str_dup(dir);
@@ -200,7 +200,7 @@ static VALUE find_file(VALUE fname)
             }
             if ( !nOK )
                 return 0;
-        }else{*/
+        } else {
             dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
             res = rb_str_dup(dir);
@@ -214,7 +214,7 @@ static VALUE find_file(VALUE fname)
                 rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
                 rb_str_cat(res,".iseq",5);
             }
-        //}
+        }
     }
 
     res = RhoPreparePath(res);
@@ -252,6 +252,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 //    FilePathValue(fname);
 
 	szName = RSTRING_PTR(fname);
+	printf("require_compiled: %s\n", szName);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
