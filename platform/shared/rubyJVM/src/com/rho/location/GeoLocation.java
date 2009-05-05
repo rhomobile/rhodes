@@ -1,4 +1,4 @@
-package rhomobile.location;
+package com.rho.location;
 
 //import rhomobile.RhoPhonebook;
 //import com.rho.sync.SyncEngine;
@@ -10,10 +10,11 @@ import com.xruby.runtime.lang.RubyNoArgMethod;
 //import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.rho.RhoClassFactory;
 
 public class GeoLocation extends RubyBasic {
 
-	private static GeoLocationImpl m_locImpl = null;
+	private static IGeoLocationImpl m_locImpl = null;
 	
 	GeoLocation(RubyClass c) {
 		super(c);
@@ -74,20 +75,13 @@ public class GeoLocation extends RubyBasic {
 		return m_locImpl != null && m_locImpl.isStarted();
 	}
 
-	public static String getLog(){
-		if (m_locImpl != null)
-			return m_locImpl.getLog();
-		
-		return "";
-	}
-	
 	public static boolean isKnownPosition(){
 		return m_locImpl != null && m_locImpl.isKnownPosition();
 	}
 	
-	public static void start() {
+	public static void start() throws Exception {
 		if (m_locImpl == null)
-			m_locImpl = new GeoLocationImpl();
+			m_locImpl = RhoClassFactory.createGeoLocationImpl();
 	}
 
 	public static void wakeUp() {

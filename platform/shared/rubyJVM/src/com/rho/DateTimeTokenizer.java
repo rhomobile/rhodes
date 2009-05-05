@@ -1,4 +1,4 @@
-package rhomobile;
+package com.rho;
 
 import java.util.Hashtable;
 

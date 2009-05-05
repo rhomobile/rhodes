@@ -24,10 +24,10 @@
  * information or have any questions.
  */
 
-package rhomobile;
+package com.rho;
 
 import java.util.Vector;
-import java.util.Enumeration;
+//import java.util.Enumeration;
 
 /**
  * The <code>Properties</code> class represents a persistent set of

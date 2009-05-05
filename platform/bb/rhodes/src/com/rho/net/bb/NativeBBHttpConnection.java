@@ -1,19 +1,19 @@
 package com.rho.net.bb;
 
-import javax.microedition.io.HttpConnection;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.microedition.io.HttpConnection;
 import com.rho.net.IHttpConnection;
 
-public class BBHttpConnection implements IHttpConnection {
-	HttpConnection m_conn;
+public class NativeBBHttpConnection implements HttpConnection {
+
+	IHttpConnection m_conn;
 	
-	public BBHttpConnection(HttpConnection conn){
+	public NativeBBHttpConnection(IHttpConnection conn){
 		m_conn = conn;
 	}
 	
