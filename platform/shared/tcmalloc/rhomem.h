@@ -50,6 +50,8 @@ char *  rho_strdup(const char *);
 #ifdef __cplusplus
 void* cpp_alloc(size_t size, bool nothrow);
 
+#include <new>
+
 #ifndef __THROW
 #define __THROW throw()
 #endif
@@ -71,17 +73,16 @@ inline  void* operator new[](size_t size) {
 inline void operator delete[](void* p) __THROW {
   rho_free(p);
 }
-
+/*
 #ifndef __NOTHROW_T_DEFINED
 #define __NOTHROW_T_DEFINED
 namespace std {
-        /* placement new tag type to suppress exceptions */
         struct nothrow_t {};
 
-        /* constant for placement new tag */
         extern const nothrow_t nothrow;
 };
 #endif //__NOTHROW_T_DEFINED
+*/
 
 inline void operator delete(void* p, const std::nothrow_t&) __THROW {
   rho_free(p);
