@@ -7,10 +7,7 @@ import javax.microedition.io.HttpConnection;
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
 
-import com.rho.RhoClassFactory;
-import com.rho.RhoConf;
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
+import com.rho.*;
 
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -25,13 +22,13 @@ import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
 
 import com.rho.net.INetworkAccess;
+import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
-import rhomobile.location.GeoLocation;
+import com.rho.location.GeoLocation;
 import com.rho.sync.SyncEngine;
 import com.rho.sync.SyncUtil;
 import com.rho.sync.SyncNotifications;
-import com.rho.*;
 
 import java.util.Vector;
 
@@ -258,7 +255,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	try{
     		RhoClassFactory.getNetworkAccess().close();
     	}catch(IOException exc){
-    		LOG.ERROR(exc.getMessage());
+    		LOG.ERROR(exc);
     	}
     		
         RhoLogger.close();
@@ -266,7 +263,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 	public void activate() {
 //		SyncEngine.start(null);
-		GeoLocation.start();
+    	try{
+    		GeoLocation.start();
+    	}catch(Exception exc){
+    		LOG.ERROR("GeoLocation failed to start", exc);
+    	}
 
 		super.activate();
 	}

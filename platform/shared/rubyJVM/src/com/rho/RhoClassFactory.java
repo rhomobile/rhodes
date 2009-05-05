@@ -3,6 +3,7 @@ package com.rho;
 import com.rho.db.*;
 import com.rho.net.*;
 import java.io.IOException;
+import com.rho.location.IGeoLocationImpl;
 
 public class RhoClassFactory 
 { 
@@ -29,6 +30,30 @@ public class RhoClassFactory
         
         return (IDBStorage)wrapperClass.newInstance();
     }
+
+    public static IRhoRubyHelper createRhoRubyHelper() throws Exception
+    {
+        Class wrapperClass;
+        try {
+            wrapperClass = Class.forName("com.rho.RhoRubyHelper");
+        } catch (ClassNotFoundException exc) {  
+            throw exc;
+        }
+        
+        return (IRhoRubyHelper)wrapperClass.newInstance();
+    }
+
+    public static IGeoLocationImpl createGeoLocationImpl() throws Exception
+    {
+        Class wrapperClass;
+        try {
+            wrapperClass = Class.forName("com.rho.location.GeoLocationImpl");
+        } catch (ClassNotFoundException exc) {  
+            throw exc;
+        }
+        
+        return (IGeoLocationImpl)wrapperClass.newInstance();
+    }
     
     static INetworkAccess m_NAInstance;
     public static INetworkAccess getNetworkAccess() throws IOException
@@ -38,7 +63,7 @@ public class RhoClassFactory
 	    	{    	
 		        Class wrapperClass;
 		        try {
-		            wrapperClass = Class.forName("com.rho.net.bb.NetworkAccess");
+		            wrapperClass = Class.forName("com.rho.net.NetworkAccess");
 		        } catch (ClassNotFoundException exc) {  
 		            throw exc;
 		        }
