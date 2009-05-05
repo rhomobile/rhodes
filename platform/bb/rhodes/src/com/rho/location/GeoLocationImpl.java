@@ -1,4 +1,4 @@
-package rhomobile.location;
+package com.rho.location;
 
 import javax.microedition.location.Coordinates;
 import javax.microedition.location.Criteria;
@@ -9,7 +9,7 @@ import javax.microedition.location.LocationProvider;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-public class GeoLocationImpl implements Runnable {
+public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GeoLocationImpl");
 
@@ -19,7 +19,6 @@ public class GeoLocationImpl implements Runnable {
 	private double m_lon = 0.0;
 	private LocationProvider m_lp = null;
 	private boolean m_bDetermined = false;
-	private String m_strLog = "";
 	
 	private final String errorStrDontSupport = "Location API doesn't support";
 	private final String errorStrLocationException= "Location could not be determined";
@@ -91,10 +90,6 @@ public class GeoLocationImpl implements Runnable {
 		return m_lp != null;
 	}
 
-	public synchronized String getLog(){
-		return m_strLog;
-	}
-	
 	public synchronized boolean isKnownPosition(){
 		return m_bDetermined;
 	}

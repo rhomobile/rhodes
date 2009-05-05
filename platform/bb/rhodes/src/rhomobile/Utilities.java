@@ -12,8 +12,9 @@ import net.rim.device.api.util.StringUtilities;
 
 import com.rho.RhoClassFactory;
 import com.rho.net.URI;
-import com.rho.net.bb.BBHttpConnection;
-
+import com.rho.net.IHttpConnection;
+import com.rho.net.bb.NativeBBHttpConnection;
+import com.rho.net.RhoConnection;
 /**
  * 
  */
@@ -28,11 +29,11 @@ public class Utilities {
 		try {
 			URI uri = new URI(url);
 			if ( "localhost".equals(uri.getHost())) {
-				conn = new RhoConnection(uri);
+				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
-				BBHttpConnection httpConn = (BBHttpConnection)(RhoClassFactory.getNetworkAccess().connect(url)); 
-				conn = httpConn.getConn();
+				IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url);
+				conn = (HttpConnection)(httpconn!=null?httpconn.getNativeConnection() : null);
 				// conn = NetworkAccess.connect(url);
 			}
 				
@@ -72,9 +73,9 @@ public class Utilities {
 			}
 
 			if (postData == null) {
-				conn.setRequestMethod(HttpConnection.GET);
+				conn.setRequestMethod(IHttpConnection.GET);
 			} else {
-				conn.setRequestMethod(HttpConnection.POST);
+				conn.setRequestMethod(IHttpConnection.POST);
 
 				conn.setRequestProperty(
 						HttpProtocolConstants.HEADER_CONTENT_LENGTH, String

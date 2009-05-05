@@ -1,4 +1,4 @@
-package com.rho.net.bb;
+package com.rho.net;
 
 import java.io.IOException;
 
@@ -12,8 +12,7 @@ import net.rim.device.api.system.RadioInfo;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.net.IHttpConnection;
-import com.rho.net.INetworkAccess;
+import com.rho.net.bb.BBHttpConnection;
 
 public class NetworkAccess implements INetworkAccess {
 
