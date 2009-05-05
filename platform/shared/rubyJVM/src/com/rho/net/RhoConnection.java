@@ -1,4 +1,4 @@
-package rhomobile;
+package com.rho.net;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,15 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.microedition.io.HttpConnection;
+//import javax.microedition.io.HttpConnection;
 
-import com.rho.SimpleFile;
-import com.rho.RhoClassFactory;
+import com.rho.net.IHttpConnection;
 
-import rhomobile.location.GeoLocation;
+//import rhomobile.location.GeoLocation;
 
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
@@ -24,8 +21,11 @@ import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RhoSupport;
 import com.rho.net.URI;
 import com.rho.sync.SyncEngine;
+import com.rho.*;
+import com.rho.location.GeoLocation;
 
-public class RhoConnection implements HttpConnection {
+public class RhoConnection implements IHttpConnection {
+
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoConnection");
 	
@@ -60,6 +60,10 @@ public class RhoConnection implements HttpConnection {
     	
     	uri.setPath("/apps" + uri.getPath());
     }
+    
+	public Object getNativeConnection() {
+		throw new RuntimeException("getNativeConnection - Not implemented");
+	}
     
 	public long getDate() throws IOException {
 		LOG.TRACE("getDate");
@@ -563,7 +567,7 @@ public class RhoConnection implements HttpConnection {
 	}
 	
 	void showGeoLocation(){
-		String location;
+		String location = "";
 		if ( !GeoLocation.isStarted() )
 			location = "Unavailable;Unavailable;Unavailable";
 		else if( !GeoLocation.isKnownPosition() )

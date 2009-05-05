@@ -1,4 +1,4 @@
-package rhomobile;
+package com.rho;
 
 import java.io.InputStream;
 
@@ -9,9 +9,9 @@ import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import com.rho.db.DBAdapter;
 import com.rho.sync.SyncEngine;
-import rhomobile.location.GeoLocation;
-import rhomobile.camera.Camera;
+import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
+import com.rho.location.GeoLocation;
 
 public class RhoRuby {
 
@@ -28,21 +28,28 @@ public class RhoRuby {
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
-		
-		RubyRuntime.init(args);
 
-        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
-        SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
-        RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
-        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
-        Camera.initMethods(RubyRuntime.CameraClass);
-        WebView.initMethods(RubyRuntime.WebViewClass);
+		IRhoRubyHelper helper = null;
+        try{
+
+			RubyRuntime.init(args);
+	
+	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
+	        SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
+	        
+	        helper = RhoClassFactory.createRhoRubyHelper();
+	        helper.initRubyExtensions();
+        }catch(Throwable exc){
+        	LOG.ERROR("Cannot init ruby", exc);
+        }
         
         try{
         	//Class mainRuby = Class.forName("xruby.ServeME.main");
-        	
-    		mainObj = new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
-    		receiver = mainObj.invoke();
+        	if ( helper != null ){
+	    		mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
+	    		receiver = mainObj.invoke();
+        	}
         	
         /*}catch(ClassNotFoundException exc){
         	LOG.ERROR("Cannot create ServeME object", exc);*/

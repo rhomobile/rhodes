@@ -36,4 +36,5 @@
 #define RHO_STRIP_LOG 0
 #define RHO_STRIP_PROFILER 0
 
+#include "tcmalloc/rhomem.h"
 #endif //_RHODEFS_H_
