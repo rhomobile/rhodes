@@ -119,8 +119,8 @@
 #define DEFAULT_KCODE KCODE_NONE
 #define DLEXT ".so"
 #define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/lib"
-#define RUBY_SITE_LIB2 "/lib"
+#define RUBY_SITE_LIB "/apps"
+#define RUBY_SITE_LIB2 "/apps/app"
 #define RUBY_VENDOR_LIB "/lib"
 #define RUBY_VENDOR_LIB2 "/lib"
 #define RUBY_PLATFORM "i386-mswin32_80"
