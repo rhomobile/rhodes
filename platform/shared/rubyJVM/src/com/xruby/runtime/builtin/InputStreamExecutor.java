@@ -1,5 +1,6 @@
 package com.xruby.runtime.builtin;
 
+import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 import java.io.InputStream;
 import java.io.IOException;
@@ -66,6 +67,8 @@ public class InputStreamExecutor implements RubyIOExecutor {
 			return strLine;
 		}catch(IOException exc){
 			return "";
+		}catch(Exception e){
+			throw new RubyException(e.getMessage());
 		}
 	}
 
