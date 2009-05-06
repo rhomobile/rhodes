@@ -252,7 +252,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 //    FilePathValue(fname);
 
 	szName = RSTRING_PTR(fname);
-	printf("require_compiled: %s\n", szName);
+	//printf("require_compiled: %s\n", szName);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
