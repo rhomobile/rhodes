@@ -34,11 +34,15 @@ module Rho
     
     # Return the directories where we need to load configuration files
     def process_rhoconfig
-      File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
-        parts = line.chop.split('=')
-        key = parts[0]
-        value = parts[1..parts.length-1].join('=') if parts and parts.length > 1
-        Rho::RhoConfig.config[key.strip] = value.strip!.gsub(/'|"/,'') if key and value
+      begin
+        File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
+          parts = line.chop.split('=')
+          key = parts[0]
+          value = parts[1..parts.length-1].join('=') if parts and parts.length > 1
+          Rho::RhoConfig.config[key.strip] = value.strip!.gsub(/'|"/,'') if key and value
+        end
+      rescue Exception => e
+        puts "Error opening rhoconfig.txt: #{e}, using defaults."
       end
     end
     
