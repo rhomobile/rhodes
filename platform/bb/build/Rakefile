@@ -148,7 +148,7 @@ namespace "build" do
     tmpdir = config["build"]["tmpdir"]
     jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
 
-    rubyvmfiles = File.readlines('RubyVM_build.files').map { |l| l.gsub!(/\\/,'/') }
+    rubyvmfiles = File.readlines('RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
   
     if not uptodate?(config["build"]["preverified"] + '/RubyVM.jar',rubyvmfiles)
 
@@ -201,8 +201,8 @@ namespace "build" do
     jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
 
     sources = Dir.glob("../rhodes/resources/**/*") | 
-              File.readlines('hsqldb_build.files').map { |l| l.gsub!(/\\/,'/') } |
-              File.readlines('rhodes_build.files').map { |l| l.gsub!(/\\/,'/') } 
+              File.readlines('hsqldb_build.files').map { |l| l.gsub!(/\\/,'/').strip! } |
+              File.readlines('rhodes_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
     
     sources.delete(nil)
 
