@@ -85,9 +85,10 @@ class Jake
   
     args.each do |x|
       x = x.to_s
-  #    x.gsub!(/"/,"\\\"")
-      argstr +=  x + " "
-      #argstr += "\"" + x + "\" "
+      x.gsub!(/^"/,"")
+      x.gsub!(/"$/,"")
+      #argstr +=  x + " "
+      argstr += '"' + x + '" '
     end
   
     if not wd.nil?
