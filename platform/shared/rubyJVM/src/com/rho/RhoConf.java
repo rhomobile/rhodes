@@ -9,7 +9,7 @@ public class RhoConf {
     private java.util.Hashtable m_mapValues = new java.util.Hashtable();
     
     private static RhoConf m_Instance;
-	private static String CONF_FILENAME = "rhoconfig.txt";
+	private static String CONF_FILENAME = "apps/rhoconfig.txt";
     
     public static RhoConf getInstance(){return m_Instance;}
     
