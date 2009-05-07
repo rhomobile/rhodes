@@ -173,3 +173,80 @@ namespace "run" do
     end
   end
 end
+
+namespace "check" do
+  task :android => "config:android" do
+    errors = Array.new
+
+  
+
+
+
+    begin
+      android = $config["env"]["paths"]["android"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      curr = pwd
+      if android.downcase[0] != curr.downcase[0]
+        puts " - Error due to android sdk issues, your app folder must be on the same drive as your sdk folder"
+        errors << "must be on the same drive as android sdk"
+      end
+    end
+
+    if not FileTest.exists? android
+      puts " - android sdk not found. Make sure you have the correct path to the android sdk in your build.yml file "
+      errors << "android sdk missing"
+    end
+
+
+    begin
+      blah = `#{$dx} 2>&1`
+    rescue
+      puts " - dx is not on the path. Make sure you have the android sdk tools folder in your path"
+      errors << "dx not on path"
+    end
+
+    begin
+      blah = `#{$aapt} 2>&1`
+    rescue
+      puts " - aapt is not on the path. Make sure you have the android sdk tools folder in your path"
+      errors << "aapt not on path"
+    end
+
+    begin
+      blah = `#{$apkbuilder} 2>&1`
+    rescue
+      puts " - apkbuilder is not on the path. Make sure you have the android sdk tools folder in your path"
+      errors << "apkbuilder not on path"
+    end
+
+
+    begin
+      blah = `jar 2>&1`
+    rescue
+      puts " - jar is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "jar not on path"
+    end
+
+    begin
+      blah = `java 2>&1`
+    rescue
+      puts " - java is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "java not on path"
+    end
+
+    puts "\nANDROID: " + android
+
+    if errors.size > 0
+      puts "\nFound the following errors for windows mobile: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Android config appears valid"
+    end
+
+  end
+end
