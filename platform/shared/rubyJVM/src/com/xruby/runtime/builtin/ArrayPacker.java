@@ -384,11 +384,11 @@ class ArrayPacker {
                         lElem.append( (char)((b << 4 | c >> 2) & 255) );
                         lElem.append( (char)((c << 6 | d) & 255) );
                     }
-                    
+
                     if (a != -1 && b != -1) {
-                        if (c == -1 && s == '=') {
+                        if (c == -1 && s1 == '=') {
                         	lElem.append( (char)((a << 2 | b >> 4) & 255) );
-                        } else if(c != -1 && s == '=') {
+                        } else if(c != -1 && s1 == '=') {
                         	lElem.append( (char)((a << 2 | b >> 4) & 255) );
                         	lElem.append( (char)((b << 4 | c >> 2) & 255) );
                         }
