@@ -1,6 +1,0 @@
-MinSeverity  = 0  
-LogToOutput=1
-LogCategories=*
-ExcludeLogCategories=
-KeepTrackOfLastVisitedPage=0
-LastVisitedPage=http://localhost:8080/app

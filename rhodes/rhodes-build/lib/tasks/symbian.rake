@@ -30,9 +30,6 @@ namespace "bundle" do
     src = $rhodeslib
     cp_r src,dest
 
-    src = File.join($rhodeslib,"..","res","sqlite3")
-    cp_r src,File.join(dest,"lib")
-    
     chdir dest
     Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
     Dir.glob("**/erb.rb").each {|f| rm f}
@@ -42,7 +39,7 @@ namespace "bundle" do
     chdir $basedir
     cp_r 'app',File.join($srcdir,'apps')
     cp_r 'public', File.join($srcdir,'apps')
-    cp   'config.rb', File.join($srcdir,'apps')
+    cp   'rhoconfig.txt', File.join($srcdir,'apps')
 
     cp   $appmanifest, $srcdir
     puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 

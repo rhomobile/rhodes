@@ -39,7 +39,7 @@ The Rhodes directory structure is outlined below.  In a default Rhodes applicati
 
 	  /appname
 	    build.yml (contains the settings for running builds)
-	    config.rb (contains settings for setting the default start and options path)
+	    rhoconfig.txt (contains settings for setting the default start and options path)
 	    Rakefile
 	    /public (contains static resources for the generated objects)
 	      /css

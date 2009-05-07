@@ -13,7 +13,6 @@ generators/templates/application/app/index.erb
 generators/templates/application/app/layout.erb
 generators/templates/application/app/loading.html
 generators/templates/application/build.yml
-generators/templates/application/config.rb
 generators/templates/application/public/css/base.css
 generators/templates/application/public/css/blackberry.css
 generators/templates/application/public/css/iphone.css
@@ -44,6 +43,7 @@ generators/templates/application/public/js/jquery-1.2.6.min.js
 generators/templates/application/public/js/rho.js
 generators/templates/application/public/js/rhogeolocation-wm.js
 generators/templates/application/public/js/rhogeolocation.js
+generators/templates/application/rhoconfig.txt
 generators/templates/bundle/db/syncdb.sqlite
 generators/templates/model/config.rb
 generators/templates/model/controller.rb

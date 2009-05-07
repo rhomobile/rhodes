@@ -1,7 +1,6 @@
-%w[rubygems rake rake/clean fileutils newgem].each { |f| require f }
+%w[rubygems rake rake/clean fileutils newgem spec/rake/spectask].each { |f| require f }
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/version.rb'
-require 'rhodes-build'
 
 task :default => [:spec]
 
@@ -44,7 +43,7 @@ Spec::Rake::SpecTask.new do |t|
   t.rcov_opts = ['--include',
                  '"lib/rhom/*,lib/rho/*"',
                  '-x',
-                 'spec,gems,sqlite3/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,config.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb',
+                 'spec,gems,sqlite3/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb',
                  '--text-report',
                  '--html']
 end

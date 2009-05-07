@@ -1,1 +1,0 @@
-# Remove this file, when build scripts will be fixed
