@@ -159,7 +159,7 @@ namespace "check" do
       puts "\nFound the following errors for windows mobile: "
       errors.each { |error| puts "\t" + error.to_s }
     else
-      puts "Blackberry config appears valid"
+      puts "Windows Mobile config appears valid"
     end
 
   end
