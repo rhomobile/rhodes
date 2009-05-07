@@ -280,13 +280,13 @@ namespace "check" do
       errors << "java not on path"
     end
 
-    puts "BBVER: " + $config["env"]["bbver"].to_s
+    puts "\nBBVER: " + $config["env"]["bbver"].to_s
     puts "JAVAHOME: " + javahome
     puts "JDEHOME: " + jdehome
     puts "MDSHOME: " + mdshome
 
     if errors.size > 0
-      puts "Found the following errors for blackberry: "
+      puts "\nFound the following errors for blackberry: "
       errors.each { |error| puts "\t" + error.to_s }
     else
       puts "Blackberry config appears valid"

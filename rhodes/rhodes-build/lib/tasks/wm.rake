@@ -120,3 +120,47 @@ namespace "run" do
 
   end
 end
+
+namespace "check" do
+  task :wm => "config:wm" do
+    errors = Array.new
+    
+    begin
+      cabwiz = $config["env"]["paths"]["cabwiz"]
+      wmemu = $config["env"]["paths"]["wmemu"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+    if not FileTest.exists? cabwiz
+      puts " - cabwiz.exe not found. Make sure you have the correct path to cabwiz in your build.yml file "
+      errors << "cabwiz missing"
+    end
+
+    if not FileTest.exists? wmemu
+      puts " - emulator not found. Make sure you have the correct path to windows mobile emulator in your build.yml file "
+      errors << "wmemu missing"
+    end
+
+
+    begin
+      blah = `cscript 2>&1`
+    rescue
+      puts " - coudn't execute csript. This is rare, please install IE4+ or the Windows Scripting Host"
+      errors << "cscript missing"
+    end
+
+
+    puts "\nCABWIZ: " + cabwiz
+    puts "WMEMU: " + wmemu
+
+    if errors.size > 0
+      puts "\nFound the following errors for windows mobile: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Blackberry config appears valid"
+    end
+
+  end
+end

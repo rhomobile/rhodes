@@ -36,6 +36,9 @@ namespace "check" do
   desc "Check that your system setup is correct for building"
   task :all do
     Rake::Task["check:bb"].invoke
+    puts "-------------------------------"
+    Rake::Task["check:wm"].invoke
+    puts "-------------------------------"
   end
 end
 
