@@ -4,7 +4,7 @@ namespace "config" do
   task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
-    $excludelib = ['**/rhom_db_adapter.rb','**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
   end
 end
@@ -47,13 +47,13 @@ namespace "bundle" do
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
+    puts `#{rubypath} "-R#{$rhodeslib}" "#{$srcdir}/createAppManifest.rb"`
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/bb.rb` 
+    puts `#{rubypath} "-R#{$rhodeslib}" "#{$srcdir}/bb.rb"`
 
     chdir $bindir
-    puts `java -jar #{xruby} -c RhoBundle`
+    puts `java -jar "#{xruby}" -c RhoBundle`
     chdir $srcdir
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
@@ -66,8 +66,8 @@ namespace "bundle" do
     args << "-classpath"
     args << '"' + jdehome + "/lib/net_rim_api.jar;" + File.join($prebuilt, "bb","RubyVM.jar") + '"'
     args << "-d"
-    args << $bindir
-    args << $bindir + "/RhoBundle.jar"
+    args << '"' + $bindir + '"'
+    args << '"' + $bindir + "/RhoBundle.jar" +'"'
     puts Jake.run(jdehome + "/bin/preverify.exe",args)
     $stdout.flush
 

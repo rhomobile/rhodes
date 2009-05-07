@@ -29,9 +29,6 @@ namespace "bundle" do
     src = $rhodeslib
     cp_r src,dest
 
-    src = File.join($rhodeslib,"..","res","sqlite3")
-    cp_r src,File.join(dest,"lib")
-
     chdir dest
     Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
     Dir.glob("**/erb.rb").each {|f| rm f}
