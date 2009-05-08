@@ -2,7 +2,7 @@
 #define _RHOSTRINGCONV_H_
 
 namespace rho{
-namespace general{
+namespace common{
 /*
 #ifdef  _UNICODE
 #define convertFromString convertFromStringW

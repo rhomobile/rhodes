@@ -36,5 +36,17 @@
 #define RHO_STRIP_LOG 0
 #define RHO_STRIP_PROFILER 0
 
+#if defined( OS_WINDOWS ) || defined( OS_WINCE )
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif //_CRT_SECURE_NO_WARNINGS
+
+#ifndef _CRT_NON_CONFORMING_SWPRINTFS
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
+#endif //_CRT_NON_CONFORMING_SWPRINTFS
+
+#endif
+
 #include "tcmalloc/rhomem.h"
+
 #endif //_RHODEFS_H_

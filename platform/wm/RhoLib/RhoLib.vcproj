@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="RhoLib"
 	ProjectGUID="{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}"
+	RootNamespace="RhoLib"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -760,6 +761,10 @@
 		<Filter
 			Name="common"
 			>
+			<File
+				RelativePath="..\..\shared\common\AutoPointer.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\shared\common\RhoConf.cpp"
 				>

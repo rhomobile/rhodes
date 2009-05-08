@@ -90,7 +90,7 @@ public:
                 addMessage(buf);
             }
             else
-                addMessage( general::convertToStringA(value) );
+                addMessage( common::convertToStringA(value) );
         }
 
         return *this; 
@@ -129,7 +129,7 @@ public:
 class NullMessageFatal {
 public:
     NullMessageFatal(){}
-    ~NullMessageFatal(){ general::CRhoFatalError().processFatalError(); }
+    ~NullMessageFatal(){ common::CRhoFatalError().processFatalError(); }
 };
 
 class LogMessageVoidify {
