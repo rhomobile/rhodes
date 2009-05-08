@@ -953,9 +953,10 @@ inline struct mallinfo do_mallinfo() {
 }
 #endif  // #ifndef HAVE_STRUCT_MALLINFO
 
-static SpinLock set_new_handler_lock(SpinLock::LINKER_INITIALIZED);
-#include <new.h>
-#include <exception>
+#ifndef __SYMBIAN32__
+//static SpinLock set_new_handler_lock(SpinLock::LINKER_INITIALIZED);
+#include <new>
+//#include <exception>
 
 void* cpp_alloc(size_t size, bool nothrow) {
   for (;;) {
@@ -997,6 +998,7 @@ void* cpp_alloc(size_t size, bool nothrow) {
 #endif
   }
 }
+#endif// __SYMBIAN32__
 
 //}  // end unnamed namespace
 

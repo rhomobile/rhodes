@@ -19,18 +19,18 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
     int len = strMsg.length();
 
     if ( !m_pFile )    
-        m_pFile = new general::CRhoFile();
+        m_pFile = new common::CRhoFile();
 
     if ( !m_pFile->isOpened() ){
-        m_pFile->open( getLogConf().getLogFilePath().c_str(), general::CRhoFile::OpenForAppend );
+        m_pFile->open( getLogConf().getLogFilePath().c_str(), common::CRhoFile::OpenForAppend );
         m_nFileLogSize = m_pFile->size();
         loadLogPosition();
     }
 
     if ( getLogConf().getMaxLogFileSize() > 0 )
     {
-        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) || 
-             ( m_nCirclePos < 0 && m_nFileLogSize + len > getLogConf().getMaxLogFileSize() ) )
+        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > (int)getLogConf().getMaxLogFileSize() ) || 
+             ( m_nCirclePos < 0 && m_nFileLogSize + len > (int)getLogConf().getMaxLogFileSize() ) )
         {
             m_pFile->movePosToStart();
             m_nFileLogSize = 0;
@@ -60,18 +60,18 @@ void CLogFileSink::clear(){
         m_pFile = NULL;
     }
 
-    general::CRhoFile().deleteFile(getLogConf().getLogFilePath().c_str());
+    common::CRhoFile().deleteFile(getLogConf().getLogFilePath().c_str());
     String strPosPath = getLogConf().getLogFilePath() + "_pos";
-    general::CRhoFile().deleteFile(strPosPath.c_str());
+    common::CRhoFile().deleteFile(strPosPath.c_str());
 }
 
 void CLogFileSink::loadLogPosition(){
     if ( !m_pPosFile )
-        m_pPosFile = new general::CRhoFile();
+        m_pPosFile = new common::CRhoFile();
 
     if ( !m_pPosFile->isOpened() ){
         String strPosPath = getLogConf().getLogFilePath() + "_pos";
-        m_pPosFile->open( strPosPath.c_str(), general::CRhoFile::OpenForReadWrite );
+        m_pPosFile->open( strPosPath.c_str(), common::CRhoFile::OpenForReadWrite );
     }
 
     if ( !m_pPosFile->isOpened() )
@@ -84,7 +84,7 @@ void CLogFileSink::loadLogPosition(){
         return;
 
     m_nCirclePos = atoi(strPos.c_str());
-    if ( m_nCirclePos < 0 || m_nCirclePos > m_nFileLogSize )
+    if ( m_nCirclePos < 0 || m_nCirclePos > (int)m_nFileLogSize )
     	m_nCirclePos = -1;
     
     if ( m_nCirclePos >= 0 )
@@ -95,10 +95,10 @@ void CLogFileSink::saveLogPosition(){
     if ( m_nCirclePos < 0 )
         return;
 
-    if ( m_nCirclePos > getLogConf().getMaxLogFileSize() )
+    if ( m_nCirclePos > (int)getLogConf().getMaxLogFileSize() )
     	return;
     
-    String strPos = general::convertToStringA(m_nCirclePos);
+    String strPos = common::convertToStringA(m_nCirclePos);
     for( int i = strPos.length(); i < 10; i++ )
     	strPos += ' ';
     
@@ -126,7 +126,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
         return;
 #endif
 
-    for( int n = 0; n < strMsg.length(); n+= 100 )
+    for( int n = 0; n < (int)strMsg.length(); n+= 100 )
         fwrite(szMsg+n, 1, min(100,strMsg.length()-n) , stdout );
 
     fflush(stdout);

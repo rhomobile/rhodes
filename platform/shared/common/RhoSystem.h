@@ -8,7 +8,7 @@
 #endif
 
 namespace rho{
-namespace general{
+namespace common{
 
 class CSystem{
 public:

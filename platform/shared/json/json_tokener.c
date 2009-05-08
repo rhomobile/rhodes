@@ -19,8 +19,9 @@
 
 #if defined(_WIN32_WCE) || defined(WIN32)
 //#define strdup _strdup
-extern int _shttpd_strncasecmp(register const char *,register const char *, size_t);
-#define strncasecmp _shttpd_strncasecmp
+//extern int _shttpd_strncasecmp(register const char *,register const char *, size_t);
+//#define strncasecmp _shttpd_strncasecmp
+# define strncasecmp _strnicmp
 #endif
 
 #ifdef _MSC_VER

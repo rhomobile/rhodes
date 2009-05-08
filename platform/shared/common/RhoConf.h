@@ -5,7 +5,7 @@
 #include <map>
 
 namespace rho{
-namespace general{
+namespace common{
 
 #define RHOVERSION "Version"
 #define RHODBVERSION "DBVersion"
@@ -44,7 +44,7 @@ extern RhoSettings g_RhoSettings;
 }
 }
 
-inline rho::general::RhoSettings& RHOCONF(){ return rho::general::g_RhoSettings; }
+inline rho::common::RhoSettings& RHOCONF(){ return rho::common::g_RhoSettings; }
 extern "C" void InitRhoConf(const char* szRootPath);
 
 #endif //_RHOCONF_H_

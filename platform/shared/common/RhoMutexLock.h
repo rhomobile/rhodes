@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 
 namespace rho{
-namespace general{
+namespace common{
 
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
 typedef CRITICAL_SECTION MutexType;

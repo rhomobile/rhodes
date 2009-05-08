@@ -4,13 +4,13 @@
 #include "RhoLogConf.h"
 
 namespace rho {
-namespace general {
+namespace common {
     class CRhoFile;
 }
 
 class CLogFileSink : public ILogSink{
-    general::CRhoFile* m_pFile;
-    general::CRhoFile* m_pPosFile;
+    common::CRhoFile* m_pFile;
+    common::CRhoFile* m_pPosFile;
     int                m_nCirclePos;
 
     unsigned int       m_nFileLogSize;
