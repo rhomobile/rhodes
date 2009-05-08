@@ -47,7 +47,6 @@ module Rho
     #
     def link_to(name,url_params = {},html_options = "",confirm = nil)
       url = url_for(url_params)
-      puts "url_params: #{url_params.class}"
       if (url_params.is_a?(String) || url_params[:action].to_s != 'delete')
         "<a href=\"#{url}\" #{html_options}>#{name || url}</a>"
       else
