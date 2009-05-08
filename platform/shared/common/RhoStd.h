@@ -23,8 +23,8 @@ public:
         push_back(item);
     }
 
-    reference get(size_type i){ return at(i);}
-    const_reference get(size_type i) const{ return at(i); }
+    typename std::vector<Type>::reference get(typename std::vector<Type>::size_type i){ return at(i);}
+    typename std::vector<Type>::const_reference get(typename std::vector<Type>::size_type i) const{ return at(i); }
 };
 
 template<class Type>
@@ -35,7 +35,7 @@ public:
 
     void clear()
     {
-        for (iterator it = begin();  it != end(); ++it )
+        for (typename std::vector<Type>::iterator it =Vector<Type>::begin();  it !=Vector<Type>::end(); ++it )
             delete *it;
         
         Vector<Type>::clear();
