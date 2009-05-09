@@ -32,13 +32,17 @@ module Mock
     if (sym.to_sym == :respond_to? or obj.respond_to?(sym)) and !replaced?(key)
       meta.__send__ :alias_method, key.first, sym.to_sym
     end
-
-    meta.class_eval <<-END
-      def #{sym}(*args, &block)
-        Mock.verify_call self, :#{sym}, *args, &block
-      end
-    END
-
+    
+    # LB: We don't support String eval, using define_method approach instead
+    # meta.class_eval <<-END
+    #   def #{sym}(*args, &block)
+    #     Mock.verify_call self, :#{sym}, *args, &block
+    #   end
+    # END
+    meta.class_eval do
+      define_method(sym.to_sym) { |*args, &block| Mock.verify_call self, sym.to_sym, *args, &block }
+    end
+        
     proxy = MockProxy.new type
 
     if proxy.mock?

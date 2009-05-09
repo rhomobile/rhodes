@@ -53,24 +53,6 @@ id|source_id|attrib|object|value|update_type|attrib_type
 1059957377|1|parent_id|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 1065948343|1|created_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|query|
 1072561171|1|shipping_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||query|
--1063480466|2|resolution|55d4850e-1768-8e05-c771-48fcf761e569||query|
--1002129139|2|created_by|55d4850e-1768-8e05-c771-48fcf761e569|1|query|
--730442286|2|assigned_user_name|55d4850e-1768-8e05-c771-48fcf761e569|adam|query|
--620659973|2|date_entered|55d4850e-1768-8e05-c771-48fcf761e569|2008-10-20 21:26:50|query|
--521145310|2|description|55d4850e-1768-8e05-c771-48fcf761e569|with:\n- Amos\n- Mary Coleman\n- SugarCRM themselves\n- Dan/Aeroprise\n- Rebecca|query|
--505842755|2|modified_user_id|55d4850e-1768-8e05-c771-48fcf761e569|d64e9409-6445-db6f-e9eb-48fce5e9fb16|query|
--473207634|2|account_name|55d4850e-1768-8e05-c771-48fcf761e569|Rhomobile|query|
--293898040|2|modified_by_name|55d4850e-1768-8e05-c771-48fcf761e569|adam|query|
-150833183|2|status|55d4850e-1768-8e05-c771-48fcf761e569|New|query|
-151892196|2|date_modified|55d4850e-1768-8e05-c771-48fcf761e569|2008-12-12 00:28:57|query|
-172405652|2|type|55d4850e-1768-8e05-c771-48fcf761e569|Administration|query|
-388567719|2|account_id|55d4850e-1768-8e05-c771-48fcf761e569|881be9cb-3879-9660-46be-48fceb82ea5f|query|
-403231927|2|name|55d4850e-1768-8e05-c771-48fcf761e569|schedule demos for sample app|query|
-510838542|2|assigned_user_id|55d4850e-1768-8e05-c771-48fcf761e569|d64e9409-6445-db6f-e9eb-48fce5e9fb16|query|
-608632198|2|created_by_name|55d4850e-1768-8e05-c771-48fcf761e569|admin|query|
-761302926|2|work_log|55d4850e-1768-8e05-c771-48fcf761e569||query|
-778832994|2|case_number|55d4850e-1768-8e05-c771-48fcf761e569|57|query|
-899692269|2|priority|55d4850e-1768-8e05-c771-48fcf761e569|Low|query|
 -1036293295|1|phone_fax|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
 -1015063951|1|description|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
 -992493612|1|ownership|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
