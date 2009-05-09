@@ -37,7 +37,6 @@ id|source_id|attrib|object|value|update_type|attrib_type
 -194048404|1|phone_fax|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 -152845069|1|shipping_address_city|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 -150248722|1|ownership|44e804f2-4933-4e20-271c-48fcecd9450d||query|
--57632761|1|shipping_address_country|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 -45449434|1|phone_office|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 -8943188|1|phone_alternate|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 63546948|1|billing_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||query|

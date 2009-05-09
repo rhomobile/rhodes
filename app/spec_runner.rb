@@ -8,7 +8,7 @@ class SpecRunner < MSpecScript
     config[:files] = []
     
     # turn on exception backtrace
-    #MSpec.backtrace = true
+    MSpec.backtrace = true
     
     Dir.entries(File.join(File.dirname(__FILE__),'spec')).each do |x|
       x = nil if not x =~ /.iseq/
