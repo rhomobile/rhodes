@@ -22,8 +22,6 @@ platform/bb/build/LogFile.txt
 platform/bb/*/.settings
 platform/bb/*/.project
 platform/bb/*/.classpath
-*.cso
-*.csl
 *.err
 platform/bb/.BB.jdw/*.files
 *.jad

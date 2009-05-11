@@ -259,6 +259,7 @@ task :prebuild_mac do
   prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/iphone/"
 
   chdir 'platform/iphone/rbuild'
+  puts `#{ant} clean`
   puts `#{ant} runapp`
   
   throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"

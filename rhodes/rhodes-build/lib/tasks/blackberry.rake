@@ -4,7 +4,7 @@ namespace "config" do
   task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
-    $excludelib = ['**/rhom_db_adapter.rb','**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
   end
 end
@@ -42,18 +42,18 @@ namespace "bundle" do
 #throw "ME"
     cp_r 'app',File.join($srcdir,'apps')
     cp_r 'public', File.join($srcdir,'apps')
-    cp   'config.rb', File.join($srcdir,'apps')
+    cp   'rhoconfig.txt', File.join($srcdir,'apps')
     #cp   'index.erb', File.join($srcdir,'apps')
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
+    puts `#{rubypath} "-R#{$rhodeslib}" "#{$srcdir}/createAppManifest.rb"`
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/bb.rb` 
+    puts `#{rubypath} "-R#{$rhodeslib}" "#{$srcdir}/bb.rb"`
 
     chdir $bindir
-    puts `java -jar #{xruby} -c RhoBundle`
+    puts `java -jar "#{xruby}" -c RhoBundle`
     chdir $srcdir
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
@@ -66,8 +66,8 @@ namespace "bundle" do
     args << "-classpath"
     args << '"' + jdehome + "/lib/net_rim_api.jar;" + File.join($prebuilt, "bb","RubyVM.jar") + '"'
     args << "-d"
-    args << $bindir
-    args << $bindir + "/RhoBundle.jar"
+    args << '"' + $bindir + '"'
+    args << '"' + $bindir + "/RhoBundle.jar" +'"'
     puts Jake.run(jdehome + "/bin/preverify.exe",args)
     $stdout.flush
 
@@ -127,6 +127,7 @@ namespace "run" do
     task :sim do
       sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
       jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      bbver = $config["env"]["bbver"]
   
       command =  '"' + jde + "/simulator/fledge.exe\""
       args = [] 
@@ -138,7 +139,11 @@ namespace "run" do
       args << "/data-port=0x4d44"
       args << "/data-port=0x4d4e"
       args << "/pin=0x2100000A"
-      args << "/fs-sdcard"
+      
+      if bbver >= 4.3
+        args << "/fs-sdcard"
+      end
+      
       args << "\"/app-param=JvmDebugFile:"+ File.join($basedir,'applog.txt') +'"'
   
       Thread.new { Jake.run(command,args,jde + "/simulator",true) }
@@ -205,5 +210,87 @@ namespace "run" do
       $stdout.flush
     
     end
+  end
+end
+
+namespace "check" do
+  task :bb => "config:bb" do
+    errors = Array.new
+    
+    begin
+      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+
+    if not FileTest.exists? javahome
+      puts " - JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
+      errors << "JAVAHOME missing"
+    end
+
+    if not FileTest.exists? javahome + "/javac.exe"
+      puts " - javac.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "javac missing"
+    end
+
+    if not FileTest.exists? javahome + "/java.exe"
+      puts " - java.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "java missing"
+    end
+
+    if not FileTest.exists? javahome + "/jar.exe"
+      puts " - jar.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "jar missing"
+    end
+
+    if not FileTest.exists? jdehome
+      puts " - JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      errors << "JDEHOME missing"
+    end
+    if not FileTest.exists? mdshome
+      puts " - MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      errors << "MDSHOME missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/preverify.exe"
+      puts " - preverify.exe not found. Make sure JDEHOME in build.yml points to a valid Blackberry JDK"
+      errors << "preverify missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/rapc.jar"
+      puts " - rapc.jar not found. Make sure JDEHOME in build.yml points to a valid Blackberry JDK"
+      errors << "rapc missing"
+    end
+
+    begin
+      blah = `jar 2>&1`
+    rescue
+      puts " - jar is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "jar not on path"
+    end
+
+    begin
+      blah = `java 2>&1`
+    rescue
+      puts " - java is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "java not on path"
+    end
+
+    puts "\nBBVER: " + $config["env"]["bbver"].to_s
+    puts "JAVAHOME: " + javahome
+    puts "JDEHOME: " + jdehome
+    puts "MDSHOME: " + mdshome
+
+    if errors.size > 0
+      puts "\nFound the following errors for blackberry: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Blackberry config appears valid"
+    end
+
   end
 end

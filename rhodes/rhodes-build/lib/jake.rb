@@ -85,9 +85,10 @@ class Jake
   
     args.each do |x|
       x = x.to_s
-  #    x.gsub!(/"/,"\\\"")
-      argstr +=  x + " "
-      #argstr += "\"" + x + "\" "
+      x.gsub!(/^"/,"")
+      x.gsub!(/"$/,"")
+      #argstr +=  x + " "
+      argstr += '"' + x + '" '
     end
   
     if not wd.nil?
@@ -227,6 +228,7 @@ class Jake
     srcdir = @@config["build"]["srcdir"]
     rubypath = @@config["build"]["rubypath"]
     excludelib = @@config["build"]["excludelib"]
+    excludeapps = @@config["build"]["excludeapps"]
     compileERB = @@config["build"]["compileERB"]
     
   
@@ -236,6 +238,7 @@ class Jake
     args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
     args << '"-Druby.path=' + get_absolute(rubypath) + '"'
     args << '"-Dexclude.lib=' + excludelib + '"'
+    args << '"-Dexclude.apps=' + excludeapps + '"'
     args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'
     args << '"-Dsrclib.dir=' + get_absolute(srcdir) + '"'
   

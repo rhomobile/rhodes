@@ -175,7 +175,7 @@ public class DataFileCache {
 
         fileFreePosition = 0;
 
-        database.logger.appLog.logContext(SimpleLog.LOG_NORMAL, "start");
+        database.logger.appLog.logContext(SimpleLog.LOG_NORMAL, "Start open DB");
 
         try {
             boolean preexists = database.isFilesInJar();
@@ -270,7 +270,7 @@ public class DataFileCache {
             freeBlocks = new DataFileBlockManager(maxFreeBlocks,
                                                   cacheFileScale, freesize);
 
-            database.logger.appLog.logContext(SimpleLog.LOG_NORMAL, "end");
+            database.logger.appLog.logContext(SimpleLog.LOG_NORMAL, "End open DB");
         } catch (Throwable e) {
             database.logger.appLog.logContext(e, "failed");
             close(false);

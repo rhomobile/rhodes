@@ -71,12 +71,8 @@ public :
         m_pServerHost = new CServerHost();
         // Starting local server
         m_pServerHost->Start(m_appWindow.m_hWnd);
-        // Navigate to the home page
-        //TCHAR _laodingpage[MAX_PATH];
-		//LPTSTR lp = CHttpServer::Instance()->GetLoadingPage(_laodingpage);
-        m_appWindow.Navigate2(_T("about:blank"));
-        //m_appWindow.Navigate(CHttpServer::Instance()->GetStartPage());
-
+        // Navigate to the "loading..." page
+		m_appWindow.Navigate2(_T("about:blank"));
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);
         return S_OK;

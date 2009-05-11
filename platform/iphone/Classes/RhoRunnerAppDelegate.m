@@ -9,25 +9,40 @@
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 #import "AppManager.h"
+#import "config.h"
 
 @implementation RhoRunnerAppDelegate
 
 @synthesize window;
 @synthesize webViewController;
 
-NSString *localhost = @"http://localhost:8080/";
-
 - (NSString*)normalizeUrl:(NSString*)url {
 	if([url hasPrefix:@"http://"]) {
 		return url;
 	}
-	return [localhost stringByAppendingPathComponent:url];
+	NSString* location = [@"http://localhost:8080" stringByAppendingString:[@"/" stringByAppendingPathComponent:url]];
+	return location;
 }
 
 - (void)onServerStarted:(NSString*)data {
 	printf("Server Started notification is recived\n");
-	NSString* location = [localhost stringByAppendingPathComponent:(NSString*)data];
-	[webViewController navigate:location];
+	NSString* location = NULL;
+	
+	//try to restore previous location
+	if ( config_getBool("KeepTrackOfLastVisitedPage") ) {
+		char* lastVisitedPage = config_getString("LastVisitedPage");
+		if (lastVisitedPage && strlen(lastVisitedPage)>0) {
+			location = [NSString stringWithCString:lastVisitedPage
+										  encoding:[NSString defaultCStringEncoding]];
+		}
+	} 
+	
+	//if there is no previous location navigate to the default start page 
+	if (!location) {
+		location = [self normalizeUrl:(NSString*)data];
+	}
+	
+	[webViewController navigateRedirect:location];
 }
 
 - (void)onRefreshView {

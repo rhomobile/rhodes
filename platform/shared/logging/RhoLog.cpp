@@ -37,11 +37,11 @@ void LogMessage::addPrefix(const char* file, int line){
     else
         *this + LogSeverityNames[m_severity][0];
 
-    *this + " " + general::CLocalTime().toString() + ' ' +
-        LOGFMT("%08x") + general::CSystem().getThreadID() + ' ';
+    *this + " " + common::CLocalTime().toString() + ' ' +
+        LOGFMT("%08x") + common::CSystem().getThreadID() + ' ';
     
     if ( m_category.isEmpty() )
-        *this +  LOGFMT("%15s") + general::CFilePath(file).getBaseName() + ':' + LOGFMT("%4d") + line;
+        *this +  LOGFMT("%15s") + common::CFilePath(file).getBaseName() + ':' + LOGFMT("%4d") + line;
     else
         *this + LOGFMT("%20s") + m_category.getName();
 
@@ -62,7 +62,7 @@ void LogMessage::flushLog(){
     getLogConf().sinkLogMessage( m_strMessage );
 
     if ( m_severity == L_FATAL ) //TODO: may be save fatal info in separate place
-        general::CRhoFatalError().processFatalError();
+        common::CRhoFatalError().processFatalError();
 }
 
 }

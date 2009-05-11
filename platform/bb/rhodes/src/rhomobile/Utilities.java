@@ -3,13 +3,18 @@ package rhomobile;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.microedition.io.Connector;
+//import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.io.http.HttpProtocolConstants;
 import net.rim.device.api.util.StringUtilities;
 
+import com.rho.RhoClassFactory;
+import com.rho.net.URI;
+import com.rho.net.IHttpConnection;
+import com.rho.net.bb.NativeBBHttpConnection;
+import com.rho.net.RhoConnection;
 /**
  * 
  */
@@ -24,10 +29,11 @@ public class Utilities {
 		try {
 			URI uri = new URI(url);
 			if ( "localhost".equals(uri.getHost())) {
-				conn = new RhoConnection(uri);
+				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
-				conn = NetworkAccess.connect(url);
+				IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url);
+				conn = (HttpConnection)(httpconn!=null?httpconn.getNativeConnection() : null);
 				// conn = NetworkAccess.connect(url);
 			}
 				
@@ -67,9 +73,9 @@ public class Utilities {
 			}
 
 			if (postData == null) {
-				conn.setRequestMethod(HttpConnection.GET);
+				conn.setRequestMethod(IHttpConnection.GET);
 			} else {
-				conn.setRequestMethod(HttpConnection.POST);
+				conn.setRequestMethod(IHttpConnection.POST);
 
 				conn.setRequestProperty(
 						HttpProtocolConstants.HEADER_CONTENT_LENGTH, String

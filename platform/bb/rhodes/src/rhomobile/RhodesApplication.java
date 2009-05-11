@@ -7,6 +7,8 @@ import javax.microedition.io.HttpConnection;
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
 
+import com.rho.*;
+
 import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
@@ -19,14 +21,14 @@ import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
 
-import rhomobile.NetworkAccess;
+import com.rho.net.INetworkAccess;
+import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
-import rhomobile.location.GeoLocation;
-import rhomobile.sync.SyncEngine;
-import rhomobile.sync.SyncUtil;
-import rhomobile.sync.SyncNotifications;
-import com.rho.*;
+import com.rho.location.GeoLocation;
+import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncUtil;
+import com.rho.sync.SyncNotifications;
 
 import java.util.Vector;
 
@@ -36,6 +38,9 @@ import java.util.Vector;
  */
 final public class RhodesApplication extends UiApplication implements RenderingApplication{
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhodesApplication");
+	
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -116,6 +121,27 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         thread.start();                       
     }
 
+    void saveCurrentLocation(String url) {
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			RhoConf.getInstance().setString("LastVisitedPage",url);
+			RhoConf.getInstance().saveToFile();
+			LOG.TRACE("Saved LastVisitedPage: " + url);
+		}   	
+    }
+
+    boolean restoreLocation() {
+    	LOG.TRACE("Restore Location to LastVisitedPage");
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			String url = RhoConf.getInstance().getString("LastVisitedPage");
+			if (url.length()>0) {
+				LOG.TRACE("Navigating to LastVisitedPage: " + url);
+				this.navigateUrl(url);
+				return true;
+			}
+		} 
+		return false;
+    }
+   
     void back(){
     	if ( _history.size() <= 1 )
     		return;
@@ -124,6 +150,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	String url = (String)_history.elementAt(nPos);
     	_history.removeElementAt(nPos+1);
 
+    	saveCurrentLocation(url);
+    	
     	navigateUrl(url);
     }
 
@@ -157,6 +185,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		_history.setSize(nPos+1);
     		_history.setElementAt(strUrl, _history.size()-1 );
     	}
+    	saveCurrentLocation(strUrl);
     }
 
     void openLink(){
@@ -191,15 +220,20 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     /***************************************************************************
      * Main.
      **************************************************************************/
-    public static void main(String[] args) {
-    	
+    public static void main(String[] args)
+    {
     	RhoLogger.InitRhoLog();
+    	System.out.println("Rhodes STARTED");
+    	
     	//TestRhoLog test = new TestRhoLog();
     	//test.runAllTests();
     	//TestProfiler.runAllTests();
+    	try{
+    		RhoClassFactory.getNetworkAccess().configure();
+    	}catch(IOException exc){
+    		LOG.ERROR(exc.getMessage());
+    	}
     	
-    	NetworkAccess.autoConfigure();
-
     	SyncUtil.init();
 
         RhoRuby.RhoRubyStart("");
@@ -209,6 +243,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
+		
+		System.out.println("Rhodes EXIT");
     }
 
     void doClose(){
@@ -216,12 +252,22 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
         
+    	try{
+    		RhoClassFactory.getNetworkAccess().close();
+    	}catch(IOException exc){
+    		LOG.ERROR(exc);
+    	}
+    		
         RhoLogger.close();
     }
 
 	public void activate() {
 //		SyncEngine.start(null);
-		GeoLocation.start();
+    	try{
+    		GeoLocation.start();
+    	}catch(Exception exc){
+    		LOG.ERROR("GeoLocation failed to start", exc);
+    	}
 
 		super.activate();
 	}
@@ -279,9 +325,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public boolean onClose() {
 			doClose();
-			super.onClose();
-			System.exit(0);
-			return true;
+			return super.onClose();
+			//System.exit(0);
+			//return true;
 		}
 
 		public boolean onMenu(int instance) {
@@ -309,7 +355,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
 
-        navigateHome();
+        if(!restoreLocation()) {
+        	navigateHome();
+        }
     }
 
     public void refreshCurrentPage(){

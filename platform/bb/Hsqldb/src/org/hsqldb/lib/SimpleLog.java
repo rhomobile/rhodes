@@ -31,6 +31,9 @@
 
 package org.hsqldb.lib;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 //import java.io.File;
 //import java.io.FileWriter;
 //import java.io.PrintWriter;
@@ -51,6 +54,9 @@ package org.hsqldb.lib;
  */
 public class SimpleLog {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("DB");
+	
     public static final int LOG_NONE   = 0;
     public static final int LOG_ERROR  = 1;
     public static final int LOG_NORMAL = 2;
@@ -59,7 +65,6 @@ public class SimpleLog {
 
     public SimpleLog(String path, int level, boolean useFile) {
 
-    	//TODO: redirect SimpleLog to RhoLog 
         this.level = level;
 
         if (level != LOG_NONE) {
@@ -94,17 +99,22 @@ public class SimpleLog {
     }*/
 
     public synchronized void sendLine(int atLevel, String message) {
-
-        if (level >= atLevel) {
+    	logContext(atLevel, message);
+        //if (level >= atLevel) {
             //writer.println(HsqlDateTime.getSytemTimeString() + " " + message);
-        }
+        //}
     }
 
     public synchronized void logContext(int atLevel, String message) {
 
-        if (level < atLevel) {
-            return;
-        }
+    	if ( atLevel == LOG_ERROR )
+    		LOG.ERROR(message);
+    	else
+    		LOG.INFO(message);
+    	
+        //if (level < atLevel) {
+        //    return;
+       // }
 
         //String info = HsqlDateTime.getSytemTimeString();
 
@@ -125,9 +135,10 @@ public class SimpleLog {
 
     public synchronized void logContext(Throwable t, String message) {
 
-        if (level == LOG_NONE) {
-            return;
-        }
+    	LOG.ERROR(message,t);
+        //if (level == LOG_NONE) {
+        //    return;
+        //}
 
        // String info = HsqlDateTime.getSytemTimeString();
 
@@ -150,9 +161,9 @@ public class SimpleLog {
 */
 
 //#endif JAVA4
-        if (message == null) {
-            message = "";
-        }
+        //if (message == null) {
+         //   message = "";
+        //}
 
         //writer.println(info + " " + t.toString() + " " + message);
     }

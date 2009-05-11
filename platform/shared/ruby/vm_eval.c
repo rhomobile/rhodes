@@ -959,6 +959,10 @@ specific_eval(int argc, VALUE *argv, VALUE klass, VALUE self)
 	const char *file = "(eval)";
 	int line = 1;
 
+//RHO
+    rb_raise(rb_eNotImpError, "Not implemented: only eval of block is supported.");
+//RHO
+
 	if (argc == 0) {
 	    rb_raise(rb_eArgError, "block not supplied");
 	}
@@ -1012,7 +1016,7 @@ VALUE
 rb_obj_instance_eval(int argc, VALUE *argv, VALUE self)
 {
     VALUE klass;
-
+                                 
     if (SPECIAL_CONST_P(self)) {
 	klass = Qnil;
     }
@@ -1335,7 +1339,7 @@ Init_vm_eval(void)
 
     rb_define_global_function("loop", rb_f_loop, 0);
 
-    //rb_define_method(rb_cBasicObject, "instance_eval", rb_obj_instance_eval, -1);
+    rb_define_method(rb_cBasicObject, "instance_eval", rb_obj_instance_eval, -1);
     rb_define_method(rb_cBasicObject, "instance_exec", rb_obj_instance_exec, -1);
     rb_define_private_method(rb_cBasicObject, "method_missing", rb_method_missing, -1);
 
@@ -1345,8 +1349,8 @@ Init_vm_eval(void)
 
     rb_define_method(rb_cModule, "module_exec", rb_mod_module_exec, -1);
     rb_define_method(rb_cModule, "class_exec", rb_mod_module_exec, -1);
-    //rb_define_method(rb_cModule, "module_eval", rb_mod_module_eval, -1);
-    //rb_define_method(rb_cModule, "class_eval", rb_mod_module_eval, -1);
+    rb_define_method(rb_cModule, "module_eval", rb_mod_module_eval, -1);
+    rb_define_method(rb_cModule, "class_eval", rb_mod_module_eval, -1);
 
     rb_define_global_function("caller", rb_f_caller, -1);
 }

@@ -50,6 +50,9 @@
               
                 <exclude name="**/nbproject" />
                 <exclude name="**/.DS_Store" />
+                <exclude name="applog.txt" />
+                <exclude name=".git/**" />
+                <exclude name="bin/**" />
             </fileset>
         </copy>
     
@@ -85,11 +88,6 @@
   </target>
 
   <target name="bundleDB" depends="bundleCommon">
-    <copy todir="${src.dir}/lib/sqlite3">
-      <fileset dir="../../../rhodes/rhodes-framework/res/sqlite3">
-        <include name="**/*.rb" />
-      </fileset>
-    </copy>
     <copy todir="${src.dir}/db">
       <fileset dir="../../../rhodes/rhodes-build/res/prebuilt/common/db">
         <include name="**/*.sqlite" />

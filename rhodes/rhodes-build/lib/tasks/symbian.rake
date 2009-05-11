@@ -30,9 +30,6 @@ namespace "bundle" do
     src = $rhodeslib
     cp_r src,dest
 
-    src = File.join($rhodeslib,"..","res","sqlite3")
-    cp_r src,File.join(dest,"lib")
-    
     chdir dest
     Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
     Dir.glob("**/erb.rb").each {|f| rm f}
@@ -42,7 +39,7 @@ namespace "bundle" do
     chdir $basedir
     cp_r 'app',File.join($srcdir,'apps')
     cp_r 'public', File.join($srcdir,'apps')
-    cp   'config.rb', File.join($srcdir,'apps')
+    cp   'rhoconfig.txt', File.join($srcdir,'apps')
 
     cp   $appmanifest, $srcdir
     puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
@@ -151,3 +148,55 @@ namespace "run" do
 
   end
 end
+
+
+namespace "check" do
+  task :symbian => "config:symbian" do
+    errors = Array.new
+
+    begin
+      tools = $config["env"]["paths"]["symbiantools"]
+      symroot = $config["env"]["paths"]["symroot"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+    makesis = File.join(tools,"makesis.exe")
+    makekeys = File.join(tools,"makekeys.exe")
+    signsis = File.join(tools,"signsis.exe")
+
+    if not FileTest.exists? makesis
+      puts " - makesis not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "makesis missing"
+    end
+
+
+    if not FileTest.exists? makekeys
+      puts " - makekeys not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "makekeys missing"
+    end
+
+    if not FileTest.exists? signsis
+      puts " - signsis not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "signsis missing"
+    end
+
+    if not FileTest.exists? symroot
+      puts " - symroot not found. Make sure you have the correct path to the symbian root folder in your build.yml file "
+      errors << "symroot missing"
+    end
+
+
+    puts "\nSYMROOT: " + symroot
+
+    if errors.size > 0
+      puts "\nFound the following errors for symbian: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Symbian config appears valid"
+    end
+
+  end
+end
+

@@ -7,7 +7,7 @@
 
 namespace rho {
 
-namespace general{ class RhoSettings; }
+namespace common{ class RhoSettings; }
 class LogCategory;
 
 struct ILogSink{
@@ -32,8 +32,8 @@ class LogSettings{
     ILogSink*   m_pFileSink;
     ILogSink*   m_pOutputSink;
 
-    static general::CMutex m_FlushLock;
-    static general::CMutex m_CatLock;
+    static common::CMutex m_FlushLock;
+    static common::CMutex m_CatLock;
 
 public:
     LogSettings();
@@ -75,7 +75,7 @@ public:
     void clearLog();
 
     void saveToFile();
-    void loadFromConf(rho::general::RhoSettings& oRhoConf);
+    void loadFromConf(rho::common::RhoSettings& oRhoConf);
 
 };
 

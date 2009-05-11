@@ -121,7 +121,7 @@ void shouldSaveLogConfToFile(){
 }
 
 void shouldLoadLogConfFromString(){
-    rho::general::RhoSettings oRhoConf;
+    rho::common::RhoSettings oRhoConf;
 
     oRhoConf.loadFromString(
         "MinSeverity  = 2  \n"
