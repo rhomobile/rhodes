@@ -1,12 +1,12 @@
-void runAllLogTests();
-extern "C" void runAllProfilingTests();
+//void runAllLogTests();
+//extern "C" void runAllProfilingTests();
 extern "C" void InitRhoLog(const char* path);
 
-int wmain(int argc, wchar_t* argv[])
+int main(int argc, wchar_t* argv[])
 {
     InitRhoLog("");
 
-    runAllLogTests();
+    //runAllLogTests();
 
 
 //	runAllProfilingTests();

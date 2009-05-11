@@ -1,9 +1,9 @@
 module RhodesGenerator
   unless defined? RhodesGenerator::VERSION
-    VERSION = '1.0.7'
+    VERSION = '1.1.0'
   end
   unless defined? RhodesGenerator::DBVERSION
-    DBVERSION = '1.0.7'
+    DBVERSION = '1.1.0'
   end
   
 end

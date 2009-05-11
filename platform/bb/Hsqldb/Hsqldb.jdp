@@ -20,6 +20,7 @@ ExcludeFromBuildAll=0
 [Files
 src\com\rho\db\FileUtilBB.java
 src\com\rho\db\HsqlDBResult.java
+src\com\rho\db\HsqlDBRowResult.java
 src\com\rho\db\HsqlDBStorage.java
 src\com\rho\db\Journal.java
 src\com\rho\db\RandomAccessFile.java

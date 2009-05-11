@@ -112,7 +112,11 @@ int process_local_changes() {
 
       nStartSrc = get_start_source(source_list, source_length );
 //#if 0	  
-	  for(i = nStartSrc; i < source_length && isContinueSync(); i++) {
+	  for(i = nStartSrc; i < source_length && isContinueSync(); i++) 
+      {
+          if ( !source_list[i] || !source_list[i]->_source_url || !*(source_list[i]->_source_url) )
+              continue;
+
 		  if(client_id == NULL) {
 			  client_id = set_client_id(database, source_list[i]);
 		  }
@@ -168,6 +172,9 @@ int process_local_changes() {
 
 		  for(i = nStartSrc; i < source_length && isContinueSync(); i++)
 		  {
+              if ( !source_list[i] || !source_list[i]->_source_url || !*(source_list[i]->_source_url) )
+                  continue;
+
               if ( !bStopSync ){
 			      ask_params = get_params_for_source(source_list[i], database);
 			      available_remote = fetch_remote_changes(database, client_id, source_list[i], ask_params, &bStopSync );

@@ -3,10 +3,10 @@
 #include "RhoFilePath.h"
 #include "StringConverter.h"
 
-static const char* CONF_FILENAME = "rhodes_conf.txt";
+static const char* CONF_FILENAME = "apps/rhoconfig.txt";
 
 namespace rho{
-namespace general{
+namespace common{
 
 RhoSettings g_RhoSettings;
 
@@ -14,15 +14,15 @@ void RhoSettings::saveToFile(){
     String strData;
     saveToString(strData);
 
-    general::CRhoFile oFile;
-    oFile.open(  getConfFilePath().c_str(), general::CRhoFile::OpenForWrite);
+    common::CRhoFile oFile;
+    oFile.open(  getConfFilePath().c_str(), common::CRhoFile::OpenForWrite);
 
     oFile.write( strData.c_str(), strData.size() );
 }
 
 void RhoSettings::loadFromFile(){
-    general::CRhoFile oFile;
-    if ( oFile.open( getConfFilePath().c_str(), general::CRhoFile::OpenReadOnly) ){
+    common::CRhoFile oFile;
+    if ( oFile.open( getConfFilePath().c_str(), common::CRhoFile::OpenReadOnly) ){
         String strSettings;
         oFile.readString(strSettings);
         loadFromString( strSettings.c_str() );
@@ -78,8 +78,8 @@ void RhoSettings::loadProperty( const char* start, int len ){
     const char* szValue = start + i+1;
     int nValueLen = len - (i+1);
 
-    while(*szValue==' '&& nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && szValue[nValueLen-1]==' ') nValueLen--;
+    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
+    while(nValueLen > 0 && szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"') nValueLen--;
 
     setPropertyByName(start, nNameLen, szValue, nValueLen );
 }
@@ -125,7 +125,7 @@ void   RhoSettings::setString(const char* szName, const String& str){
 }
 
 void   RhoSettings::setInt(const char* szName, int nVal){
-    m_mapValues[szName] = general::convertToStringA(nVal);
+    m_mapValues[szName] = common::convertToStringA(nVal);
 }
 
 void   RhoSettings::setBool(const char* szName, bool bVal){
@@ -141,7 +141,7 @@ bool   RhoSettings::isExist(const char* szName){
 }
 
 extern "C" void InitRhoConf(const char* szRootPath){
-	rho::general::CFilePath oRhoPath( szRootPath );
+	rho::common::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
 }

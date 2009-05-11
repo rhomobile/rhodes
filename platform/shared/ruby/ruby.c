@@ -405,12 +405,12 @@ ruby_init_loadpath(const char* szRoot)
     //incpush(RUBY_RELATIVE(RUBY_SEARCH_PATH));
 #endif
 
-    //incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
+    incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
 #ifdef RUBY_SITE_THIN_ARCHLIB
     //incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
 #endif
    // incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
-   // incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
+	incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
 
    // incpush(RUBY_RELATIVE(RUBY_VENDOR_LIB2));
 #ifdef RUBY_VENDOR_THIN_ARCHLIB

@@ -106,7 +106,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
     LOG(INFO) + "Starting SYNC";
 
     CSyncEngine* sync = CSyncEngine::Instance();
-    if (sync) sync->ShowHomePage();
+    if (sync) sync->ShowStartPage();
 
 //    if (logged_in()){
       

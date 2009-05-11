@@ -34,7 +34,6 @@ lib/rhom/rhom_source.rb
 lib/singleton.rb
 lib/time.rb
 lib/version.rb
-res/sqlite3/empty.rb
 rhodes-framework.gemspec
 rhodes.gemspec
 spec/app_manifest.txt

@@ -138,10 +138,10 @@ void CSyncEngine::TriggerSync() {
   //Unlock();
 }*/
 
-void CSyncEngine::ShowHomePage()
+void CSyncEngine::ShowStartPage()
 {
   if (m_hMainWindow) {
-    ::PostMessage(m_hMainWindow,WM_COMMAND,IDM_HOME,0);
+    ::PostMessage(m_hMainWindow,WM_COMMAND,IDM_START_PAGE,0);
     m_hMainWindow = NULL;
   }
 }

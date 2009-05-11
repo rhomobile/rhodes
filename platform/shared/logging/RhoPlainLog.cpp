@@ -3,7 +3,7 @@
 extern "C"{
 const char* __rawDefaultCategory = "";
 
-static rho::general::CMutex g_plainBufferLock;
+static rho::common::CMutex g_plainBufferLock;
 static char g_plainBuffer[2000];
 
 void rhoPlainLogArg(const char* file, int line, LogSeverity severity, const char* szCategory,
@@ -12,7 +12,7 @@ void rhoPlainLogArg(const char* file, int line, LogSeverity severity, const char
 
     if ( oLogMsg.isEnabled() )
     {
-        rho::general::CMutexLock oLock(g_plainBufferLock);
+        rho::common::CMutexLock oLock(g_plainBufferLock);
 
         int buflen = sizeof(g_plainBuffer)-1;
         int len = vsnprintf(g_plainBuffer, buflen, format, ap);
@@ -38,7 +38,7 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
 
     if ( oLogMsg.isEnabled() )
     {
-        rho::general::CMutexLock oLock(g_plainBufferLock);
+        rho::common::CMutexLock oLock(g_plainBufferLock);
 
         int buflen = sizeof(g_plainBuffer)/2-1;
         wchar_t* buf = (wchar_t*)g_plainBuffer;

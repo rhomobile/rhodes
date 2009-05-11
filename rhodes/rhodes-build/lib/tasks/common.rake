@@ -32,6 +32,20 @@ namespace "bundle" do
   end
 end
 
+namespace "check" do
+  desc "Check that your system setup is correct for building"
+  task :all do
+    Rake::Task["check:bb"].invoke
+    puts "-------------------------------"
+    Rake::Task["check:wm"].invoke
+    puts "-------------------------------"
+    Rake::Task["check:android"].invoke
+    puts "-------------------------------"
+    Rake::Task["check:symbian"].invoke
+    puts "-------------------------------"
+  end
+end
+
 Rake::TaskManager.class_eval do
   def remove_task(task_name)
     @tasks.delete(task_name.to_s)
