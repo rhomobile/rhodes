@@ -5,7 +5,8 @@ module Rho
       columns = []
       tables.each do |filename|
         Rhom::RhomDbAdapter.delete_all_from_table(filename)
-        File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',dir_prefix,'fixtures',filename+'.txt')).each do |line|
+        prefix = dir_prefix.nil? ? "" : dir_prefix
+        File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
           if first_row
             columns = line.chomp.split('|'); first_row = false; next;
           end
