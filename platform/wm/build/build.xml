@@ -1,4 +1,4 @@
-<project name="buildWM" default="buildall" basedir=".">
+﻿<project name="buildWM" default="buildall" basedir=".">
 
     <fail message="build.properties does not exist, please copy build.properties.sample and fill in your settings.">
         <condition>
@@ -76,7 +76,7 @@
       <arg value="wm6"/>
     </exec>
 
-    <exec executable="${cabWiz.dir}/cabwiz.exe">
+    <exec executable="${cabWiz.dir}/сabwiz.exe">
       <arg value="rhodes.inf"/>
     </exec>
 
