@@ -11,16 +11,7 @@ $hoe = Hoe.new('rhodes-build', RhodesBuild::VERSION) do |p|
   p.changes              = p.paragraphs_of("../History.txt", 0..1).join("\n\n")  if File.exists? "../History.txt"
   #p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value
-  p.extra_deps         = [
-    ['sqlite3-ruby','= 1.2.3'],
-    ['rcov'],
-    ['rspec'],
-    ['templater'],
-    ['diff-lcs'],
-    ['extlib'],
-    ['newgem'],
-    ['activesupport']
-  ]
+  #p.extra_deps         = []
   
   p.clean_globs |= %w[**/.DS_Store tmp *.log]
   path = (p.rubyforge_name == p.name) ? p.rubyforge_name : "\#{p.rubyforge_name}/\#{p.name}"
@@ -31,7 +22,4 @@ $hoe = Hoe.new('rhodes-build', RhodesBuild::VERSION) do |p|
   
 end
 
-require 'newgem/tasks' # load /tasks/*.rake
-# remove test task TODO: why does this run anyway?
-Rake.application.remove_task(:test)
-Dir['lib/tasks/**/*.rake'].each { |t| load t }
+require 'newgem/tasks'

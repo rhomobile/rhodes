@@ -16,19 +16,7 @@ class <%=name.camelize%> < SourceAdapter
   end
 
   def sync
-    # usually this generic code does the job
-    user_id=@source.current_user.id
-    @result.entry_list.each do |x|
-      x.name_value_list.each do |y|
-        o=ObjectValue.new
-        o.source_id=@source.id
-        o.object=x['id']
-        o.attrib=y.name
-        o.value=y.value
-        o.user_id=user_id if user_id
-        o.save
-      end
-    end
+    super
   end
 
   def create(name_value_list)

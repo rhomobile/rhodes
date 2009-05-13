@@ -98,7 +98,7 @@ module Rhogen
         name - model name
         source_url - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
         source_id - unique id for this model (i.e. 500, this is only used on the device to uniquely identify the source)
-        attributes - list of one or more string attributes (i.e. name,industry,progress)
+        attributes - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
