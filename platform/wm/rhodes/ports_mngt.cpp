@@ -18,7 +18,7 @@
 
 #include "common/RhoMutexLock.h"
 
-using namespace rho::general;
+using namespace rho::common;
 
 extern "C" {
 

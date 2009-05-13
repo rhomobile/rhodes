@@ -1,0 +1,110 @@
+<?xml version="1.0" ?>
+<project name="Platform" default="usage">
+
+	<property file="build.properties"/>
+	
+	<target name="usage">            
+       <echo message="Usage: ant [options]"/>      
+       <echo message=""/> 
+       <echo message="where options is"/>
+       <echo message=""/> 
+       <echo message="appgen             : to clean + generate app"/>
+       <echo message=""/> 
+	</target> 
+
+	<target name="appgen" depends="cleanup-old-app-files, prepare-wm67z, prepare-buildinf-js">
+		
+		<!-- Restore files to original state from backup -->
+
+		<copy overwrite="true" file="${platform-prebuild-dir}/wm67z.bak" tofile="${platform-prebuild-dir}/wm6.7z" />
+
+		<copy overwrite="true" file="${platform-prebuild-dir}/buildinf-js.bak" tofile="${platform-prebuild-res}/build_inf.js" />
+
+		<echo file="${platform-prebuild-dir}/lastapp.bak" message="lastapp=${application-name}" />
+
+		<!-- extract wm6.7z -->
+
+		<exec executable="${platform-prebuild-res}/7z.exe" dir="${platform-prebuild-dir}">
+			<arg value="x"/>
+			<arg value="wm6.7z"/>
+			<arg value="-o${platform-prebuild-dir}/${application-name}"/>
+		</exec>
+
+		<!-- Replace icon -->
+		<exec executable="cmd">
+    			<arg value="/c"/>
+			<arg value="${platform-prebuild-res}/replaceicon.exe"/>
+			<arg value="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/rhodes.exe"/>
+			<arg value="${platform-prebuild-res}/icon.ico"/>
+			<arg value="${rhodes-icon-id}"/>
+		</exec>
+		
+		<copy overwrite="true" file="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/rhodes.exe" 
+			tofile="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/${application-name}.exe" />
+
+		<!-- create wm6.7z -->
+
+		<delete dir="${platfrom-prebuild-dir}" failonerror="true" includes="wm6.7z"/>
+
+		<exec executable="${platform-prebuild-res}/7z.exe" dir="${platform-prebuild-dir}">
+			<arg value="d"/> 
+			<arg value="wm6.7z"/>			
+			<arg value="*.*"/>
+			<arg value="-r"/>
+		</exec>
+
+		<exec executable="${platform-prebuild-res}/7z.exe" dir="${platform-prebuild-dir}\${application-name}\">
+			<arg value="a"/> 
+			<arg value="-t7z"/>
+			<arg value="wm6.7z"/>			
+			<arg value="Windows Mobile 6 Professional SDK (ARMV4I)/"/>
+		</exec>
+		
+		<copy overwrite="true" file="${platform-prebuild-dir}/${application-name}/wm6.7z" 
+			tofile="${platform-prebuild-dir}/wm6.7z" />
+			
+		<delete dir="${platform-prebuild-dir}/${application-name}" includeemptydirs="true"/>	
+			
+		<echo message="modify build-inf file" />	
+		<!-- modify build-inf file -->
+		
+		<replace file="${platform-prebuild-res}/build_inf.js" token="rhodes" value="${application-name}"/>
+		<replace file="${platform-prebuild-res}/build_inf.js" token="Rhodes" value="${application-name}"/>	
+		<replace file="${platform-prebuild-res}/build_inf.js" token="rhomobile" value="${application-author}"/>	
+		<!-- This is only one place where we will leave rhodes name -->
+		<replace file="${platform-prebuild-res}/build_inf.js" token="${application-name}\\Release" value="rhodes\\Release"/>
+			
+	</target>
+	
+	<target name="prepare-wm67z">
+		<condition property="wm67z-bak-available">
+			<available file="${platform-prebuild-dir}/wm67z.bak" />
+		</condition>
+		<antcall target="create-wm67z-backup" />
+	</target>
+	
+	<target name="prepare-buildinf-js">
+		<condition property="buildinf-js-bak-available">
+			<available file="${platform-prebuild-dir}/buildinf-js.bak" />
+		</condition>
+		<antcall target="create-buildinf-js-backup" />
+	</target>
+
+	<target name="create-buildinf-js-backup" unless="buildinf-js-bak-available">
+		<copy file="${platform-prebuild-res}/build_inf.js" tofile="${platform-prebuild-dir}/buildinf-js.bak"/>
+	</target>
+
+	<target name="create-wm67z-backup" unless="wm67z-bak-available">
+		<copy file="${platform-prebuild-dir}/wm6.7z" tofile="${platform-prebuild-dir}/wm67z.bak"/>
+	</target>
+
+	<target name="cleanup-old-app-files">
+	<!-- Load last app name -->
+      	<property file="${platform-prebuild-dir}/lastapp.bak" />
+		<echo message="cleanup [lastapp: ${platfrom-prebuild-dir}/${lastapp}]" />
+		
+		<delete dir="${platform-prebuild-dir}/${lastapp}" includeemptydirs="true"/>
+		
+	</target>
+
+</project>
