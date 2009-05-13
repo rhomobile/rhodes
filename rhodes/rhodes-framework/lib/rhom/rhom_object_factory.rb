@@ -41,7 +41,7 @@ module Rhom
               extend ::Rhom::RhomObject
           
               def initialize(obj=nil)
-                self.send("object=".to_sym(), "#{Time.now.to_i}")
+                self.send("object=".to_sym(), "#{((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i}")
                 if obj
                   self.send("source_id=".to_sym(), obj['source_id'].to_s)
                   self.send("update_type=".to_sym(), 'create')
