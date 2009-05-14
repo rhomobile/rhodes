@@ -22,7 +22,7 @@ describe "Rhom::RhomObjectFactory" do
 
   it_should_behave_like "rhom initializer"
   
-  before(:each) do
+  before do
     SyncEngine.stub!(:dosync).and_return(true)
   end
   
@@ -30,7 +30,7 @@ describe "Rhom::RhomObjectFactory" do
     Account.get_source_id.should == "1"
     Case.get_source_id.should == "2"
   end
-
+  
   it "should dynamically assign values" do
     account = Account.new
     account.name = 'hello name'
@@ -71,17 +71,19 @@ describe "Rhom::RhomObjectFactory" do
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
+    obj = account.object
     account.save
-    acct = Account.find(:first, :conditions =>{'name'=>'foobarthree'})
+    acct = Account.find(obj)
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
     
     account = Account.new
+    obj = account.object
     account.name = 'foobarfour'
     account.industry = 'solar'
     account.save
     
-    acct = Account.find(:first, :conditions =>{'name'=>'foobarfour'})
+    acct = Account.find(obj)
     acct.name.should == 'foobarfour'
     acct.industry.should == 'solar'
   end
@@ -394,17 +396,29 @@ describe "Rhom::RhomObjectFactory" do
     @res.length.should == 1
   end
   
-  # it "should include only selected columns" do
-  #   @accts = Account.find(:all, :select => ['name'])
-  #   
-  #   @accts[0].name.should == "Mobio India"
-  #   @accts[0].industry.should be_nil
-  # end
-  # 
-  # it "should include selected columns and conditions" do
-  #   @accts = Account.find(:all, :conditions => {'name' => 'Mobio India'}, :select => ['name'])
-  #   
-  #   @accts[0].name.should == "Mobio India"
-  #   @accts[0].industry.should be_nil
-  # end
+  it "should include only selected column" do
+    @accts = Account.find(:all, :select => ['name'])
+    
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should be_nil
+    @accts[0].instance_variables.length.should == 2
+  end
+  
+  it "should include only selected columns" do
+    @accts = Account.find(:all, :select => ['name','industry'])
+    
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[0].shipping_address_street.should be_nil
+    @accts[0].instance_variables.length.should == 3
+  end
+  
+  it "should include selected columns and conditions" do
+    @accts = Account.find(:all, :conditions => {'name' => 'Mobio India'}, :select => ['name','industry'])
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[0].shipping_address_street.should be_nil
+    @accts[0].instance_variables.length.should == 3
+  end
 end
