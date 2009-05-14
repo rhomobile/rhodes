@@ -38,6 +38,15 @@
 			<arg value="${platform-prebuild-res}/icon.ico"/>
 			<arg value="${rhodes-icon-id}"/>
 		</exec>
+
+		<!-- Replace window class string -->
+		<exec executable="cmd">
+    			<arg value="/c"/>
+			<arg value="${platform-prebuild-res}/updateresstring.exe"/>
+			<arg value="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/rhodes.exe"/>
+			<arg value="${application-name}${application-author}Rhodes.MainWindow"/>
+			<arg value="${rhodes-wnd-class-ids}"/>
+		</exec>
 		
 		<copy overwrite="true" file="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/rhodes.exe" 
 			tofile="${platform-prebuild-dir}/${application-name}/${rhodes-path-in-zip}/${application-name}.exe" />
