@@ -11,7 +11,7 @@
 #include "logging/RhoLog.h"
 
 #if defined(OS_WINDOWS)
-rho::general::CMutex CLogView::m_ViewFlushLock;
+rho::common::CMutex CLogView::m_ViewFlushLock;
 #endif
 
 LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -60,7 +60,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 #if defined(OS_WINDOWS)
 void CLogView::writeLogMessage( rho::String& strMsg ) {
-	rho::general::CMutexLock oLock(m_ViewFlushLock);
+	rho::common::CMutexLock oLock(m_ViewFlushLock);
 	m_buffer.AddTail(strMsg);
 	if (m_buffer.GetCount()>10000) {
 		m_buffer.RemoveHead();
@@ -170,7 +170,7 @@ LRESULT CLogView::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 }
 
 LRESULT CLogView::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	rho::general::CMutexLock oLock(m_ViewFlushLock);
+	rho::common::CMutexLock oLock(m_ViewFlushLock);
 	CWindow edit = GetDlgItem(IDC_LOGEDIT);
 	while(m_buffer.GetCount()) {
 		int pos = ::SendMessage(edit.m_hWnd, WM_GETTEXTLENGTH, 0, 0L);

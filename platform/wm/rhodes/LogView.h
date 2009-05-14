@@ -71,7 +71,7 @@ public:
 
 #if defined(OS_WINDOWS)
 // IlogSink
-	static rho::general::CMutex m_ViewFlushLock;
+	static rho::common::CMutex m_ViewFlushLock;
 	CAtlList<rho::String> m_buffer;
 	void writeLogMessage( rho::String& strMsg );
     int getCurPos(){ return -1; }

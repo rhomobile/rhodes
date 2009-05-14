@@ -47,6 +47,8 @@ char *  rho_strdup(const char *);
 #define strdup(s) rho_strdup(s)
 #define _strdup(s) rho_strdup(s)
 
+#if 0//ndef __SYMBIAN32__
+
 #ifdef __cplusplus
 void* cpp_alloc(size_t size, bool nothrow);
 
@@ -100,6 +102,8 @@ inline void* operator new(size_t size, const std::nothrow_t&) __THROW {
 }
 
 #endif// __cplusplus
+
+#endif
 
 #endif //_RHO_NO_MEMDEFINES
 

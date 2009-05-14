@@ -13,9 +13,9 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
   #p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value
   p.extra_deps         = $rhodesdeps + [
-    ['rhodes-framework'],
-    ['rhodes-generator'],
-    ['rhodes-build']
+    ['rhodes-framework', "= #{Rhodes::VERSION}"],
+    ['rhodes-generator', "= #{Rhodes::VERSION}"],
+    ['rhodes-build', "= #{Rhodes::VERSION}"]
   ]
   
   p.clean_globs |= %w[**/.DS_Store tmp *.log]
@@ -28,6 +28,3 @@ $hoe = Hoe.new('rhodes', Rhodes::VERSION) do |p|
 end
 
 require 'newgem/tasks' # load /tasks/*.rake
-# remove test task TODO: why does this run anyway?
-#Rake.application.remove_task(:test)
-Dir['tasks/**/*.rake'].each { |t| load t }

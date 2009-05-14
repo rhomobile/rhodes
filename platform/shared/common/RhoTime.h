@@ -8,7 +8,7 @@
 #endif
 
 namespace rho{
-namespace general{
+namespace common{
 
 class CBaseTime{
 public:
@@ -56,6 +56,11 @@ public:
         int nSize = sprintf(timeBuf, "%d:%02d:%03d", nMin, nSec, mSec );
         timeBuf[nSize] = 0;
         return String(timeBuf);
+    }
+
+    unsigned long toULong()
+    {
+        return m_nativeTime;
     }
 
     CTimeInterval minus(const CTimeInterval& time)const{

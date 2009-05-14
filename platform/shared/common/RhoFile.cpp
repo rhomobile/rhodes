@@ -9,7 +9,7 @@
 #endif
 
 namespace rho{
-namespace general{
+namespace common{
 
     bool CRhoFile::isOpened(){
         return m_file!=0;
@@ -59,7 +59,7 @@ namespace general{
         char* buf = (char*)malloc(nSize+1);
         nSize = fread(buf, 1, nSize, m_file);
         buf[nSize] = 0;
-        general::convertToStringW(buf,strTextW);
+        common::convertToStringW(buf,strTextW);
         free(buf);
     }
 
@@ -125,7 +125,7 @@ namespace general{
     void CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
         StringW wFileName;
-        general::convertToStringW(szFilePath,wFileName);
+        common::convertToStringW(szFilePath,wFileName);
         DeleteFile(wFileName.c_str());
 #else
         remove(szFilePath);

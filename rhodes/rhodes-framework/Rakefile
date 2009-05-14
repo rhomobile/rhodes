@@ -1,4 +1,4 @@
-%w[rubygems rake rake/clean fileutils newgem spec/rake/spectask].each { |f| require f }
+%w[rubygems rake rake/clean fileutils newgem].each { |f| require f }
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/version.rb'
 
@@ -8,7 +8,7 @@ task :default => [:spec]
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('rhodes-framework', RhodesFramework::VERSION) do |p|
   p.developer('Rhomobile Dev', 'dev@rhomobile.com')
-  p.changes              = p.paragraphs_of("../History.txt", 0..1).join("\n\n")  if File.exists? "../History.txt"
+  #p.changes              = p.paragraphs_of("../History.txt", 0..1).join("\n\n")  if File.exists? "../History.txt"
   #p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value
   p.extra_deps         = [
@@ -30,20 +30,4 @@ $hoe = Hoe.new('rhodes-framework', RhodesFramework::VERSION) do |p|
   
 end
 
-require 'newgem/tasks' # load /tasks/*.rake
-# remove test task TODO: why does this run anyway?
-Rake.application.remove_task(:test)
-Dir['tasks/**/*.rake'].each { |t| load t }
-
-desc "Run the specs under spec"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_opts = ['--options', "spec/spec.opts"]
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.rcov = true
-  t.rcov_opts = ['--include',
-                 '"lib/rhom/*,lib/rho/*"',
-                 '-x',
-                 'spec,gems,sqlite3/*,lib/date.rb,lib/rational.rb,lib/time.rb,lib/find.rb,lib/erb.rb,lib/singleton.rb,lib/pairparser.rb',
-                 '--text-report',
-                 '--html']
-end
+require 'newgem/tasks'

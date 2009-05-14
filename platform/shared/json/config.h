@@ -144,5 +144,9 @@
 #include "tcmalloc/rhomem.h"
 
 #if defined(WIN32)
+
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #endif
