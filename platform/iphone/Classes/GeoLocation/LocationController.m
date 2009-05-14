@@ -6,11 +6,7 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#if TARGET_IPHONE_SIMULATOR
-#import <CoreServices/CoreServices.h>
-#else
 #import <CFNetwork/CFNetwork.h>
-#endif
 
 #import "defs.h"
 #import <CoreLocation/CoreLocation.h>
