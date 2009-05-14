@@ -6,7 +6,7 @@
 #include <webvw.h>
 #endif
 #include <string>
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 #pragma warning(disable : 4995)
 #include <strsafe.h>
 #endif
@@ -18,7 +18,6 @@
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
-#include "LogView.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 char* canonicalizeURL(char* path);
@@ -86,14 +85,16 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
                      WS_CHILD | WS_VISIBLE | WS_BORDER, 0,
                      ID_BROWSER);
 #else
-	{
-		LPTSTR root = wce_mbtowc(RhoGetRootPath());
-		TCHAR ini[MAX_PATH];
-		wsprintf(ini,L"%s%s",root,L"rhodes.conf");
-		rcMainWindow.right = ::GetPrivateProfileInt(L"ClientArea",L"width",320,ini);
-		rcMainWindow.bottom = ::GetPrivateProfileInt(L"ClientArea",L"height",470,ini);
-		free(ini);
-	}
+	LOGCONF().setLogView(&m_logView);
+
+	rcMainWindow.left = RHOCONF().getInt("main_view_left");
+	rcMainWindow.top = RHOCONF().getInt("main_view_top");
+	int width = RHOCONF().getInt("client_area_width");
+	if (width <= 0) width = 320;
+	rcMainWindow.right = rcMainWindow.left+width;
+	int height = RHOCONF().getInt("client_area_height");
+	if (height <= 0) height = 470;
+	rcMainWindow.bottom = rcMainWindow.top+height;
 
 	m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
@@ -166,6 +167,13 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     m_menuBar = NULL;
 #endif
 
+#if defined(OS_WINDOWS)
+	if(m_logView.IsWindow()) {
+		m_logView.DestroyWindow();
+	}
+	LOGCONF().setLogView(NULL);
+#endif
+
     // Tear down connection points while controls are still alive.
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
 
@@ -180,7 +188,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 	USES_CONVERSION;
 	LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight);
 	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight);
@@ -308,8 +316,16 @@ LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CLogView oLogView;
+#if defined(OS_WINDOWS)
+	if ( !m_logView.IsWindow() ) {
+		LoadLibrary(_T("riched20.dll"));
+		m_logView.Create(NULL);
+	}
+	m_logView.ShowWindow(SW_SHOWNORMAL);
+#else
+	CLogView oLogView;
     oLogView.DoModal(m_hWnd);
+#endif
 
     return 0;
 }
@@ -365,7 +381,7 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	return 0;
 }
 
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CMenu menu;
 	CMenu sub;
@@ -382,6 +398,15 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 			m_hWnd);
 	sub.Detach();
 
+	return 0;
+}
+
+LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
+	RHOCONF().setInt("main_view_left",lp->x);
+	RHOCONF().setInt("main_view_top",lp->y);
+	RHOCONF().saveToFile();
+	bHandled = FALSE;
 	return 0;
 }
 #endif
@@ -660,7 +685,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 /* char -> wchar_t */
 wchar_t* wce_mbtowc(const char* a)
 {
@@ -690,4 +715,4 @@ char* wce_wctomb(const wchar_t* w)
 
 	return pChar;
 }
-#endif //_WIN32_WCE
+#endif //OS_WINDOWS

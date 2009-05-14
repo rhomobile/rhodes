@@ -11,9 +11,10 @@
 #include "NetRequest.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
-#if defined(WIN32)
+#if defined(OS_WINDOWS)
 #include "menubar.h"
 #endif
+#include "LogView.h"
 
 static const UINT ID_BROWSER = 1;
 static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
@@ -62,8 +63,9 @@ public:
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
 		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
+		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
@@ -92,8 +94,9 @@ private:
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-#if !defined(_WIN32_WCE)
+#if defined(OS_WINDOWS)
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 #endif
 
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -136,9 +139,10 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
-#elif defined (WIN32)
+#elif defined (OS_WINDOWS)
 	CMenuBar m_menuBar;
 	int m_menuBarHeight;
+	CLogView m_logView;
 #endif //_WIN32_WCE
 
 #if defined(_WIN32_WCE)

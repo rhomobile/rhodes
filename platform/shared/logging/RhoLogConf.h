@@ -31,6 +31,7 @@ class LogSettings{
 
     ILogSink*   m_pFileSink;
     ILogSink*   m_pOutputSink;
+    ILogSink*   m_pLogViewSink;
 
     static common::CMutex m_FlushLock;
     static common::CMutex m_CatLock;
@@ -71,8 +72,12 @@ public:
     void getLogText(String& strText);
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
+	
+	void setLogView(ILogSink* logView) { 
+		m_pLogViewSink = logView; 
+	}
 
-    void clearLog();
+	void clearLog();
 
     void saveToFile();
     void loadFromConf(rho::common::RhoSettings& oRhoConf);
