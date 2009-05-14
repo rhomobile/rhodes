@@ -41,8 +41,7 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
-    //DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
-
+#if defined(_WIN32_WCE)
 	static ATL::CWndClassInfo& GetWndClassInfo() 
 	{ 
 		CString tmp;
@@ -56,8 +55,11 @@ public:
 		}; 
 		return wc; 
 	}
-
-    BEGIN_MSG_MAP(CMainWindow)
+#else
+	DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
+#endif
+    
+	BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
         MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
