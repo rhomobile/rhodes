@@ -64,15 +64,16 @@ public class RhoLogger {
 		return strTime;
 	}
 	
-	private String getCategoryField(){
-		if ( m_category.length() >= 15 )
-			return m_category.substring(0, 15);
+	private String makeStringSize(String str, int nSize)
+	{
+		if ( str.length() >= nSize )
+			return str.substring(0, nSize);
 		else {
 			String res = "";
-			for( int i = 0; i < 15 - m_category.length(); i++ )
+			for( int i = 0; i < nSize - str.length(); i++ )
 				res += ' ';
 			
-			res += m_category;
+			res += str;
 			
 			return res;
 		}
@@ -81,11 +82,15 @@ public class RhoLogger {
 	private String getThreadField(){
 		String strThread = Thread.currentThread().getName();
 		if ( strThread.startsWith("Thread-"))
-			strThread = strThread.substring(7);
+		{
+			try {
+				int nThreadID = Integer.parseInt(strThread.substring(7));
+				
+				return Integer.toHexString(nThreadID);
+			}catch(Exception exc){}
+		}
 		
-		int nThreadID = Integer.parseInt(strThread);
-		
-		return Integer.toHexString(nThreadID);		
+		return strThread;
 	}
 	
 	private void addPrefix(){
@@ -97,8 +102,8 @@ public class RhoLogger {
 	    else
 	    	m_strMessage += LogSeverityNames[m_severity].charAt(0);
 
-	    m_strMessage += " " + getLocalTimeString() + ' ' + getThreadField() + ' ' +
-	    	getCategoryField() + "| ";
+	    m_strMessage += " " + getLocalTimeString() + ' ' + makeStringSize(getThreadField(),8) + ' ' +
+	    	makeStringSize(m_category,15) + "| ";
 	}
 
 	private void logMessage( int severity, String msg ){

@@ -354,6 +354,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
+        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+        //_renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
 
         if(!restoreLocation()) {
         	navigateHome();
@@ -403,7 +405,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     }
                 }
 
-                synchronized (getAppEventLock())
+                //synchronized (getAppEventLock())
                 {
                 	browserContent.finishLoading();
                 }
@@ -598,7 +600,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      * @see net.rim.device.api.browser.RenderingApplication#invokeRunnable(java.lang.Runnable)
      */
     public void invokeRunnable(Runnable runnable) {
-        (new Thread(runnable)).run();
+        (new Thread(runnable)).start();
     }
 
 }
