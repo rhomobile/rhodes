@@ -148,3 +148,55 @@ namespace "run" do
 
   end
 end
+
+
+namespace "check" do
+  task :symbian => "config:symbian" do
+    errors = Array.new
+
+    begin
+      tools = $config["env"]["paths"]["symbiantools"]
+      symroot = $config["env"]["paths"]["symroot"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+    makesis = File.join(tools,"makesis.exe")
+    makekeys = File.join(tools,"makekeys.exe")
+    signsis = File.join(tools,"signsis.exe")
+
+    if not FileTest.exists? makesis
+      puts " - makesis not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "makesis missing"
+    end
+
+
+    if not FileTest.exists? makekeys
+      puts " - makekeys not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "makekeys missing"
+    end
+
+    if not FileTest.exists? signsis
+      puts " - signsis not found. Make sure you have the correct path to the symbian tools folder in your build.yml file "
+      errors << "signsis missing"
+    end
+
+    if not FileTest.exists? symroot
+      puts " - symroot not found. Make sure you have the correct path to the symbian root folder in your build.yml file "
+      errors << "symroot missing"
+    end
+
+
+    puts "\nSYMROOT: " + symroot
+
+    if errors.size > 0
+      puts "\nFound the following errors for symbian: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Symbian config appears valid"
+    end
+
+  end
+end
+

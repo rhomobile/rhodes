@@ -19,6 +19,7 @@ lib/rho/rhocontact.rb
 lib/rho/rhocontroller.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhosupport.rb
+lib/rho/rhoutils.rb
 lib/rho/rhoviewhelpers.rb
 lib/rhodes-framework.rb
 lib/rhodes.rb
@@ -35,17 +36,3 @@ lib/singleton.rb
 lib/time.rb
 lib/version.rb
 rhodes-framework.gemspec
-rhodes.gemspec
-spec/app_manifest.txt
-spec/configs/account.rb
-spec/configs/case.rb
-spec/configs/contact.rb
-spec/configs/employee.rb
-spec/rho_controller_spec.rb
-spec/rho_spec.rb
-spec/rhom_object_factory_spec.rb
-spec/rhom_spec.rb
-spec/spec.opts
-spec/spec_helper.rb
-spec/stubs.rb
-spec/syncdbtest.sqlite

@@ -1,14 +1,15 @@
 #ifndef _RHOFILEPATH_H_
 #define _RHOFILEPATH_H_
 
-#include "RhoPort.h"
+#include "RhoStd.h"
 
 namespace rho{
-namespace general{
+namespace common{
 
 class CFilePath{
 public:
     CFilePath(const char* path) : m_szPath(path){}
+    CFilePath(const String& str) : m_szPath(str.c_str()){}
 
     const char* getBaseName(){ 
         const char* base = findLastSlash();

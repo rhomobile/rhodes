@@ -6,8 +6,8 @@
 #include "common/RhoConf.h"
 
 namespace rho{
-general::CMutex LogSettings::m_FlushLock;
-general::CMutex LogSettings::m_CatLock;
+common::CMutex LogSettings::m_FlushLock;
+common::CMutex LogSettings::m_CatLock;
 
 LogSettings g_LogSettings;
 
@@ -30,14 +30,14 @@ LogSettings::~LogSettings(){
 }
 
 void LogSettings::getLogTextW(StringW& strTextW){
-    general::CRhoFile oFile;
-    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+    common::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly) )
         oFile.readStringW(strTextW);
 }
 
 void LogSettings::getLogText(String& strText){
-    general::CRhoFile oFile;
-    if ( oFile.open( getLogFilePath().c_str(), general::CRhoFile::OpenReadOnly) )
+    common::CRhoFile oFile;
+    if ( oFile.open( getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly) )
         oFile.readString(strText);
 }
 
@@ -60,7 +60,7 @@ void LogSettings::saveToFile(){
     RHOCONF().saveToFile();
 }
 
-void LogSettings::loadFromConf(rho::general::RhoSettings& oRhoConf){
+void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
     if ( oRhoConf.isExist( "MinSeverity" ) )
         setMinSeverity( oRhoConf.getInt("MinSeverity") );
     if ( oRhoConf.isExist( "LogToOutput") )
@@ -79,7 +79,7 @@ void LogSettings::loadFromConf(rho::general::RhoSettings& oRhoConf){
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
     if ( m_strLogFilePath.compare(szLogFilePath) != 0 ){
-        general::CMutexLock oLock(m_FlushLock);
+        common::CMutexLock oLock(m_FlushLock);
 
         m_strLogFilePath = szLogFilePath; 
 
@@ -91,7 +91,7 @@ void LogSettings::setLogFilePath(const char* szLogFilePath){
 }
 
 void LogSettings::clearLog(){
-    general::CMutexLock oLock(m_FlushLock);
+    common::CMutexLock oLock(m_FlushLock);
 
     if ( m_pFileSink ){
         m_pFileSink->clear();
@@ -100,7 +100,7 @@ void LogSettings::clearLog(){
 }
 
 void LogSettings::sinkLogMessage( String& strMsg ){
-    general::CMutexLock oLock(m_FlushLock);
+    common::CMutexLock oLock(m_FlushLock);
 
     if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
@@ -115,7 +115,7 @@ void LogSettings::sinkLogMessage( String& strMsg ){
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
     //TODO: Optimize categories search : add map
-    general::CMutexLock oLock(m_CatLock);
+    common::CMutexLock oLock(m_CatLock);
 
     if ( m_strDisabledCategories.length() > 0 && strstr(m_strDisabledCategories.c_str(), cat.getName().c_str() ) != 0 )
         return false;
@@ -127,7 +127,7 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 }
 
 void LogSettings::setEnabledCategories( const char* szCatList ){
-    general::CMutexLock oLock(m_CatLock);
+    common::CMutexLock oLock(m_CatLock);
 
     if ( szCatList && *szCatList )
     	m_strEnabledCategories = szCatList;
@@ -136,7 +136,7 @@ void LogSettings::setEnabledCategories( const char* szCatList ){
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
-    general::CMutexLock oLock(m_CatLock);
+    common::CMutexLock oLock(m_CatLock);
 
     if ( szCatList && *szCatList )
     	m_strDisabledCategories = szCatList;
@@ -150,7 +150,7 @@ extern "C" void InitRhoLog(const char* szRootPath){
 
     InitRhoConf(szRootPath);
 
-	rho::general::CFilePath oLogPath( szRootPath );
+	rho::common::CFilePath oLogPath( szRootPath );
 	
     //Set defaults
 #ifdef RHO_DEBUG

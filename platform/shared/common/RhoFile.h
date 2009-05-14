@@ -4,7 +4,7 @@
 #include "RhoStd.h"
 
 namespace rho{
-namespace general{
+namespace common{
 
 class CRhoFile {
     FILE* m_file;

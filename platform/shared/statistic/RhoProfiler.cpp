@@ -10,7 +10,7 @@ class CProfiler
 
     class CCounter
     {
-        general::CTimeInterval m_startTime;
+        common::CTimeInterval m_startTime;
         bool m_bWasStarted;
     public:
         CCounter(bool bStart=true) : m_bWasStarted(false){ 
@@ -20,35 +20,35 @@ class CProfiler
 
         virtual bool isGlobal()const{ return false;}
 
-        virtual void start(){ m_startTime = general::CTimeInterval::getCurrentTime(); m_bWasStarted = true; }
-        virtual general::CTimeInterval stop(){
+        virtual void start(){ m_startTime = common::CTimeInterval::getCurrentTime(); m_bWasStarted = true; }
+        virtual common::CTimeInterval stop(){
             if ( m_startTime.isEmpty() )
                 return m_startTime;
 
-            general::CTimeInterval res = general::CTimeInterval::getCurrentTime()-m_startTime;
-            m_startTime = general::CTimeInterval();
+            common::CTimeInterval res = common::CTimeInterval::getCurrentTime()-m_startTime;
+            m_startTime = common::CTimeInterval();
             return res;
         }
-        virtual general::CTimeInterval flush(){ return stop(); }
+        virtual common::CTimeInterval flush(){ return stop(); }
 
         bool isWasStarted()const{ return m_bWasStarted;}
     };
 
     class CGlobalCounter : public CCounter
     {
-        general::CTimeInterval m_sumGlobal;
+        common::CTimeInterval m_sumGlobal;
     public:
         CGlobalCounter() : CCounter(false){ }
         virtual bool isGlobal()const{ return true;}
 
-        virtual general::CTimeInterval stop(){
+        virtual common::CTimeInterval stop(){
             m_sumGlobal += CCounter::stop();
 
             return m_sumGlobal;
         }
-        virtual general::CTimeInterval flush(){ 
-            general::CTimeInterval res = stop(); 
-            m_sumGlobal = general::CTimeInterval();
+        virtual common::CTimeInterval flush(){ 
+            common::CTimeInterval res = stop(); 
+            m_sumGlobal = common::CTimeInterval();
             return res;
         }
 
@@ -90,7 +90,7 @@ void CProfiler::stopCounter(const char* szCounterName, bool bDestroy /*=false*/)
 
     if ( bDestroy || !pCounter->isGlobal() )
     {
-        general::CTimeInterval oInterval = pCounter->stop();
+        common::CTimeInterval oInterval = pCounter->stop();
         LOG(INFO) + szCounterName + " (" + oInterval.toString() + ") : STOP";
 
         m_mapCounters.erase(szCounterName);
@@ -107,7 +107,7 @@ void CProfiler::flushCounter(const char* szCounterName, const char* msg)
         return;
     }
 
-    general::CTimeInterval oInterval = pCounter->flush();
+    common::CTimeInterval oInterval = pCounter->flush();
     LOG(INFO) + szCounterName + (msg && *msg ? " - " : "" ) + (msg && *msg ? msg : "" ) +
         " (" + oInterval.toString() + ") : STOP";
 }

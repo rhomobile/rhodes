@@ -11,19 +11,15 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RDispatcher"
 
-#ifdef __SYMBIAN32__
-
+#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)
 extern char* get_home_url();
-
 #else
 static char* localhost = "http://localhost:8080";
 #endif
 
 #ifdef __SYMBIAN32__      
-      extern int g_need_launch_gc;
-#endif
+extern int g_need_launch_gc;
 
-#ifdef __SYMBIAN32__      
 char* g_current_url = NULL;
 RHO_INIT_LOCK(change_url);
 
@@ -278,7 +274,7 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 		}
 	}
 	
-#ifdef __SYMBIAN32__	
+#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)	
 	full_len = strlen(get_home_url())+strlen(tmp_url)+1;
 	ret = malloc(full_len);
 	_shttpd_snprintf(ret, full_len, "%s%s", get_home_url(), tmp_url);	

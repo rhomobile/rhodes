@@ -212,3 +212,85 @@ namespace "run" do
     end
   end
 end
+
+namespace "check" do
+  task :bb => "config:bb" do
+    errors = Array.new
+    
+    begin
+      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    rescue
+      puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
+      errors << "invalid build.yml"
+    end
+
+
+    if not FileTest.exists? javahome
+      puts " - JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
+      errors << "JAVAHOME missing"
+    end
+
+    if not FileTest.exists? javahome + "/javac.exe"
+      puts " - javac.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "javac missing"
+    end
+
+    if not FileTest.exists? javahome + "/java.exe"
+      puts " - java.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "java missing"
+    end
+
+    if not FileTest.exists? javahome + "/jar.exe"
+      puts " - jar.exe not found. Make sure JAVAHOME in build.yml points to a valid Java SDK"
+      errors << "jar missing"
+    end
+
+    if not FileTest.exists? jdehome
+      puts " - JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      errors << "JDEHOME missing"
+    end
+    if not FileTest.exists? mdshome
+      puts " - MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      errors << "MDSHOME missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/preverify.exe"
+      puts " - preverify.exe not found. Make sure JDEHOME in build.yml points to a valid Blackberry JDK"
+      errors << "preverify missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/rapc.jar"
+      puts " - rapc.jar not found. Make sure JDEHOME in build.yml points to a valid Blackberry JDK"
+      errors << "rapc missing"
+    end
+
+    begin
+      blah = `jar 2>&1`
+    rescue
+      puts " - jar is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "jar not on path"
+    end
+
+    begin
+      blah = `java 2>&1`
+    rescue
+      puts " - java is not on the path. Make sure you have the java sdk bin folder in your path"
+      errors << "java not on path"
+    end
+
+    puts "\nBBVER: " + $config["env"]["bbver"].to_s
+    puts "JAVAHOME: " + javahome
+    puts "JDEHOME: " + jdehome
+    puts "MDSHOME: " + mdshome
+
+    if errors.size > 0
+      puts "\nFound the following errors for blackberry: "
+      errors.each { |error| puts "\t" + error.to_s }
+    else
+      puts "Blackberry config appears valid"
+    end
+
+  end
+end
