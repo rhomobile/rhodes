@@ -250,6 +250,7 @@ BEGIN
     IDS_MENU                "Menu"
     IDS_OK                  "OK"
     IDS_CANCEL              "Cancel"
+    IDS_WND_CLASS           "Rhodes.MainWindow"
 END
 
 #endif    // English (U.S.) resources

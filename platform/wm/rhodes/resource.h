@@ -30,6 +30,7 @@
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
 #define IDS_CANCEL                      10004
+#define IDS_WND_CLASS                   10005
 #define IDM_SK1_EXIT                    40001
 #define IDM_SK2_MENU                    40002
 #define IDM_BACK                        40003
