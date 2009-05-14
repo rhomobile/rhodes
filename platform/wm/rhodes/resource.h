@@ -9,9 +9,12 @@
 #define IDR_GETURL_MENUBAR              107
 #define IDD_LOGVIEW                     108
 #define IDD_LOGVIEW_WIDE                109
-#define IDR_LOGMENUBAR                  110
-#define IDD_LOGOPTIONS                  111
-#define IDR_LOGOPTIONSMENUBAR           112
+#define IDD_SIMULATOR_LOGVIEW           110
+#define IDR_LOGMENUBAR                  111
+#define IDD_LOGOPTIONS                  112
+#define IDR_LOGOPTIONSMENUBAR           114
+#define IDR_LOGVIEW_MENU                115
+#define IDD_SIMULATOR_LOGOPTIONS        116
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -21,6 +24,7 @@
 #define IDC_MSGCLASSES                  1006
 #define IDC_EDIT2                       1007
 #define IDC_MSGEXCLUDE                  1007
+#define IDC_BUTTON2                     1010
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -47,15 +51,15 @@
 #define IDM_LOG                         40020
 #define IDM_CLEAR                       40021
 #define IDM_NAVIGATE                    40022
-#define IDM_START_PAGE					40023
+#define IDM_START_PAGE                  40023
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        113
+#define _APS_NEXT_RESOURCE_VALUE        117
 #define _APS_NEXT_COMMAND_VALUE         40024
-#define _APS_NEXT_CONTROL_VALUE         1008
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
