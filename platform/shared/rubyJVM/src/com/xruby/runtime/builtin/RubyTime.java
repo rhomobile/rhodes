@@ -237,6 +237,10 @@ public class RubyTime extends RubyBasic {
         return createTime(args, TimeZone.getDefault());
     }
 
+    private static String[] month_shorts = {"Jan", "Feb", "Mar", "Apr", 
+            "May", "Jun", "Jul", "Aug", 
+            "Sep", "Oct", "Nov", "Dec"};
+    
     private static RubyTime createTime(RubyArray args, TimeZone zone) {
         if (null == args || args.size() == 0) {
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong number of arguments (0 for 1)");
@@ -244,7 +248,24 @@ public class RubyTime extends RubyBasic {
 
         int i = 0;
         int year = ((RubyFixnum) args.get(i++)).toInt();
-        int month = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
+        int month = 0;
+        if ( args.size() > i )
+        {
+        	RubyValue mon = args.get(i++);
+        	if ( mon instanceof RubyFixnum )
+        		month = ((RubyFixnum) mon).toInt();
+        	else if ( mon instanceof RubyString )
+        	{
+        		String strMon = mon.toStr();
+        		for ( int m = 0; m < month_shorts.length; m++ )
+        			if ( month_shorts[m].equalsIgnoreCase(strMon) )
+        			{
+        				month = m+1;
+        				break;
+        			}
+        	}
+        }
+        
         int day = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
         int hour = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
         int min = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
