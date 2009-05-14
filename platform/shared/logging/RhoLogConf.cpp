@@ -21,6 +21,7 @@ LogSettings::LogSettings(){
 
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
+    m_pLogViewSink = NULL;
 }
 
 LogSettings::~LogSettings(){
@@ -103,6 +104,9 @@ void LogSettings::sinkLogMessage( String& strMsg ){
 
     if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
+
+	if (m_pLogViewSink)
+		m_pLogViewSink->writeLogMessage(strMsg);
 
     //Should be at the end
     if ( isLogToOutput() )

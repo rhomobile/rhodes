@@ -77,9 +77,26 @@ module Rhom
       end
     
       # generates where clause based on hash
-      def where_str(condition)
-        cond = string_from_key_vals(condition," and")
-        cond[0..cond.length - 5]
+      def where_str(condition,select_arr=nil)
+        where_str = ""
+        if condition
+          where_str += string_from_key_vals(condition,"and")
+          where_str = where_str[0..where_str.length - 5]
+        end
+        
+        if select_arr and select_arr.length > 0
+          where_str += " and attrib in (#{select_str(select_arr)})"
+        end
+        #puts "where_str: #{where_str}" if where_str
+        where_str
+      end
+      
+      def select_str(select_arr)
+        select_str = ""
+        select_arr.each do |attrib|
+          select_str << "'#{attrib}'" + ","
+        end
+        select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
       end
     
       # generates value clause based on hash
@@ -92,7 +109,7 @@ module Rhom
       def string_from_key_vals(values, delim)
         vals = ""
         values.each do |key,value|
-          vals << " #{key} = #{get_value_for_sql_stmt(value)}#{delim}"
+          vals << " #{key} = #{get_value_for_sql_stmt(value)} #{delim}"
         end
         vals
       end
@@ -116,15 +133,15 @@ module Rhom
       #                   {"order by"=>'object'})
       # this would return all columns where source_id = 2 and update_type = 'query' ordered
       # by the "object" column
-      def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
+      def select_from_table(table=nil,columns=nil,condition=nil,params=nil,select_arr=nil)
         query = nil
         if table and columns and condition
           if params and params['distinct']
-            query = "select distinct #{columns} from #{table} where #{where_str(condition)}"
+            query = "select distinct #{columns} from #{table} where #{where_str(condition,select_arr)}"
           elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{where_str(condition)} order by #{params['order by']}"
+            query = "select #{columns} from #{table} where #{where_str(condition,select_arr)} order by #{params['order by']}"
           else
-            query = "select #{columns} from #{table} where #{where_str(condition)}"
+            query = "select #{columns} from #{table} where #{where_str(condition,select_arr)}"
           end
         elsif table and columns
           query = "select #{columns} from #{table}"                     

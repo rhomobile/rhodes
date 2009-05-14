@@ -8,6 +8,8 @@
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern char* canonicalizeURL(char* path);
 
+//BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
+
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 public :
@@ -55,6 +57,8 @@ public :
 				break;
 			}
 		}
+		//EnumWindows(EnumRhodesWindowsProc, (LPARAM)&hWnd);
+
 		if (hWnd)
 		{
 			SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
@@ -168,3 +172,21 @@ extern "C" char* webview_current_location() {
 	return get_current_location();
 }
 
+/*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
+{
+	char buf[255] = {0};
+	static char current_path[255] = {0};
+	if ( strlen(current_path) == 0 )
+		GetWindowModuleFileName(getMainWnd(), current_path, 255);
+	
+	GetWindowModuleFileName(hwnd, buf, 255);
+
+	if ( strncmp( buf, current_path, 255 ) == 0 )
+	{
+		HWND* pWnd = (HWND*)lParam;
+		*pWnd = hwnd;
+		return FALSE;
+	}
+
+	return TRUE;
+}*/

@@ -40,4 +40,10 @@ describe "Rhom" do
     Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
     Rhom::Rhom::client_id.should be_nil
   end
+  
+  it "should call select_from_table with select array" do
+    sel_arr = ['name','industry']
+    @res = Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
+    @res.length.should == 2
+  end
 end

@@ -21,15 +21,15 @@ require 'spec/spec_helper'
 
 describe "Rho" do
 
-  after(:each) do
+  before(:each) do
     Rho::RhoConfig.config = {'start_path'=>'/app','options_path'=>'/app/Settings'}
   end
-
-  # it "should populate configuration in sources table" do
-  #     sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
-  #     sources.size.should > 1
-  #   end
-
+  
+  it "should populate configuration in sources table" do
+    sources = Rhom::RhomDbAdapter::select_from_table('sources','*')
+    sources.size.should > 1
+  end
+  
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/app'
   end
@@ -37,7 +37,7 @@ describe "Rho" do
   it "should retrieve start_path" do
     Rho::RhoConfig.start_path.should == '/app'
   end
-
+  
   it "should set start_path" do
     Rho::RhoConfig.config['start_path'] = '/foo/bar'
     Rho::RhoConfig.start_path.should == '/foo/bar'

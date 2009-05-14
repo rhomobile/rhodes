@@ -83,19 +83,28 @@ module Rhom
                   # do we have conditions?
                   # if so, add them to the query
                   condition_hash = {}
-                  condition_hash = get_conditions_hash(args[1][:conditions]) if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
-                  conditions.merge!(condition_hash)
+                  select_arr = nil
+                  if args[1]
+                    condition_hash = get_conditions_hash(args[1][:conditions]) if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
+                    conditions.merge!(condition_hash)
+                    
+                    select_arr = args[1][:select] if args[1][:select]
+                  end
 
                   # process query, create, and update lists in order
                   ["query", "create", "update"].each do |update_type|
                     conditions.merge!({"update_type"=>update_type})
-                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'})
+                    objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'},select_arr)
 
                     # fetch the rest of the attributes if we're searching by specific attrib value
-                    if condition_hash and condition_hash.size > 0
+                    if conditions and conditions.size > 0
                       full_objects = []
                       objs.each do |obj|
-                        full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {'object' => obj['object'].to_s})
+                        if not select_arr
+                          full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {'object' => obj['object'].to_s})
+                        elsif select_arr and conditions
+                          full_objects += ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', {'object' => obj['object'].to_s}, nil, select_arr)
+                        end
                       end
                       objs = full_objects
                     end

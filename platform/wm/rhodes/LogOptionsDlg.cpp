@@ -18,6 +18,7 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+#endif //OS_WINCE
 
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Trace"));
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Info"));
@@ -30,8 +31,6 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetDlgItemText(IDC_MSGCLASSES, strW );
     strW = LOGCONF().getDisabledCategories().c_str();
     SetDlgItemText(IDC_MSGEXCLUDE, strW );
-    
-#endif //OS_WINCE
 
 	bHandled = TRUE;
 	return 1;  // Let the system set the focus

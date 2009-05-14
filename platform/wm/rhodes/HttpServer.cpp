@@ -11,6 +11,8 @@
 #include "rdispatcher.h"
 #include "shttpd.h"
 
+#include "ports_mngt.h"
+
 IMPLEMENT_LOGCLASS(CHttpServer,"HttpServer");
 #if defined(_WIN32_WCE)
 // strdup is implemented as part of ruby CE port
@@ -19,6 +21,7 @@ extern "C" char *strdup(const char * str);
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
+extern "C" int	set_ports(struct shttpd_ctx *ctx, const char *p);
 
 char* canonicalizeURL(char* path);
 
@@ -142,6 +145,8 @@ bool CHttpServer::InitHttpServer()
   sprintf(httproot,"%sapps",rootpath);
   shttpd_set_option(ctx, "root",httproot);
 
+  set_ports(ctx, get_free_listening_port());
+
 #if defined(_WIN32_WCE)
   shttpd_register_uri(ctx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
 #endif
@@ -166,8 +171,8 @@ LPTSTR CHttpServer::GetLoadingPage(LPTSTR buffer) {
 }
 
 
-#define HOME_PAGE_A "http://localhost:8080"
-#define HOME_PAGE_W L"http://localhost:8080/"
+//#define HOME_PAGE_A "http://localhost:8080"
+//#define HOME_PAGE_W L"http://localhost:8080/"
 
 bool CHttpServer::InitStartandOptionPages() {
 	if (m_bRubyInitialized) {
@@ -191,19 +196,19 @@ LPTSTR CHttpServer::GetStartPage() {
 	if (m_pStartPage)
 		return m_pStartPage;
 	else
-		return HOME_PAGE_W;
+		return (LPTSTR)get_home_url_w();
 }
 
 LPTSTR CHttpServer::GetOptionsPage() {
 	if (m_pOptionsPage)
 		return m_pOptionsPage;
 	else
-		return HOME_PAGE_W;
+		return (LPTSTR)get_home_url_w();
 }
 
 char* canonicalizeURL(char* path) {
 	if (!path) {
-		return wce_wctomb(HOME_PAGE_W);
+		return wce_wctomb(get_home_url_w());
 	}
 
 	if ( strncmp("http://",path,7)==0 ) {
@@ -215,9 +220,9 @@ char* canonicalizeURL(char* path) {
 		slash = "/";
 	}
 
-	int len = strlen(HOME_PAGE_A)+strlen(slash)+strlen(path);
+	int len = strlen(get_home_url())+strlen(slash)+strlen(path);
 	char* url = (char*) malloc(len+1);
-	sprintf(url,"%s%s%s",HOME_PAGE_A,slash,path);
+	sprintf(url,"%s%s%s",get_home_url(),slash,path);
 	
 	return url;
 }
