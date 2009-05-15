@@ -58,8 +58,8 @@ public:
 		return wc; 
 	}
 #endif
-
-    BEGIN_MSG_MAP(CMainWindow)
+    
+	BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
         MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)

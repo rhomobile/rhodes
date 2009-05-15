@@ -2,7 +2,7 @@
 start_path = '/app'
 
 # Path to the options page (in this case handled by javascript)
-options_path = '/app?settings=true'
+options_path = '/app/Settings'
 
 # Location of bundle url (i.e. from rhohub.com)
 rhobundle_zip_url = <%=zip_url%>
