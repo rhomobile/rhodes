@@ -19,7 +19,7 @@
 require 'spec/spec_helper'
 
 describe "Rhom::RhomObjectFactory" do
-
+  
   it_should_behave_like "rhom initializer"
   
   before do
@@ -67,6 +67,12 @@ describe "Rhom::RhomObjectFactory" do
   it "should get count of objects" do
     Account.count.should == 2
   end
+  
+  # it "should raise RecordNotFound error if nil given as find argument" do
+  #   lambda {
+  #     get 'index'
+  #   }.should_raise(Rhom::RecordNotFound)
+  # end
   
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
