@@ -121,7 +121,10 @@ const char* RhoGetRootPath();
 #endif	
 	if (replaceFiles) {
 		InitRhoLog(RhoGetRootPath());
+#ifndef TARGET_IPHONE_SIMULATOR	//DEBUG
+	
 		config_setString("currentVersion", version);
+#endif		
 		config_save();
 	}
 }
