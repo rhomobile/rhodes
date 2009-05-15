@@ -23,6 +23,13 @@
 #include <float.h>
 #endif
 
+// LB (5/14/09): iPhone 3.0 OS redefines FLT_ROUNDS (through float.h above) and causes
+// link error so we need to define it here.
+#ifdef __APPLE__
+#undef FLT_ROUNDS
+#define FLT_ROUNDS 1
+#endif
+
 #ifdef HAVE_IEEEFP_H
 #include <ieeefp.h>
 #endif
@@ -3176,7 +3183,7 @@ Init_Numeric(void)
     rb_undef_method(CLASS_OF(rb_cFloat), "new");
 
     rb_define_const(rb_cFloat, "ROUNDS", INT2FIX(FLT_ROUNDS));
-    rb_define_const(rb_cFloat, "RADIX", INT2FIX(FLT_RADIX));
+	rb_define_const(rb_cFloat, "RADIX", INT2FIX(FLT_RADIX));
     rb_define_const(rb_cFloat, "MANT_DIG", INT2FIX(DBL_MANT_DIG));
     rb_define_const(rb_cFloat, "DIG", INT2FIX(DBL_DIG));
     rb_define_const(rb_cFloat, "MIN_EXP", INT2FIX(DBL_MIN_EXP));
