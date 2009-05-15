@@ -175,3 +175,4 @@ private:
 private:
 	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
+

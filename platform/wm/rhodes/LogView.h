@@ -141,4 +141,10 @@ protected:
 #endif
 };
 
+#if defined(OS_WINDOWS)
+
+int  getIniInt(LPCTSTR lpKeyName, int nDefault);
+void setIniInt(LPCTSTR lpKeyName, int nValue);
+
+#endif
 
