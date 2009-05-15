@@ -20,8 +20,8 @@ public class RhoRuby {
 	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
-	public static final RubyID getStartPath = RubyID.intern("get_start_path");
-	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
+//	public static final RubyID getStartPath = RubyID.intern("get_start_path");
+//	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
@@ -85,18 +85,19 @@ public class RhoRuby {
 		return value;
 	}
 
-	public static String getStartPage(){
-		
-		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
-		
-		return value.toString();
+	public static String getStartPage()
+	{
+		return RhoConf.getInstance().getString("start_path");
+		//RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
+		//return value.toString();
 	}
 
-	public static String getOptionsPage(){
-		
-		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
-		
-		return value.toString();
+	public static String getOptionsPage()
+	{
+		return RhoConf.getInstance().getString("options_path");
+
+		//RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
+		//return value.toString();
 	}
 	
 	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
