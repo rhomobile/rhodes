@@ -8,7 +8,6 @@
 #endif
 #include "resource.h"
 #include "GetURLDialog.h"
-#include "NetRequest.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #if defined(OS_WINDOWS)
@@ -174,6 +173,5 @@ private:
 	void SetRhobundleReloadMenu();
 
 private:
-	CNetRequest m_callbackRequest;
 	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };

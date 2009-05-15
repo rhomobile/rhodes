@@ -18,6 +18,8 @@
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
+#include "rho/net/NetRequest.h"
+#include "rho/sync/SyncThread.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 char* canonicalizeURL(const char* path);
@@ -359,11 +361,10 @@ LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-extern "C" void dosync();
 
 LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	dosync();
+	rho_sync_doSyncAllSources();
     return 0;
 }
 
@@ -432,9 +433,11 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 			(status==S_FALSE?"cancel":"error"),status_message);
 	}
 
-	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
-	char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
-	if ( res ) free(res);
+//	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
+	//char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
+	//if ( res ) free(res);
+    rho::net::CNetLocalRequest oNetReq;
+    oNetReq.pushData( callback, message );
 
 	free(message);
 	if (imageuri) free(imageuri);

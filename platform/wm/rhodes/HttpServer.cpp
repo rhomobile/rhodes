@@ -4,15 +4,19 @@
 #include "common/RhoConf.h"
 #include "rhoruby/rhoruby.h"
 #include "HttpServer.h"
-#include "syncengine/rsyncengine.h"
+//#include "syncengine/rsyncengine.h"
 #if defined(_WIN32_WCE)
 #include "geolocation/LocationController.h"
 #endif
-#include "SyncEngine.h"
+//#include "SyncEngine.h"
 #include "rdispatcher.h"
 #include "shttpd.h"
 
 #include "ports_mngt.h"
+#include "resource.h"
+#include "rho/sync/SyncThread.h"
+using namespace rho::sync;
+#include "common/StringConverter.h"
 
 IMPLEMENT_LOGCLASS(CHttpServer,"HttpServer");
 #if defined(_WIN32_WCE)
@@ -95,7 +99,8 @@ void CHttpServer::FreezeThread()
 
 HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
-  if (!m_bRubyInitialized) {
+  if (!m_bRubyInitialized) 
+  {
     InitRubyFramework();
 //    InitHttpServer();
   
@@ -104,10 +109,17 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 	m_szRhobundleReloadUrl = strdup(RHOCONF().getString("rhobundle_zip_url").c_str());
 #endif
-    LOG(INFO) + "Starting SYNC";
+    //LOG(INFO) + "Starting SYNC";
 
-    CSyncEngine* sync = CSyncEngine::Instance();
-    if (sync) sync->ShowStartPage();
+//    CSyncEngine* sync = CSyncEngine::Instance();
+//    if (sync) sync->ShowStartPage();
+    if (m_hMainWindow) 
+    {
+        ::PostMessage( m_hMainWindow, WM_COMMAND, IDM_START_PAGE, 0 );
+        m_hMainWindow = NULL;
+    }
+
+    CSyncThread::Create()->ResumeThread();
 
 //    if (logged_in()){
       
@@ -126,7 +138,9 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 
 HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
-  if (m_bRubyInitialized) {
+  CSyncThread::Destroy();
+  if (m_bRubyInitialized) 
+  {
     LOG(INFO) + "Shutting-down ruby framework";
 //    shttpd_fini(ctx);
     RhoRubyStop();
