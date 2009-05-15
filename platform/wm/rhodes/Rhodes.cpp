@@ -6,7 +6,7 @@
 #include "ServerHost.h"
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
-extern char* canonicalizeURL(char* path);
+extern char* canonicalizeURL(const char* path);
 
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
 

@@ -41,10 +41,6 @@ extern void RhoSetCurAppPath(char* path);
 static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
-static ID framework_mid3;
-static ID framework_mid4;
-static ID framework_mid5;
-static ID framework_mid6;
 
 static char* rb_type_to_s(VALUE obj);
 
@@ -101,10 +97,6 @@ void RhoRubyStart()
     rb_gc_register_mark_object(framework);
 		CONST_ID(framework_mid, "serve");
 		CONST_ID(framework_mid2, "serve_index");
-		CONST_ID(framework_mid3, "get_start_path");
-		CONST_ID(framework_mid4, "get_options_path");
-		CONST_ID(framework_mid5, "get_rhobundle_zip_url");
-		CONST_ID(framework_mid6, "get_rhobundle_zip_pwd");
 		
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
@@ -222,57 +214,6 @@ VALUE callServeIndex(char* index_name) {
 	rb_gc();
 	
 	return callres;
-}
-
-char* callGetStartPage() {
-	char* szRes;
-	
-	VALUE callres = rb_funcall(framework, framework_mid3, 0, Qnil);
-	
-	if (TYPE(callres)!=T_STRING) {
-		RAWLOG_INFO1("Method's get_start_page result type = %s", rb_type_to_s(callres));
-		return "/";
-	}
-	
-	//TBD: need to cleanup memory
-	//rb_gc();
-	
-	szRes = RSTRING_PTR(callres);
-	return szRes;
-}
-
-char* callGetOptionsPage() {
-	char* szRes;
-	
-	VALUE callres = rb_funcall(framework, framework_mid4, 0, Qnil);
-	
-	if (TYPE(callres)!=T_STRING) {
-		RAWLOG_INFO1("Method's get_options_page result type = %s", rb_type_to_s(callres));
-		return "/";
-	}
-	
-	//TBD: need to cleanup memory
-	//rb_gc();
-	
-	szRes = RSTRING_PTR(callres);
-	return szRes;
-}
-
-char* callGetRhobundleZipUrl() {
-	char* szRes;
-	
-	VALUE callres = rb_funcall(framework, framework_mid5, 0, Qnil);
-	
-	if (TYPE(callres)!=T_STRING) {
-		RAWLOG_INFO1("Method's get_rhobundle_zip_url result type = %s", rb_type_to_s(callres));
-		return NULL;
-	}
-	
-	//TBD: need to cleanup memory
-	rb_gc();
-	
-	szRes = RSTRING_PTR(callres);
-	return szRes;
 }
 
 static char*

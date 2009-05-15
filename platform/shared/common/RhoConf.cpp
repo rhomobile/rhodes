@@ -79,7 +79,7 @@ void RhoSettings::loadProperty( const char* start, int len ){
     int nValueLen = len - (i+1);
 
     while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"') nValueLen--;
+    while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
 
     setPropertyByName(start, nNameLen, szValue, nValueLen );
 }
@@ -94,8 +94,9 @@ void RhoSettings::setPropertyByName(const char* szName, int nNameLen, const char
 void RhoSettings::saveToString(String& strData){
 	for ( std::map<String,String>::iterator it=m_mapValues.begin() ; it != m_mapValues.end(); it++ ) {
         strData += it->first;
-        strData += "=";
+        strData += "='";
         strData += it->second;
+        strData += "'";
         strData += LOG_NEWLINE;
 	}
 }
