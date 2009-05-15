@@ -20,7 +20,8 @@
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-char* canonicalizeURL(char* path);
+char* canonicalizeURL(const char* path);
+const char* strip_local_domain(const char* url);
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
@@ -291,7 +292,9 @@ LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	rho::String lastPage = RHOCONF().getString("LastVisitedPage");
 	LPTSTR lastPageW = NULL;
 	if (lastPage.length() > 0) {
-		startPage = lastPageW = wce_mbtowc(lastPage.c_str());
+		char* _page = canonicalizeURL(lastPage.c_str());
+		startPage = lastPageW = wce_mbtowc(_page);
+		free(_page);
 	} else {
 		startPage = CHttpServer::Instance()->GetStartPage();
 	}
@@ -586,7 +589,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	m_current_url = wce_wctomb(url);
 	
 	if( store_current_url ) {
-		RHOCONF().setString("LastVisitedPage",m_current_url);
+		const char* _page = strip_local_domain(m_current_url);
+		RHOCONF().setString("LastVisitedPage",_page);		
 		RHOCONF().saveToFile();
 	}
 
