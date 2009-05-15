@@ -766,6 +766,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\InputStream.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoConf.cpp"
 				>
 			</File>

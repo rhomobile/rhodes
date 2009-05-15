@@ -2,29 +2,32 @@
 
 #include "ServerHost.h"
 #include "HttpServer.h"
-#include "syncengine/rsyncengine.h"
+//#include "rho/sync/SyncThread.h"
+
+//using namespace rho::sync;
 
 CServerHost::CServerHost()
 {
-  m_syncengine = CSyncEngine::Create();
-  m_httpserver = CHttpServer::Create();
+    //m_syncThread = CSyncThread::Create();
+    m_httpserver = CHttpServer::Create();
 }
 
 CServerHost::~CServerHost(void)
 {
   if (m_httpserver)
     delete m_httpserver;
-  if (m_syncengine)
-    delete m_syncengine;
+  //if (m_syncThread)
+  //  delete m_syncThread;
 }
 
-bool CServerHost::Start(HWND hWnd) {
+bool CServerHost::Start(HWND hWnd) 
+{
   // Start HTTP server 
   m_httpserver->SetMainWindow(hWnd);
   m_httpserver->ResumeThread();  
   //Start sync engine
-  m_syncengine->SetMainWindow(hWnd);
-  m_syncengine->ResumeThread();
+  //m_syncThread->SetMainWindow(hWnd);
+  //m_syncThread->ResumeThread();
   return true;
 }
 

@@ -1057,7 +1057,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="jason"
+			Name="json"
 			>
 			<File
 				RelativePath="..\..\shared\json\arraylist.c"
@@ -1116,6 +1116,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\json\JSONIterator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\json\JSONIterator.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\json\linkhash.c"
 				>
 			</File>
@@ -1133,86 +1141,42 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="syncengine"
+			Name="sync"
 			>
 			<File
-				RelativePath="..\..\shared\syncengine\Constants.h"
+				RelativePath="..\..\shared\sync\SyncEngine.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\Notifications.cpp"
+				RelativePath="..\..\shared\sync\SyncEngine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\Notifications.h"
+				RelativePath="..\..\shared\sync\SyncSource.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\Source.c"
+				RelativePath="..\..\shared\sync\SyncSource.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="db"
+			>
+			<File
+				RelativePath="..\..\shared\db\DBAdapter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\Source.h"
+				RelativePath="..\..\shared\db\DBAdapter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\SyncBlob.c"
+				RelativePath="..\..\shared\db\DBResult.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\syncengine\SyncBlob.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncEngine.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncEngine.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncJSONReader.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncJSONReader.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncManagerI.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncObject.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncOperation.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncOperation.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncUtil.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\SyncUtil.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\Utils.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\syncengine\Utils.h"
+				RelativePath="..\..\shared\db\DBResult.h"
 				>
 			</File>
 		</Filter>
