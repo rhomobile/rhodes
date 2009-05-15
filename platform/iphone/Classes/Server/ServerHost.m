@@ -166,6 +166,7 @@ extern const char* RhoGetRootPath();
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
+	InitRhoLog(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
 	InitRhoLog(RhoGetRootPath());

@@ -104,7 +104,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
     bool replaceFiles = NO;
 	if ( strcmp(version, currentVersion) ) {
 		config_setString("currentVersion", version);
-		config_save();
+
 		replaceFiles = YES;
 	}
 	free(currentVersion);	
@@ -117,7 +117,9 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 #else
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 #endif	
-	
+	if (replaceFiles) {
+		config_save();
+	}
 }
 
 @end
