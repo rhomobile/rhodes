@@ -19,6 +19,7 @@
 #include "ServerHost.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
+#include "config.h"
 
 extern char* get_current_location();
 
@@ -123,8 +124,8 @@ static ServerHost* sharedSH = nil;
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
-	homeUrl = [NSString stringWithCString:callGetStartPage() encoding:NSUTF8StringEncoding];
-	optionsUrl = [NSString stringWithCString:callGetOptionsPage() encoding:NSUTF8StringEncoding];
+	homeUrl = [NSString stringWithCString:config_getString("start_path") encoding:NSUTF8StringEncoding];
+	optionsUrl = [NSString stringWithCString:config_getString("options_path") encoding:NSUTF8StringEncoding];
 	DBG(("Start page: %s\n", [homeUrl UTF8String]));
 	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
@@ -169,7 +170,7 @@ extern const char* RhoGetRootPath();
 	InitRhoLog(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
-	InitRhoLog(RhoGetRootPath());
+	
 	//Start Sync engine
 	[self initializeDatabaseConn];
 	// Startup the sync engine thread

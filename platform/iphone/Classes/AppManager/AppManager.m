@@ -19,6 +19,8 @@
 #import "config.h"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
+extern void InitRhoLog(const char* szRootPath);
+const char* RhoGetRootPath();
 
 @implementation AppManager
 
@@ -103,11 +105,11 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	char* currentVersion = config_getString("currentVersion");
     bool replaceFiles = NO;
 	if ( strcmp(version, currentVersion) ) {
-		config_setString("currentVersion", version);
-
 		replaceFiles = YES;
 	}
-	free(currentVersion);	
+	if (currentVersion) {
+		free(currentVersion);	
+	}
 #endif	
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
@@ -118,6 +120,8 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 #endif	
 	if (replaceFiles) {
+		InitRhoLog(RhoGetRootPath());
+		config_setString("currentVersion", version);
 		config_save();
 	}
 }
