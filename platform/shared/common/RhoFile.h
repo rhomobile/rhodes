@@ -2,6 +2,7 @@
 #define _RHOFILE_H_
 
 #include "RhoStd.h"
+#include "InputStream.h"
 
 namespace rho{
 namespace common{
@@ -9,11 +10,12 @@ namespace common{
 class CRhoFile {
     FILE* m_file;
     String m_strPath;
+    InputStream* m_pInputStream;
 
 public:
     enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
 
-    CRhoFile() : m_file(0){}
+    CRhoFile() : m_file(0), m_pInputStream(0){}
     ~CRhoFile(){close();}
 
     bool isOpened();
@@ -28,6 +30,10 @@ public:
 
     void readString(String& strData);
     void readStringW(StringW& strTextW);
+
+    InputStream* getInputStream();
+    int readByte();
+    int readData(unsigned char* buffer, int bufOffset, int bytesToRead);
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );

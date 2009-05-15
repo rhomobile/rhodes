@@ -21,6 +21,8 @@ public:
 
     inline void Lock();    // Block if needed until free then acquire exclusively
     inline void Unlock();  // Release a lock acquired via Lock()
+	
+	MutexType* getNativeMutex(){ return &m_nativeMutex;}
 private:
 
     MutexType m_nativeMutex;
@@ -32,7 +34,14 @@ CMutex::~CMutex()            { DeleteCriticalSection(&m_nativeMutex); }
 void CMutex::Lock()         { EnterCriticalSection(&m_nativeMutex); }
 void CMutex::Unlock()       { LeaveCriticalSection(&m_nativeMutex); }
 #else
-CMutex::CMutex()             { pthread_mutex_init(&m_nativeMutex, NULL); }
+CMutex::CMutex()             {
+	pthread_mutexattr_t mutex_details;
+	pthread_mutexattr_init(&mutex_details);
+	pthread_mutex_init(&m_nativeMutex, &mutex_details);
+	pthread_mutexattr_destroy(&mutex_details);
+	
+	//pthread_mutex_init(&m_nativeMutex, NULL); 
+}
 CMutex::~CMutex()            { pthread_mutex_destroy(&m_nativeMutex); }
 void CMutex::Lock()         { pthread_mutex_lock(&m_nativeMutex); }
 void CMutex::Unlock()       { pthread_mutex_unlock(&m_nativeMutex); }

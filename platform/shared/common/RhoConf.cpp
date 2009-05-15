@@ -141,8 +141,34 @@ bool   RhoSettings::isExist(const char* szName){
 }
 }
 
-extern "C" void InitRhoConf(const char* szRootPath){
+extern "C" {
+	
+void InitRhoConf(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+}
+
+	char* str_assign_ex( char* data, int len) 
+	{
+		if (data) 
+		{
+			char* a = (char*)malloc(len+1);
+			strncpy(a,data,len);
+			a[len] = 0;
+			return a;
+		}
+		return 0;
+	}
+	
+	char* str_assign(char* data) 
+	{
+		if (data) 
+		{
+			int len = strlen(data);
+			return str_assign_ex(data,len);
+		}
+		return 0;
+	}
+	
 }

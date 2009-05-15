@@ -32,7 +32,7 @@ void *  rho_calloc(size_t num, size_t size);
 size_t  rho_msize(void *);
 void *  rho_realloc(void *, size_t);
 char *  rho_strdup(const char *);
-
+void    sys_free(void *);
 #ifdef __cplusplus
 }
 #endif
@@ -47,7 +47,7 @@ char *  rho_strdup(const char *);
 #define strdup(s) rho_strdup(s)
 #define _strdup(s) rho_strdup(s)
 
-#if 0//ndef __SYMBIAN32__
+#ifndef __SYMBIAN32__
 
 #ifdef __cplusplus
 void* cpp_alloc(size_t size, bool nothrow);

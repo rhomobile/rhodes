@@ -104,6 +104,8 @@ CONVERT_TYPE_A( bool, "%d" );
 CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%f" );
 
+CONVERT_TYPE_A( uint64, "%llu" );
+
 }
 }
 

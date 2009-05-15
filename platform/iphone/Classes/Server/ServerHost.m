@@ -20,6 +20,7 @@
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 #include "config.h"
+#include "../rho/sync/syncthread.h"
 
 extern char* get_current_location();
 
@@ -138,6 +139,10 @@ static ServerHost* sharedSH = nil;
 		DBG(("HTTP Server started and ready\n"));
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
 							   withObject:homeUrl waitUntilDone:NO];
+		
+		DBG(("Create Sync"));
+		rho_sync_create();
+		
         [[NSRunLoop currentRunLoop] run];
         DBG(("Invalidating local server\n"));
         ServerInvalidate(server);
@@ -147,18 +152,21 @@ static ServerHost* sharedSH = nil;
 							   withObject:NULL waitUntilDone:NO];
     }
 	
+	DBG(("Destroy Sync"));
+	rho_sync_destroy();
+	
 	DBG(("Stopping ruby"));
 	RhoRubyStop();
 	
     DBG(("Server host thread routine is completed\n"));
     [pool release];
 }
-
+/*
 - (int)initializeDatabaseConn {
     NSString *appRoot = [AppManager getApplicationsRootPath];
     NSString *path = [appRoot stringByAppendingPathComponent:@"../db/syncdb.sqlite"];
 	return sqlite3_open([path UTF8String], &database);
-}
+}*/
 
 extern void InitRhoLog(const char* szRootPath);
 extern const char* RhoGetRootPath();
@@ -172,9 +180,9 @@ extern const char* RhoGetRootPath();
 	//Init log and settings
 	
 	//Start Sync engine
-	[self initializeDatabaseConn];
+	//[self initializeDatabaseConn];
 	// Startup the sync engine thread
-	start_sync_engine(database);
+	//start_sync_engine(database);
 	
 	
 	// Start server thread	
@@ -185,8 +193,8 @@ extern const char* RhoGetRootPath();
 -(void) stop {
     CFRunLoopStop(runLoop);
 	// Stop the sync engine
-	stop_sync_engine();
-	shutdown_database();
+	//stop_sync_engine();
+	//shutdown_database();
 }
 
 - (void)dealloc 

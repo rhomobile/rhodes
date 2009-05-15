@@ -1546,16 +1546,16 @@ static VALUE mSyncEngine;
 
 
 /* Put header files here or function declarations like below */
-extern void dosync();
-extern void lock_sync_mutex();
-extern void unlock_sync_mutex();
-extern int login(const char *login, const char *password);
-extern int logged_in();
-extern void logout();
-extern void trigger_sync_db_reset();
-extern void set_notification(int source_id, const char *url, char* params);
-extern void clear_notification(int source_id);
+extern void rho_sync_doSyncAllSources();
 
+extern void rho_sync_lock();
+extern void rho_sync_unlock();
+extern int rho_sync_login(const char *login, const char *password);
+extern int rho_sync_logged_in();
+extern void rho_sync_logout();
+extern void rho_sync_db_reset();
+extern void rho_sync_set_notification(int source_id, const char *url, char* params);
+extern void rho_sync_clear_notification(int source_id);
 
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
@@ -1689,7 +1689,7 @@ _wrap_dosync(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  dosync();
+  rho_sync_doSyncAllSources();
   return Qnil;
 fail:
   return Qnil;
@@ -1701,7 +1701,7 @@ _wrap_lock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  lock_sync_mutex();
+  rho_sync_lock();
   return Qnil;
 fail:
   return Qnil;
@@ -1713,7 +1713,7 @@ _wrap_unlock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  unlock_sync_mutex();
+  rho_sync_unlock();
   return Qnil;
 fail:
   return Qnil;
@@ -1746,7 +1746,7 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "login" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  result = (int)login((char const *)arg1,(char const *)arg2);
+  result = (int)rho_sync_login((char const *)arg1,(char const *)arg2);
   vresult = SWIG_From_int((int)(result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -1766,7 +1766,7 @@ _wrap_logged_in(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)logged_in();
+  result = (int)rho_sync_logged_in();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -1779,7 +1779,7 @@ _wrap_logout(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  logout();
+  rho_sync_logout();
   return Qnil;
 fail:
   return Qnil;
@@ -1791,7 +1791,7 @@ _wrap_trigger_sync_db_reset(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  trigger_sync_db_reset();
+  rho_sync_db_reset();
   return Qnil;
 fail:
   return Qnil;
@@ -1830,7 +1830,7 @@ _wrap_set_notification(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "set_notification" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
-  set_notification(arg1,(char const *)arg2,arg3);
+  rho_sync_set_notification(arg1,(char const *)arg2,arg3);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
@@ -1855,7 +1855,7 @@ _wrap_clear_notification(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "clear_notification" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  clear_notification(arg1);
+  rho_sync_clear_notification(arg1);
   return Qnil;
 fail:
   return Qnil;

@@ -19,7 +19,9 @@ public:
 
 extern rho::LogCategory __rhoCurrentCategory;
 
-#define DEFINE_LOGCLASS static rho::LogCategory __rhoCurrentCategory
+#define DEFINE_LOGCLASS static rho::LogCategory __rhoCurrentCategory;\
+    static rho::LogCategory getLogCategory(){return __rhoCurrentCategory;}
+
 #define IMPLEMENT_LOGCLASS(classname, name) \
     rho::LogCategory classname::__rhoCurrentCategory = name
 

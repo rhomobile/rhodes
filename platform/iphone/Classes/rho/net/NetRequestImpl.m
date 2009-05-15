@@ -23,15 +23,12 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <Foundation/Foundation.h>
-#include "Constants.h"
-#include "SyncJSONReader.h"
-#include "SyncUtil.h"
-#include "SyncEngine.h"
+#include "common/RhoPort.h"
 
-extern int logged_in();
-extern void logout();
+//extern int logged_in();
+extern void rho_net_impl_deleteAllCookies();
 extern NSString *get_session();
-extern int has_network_impl();
+//extern int has_network_impl();
 extern int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags);
 
 /*
@@ -49,6 +46,7 @@ typedef enum {
  * for a given source and populates a list
  * of sync objects in memory and the database.
  */
+/*
 char *fetch_remote_data(char *url_string) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *session;
@@ -96,13 +94,14 @@ char *fetch_remote_data(char *url_string) {
 		[pool release];
 		return NULL;
 	}
-}
+}*/
 
 /*
  * Login with given login/password
  * If return success if cookie is stored into shared
  * cookie storage NSHTTPCookieStorage
  */
+/*
 int login(const char *login, const char *password) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	pSource *source_list;
@@ -170,11 +169,189 @@ int login(const char *login, const char *password) {
 	[pool drain];
 	[pool release];
 	return retval;
+}*/
+
+static NSURLConnection* g_curConn = NULL;
+int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody )
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSString *session;
+	int cookie_size = 0;
+	
+	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
+	session = get_session(szUrl);
+	if (!session) 
+	{
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse *response;
+		NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+		NSMutableData *postBody = [NSMutableData dataWithBytes:szBody length:data_size];
+		[request setURL:[NSURL URLWithString:linkString]];
+		[request setHTTPMethod:[[NSString alloc] initWithUTF8String:szMethod]];
+		[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+		[request setHTTPBody:postBody];
+		
+		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		if (conn) 
+		{
+			g_curConn = conn;
+			NSData *returnData = [NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error];
+			NSInteger errorCode = [error code];
+			NSInteger code = [response statusCode];
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			g_curConn = NULL;
+			
+			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			if (code != 200) 
+			{
+				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired ||
+					errorCode == NSURLErrorBadServerResponse ) 
+				{
+					rho_net_impl_deleteAllCookies();
+				}
+			} else 
+			{
+				NSHTTPCookieStorage *store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+				NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse*)response allHeaderFields] 
+															  forURL:[NSURL URLWithString:linkString]];
+				NSEnumerator *c = [cookies objectEnumerator];
+				id cookie;
+				while (cookie = [c nextObject]) 
+				{
+					NSLog(@"Storing Cookie: Name: %@, Value: %@",
+						  [cookie name],
+						  [cookie value]);				
+					[store setCookie:cookie];
+					cookie_size++;
+				}
+			}
+		}
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	} else {
+		printf("Found existing session for url...\n");
+	}
+
+	[pool drain];
+	[pool release];
+	return cookie_size > 0;
 }
 
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody )
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	char* respData = NULL;
+	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
+	NSString *session = get_session(szUrl);
+	if (session) 
+	{
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse *response;
+		NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+		NSMutableData *postBody = [NSMutableData dataWithBytes:szBody length:data_size];
+		[request setURL:[NSURL URLWithString:linkString]];
+		[request setHTTPMethod:[[NSString alloc] initWithUTF8String:szMethod]];
+		[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+		[request setValue:session forHTTPHeaderField:@"Cookie"];
+		[request setHTTPBody:postBody];
+		
+		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		if (conn) 
+		{
+			g_curConn = conn;
+			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+			NSInteger errorCode = [error code];
+			NSInteger code = [response statusCode];
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			g_curConn = NULL;
+
+			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			if (code != 200) 
+			{
+				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired) 
+				{
+					rho_net_impl_deleteAllCookies();
+				}
+			} else 
+			{
+				respData = str_assign( (char *)[strData UTF8String] );
+			}
+		}
+		
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	}
+	
+	[pool drain];
+	[pool release];
+	return respData;
+}
+
+int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
+{
+	//TODO: test rho_net_impl_pushFile
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	int nRet = 0;
+	NSString *session = get_session(szUrl);
+	if (session) 
+	{
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse *response;
+		NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+		[request setURL:[NSURL URLWithString:linkString]];
+		[request setValue:session forHTTPHeaderField:@"Cookie"];
+		[request setHTTPBodyStream:[NSInputStream inputStreamWithFileAtPath:[[NSString alloc] initWithUTF8String:szFilePath]]];
+		
+		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		if (conn) 
+		{
+			g_curConn = conn;
+			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+			NSInteger errorCode = [error code];
+			NSInteger code = [response statusCode];
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			g_curConn = NULL;
+			
+			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			if (code != 200) 
+			{
+				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired) 
+				{
+					rho_net_impl_deleteAllCookies();
+				}
+			} else
+				nRet = 1;
+		}
+		
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	}
+	
+	[pool drain];
+	[pool release];
+	return nRet;
+}
+
+void rho_net_impl_cancelAll()
+{
+	if ( g_curConn != NULL )
+		[g_curConn cancel];
+}
 /*
  * Pushes changes from list to rhosync server
  */
+/*
 int push_remote_data(char* url, char* data, size_t data_size,char* contentType) {
 	int retval = SYNC_PUSH_CHANGES_OK;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -228,14 +405,15 @@ int push_remote_data(char* url, char* data, size_t data_size,char* contentType) 
 	[pool drain];
 	[pool release];
 	return retval;
-}
+}*/
 
-NSArray *get_all_cookies() {
+NSArray *get_all_cookies() 
+{
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	NSArray *cookies = [cookieStore cookies];
 	return cookies;
 }
-
+/*
 int logged_in() {
 	int i,retval = 0;
 	NSArray *cookies;
@@ -246,9 +424,10 @@ int logged_in() {
 		if ([[[cookies objectAtIndex:i] name] isEqualToString:@"rhosync_session"]) retval = 1;
 	}
 	return retval;
-}
+}*/
 
-void logout() {
+void rho_net_impl_deleteAllCookies() 
+{
 	int i;
 	NSArray *cookies;
 	cookies = get_all_cookies();
@@ -265,7 +444,9 @@ void logout() {
 /*
  * Retrieve cookie from shared cookie storage
  */
-NSString *get_session(char *url_string) {
+
+NSString *get_session(char *url_string) 
+{
 	NSString *session = NULL;
 	NSString *ns_url_string = [[[NSString alloc] initWithUTF8String:url_string] autorelease];
 	NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
@@ -285,7 +466,7 @@ NSString *get_session(char *url_string) {
 }
 
 // Determines network connectivity
-int has_network_impl() {
+int rho_net_has_network() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
 	int defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
 	if (defaultRouteIsAvailable == 1) {

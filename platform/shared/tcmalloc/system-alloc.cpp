@@ -415,11 +415,15 @@ void InitSystemAllocators(void) {
   }
 }
 
+long long g_nTotalMemory = 0;
 void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
                            size_t alignment) {
   // Discard requests that overflow
   if (size + alignment < size) return NULL;
-
+	
+	g_nTotalMemory += size;
+printf("TCMALLOC: alloc size %d (Bytes); Total : %d (Mb)\r\n",size, g_nTotalMemory/(1024*1024));
+	
   SpinLockHolder lock_holder(&spinlock);
 
   if (!system_alloc_inited) {
