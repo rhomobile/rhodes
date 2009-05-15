@@ -97,7 +97,7 @@ const char* RhoGetRootPath();
  */
 - (void) configure {
 	
-#if TARGET_IPHONE_SIMULATOR	//DEBUG
+#if TARGET_IPHONE_SIMULATOR	
 	bool replaceFiles = YES;
 #else
 	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -107,9 +107,7 @@ const char* RhoGetRootPath();
 	if ( strcmp(version, currentVersion) ) {
 		replaceFiles = YES;
 	}
-	if (currentVersion) {
-		free(currentVersion);	
-	}
+	config_freeString(currentVersion);
 #endif	
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
@@ -121,7 +119,7 @@ const char* RhoGetRootPath();
 #endif	
 	if (replaceFiles) {
 		InitRhoLog(RhoGetRootPath());
-#ifndef TARGET_IPHONE_SIMULATOR	//DEBUG
+#ifndef TARGET_IPHONE_SIMULATOR	
 		config_setString("currentVersion", version);
 		config_save();
 #endif	

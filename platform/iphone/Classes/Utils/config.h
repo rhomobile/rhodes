@@ -17,6 +17,7 @@ extern "C" {
 	bool  config_getBool(const char* szName);
 	void  config_setBool(const char* szName, bool value);
 	char* config_getString(const char* szName);
+	void  config_freeString(char* str);
 	void  config_setString(const char* szName, const char* value);
 	void  config_save();
 	
