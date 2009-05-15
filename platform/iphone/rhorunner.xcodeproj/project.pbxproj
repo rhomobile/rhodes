@@ -26,16 +26,18 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
+		5C5332680FBD6AF000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332650FBD6AF000F268F0 /* NetRequest.cpp */; };
+		5C5332690FBD6AF000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */; };
+		5C53326C0FBD6B0200F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53326A0FBD6B0200F268F0 /* syncthread.cpp */; };
+		5C53329D0FBD727500F268F0 /* rhoconfig.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5C53329C0FBD727500F268F0 /* rhoconfig.txt */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
 		F52181160F96B14B00B7F974 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52181140F96B14B00B7F974 /* log.cpp */; };
-		F5342AD10F65BF7D003FD158 /* HttpCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F5342AD00F65BF7D003FD158 /* HttpCallback.m */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
 		F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = F547F2870F9945D2007C2CD2 /* LogOptionsController.m */; };
 		F547F57E0F9E45EA007C2CD2 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547F57D0F9E45EA007C2CD2 /* config.cpp */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
-		F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */ = {isa = PBXBuildFile; fileRef = F563D63B0EA92C160062DA57 /* rubysynci.c */; };
 		F563D8080EA95EDC0062DA57 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = F563D7680EA95EDC0062DA57 /* apps */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
@@ -147,16 +149,19 @@
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
+		5C5332640FBD6AE300F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/RhoClassFactory.h; sourceTree = "<group>"; };
+		5C5332650FBD6AF000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
+		5C5332660FBD6AF000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
+		5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
+		5C53326A0FBD6B0200F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = rho/sync/syncthread.cpp; sourceTree = "<group>"; };
+		5C53326B0FBD6B0200F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = rho/sync/syncthread.h; sourceTree = "<group>"; };
+		5C53329C0FBD727500F268F0 /* rhoconfig.txt */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text; name = rhoconfig.txt; path = "../../../rapps/rhodes-wikipedia/rhoconfig.txt"; sourceTree = SOURCE_ROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
 		F52181120F96B13500B7F974 /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
 		F52181140F96B14B00B7F974 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = Utils/log.cpp; sourceTree = "<group>"; };
 		F52181150F96B14B00B7F974 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = Utils/log.h; sourceTree = "<group>"; };
-		F5342A9C0F658E42003FD158 /* UniversalLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniversalLock.h; path = ../shared/syncengine/UniversalLock.h; sourceTree = SOURCE_ROOT; };
-		F5342ACF0F65BF7D003FD158 /* HttpCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpCallback.h; sourceTree = "<group>"; };
-		F5342AD00F65BF7D003FD158 /* HttpCallback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpCallback.m; sourceTree = "<group>"; };
-		F5342ADA0F65D729003FD158 /* Notifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Notifications.h; path = ../shared/syncengine/Notifications.h; sourceTree = SOURCE_ROOT; };
 		F547F1DA0F990084007C2CD2 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F547F2860F9945D2007C2CD2 /* LogOptionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOptionsController.h; sourceTree = "<group>"; };
 		F547F2870F9945D2007C2CD2 /* LogOptionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOptionsController.m; sourceTree = "<group>"; };
@@ -166,10 +171,7 @@
 		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		F563D5820EA828580062DA57 /* SyncEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncEngine.h; path = ../shared/syncengine/SyncEngine.h; sourceTree = SOURCE_ROOT; };
 		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
-		F563D63A0EA92C160062DA57 /* rubysynci.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rubysynci.h; sourceTree = "<group>"; };
-		F563D63B0EA92C160062DA57 /* rubysynci.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rubysynci.c; sourceTree = "<group>"; };
 		F563D7680EA95EDC0062DA57 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = bin/RhoBundle/apps; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
 		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
@@ -210,7 +212,6 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
-				F563D5810EA8283A0062DA57 /* SyncEngine */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
 				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
@@ -220,8 +221,6 @@
 				05377CEB0E74D6C0003B8BD1 /* Server.h */,
 				05377CEA0E74D6C0003B8BD1 /* Server.c */,
 				05CF72930E7F2EAC00D41986 /* defs.h */,
-				F5342ACF0F65BF7D003FD158 /* HttpCallback.h */,
-				F5342AD00F65BF7D003FD158 /* HttpCallback.m */,
 			);
 			name = Server;
 			sourceTree = "<group>";
@@ -229,6 +228,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				5C5332610FBD6AC700F268F0 /* rho */,
 				F547F3D10F9CEB05007C2CD2 /* Log */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
@@ -327,6 +327,35 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5C5332610FBD6AC700F268F0 /* rho */ = {
+			isa = PBXGroup;
+			children = (
+				5C5332640FBD6AE300F268F0 /* RhoClassFactory.h */,
+				5C5332630FBD6AD300F268F0 /* sync */,
+				5C5332620FBD6ACC00F268F0 /* net */,
+			);
+			name = rho;
+			sourceTree = "<group>";
+		};
+		5C5332620FBD6ACC00F268F0 /* net */ = {
+			isa = PBXGroup;
+			children = (
+				5C53326A0FBD6B0200F268F0 /* syncthread.cpp */,
+				5C53326B0FBD6B0200F268F0 /* syncthread.h */,
+			);
+			name = net;
+			sourceTree = "<group>";
+		};
+		5C5332630FBD6AD300F268F0 /* sync */ = {
+			isa = PBXGroup;
+			children = (
+				5C5332650FBD6AF000F268F0 /* NetRequest.cpp */,
+				5C5332660FBD6AF000F268F0 /* NetRequest.h */,
+				5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */,
+			);
+			name = sync;
+			sourceTree = "<group>";
+		};
 		5C7162930F8B7EEC0096B6AA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -365,18 +394,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F563D5810EA8283A0062DA57 /* SyncEngine */ = {
-			isa = PBXGroup;
-			children = (
-				F5342ADA0F65D729003FD158 /* Notifications.h */,
-				F5342A9C0F658E42003FD158 /* UniversalLock.h */,
-				F563D5820EA828580062DA57 /* SyncEngine.h */,
-				F563D63A0EA92C160062DA57 /* rubysynci.h */,
-				F563D63B0EA92C160062DA57 /* rubysynci.c */,
-			);
-			name = SyncEngine;
-			sourceTree = "<group>";
-		};
 		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
 			isa = PBXGroup;
 			children = (
@@ -388,6 +405,7 @@
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				5C53329C0FBD727500F268F0 /* rhoconfig.txt */,
 				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
 				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
 				F547F57C0F9E45EA007C2CD2 /* config.h */,
@@ -550,6 +568,7 @@
 				4640FE960F410A3400B7975E /* forward_btn.png in Resources */,
 				461B5A880F82D89700B08CB9 /* gears.png in Resources */,
 				F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */,
+				5C53329D0FBD727500F268F0 /* rhoconfig.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,14 +608,15 @@
 				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
 				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
-				F563D63C0EA92C160062DA57 /* rubysynci.c in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
 				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
-				F5342AD10F65BF7D003FD158 /* HttpCallback.m in Sources */,
 				F52181130F96B13500B7F974 /* LogViewController.m in Sources */,
 				F52181160F96B14B00B7F974 /* log.cpp in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
 				F547F57E0F9E45EA007C2CD2 /* config.cpp in Sources */,
+				5C5332680FBD6AF000F268F0 /* NetRequest.cpp in Sources */,
+				5C5332690FBD6AF000F268F0 /* NetRequestImpl.m in Sources */,
+				5C53326C0FBD6B0200F268F0 /* syncthread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -31,8 +31,8 @@ typedef unsigned __int64 uint64;
 
 //typedef int32_t int32;
 //typedef uint32_t uint32;
-//typedef int64_t int64;
-//typedef uint64_t uint64;
+typedef long long int64;
+typedef unsigned long long uint64;
 
 #endif 
 
@@ -46,4 +46,15 @@ typedef unsigned __int64 uint64;
 
 //#include "tcmalloc/rhomem.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+	
+char* str_assign_ex( char* data, int len); 
+char* str_assign(char* data); 
+#ifdef __cplusplus
+}
+#endif
+		
+	
 #endif //_RHOPORT_H_

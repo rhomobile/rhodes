@@ -1,7 +1,8 @@
 #import "WebViewController.h"
 #import "rhoruby.h"
-#import "UniversalLock.h"
+//#import "UniversalLock.h"
 #import "config.h"
+#import "rho/sync/syncthread.h"
 
 static char currentLocation[4096] = "";
 
@@ -155,7 +156,7 @@ NSString *loadingText = @"Loading...";
 
 - (void)runSync
 {
-	wake_up_sync_engine();
+	rho_sync_doSyncAllSources();
 }
 
 - (void)actionShowLog:(id)sender

@@ -7,13 +7,13 @@
 //
 
 #import "AppManager.h"
-#import "SyncEngine.h"
+//#import "SyncEngine.h"
 
 @interface ServerHost : NSObject
 {
 	AppManager * appManager;
     CFRunLoopRef runLoop;
-	sqlite3 *database;
+	//sqlite3 *database;
 	NSString *homeUrl,*optionsUrl;
 	
 @public

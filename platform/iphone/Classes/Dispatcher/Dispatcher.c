@@ -17,7 +17,8 @@
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 //#include "geolocation.h"
-#include "SyncEngine.h"
+//#include "SyncEngine.h"
+#include "../rho/sync/syncthread.h"
 
 char *trim(char *str)
 {
@@ -177,7 +178,7 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 			if (route->_model && !strcmp(route->_model,"geolocation")) {
 				return HTTPSendReply(context,GeoGetLocation()); 	
 			} else if (route->_model && !strcmp(route->_model,"syncdb")) {
-				wake_up_sync_engine();
+				rho_sync_doSyncAllSources();
 				return HTTPSendReply(context,"OK"); 	
 			} else if (route->_model && !strcmp(route->_model,"redirect_to")) {
 				if (context->_request->_query && !strncmp("url=",context->_request->_query,4)) {
