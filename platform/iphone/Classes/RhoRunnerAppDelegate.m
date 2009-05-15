@@ -35,6 +35,7 @@
 			location = [NSString stringWithCString:lastVisitedPage
 										  encoding:[NSString defaultCStringEncoding]];
 		}
+		config_freeString(lastVisitedPage);
 	} 
 	
 	//if there is no previous location navigate to the default start page 

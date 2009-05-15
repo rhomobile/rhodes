@@ -125,8 +125,14 @@ static ServerHost* sharedSH = nil;
     
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
-	homeUrl = [NSString stringWithCString:config_getString("start_path") encoding:NSUTF8StringEncoding];
-	optionsUrl = [NSString stringWithCString:config_getString("options_path") encoding:NSUTF8StringEncoding];
+
+	char* _url = config_getString("start_path");
+	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
+	config_freeString(_url);
+	_url = config_getString("options_path");
+	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
+	config_freeString(_url);
+	
 	DBG(("Start page: %s\n", [homeUrl UTF8String]));
 	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];

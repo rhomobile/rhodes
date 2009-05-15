@@ -19,7 +19,11 @@ void config_setBool(const char* szName, bool value) {
 }
 
 char* config_getString(const char* szName) {
-	return strdup(RHOCONF().getString(szName).c_str());
+	return rho_strdup(RHOCONF().getString(szName).c_str());
+}
+
+void config_freeString(char* str) {
+	rho_free(str);
 }
 
 void config_setString(const char* szName, const char* value){
