@@ -29,7 +29,6 @@
 		5C5332680FBD6AF000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332650FBD6AF000F268F0 /* NetRequest.cpp */; };
 		5C5332690FBD6AF000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */; };
 		5C53326C0FBD6B0200F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53326A0FBD6B0200F268F0 /* syncthread.cpp */; };
-		5C53329D0FBD727500F268F0 /* rhoconfig.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5C53329C0FBD727500F268F0 /* rhoconfig.txt */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
 		F52181160F96B14B00B7F974 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52181140F96B14B00B7F974 /* log.cpp */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
@@ -155,7 +154,6 @@
 		5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C53326A0FBD6B0200F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = rho/sync/syncthread.cpp; sourceTree = "<group>"; };
 		5C53326B0FBD6B0200F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = rho/sync/syncthread.h; sourceTree = "<group>"; };
-		5C53329C0FBD727500F268F0 /* rhoconfig.txt */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text; name = rhoconfig.txt; path = "../../../rapps/rhodes-wikipedia/rhoconfig.txt"; sourceTree = SOURCE_ROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
@@ -405,7 +403,6 @@
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				5C53329C0FBD727500F268F0 /* rhoconfig.txt */,
 				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
 				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
 				F547F57C0F9E45EA007C2CD2 /* config.h */,
@@ -568,7 +565,6 @@
 				4640FE960F410A3400B7975E /* forward_btn.png in Resources */,
 				461B5A880F82D89700B08CB9 /* gears.png in Resources */,
 				F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */,
-				5C53329D0FBD727500F268F0 /* rhoconfig.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
