@@ -5,7 +5,17 @@
 #include "MainWindow.h"
 #include "ServerHost.h"
 
+//void runAllLogTests();
+extern "C" void InitRhoLog(const char* szRootPath);
+extern "C" const char* RhoGetRootPath();
+
+#if defined(OS_WINDOWS)
+extern "C" void __setRootPath(const char* path);
+char* parseToken( const char* start, int len );
+#endif
+//
 extern "C" wchar_t* wce_mbtowc(const char* a);
+extern "C" char* wce_wctomb(const wchar_t* w);
 extern char* canonicalizeURL(const char* path);
 
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
@@ -20,13 +30,32 @@ public :
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
 		while (lpszToken != NULL)
 		{
-			if (WordCmpI(lpszToken, _T("Restarting"))==0)
-			{
+			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
-				break;
 			}
+#if defined(OS_WINDOWS)
+			else if (wcsncmp(lpszToken, _T("approot"),7)==0) {
+				char* token = wce_wctomb(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+				char* path = parseToken( token, strlen(token) );
+				if (path) {
+					int len = strlen(path);
+					if (!(path[len]=='\\' || path[len]=='/')) {
+						path[len] = '\\';
+						path[len+1]  = 0;
+					}
+					__setRootPath(path);
+					free(path);
+				}
+				free(token);
+			}
+#endif
 			lpszToken = FindOneOf(lpszToken, szTokens);
 		}
+
+		//
+		InitRhoLog(RhoGetRootPath());
+		//	runAllLogTests();
 
 		return __super::ParseCommandLine(lpCmdLine, pnRetCode);
 	}
@@ -129,19 +158,12 @@ private:
 };
 
 CRhodesModule _AtlModule;
-//void runAllLogTests();
-extern "C" void InitRhoLog(const char* szRootPath);
-extern "C" const char* RhoGetRootPath();
 //
 bool g_restartOnExit = false;
 //
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
-//
-	InitRhoLog(RhoGetRootPath());
-//	runAllLogTests();
-
 	return _AtlModule.WinMain(nShowCmd);
 }
 
@@ -190,3 +212,41 @@ extern "C" char* webview_current_location() {
 
 	return TRUE;
 }*/
+
+#if defined(OS_WINDOWS)
+//parseToken will allocate extra byte at the end of the 
+//returned token value
+char* parseToken( const char* start, int len ) {
+    int nNameLen = 0;
+    while(*start==' '){ start++; len--;}
+
+    int i = 0;
+    for( i = 0; i < len; i++ ){
+        if ( start[i] == '=' ){
+            if ( i > 0 ){
+                int s = i-1;
+                for(; s >= 0 && start[s]==' '; s-- );
+
+                nNameLen = s+1;
+                break;
+            }else 
+                break;
+        }
+    }
+
+    if ( nNameLen == 0 )
+        return NULL;
+
+    const char* szValue = start + i+1;
+    int nValueLen = len - (i+1);
+
+    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
+    while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
+
+	char* value = (char*) malloc(nValueLen+2);
+	strncpy(value, szValue, nValueLen);
+	value[nValueLen] = '\0';
+
+	return value;
+}
+#endif

@@ -90,8 +90,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #else
 	LOGCONF().setLogView(&m_logView);
 
-	rcMainWindow.left = RHOCONF().getInt("main_view_left");
-	rcMainWindow.top = RHOCONF().getInt("main_view_top");
+	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
+	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
 	int width = RHOCONF().getInt("client_area_width");
 	if (width <= 0) width = 320;
 	rcMainWindow.right = rcMainWindow.left+width;
@@ -407,9 +407,8 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
-	RHOCONF().setInt("main_view_left",lp->x);
-	RHOCONF().setInt("main_view_top",lp->y);
-	RHOCONF().saveToFile();
+	setIniInt(_T("main_view_left"),lp->x);
+	setIniInt(_T("main_view_top"),lp->y);
 	bHandled = FALSE;
 	return 0;
 }
@@ -722,4 +721,5 @@ char* wce_wctomb(const wchar_t* w)
 
 	return pChar;
 }
+
 #endif //OS_WINDOWS

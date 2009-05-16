@@ -42,13 +42,11 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	SetTimer(100,1000,NULL);
 
 	RECT rc = { 0,0,500,400 };
-	rc.left = RHOCONF().getInt("log_view_left");
-	rc.top = RHOCONF().getInt("log_view_top");
-	int width = RHOCONF().getInt("log_view_width");
-	if (width <= 0) width = 500;
+	rc.left = getIniInt(_T("log_view_left"),0);
+	rc.top = getIniInt(_T("log_view_top"),0);
+	int width = getIniInt(_T("log_view_width"),500);
 	rc.right = rc.left+width;
-	int height = RHOCONF().getInt("log_view_height");
-	if (height <= 0) height = 400;
+	int height = getIniInt(_T("log_view_height"),400);
 	rc.bottom = rc.top+height;
 	
 	MoveWindow(&rc);
@@ -153,11 +151,10 @@ LRESULT CLogView::OnSizing(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL
 LRESULT CLogView::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
-	RHOCONF().setInt("log_view_left",lp->x);
-	RHOCONF().setInt("log_view_top",lp->y);
-	RHOCONF().setInt("log_view_width",lp->cx);
-	RHOCONF().setInt("log_view_height",lp->cy);
-	RHOCONF().saveToFile();
+	setIniInt(_T("log_view_left"),lp->x);
+	setIniInt(_T("log_view_top"),lp->y);
+	setIniInt(_T("log_view_width"),lp->cx);
+	setIniInt(_T("log_view_height"),lp->cy);
 	bHandled = FALSE;
 	return 0;
 }
@@ -326,6 +323,36 @@ LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 	}
 
 	return ::CallWindowProc(oldWndProc, hwnd, msg, wParam, lParam);
+}
+
+LPCTSTR getIniPath() {
+	static TCHAR _inipath[MAX_PATH];
+	static bool path_loaded = false;
+	if (!path_loaded) {
+		int len = GetModuleFileName(NULL,_inipath,MAX_PATH);
+		if( len == 0 ) {
+			wcscpy(_inipath,_T("."));
+		} else {
+			while( !(_inipath[len] == '.') )
+				len--;
+			_inipath[len]=0;
+			swprintf(_inipath,MAX_PATH,_T("%s.ini"),_inipath);
+		}
+		path_loaded = 1;
+	}
+	return _inipath;
+}
+
+int getIniInt(LPCTSTR lpKeyName, int nDefault) {
+	return GetPrivateProfileInt( _T("properties"), 
+		lpKeyName, nDefault, getIniPath());
+}
+
+void setIniInt(LPCTSTR lpKeyName, int nValue) {
+	TCHAR value[128];
+	_itow_s(nValue,value,128,10);
+	WritePrivateProfileString( _T("properties"), 
+		lpKeyName, value, getIniPath());
 }
 
 #endif //OS_WINDOWS
