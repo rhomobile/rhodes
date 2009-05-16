@@ -87,13 +87,13 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 		int nCol = 0;
 		VALUE hashRec = rb_hash_new();
 
-        if ( !colNames )
-            colNames = getColNames(statement, nCount);
+        //if ( !colNames )
+        //    colNames = getColNames(statement, nCount);
 
 		for(;nCol<nCount;nCol++){
 			int nColType = sqlite3_column_type(statement,nCol);
-			//const char* szColName = sqlite3_column_name(statement,nCol);
-			//VALUE colName = rb_str_new2(szColName);
+			const char* szColName = sqlite3_column_name(statement,nCol);
+			VALUE colName = rb_str_new2(szColName);
 			VALUE colValue = Qnil;
 			
 			switch(nColType){
@@ -112,7 +112,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 				}
 			}
 			
-			rb_hash_aset(hashRec, colNames[nCol], colValue);
+			rb_hash_aset(hashRec, colName/*colNames[nCol]*/, colValue);
 		}
 		
 		rb_ary_push(arRes, hashRec);
