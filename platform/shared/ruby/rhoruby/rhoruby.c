@@ -111,6 +111,12 @@ extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
 #endif
 static int _root_loaded = 0;
 static char _rootpath[MAX_PATH];
+#if !defined(_WIN32_WCE)
+void __setRootPath(const char* path) {
+	strcpy(_rootpath,path);
+	_root_loaded = 1;
+}
+#endif
 const char* RhoGetRootPath() {
   int len;
   if (_root_loaded) {
