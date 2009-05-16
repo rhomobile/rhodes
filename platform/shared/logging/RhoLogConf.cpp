@@ -154,7 +154,7 @@ extern "C" void InitRhoLog(const char* szRootPath){
 	
     //Set defaults
 #ifdef RHO_DEBUG
-    LOGCONF().setMinSeverity( 0 );
+    LOGCONF().setMinSeverity( L_INFO );
     LOGCONF().setLogToOutput(true);
     LOGCONF().setEnabledCategories("*");
     LOGCONF().setDisabledCategories("");
