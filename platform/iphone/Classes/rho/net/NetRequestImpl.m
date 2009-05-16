@@ -247,13 +247,13 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	char* respData = NULL;
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
 	NSString *session = get_session(szUrl);
-	if (session) 
+	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+	if (session || [linkString hasPrefix:@"http://localhost"]) 
 	{
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
 		NSHTTPURLResponse *response;
-		NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
 		NSMutableData *postBody = [NSMutableData dataWithBytes:szBody length:data_size];
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setHTTPMethod:[[NSString alloc] initWithUTF8String:szMethod]];
@@ -301,8 +301,7 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	int nRet = 0;
 	NSString *session = get_session(szUrl);
-	if (session) 
-	{
+	if (session) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -334,10 +333,9 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
 			} else
 				nRet = 1;
 		}
-		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	}
-	
+		
 	[pool drain];
 	[pool release];
 	return nRet;
