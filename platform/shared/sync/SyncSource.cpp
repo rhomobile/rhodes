@@ -70,21 +70,26 @@ void CSyncSource::syncClientChanges()
 
         String strBody;
         makePushBody(strBody, arUpdateTypes[i]);
-        if ( strBody.length() == 0 )
-            continue;
-
-		LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
-		LOG(TRACE) + "Push body: " + strBody;		
-        if ( getNet().pushData(strUrl+strQuery,strBody) )
+        if ( strBody.length() > 0 )
         {
-            if ( m_arSyncBlobs.size() )
+		    LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
+		    LOG(TRACE) + "Push body: " + strBody;		
+
+            if ( !getNet().pushData(strUrl+strQuery,strBody) )
             {
-                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
-                syncClientBlobs(strQuery);
-            }else
-                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+                getSync().setState(CSyncEngine::esStop);
+                continue;
+            }
+        }
+
+        if ( m_arSyncBlobs.size() )
+        {
+		    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
+
+            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+            syncClientBlobs(strQuery);
         }else
-            getSync().setState(CSyncEngine::esStop);
+            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
     }
 }
 
@@ -208,9 +213,7 @@ void CSyncSource::processServerData(const char* szData)
 
 	LOG(INFO) + "Got " + this->getCurPageCount() + " records from server. Source ID: " + getID();
 	
-    //TODO: support transactions
     //TODO: support DBExceptions
-
     getDB().startTransaction();
     for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
     {
@@ -235,16 +238,6 @@ void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     const char* szDbOp = oJsonEntry.getString("db_operation");
     if ( szDbOp && strcmp(szDbOp,"insert")==0 )
     {
-        //TEST ONLY
-        static boolean bFirst = false;
-        if ( bFirst )
-        {
-//            value = /*"/users/evgeny/test.png";*/"d:/work/BBSign.JPG";
-//            attribType = "blob.file";
-//            bFirst = false;
-        }
-        //TEST ONLY
-
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
             oJsonEntry.getUInt64("id"), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
