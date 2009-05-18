@@ -3,7 +3,7 @@
 
 #include "common/RhoFilePath.h"
 #include "common/RhoTime.h"
-#include "common/RhoFile.h"
+//#include "common/RhoFile.h"
 #include "common/StringConverter.h"
 //#include "common/AutoPointer.h"
 #include "json/JSONIterator.h"
@@ -79,7 +79,7 @@ void CSyncSource::syncClientChanges()
         {
             if ( m_arSyncBlobs.size() )
             {
-                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and attrib_type!=blob.file", getID(), arUpdateTypes[i] );
+                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
                 syncClientBlobs(strQuery);
             }else
                 getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -100,7 +100,9 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType ) );
-
+//TEST ONLY
+    boolean bFirst = false;
+//TEST ONLY
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
@@ -109,9 +111,19 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
             strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 
         String value = res.getStringByIdx(2);
+        String attribType = res.getStringByIdx(3);
+        //TEST ONLY
+        if ( bFirst )
+        {
+            value = "d:/work/BBSign.JPG";
+            attribType = "blob.file";
+            bFirst = false;
+        }
+        //TEST ONLY
+
         if ( value.length() > 0 )
         {
-            if ( res.getStringByIdx(3) == "blob.file" )
+            if ( attribType == "blob.file" )
             {
                 common::CFilePath oBlobPath(value);
                 strSrcBody += "&attrvals[][value]=";

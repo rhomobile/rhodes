@@ -19,7 +19,7 @@ public:
 
     virtual  int available(){ return m_oFile.size(); }
     virtual  int read(){ return m_oFile.readByte(); }
-    virtual  int read(unsigned char* buffer, int bufOffset, int bytesToRead){ return m_oFile.readData(buffer, bufOffset, bytesToRead); }
+    virtual  int read(void* buffer, int bufOffset, int bytesToRead){ return m_oFile.readData(buffer, bufOffset, bytesToRead); }
     virtual  void reset(){ m_oFile.movePosToStart(); }
 };
 
@@ -60,9 +60,9 @@ int CRhoFile::readByte()
     return nSize > 0 ? buf[0] : -1;
 }
 
-int CRhoFile::readData(unsigned char* buffer, int bufOffset, int bytesToRead)
+int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
 { 
-    int nSize = fread(buffer+bufOffset, 1, bytesToRead, m_file);
+    int nSize = fread(((char*)buffer)+bufOffset, 1, bytesToRead, m_file);
     return nSize > 0 ? nSize : -1;
 }
 
