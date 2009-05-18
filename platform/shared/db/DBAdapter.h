@@ -64,6 +64,20 @@ public:
         return executeStatement(res);
     }
 
+    template<typename T1, typename T2, typename T3>
+    DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3 )
+    {
+        DBResultPtr res = prepareStatement(szSt);
+        if ( res->getStatement() == null )
+            return res;
+
+        bind(res->getStatement(), 1, p1);
+        bind(res->getStatement(), 2, p2);
+        bind(res->getStatement(), 3, p3);
+
+        return executeStatement(res);
+    }
+
     template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6 )
     {

@@ -248,7 +248,7 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
 	NSString *session = get_session(szUrl);
 	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
-	if (session || [linkString hasPrefix:@"http://localhost"]) 
+	if (session || [linkString hasPrefix:@"http://localhost"] || [linkString hasPrefix:@"http://127.0.0.0"]) 
 	{
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];

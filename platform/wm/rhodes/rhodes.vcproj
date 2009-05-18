@@ -1017,6 +1017,14 @@
 					RelativePath=".\rho\net\NetRequest.h"
 					>
 				</File>
+				<File
+					RelativePath=".\rho\net\NetRequestImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\net\NetRequestImpl.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="sync"

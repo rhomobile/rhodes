@@ -6,6 +6,8 @@
 namespace rho {
 namespace net {
 
+#define MAX_NETREQUEST_RETRY 3
+
 struct INetData
 {
     virtual ~INetData(void){;}
