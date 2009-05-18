@@ -52,7 +52,10 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
+    {
+        LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
         return false;
+    }
 
     int nTry = 0;
     CNetDataImpl* pData = 0;
