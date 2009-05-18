@@ -115,7 +115,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
         //TEST ONLY
         if ( bFirst )
         {
-            value = "d:/work/BBSign.JPG";
+            value = "/users/evgeny/test.png";//"d:/work/BBSign.JPG";
             attribType = "blob.file";
             bFirst = false;
         }
