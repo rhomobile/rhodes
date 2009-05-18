@@ -100,9 +100,6 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType ) );
-//TEST ONLY
-    boolean bFirst = false;
-//TEST ONLY
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
@@ -112,15 +109,6 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
-        //TEST ONLY
-        if ( bFirst )
-        {
-            value = "/users/evgeny/test.png";//"d:/work/BBSign.JPG";
-            attribType = "blob.file";
-            bFirst = false;
-        }
-        //TEST ONLY
-
         if ( value.length() > 0 )
         {
             if ( attribType == "blob.file" )
@@ -215,7 +203,9 @@ void CSyncSource::processServerData(const char* szData)
     {
         processToken(oJsonArr.getCurItem().getUInt64("token"));
         oJsonArr.next();
-    }
+    }else if ( getCurPageCount() == 0 )
+        processToken(0);
+
 	LOG(INFO) + "Got " + this->getCurPageCount() + " records from server. Source ID: " + getID();
 	
     //TODO: support transactions
@@ -245,6 +235,16 @@ void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     const char* szDbOp = oJsonEntry.getString("db_operation");
     if ( szDbOp && strcmp(szDbOp,"insert")==0 )
     {
+        //TEST ONLY
+        static boolean bFirst = false;
+        if ( bFirst )
+        {
+//            value = /*"/users/evgeny/test.png";*/"d:/work/BBSign.JPG";
+//            attribType = "blob.file";
+//            bFirst = false;
+        }
+        //TEST ONLY
+
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
             oJsonEntry.getUInt64("id"), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
