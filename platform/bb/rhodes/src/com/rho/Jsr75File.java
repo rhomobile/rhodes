@@ -104,31 +104,35 @@ public class Jsr75File implements SimpleFile
 	  return strVer; 
     }
     
-    static class SoftVersion{
-		int nMajor = 0;
-		int nMinor = 0;
+    public static class SoftVersion{
+		public int nMajor = 0;
+		public int nMinor = 0;
     };
-    
-    static SoftVersion getSoftVersion(){
-    	SoftVersion ver = new SoftVersion();
+    private static SoftVersion m_softVer;
+    public static SoftVersion getSoftVersion()
+    {
+    	if ( m_softVer != null )
+    		return m_softVer;
+    	
+    	m_softVer = new SoftVersion();
 		String strVer = getSoftwareVersion();//DeviceInfo.getPlatformVersion();
     	
 		int nDot = strVer.indexOf('.');
 		
 		if ( nDot >= 0 )
 		{
-			ver.nMajor = Integer.parseInt( strVer.substring(0, nDot) );
+			m_softVer.nMajor = Integer.parseInt( strVer.substring(0, nDot) );
 			
 			int nDot2 = strVer.indexOf('.',nDot+1);
 			if ( nDot2 >= 0 )
-				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
+				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
 			else
-				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
+				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
 		}else
-			ver.nMajor = Integer.parseInt( strVer );
+			m_softVer.nMajor = Integer.parseInt( strVer );
 		
 	
-		return ver;
+		return m_softVer;
     }
     
     static String makeRootPath(){

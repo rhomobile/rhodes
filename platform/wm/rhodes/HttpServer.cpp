@@ -66,6 +66,8 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
+  CSyncThread::Destroy();
+
   shutdown_poll(ctx);
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
@@ -138,7 +140,6 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 
 HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
-  CSyncThread::Destroy();
   if (m_bRubyInitialized) 
   {
     LOG(INFO) + "Shutting-down ruby framework";

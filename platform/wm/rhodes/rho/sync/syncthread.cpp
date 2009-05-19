@@ -80,10 +80,16 @@ void CSyncThread::PerformSync()
 
 CSyncThread::~CSyncThread(void)
 {
+LOG(INFO) + "CSyncThread::~CSyncThread";
+
     m_oSyncEngine.exitSync();
+LOG(INFO) + "exitSync";
+
     ::SetEvent(m_hDoSyncEvent);
+LOG(INFO) + "SetEvent";
 
     m_thread.RemoveHandle(m_hEvent);
+LOG(INFO) + "RemoveHandle";
     m_thread.Shutdown();
 
     //m_oDBAdapter.close();

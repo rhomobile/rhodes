@@ -176,13 +176,18 @@ int rho_sync_login(const char *name, const char *password)
 
 int rho_sync_logged_in()
 {
-    return rho::sync::CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
+	rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+	db.setUnlockDB(true);
+    int nRes = rho::sync::CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
+	return nRes;
 }
 
 void rho_sync_logout()
 {
     //TODO: stop sync
-    return rho::sync::CSyncThread::getSyncEngine().logout();
+	rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+	db.setUnlockDB(true);
+    rho::sync::CSyncThread::getSyncEngine().logout();
 }
 
 void rho_sync_db_reset()

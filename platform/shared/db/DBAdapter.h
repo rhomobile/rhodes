@@ -13,12 +13,13 @@ class CDBAdapter
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
     common::CMutex m_mxDB;
     common::CMutex m_mxTransDB;
+	boolean m_bInsideTransaction;
     boolean m_bUnlockDB;
 
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUnlockDB(false){}
+    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUnlockDB(false), m_bInsideTransaction(false){}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer);
@@ -27,8 +28,8 @@ public:
 
     boolean isUnlockDB()const{ return m_bUnlockDB; }
     void setUnlockDB(boolean b){ m_bUnlockDB = b; }
-    void Lock(){ m_mxTransDB.Lock(); }
-    void Unlock(){ setUnlockDB(false); m_mxTransDB.Unlock(); }
+    void Lock(){ m_mxDB.Lock(); }
+    void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
@@ -60,6 +61,20 @@ public:
 
         bind(res->getStatement(), 1, p1);
         bind(res->getStatement(), 2, p2);
+
+        return executeStatement(res);
+    }
+
+    template<typename T1, typename T2, typename T3>
+    DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3 )
+    {
+        DBResultPtr res = prepareStatement(szSt);
+        if ( res->getStatement() == null )
+            return res;
+
+        bind(res->getStatement(), 1, p1);
+        bind(res->getStatement(), 2, p2);
+        bind(res->getStatement(), 3, p3);
 
         return executeStatement(res);
     }

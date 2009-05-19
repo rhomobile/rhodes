@@ -77,11 +77,14 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
     if ( m_dbHandle == null )
         return new CDBResult(m_mxDB);
 
+	DBResultPtr res = new CDBResult(0,m_bInsideTransaction ? m_mxTransDB : m_mxDB);
     sqlite3_stmt* st = m_mapStatements.get(szSt);
-    DBResultPtr res = new CDBResult(st,m_mxDB);
     if ( st != null )
+	{
+		res->setStatement(st);
         return res;
-
+	}
+	
     int rc = sqlite3_prepare_v2(m_dbHandle, szSt, -1, &st, NULL);
     if ( rc != SQLITE_OK )
     {
@@ -123,6 +126,7 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
 void CDBAdapter::startTransaction()
 {
     Lock();
+	m_bInsideTransaction=true;
     char *zErr;
     int rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
 }
@@ -132,7 +136,9 @@ void CDBAdapter::endTransaction()
     char *zErr;
     int rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
 
+	m_bInsideTransaction=false;
     Unlock();
+	
 }
 
 }

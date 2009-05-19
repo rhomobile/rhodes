@@ -3,7 +3,7 @@
 
 #include "common/RhoFilePath.h"
 #include "common/RhoTime.h"
-#include "common/RhoFile.h"
+//#include "common/RhoFile.h"
 #include "common/StringConverter.h"
 //#include "common/AutoPointer.h"
 #include "json/JSONIterator.h"
@@ -70,21 +70,26 @@ void CSyncSource::syncClientChanges()
 
         String strBody;
         makePushBody(strBody, arUpdateTypes[i]);
-        if ( strBody.length() == 0 )
-            continue;
-
-		LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
-		LOG(TRACE) + "Push body: " + strBody;		
-        if ( getNet().pushData(strUrl+strQuery,strBody) )
+        if ( strBody.length() > 0 )
         {
-            if ( m_arSyncBlobs.size() )
+		    LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
+		    LOG(TRACE) + "Push body: " + strBody;		
+
+            if ( !getNet().pushData(strUrl+strQuery,strBody) )
             {
-                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and attrib_type!=blob.file", getID(), arUpdateTypes[i] );
-                syncClientBlobs(strQuery);
-            }else
-                getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+                getSync().setState(CSyncEngine::esStop);
+                continue;
+            }
+        }
+
+        if ( m_arSyncBlobs.size() )
+        {
+		    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
+
+            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+            syncClientBlobs(strQuery);
         }else
-            getSync().setState(CSyncEngine::esStop);
+            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
     }
 }
 
@@ -100,7 +105,6 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType ) );
-
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
@@ -109,9 +113,10 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
             strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 
         String value = res.getStringByIdx(2);
+        String attribType = res.getStringByIdx(3);
         if ( value.length() > 0 )
         {
-            if ( res.getStringByIdx(3) == "blob.file" )
+            if ( attribType == "blob.file" )
             {
                 common::CFilePath oBlobPath(value);
                 strSrcBody += "&attrvals[][value]=";
@@ -203,12 +208,12 @@ void CSyncSource::processServerData(const char* szData)
     {
         processToken(oJsonArr.getCurItem().getUInt64("token"));
         oJsonArr.next();
-    }
+    }else if ( getCurPageCount() == 0 )
+        processToken(0);
+
 	LOG(INFO) + "Got " + this->getCurPageCount() + " records from server. Source ID: " + getID();
 	
-    //TODO: support transactions
     //TODO: support DBExceptions
-
     getDB().startTransaction();
     for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
     {
