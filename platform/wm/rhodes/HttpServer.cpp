@@ -14,7 +14,7 @@
 
 #include "ports_mngt.h"
 #include "resource.h"
-#include "rho/sync/SyncThread.h"
+#include "sync/SyncThread.h"
 using namespace rho::sync;
 #include "common/StringConverter.h"
 
@@ -66,7 +66,7 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
-  CSyncThread::Destroy();
+  rho_sync_destroy();
 
   shutdown_poll(ctx);
   m_thread.RemoveHandle(m_hEvent);
@@ -121,7 +121,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
         m_hMainWindow = NULL;
     }
 
-    CSyncThread::Create()->ResumeThread();
+    rho_sync_create();
 
 //    if (logged_in()){
       

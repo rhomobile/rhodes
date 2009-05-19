@@ -1,12 +1,13 @@
 #pragma once
 
 #include "common/IRhoClassFactory.h"
-#include "net/NetRequest.h"
-#include "common/RhoThreadImpl.h"
+#include "../net/NetRequest.h"
+#include "RhoThreadImpl.h"
 
 namespace rho {
+namespace common {
 
-class CRhoClassFactory : public common::IRhoClassFactory
+class CRhoClassFactory : public IRhoClassFactory
 {
 public:
     virtual ~CRhoClassFactory(void){}
@@ -15,11 +16,13 @@ public:
         return new net::CNetRequest();
     }
 
-    virtual common::IRhoThreadImpl* createThreadImpl()
+    virtual IRhoThreadImpl* createThreadImpl()
     {
-        return new common::CRhoThreadImpl;
+        return new CRhoThreadImpl;
     }
 
 };
 
 }
+}
+

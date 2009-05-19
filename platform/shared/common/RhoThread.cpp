@@ -9,9 +9,9 @@ CRhoThread::CRhoThread(IRhoClassFactory* factory)
     m_pImpl = factory->createThreadImpl();
 }
 
-void CRhoThread::start()
+void CRhoThread::start(EPriority ePriority)
 {
-    m_pImpl->start(this);
+    m_pImpl->start(this, ePriority);
 }
 
 }
