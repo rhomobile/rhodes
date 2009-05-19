@@ -84,9 +84,9 @@ public:
         {
             if ( getLastFmt().length() > 0 )
             {
-				int buflen = 100;
-                char buf[buflen];
-                int len = snprintf(buf,buflen-1,getLastFmt().c_str(),value);
+				int buflen = 99;
+                char buf[100];
+                int len = snprintf(buf,buflen,getLastFmt().c_str(),value);
 				if (len < 0 || len >= buflen){
 #ifdef OS_SYMBIAN
 					len = buflen - 1;
