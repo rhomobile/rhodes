@@ -1,15 +1,6 @@
 #pragma once
 
 #if !defined(_WIN32_WCE)
-#include <atlapp.h>
-//#include <atlwin.h>
-//#include <atlcrack.h>
-//#include <atlframe.h>
-#include <atlctrls.h>
-//#include <atlctrlx.h>
-//#include <atlmisc.h>
-//#include <atlddx.h>
-
 /*
 class CODButtonImpl : public CWindowImpl<CODButtonImpl, CButton>,
                       public COwnerDraw<CODButtonImpl>
