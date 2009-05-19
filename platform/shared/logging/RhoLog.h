@@ -84,8 +84,17 @@ public:
         {
             if ( getLastFmt().length() > 0 )
             {
-                char buf[100];
-                sprintf(buf,getLastFmt().c_str(),value);
+				int buflen = 100;
+                char buf[buflen];
+                int len = snprintf(buf,buflen-1,getLastFmt().c_str(),value);
+				if (len < 0 || len >= buflen){
+#ifdef OS_SYMBIAN
+					len = buflen - 1;
+#else
+					len = buflen;
+#endif
+				}
+				buf[len]=0;
                 clearLastFmt();
                 addMessage(buf);
             }
@@ -109,6 +118,16 @@ public:
         return *this + value.c_str();
     }
 
+    /*inline LogMessage& operator+(const char* value) 
+	{ 
+		if (isEnabled())
+		{
+			m_strMessage+= value;
+			clearLastFmt();
+		}
+        return *this;
+    }*/
+	
 private:
     void flushLog();
     void addPrefix(const char* file, int line);
