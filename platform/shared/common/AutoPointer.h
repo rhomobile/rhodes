@@ -119,7 +119,7 @@ public:
     CAutoPointer( FUNCTYPE pFunc ) 
     { 
         static CDeleter<FUNCTYPE> oDeleter(pFunc);
-        CBaseAutoPointer<PTRTYPE>::m_ptr = NULL; 
+        CBaseAutoPointer<PTRTYPE>::m_ptr = 0; 
         m_pDeleter = &oDeleter;
     }
     ~CAutoPointer(){ CBaseAutoPointer<PTRTYPE>::Close(); }
