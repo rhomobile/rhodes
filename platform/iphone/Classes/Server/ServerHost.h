@@ -22,6 +22,7 @@
 	SEL onStartFailure;
 	SEL onRefreshView;
 	SEL onNavigateTo;
+	SEL onExecuteJs;
 	SEL onSetViewHomeUrl;
 	SEL onTakePicture;
 	SEL onChoosePicture;
@@ -34,6 +35,7 @@
 @property (assign) SEL onStartFailure;
 @property (assign) SEL onRefreshView;
 @property (assign) SEL onNavigateTo;
+@property (assign) SEL onExecuteJs;
 @property (assign) SEL onSetViewHomeUrl;
 @property (assign) SEL onTakePicture;
 @property (assign) SEL onChoosePicture;

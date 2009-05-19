@@ -54,6 +54,10 @@
 	[webViewController navigateRedirect:url];
 }
 
+- (void)onExecuteJs:(NSString *)js {
+	[webViewController executeJs:js];
+}
+
 - (void)onSetViewHomeUrl:(NSString *)url {
 	//[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
 	[webViewController setViewHomeUrl:url];
@@ -140,6 +144,7 @@
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
 	serverHost->onNavigateTo = @selector(onNavigateTo:);
+	serverHost->onExecuteJs = @selector(onExecuteJs:);
 	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
