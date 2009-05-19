@@ -172,11 +172,14 @@ int login(const char *login, const char *password) {
 }*/
 
 static NSURLConnection* g_curConn = NULL;
-int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody )
+int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *session;
 	int cookie_size = 0;
+	
+	if ( pbRespRecieved )
+		*pbRespRecieved = 0;
 	
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
 	session = get_session(szUrl);
@@ -202,6 +205,9 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			g_curConn = NULL;
+			
+			if ( pbRespRecieved )
+				*pbRespRecieved = code > 0;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
@@ -240,20 +246,23 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 	return cookie_size > 0;
 }
 
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody )
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	if ( pbRespRecieved )
+		*pbRespRecieved = 0;
 	
 	char* respData = NULL;
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
 	NSString *session = get_session(szUrl);
-	if (session) 
+	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+	if (session || [linkString hasPrefix:@"http://localhost"] || [linkString hasPrefix:@"http://127.0.0.0"]) 
 	{
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
 		NSHTTPURLResponse *response;
-		NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
 		NSMutableData *postBody = [NSMutableData dataWithBytes:szBody length:data_size];
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setHTTPMethod:[[NSString alloc] initWithUTF8String:szMethod]];
@@ -271,6 +280,9 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			g_curConn = NULL;
 
+			if ( pbRespRecieved )
+				*pbRespRecieved = code > 0;
+			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
 			{
@@ -295,14 +307,17 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	return respData;
 }
 
-int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
+int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved)
 {
 	//TODO: test rho_net_impl_pushFile
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	if ( pbRespRecieved )
+		*pbRespRecieved = 0;
+	
 	int nRet = 0;
 	NSString *session = get_session(szUrl);
-	if (session) 
-	{
+	if (session) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -322,6 +337,9 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			g_curConn = NULL;
 			
+			if ( pbRespRecieved )
+				*pbRespRecieved = code > 0;
+			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
 			{
@@ -334,10 +352,9 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath)
 			} else
 				nRet = 1;
 		}
-		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	}
-	
+		
 	[pool drain];
 	[pool release];
 	return nRet;

@@ -26,9 +26,9 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		5C5332680FBD6AF000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332650FBD6AF000F268F0 /* NetRequest.cpp */; };
-		5C5332690FBD6AF000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */; };
-		5C53326C0FBD6B0200F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53326A0FBD6B0200F268F0 /* syncthread.cpp */; };
+		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
+		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
+		5C53337E0FC1B20D00F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53337C0FC1B20D00F268F0 /* syncthread.cpp */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
 		F52181160F96B14B00B7F974 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52181140F96B14B00B7F974 /* log.cpp */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
@@ -149,11 +149,11 @@
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5332640FBD6AE300F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/RhoClassFactory.h; sourceTree = "<group>"; };
-		5C5332650FBD6AF000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
-		5C5332660FBD6AF000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
-		5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
-		5C53326A0FBD6B0200F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = rho/sync/syncthread.cpp; sourceTree = "<group>"; };
-		5C53326B0FBD6B0200F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = rho/sync/syncthread.h; sourceTree = "<group>"; };
+		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
+		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
+		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
+		5C53337C0FC1B20D00F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = rho/sync/syncthread.cpp; sourceTree = "<group>"; };
+		5C53337D0FC1B20D00F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = rho/sync/syncthread.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
@@ -338,8 +338,9 @@
 		5C5332620FBD6ACC00F268F0 /* net */ = {
 			isa = PBXGroup;
 			children = (
-				5C53326A0FBD6B0200F268F0 /* syncthread.cpp */,
-				5C53326B0FBD6B0200F268F0 /* syncthread.h */,
+				5C5333770FC1B20000F268F0 /* NetRequest.cpp */,
+				5C5333780FC1B20000F268F0 /* NetRequest.h */,
+				5C5333790FC1B20000F268F0 /* NetRequestImpl.m */,
 			);
 			name = net;
 			sourceTree = "<group>";
@@ -347,9 +348,8 @@
 		5C5332630FBD6AD300F268F0 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				5C5332650FBD6AF000F268F0 /* NetRequest.cpp */,
-				5C5332660FBD6AF000F268F0 /* NetRequest.h */,
-				5C5332670FBD6AF000F268F0 /* NetRequestImpl.m */,
+				5C53337C0FC1B20D00F268F0 /* syncthread.cpp */,
+				5C53337D0FC1B20D00F268F0 /* syncthread.h */,
 			);
 			name = sync;
 			sourceTree = "<group>";
@@ -610,9 +610,9 @@
 				F52181160F96B14B00B7F974 /* log.cpp in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
 				F547F57E0F9E45EA007C2CD2 /* config.cpp in Sources */,
-				5C5332680FBD6AF000F268F0 /* NetRequest.cpp in Sources */,
-				5C5332690FBD6AF000F268F0 /* NetRequestImpl.m in Sources */,
-				5C53326C0FBD6B0200F268F0 /* syncthread.cpp in Sources */,
+				5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */,
+				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
+				5C53337E0FC1B20D00F268F0 /* syncthread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

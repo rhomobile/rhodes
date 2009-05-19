@@ -3,9 +3,9 @@
 
 extern "C" {
 char* HTTPResolveUrl(char* url);
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody );
-int   rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody );
-int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath);
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
+int   rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
+int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved);
 void rho_net_impl_deleteAllCookies();
 void rho_net_impl_cancelAll();
 }
@@ -39,13 +39,29 @@ public:
 	
 INetData* CNetRequest::pullData(const String& strUrl )
 {
-	char* response = rho_net_impl_request("GET", strUrl.c_str(), "" );
+    int bRespRecieved = 0;
+	int nTry = 0;
+	char* response = 0;
+	
+	do{
+		response = rho_net_impl_request("GET", strUrl.c_str(), "", &bRespRecieved );
+		nTry++;
+	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	
 	return new CNetData(response);
 }
 	
 boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 {
-	char* response = rho_net_impl_request("POST", strUrl.c_str(), strBody.c_str() );
+    int bRespRecieved = 0;
+	int nTry = 0;
+	char* response = 0;
+	
+	do{
+		response = rho_net_impl_request("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved );
+		nTry++;
+	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+		
 	boolean bRet = response!=0;
 	if ( response!=0 )
 		free(response);
@@ -55,12 +71,30 @@ boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 
 boolean CNetRequest::pushFile(const String& strUrl, const String& strFileName)
 {
-	return rho_net_impl_pushFile(strUrl.c_str(), strFileName.c_str() ) != 0;
+    int bRespRecieved = 0;
+	int nTry = 0;
+	boolean bRet = false;
+	
+	do{
+		bRet = rho_net_impl_pushFile(strUrl.c_str(), strFileName.c_str(), &bRespRecieved ) != 0;
+		nTry++;
+	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+		
+	return bRet;
 }
 	
 boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 {
-	return rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str() ) != 0;
+    int bRespRecieved = 0;
+	int nTry = 0;
+	boolean bRet = false;
+	
+	do{
+		bRet = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved ) != 0;
+		nTry++;
+	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	
+	return bRet;
 }
 
 //if strUrl.length() == 0 delete all cookies if possible

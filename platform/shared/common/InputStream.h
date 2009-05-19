@@ -11,7 +11,7 @@ struct InputStream
     virtual  int available() = 0;
 
     virtual  int read() = 0;
-    virtual  int read(unsigned char* buffer, int bufOffset, int bytesToRead) = 0;
+    virtual  int read(void* buffer, int bufOffset, int bytesToRead) = 0;
 
     virtual  void reset() = 0;
 };

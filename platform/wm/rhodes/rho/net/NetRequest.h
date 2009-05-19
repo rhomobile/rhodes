@@ -21,18 +21,10 @@ public:
 
     virtual String resolveUrl(const String& strUrl);
 
-    virtual bool SetupInternetConnection(LPCTSTR url);
-
     virtual void cancelAll();
 
 protected:
     virtual INetData* doRequest( const char* method, const String& strUrl, const String& strBody );
-};
-
-class CNetLocalRequest : public CNetRequest
-{
-public :
-    virtual bool SetupInternetConnection(LPCTSTR url){ return true;}
 };
 
 }

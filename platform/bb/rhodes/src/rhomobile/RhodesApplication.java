@@ -36,11 +36,11 @@ import java.util.Vector;
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication{
-
+final public class RhodesApplication extends UiApplication implements RenderingApplication
+{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
-	
+
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -214,6 +214,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private final String _httpRoot = "http://localhost:8080/";
 
+    private final boolean _isFullBrowser = false;
+    
     private static RhodesApplication _instance;
 
     public static RhodesApplication getInstance(){ return _instance; }
@@ -354,9 +356,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
-        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-        //_renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-
+        
+        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+        {
+	        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+	        //_renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
+        	//_isFullBrowser = true;
+        }
+        
         if(!restoreLocation()) {
         	navigateHome();
         }
@@ -405,9 +413,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     }
                 }
 
-                //synchronized (getAppEventLock())
-                {
+                if ( _isFullBrowser )
                 	browserContent.finishLoading();
+                else
+                {
+	                synchronized (getAppEventLock())
+	                {
+	                	browserContent.finishLoading();
+	                }
                 }
             }
 

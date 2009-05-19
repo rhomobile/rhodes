@@ -33,7 +33,7 @@ public:
 
     InputStream* getInputStream();
     int readByte();
-    int readData(unsigned char* buffer, int bufOffset, int bytesToRead);
+    int readData(void* buffer, int bufOffset, int bytesToRead);
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );

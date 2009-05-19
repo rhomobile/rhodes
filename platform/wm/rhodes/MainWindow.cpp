@@ -435,7 +435,7 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 //	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
 	//char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
 	//if ( res ) free(res);
-    rho::net::CNetLocalRequest oNetReq;
+    rho::net::CNetRequest oNetReq;
     oNetReq.pushData( callback, message );
 
 	free(message);
