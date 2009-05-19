@@ -94,20 +94,21 @@ module Rhogen
     desc <<-DESC
       Generates a new model for a rhodes application.
       
-      You must specify the following:
-        name - model name
-        source_url - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
-        source_id - unique id for this model (i.e. 500, this is only used on the device to uniquely identify the source)
-        attributes - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
+      Required:
+        name        - model name
+        source_url  - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
+        attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
+        
+      Optional:
+        type        - optional type (i.e. "ask" for an ask model) 
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
     first_argument :name, :required => true, :desc => "model name"
     second_argument :source_url, :required => true, :desc => "source url"
-    third_argument :source_id, :required => true, :desc => "source id"
-    fourth_argument :attributes, :as => :array, :required => true, :desc => "array of attributes (only string suppported right now)"
-    argument(4, :type, {:required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"})
+    third_argument :attributes, :as => :array, :required => true, :desc => "list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes"
+    fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
     template :config do |template|
       template.source = 'config.rb'
