@@ -21,7 +21,7 @@
 #include "AppManagerI.h"
 #include "config.h"
 #include "sync/syncthread.h"
-#import "JSString.h"
+#include "JSString.h"
 
 extern char* get_current_location();
 
@@ -274,6 +274,7 @@ char* webview_execute_js(char* js) {
 	JSString *javascript = [[[JSString alloc] init] autorelease];
 	javascript.inputJs = [NSString stringWithUTF8String:js];
 	[[ServerHost sharedInstance] executeJs:javascript];
+	// TBD: Does ruby GC pick this up?
 	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	return retval;
 }
