@@ -29,6 +29,7 @@
 		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53337E0FC1B20D00F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53337C0FC1B20D00F268F0 /* syncthread.cpp */; };
+		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
 		F52181160F96B14B00B7F974 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52181140F96B14B00B7F974 /* log.cpp */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
@@ -154,6 +155,8 @@
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C53337C0FC1B20D00F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = rho/sync/syncthread.cpp; sourceTree = "<group>"; };
 		5C53337D0FC1B20D00F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = rho/sync/syncthread.h; sourceTree = "<group>"; };
+		5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThreadImpl.cpp; path = rho/common/RhoThreadImpl.cpp; sourceTree = "<group>"; };
+		5C53354B0FC2974D00F268F0 /* RhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThreadImpl.h; path = rho/common/RhoThreadImpl.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
@@ -328,6 +331,7 @@
 		5C5332610FBD6AC700F268F0 /* rho */ = {
 			isa = PBXGroup;
 			children = (
+				5C5335490FC2973900F268F0 /* common */,
 				5C5332640FBD6AE300F268F0 /* RhoClassFactory.h */,
 				5C5332630FBD6AD300F268F0 /* sync */,
 				5C5332620FBD6ACC00F268F0 /* net */,
@@ -352,6 +356,15 @@
 				5C53337D0FC1B20D00F268F0 /* syncthread.h */,
 			);
 			name = sync;
+			sourceTree = "<group>";
+		};
+		5C5335490FC2973900F268F0 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */,
+				5C53354B0FC2974D00F268F0 /* RhoThreadImpl.h */,
+			);
+			name = common;
 			sourceTree = "<group>";
 		};
 		5C7162930F8B7EEC0096B6AA /* Products */ = {
@@ -613,6 +626,7 @@
 				5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */,
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
 				5C53337E0FC1B20D00F268F0 /* syncthread.cpp in Sources */,
+				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
