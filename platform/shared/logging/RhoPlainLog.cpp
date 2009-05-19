@@ -46,7 +46,7 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
         int len = vswnprintf(buf, buflen, format, ap);
 
         if (len < 0 || len >= buflen){
-#ifdef __SYMBIAN32__
+#ifdef OS_SYMBIAN
             len = buflen - 1;
 #else
             len = buflen;
