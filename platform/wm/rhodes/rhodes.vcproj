@@ -1002,10 +1002,6 @@
 		<Filter
 			Name="rho"
 			>
-			<File
-				RelativePath=".\rho\RhoClassFactory.h"
-				>
-			</File>
 			<Filter
 				Name="net"
 				>
@@ -1027,20 +1023,16 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="sync"
-				>
-				<File
-					RelativePath=".\rho\sync\syncthread.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\rho\sync\syncthread.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="common"
 				>
+				<File
+					RelativePath=".\rho\common\RhoClassFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\common\RhoClassFactory.h"
+					>
+				</File>
 				<File
 					RelativePath=".\rho\common\RhoThreadImpl.cpp"
 					>

@@ -1159,6 +1159,14 @@
 				RelativePath="..\..\shared\sync\SyncSource.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\sync\syncthread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\sync\syncthread.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="db"

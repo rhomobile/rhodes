@@ -19,7 +19,7 @@
 #include "camera/Camera.h"
 #endif
 #include "rho/net/NetRequest.h"
-#include "rho/sync/SyncThread.h"
+#include "sync/SyncThread.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 char* canonicalizeURL(const char* path);
