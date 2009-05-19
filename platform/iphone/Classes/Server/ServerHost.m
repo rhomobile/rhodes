@@ -20,7 +20,7 @@
 #include "Dispatcher.h"
 #include "AppManagerI.h"
 #include "config.h"
-#include "../rho/sync/syncthread.h"
+#include "sync/syncthread.h"
 
 extern char* get_current_location();
 

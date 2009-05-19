@@ -2,7 +2,7 @@
 #import "rhoruby.h"
 //#import "UniversalLock.h"
 #import "config.h"
-#import "rho/sync/syncthread.h"
+#import "sync/syncthread.h"
 
 static char currentLocation[4096] = "";
 

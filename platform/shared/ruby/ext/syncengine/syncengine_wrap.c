@@ -2152,7 +2152,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "login", _wrap_rho_sync_login, -1);
   rb_define_module_function(mSyncEngine, "logged_in", _wrap_rho_sync_logged_in, -1);
   rb_define_module_function(mSyncEngine, "logout", _wrap_rho_sync_logout, -1);
-  rb_define_module_function(mSyncEngine, "db_reset", _wrap_rho_sync_db_reset, -1);
+  rb_define_module_function(mSyncEngine, "trigger_sync_db_reset", _wrap_rho_sync_db_reset, -1);
   rb_define_module_function(mSyncEngine, "set_notification", _wrap_rho_sync_set_notification, -1);
   rb_define_module_function(mSyncEngine, "clear_notification", _wrap_rho_sync_clear_notification, -1);
   rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_rho_sync_set_pollinterval, -1);

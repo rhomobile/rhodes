@@ -1,11 +1,12 @@
 #pragma once
 
 #include "common/IRhoClassFactory.h"
-#include "net/NetRequest.h"
-#include "common/RhoThreadImpl.h"
+#include "../net/NetRequest.h"
+#include "RhoThreadImpl.h"
 
 namespace rho {
-
+namespace common {
+		
 class CRhoClassFactory : public common::IRhoClassFactory
 {
 public:
@@ -21,4 +22,5 @@ public:
 
 };
 
+}
 }
