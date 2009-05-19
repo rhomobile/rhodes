@@ -25,7 +25,9 @@ class CSyncThread //: public IWorkerThreadClient
 
 	pthread_cond_t m_condSync;
 	common::CMutex m_mxSync;
-	pthread_t       m_thread;
+	pthread_t      m_thread;
+	int            m_nPollInterval;
+	
 	//    HANDLE m_hEvent;
 //    HANDLE m_hDoSyncEvent;
 //    CWorkerThread<DefaultThreadTraits> m_thread;
@@ -46,6 +48,7 @@ public:
     void TriggerDbReset(){ m_bResetDB = true; TriggerSync(); }
 	void Execute();
 
+	void setPollInterval(int nInterval){ m_nPollInterval = nInterval; }
 private:
     CSyncThread(void);
 

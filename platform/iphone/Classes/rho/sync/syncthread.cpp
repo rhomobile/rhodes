@@ -39,7 +39,8 @@ void* sync_engine_main_routine(void* data)
 CSyncThread::CSyncThread() : m_oSyncEngine(m_oDBAdapter)
 {
     m_bResetDB = false;
-
+	m_nPollInterval = WAIT_TIME_SECONDS;
+	
     m_oSyncEngine.setFactory(&m_oFactory);
 
 	// Initialize thread
@@ -73,9 +74,9 @@ void CSyncThread::Execute()
 		/* Convert from timeval to timespec */
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
-		ts.tv_sec += WAIT_TIME_SECONDS;
+		ts.tv_sec += m_nPollInterval;
 			
-		LOG(INFO) + "Sync engine blocked for " + WAIT_TIME_SECONDS + " seconds...";
+		LOG(INFO) + "Sync engine blocked for " + m_nPollInterval + " seconds...";
 		pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
 		
 		PerformSync();
@@ -205,6 +206,11 @@ void rho_sync_clear_notification(int source_id)
     return rho::sync::CSyncThread::getSyncEngine().clearNotification(source_id);
 }
 
+void rho_sync_set_pollinterval(int nInterval)
+{
+	return rho::sync::CSyncThread::getInstance()->setPollInterval(nInterval);
+}
+	
 int rho_sync_openDB(const char* szDBPath, void ** ppDB)
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
