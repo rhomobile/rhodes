@@ -21,6 +21,7 @@
 #include "AppManagerI.h"
 #include "config.h"
 #include "sync/syncthread.h"
+#import "JSString.h"
 
 extern char* get_current_location();
 
@@ -63,7 +64,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -88,6 +89,12 @@ static ServerHost* sharedSH = nil;
 - (void)navigateTo:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
 		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:url waitUntilDone:NO];
+	}
+}
+
+- (void)executeJs:(JSString*) js {
+	if(actionTarget && [actionTarget respondsToSelector:onExecuteJs]) {
+		[actionTarget performSelectorOnMainThread:onExecuteJs withObject:js waitUntilDone:YES];
 	}
 }
 
@@ -260,6 +267,15 @@ void webview_refresh() {
 
 void webview_navigate(char* url) {
 	[[ServerHost sharedInstance] navigateTo:[NSString stringWithCString:url]];
+}
+
+char* webview_execute_js(char* js) {
+	char * retval;
+	JSString *javascript = [[[JSString alloc] init] autorelease];
+	javascript.inputJs = [NSString stringWithUTF8String:js];
+	[[ServerHost sharedInstance] executeJs:javascript];
+	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	return retval;
 }
 
 void perform_webview_refresh() {

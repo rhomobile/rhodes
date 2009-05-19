@@ -3,6 +3,7 @@
 //#import "UniversalLock.h"
 #import "config.h"
 #import "sync/syncthread.h"
+#import "JSString.h"
 
 static char currentLocation[4096] = "";
 
@@ -62,6 +63,11 @@ NSString *loadingText = @"Loading...";
 -(void)navigate:(NSString*)url {
     printf("Navigating to the specifyed URL\n");
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
+}
+
+-(void)executeJs:(JSString*)js {
+    NSLog(@"Executing JS: %@\n", js.inputJs);
+	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
 }
 
 -(void)navigateRedirect:(NSString*)url {
