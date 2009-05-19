@@ -54,13 +54,16 @@
 #define IDM_CLEAR                       40021
 #define IDM_NAVIGATE                    40022
 #define IDM_START_PAGE                  40023
+#define ID_MENU_COPY                    40024
+#define ID_MENU_SELECTALL               40025
+#define ID_MENU_FIND                    40026
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40024
+#define _APS_NEXT_COMMAND_VALUE         40027
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
