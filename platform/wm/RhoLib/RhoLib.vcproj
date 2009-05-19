@@ -770,6 +770,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\irhoclassfactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\IRhoThreadImpl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoConf.cpp"
 				>
 			</File>
@@ -811,6 +819,14 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\common\RhoSystem.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoThread.h"
 				>
 			</File>
 			<File

@@ -18,7 +18,7 @@ template <typename PTRTYPE>
 class CBaseAutoPointer //: public CNonCopyable
 {
 public:
-    CBaseAutoPointer() { m_ptr = NULL; }
+    CBaseAutoPointer() { m_ptr = 0; }
 
     PTRTYPE* operator &(){ Close(); return &m_ptr; }
     void Set( PTRTYPE ptr ){ Close(); m_ptr = ptr; }
@@ -32,7 +32,7 @@ public:
         if ( m_ptr ) 
         { 
             FreePtr(); 
-            m_ptr = NULL;
+            m_ptr = 0;
         }
     }
 
@@ -45,6 +45,7 @@ class CAutoPtr : public CBaseAutoPointer<PTRTYPE>
 {
 public:
     CAutoPtr( PTRTYPE ptr ){ Set(ptr); }
+    CAutoPtr(){}
     ~CAutoPtr(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     CAutoPtr( const CAutoPtr& orig){ *this = orig; }

@@ -1038,6 +1038,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="common"
+				>
+				<File
+					RelativePath=".\rho\common\RhoThreadImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\common\RhoThreadImpl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="phonebook"

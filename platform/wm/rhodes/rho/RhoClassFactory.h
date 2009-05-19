@@ -2,6 +2,7 @@
 
 #include "common/IRhoClassFactory.h"
 #include "net/NetRequest.h"
+#include "common/RhoThreadImpl.h"
 
 namespace rho {
 
@@ -13,6 +14,12 @@ public:
     {
         return new net::CNetRequest();
     }
+
+    virtual common::IRhoThreadImpl* createThreadImpl()
+    {
+        return new common::CRhoThreadImpl;
+    }
+
 };
 
 }
