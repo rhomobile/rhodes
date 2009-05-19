@@ -25,6 +25,8 @@
 		46E9214B0E9BF40A00F14AC8 /* linkhash.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E921390E9BF40A00F14AC8 /* linkhash.h */; };
 		46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9213A0E9BF40A00F14AC8 /* printbuf.c */; };
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
+		5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */; };
+		5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335AB0FC2F3AB00F268F0 /* syncthread.h */; };
 		5C9817230FBC4F20002597A5 /* JSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817210FBC4F20002597A5 /* JSONIterator.cpp */; };
 		5C9817240FBC4F20002597A5 /* JSONIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817220FBC4F20002597A5 /* JSONIterator.h */; };
 		5C98172A0FBC4F41002597A5 /* SyncEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817260FBC4F41002597A5 /* SyncEngine.cpp */; };
@@ -59,6 +61,8 @@
 		46E921390E9BF40A00F14AC8 /* linkhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = linkhash.h; path = ../../shared/json/linkhash.h; sourceTree = SOURCE_ROOT; };
 		46E9213A0E9BF40A00F14AC8 /* printbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = printbuf.c; path = ../../shared/json/printbuf.c; sourceTree = SOURCE_ROOT; };
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
+		5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = ../../shared/sync/syncthread.cpp; sourceTree = SOURCE_ROOT; };
+		5C5335AB0FC2F3AB00F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = ../../shared/sync/syncthread.h; sourceTree = SOURCE_ROOT; };
 		5C9817210FBC4F20002597A5 /* JSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONIterator.cpp; sourceTree = "<group>"; };
 		5C9817220FBC4F20002597A5 /* JSONIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONIterator.h; sourceTree = "<group>"; };
 		5C9817260FBC4F41002597A5 /* SyncEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncEngine.cpp; path = ../../shared/sync/SyncEngine.cpp; sourceTree = SOURCE_ROOT; };
@@ -145,6 +149,8 @@
 		5C9817250FBC4F27002597A5 /* sync */ = {
 			isa = PBXGroup;
 			children = (
+				5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */,
+				5C5335AB0FC2F3AB00F268F0 /* syncthread.h */,
 				5C9817260FBC4F41002597A5 /* SyncEngine.cpp */,
 				5C9817270FBC4F41002597A5 /* SyncEngine.h */,
 				5C9817280FBC4F41002597A5 /* SyncSource.cpp */,
@@ -194,6 +200,7 @@
 				5C98172D0FBC4F41002597A5 /* SyncSource.h in Headers */,
 				5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */,
 				5C9817360FBC4F70002597A5 /* DBResult.h in Headers */,
+				5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +258,7 @@
 				5C98172C0FBC4F41002597A5 /* SyncSource.cpp in Sources */,
 				5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */,
 				5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */,
+				5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

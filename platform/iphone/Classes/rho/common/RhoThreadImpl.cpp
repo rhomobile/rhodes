@@ -1,4 +1,5 @@
 #include "RhoThreadImpl.h"
+#include <sys/time.h>
 
 namespace rho{
 namespace common{
@@ -8,6 +9,13 @@ CRhoThreadImpl::CRhoThreadImpl()
 {
 }
 
+void* runProc(void* pv)
+{
+	IRhoRunnable* p = static_cast<IRhoRunnable*>(pv);
+	p->run();
+	return 0;	
+}
+	
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
 	pthread_condattr_t sync_details;
@@ -28,7 +36,7 @@ void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePri
         return_val = pthread_attr_setschedparam (&attr, &param);
     }
 
-    int thread_error = pthread_create(&m_thread, &attr, &sync_engine_main_routine, this);
+    int thread_error = pthread_create(&m_thread, &attr, &runProc, pRunnable);
     return_val = pthread_attr_destroy(&attr);
     RHO_ASSERT(!return_val);
     RHO_ASSERT(thread_error==0);

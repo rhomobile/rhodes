@@ -15,11 +15,12 @@ class CRhoThreadImpl : public IRhoThreadImpl
 	pthread_t      m_thread;
 
 public:
-    virtual void start(IRhoRunnable* pRunnable);
+	CRhoThreadImpl();
+	
+    virtual void start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority );
     virtual void stop(unsigned int nTimeoutToKill);
     virtual void wait(unsigned int nTimeout);
     virtual void stopWait();
-    virtual void setThreadPriority(IRhoRunnable::EPriority ePriority);
 };
 
 }

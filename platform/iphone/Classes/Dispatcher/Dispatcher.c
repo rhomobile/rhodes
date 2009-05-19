@@ -18,7 +18,7 @@
 #include "AppManagerI.h"
 //#include "geolocation.h"
 //#include "SyncEngine.h"
-#include "../rho/sync/syncthread.h"
+#include "sync/syncthread.h"
 
 char *trim(char *str)
 {
