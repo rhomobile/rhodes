@@ -20,7 +20,7 @@
 
 #include "linkhash.h"
 //RHO
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 
 void lh_abort(const char *msg, ...)
 {

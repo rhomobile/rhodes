@@ -10,7 +10,7 @@
 #include "missing/file.h"
 #endif
 
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();

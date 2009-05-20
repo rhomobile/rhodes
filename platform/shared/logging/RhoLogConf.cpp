@@ -146,9 +146,11 @@ void LogSettings::setDisabledCategories( const char* szCatList ){
 
 }
 
-extern "C" void InitRhoLog(const char* szRootPath){
+extern "C" {
 
-    InitRhoConf(szRootPath);
+void rho_logconf_Init(const char* szRootPath){
+
+    rho_conf_Init(szRootPath);
 
 	rho::common::CFilePath oLogPath( szRootPath );
 	
@@ -172,4 +174,48 @@ extern "C" void InitRhoLog(const char* szRootPath){
 
     RHOCONF().loadFromFile();
     LOGCONF().loadFromConf(RHOCONF());
+}
+
+char* rho_logconf_getText() {
+    rho::String strText;
+    LOGCONF().getLogText(strText);
+	return strdup(strText.c_str());
+}
+
+int rho_logconf_getTextPos() {
+	return LOGCONF().getLogTextPos();
+}
+
+char* rho_logconf_getEnabledCategories() {
+	return strdup(LOGCONF().getEnabledCategories().c_str());
+}
+
+char* rho_logconf_getDisabledCategories() {
+	return strdup(LOGCONF().getDisabledCategories().c_str());
+}
+
+int rho_logconf_getSeverity() {
+	return LOGCONF().getMinSeverity();
+}
+
+void rho_logconf_setEnabledCategories(const char* categories) {
+	LOGCONF().setEnabledCategories(categories);
+}
+
+void rho_logconf_setDisabledCategories(const char* categories) {
+	LOGCONF().setDisabledCategories(categories);
+}
+
+void rho_logconf_setSeveity(int nLevel) {
+	LOGCONF().setMinSeverity(nLevel);
+}
+
+void rho_logconf_saveSettings() {
+	 LOGCONF().saveToFile();
+}
+
+void rho_logconf_freeString(char* str) {
+	rho_free(str);
+}
+
 }

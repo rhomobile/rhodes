@@ -1997,7 +1997,7 @@ shttpd_init(int argc, char *argv[])
 
 	return (ctx);
 }
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 void __shttpd_trace(const char* format, ... ){
     va_list ap;
     va_start(ap, format);

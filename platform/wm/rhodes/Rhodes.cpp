@@ -4,9 +4,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "ServerHost.h"
+#include "logging/RhoLog.h"
 
 //void runAllLogTests();
-extern "C" void InitRhoLog(const char* szRootPath);
 extern "C" const char* RhoGetRootPath();
 
 #if defined(OS_WINDOWS)
@@ -54,7 +54,7 @@ public :
 		}
 
 		//
-		InitRhoLog(RhoGetRootPath());
+		rho_logconf_Init(RhoGetRootPath());
 		//	runAllLogTests();
 
 		return __super::ParseCommandLine(lpCmdLine, pnRetCode);

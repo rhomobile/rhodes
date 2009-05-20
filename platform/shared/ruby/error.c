@@ -23,7 +23,7 @@
 #endif
 
 //RHO
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 int rhoRubyFPrintf(FILE *, const char *, ...);
 int rhoRubyVFPrintf(FILE *, const char *, va_list);
 #define fprintf rhoRubyFPrintf

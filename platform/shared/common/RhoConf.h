@@ -1,6 +1,8 @@
 #ifndef _RHOCONF_H_
 #define _RHOCONF_H_
 
+#ifdef __cplusplus
+
 #include "RhoStd.h"
 #include <map>
 
@@ -43,8 +45,24 @@ extern RhoSettings g_RhoSettings;
 
 }
 }
-
 inline rho::common::RhoSettings& RHOCONF(){ return rho::common::g_RhoSettings; }
-extern "C" void InitRhoConf(const char* szRootPath);
+
+#endif //__cplusplus
+
+#ifdef __cplusplus
+extern "C"{
+#endif //__cplusplus
+
+void  rho_conf_Init(const char* szRootPath);
+bool  rho_conf_getBool(const char* szName);
+void  rho_conf_setBool(const char* szName, bool value);
+char* rho_conf_getString(const char* szName);
+void  rho_conf_freeString(char* str);
+void  rho_conf_setString(const char* szName, const char* value);
+void  rho_conf_save();
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 
 #endif //_RHOCONF_H_
