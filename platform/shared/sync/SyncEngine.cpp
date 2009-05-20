@@ -146,14 +146,23 @@ boolean CSyncEngine::doLogin(String name, String password)
     return true;
 }
 
+#ifdef OS_MACOSX
+extern "C" int rho_sync_logged_in_cookies();
+#endif
+
 boolean CSyncEngine::isLoggedIn()
 {
+    //TODO: read cookies from DB and set them for each request
+#ifdef OS_MACOSX
+    return rho_sync_logged_in_cookies() == 0 ? false : true;
+#else
     int nCount = 0;
     DBResult( res , getDB().executeSQL("SELECT count(session) FROM sources") );
     if ( !res.isEnd() )
         nCount = res.getIntByIdx(0);
 
     return nCount > 0;
+#endif
 }
 
 void CSyncEngine::logout()

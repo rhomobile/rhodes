@@ -430,8 +430,9 @@ NSArray *get_all_cookies()
 	NSArray *cookies = [cookieStore cookies];
 	return cookies;
 }
-/*
-int logged_in() {
+
+int rho_sync_logged_in_cookies() 
+{
 	int i,retval = 0;
 	NSArray *cookies;
 	cookies = get_all_cookies();
@@ -441,7 +442,7 @@ int logged_in() {
 		if ([[[cookies objectAtIndex:i] name] isEqualToString:@"rhosync_session"]) retval = 1;
 	}
 	return retval;
-}*/
+}
 
 void rho_net_impl_deleteAllCookies() 
 {
