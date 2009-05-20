@@ -18,6 +18,13 @@
 #endif
 #include "ruby/util.h"
 
+//RHO
+int isCompatibleEncodings( int srcEnc, int nAddEnc)
+{
+    return srcEnc == nAddEnc || srcEnc == 1 && nAddEnc == 0;
+}
+//RHO
+
 static ID id_encoding;
 VALUE rb_cEncoding;
 static VALUE rb_encoding_list;
@@ -639,6 +646,13 @@ rb_enc_compatible(VALUE str1, VALUE str2)
     }
     enc1 = rb_enc_from_index(idx1);
     enc2 = rb_enc_from_index(idx2);
+
+//RHO
+    if ( isCompatibleEncodings(idx1, idx2) )
+        return enc1;
+    if ( isCompatibleEncodings(idx2, idx1) )
+        return enc2;
+//RHO
 
     if (TYPE(str2) == T_STRING && RSTRING_LEN(str2) == 0)
 	return enc1;
