@@ -405,6 +405,12 @@ void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 
     state->data = data;
     state->nDataLen = getStringLenFromValue(data);
+#if defined(OS_WINDOWS)
+	{
+		char* reply = getStringFromValue(state->data);
+		RAWLOG_INFO1("Reply: [%s]\n",reply);
+	}
+#endif
 }
 
 void rho_serve(struct shttpd_arg *arg) {
