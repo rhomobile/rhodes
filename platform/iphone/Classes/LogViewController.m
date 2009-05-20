@@ -7,16 +7,16 @@
 //
 
 #import "LogViewController.h"
-#import "log.h"
+#import "logging/RhoLogConf.h"
 
 @implementation LogViewController
 
 @synthesize actionTarget, onShowLogOptions;
 
 - (void)loadLogText {
-	char* logText = getLogText();	
+	char* logText = rho_logconf_getText();	
 	textView.text = [NSString stringWithCString:logText encoding:[NSString defaultCStringEncoding]];
-	free(logText);
+	rho_logconf_freeString(logText);
 	
 	// commented it out as it crashes somewhere in the sys code
 	//int pos = grtLogTextPos();

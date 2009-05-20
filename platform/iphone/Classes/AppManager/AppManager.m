@@ -16,10 +16,10 @@
 #import "HttpMessage.h"
 #import "Dispatcher.h"
 #import "AppLoader.h"
-#import "config.h"
+#import "common/RhoConf.h"
+#import "logging/RhoLogConf.h"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
-extern void InitRhoLog(const char* szRootPath);
 const char* RhoGetRootPath();
 
 @implementation AppManager
@@ -118,7 +118,7 @@ const char* RhoGetRootPath();
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 #endif	
 	if (replaceFiles) {
-		InitRhoLog(RhoGetRootPath());
+		rho_logconf_Init(RhoGetRootPath());
 #ifndef TARGET_IPHONE_SIMULATOR	
 		config_setString("currentVersion", version);
 		config_save();

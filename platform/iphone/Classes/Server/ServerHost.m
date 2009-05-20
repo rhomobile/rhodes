@@ -19,7 +19,8 @@
 #include "ServerHost.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
-#include "config.h"
+#include "common/RhoConf.h"
+#include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
 #include "JSString.h"
 
@@ -133,12 +134,12 @@ static ServerHost* sharedSH = nil;
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
 
-	char* _url = config_getString("start_path");
+	char* _url = rho_conf_getString("start_path");
 	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	config_freeString(_url);
-	_url = config_getString("options_path");
+	rho_conf_freeString(_url);
+	_url = rho_conf_getString("options_path");
 	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	config_freeString(_url);
+	rho_conf_freeString(_url);
 	
 	DBG(("Start page: %s\n", [homeUrl UTF8String]));
 	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
@@ -181,14 +182,13 @@ static ServerHost* sharedSH = nil;
 	return sqlite3_open([path UTF8String], &database);
 }*/
 
-extern void InitRhoLog(const char* szRootPath);
 extern const char* RhoGetRootPath();
 
 -(void) start {
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
-	InitRhoLog(RhoGetRootPath());
+	rho_logconf_Init(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
 	

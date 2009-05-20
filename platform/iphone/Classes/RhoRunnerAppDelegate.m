@@ -9,7 +9,7 @@
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 #import "AppManager.h"
-#import "config.h"
+#import "common/RhoConf.h"
 
 @implementation RhoRunnerAppDelegate
 
@@ -29,13 +29,13 @@
 	NSString* location = NULL;
 	
 	//try to restore previous location
-	if ( config_getBool("KeepTrackOfLastVisitedPage") ) {
-		char* lastVisitedPage = config_getString("LastVisitedPage");
+	if ( rho_conf_getBool("KeepTrackOfLastVisitedPage") ) {
+		char* lastVisitedPage = rho_conf_getString("LastVisitedPage");
 		if (lastVisitedPage && strlen(lastVisitedPage)>0) {
 			location = [NSString stringWithCString:lastVisitedPage
 										  encoding:[NSString defaultCStringEncoding]];
 		}
-		config_freeString(lastVisitedPage);
+		rho_conf_freeString(lastVisitedPage);
 	} 
 	
 	//if there is no previous location navigate to the default start page 
