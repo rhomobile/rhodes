@@ -1,7 +1,7 @@
 #import "WebViewController.h"
 #import "rhoruby.h"
 //#import "UniversalLock.h"
-#import "config.h"
+#import "common/RhoConf.h"
 #import "sync/syncthread.h"
 #import "JSString.h"
 
@@ -17,9 +17,9 @@ void set_current_location(CFStringRef location) {
 	printf("Current location: %s\n",currentLocation);
 	//UNLOCK(current_location);
 
-	if (config_getBool("KeepTrackOfLastVisitedPage")) {
-		config_setString("LastVisitedPage",currentLocation);
-		config_save();
+	if (rho_conf_getBool("KeepTrackOfLastVisitedPage")) {
+		rho_conf_setString("LastVisitedPage",currentLocation);
+		rho_conf_save();
 	}
 	
 }

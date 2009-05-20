@@ -7,7 +7,7 @@
 //
 
 #import "LogOptionsController.h"
-#import "log.h"
+#import "logging/RhoLogConf.h"
 
 #define kUITextViewHeight 70.0
 #define kUILabelHeight	  20.0
@@ -77,14 +77,14 @@
 
 	char* categoriesText;
 	if (categories) {
-		categoriesText = getLogEnabledCategories();
+		categoriesText = rho_logconf_getEnabledCategories();
 		textViewEnabledCategories = textView;
 	} else {
-		categoriesText = getLogDisabledCategories();
+		categoriesText = rho_logconf_getDisabledCategories();
 		textViewDisabledCategories = textView;
 	}
 	textView.text = [NSString stringWithCString:categoriesText encoding:[NSString defaultCStringEncoding]];
-	free(categoriesText);
+	rho_logconf_freeString(categoriesText);
 
 	return kUITextViewHeight;
 }
@@ -123,7 +123,7 @@
 	pickerView.delegate = self;
 	pickerView.showsSelectionIndicator = YES;
 	
-	selectedRow = getLogSeverity();
+	selectedRow = rho_logconf_getSeverity();
 	[pickerView selectRow:selectedRow inComponent:0 animated:NO];
 	
 	[self.view addSubview:pickerView];
@@ -156,12 +156,12 @@
 {
 	NSString* text = textViewEnabledCategories.text;
 	const char* categories = [text cStringUsingEncoding:[NSString defaultCStringEncoding]]; 	
-	setLogEnabledCategories(categories);
+	rho_logconf_setEnabledCategories(categories);
 	text = textViewDisabledCategories.text;
 	categories = [text cStringUsingEncoding:[NSString defaultCStringEncoding]]; 	
-	setLogDisabledCategories(categories);
-	setLogSeveity(selectedRow);
-	saveLogSettings();
+	rho_logconf_setDisabledCategories(categories);
+	rho_logconf_setSeveity(selectedRow);
+	rho_logconf_saveSettings();
 	
 	[self dismissModalViewControllerAnimated:YES]; 
 	self.view.hidden = YES;
