@@ -186,6 +186,11 @@ extern "C" void webview_navigate(char* url) {
 	_AtlModule.DoViewNavigate(url);
 }
 
+extern "C" char* webview_execute_js(char* js) {
+//TODO: webview_execute_js
+    return "";
+}
+
 extern "C" char* get_current_location() {
 	return _AtlModule.GetCurrentLocation();
 }
