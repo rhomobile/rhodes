@@ -9,7 +9,7 @@
  */
 
 #include "defs.h"
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "shttpd"
