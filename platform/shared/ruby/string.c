@@ -15,6 +15,10 @@
 #include "ruby/re.h"
 #include "ruby/encoding.h"
 
+//RHO
+int isCompatibleEncodings( int srcEnc, int nAddEnc);
+//RHO
+
 #define BEG(no) regs->beg[no]
 #define END(no) regs->end[no]
 
@@ -1692,10 +1696,12 @@ rb_enc_cr_str_buf_cat(VALUE str, const char *ptr, long len,
     if (str_encindex != ptr_encindex &&
         str_cr != ENC_CODERANGE_7BIT &&
         ptr_cr != ENC_CODERANGE_7BIT) {
+        if ( !isCompatibleEncodings(str_encindex,ptr_encindex) ) {
       incompatible:
         rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
             rb_enc_name(rb_enc_from_index(str_encindex)),
             rb_enc_name(rb_enc_from_index(ptr_encindex)));
+        }
     }
 
     if (str_cr == ENC_CODERANGE_UNKNOWN) {
@@ -3373,9 +3379,11 @@ rb_str_sub_bang(int argc, VALUE *argv, VALUE str)
             if (coderange_scan(RSTRING_PTR(str), beg0, str_enc) != ENC_CODERANGE_7BIT ||
                 coderange_scan(RSTRING_PTR(str)+end0,
 			       RSTRING_LEN(str)-end0, str_enc) != ENC_CODERANGE_7BIT) {
-                rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
-			 rb_enc_name(str_enc),
-			 rb_enc_name(STR_ENC_GET(repl)));
+                if ( !isCompatibleEncodings(str_enc,STR_ENC_GET(repl)) ) {
+                    rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
+			            rb_enc_name(str_enc),
+			            rb_enc_name(STR_ENC_GET(repl)));
+                }
             }
             enc = STR_ENC_GET(repl);
         }
