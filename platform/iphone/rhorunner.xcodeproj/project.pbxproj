@@ -26,15 +26,14 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
+		46E9DE330FC3577B00726D6B /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 46E9DE320FC3577B00726D6B /* JSString.m */; };
 		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
-		F52181160F96B14B00B7F974 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52181140F96B14B00B7F974 /* log.cpp */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
 		F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = F547F2870F9945D2007C2CD2 /* LogOptionsController.m */; };
-		F547F57E0F9E45EA007C2CD2 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F547F57D0F9E45EA007C2CD2 /* config.cpp */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
@@ -148,6 +147,8 @@
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
+		46E9DE310FC3577B00726D6B /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../JSString.h; sourceTree = "<group>"; };
+		46E9DE320FC3577B00726D6B /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = ../JSString.m; sourceTree = "<group>"; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
 		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
@@ -160,13 +161,9 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
 		F52181120F96B13500B7F974 /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
-		F52181140F96B14B00B7F974 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = Utils/log.cpp; sourceTree = "<group>"; };
-		F52181150F96B14B00B7F974 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = Utils/log.h; sourceTree = "<group>"; };
 		F547F1DA0F990084007C2CD2 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F547F2860F9945D2007C2CD2 /* LogOptionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOptionsController.h; sourceTree = "<group>"; };
 		F547F2870F9945D2007C2CD2 /* LogOptionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOptionsController.m; sourceTree = "<group>"; };
-		F547F57C0F9E45EA007C2CD2 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		F547F57D0F9E45EA007C2CD2 /* config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cpp; sourceTree = "<group>"; };
 		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
 		F563D38E0EA6BC2E0062DA57 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -212,6 +209,8 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
+				46E9DE310FC3577B00726D6B /* JSString.h */,
+				46E9DE320FC3577B00726D6B /* JSString.m */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
 				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
@@ -368,8 +367,6 @@
 		F547F3D10F9CEB05007C2CD2 /* Log */ = {
 			isa = PBXGroup;
 			children = (
-				F52181140F96B14B00B7F974 /* log.cpp */,
-				F52181150F96B14B00B7F974 /* log.h */,
 				F52181110F96B13500B7F974 /* LogViewController.h */,
 				F52181120F96B13500B7F974 /* LogViewController.m */,
 				F547F2860F9945D2007C2CD2 /* LogOptionsController.h */,
@@ -408,8 +405,6 @@
 			children = (
 				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
 				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
-				F547F57C0F9E45EA007C2CD2 /* config.h */,
-				F547F57D0F9E45EA007C2CD2 /* config.cpp */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -610,13 +605,12 @@
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
 				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
 				F52181130F96B13500B7F974 /* LogViewController.m in Sources */,
-				F52181160F96B14B00B7F974 /* log.cpp in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
-				F547F57E0F9E45EA007C2CD2 /* config.cpp in Sources */,
 				5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */,
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
+				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

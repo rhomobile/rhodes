@@ -42,7 +42,7 @@ public:
     void addSyncCommand(ESyncCommands curCommand){ m_curCommand = curCommand; stopWait(); }
 	virtual void run();
 
-	void setPollInterval(int nInterval){ m_nPollInterval = nInterval; addSyncCommand(scChangePollInterval); }
+	void setPollInterval(int nInterval);
 private:
     CSyncThread(common::IRhoClassFactory* factory);
 

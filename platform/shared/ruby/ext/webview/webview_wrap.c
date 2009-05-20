@@ -1551,6 +1551,8 @@ extern void webview_navigate(char* url);
 #define navigate webview_navigate
 extern char* webview_current_location();
 #define current_location webview_current_location
+extern char* execute_js(char* js);
+#define execute_js webview_execute_js
 
 
 SWIGINTERN swig_type_info*
@@ -1678,6 +1680,33 @@ _wrap_current_location(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_execute_js(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "execute_js" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)execute_js(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -1947,5 +1976,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "refresh", _wrap_refresh, -1);
   rb_define_module_function(mWebView, "navigate", _wrap_navigate, -1);
   rb_define_module_function(mWebView, "current_location", _wrap_current_location, -1);
+  rb_define_module_function(mWebView, "execute_js", _wrap_execute_js, -1);
 }
 

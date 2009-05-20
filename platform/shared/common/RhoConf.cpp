@@ -143,32 +143,56 @@ bool   RhoSettings::isExist(const char* szName){
 
 extern "C" {
 	
-void InitRhoConf(const char* szRootPath){
+void rho_conf_Init(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
 }
 
-	char* str_assign_ex( char* data, int len) 
+bool rho_conf_getBool(const char* szName) {
+	return RHOCONF().getBool(szName);
+}
+
+void rho_conf_setBool(const char* szName, bool value) {
+	RHOCONF().setBool(szName,value);
+}
+
+char* rho_conf_getString(const char* szName) {
+	return rho_strdup(RHOCONF().getString(szName).c_str());
+}
+
+void rho_conf_freeString(char* str) {
+	rho_free(str);
+}
+
+void rho_conf_setString(const char* szName, const char* value){
+	RHOCONF().setString(szName,value);
+}
+
+void rho_conf_save() {
+	RHOCONF().saveToFile();
+}
+
+char* str_assign_ex( char* data, int len) 
+{
+	if (data) 
 	{
-		if (data) 
-		{
-			char* a = (char*)malloc(len+1);
-			strncpy(a,data,len);
-			a[len] = 0;
-			return a;
-		}
-		return 0;
+		char* a = (char*)malloc(len+1);
+		strncpy(a,data,len);
+		a[len] = 0;
+		return a;
 	}
-	
-	char* str_assign(char* data) 
+	return 0;
+}
+
+char* str_assign(char* data) 
+{
+	if (data) 
 	{
-		if (data) 
-		{
-			int len = strlen(data);
-			return str_assign_ex(data,len);
-		}
-		return 0;
+		int len = strlen(data);
+		return str_assign_ex(data,len);
 	}
+	return 0;
+}
 	
 }

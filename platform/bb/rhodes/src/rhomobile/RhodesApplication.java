@@ -214,7 +214,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private final String _httpRoot = "http://localhost:8080/";
 
-    private final boolean _isFullBrowser = false;
+    private boolean _isFullBrowser = false;
     
     private static RhodesApplication _instance;
 
@@ -361,8 +361,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         if ( ver.nMajor == 4 && ver.nMinor == 6 )
         {
 	        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-	        //_renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-        	//_isFullBrowser = true;
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
+        	_isFullBrowser = true;
         }
         
         if(!restoreLocation()) {

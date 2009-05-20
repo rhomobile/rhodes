@@ -4,9 +4,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "ServerHost.h"
+#include "logging/RhoLog.h"
 
 //void runAllLogTests();
-extern "C" void InitRhoLog(const char* szRootPath);
 extern "C" const char* RhoGetRootPath();
 
 #if defined(OS_WINDOWS)
@@ -54,7 +54,7 @@ public :
 		}
 
 		//
-		InitRhoLog(RhoGetRootPath());
+		rho_logconf_Init(RhoGetRootPath());
 		//	runAllLogTests();
 
 		return __super::ParseCommandLine(lpCmdLine, pnRetCode);
@@ -184,6 +184,11 @@ extern "C" void perform_webview_refresh() {
 
 extern "C" void webview_navigate(char* url) {
 	_AtlModule.DoViewNavigate(url);
+}
+
+extern "C" char* webview_execute_js(char* js) {
+//TODO: webview_execute_js
+    return "";
 }
 
 extern "C" char* get_current_location() {

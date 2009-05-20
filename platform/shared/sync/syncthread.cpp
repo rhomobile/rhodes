@@ -83,6 +83,15 @@ CSyncThread::~CSyncThread(void)
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
+void CSyncThread::setPollInterval(int nInterval)
+{ 
+    m_nPollInterval = nInterval; 
+    if ( m_nPollInterval == 0 )
+        m_oSyncEngine.stopSync();
+
+    addSyncCommand(scChangePollInterval); 
+}
+
 };
 };
 
