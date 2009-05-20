@@ -13,7 +13,7 @@
 #define RHO_MEMORY__
 #include "ruby.h"
 #include "debug.h"
-#include <sqlite3.h>
+//#include <sqlite3.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -42,10 +42,10 @@ main(int argc, char **argv)
     RhoRubyStop();
 }
 
-const char* RhoGetRootPath()
+/*const char* RhoGetRootPath()
 {
     return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
-}
+}*/
 
 #else 
 #include "vm_core.h"
@@ -105,14 +105,14 @@ __rho_compile( VALUE obj, VALUE src)
 
     return result;
 }
-
+/*
 const char* RhoGetRootPath()
 {
     return 0;
-}
+}*/
 
 #endif //!COMPILER
-
+/*
 void setup_delete_db_callback(sqlite3 * db) {
 }
 
@@ -123,7 +123,7 @@ void unlock_sync_mutex() {
 }
 
 void dosync() {
-}
+}*/
 
 void Init_GeoLocation(){
 }
@@ -138,6 +138,10 @@ void Init_Camera(){
 }
 
 void Init_WebView(){
+}
+
+void Init_sqlite3_api()
+{
 }
 
 VALUE has_network(){
