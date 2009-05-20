@@ -18,7 +18,7 @@
 #include "../stat/stat.h"
 #endif
 
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
@@ -61,8 +61,10 @@ void RhoRubyStart()
 #endif
 
 #if defined(DEBUG)
-		enable_gc_profile();
+		//enable_gc_profile();
 #endif
+        //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
+
 		ruby_init_loadpath(RhoGetRootPath());
 		Init_strscan();
 		Init_sqlite3_api();

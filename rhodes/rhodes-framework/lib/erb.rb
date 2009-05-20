@@ -720,7 +720,7 @@ class ERB
     compiler.insert_cmd = "#{eoutvar}.concat"
 
     cmd = []
-    cmd.push "#{eoutvar} = ''"
+    cmd.push "#{eoutvar} = ''; #{eoutvar}.force_encoding('utf-8')"
     
     compiler.pre_cmd = cmd
 

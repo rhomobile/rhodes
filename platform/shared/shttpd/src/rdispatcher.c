@@ -4,7 +4,7 @@
 #include "llist.h"
 #include "rhoruby.h"
 
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 
 #include "common/RhoMutexLock.h"
 

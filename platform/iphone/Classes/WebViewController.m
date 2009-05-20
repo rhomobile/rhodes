@@ -1,8 +1,9 @@
 #import "WebViewController.h"
 #import "rhoruby.h"
 //#import "UniversalLock.h"
-#import "config.h"
+#import "common/RhoConf.h"
 #import "sync/syncthread.h"
+#import "JSString.h"
 
 static char currentLocation[4096] = "";
 
@@ -16,9 +17,9 @@ void set_current_location(CFStringRef location) {
 	printf("Current location: %s\n",currentLocation);
 	//UNLOCK(current_location);
 
-	if (config_getBool("KeepTrackOfLastVisitedPage")) {
-		config_setString("LastVisitedPage",currentLocation);
-		config_save();
+	if (rho_conf_getBool("KeepTrackOfLastVisitedPage")) {
+		rho_conf_setString("LastVisitedPage",currentLocation);
+		rho_conf_save();
 	}
 	
 }
@@ -62,6 +63,11 @@ NSString *loadingText = @"Loading...";
 -(void)navigate:(NSString*)url {
     printf("Navigating to the specifyed URL\n");
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
+}
+
+-(void)executeJs:(JSString*)js {
+    NSLog(@"Executing JS: %@\n", js.inputJs);
+	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
 }
 
 -(void)navigateRedirect:(NSString*)url {

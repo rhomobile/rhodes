@@ -19,8 +19,10 @@
 #include "ServerHost.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
-#include "config.h"
+#include "common/RhoConf.h"
+#include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
+#include "JSString.h"
 
 extern char* get_current_location();
 
@@ -63,7 +65,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -88,6 +90,12 @@ static ServerHost* sharedSH = nil;
 - (void)navigateTo:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
 		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:url waitUntilDone:NO];
+	}
+}
+
+- (void)executeJs:(JSString*) js {
+	if(actionTarget && [actionTarget respondsToSelector:onExecuteJs]) {
+		[actionTarget performSelectorOnMainThread:onExecuteJs withObject:js waitUntilDone:YES];
 	}
 }
 
@@ -126,12 +134,12 @@ static ServerHost* sharedSH = nil;
 	DBG(("Initializing ruby\n"));
 	RhoRubyStart();
 
-	char* _url = config_getString("start_path");
+	char* _url = rho_conf_getString("start_path");
 	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	config_freeString(_url);
-	_url = config_getString("options_path");
+	rho_conf_freeString(_url);
+	_url = rho_conf_getString("options_path");
 	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	config_freeString(_url);
+	rho_conf_freeString(_url);
 	
 	DBG(("Start page: %s\n", [homeUrl UTF8String]));
 	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
@@ -174,14 +182,13 @@ static ServerHost* sharedSH = nil;
 	return sqlite3_open([path UTF8String], &database);
 }*/
 
-extern void InitRhoLog(const char* szRootPath);
 extern const char* RhoGetRootPath();
 
 -(void) start {
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
-	InitRhoLog(RhoGetRootPath());
+	rho_logconf_Init(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
 	
@@ -260,6 +267,16 @@ void webview_refresh() {
 
 void webview_navigate(char* url) {
 	[[ServerHost sharedInstance] navigateTo:[NSString stringWithCString:url]];
+}
+
+char* webview_execute_js(char* js) {
+	char * retval;
+	JSString *javascript = [[[JSString alloc] init] autorelease];
+	javascript.inputJs = [NSString stringWithUTF8String:js];
+	[[ServerHost sharedInstance] executeJs:javascript];
+	// TBD: Does ruby GC pick this up?
+	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	return retval;
 }
 
 void perform_webview_refresh() {
