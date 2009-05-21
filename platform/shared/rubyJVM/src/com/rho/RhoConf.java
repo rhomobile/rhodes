@@ -63,6 +63,10 @@ public class RhoConf {
 			if (tok.length() == 0) {
 				continue;
 			}
+			
+			if ( tok.length() > 0 && tok.charAt(0) == '#' )
+				continue;
+			
 			int i = tok.indexOf('=');
 			String name;
 			String value;
@@ -163,8 +167,14 @@ public class RhoConf {
     
     private void loadFromConfFromJar()
     {
-		java.io.InputStream fstream = getClass().getResourceAsStream(
+		java.io.InputStream fstream = null;
+		try {
+			fstream = RhoClassFactory.createFile().getResourceAsStream(getClass(),
 				 "/" + CONF_FILENAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if ( fstream == null )
 			return;
 		 

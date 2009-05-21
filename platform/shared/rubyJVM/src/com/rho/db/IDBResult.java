@@ -18,4 +18,5 @@ public interface IDBResult {
 	public abstract int getInt(int nItem, String colname);
 	public abstract String getString(int nItem, String colname);
 
+	public abstract void close();//close cursor and release any locks
 }

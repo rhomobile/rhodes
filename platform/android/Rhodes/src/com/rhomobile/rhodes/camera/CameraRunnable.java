@@ -1,9 +1,9 @@
 package com.rhomobile.rhodes.camera;
 
-import java.net.HttpURLConnection;
+import java.io.IOException;
 
-import com.rho.IHttpConnection;
-import com.rhomobile.rhodes.MyRhoConnection;
+import com.rho.net.IHttpConnection;
+import com.rhomobile.rhodes.AndroidHttpConnection;
 import com.rhomobile.rhodes.http.HttpHeader;
 
 public class CameraRunnable implements Runnable {
@@ -21,17 +21,17 @@ public class CameraRunnable implements Runnable {
 	}
 
 	public void run() {
-		HttpURLConnection connection = null;
+		IHttpConnection connection = null;
 
 		HttpHeader headers = new HttpHeader();
 		headers.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		
 		try {
 			if (loadImgUrl != null) {
-				connection = MyRhoConnection.makeConnection(loadUrl, headers, ("status=ok&image_uri="
+				connection = AndroidHttpConnection.makeConnection(loadUrl, headers, ("status=ok&image_uri="
 						+ loadImgUrl).getBytes());
 			} else {
-				connection = MyRhoConnection.makeConnection(loadUrl, headers, ("status="
+				connection = AndroidHttpConnection.makeConnection(loadUrl, headers, ("status="
 						+ this.errorStatus + "&message=" + this.errorMessage).getBytes());
 			}
 			int code = connection.getResponseCode();
@@ -42,7 +42,11 @@ public class CameraRunnable implements Runnable {
 			System.out.println("Error posting data: " + e.getMessage());
 		} finally {
 			if (connection != null)
-				connection.disconnect();
+				try {
+					connection.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 
 	}

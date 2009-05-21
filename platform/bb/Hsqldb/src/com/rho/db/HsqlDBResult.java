@@ -159,5 +159,10 @@ public class HsqlDBResult implements IDBResult
 		
 		return -1;
 	}
+
+	public void close(){
+	  //TODO: Add lock to this class
+        //FIXME: Here this lock must be released
+	}
 	
 }
