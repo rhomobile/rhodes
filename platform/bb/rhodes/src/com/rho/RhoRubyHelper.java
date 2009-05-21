@@ -19,4 +19,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		return new xruby.ServeME.main();
 	}
 
+	public String getPlatform() {
+		return "Blackberry";
+	}
 }

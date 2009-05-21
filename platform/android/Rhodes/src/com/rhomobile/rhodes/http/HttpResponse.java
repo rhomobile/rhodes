@@ -83,6 +83,9 @@ public class HttpResponse extends HttpHeader {
 
 	private static final int IO_BUFFER_SIZE = 4 * 1024;
 
+	final static byte[] EOF = { (byte) '0', (byte) ';', (byte) '\015',
+		(byte) '\012', (byte) '\015', (byte) '\012' };
+
 	public static void copy(InputStream in, OutputStream out)
 			throws IOException {
 		byte[] b = new byte[IO_BUFFER_SIZE];
@@ -217,8 +220,12 @@ public class HttpResponse extends HttpHeader {
 			writer.write(reason);
 			writer.write(CRLF);
 
-			super.write(writer);
-			writer.flush();
+			super.write(writer); 
+			try { 
+				writer.flush();
+			}catch(Exception e) {
+				Log.e(this.getClass().getSimpleName(), e.getMessage());
+			}
 		}
 
 		// Handle HEAD
@@ -261,10 +268,15 @@ public class HttpResponse extends HttpHeader {
 	}
 
 	void flush() throws IOException {
-		if (outputState == 2)
-			writer.flush();
-		else
-			httpOut.flush();
+		try {
+			if (outputState == 2)
+				writer.flush();
+			else
+				httpOut.flush();
+		}
+		catch (Exception e ){
+			Log.e("HttpResponse", e.getMessage());
+		}
 	}
 
 	/**

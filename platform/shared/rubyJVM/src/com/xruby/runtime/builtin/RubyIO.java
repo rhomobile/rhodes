@@ -9,6 +9,7 @@ import java.io.IOException;
 //import java.nio.channels.Pipe;
 import j2me.util.Iterator;
 
+import com.rho.RhoClassFactory;
 import com.xruby.runtime.lang.GlobalVariables;
 import com.xruby.runtime.lang.RubyAPI;
 import com.xruby.runtime.lang.RubyBasic;
@@ -285,7 +286,13 @@ public class RubyIO extends RubyBasic {
 	}
 
     static RubyValue loadFromResources(String fileName){
-    	InputStream stream = fileName.getClass().getResourceAsStream("/"+fileName);
+    	InputStream stream = null;
+		try {
+			stream = RhoClassFactory.createFile().getResourceAsStream(fileName.getClass(), "/"+fileName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
     	if ( stream == null )
     		return null;
     	

@@ -93,9 +93,14 @@ public class SyncObject {
 	public int insertIntoDatabase() throws DBException{
 		Object[] values = { new Integer(_primaryKey),_attrib,new Integer(_sourceId),_object,_value,_updateType,_token,_type};
 		
-		SyncUtil.adapter.executeSQL("INSERT INTO object_values (id, attrib, source_id, object, value,"+
+		IDBResult result = null;
+		try {
+			result = SyncUtil.adapter.executeSQL("INSERT INTO object_values (id, attrib, source_id, object, value,"+
 				 "update_type,token,attrib_type) VALUES(?,?,?,?,?,?,?,?)", values);
-		
+		}finally{
+			if ( result != null )
+				result.close();
+		}
 		//insertIntoTable(SyncUtil
 		//		.createString(SyncConstants.OBJECTS_TABLE), this
 		//		.getHashFromValues());
@@ -104,7 +109,13 @@ public class SyncObject {
 
 	public void deleteFromDatabase() throws DBException{
 		Object[] values = {new Integer(_primaryKey)};
-		SyncUtil.adapter.executeSQL("DELETE FROM object_values where id=?", values);
+		IDBResult result = null;
+		try {
+			result = SyncUtil.adapter.executeSQL("DELETE FROM object_values where id=?", values);
+		}finally{
+			if ( result != null )
+				result.close();
+		}
 		/*RubyHash hash = SyncUtil.createHash();
 		hash.add(SyncUtil.createString("id"), SyncUtil
 				.createInteger(this.getPrimaryKey()));
@@ -120,7 +131,13 @@ public class SyncObject {
 	public static void deleteFromDatabaseBySource(int id) {
 		try {
 			Object[] values = {new Integer(id)};
-			SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=?", values);
+			IDBResult result = null;
+			try {
+				result = SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=?", values);
+			}finally{
+				if ( result != null )
+					result.close();
+			}
 		}catch (DBException e) {
 			LOG.ERROR("There was an error delete the record", e);
 		}

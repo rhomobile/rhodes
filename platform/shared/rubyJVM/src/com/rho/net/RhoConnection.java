@@ -642,11 +642,11 @@ public class RhoConnection implements IHttpConnection {
 		return true;
 	}
 	
-	protected void processRequest()  throws IOException{
+	public void processRequest()  throws IOException{
 		if (!requestProcessed) {
 			String strErr = "";
 			
-			if ( this.method == "GET" && httpGetFile() ){
+			if ( /*this.method == "GET" &&*/ httpGetFile() ){
 				
 			}else if ( dispatch() ){
 			}else{

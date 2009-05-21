@@ -453,4 +453,11 @@ public class Jsr75File implements SimpleFile
             }
         }
     }
+
+    public InputStream getResourceAsStream(Class fromClass, String path){
+	 if ( fromClass == null )
+          return null;
+
+       return fromClass.getResourceAsStream(path);
+    }
 }
