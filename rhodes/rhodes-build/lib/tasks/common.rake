@@ -41,8 +41,8 @@ namespace "check" do
     puts "-------------------------------"
     Rake::Task["check:android"].invoke
     puts "-------------------------------"
-    Rake::Task["check:symbian"].invoke
-    puts "-------------------------------"
+    # Rake::Task["check:symbian"].invoke
+    #     puts "-------------------------------"
   end
 end
 
