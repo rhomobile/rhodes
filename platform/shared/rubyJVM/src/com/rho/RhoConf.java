@@ -76,6 +76,10 @@ public class RhoConf {
 			name = name.trim();
 			value = value.trim();
 			
+			if (value.startsWith("\'") && value.endsWith("\'")) {
+				value = value.substring(1,value.length()-1);
+			}
+				
 			setPropertyByName(name,value);
 		}
 	}
@@ -93,9 +97,9 @@ public class RhoConf {
 			String value = (String)enValues.nextElement();
 			
             strData += key;
-            strData += "=";
+            strData += "=\'";
             strData += value;
-            strData += "\n";
+            strData += "\'\n";
 		}
 		
     	return strData;
