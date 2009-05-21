@@ -62,16 +62,21 @@ public class DBAdapter extends RubyBasic {
     {
     	RubyArray res = new RubyArray(); 
     	try{
-    		IDBResult rows = executeSQL(v.toStr(), null);
-    		RubyString[] colNames = getColNames(rows);
-    		
-    		for( int i = 0; i < rows.getCount(); i++ )
-    		{
-    			RubyHash row = ObjectFactory.createHash();
-    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-    				row.add( colNames[nCol], rows.getRubyValueByIdx(i, nCol) );
-    			
-    			res.add( row );
+    		IDBResult rows = null;
+    		try {
+	    		rows = executeSQL(v.toStr(), null);
+	    		RubyString[] colNames = getColNames(rows);
+	    		
+	    		for( int i = 0; i < rows.getCount(); i++ )
+	    		{
+	    			RubyHash row = ObjectFactory.createHash();
+	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+	    				row.add( colNames[nCol], rows.getRubyValueByIdx(i, nCol) );
+	    			
+	    			res.add( row );
+	    		}
+    		}finally {
+    			rows.close(); //release locks
     		}
     	}catch(DBException exc){
     		LOG.ERROR("executeSQL failed.", exc);
@@ -211,7 +216,10 @@ public class DBAdapter extends RubyBasic {
         byte buf[] = new byte[20];
 		int len = file.read(0, buf);
 		file.close();
-		return new String(buf,0,len);
+		if ( len > 0 )
+			return new String(buf,0,len);
+		else
+			return null;
 	}
 	
 	void writeDBVersion(String ver)throws Exception

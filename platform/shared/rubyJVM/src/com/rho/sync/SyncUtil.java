@@ -116,6 +116,11 @@ public class SyncUtil {
 	//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
 									
 									syncObj.insertIntoDatabase();
+									try {
+										Thread.currentThread().sleep(1000L);
+									}catch(Exception e){
+									}
+									
 									inserted++;
 								} else if (dbOp.equalsIgnoreCase("delete")) {
 									syncObj.deleteFromDatabase();
@@ -153,11 +158,15 @@ public class SyncUtil {
 			 source.get_token().equals(token)) {
 			// Delete non-confirmed records
 
+			IDBResult result = null;
 			try {
 				Object[] values = {new Integer(source.get_sourceId()), token};
-				SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=? and token=?", values);
+				result = SyncUtil.adapter.executeSQL("DELETE FROM object_values where source_id=? and token=?", values);
 			}catch (DBException e) {
 				LOG.ERROR("There was an error delete object_values record by token", e);
+			}finally{
+				if ( result != null )
+					result.close();
 			}
 			
 			/*RubyHash where = createHash();
@@ -170,11 +179,15 @@ public class SyncUtil {
 		{
 			source.set_token(token);
 			
+			IDBResult result = null;
 			try {
 				Object[] values = {token, new Integer(source.get_sourceId())};
-				adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
+				result = adapter.executeSQL("UPDATE sources SET token=? where source_id=?", values);
 			}catch (DBException e) {
 				LOG.ERROR("There was an error update token in sources record", e);
+			}finally{
+				if ( result != null )
+					result.close();
 			}
 			
 			/*RubyHash values = SyncUtil.createHash();
@@ -198,14 +211,19 @@ public class SyncUtil {
 	 */
 	private static void updateSourceSyncStatus(SyncSource source, int inserted,
 			int deleted, long duration, int success) {
+		
+		IDBResult result = null;
 		try {
 			long now = System.currentTimeMillis() / 1000;
 			Object[] values = {new Long(now), new Integer(inserted), new Integer(deleted), new Long(duration), new Integer(success),
 					new Integer(source.get_sourceId()) };
-			SyncUtil.adapter.executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?,"+
+			result = SyncUtil.adapter.executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?,"+
 					 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", values);
 		}catch (DBException e) {
 			LOG.ERROR("There was an error update token in sources record", e);
+		}finally{
+			if ( result != null )
+				result.close();
 		}
 		
 		/*RubyHash values = SyncUtil.createHash();
@@ -279,17 +297,22 @@ public class SyncUtil {
 		RubyArray rows = (RubyArray) adapter.selectFromTable(arr);*/
 		
 		ArrayList results = new ArrayList();
-		IDBResult rows;
-		
+		IDBResult rows = null;
+		ArrayList objects = null;
 		try {
-			Object[] values = { new Integer(source.get_sourceId()), type };
-			rows = SyncUtil.adapter.executeSQL("SELECT * FROM object_values WHERE source_id=? AND update_type=?", values);
-		}catch (DBException e) {
-			LOG.ERROR("There was an error update token in sources record", e);
-			return results;
-		}
+			try {
+				Object[] values = { new Integer(source.get_sourceId()), type };
+				rows = SyncUtil.adapter.executeSQL("SELECT * FROM object_values WHERE source_id=? AND update_type=?", values);
+			}catch (DBException e) {
+				LOG.ERROR("There was an error update token in sources record", e);
+				return results;
+			}
 		
-		ArrayList objects = getSyncObjectList(rows);
+			objects = getSyncObjectList(rows);
+		}finally{
+			if ( rows != null )
+				rows.close();
+		}
 		LOG.INFO("Found " + objects.size() + " records for " + type	+ " processing...");
 
 		String operation = null;
@@ -326,11 +349,15 @@ public class SyncUtil {
 	}
 
 	public static void removeOpListFromDatabase(String type, SyncSource source) {
+		IDBResult result = null;
 		try {
 			Object[] values = { type, new Integer(source.get_sourceId()) };
-			SyncUtil.adapter.executeSQL("DELETE FROM object_values WHERE update_type=? and source_id=?", values);
+			result = SyncUtil.adapter.executeSQL("DELETE FROM object_values WHERE update_type=? and source_id=?", values);
 		}catch (DBException e) {
 			LOG.ERROR("There was an error update token in sources record", e);
+		}finally{
+			if ( result != null )
+				result.close();
 		}
 		
 		/*RubyHash where = createHash();
@@ -351,13 +378,22 @@ public class SyncUtil {
 		String askType = "ask";
 		String params = "";
 		try {
-			Object[] values = { new Integer(source.get_sourceId()), askType };
-			IDBResult rows = SyncUtil.adapter.executeSQL(
-					"SELECT value FROM object_values WHERE source_id=? AND update_type=?", values);
 			
-			if ( rows.getCount() > 0 ){
-				params = rows.getStringByIdx(0,0);
-				removeOpListFromDatabase(askType, source);
+			IDBResult rows = null;
+			try
+			{
+				Object[] values = { new Integer(source.get_sourceId()), askType };
+				rows = SyncUtil.adapter.executeSQL(
+						"SELECT value FROM object_values WHERE source_id=? AND update_type=?", values);
+			
+				if ( rows.getCount() > 0 ){
+					params = rows.getStringByIdx(0,0);
+					removeOpListFromDatabase(askType, source);
+				}
+			}
+			finally {
+				if ( rows != null )
+					rows.close();
 			}
 			
 		}catch (DBException e) {
@@ -495,60 +531,70 @@ public class SyncUtil {
 	 */
 	public static int processLocalChanges(SyncThread thread) {
 		IDBResult sources = SyncUtil.getSourceList();
-
-		String client_id = null;
-		int nStartSrc = get_start_source(sources);
-		SyncFetchResult syncResult = new SyncFetchResult();
 		
-		for (int i = nStartSrc; i < sources.getCount() && !thread.isStop(); i++) 
-		{
-			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
-			int success = 0;
+		try {
+			String client_id = null;
+			int nStartSrc = get_start_source(sources);
+			SyncFetchResult syncResult = new SyncFetchResult();
 			
-			if ( !syncResult.stopSync ){
-				SyncSource current = new SyncSource(sources, i);
-	
-				if ( current.get_sourceUrl().length() == 0 )
-					continue;
+			for (int i = nStartSrc; i < sources.getCount() && !thread.isStop(); i++) 
+			{
+				int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
+				int success = 0;
 				
-				if (client_id == null)
-					client_id = get_client_id(current);
-	
-				if (thread.isStop())
-					break;
-	
-				LOG.INFO("URL: " + current.get_sourceUrl());
-				success += processOpList(current, "create", client_id);
-				if (thread.isStop())
-					break;
-				success += processOpList(current, "update", client_id);
-				if (thread.isStop())
-					break;
-				success += processOpList(current, "delete", client_id);
-				if (thread.isStop())
-					break;
-	
-				if (success > 0) {
-					LOG.ERROR("Remote update failed, not continuing with sync...");
-				} else {
-					String askParams = SyncUtil.getParamsForSource(current);
-					syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams, thread);
-					LOG.INFO("Successfully processed " + syncResult.available
-							+ " records...");
-					if (SyncConstants.DEBUG) {
-						IDBResult objects = SyncUtil.getObjectValueList(current.get_sourceId());
-						SyncUtil.printResults(objects);
-					}
+				if ( !syncResult.stopSync ){
+					SyncSource current = new SyncSource(sources, i);
+		
+					if ( current.get_sourceUrl().length() == 0 )
+						continue;
 					
-					success = syncResult.available; 
+					if (client_id == null || "".equals(client_id))
+						client_id = get_client_id(current);
+		
+					if (thread.isStop())
+						break;
+		
+					LOG.INFO("URL: " + current.get_sourceUrl());
+					success += processOpList(current, "create", client_id);
+					if (thread.isStop())
+						break;
+					success += processOpList(current, "update", client_id);
+					if (thread.isStop())
+						break;
+					success += processOpList(current, "delete", client_id);
+					if (thread.isStop())
+						break;
+		
+					if (success > 0) {
+						LOG.ERROR("Remote update failed, not continuing with sync...");
+					} else {
+						String askParams = SyncUtil.getParamsForSource(current);
+						syncResult = SyncUtil.fetchRemoteChanges(current, client_id, askParams, thread);
+						LOG.INFO("Successfully processed " + syncResult.available
+								+ " records...");
+						if (SyncConstants.DEBUG) {
+							IDBResult objects = null;
+							try {
+								objects = SyncUtil.getObjectValueList(current.get_sourceId());
+								SyncUtil.printResults(objects);
+							}finally{
+								objects.close();
+							}
+						}
+						
+						success = syncResult.available; 
+					}
 				}
+				
+				if (!thread.isStop())
+					SyncEngine.getNotificationImpl().fireNotification(id, success);
+				
 			}
-			
-			if (!thread.isStop())
-				SyncEngine.getNotificationImpl().fireNotification(id, success);
-			
+			return SyncConstants.SYNC_PROCESS_CHANGES_OK;
+		}finally{
+			sources.close();
 		}
-		return SyncConstants.SYNC_PROCESS_CHANGES_OK;
+		
 	}
 
 	/**
@@ -642,11 +688,15 @@ public class SyncUtil {
 	 * @return size of objectValues table
 	 */
 	public static int getObjectCountFromDatabase(String dbName) {
+		IDBResult rows = null;
 		try {
-			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT count(*) from " + dbName, null);
+			rows = SyncUtil.adapter.executeSQL( "SELECT count(*) from " + dbName, null);
 			return rows.getIntByIdx(0,0);
 		}catch (DBException e) {
 			LOG.ERROR("There was an error update token in sources record", e);
+		}finally{
+			if ( rows != null)
+				rows.close();
 		}
 		
 		return 0;
@@ -680,12 +730,19 @@ public class SyncUtil {
 				//hash.add(SyncUtil.createString("client_id"),createString(client_id));
 				Object[] values = { client_id };
 				
-				if (getObjectCountFromDatabase(SyncConstants.CLIENT_INFO) > 0)
-					SyncUtil.adapter.executeSQL("UPDATE client_info SET client_id=?", values);
-					//adapter.updateIntoTable(createString(SyncConstants.CLIENT_INFO), hash,RubyConstant.QNIL);
-				else
-					SyncUtil.adapter.executeSQL("INSERT INTO client_info (client_id) VALUES (?)", values);
-					//adapter.insertIntoTable(createString(SyncConstants.CLIENT_INFO), hash);
+				IDBResult result = null;
+				try {
+					if (getObjectCountFromDatabase(SyncConstants.CLIENT_INFO) > 0)
+						result = SyncUtil.adapter.executeSQL("UPDATE client_info SET client_id=?", values);
+						//adapter.updateIntoTable(createString(SyncConstants.CLIENT_INFO), hash,RubyConstant.QNIL);
+					else
+						result = SyncUtil.adapter.executeSQL("INSERT INTO client_info (client_id) VALUES (?)", values);
+						//adapter.insertIntoTable(createString(SyncConstants.CLIENT_INFO), hash);
+				}finally {
+					if ( result != null )
+						result.close();
+				}
+				
 					
 			} catch (Exception e) {
 				LOG.ERROR("There was an error fetching data from the sync source: ", e);
@@ -696,12 +753,17 @@ public class SyncUtil {
 
 	public static String get_session(SyncSource source) {
 		String session = "";
+		IDBResult rows = null;
 		try {
 			Object[] values = { new Integer(source.get_sourceId()) };
-			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT session FROM sources WHERE source_id=?", values);
-			session = rows.getStringByIdx(0,0);
+			rows = SyncUtil.adapter.executeSQL( "SELECT session FROM sources WHERE source_id=?", values);
+			if ( rows.getCount() > 0 )
+				session = rows.getStringByIdx(0,0);
 		}catch (DBException e) {
 			LOG.ERROR("There was an error update token in sources record", e);
+		}finally{
+			if ( rows != null )
+				rows.close();
 		}
 		
 		return session;
@@ -742,7 +804,10 @@ public class SyncUtil {
 				} catch (URI.MalformedURIException exc) {
 				}
 			}
-		} catch (URI.MalformedURIException exc) {
+		}catch (URI.MalformedURIException exc) {
+		
+		}finally{
+			sources.close();
 		}
 
 		return "";
@@ -822,10 +887,10 @@ public class SyncUtil {
 
 		for (int i = 0;; i++) {
 			String strField = connection.getHeaderFieldKey(i);
-			if (strField == null)
+			if (strField == null && i > 0)
 				break;
 
-			if (strField.equalsIgnoreCase("Set-Cookie")) {
+			if (strField != null && strField.equalsIgnoreCase("Set-Cookie")) {
 				String header_field = connection.getHeaderField(i);
 				LOG.INFO("Set-Cookie: " + header_field);
 				parseCookie(header_field, cookie);
@@ -851,79 +916,97 @@ public class SyncUtil {
 	public static boolean fetch_client_login(String strUser, String strPwd) {
 		boolean success = true;
 		IDBResult sources = getSourceList();
-		for (int i = 0; i < sources.getCount(); i++) {
-			String strSession = "";
-			// String strExpire="";
-			IHttpConnection connection = null;
-
-			String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
-			int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
-
-			if (sourceUrl.length() == 0)
-				continue;
-
-			strSession = getSessionByDomain(sourceUrl);
-			if (strSession.length() == 0) {
-				ByteArrayInputStream dataStream = null;
-				try {
-					String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
-					dataStream = new ByteArrayInputStream(body.getBytes()); 
-					
-					SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "",
-							"application/x-www-form-urlencoded");
-
-					connection = SyncManager.getConnection();
-					int code = connection.getResponseCode();
-					if (code == IHttpConnection.HTTP_OK) {
-						ParsedCookie cookie = makeCookie(connection);
-						strSession = cookie.strAuth + ";" + cookie.strSession
-								+ ";";
-					} else {
-						LOG.ERROR("Error posting data: " + code);
+		
+		try {
+		
+			for (int i = 0; i < sources.getCount(); i++) {
+				String strSession = "";
+				// String strExpire="";
+				IHttpConnection connection = null;
+	
+				String sourceUrl = sources.getString(i, SyncConstants.COL_SOURCEURL);
+				int id = sources.getInt(i, SyncConstants.COL_SOURCEID);
+	
+				if (sourceUrl.length() == 0)
+					continue;
+	
+				strSession = getSessionByDomain(sourceUrl);
+				if (strSession.length() == 0) {
+					ByteArrayInputStream dataStream = null;
+					try {
+						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
+						dataStream = new ByteArrayInputStream(body.getBytes()); 
+						
+						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "",
+								"application/x-www-form-urlencoded");
+	
+						connection = SyncManager.getConnection();
+						int code = connection.getResponseCode();
+						if (code == IHttpConnection.HTTP_OK) {
+							ParsedCookie cookie = makeCookie(connection);
+							strSession = cookie.strAuth + ";" + cookie.strSession
+									+ ";";
+						} else {
+							LOG.ERROR("Error posting data: " + code);
+							success = false;
+						}
+	
+					} catch (IOException e) {
+						LOG.ERROR("There was an error fetch_client_login: ", e );
 						success = false;
+					} finally {
+						
+						if ( dataStream != null ){
+							try{dataStream.close();}catch(IOException exc){}
+							dataStream = null;
+						}
+						
+						SyncManager.closeConnection();
+						connection = null;
 					}
-
-				} catch (IOException e) {
-					LOG.ERROR("There was an error fetch_client_login: ", e );
-				} finally {
-					
-					if ( dataStream != null ){
-						try{dataStream.close();}catch(IOException exc){}
-						dataStream = null;
-					}
-					
-					SyncManager.closeConnection();
-					connection = null;
 				}
+	/*
+				RubyHash values = SyncUtil.createHash();
+				values.add(SyncConstants.SESSION, createString(strSession));
+				RubyHash where = SyncUtil.createHash();
+				where.add(SyncConstants.SOURCE_ID, createInteger(id));
+	
+				adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
+						values, where);*/
+				IDBResult result = null;
+				try {
+					Object[] values = { strSession, new Integer(id) };
+					result = adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
+				}catch (DBException e) {
+					LOG.ERROR("There was an error update session in sources record", e);
+				}finally{
+					if ( result != null ) 
+						result.close();
+				}
+					
 			}
-/*
-			RubyHash values = SyncUtil.createHash();
-			values.add(SyncConstants.SESSION, createString(strSession));
-			RubyHash where = SyncUtil.createHash();
-			where.add(SyncConstants.SOURCE_ID, createInteger(id));
-
-			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-					values, where);*/
-			try {
-				Object[] values = { strSession, new Integer(id) };
-				adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
-			}catch (DBException e) {
-				LOG.ERROR("There was an error update session in sources record", e);
-			}
-				
 		}
-
+		finally {
+			sources.close();
+		}
+		
 		return success;
 	}
 
 	public static String get_db_client_id() {
 		
 		String client_id = "";
+		IDBResult rows = null;
 		try {
-			IDBResult rows = SyncUtil.adapter.executeSQL( "SELECT client_id FROM client_info", null);
-			client_id = rows.getStringByIdx(0,0);
+			rows = SyncUtil.adapter.executeSQL( "SELECT client_id FROM client_info", null);
+			if ( rows.getCount() > 0 )
+				client_id = rows.getStringByIdx(0,0);
+			
 		}catch (DBException e) {
 			LOG.ERROR("There was an error update token in sources record", e);
+		}finally{
+			if ( rows != null )
+				rows.close();
 		}
 		
 		return client_id;
@@ -946,12 +1029,17 @@ public class SyncUtil {
 	{
 		boolean success = false;
 		IDBResult sources = SyncUtil.getSourceList();
-		for (int i = 0; i < sources.getCount(); i++) 
-		{
-			SyncSource current = new SyncSource(sources,i);
-			if (get_session(current).length() > 0) {
-				success = true;
+		try {
+			for (int i = 0; i < sources.getCount(); i++) 
+			{
+				SyncSource current = new SyncSource(sources,i);
+				if (get_session(current).length() > 0) {
+					success = true;
+				}
 			}
+		}
+		finally {
+			sources.close();
 		}
 		return success;
 	}
@@ -959,21 +1047,31 @@ public class SyncUtil {
 	public static void logout() 
 	{
 		IDBResult sources = getSourceList();
-		for (int i = 0; i < sources.getCount(); i++) 
-		{
-			try {
-				Object[] values = { "", new Integer( sources.getInt(i, SyncConstants.COL_SOURCEID)) };
-				adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
-			}catch (DBException e) {
-				LOG.ERROR("Logout: There was an error update session in sources record", e);
-			}
+		try {
 			
-			/*RubyHash values = SyncUtil.createHash();
-			values.add(SyncConstants.SESSION, SyncUtil.createString(""));
-			RubyHash where = SyncUtil.createHash();
-			where.add(SyncConstants.SOURCE_ID, createInteger(id));
-			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
-					values, where);*/
+			for (int i = 0; i < sources.getCount(); i++) 
+			{
+				IDBResult result = null;
+				try {
+					Object[] values = { "", new Integer( sources.getInt(i, SyncConstants.COL_SOURCEID)) };
+					result = adapter.executeSQL( "UPDATE sources SET session=? WHERE source_id=?", values);
+				}catch (DBException e) {
+					LOG.ERROR("Logout: There was an error update session in sources record", e);
+				}finally{
+					if ( result != null )
+						result.close();
+				}
+				
+				/*RubyHash values = SyncUtil.createHash();
+				values.add(SyncConstants.SESSION, SyncUtil.createString(""));
+				RubyHash where = SyncUtil.createHash();
+				where.add(SyncConstants.SOURCE_ID, createInteger(id));
+				adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE),
+						values, where);*/
+			}
+		}
+		finally {
+			sources.close();
 		}
 	}
 
@@ -982,16 +1080,37 @@ public class SyncUtil {
 		try {
 		
 			LOG.INFO("Deleting all objects from db...");
+			
+			IDBResult result = null;
 			//adapter.deleteAllFromTable(createString(SyncConstants.OBJECTS_TABLE));
-			adapter.executeSQL("delete from object_values", null);
+			try {
+				result = adapter.executeSQL("delete from object_values", null);
+			}
+			finally {
+				if ( result != null )
+					result.close();
+			}
+			
 			LOG.INFO("Deleting client info from db...");
+			
 //			adapter.deleteAllFromTable(createString(SyncConstants.CLIENT_INFO));
-			adapter.executeSQL("delete from client_info", null);
-			
+			try {
+				result = adapter.executeSQL("delete from client_info", null);
+			}
+			finally {
+				if ( result != null )
+					result.close();
+			}
 			LOG.INFO("Clear tokens in source table...");
-			Object[] values = { "" };
-			adapter.executeSQL("UPDATE sources SET token=?", values);
 			
+			try {
+				Object[] values = { "" };
+				result = adapter.executeSQL("UPDATE sources SET token=?", values);
+			}
+			finally {
+				if ( result != null )
+					result.close();
+			}
 /*			RubyHash values = SyncUtil.createHash();
 			values.add(SyncConstants.TOKEN, createString(""));
 			adapter.updateIntoTable(createString(SyncConstants.SOURCES_TABLE), values, null);*/
