@@ -13,7 +13,11 @@ public class RhoClassFactory
         try {
             wrapperClass = Class.forName("com.rho.Jsr75File");
         } catch (ClassNotFoundException exc) {  
-            throw exc;
+        	try {
+                wrapperClass = Class.forName("com.rhomobile.rhodes.AndroidFile"); //android
+            } catch (ClassNotFoundException e) {  
+                throw e;
+            }
         }
         
         return (SimpleFile)wrapperClass.newInstance();
@@ -25,7 +29,11 @@ public class RhoClassFactory
         try {
             wrapperClass = Class.forName("com.rho.db.HsqlDBStorage");
         } catch (ClassNotFoundException exc) {  
-            throw exc;
+        	try {
+                wrapperClass = Class.forName("com.rhomobile.rhodes.db.DBStorage"); //android
+            } catch (ClassNotFoundException e) {  
+                throw e;
+            }
         }
         
         return (IDBStorage)wrapperClass.newInstance();
@@ -35,9 +43,13 @@ public class RhoClassFactory
     {
         Class wrapperClass;
         try {
-            wrapperClass = Class.forName("com.rho.RhoRubyHelper");
+            wrapperClass = Class.forName("com.rho.RhoRubyHelper"); //bb
         } catch (ClassNotFoundException exc) {  
-            throw exc;
+        	try {
+                wrapperClass = Class.forName("com.rhomobile.rhodes.RhoRubyHelper"); //android
+            } catch (ClassNotFoundException e) {  
+                throw e;
+            }
         }
         
         return (IRhoRubyHelper)wrapperClass.newInstance();
@@ -49,7 +61,11 @@ public class RhoClassFactory
         try {
             wrapperClass = Class.forName("com.rho.location.GeoLocationImpl");
         } catch (ClassNotFoundException exc) {  
-            throw exc;
+        	try {
+                wrapperClass = Class.forName("com.rhomobile.rhodes.geolocation.GeoLocation"); //android
+            } catch (ClassNotFoundException e) {  
+                throw e;
+            }
         }
         
         return (IGeoLocationImpl)wrapperClass.newInstance();
@@ -65,7 +81,11 @@ public class RhoClassFactory
 		        try {
 		            wrapperClass = Class.forName("com.rho.net.NetworkAccess");
 		        } catch (ClassNotFoundException exc) {  
-		            throw exc;
+		        	try {
+			            wrapperClass = Class.forName("com.rhomobile.rhodes.NetworkAccessImpl"); //android 
+			        } catch (ClassNotFoundException e) {  
+			            throw e;
+			        }
 		        }
 		        
 		        m_NAInstance = (INetworkAccess)wrapperClass.newInstance();

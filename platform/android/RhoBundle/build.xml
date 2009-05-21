@@ -1,0 +1,81 @@
+<project name="rhobundle" default="all" basedir=".">
+
+    <property file="build.properties"/>
+	
+    <!-- Initialization variables -->
+    <property environment="env" />
+
+    <property name="rhobundle.jar.name" value="RhoBundle.jar"/>
+    <property name="bin.dir" location="bin"/>
+	<property name="src.dir" location="${bin.dir}/RhoBundle" />
+	<property name="build.dir" location="build"/>
+	<property name="xruby.dir" location="${bin.dir}/../../../../rhodes/rhodes-build/res"/>
+    <property name="classes.dir" value="${bin.dir}/classes"/>
+    <property name="distribution.dir" value="${bin.dir}/distribution"/>
+	<property name="sharedAnt.dir" value="../../shared/build" />
+	
+  	<condition property="exclude.lib" value="**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb">
+    	<not><isset property="exclude.lib"/></not>
+  	</condition>
+
+  	<property name="compileERB.path" location="${build.dir}/compileERB.rb" />
+  	<property name="srclib.dir" value="${src.dir}"/>
+
+	<path id="compile.classpath">
+        <fileset dir="${build.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- ============================= -->
+    <target name="all" depends="clean,build-rhobundle-jar" description="Does the whole work"/>
+
+    <!-- ====================================== -->
+    <target name="clean" description="Deletes compiled and generated code">
+    	<delete dir="${bin.dir}"/>
+    	<delete dir="${src.dir}"/>
+    </target>
+
+    <!-- ====================================== -->
+    <target name="compile" description="Compiles the Java code">
+        <mkdir dir="${bin.dir}" />
+    	<mkdir dir="${src.dir}" />
+        <mkdir dir="${classes.dir}" />
+
+    	<!-- Build ruby apps, output will be saved to the ${src.dir} -->
+
+    	<delete dir="${src.dir}/apps/shared">
+	      <!-- <exclude name="**/rhogeolocation.js" /> -->
+	    </delete>
+    	
+    	<delete>
+	      <fileset dir="${src.dir}" includes="**/*.isec"/>
+	    </delete>
+    	
+   		<ant dir = "${sharedAnt.dir}" target="bundleCommon" />
+    	
+        <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
+          <arg value="-jar" />
+          <arg value="${xruby.dir}/xruby-0.3.3.jar" />
+          <arg value="-c" />
+          <arg value="RhoBundle" />
+        </exec>
+
+    </target>
+
+    <!-- ====================================== -->
+    <target name="build-rhobundle-jar" depends="compile" description="Packages the rhobundle files into a jrhobundle JAR file">
+    	
+    	<ant dir="${sharedAnt.dir}" target="deleteRBandERB" />
+    	
+    	<exec executable="${javac.home}/jar.exe" dir="${src.dir}">
+          <arg value="uf" />
+          <arg value="../RhoBundle.jar" />
+          <arg value="apps/*.*" />
+        </exec>
+
+    	<delete dir="${src.dir}" />
+    	 
+    </target>
+
+</project>

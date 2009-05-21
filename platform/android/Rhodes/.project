@@ -3,6 +3,7 @@
 	<name>Rhodes</name>
 	<comment></comment>
 	<projects>
+		<project>RubyJVM</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -205,10 +205,11 @@ public class SyncManager {
 				else
 					connection.setRequestProperty("content-type", contentType);
 			}
-			
-			os = connection.openOutputStream();
+
 			connection.setRequestMethod(IHttpConnection.POST);
 
+			os = connection.openOutputStream();
+			
 			if (bMultipart){
 				os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
 			}

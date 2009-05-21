@@ -67,7 +67,12 @@ public class RhoRuby {
 	}
 	
 	static public InputStream loadFile(String path){
-		return mainObj.getClass().getResourceAsStream(path);		
+		try {
+			return RhoClassFactory.createFile().getResourceAsStream(mainObj.getClass(), path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return null;
 	}
 
 	public static RubyValue processIndexRequest(String strIndexArg ){
