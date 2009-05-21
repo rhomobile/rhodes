@@ -152,9 +152,10 @@ static void NTAPI on_tls_callback(HINSTANCE h, DWORD dwReason, PVOID pv) {
 #pragma data_seg(".CRT$XLB")
 static void (NTAPI *p_thread_callback)(HINSTANCE h, DWORD dwReason, PVOID pv)
     = on_tls_callback;
-#pragma data_seg(".CRT$XTU")
+/*#pragma data_seg(".CRT$XTU")
 static int (*p_process_term)(void) = on_process_term;
 #pragma data_seg(pop, old_seg)
+*/
 
 #else  // #ifdef _MSC_VER  [probably msys/mingw]
 
