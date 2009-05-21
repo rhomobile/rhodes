@@ -160,6 +160,7 @@ spec/app/spec/rho_spec.rb
 spec/app/spec/rhom_object_factory_spec.rb
 spec/app/spec/rhom_spec.rb
 spec/app/spec/spec_helper.rb
+spec/app/spec/webview_spec.rb
 spec/app/spec_runner.rb
 spec/build.yml
 spec/public/css/base.css
