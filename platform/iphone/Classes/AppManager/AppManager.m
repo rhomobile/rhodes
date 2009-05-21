@@ -102,12 +102,12 @@ const char* RhoGetRootPath();
 #else
 	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	char* currentVersion = config_getString("currentVersion");
+	char* currentVersion = rho_conf_getString("currentVersion");
     bool replaceFiles = NO;
 	if ( strcmp(version, currentVersion) ) {
 		replaceFiles = YES;
 	}
-	config_freeString(currentVersion);
+	rho_conf_freeString(currentVersion);
 #endif	
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
