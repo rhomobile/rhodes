@@ -92,6 +92,8 @@ extern LogSettings g_LogSettings;
 
 inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
 
+#else
+#include "common/RhoPort.h"
 #endif //__cplusplus
 
 #ifdef __cplusplus

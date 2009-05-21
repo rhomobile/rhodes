@@ -10,6 +10,9 @@
 #import "WebViewController.h"
 #import "AppManager.h"
 #import "common/RhoConf.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
 
 @implementation RhoRunnerAppDelegate
 
@@ -25,7 +28,7 @@
 }
 
 - (void)onServerStarted:(NSString*)data {
-	printf("Server Started notification is recived\n");
+	RAWLOG_INFO("Server Started notification is recived");
 	NSString* location = NULL;
 	
 	//try to restore previous location
@@ -157,7 +160,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    DBG(("Runner will terminate\n"));
+    RAWLOG_INFO("Runner will terminate");
 	//Stop HTTP server host 
     [serverHost stop];
 }

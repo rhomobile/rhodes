@@ -2,6 +2,11 @@
 #define _RHOSTD_H_
 
 #include "RhoPort.h"
+#define _GLIBCXX_CSTDLIB 1
+namespace std
+{
+	using ::rand;	
+}
 
 #include <string>
 #include <vector>

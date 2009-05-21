@@ -161,7 +161,10 @@ module Rho
     data << "Expires: 0" << CRLF
 
       data << CRLF
-      data << res['request-body']
+	  if ( !res['request-body'].nil? )
+		data << res['request-body']
+	  end
+	  	
       data
     end
 

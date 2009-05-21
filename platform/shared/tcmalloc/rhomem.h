@@ -1,6 +1,7 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
+#ifndef __APPLE__
 //#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 #include <stdlib.h>
 
@@ -36,6 +37,14 @@ void    sys_free(void *);
 #ifdef __cplusplus
 }
 #endif
+
+#undef free
+#undef malloc
+#undef calloc
+#undef _msize
+#undef realloc
+#undef strdup
+#undef _strdup
 
 //#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
@@ -108,5 +117,6 @@ inline void* operator new(size_t size, const std::nothrow_t&) __THROW {
 #endif //_RHO_NO_MEMDEFINES
 
 //#endif// _WIN32_WCE
+#endif
 
 #endif  // RHO_MEMORY__

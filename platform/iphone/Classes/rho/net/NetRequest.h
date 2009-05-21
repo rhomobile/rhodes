@@ -29,7 +29,8 @@ public:
 
 }
 }
-
+#else
+#include "common/RhoPort.h"
 #endif //__cplusplus
 
 #ifdef __cplusplus

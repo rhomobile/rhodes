@@ -28,6 +28,10 @@
 #include "HttpMessage.h"
 #include "Dispatcher.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "HttpMessage"
+
 const struct vec _known_http_methods[] = {
 {"GET",		3},
 {"POST",	4},
@@ -168,7 +172,7 @@ _HTTPGetRequestMethod(HttpContextRef context, const char *buf)
 	for (v = _known_http_methods; v->ptr != NULL; v++)
 		if (!memcmp(buf, v->ptr, v->len)) {
 			context->_request->_method = v - _known_http_methods;
-            DBG(("Request method %s = %d\n", v->ptr, context->_request->_method));
+            RAWLOG_INFO2("Request method %s = %d", v->ptr, context->_request->_method);
 			break;
 		}
     
@@ -189,7 +193,7 @@ _HTTPParseHeaders(const char *s, int len, struct headers *parsed)
 	struct parsed_header        *v;
 	const char                  *p, *e = s + len;
     
-	DBG(("parsing headers (len %d): [%.*s]\n", len, len, s));
+	RAWTRACE3("parsing headers (len %d): [%.*s]", len, len, s);
     
 	/* Loop through all headers in the request */
 	while (s < e) {
@@ -245,8 +249,8 @@ _HTTPParseMessage(HttpContextRef context) {
     int buflen = CFDataGetLength(context->_rcvdBytes);
     
     int req_len = _HttpGetHeadersLen(buffer, buflen);
-    DBG(("\n\nParsing new request (context 0x%X (%d - 0x%x))\nHeaders len = %d\n", 
-		 context, sizeof(context[0]), context+sizeof(context[0]), req_len));
+    RAWLOG_INFO4("Parsing new request (context 0x%X (%d - 0x%x)).Headers len = %d", 
+		 context, sizeof(context[0]), context+sizeof(context[0]), req_len );
     
     if (req_len == 0) {
         if (buflen > 2048) {
@@ -285,7 +289,7 @@ _HTTPParseMessage(HttpContextRef context) {
     }
     memcpy(context->_request->_uri, start, uri_len);
     context->_request->_uri[uri_len] = '\0';
-    DBG(("URI = [%s]\n", context->_request->_uri));
+    RAWLOG_INFO1("URI = [%s]", context->_request->_uri);
     
 	/* Skip space following the URI */
 	while (p < e && *p == ' ') p++;
@@ -321,7 +325,7 @@ _HTTPParseMessage(HttpContextRef context) {
     
     // Parse headers
     _HTTPParseHeaders(context->_request->_headers, headers_len, &context->_request->_cheaders);
-    DBG(("Content-Length: %d\n",context->_request->_cheaders.cl._v.v_big_int));
+    RAWLOG_INFO1("Content-Length: %d",context->_request->_cheaders.cl._v.v_big_int);
         
     // Done with headers
     context->_request->_flags |= _FLAG_HEADERS_PARSED;
@@ -484,10 +488,10 @@ _HTTPServeDirectoryListing(HttpContextRef context, char* dir) {
 	CFDataAppendBytes(context->_sendBytes, CFDataGetBytePtr(message_body), 
 					  CFDataGetLength(message_body));
 	
-	DBG(("Message to send:\n"));
-	_dbg_print_data((UInt8*)CFDataGetBytePtr(context->_sendBytes), 
-					CFDataGetLength(context->_sendBytes));
-	DBG(("-- eof --\n"));
+	RAWTRACE("Message to send: ");
+	RAWTRACE_DATA((UInt8*)CFDataGetBytePtr(context->_sendBytes), 
+						   CFDataGetLength(context->_sendBytes));	
+	RAWTRACE("Message -- eof --");
 
 	CFRelease(message_body);
 
@@ -590,9 +594,9 @@ HTTPSendReply(HttpContextRef context, char* body) {
 	/* Add reply headers to the send buffer */
 	CFDataAppendBytes(context->_sendBytes, (UInt8*)headers, (CFIndex)headers_len);
 	
-	DBG(("Reply send:\n"));
-	_dbg_print_data((UInt8*)headers, headers_len);
-	DBG(("-- eof --\n"));
+	RAWTRACE("Reply send:");
+	RAWTRACE_DATA( (UInt8*)headers, headers_len );
+	RAWTRACE("Reply -- eof --");
 	
 	/* Add file to the send buffer */
 	CFDataAppendBytes(context->_sendBytes, (UInt8*)body, (CFIndex)cl);			
@@ -616,7 +620,7 @@ HttpSendErrorToTheServer(HttpContextRef context, int status, const char *reason)
             "Error: %03d - %s\r\n",
             status, reason, 15 + strlen(reason), status, reason);
     
-	DBG(("Error %d - %s\n", status, reason));
+	RAWLOG_ERROR2("Error %d - %s", status, reason);
 	
     // Add the bytes of data to the send buffer.
     CFDataAppendBytes(context->_sendBytes, (UInt8*)buffer, (CFIndex)strlen(buffer));
@@ -685,9 +689,9 @@ _HTTPServeFile(HttpContextRef context, struct stat *st, char* file) {
 			/* Add reply headers to the send buffer */
 			CFDataAppendBytes(context->_sendBytes, (UInt8*)headers, (CFIndex)headers_len);
 			
-			DBG(("File to send:\n"));
-			_dbg_print_data((UInt8*)headers, headers_len);
-			DBG(("-- eof --\n"));
+			RAWTRACE("File to send:");
+			RAWTRACE_DATA( (UInt8*)headers, headers_len );
+			RAWTRACE("File -- eof --");
 			
 			/* Add file to the send buffer */
 			CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)cl);			
@@ -719,9 +723,9 @@ HTTPRedirect(HttpContextRef context, char* location) {
 								location);	
 	
 	
-	DBG(("Message to send:\n"));
-	_dbg_print_data((UInt8*)buf, msg_len);
-	DBG(("-- eof --\n"));
+	RAWTRACE("Message to send:");
+	RAWTRACE_DATA((UInt8*)buf, msg_len);
+	RAWTRACE("Message -- eof --");
 	
 	CFDataAppendBytes(context->_sendBytes, (UInt8*)buf, (CFIndex)msg_len);
 	
@@ -876,7 +880,7 @@ HTTPProcessMessage(HttpContextRef context) {
 		}
 	
 		HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
-		DBG(("Path = %s\n", path));
+		RAWLOG_INFO1("Path = %s", path);
 		 
 		if (context->_request->_method == METHOD_GET) {
 			if ((res = _HTTPGetFile(context, path))!=0) {

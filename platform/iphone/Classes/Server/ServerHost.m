@@ -24,6 +24,10 @@
 #include "sync/syncthread.h"
 #include "JSString.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "ServerHost"
+
 extern char* get_current_location();
 
 #pragma mark -
@@ -43,7 +47,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
     
 	if (sock == ((CFSocketNativeHandle)(-1))) {
         
-		DBG(("AcceptConnection - Received an error (%d, %d)\n", (int)error->domain, (int)error->error));
+		RAWLOG_INFO2("AcceptConnection - Received an error (%d, %d)", (int)error->domain, (int)error->error );
 		
 		ServerInvalidate(server);
 		ServerRelease(server);
@@ -131,7 +135,7 @@ static ServerHost* sharedSH = nil;
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-	DBG(("Initializing ruby\n"));
+	RAWLOG_INFO("Initializing ruby");
 	RhoRubyStart();
 
 	char* _url = rho_conf_getString("start_path");
@@ -141,8 +145,8 @@ static ServerHost* sharedSH = nil;
 	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
 	rho_conf_freeString(_url);
 	
-	DBG(("Start page: %s\n", [homeUrl UTF8String]));
-	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
+	RAWLOG_INFO1("Start page: %s", [homeUrl UTF8String]);
+	RAWLOG_INFO1("Options page: %s", [optionsUrl UTF8String]);
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
 	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
 	
@@ -150,29 +154,29 @@ static ServerHost* sharedSH = nil;
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
-		DBG(("HTTP Server started and ready\n"));
+		RAWLOG_INFO("HTTP Server started and ready");
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
 							   withObject:homeUrl waitUntilDone:NO];
 		
-		DBG(("Create Sync"));
+		RAWLOG_INFO("Create Sync");
 		rho_sync_create();
 		
         [[NSRunLoop currentRunLoop] run];
-        DBG(("Invalidating local server\n"));
+        RAWLOG_INFO("Invalidating local server");
         ServerInvalidate(server);
     } else {
-        DBG(("Failed to start HTTP Server\n"));
+        RAWLOG_INFO("Failed to start HTTP Server");
 		[self performSelectorOnMainThread:@selector(serverFailed:) 
 							   withObject:NULL waitUntilDone:NO];
     }
 	
-	DBG(("Destroy Sync"));
+	RAWLOG_INFO("Destroy Sync");
 	rho_sync_destroy();
 	
-	DBG(("Stopping ruby"));
+	RAWLOG_INFO("Stopping ruby");
 	RhoRubyStop();
 	
-    DBG(("Server host thread routine is completed\n"));
+    RAWLOG_INFO("Server host thread routine is completed");
     [pool release];
 }
 /*

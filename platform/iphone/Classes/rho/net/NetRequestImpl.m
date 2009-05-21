@@ -24,6 +24,9 @@
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <Foundation/Foundation.h>
 #include "common/RhoPort.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Net"
 
 //extern int logged_in();
 extern void rho_net_impl_deleteAllCookies();
@@ -185,6 +188,8 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 	session = get_session(szUrl);
 	if (!session) 
 	{
+		RAWLOG_INFO1("Request cookies by Url: %s", szUrl);
+		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -218,6 +223,9 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 					errorCode == NSURLErrorBadServerResponse ) 
 				{
 					rho_net_impl_deleteAllCookies();
+					
+					if ( pbRespRecieved )
+						*pbRespRecieved = 1;
 				}
 			} else 
 			{
@@ -238,7 +246,7 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 		}
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	} else {
-		printf("Found existing session for url...\n");
+		RAWLOG_INFO("Found existing session for url...");
 	}
 
 	[pool drain];
@@ -259,6 +267,8 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
 	if (session || [linkString hasPrefix:@"http://localhost"] || [linkString hasPrefix:@"http://127.0.0.0"]) 
 	{
+		RAWLOG_INFO1("Request Url: %s", szUrl);
+		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -317,7 +327,10 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 	
 	int nRet = 0;
 	NSString *session = get_session(szUrl);
-	if (session) {
+	if (session) 
+	{
+		RAWLOG_INFO2("Push file. Url: %s; File path: %s", szUrl, szFilePath);
+		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -434,21 +447,27 @@ NSArray *get_all_cookies()
 int rho_sync_logged_in_cookies() 
 {
 	int i,retval = 0;
-	NSArray *cookies;
-	cookies = get_all_cookies();
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSArray *cookies = get_all_cookies();
 	int count = [cookies count];
 	// Iterate over all cookies and see if we have a rhosync_session
 	for (i = 0; i < count; i++) {
 		if ([[[cookies objectAtIndex:i] name] isEqualToString:@"rhosync_session"]) retval = 1;
 	}
+	
+	[pool drain];
+	[pool release];
 	return retval;
 }
 
 void rho_net_impl_deleteAllCookies() 
 {
 	int i;
-	NSArray *cookies;
-	cookies = get_all_cookies();
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSArray *cookies = get_all_cookies();
 	int count = [cookies count];
 	for (i = 0; i < count; i++) {
 		NSHTTPCookie *cookie = [cookies objectAtIndex:i];
@@ -457,6 +476,8 @@ void rho_net_impl_deleteAllCookies()
 			[[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
 		}
 	}
+	[pool drain];
+	[pool release];
 }
 
 /*

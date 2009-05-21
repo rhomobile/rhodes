@@ -158,11 +158,11 @@ void rho_conf_setBool(const char* szName, bool value) {
 }
 
 char* rho_conf_getString(const char* szName) {
-	return rho_strdup(RHOCONF().getString(szName).c_str());
+	return strdup(RHOCONF().getString(szName).c_str());
 }
 
 void rho_conf_freeString(char* str) {
-	rho_free(str);
+	free(str);
 }
 
 void rho_conf_setString(const char* szName, const char* value){
