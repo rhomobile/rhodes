@@ -1026,7 +1026,7 @@ rb_filesystem_encoding(void)
 #if defined _WIN32
     enc = rb_locale_encoding();
 #elif defined __APPLE__
-    enc = rb_enc_find("UTF8-MAC");
+    enc = rb_enc_find("UTF-8");//("UTF8-MAC");
 #else
     enc = rb_default_external_encoding();
 #endif

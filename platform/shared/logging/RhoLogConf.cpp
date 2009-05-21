@@ -215,7 +215,7 @@ void rho_logconf_saveSettings() {
 }
 
 void rho_logconf_freeString(char* str) {
-	rho_free(str);
+	free(str);
 }
 
 }

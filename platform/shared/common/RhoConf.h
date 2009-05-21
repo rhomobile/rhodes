@@ -47,6 +47,8 @@ extern RhoSettings g_RhoSettings;
 }
 inline rho::common::RhoSettings& RHOCONF(){ return rho::common::g_RhoSettings; }
 
+#else
+#include "common/RhoPort.h"
 #endif //__cplusplus
 
 #ifdef __cplusplus

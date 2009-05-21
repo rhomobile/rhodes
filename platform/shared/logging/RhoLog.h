@@ -185,6 +185,8 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
 
 int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* szCategory,
                   const char* msg );
+int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
+					const void* data, int len );
 
 #define RAWLOG_NONE ((void)0)
 
@@ -200,7 +202,7 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWLOG_INFO1(msg,arg1) RAWLOGC_INFO1( DEFAULT_LOGCATEGORY, msg, arg1 )
 #define RAWLOG_INFO2(msg,arg1,arg2) RAWLOGC_INFO2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #define RAWLOG_INFO3(msg,arg1,arg2,arg3) RAWLOGC_INFO3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
-#define RAWLOG_INFO4(msg,arg1,arg2,arg3,arg4) RAWLOGC_INFO3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
+#define RAWLOG_INFO4(msg,arg1,arg2,arg3,arg4) RAWLOGC_INFO4( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
 #define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOGC_INFO6( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4,arg5,arg6 )
 
 #else
@@ -263,13 +265,18 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 #define RAWTRACEC(category, msg) rhoPlainLog(__FILE__, __LINE__, L_TRACE, category, msg )
 #define RAWTRACEC1(category, msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1 )
 #define RAWTRACEC2(category, msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2 )
+#define RAWTRACEC3(category, msg,arg1,arg2,arg3) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2,arg3 )
 
 #define RAWTRACE(msg) RAWTRACEC(DEFAULT_LOGCATEGORY,msg)
 #define RAWTRACE1(msg,arg1) RAWTRACEC1(DEFAULT_LOGCATEGORY,msg,arg1)
 #define RAWTRACE2(msg,arg1,arg2) RAWTRACEC2(DEFAULT_LOGCATEGORY,msg,arg1,arg2)
+#define RAWTRACE3(msg,arg1,arg2,arg3) RAWTRACEC3(DEFAULT_LOGCATEGORY,msg,arg1,arg2,arg3)
 
 #define RAWTRACE_IF(exp,msg) !(exp) ? (void) 0 : RAWTRACE(msg)
 #define RAWTRACE_IF1(exp,msg,arg1) !(exp) ? (void) 0 : RAWTRACE1(msg,arg1)
+
+#define RAWTRACEC_DATA(category,data,len) rhoPlainLogData(__FILE__, __LINE__, L_TRACE, category, data, len)
+#define RAWTRACE_DATA(data,len) RAWTRACEC_DATA(DEFAULT_LOGCATEGORY,data,len)
 
 #else
 

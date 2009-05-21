@@ -4,6 +4,9 @@
 #import "common/RhoConf.h"
 #import "sync/syncthread.h"
 #import "JSString.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "WebViewCtrl"
 
 static char currentLocation[4096] = "";
 
@@ -14,7 +17,7 @@ void set_current_location(CFStringRef location) {
 	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
 	char* fragment = strstr(currentLocation,"#");
 	if (fragment) *fragment = 0; //cut out fragment
-	printf("Current location: %s\n",currentLocation);
+	RAWLOG_INFO1("Current location: %s",currentLocation);
 	//UNLOCK(current_location);
 
 	if (rho_conf_getBool("KeepTrackOfLastVisitedPage")) {
@@ -61,7 +64,7 @@ NSString *loadingText = @"Loading...";
 }
 
 -(void)navigate:(NSString*)url {
-    printf("Navigating to the specifyed URL\n");
+    RAWLOG_INFO("Navigating to the specifyed URL");
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
 }
 

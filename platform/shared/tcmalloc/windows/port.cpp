@@ -215,7 +215,8 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
   //RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
   g_nTotalMemory += size + extra;
-  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, g_nTotalMemory/(1024*1024));
+  int nTotal = g_nTotalMemory/(1024*1024);
+  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, nTotal);
 
   if (result == NULL)
     return NULL;

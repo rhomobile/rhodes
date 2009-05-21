@@ -19,6 +19,9 @@
 //#include "geolocation.h"
 //#include "SyncEngine.h"
 #include "sync/syncthread.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Dispatcher"
 
 char *trim(char *str)
 {
@@ -89,7 +92,7 @@ _GetRoute(char* url, RouteRef route) {
 
 static VALUE 
 _CreateRequestHash(HttpContextRef context, RouteRef route) {
-	DBG(("Creating Req Hash\n"));
+	RAWTRACE("Creating Req Hash");
 	
 	VALUE hash = createHash();
 
@@ -147,16 +150,16 @@ _CreateRequestHash(HttpContextRef context, RouteRef route) {
 
 static int 
 _CallApplication(HttpContextRef context, RouteRef route) {
-	DBG(("Calling ruby framework\n"));
+	RAWLOG_INFO("Calling ruby framework");
 		
 	VALUE val = callFramework(_CreateRequestHash(context,route));
 	char* res = getStringFromValue(val);
 	if (res) {
-		DBG(("RESPONSE:\n"));
-		_dbg_print_data((UInt8*)res, strlen(res));
-		DBG(("-- eof --\n"));
+		RAWTRACE("RESPONSE:");
+		RAWTRACE_DATA((UInt8*)res, strlen(res));
+		RAWTRACE( "RESPONSE -- eof --");
 		
-		DBG(("Add response to the send buffer"))
+		RAWLOG_INFO("Add response to the send buffer");
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
 		releaseValue(val);
@@ -171,7 +174,7 @@ extern char* GeoGetLocation();
 int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	
 	if (route->_application && !strcmp(route->_application,"AppManager")) {
-		DBG(("Executing AppManager\n"));
+		RAWLOG_INFO("Executing AppManager");
 		return ExecuteAppManager(context,route);
 	} else if (route->_application && !strcmp(route->_application,"system")) {
 		if (context->_request->_method == METHOD_GET) {
@@ -194,23 +197,23 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	} else if (route->_application && !strcmp(route->_application,"shared")) {
 		return 0;
 	} else {
-		DBG(("Executing %s\n",route->_application));
+		RAWLOG_INFO1( "Executing %s",route->_application);
 		return _CallApplication(context, route);
 	}
 	return 0;
 }
 
 int ServeIndex(HttpContextRef context, char* index_name) {
-	DBG(("Calling ruby framework to serve index\n"));
+	RAWLOG_INFO("Calling ruby framework to serve index");
 	
 	VALUE val = callServeIndex(index_name);
 	char* res = getStringFromValue(val);
 	if (res) {
-		DBG(("RESPONSE:\n"));
-		_dbg_print_data((UInt8*)res, strlen(res));
-		DBG(("-- eof --\n"));
+		RAWTRACE("RESPONSE:");
+		RAWTRACE_DATA((UInt8*)res, strlen(res));
+		RAWTRACE("RESPONSE -- eof --");
 		
-		DBG(("Add response to the send buffer"))
+		RAWLOG_INFO("Add response to the send buffer");
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
 		releaseValue(val);

@@ -1788,7 +1788,8 @@ rb_str_append(VALUE str, VALUE str2)
 {
     rb_encoding *enc;
     int cr, cr2;
-
+char* szStr = RSTRING_PTR(str);
+	
     StringValue(str2);
     if (RSTRING_LEN(str2) > 0 && STR_ASSOC_P(str)) {
         long len = RSTRING_LEN(str)+RSTRING_LEN(str2);
@@ -3379,7 +3380,7 @@ rb_str_sub_bang(int argc, VALUE *argv, VALUE str)
             if (coderange_scan(RSTRING_PTR(str), beg0, str_enc) != ENC_CODERANGE_7BIT ||
                 coderange_scan(RSTRING_PTR(str)+end0,
 			       RSTRING_LEN(str)-end0, str_enc) != ENC_CODERANGE_7BIT) {
-                if ( !isCompatibleEncodings(str_enc,STR_ENC_GET(repl)) ) {
+                if ( !isCompatibleEncodings(ENCODING_GET(str),ENCODING_GET(repl)) ) {
                     rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
 			            rb_enc_name(str_enc),
 			            rb_enc_name(STR_ENC_GET(repl)));

@@ -75,4 +75,12 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
     return 1;
 }
 
+int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
+				const void* data, int len ){
+		
+	//rho::LogMessage(file, line, severity, LOGCONF(), rho::LogCategory(szCategory) ) + msg;
+		
+	return 1;
+}
+	
 }
