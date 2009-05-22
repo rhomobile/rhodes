@@ -16,8 +16,6 @@
 #pragma mark -
 #pragma mark Type Declarations
 
-
-
 #pragma mark -
 #pragma mark Constant Definitions
 
@@ -332,7 +330,7 @@ _HttpContextHandleHasBytesAvailable(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleEndEncountered(HttpContextRef context) {
-    RAWLOG_INFO1("Handle End Encountered 0x%X",context);
+    RAWTRACE1("Handle End Encountered 0x%X",context);
 	// End was hit, so destroy the context.
     HttpContextClose(context);
     HttpContextRelease(context);
@@ -340,7 +338,7 @@ _HttpContextHandleEndEncountered(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
-	RAWLOG_INFO("Sending data to the view");
+	RAWTRACE("Sending data to the view");
 	
 	// Get the start of the buffer to send.
 	const UInt8* start = CFDataGetBytePtr(context->_sendBytes);
@@ -356,7 +354,7 @@ _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
 		
 		// Write all of the bytes redy to be sent
 		CFIndex bytesWritten = CFWriteStreamWrite(context->_outStream, start, size);
-		RAWLOG_INFO1("%d bytes sent", bytesWritten);
+		RAWTRACE1("%d bytes sent", bytesWritten);
 			 
 		// If successfully sent the data, remove the bytes from the buffer.
 		if (bytesWritten > 0)

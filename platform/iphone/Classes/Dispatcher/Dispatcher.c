@@ -159,7 +159,7 @@ _CallApplication(HttpContextRef context, RouteRef route) {
 		RAWTRACE_DATA((UInt8*)res, strlen(res));
 		RAWTRACE( "RESPONSE -- eof --");
 		
-		RAWLOG_INFO("Add response to the send buffer");
+		RAWTRACE("Add response to the send buffer");
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
 		releaseValue(val);
@@ -213,7 +213,7 @@ int ServeIndex(HttpContextRef context, char* index_name) {
 		RAWTRACE_DATA((UInt8*)res, strlen(res));
 		RAWTRACE("RESPONSE -- eof --");
 		
-		RAWLOG_INFO("Add response to the send buffer");
+		RAWTRACE("Add response to the send buffer");
 		CFDataAppendBytes(context->_sendBytes, (UInt8*)res, (CFIndex)strlen(res));
 		
 		releaseValue(val);
