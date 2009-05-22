@@ -116,10 +116,10 @@ public class SyncUtil {
 	//								SyncBlob.insertOp(syncObj, client_id, SyncBlob.SYNC_STAGE);
 									
 									syncObj.insertIntoDatabase();
-									try {
+									/*try {
 										Thread.currentThread().sleep(1000L);
 									}catch(Exception e){
-									}
+									}*/
 									
 									inserted++;
 								} else if (dbOp.equalsIgnoreCase("delete")) {
