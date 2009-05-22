@@ -13,6 +13,8 @@
     <property name="classes.dir" value="${bin.dir}/classes"/>
     <property name="distribution.dir" value="${bin.dir}/distribution"/>
 	<property name="sharedAnt.dir" value="../../shared/build" />
+	<property name="rhodes.apps.dir" value="${bin.dir}/../../Rhodes/assets/apps" />
+	<property name="rhodes.lib.dir" value="${bin.dir}/../../Rhodes/libs" />
 	
   	<condition property="exclude.lib" value="**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb">
     	<not><isset property="exclude.lib"/></not>
@@ -68,12 +70,30 @@
     	
     	<ant dir="${sharedAnt.dir}" target="deleteRBandERB" />
     	
+    	<delete>
+    		<fileset dir="${rhodes.apps.dir}" includes="**/*.*" excludes="loading.html"/>
+        </delete>
+    	
+    	<copy todir="${rhodes.apps.dir}">
+    	  <fileset dir="${src.dir}/apps"
+    	           includes="**/*.*"
+    	  />
+    	</copy>
+
+    	<delete>
+    		<fileset dir="${src.dir}/apps" includes="**/*.*" />
+        </delete>
+    	
     	<exec executable="${javac.home}/jar.exe" dir="${src.dir}">
           <arg value="uf" />
           <arg value="../RhoBundle.jar" />
           <arg value="apps/*.*" />
         </exec>
 
+    	<copy overwrite="true" todir="${rhodes.lib.dir}">
+    	  <fileset dir="${bin.dir}" includes="RhoBundle.jar" />
+    	</copy>
+    		
     	<delete dir="${src.dir}" />
     	 
     </target>
