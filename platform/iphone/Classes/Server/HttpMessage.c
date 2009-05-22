@@ -172,7 +172,7 @@ _HTTPGetRequestMethod(HttpContextRef context, const char *buf)
 	for (v = _known_http_methods; v->ptr != NULL; v++)
 		if (!memcmp(buf, v->ptr, v->len)) {
 			context->_request->_method = v - _known_http_methods;
-            RAWLOG_INFO2("Request method %s = %d", v->ptr, context->_request->_method);
+            RAWTRACE2("Request method %s = %d", v->ptr, context->_request->_method);
 			break;
 		}
     
@@ -249,7 +249,7 @@ _HTTPParseMessage(HttpContextRef context) {
     int buflen = CFDataGetLength(context->_rcvdBytes);
     
     int req_len = _HttpGetHeadersLen(buffer, buflen);
-    RAWLOG_INFO4("Parsing new request (context 0x%X (%d - 0x%x)).Headers len = %d", 
+    RAWTRACE4("Parsing new request (context 0x%X (%d - 0x%x)).Headers len = %d", 
 		 context, sizeof(context[0]), context+sizeof(context[0]), req_len );
     
     if (req_len == 0) {
@@ -289,7 +289,7 @@ _HTTPParseMessage(HttpContextRef context) {
     }
     memcpy(context->_request->_uri, start, uri_len);
     context->_request->_uri[uri_len] = '\0';
-    RAWLOG_INFO1("URI = [%s]", context->_request->_uri);
+    RAWTRACE1("URI = [%s]", context->_request->_uri);
     
 	/* Skip space following the URI */
 	while (p < e && *p == ' ') p++;
@@ -325,7 +325,7 @@ _HTTPParseMessage(HttpContextRef context) {
     
     // Parse headers
     _HTTPParseHeaders(context->_request->_headers, headers_len, &context->_request->_cheaders);
-    RAWLOG_INFO1("Content-Length: %d",context->_request->_cheaders.cl._v.v_big_int);
+    RAWTRACE1("Content-Length: %d",context->_request->_cheaders.cl._v.v_big_int);
         
     // Done with headers
     context->_request->_flags |= _FLAG_HEADERS_PARSED;
@@ -880,7 +880,7 @@ HTTPProcessMessage(HttpContextRef context) {
 		}
 	
 		HttpSnprintf(path, sizeof(path), "%s%s", root, context->_request->_uri);
-		RAWLOG_INFO1("Path = %s", path);
+		RAWTRACE1("Path = %s", path);
 		 
 		if (context->_request->_method == METHOD_GET) {
 			if ((res = _HTTPGetFile(context, path))!=0) {

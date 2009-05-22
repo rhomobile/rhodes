@@ -69,7 +69,8 @@ NSString *loadingText = @"Loading...";
 }
 
 -(void)executeJs:(JSString*)js {
-    NSLog(@"Executing JS: %@\n", js.inputJs);
+	RAWLOG_INFO1("Executing JS: %s", [js.inputJs UTF8String] );
+    //NSLog(@"Executing JS: %@\n", js.inputJs);
 	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
 }
 

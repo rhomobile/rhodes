@@ -218,7 +218,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_INFO1(msg,arg1) RAWLOG_NONE
 #define RAWLOG_INFO2(msg,arg1,arg2) RAWLOG_NONE
 #define RAWLOG_INFO3(msg,arg1,arg2,arg3) RAWLOG_NONE
-#define RAWLOG_INFO3(msg,arg1,arg2,arg4) RAWLOG_NONE
+#define RAWLOG_INFO4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
 #define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOG_NONE
 #endif
 
@@ -227,21 +227,27 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOGC_ERROR1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1 )
 #define RAWLOGC_ERROR2(category,msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1,arg2 )
 #define RAWLOGC_ERROR3(category,msg,arg1,arg2,arg3) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1,arg2,arg3 )
+#define RAWLOGC_ERROR4(category,msg,arg1,arg2,arg3,arg4) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1,arg2,arg3,arg4 )
 
 #define RAWLOG_ERROR(msg) RAWLOGC_ERROR( DEFAULT_LOGCATEGORY, msg )
 #define RAWLOG_ERROR1(msg,arg1) RAWLOGC_ERROR1( DEFAULT_LOGCATEGORY, msg, arg1 )
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOGC_ERROR2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOGC_ERROR3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
+#define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOGC_ERROR4( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
+	
 #else
 #define RAWLOGC_ERROR(category,msg) RAWLOG_NONE
 #define RAWLOGC_ERROR1(category,msg,arg1) RAWLOG_NONE
 #define RAWLOGC_ERROR2(category,msg,arg1,arg2) RAWLOG_NONE
 #define RAWLOGC_ERROR3(category,msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOGC_ERROR4(category,msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
 
 #define RAWLOG_ERROR(msg) RAWLOG_NONE
 #define RAWLOG_ERROR1(msg,arg1) RAWLOG_NONE
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOG_NONE
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
+	
 #endif
 
 #if RHO_STRIP_LOG <= L_FATAL
@@ -267,11 +273,13 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWTRACEC1(category, msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1 )
 #define RAWTRACEC2(category, msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2 )
 #define RAWTRACEC3(category, msg,arg1,arg2,arg3) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2,arg3 )
+#define RAWTRACEC4(category, msg,arg1,arg2,arg3,arg4) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2,arg3,arg4 )
 
 #define RAWTRACE(msg) RAWTRACEC(DEFAULT_LOGCATEGORY,msg)
 #define RAWTRACE1(msg,arg1) RAWTRACEC1(DEFAULT_LOGCATEGORY,msg,arg1)
 #define RAWTRACE2(msg,arg1,arg2) RAWTRACEC2(DEFAULT_LOGCATEGORY,msg,arg1,arg2)
 #define RAWTRACE3(msg,arg1,arg2,arg3) RAWTRACEC3(DEFAULT_LOGCATEGORY,msg,arg1,arg2,arg3)
+#define RAWTRACE4(msg,arg1,arg2,arg3,arg4) RAWTRACEC4(DEFAULT_LOGCATEGORY,msg,arg1,arg2,arg3,arg4)
 
 #define RAWTRACE_IF(exp,msg) !(exp) ? (void) 0 : RAWTRACE(msg)
 #define RAWTRACE_IF1(exp,msg,arg1) !(exp) ? (void) 0 : RAWTRACE1(msg,arg1)
@@ -284,10 +292,14 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWTRACEC(category,msg) RAWLOG_NONE
 #define RAWTRACEC1(category, msg,arg1) RAWLOG_NONE
 #define RAWTRACEC2(category, msg,arg1,arg2) RAWLOG_NONE
+#define RAWTRACEC3(category, msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWTRACEC4(category, msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
 
 #define RAWTRACE(msg) RAWLOG_NONE
 #define RAWTRACE1(msg,arg1) RAWLOG_NONE
 #define RAWTRACE2(msg,arg1,arg2) RAWLOG_NONE
+#define RAWTRACE3(msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWTRACE4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
 
 #define RAWTRACE_IF(exp,msg) RAWLOG_NONE
 #define RAWTRACE_IF1(exp,msg,arg1) RAWLOG_NONE

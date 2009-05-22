@@ -217,7 +217,8 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
 			{
-				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				RAWLOG_ERROR4("Request cookies failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired ||
 					errorCode == NSURLErrorBadServerResponse ) 
@@ -236,9 +237,7 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 				id cookie;
 				while (cookie = [c nextObject]) 
 				{
-					NSLog(@"Storing Cookie: Name: %@, Value: %@",
-						  [cookie name],
-						  [cookie value]);				
+					RAWLOG_INFO2("Storing Cookie: Name: %s, Value: %s", [[cookie name] UTF8String],  [[cookie value] UTF8String]);
 					[store setCookie:cookie];
 					cookie_size++;
 				}
@@ -296,7 +295,8 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
 			{
-				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -306,6 +306,9 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 			} else 
 			{
 				respData = str_assign( (char *)[strData UTF8String] );
+				RAWTRACE("RESPONSE-----");
+				RAWTRACE(respData);
+				RAWTRACE("END RESPONSE-----");
 			}
 		}
 		
@@ -356,7 +359,9 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 
 			{
-				NSLog(@"An error occured connecting to the sync source: %i returned. Response: %s", code, [strData UTF8String]);
+				RAWLOG_ERROR4("Push file failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
+				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
 				{
