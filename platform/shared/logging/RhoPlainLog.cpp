@@ -78,8 +78,8 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
 int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
 				const void* data, int len ){
 		
-	//rho::LogMessage(file, line, severity, LOGCONF(), rho::LogCategory(szCategory) ) + msg;
-		
+	rho::LogMessage oMsg(file, line, severity, LOGCONF(), rho::LogCategory(szCategory) );
+	oMsg.addRawString( static_cast<const char*>(data),len);	
 	return 1;
 }
 	
