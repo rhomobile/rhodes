@@ -67,12 +67,18 @@ public class RhoDB extends SQLiteOpenHelper {
 
 			db.beginTransaction();
 
-			String[] statments = schema.split(";");
-			for (int i = 0; i < statments.length; i++) {
-				SQLiteStatement st = db.compileStatement(statments[i]);
+			String[] statements = schema.split(";");
+			for (int i = 0; i < statements.length; i++) {
+				SQLiteStatement st = db.compileStatement(statements[i]);
 				st.execute();
 			}
 
+			statements = ctx.getString(R.string.db_schema).split(";");
+			for (int i = 0; i < statements.length; i++) {
+				SQLiteStatement st = db.compileStatement(statements[i]);
+				st.execute();
+			}
+			
 			SQLiteStatement stTrigger = db.compileStatement(ctx
 					.getString(R.string.deleteTrigger));
 			stTrigger.execute();
