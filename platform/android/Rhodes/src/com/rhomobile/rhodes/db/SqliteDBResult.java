@@ -11,7 +11,7 @@ import com.xruby.runtime.lang.RubyValue;
 
 public class SqliteDBResult implements IDBResult {
 
-	private static RWLock lock = new RWLock();
+	//private static RWLock lock = new RWLock();
 	private Cursor cursor;
 	private int curIndex = 0;
 	private boolean useLocalCursor = false;
@@ -19,7 +19,7 @@ public class SqliteDBResult implements IDBResult {
 	private List<String> cashedColumnsNames =  new ArrayList< String > ();
 	
 	public SqliteDBResult() {
-		lock.getWriteLock();
+		//lock.getWriteLock();
 	}
 
 	public void assign(Cursor cursor) {
@@ -30,8 +30,8 @@ public class SqliteDBResult implements IDBResult {
 		
 		reset();
 		
-		if ( this.cursor == null ) //nothing to lock
-			lock.releaseLock();
+		//if ( this.cursor == null ) //nothing to lock
+		//	lock.releaseLock();
 	}
 	
 	public void copy(Cursor cursor) {
@@ -67,8 +67,8 @@ public class SqliteDBResult implements IDBResult {
 			useLocalCursor = true;
 		}
 		
-		if ( this.cursor == null ) //nothing to lock
-			lock.releaseLock();
+		//if ( this.cursor == null ) //nothing to lock
+		//	lock.releaseLock();
 	}
 
 	public void close() {
@@ -76,7 +76,7 @@ public class SqliteDBResult implements IDBResult {
 		if (this.cursor != null)
 			this.cursor.close();
 
-		lock.releaseLock();
+		//lock.releaseLock();
 	}
 
 	public int getColCount() {
