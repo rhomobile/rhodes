@@ -18,28 +18,28 @@ public class DBStorage implements IDBStorage {
 	private String dbName;
 	private RhoDB rhoDB;
 
-	public void close() throws DBException {
+	synchronized public void close() throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
 			rhoDB.close();
 			rhoDB = null;
 		}
 	}
 
-	public void commit() throws DBException {
+	synchronized public void commit() throws DBException {
 		// if ( rhoDB != null && rhoDB.isOpen())
 		// rhoDB.endTransaction();
 	}
 
-	public IDBResult createResult() {
+	synchronized public IDBResult createResult() {
 		return new SqliteDBResult();
 	}
 
-	public void deleteAllFiles(String strPath) throws Exception {
+	synchronized public void deleteAllFiles(String strPath) throws Exception {
 		AndroidFile andFile = new AndroidFile();
 		andFile.delete(strPath);
 	}
 
-	public IDBResult executeSQL(String strStatement, Object[] values)
+	synchronized public IDBResult executeSQL(String strStatement, Object[] values)
 			throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
 			return rhoDB.executeSQL(strStatement, values);
@@ -47,7 +47,7 @@ public class DBStorage implements IDBStorage {
 		return null;
 	}
 
-	public void open(String strPath, String strSqlScript) throws DBException {
+	synchronized public void open(String strPath, String strSqlScript) throws DBException {
 		parsePath(strPath);
 
 		close();
@@ -65,11 +65,11 @@ public class DBStorage implements IDBStorage {
 			rhoDB.loadSchema(strSqlScript);
 	}
 
-	public void setDbCallback(IDBCallback callback) {
+	synchronized public void setDbCallback(IDBCallback callback) {
 		this.callback = callback;
 	}
 
-	public void startTransaction() throws DBException {
+	synchronized public void startTransaction() throws DBException {
 		// if ( rhoDB != null && rhoDB.isOpen())
 		// rhoDB.beginTransaction();
 	}
