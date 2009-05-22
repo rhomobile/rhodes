@@ -72,6 +72,7 @@ public:
     LogSeverity getSeverity()const{ return m_severity; }
 
     void addMessage(String strMesage){ m_strMessage+=strMesage; }
+    void addRawString(const char* data, int nLen){ m_strMessage.append(data, nLen); }
 
     const String& getLastFmt()const{ return m_lastFmt.m_strFmt; } 
     void  clearLastFmt(){ m_lastFmt.m_strFmt = String(); }
