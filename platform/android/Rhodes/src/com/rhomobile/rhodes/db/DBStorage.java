@@ -2,8 +2,8 @@ package com.rhomobile.rhodes.db;
 
 import java.io.File;
 
-import android.os.Environment;
-
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.rho.db.DBException;
 import com.rho.db.IDBCallback;
 import com.rho.db.IDBResult;
@@ -13,6 +13,9 @@ import com.rhomobile.rhodes.RhodesInstance;
 
 public class DBStorage implements IDBStorage {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("DBStorage");
+	
 	private IDBCallback callback;
 	private String dbPath;
 	private String dbName;
@@ -42,9 +45,35 @@ public class DBStorage implements IDBStorage {
 	synchronized public IDBResult executeSQL(String strStatement, Object[] values)
 			throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
-			return rhoDB.executeSQL(strStatement, values);
+			IDBResult result = rhoDB.executeSQL(strStatement, values);
+			
+			onDeleteRecords(strStatement);
+			
+			return result;
 		}
 		return null;
+	}
+	
+	void onDeleteRecords(String strStatement){
+		IDBResult rows2Delete = null;
+		try
+		{
+			if ( strStatement.toLowerCase().indexOf(" delete ") == -1 )
+				return;
+		
+			if ( this.callback == null )
+				return;
+			
+			rows2Delete = executeSQL("SELECT attrib_type, update_type, value FROM object_values_to_delete", null);
+			
+			this.callback.OnDeleteFromTable("object_values", rows2Delete);
+		}
+		catch( Exception e ){
+			LOG.ERROR(e.getMessage());
+		}finally{
+			if ( rows2Delete != null)
+				rows2Delete.close();
+		}
 	}
 
 	synchronized public void open(String strPath, String strSqlScript) throws DBException {
