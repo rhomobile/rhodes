@@ -248,6 +248,60 @@ task :prebuild_win do
   #   cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
   #   cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
 
+###### build android pre-built binaries ######
+
+  chdir basedir
+
+  require 'rhodes/rhodes-build/lib/jake.rb'
+
+  prebuilt = "rhodes/rhodes-build/res/prebuilt/android/"
+
+  chdir 'platform/android/build'
+
+  config = Jake.config(File.open('build.yml'))
+
+  android_sdk = config["env"]["paths"]["android_sdk"]
+  eclipse_home = config["env"]["paths"]["eclipse_home"]
+  javac_home = config["env"]["paths"]["javac_home"]
+
+  puts "Compile RubyJVM"
+  chdir basedir
+  chdir 'platform/android/RubyJVM'    
+  puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}"`
+
+  puts "Compile RhoBundle, required by Rhodes"
+  chdir basedir
+  chdir 'platform/android/RhoBundle'    
+  puts `#{ant} -Djavac.home="#{javac_home}"`
+
+  puts "Compile Rhodes"
+  chdir basedir
+  chdir 'platform/android/Rhodes'
+  
+  puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}" -DANDROID_SDK="#{android_sdk}"`
+  
+  chdir basedir
+  chdir 'platform/android'
+
+  rm_rf File.join( basedir, prebuilt)
+  mkdir_p File.join( basedir, prebuilt )
+
+  puts "copy classes"
+  mkdir_p File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
+
+  puts "copy res folder"
+  mkdir_p File.join( basedir, prebuilt, 'res' )
+  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'res' ), File.join( basedir, prebuilt )
+
+  puts "copy manifest"
+  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'AndroidManifest.xml' ), File.join( basedir, prebuilt )
+
+  puts "copy loading.html"
+  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'assets', 'apps', 'loading.html' ), File.join( basedir, prebuilt )
+
+  puts "copy rhosdcard.7z"
+  cp File.join( basedir, 'platform', 'android', 'build', 'rhosdcard.7z' ), File.join( basedir, prebuilt )
 
 end
 
