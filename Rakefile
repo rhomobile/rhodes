@@ -170,6 +170,7 @@ task :prebuild_win do
   end
 
   chdir 'platform/bb/build'
+  puts `#{rake} clean`
   puts `#{rake} build:all`
 
   throw "blackberry rhodes.jar missing" if not File.exists? '../preverified/rhodes.jar'

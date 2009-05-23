@@ -1,3 +1,16 @@
+== 1.1.0
+* Stability fixes in 1.0
+* Support HSQLDB on RIM
+* Integrated mspec framework for testing
+* Support find / select (similar to ActiveRecord)
+* Configurable sync interface
+* Added logging infrastructure w/ native UI
+* moved top-level config.rb -> rhoconfig.txt
+* remove prebuilt binaries to save space
+
+== 1.0.0
+* Initial support for Android
+
 == 0.3.0 & 0.3.1
 Major features:
 * incremental sync enhancements

@@ -2,8 +2,6 @@
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/version.rb'
 
-task :default => [:spec, :features]
-
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('rhodes-build', RhodesBuild::VERSION) do |p|

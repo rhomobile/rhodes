@@ -1,7 +1,7 @@
 env:
   version: 1.1.0
   vendor: rhomobile
-  bbver: 4.2
+  bbver: 4.6
   applog: rholog.txt
   paths:
     4.6:
