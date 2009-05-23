@@ -14,6 +14,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	private FileUtilBB m_fs;
 	private IDBCallback m_dbCallback;
 	private HsqlDBRowResult m_rowResult = new HsqlDBRowResult();
+	private boolean m_bPendingNoAutoCommit = false;
 	
 	public HsqlDBStorage(){
 		m_fs = FileUtilBB.getDefaultInstance(); 
@@ -55,6 +56,10 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 				m_dbSess.sqlExecuteDirectNoPreChecks(strSqlScript);
 				m_dbSess.commitSchema();
 			}
+			
+			if ( m_bPendingNoAutoCommit )
+				m_dbSess.setAutoCommit(false);
+			m_bPendingNoAutoCommit = false;
 		}catch(HsqlException exc ){
 			throw new DBException(exc);
 		}
@@ -122,7 +127,10 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	
 	public void startTransaction()throws DBException
 	{
-		m_dbSess.setAutoCommit(false);
+		if ( m_dbSess == null )
+			m_bPendingNoAutoCommit = true;
+		else
+			m_dbSess.setAutoCommit(false);
 	}
 	
 	public void commit()throws DBException

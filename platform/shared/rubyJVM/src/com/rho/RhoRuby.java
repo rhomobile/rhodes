@@ -46,9 +46,12 @@ public class RhoRuby {
         
         try{
         	//Class mainRuby = Class.forName("xruby.ServeME.main");
-        	if ( helper != null ){
+        	if ( helper != null )
+        	{
+        		DBAdapter.getInstance().startTransaction();
 	    		mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
 	    		receiver = mainObj.invoke();
+        		DBAdapter.getInstance().commit();
         	}
         	
         /*}catch(ClassNotFoundException exc){

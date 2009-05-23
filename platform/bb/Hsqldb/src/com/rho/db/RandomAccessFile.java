@@ -6,12 +6,18 @@ import j2me.io.FileNotFoundException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import j2me.nio.channels.*;
 
 import j2me.io.File;
 
 public class RandomAccessFile  
 {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RAFile");
+	
     private boolean        m_bWriteAccess;
     private FileConnection m_file;
     private long           m_nSeekPos;
@@ -53,14 +59,15 @@ public class RandomAccessFile
     private void open(String name, int mode) throws FileNotFoundException{
     	try{
     		m_file = (FileConnection)Connector.open(name, mode);
-    		
-            if (!m_file.exists() && mode == Connector.READ_WRITE ) { 
+    		LOG.INFO("Open file: " + name);
+            if (!m_file.exists() && mode == Connector.READ_WRITE ) {
+            	LOG.INFO("Create file: " + name);
             	m_file.create();  // create the file if it doesn't exist
             }
     		
             m_fileSize = m_file.fileSize();
     	}catch(IOException exc){
-    		System.out.println("RandomAccessFile:open Exception: " + exc.getMessage());
+    		LOG.ERROR("Open '" + name +"'failed.", exc);
     		throw new FileNotFoundException(exc.getMessage());
     	}
     		
@@ -80,11 +87,15 @@ public class RandomAccessFile
             m_out.close();
             m_out = null;
         }
-    	
+
     	if ( m_file != null )
+    	{
+    		LOG.INFO("Close file: " + m_file.getName());
     		m_file.close();
+    	}
     	
     	m_file = null;
+    	
     }
     
     public void seek(long pos) throws IOException
