@@ -4,6 +4,7 @@ config = Jake.config(File.open('build.yml'))
 
 rhobundleimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["preverified"]+"/RubyVM.jar")
 rhodesimplib = rhobundleimplib + ";"+ Jake.get_absolute(config["build"]["preverified"]+"/RhoBundle.jar")
+builddir = pwd
 
 namespace "package" do
   desc "Package rhoBundle"
@@ -327,6 +328,12 @@ namespace "clean" do
     mkdir_p config["build"]["targetdir"]
   end
 
+  desc "Clean bin dir"
+  task :bindir do
+    rm_rf config["build"]["bindir"]
+    mkdir_p config["build"]["bindir"]
+  end
+
   desc "Clean temp dir"
   task :tempdir do
     rm_rf config["build"]["tmpdir"]
@@ -334,10 +341,10 @@ namespace "clean" do
   end
 
   desc "Clean all"
-  task :all => [:preverified,:packaged,:tempdir] do
+  task :all => [:preverified,:packaged,:bindir,:tempdir] do
     rubyvmdir = config["build"]["rubyVMdir"]
 
-    rm config["build"]["bindir"] + "/*.jar", :force => true
+    #rm config["build"]["bindir"] + "/*.jar", :force => true
     rm "../RhoBundle/RhoBundle.jar", :force => true
     rm rubyvmdir + '/RubyVM.jar', :force => true
   end
@@ -366,7 +373,8 @@ namespace "run" do
         args << "/fs-sdcard"
     end
         
-    args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
+#    args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
+    args << "\"/app-param=JvmDebugFile:"+ File.join(builddir,config["env"]["applog"]) +'"'
 
     Thread.new { Jake.run(command,args,jde + "/simulator",true) }
     $stdout.flush

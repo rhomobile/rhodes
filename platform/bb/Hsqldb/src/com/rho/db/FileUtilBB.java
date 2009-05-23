@@ -32,11 +32,19 @@ public class FileUtilBB implements FileAccess {
 
     public long getFileLength(java.lang.String filename){
     	
+    	FileConnection fconn = null;
     	try{
-	    	FileConnection fconn = (FileConnection)Connector.open(filename);
+	    	fconn = (FileConnection)Connector.open(filename,Connector.READ);
 	    	return fconn.fileSize();
     	}catch(IOException exc){
-    		System.out.println("FileUtilBB:getFileLength Exception: " + exc.getMessage());
+    		System.out.println("FileUtilBB:getFileLength Exception: " + exc.getMessage() + ";File: " + filename);
+    	}finally{
+    		if ( fconn != null )
+    			try{ 
+    				fconn.close(); 
+    			}catch(IOException exc){
+    	    		System.out.println("FileUtilBB:getFileLength Close Exception: " + exc.getMessage() + ";File: " + filename);
+    	    	}
     	}
     	
     	return 0;

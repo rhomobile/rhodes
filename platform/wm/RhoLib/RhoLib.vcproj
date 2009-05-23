@@ -877,10 +877,6 @@
 				RelativePath="..\..\shared\logging\RhoPlainLog.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\shared\logging\RhoPlainLog.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="statistic"

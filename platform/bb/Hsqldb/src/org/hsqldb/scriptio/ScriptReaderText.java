@@ -60,19 +60,20 @@ public class ScriptReaderText extends ScriptReaderBase {
 
     // this is used only to enable reading one logged line at a time
     //BufferedReader  dataStreamIn;
-    RowInputTextLog rowIn;
-    boolean         isInsert;
-    RandomAccessFile dataFile;
+    //RowInputTextLog rowIn;
+    //boolean         isInsert;
+    //RandomAccessFile dataFile;
+    String m_strScript;
     
     ScriptReaderText(Database db,
                      String file) throws HsqlException, IOException {
 
         super(db, file);
 
-        rowIn = new RowInputTextLog();
+        //rowIn = new RowInputTextLog();
     }
 
-    protected void openFile() throws IOException {
+    protected void openFile(){// throws IOException {
 
         /*InputStream d = db.isFilesInJar()
                         ? getClass().getResourceAsStream(fileName)
@@ -81,19 +82,39 @@ public class ScriptReaderText extends ScriptReaderBase {
         dataStreamIn = new BufferedReader(
             new InputStreamReader(new BufferedInputStream(d)));*/
     	
-    	dataFile = new RandomAccessFile(fileName,"r");    	
+    	RandomAccessFile dataFile = null;
+    	try{
+	    	dataFile = new RandomAccessFile(fileName,"r");
+	    	int len = (int)dataFile.length();
+		    if ( len == 0 )
+		    	m_strScript = "";
+		    else
+		    {
+			    byte[] data = new byte[len];
+			    dataFile.readFully(data);
+		
+			    m_strScript = new String(data,0,len);
+		    }
+    	}catch(IOException exc)
+    	{
+            db.logger.appLog.logContext(exc, null);
+    	}finally{
+    		if ( dataFile != null )
+    			try{ dataFile.close();}catch(IOException exc){}
+    	}
     }
 
-    protected void readDDL(Session session) throws IOException, HsqlException {
-
+    protected void readDDL(Session session) throws IOException, HsqlException 
+    {
+/*
         for (; readLoggedStatement(session); ) {
             if (rowIn.getStatementType() == INSERT_STATEMENT) {
                 isInsert = true;
 
                 break;
             }
-
-            Result result = session.sqlExecuteDirectNoPreChecks(statement);
+*/
+            Result result = session.sqlExecuteDirectNoPreChecks(m_strScript);//statement);
 
             if (result != null && result.isError()) {
                 db.logger.appLog.logContext(SimpleLog.LOG_ERROR,
@@ -106,15 +127,15 @@ public class ScriptReaderText extends ScriptReaderBase {
                     new Integer(lineCount), result.getMainString()
                 });
 
-                /** @todo fredt - if unavaialble external functions are to be ignored */
+                // @todo fredt - if unavaialble external functions are to be ignored 
                 throw error;
             }
-        }
+        //}
     }
 
     protected void readExistingData(Session session)
     throws IOException, HsqlException {
-
+/*
         try {
             String tablename = null;
 
@@ -150,13 +171,13 @@ public class ScriptReaderText extends ScriptReaderBase {
                               new Object[] {
                 new Integer(lineCount), e.toString()
             });
-        }
+        }*/
     }
 
     public boolean readLoggedStatement(Session session) throws IOException {
 
         //fredt temporary solution - should read bytes directly from buffer
-        String s = dataFile.readLine();//dataStreamIn.readLine();
+        /*String s = dataFile.readLine();//dataStreamIn.readLine();
 
         lineCount++;
 
@@ -167,13 +188,13 @@ public class ScriptReaderText extends ScriptReaderBase {
             return false;
         }
 
-        processStatement(session);
+        processStatement(session);*/
 
         return true;
     }
 
     private void processStatement(Session session) throws IOException {
-
+/*
         try {
             if (statement.startsWith("/*C")) {
                 int endid = statement.indexOf('*', 4);
@@ -224,14 +245,14 @@ public class ScriptReaderText extends ScriptReaderBase {
             rowData = rowIn.readData(colTypes);
         } catch (Exception e) {
             throw new IOException(e.toString());
-        }
+        }*/
     }
 
     public void close() {
 
         try {
             //dataStreamIn.close();
-        	dataFile.close();
+        	//dataFile.close();
         } catch (Exception e) {}
     }
 }
