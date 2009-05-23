@@ -1,0 +1,200 @@
+#header {
+  height: 30px;
+  width: 293px;
+  padding: 8px 0 0 8px;
+  margin: 0 0 10px 0;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px; }
+  #header a, #header img {
+    border: 0px; }
+  #header #logo {
+    float: left;
+    padding-right: 5px; }
+
+.notice {
+  padding: 5px;
+  background: #ddd;
+  -webkit-border-radius: 5px;
+  margin-top: 5px;
+  text-align: center; }
+
+
+html {
+  font-size: 67.5%; }
+
+body {
+  line-height: 1;
+  font-size: 1.2em;
+  color: #000;
+  background: #fff;
+  font-family: sans-serif;
+  overflow-x: hidden;
+  -webkit-user-select: none;
+  -webkit-text-size-adjust: none; }
+
+p, li, dl, #featured_article {
+  line-height: 1.65; }
+
+pre {
+  white-space: pre-wrap; }
+
+h2 {
+  border-bottom: 1px solid #aaa;
+  padding: 5px 0; }
+
+a {
+  text-decoration: none;
+  color: #002bb8; }
+  a:visited {
+    color: #5a3696; }
+  a:active {
+    color: #faa700; }
+  a:hover {
+    text-decoration: underline; }
+
+.links {
+  float: left;
+  padding: 10px; }
+
+
+#contentSub, .dablink {
+  margin-bottom: 10px; }
+
+img.thumbborder {
+  border: 1px solid #ccc; }
+
+
+.thumb {
+  border: 1px solid #ccc;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background: #f9f9f9;
+  margin-bottom: 10px; }
+  .thumb .thumbinner[style] {
+    margin: 5px auto; }
+  .thumb .thumbcaption {
+    width: 100%;
+    margin: 5px 10px 0;
+    text-align: center;
+    width: auto !important; }
+
+
+table {
+  border-spacing: 0 !important;
+  width: 100%;
+  border-collapse: collapse !important;
+  border: 1px solid #ccc;
+  padding: 3px;
+  margin-bottom: 15px; }
+  table td, table th {
+    border: 1px solid #ccc;
+    padding: 3px; }
+  table table {
+    border: 0; }
+    table table td, table table th {
+      border: 0; }
+  table.toc {
+    background: #f9f9f9; }
+    table.toc h2 {
+      border: 0;
+      padding: 0;
+      margin-top: 5px; }
+  table.navbox {
+    font-size: 0.9em;
+    width: 100% !important; }
+    table.navbox th.navbox-title {
+      background: #CCCCFF;
+      padding: 5px; }
+    table.navbox td.navbox-abovebelow {
+      padding: 3px; }
+    table.navbox td.navbox-group {
+      background: #DDDDFF;
+      width: 25%;
+      padding: 3px; }
+    table.navbox td.navbox-group+td {
+      padding: 3px; }
+    table.navbox div[style*="padding"] {
+      padding-left: 0 !important;
+      padding-right: 0 !important; }
+      table.navbox div[style*="padding"] a {
+        white-space: pre-wrap; }
+    table.navbox span[style*="white"] {
+      white-space: pre-wrap !important; }
+    table.navbox td, table.navbox th {
+      padding: 0; }
+    table.navbox table {
+      margin-bottom: 0; }
+  table.wikitable th {
+    background: #f3f3f3; }
+  table[style] {
+    width: 100% !important;
+    float: none !important;
+    margin-left: 0 !important; }
+  table.infobox {
+    background: #f9f9f9; }
+    table.infobox th, table.infobox td {
+      border: 0; }
+    table.infobox td[colspan="3"], table.infobox th[colspan="3"] {
+      border: 1px solid #ccc; }
+  table.gallery {
+    background: #f9f9f9;
+    border-bottom: 0; }
+    table.gallery th, table.gallery td {
+      display: block;
+      border: 0;
+      border-bottom: 1px solid #ccc; }
+    table.gallery .gallerybox[style] {
+      width: auto !important;
+      margin-bottom: -16px; }
+    table.gallery .thumb[style] {
+      border: 0;
+      padding: 0 !important;
+      width: auto !important;
+      margin: 0 auto; }
+    table.gallery .gallerytext {
+      margin-top: -12px;
+      text-align: center; }
+  table.geography[style] th {
+    text-align: left; }
+  table.geography[style] span span {
+    display: block; }
+  table.geography[style] td[style*="text-align"], table.geography[style] td[colspan="2"] {
+    text-align: left !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important; }
+    table.geography[style] td[style*="text-align"] div[style],     table.geography[style] td[colspan="2"] div[style] {
+      text-align: left !important; }
+
+table.admin {
+  width: 300px; }
+
+#featured_article .noprint {
+  display: none; }
+
+#firstHeading {
+  font-size: 140%; }
+
+
+.help dt {
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+  padding-bottom: 2px;
+  font-size: 1.05em; }
+.help dd {
+  margin-bottom: 25px;
+  margin-left: 20px; }
+
+#image {
+  padding-top: 15px; }
+
+#footer {
+  padding-top: 20px;
+  font-size: 80%; }
+
+.today .noprint {
+  display: none; }
+
+
+.floatright {
+  float: right; }

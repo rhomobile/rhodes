@@ -1,0 +1,12 @@
+start_path = '/app'
+options_path = '/app?history=true'
+rhobundle_zip_url = nil
+rhobundle_zip_pwd = nil
+
+# Rhodes runtime properties
+MinSeverity  = 0
+LogToOutput = 1
+LogCategories = *
+ExcludeLogCategories =
+KeepTrackOfLastVisitedPage = 0
+LastVisitedPage = 'http://localhost:8080/app'
