@@ -1,2 +1,0 @@
-config
-app/WikipediaPage/config
