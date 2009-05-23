@@ -44,6 +44,8 @@ platform/android/.metadata/*
 platform/android/Rhodes/assets
 platform/android/Rhodes/bin
 platform/android/Rhodes/libs
+platform/android/**/bin
+
 platform/shared/*/bin
 
 #*.jar
