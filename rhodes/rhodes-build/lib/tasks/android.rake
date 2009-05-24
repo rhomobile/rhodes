@@ -86,13 +86,11 @@ namespace "bundle" do
     chdir $bindir
   
     classes = File.join($prebuilt,"android","classes")
-    rubyvm = File.join($prebuilt,"android","jrubyvm.jar")
-    rhodes = File.join($prebuilt,"android","jrhodes.jar")
     rhobundle = File.join($bindir,"RhoBundle.jar")
     dexfile = File.join($bindir,"classes.dex")
 
     puts "Running dx utility"
-    puts `#{$dx} --dex "--output=#{dexfile}" #{classes} #{rubyvm} #{rhodes} #{rhobundle}`
+    puts `#{$dx} --dex "--output=#{dexfile}" #{classes} #{rhobundle}`
 
     manifest = File.join($prebuilt,"android","AndroidManifest.xml")
     resource = File.join($prebuilt,"android","res")
@@ -163,10 +161,10 @@ namespace "run" do
       count = 0
       while theoutput.to_s.match(/Error Type/) and count < 15 do
         puts "Failed to load (possibly because emulator not done launching)- retrying"
-	$stdout.flush
-	sleep 5
-	count += 1
-	theoutput = `#{$adb} install -r "#{apkfile}"`
+        $stdout.flush
+        sleep 5
+        count += 1
+        theoutput = `#{$adb} install -r "#{apkfile}"`
       end
       puts "Loading complete, you may now run the application"      
       
