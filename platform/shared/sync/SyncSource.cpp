@@ -47,13 +47,13 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         //    continue;
 
         strQuery = strBaseQuery + "&" + blob.getBody();
-        if ( !getNet().pushFile(getUrl()+strQuery, blob.getFilePath() ) ) //oFile.getInputStream()) )
+        if ( !getNet().pushFile(strQuery, blob.getFilePath() ) ) //oFile.getInputStream()) )
         {
             getSync().setState(CSyncEngine::esStop);
             return;
         }
 
-        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and attrib_type=blob.file and value=?", getID(), blob.getFilePath() );
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and attrib_type=? and value=?", getID(), "blob.file", blob.getFilePath() );
     }
 
     m_arSyncBlobs.clear();
@@ -87,7 +87,7 @@ void CSyncSource::syncClientChanges()
 		    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
 
             getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
-            syncClientBlobs(strQuery);
+            syncClientBlobs(strUrl+strQuery);
         }else
             getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
     }
@@ -103,6 +103,7 @@ void CSyncSource::syncClientChanges()
  */
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
+    //boolean bFirst = true;
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType ) );
     for( ; !res.isEnd(); res.next() )
@@ -114,6 +115,14 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
+
+        /*if ( bFirst )
+        {
+            value = "d:\\work\\blobtest.png";
+            attribType = "blob.file";
+            bFirst = false;
+        }*/
+
         if ( value.length() > 0 )
         {
             if ( attribType == "blob.file" )
