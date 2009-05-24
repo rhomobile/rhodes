@@ -1,8 +1,8 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-#ifndef __APPLE__
-//#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+//#ifndef __APPLE__
+#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 #include <stdlib.h>
 
 #ifndef _RHO_NO_MEMDEFINES
