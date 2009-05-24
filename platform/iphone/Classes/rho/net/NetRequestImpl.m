@@ -386,16 +386,16 @@ void rho_net_impl_cancelAll()
 /*
  * Pushes changes from list to rhosync server
  */
-/*
-int push_remote_data(char* url, char* data, size_t data_size,char* contentType) {
-	int retval = SYNC_PUSH_CHANGES_OK;
+
+int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType) 
+{
+	int nRet = 0;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	if (data_size == 0 || data == NULL) {
-		[pool release];
-		return SYNC_PUSH_CHANGES_OK;
-	}
+
 	NSString *session = get_session(url);
 	if (session) {
+		RAWLOG_INFO2("Push data. Url: %s; Size: %d", url, data_size);
+		
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 		NSError *error = nil;
@@ -405,42 +405,51 @@ int push_remote_data(char* url, char* data, size_t data_size,char* contentType) 
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setHTTPMethod:@"POST"];
 		
-		if (contentType){
-			NSString *temp = [[NSString alloc] initWithUTF8String:contentType];
-			[request setValue:temp forHTTPHeaderField:@"Content-Type"];
-		}
 		
-		if (session) {
-			[request setValue:session forHTTPHeaderField:@"Cookie"];
-		}
+		[request setValue:session forHTTPHeaderField:@"Cookie"];
 		[request setHTTPBody:postBody];
+		
+		//if (contentType){
+		//	NSString *temp = [[NSString alloc] initWithUTF8String:contentType];
+			//[request setValue:temp forHTTPHeaderField:@"Content-Type"];			
+			[request setValue:@"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5" forHTTPHeaderField:@"Content-Type"];
+		//}
+		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) {
+			g_curConn = conn;
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			if (code != 200) {
-				NSLog(@"An error occured connecting to the sync source: %i returned", code);
+			g_curConn = NULL;
+
+			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			if (code != 200) 
+			{
+				RAWLOG_ERROR4("Push file failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
+				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
-					errorCode == NSURLErrorUserAuthenticationRequired) {
-					logout();
+					errorCode == NSURLErrorUserAuthenticationRequired) 
+				{
+					rho_net_impl_deleteAllCookies();
 				}
-				retval = SYNC_PUSH_CHANGES_ERROR;
-			} else {
+
+			} else 
+			{
+				nRet = 1;
 				NSString *output = [NSString stringWithCString:[returnData bytes]];
 				NSLog(@"RESPONSE: %@", output);
 			}
 		}
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-		retval = SYNC_PUSH_CHANGES_OK;
-	} else {
-		retval = SYNC_PUSH_CHANGES_ERROR;
-	}
+	} 
+	
 	[pool drain];
 	[pool release];
-	return retval;
-}*/
+	return nRet;
+}
 
 NSArray *get_all_cookies() 
 {
