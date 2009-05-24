@@ -291,6 +291,12 @@ task :prebuild_win do
   mkdir_p File.join( basedir, prebuilt, 'classes' )
   cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
 
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2me' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2mex' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'javolution' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'org' ), File.join( basedir, prebuilt, 'classes' )
+
   puts "copy res folder"
   mkdir_p File.join( basedir, prebuilt, 'res' )
   cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'res' ), File.join( basedir, prebuilt )

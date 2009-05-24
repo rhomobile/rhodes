@@ -4,7 +4,7 @@ namespace "config" do
   task :android => :common do
 
     $deploydir = File.join($basedir,'deploy','android')
-    $excludelib = ['**/rhom_db_adapter.rb','**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $dx = "dx.bat"
