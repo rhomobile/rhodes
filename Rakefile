@@ -267,18 +267,21 @@ task :prebuild_win do
 
   puts "Compile RubyJVM"
   chdir basedir
-  chdir 'platform/android/RubyJVM'    
+  chdir 'platform/android/RubyJVM'  
+  puts `#{ant} clean`  
   puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}"`
 
   puts "Compile RhoBundle, required by Rhodes"
   chdir basedir
   chdir 'platform/android/RhoBundle'    
+  puts `#{ant} clean`  
   puts `#{ant} -Djavac.home="#{javac_home}"`
 
   puts "Compile Rhodes"
   chdir basedir
   chdir 'platform/android/Rhodes'
   
+  puts `#{ant} clean`  
   puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}" -DANDROID_SDK="#{android_sdk}"`
   
   chdir basedir
