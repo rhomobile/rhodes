@@ -70,7 +70,7 @@ module Rhom
                 # full list corresponding to factory's source id
                 def find(*args)
                   list = []
-                  hash_list = {}
+                  #hash_list = {}
                   conditions = {}
 
                   # first find all query objects
@@ -97,7 +97,8 @@ module Rhom
                     objs = ::Rhom::RhomDbAdapter::select_from_table(::Rhom::TABLE_NAME, '*', conditions, {"order by"=>'object'},select_arr)
 
                     # fetch the rest of the attributes if we're searching by specific attrib value
-                    if conditions and conditions.size > 0
+                    #if conditions and conditions.size > 0
+                    if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
                       full_objects = []
                       objs.each do |obj|
                         if not select_arr
@@ -111,23 +112,33 @@ module Rhom
 
                     # build up the object array where each
                     # row in this array is a rhom_object
-                    objs.collect! do |obj|
+                    index = -1
+                    prev_object = ""
+                    objs.each do |obj|
                       object = obj['object']
                       attrib = obj['attrib']
                       value = obj['value']
-                      hash_list[object] = get_new_obj(obj) if not hash_list[object]
-                      if not method_name_reserved?(attrib) and hash_list[object].send(attrib.to_sym)
-                        hash_list[object].remove_var(attrib)
+                      
+                      if not object.eql?(prev_object)
+                        list.push get_new_obj(obj)
+                        index += 1
+                        prev_object = object;
                       end
-                      hash_list[object].send("#{attrib}=".to_sym(), value) if not method_name_reserved?(attrib)
-                      nil # remove the element from the array
+                      list[index].send("#{attrib}=".to_sym(), value) if not method_name_reserved?(attrib)
+                      
+                      #hash_list[object] = get_new_obj(obj) if not hash_list[object]
+                      #if not method_name_reserved?(attrib) and hash_list[object].send(attrib.to_sym)
+                      #  hash_list[object].remove_var(attrib)
+                      #end
+                      #hash_list[object].send("#{attrib}=".to_sym(), value) if not method_name_reserved?(attrib)
+                      #nil # remove the element from the array
                     end
                     
                   end
 
                   # convert hash to array
-                  list = hash_list.values
-                  hash_list = nil
+                  #list = hash_list.values
+                  #hash_list = nil
                   
                   # setup order by if provided
                   order = extract_options(args)
