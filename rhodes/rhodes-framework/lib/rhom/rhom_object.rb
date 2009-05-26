@@ -62,8 +62,20 @@ module Rhom
       arr.last.is_a?(::Hash) ? arr.pop : {}
     end
     
+    @@reserved_names = {"object" => "1",
+                      "source_id" => "1",
+                      "update_type" => "1",
+                      "attrib_type" => "1",
+                      "type" => "1",
+                      "set_notification" => "1",
+                      "clear_notification" => "1" }
+    
+
     def method_name_reserved?(method)
-      method =~ /\bobject\b|\bsource_id\b|\bupdate_type\b|\battrib_type\b|\btype\b|\bset_notification\b|\bclear_notification\b/
-    end
+      @@reserved_names.has_key?(method)
+    end    
+    #def method_name_reserved?(method)
+     # method =~ /\bobject\b|\bsource_id\b|\bupdate_type\b|\battrib_type\b|\btype\b|\bset_notification\b|\bclear_notification\b/
+    #end
   end # RhomObject
 end # Rhom
