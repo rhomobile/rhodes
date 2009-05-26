@@ -357,12 +357,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
         
-        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
-        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
         {
-	        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-        	_isFullBrowser = true;
+	        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+	        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+	        {
+		        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+		        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
+	        	_isFullBrowser = true;
+	        }
         }
         
         if(!restoreLocation()) {
