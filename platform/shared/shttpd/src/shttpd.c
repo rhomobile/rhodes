@@ -1215,7 +1215,7 @@ do_select(int max_fd, fd_set *read_set, fd_set *write_set, int milliseconds)
 		 * we sleep here.
 		 */
 		//Sleep(milliseconds);
-        WaitForSingleObject(g_hWaitEvent,milliseconds);
+        //WaitForSingleObject(g_hWaitEvent,milliseconds);
 #endif // _WIN32
 		DBG(("select: %d", ERRNO));
 	}
