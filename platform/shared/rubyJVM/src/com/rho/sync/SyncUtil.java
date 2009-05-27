@@ -92,7 +92,7 @@ public class SyncUtil {
 			if (data != null) {
 		        LOG.INFO("Start parsing data." );
 				
-				ArrayList list = SyncJSONParser.parseObjectValues(data, header);
+				ArrayList list = SyncJSONParser.parseObjectValues(data, header, source.get_sourceId());
 				int count = list.size();
 				
 		        LOG.INFO("Parsed " + count + " records from sync source..." );
