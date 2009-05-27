@@ -46,7 +46,7 @@ public class SyncJSONParser {
 	 * 
 	 * @return the array list
 	 */
-	public static ArrayList parseObjectValues(String input, SyncHeader header) {
+	public static ArrayList parseObjectValues(String input, SyncHeader header, int sourceId) {
 		ArrayList list = new ArrayList();
 
 		// Iterates over a JSONArray provided by input and parses
@@ -63,7 +63,7 @@ public class SyncJSONParser {
 				{
 					JSONObject current = (JSONObject) element.get("object_value");
 					String attrib = (String) current.get("attrib");
-					int sourceId = ((Integer) current.get("source_id")).intValue();
+					//int sourceId = ((Integer) current.get("source_id")).intValue();
 					String object = (String) current.get("object");
 					Object obValue = current.get("value");
 					String value = obValue == JSONObject.NULL ? null : (String) obValue;
