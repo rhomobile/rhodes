@@ -11,6 +11,8 @@ using namespace rho::db;
 using namespace rho::net;
 using namespace rho::common;
 
+extern common::CMutex g_mxDB;
+
 template <>
 struct printArg<DBResultPtr&>
 {
@@ -21,6 +23,18 @@ struct printArg<DBResultPtr&>
   }
 }; 
 
+template<> 
+struct comparer<const char*>
+{
+  static inline bool compare(const char* sz1, const char* sz2)
+  {
+    if ( sz1 == sz2 )
+        return true;
+
+	return sz1 && sz2 && strcmp(sz1,sz2) == 0 ;
+  }
+};
+
 TEST(SyncSource, syncWithoutNetwork)
 {
     MockRepository mocks;
@@ -28,11 +42,8 @@ TEST(SyncSource, syncWithoutNetwork)
     IRhoClassFactory* factory = mocks.InterfaceMock<IRhoClassFactory>();
 
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
     mocks.ExpectCall(net, INetRequest::pullData).With(String("?format=json&client_id=&p_size=")+CSyncEngine::SYNC_PAGE_SIZE()+"&ack_token=6869672616465")
-        .Return(new CNetData(""));
+        .Return(new CNetData(0));
 
     CDBAdapter db;
     CSyncEngine oSyncEngine(db);
@@ -50,11 +61,8 @@ TEST(SyncSource, syncWithoutNetworkFirstTime)
     IRhoClassFactory* factory = mocks.InterfaceMock<IRhoClassFactory>();
 
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(true);
     mocks.ExpectCall(net, INetRequest::pullData).With(String("?format=json&client_id=&p_size=") + CSyncEngine::SYNC_PAGE_SIZE()).
-        Return(new CNetData(""));
+        Return(new CNetData(0));
 
     CDBAdapter db;
     CSyncEngine oSyncEngine(db);
@@ -143,7 +151,8 @@ TEST(SyncSource, makePushBody)
     CDBAdapter* db = mocks.ClassMock<CDBAdapter>();
     CDBResult* res = mocks.ClassMock<CDBResult>();
 
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(res);
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).With("SELECT attrib, object, value, attrib_type "
+					 "FROM object_values where source_id=? and update_type =?").Return(res);
     mocks.ExpectCall(res, CDBResult::isEnd).Return(false);
     mocks.ExpectCall(res, CDBResult::getStringByIdx).With(0).Return("attr1");
     mocks.ExpectCall(res, CDBResult::getStringByIdx).With(1).Return("obj1");
@@ -191,18 +200,6 @@ TEST(SyncSource, makePushBlobBody)
     mocks.removeMock(res);
 }
 
-bool testBlob(const String& strUrl, common::InputStream* body)
-{
-    int i = 0;
-    if ( body )
-    {
-
-        for( i = 0; body->read() != -1; i++ ) ;
-    }
-
-    return true;
-}
-
 TEST(SyncSource, syncClientBlobs)
 {
     MockRepository mocks;
@@ -211,8 +208,8 @@ TEST(SyncSource, syncClientBlobs)
     CDBAdapter* db = mocks.ClassMock<CDBAdapter>();
 
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
-    mocks.ExpectCall(net, INetRequest::pushMultipartData).Do(testBlob);
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult());
+    mocks.ExpectCall(net, INetRequest::pushFile).With("?client_id=cl1&Body", "d:/work/BlobTest.png").Return(true);
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult(g_mxDB));
 
     CSyncEngine oSyncEngine(*db);
     oSyncEngine.setFactory(factory);
@@ -229,7 +226,7 @@ TEST(SyncSource, processServerData)
     CDBAdapter db;
     CSyncEngine oSyncEngine(db);
     CSyncSource oSrc(oSyncEngine);
-    String data = "[{\"count\": 200},{\"token\": \"6869672616465\"},\
+    const char* data = "[{\"count\": 200},{\"token\": \"6869672616465\"},\
     {\"object_value\": {\"attrib\": \"shipping_address_state\", \"update_type\": \"query\", \"id\": -1032404474, \"value\": \"NJ\", \"source_id\": 1, \"object\": \"1460099a-be9d-59f1-16c9-4544f051792a\", \"db_operation\": \"insert\"}}]";
     oSrc.processServerData(data);
 

@@ -389,6 +389,11 @@ int rho_testvprintf(const char * _Format, va_list _ArgList);
 #include <vector>
 #endif
 
+#ifdef _WIN32_WCE
+#undef GTEST_HAS_DEATH_TEST
+#define GTEST_HAS_DEATH_TEST 0
+#endif //_WIN32_WCE
+
 // Determines whether to support value-parameterized tests.
 
 #if defined(__GNUC__) || (_MSC_VER >= 1400)

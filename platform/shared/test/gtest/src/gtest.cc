@@ -3368,14 +3368,14 @@ int UnitTest::Run() {
     // Death test children can be terminated with _abort().  On Windows,
     // _abort() can show a dialog with a warning message.  This forces the
     // abort message to go to stderr instead.
-    _set_error_mode(_OUT_TO_STDERR);
+//    _set_error_mode(_OUT_TO_STDERR);
 
     // In the debug version, Visual Studio pops up a separate dialog
     // offering a choice to debug the aborted program. We need to suppress
     // this dialog or it will pop up for every EXPECT/ASSERT_DEATH statement
     // executed. Google Test will notify the user of any unexpected
     // failure via stderr.
-#if _MSC_VER >= 1400
+/*#if _MSC_VER >= 1400
     // VC++ doesn't define _set_abort_behavior() prior to the version 8.0.
     // Users of prior VC versions shall suffer the agony and pain of
     // clicking through the countless debug dialogs.
@@ -3386,6 +3386,7 @@ int UnitTest::Run() {
           0x0,                                    // Clear the following flags:
           _WRITE_ABORT_MSG | _CALL_REPORTFAULT);  // pop-up window, core dump.
 #endif  // _MSC_VER >= 1400
+*/
   }
 
   __try {

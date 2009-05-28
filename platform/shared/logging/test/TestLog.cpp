@@ -16,7 +16,7 @@ void setup(){
     LOGCONF().setMinSeverity( 0 );
     LOGCONF().setLogToOutput(true);
     LOGCONF().setLogToFile(true);
-    LOGCONF().setLogFilePath("MyLog.txt");
+    //LOGCONF().setLogFilePath("MyLog.txt");
     LOGCONF().setLogPrefix(true);
 }
 

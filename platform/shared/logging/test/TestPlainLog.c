@@ -1,4 +1,4 @@
-#include "../RhoPlainLog.h"
+#include "../RhoLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "PlainC"

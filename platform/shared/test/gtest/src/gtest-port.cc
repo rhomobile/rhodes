@@ -36,8 +36,8 @@
 #include <stdio.h>
 
 #if GTEST_OS_WINDOWS
-#include <io.h>
-#include <sys/stat.h>
+//#include <io.h>
+//#include <sys/stat.h>
 #else
 #include <unistd.h>
 #endif  // GTEST_OS_WINDOWS
@@ -410,7 +410,7 @@ void GTestLog(GTestLogSeverity severity, const char* file,
 #endif  // _MSC_VER
 
 // Defines the stderr capturer.
-
+/*
 class CapturedStderr {
  public:
   // The ctor redirects stderr to a temporary file.
@@ -459,13 +459,13 @@ class CapturedStderr {
  private:
   int uncaptured_fd_;
   ::std::string filename_;
-};
+};*/
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif  // _MSC_VER
 
-static CapturedStderr* g_captured_stderr = NULL;
+//static CapturedStderr* g_captured_stderr = NULL;
 
 // Returns the size (in bytes) of a file.
 static size_t GetFileSize(FILE * file) {
@@ -498,17 +498,17 @@ static ::std::string ReadEntireFile(FILE * file) {
 
 // Starts capturing stderr.
 void CaptureStderr() {
-  if (g_captured_stderr != NULL) {
+  /*if (g_captured_stderr != NULL) {
     GTEST_LOG_(FATAL, "Only one stderr capturer can exist at one time.");
   }
-  g_captured_stderr = new CapturedStderr;
+  g_captured_stderr = new CapturedStderr;*/
 }
 
 // Stops capturing stderr and returns the captured string.
 // GTEST_HAS_DEATH_TEST implies that we have ::std::string, so we can
 // use it here.
 ::std::string GetCapturedStderr() {
-  g_captured_stderr->StopCapture();
+/*  g_captured_stderr->StopCapture();
 
 // Disables Microsoft deprecation warning for fopen and fclose.
 #ifdef _MSC_VER
@@ -525,7 +525,9 @@ void CaptureStderr() {
   delete g_captured_stderr;
   g_captured_stderr = NULL;
 
-  return content;
+  return content;*/
+
+  return "";
 }
 
 #endif  // GTEST_HAS_STD_STRING

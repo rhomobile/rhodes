@@ -23,14 +23,36 @@ struct printArg<DBResultPtr&>
     if (withComma) os << ",";
     os << arg.operator ->();
   }
-}; 
+};
+
+//bool operator==(const CDBResult& , const CDBResult& ){ return true;}
+template<> 
+struct comparer<const char*>
+{
+  static inline bool compare(const char* sz1, const char* sz2)
+  {
+    if ( sz1 == sz2 )
+        return true;
+
+	return sz1 && sz2 && strcmp(sz1,sz2) == 0 ;
+  }
+};
+/*bool operator==(const char* sz1, const char* sz2)
+{
+    if ( sz1 == sz2 )
+        return true;
+
+	return sz1 && sz2 && strcmp(sz1,sz2) == 0 ;
+}*/
+
+common::CMutex g_mxDB;
 
 TEST(SyncEngine, loadAllSources0) 
 {
     MockRepository mocks;
     CDBAdapter* db = mocks.ClassMock<CDBAdapter>();
 
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult());
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult(g_mxDB));
 
     CSyncEngine oSyncEngine(*db);
     oSyncEngine.loadAllSources();
@@ -42,36 +64,39 @@ TEST(SyncEngine, loadClientID)
 {
     MockRepository mocks;
     CDBAdapter* db = mocks.ClassMock<CDBAdapter>();
+    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
     INetRequest* net = mocks.InterfaceMock<INetRequest>();
     IRhoClassFactory* factory = mocks.InterfaceMock<IRhoClassFactory>();
-    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
+    const char* szclientID = "{\"client\": {\"created_at\": \"2009-05-13T19:28:36Z\", \"session\": null, \"updated_at\": \"2009-05-13T19:28:36Z\", \"user_id\": null, \"client_id\": \"dce301bd-053e-4591-a2c5-4813c201c623\", \"last_sync_token\": null}}";
 
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult());
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).With("SELECT client_id from client_info limit 1").Return(new CDBResult(g_mxDB));
     mocks.ExpectCall(net, INetRequest::pullData).
-        With(String("clientcreate")+CSyncEngine::SYNC_SOURCE_FORMAT()).Return(new CNetData("clientID1"));
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult());
+        With(String("/clientcreate")+CSyncEngine::SYNC_SOURCE_FORMAT()).Return(new CNetData(szclientID));
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).With("DELETE FROM client_info").Return(new CDBResult(g_mxDB));
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).With("INSERT INTO client_info (client_id) values (?)").Return(new CDBResult(g_mxDB));
 
     CSyncEngine oSyncEngine(*db);
     oSyncEngine.setFactory(factory);
     oSyncEngine.getSources().add(src0);
     oSyncEngine.loadClientID();
 
-    EXPECT_EQ("clientID1", oSyncEngine.getClientID());
-
+    EXPECT_EQ("dce301bd-053e-4591-a2c5-4813c201c623", oSyncEngine.getClientID());
     mocks.removeMock(src0);
 }
 
 TEST(SyncEngine, syncAllSourcesOK)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
+    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.ExpectCall(src0, CSyncSource::sync);
 
-    CSyncEngine oSyncEngine;
+    CDBAdapter db;
+    CSyncEngine oSyncEngine(db);
     oSyncEngine.getSources().add(src0);
+    oSyncEngine.setLoggedIn(true);
     oSyncEngine.syncAllSources();
 
     mocks.removeMock(src0);
@@ -84,8 +109,7 @@ TEST(SyncEngine, syncShouldStopOnFirstError)
     INetRequest* net = mocks.InterfaceMock<INetRequest>();
 
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
-    mocks.ExpectCall(net, INetRequest::pushData).Return(false);
-    mocks.NeverCall(net, INetRequest::pushData);
+    mocks.ExpectCall(net, INetRequest::pullData).Return(new CNetData(0));
     mocks.NeverCall(net, INetRequest::pullData);
 
     CDBAdapter db;
@@ -106,12 +130,14 @@ TEST(SyncEngine, syncShouldStopOnFirstError)
 TEST(SyncEngine, syncShouldExit)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
+    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.NeverCall(src0, CSyncSource::sync);
 
-    CSyncEngine oSyncEngine;
+    CDBAdapter db;
+    CSyncEngine oSyncEngine(db);
+    oSyncEngine.setLoggedIn(true);
     oSyncEngine.getSources().add(src0);
     oSyncEngine.setState(CSyncEngine::esExit);
     oSyncEngine.syncAllSources();
@@ -122,15 +148,17 @@ TEST(SyncEngine, syncShouldExit)
 TEST(SyncEngine, syncShouldStartFrom1)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
-    CSyncSource* src1 = mocks.ClassMock<CSyncSource>();
+    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
+    CSyncSource* src1 = mocks.InterfaceMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.ExpectCall(src1, CSyncSource::isEmptyToken).Return(false);
     mocks.NeverCall(src0, CSyncSource::sync);
     mocks.ExpectCall(src1, CSyncSource::sync);
 
-    CSyncEngine oSyncEngine;
+    CDBAdapter db;
+    CSyncEngine oSyncEngine(db);
+    oSyncEngine.setLoggedIn(true);
     oSyncEngine.getSources().add(src0);
     oSyncEngine.getSources().add(src1);
     oSyncEngine.syncAllSources();
@@ -150,7 +178,7 @@ TEST(SyncEngine, loginOK)
     mocks.ExpectCall(factory, IRhoClassFactory::createNetRequest).Return(net);
     mocks.ExpectCall(net, INetRequest::pullCookies).With("http://dev.rhosync.rhohub.com/apps/1/sources/15/client_login",
         "login=name&password=pwd&remember_me=1").Return(true);
-    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult());
+    mocks.ExpectCall(db, CDBAdapter::prepareStatement).Return(new CDBResult(g_mxDB));
 
     CSyncEngine oSyncEngine(*db);
     oSyncEngine.setFactory(factory);
@@ -216,7 +244,8 @@ TEST(SyncEngine, notifications)
     mocks.NeverCall(net, INetRequest::resolveUrl);
     mocks.NeverCall(net, INetRequest::pushData);
 
-    CSyncEngine oSyncEngine;
+    CDBAdapter db;
+    CSyncEngine oSyncEngine(db);
     oSyncEngine.setFactory(factory);
     oSyncEngine.setNotification(1,"url1","params1");
     oSyncEngine.fireNotification(1,1);
