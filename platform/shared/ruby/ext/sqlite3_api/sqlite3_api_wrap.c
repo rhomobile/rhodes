@@ -1,6 +1,10 @@
 #include "sqlite3.h"
 #include "ruby.h"
 
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "DB"
+
 static VALUE mSqlite3;
 static VALUE mDatabase;
 
@@ -79,6 +83,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	db = *ppDB;
 	sql = RSTRING_PTR(argv[0]);
 	
+    RAWTRACE1("db_execute: %s", sql);
 	if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
 		rb_raise(rb_eArgError, "could not prepare statement: %d",nRes);
 

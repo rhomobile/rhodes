@@ -63,7 +63,6 @@ void CSyncThread::processCommand()
         m_oSyncEngine.doSyncAllSources();
         break;
     case scChangePollInterval:
-        //TODO:scChangePollInterval
         break;
     case scSyncOne:
         //TODO:scSyncOne

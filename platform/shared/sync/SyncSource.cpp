@@ -259,7 +259,7 @@ void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
 
         m_nDeleted++;
     }else{
-        //TODO: log error
+        LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");
     }
 }
 
