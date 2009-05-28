@@ -43,6 +43,8 @@ public:
     {
         return sqlite3_column_int64(m_dbStatement, nCol);
     }
+//private:
+    CDBResult() : m_lockDB(*new common::CMutex() ){} //TEST ONLY
 
 };
 

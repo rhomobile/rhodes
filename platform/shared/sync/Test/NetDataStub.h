@@ -7,6 +7,7 @@ public:
     CNetData(const char* szData) : m_szData(szData){}
 
     virtual const char* getCharData(){ return m_szData; }
+    virtual unsigned int getDataSize(){ return strlen(m_szData); }
 
 };
 

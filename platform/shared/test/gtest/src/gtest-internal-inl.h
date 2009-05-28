@@ -45,7 +45,7 @@
 #error "It must not be included except by Google Test itself."
 #endif  // GTEST_IMPLEMENTATION_
 
-#include <errno.h>
+//#include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>   // For strtoll/_strtoul64.
 
