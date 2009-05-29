@@ -19,14 +19,18 @@ public class RubyExceptionValue extends RubyBasic {
     private String message_ = "";
     private Throwable throwable_;
 
+    RubyArray backTrace = new RubyArray();
+
     public RubyExceptionValue(RubyClass c) {
         super(c);
+        loadBackTrace();
         GlobalVariables.set(this, "$!");
     }
 
     public RubyExceptionValue(RubyClass c, String message) {
         super(c);
         message_ = message;
+        loadBackTrace();
         GlobalVariables.set(this, "$!");
     }
 
@@ -81,22 +85,46 @@ public class RubyExceptionValue extends RubyBasic {
 
     //@RubyLevelMethod(name="backtrace")
     public RubyArray backtrace() {
-        RubyArray a = new RubyArray();
-        //TODO: backtrace
- /*       StackTraceElement[] trace = exception_.getStackTrace();
-//        for (StackTraceElement e : trace) {
-		for(int i = 0; i<trace.length;i++){
-			StackTraceElement e = trace[i]; 
-        
-            String s = e.getClassName();
-            if ((!s.startsWith("com.xruby"))||
-                s.startsWith("com.xruby.runtime.builtin")) {//filter internal calls
-                a.add(ObjectFactory.createString(s));
-            }
-        }*/
-        return a;
+        return backTrace;
     }
+        
+    private void loadBackTrace(){
+    	try
+    	{
+	        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+	        for (StackTraceElement e : trace) {
+            String s = e.getClassName();
+	            
+            	if ( s.startsWith("xruby.")) {
+            		String fileName = e.getFileName();
+            		String funcName = null;
+            		
+            		String[] classParts = s.split("\\$");
+            		for ( int i = 0; i < classParts.length && funcName == null ; i++ ){
+            			String[] subPaths = classParts[i].split("\\.");
+            			
+            			for ( int j = 0; j < subPaths.length && funcName == null; j++ ){
+            				if ( fileName.indexOf(subPaths[j]) != -1 ) {
+            					if ( j + 1 < subPaths.length )
+            						funcName = subPaths[j+1];
+            					else
+            						funcName = subPaths[j];
+            }
+    }
+            		}
+            		
+            		fileName = fileName.replaceAll("\\\\", "/");
+            		fileName = fileName.replace("RhoBundle", "");
 
+            		String traceStr = "at " + fileName + ":" + e.getLineNumber() + ": in `" + funcName + "`\r\n";
+            		backTrace.add(ObjectFactory.createString(traceStr));
+                }
+	        }
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
     public Throwable getThrowable(){
         return throwable_;
     }
