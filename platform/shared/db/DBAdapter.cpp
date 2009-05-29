@@ -127,14 +127,18 @@ void CDBAdapter::startTransaction()
 {
     Lock();
 	m_bInsideTransaction=true;
-    char *zErr;
-    int rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
+    char *zErr = 0;
+    int rc = 0;
+	if ( m_dbHandle )
+		rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
 }
 
 void CDBAdapter::endTransaction()
 {
-    char *zErr;
-    int rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
+    char *zErr = 0;
+    int rc = 0;
+	if (m_dbHandle)
+		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
 
 	m_bInsideTransaction=false;
     Unlock();

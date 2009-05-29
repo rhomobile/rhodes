@@ -37,6 +37,7 @@ void CMutex::Unlock()       { LeaveCriticalSection(&m_nativeMutex); }
 CMutex::CMutex()             {
 	pthread_mutexattr_t mutex_details;
 	pthread_mutexattr_init(&mutex_details);
+	pthread_mutexattr_settype(&mutex_details,PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&m_nativeMutex, &mutex_details);
 	pthread_mutexattr_destroy(&mutex_details);
 	

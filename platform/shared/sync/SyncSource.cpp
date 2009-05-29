@@ -16,10 +16,10 @@ using namespace rho::net;
 using namespace rho::db;
 using namespace rho::common;
 using namespace rho::json;
-/*
-CSyncSource::CSyncSource() : m_syncEngine(CSyncEngine())
+
+CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter()))
 {
-}*/
+}
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
