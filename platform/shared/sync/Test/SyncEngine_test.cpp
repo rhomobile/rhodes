@@ -64,7 +64,7 @@ TEST(SyncEngine, loadClientID)
 {
     MockRepository mocks;
     CDBAdapter* db = mocks.ClassMock<CDBAdapter>();
-    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
+    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
     INetRequest* net = mocks.InterfaceMock<INetRequest>();
     IRhoClassFactory* factory = mocks.InterfaceMock<IRhoClassFactory>();
     const char* szclientID = "{\"client\": {\"created_at\": \"2009-05-13T19:28:36Z\", \"session\": null, \"updated_at\": \"2009-05-13T19:28:36Z\", \"user_id\": null, \"client_id\": \"dce301bd-053e-4591-a2c5-4813c201c623\", \"last_sync_token\": null}}";
@@ -88,7 +88,7 @@ TEST(SyncEngine, loadClientID)
 TEST(SyncEngine, syncAllSourcesOK)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
+    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.ExpectCall(src0, CSyncSource::sync);
@@ -130,7 +130,7 @@ TEST(SyncEngine, syncShouldStopOnFirstError)
 TEST(SyncEngine, syncShouldExit)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
+    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.NeverCall(src0, CSyncSource::sync);
@@ -148,8 +148,8 @@ TEST(SyncEngine, syncShouldExit)
 TEST(SyncEngine, syncShouldStartFrom1)
 {
     MockRepository mocks;
-    CSyncSource* src0 = mocks.InterfaceMock<CSyncSource>();
-    CSyncSource* src1 = mocks.InterfaceMock<CSyncSource>();
+    CSyncSource* src0 = mocks.ClassMock<CSyncSource>();
+    CSyncSource* src1 = mocks.ClassMock<CSyncSource>();
 
     mocks.ExpectCall(src0, CSyncSource::isEmptyToken).Return(true);
     mocks.ExpectCall(src1, CSyncSource::isEmptyToken).Return(false);

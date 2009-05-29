@@ -72,7 +72,7 @@ public:
     }
 
 //private:
-    //CSyncSource();
+    CSyncSource();
     CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     {
         m_nID = 0;

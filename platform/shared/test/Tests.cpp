@@ -2,18 +2,34 @@
 #ifdef OS_WINDOWS
 #include <atlstr.h>
 #endif
+#ifdef OS_WINCE
 #include "ruby\wince\direct.h"
+#endif
 
 #include <gtest/gtest.h>
 
 void runAllLogTests();
 extern "C" void runAllProfilingTests();
 extern "C" void rho_logconf_Init(const char* path);
-const char* RhoGetRootPath();
+extern "C" const char* RhoGetRootPath();
 
+#ifdef OS_MACOSX
+#include <sys/stat.h>
+extern "C" int rho_sync_logged_in_cookies()
+{
+	return 1;
+}
+
+int main(int argc, char* argv[])
+{
+    mkdir(RhoGetRootPath(), 0777);
+#else
 int _tmain(int argc, _TCHAR* argv[])
 {
-    _mkdir(RhoGetRootPath());
+	_mkdir(RhoGetRootPath());
+		
+#endif
+	
     rho_logconf_Init(RhoGetRootPath());
 
     //runAllLogTests();

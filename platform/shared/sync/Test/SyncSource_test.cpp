@@ -50,7 +50,7 @@ TEST(SyncSource, syncWithoutNetwork)
     oSyncEngine.setFactory(factory);
 
     CSyncSource oSrc(oSyncEngine);
-    oSrc.setToken(6869672616465);
+    oSrc.setToken(6869672616465ll);
     oSrc.sync();
 }
 
@@ -93,7 +93,7 @@ TEST(SyncSource, syncOneSourceOK)
     oSrc.syncServerChanges();
 
     EXPECT_EQ(CSyncEngine::esNone, oSyncEngine.getState());
-    EXPECT_EQ(6869672616467, oSrc.getToken());
+    EXPECT_EQ(6869672616467ll, oSrc.getToken());
 }
 
 TEST(SyncSource, syncOneSourceServerError)
@@ -141,7 +141,7 @@ TEST(SyncSource, syncOneSourceAsk)
     oSrc.syncServerChanges();
 
     EXPECT_EQ(CSyncEngine::esNone, oSyncEngine.getState());
-    EXPECT_EQ(6869672616465, oSrc.getToken());
+    EXPECT_EQ(6869672616465ll, oSrc.getToken());
 
 }
 
@@ -233,7 +233,7 @@ TEST(SyncSource, processServerData)
     EXPECT_EQ(1,oSrc.getInsertedCount());
     EXPECT_EQ(0,oSrc.getDeletedCount());
     EXPECT_EQ(200,oSrc.getCurPageCount());
-    EXPECT_EQ(6869672616465,oSrc.getToken());
+    EXPECT_EQ(6869672616465ll,oSrc.getToken());
 }
 
 TEST(SyncSource, processServerEmptyData)
