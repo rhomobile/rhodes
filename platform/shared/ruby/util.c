@@ -31,6 +31,13 @@
 
 #include "ruby/util.h"
 
+// LB (5/29/09): iPhone 3.0 OS redefines FLT_ROUNDS (through float.h above) and causes
+// link error so we need to define it here.
+#if defined(__APPLE__)
+#undef FLT_ROUNDS
+#define FLT_ROUNDS 1
+#endif
+
 unsigned long
 ruby_scan_oct(const char *start, int len, int *retlen)
 {
