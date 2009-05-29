@@ -21,7 +21,11 @@ require 'spec/spec_helper'
 
 describe "RhoRuby" do
   
-  it "should compute string to_f" do
+  it "should compute string to_f to test flt_rounds" do
     "100.250".to_f.should == 100.25
+  end
+  
+  it "should compute == on float to test flt_rounds" do
+    1.0.should == 1
   end
 end
