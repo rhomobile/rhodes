@@ -684,7 +684,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\Tests.cpp"
+			RelativePath="..\..\shared\test\Tests.cpp"
 			>
 		</File>
 	</Files>

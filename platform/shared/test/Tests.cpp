@@ -2,7 +2,7 @@
 #ifdef OS_WINDOWS
 #include <atlstr.h>
 #endif
-#ifdef OS_WINCE
+#if defined OS_WINCE || defined OS_WINDOWS
 #include "ruby\wince\direct.h"
 #endif
 
