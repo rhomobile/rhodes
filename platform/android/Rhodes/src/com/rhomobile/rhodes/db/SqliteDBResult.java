@@ -45,14 +45,16 @@ public class SqliteDBResult implements IDBResult {
 				localDataCopy = new ArrayList< List<String> >();
 				cashedColumnsNames = new ArrayList<String>();
 				
+				for ( int j = 0; j < getColCount(); j++ )
+				{
+					cashedColumnsNames.add(getColName(j));
+				}
+				
 				for ( int i = 0; i < getCount(); i++ )
 				{
 					List<String> row = new ArrayList<String>();
 					for ( int j = 0; j < getColCount(); j++ )
 					{
-						if ( i == 0 )
-							cashedColumnsNames.add(getColName(j));
-						
 						row.add(getStringByIdx(i, j));
 					}
 					
