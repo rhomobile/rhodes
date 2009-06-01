@@ -1,3 +1,7 @@
+== 1.1.1
+* #630 - handle rhoconfig.txt without newline at EOF
+* #721 - RIM save changes to DB on interrupted shutdown
+
 == 1.1.0
 * Stability fixes in 1.0
 * Support HSQLDB on RIM
