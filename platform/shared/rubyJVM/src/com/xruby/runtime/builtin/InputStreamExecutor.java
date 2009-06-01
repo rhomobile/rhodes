@@ -66,9 +66,12 @@ public class InputStreamExecutor implements RubyIOExecutor {
 				strLine = m_strInput.substring(m_nPos, nPos);
 			else
 				strLine = m_strInput.substring(m_nPos);
-				
-			m_nPos = nPos + chSep.length(); 
-					
+			
+			if ( nPos > 0 )
+				m_nPos = nPos + chSep.length(); 
+			else
+				m_nPos = m_strInput.length();
+			
 			return strLine;
 		}catch(IOException exc){
 			return "";
