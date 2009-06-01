@@ -289,7 +289,12 @@ public class Log {
             writeScript(false);
             renameNewScript();
     	}else if (cache != null)
+    	{
+            deleteNewAndOldFiles();
+            writeScript(false);
             cache.rhoSave();
+            renameNewScript();
+    	}
     }
     
     /**
