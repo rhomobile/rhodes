@@ -1,8 +1,5 @@
 package com.rhomobile.rhodes.ui;
 
-import com.rho.RhoLogger;
-import com.rhomobile.rhodes.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.rho.RhoLogger;
+import com.rhomobile.rhodes.R;
 
 public class LogOptionsDialog extends Dialog implements OnClickListener {
 
