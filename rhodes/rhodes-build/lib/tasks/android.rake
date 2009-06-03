@@ -136,24 +136,19 @@ namespace "run" do
       puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
       chdir $basedir
 
-      src = File.join($prebuilt,"android","rhosdcard.7z")
-      seven = File.join($res,"7z.exe")
-
-      puts `#{seven} x -y #{src}`
-
-      sdimage = File.join($basedir,"rhosdcard.iso")
-
       puts `#{$adb} start-server`
       sleep 5
 
-      Thread.new { system("#{$emulator} -sdcard \"#{sdimage}\"") }
+      system("android create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+
+      Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
       sleep 10
       
       puts "Waiting for emulator to get started"
       $stdout.flush
       puts `#{$adb} wait-for-device`
-      sleep 20
+      sleep 60
       apkfile = File.join($targetdir,"Rhodes-debug.apk")    
 
       puts "Loading package into emulator"
