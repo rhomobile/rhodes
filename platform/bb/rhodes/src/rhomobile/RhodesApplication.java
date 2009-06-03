@@ -318,7 +318,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			super.makeMenu(menu, instance);
-			menu.deleteAll();
+			//menu.deleteAll();
 			
 			menu.add(homeItem);
 			menu.add(refreshItem);
