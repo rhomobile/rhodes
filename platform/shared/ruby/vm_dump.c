@@ -12,6 +12,11 @@
 #include "ruby/ruby.h"
 #include "vm_core.h"
 
+//RHO
+int rhoRubyFPrintf(FILE *, const char *, ...);
+#define fprintf rhoRubyFPrintf
+//RHO
+
 #define MAX_POSBUF 128
 
 #define VM_CFP_CNT(th, cfp) \
@@ -173,6 +178,11 @@ rb_vmdebug_stack_dump_raw(rb_thread_t *th, rb_control_frame_t *cfp)
 
     fprintf(stderr, "-- control frame ----------\n");
     while ((void *)cfp < (void *)(th->stack + th->stack_size)) {
+//RHO
+    if ( cfp->pc == 0 && cfp->iseq == 0 )
+        break; //exception inside exception issue
+//RHO
+
 	control_frame_dump(th, cfp);
 	cfp++;
     }
