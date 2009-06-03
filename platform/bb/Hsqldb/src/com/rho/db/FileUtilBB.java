@@ -121,7 +121,8 @@ public class FileUtilBB implements FileAccess {
     		//if ( fc.isDirectory() )
     		//	deleteFilesInFolder(fc);
         	
-    		fconn.delete();
+    		if ( fconn != null && fconn.exists() )
+    			fconn.delete();
     	}catch(IOException exc){
     		System.out.println("FileUtilBB:delete '" + filename + "' Exception: " + exc.getMessage());
     	}finally{

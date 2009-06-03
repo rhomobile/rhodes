@@ -315,13 +315,21 @@ public class Jsr75File implements SimpleFile
                     fconn.create();  // create the file if it doesn't exist
                 }
             }
-            fileSize = fconn.fileSize();
-            m_bOpened = true;
-            if (!readOnly) {
-                //fconn.setWritable(true);	                    
+            if ( fconn.exists() )
+            {
+            	fileSize = fconn.fileSize();
+            	m_bOpened = true;
+	            if (!readOnly) {
+	                //fconn.setWritable(true);	                    
+	            	
+	                out = fconn.openOutputStream();
+	                outPos = 0;
+	            }
+            }else
+            {
+            	fileSize = 0;
+            	m_bOpened = false;
             	
-                out = fconn.openOutputStream();
-                outPos = 0;
             }
         } catch (IOException x) { 
         	log("Exception: " + x.getMessage());
