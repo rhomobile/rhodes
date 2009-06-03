@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "defs.h"
 #include "Server.h"

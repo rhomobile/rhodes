@@ -70,6 +70,11 @@ int flock(int, int);
 #define lstat stat
 #endif
 
+//RHO
+static int
+file_load_ok(const char *path);
+//RHO
+
 #ifdef __BEOS__ /* should not change ID if -1 */
 static int
 be_chown(const char *path, uid_t owner, gid_t group)
