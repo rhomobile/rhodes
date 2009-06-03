@@ -28,7 +28,6 @@ lib/rhofsconnector.rb
 lib/rhom.rb
 lib/rhom/rhom.rb
 lib/rhom/rhom_db_adapter.rb
-lib/rhom/rhom_db_adapterME.rb
 lib/rhom/rhom_object.rb
 lib/rhom/rhom_object_factory.rb
 lib/rhom/rhom_source.rb
@@ -157,8 +156,10 @@ spec/app/spec/fixtures/client_info.txt
 spec/app/spec/fixtures/object_values.txt
 spec/app/spec/rho_controller_spec.rb
 spec/app/spec/rho_spec.rb
-spec/app/spec/rhom_object_factory_spec.rb
+spec/app/spec/rhom_db_adapter_spec.rb
+spec/app/spec/rhom_object_spec.rb
 spec/app/spec/rhom_spec.rb
+spec/app/spec/rhoruby_spec.rb
 spec/app/spec/spec_helper.rb
 spec/app/spec/webview_spec.rb
 spec/app/spec_runner.rb
