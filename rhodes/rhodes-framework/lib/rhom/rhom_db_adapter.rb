@@ -203,5 +203,5 @@ module Rhom
 end # Rhom
 
 at_exit do
-	RhomDbAdapter.close
+	::Rhom::RhomDbAdapter.close
 end
