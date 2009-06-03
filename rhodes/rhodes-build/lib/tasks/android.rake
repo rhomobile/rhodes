@@ -4,7 +4,7 @@ namespace "config" do
   task :android => :common do
 
     $deploydir = File.join($basedir,'deploy','android')
-    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $dx = "dx.bat"
@@ -39,7 +39,6 @@ namespace "bundle" do
     mkdir_p File.join($srcdir,'apps')
 
     compileERB = File.join($compileERBbase,'bb.rb')
-    rubypath =  File.join($res,$rhoruby)
     xruby =  File.join($res,'xruby-0.3.3.jar')
 
     dest = $srcdir 
@@ -63,10 +62,8 @@ namespace "bundle" do
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/bb.rb` 
 
     chdir $bindir
     puts `java -jar #{xruby} -c RhoBundle`

@@ -87,8 +87,26 @@ class Time
     end
 
     def zone_utc?(zone)
-      # * +0000 means localtime. [RFC 2822]
-      # * GMT is a localtime abbreviation in Europe/London, etc.
+      # * +0000
+      #   In RFC 2822, +0000 indicate a time zone at Universal Time.
+      #   Europe/London is "a time zone at Universal Time" in Winter.
+      #   Europe/Lisbon is "a time zone at Universal Time" in Winter.
+      #   Atlantic/Reykjavik is "a time zone at Universal Time".
+      #   Africa/Dakar is "a time zone at Universal Time".
+      #   So +0000 is a local time such as Europe/London, etc.
+      # * GMT
+      #   GMT is used as a time zone abbreviation in Europe/London,
+      #   Africa/Dakar, etc.
+      #   So it is a local time.
+      #
+      # * -0000, -00:00
+      #   In RFC 2822, -0000 the date-time contains no information about the
+      #   local time zone.
+      #   In RFC 3339, -00:00 is used for the time in UTC is known,
+      #   but the offset to local time is unknown.
+      #   They are not appropriate for specific time zone such as
+      #   Europe/London because time zone neutral, 
+      #   So -00:00 and -0000 are treated as UTC.
       if /\A(?:-00:00|-0000|-00|UTC|Z|UT)\z/i =~ zone
         true
       else

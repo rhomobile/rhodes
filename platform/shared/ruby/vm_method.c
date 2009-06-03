@@ -8,9 +8,8 @@
 
 static void rb_vm_check_redefinition_opt_method(const NODE *node);
 
-static ID __send__, object_id;
+static ID object_id;
 static ID removed, singleton_removed, undefined, singleton_undefined;
-static ID eqq, each, aref, aset, match, missing;
 static ID added, singleton_added;
 
 struct cache_entry {		/* method hash table. */
@@ -130,6 +129,7 @@ rb_add_method(VALUE klass, ID mid, NODE * node, int noex)
 
     /*
      * NODE_METHOD (NEW_METHOD(body, klass, vis)):
+     *   nd_file : original id   // RBASIC()->klass (TODO: dirty hack)
      *   nd_body : method body   // (2) // mark
      *   nd_clss : klass         // (1) // mark
      *   nd_noex : visibility    // (3)
@@ -140,7 +140,9 @@ rb_add_method(VALUE klass, ID mid, NODE * node, int noex)
      *   nd_cnt  : alias count           // (3)
      */
     if (node) {
-	body = NEW_FBODY(NEW_METHOD(node, klass, NOEX_WITH_SAFE(noex)), 0);
+	NODE *method = NEW_METHOD(node, klass, NOEX_WITH_SAFE(noex));
+	method->nd_file = (void *)mid;
+	body = NEW_FBODY(method, mid);
     }
     else {
 	body = 0;
@@ -166,7 +168,7 @@ rb_add_method(VALUE klass, ID mid, NODE * node, int noex)
 	    rb_warn("redefining Object#initialize may cause infinite loop");
 	}
 
-	if (mid == object_id || mid == __send__) {
+	if (mid == object_id || mid == id__send__) {
 	    if (node && nd_type(node) == RUBY_VM_METHOD_NODE) {
 		rb_warn("redefining `%s' may cause serious problem",
 			rb_id2name(mid));
@@ -313,7 +315,7 @@ remove_method(VALUE klass, ID mid)
     }
     if (OBJ_FROZEN(klass))
 	rb_error_frozen("class/module");
-    if (mid == object_id || mid == __send__ || mid == idInitialize) {
+    if (mid == object_id || mid == id__send__ || mid == idInitialize) {
 	rb_warn("removing `%s' may cause serious problem", rb_id2name(mid));
     }
     if (st_lookup(RCLASS_M_TBL(klass), mid, &data)) {
@@ -480,7 +482,7 @@ rb_undef(VALUE klass, ID id)
 		 rb_id2name(id));
     }
     rb_frozen_class_p(klass);
-    if (id == object_id || id == __send__ || id == idInitialize) {
+    if (id == object_id || id == id__send__ || id == idInitialize) {
 	rb_warn("undefining `%s' may cause serious problem", rb_id2name(id));
     }
     body = search_method(klass, id, &origin);
@@ -726,7 +728,7 @@ rb_mod_protected_method_defined(VALUE mod, VALUE mid)
 void
 rb_alias(VALUE klass, ID name, ID def)
 {
-    NODE *orig_fbody, *node;
+    NODE *orig_fbody, *node, *method;
     VALUE singleton = 0;
     st_data_t data;
 
@@ -763,9 +765,10 @@ rb_alias(VALUE klass, ID name, ID def)
 
     st_insert(RCLASS_M_TBL(klass), name,
 	      (st_data_t) NEW_FBODY(
-		  NEW_METHOD(orig_fbody->nd_body->nd_body,
+		  method = NEW_METHOD(orig_fbody->nd_body->nd_body,
 			     orig_fbody->nd_body->nd_clss,
 			     NOEX_WITH_SAFE(orig_fbody->nd_body->nd_noex)), def));
+    method->nd_file = (void *)def;
 
     rb_clear_cache_by_id(name);
 
@@ -1054,15 +1057,6 @@ rb_method_basic_definition_p(VALUE klass, ID id)
     return 0;
 }
 
-/*
- *  call-seq:
- *     obj.respond_to?(symbol, include_private=false) => true or false
- *
- *  Returns +true+> if _obj_ responds to the given
- *  method. Private methods are included in the search only if the
- *  optional second parameter evaluates to +true+.
- */
-
 int
 rb_obj_respond_to(VALUE obj, ID id, int priv)
 {
@@ -1091,7 +1085,7 @@ rb_respond_to(VALUE obj, ID id)
  *  call-seq:
  *     obj.respond_to?(symbol, include_private=false) => true or false
  *
- *  Returns +true+> if _obj_ responds to the given
+ *  Returns +true+ if _obj_ responds to the given
  *  method. Private methods are included in the search only if the
  *  optional second parameter evaluates to +true+.
  */
@@ -1137,13 +1131,6 @@ Init_eval_method(void)
     rb_define_singleton_method(rb_vm_top_self(), "private", top_private, -1);
 
     object_id = rb_intern("object_id");
-    __send__ = rb_intern("__send__");
-    eqq = rb_intern("===");
-    each = rb_intern("each");
-    aref = rb_intern("[]");
-    aset = rb_intern("[]=");
-    match = rb_intern("=~");
-    missing = rb_intern("method_missing");
     added = rb_intern("method_added");
     singleton_added = rb_intern("singleton_method_added");
     removed = rb_intern("method_removed");

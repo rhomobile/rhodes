@@ -8,7 +8,7 @@
  */
 #include "stdafx.h"
 
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #include "phonebook.h"
 
 void* openPhonebook() {

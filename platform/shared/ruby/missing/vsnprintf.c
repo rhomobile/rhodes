@@ -238,7 +238,7 @@ static int BSD__sfvwrite(fp, uio)
 	register struct __suio *uio;
 {
 	register size_t len;
-	register char *p;
+	register const char *p;
 	register struct __siov *iov;
 	register int w;
 
@@ -494,7 +494,7 @@ BSD__ultoa(register u_long val, char *endp, int base, int octzero, const char *x
 #define	BUF		(MAXEXP+MAXFRACT+1)	/* + decimal point */
 #define	DEFPREC		6
 
-static char *cvt __P((double, int, int, char *, int *, int, int *));
+static char *cvt __P((double, int, int, char *, int *, int, int *, char *));
 static int exponent __P((char *, int, int));
 
 #else /* no FLOATING_POINT */
@@ -713,10 +713,16 @@ reswitch:	switch (ch) {
 		case 'h':
 			flags |= SHORTINT;
 			goto rflag;
+#if SIZEOF_PTRDIFF_T == SIZEOF_LONG
+		case 't':
+#endif
 		case 'l':
 			flags |= LONGINT;
 			goto rflag;
 #ifdef _HAVE_SANE_QUAD_
+#if SIZEOF_PTRDIFF_T == SIZEOF_LONG_LONG
+		case 't':
+#endif
 		case 'q':
 			flags |= QUADINT;
 			goto rflag;
@@ -753,6 +759,8 @@ reswitch:	switch (ch) {
 #ifdef FLOATING_POINT
 		case 'e':		/* anomalous precision */
 		case 'E':
+			if (prec != 0)
+				flags |= ALT;
 			prec = (prec == -1) ?
 				DEFPREC + 1 : prec + 1;
 			/* FALLTHROUGH */
@@ -780,9 +788,9 @@ fp_begin:		_double = va_arg(ap, double);
 			}
 			flags |= FPT;
 			cp = cvt(_double, prec, flags, &softsign,
-				&expt, ch, &ndig);
+				&expt, ch, &ndig, buf);
 			if (ch == 'g' || ch == 'G') {
-				if (expt <= -4 || expt > prec)
+				if (expt <= -4 || (expt > prec && expt > 1))
 					ch = (ch == 'g') ? 'e' : 'E';
 				else
 					ch = 'g';
@@ -798,6 +806,8 @@ fp_begin:		_double = va_arg(ap, double);
 					size = expt;
 					if (prec || flags & ALT)
 						size += prec + 1;
+				} else if (!prec) { /* "0" */
+					size = 1;
 				} else	/* "0.X" */
 					size = prec + 2;
 			} else if (expt >= ndig) {	/* fixed g fmt */
@@ -1008,13 +1018,15 @@ number:			if ((dprec = prec) >= 0)
 			if (ch >= 'f') {	/* 'f' or 'g' */
 				if (_double == 0) {
 				/* kludge for __dtoa irregularity */
-					if (prec == 0 ||
+					if (ndig <= 1 &&
 					    (flags & ALT) == 0) {
 						PRINT("0", 1);
 					} else {
 						PRINT("0.", 2);
 						PAD(ndig - 1, zeroes);
 					}
+				} else if (expt == 0 && ndig == 0 && (flags & ALT) == 0) {
+					PRINT("0", 1);
 				} else if (expt <= 0) {
 					PRINT("0.", 2);
 					PAD(-expt, zeroes);
@@ -1069,10 +1081,10 @@ error:
 extern char *BSD__dtoa __P((double, int, int, int *, int *, char **));
 
 static char *
-cvt(value, ndigits, flags, sign, decpt, ch, length)
+cvt(value, ndigits, flags, sign, decpt, ch, length, buf)
 	double value;
 	int ndigits, flags, *decpt, ch, *length;
-	char *sign;
+	char *sign, *buf;
 {
 	int mode, dsgn;
 	char *digits, *bp, *rve;
@@ -1091,6 +1103,10 @@ cvt(value, ndigits, flags, sign, decpt, ch, length)
 	    *sign = '\000';
 	}
 	digits = BSD__dtoa(value, mode, ndigits, decpt, &dsgn, &rve);
+	memcpy(buf, digits, rve - digits);
+	xfree(digits);
+	rve = buf + (rve - digits);
+	digits = buf;
 	if (flags & ALT) {	/* Print trailing zeros */
 		bp = digits + ndigits;
 		if (ch == 'f') {

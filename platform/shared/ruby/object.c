@@ -2,7 +2,7 @@
 
   object.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Thu Jul 15 12:01:24 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -1092,9 +1092,10 @@ rb_obj_match(VALUE obj1, VALUE obj2)
 
 /*
  *  call-seq:
- *     obj !~ other  => nil
+ *     obj !~ other  => true or false
  *  
- *  Returns true if two objects does not match, using <i>=~</i> method.
+ *  Returns true if two objects do not match (using the <i>=~</i>
+ *  method), otherwise false.
  */
 
 static VALUE
@@ -2265,6 +2266,20 @@ static VALUE
 rb_f_float(VALUE obj, VALUE arg)
 {
     return rb_Float(arg);
+}
+
+VALUE
+rb_to_float(VALUE val)
+{
+    if (TYPE(val) == T_FLOAT) return val;
+    if (!rb_obj_is_kind_of(val, rb_cNumeric)) {
+	rb_raise(rb_eTypeError, "can't convert %s into Float",
+		 NIL_P(val) ? "nil" :
+		 val == Qtrue ? "true" :
+		 val == Qfalse ? "false" :
+		 rb_obj_classname(val));
+    }
+    return rb_convert_type(val, T_FLOAT, "Float", "to_f");
 }
 
 double

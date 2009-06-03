@@ -32,8 +32,8 @@ int rhoRubyFPrintf(FILE *, const char *, ...);
 VALUE rb_cRational;
 
 static ID id_abs, id_cmp, id_convert, id_equal_p, id_expt, id_floor,
-    id_format, id_hash, id_idiv, id_inspect, id_integer_p, id_negate,
-    id_to_f, id_to_i, id_to_s, id_truncate;
+    id_hash, id_idiv, id_inspect, id_integer_p, id_negate, id_to_f,
+    id_to_i, id_to_s, id_truncate;
 
 #define f_boolcast(x) ((x) ? Qtrue : Qfalse)
 
@@ -382,7 +382,19 @@ f_rational_new_bang2(VALUE klass, VALUE x, VALUE y)
     return nurat_s_new_internal(klass, x, y);
 }
 
-#define f_unify_p(klass) rb_const_defined(klass, id_Unify)
+#ifdef CANONICALIZATION_FOR_MATHN
+#define CANON
+#endif
+
+#ifdef CANON
+static int canonicalization = 0;
+
+void
+nurat_canonicalization(int f)
+{
+    canonicalization = f;
+}
+#endif
 
 inline static void
 nurat_int_check(VALUE num)
@@ -426,7 +438,7 @@ nurat_s_canonicalize_internal(VALUE klass, VALUE num, VALUE den)
     den = f_idiv(den, gcd);
 
 #ifdef CANON
-    if (f_one_p(den) && f_unify_p(klass))
+    if (f_one_p(den) && canonicalization)
 	return num;
 #endif
     return nurat_s_new_internal(klass, num, den);
@@ -446,7 +458,7 @@ nurat_s_canonicalize_internal_no_reduce(VALUE klass, VALUE num, VALUE den)
     }
 
 #ifdef CANON
-    if (f_one_p(den) && f_unify_p(klass))
+    if (f_one_p(den) && canonicalization)
 	return num;
 #endif
     return nurat_s_new_internal(klass, num, den);
@@ -1104,19 +1116,34 @@ nurat_hash(VALUE self)
 }
 
 static VALUE
+nurat_format(VALUE self, VALUE (*func)(VALUE))
+{
+    VALUE s;
+    get_dat1(self);
+
+    s = (*func)(dat->num);
+    rb_str_cat2(s, "/");
+    rb_str_concat(s, (*func)(dat->den));
+
+    return s;
+}
+
+static VALUE
 nurat_to_s(VALUE self)
 {
-    get_dat1(self);
-    return rb_funcall(rb_mKernel, id_format, 3,
-		      rb_str_new2("%d/%d"), dat->num, dat->den);
+    return nurat_format(self, f_to_s);
 }
 
 static VALUE
 nurat_inspect(VALUE self)
 {
-    get_dat1(self);
-    return rb_funcall(rb_mKernel, id_format, 3,
-		      rb_str_new2("(%d/%d)"), dat->num, dat->den);
+    VALUE s;
+
+    s = rb_usascii_str_new2("(");
+    rb_str_concat(s, nurat_format(self, f_inspect));
+    rb_str_cat2(s, ")");
+
+    return s;
 }
 
 static VALUE
@@ -1266,7 +1293,7 @@ make_patterns(void)
 				 sizeof underscores_pat_source - 1, 0);
     rb_gc_register_mark_object(underscores_pat);
 
-    an_underscore = rb_str_new2("_");
+    an_underscore = rb_usascii_str_new2("_");
     rb_gc_register_mark_object(an_underscore);
 }
 
@@ -1345,7 +1372,7 @@ string_to_r_internal(VALUE self)
 	    v = f_mul(v, f_expt(INT2FIX(10), f_to_i(exp)));
 #if 0
 	if (!NIL_P(de) && (!NIL_P(fp) || !NIL_P(exp)))
-	    return rb_assoc_new(v, rb_str_new2("dummy"));
+	    return rb_assoc_new(v, rb_usascii_str_new2("dummy"));
 #endif
 	if (!NIL_P(de))
 	    v = f_div(v, f_to_i(de));
@@ -1477,7 +1504,6 @@ Init_Rational(void)
     id_equal_p = rb_intern("==");
     id_expt = rb_intern("**");
     id_floor = rb_intern("floor");
-    id_format = rb_intern("format");
     id_hash = rb_intern("hash");
     id_idiv = rb_intern("div");
     id_inspect = rb_intern("inspect");
@@ -1520,9 +1546,11 @@ Init_Rational(void)
     rb_define_method(rb_cRational, "coerce", nurat_coerce, 1);
 
     rb_define_method(rb_cRational, "div", nurat_idiv, 1);
-#if NUBY
+
+#if 0 /* NUBY */
     rb_define_method(rb_cRational, "//", nurat_idiv, 1);
 #endif
+
     rb_define_method(rb_cRational, "modulo", nurat_mod, 1);
     rb_define_method(rb_cRational, "%", nurat_mod, 1);
     rb_define_method(rb_cRational, "divmod", nurat_divmod, 1);

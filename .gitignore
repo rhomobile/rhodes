@@ -1,6 +1,7 @@
 *~
 *.iseq
 .DS_Store
+platform/mac/**/build/*
 platform/iphone/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
