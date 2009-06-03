@@ -37,8 +37,8 @@ module Rhom
         unless Object.const_defined?(classname.intern)
           Object.const_set(classname.intern, 
             Class.new do
-              include RhomObject
-              extend RhomObject
+              include ::Rhom::RhomObject
+              extend ::Rhom::RhomObject
               
               # This holds the attributes for an instance of
               # the rhom object
@@ -69,7 +69,7 @@ module Rhom
               class << self
               
                 def count
-                  RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
+                  ::Rhom::RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
                 end
               
                 def get_source_id
@@ -77,7 +77,7 @@ module Rhom
                 end
                 
                 def get_attribs
-                  attribs = RhomDbAdapter.select_from_table('object_values','attrib', {"source_id"=>get_source_id}, {"distinct"=>true})
+                  attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib', {"source_id"=>get_source_id}, {"distinct"=>true})
                   attribs.collect! do |attrib|
                     attrib['attrib']
                   end
@@ -120,11 +120,11 @@ module Rhom
                     end
                   end
                   sql << "update_type FROM object_values ov where update_type != 'delete'\n"
-                  sql << "and " + RhomDbAdapter.where_str(conditions) + "\n" if conditions and conditions.length > 0
+                  sql << "and " + ::Rhom::RhomDbAdapter.where_str(conditions) + "\n" if conditions and conditions.length > 0
                   sql << "group by object\n"
                   sql << "order by #{args[1][:order]}" if args[1] and args[1][:order]
                   
-                  list = RhomDbAdapter.execute_sql(sql)
+                  list = ::Rhom::RhomDbAdapter.execute_sql(sql)
                   
                   list.each do |rowhash|
                     # always return object filed with surrounding '{}'
@@ -152,8 +152,8 @@ module Rhom
                   tmp_obj = self.new(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
                   if question
                     # We only support one ask at a time!
-                    RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id, "update_type"=>'ask'})
-                    RhomDbAdapter.insert_into_table('object_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'})
+                    ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id, "update_type"=>'ask'})
+                    ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'})
                     SyncEngine.dosync
                   end
                 end
@@ -163,12 +163,12 @@ module Rhom
                   if conditions
                     del_conditions = get_conditions_hash(conditions[:conditions])
                     # find all relevant objects, then delete them
-                    del_objects = RhomDbAdapter.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
+                    del_objects = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
                     del_objects.each do |obj|                                                       
-                      RhomDbAdapter.delete_from_table('object_values', {'object'=>obj['object']})
+                      ::Rhom::RhomDbAdapter.delete_from_table('object_values', {'object'=>obj['object']})
                     end
                   else
-                    RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id})
+                    ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id})
                   end
                 end
                     
@@ -195,10 +195,10 @@ module Rhom
                 update_type=self.get_update_type_by_source('delete')
                 if obj
                   # first delete the record from viewable list
-                  result = RhomDbAdapter.delete_from_table('object_values', {"object"=>obj})
+                  result = ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>obj})
                   if update_type
                     # now add delete operation
-                    result = RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "update_type"=>update_type})
+                    result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "update_type"=>update_type})
                   end
                 end
                 result
@@ -220,7 +220,7 @@ module Rhom
                               "value"=>val,
                               "update_type"=>update_type}
                     fields = key == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
-                    result = RhomDbAdapter.insert_into_table('object_values', fields)                                     
+                    result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
                   end
                 end
                 result
@@ -243,9 +243,9 @@ module Rhom
                   # then we procede with update
                   if old_val != new_val
                     unless self.method_name_reserved?(attrib)
-                      RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>update_type})
+                      ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>update_type})
                       # update sync list
-                      result = RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                      result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                     end
                   end
                 end
