@@ -271,13 +271,11 @@ binding_clone(VALUE self)
     return bindval;
 }
 
-rb_control_frame_t *vm_get_ruby_level_next_cfp(rb_thread_t *th, rb_control_frame_t *cfp);
-
 VALUE
 rb_binding_new(void)
 {
     rb_thread_t *th = GET_THREAD();
-    rb_control_frame_t *cfp = vm_get_ruby_level_next_cfp(th, th->cfp);
+    rb_control_frame_t *cfp = rb_vm_get_ruby_level_next_cfp(th, th->cfp);
     VALUE bindval = binding_alloc(rb_cBinding);
     rb_binding_t *bind;
 
@@ -286,7 +284,7 @@ rb_binding_new(void)
     }
 
     GetBindingPtr(bindval, bind);
-    bind->env = vm_make_env_object(th, cfp);
+    bind->env = rb_vm_make_env_object(th, cfp);
     return bindval;
 }
 
@@ -350,7 +348,6 @@ proc_new(VALUE klass, int is_lambda)
 	!RUBY_VM_CLASS_SPECIAL_P(cfp->lfp[0])) {
 
 	block = GC_GUARDED_PTR_REF(cfp->lfp[0]);
-	cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp);
     }
     else {
 	cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp);
@@ -359,15 +356,6 @@ proc_new(VALUE klass, int is_lambda)
 	    !RUBY_VM_CLASS_SPECIAL_P(cfp->lfp[0])) {
 
 	    block = GC_GUARDED_PTR_REF(cfp->lfp[0]);
-
-	    if (block->proc) {
-		return block->proc;
-	    }
-
-	    /* TODO: check more (cfp limit, called via cfunc, etc) */
-	    while (cfp->dfp != block->dfp) {
-		cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp);
-	    }
 
 	    if (is_lambda) {
 		rb_warn("tried to create Proc object without a block");
@@ -380,11 +368,19 @@ proc_new(VALUE klass, int is_lambda)
     }
 
     procval = block->proc;
-    if (procval && RBASIC(procval)->klass == klass) {
-	return procval;
+
+    if (procval) {
+	if (RBASIC(procval)->klass == klass) {
+	    return procval;
+	}
+	else {
+	    VALUE newprocval = proc_dup(procval);
+	    RBASIC(newprocval)->klass = klass;
+	    return newprocval;
+	}
     }
 
-    procval = vm_make_proc(th, cfp, block, klass);
+    procval = rb_vm_make_proc(th, block, klass);
 
     if (is_lambda) {
 	rb_proc_t *proc;
@@ -523,17 +519,31 @@ proc_call(int argc, VALUE *argv, VALUE procval)
 	}
     }
 
-    return vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
-			  argc, argv, blockptr);
+    return rb_vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
+			     argc, argv, blockptr);
 }
+
+#if SIZEOF_LONG > SIZEOF_INT
+static inline int
+check_argc(long argc)
+{
+    if (argc > INT_MAX || argc < 0) {
+	rb_raise(rb_eArgError, "too many arguments (%lu)",
+		 (unsigned long)argc);
+    }
+    return (int)argc;
+}
+#else
+#define check_argc(argc) (argc)
+#endif
 
 VALUE
 rb_proc_call(VALUE self, VALUE args)
 {
     rb_proc_t *proc;
     GetProcPtr(self, proc);
-    return vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
-			  RARRAY_LEN(args), RARRAY_PTR(args), 0);
+    return rb_vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
+			     check_argc(RARRAY_LEN(args)), RARRAY_PTR(args), 0);
 }
 
 VALUE
@@ -549,8 +559,8 @@ rb_proc_call_with_block(VALUE self, int argc, VALUE *argv, VALUE pass_procval)
 	block = &pass_proc->block;
     }
 
-    return vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
-			  argc, argv, block);
+    return rb_vm_invoke_proc(GET_THREAD(), proc, proc->block.self,
+			     argc, argv, block);
 }
 
 /*
@@ -666,12 +676,15 @@ proc_eq(VALUE self, VALUE other)
     }
     else {
 	if (TYPE(other)          == T_DATA &&
-	    RBASIC(other)->klass == rb_cProc &&
-	    CLASS_OF(self)       == CLASS_OF(other)) {
+	    RDATA(other)->dmark  == proc_mark) {
 	    rb_proc_t *p1, *p2;
 	    GetProcPtr(self, p1);
 	    GetProcPtr(other, p2);
-	    if (p1->block.iseq == p2->block.iseq && p1->envval == p2->envval) {
+	    if (p1->envval == p2->envval &&
+		p1->block.iseq->iseq_size == p2->block.iseq->iseq_size &&
+		p1->block.iseq->local_size == p2->block.iseq->local_size &&
+		MEMCMP(p1->block.iseq->iseq, p2->block.iseq->iseq, VALUE,
+		       p1->block.iseq->iseq_size) == 0) {
 		return Qtrue;
 	    }
 	}
@@ -730,7 +743,7 @@ proc_to_s(VALUE self)
 			 line_no, is_lambda);
     }
     else {
-	str = rb_sprintf("#<%s:%p%s>", cname, proc->block.iseq,
+	str = rb_sprintf("#<%s:%p%s>", cname, (void *)proc->block.iseq,
 			 is_lambda);
     }
 
@@ -795,7 +808,7 @@ mnew(VALUE klass, VALUE obj, ID id, VALUE mclass, int scope)
 	rb_print_undef(rclass, oid, 0);
     }
     if (scope && (body->nd_noex & NOEX_MASK) != NOEX_PUBLIC) {
-	rb_print_undef(rclass, oid, (body->nd_noex & NOEX_MASK));
+	rb_print_undef(rclass, oid, (int)(body->nd_noex & NOEX_MASK));
     }
 
     klass = body->nd_clss;
@@ -1363,7 +1376,7 @@ rb_node_arity(NODE* body)
       case NODE_CFUNC:
 	if (body->nd_argc < 0)
 	    return -1;
-	return body->nd_argc;
+	return check_argc(body->nd_argc);
       case NODE_ZSUPER:
 	return -1;
       case NODE_ATTRSET:
@@ -1556,13 +1569,19 @@ static VALUE
 bmcall(VALUE args, VALUE method)
 {
     volatile VALUE a;
+    VALUE ret;
+    int argc;
 
     if (CLASS_OF(args) != rb_cArray) {
 	args = rb_ary_new3(1, args);
+	argc = 1;
     }
-
-    a = args;
-    return rb_method_call(RARRAY_LEN(a), RARRAY_PTR(a), method);
+    else {
+	argc = check_argc(RARRAY_LEN(args));
+    }
+    ret = rb_method_call(argc, RARRAY_PTR(args), method);
+    RB_GC_GUARD(a) = args;
+    return ret;
 }
 
 VALUE
@@ -1699,7 +1718,8 @@ curry(VALUE dummy, VALUE args, int argc, VALUE *argv, VALUE passed_proc)
 	return arity;
     }
     else {
-	return rb_proc_call_with_block(proc, RARRAY_LEN(passed), RARRAY_PTR(passed), passed_proc);
+	return rb_proc_call_with_block(proc, check_argc(RARRAY_LEN(passed)),
+				       RARRAY_PTR(passed), passed_proc);
     }
 }
 
@@ -1917,7 +1937,7 @@ Init_Binding(void)
     rb_undef_method(CLASS_OF(rb_cBinding), "new");
     rb_define_method(rb_cBinding, "clone", binding_clone, 0);
     rb_define_method(rb_cBinding, "dup", binding_dup, 0);
-    //rb_define_method(rb_cBinding, "eval", bind_eval, -1);
+    rb_define_method(rb_cBinding, "eval", bind_eval, -1);
     rb_define_global_function("binding", rb_f_binding, 0);
 }
 

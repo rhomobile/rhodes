@@ -14,7 +14,7 @@
 #include "MainWindow.h"
 #include "HttpServer.h"
 #include "AppManager.h"
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif

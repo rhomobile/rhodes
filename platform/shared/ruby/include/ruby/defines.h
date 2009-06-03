@@ -103,10 +103,7 @@ void xfree(void*);
 #undef _WIN32
 #endif
 
-#ifdef __SYMBIAN32__
-#undef _WIN32
-#endif
-#if defined(_WIN32) || defined(__EMX__) || defined(__SYMBIAN32__)
+#if defined(_WIN32) || defined(__EMX__)
 #define DOSISH 1
 # define DOSISH_DRIVE_LETTER
 #endif
@@ -195,16 +192,8 @@ void xfree(void*);
 #include "ruby/win32.h"
 #endif
 
-#ifdef __SYMBIAN32__
-//#include "symbian.h"
-#endif //__SYMBIAN32__
-
 #if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
 #include <net/socket.h> /* intern.h needs fd_set definition */
-#endif
-
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
 #endif
 
 #ifdef RUBY_EXPORT
@@ -280,14 +269,6 @@ void rb_ia64_flushrs(void);
 #ifndef RUBY_ALIAS_FUNCTION
 #define RUBY_ALIAS_FUNCTION(old_prot, new_name, args) \
     VALUE old_prot {return new_name args;}
-#endif
-
-#ifdef _WIN32
-#define IS_CLOSED_IO(fd) ((fd) == INVALID_HANDLE_VALUE)
-#define IS_STD_FD(fd) ((fd)==fileno(stdout)||(fd)==fileno(stderr))
-#else
-#define IS_CLOSED_IO(fd) ((fd) < 0)
-#define IS_STD_FD(fd) ((fd) < 2)
 #endif
 
 #if defined(__cplusplus)

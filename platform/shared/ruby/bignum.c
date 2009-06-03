@@ -2,7 +2,7 @@
 
   bignum.c -
 
-  $Author: tadf $
+  $Author: yugui $
   created at: Fri Jun 10 00:48:55 JST 1994
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -56,7 +56,12 @@ rb_cmpint(VALUE val, VALUE a, VALUE b)
     if (NIL_P(val)) {
 	rb_cmperr(a, b);
     }
-    if (FIXNUM_P(val)) return FIX2INT(val);
+    if (FIXNUM_P(val)) {
+        long l = FIX2LONG(val);
+        if (l > 0) return 1;
+        if (l < 0) return -1;
+        return 0;
+    }
     if (TYPE(val) == T_BIGNUM) {
 	if (BIGZEROP(val)) return 0;
 	if (RBIGNUM_SIGN(val)) return 1;

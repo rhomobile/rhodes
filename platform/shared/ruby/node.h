@@ -2,7 +2,7 @@
 
   node.h -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Fri May 28 15:14:02 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -468,7 +468,7 @@ typedef struct RNode {
 
 #define NOEX_UNDEF     NOEX_NOSUPER
 
-#define NOEX_MODFUNC   0x10
+#define NOEX_MODFUNC   0x12
 #define NOEX_SUPER     0x20
 #define NOEX_VCALL     0x40
 

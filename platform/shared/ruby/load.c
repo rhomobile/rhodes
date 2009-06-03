@@ -30,12 +30,22 @@ VALUE
 rb_get_load_path(void)
 {
     VALUE load_path = GET_VM()->load_path;
+    return load_path;
+}
+
+VALUE
+rb_get_expanded_load_path(void)
+{
+    VALUE load_path = rb_get_load_path();
     VALUE ary = rb_ary_new2(RARRAY_LEN(load_path));
     long i;
 
     for (i = 0; i < RARRAY_LEN(load_path); ++i) {
-	rb_ary_push(ary, rb_file_expand_path(RARRAY_PTR(load_path)[i], Qnil));
+	VALUE path = rb_file_expand_path(RARRAY_PTR(load_path)[i], Qnil);
+	rb_str_freeze(path);
+	rb_ary_push(ary, path);
     }
+    rb_obj_freeze(ary);
     return ary;
 }
 
@@ -118,8 +128,8 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
 
     if (fn) *fn = 0;
     if (ext) {
-	len = ext - feature;
 	elen = strlen(ext);
+	len = strlen(feature) - elen;
 	type = rb ? 'r' : 's';
     }
     else {
@@ -134,9 +144,10 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
 	if ((n = RSTRING_LEN(v)) < len) continue;
 	if (strncmp(f, feature, len) != 0) {
 	    if (expanded) continue;
-	    if (!load_path) load_path = rb_get_load_path();
+	    if (!load_path) load_path = rb_get_expanded_load_path();
 	    if (!(p = loaded_feature_path(f, n, feature, len, type, load_path)))
 		continue;
+	    expanded = 1;
 	    f += RSTRING_LEN(p) + 1;
 	}
 	if (!*(e = f + len)) {
@@ -182,7 +193,7 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
 	    buf = RSTRING_PTR(bufstr);
 	    MEMCPY(buf, feature, char, len);
 	    for (i = 0; (e = loadable_ext[i]) != 0; i++) {
-		strncpy(buf + len, e, DLEXT_MAXLEN + 1);
+		strlcpy(buf + len, e, DLEXT_MAXLEN + 1);
 		if (st_get_key(loading_tbl, (st_data_t)buf, &data)) {
 		    rb_str_resize(bufstr, 0);
 		    if (fn) *fn = (const char*)data;
@@ -198,6 +209,12 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
 int
 rb_provided(const char *feature)
 {
+    return rb_feature_provided(feature, 0);
+}
+
+int
+rb_feature_provided(const char *feature, const char **loading)
+{
     const char *ext = strrchr(feature, '.');
     volatile VALUE fullpath = 0;
 
@@ -208,15 +225,15 @@ rb_provided(const char *feature)
     }
     if (ext && !strchr(ext, '/')) {
 	if (IS_RBEXT(ext)) {
-	    if (rb_feature_p(feature, ext, Qtrue, Qfalse, 0)) return Qtrue;
+	    if (rb_feature_p(feature, ext, Qtrue, Qfalse, loading)) return Qtrue;
 	    return Qfalse;
 	}
 	else if (IS_SOEXT(ext) || IS_DLEXT(ext)) {
-	    if (rb_feature_p(feature, ext, Qfalse, Qfalse, 0)) return Qtrue;
+	    if (rb_feature_p(feature, ext, Qfalse, Qfalse, loading)) return Qtrue;
 	    return Qfalse;
 	}
     }
-    if (rb_feature_p(feature, feature + strlen(feature), Qtrue, Qfalse, 0))
+    if (rb_feature_p(feature, feature + strlen(feature), Qtrue, Qfalse, loading))
 	return Qtrue;
     return Qfalse;
 }
@@ -298,7 +315,7 @@ rb_load(VALUE fname, int wrap)
 	rb_exc_raise(GET_THREAD()->errinfo);
     }
     if (state) {
-	vm_jump_tag_but_local_jump(state, Qundef);
+	rb_vm_jump_tag_but_local_jump(state, Qundef);
     }
 
     if (!NIL_P(GET_THREAD()->errinfo)) {
@@ -366,7 +383,7 @@ load_lock(const char *ftptr)
 }
 
 static void
-load_unlock(const char *ftptr)
+load_unlock(const char *ftptr, int done)
 {
     if (ftptr) {
 	st_data_t key = (st_data_t)ftptr;
@@ -374,8 +391,12 @@ load_unlock(const char *ftptr)
 	st_table *loading_tbl = get_loading_table();
 
 	if (st_delete(loading_tbl, &key, &data)) {
+	    VALUE barrier = (VALUE)data;
 	    xfree((char *)key);
-	    rb_barrier_release((VALUE)data);
+	    if (done)
+		rb_barrier_destroy(barrier);
+	    else
+		rb_barrier_release(barrier);
 	}
     }
 }
@@ -426,9 +447,8 @@ search_required(VALUE fname, volatile VALUE *path)
 		return 'r';
 	    }
 	    if ((tmp = rb_find_file(fname)) != 0) {
-		tmp = rb_file_expand_path(tmp, Qnil);
 		ext = strrchr(ftptr = RSTRING_PTR(tmp), '.');
-		if (!rb_feature_p(ftptr, ext, Qtrue, Qtrue, 0))
+		if (!rb_feature_p(ftptr, ext, Qtrue, Qtrue, &loading) || loading)
 		    *path = tmp;
 		return 'r';
 	    }
@@ -443,9 +463,8 @@ search_required(VALUE fname, volatile VALUE *path)
 #ifdef DLEXT2
 	    OBJ_FREEZE(tmp);
 	    if (rb_find_file_ext(&tmp, loadable_ext + 1)) {
-		tmp = rb_file_expand_path(tmp, Qnil);
 		ext = strrchr(ftptr = RSTRING_PTR(tmp), '.');
-		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, 0))
+		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, &loading) || loading)
 		    *path = tmp;
 		return 's';
 	    }
@@ -453,9 +472,8 @@ search_required(VALUE fname, volatile VALUE *path)
 	    rb_str_cat2(tmp, DLEXT);
 	    OBJ_FREEZE(tmp);
 	    if ((tmp = rb_find_file(tmp)) != 0) {
-		tmp = rb_file_expand_path(tmp, Qnil);
 		ext = strrchr(ftptr = RSTRING_PTR(tmp), '.');
-		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, 0))
+		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, &loading) || loading)
 		    *path = tmp;
 		return 's';
 	    }
@@ -467,9 +485,8 @@ search_required(VALUE fname, volatile VALUE *path)
 		return 's';
 	    }
 	    if ((tmp = rb_find_file(fname)) != 0) {
-		tmp = rb_file_expand_path(tmp, Qnil);
 		ext = strrchr(ftptr = RSTRING_PTR(tmp), '.');
-		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, 0))
+		if (!rb_feature_p(ftptr, ext, Qfalse, Qtrue, &loading) || loading)
 		    *path = tmp;
 		return 's';
 	    }
@@ -537,13 +554,17 @@ rb_require_safe(VALUE fname, int safe)
 	rb_set_safe_level_force(safe);
 	FilePathValue(fname);
 	RB_GC_GUARD(fname) = rb_str_new4(fname);
+	rb_set_safe_level_force(0);
 	found = search_required(fname, &path);
 	if (found) {
 	    if (!path || !(ftptr = load_lock(RSTRING_PTR(path)))) {
 		result = Qfalse;
 	    }
 	    else {
-		rb_set_safe_level_force(0);
+		if (safe > 0 && OBJ_TAINTED(path)) {
+		    rb_raise(rb_eSecurityError, "cannot load from insecure path - %s",
+			     RSTRING_PTR(path));
+		}
 		switch (found) {
 		  case 'r':
 		    rb_load(path, 0);
@@ -561,7 +582,7 @@ rb_require_safe(VALUE fname, int safe)
 	}
     }
     POP_TAG();
-    load_unlock(ftptr);
+    load_unlock(ftptr, !state);
 
     rb_set_safe_level_force(saved.safe);
     if (state) {
@@ -600,7 +621,7 @@ ruby_init_ext(const char *name, void (*init)(void))
 	rb_vm_call_cfunc(rb_vm_top_self(), init_ext_call, (VALUE)init,
 			 0, rb_str_new2(name));
 	rb_provide(name);
-	load_unlock(name);
+	load_unlock(name, 1);
     }
 }
 

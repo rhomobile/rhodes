@@ -15,6 +15,7 @@
 #include "vm_core.h"
 #include <signal.h>
 #include <stdio.h>
+#include <errno.h>
 
 #ifdef _WIN32
 typedef LONG rb_atomic_t;
@@ -398,7 +399,7 @@ rb_f_kill(int argc, VALUE *argv)
     return INT2FIX(i-1);
 }
 
-struct {
+static struct {
     rb_atomic_t cnt[RUBY_NSIG];
     rb_atomic_t size;
 } signal_buff;
@@ -408,8 +409,45 @@ struct {
 #endif
 
 typedef RETSIGTYPE (*sighandler_t)(int);
+#ifdef SA_SIGINFO
+typedef void ruby_sigaction_t(int, siginfo_t*, void*);
+#define SIGINFO_ARG , siginfo_t *info, void *ctx
+#else
+typedef RETSIGTYPE ruby_sigaction_t(int);
+#define SIGINFO_ARG
+#endif
 
 #ifdef POSIX_SIGNAL
+#if defined(SIGSEGV) && defined(HAVE_SIGALTSTACK)
+#define USE_SIGALTSTACK
+#endif
+
+#ifdef USE_SIGALTSTACK
+#ifdef SIGSTKSZ
+#define ALT_STACK_SIZE (SIGSTKSZ*2)
+#else
+#define ALT_STACK_SIZE (4*1024)
+#endif
+/* alternate stack for SIGSEGV */
+static void
+register_sigaltstack(void)
+{
+    static void *altstack = 0;
+    stack_t newSS, oldSS;
+
+    if (altstack) return;
+
+    newSS.ss_sp = altstack = malloc(ALT_STACK_SIZE);
+    if (newSS.ss_sp == NULL)
+	/* should handle error */
+	rb_bug("register_sigaltstack. malloc error\n");
+    newSS.ss_size = ALT_STACK_SIZE;
+    newSS.ss_flags = 0;
+
+    sigaltstack(&newSS, &oldSS); /* ignore error. */
+}
+#endif
+
 static sighandler_t
 ruby_signal(int signum, sighandler_t handler)
 {
@@ -421,13 +459,7 @@ ruby_signal(int signum, sighandler_t handler)
 
     sigemptyset(&sigact.sa_mask);
 #ifdef SA_SIGINFO
-    
-  #ifdef __SYMBIAN32__
-      sigact.sa_handler = handler;
-  #else //!__SYMBIAN32__
-      sigact.sa_sigaction = (void (*)(int, siginfo_t*, void*))handler;
-  #endif//!__SYMBIAN32__
-
+    sigact.sa_sigaction = (ruby_sigaction_t*)handler;
     sigact.sa_flags = SA_SIGINFO;
 #else
     sigact.sa_handler = handler;
@@ -438,7 +470,15 @@ ruby_signal(int signum, sighandler_t handler)
     if (signum == SIGCHLD && handler == SIG_IGN)
 	sigact.sa_flags |= SA_NOCLDWAIT;
 #endif
-    sigaction(signum, &sigact, &old);
+#if defined(SA_ONSTACK) && defined(USE_SIGALTSTACK)
+    if (signum == SIGSEGV)
+	sigact.sa_flags |= SA_ONSTACK;
+#endif
+    if (sigaction(signum, &sigact, &old) < 0) {
+	if (errno != 0 && errno != EINVAL) {
+	    rb_bug("sigaction error.\n");
+	}
+    }
     return old.sa_handler;
 }
 
@@ -473,6 +513,12 @@ sighandler(int sig)
 #endif
 }
 
+int
+rb_signal_buff_size()
+{
+    return signal_buff.size;
+}
+
 #if USE_TRAP_MASK
 # ifdef HAVE_SIGPROCMASK
 static sigset_t trap_last_mask;
@@ -488,7 +534,7 @@ static int trap_last_mask;
 void
 rb_disable_interrupt(void)
 {
-#if ! defined(_WIN32) && ! defined(__SYMBIAN32__)
+#ifndef _WIN32
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, SIGVTALRM);
@@ -500,7 +546,7 @@ rb_disable_interrupt(void)
 void
 rb_enable_interrupt(void)
 {
-#if ! defined(_WIN32) && ! defined(__SYMBIAN32__)
+#ifndef _WIN32
     sigset_t mask;
     sigemptyset(&mask);
     pthread_sigmask(SIG_SETMASK, &mask, NULL);
@@ -538,8 +584,16 @@ sigbus(int sig)
 #ifdef SIGSEGV
 static int segv_received = 0;
 static RETSIGTYPE
-sigsegv(int sig)
+sigsegv(int sig SIGINFO_ARG)
 {
+#ifdef USE_SIGALTSTACK
+    int ruby_stack_overflowed_p(const rb_thread_t *, const void *);
+    NORETURN(void ruby_thread_stack_overflow(rb_thread_t *th));
+    rb_thread_t *th = GET_THREAD();
+    if (ruby_stack_overflowed_p(th, info->si_addr)) {
+	ruby_thread_stack_overflow(th);
+    }
+#endif
     if (segv_received) {
 	fprintf(stderr, "SEGV recieved in SEGV handler\n");
 	exit(EXIT_FAILURE);
@@ -668,7 +722,10 @@ default_handler(int sig)
 #endif
 #ifdef SIGSEGV
       case SIGSEGV:
-        func = sigsegv;
+        func = (sighandler_t)sigsegv;
+# ifdef USE_SIGALTSTACK
+        register_sigaltstack();
+# endif
         break;
 #endif
 #ifdef SIGPIPE
@@ -695,6 +752,10 @@ trap_handler(VALUE *cmd, int sig)
     }
     else {
 	command = rb_check_string_type(*cmd);
+	if (NIL_P(command) && SYMBOL_P(*cmd)) {
+	    command = rb_id2str(SYM2ID(*cmd));
+	    if (!command) rb_raise(rb_eArgError, "bad handler");
+	}
 	if (!NIL_P(command)) {
 	    SafeStringValue(command);	/* taint check */
 	    *cmd = command;
@@ -1076,7 +1137,10 @@ Init_signal(void)
     install_sighandler(SIGBUS, sigbus);
 #endif
 #ifdef SIGSEGV
-    install_sighandler(SIGSEGV, sigsegv);
+# ifdef USE_SIGALTSTACK
+    register_sigaltstack();
+# endif
+    install_sighandler(SIGSEGV, (sighandler_t)sigsegv);
 #endif
     }
 #ifdef SIGPIPE
