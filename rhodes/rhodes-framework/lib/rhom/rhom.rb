@@ -24,6 +24,8 @@ require 'rhom/rhom_object'
 require 'rhom/rhom_db_adapter'
 
 module Rhom
+  UPDATE_TYPES = ["'create'","'update'","'query'","'ask'"]
+  
   class Rhom
     attr_accessor :factory
   
