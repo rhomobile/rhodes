@@ -23,14 +23,14 @@ public class RubyExceptionValue extends RubyBasic {
 
     public RubyExceptionValue(RubyClass c) {
         super(c);
-        loadBackTrace();
+        //loadBackTrace();
         GlobalVariables.set(this, "$!");
     }
 
     public RubyExceptionValue(RubyClass c, String message) {
         super(c);
         message_ = message;
-        loadBackTrace();
+        //loadBackTrace();
         GlobalVariables.set(this, "$!");
     }
 
@@ -88,12 +88,13 @@ public class RubyExceptionValue extends RubyBasic {
         return backTrace;
     }
         
-    private void loadBackTrace(){
+    /*private void loadBackTrace(){
     	try
     	{
 	        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-	        for (StackTraceElement e : trace) {
-            String s = e.getClassName();
+	        for ( int m = 0; m < trace.length; m++ ) {
+	        	StackTraceElement e = trace[m];
+	        	String s = e.getClassName();
 	            
             	if ( s.startsWith("xruby.")) {
             		String fileName = e.getFileName();
@@ -124,7 +125,8 @@ public class RubyExceptionValue extends RubyBasic {
     	catch(Exception e){
     		e.printStackTrace();
     	}
-    }
+    }*/
+    
     public Throwable getThrowable(){
         return throwable_;
     }
