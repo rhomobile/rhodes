@@ -2,7 +2,7 @@
 
   process.c -
 
-  $Author: mame $
+  $Author: yugui $
   created at: Tue Aug 10 14:30:50 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -590,6 +590,29 @@ pst_wcoredump(VALUE st)
 #if !defined(HAVE_WAITPID) && !defined(HAVE_WAIT4)
 #define NO_WAITPID
 static st_table *pid_tbl;
+
+struct wait_data {
+    rb_pid_t pid;
+    int status;
+};
+
+static int
+wait_each(rb_pid_t pid, int status, struct wait_data *data)
+{
+    if (data->status != -1) return ST_STOP;
+
+    data->pid = pid;
+    data->status = status;
+    return ST_DELETE;
+}
+
+static int
+waitall_each(rb_pid_t pid, int status, VALUE ary)
+{
+    rb_last_status_set(status, pid);
+    rb_ary_push(ary, rb_assoc_new(PIDT2NUM(pid), rb_last_status_get()));
+    return ST_DELETE;
+}
 #else
 struct waitpid_arg {
     rb_pid_t pid;
@@ -624,25 +647,36 @@ rb_waitpid(rb_pid_t pid, int *st, int flags)
 #ifndef NO_WAITPID
     struct waitpid_arg arg;
 
+  retry:
     arg.pid = pid;
     arg.st = st;
     arg.flags = flags;
     result = (rb_pid_t)rb_thread_blocking_region(rb_waitpid_blocking, &arg,
 						 RUBY_UBF_PROCESS, 0);
     if (result < 0) {
-#if 0
 	if (errno == EINTR) {
-	    rb_thread_polling();
-	    goto retry;
-	}
-#endif
-	return -1;
+            RUBY_VM_CHECK_INTS();
+            goto retry;
+        }
+	return (rb_pid_t)-1;
     }
 #else  /* NO_WAITPID */
-    if (pid_tbl && st_lookup(pid_tbl, pid, (st_data_t *)st)) {
-	rb_last_status_set(*st, pid);
-	st_delete(pid_tbl, (st_data_t*)&pid, NULL);
-	return pid;
+    if (pid_tbl) {
+	st_data_t status, piddata = (st_data_t)pid;
+	if (pid == (rb_pid_t)-1) {
+	    struct wait_data data;
+	    data.pid = (rb_pid_t)-1;
+	    data.status = -1;
+	    st_foreach(pid_tbl, wait_each, (st_data_t)&data);
+	    if (data.status != -1) {
+		rb_last_status_set(data.status, data.pid);
+		return data.pid;
+	    }
+	}
+	else if (st_delete(pid_tbl, &piddata, &status)) {
+	    rb_last_status_set(*st = (int)status, pid);
+	    return pid;
+	}
     }
 
     if (flags) {
@@ -651,19 +685,19 @@ rb_waitpid(rb_pid_t pid, int *st, int flags)
 
     for (;;) {
 	result = (rb_pid_t)rb_thread_blocking_region(rb_waitpid_blocking,
-						     st, RUBY_UBF_PROCESS);
+						     st, RUBY_UBF_PROCESS, 0);
 	if (result < 0) {
 	    if (errno == EINTR) {
 		rb_thread_schedule();
 		continue;
 	    }
-	    return -1;
+	    return (rb_pid_t)-1;
 	}
-	if (result == pid) {
+	if (result == pid || pid == (rb_pid_t)-1) {
 	    break;
 	}
 	if (!pid_tbl)
-	  pid_tbl = st_init_numtable();
+	    pid_tbl = st_init_numtable();
 	st_insert(pid_tbl, pid, (st_data_t)st);
 	if (!rb_thread_alone()) rb_thread_schedule();
     }
@@ -673,31 +707,6 @@ rb_waitpid(rb_pid_t pid, int *st, int flags)
     }
     return result;
 }
-
-#ifdef NO_WAITPID
-struct wait_data {
-    rb_pid_t pid;
-    int status;
-};
-
-static int
-wait_each(rb_pid_t pid, int status, struct wait_data *data)
-{
-    if (data->status != -1) return ST_STOP;
-
-    data->pid = pid;
-    data->status = status;
-    return ST_DELETE;
-}
-
-static int
-waitall_each(rb_pid_t pid, int status, VALUE ary)
-{
-    rb_last_status_set(status, pid);
-    rb_ary_push(ary, rb_assoc_new(PIDT2NUM(pid), rb_last_status_get());
-    return ST_DELETE;
-}
-#endif
 
 
 /* [MG]:FIXME: I wasn't sure how this should be done, since ::wait()
@@ -971,10 +980,14 @@ void rb_thread_stop_timer_thread(void);
 void rb_thread_start_timer_thread(void);
 void rb_thread_reset_timer_thread(void);
 
+static int forked_child = 0;
+
 #define before_exec() \
-  (rb_enable_interrupt(), rb_thread_stop_timer_thread())
+    (rb_enable_interrupt(), (forked_child ? 0 : (rb_thread_stop_timer_thread(), 1)))
 #define after_exec() \
-  (rb_thread_start_timer_thread(), rb_disable_interrupt())
+  (rb_thread_reset_timer_thread(), rb_thread_start_timer_thread(), forked_child = 0, rb_disable_interrupt())
+#define before_fork() before_exec()
+#define after_fork() (GET_THREAD()->thrown_errinfo = 0, after_exec())
 
 #include "dln.h"
 
@@ -1130,7 +1143,6 @@ static rb_pid_t
 proc_spawn_v(char **argv, char *prog)
 {
     char fbuf[MAXPATHLEN];
-    char *extension;
     rb_pid_t status;
 
     if (!prog)
@@ -2272,7 +2284,8 @@ rb_fork(int *status, int (*chfunc)(void*), void *charg, VALUE fds)
 	}
     }
 #endif
-    for (; (pid = fork()) < 0; prefork()) {
+    for (; before_fork(), (pid = fork()) < 0; prefork()) {
+	after_fork();
 	switch (errno) {
 	  case EAGAIN:
 #if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
@@ -2298,7 +2311,7 @@ rb_fork(int *status, int (*chfunc)(void*), void *charg, VALUE fds)
 	}
     }
     if (!pid) {
-	rb_thread_reset_timer_thread();
+        forked_child = 1;
 	if (chfunc) {
 #ifdef FD_CLOEXEC
 	    close(ep[0]);
@@ -2314,10 +2327,10 @@ rb_fork(int *status, int (*chfunc)(void*), void *charg, VALUE fds)
 	    _exit(127);
 #endif
 	}
-	rb_thread_start_timer_thread();
     }
+    after_fork();
 #ifdef FD_CLOEXEC
-    else if (chfunc) {
+    if (pid && chfunc) {
 	close(ep[1]);
 	if ((state = read(ep[0], &err, sizeof(err))) < 0) {
 	    err = errno;
@@ -2555,12 +2568,8 @@ rb_f_abort(int argc, VALUE *argv)
 }
 
 
-#if defined(sun)
-#define signal(a,b) sigset(a,b)
-#else
-# if defined(POSIX_SIGNAL)
-#  define signal(a,b) posix_signal(a,b)
-# endif
+#if defined(POSIX_SIGNAL)
+# define signal(a,b) posix_signal(a,b)
 #endif
 
 void
@@ -2894,7 +2903,7 @@ rb_f_spawn(int argc, VALUE *argv)
 static VALUE
 rb_f_sleep(int argc, VALUE *argv)
 {
-    int beg, end;
+    time_t beg, end;
 
     beg = time(0);
     if (argc == 0) {
@@ -4198,13 +4207,16 @@ proc_daemon(int argc, VALUE *argv)
     rb_scan_args(argc, argv, "02", &nochdir, &noclose);
 
 #if defined(HAVE_DAEMON)
+    prefork();
+    before_fork();
     n = daemon(RTEST(nochdir), RTEST(noclose));
+    after_fork();
     if (n < 0) rb_sys_fail("daemon");
     return INT2FIX(n);
 #elif defined(HAVE_FORK)
     switch (rb_fork(0, 0, 0, Qnil)) {
       case -1:
-	return (-1);
+	return INT2FIX(-1);
       case 0:
 	break;
       default:
@@ -4212,6 +4224,16 @@ proc_daemon(int argc, VALUE *argv)
     }
 
     proc_setsid();
+
+    /* must not be process-leader */
+    switch (rb_fork(0, 0, 0, Qnil)) {
+      case -1:
+	return INT2FIX(-1);
+      case 0:
+	break;
+      default:
+	_exit(0);
+    }
 
     if (!RTEST(nochdir))
 	(void)chdir("/");

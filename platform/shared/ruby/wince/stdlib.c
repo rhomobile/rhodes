@@ -55,3 +55,7 @@ void *bsearch( const void *key, const void *base,
 	return NULL;
 }
 
+int __cdecl strcmpi(const char * _Str1, const char * _Str2)
+{
+    return _stricmp(_Str1, _Str2);
+}

@@ -1,8 +1,8 @@
 /**********************************************************************
 
-  insnhelper.c - instruction helper functions.
+  vm_insnhelper.c - instruction helper functions.
 
-  $Author: ko1 $
+  $Author: yugui $
 
   Copyright (C) 2007 Koichi Sasada
 
@@ -17,6 +17,8 @@
 #ifndef INLINE
 #define INLINE inline
 #endif
+
+static rb_control_frame_t *vm_get_ruby_level_caller_cfp(rb_thread_t *th, rb_control_frame_t *cfp);
 
 static inline rb_control_frame_t *
 vm_push_frame(rb_thread_t * th, const rb_iseq_t * iseq,
@@ -185,9 +187,7 @@ vm_callee_setup_arg_complex(rb_thread_t *th, const rb_iseq_t * iseq,
 	    /* make Proc object */
 	    if (blockptr->proc == 0) {
 		rb_proc_t *proc;
-
-		blockval = vm_make_proc(th, th->cfp, blockptr, rb_cProc);
-
+		blockval = rb_vm_make_proc(th, blockptr, rb_cProc);
 		GetProcPtr(blockval, proc);
 		*block = &proc->block;
 	    }
@@ -357,7 +357,7 @@ call_cfunc(VALUE (*func)(), VALUE recv,
 
 static inline VALUE
 vm_call_cfunc(rb_thread_t *th, rb_control_frame_t *reg_cfp,
-	      int num, ID id, VALUE recv, VALUE klass,
+	      int num, ID id, ID oid, VALUE recv, VALUE klass,
 	      VALUE flag, const NODE *mn, const rb_block_t *blockptr)
 {
     VALUE val;
@@ -368,7 +368,7 @@ vm_call_cfunc(rb_thread_t *th, rb_control_frame_t *reg_cfp,
 	    vm_push_frame(th, 0, VM_FRAME_MAGIC_CFUNC,
 			  recv, (VALUE) blockptr, 0, reg_cfp->sp, 0, 1);
 
-	cfp->method_id = id;
+	cfp->method_id = oid;
 	cfp->method_class = klass;
 
 	reg_cfp->sp -= num + 1;
@@ -399,30 +399,35 @@ vm_call_bmethod(rb_thread_t *th, ID id, VALUE procval, VALUE recv,
     (cfp-2)->method_class = klass;
 
     GetProcPtr(procval, proc);
-    val = vm_invoke_proc(th, proc, recv, argc, argv, blockptr);
+    val = rb_vm_invoke_proc(th, proc, recv, argc, argv, blockptr);
     return val;
+}
+
+static inline void
+vm_method_missing_args(rb_thread_t *th, VALUE *argv,
+		  int num, rb_block_t *blockptr, int opt)
+{
+    rb_control_frame_t * const reg_cfp = th->cfp;
+    MEMCPY(argv, STACK_ADDR_FROM_TOP(num + 1), VALUE, num + 1);
+    th->method_missing_reason = opt;
+    th->passed_block = blockptr;
+    POPN(num + 1);
 }
 
 static inline VALUE
 vm_method_missing(rb_thread_t *th, ID id, VALUE recv,
 		  int num, rb_block_t *blockptr, int opt)
 {
-    VALUE val;
-    rb_control_frame_t * const reg_cfp = th->cfp;
     VALUE *argv = ALLOCA_N(VALUE, num + 1);
-    MEMCPY(argv, STACK_ADDR_FROM_TOP(num + 1), VALUE, num + 1);
+    vm_method_missing_args(th, argv, num, blockptr, opt);
     argv[0] = ID2SYM(id);
-    th->method_missing_reason = opt;
-    th->passed_block = blockptr;
-    POPN(num + 1);
-    val = rb_funcall2(recv, idMethodMissing, num + 1, argv);
-    return val;
+    return rb_funcall2(recv, idMethodMissing, num + 1, argv);
 }
 
 static inline void
 vm_setup_method(rb_thread_t *th, rb_control_frame_t *cfp,
 		const int argc, const rb_block_t *blockptr, const VALUE flag,
-		const VALUE iseqval, const VALUE recv, const VALUE klass)
+		const VALUE iseqval, const VALUE recv)
 {
     rb_iseq_t *iseq;
     int opt_pc, i;
@@ -478,7 +483,7 @@ vm_setup_method(rb_thread_t *th, rb_control_frame_t *cfp,
 static inline VALUE
 vm_call_method(rb_thread_t * const th, rb_control_frame_t * const cfp,
 	       const int num, rb_block_t * const blockptr, const VALUE flag,
-	       const ID id, const NODE * mn, const VALUE recv, VALUE klass)
+	       const ID id, const NODE * mn, const VALUE recv)
 {
     VALUE val;
 
@@ -495,11 +500,11 @@ vm_call_method(rb_thread_t * const th, rb_control_frame_t * const cfp,
 
 	    switch (nd_type(node)) {
 	      case RUBY_VM_METHOD_NODE:{
-		vm_setup_method(th, cfp, num, blockptr, flag, (VALUE)node->nd_body, recv, klass);
+		vm_setup_method(th, cfp, num, blockptr, flag, (VALUE)node->nd_body, recv);
 		return Qundef;
 	      }
 	      case NODE_CFUNC:{
-		val = vm_call_cfunc(th, cfp, num, id, recv, mn->nd_clss, flag, node, blockptr);
+		val = vm_call_cfunc(th, cfp, num, id, (ID)mn->nd_file, recv, mn->nd_clss, flag, node, blockptr);
 		break;
 	      }
 	      case NODE_ATTRSET:{
@@ -520,10 +525,11 @@ vm_call_method(rb_thread_t * const th, rb_control_frame_t * const cfp,
 		VALUE *argv = ALLOCA_N(VALUE, num);
 		MEMCPY(argv, cfp->sp - num, VALUE, num);
 		cfp->sp += - num - 1;
-		val = vm_call_bmethod(th, id, node->nd_cval, recv, klass, num, argv, blockptr);
+		val = vm_call_bmethod(th, (ID)mn->nd_file, node->nd_cval, recv, mn->nd_clss, num, argv, blockptr);
 		break;
 	      }
 	      case NODE_ZSUPER:{
+		VALUE klass;
 		klass = RCLASS_SUPER(mn->nd_clss);
 		mn = rb_method_node(klass, id);
 
@@ -580,17 +586,19 @@ vm_call_method(rb_thread_t * const th, rb_control_frame_t * const cfp,
     }
     else {
 	/* method missing */
+	int stat = 0;
+	if (flag & VM_CALL_VCALL_BIT) {
+	    stat |= NOEX_VCALL;
+	}
+	if (flag & VM_CALL_SUPER_BIT) {
+	    stat |= NOEX_SUPER;
+	}
 	if (id == idMethodMissing) {
-	    rb_bug("method missing");
+	    VALUE *argv = ALLOCA_N(VALUE, num);
+	    vm_method_missing_args(th, argv, num - 1, 0, stat);
+	    rb_raise_method_missing(th, num, argv, recv, stat);
 	}
 	else {
-	    int stat = 0;
-	    if (flag & VM_CALL_VCALL_BIT) {
-		stat |= NOEX_VCALL;
-	    }
-	    if (flag & VM_CALL_SUPER_BIT) {
-		stat |= NOEX_SUPER;
-	    }
 	    val = vm_method_missing(th, id, recv, num, blockptr, stat);
 	}
     }
@@ -645,7 +653,7 @@ block_proc_is_lambda(const VALUE procval)
 static inline VALUE
 vm_yield_with_cfunc(rb_thread_t *th, const rb_block_t *block,
 		    VALUE self, int argc, const VALUE *argv,
-		    const rb_block_t *blockptr)
+		    const rb_block_t *blockargptr)
 {
     NODE *ifunc = (NODE *) block->iseq;
     VALUE val, arg, blockarg;
@@ -661,8 +669,13 @@ vm_yield_with_cfunc(rb_thread_t *th, const rb_block_t *block,
 	arg = argv[0];
     }
 
-    if (blockptr) {
-	blockarg = vm_make_proc(th, th->cfp, blockptr, rb_cProc);
+    if (blockargptr) {
+	if (blockargptr->proc) {
+	    blockarg = blockargptr->proc;
+	}
+	else {
+	    blockarg = rb_vm_make_proc(th, blockargptr, rb_cProc);
+	}
     }
     else {
 	blockarg = Qnil;
@@ -678,13 +691,157 @@ vm_yield_with_cfunc(rb_thread_t *th, const rb_block_t *block,
     return val;
 }
 
+
+/*--
+ * @brief on supplied all of optional, rest and post parameters.
+ * @pre iseq is block style (not lambda style)
+ */
+static inline int
+vm_yield_setup_block_args_complex(rb_thread_t *th, const rb_iseq_t * iseq,
+	int argc, VALUE * argv)
+{
+    int opt_pc = 0;
+    int i;
+    const int m = iseq->argc;
+    const int r = iseq->arg_rest;
+    int len = iseq->arg_post_len;
+    int start = iseq->arg_post_start;
+    int rsize = argc > m ? argc - m : 0;    /* # of arguments which did not consumed yet */
+    int psize = rsize > len ? len : rsize;  /* # of post arguments */
+    int osize = 0;  /* # of opt arguments */
+    VALUE ary;
+
+    /* reserves arguments for post parameters */
+    rsize -= psize;
+
+    if (iseq->arg_opts) {
+	const int opts = iseq->arg_opts - 1;
+	if (rsize > opts) {
+            osize = opts;
+	    opt_pc = iseq->arg_opt_table[opts];
+	}
+	else {
+            osize = rsize;
+	    opt_pc = iseq->arg_opt_table[rsize];
+	}
+    }
+    rsize -= osize;
+
+    if (0) {
+	printf(" argc: %d\n", argc);
+	printf("  len: %d\n", len);
+	printf("start: %d\n", start);
+	printf("rsize: %d\n", rsize);
+    }
+
+    if (r == -1) {
+        /* copy post argument */
+        MEMMOVE(&argv[start], &argv[m+osize], VALUE, psize);
+    }
+    else {
+        ary = rb_ary_new4(rsize, &argv[r]);
+
+        /* copy post argument */
+        MEMMOVE(&argv[start], &argv[m+rsize+osize], VALUE, psize);
+        argv[r] = ary;
+    }
+
+    for (i=psize; i<len; i++) {
+	argv[start + i] = Qnil;
+    }
+
+    return opt_pc;
+}
+
+static inline int
+vm_yield_setup_block_args(rb_thread_t *th, const rb_iseq_t * iseq,
+	int orig_argc, VALUE * argv,
+	const rb_block_t *blockptr)
+{
+    int i;
+    int argc = orig_argc;
+    const int m = iseq->argc;
+    VALUE ary;
+    int opt_pc = 0;
+
+    th->mark_stack_len = argc;
+
+    /*
+     * yield [1, 2]
+     *  => {|a|} => a = [1, 2]
+     *  => {|a, b|} => a, b = [1, 2]
+     */
+    if (!(iseq->arg_simple & 0x02) &&          /* exclude {|a|} */
+            (m + iseq->arg_post_len) > 0 &&    /* this process is meaningful */
+            argc == 1 && !NIL_P(ary = rb_check_array_type(argv[0]))) { /* rhs is only an array */
+        th->mark_stack_len = argc = RARRAY_LEN(ary);
+
+        CHECK_STACK_OVERFLOW(th->cfp, argc);
+
+        MEMCPY(argv, RARRAY_PTR(ary), VALUE, argc);
+    }
+
+    for (i=argc; i<m; i++) {
+        argv[i] = Qnil;
+    }
+
+    if (iseq->arg_rest == -1 && iseq->arg_opts == 0) {
+        const int arg_size = iseq->arg_size;
+        if (arg_size < argc) {
+            /*
+             * yield 1, 2
+             * => {|a|} # truncate
+             */
+            th->mark_stack_len = argc = arg_size;
+        }
+    }
+    else {
+        int r = iseq->arg_rest;
+
+        if (iseq->arg_post_len || 
+                iseq->arg_opts) { /* TODO: implement simple version for (iseq->arg_post_len==0 && iseq->arg_opts > 0) */
+	    opt_pc = vm_yield_setup_block_args_complex(th, iseq, argc, argv);
+        }
+        else {
+            if (argc < r) {
+                /* yield 1
+                 * => {|a, b, *r|}
+                 */
+                for (i=argc; i<r; i++) {
+                    argv[i] = Qnil;
+                }
+                argv[r] = rb_ary_new();
+            }
+            else {
+                argv[r] = rb_ary_new4(argc-r, &argv[r]);
+            }
+        }
+
+        th->mark_stack_len = iseq->arg_size;
+    }
+
+    /* {|&b|} */
+    if (iseq->arg_block != -1) {
+        VALUE procval = Qnil;
+
+        if (blockptr) {
+            procval = blockptr->proc;
+        }
+
+        argv[iseq->arg_block] = procval;
+    }
+
+    th->mark_stack_len = 0;
+    return opt_pc;
+}
+
 static inline int
 vm_yield_setup_args(rb_thread_t * const th, const rb_iseq_t *iseq,
-		    int orig_argc, VALUE *argv,
+		    int argc, VALUE *argv,
 		    const rb_block_t *blockptr, int lambda)
 {
     if (0) { /* for debug */
-	printf("     argc: %d\n", orig_argc);
+	printf("     argc: %d\n", argc);
 	printf("iseq argc: %d\n", iseq->argc);
 	printf("iseq opts: %d\n", iseq->arg_opts);
 	printf("iseq rest: %d\n", iseq->arg_rest);
@@ -697,105 +854,11 @@ vm_yield_setup_args(rb_thread_t * const th, const rb_iseq_t *iseq,
     if (lambda) {
 	/* call as method */
 	int opt_pc;
-	VM_CALLEE_SETUP_ARG(opt_pc, th, iseq, orig_argc, argv, &blockptr);
+	VM_CALLEE_SETUP_ARG(opt_pc, th, iseq, argc, argv, &blockptr);
 	return opt_pc;
     }
     else {
-	int i;
-	int argc = orig_argc;
-	const int m = iseq->argc;
-	VALUE ary;
-
-	th->mark_stack_len = argc;
-
-	/*
-	 * yield [1, 2]
-	 *  => {|a|} => a = [1, 2]
-	 *  => {|a, b|} => a, b = [1, 2]
-	 */
-	if (!(iseq->arg_simple & 0x02) &&
-	    (m + iseq->arg_post_len) > 0 &&
-	    argc == 1 && !NIL_P(ary = rb_check_array_type(argv[0]))) {
-	    th->mark_stack_len = argc = RARRAY_LEN(ary);
-
-	    CHECK_STACK_OVERFLOW(th->cfp, argc);
-
-	    MEMCPY(argv, RARRAY_PTR(ary), VALUE, argc);
-	}
-
-	for (i=argc; i<m; i++) {
-	    argv[i] = Qnil;
-	}
-
-	if (iseq->arg_rest == -1) {
-	    if (m < argc) {
-		/*
-		 * yield 1, 2
-		 * => {|a|} # truncate
-		 */
-		th->mark_stack_len = argc = m;
-	    }
-	}
-	else {
-	    int r = iseq->arg_rest;
-
-	    if (iseq->arg_post_len) {
-		int len = iseq->arg_post_len;
-		int start = iseq->arg_post_start;
-		int rsize = argc > m ? argc - m : 0;
-		int psize = rsize;
-		VALUE ary;
-
-		if (psize > len) psize = len;
-
-		ary = rb_ary_new4(rsize - psize, &argv[r]);
-
-		if (0) {
-		    printf(" argc: %d\n", argc);
-		    printf("  len: %d\n", len);
-		    printf("start: %d\n", start);
-		    printf("rsize: %d\n", rsize);
-		}
-
-		/* copy post argument */
-		MEMMOVE(&argv[start], &argv[r + rsize - psize], VALUE, psize);
-
-		for (i=psize; i<len; i++) {
-		    argv[start + i] = Qnil;
-		}
-		argv[r] = ary;
-	    }
-	    else {
-		if (argc < r) {
-		    /* yield 1
-		     * => {|a, b, *r|}
-		     */
-		    for (i=argc; i<r; i++) {
-			argv[i] = Qnil;
-		    }
-		    argv[r] = rb_ary_new();
-		}
-		else {
-		    argv[r] = rb_ary_new4(argc-r, &argv[r]);
-		}
-	    }
-
-	    th->mark_stack_len = iseq->arg_size;
-	}
-
-	/* {|&b|} */
-	if (iseq->arg_block != -1) {
-	    VALUE procval = Qnil;
-
-	    if (blockptr) {
-		procval = blockptr->proc;
-	    }
-
-	    argv[iseq->arg_block] = procval;
-	}
-
-	th->mark_stack_len = 0;
-	return 0;
+	return vm_yield_setup_block_args(th, iseq, argc, argv, blockptr);
     }
 }
 
@@ -807,7 +870,7 @@ vm_invoke_block(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_num_t num, rb_n
     int argc = num;
 
     if (GET_ISEQ()->local_iseq->type != ISEQ_TYPE_METHOD || block == 0) {
-	vm_localjump_error("no block given (yield)", Qnil, 0);
+	rb_vm_localjump_error("no block given (yield)", Qnil, 0);
     }
     iseq = block->iseq;
 
@@ -1026,10 +1089,13 @@ vm_get_ev_const(rb_thread_t *th, const rb_iseq_t *iseq,
 	    cref = cref->nd_next;
 
 	    if (!NIL_P(klass)) {
+		VALUE am = 0;
 	      search_continue:
 		if (RCLASS_IV_TBL(klass) &&
 		    st_lookup(RCLASS_IV_TBL(klass), id, &val)) {
 		    if (val == Qundef) {
+			if (am == klass) break;
+			am = klass;
 			rb_autoload_load(klass, id);
 			goto search_continue;
 		    }
@@ -1119,19 +1185,21 @@ static inline VALUE
 vm_search_normal_superclass(VALUE klass, VALUE recv)
 {
     if (BUILTIN_TYPE(klass) == T_CLASS) {
-	klass = RCLASS_SUPER(klass);
+	return RCLASS_SUPER(klass);
     }
     else if (BUILTIN_TYPE(klass) == T_MODULE) {
 	VALUE k = CLASS_OF(recv);
 	while (k) {
 	    if (BUILTIN_TYPE(k) == T_ICLASS && RBASIC(k)->klass == klass) {
-		klass = RCLASS_SUPER(k);
-		break;
+		return RCLASS_SUPER(k);
 	    }
 	    k = RCLASS_SUPER(k);
 	}
+	return rb_cObject;
     }
-    return klass;
+    else {
+	rb_bug("vm_search_normal_superclass: should not be reach here");
+    }
 }
 
 static void
@@ -1257,7 +1325,7 @@ vm_throw(rb_thread_t *th, rb_control_frame_t *reg_cfp,
 		}
 
 		if (is_orphan) {
-		    vm_localjump_error("break from proc-closure", throwobj, TAG_BREAK);
+		    rb_vm_localjump_error("break from proc-closure", throwobj, TAG_BREAK);
 		}
 	    }
 	    else if (state == TAG_RETRY) {
@@ -1296,7 +1364,7 @@ vm_throw(rb_thread_t *th, rb_control_frame_t *reg_cfp,
 		    cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp);
 		}
 
-		vm_localjump_error("unexpected return", throwobj, TAG_RETURN);
+		rb_vm_localjump_error("unexpected return", throwobj, TAG_RETURN);
 
 	      valid_return:
 		pt = dfp;
@@ -1391,7 +1459,7 @@ vm_expandarray(rb_control_frame_t *cfp, VALUE ary, int num, int flag)
 }
 
 static inline int
-check_cfunc(const NODE *mn, const void *func)
+check_cfunc(const NODE *mn, VALUE (*func)())
 {
     if (mn && nd_type(mn->nd_body) == NODE_CFUNC &&
 	mn->nd_body->nd_cfnc == func) {

@@ -3,7 +3,7 @@
 
   thread_win32.c -
 
-  $Author: usa $
+  $Author: yugui $
 
   Copyright (C) 2004-2007 Koichi Sasada
 
@@ -50,6 +50,7 @@ Init_native_thread(void)
     rb_thread_t *th = GET_THREAD();
 
     ruby_native_thread_key = TlsAlloc();
+    ruby_thread_set_native(th);
     DuplicateHandle(GetCurrentProcess(),
 		    GetCurrentThread(),
 		    GetCurrentProcess(),
@@ -167,7 +168,7 @@ w32_resume_thread(HANDLE handle)
     }
 }
 
-#if defined( _MSC_VER ) && !defined(_WIN32_WCE)
+#if defined _MSC_VER && !defined(_WIN32_WCE)
 #define HAVE__BEGINTHREADEX 1
 #else
 #undef HAVE__BEGINTHREADEX
@@ -455,7 +456,6 @@ static unsigned long _stdcall
 thread_start_func_1(void *th_ptr)
 {
     rb_thread_t *th = th_ptr;
-    VALUE stack_start;
     volatile HANDLE thread_id = th->thread_id;
 
     native_thread_init_stack(th);
@@ -464,7 +464,8 @@ thread_start_func_1(void *th_ptr)
     /* run */
     thread_debug("thread created (th: %p, thid: %p, event: %p)\n", th,
 		 th->thread_id, th->native_thread_data.interrupt_event);
-    thread_start_func_2(th, &stack_start, 0);
+
+    thread_start_func_2(th, th->machine_stack_start, rb_ia64_bsp());
 
     w32_close_handle(thread_id);
     thread_debug("thread deleted (th: %p)\n", th);
@@ -531,27 +532,42 @@ ubf_handle(void *ptr)
 }
 
 static HANDLE timer_thread_id = 0;
+static HANDLE timer_thread_lock;
 
 static unsigned long _stdcall
 timer_thread_func(void *dummy)
 {
     thread_debug("timer_thread\n");
-    while (system_working) {
-	Sleep(WIN32_WAIT_TIMEOUT);
+    while (WaitForSingleObject(timer_thread_lock, WIN32_WAIT_TIMEOUT) ==
+	   WAIT_TIMEOUT) {
 	timer_thread_function(dummy);
     }
     thread_debug("timer killed\n");
     return 0;
 }
 
-void
+static void
 rb_thread_create_timer_thread(void)
 {
     if (timer_thread_id == 0) {
+	if (!timer_thread_lock) {
+	    timer_thread_lock = CreateEvent(0, TRUE, FALSE, 0);
+	}
 	timer_thread_id = w32_create_thread(1024 + (THREAD_DEBUG ? BUFSIZ : 0),
-					    timer_thread_func, GET_VM());
+					    timer_thread_func, 0);
 	w32_resume_thread(timer_thread_id);
     }
+}
+
+static int
+native_stop_timer_thread(void)
+{
+    int stopped = --system_working <= 0;
+    if (stopped) {
+	CloseHandle(timer_thread_lock);
+	timer_thread_lock = 0;
+    }
+    return stopped;
 }
 
 #endif /* THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION */

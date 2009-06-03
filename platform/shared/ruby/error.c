@@ -2,7 +2,7 @@
 
   error.c -
 
-  $Author: matz $
+  $Author: yugui $
   created at: Mon Aug  9 16:11:34 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -210,22 +210,32 @@ static void
 report_bug(const char *file, int line, const char *fmt, va_list args)
 {
     char buf[BUFSIZ];
-//    FILE *out = stderr;
+//RHO
+    //FILE *out = stderr;
+//RHO
     int len = err_position_0(buf, BUFSIZ, file, line);
 
- //RHO
+//RHO
     buf[len] = 0;
     rhoPlainLogVar("",0,L_ERROR,"RubyVM","%s [BUG]",buf);
     rhoPlainLogArg("",0,L_ERROR,"RubyVM",fmt,args);
     rhoPlainLogVar("",0,L_ERROR,"RubyVM","Description: %s",ruby_description);
 
     rb_vm_bugreport();
+
 /*    if (fwrite(buf, 1, len, out) == len ||
 	fwrite(buf, 1, len, (out = stdout)) == len) {
+
 	fputs("[BUG] ", out);
 	vfprintf(out, fmt, args);
 	fprintf(out, "\n%s\n\n", ruby_description);
+
 	rb_vm_bugreport();
+
+	fprintf(out,
+		"[NOTE]\n"
+		"You may encounter a bug of Ruby interpreter. Bug reports are welcome.\n"
+		"For details: http://www.ruby-lang.org/bugreport.html\n\n");
     }*/
 //RHO
 }
@@ -570,15 +580,33 @@ exc_set_backtrace(VALUE exc, VALUE bt)
 static VALUE
 exc_equal(VALUE exc, VALUE obj)
 {
+    VALUE mesg, backtrace;
     ID id_mesg;
 
     if (exc == obj) return Qtrue;
-    if (rb_obj_class(exc) != rb_obj_class(obj))
-	return Qfalse;
     CONST_ID(id_mesg, "mesg");
-    if (!rb_equal(rb_attr_get(exc, id_mesg), rb_attr_get(obj, id_mesg)))
+
+    if (rb_obj_class(exc) != rb_obj_class(obj)) {
+	ID id_message, id_backtrace;
+	CONST_ID(id_message, "message");
+	CONST_ID(id_backtrace, "backtrace");
+
+	if (rb_respond_to(obj, id_message) && rb_respond_to(obj, id_backtrace)) {
+	    mesg = rb_funcall(obj, id_message, 0, 0);
+	    backtrace = rb_funcall(obj, id_backtrace, 0, 0);
+	}
+	else {
+	    return Qfalse;
+	}
+    }
+    else {
+	mesg = rb_attr_get(obj, id_mesg);
+	backtrace = exc_backtrace(obj);
+    }
+
+    if (!rb_equal(rb_attr_get(exc, id_mesg), mesg))
 	return Qfalse;
-    if (!rb_equal(exc_backtrace(exc), exc_backtrace(obj)))
+    if (!rb_equal(exc_backtrace(exc), backtrace))
 	return Qfalse;
     return Qtrue;
 }
@@ -1173,7 +1201,11 @@ rb_check_frozen(VALUE obj)
     if (OBJ_FROZEN(obj)) rb_error_frozen(rb_obj_classname(obj));
 }
 
+void Init_syserr(void)
+{
+    rb_eNOERROR = set_syserr(0, "NOERROR");
 #include "known_errors.inc"
+}
 
 static void
 err_append(const char *s)

@@ -2,7 +2,7 @@
 
   iseq.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: 2006-07-11(Tue) 09:00:03 +0900
 
   Copyright (C) 2006 Koichi Sasada
@@ -19,11 +19,9 @@
 #include "insns.inc"
 #include "insns_info.inc"
 
-/* compile.c */
-void iseq_compile(VALUE self, NODE *node);
-int iseq_translate_threaded_code(rb_iseq_t *iseq);
-
 VALUE rb_cISeq;
+
+#define hidden_obj_p(obj) (!SPECIAL_CONST_P(obj) && !RBASIC(obj)->klass)
 
 static void
 compile_data_free(struct iseq_compile_data *compile_data)
@@ -314,6 +312,15 @@ rb_iseq_new_top(NODE *node, VALUE name, VALUE filename, VALUE parent)
 				&COMPILE_OPTION_DEFAULT);
 }
 
+VALUE
+rb_iseq_new_main(NODE *node, VALUE filename)
+{
+    rb_thread_t *th = GET_THREAD();
+    VALUE parent = th->base_block->iseq->self;
+    return rb_iseq_new_with_opt(node, rb_str_new2("<main>"), filename,
+				parent, ISEQ_TYPE_MAIN, &COMPILE_OPTION_DEFAULT);
+}
+
 static VALUE
 rb_iseq_new_with_bopt_and_opt(NODE *node, VALUE name, VALUE filename,
 				VALUE parent, VALUE type, VALUE bopt,
@@ -326,7 +333,7 @@ rb_iseq_new_with_bopt_and_opt(NODE *node, VALUE name, VALUE filename,
     iseq->self = self;
 
     prepare_iseq_build(iseq, name, filename, parent, type, bopt, option);
-    iseq_compile(self, node);
+    rb_iseq_compile_node(self, node);
     cleanup_iseq_build(iseq);
     return self;
 }
@@ -348,17 +355,14 @@ rb_iseq_new_with_bopt(NODE *node, VALUE name, VALUE filename,
 					   bopt, &COMPILE_OPTION_DEFAULT);
 }
 
-VALUE iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
-			  VALUE exception, VALUE body);
-
 #define CHECK_ARRAY(v)   rb_convert_type(v, T_ARRAY, "Array", "to_ary")
 #define CHECK_STRING(v)  rb_convert_type(v, T_STRING, "String", "to_str")
 #define CHECK_SYMBOL(v)  rb_convert_type(v, T_SYMBOL, "Symbol", "to_sym")
 static inline VALUE CHECK_INTEGER(VALUE v) {NUM2LONG(v); return v;}
-VALUE
+static VALUE
 iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
 {
-    VALUE iseqval = iseq_alloc(rb_cISeq);
+    VALUE iseqval = iseq_alloc(self);
 
     VALUE magic, version1, version2, format_type, misc;
     VALUE name, filename;
@@ -409,6 +413,7 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
 	st_insert(type_map, ID2SYM(rb_intern("rescue")), ISEQ_TYPE_RESCUE);
 	st_insert(type_map, ID2SYM(rb_intern("ensure")), ISEQ_TYPE_ENSURE);
 	st_insert(type_map, ID2SYM(rb_intern("eval")), ISEQ_TYPE_EVAL);
+	st_insert(type_map, ID2SYM(rb_intern("main")), ISEQ_TYPE_MAIN);
 	st_insert(type_map, ID2SYM(rb_intern("defined_guard")), ISEQ_TYPE_DEFINED_GUARD);
     }
 
@@ -428,10 +433,9 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     prepare_iseq_build(iseq, name, filename,
 		       parent, iseq_type, 0, &option);
 
-    iseq_build_from_ary(iseq, locals, args, exception, body);
+    rb_iseq_build_from_ary(iseq, locals, args, exception, body);
 
     cleanup_iseq_build(iseq);
-
     return iseqval;
 }
 
@@ -442,6 +446,12 @@ iseq_s_load(int argc, VALUE *argv, VALUE self)
     rb_scan_args(argc, argv, "11", &data, &opt);
 
     return iseq_load(self, data, 0, opt);
+}
+
+VALUE
+ruby_iseq_load(VALUE data, VALUE parent, VALUE opt)
+{
+    return iseq_load(rb_cISeq, data, parent, opt);
 }
 
 static NODE *
@@ -691,6 +701,16 @@ insn_operand_intern(rb_iseq_t *iseq,
 	op = ID2SYM(op);
 
       case TS_VALUE:		/* VALUE */
+	if (hidden_obj_p(op)) {
+	    switch (BUILTIN_TYPE(op)) {
+	      case T_STRING:
+		op = rb_str_replace(rb_str_new(0, 0), op);
+		break;
+	      case T_ARRAY:
+		op = rb_ary_replace(rb_ary_new2(0), op);
+		break;
+	    }
+	}
 	ret = rb_inspect(op);
 	if (CLASS_OF(op) == rb_cISeq) {
 	    rb_ary_push(child, op);
@@ -731,7 +751,7 @@ insn_operand_intern(rb_iseq_t *iseq,
 	break;
 
       default:
-	rb_bug("ruby_iseq_disasm: unknown operand type: %c", type);
+	rb_bug("rb_iseq_disasm: unknown operand type: %c", type);
     }
     return ret;
 }
@@ -741,8 +761,8 @@ insn_operand_intern(rb_iseq_t *iseq,
  * Iseq -> Iseq inspect object
  */
 VALUE
-ruby_iseq_disasm_insn(VALUE ret, VALUE *iseq, int pos,
-		      rb_iseq_t *iseqdat, VALUE child)
+rb_iseq_disasm_insn(VALUE ret, VALUE *iseq, int pos,
+		    rb_iseq_t *iseqdat, VALUE child)
 {
     int insn = iseq[pos];
     int len = insn_len(insn);
@@ -823,7 +843,7 @@ catch_type(int type)
 }
 
 VALUE
-ruby_iseq_disasm(VALUE self)
+rb_iseq_disasm(VALUE self)
 {
     rb_iseq_t *iseqdat = iseq_check(self);
     VALUE *iseq;
@@ -831,6 +851,7 @@ ruby_iseq_disasm(VALUE self)
     VALUE child = rb_ary_new();
     unsigned long size;
     int i;
+    long l;
     ID *tbl;
     enum {header_minlen = 72};
 
@@ -842,9 +863,9 @@ ruby_iseq_disasm(VALUE self)
     rb_str_cat2(str, "== disasm: ");
 
     rb_str_concat(str, iseq_inspect(iseqdat->self));
-    if ((i = RSTRING_LEN(str)) < header_minlen) {
+    if ((l = RSTRING_LEN(str)) < header_minlen) {
 	rb_str_resize(str, header_minlen);
-	memset(RSTRING_PTR(str) + i, '=', header_minlen - i);
+	memset(RSTRING_PTR(str) + l, '=', header_minlen - l);
     }
     rb_str_cat2(str, "\n");
 
@@ -859,7 +880,7 @@ ruby_iseq_disasm(VALUE self)
 		    catch_type((int)entry->type), (int)entry->start,
 		    (int)entry->end, (int)entry->sp, (int)entry->cont);
 	if (entry->iseq) {
-	    rb_str_concat(str, ruby_iseq_disasm(entry->iseq));
+	    rb_str_concat(str, rb_iseq_disasm(entry->iseq));
 	}
     }
     if (iseqdat->catch_table_size != 0) {
@@ -912,12 +933,12 @@ ruby_iseq_disasm(VALUE self)
 
     /* show each line */
     for (i = 0; i < size;) {
-	i += ruby_iseq_disasm_insn(str, iseq, i, iseqdat, child);
+	i += rb_iseq_disasm_insn(str, iseq, i, iseqdat, child);
     }
 
     for (i = 0; i < RARRAY_LEN(child); i++) {
 	VALUE isv = rb_ary_entry(child, i);
-	rb_str_concat(str, ruby_iseq_disasm(isv));
+	rb_str_concat(str, rb_iseq_disasm(isv));
     }
 
     return str;
@@ -935,7 +956,7 @@ iseq_s_disasm(VALUE klass, VALUE body)
     if ((node = rb_method_body(body)) != 0) {
 	if (nd_type(node) == RUBY_VM_METHOD_NODE) {
  	    VALUE iseqval = (VALUE)node->nd_body;
-	    ret = ruby_iseq_disasm(iseqval);
+	    ret = rb_iseq_disasm(iseqval);
 	}
     }
 
@@ -1021,6 +1042,7 @@ iseq_data_to_ary(rb_iseq_t *iseq)
     DECL_SYMBOL(rescue);
     DECL_SYMBOL(ensure);
     DECL_SYMBOL(eval);
+    DECL_SYMBOL(main);
     DECL_SYMBOL(defined_guard);
 
     if (sym_top == 0) {
@@ -1035,6 +1057,7 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 	INIT_SYMBOL(rescue);
 	INIT_SYMBOL(ensure);
 	INIT_SYMBOL(eval);
+	INIT_SYMBOL(main);
 	INIT_SYMBOL(defined_guard);
     }
 
@@ -1047,6 +1070,7 @@ iseq_data_to_ary(rb_iseq_t *iseq)
       case ISEQ_TYPE_RESCUE: type = sym_rescue; break;
       case ISEQ_TYPE_ENSURE: type = sym_ensure; break;
       case ISEQ_TYPE_EVAL:   type = sym_eval;   break;
+      case ISEQ_TYPE_MAIN:   type = sym_main;   break;
       case ISEQ_TYPE_DEFINED_GUARD: type = sym_defined_guard; break;
       default: rb_bug("unsupported iseq type");
     };
@@ -1237,20 +1261,6 @@ iseq_data_to_ary(rb_iseq_t *iseq)
     return val;
 }
 
-struct st_table *
-insn_make_insn_table(void)
-{
-    struct st_table *table;
-    int i;
-    table = st_init_numtable();
-
-    for (i=0; i<VM_INSTRUCTION_SIZE; i++) {
-	st_insert(table, ID2SYM(rb_intern(insn_name(i))), i);
-    }
-
-    return table;
-}
-
 VALUE
 rb_iseq_clone(VALUE iseqval, VALUE newcbase)
 {
@@ -1307,7 +1317,7 @@ rb_iseq_build_for_ruby2cext(
 	iseq->iseq[i+1] = (VALUE)func;
     }
 
-    iseq_translate_threaded_code(iseq);
+    rb_iseq_translate_threaded_code(iseq);
 
 #define ALLOC_AND_COPY(dst, src, type, size) do { \
   if (size) { \
@@ -1337,16 +1347,16 @@ Init_ISeq(void)
     rb_cISeq = rb_define_class_under(rb_cRubyVM, "InstructionSequence", rb_cObject);
     rb_define_alloc_func(rb_cISeq, iseq_alloc);
     rb_define_method(rb_cISeq, "inspect", iseq_inspect, 0);
-    rb_define_method(rb_cISeq, "disasm", ruby_iseq_disasm, 0);
-    rb_define_method(rb_cISeq, "disassemble", ruby_iseq_disasm, 0);
+    rb_define_method(rb_cISeq, "disasm", rb_iseq_disasm, 0);
+    rb_define_method(rb_cISeq, "disassemble", rb_iseq_disasm, 0);
     rb_define_method(rb_cISeq, "to_a", iseq_to_a, 0);
-    //rb_define_method(rb_cISeq, "eval", iseq_eval, 0);
+    rb_define_method(rb_cISeq, "eval", iseq_eval, 0);
 
     /* disable this feature because there is no verifier. */
-    //RHO	
-    rb_define_singleton_method(rb_cISeq, "load", iseq_s_load, -1);
-    //(void)iseq_s_load;
     //RHO
+    rb_define_singleton_method(rb_cISeq, "load", iseq_s_load, -1);
+    //RHO
+    (void)iseq_s_load;
 
     rb_define_singleton_method(rb_cISeq, "compile", iseq_s_compile, -1);
     rb_define_singleton_method(rb_cISeq, "new", iseq_s_compile, -1);

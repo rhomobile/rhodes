@@ -232,7 +232,6 @@ public class DataFileCache {
 
             dataFile = ScaledRAFile.newScaledRAFile(database, fileName,
                     readonly, fileType, cname, skey );
-            getJournal().start();
             
             if (preexists) {
                 dataFile.seek(FLAGS_POS);
@@ -253,6 +252,8 @@ public class DataFileCache {
                     fileFreePosition = INITIAL_FREE_POS;
                 }
             } else {
+                getJournal().start();
+            	
                 fileFreePosition = INITIAL_FREE_POS;
 
                 dataFile.seek(LONG_FREE_POS_POS);
@@ -261,8 +262,10 @@ public class DataFileCache {
                 // set unsaved flag;
                 dataFile.seek(FLAGS_POS);
                 dataFile.writeInt(0);
+                
+                getJournal().stop();
+                
             }
-            getJournal().stop();
             
             initBuffers();
 

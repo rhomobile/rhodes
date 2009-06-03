@@ -4,7 +4,7 @@
 #include <aygshell.h>
 #endif
 #include <atltime.h>
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
 #include "Camera.h"
 

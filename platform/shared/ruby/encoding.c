@@ -2,7 +2,7 @@
 
   encoding.c -
 
-  $Author: nobu $
+  $Author: yugui $
   created at: Thu May 24 17:23:27 JST 2007
 
   Copyright (C) 2007 Yukihiro Matsumoto
@@ -13,8 +13,13 @@
 #include "ruby/encoding.h"
 #include "regenc.h"
 #include <ctype.h>
+#ifndef NO_LOCALE_CHARMAP
+#ifdef __CYGWIN__
+#include <windows.h>
+#endif
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
+#endif
 #endif
 #include "ruby/util.h"
 
@@ -45,6 +50,7 @@ static struct {
 void rb_enc_init(void);
 
 #define ENCODING_COUNT ENCINDEX_BUILTIN_MAX
+#define UNSPECIFIED_ENCODING INT_MAX
 
 #define enc_autoload_p(enc) (!rb_enc_mbmaxlen(enc))
 
@@ -356,11 +362,18 @@ enc_dummy_p(VALUE enc)
     return ENC_DUMMY_P(enc_table.list[must_encoding(enc)].enc) ? Qtrue : Qfalse;
 }
 
-static int
-enc_alias(const char *alias, int idx)
+static const char *
+enc_alias_internal(const char *alias, int idx)
 {
     alias = strdup(alias);
     st_insert(enc_table.names, (st_data_t)alias, (st_data_t)idx);
+    return alias;
+}
+
+static int
+enc_alias(const char *alias, int idx)
+{
+    alias = enc_alias_internal(alias, idx);
     set_encoding_const(alias, rb_enc_from_index(idx));
     return idx;
 }
@@ -507,7 +520,12 @@ rb_enc_find_index(const char *name)
     if (i < 0) {
 	i = load_encoding(name);
     }
-    else if (enc_autoload_p(enc = rb_enc_from_index(i))) {
+    else if (!(enc = rb_enc_from_index(i))) {
+	if (i != UNSPECIFIED_ENCODING) {
+	    rb_raise(rb_eArgError, "encoding %s is not registered", name);
+	}
+    }
+    else if (enc_autoload_p(enc)) {
 	if (enc_autoload(enc) < 0) {
 	    rb_warn("failed to load encoding (%s); use ASCII-8BIT instead",
 		    name);
@@ -906,6 +924,9 @@ enc_list(VALUE klass)
  *   Encoding.find("US-ASCII")  => #<Encoding:US-ASCII>
  *   Encoding.find(:Shift_JIS)  => #<Encoding:Shift_JIS>
  *
+ * An ArgumentError is raised when no encoding with <i>name</i>.
+ * Only +Encoding.find("internal")+ however returns nil when no encoding named "internal",
+ * in other words, when Ruby has no default internal encoding.
  */
 static VALUE
 enc_find(VALUE klass, VALUE enc)
@@ -1010,11 +1031,11 @@ rb_locale_encoding(void)
     int idx;
 
     if (NIL_P(charmap))
-        return rb_usascii_encoding();
-    else
-        idx = rb_enc_find_index(StringValueCStr(charmap));
-    if (idx < 0)
-        return rb_ascii8bit_encoding();
+        idx = rb_usascii_encindex();
+    else if ((idx = rb_enc_find_index(StringValueCStr(charmap))) < 0)
+        idx = rb_ascii8bit_encindex();
+
+    if (rb_enc_registered("locale") < 0) enc_alias_internal("locale", idx);
 
     return rb_enc_from_index(idx);
 }
@@ -1023,26 +1044,62 @@ rb_encoding *
 rb_filesystem_encoding(void)
 {
     rb_encoding *enc;
-#if defined _WIN32
-    enc = rb_locale_encoding();
+#if defined NO_LOCALE_CHARMAP
+    enc = rb_default_external_encoding();
+#elif defined _WIN32 || defined __CYGWIN__
+    char cp[sizeof(int) * 8 / 3 + 4];
+    snprintf(cp, sizeof cp, "CP%d", AreFileApisANSI() ? GetACP() : GetOEMCP());
+    enc = rb_enc_find(cp);
 #elif defined __APPLE__
-    enc = rb_enc_find("UTF-8");//("UTF8-MAC");
+    enc = rb_enc_find("UTF8-MAC");
 #else
     enc = rb_default_external_encoding();
 #endif
     return enc;
 }
 
-static int default_external_index;
-static rb_encoding *default_external;
+struct default_encoding {
+    int index;			/* -2 => not yet set, -1 => nil */
+    rb_encoding *enc;
+};
+
+static int
+enc_set_default_encoding(struct default_encoding *def, VALUE encoding, const char *name)
+{
+    int overridden = Qfalse;
+    if (def->index != -2)
+	/* Already set */
+	overridden = Qtrue;
+
+    if (NIL_P(encoding)) {
+	def->index = -1;
+	def->enc = 0;
+	st_insert(enc_table.names, (st_data_t)strdup(name),
+		  (st_data_t)UNSPECIFIED_ENCODING);
+    }
+    else {
+	def->index = rb_enc_to_index(rb_to_encoding(encoding));
+	def->enc = 0;
+	enc_alias_internal(name, def->index);
+    }
+
+    return overridden;
+}
+
+static struct default_encoding default_external = {0};
 
 rb_encoding *
 rb_default_external_encoding(void)
 {
-    if (!default_external) {
-	default_external = rb_enc_from_index(default_external_index);
+    if (default_external.enc) return default_external.enc;
+
+    if (default_external.index >= 0) {
+        default_external.enc = rb_enc_from_index(default_external.index);
+        return default_external.enc;
     }
-    return default_external;
+    else {
+        return rb_locale_encoding();
+    }
 }
 
 VALUE
@@ -1057,8 +1114,7 @@ rb_enc_default_external(void)
  *
  * Returns default external encoding.
  *
- * It is initialized by the locale or -E option,
- * and can't be modified after that.
+ * It is initialized by the locale or -E option.
  */
 static VALUE
 get_default_external(VALUE klass)
@@ -1069,21 +1125,36 @@ get_default_external(VALUE klass)
 void
 rb_enc_set_default_external(VALUE encoding)
 {
-    default_external_index = rb_enc_to_index(rb_to_encoding(encoding));
-    default_external = 0;
+    if (NIL_P(encoding)) {
+        rb_raise(rb_eArgError, "default external can not be nil");
+    }
+    enc_set_default_encoding(&default_external, encoding,
+                            "external");
 }
 
-/* -2 => not yet set, -1 => nil */
-static int default_internal_index = -2;
-static rb_encoding *default_internal;
+/*
+ * call-seq:
+ *   Encoding.default_external = enc
+ *
+ * Sets default external encoding.
+ */
+static VALUE
+set_default_external(VALUE klass, VALUE encoding)
+{
+    rb_warning("setting Encoding.default_external");
+    rb_enc_set_default_external(encoding);
+    return encoding;
+}
+
+static struct default_encoding default_internal = {-2};
 
 rb_encoding *
 rb_default_internal_encoding(void)
 {
-    if (!default_internal && default_internal_index >= 0) {
-	default_internal = rb_enc_from_index(default_internal_index);
+    if (!default_internal.enc && default_internal.index >= 0) {
+        default_internal.enc = rb_enc_from_index(default_internal.index);
     }
-    return default_internal;
+    return default_internal.enc; /* can be NULL */
 }
 
 VALUE
@@ -1099,8 +1170,7 @@ rb_enc_default_internal(void)
  *
  * Returns default internal encoding.
  *
- * It is initialized by the source internal_encoding or -E option,
- * and can't be modified after that.
+ * It is initialized by the source internal_encoding or -E option.
  */
 static VALUE
 get_default_internal(VALUE klass)
@@ -1111,15 +1181,23 @@ get_default_internal(VALUE klass)
 void
 rb_enc_set_default_internal(VALUE encoding)
 {
-    if (default_internal_index != -2)
-	/* Already set */
-	return;
-    default_internal_index = encoding == Qnil ?
-				-1 :rb_enc_to_index(rb_to_encoding(encoding));
-    /* Convert US-ASCII => UTF-8 */
-    if (default_internal_index == rb_usascii_encindex())
-	default_internal_index = rb_utf8_encindex();
-    default_internal = 0;
+    enc_set_default_encoding(&default_internal, encoding,
+                            "internal");
+}
+
+/*
+ * call-seq:
+ *   Encoding.default_internal = enc or nil
+ *
+ * Sets default internal encoding.
+ * Or removes default internal encoding when passed nil.
+ */
+static VALUE
+set_default_internal(VALUE klass, VALUE encoding)
+{
+    rb_warning("setting Encoding.default_internal");
+    rb_enc_set_default_internal(encoding);
+    return encoding;
 }
 
 /*
@@ -1140,18 +1218,30 @@ rb_enc_set_default_internal(VALUE encoding)
  *     LANG=ja
  *       Encoding.locale_charmap  => "eucJP"
  *
+ * The result is higly platform dependent.
+ * So Encoding.find(Encoding.locale_charmap) may cause an error.
+ * If you need some encoding object even for unknown locale,
+ * Encoding.find("locale") can be used.
+ *
  */
 VALUE
 rb_locale_charmap(VALUE klass)
 {
 #if defined NO_LOCALE_CHARMAP
     return rb_usascii_str_new2("ASCII-8BIT");
+#elif defined _WIN32 || defined __CYGWIN__
+    const char *nl_langinfo_codeset(void);
+    const char *codeset = nl_langinfo_codeset();
+    char cp[sizeof(int) * 3 + 4];
+    if (!codeset) {
+	snprintf(cp, sizeof(cp), "CP%d", GetConsoleCP());
+	codeset = cp;
+    }
+    return rb_usascii_str_new2(codeset);
 #elif defined HAVE_LANGINFO_H
     char *codeset;
     codeset = nl_langinfo(CODESET);
     return rb_usascii_str_new2(codeset);
-#elif defined _WIN32
-    return rb_sprintf("CP%d", GetACP());
 #else
     return Qnil;
 #endif
@@ -1248,6 +1338,7 @@ rb_enc_aliases_enc_i(st_data_t name, st_data_t orig, st_data_t arg)
     if (NIL_P(str)) {
 	rb_encoding *enc = rb_enc_from_index(idx);
 
+	if (!enc) return ST_CONTINUE;
 	if (STRCASECMP((char*)name, rb_enc_name(enc)) == 0) {
 	    return ST_CONTINUE;
 	}
@@ -1308,7 +1399,9 @@ Init_Encoding(void)
     rb_define_singleton_method(rb_cEncoding, "_load", enc_load, 1);
 
     rb_define_singleton_method(rb_cEncoding, "default_external", get_default_external, 0);
+    rb_define_singleton_method(rb_cEncoding, "default_external=", set_default_external, 1);
     rb_define_singleton_method(rb_cEncoding, "default_internal", get_default_internal, 0);
+    rb_define_singleton_method(rb_cEncoding, "default_internal=", set_default_internal, 1);
     rb_define_singleton_method(rb_cEncoding, "locale_charmap", rb_locale_charmap, 0);
 
     list = rb_ary_new2(enc_table.count);
