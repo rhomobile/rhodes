@@ -1,6 +1,8 @@
 *~
 *.iseq
 .DS_Store
+rhodes/*/pkg/
+rhodes/rhodes-framework/spec/bin/
 platform/iphone/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
