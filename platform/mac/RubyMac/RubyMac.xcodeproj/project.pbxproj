@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5C0440920EF7DC550014E5C6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0440910EF7DC550014E5C6 /* main.c */; };
 		5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */; };
-		5C0440F60EF7E72A0014E5C6 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440F50EF7E72A0014E5C6 /* librhorubylib.a */; };
 		8DD76F6A0486A84900D96B5E /* RubyMac.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* RubyMac.1 */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +46,6 @@
 		5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = ../../iphone/rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		5C0440910EF7DC550014E5C6 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../shared/ruby/main.c; sourceTree = SOURCE_ROOT; };
 		5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
-		5C0440F50EF7E72A0014E5C6 /* librhorubylib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librhorubylib.a; path = ../../iphone/build/Debug/librhorubylib.a; sourceTree = SOURCE_ROOT; };
 		8DD76F6C0486A84900D96B5E /* RubyMac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RubyMac; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859E8B029090EE04C91782 /* RubyMac.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RubyMac.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,7 +56,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */,
-				5C0440F60EF7E72A0014E5C6 /* librhorubylib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +65,6 @@
 		08FB7794FE84155DC02AAC07 /* RubyMac */ = {
 			isa = PBXGroup;
 			children = (
-				5C0440F50EF7E72A0014E5C6 /* librhorubylib.a */,
 				5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6859E8C029090F304C91782 /* Documentation */,
@@ -204,8 +200,10 @@
 					"\"$(SRCROOT)/../../iphone/build/Debug\"",
 					"\"$(SRCROOT)/../../iphone/build/Release\"",
 				);
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lrhorubylib";
 				PRODUCT_NAME = RubyMac;
+				SYMROOT = build;
+				USER_HEADER_SEARCH_PATHS = "../../shared ../../shared/ruby/iphone ../../shared/ruby/include ../../shared/ruby";
 			};
 			name = Debug;
 		};
@@ -221,8 +219,9 @@
 					"\"$(SRCROOT)/../../iphone/build/Debug\"",
 					"\"$(SRCROOT)/../../iphone/build/Release\"",
 				);
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lrhorubylib";
 				PRODUCT_NAME = RubyMac;
+				USER_HEADER_SEARCH_PATHS = "../../shared ../../shared/ruby/iphone ../../shared/ruby/include ../../shared/ruby";
 			};
 			name = Release;
 		};
@@ -249,6 +248,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lrhorubylib";
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;

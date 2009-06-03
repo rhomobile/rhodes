@@ -535,7 +535,9 @@ void ruby_script(const char*);
 void ruby_prog_init(void);
 void ruby_set_argv(int, char**);
 void *ruby_process_options(int, char**);
-void ruby_init_loadpath(void);
+//RHO
+void ruby_init_loadpath(const char* szRoot);
+//RHO
 void ruby_incpush(const char*);
 /* signal.c */
 VALUE rb_f_kill(int, VALUE*);
