@@ -7,7 +7,7 @@
  *
  */
 
-#include "rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 #include "ruby/ext/phonebook/phonebook.h"
 #include "phonebook.h"
 

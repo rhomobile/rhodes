@@ -2,7 +2,7 @@
 
   math.c -
 
-  $Author: tadf $
+  $Author: yugui $
   created at: Tue Jan 25 14:12:56 JST 1994
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -15,33 +15,22 @@
 
 VALUE rb_mMath;
 
-static VALUE
-to_flo(VALUE x)
-{
-    if (!rb_obj_is_kind_of(x, rb_cNumeric)) {
-	rb_raise(rb_eTypeError, "can't convert %s into Float",
-		 NIL_P(x) ? "nil" :
-		 x == Qtrue ? "true" :
-		 x == Qfalse ? "false" :
-		 rb_obj_classname(x));
-    }
-    return rb_convert_type(x, T_FLOAT, "Float", "to_f");
-}
-
-#define Need_Float(x) (x) = to_flo(x)
+extern VALUE rb_to_float(VALUE val);
+#define Need_Float(x) (x) = rb_to_float(x)
 #define Need_Float2(x,y) do {\
     Need_Float(x);\
     Need_Float(y);\
 } while (0)
 
 static void
-domain_check(double x, const char *msg)
+domain_check(double x, double y, const char *msg)
 {
     while(1) {
 	if (errno) {
 	    rb_sys_fail(msg);
 	}
-	if (isnan(x)) {
+	if (isnan(y)) {
+	    if (isnan(x)) break;
 #if defined(EDOM)
 	    errno = EDOM;
 #elif defined(ERANGE)
@@ -81,7 +70,7 @@ infinity_check(VALUE arg, double res, const char *msg)
  *     
  */
 
-VALUE
+static VALUE
 math_atan2(VALUE obj, VALUE y, VALUE x)
 {
     Need_Float2(y, x);
@@ -97,7 +86,7 @@ math_atan2(VALUE obj, VALUE y, VALUE x)
  *  -1..1.
  */
 
-VALUE
+static VALUE
 math_cos(VALUE obj, VALUE x)
 {
     Need_Float(x);
@@ -112,7 +101,7 @@ math_cos(VALUE obj, VALUE x)
  *  -1..1.
  */
 
-VALUE
+static VALUE
 math_sin(VALUE obj, VALUE x)
 {
     Need_Float(x);
@@ -146,12 +135,13 @@ math_tan(VALUE obj, VALUE x)
 static VALUE
 math_acos(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = acos(RFLOAT_VALUE(x));
-    domain_check(d, "acos");
+    d0 = RFLOAT_VALUE(x);
+    d = acos(d0);
+    domain_check(d0, d, "acos");
     return DBL2NUM(d);
 }
 
@@ -165,12 +155,13 @@ math_acos(VALUE obj, VALUE x)
 static VALUE
 math_asin(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = asin(RFLOAT_VALUE(x));
-    domain_check(d, "asin");
+    d0 = RFLOAT_VALUE(x);
+    d = asin(d0);
+    domain_check(d0, d, "asin");
     return DBL2NUM(d);
 }
 
@@ -203,7 +194,7 @@ cosh(double x)
  *  Computes the hyperbolic cosine of <i>x</i> (expressed in radians).
  */
 
-VALUE
+static VALUE
 math_cosh(VALUE obj, VALUE x)
 {
     Need_Float(x);
@@ -227,7 +218,7 @@ sinh(double x)
  *  radians).
  */
 
-VALUE
+static VALUE
 math_sinh(VALUE obj, VALUE x)
 {
     Need_Float(x);
@@ -267,12 +258,13 @@ math_tanh(VALUE obj, VALUE x)
 static VALUE
 math_acosh(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = acosh(RFLOAT_VALUE(x));
-    domain_check(d, "acosh");
+    d0 = RFLOAT_VALUE(x);
+    d = acosh(d0);
+    domain_check(d0, d, "acosh");
     return DBL2NUM(d);
 }
 
@@ -300,12 +292,13 @@ math_asinh(VALUE obj, VALUE x)
 static VALUE
 math_atanh(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = atanh(RFLOAT_VALUE(x));
-    domain_check(d, "atanh");
+    d0 = RFLOAT_VALUE(x);
+    d = atanh(d0);
+    domain_check(d0, d, "atanh");
     infinity_check(x, d, "atanh");
     return DBL2NUM(d);
 }
@@ -317,7 +310,7 @@ math_atanh(VALUE obj, VALUE x)
  *  Returns e**x.
  */
 
-VALUE
+static VALUE
 math_exp(VALUE obj, VALUE x)
 {
     Need_Float(x);
@@ -343,21 +336,22 @@ math_exp(VALUE obj, VALUE x)
  *  of logarithm.
  */
 
-VALUE
+static VALUE
 math_log(int argc, VALUE *argv)
 {
     VALUE x, base;
-    double d;
+    double d0, d;
 
     rb_scan_args(argc, argv, "11", &x, &base);
     Need_Float(x);
     errno = 0;
-    d = log(RFLOAT_VALUE(x));
+    d0 = RFLOAT_VALUE(x);
+    d = log(d0);
     if (argc == 2) {
 	Need_Float(base);
 	d /= log(RFLOAT_VALUE(base));
     }
-    domain_check(d, "log");
+    domain_check(d0, d, "log");
     infinity_check(x, d, "log");
     return DBL2NUM(d);
 }
@@ -384,12 +378,13 @@ extern double log2(double);
 static VALUE
 math_log2(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = log2(RFLOAT_VALUE(x));
-    domain_check(d, "log2");
+    d0 = RFLOAT_VALUE(x);
+    d = log2(d0);
+    domain_check(d0, d, "log2");
     infinity_check(x, d, "log2");
     return DBL2NUM(d);
 }
@@ -404,12 +399,13 @@ math_log2(VALUE obj, VALUE x)
 static VALUE
 math_log10(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = log10(RFLOAT_VALUE(x));
-    domain_check(d, "log10");
+    d0 = RFLOAT_VALUE(x);
+    d = log10(d0);
+    domain_check(d0, d, "log10");
     infinity_check(x, d, "log10");
     return DBL2NUM(d);
 }
@@ -438,15 +434,16 @@ math_log10(VALUE obj, VALUE x)
  *
  */
 
-VALUE
+static VALUE
 math_sqrt(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
 
     Need_Float(x);
     errno = 0;
-    d = sqrt(RFLOAT_VALUE(x));
-    domain_check(d, "sqrt");
+    d0 = RFLOAT_VALUE(x);
+    d = sqrt(d0);
+    domain_check(d0, d, "sqrt");
     return DBL2NUM(d);
 }
 
@@ -540,7 +537,7 @@ math_ldexp(VALUE obj, VALUE x, VALUE n)
  *     Math.hypot(3, 4)   #=> 5.0
  */
 
-VALUE
+static VALUE
 math_hypot(VALUE obj, VALUE x, VALUE y)
 {
     Need_Float2(x, y);
@@ -619,11 +616,12 @@ math_erfc(VALUE obj, VALUE x)
 static VALUE
 math_gamma(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
     Need_Float(x);
     errno = 0;
-    d = tgamma(RFLOAT_VALUE(x));
-    domain_check(d, "gamma");
+    d0 = RFLOAT_VALUE(x);
+    d = tgamma(d0);
+    domain_check(d0, d, "gamma");
     return DBL2NUM(d);
 }
 
@@ -642,16 +640,49 @@ math_gamma(VALUE obj, VALUE x)
 static VALUE
 math_lgamma(VALUE obj, VALUE x)
 {
-    double d;
+    double d0, d;
     int sign;
     VALUE v;
     Need_Float(x);
     errno = 0;
-    d = lgamma_r(RFLOAT_VALUE(x), &sign);
-    domain_check(d, "lgamma");
+    d0 = RFLOAT_VALUE(x);
+    d = lgamma_r(d0, &sign);
+    domain_check(d0, d, "lgamma");
     v = DBL2NUM(d);
     return rb_assoc_new(v, INT2FIX(sign));
 }
+
+
+#define exp1(n) \
+VALUE \
+rb_math_##n(VALUE x)\
+{\
+    return math_##n(rb_mMath, x);\
+}
+
+#define exp2(n) \
+VALUE \
+rb_math_##n(VALUE x, VALUE y)\
+{\
+    return math_##n(rb_mMath, x, y);\
+}
+
+exp2(atan2)
+exp1(cos)
+exp1(cosh)
+exp1(exp)
+exp2(hypot)
+
+VALUE
+rb_math_log(int argc, VALUE *argv)
+{
+    return math_log(argc, argv);
+}
+
+exp1(sin)
+exp1(sinh)
+exp1(sqrt)
+
 
 /*
  *  The <code>Math</code> module contains module functions for basic

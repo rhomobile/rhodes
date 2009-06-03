@@ -265,12 +265,6 @@ task :prebuild_win do
   eclipse_home = config["env"]["paths"]["eclipse_home"]
   javac_home = config["env"]["paths"]["javac_home"]
 
-  puts "Compile RubyJVM"
-  chdir basedir
-  chdir 'platform/android/RubyJVM'  
-  puts `#{ant} clean`  
-  puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}"`
-
   puts "Compile RhoBundle, required by Rhodes"
   chdir basedir
   chdir 'platform/android/RhoBundle'    
@@ -309,9 +303,6 @@ task :prebuild_win do
 
   puts "copy loading.html"
   cp File.join( basedir, 'platform', 'android', 'Rhodes', 'assets', 'apps', 'loading.html' ), File.join( basedir, prebuilt )
-
-  puts "copy rhosdcard.7z"
-  cp File.join( basedir, 'platform', 'android', 'build', 'rhosdcard.7z' ), File.join( basedir, prebuilt )
 
 end
 
