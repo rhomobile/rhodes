@@ -26,7 +26,7 @@ extern void Init_SyncEngine(void);
  if (rb_safe_level() == 0) {
  ruby_incpush(getenv("RUBYLIB"));
     }
-[04.01.2009 11:44:19] evgeny vovchenko says: ýòî íàäî óáðàòü
+[04.01.2009 11:44:19] evgeny vovchenko says: ËÃšÃ“ ÃŒâ€¡â€°Ã“ Ã›Â·ï£¿â€¡ÃšÂ¸
 [04.01.2009 11:44:35] evgeny vovchenko says: ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
 */
 //RUBY_GLOBAL_SETUP
@@ -105,11 +105,12 @@ __rho_compile( VALUE obj, VALUE src)
 
     return result;
 }
-/*
+#ifdef __APPLE__
 const char* RhoGetRootPath()
 {
-    return 0;
-}*/
+    return "";
+}
+#endif //__APPLE__
 
 #endif //!COMPILER
 /*

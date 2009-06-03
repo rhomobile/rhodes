@@ -3,8 +3,8 @@
 #define PACKAGE_VERSION ""
 #define PACKAGE_STRING ""
 #define PACKAGE_BUGREPORT ""
+#define CANONICALIZATION_FOR_MATHN 1
 #define USE_BUILTIN_FRAME_ADDRESS 1
-#define _GNU_SOURCE 1
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
@@ -16,6 +16,8 @@
 #define HAVE_STDINT_H 1
 #define HAVE_UNISTD_H 1
 #define __EXTENSIONS__ 1
+#define _ALL_SOURCE 1
+#define _GNU_SOURCE 1
 #define _POSIX_PTHREAD_SEMANTICS 1
 #define _TANDEM_SOURCE 1
 #define HAVE_LONG_LONG 1
@@ -55,11 +57,7 @@
 #define BROKEN_CRYPT 1
 #define HAVE_LIBDL 1
 #define HAVE_DIRENT_H 1
-#define STDC_HEADERS 1
 #define HAVE_SYS_WAIT_H 1
-#define HAVE_STDLIB_H 1
-#define HAVE_STRING_H 1
-#define HAVE_UNISTD_H 1
 #define HAVE_LIMITS_H 1
 #define HAVE_SYS_FILE_H 1
 #define HAVE_SYS_IOCTL_H 1
@@ -73,12 +71,10 @@
 #define HAVE_PWD_H 1
 #define HAVE_GRP_H 1
 #define HAVE_UTIME_H 1
-#define HAVE_MEMORY_H 1
 #define HAVE_SYS_RESOURCE_H 1
 #define HAVE_NETINET_IN_SYSTM_H 1
 #define HAVE_FLOAT_H 1
 #define HAVE_PTHREAD_H 1
-#define HAVE_UCONTEXT_H 1
 #define HAVE_LANGINFO_H 1
 #define HAVE_LOCALE_H 1
 #define HAVE_TIME_H 1
@@ -121,7 +117,7 @@
 #define HAVE_FLOCK 1
 #define HAVE_VSNPRINTF 1
 #define HAVE_ISNAN 1
-#define HAVE_FINITE 0
+#define HAVE_FINITE 1
 #define HAVE_ISINF 1
 #define HAVE_HYPOT 1
 #define HAVE_ACOSH 1
@@ -178,7 +174,6 @@
 #define HAVE_SIGSETJMP 1
 #define HAVE__SETJMP 1
 #define HAVE__LONGJMP 1
-#define HAVE_VSNPRINTF 1
 #define HAVE_SNPRINTF 1
 #define HAVE_SETSID 1
 #define HAVE_TELLDIR 1
@@ -191,7 +186,6 @@
 #define HAVE_ROUND 1
 #define HAVE_SETUID 1
 #define HAVE_SETGID 1
-#define HAVE_DAEMON 1
 #define HAVE_SETENV 1
 #define HAVE_UNSETENV 1
 #define HAVE_MKTIME 1
@@ -201,6 +195,7 @@
 #define HAVE_PREAD 1
 #define HAVE_SENDFILE 1
 #define HAVE_SHUTDOWN 1
+#define HAVE_SIGALTSTACK 1
 #define RUBY_SETJMP(env) _setjmp(env)
 #define RUBY_LONGJMP(env,val) _longjmp(env,val)
 #define RUBY_JMP_BUF jmp_buf
@@ -227,8 +222,6 @@
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
 #define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
-#define HAVE_GETCONTEXT 1
-#define HAVE_SETCONTEXT 1
 #define HAVE_BACKTRACE 1
 #define DLEXT_MAXLEN 7
 #define DLEXT ".bundle"
