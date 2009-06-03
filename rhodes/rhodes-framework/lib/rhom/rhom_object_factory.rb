@@ -58,7 +58,6 @@ module Rhom
                 unless name == Fixnum
                   varname = name.to_s.gsub(/\=/,"")
                   setting = (name.to_s =~ /=/)
-                  puts "inside method_missing: setting - #{setting} varname - #{varname}"
                   if setting
                     @vars[varname] = args[0]  
                   else
@@ -78,13 +77,18 @@ module Rhom
                 end
                 
                 def get_attribs
-                  RhomDbAdapter.select_from_table('object_values','attrib', {"source_id"=>get_source_id}, {"distinct"=>true}).values
+                  attribs = RhomDbAdapter.select_from_table('object_values','attrib', {"source_id"=>get_source_id}, {"distinct"=>true})
+                  attribs.collect! do |attrib|
+                    attrib['attrib']
+                  end
+                  attribs
                 end
                 
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
                 def find(*args)
                   ret_list = []
+                  conditions = {}
                   # first find all query objects
                   if args.first == :all
                     conditions = {"source_id"=>get_source_id}
@@ -102,24 +106,28 @@ module Rhom
                     select_arr = args[1][:select] if args[1][:select]
                   end
                   
+                  # return horizontal resultset from database
+                  # for example, an object that has attributes name,industry:
+                  # |               object                 |       name         |  industry   |
+                  # ---------------------------------------------------------------------------
+                  # | 3560c0a0-ef58-2f40-68a5-48f39f63741b |A.G. Parr PLC 37862 |Entertainment|
                   sql = "SELECT object,\n"
-                  
                   attribs = get_attribs
                   attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                   attribs.each do |attrib|
-                    unless method_name_reserved?(attrib) or attrib.nil? or attrib.length == 0
-                      sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in ('create','update','query') order by update_type ASC limit 1)  AS #{attrib},\n"
+                    unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
+                      sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS #{attrib},\n"
                     end
                   end
-                  sql << "update_type FROM object_values ov where\n"
-                  sql << RhomDbAdapter.where_str(conditions) + "\n"
-                  sql << "group by object"
+                  sql << "update_type FROM object_values ov where update_type != 'delete'\n"
+                  sql << "and " + RhomDbAdapter.where_str(conditions) + "\n" if conditions and conditions.length > 0
+                  sql << "group by object\n"
+                  sql << "order by #{args[1][:order]}" if args[1] and args[1][:order]
                   
                   list = RhomDbAdapter.execute_sql(sql)
                   
-                  puts "LIST IS: #{list.inspect}"
-                  
                   list.each do |rowhash|
+                    # always return object filed with surrounding '{}'
                     rowhash['object'] = "{#{rowhash['object']}}"
                     new_obj = self.new
                     new_obj.vars.merge!(rowhash)
@@ -141,7 +149,7 @@ module Rhom
                 end
                 
                 def ask(question)
-                  tmp_obj = get_new_obj(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
+                  tmp_obj = self.new(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
                   if question
                     # We only support one ask at a time!
                     RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id, "update_type"=>'ask'})
@@ -165,13 +173,6 @@ module Rhom
                 end
                     
                 private
-                # returns new model instance with a temp object id
-                def get_new_obj(obj)
-                  tmp_obj = self.new
-                  @vars
-
-                end
-                
                 # get hash of conditions in sql form
                 def get_conditions_hash(conditions=nil)
                   if conditions
