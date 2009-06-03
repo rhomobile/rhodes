@@ -2,7 +2,7 @@
 
   iseq.h -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: 04/01/01 23:36:57 JST
 
   Copyright (C) 2004-2008 Koichi Sasada
@@ -12,7 +12,15 @@
 #ifndef RUBY_COMPILE_H
 #define RUBY_COMPILE_H
 
-VALUE iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt);
+/* compile.c */
+VALUE rb_iseq_compile_node(VALUE self, NODE *node);
+int rb_iseq_translate_threaded_code(rb_iseq_t *iseq);
+VALUE rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
+			     VALUE exception, VALUE body);
+
+/* iseq.c */
+VALUE ruby_iseq_load(VALUE data, VALUE parent, VALUE opt);
+struct st_table *ruby_insn_make_insn_table(void);
 
 #define ISEQ_TYPE_TOP    INT2FIX(1)
 #define ISEQ_TYPE_METHOD INT2FIX(2)
@@ -21,7 +29,8 @@ VALUE iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt);
 #define ISEQ_TYPE_RESCUE INT2FIX(5)
 #define ISEQ_TYPE_ENSURE INT2FIX(6)
 #define ISEQ_TYPE_EVAL   INT2FIX(7)
-#define ISEQ_TYPE_DEFINED_GUARD INT2FIX(8)
+#define ISEQ_TYPE_MAIN   INT2FIX(8)
+#define ISEQ_TYPE_DEFINED_GUARD INT2FIX(9)
 
 #define CATCH_TYPE_RESCUE INT2FIX(1)
 #define CATCH_TYPE_ENSURE INT2FIX(2)

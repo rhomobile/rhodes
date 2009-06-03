@@ -2,7 +2,7 @@
 
 #include "defs.h"
 #include "llist.h"
-#include "rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "logging/RhoLog.h"
 

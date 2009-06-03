@@ -21,11 +21,7 @@
 
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
-if defined? RHO_DBME
-	require 'rhom/rhom_db_adapterME'
-else
-	require 'rhom/rhom_db_adapter'
-end
+require 'rhom/rhom_db_adapter'
 
 module Rhom
   TABLE_NAME = 'object_values'

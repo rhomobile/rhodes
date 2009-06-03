@@ -2,7 +2,7 @@
 
   intern.h -
 
-  $Author: matz $
+  $Author: yugui $
   created at: Thu Jun 10 14:22:17 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -218,6 +218,24 @@ int rb_fd_select(int, rb_fdset_t *, rb_fdset_t *, rb_fdset_t *, struct timeval *
 #define rb_fd_ptr(f)	((f)->fdset)
 #define rb_fd_max(f)	((f)->maxfd)
 
+#elif defined(_WIN32)
+
+typedef struct {
+    int capa;
+    fd_set *fdset;
+} rb_fdset_t;
+
+void rb_fd_init(volatile rb_fdset_t *);
+void rb_fd_term(rb_fdset_t *);
+#define rb_fd_zero(f)		((f)->fdset->fd_count = 0)
+void rb_fd_set(int, rb_fdset_t *);
+#define rb_fd_clr(n, f)		rb_w32_fdclr(n, (f)->fdset)
+#define rb_fd_isset(n, f)	rb_w32_fdisset(n, (f)->fdset)
+#define rb_fd_select(n, rfds, wfds, efds, timeout)	rb_w32_select(n, (rfds) ? ((rb_fdset_t*)rfds)->fdset : NULL, (wfds) ? ((rb_fdset_t*)wfds)->fdset : NULL, (efds) ? ((rb_fdset_t*)efds)->fdset: NULL, timeout)
+
+#define rb_fd_ptr(f)	((f)->fdset)
+#define rb_fd_max(f)	((f)->fdset->fd_count)
+
 #else
 
 typedef fd_set rb_fdset_t;
@@ -267,6 +285,7 @@ void rb_load(VALUE, int);
 void rb_load_protect(VALUE, int, int*);
 NORETURN(void rb_jump_tag(int));
 int rb_provided(const char*);
+int rb_feature_provided(const char *, const char **);
 void rb_provide(const char*);
 VALUE rb_f_require(VALUE, VALUE);
 VALUE rb_require_safe(VALUE, int);
@@ -358,6 +377,7 @@ VALUE rb_hash_dup(VALUE);
 VALUE rb_hash_freeze(VALUE);
 VALUE rb_hash_aref(VALUE, VALUE);
 VALUE rb_hash_lookup(VALUE, VALUE);
+VALUE rb_hash_lookup2(VALUE, VALUE, VALUE);
 VALUE rb_hash_fetch(VALUE, VALUE);
 VALUE rb_hash_aset(VALUE, VALUE, VALUE);
 VALUE rb_hash_delete_if(VALUE);
@@ -382,6 +402,7 @@ VALUE rb_io_close(VALUE);
 VALUE rb_io_flush(VALUE);
 VALUE rb_io_eof(VALUE);
 VALUE rb_io_binmode(VALUE);
+VALUE rb_io_ascii8bit_binmode(VALUE);
 VALUE rb_io_addstr(VALUE, VALUE);
 VALUE rb_io_printf(int, VALUE*, VALUE);
 VALUE rb_io_print(int, VALUE*, VALUE);
@@ -400,6 +421,7 @@ VALUE rb_marshal_load(VALUE);
 void rb_marshal_define_compat(VALUE newclass, VALUE oldclass, VALUE (*dumper)(VALUE), VALUE (*loader)(VALUE, VALUE));
 /* numeric.c */
 void rb_num_zerodiv(void);
+#define RB_NUM_COERCE_FUNCS_NEED_OPID 1
 VALUE rb_num_coerce_bin(VALUE, VALUE, ID);
 VALUE rb_num_coerce_cmp(VALUE, VALUE, ID);
 VALUE rb_num_coerce_relop(VALUE, VALUE, ID);
@@ -431,6 +453,7 @@ VALUE rb_check_convert_type(VALUE,int,const char*,const char*);
 VALUE rb_check_to_integer(VALUE, const char *);
 VALUE rb_to_int(VALUE);
 VALUE rb_Integer(VALUE);
+VALUE rb_to_float(VALUE);
 VALUE rb_Float(VALUE);
 VALUE rb_String(VALUE);
 VALUE rb_Array(VALUE);
@@ -512,7 +535,7 @@ void ruby_script(const char*);
 void ruby_prog_init(void);
 void ruby_set_argv(int, char**);
 void *ruby_process_options(int, char**);
-void ruby_init_loadpath(const char* szRoot);
+void ruby_init_loadpath(void);
 void ruby_incpush(const char*);
 /* signal.c */
 VALUE rb_f_kill(int, VALUE*);
@@ -547,7 +570,9 @@ VALUE rb_tainted_str_new_cstr(const char*);
 VALUE rb_tainted_str_new(const char*, long);
 VALUE rb_tainted_str_new2(const char*);
 VALUE rb_external_str_new(const char*, long);
+VALUE rb_external_str_new_cstr(const char*);
 VALUE rb_locale_str_new(const char*, long);
+VALUE rb_locale_str_new_cstr(const char*);
 VALUE rb_str_buf_new(long);
 VALUE rb_str_buf_new_cstr(const char*);
 VALUE rb_str_buf_new2(const char*);
@@ -589,6 +614,7 @@ int rb_str_cmp(VALUE, VALUE);
 VALUE rb_str_equal(VALUE str1, VALUE str2);
 VALUE rb_str_drop_bytes(VALUE, long);
 void rb_str_update(VALUE, long, long, VALUE);
+VALUE rb_str_replace(VALUE, VALUE);
 VALUE rb_str_inspect(VALUE);
 VALUE rb_str_dump(VALUE);
 VALUE rb_str_split(VALUE, const char*);
@@ -617,6 +643,18 @@ size_t rb_str_capacity(VALUE);
     (__builtin_constant_p(str)) ?	       \
 	rb_usascii_str_new(str, strlen(str)) : \
 	rb_usascii_str_new_cstr(str);	       \
+})
+#define rb_external_str_new_cstr(str) __extension__ ( \
+{						\
+    (__builtin_constant_p(str)) ?		\
+	rb_external_str_new(str, strlen(str)) : \
+	rb_external_str_new_cstr(str);		\
+})
+#define rb_locale_str_new_cstr(str) __extension__ ( \
+{					       \
+    (__builtin_constant_p(str)) ?	       \
+	rb_locale_str_new(str, strlen(str)) :  \
+	rb_locale_str_new_cstr(str);	       \
 })
 #define rb_str_buf_new_cstr(str) __extension__ ( \
 {						\
@@ -673,10 +711,11 @@ VALUE rb_mutex_try_lock(VALUE mutex);
 VALUE rb_mutex_lock(VALUE mutex);
 VALUE rb_mutex_unlock(VALUE mutex);
 VALUE rb_mutex_sleep(VALUE self, VALUE timeout);
-VALUE rb_mutex_synchronize(VALUE self);
+VALUE rb_mutex_synchronize(VALUE mutex, VALUE (*func)(VALUE arg), VALUE arg);
 VALUE rb_barrier_new(void);
 VALUE rb_barrier_wait(VALUE self);
 VALUE rb_barrier_release(VALUE self);
+VALUE rb_barrier_destroy(VALUE self);
 /* time.c */
 VALUE rb_time_new(time_t, long);
 VALUE rb_time_nano_new(time_t, long);
