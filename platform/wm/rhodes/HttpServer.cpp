@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "common/RhoConf.h"
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #include "HttpServer.h"
 //#include "syncengine/rsyncengine.h"
 #if defined(_WIN32_WCE)

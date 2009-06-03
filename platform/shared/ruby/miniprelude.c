@@ -43,13 +43,15 @@ static const char prelude_code0[] =
 void
 Init_prelude(void)
 {
-  //RHO
-  //rb_iseq_eval(rb_iseq_compile(
-  //  rb_str_new(prelude_code0, sizeof(prelude_code0) - 1),
-  //  rb_str_new(prelude_name0, sizeof(prelude_name0) - 1),
-  //  INT2FIX(1)));
-  //RHO
+//RHO
+/*  rb_iseq_eval(rb_iseq_compile(
+    rb_str_new(prelude_code0, sizeof(prelude_code0) - 1),
+    rb_str_new(prelude_name0, sizeof(prelude_name0) - 1),
+    INT2FIX(1)));
+
 #if 0
     puts(prelude_code0);
 #endif
+*/
+//RHO
 }

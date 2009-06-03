@@ -325,7 +325,19 @@ f_complex_new_bang2(VALUE klass, VALUE x, VALUE y)
     return nucomp_s_new_internal(klass, x, y);
 }
 
-#define f_unify_p(klass) rb_const_defined(klass, id_Unify)
+#ifdef CANONICALIZATION_FOR_MATHN
+#define CANON
+#endif
+
+#ifdef CANON
+static int canonicalization = 0;
+
+void
+nucomp_canonicalization(int f)
+{
+    canonicalization = f;
+}
+#endif
 
 inline static void
 nucomp_real_check(VALUE num)
@@ -348,10 +360,10 @@ nucomp_s_canonicalize_internal(VALUE klass, VALUE real, VALUE imag)
 #ifdef CANON
 #define CL_CANON
 #ifdef CL_CANON
-    if (f_zero_p(imag) && k_exact_p(imag) && f_unify_p(klass))
+    if (f_zero_p(imag) && k_exact_p(imag) && canonicalization)
 	return real;
 #else
-    if (f_zero_p(imag) && f_unify_p(klass))
+    if (f_zero_p(imag) && canonicalization)
 	return real;
 #endif
 #endif
@@ -419,31 +431,41 @@ nucomp_f_complex(int argc, VALUE *argv, VALUE klass)
     return rb_funcall2(rb_cComplex, id_convert, argc, argv);
 }
 
-extern VALUE math_atan2(VALUE obj, VALUE x, VALUE y);
-extern VALUE math_cos(VALUE obj, VALUE x);
-extern VALUE math_cosh(VALUE obj, VALUE x);
-extern VALUE math_exp(VALUE obj, VALUE x);
-extern VALUE math_hypot(VALUE obj, VALUE x, VALUE y);
-extern VALUE math_log(int argc, VALUE *argv);
-extern VALUE math_sin(VALUE obj, VALUE x);
-extern VALUE math_sinh(VALUE obj, VALUE x);
-extern VALUE math_sqrt(VALUE obj, VALUE x);
+#define imp1(n) \
+extern VALUE rb_math_##n(VALUE x);\
+inline static VALUE \
+m_##n##_bang(VALUE x)\
+{\
+    return rb_math_##n(x);\
+}
 
-#define m_atan2_bang(x,y) math_atan2(Qnil,x,y)
-#define m_cos_bang(x) math_cos(Qnil,x)
-#define m_cosh_bang(x) math_cosh(Qnil,x)
-#define m_exp_bang(x) math_exp(Qnil,x)
-#define m_hypot(x,y) math_hypot(Qnil,x,y)
+#define imp2(n) \
+extern VALUE rb_math_##n(VALUE x, VALUE y);\
+inline static VALUE \
+m_##n##_bang(VALUE x, VALUE y)\
+{\
+    return rb_math_##n(x, y);\
+}
+
+imp2(atan2)
+imp1(cos)
+imp1(cosh)
+imp1(exp)
+imp2(hypot)
+
+#define m_hypot(x,y) m_hypot_bang(x,y)
+
+extern VALUE rb_math_log(int argc, VALUE *argv);
 
 static VALUE
 m_log_bang(VALUE x)
 {
-    return math_log(1, &x);
+    return rb_math_log(1, &x);
 }
 
-#define m_sin_bang(x) math_sin(Qnil,x)
-#define m_sinh_bang(x) math_sinh(Qnil,x)
-#define m_sqrt_bang(x) math_sqrt(Qnil,x)
+imp1(sin)
+imp1(sinh)
+imp1(sqrt)
 
 static VALUE
 m_cos(VALUE x)
@@ -870,15 +892,19 @@ f_signbit(VALUE x)
     switch (TYPE(x)) {
       case T_FLOAT:
 #ifdef HAVE_SIGNBIT
-	return f_boolcast(signbit(RFLOAT_VALUE(x)));
+      {
+	  double f = RFLOAT_VALUE(x);
+	  return f_boolcast(!isnan(f) && signbit(f));
+      }
 #else
-	{
-	    char s[2];
+      {
+	  char s[2];
+	  double f = RFLOAT_VALUE(x);
 
-	    (void)snprintf(s, sizeof s, "%.0f", RFLOAT_VALUE(x));
-
-	    return f_boolcast(s[0] == '-');
-	}
+	  if (isnan(f)) return Qfalse;
+	  (void)snprintf(s, sizeof s, "%.0f", f);
+	  return f_boolcast(s[0] == '-');
+      }
 #endif
     }
     return f_negative_p(x);
@@ -891,7 +917,7 @@ f_tpositive_p(VALUE x)
 }
 
 static VALUE
-nucomp_to_s(VALUE self)
+nucomp_format(VALUE self, VALUE (*func)(VALUE))
 {
     VALUE s, impos;
 
@@ -899,30 +925,31 @@ nucomp_to_s(VALUE self)
 
     impos = f_tpositive_p(dat->imag);
 
-    s = f_to_s(dat->real);
+    s = (*func)(dat->real);
     rb_str_cat2(s, !impos ? "-" : "+");
 
-    rb_str_concat(s, f_to_s(f_abs(dat->imag)));
+    rb_str_concat(s, (*func)(f_abs(dat->imag)));
+    if (!rb_isdigit(RSTRING_PTR(s)[RSTRING_LEN(s) - 1]))
+	rb_str_cat2(s, "*");
     rb_str_cat2(s, "i");
 
     return s;
 }
 
 static VALUE
+nucomp_to_s(VALUE self)
+{
+    return nucomp_format(self, f_to_s);
+}
+
+static VALUE
 nucomp_inspect(VALUE self)
 {
-    VALUE s, impos;
+    VALUE s;
 
-    get_dat1(self);
-
-    impos = f_tpositive_p(dat->imag);
-
-    s = rb_str_new2("(");
-    rb_str_concat(s, f_inspect(dat->real));
-    rb_str_cat2(s, !impos ? "-" : "+");
-
-    rb_str_concat(s, f_inspect(f_abs(dat->imag)));
-    rb_str_cat2(s, "i)");
+    s = rb_usascii_str_new2("(");
+    rb_str_concat(s, nucomp_format(self, f_inspect));
+    rb_str_cat2(s, ")");
 
     return s;
 }
@@ -1062,20 +1089,20 @@ make_patterns(void)
     comp_pat2 = rb_reg_new(comp_pat2_source, sizeof comp_pat2_source - 1, 0);
     rb_gc_register_mark_object(comp_pat2);
 
-    a_slash = rb_str_new2("/");
+    a_slash = rb_usascii_str_new2("/");
     rb_gc_register_mark_object(a_slash);
 
-    a_dot_and_an_e = rb_str_new2(".eE");
+    a_dot_and_an_e = rb_usascii_str_new2(".eE");
     rb_gc_register_mark_object(a_dot_and_an_e);
 
-    null_string = rb_str_new2("");
+    null_string = rb_usascii_str_new2("");
     rb_gc_register_mark_object(null_string);
 
     underscores_pat = rb_reg_new(underscores_pat_source,
 				 sizeof underscores_pat_source - 1, 0);
     rb_gc_register_mark_object(underscores_pat);
 
-    an_underscore = rb_str_new2("_");
+    an_underscore = rb_usascii_str_new2("_");
     rb_gc_register_mark_object(an_underscore);
 }
 
@@ -1127,13 +1154,13 @@ string_to_c_internal(VALUE self)
 		sr = Qnil;
 		si = f_aref(m, INT2FIX(1));
 		if (NIL_P(si))
-		    si = rb_str_new2("");
+		    si = rb_usascii_str_new2("");
 		{
 		    VALUE t;
 
 		    t = f_aref(m, INT2FIX(2));
 		    if (NIL_P(t))
-			t = rb_str_new2("1");
+			t = rb_usascii_str_new2("1");
 		    rb_str_concat(si, t);
 		}
 		re = f_post_match(m);
@@ -1153,7 +1180,7 @@ string_to_c_internal(VALUE self)
 		si = f_aref(m, INT2FIX(3));
 		t = f_aref(m, INT2FIX(4));
 		if (NIL_P(t))
-		    t = rb_str_new2("1");
+		    t = rb_usascii_str_new2("1");
 		rb_str_concat(si, t);
 	    }
 	    re = f_post_match(m);
@@ -1407,7 +1434,7 @@ Init_Complex(void)
     rb_undef_method(rb_cComplex, "step");
     rb_undef_method(rb_cComplex, "truncate");
 
-#if NUBY
+#if 0 /* NUBY */
     rb_undef_method(rb_cComplex, "//");
 #endif
 

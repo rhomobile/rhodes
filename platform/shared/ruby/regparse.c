@@ -2112,6 +2112,7 @@ conv_backslash_value(int c, ScanEnv* env)
   return c;
 }
 
+#if 0				/* no invalid quantifier */
 static int
 is_invalid_quantifier_target(Node* node)
 {
@@ -2143,6 +2144,9 @@ is_invalid_quantifier_target(Node* node)
   }
   return 0;
 }
+#else
+#define is_invalid_quantifier_target(node) 0
+#endif
 
 /* ?:0, *:1, +:2, ??:3, *?:4, +?:5 */
 static int
@@ -4218,8 +4222,8 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
     fetched = 0;
     switch (r) {
     case TK_CHAR:
-      len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.c);
-      if (len > 1) {
+      if ((tok->u.code >= SINGLE_BYTE_SIZE) ||
+	  (len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.c)) > 1) {
 	in_type = CCV_CODE_POINT;
       }
       else if (len < 0) {

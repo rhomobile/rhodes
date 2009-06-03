@@ -8,7 +8,7 @@
 #include "HttpServer.h"
 
 #include "unzip.h"
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #include "common/AutoPointer.h"
 
 extern "C" wchar_t* wce_mbtowc(const char* a);

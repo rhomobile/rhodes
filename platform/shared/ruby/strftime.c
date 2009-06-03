@@ -121,15 +121,15 @@ extern char *strchr();
 #define range(low, item, hi)	max(low, min(item, hi))
 
 #if defined __WIN32__ || defined _WIN32
-#define DLL_IMPORT __declspec(dllimport)
+#define DLL_IMPORT //__declspec(dllimport)
 #endif
 #ifndef DLL_IMPORT
 #define DLL_IMPORT
 #endif
 #if !defined(OS2) && defined(HAVE_TZNAME)
-//extern DLL_IMPORT char *tzname[2];
+extern DLL_IMPORT char *tzname[2];
 #ifdef HAVE_DAYLIGHT
-//extern DLL_IMPORT int daylight;
+extern DLL_IMPORT int daylight;
 #endif
 #ifdef HAVE_VAR_TIMEZONE
 extern DLL_IMPORT TYPEOF_VAR_TIMEZONE timezone;
@@ -270,22 +270,37 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 				goto unknown; \
 		} while (0)
 #define NEEDS(n) do if (s + (n) >= endp - 1) goto err; while (0)
+#define FILL_PADDING(i) do { \
+	if (!(flags & BIT_OF(LEFT)) && precision > i) { \
+		NEEDS(precision); \
+		memset(s, padding ? padding : ' ', precision - i); \
+		s += precision - i; \
+	} \
+	else { \
+		NEEDS(i); \
+	} \
+} while (0);
 #define FMT(def_pad, def_prec, fmt, val) \
 		do { \
 			int l; \
 			if (precision <= 0) precision = (def_prec); \
 			if (flags & BIT_OF(LEFT)) precision = 1; \
 			l = snprintf(s, endp - s, \
-				     ((padding == '0' || (!padding && def_pad == '0')) ? "%.*"fmt : "%*"fmt), \
+				     ((padding == '0' || (!padding && def_pad == '0')) ? "%0*"fmt : "%*"fmt), \
 				     precision, val); \
 			if (l < 0) goto err; \
 			s += l; \
 		} while (0)
-#define STRFTIME(fmt, tm) \
+#define STRFTIME(fmt) \
 		do { \
-			i = strftime(s, endp - s, fmt, tm); \
+			i = rb_strftime(s, endp - s, fmt, timeptr, ts, gmt); \
 			if (!i) return 0; \
-			s += i; \
+			if (precision > i) {\
+				memmove(s + precision - i, s, i);\
+				memset(s, padding ? padding : ' ', precision - i); \
+				s += precision;	\
+	                }\
+			else s += i; \
 		} while (0)
 
 		if (*format != '%') {
@@ -300,14 +315,19 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 	again:
 		switch (*++format) {
 		case '\0':
-			*s++ = '%';
-			goto out;
+			format--;
+			goto unknown;
 
 		case '%':
+			FILL_PADDING(1);
 			*s++ = '%';
 			continue;
 
 		case 'a':	/* abbreviated weekday name */
+			if (flags & BIT_OF(CHCASE)) {
+				flags &= ~(BIT_OF(LOWER)|BIT_OF(CHCASE));
+				flags |= BIT_OF(UPPER);
+			}
 			if (timeptr->tm_wday < 0 || timeptr->tm_wday > 6)
 				i = 1, tp = "?";
 			else
@@ -315,6 +335,10 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			break;
 
 		case 'A':	/* full weekday name */
+			if (flags & BIT_OF(CHCASE)) {
+				flags &= ~(BIT_OF(LOWER)|BIT_OF(CHCASE));
+				flags |= BIT_OF(UPPER);
+			}
 			if (timeptr->tm_wday < 0 || timeptr->tm_wday > 6)
 				i = 1, tp = "?";
 			else
@@ -325,6 +349,10 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 		case 'h':	/* abbreviated month name */
 #endif
 		case 'b':	/* abbreviated month name */
+			if (flags & BIT_OF(CHCASE)) {
+				flags &= ~(BIT_OF(LOWER)|BIT_OF(CHCASE));
+				flags |= BIT_OF(UPPER);
+			}
 			if (timeptr->tm_mon < 0 || timeptr->tm_mon > 11)
 				i = 1, tp = "?";
 			else
@@ -332,6 +360,10 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			break;
 
 		case 'B':	/* full month name */
+			if (flags & BIT_OF(CHCASE)) {
+				flags &= ~(BIT_OF(LOWER)|BIT_OF(CHCASE));
+				flags |= BIT_OF(UPPER);
+			}
 			if (timeptr->tm_mon < 0 || timeptr->tm_mon > 11)
 				i = 1, tp = "?";
 			else
@@ -339,7 +371,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			break;
 
 		case 'c':	/* appropriate date and time representation */
-			STRFTIME("%a %b %e %H:%M:%S %Y", timeptr);
+			STRFTIME("%a %b %e %H:%M:%S %Y");
 			continue;
 
 		case 'd':	/* day of the month, 01 - 31 */
@@ -378,7 +410,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 		case 'p':	/* AM or PM based on 12-hour clock */
 		case 'P':	/* am or pm based on 12-hour clock */
 			if ((*format == 'p' && (flags & BIT_OF(CHCASE))) ||
-			    (*format == 'P' && !(flags & BIT_OF(CHCASE)))) {
+			    (*format == 'P' && !(flags & (BIT_OF(CHCASE)|BIT_OF(UPPER))))) {
 				flags &= ~(BIT_OF(UPPER)|BIT_OF(CHCASE));
 				flags |= BIT_OF(LOWER);
 			}
@@ -391,7 +423,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			break;
 
 		case 's':
-			FMT(' ', 1, "d", (int) ts->tv_sec);
+			FMT('0', 1, "d", (int) ts->tv_sec);
 			continue;
 
 		case 'S':	/* second, 00 - 60 */
@@ -405,7 +437,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 
 		case 'w':	/* weekday, Sunday == 0, 0 - 6 */
 			i = range(0, timeptr->tm_wday, 6);
-			FMT('0', 0, "d", i);
+			FMT('0', 1, "d", i);
 			continue;
 
 		case 'W':	/* week of year, Monday is first day of week */
@@ -413,11 +445,11 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			continue;
 
 		case 'x':	/* appropriate date representation */
-			STRFTIME("%m/%d/%y", timeptr);
+			STRFTIME("%m/%d/%y");
 			continue;
 
 		case 'X':	/* appropriate time representation */
-			STRFTIME("%H:%M:%S", timeptr);
+			STRFTIME("%H:%M:%S");
 			continue;
 
 		case 'y':	/* year without a century, 00 - 99 */
@@ -426,7 +458,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			continue;
 
 		case 'Y':	/* year with century */
-			FMT('0', 0, "ld", 1900L + timeptr->tm_year);
+			FMT('0', 1, "ld", 1900L + timeptr->tm_year);
 			continue;
 
 #ifdef MAILHEADER_EXT
@@ -540,17 +572,17 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 
 #ifdef SYSV_EXT
 		case 'n':	/* same as \n */
-			NEEDS(1);
+			FILL_PADDING(1);
 			*s++ = '\n';
 			continue;
 
 		case 't':	/* same as \t */
-			NEEDS(1);
+			FILL_PADDING(1);
 			*s++ = '\t';
 			continue;
 
 		case 'D':	/* date as %m/%d/%y */
-			STRFTIME("%m/%d/%y", timeptr);
+			STRFTIME("%m/%d/%y");
 			continue;
 
 		case 'e':	/* day of month, blank padded */
@@ -558,15 +590,15 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			continue;
 
 		case 'r':	/* time as %I:%M:%S %p */
-			STRFTIME("%I:%M:%S %p", timeptr);
+			STRFTIME("%I:%M:%S %p");
 			continue;
 
 		case 'R':	/* time as %H:%M */
-			STRFTIME("%H:%M", timeptr);
+			STRFTIME("%H:%M");
 			continue;
 
 		case 'T':	/* time as %H:%M:%S */
-			STRFTIME("%H:%M:%S", timeptr);
+			STRFTIME("%H:%M:%S");
 			continue;
 #endif
 
@@ -595,8 +627,8 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 				     timeptr->tm_year + 1900L);
 			if (w < 0) goto err;
 			for (i = 3; i < 6; i++)
-				if (islower(s[i]))
-					s[i] = toupper(s[i]);
+				if (ISLOWER(s[i]))
+					s[i] = TOUPPER(s[i]);
 			s += w;
 			continue;
 #endif
@@ -623,7 +655,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 
 		case 'u':
 		/* ISO 8601: Weekday as a decimal number [1 (Monday) - 7] */
-			FMT('0', 0, "d", timeptr->tm_wday == 0 ? 7 : timeptr->tm_wday);
+			FMT('0', 1, "d", timeptr->tm_wday == 0 ? 7 : timeptr->tm_wday);
 			continue;
 #endif	/* POSIX2_DATE */
 
@@ -648,7 +680,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 				y = 1900L + timeptr->tm_year;
 
 			if (*format == 'G')
-				FMT('0', 0, "ld", y);
+				FMT('0', 1, "ld", y);
 			else
 				FMT('0', 2, "ld", y % 100);
 			continue;
@@ -673,8 +705,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			{
 				long n = ts->tv_nsec;
 
-				if (precision == 0) continue;
-				if (precision < 0) {
+				if (precision <= 0) {
 				    precision = w;
 				}
 				NEEDS(precision);
@@ -737,29 +768,25 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 
 		default:
 		unknown:
-			tp = sp;
 			i = format - sp + 1;
+			tp = sp;
+			precision = -1;
+			flags = 0;
+			padding = 0;
 			break;
 		}
 		if (i) {
-			if (!(flags & BIT_OF(LEFT)) && precision > i) {
-				NEEDS(precision);
-				memset(s, padding ? padding : ' ', precision - i);
-				s += precision - i;
-			}
-			else {
-				NEEDS(i);
-			}
+			FILL_PADDING(i);
 			memcpy(s, tp, i);
 			switch (flags & (BIT_OF(UPPER)|BIT_OF(LOWER))) {
 			case BIT_OF(UPPER):
 				do {
-					if (islower(*s)) *s = toupper(*s);
+					if (ISLOWER(*s)) *s = TOUPPER(*s);
 				} while (s++, --i);
 				break;
 			case BIT_OF(LOWER):
 				do {
-					if (isupper(*s)) *s = tolower(*s);
+					if (ISUPPER(*s)) *s = TOLOWER(*s);
 				} while (s++, --i);
 				break;
 			default:
@@ -768,7 +795,6 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 			}
 		}
 	}
-out:
 	if (s >= endp) {
 		goto err;
 	}

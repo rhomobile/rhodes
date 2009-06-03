@@ -75,7 +75,7 @@ public class RandomAccessFile
     
     public long length() throws IOException
     {
-   		return m_file != null ? m_file.fileSize() : 0;
+   		return m_fileSize;
     }
     
     public void close() throws IOException {
@@ -95,7 +95,7 @@ public class RandomAccessFile
     	}
     	
     	m_file = null;
-    	
+    	m_fileSize = 0;
     }
     
     public void seek(long pos) throws IOException
@@ -142,7 +142,7 @@ public class RandomAccessFile
                     m_fileSize += size;
                     
                     //BB
-                    m_file.truncate(m_fileSize);
+                    //m_file.truncate(m_fileSize);
                 } while (m_nSeekPos != m_fileSize);
             }
             m_outPos = m_nSeekPos;
@@ -163,7 +163,7 @@ public class RandomAccessFile
             m_fileSize = m_outPos;
         }
         //BB
-        m_file.truncate(m_fileSize);
+        //m_file.truncate(m_fileSize);
         if (m_in != null) { 
             m_in.close();
             m_in = null;
@@ -302,7 +302,7 @@ public class RandomAccessFile
                 m_out.write(zeroBuf, 0, size);
                 m_fileSize += size;
                 
-                m_file.truncate(m_fileSize);
+                //m_file.truncate(m_fileSize);
             } while (newLength != m_fileSize);
         }else
             m_file.truncate(newLength);

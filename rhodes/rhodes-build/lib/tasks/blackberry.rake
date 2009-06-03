@@ -4,7 +4,7 @@ namespace "config" do
   task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
-    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
 
   end
 end
