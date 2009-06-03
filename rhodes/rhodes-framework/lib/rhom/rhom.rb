@@ -35,13 +35,13 @@ module Rhom
     
     class << Rhom
       def client_id
-        c_id = RhomDbAdapter.select_from_table('client_info','client_id')[0]
+        c_id = ::Rhom::RhomDbAdapter.select_from_table('client_info','client_id')[0]
         c_id.nil? ? nil : c_id['client_id']
       end
       
       def database_full_reset
-        RhomDbAdapter.delete_all_from_table('object_values')
-        RhomDbAdapter.delete_all_from_table('client_info')
+        ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+        ::Rhom::RhomDbAdapter.delete_all_from_table('client_info')
       end
       
       def database_full_reset_and_logout
