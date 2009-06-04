@@ -90,11 +90,12 @@ module Rhom
                   puts "Inside find: args - #{args.inspect}"
                   ret_list = []
                   conditions = {}
+                  where_cond = nil
                   # first find all query objects
                   if args.first == :all
-                    conditions = {"source_id"=>get_source_id}
+                    where_cond = {"source_id"=>get_source_id}
                   elsif args.first.is_a?(String)
-                    conditions = {"object"=>strip_braces(args.first.to_s)}
+                    where_cond = {"object"=>strip_braces(args.first.to_s)}
                   end
 
                   # do we have conditions?
@@ -102,34 +103,40 @@ module Rhom
                   condition_hash = {}
                   select_arr = nil
                   if args[1]
-                    condition_hash = get_conditions_hash(args[1][:conditions]) if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
-                    conditions.merge!(condition_hash)
+                    condition_hash = args[1][:conditions] if args[1] and args[1][:conditions] and args[1][:conditions].is_a?(Hash)
                     select_arr = args[1][:select] if args[1][:select]
                   end
                   
                   puts "Inside find - running sql now"
+				          start = Time.new
                   # return horizontal resultset from database
                   # for example, an object that has attributes name,industry:
                   # |               object                 |       name         |  industry   |
                   # ---------------------------------------------------------------------------
                   # | 3560c0a0-ef58-2f40-68a5-48f39f63741b |A.G. Parr PLC 37862 |Entertainment|
-                  sql = "SELECT object,\n"
+                  sql = ""
+                  sql << "SELECT * FROM (\n" if condition_hash.length > 0
+                  sql << "SELECT object,\n"
                   attribs = get_attribs
                   attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
+                  start = Time.new
                   attribs.each do |attrib|
                     unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
-                      sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
+                      #sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
+                      sql << "MAX(CASE WHEN attrib = '#{attrib}' AND update_type IN (#{::Rhom::UPDATE_TYPES.join(',')}) THEN value ELSE NULL END) AS \"#{attrib}\",\n"
                     end
                   end 
                   sql.chomp!
                   sql.chop!
-                  sql << " FROM object_values ov where update_type != 'delete'\n"
-                  sql << "and " + ::Rhom::RhomDbAdapter.where_str(conditions) + "\n" if conditions and conditions.length > 0
+                  sql << "FROM object_values ov where update_type not in ('delete','update')\n"
+                  sql << "AND " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
                   sql << "group by object\n"
                   sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
+                  sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash.length > 0
                   
                   list = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                  puts "Inside find - list: #{list.inspect}"
+                  puts "Database query took #{Time.new - start} sec, #{list.length} rows"
+                  start = Time.new
                   list.each do |rowhash|
                     # always return object field with surrounding '{}'
                     rowhash['object'] = "{#{rowhash['object']}}"
@@ -137,6 +144,7 @@ module Rhom
                     new_obj.vars.merge!(rowhash)
                     ret_list << new_obj
                   end
+                  puts "Processing rhom objects took #{Time.new - start} sec, #{ret_list.length} objects"
                   args.first == :first || args.first.is_a?(String) ? ret_list[0] : ret_list
                 end
               
@@ -247,9 +255,13 @@ module Rhom
                   # then we procede with update
                   if old_val != new_val
                     unless self.method_name_reserved?(attrib)
+                      # only one update at a time
                       ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>update_type})
-                      # update sync list
-                      result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                      # add to syncengine queue
+                      ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                      # update viewable ('query') list
+                      ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>'query'})
+                      result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>'query'})
                     end
                   end
                 end

@@ -74,7 +74,7 @@ module Rhom
       def execute_sql(sql=nil)
         result = []
         if sql
-          puts "RhomDbAdapter: Executing query - #{sql}"
+          #puts "RhomDbAdapter: Executing query - #{sql}"
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
