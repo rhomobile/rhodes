@@ -118,13 +118,16 @@ module Rhom
                   attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                   attribs.each do |attrib|
                     unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
-                      sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS #{attrib},\n"
+                      sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
                     end
                   end
-                  sql << "update_type FROM object_values ov where update_type != 'delete'\n"
+                  #update_type 
+                  sql.chomp!
+                  sql.chop!
+                  sql << " FROM object_values ov where update_type != 'delete'\n"
                   sql << "and " + ::Rhom::RhomDbAdapter.where_str(conditions) + "\n" if conditions and conditions.length > 0
                   sql << "group by object\n"
-                  sql << "order by #{args[1][:order]}" if args[1] and args[1][:order]
+                  sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
                   
                   list = ::Rhom::RhomDbAdapter.execute_sql(sql)
                   puts "Inside find - list: #{list.inspect}"
