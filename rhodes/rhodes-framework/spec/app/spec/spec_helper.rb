@@ -8,7 +8,9 @@ describe "rhom initializer", :shared => true do
   end
 
   after(:each) do
+    Rhom::RhomDbAdapter.start_transaction
     Rhom::RhomDbAdapter.delete_all_from_table('client_info')
     Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+    Rhom::RhomDbAdapter.commit
   end
 end

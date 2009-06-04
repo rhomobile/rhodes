@@ -39,6 +39,7 @@ namespace "bundle" do
     mkdir_p File.join($srcdir,'apps')
 
     compileERB = File.join($compileERBbase,'bb.rb')
+    #rubypath =  File.join($res,$rhoruby)
     xruby =  File.join($res,'xruby-0.3.3.jar')
 
     dest = $srcdir 
@@ -62,9 +63,11 @@ namespace "bundle" do
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
+    puts `ruby #{$srcdir}/createAppManifest.rb`
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-
+    puts `ruby #{$srcdir}/bb.rb`
+    
     chdir $bindir
     puts `java -jar #{xruby} -c RhoBundle`
     chdir $srcdir
