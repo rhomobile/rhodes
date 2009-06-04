@@ -74,6 +74,9 @@ void rho_sync_set_pollinterval(int nInterval);
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath, void** ppDB);
 int rho_sync_closeDB(void* pDB);
+int rho_db_startUITransaction(void * pDB);
+int rho_db_commitUITransaction(void * pDB);
+int rho_db_rollbackUITransaction(void * pDB);
 	
 #ifdef __cplusplus
 };

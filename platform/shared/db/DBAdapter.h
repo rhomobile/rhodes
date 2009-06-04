@@ -129,6 +129,7 @@ public:
 
     void startTransaction();
     void endTransaction();
+    void rollback();
 
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
