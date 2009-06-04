@@ -110,7 +110,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void navigateUrl(String url){
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+    	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), null, null, null, this);
         thread.start();                       
     }
@@ -304,6 +304,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 					curUrl = _httpRoot +
 						curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
 
+					addToHistory(curUrl, null );
+			    	
 					navigateUrl(curUrl);
 				}
 			};
@@ -317,14 +319,26 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
-			super.makeMenu(menu, instance);
-			//menu.deleteAll();
+			
+			for(int i=0; i < menu.getSize(); i++)
+	    	{
+	    	    MenuItem item = menu.getItem(i);
+	    	    String label = item.toString();
+	    	    if(! ( label.equalsIgnoreCase("Get Link") || label.equalsIgnoreCase("Close") )) //TODO: catch by ID?
+	    	    {
+	    	    	menu.deleteItem(i);
+	    	    	if ( i > 0 )
+	    	    		i = i - 1;
+	    	    }
+	    	}
 			
 			menu.add(homeItem);
 			menu.add(refreshItem);
 			menu.add(syncItem);
 			menu.add(optionsItem);
 			menu.add(logItem);
+			
+			super.makeMenu(menu, instance);
 		}
 
 		public boolean onClose() {
