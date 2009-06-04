@@ -120,8 +120,7 @@ module Rhom
                     unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
                       sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
                     end
-                  end
-                  #update_type 
+                  end 
                   sql.chomp!
                   sql.chop!
                   sql << " FROM object_values ov where update_type != 'delete'\n"
@@ -132,7 +131,7 @@ module Rhom
                   list = ::Rhom::RhomDbAdapter.execute_sql(sql)
                   puts "Inside find - list: #{list.inspect}"
                   list.each do |rowhash|
-                    # always return object filed with surrounding '{}'
+                    # always return object field with surrounding '{}'
                     rowhash['object'] = "{#{rowhash['object']}}"
                     new_obj = self.new
                     new_obj.vars.merge!(rowhash)

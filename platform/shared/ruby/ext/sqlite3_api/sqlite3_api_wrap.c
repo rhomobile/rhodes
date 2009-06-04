@@ -10,6 +10,9 @@ static VALUE mDatabase;
 
 extern int rho_sync_openDB(const char* szDBPath, void ** ppDB);
 extern int rho_sync_closeDB(void * pDB);
+extern int rho_db_startUITransaction(void * pDB);
+extern int rho_db_commitUITransaction(void * pDB);
+extern int rho_db_rollbackUITransaction(void * pDB);
 
 static VALUE db_allocate(VALUE klass)
 {
@@ -48,6 +51,54 @@ static VALUE db_close(int argc, VALUE *argv, VALUE self){
 	db = *ppDB;
 	
 	rc = rho_sync_closeDB(db);//sqlite3_close(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE db_start_transaction(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_startUITransaction(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE db_commit(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_commitUITransaction(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE db_rollback(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_rollbackUITransaction(db);
 	
 	return INT2NUM(rc);
 }
@@ -140,6 +191,9 @@ void Init_sqlite3_api(void)
 	rb_define_method(mDatabase, "initialize", db_init, -1);
 	rb_define_method(mDatabase, "close", db_close, -1);
 	rb_define_method(mDatabase, "execute", db_execute, -1);	
+	rb_define_method(mDatabase, "start_transaction", db_start_transaction, -1);	
+	rb_define_method(mDatabase, "commit", db_commit, -1);	
+    rb_define_method(mDatabase, "rollback", db_rollback, -1);	
 }
 
 #if 0

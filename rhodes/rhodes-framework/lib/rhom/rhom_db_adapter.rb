@@ -44,6 +44,30 @@ module Rhom
         return true
       end   
     
+      def start_transaction
+          begin
+            @@database.start_transaction
+          rescue Exception => e
+            puts "exception when start_transaction"
+          end
+      end
+
+      def commit
+          begin
+            @@database.commit
+          rescue Exception => e
+            puts "exception when commit transaction"
+          end
+      end
+
+      def rollback
+          begin
+            @@database.rollback
+          rescue Exception => e
+            puts "exception when rollback transaction"
+          end
+      end
+    
       # execute a sql statement
       # optionally, disable the factory processing 
       # which returns the result array directly
