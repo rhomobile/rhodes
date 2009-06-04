@@ -8,7 +8,8 @@ class RaiseErrorMatcher
   def matches?(proc)
     proc.call
     return false
-  rescue Exception => @actual
+  rescue Exception => err
+    @actual = err
     return false unless @exception === @actual
     if @message then
       case @message
