@@ -87,6 +87,7 @@ module Rhom
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
                 def find(*args)
+                  puts "Inside find: args - #{args.inspect}"
                   ret_list = []
                   conditions = {}
                   # first find all query objects
@@ -106,6 +107,7 @@ module Rhom
                     select_arr = args[1][:select] if args[1][:select]
                   end
                   
+                  puts "Inside find - running sql now"
                   # return horizontal resultset from database
                   # for example, an object that has attributes name,industry:
                   # |               object                 |       name         |  industry   |
@@ -125,7 +127,7 @@ module Rhom
                   sql << "order by #{args[1][:order]}" if args[1] and args[1][:order]
                   
                   list = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                  
+                  puts "Inside find - list: #{list.inspect}"
                   list.each do |rowhash|
                     # always return object filed with surrounding '{}'
                     rowhash['object'] = "{#{rowhash['object']}}"
