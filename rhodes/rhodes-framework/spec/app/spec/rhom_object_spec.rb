@@ -62,7 +62,7 @@ describe "Rhom::RhomObject" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
   
-    @account.vars.size.should == 38
+    @account.vars.size.should == 37
   end
   
   it "should get count of objects" do
@@ -408,7 +408,7 @@ describe "Rhom::RhomObject" do
     
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should be_nil
-    @accts[0].vars.length.should == 3
+    @accts[0].vars.length.should == 2
   end
   
   it "should include only selected columns" do
@@ -417,7 +417,7 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
     @accts[0].shipping_address_street.should be_nil
-    @accts[0].vars.length.should == 4
+    @accts[0].vars.length.should == 3
   end
   
   it "should include selected columns and conditions" do
@@ -426,6 +426,6 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
     @accts[0].shipping_address_street.should be_nil
-    @accts[0].vars.length.should == 4
+    @accts[0].vars.length.should == 3
   end
 end
