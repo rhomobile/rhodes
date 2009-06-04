@@ -150,6 +150,7 @@ public class DBAdapter extends RubyBasic {
 		"last_deleted_size int default 0,"+
 		"last_sync_duration int default 0,"+
 		"last_sync_success int default 0);"+
+		"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
 		"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
 		"CREATE INDEX by_type ON object_values (attrib_type)";
     }
