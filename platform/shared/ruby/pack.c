@@ -2,7 +2,7 @@
 
   pack.c -
 
-  $Author: mame $
+  $Author: yugui $
   created at: Thu Feb 10 15:17:05 JST 1994
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -10,6 +10,7 @@
 **********************************************************************/
 
 #include "ruby/ruby.h"
+#include "ruby/encoding.h"
 #include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
@@ -443,6 +444,7 @@ pack_pack(VALUE ary, VALUE fmt)
     char type;
     long items, len, idx, plen;
     const char *ptr;
+    int enc_info = 1;		/* 0 - BINARY, 1 - US-ASCII, 2 - UTF-8 */
 #ifdef NATINT_PACK
     int natint;		/* native integer */
 #endif
@@ -489,7 +491,9 @@ pack_pack(VALUE ary, VALUE fmt)
 	    }
 	}
 	if (*p == '*') {	/* set data length */
-	    len = strchr("@Xxu", type) ? 0 : items;
+	    len = strchr("@Xxu", type) ? 0
+                : strchr("PMm", type) ? 1
+                : items;
 	    p++;
 	}
 	else if (ISDIGIT(*p)) {
@@ -503,6 +507,19 @@ pack_pack(VALUE ary, VALUE fmt)
 	    len = 1;
 	}
 
+	switch (type) {
+	  case 'U':
+	    /* if encoding is US-ASCII, upgrade to UTF-8 */
+	    if (enc_info == 1) enc_info = 2;
+	    break;
+	  case 'm': case 'M': case 'u':
+	    /* keep US-ASCII (do nothing) */
+	    break;
+	  default:
+	    /* fall back to BINARY */
+	    enc_info = 0;
+	    break;
+	}
 	switch (type) {
 	  case 'A': case 'a': case 'Z':
 	  case 'B': case 'b':
@@ -609,7 +626,7 @@ pack_pack(VALUE ary, VALUE fmt)
 		    long i, j = 0;
 
 		    if (len > plen) {
-			j = (len - plen + 1)/2;
+			j = (len + 1) / 2 - (plen + 1) / 2;
 			len = plen;
 		    }
 		    for (i=0; i++ < len; ptr++) {
@@ -640,7 +657,7 @@ pack_pack(VALUE ary, VALUE fmt)
 		    long i, j = 0;
 
 		    if (len > plen) {
-			j = (len - plen + 1)/2;
+			j = (len + 1) / 2 - (plen + 1) / 2;
 			len = plen;
 		    }
 		    for (i=0; i++ < len; ptr++) {
@@ -772,7 +789,7 @@ pack_pack(VALUE ary, VALUE fmt)
 		float f;
 
 		from = NEXTFROM;
-		f = RFLOAT_VALUE(rb_Float(from));
+		f = RFLOAT_VALUE(rb_to_float(from));
 		rb_str_buf_cat(res, (char*)&f, sizeof(float));
 	    }
 	    break;
@@ -888,7 +905,7 @@ pack_pack(VALUE ary, VALUE fmt)
 	    ptr = RSTRING_PTR(from);
 	    plen = RSTRING_LEN(from);
 
-	    if (len == 0) {
+	    if (len == 0 && type == 'm') {
 		encodes(res, ptr, plen, type, 0);
 		ptr += plen;
 		break;
@@ -1003,6 +1020,18 @@ pack_pack(VALUE ary, VALUE fmt)
 
     if (associates) {
 	rb_str_associate(res, associates);
+    }
+    OBJ_INFECT(res, fmt);
+    switch (enc_info) {
+      case 1:
+	ENCODING_CODERANGE_SET(res, rb_usascii_encindex(), ENC_CODERANGE_7BIT);
+	break;
+      case 2:
+	rb_enc_set_index(res, rb_utf8_encindex());
+	break;
+      default:
+	/* do nothing, keep ASCII-8BIT */
+	break;
     }
     return res;
 }
@@ -1900,6 +1929,7 @@ pack_unpack(VALUE str, VALUE fmt)
 		    s++;
 		}
 		rb_str_set_len(buf, ptr - RSTRING_PTR(buf));
+		ENCODING_CODERANGE_SET(buf, rb_usascii_encindex(), ENC_CODERANGE_7BIT);
 		UNPACK_PUSH(buf);
 	    }
 	    break;

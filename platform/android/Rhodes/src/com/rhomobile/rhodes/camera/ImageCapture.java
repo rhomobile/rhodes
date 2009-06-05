@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes.camera;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -83,7 +84,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 				// String filename = timeStampFormat.format(new Date());
 				iccb = new ImageCaptureCallback(getContentResolver()
 						.openOutputStream(uri), FileList.BASE_CAMERA_DIR
-						+ filename  +".jpg");
+						+ filename + ".jpg");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				Log.e(getClass().getSimpleName(), ex.getMessage(), ex);
@@ -121,16 +122,21 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		Log.e(getClass().getSimpleName(), "surfaceChanged");
-		if (isPreviewRunning) {
-			camera.stopPreview();
+		try {
+			Log.e(getClass().getSimpleName(), "surfaceChanged");
+			if (isPreviewRunning) {
+				camera.stopPreview();
+			}
+			Camera.Parameters p = camera.getParameters();
+			p.setPreviewSize(w, h);
+			camera.setParameters(p);
+			camera.setPreviewDisplay(holder);
+			camera.startPreview();
+			isPreviewRunning = true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		Camera.Parameters p = camera.getParameters();
-		p.setPreviewSize(w, h);
-		camera.setParameters(p);
-		camera.setPreviewDisplay(holder);
-		camera.startPreview();
-		isPreviewRunning = true;
+
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {

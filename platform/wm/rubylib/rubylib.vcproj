@@ -1533,10 +1533,18 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="rhosupport"
+					Name="rho"
 					>
 					<File
-						RelativePath="..\..\shared\ruby\ext\rhosupport\rhosupport.c"
+						RelativePath="..\..\shared\ruby\ext\rho\rhoruby.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\rho\rhoruby.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\rho\rhosupport.c"
 						>
 					</File>
 				</Filter>
@@ -1561,6 +1569,14 @@
 					>
 					<File
 						RelativePath="..\..\shared\ruby\ext\camera\camera_wrap.c"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="stringio"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\stringio\stringio.c"
 						>
 					</File>
 				</Filter>
@@ -1605,26 +1621,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\shared\ruby\missing\strftime.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\shared\ruby\missing\strlcat.c"
 					>
 				</File>
@@ -1638,20 +1634,12 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="rhoruby"
-				>
-				<File
-					RelativePath="..\..\shared\ruby\rhoruby\rhoruby.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\ruby\rhoruby\rhoruby.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="win32"
 				>
+				<File
+					RelativePath="..\..\shared\ruby\win32\dir.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\shared\ruby\win32\miniprelude.c"
 					>
@@ -1664,6 +1652,14 @@
 					RelativePath="..\..\shared\ruby\win32\win32.c"
 					>
 				</File>
+				<Filter
+					Name="ruby"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\win32\ruby\config.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="wince"

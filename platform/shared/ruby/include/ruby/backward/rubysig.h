@@ -2,8 +2,8 @@
 
   rubysig.h -
 
-  $Author: nobu $
-  $Date: 2008-09-25 17:55:09 -0700 (Чт, 25 сен 2008) $
+  $Author: yugui $
+  $Date: 2009-02-22 18:48:42 +0900 (Sun, 22 Feb 2009) $
   created at: Wed Aug 16 01:15:38 JST 1995
 
   Copyright (C) 1993-2008 Yukihiro Matsumoto
@@ -20,14 +20,29 @@
 #define RUBYSIG_H
 #include "ruby/ruby.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#if 0
+} /* satisfy cc-mode */
+#endif
+#endif
+
 struct rb_blocking_region_buffer;
-RUBY_EXTERN struct rb_blocking_region_buffer *rb_thread_blocking_region_begin(void);
-RUBY_EXTERN void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *);
-#define TRAP_BEG do {void *__region = rb_thread_blocking_region_begin(void);
+DEPRECATED(RUBY_EXTERN struct rb_blocking_region_buffer *rb_thread_blocking_region_begin(void));
+DEPRECATED(RUBY_EXTERN void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *));
+#define TRAP_BEG do {struct rb_blocking_region_buffer *__region = rb_thread_blocking_region_begin();
 #define TRAP_END rb_thread_blocking_region_end(__region);} while (0)
 #define RUBY_CRITICAL(statements) do {statements;} while (0)
 #define DEFER_INTS (0)
 #define ENABLE_INTS (1)
 #define ALLOW_INTS do {CHECK_INTS;} while (0)
 #define CHECK_INTS rb_thread_check_ints()
+
+#if defined(__cplusplus)
+#if 0
+{ /* satisfy cc-mode */
+#endif
+}  /* extern "C" { */
+#endif
+
 #endif

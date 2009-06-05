@@ -117,19 +117,6 @@ void rho_sync_set_pollinterval(int nInterval)
     CSyncThread::getInstance()->setPollInterval(nInterval);
 }
 
-void rho_sync_lock()
-{
-    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.setUnlockDB(true);
-    db.Lock();
-}
-
-void rho_sync_unlock()
-{
-    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.Unlock();
-}
-
 int rho_sync_login(const char *name, const char *password)
 {
     //TODO: stop sync
@@ -175,6 +162,43 @@ int rho_sync_closeDB(void * pDB)
 {
     CSyncThread::getDBAdapter().close();
     return 0;
+}
+
+int rho_db_startUITransaction(void * pDB)
+{
+    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+    db.setUnlockDB(true);
+    db.startTransaction();
+
+    //TODO: get error code from DBException
+    return 0;
+}
+
+int rho_db_commitUITransaction(void * pDB)
+{
+    CSyncThread::getDBAdapter().endTransaction();
+    //TODO: get error code from DBException
+    return 0;
+}
+
+int rho_db_rollbackUITransaction(void * pDB)
+{
+    CSyncThread::getDBAdapter().rollback();
+    //TODO: get error code from DBException
+    return 0;
+}
+
+void rho_sync_lock()
+{
+    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+    db.setUnlockDB(true);
+    db.Lock();
+}
+
+void rho_sync_unlock()
+{
+    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+    db.Unlock();
 }
 
 }

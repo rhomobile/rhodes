@@ -4,6 +4,7 @@ import rhomobile.RhoPhonebook;
 import rhomobile.WebView;
 import rhomobile.camera.Camera;
 
+import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 
@@ -21,5 +22,9 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public String getPlatform() {
 		return "Blackberry";
+	}
+
+	public void loadBackTrace(RubyArray backtrace) {
+		//TODO:
 	}
 }

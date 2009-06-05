@@ -2,7 +2,7 @@
 
   sprintf.c -
 
-  $Author: nobu $
+  $Author: yugui $
   created at: Fri Oct 15 10:39:26 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -25,7 +25,7 @@
 #define BITSPERDIG (SIZEOF_BDIGITS*CHAR_BIT)
 #define EXTENDSIGN(n, l) (((~0 << (n)) >> (((n)*(l)) % BITSPERDIG)) & ~(~0 << (n)))
 
-static void fmt_setup(char*,int,int,int,int);
+static void fmt_setup(char*,size_t,int,int,int,int);
 
 static char*
 remove_sign_bits(char *str, int base)
@@ -652,6 +652,7 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 		str = rb_obj_as_string(arg);
 		if (OBJ_TAINTED(str)) tainted = 1;
 		len = RSTRING_LEN(str);
+		rb_str_set_len(result, blen);
 		enc = rb_enc_check(result, str);
 		if (flags&(FPREC|FWIDTH)) {
 		    slen = rb_enc_strlen(RSTRING_PTR(str),RSTRING_END(str),enc);
@@ -800,8 +801,8 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 			    sc = ' ';
 			    width--;
 			}
-			sprintf(fbuf, "%%l%c", c);
-			sprintf(nbuf, fbuf, v);
+			snprintf(fbuf, sizeof(fbuf), "%%l%c", c);
+			snprintf(nbuf, sizeof(nbuf), fbuf, v);
 			s = nbuf;
 		    }
 		    else {
@@ -809,8 +810,8 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 			if (v < 0) {
 			    dots = 1;
 			}
-			sprintf(fbuf, "%%l%c", *p == 'X' ? 'x' : *p);
-			sprintf(++s, fbuf, v);
+			snprintf(fbuf, sizeof(fbuf), "%%l%c", *p == 'X' ? 'x' : *p);
+			snprintf(++s, sizeof(nbuf) - 1, fbuf, v);
 			if (v < 0) {
 			    char d = 0;
 
@@ -979,8 +980,8 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 		    if ((flags & FWIDTH) && need < width)
 			need = width;
 
-		    CHECK(need);
-		    sprintf(&buf[blen], "%*s", need, "");
+		    CHECK(need + 1);
+		    snprintf(&buf[blen], need + 1, "%*s", need, "");
 		    if (flags & FMINUS) {
 			if (!isnan(fval) && fval < 0.0)
 			    buf[blen++] = '-';
@@ -1004,7 +1005,7 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 		    break;
 		}
 
-		fmt_setup(fbuf, *p, flags, width, prec);
+		fmt_setup(fbuf, sizeof(fbuf), *p, flags, width, prec);
 		need = 0;
 		if (*p != 'e' && *p != 'E') {
 		    i = INT_MIN;
@@ -1018,7 +1019,7 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 		need += 20;
 
 		CHECK(need);
-		sprintf(&buf[blen], fbuf, fval);
+		snprintf(&buf[blen], need, fbuf, fval);
 		blen += strlen(&buf[blen]);
 	    }
 	    break;
@@ -1041,8 +1042,9 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 }
 
 static void
-fmt_setup(char *buf, int c, int flags, int width, int prec)
+fmt_setup(char *buf, size_t size, int c, int flags, int width, int prec)
 {
+    char *end = buf + size;
     *buf++ = '%';
     if (flags & FSHARP) *buf++ = '#';
     if (flags & FPLUS)  *buf++ = '+';
@@ -1051,12 +1053,12 @@ fmt_setup(char *buf, int c, int flags, int width, int prec)
     if (flags & FSPACE) *buf++ = ' ';
 
     if (flags & FWIDTH) {
-	sprintf(buf, "%d", width);
+	snprintf(buf, end - buf, "%d", width);
 	buf += strlen(buf);
     }
 
     if (flags & FPREC) {
-	sprintf(buf, ".%d", prec);
+	snprintf(buf, end - buf, ".%d", prec);
 	buf += strlen(buf);
     }
 
@@ -1080,10 +1082,9 @@ fmt_setup(char *buf, int c, int flags, int width, int prec)
 #  define u_quad_t unsigned LONG_LONG
 # endif
 #endif
-#undef vsnprintf
 #undef snprintf
 #define FLOATING_POINT 1
-#define BSD__dtoa dtoa
+#define BSD__dtoa ruby_dtoa
 #include "missing/vsnprintf.c"
 
 static int

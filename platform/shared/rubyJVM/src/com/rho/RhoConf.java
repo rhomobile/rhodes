@@ -25,9 +25,9 @@ public class RhoConf {
 
     	try{
 	        oFile = RhoClassFactory.createFile();
+	        oFile.delete(getConfFilePath());
 	        
         	oFile.open( getConfFilePath(), false, false);
-        	oFile.truncate(0);
 	        oFile.write( 0, strData.getBytes() );
 	        oFile.close();
     	}catch(Exception exc){
