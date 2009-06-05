@@ -95,6 +95,19 @@ describe "Rhom::RhomObject" do
     acct.industry.should == 'solar'
   end
   
+  it "should create records with no attribs in database" do
+    ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+    res = ::Rhom::RhomDbAdapter.select_from_table('object_values',"*")
+    res.length.should == 0
+    vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    account = Account.new(vars)
+    obj = account.object
+    account.save
+    acct = Account.find(obj)
+    acct.name.should == 'foobarthree'
+    acct.industry.should == 'entertainment'
+  end
+  
   it "should create a record" do
     vars = {"name"=>"some new record", "industry"=>"electronics"}
     @account1 = Account.new(vars)

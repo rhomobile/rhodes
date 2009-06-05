@@ -107,42 +107,43 @@ module Rhom
                     select_arr = args[1][:select] if args[1][:select]
                   end
                   
-                  puts "Inside find - running sql now"
 				          start = Time.new
                   # return horizontal resultset from database
                   # for example, an object that has attributes name,industry:
                   # |               object                 |       name         |  industry   |
                   # ---------------------------------------------------------------------------
                   # | 3560c0a0-ef58-2f40-68a5-48f39f63741b |A.G. Parr PLC 37862 |Entertainment|
-                  sql = ""
-                  sql << "SELECT * FROM (\n" if condition_hash.length > 0
-                  sql << "SELECT object,\n"
                   attribs = get_attribs
-                  attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
-                  start = Time.new
-                  attribs.each do |attrib|
-                    unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
-                      #sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
-                      sql << "MAX(CASE WHEN attrib = '#{attrib}' AND update_type IN (#{::Rhom::UPDATE_TYPES.join(',')}) THEN value ELSE NULL END) AS \"#{attrib}\",\n"
-                    end
-                  end 
-                  sql.chomp!
-                  sql.chop!
-                  sql << "FROM object_values ov where update_type not in ('delete','update')\n"
-                  sql << "AND " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                  sql << "group by object\n"
-                  sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
-                  sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash.length > 0
+                  if attribs and attribs.length > 0
+                    sql = ""
+                    sql << "SELECT * FROM (\n" if condition_hash.length > 0
+                    sql << "SELECT object,\n"
+                    attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
+                    start = Time.new
+                    attribs.each do |attrib|
+                      unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
+                        #sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
+                        sql << "MAX(CASE WHEN attrib = '#{attrib}' AND update_type IN (#{::Rhom::UPDATE_TYPES.join(',')}) THEN value ELSE NULL END) AS \"#{attrib}\",\n"
+                      end
+                    end 
+                    sql.chomp!
+                    sql.chop!
+                    sql << " FROM object_values ov where update_type not in ('delete','update')\n"
+                    sql << "AND " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                    sql << "group by object\n"
+                    sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
+                    sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash.length > 0
                   
-                  list = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                  puts "Database query took #{Time.new - start} sec, #{list.length} rows"
-                  start = Time.new
-                  list.each do |rowhash|
-                    # always return object field with surrounding '{}'
-                    rowhash['object'] = "{#{rowhash['object']}}"
-                    new_obj = self.new
-                    new_obj.vars.merge!(rowhash)
-                    ret_list << new_obj
+                    list = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                    puts "Database query took #{Time.new - start} sec, #{list.length} rows"
+                    start = Time.new
+                    list.each do |rowhash|
+                      # always return object field with surrounding '{}'
+                      rowhash['object'] = "{#{rowhash['object']}}"
+                      new_obj = self.new
+                      new_obj.vars.merge!(rowhash)
+                      ret_list << new_obj
+                    end
                   end
                   puts "Processing rhom objects took #{Time.new - start} sec, #{ret_list.length} objects"
                   args.first == :first || args.first.is_a?(String) ? ret_list[0] : ret_list
