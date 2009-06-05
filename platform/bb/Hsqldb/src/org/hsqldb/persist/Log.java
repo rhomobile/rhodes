@@ -282,19 +282,21 @@ public class Log {
         properties.setDBModified(HsqlDatabaseProperties.FILES_NOT_MODIFIED);
     }
 
-    void rhoSave(boolean bSchema) throws HsqlException 
+    void rhoSave(boolean bSchema) throws HsqlException
     {
-    	if ( bSchema ){
+        if (bSchema)
+        {
             deleteNewAndOldFiles();
             writeScript(false);
             renameNewScript();
-    	}else if (cache != null)
-    	{
+        }
+        else if (cache != null)
+        {
             deleteNewAndOldFiles();
             writeScript(false);
             cache.rhoSave();
             renameNewScript();
-    	}
+        }
     }
     
     /**
