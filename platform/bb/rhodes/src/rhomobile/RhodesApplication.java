@@ -3,6 +3,7 @@ package rhomobile;
 import java.io.IOException;
 
 import javax.microedition.io.HttpConnection;
+import net.rim.device.api.system.ApplicationManager;
 
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
@@ -36,7 +37,7 @@ import java.util.Vector;
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication
+final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
@@ -206,7 +207,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
-    private MainScreen _mainScreen;
+    private MainScreen _mainScreen = null;
 
     private HttpConnection  _currentConnection;
 
@@ -215,6 +216,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private final String _httpRoot = "http://localhost:8080/";
 
     private boolean _isFullBrowser = false;
+    
+    private static PushListeningThread _pushListeningThread = null;
     
     private static RhodesApplication _instance;
 
@@ -225,31 +228,23 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static void main(String[] args)
     {
     	RhoLogger.InitRhoLog();
-    	System.out.println("Rhodes STARTED");
+    	LOG.TRACE("Rhodes MAIN started ***--------------------------***");
     	
-    	//TestRhoLog test = new TestRhoLog();
-    	//test.runAllTests();
-    	//TestProfiler.runAllTests();
-    	try{
-    		RhoClassFactory.getNetworkAccess().configure();
-    	}catch(IOException exc){
-    		LOG.ERROR(exc.getMessage());
-    	}
+    	_pushListeningThread = new PushListeningThread();
+    	_pushListeningThread.start();
     	
-    	SyncUtil.init();
-
-        RhoRuby.RhoRubyStart("");
-
-		SyncEngine.start(null);
-		//GeoLocation.start();
-
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
+				
+		_pushListeningThread.stop();
 		
-		System.out.println("Rhodes EXIT");
+        RhoLogger.close();
+		LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
     }
 
-    void doClose(){
+    void doClose(){   	
+    	LOG.TRACE("Rhodes DO CLOSE ***--------------------------***");
+/*    	
 		SyncEngine.stop(null);
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
@@ -259,11 +254,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}catch(IOException exc){
     		LOG.ERROR(exc);
     	}
-    		
-        RhoLogger.close();
+*/
     }
 
 	public void activate() {
+    	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
     	try{
     		GeoLocation.start();
@@ -275,6 +270,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 
 	public void deactivate() {
+    	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 
@@ -341,6 +337,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			super.makeMenu(menu, instance);
 		}
 
+		public void close() {
+			LOG.TRACE("Calling Screen.close");
+			Application.getApplication().requestBackground();
+		}
+		
 		public boolean onClose() {
 			doClose();
 			return super.onClose();
@@ -355,7 +356,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     }
 
-    private RhodesApplication() {
+    private void doStartupWork() {
+        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
+      
+    	try {
+    		RhoClassFactory.getNetworkAccess().configure();
+    	} catch(IOException exc) {
+    		LOG.ERROR(exc.getMessage());
+    	}
+    	
+    	SyncUtil.init();
+        RhoRuby.RhoRubyStart("");
+		SyncEngine.start(null);
+   	
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
@@ -386,6 +399,54 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         
         if(!restoreLocation()) {
         	navigateHome();
+        }    
+        
+        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );        
+    }
+    
+    private void invokeStartupWork() {
+        // I think this can get called twice
+        // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
+        // 2) From System Listener - after system restart and when the app is originally installed
+        // To make sure we don't actually do the startup stuff twice,
+        // we use _mainScreen as a flag
+        if ( _mainScreen == null ) {
+            LOG.TRACE(" Shedule doStartupWork() ***---------------------------------- " );
+            this.invokeLater( new Runnable() { 
+                public void run() { 
+                    doStartupWork(); 
+                }
+            } );
+        }
+    }
+
+    //----------------------------------------------------------------------
+    // SystemListener methods
+
+    public void powerUp() {
+        LOG.TRACE(" POWER UP ***----------------------------------*** " );
+        invokeStartupWork();
+        this.requestBackground();
+    }
+    public void powerOff() {
+        LOG.TRACE(" POWER DOWN ***----------------------------------*** " );
+//        _mainScreen = null;
+//        doClose();
+    }
+    public void batteryLow() { }
+    public void batteryGood() { }    
+    public void batteryStatusChange(int status) { }
+
+    // end of SystemListener methods
+    //----------------------------------------------------------------------
+    
+    private RhodesApplication() {
+        LOG.TRACE(" Construct RhodesApplication() ***----------------------------------*** " );
+        this.addSystemListener(this);
+        if ( ApplicationManager.getApplicationManager().inStartup() ) {
+            LOG.TRACE("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
+        } else {
+            invokeStartupWork();
         }
     }
 
