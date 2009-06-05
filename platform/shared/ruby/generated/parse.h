@@ -1,27 +1,37 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
-   This program is free software; you can redistribute it and/or modify
+/* Skeleton interface for Bison's Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+   
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -150,143 +160,28 @@
      tLAST_TOKEN = 376
    };
 #endif
-/* Tokens.  */
-#define keyword_class 258
-#define keyword_module 259
-#define keyword_def 260
-#define keyword_undef 261
-#define keyword_begin 262
-#define keyword_rescue 263
-#define keyword_ensure 264
-#define keyword_end 265
-#define keyword_if 266
-#define keyword_unless 267
-#define keyword_then 268
-#define keyword_elsif 269
-#define keyword_else 270
-#define keyword_case 271
-#define keyword_when 272
-#define keyword_while 273
-#define keyword_until 274
-#define keyword_for 275
-#define keyword_break 276
-#define keyword_next 277
-#define keyword_redo 278
-#define keyword_retry 279
-#define keyword_in 280
-#define keyword_do 281
-#define keyword_do_cond 282
-#define keyword_do_block 283
-#define keyword_do_LAMBDA 284
-#define keyword_return 285
-#define keyword_yield 286
-#define keyword_super 287
-#define keyword_self 288
-#define keyword_nil 289
-#define keyword_true 290
-#define keyword_false 291
-#define keyword_and 292
-#define keyword_or 293
-#define keyword_not 294
-#define modifier_if 295
-#define modifier_unless 296
-#define modifier_while 297
-#define modifier_until 298
-#define modifier_rescue 299
-#define keyword_alias 300
-#define keyword_defined 301
-#define keyword_BEGIN 302
-#define keyword_END 303
-#define keyword__LINE__ 304
-#define keyword__FILE__ 305
-#define keyword__ENCODING__ 306
-#define tIDENTIFIER 307
-#define tFID 308
-#define tGVAR 309
-#define tIVAR 310
-#define tCONSTANT 311
-#define tCVAR 312
-#define tLABEL 313
-#define tINTEGER 314
-#define tFLOAT 315
-#define tSTRING_CONTENT 316
-#define tCHAR 317
-#define tNTH_REF 318
-#define tBACK_REF 319
-#define tREGEXP_END 320
-#define tUPLUS 321
-#define tUMINUS 322
-#define tPOW 323
-#define tCMP 324
-#define tEQ 325
-#define tEQQ 326
-#define tNEQ 327
-#define tGEQ 328
-#define tLEQ 329
-#define tANDOP 330
-#define tOROP 331
-#define tMATCH 332
-#define tNMATCH 333
-#define tDOT2 334
-#define tDOT3 335
-#define tAREF 336
-#define tASET 337
-#define tLSHFT 338
-#define tRSHFT 339
-#define tCOLON2 340
-#define tCOLON3 341
-#define tOP_ASGN 342
-#define tASSOC 343
-#define tLPAREN 344
-#define tLPAREN_ARG 345
-#define tRPAREN 346
-#define tLBRACK 347
-#define tLBRACE 348
-#define tLBRACE_ARG 349
-#define tSTAR 350
-#define tAMPER 351
-#define tLAMBDA 352
-#define tSYMBEG 353
-#define tSTRING_BEG 354
-#define tXSTRING_BEG 355
-#define tREGEXP_BEG 356
-#define tWORDS_BEG 357
-#define tQWORDS_BEG 358
-#define tSTRING_DBEG 359
-#define tSTRING_DVAR 360
-#define tSTRING_END 361
-#define tLAMBEG 362
-#define tLOWEST 363
-#define tUMINUS_NUM 364
-#define idNULL 365
-#define idRespond_to 366
-#define idIFUNC 367
-#define idCFUNC 368
-#define idThrowState 369
-#define id_core_set_method_alias 370
-#define id_core_set_variable_alias 371
-#define id_core_undef_method 372
-#define id_core_define_method 373
-#define id_core_define_singleton_method 374
-#define id_core_set_postexe 375
-#define tLAST_TOKEN 376
 
 
 
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
+{
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-typedef union YYSTYPE {
+/* Line 1676 of yacc.c  */
+
     VALUE val;
     NODE *node;
     ID id;
     int num;
+
+
+
+/* Line 1676 of yacc.c  */
 } YYSTYPE;
-/* Line 1447 of yacc.c.  */
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 

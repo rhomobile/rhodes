@@ -5,6 +5,8 @@ module Rho
       columns = []
       tables.each do |filename|
         Rhom::RhomDbAdapter.delete_all_from_table(filename)
+        Rhom::RhomDbAdapter.start_transaction
+        
         prefix = dir_prefix.nil? ? "" : dir_prefix
         File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
           if first_row
@@ -18,6 +20,8 @@ module Rho
           end
           Rhom::RhomDbAdapter.insert_into_table(filename,row)
         end
+        
+        Rhom::RhomDbAdapter.commit
         columns = []
         first_row = true
       end

@@ -2,7 +2,7 @@
 
   time.c -
 
-  $Author: matz $
+  $Author: yugui $
   created at: Tue Dec 28 14:31:59 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -487,7 +487,7 @@ static VALUE time_get_tm(VALUE, int);
 #define IF_HAVE_GMTIME_R(x) x
 #define ASCTIME(tm, buf) asctime_r(tm, buf)
 #define GMTIME(tm, result) gmtime_r(tm, &result)
-#define LOCALTIME(tm, result) localtime_r(tm, &result)
+#define LOCALTIME(tm, result) (tzset(),localtime_r(tm, &result))
 #else
 #define IF_HAVE_GMTIME_R(x) 	/* nothing */
 #define ASCTIME(tm, buf) asctime(tm)
@@ -1109,7 +1109,7 @@ time_cmp(VALUE time1, VALUE time2)
 	cmp = rb_funcall(time2, rb_intern("<=>"), 1, time1);
 	if (NIL_P(cmp)) return Qnil;
 
-	n = rb_cmpint(cmp, time1, time2);
+	n = -rb_cmpint(cmp, time1, time2);
 	if (n == 0) return INT2FIX(0);
 	if (n > 0) return INT2FIX(1);
 	return INT2FIX(-1);

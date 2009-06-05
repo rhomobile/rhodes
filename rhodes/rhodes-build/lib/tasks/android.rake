@@ -4,7 +4,7 @@ namespace "config" do
   task :android => :common do
 
     $deploydir = File.join($basedir,'deploy','android')
-    $excludelib = ['**/singleton.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $dx = "dx.bat"
@@ -39,7 +39,7 @@ namespace "bundle" do
     mkdir_p File.join($srcdir,'apps')
 
     compileERB = File.join($compileERBbase,'bb.rb')
-    rubypath =  File.join($res,$rhoruby)
+    #rubypath =  File.join($res,$rhoruby)
     xruby =  File.join($res,'xruby-0.3.3.jar')
 
     dest = $srcdir 
@@ -63,11 +63,11 @@ namespace "bundle" do
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/createAppManifest.rb` 
+    puts `ruby #{$srcdir}/createAppManifest.rb`
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-    puts `#{rubypath} -R#{$rhodeslib} #{$srcdir}/bb.rb` 
-
+    puts `ruby #{$srcdir}/bb.rb`
+    
     chdir $bindir
     puts `java -jar #{xruby} -c RhoBundle`
     chdir $srcdir
@@ -136,24 +136,19 @@ namespace "run" do
       puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
       chdir $basedir
 
-      src = File.join($prebuilt,"android","rhosdcard.7z")
-      seven = File.join($res,"7z.exe")
-
-      puts `#{seven} x -y #{src}`
-
-      sdimage = File.join($basedir,"rhosdcard.iso")
-
       puts `#{$adb} start-server`
       sleep 5
 
-      Thread.new { system("#{$emulator} -sdcard \"#{sdimage}\"") }
+      system("android create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+
+      Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
       sleep 10
       
       puts "Waiting for emulator to get started"
       $stdout.flush
       puts `#{$adb} wait-for-device`
-      sleep 20
+      sleep 60
       apkfile = File.join($targetdir,"Rhodes-debug.apk")    
 
       puts "Loading package into emulator"

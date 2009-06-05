@@ -2,7 +2,7 @@
 
   eval.c -
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: Tue Sep 23 09:44:32 JST 2008
 
   Copyright (C) 2008 Yukihiro Matsumoto
@@ -65,6 +65,9 @@ safe_setter(VALUE val)
 	rb_raise(rb_eSecurityError,
 		 "tried to downgrade safe level from %d to %d",
 		 th->safe_level, level);
+    }
+    if (level == 3) {
+	rb_warning("$SAFE=3 does no sandboxing; you might want to use $SAFE=4");
     }
     if (level > SAFE_LEVEL_MAX) {
 	level = SAFE_LEVEL_MAX;

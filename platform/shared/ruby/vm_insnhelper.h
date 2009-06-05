@@ -2,7 +2,7 @@
 
   insnhelper.h - helper macros to implement each instructions
 
-  $Author: ko1 $
+  $Author: yugui $
   created at: 04/01/01 15:50:34 JST
 
   Copyright (C) 2004-2007 Koichi Sasada
@@ -53,11 +53,12 @@ enum {
   BOP_NOT,
   BOP_NEQ,
 
-  BOP_LAST_,
+  BOP_LAST_
 };
 
 extern char ruby_vm_redefined_flag[BOP_LAST_];
 extern VALUE ruby_vm_global_state_version;
+extern VALUE ruby_vm_const_missing_count;
 
 #define GET_VM_STATE_VERSION() (ruby_vm_global_state_version)
 #define INC_VM_STATE_VERSION() \
@@ -158,8 +159,8 @@ extern VALUE ruby_vm_global_state_version;
   c1->nd_next = __tmp_c2->nd_next; \
 } while (0)
 
-#define CALL_METHOD(num, blockptr, flag, id, mn, recv, klass) do { \
-    VALUE v = vm_call_method(th, GET_CFP(), num, blockptr, flag, id, mn, recv, klass); \
+#define CALL_METHOD(num, blockptr, flag, id, mn, recv) do { \
+    VALUE v = vm_call_method(th, GET_CFP(), num, blockptr, flag, id, mn, recv); \
     if (v == Qundef) { \
 	RESTORE_REGS(); \
 	NEXT_INSN(); \
@@ -188,7 +189,7 @@ extern VALUE ruby_vm_global_state_version;
 
 #define CALL_SIMPLE_METHOD(num, id, recv) do { \
     VALUE klass = CLASS_OF(recv); \
-    CALL_METHOD(num, 0, 0, id, rb_method_node(klass, id), recv, CLASS_OF(recv)); \
+    CALL_METHOD(num, 0, 0, id, rb_method_node(klass, id), recv); \
 } while (0)
 
 #endif /* RUBY_INSNHELPER_H */

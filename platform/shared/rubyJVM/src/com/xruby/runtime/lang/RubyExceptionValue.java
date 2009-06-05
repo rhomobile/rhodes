@@ -5,6 +5,7 @@
 
 package com.xruby.runtime.lang;
 
+import com.rho.RhoClassFactory;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyString;
@@ -19,14 +20,26 @@ public class RubyExceptionValue extends RubyBasic {
     private String message_ = "";
     private Throwable throwable_;
 
+    RubyArray backTrace = new RubyArray();
+
     public RubyExceptionValue(RubyClass c) {
         super(c);
+        try {
+			RhoClassFactory.createRhoRubyHelper().loadBackTrace(this.backTrace);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         GlobalVariables.set(this, "$!");
     }
 
     public RubyExceptionValue(RubyClass c, String message) {
         super(c);
         message_ = message;
+        try {
+			RhoClassFactory.createRhoRubyHelper().loadBackTrace(this.backTrace);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         GlobalVariables.set(this, "$!");
     }
 
@@ -81,20 +94,7 @@ public class RubyExceptionValue extends RubyBasic {
 
     //@RubyLevelMethod(name="backtrace")
     public RubyArray backtrace() {
-        RubyArray a = new RubyArray();
-        //TODO: backtrace
- /*       StackTraceElement[] trace = exception_.getStackTrace();
-//        for (StackTraceElement e : trace) {
-		for(int i = 0; i<trace.length;i++){
-			StackTraceElement e = trace[i]; 
-        
-            String s = e.getClassName();
-            if ((!s.startsWith("com.xruby"))||
-                s.startsWith("com.xruby.runtime.builtin")) {//filter internal calls
-                a.add(ObjectFactory.createString(s));
-            }
-        }*/
-        return a;
+        return backTrace;
     }
 
     public Throwable getThrowable(){

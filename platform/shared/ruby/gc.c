@@ -38,9 +38,6 @@ static VALUE gc_profile_result(void);
 #include <sys/resource.h>
 #endif
 
-#ifdef __SYMBIAN32__
-#undef RUSAGE_SELF
-#endif
 #if defined _WIN32 || defined __CYGWIN__
 #include <windows.h>
 #endif
@@ -85,11 +82,7 @@ void *alloca ();
 #endif /* __GNUC__ */
 
 #ifndef GC_MALLOC_LIMIT
-#if defined(MSDOS) || defined(__human68k__)
-#define GC_MALLOC_LIMIT 200000
-#else
 #define GC_MALLOC_LIMIT 8000000
-#endif
 #endif
 
 #define nomem_error GET_VM()->special_exceptions[ruby_error_nomemory]
@@ -127,7 +120,7 @@ getrusage_time(void)
     getrusage(RUSAGE_SELF, &usage);
     time = usage.ru_utime;
     return time.tv_sec + time.tv_usec * 1e-6;
-#elif defined (_WIN32)
+#elif defined _WIN32
     FILETIME creation_time, exit_time, kernel_time, user_time;
     ULARGE_INTEGER ui;
     LONG_LONG q;
@@ -410,6 +403,7 @@ rb_objspace_alloc(void)
 
 #define HEAP_OBJ_LIMIT (HEAP_SIZE / sizeof(struct RVALUE))
 
+extern VALUE rb_cMutex;
 extern st_table *rb_class_tbl;
 
 int ruby_disable_gc_stress = 0;
@@ -421,6 +415,31 @@ void
 rb_global_variable(VALUE *var)
 {
     rb_gc_register_address(var);
+}
+
+static void *
+ruby_memerror_body(void *dummy)
+{
+    rb_memerror();
+    return 0;
+}
+
+static void
+ruby_memerror(void)
+{
+    if (ruby_thread_has_gvl_p()) {
+	rb_memerror();
+    }
+    else {
+	if (ruby_native_thread_p()) {
+	    rb_thread_call_with_gvl(ruby_memerror_body, 0);
+	}
+	else {
+	    /* no ruby thread */
+	    fprintf(stderr, "[FATAL] failed to allocate memory\n");
+	    exit(EXIT_FAILURE);
+	}
+    }
 }
 
 void
@@ -508,11 +527,6 @@ gc_profile_enable(void)
     return Qnil;
 }
 
-//trv-dbg
-void enable_gc_profile(void) {
-	gc_profile_enable();
-}
-
 /*
  *  call-seq:
  *    GC::Profiler.disable          => nil
@@ -549,12 +563,60 @@ gc_profile_clear(void)
 }
 
 static void *
+negative_size_allocation_error_with_gvl(void *ptr)
+{
+    rb_raise(rb_eNoMemError, "%s", (const char *)ptr);
+    return 0; /* should not be reached */
+}
+
+static void
+negative_size_allocation_error(const char *msg)
+{
+    if (ruby_thread_has_gvl_p()) {
+	rb_raise(rb_eNoMemError, "%s", msg);
+    }
+    else {
+	if (ruby_native_thread_p()) {
+	    rb_thread_call_with_gvl(negative_size_allocation_error_with_gvl, (void *)msg);
+	}
+	else {
+	    fprintf(stderr, "[FATAL] %s\n", msg);
+	    exit(EXIT_FAILURE);
+	}
+    }
+}
+
+static void *
+gc_with_gvl(void *ptr)
+{
+    return (void *)(VALUE)garbage_collect((rb_objspace_t *)ptr);
+}
+
+static int
+garbage_collect_with_gvl(rb_objspace_t *objspace)
+{
+    if (ruby_thread_has_gvl_p()) {
+	return garbage_collect(objspace);
+    }
+    else {
+	if (ruby_native_thread_p()) {
+	    return (int)rb_thread_call_with_gvl(gc_with_gvl, (void *)objspace);
+	}
+	else {
+	    /* no ruby thread */
+	    fprintf(stderr, "[FATAL] failed to allocate memory\n");
+	    exit(EXIT_FAILURE);
+	}
+    }
+}
+
+static void *
 vm_xmalloc(rb_objspace_t *objspace, size_t size)
 {
     void *mem;
 
     if (size < 0) {
-	rb_raise(rb_eNoMemError, "negative allocation size (or too big)");
+	negative_size_allocation_error("negative allocation size (or too big)");
     }
     if (size == 0) size = 1;
 
@@ -564,15 +626,15 @@ vm_xmalloc(rb_objspace_t *objspace, size_t size)
 
     if ((ruby_gc_stress && !ruby_disable_gc_stress) ||
 	(malloc_increase+size) > malloc_limit) {
-	garbage_collect(objspace);
+	garbage_collect_with_gvl(objspace);
     }
     mem = malloc(size);
     if (!mem) {
-	if (garbage_collect(objspace)) {
+	if (garbage_collect_with_gvl(objspace)) {
 	    mem = malloc(size);
 	}
 	if (!mem) {
-	    rb_memerror();
+	    ruby_memerror();
 	}
     }
     malloc_increase += size;
@@ -593,11 +655,12 @@ vm_xrealloc(rb_objspace_t *objspace, void *ptr, size_t size)
     void *mem;
 
     if (size < 0) {
-	rb_raise(rb_eArgError, "negative re-allocation size");
+	negative_size_allocation_error("negative re-allocation size");
     }
     if (!ptr) return ruby_xmalloc(size);
     if (size == 0) size = 1;
-    if (ruby_gc_stress && !ruby_disable_gc_stress) garbage_collect(objspace);
+    if (ruby_gc_stress && !ruby_disable_gc_stress)
+      garbage_collect_with_gvl(objspace);
 
 #if CALC_EXACT_MALLOC_SIZE
     size += sizeof(size_t);
@@ -607,11 +670,11 @@ vm_xrealloc(rb_objspace_t *objspace, void *ptr, size_t size)
 
     mem = realloc(ptr, size);
     if (!mem) {
-	if (garbage_collect(objspace)) {
+	if (garbage_collect_with_gvl(objspace)) {
 	    mem = realloc(ptr, size);
 	}
 	if (!mem) {
-	    rb_memerror();
+	    ruby_memerror();
         }
     }
     malloc_increase += size;
@@ -837,7 +900,7 @@ assign_heap_slot(rb_objspace_t *objspace)
 	    hi = mid;
 	}
 	else {
-	    rb_bug("same heap slot is allocated: %p at %"PRIuVALUE, membase, (VALUE)mid);
+	    rb_bug("same heap slot is allocated: %p at %"PRIuVALUE, (void *)membase, (VALUE)mid);
 	}
     }
     if (hi < heaps_used) {
@@ -1046,10 +1109,10 @@ int ruby_stack_grow_direction;
 int
 ruby_get_stack_grow_direction(VALUE *addr)
 {
-    rb_thread_t *th = GET_THREAD();
-    SET_STACK_END;
+    VALUE *end;
+    SET_MACHINE_STACK_END(&end);
 
-    if (STACK_END > addr) return ruby_stack_grow_direction = 1;
+    if (end > addr) return ruby_stack_grow_direction = 1;
     return ruby_stack_grow_direction = -1;
 }
 #endif
@@ -1065,8 +1128,8 @@ ruby_stack_length(VALUE **p)
     return STACK_LENGTH;
 }
 
-int
-ruby_stack_check(void)
+static int
+stack_check(void)
 {
     int ret;
     rb_thread_t *th = GET_THREAD();
@@ -1079,6 +1142,16 @@ ruby_stack_check(void)
     }
 #endif
     return ret;
+}
+
+int
+ruby_stack_check(void)
+{
+#if defined(POSIX_SIGNAL) && defined(SIGSEGV) && defined(HAVE_SIGALTSTACK)
+    return 0;
+#else
+    return stack_check();
+#endif
 }
 
 static void
@@ -1287,7 +1360,7 @@ gc_mark(rb_objspace_t *objspace, VALUE ptr, int lev)
     if (obj->as.basic.flags & FL_MARK) return;  /* already marked */
     obj->as.basic.flags |= FL_MARK;
 
-    if (lev > GC_LEVEL_MAX || (lev == 0 && ruby_stack_check())) {
+    if (lev > GC_LEVEL_MAX || (lev == 0 && stack_check())) {
 	if (!mark_stack_overflow) {
 	    if (mark_stack_ptr - mark_stack < MARK_STACK_MAX) {
 		*mark_stack_ptr = ptr;
@@ -1527,6 +1600,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
             gc_mark(objspace, obj->as.file.fptr->writeconv_asciicompat, lev);
             gc_mark(objspace, obj->as.file.fptr->writeconv_pre_ecopts, lev);
             gc_mark(objspace, obj->as.file.fptr->encs.ecopts, lev);
+            gc_mark(objspace, obj->as.file.fptr->write_lock, lev);
         }
         break;
 
@@ -1570,7 +1644,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
 
       default:
 	rb_bug("rb_gc_mark(): unknown data type 0x%lx(%p) %s",
-	       BUILTIN_TYPE(obj), obj,
+	       BUILTIN_TYPE(obj), (void *)obj,
 	       is_pointer_to_heap(objspace, obj) ? "corrupted object" : "non object");
     }
 }
@@ -2223,9 +2297,14 @@ define_final(int argc, VALUE *argv, VALUE os)
 	rb_raise(rb_eArgError, "wrong type argument %s (should be callable)",
 		 rb_obj_classname(block));
     }
-    FL_SET(obj, FL_FINALIZE);
+    if (!FL_ABLE(obj)) {
+	rb_raise(rb_eArgError, "cannot define finalizer for %s",
+		 rb_obj_classname(obj));
+    }
+    RBASIC(obj)->flags |= FL_FINALIZE;
 
     block = rb_ary_new3(2, INT2FIX(rb_safe_level()), block);
+    OBJ_FREEZE(block);
 
     if (!finalizer_table) {
 	finalizer_table = st_init_numtable();
@@ -2234,7 +2313,9 @@ define_final(int argc, VALUE *argv, VALUE os)
 	rb_ary_push(table, block);
     }
     else {
-	st_add_direct(finalizer_table, obj, rb_ary_new3(1, block));
+	table = rb_ary_new3(1, block);
+	RBASIC(table)->klass = 0;
+	st_add_direct(finalizer_table, obj, table);
     }
     return block;
 }
@@ -2364,7 +2445,7 @@ rb_gc_call_finalizer_at_exit(void)
 	while (p < pend) {
 	    if (BUILTIN_TYPE(p) == T_DATA &&
 		DATA_PTR(p) && RANY(p)->as.data.dfree &&
-		RANY(p)->as.basic.klass != rb_cThread) {
+		RANY(p)->as.basic.klass != rb_cThread && RANY(p)->as.basic.klass != rb_cMutex) {
 		p->as.free.flags = 0;
 		if ((long)RANY(p)->as.data.dfree == -1) {
 		    xfree(DATA_PTR(p));
@@ -2403,7 +2484,6 @@ rb_gc(void)
     rhoGCReport(gc_profile_result());
 #endif //_DEBUG
     //RHO
-
 }
 
 /*
@@ -2750,7 +2830,7 @@ gc_profile_result(void)
 			NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern("HEAP_USE_SIZE")))),
 			NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern("HEAP_TOTAL_SIZE")))),
 			NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern("HEAP_TOTAL_OBJECTS")))),
-			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_TIME"))))*100);
+			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_TIME"))))*1000);
 	}
 #if GC_PROFILE_MORE_DETAIL
 	rb_str_cat2(result, "\n\n");
@@ -2763,8 +2843,8 @@ gc_profile_result(void)
 			NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern("ALLOCATE_LIMIT")))),
 			NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern("HEAP_USE_SLOTS")))),
 			rb_hash_aref(r, ID2SYM(rb_intern("HAVE_FINALIZE")))? "true" : "false",
-			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_MARK_TIME"))))*100,
-			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_SWEEP_TIME"))))*100);
+			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_MARK_TIME"))))*1000,
+			NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern("GC_SWEEP_TIME"))))*1000);
 	}
 #endif
     }
@@ -2798,6 +2878,7 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
 
     return Qnil;
 }
+
 
 /*
  *  The <code>GC</code> module provides an interface to Ruby's mark and

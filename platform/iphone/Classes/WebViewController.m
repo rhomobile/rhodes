@@ -1,5 +1,5 @@
 #import "WebViewController.h"
-#import "rhoruby.h"
+#import "ruby/ext/rho/rhoruby.h"
 //#import "UniversalLock.h"
 #import "common/RhoConf.h"
 #import "sync/syncthread.h"

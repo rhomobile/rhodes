@@ -142,7 +142,17 @@ void CDBAdapter::endTransaction()
 
 	m_bInsideTransaction=false;
     Unlock();
-	
+}
+
+void CDBAdapter::rollback()
+{
+    char *zErr = 0;
+    int rc = 0;
+	if (m_dbHandle)
+		rc = sqlite3_exec(m_dbHandle, "ROLLBACK;",0,0,&zErr);
+
+	m_bInsideTransaction=false;
+    Unlock();
 }
 
 }
