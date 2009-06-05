@@ -730,7 +730,7 @@ public class SyncUtil {
 						+ "/clientcreate" + SyncConstants.SYNC_FORMAT, "",
 						false);
 				} else {
-					String body = "client_pin=" + DeviceInfo.getDeviceId();
+					String body = "device_pin=" + DeviceInfo.getDeviceId()+"&device_type=blackberry";
 					ByteArrayOutputStream reply = new ByteArrayOutputStream(); 
 					SyncManager.makePostRequest(source.get_sourceUrl()
 							+ "/clientcreate" + SyncConstants.SYNC_FORMAT, 
@@ -950,7 +950,8 @@ public class SyncUtil {
 				if (strSession.length() == 0) {
 					ByteArrayInputStream dataStream = null;
 					try {
-						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
+						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1"+
+							"&device_pin=" + DeviceInfo.getDeviceId()+"&device_type=blackberry";
 						dataStream = new ByteArrayInputStream(body.getBytes()); 
 						
 						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, null, "",
