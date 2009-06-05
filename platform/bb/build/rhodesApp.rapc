@@ -6,4 +6,4 @@ MIDlet-Jar-Size: 0
 MicroEdition-Profile: MIDP-2.0
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-1: rhodesApp,resources/icon.png,
-RIM-MIDlet-Flags-1: 0
+RIM-MIDlet-Flags-1: 1

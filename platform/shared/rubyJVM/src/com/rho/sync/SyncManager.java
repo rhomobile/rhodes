@@ -147,7 +147,7 @@ public class SyncManager {
 		int success = SyncConstants.SYNC_PUSH_CHANGES_OK;
 		if (checkSession && (session == null || session.length() == 0)) return SyncConstants.SYNC_PUSH_CHANGES_ERROR;
 		try {
-			makePostRequest(url,data,session,contentType);
+			makePostRequest(url,data,null,session,contentType);
 
 			int code = connection.getResponseCode();
 			if (code == IHttpConnection.HTTP_INTERNAL_ERROR || code == IHttpConnection.HTTP_NOT_FOUND) {
@@ -185,11 +185,12 @@ public class SyncManager {
 	static String szMultipartContType = 
 	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 	
-	public static void makePostRequest(String url, InputStream data, String session, 
+	public static void makePostRequest(String url, InputStream data, OutputStream result, String session, 
 			String contentType )throws IOException 
 	{
 		// Performs a post to url with post body provided by data
 		OutputStream os = null;
+		InputStream is = null;
 		try {
 			closeConnection();
 			connection = RhoClassFactory.getNetworkAccess().connect(url);
@@ -227,14 +228,27 @@ public class SyncManager {
 				os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
 			}
 			
-			//os.write(data);
 			os.flush();
+			
+			if (result != null) {
+				// read reply body of the POST call
+				is = connection.openInputStream();
+				int nRead = 0;
+				do {
+					nRead = is.read();
+					result.write(nRead);
+				} while(nRead > 0);
+			}
+			
 		}catch(IOException exc){
 			throw exc;
 		}
 		finally {
 			if (os != null) {
 				os.close();
+			}
+			if (is != null) {
+				is.close();
 			}
 		}
 	}
