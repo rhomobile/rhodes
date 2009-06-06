@@ -122,7 +122,6 @@ module Rhom
                     start = Time.new
                     attribs.each do |attrib|
                       unless attrib.nil? or attrib.length == 0 or method_name_reserved?(attrib)
-                        #sql << "(select value from object_values where attrib = '#{attrib}' and object = ov.object and update_type in (#{::Rhom::UPDATE_TYPES.join(',')}) order by update_type DESC limit 1)  AS \"#{attrib}\",\n"
                         sql << "MAX(CASE WHEN attrib = '#{attrib}' AND update_type IN (#{::Rhom::UPDATE_TYPES.join(',')}) THEN value ELSE NULL END) AS \"#{attrib}\",\n"
                       end
                     end 
