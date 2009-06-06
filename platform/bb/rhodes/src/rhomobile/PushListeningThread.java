@@ -1,6 +1,8 @@
 package rhomobile;
 
 import java.io.*;
+import java.util.Vector;
+
 import javax.microedition.io.*;
 
 import com.rho.RhoEmptyLogger;
@@ -91,7 +93,7 @@ public class PushListeningThread extends Thread {
                             db.write(data, 0, chunk);
                         }
                         
-                        updateMessage(data);
+                        processPushMessage(data);
                         
                         // This method is called to accept the push.
                         pushInputStream.accept();
@@ -161,34 +163,92 @@ public class PushListeningThread extends Thread {
         }
     }
     
-    private void updateMessage(final byte[] data)
+    private String[] split(String original, String separator) {
+		Vector nodes = new Vector();
+		// Parse nodes into vector
+		int index = original.indexOf(separator);
+		while (index >= 0) {
+			nodes.addElement(original.substring(0, index));
+			original = original.substring(index + separator.length());
+			index = original.indexOf(separator);
+		}
+		// Get the last node
+		nodes.addElement(original);
+
+		// Create splitted string array
+		String[] result = new String[nodes.size()];
+		if (nodes.size() > 0) {
+			for (int loop = 0; loop < nodes.size(); loop++) {
+				result[loop] = ((String)nodes.elementAt(loop)).trim();
+			}
+		}
+
+		return result;
+	}
+   
+    private String[] splitOnce(String original, String separator) {
+		String[] result;
+    	int index = original.indexOf(separator);
+    	if (index>=0) {
+    		result = new String[2];
+    		result[0] = original.substring(0, index).trim();
+    		result[1] = original.substring(index + separator.length()).trim();
+    	} else {
+    		result = new String[1];
+    		result[0] = original.trim();
+    	}
+    	return result;
+    }
+    
+    private void showPopup(String message) {
+		String[] choices = { "Ok" };
+		Application.getApplication().requestForeground();
+		Dialog.ask(message,choices,0);
+	}
+    
+    private void vibrate(String duration) {
+    	int dt = 2500;
+    	try {
+    		dt = Integer.parseInt(duration);
+    	} catch (NumberFormatException e) {    		
+    	}
+    	
+    	if (dt > 25500) dt = 25500;
+    	
+    	if (dt > 0) {
+    		Alert.startVibrate(dt);
+    	}
+    }
+    
+    private void processPushMessage(final byte[] data)
     {
         Application.getApplication().invokeLater(new Runnable() 
         {
             public void run() 
             {
-            	LOG.TRACE("Triger sync on PUSH message [" + new String(data) + " ]\n");
-            	SyncEngine.dosync(null);
+            	String msg = new String(data);
+            	LOG.TRACE("Triger sync on PUSH message [" + msg + " ]\n");
+
+            	String[] op;
+            	String[] ops = split(msg,"\n");
+            	for (int loop = 0; loop < ops.length; loop++) {
+            		if (ops[loop].startsWith("do_sync")) {
+                    	SyncEngine.dosync(null);
+            		} else if (ops[loop].startsWith("show_popup")) {
+            			op = splitOnce(ops[loop],"=");
+            			if (op.length>1) {
+            				showPopup(op[1]);
+            			}
+            		} else if (ops[loop].startsWith("vibrate")) {
+            			op = splitOnce(ops[loop],"=");
+            			if (op.length>1) {
+            				vibrate(op[1]);
+            			} else {
+            				vibrate("2500");
+            			}
+            		}
+            	}
             	
-                // Query the user to load the received message.
-//                String[] choices = {"Ok" , "Cancel" };
-//                
-//                if ( 0 != Dialog.ask("New message received. Do you want to render it?" , choices, 0) )
-//                {
-//                    return;
-//                }
-//                
-//                _infoField.setText("Text received - size:  " + data.length);
-//
-//                try 
-//                {
-//                   _imageField.setText(new String(data));
-//                }
-//                catch (Exception e) 
-//                {
-//                    Dialog.inform(e.toString());
-//                    System.err.println(e.toString());
-//                }
             }
         });
     }
