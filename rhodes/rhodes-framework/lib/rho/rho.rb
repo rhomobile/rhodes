@@ -28,7 +28,7 @@ module Rho
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename).each do |line|
-        require File.join(File.dirname(app_manifest_filename), line.chop)
+        require File.join(File.dirname(app_manifest_filename), line.chomp)
       end
     end
     
