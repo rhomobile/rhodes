@@ -33,6 +33,7 @@ src\rhomobile\camera\CameraScreen.java
 src\rhomobile\camera\ImageBrowserScreen.java
 src\rhomobile\LogOptionsScreen.java
 src\rhomobile\LogScreen.java
+src\rhomobile\PushListeningThread.java
 src\rhomobile\RhodesApplication.java
 src\rhomobile\RhoPhonebook.java
 src\rhomobile\SecondaryResourceFetchThread.java
@@ -55,7 +56,7 @@ OutputFileName=rhodes
 [PackageProtection
 ]
 RibbonPosition=0
-RunOnStartup=0
+RunOnStartup=1
 StartupTier=7
 SystemModule=0
 Type=0

@@ -10,6 +10,7 @@
 ..\rhodes\src\rhomobile\camera\ImageBrowserScreen.java
 ..\rhodes\src\rhomobile\LogOptionsScreen.java
 ..\rhodes\src\rhomobile\LogScreen.java
+..\rhodes\src\rhomobile\PushListeningThread.java
 ..\rhodes\src\rhomobile\RhodesApplication.java
 ..\rhodes\src\rhomobile\RhoPhonebook.java
 ..\rhodes\src\rhomobile\SecondaryResourceFetchThread.java

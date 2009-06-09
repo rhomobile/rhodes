@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-RIM-MIDlet-Flags-1: 0
+RIM-MIDlet-Flags-1: 1
 MIDlet-Vendor: <unknown>
 MIDlet-Version: 1.40
 MicroEdition-Configuration: CLDC-1.1

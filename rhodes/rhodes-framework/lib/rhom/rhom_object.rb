@@ -18,33 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 module Rhom
-  module RhomObject
-    # defines a method at runtime for the
-    # dynamically created class
-    
-    
-    # we override method_missing here so that instance variables,
-    # when retrieved or set, are added to the object
-    def method_missing(name, *args)
-      unless name == Fixnum
-        varname = name.to_s.gsub(/=/,"")
-        setting = (name.to_s =~ /=/)
-        inst_var = nil
-
-        if setting
-          inst_var = instance_variable_set( "@#{varname}", args[0] )  
-        else
-          inst_var = instance_variable_get( "@#{varname}" )
-        end
-        
-        inst_var
-      end
-    end
-    
-    def remove_var(name)
-      remove_instance_variable("@#{name}")
-    end
-  
+  module RhomObject    
     def strip_braces(str=nil)
       str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
     end
@@ -59,7 +33,7 @@ module Rhom
     end
     
     def extract_options(arr=[])
-      arr.last.is_a?(::Hash) ? arr.pop : {}
+      arr.last.is_a?(Hash) ? arr.pop : {}
     end
     
     @@reserved_names = {"object" => "1",
@@ -73,9 +47,6 @@ module Rhom
 
     def method_name_reserved?(method)
       @@reserved_names.has_key?(method)
-    end    
-    #def method_name_reserved?(method)
-     # method =~ /\bobject\b|\bsource_id\b|\bupdate_type\b|\battrib_type\b|\btype\b|\bset_notification\b|\bclear_notification\b/
-    #end
+    end
   end # RhomObject
 end # Rhom
