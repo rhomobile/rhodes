@@ -30,7 +30,12 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		//TODO:
 	}
 
+	public boolean hasNetwork() {
+		//TODO: 
+		return true;
+	}
+
 	public String getDeviceId(){
-		return DeviceInfo.getDeviceId();
+		return new Integer( DeviceInfo.getDeviceId() ).toString();
       }
 }

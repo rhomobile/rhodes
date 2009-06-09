@@ -4,30 +4,12 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import android.util.Log;
-
 import com.rho.net.IHttpConnection;
 import com.rho.net.INetworkAccess;
 
 public class NetworkAccessImpl implements INetworkAccess {
 
-	private NetworkStateTracker networkStateTracker;
-
 	public NetworkAccessImpl() {
-		RhodesInstance.getInstance().runOnUiThread(new Runnable() {
-
-			public void run() {
-				try {
-					networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
-					networkStateTracker.enable();
-				}catch (Exception e){
-					Log.e( "NetworkAccessImpl", e.getMessage());
-				}
-				
-			}
-	    	
-	    });
-
 	}
 
 	public void autoConfigure() {
@@ -53,13 +35,6 @@ public class NetworkAccessImpl implements INetworkAccess {
 
 	public String getSuffix() {
 		return "";
-	}
-
-	public synchronized boolean isNetworkAvailable() {
-		if ( networkStateTracker != null )
-			return networkStateTracker.isNetworkConnected();
-		else
-			return true;
 	}
 
 	public void log(String txt) {
