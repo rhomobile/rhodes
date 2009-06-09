@@ -24,6 +24,7 @@
 	<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
 	<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
 	<uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_GPS"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
