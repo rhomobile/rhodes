@@ -78,4 +78,8 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		return mTelephonyMgr.getDeviceId();
 	}
 
+	public boolean hasNetwork() {
+		return RhodesInstance.getInstance().isNetworkAvailable();
+	}
+
 }

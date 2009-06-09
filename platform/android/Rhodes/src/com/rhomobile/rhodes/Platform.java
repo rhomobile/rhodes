@@ -63,6 +63,8 @@ public class Platform extends Activity {
 
 	private boolean isStarted = false;
 
+	private NetworkStateTracker networkStateTracker;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,6 +130,13 @@ public class Platform extends Activity {
 		RhodesInstance.setInstance(this);
 		
 		RhoLogger.InitRhoLog();
+		
+		try {
+			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
+			networkStateTracker.enable();
+		}catch (Exception e){
+			Log.e( "NetworkAccessImpl", e.getMessage());
+		}
 		
 		Log.i(LOG_TAG, "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
@@ -382,5 +391,12 @@ public class Platform extends Activity {
 	public void refreshCurrentPage() {
 		this.webView.reload();
 	}
-	
+
+	public synchronized boolean isNetworkAvailable() {
+		if ( networkStateTracker != null )
+			return networkStateTracker.isNetworkConnected();
+		else
+			return true;
+	}
+
 }

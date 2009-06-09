@@ -143,8 +143,12 @@ public class RhoSupport {
 
     //@RubyLevelMethod(name="has_network", module=true)
     public static RubyValue has_network(RubyValue receiver) {
-    	//TODO: has_network
-    	return RubyConstant.QTRUE;
+    	try {
+			return RhoClassFactory.createRhoRubyHelper().hasNetwork() ? RubyConstant.QTRUE : RubyConstant.QFALSE;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return RubyConstant.QFALSE;
     }
     
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)
