@@ -108,17 +108,17 @@ namespace "device" do
       Rake::Task["run:bb:manualsign"].execute
     end
 
+    webdir = File.join($targetdir, "web")  
+    mkdir_p webdir
+
+    cp File.join($targetdir, "rhodesApp.jad"), webdir
+
+    Jake.unjar(File.join($targetdir, "rhodesApp.cod"), webdir)
+
     rm_rf $deploydir
     mkdir_p $deploydir 
-
-    cp File.join($targetdir, "rhodesApp.jad"), $deploydir
-
-    Jake.unjar(File.join($targetdir, "rhodesApp.cod"), $deploydir)
-
-    rm_rf $targetdir
-    mv $deploydir, $targetdir
-
-
+    mv $targetdir,$deploydir
+    
   end
 end
 
