@@ -105,7 +105,7 @@ namespace "build" do
     jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
     jarexe =  config["env"]["paths"][config["env"]["bbver"]]["java"] + "/jar.exe"
 
-    Jake.ant(config["build"]["shareddir"],"bundleCommon")
+    Jake.ant(config["build"]["shareddir"],"compileERB_Java")
 
     rm_rf config["build"]["srcdir"] + "/apps/shared"
 
