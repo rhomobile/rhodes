@@ -24,7 +24,7 @@ public class File {
                 System.getProperty("path.separator") : "/";
 
     public static final char pathSeparatorChar = pathSeparator.charAt(0);
-
+	
     private String _path;
     private transient int prefixLength = 0;
     
@@ -37,7 +37,10 @@ public class File {
     }
    
     public String getParent() {
-        int index = _path.lastIndexOf(separatorChar);
+        int index = _path.lastIndexOf('/');
+        if ( index < 0 )
+        	index = _path.lastIndexOf('\\');
+        
         if (index < prefixLength) {
             if ((prefixLength > 0) && (_path.length() > prefixLength))
                 return _path.substring(0, prefixLength);
@@ -71,9 +74,11 @@ public class File {
         throw new RuntimeException("Not Implemented");
         //return new String[0]; 
     }
-    public String getAbsolutePath() {
+    public String getAbsolutePath() 
+    {
+    	return _path;
         //TODO: getAbsolutePath
-        throw new RuntimeException("Not Implemented");
+        //throw new RuntimeException("Not Implemented");
         //return _path;
     }
     

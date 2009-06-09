@@ -165,6 +165,41 @@ public class DBAdapter extends RubyBasic {
     {
     	m_dbStorage.commit();
     }
+
+    public void rollback()throws DBException
+    {
+    	throw new DBException("Not implemented");
+    }
+    
+    private RubyValue rb_start_transaction() {
+    	try{
+    		startTransaction();
+    	}catch( Exception exc ){
+    		LOG.ERROR("Start transaction failed.", exc);
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
+    
+    private RubyValue rb_commit() {
+    	try{
+    		commit();
+    	}catch( Exception exc ){
+    		LOG.ERROR("Commit transaction failed.", exc);
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
+    
+    private RubyValue rb_rollback() {
+    	try{
+    		rollback();
+    	}catch( Exception exc ){
+    		LOG.ERROR("Rollback transaction failed.", exc);
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
     
     private void openDB(String strDBName)
     {
@@ -250,6 +285,18 @@ public class DBAdapter extends RubyBasic {
 		klass.defineMethod( "execute", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_execute(arg);}
+		});
+		klass.defineMethod( "start_transaction", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_start_transaction();}
+		});
+		klass.defineMethod( "commit", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_commit();}
+		});
+		klass.defineMethod( "rollback", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_rollback();}
 		});
 		
 	}

@@ -9,4 +9,6 @@ public interface IRhoRubyHelper {
 	public abstract String getPlatform();
 	
 	public void loadBackTrace(RubyArray backtrace);
+	public String getDeviceId();
+	public boolean hasNetwork();
 }

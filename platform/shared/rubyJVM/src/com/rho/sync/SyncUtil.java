@@ -22,11 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 
-import net.rim.device.api.system.DeviceInfo;
-
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
 import j2me.util.ArrayList;
+
+import com.rho.IRhoRubyHelper;
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.Tokenizer;
@@ -730,7 +731,10 @@ public class SyncUtil {
 						+ "/clientcreate" + SyncConstants.SYNC_FORMAT, "",
 						false);
 				} else {
-					String body = "device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
+					IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+					String body = "device_pin=" + helper.getDeviceId()
+								+ "&device_type=" + helper.getPlatform(); 
+					
 					ByteArrayOutputStream reply = new ByteArrayOutputStream(); 
 					SyncManager.makePostRequest(source.get_sourceUrl()
 							+ "/clientcreate" + SyncConstants.SYNC_FORMAT, 
@@ -950,8 +954,19 @@ public class SyncUtil {
 				if (strSession.length() == 0) {
 					ByteArrayInputStream dataStream = null;
 					try {
-						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1"+
-							"&device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
+						String body = "";
+						try {
+							IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+							
+							body = "login=" + strUser 
+							+ "&password=" + strPwd
+							+ "&remember_me=1"
+							+ "&device_pin=" + helper.getDeviceId()
+							+ "&device_type=" + helper.getPlatform();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 						dataStream = new ByteArrayInputStream(body.getBytes()); 
 						
 						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, null, "",

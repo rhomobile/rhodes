@@ -488,6 +488,24 @@ public class RubyKernelModule {
 	public static RubyInteger toInteger(RubyValue receiver, RubyValue arg) {
 		return arg.toRubyInteger();		
 	}
+
+	//@RubyLevelMethod(name="String", module=true)
+	public static RubyString toString(RubyValue receiver, RubyValue arg) {
+		return arg.toRubyString();		
+	}
+
+	//@RubyLevelMethod(name="Array", module=true)
+	public static RubyArray toArray(RubyValue receiver, RubyValue arg) {
+		RubyArray res = null;
+		try{
+			res = arg.toRubyArray();
+		}catch(RubyException exc)
+		{}
+		if ( res == null )
+			res = ObjectFactory.createArray(1, arg);
+				
+		return res;
+	}
 	
 	//@RubyLevelMethod(name="puts", module=true)
 	public static RubyValue puts(RubyValue receiver) {

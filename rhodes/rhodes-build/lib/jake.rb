@@ -236,7 +236,7 @@ class Jake
     args << "-buildfile"
     args << dir + "/build.xml"
     args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
-    args << '"-Druby.path=' + get_absolute(rubypath) + '"'
+#    args << '"-Druby.path=' + get_absolute(rubypath) + '"'
     args << '"-Dexclude.lib=' + excludelib + '"'
     args << '"-Dexclude.apps=' + excludeapps + '"'
     args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'

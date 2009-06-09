@@ -16,7 +16,7 @@
 	<property name="rhodes.apps.dir" value="${bin.dir}/../../Rhodes/assets/apps" />
 	<property name="rhodes.lib.dir" value="${bin.dir}/../../Rhodes/libs" />
 	
-  	<condition property="exclude.lib" value="**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb">
+  	<condition property="exclude.lib" value="**/singleton.rb,**/rhoframework.rb,**/date.rb,**/rational.rb">
     	<not><isset property="exclude.lib"/></not>
   	</condition>
 
@@ -54,7 +54,7 @@
 	      <fileset dir="${src.dir}" includes="**/*.isec"/>
 	    </delete>
     	
-   		<ant dir = "${sharedAnt.dir}" target="bundleCommon" />
+   		<ant dir = "${sharedAnt.dir}" target="compileERB_Java" />
     	
         <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
           <arg value="-jar" />

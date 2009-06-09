@@ -1,5 +1,8 @@
 package com.rhomobile.rhodes;
 
+import android.content.Context;
+import android.telephony.*; 
+
 import com.rho.IRhoRubyHelper;
 import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.phonebook.RhoPhonebook;
@@ -65,6 +68,18 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getDeviceId() {
+
+        TelephonyManager mTelephonyMgr = 
+            (TelephonyManager) RhodesInstance.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+        
+		return mTelephonyMgr.getDeviceId();
+	}
+
+	public boolean hasNetwork() {
+		return RhodesInstance.getInstance().isNetworkAvailable();
 	}
 
 }
