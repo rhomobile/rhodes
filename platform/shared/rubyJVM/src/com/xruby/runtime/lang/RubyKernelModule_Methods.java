@@ -295,6 +295,14 @@ klass.defineModuleMethod( "Integer", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyKernelModule.toInteger(receiver, arg);}
 });
+klass.defineModuleMethod( "Array", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyKernelModule.toArray(receiver, arg);}
+});
+klass.defineModuleMethod( "String", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyKernelModule.toString(receiver, arg);}
+});
  
 klass.defineModuleMethod( "srand", new RubyNoOrOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){

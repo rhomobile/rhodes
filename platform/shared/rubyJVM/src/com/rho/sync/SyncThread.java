@@ -18,6 +18,7 @@
  */
 package com.rho.sync;
 
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
@@ -118,6 +119,16 @@ public class SyncThread implements Runnable {
 
 			if ( isStop() )
 				break;
+			
+			try {
+				if ( !RhoClassFactory.createRhoRubyHelper().hasNetwork() ){
+					setState(STATE_PAUSE);
+					continue;
+				}
+			} catch (Exception e) {
+				LOG.ERROR( e.getMessage() );
+			}
+			
 			
 			// synchronized (sync) {
 			//SyncUtil.adapter.initialize(null);

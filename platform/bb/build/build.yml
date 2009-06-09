@@ -20,7 +20,6 @@ build:
   rhobundledir: ../RhoBundle
   srcdir: %bindir%/RhoBundle
   preverified: ../preverified
-  rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
   rubyVMdir: ../RubyVM
