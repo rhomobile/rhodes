@@ -62,8 +62,7 @@
 
     <copy file="createAppManifest.rb" todir="${src.dir}"/>
 
-    <exec executable="${ruby.path}">
-      <arg value="-R${rubylib.dir}" />
+    <exec executable="ruby">
       <arg value="${src.dir}/createAppManifest.rb" />
     </exec>
 
@@ -84,6 +83,18 @@
 
   </target>
 
+  <target name="compileERB_Java" depends="createAppManifest">
+
+    <copy file="${compileERB.path}" todir="${src.dir}"/>
+
+    <exec executable="ruby">
+      <arg value="${src.dir}/compileERB.rb" />
+    </exec>
+
+    <delete file="${src.dir}/compileERB.rb" />
+
+  </target>
+    
   <target name="bundleCommon" depends="compileERB">
   </target>
 
