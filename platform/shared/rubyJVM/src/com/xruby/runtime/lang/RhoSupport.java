@@ -8,6 +8,9 @@ import com.xruby.runtime.builtin.RubyArray;
 
 public class RhoSupport {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhoSupport");
+	
 	public static RubyModule SystemModule;
 	private static String    m_strCurAppPath;
 	
@@ -71,8 +74,8 @@ public class RhoSupport {
         if ( required_file.charAt(0) == '/' || required_file.charAt(0) == '\\' )
         	required_file = required_file.substring(1);
         
-        required_file = required_file.replace('/', '$');
-        required_file = required_file.replace('\\', '$');
+        required_file = required_file.replace('/', '.');
+        required_file = required_file.replace('\\', '.');
         required_file += ".main";
         return "xruby." + required_file;
     }
@@ -147,6 +150,9 @@ public class RhoSupport {
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)
     public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
         String required_file = arg.toStr();
+        if ( required_file.endsWith("/") || required_file.endsWith("\\") )
+        	return RubyConstant.QTRUE;
+        
         String name = RhoSupport.createMainClassName(required_file);
         try {
         	
@@ -156,6 +162,9 @@ public class RhoSupport {
             } catch (ClassNotFoundException e) {
             }
             if ( c == null ){
+            	if ( m_strCurAppPath == null || m_strCurAppPath.length() == 0 )
+            		return RubyConstant.QFALSE;
+            	
             	name = RhoSupport.createMainClassName(m_strCurAppPath+required_file);
             	c = Class.forName(name);
             	

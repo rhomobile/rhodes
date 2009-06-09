@@ -874,8 +874,12 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="uniq")
-    public RubyValue uniq() {
-        return copy().uniq_danger();
+    public RubyValue uniq() 
+    {
+    	RubyArray res = copy();
+        res.uniq_danger();
+        
+        return res;
     }
 
     //@RubyLevelMethod(name="uniq!")

@@ -1,12 +1,12 @@
 module Rho
   class RhoUtils
     def self.load_offline_data(tables=[], dir_prefix=nil)
-      first_row=true
       columns = []
       tables.each do |filename|
         Rhom::RhomDbAdapter.delete_all_from_table(filename)
         Rhom::RhomDbAdapter.start_transaction
-        
+
+        first_row=true
         prefix = dir_prefix.nil? ? "" : dir_prefix
         File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
           if first_row
@@ -23,7 +23,6 @@ module Rho
         
         Rhom::RhomDbAdapter.commit
         columns = []
-        first_row = true
       end
     end
   end

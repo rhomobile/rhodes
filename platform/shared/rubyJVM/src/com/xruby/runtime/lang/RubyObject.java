@@ -16,7 +16,7 @@ import com.xruby.runtime.builtin.ObjectFactory;
 
 //@RubyLevelClass(name="Object", superclass="", modules="Kernel")
 public class RubyObject extends RubyBasic {
-	private Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
+	protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
 	
 	public RubyObject(RubyClass c) {
 		super(c);
