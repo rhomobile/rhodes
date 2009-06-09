@@ -7,12 +7,13 @@ namespace "config" do
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $dx = "dx.bat"
-      $aapt = "aapt.exe"
-      $apkbuilder = "apkbuilder.bat"
+      $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
+      $aapt = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "aapt.exe" )
+      $apkbuilder = File.join( $config["env"]["paths"]["android"], "tools", "apkbuilder.bat" )
       $rhoruby = "RhoRuby.exe"
-      $emulator = "cmd /c emulator.exe"
-      $adb = "adb.exe"
+      $emulator = "cmd /c " + File.join( $config["env"]["paths"]["android"], "tools", "emulator.exe" )
+      $adb = File.join( $config["env"]["paths"]["android"], "tools", "adb.exe" )
+
     else
       $dx = "dx"
       $aapt = "aapt"

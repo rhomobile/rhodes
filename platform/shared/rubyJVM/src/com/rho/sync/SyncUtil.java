@@ -18,8 +18,12 @@
  */
 package com.rho.sync;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+
+import net.rim.device.api.system.DeviceInfo;
+
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
 import j2me.util.ArrayList;
@@ -714,15 +718,27 @@ public class SyncUtil {
 		return results == null ? 0 : results.toInt();*/
 	}
 
+	private final static boolean USE_GET_TO_CREATE_CLIENT_ID = true;
+	
 	public static String get_client_id(SyncSource source) {
 		String client_id = get_db_client_id();
 		if (client_id.length() == 0) {
 			String data = null;
 			try {
-				data = SyncManager.fetchRemoteData(source.get_sourceUrl()
+				if (USE_GET_TO_CREATE_CLIENT_ID) {
+					data = SyncManager.fetchRemoteData(source.get_sourceUrl()
 						+ "/clientcreate" + SyncConstants.SYNC_FORMAT, "",
 						false);
-
+				} else {
+					String body = "device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
+					ByteArrayOutputStream reply = new ByteArrayOutputStream(); 
+					SyncManager.makePostRequest(source.get_sourceUrl()
+							+ "/clientcreate" + SyncConstants.SYNC_FORMAT, 
+							new ByteArrayInputStream(body.getBytes()), reply, "",
+							"application/x-www-form-urlencoded");
+					data = reply.toString();
+				}
+				
 				if (data != null)
 					client_id = SyncJSONParser.parseClientID(data);
 
@@ -934,10 +950,11 @@ public class SyncUtil {
 				if (strSession.length() == 0) {
 					ByteArrayInputStream dataStream = null;
 					try {
-						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1";
+						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1"+
+							"&device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
 						dataStream = new ByteArrayInputStream(body.getBytes()); 
 						
-						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, "",
+						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, null, "",
 								"application/x-www-form-urlencoded");
 	
 						connection = SyncManager.getConnection();

@@ -24,10 +24,10 @@ require 'rhom/rhom_object'
 require 'rhom/rhom_db_adapter'
 
 module Rhom
-  TABLE_NAME = 'object_values'
+  #UPDATE_TYPES = ["'create'","'update'","'query'","'ask'"]
+  UPDATE_TYPES = ["'create'","'query'","'ask'"]
   
   class Rhom
-    include RhomObject
     attr_accessor :factory
   
     def initialize
@@ -36,18 +36,18 @@ module Rhom
     
     class << Rhom
       def client_id
-        c_id = ::Rhom::RhomDbAdapter::select_from_table('client_info','client_id')[0]
+        c_id = ::Rhom::RhomDbAdapter.select_from_table('client_info','client_id')[0]
         c_id.nil? ? nil : c_id['client_id']
       end
       
       def database_full_reset
-        ::Rhom::RhomDbAdapter::delete_all_from_table(TABLE_NAME)
-        ::Rhom::RhomDbAdapter::delete_all_from_table('client_info')
+        ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+        ::Rhom::RhomDbAdapter.delete_all_from_table('client_info')
       end
       
       def database_full_reset_and_logout
         database_full_reset
-        SyncEngine::logout
+        SyncEngine.logout
       end
     end #class methods
   end # Rhom

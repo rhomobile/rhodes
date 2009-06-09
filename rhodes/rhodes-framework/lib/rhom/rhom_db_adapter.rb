@@ -17,8 +17,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#$:.unshift(File.join(File.dirname(__FILE__), '../../'))
-# require 'sqlite3/database'
 require 'rhodes'
 
 module Rhom
@@ -30,7 +28,6 @@ module Rhom
       
       # maintains a single database connection
       def open(dbfile=nil)
-        #puts "DB name = " + dbfile.inspect
         unless @@database or dbfile.nil?
           @@database = SQLite3::Database.new(dbfile)
         end
@@ -38,7 +35,7 @@ module Rhom
     
       # closes the database if and only if it is open
       def close
-        if @@database #and not @@database.closed?
+        if @@database
           @@database.close
           @@database = nil
         else
@@ -77,26 +74,21 @@ module Rhom
       def execute_sql(sql=nil)
         result = []
         if sql
-          #puts 'query is ' + sql
+          #puts "RhomDbAdapter: Executing query - #{sql}"
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
           begin
-            SyncEngine::lock_sync_mutex
-            # execute sql statement inside of transaction
-            # result is returned as an array of hashes
-            # @@database.transaction unless @@database.transaction_active?
-            # @@database.results_as_hash = true
+            SyncEngine.lock_sync_mutex
             result = @@database.execute sql
-            # @@database.commit
-            SyncEngine::unlock_sync_mutex
+            SyncEngine.unlock_sync_mutex
           rescue Exception => e
-            puts "exception when running query: #{e}"
+            #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
-            SyncEngine::unlock_sync_mutex
+            SyncEngine.unlock_sync_mutex
           end
         end
-        #puts "returned #{result.length.to_s} records..."
+        #puts "result is: #{result.inspect}"
         result
       end
     
@@ -111,7 +103,6 @@ module Rhom
         if select_arr and select_arr.length > 0
           where_str += " and attrib in (#{select_str(select_arr)})"
         end
-        #puts "where_str: #{where_str}" if where_str
         where_str
       end
       
@@ -236,5 +227,5 @@ module Rhom
 end # Rhom
 
 at_exit do
-	Rhom::RhomDbAdapter::close
+	::Rhom::RhomDbAdapter.close
 end
