@@ -8,6 +8,8 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 
+import net.rim.device.api.system.DeviceInfo;
+
 public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public void initRubyExtensions(){
@@ -27,4 +29,8 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	public void loadBackTrace(RubyArray backtrace) {
 		//TODO:
 	}
+
+	public String getDeviceId(){
+		return DeviceInfo.getDeviceId();
+      }
 }
