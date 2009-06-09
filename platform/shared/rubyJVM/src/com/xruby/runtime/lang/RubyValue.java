@@ -198,7 +198,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     }
 
     public RubyArray toAry() {
-        return this.contertToArray().toAry();
+        return this.convertToArray().toAry();
     }
 
     public double toFloat() {
@@ -230,11 +230,15 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         return this.convertToString().toRubyString();
     }
 
+    public RubyArray toRubyArray() {
+        return toAry();
+    }
+    
     private RubyValue convertToInteger() {
         return convertToType(RubyRuntime.IntegerClass, RubyID.toIntID);
     }
 
-    private RubyValue contertToArray() {
+    private RubyValue convertToArray() {
         return convertToType(RubyRuntime.ArrayClass, RubyID.toAryID);
     }
 
