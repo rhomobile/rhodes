@@ -10,17 +10,17 @@ namespace "config" do
       $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
       $aapt = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "aapt.exe" )
       $apkbuilder = File.join( $config["env"]["paths"]["android"], "tools", "apkbuilder.bat" )
-      $rhoruby = "RhoRuby.exe"
       $emulator = "cmd /c " + File.join( $config["env"]["paths"]["android"], "tools", "emulator.exe" )
       $adb = File.join( $config["env"]["paths"]["android"], "tools", "adb.exe" )
+      $all_files_mask = "*.*"
 
     else
       $dx = "dx"
       $aapt = "aapt"
       $apkbuilder = "apkbuilder"
-      $rhoruby = "RubyMac"
       $emulator = "emulator"
       $adb = "adb"
+      $all_files_mask = "*"
     end
 
   end
@@ -40,7 +40,6 @@ namespace "bundle" do
     mkdir_p File.join($srcdir,'apps')
 
     compileERB = File.join($compileERBbase,'bb.rb')
-    #rubypath =  File.join($res,$rhoruby)
     xruby =  File.join($res,'xruby-0.3.3.jar')
 
     dest = $srcdir 
@@ -74,7 +73,7 @@ namespace "bundle" do
     chdir $srcdir
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
-    puts `jar uf ../RhoBundle.jar apps/*.*`
+    puts `jar uf ../RhoBundle.jar apps/#{all_files_mask}`
     mkdir_p "../assets"
     cp_r "apps","../assets"
     cp File.join($prebuilt,"android","loading.html"), "../assets/apps"
@@ -96,7 +95,7 @@ namespace "bundle" do
     manifest = File.join($prebuilt,"android","AndroidManifest.xml")
     resource = File.join($prebuilt,"android","res")
     assets = File.join($bindir,"assets")
-    androidjar = File.join(android,"android.jar")
+    androidjar = File.join(android,"platforms","android-1.1","android.jar")
     resourcepkg = File.join($bindir,"rhodes.ap_")
 
     puts "Packaging Assets and Jars"
