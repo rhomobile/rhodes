@@ -8,7 +8,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
-
+# if 0
 #include "config.h"
 
 #include <stdio.h>
@@ -96,3 +96,4 @@ void mc_info(const char *msg, ...)
 		vfprintf(stderr, msg, ap);
   va_end(ap);
 }
+#endif //0

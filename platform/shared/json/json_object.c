@@ -171,7 +171,7 @@ static struct json_object* json_object_new(enum json_type o_type)
   this->o_type = o_type;
   this->_ref_count = 1;
   this->_delete = &json_object_generic_delete;
-#ifdef REFCOUNT_DEBUG
+#ifdef REFCOUNT_DEBUG                +
   lh_table_insert(json_object_table, this, this);
   MC_DEBUG2("json_object_new_%s: %p\n", json_type_name[this->o_type], this);
 #endif /* REFCOUNT_DEBUG */

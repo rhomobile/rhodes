@@ -240,7 +240,9 @@ public class RubyAPI {
 
     //TODO should pass owner to work with protected method
     public static RubyValue callPublicMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid) {
-    	AssertMe.rho_assert(null == args || args.size() > 1);//use callPublicOneArgMethod if has only one arg
+    	//RHO
+   		//AssertMe.rho_assert(null == args || args.size() > 1);//use callPublicOneArgMethod if has only one arg
+    	//RHO
         RubyMethod m = receiver.findPublicMethod(mid);
         if (null != m && !UndefMethod.isUndef(m)) {
             return m.invoke(receiver, args, block);

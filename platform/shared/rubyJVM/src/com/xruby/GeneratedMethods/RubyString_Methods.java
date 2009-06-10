@@ -243,6 +243,14 @@ klass.defineMethod( "force_encoding", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).force_encoding(arg);}
 });
+klass.defineMethod( "end_with?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).opEndWith(arg);}
+});
+klass.defineMethod( "end_with?", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray arg, RubyBlock block ){
+		return ((RubyString)receiver).opEndWith(arg);}
+});
 
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{

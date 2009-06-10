@@ -261,7 +261,8 @@ task :prebuild_win do
 
   config = Jake.config(File.open('build.yml'))
 
-  android_sdk = config["env"]["paths"]["android_sdk"]
+  android_sdk = File.join( config["env"]["paths"]["android_sdk"], "platforms", "android-1.1")
+
   eclipse_home = config["env"]["paths"]["eclipse_home"]
   javac_home = config["env"]["paths"]["javac_home"]
 
