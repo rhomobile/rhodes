@@ -1,3 +1,8 @@
+== 1.2.0
+* Improved Rhom performance by using horizontal resultset to rhom object conversion
+* Support android 1.5
+* 
+
 == 1.1.1
 * #630 - handle rhoconfig.txt without newline at EOF
 * #721 - RIM save changes to DB on interrupted shutdown
