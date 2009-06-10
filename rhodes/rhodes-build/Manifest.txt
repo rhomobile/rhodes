@@ -56,6 +56,9 @@ res/prebuilt/android/classes/com/rho/db/DBAdapter$1.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$2.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$3.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$4.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$5.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$6.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$7.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter.class
 res/prebuilt/android/classes/com/rho/db/DBException.class
 res/prebuilt/android/classes/com/rho/db/IDBCallback.class
@@ -104,7 +107,6 @@ res/prebuilt/android/classes/com/rho/sync/SyncUtil.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/AndroidFile.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/AndroidHttpConnection.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/HttpLog.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/NetworkAccessImpl$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/NetworkAccessImpl.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/NetworkConnectivityListener$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/NetworkConnectivityListener$ConnectivityBroadcastReceiver.class
@@ -501,7 +503,9 @@ res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$55.cl
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$56.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$57.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$58.class
+res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$59.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$6.class
+res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$60.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$7.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$8.class
 res/prebuilt/android/classes/com/xruby/GeneratedMethods/RubyString_Methods$9.class
@@ -721,6 +725,8 @@ res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$50.
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$51.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$52.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$53.class
+res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$54.class
+res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$55.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$6.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$7.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyKernelModule_Methods$8.class
