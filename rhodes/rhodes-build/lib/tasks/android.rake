@@ -4,7 +4,7 @@ namespace "config" do
   task :android => :common do
 
     $deploydir = File.join($basedir,'deploy','android')
-    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
@@ -73,7 +73,7 @@ namespace "bundle" do
     chdir $srcdir
     Dir.glob("**/*.rb") { |f| rm f }
     Dir.glob("**/*.erb") { |f| rm f }
-    puts `jar uf ../RhoBundle.jar apps/#{all_files_mask}`
+    puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
     mkdir_p "../assets"
     cp_r "apps","../assets"
     cp File.join($prebuilt,"android","loading.html"), "../assets/apps"
