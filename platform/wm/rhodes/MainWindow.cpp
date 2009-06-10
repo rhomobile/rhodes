@@ -30,6 +30,16 @@ extern "C" char* wce_wctomb(const wchar_t* w);
 
 extern "C" void pause_sync( int nPause );
 
+#if defined(_WIN32_WCE)
+#include <regext.h>
+
+// Global Notification Handle
+extern HREGNOTIFY g_hNotify;
+
+#endif
+
+extern "C" int g_rho_net_has_network;
+
 CMainWindow::CMainWindow()
 {
 	m_bLoading = true;
@@ -243,6 +253,11 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
+	if ( g_hNotify )
+		RegistryCloseNotification(g_hNotify);
+#endif
+
     SendMessage(WM_CLOSE);
     return 0;
 }
@@ -450,6 +465,15 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	TCHAR image_uri[MAX_PATH];
 	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
 	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+#endif
+	return 0;
+}
+
+LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+#if defined (_WIN32_WCE)
+
+	g_rho_net_has_network = (int)wParam;
+
 #endif
 	return 0;
 }
