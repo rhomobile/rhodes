@@ -27,6 +27,8 @@ import net.rim.device.api.system.DeviceInfo;
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
 import j2me.util.ArrayList;
+
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.Tokenizer;
@@ -730,7 +732,9 @@ public class SyncUtil {
 						+ "/clientcreate" + SyncConstants.SYNC_FORMAT, "",
 						false);
 				} else {
-					String body = "device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
+                	int port = RhoConf.getInstance().getInt("push_port");
+                	if (port == 0) port = 100;					
+					String body = "device_pin=" + DeviceInfo.getDeviceId()+"&device_port="+port+"&device_type=Blackberry";
 					ByteArrayOutputStream reply = new ByteArrayOutputStream(); 
 					SyncManager.makePostRequest(source.get_sourceUrl()
 							+ "/clientcreate" + SyncConstants.SYNC_FORMAT, 
@@ -950,8 +954,10 @@ public class SyncUtil {
 				if (strSession.length() == 0) {
 					ByteArrayInputStream dataStream = null;
 					try {
+	                	int port = RhoConf.getInstance().getInt("push_port");
+	                	if (port == 0) port = 100;						
 						String body = "login=" + strUser + "&password=" + strPwd+ "&remember_me=1"+
-							"&device_pin=" + DeviceInfo.getDeviceId()+"&device_type=Blackberry";
+							"&device_pin=" + DeviceInfo.getDeviceId()+"&k="+port+"&device_type=Blackberry";
 						dataStream = new ByteArrayInputStream(body.getBytes()); 
 						
 						SyncManager.makePostRequest(sourceUrl + "/client_login", dataStream, null, "",
