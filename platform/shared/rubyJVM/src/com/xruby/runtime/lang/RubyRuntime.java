@@ -59,6 +59,7 @@ public class RubyRuntime {
 
     public static RubyClass ExceptionClass;
     public static RubyClass StandardErrorClass;
+    public static RubyClass SystemExitClass;
     public static RubyClass TypeErrorClass;
     public static RubyClass ArgumentErrorClass;
     public static RubyClass IndexErrorClass;
@@ -283,6 +284,7 @@ public class RubyRuntime {
         ThreadClass = RubyTypeFactory.getClass(RubyThread.class);*/
         UnboundMethodClass = RubyAPI.defineClass("UnboundMethod", MethodClass);
 //        ExceptionClass = RubyTypeFactory.getClass(RubyExceptionValue.class);
+        SystemExitClass = RubyAPI.defineClass("SystemExit", ExceptionClass);
         StandardErrorClass = RubyAPI.defineClass("StandardError", ExceptionClass);
         TypeErrorClass = RubyAPI.defineClass("TypeError", StandardErrorClass);
         ArgumentErrorClass = RubyAPI.defineClass("ArgumentError", StandardErrorClass);
@@ -371,6 +373,15 @@ public class RubyRuntime {
 
         //RHO_ADED
         RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_ME");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("1.9.1"), "RUBY_VERSION");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("2009-05-12"), "RUBY_RELEASE_DATE");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("java"), "RUBY_PLATFORM");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createInteger(129), "RUBY_PATCHLEVEL");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createInteger(23412), "RUBY_REVISION");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("xruby"), "RUBY_DESCRIPTION");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby - Copyright (C)"), "RUBY_COPYRIGHT");
+        RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby"), "RUBY_ENGINE");
+        
         //
         
         updateStdout();

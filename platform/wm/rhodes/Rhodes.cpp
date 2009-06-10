@@ -18,6 +18,21 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
 extern char* canonicalizeURL(const char* path);
 
+
+#if defined(_WIN32_WCE)
+#include <regext.h>
+
+// Global Notification Handle
+HREGNOTIFY g_hNotify = NULL;
+
+// ConnectionsNetworkCount
+// Gets a value indicating the number of network connections that are currently connected.
+#define SN_CONNECTIONSNETWORKCOUNT_ROOT HKEY_LOCAL_MACHINE
+#define SN_CONNECTIONSNETWORKCOUNT_PATH TEXT("System\\State\\Connections\\Network")
+#define SN_CONNECTIONSNETWORKCOUNT_VALUE TEXT("Count")
+
+#endif
+
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
@@ -108,6 +123,18 @@ public :
 		m_appWindow.Navigate2(_T("about:blank"));
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);
+
+#if defined(_WIN32_WCE)
+		// Register for changes in the number of network connections
+		hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+			SN_CONNECTIONSNETWORKCOUNT_PATH, 
+			SN_CONNECTIONSNETWORKCOUNT_VALUE, 
+			m_appWindow.m_hWnd, 
+			WM_CONNECTIONSNETWORKCOUNT, 
+			0, 
+			NULL, 
+			&g_hNotify);
+#endif
         return S_OK;
     }
 

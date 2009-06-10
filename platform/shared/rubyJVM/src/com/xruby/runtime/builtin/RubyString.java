@@ -361,6 +361,35 @@ public class RubyString extends RubyBasic {
         return RubyConstant.QFALSE;
     }
 
+    //@RubyLevelMethod(name="end_with?")
+    public RubyValue opEndWith(RubyValue v) {
+        if (this == v) {
+            return RubyConstant.QTRUE;
+        }
+
+        if (v instanceof RubyString) {
+            RubyString str = ((RubyString)v);
+            
+            return this.sb_.toString().endsWith(str.toStr()) ? RubyConstant.QTRUE :
+            	RubyConstant.QFALSE; 
+        }
+
+        return RubyConstant.QFALSE;
+    }
+
+    //@RubyLevelMethod(name="end_with?")
+    public RubyValue opEndWith(RubyArray v) 
+    {
+    	
+    	for( int i = 0; i < v.size(); i++ )
+    	{
+    		RubyValue res = opEndWith(v.get(i));
+    		if ( res == RubyConstant.QTRUE )
+    			return RubyConstant.QTRUE;
+    	}
+        return RubyConstant.QFALSE;
+    }
+    
     //@RubyLevelMethod(name="strip")
     public RubyString strip() {
         return ObjectFactory.createString(sb_.toString().trim());
@@ -527,11 +556,18 @@ public class RubyString extends RubyBasic {
     }
 
     private boolean chomp(String seperator) {
-        if (!sb_.toString().endsWith(seperator)) {
+    	int nSepLen = 0;
+    	
+        if ( seperator.equals("\n") && sb_.toString().endsWith("\r\n") )
+        	nSepLen = 2;
+        else if (sb_.toString().endsWith(seperator) )
+        	nSepLen = seperator.length();
+        else if ( sb_.toString().endsWith("\r") )
+        	nSepLen = 1;
+        else
             return false;
-        }
 
-        int start = sb_.length() - seperator.length();
+        int start = sb_.length() - nSepLen;
         int end = sb_.length();
         sb_.delete(start, end);
         return true;

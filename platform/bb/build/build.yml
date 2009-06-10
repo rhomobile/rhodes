@@ -1,5 +1,5 @@
 env:
-  version: 1.1.1
+  version: 1.2.0
   vendor: rhomobile
   bbver: 4.6
   applog: rholog.txt
@@ -20,7 +20,6 @@ build:
   rhobundledir: ../RhoBundle
   srcdir: %bindir%/RhoBundle
   preverified: ../preverified
-  rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
   shareddir: ../../shared/build
   targetdir: ../target/%bbver%
   rubyVMdir: ../RubyVM

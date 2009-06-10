@@ -96,8 +96,13 @@ INetData* CNetRequest::doRequest( const char* method, const String& strUrl, cons
 }
 }
 
-extern "C" int rho_net_has_network()
+extern "C" {
+
+int g_rho_net_has_network = 1;
+
+int rho_net_has_network()
 {
-    //TODO: rho_net_has_network
-    return 1;
+	return g_rho_net_has_network > 0 ? 1 : 0;
+}
+
 }
