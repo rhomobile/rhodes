@@ -5,7 +5,7 @@ start_path = '/app'
 options_path = '/app/Settings'
 
 # Location of bundle url (i.e. from rhohub.com)
-rhobundle_zip_url = <%=zip_url%>
+rhobundle_zip_url = '<%=zip_url%>'
 
 # Optional password to access bundle (usually not required)
 rhobundle_zip_pwd = nil
