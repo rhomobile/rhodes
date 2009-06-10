@@ -8,7 +8,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
-
+/*
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
@@ -73,3 +73,4 @@ extern void mc_info(const char *msg, ...);
 #endif
 
 #endif
+*/
