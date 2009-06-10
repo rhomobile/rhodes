@@ -236,6 +236,22 @@ TEST(SyncSource, processServerData)
     EXPECT_EQ(6869672616465ll,oSrc.getToken());
 }
 
+TEST(SyncSource, processServerDataError)
+{
+    MockRepository mocks;
+
+    CDBAdapter db;
+    CSyncEngine oSyncEngine(db);
+    CSyncSource oSrc(oSyncEngine);
+    const char* data = "[{\"count\": 200},{\"token\": \"6869672616465\"},\
+    {\"object_value\": {\"attrib\": \"shipping_address_state\", \"update_type\": \"query\", \"id\": -1032404474, \"value\": \"Model Trimmer Abrasive Wheel 10\\\\\",A\\\\\"\", \"source_id\": 1, \"object\": \"1460099a-be9d-59f1-16c9-4544f051792a\", \"db_operation\": \"insert\"}}]";
+    oSrc.processServerData(data);
+
+    EXPECT_EQ(0,oSrc.getInsertedCount());
+    EXPECT_EQ(0,oSrc.getCurPageCount());
+    EXPECT_EQ(0,oSrc.getToken());
+}
+
 TEST(SyncSource, processServerEmptyData)
 {
     MockRepository mocks;
@@ -243,7 +259,7 @@ TEST(SyncSource, processServerEmptyData)
     CDBAdapter db;
     CSyncEngine oSyncEngine(db);
     CSyncSource oSrc(oSyncEngine);
-    oSrc.processServerData("");
+    oSrc.processServerData("[{\"count\": 0}]");
 
     EXPECT_EQ(0,oSrc.getInsertedCount());
     EXPECT_EQ(0,oSrc.getDeletedCount());
