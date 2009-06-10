@@ -11,6 +11,9 @@
 #endif
 
 #include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoRuby"
+
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();
@@ -251,7 +254,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 //    FilePathValue(fname);
 
 	szName = RSTRING_PTR(fname);
-	//printf("require_compiled: %s\n", szName);
+    RAWTRACE1("require_compiled: %s", szName);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
