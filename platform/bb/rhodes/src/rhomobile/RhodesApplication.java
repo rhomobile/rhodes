@@ -31,6 +31,7 @@ import com.rho.sync.SyncEngine;
 import com.rho.sync.SyncUtil;
 import com.rho.sync.SyncNotifications;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 
@@ -114,6 +115,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), null, null, null, this);
         thread.start();                       
+    }
+    
+    void addMenuItem(String title, String url){
+		url = _httpRoot + url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
+    	_mainScreen.addCustomMenuItem(title, url);
     }
 
     public void postUrl(String url, String body, HttpHeaders headers){
@@ -207,7 +213,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
-    private MainScreen _mainScreen = null;
+    private CMainScreen _mainScreen = null;
 
     private HttpConnection  _currentConnection;
 
@@ -278,6 +284,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 
     class CMainScreen extends MainScreen{
+    	
+    	private Vector customItems = new Vector();
 
 		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
 			public void run() {
@@ -334,7 +342,33 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			menu.add(optionsItem);
 			menu.add(logItem);
 			
+
+			Enumeration elements = customItems.elements();
+			while (elements.hasMoreElements()) {
+				MenuItem item = (MenuItem)elements.nextElement();
+				// Don't redraw the same item!
+				for(int i=0; i < menu.getSize(); i++)
+		    	{
+		    	    MenuItem itm = menu.getItem(i);
+		    	    String label = itm.toString();
+		    	    if(label.equalsIgnoreCase(item.toString())) {
+		    	    	menu.deleteItem(i);
+		    	    }
+		    	}
+				menu.add(item);
+			}
+			
 			super.makeMenu(menu, instance);
+		}
+		
+		public void addCustomMenuItem(String title, final String url) {
+			MenuItem itemToAdd = new MenuItem(title, 200000, 10) {
+				public void run() {
+					addToHistory(url, null );
+					navigateUrl(url);
+				}
+			};
+			customItems.addElement(itemToAdd);
 		}
 
 		public void close() {
