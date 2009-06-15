@@ -2,6 +2,7 @@ package rhomobile.datetime;
 
 import rhomobile.RhodesApplication;
 import net.rim.device.api.i18n.DateFormat;
+import net.rim.device.api.i18n.SimpleDateFormat;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.UiApplication;
@@ -33,7 +34,9 @@ public class DateTimeScreen extends MainScreen {
 		//LabelField title = new LabelField( "Choose date/time", LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH );
 		//add(title);
 		
-		_dateTime = new DateField("", init, DateFormat.DATE_DEFAULT);
+		_dateTime = new DateField("", init,
+				new SimpleDateFormat(DateFormat.DATE_FULL | DateFormat.TIME_FULL),
+				DateField.DATE_TIME);
 		
 		ButtonField okButton = new ButtonField("OK");
 		okButton.setChangeListener(new OkListener());
