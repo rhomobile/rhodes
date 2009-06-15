@@ -2,7 +2,6 @@ package rhomobile.datetime;
 
 import rhomobile.RhodesApplication;
 import net.rim.device.api.i18n.DateFormat;
-import net.rim.device.api.i18n.SimpleDateFormat;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.UiApplication;
@@ -23,7 +22,7 @@ public class DateTimeScreen extends MainScreen {
 	
 	public Long retvalue;
 	
-	public DateTimeScreen(String title, long init)
+	public DateTimeScreen(String title, long init, DateFormat fmt)
 	{
 		//A reference to this object, to be used in listeners.
 		_dateTimeScreen = this;
@@ -31,12 +30,8 @@ public class DateTimeScreen extends MainScreen {
 		retvalue = null;
 
 		setTitle( new LabelField( title, LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
-		//LabelField title = new LabelField( "Choose date/time", LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH );
-		//add(title);
 		
-		_dateTime = new DateField("", init,
-				new SimpleDateFormat(DateFormat.DATE_FULL | DateFormat.TIME_FULL),
-				DateField.DATE_TIME);
+		_dateTime = new DateField("", init, fmt);
 		
 		ButtonField okButton = new ButtonField("OK");
 		okButton.setChangeListener(new OkListener());
