@@ -1,4 +1,4 @@
-package rhomobile.location;
+package com.rho.location;
 
 import javax.microedition.location.*;
 
