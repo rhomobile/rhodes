@@ -44,7 +44,7 @@ public class DateTimeScreen extends MainScreen {
 		cancelButton.setChangeListener(new CancelListener());
 		
 		HorizontalFieldManager hfm = new HorizontalFieldManager(Field.FIELD_HCENTER);
-        hfm.add(okButton);
+		hfm.add(okButton);
 		hfm.add(cancelButton);
 		
 		VerticalFieldManager vfm = new VerticalFieldManager(Field.FIELD_VCENTER);
@@ -80,9 +80,9 @@ public class DateTimeScreen extends MainScreen {
 	{
 		public void fieldChanged(Field field, int context)
 		{
-        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-        	retvalue = new Long(_dateTime.getDate());
-        	app.popScreen( _dateTimeScreen );
+			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+			retvalue = new Long(_dateTime.getDate());
+			app.popScreen( _dateTimeScreen );
 		}
 	}
 	
@@ -90,9 +90,9 @@ public class DateTimeScreen extends MainScreen {
 	{
 		public void fieldChanged(Field field, int context)
 		{
-        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
         	retvalue = null;
-			app.popScreen( _dateTimeScreen );
+        	app.popScreen( _dateTimeScreen );
 		}
 	}
 }
