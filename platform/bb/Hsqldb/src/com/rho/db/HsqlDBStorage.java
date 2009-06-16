@@ -135,7 +135,8 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	
 	public void commit()throws DBException
 	{
-		m_dbSess.setAutoCommit(true);
+		if ( m_dbSess!= null )
+			m_dbSess.setAutoCommit(true);
 	}
 	
 }

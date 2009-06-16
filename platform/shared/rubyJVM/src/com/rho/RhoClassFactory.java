@@ -150,4 +150,8 @@ public class RhoClassFactory
 	    return m_NAInstance;
     }
     
+    public NetRequest createNetRequest()
+    {
+    	return new NetRequest();
+    }
 }

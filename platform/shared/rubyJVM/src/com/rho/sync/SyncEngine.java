@@ -18,285 +18,375 @@
  */
 package com.rho.sync;
 
-import com.xruby.runtime.lang.RubyBasic;
-import com.xruby.runtime.lang.RubyBlock;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyTwoArgMethod;
-import com.xruby.runtime.lang.RubyVarArgMethod;
-import com.xruby.runtime.lang.RubyRuntime;
-import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.builtin.RubyInteger;
-import com.xruby.runtime.builtin.ObjectFactory;
+import com.rho.IRhoRubyHelper;
+import com.rho.RhoClassFactory;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+import com.rho.db.*;
+import com.rho.net.*;
+import com.rho.*;
 
-/**
- * The Class SyncEngine.
- */
-public class SyncEngine extends RubyBasic {
+import java.util.Vector;
+import java.util.Hashtable;
 
-	/** The s thread. */
-	private static SyncThread sThread = null;
-	private static SyncNotifications sNotifications;
-	
-	
-	// @RubyAllocMethod
-	/**
-	 * Alloc.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the sync engine
-	 */
-	public static SyncEngine alloc(RubyValue receiver) {
-		return new SyncEngine(RubyRuntime.SyncEngineClass);
-	}
+import org.json.me.JSONException;
 
-	public static void setNotificationImpl(SyncNotifications pNotify ){
-		sNotifications = pNotify;
-	}
-	public static SyncNotifications getNotificationImpl(){
-		return sNotifications;
-	}
-	
-	//public static RubyArray createArray() {
-	//	return new RubyArray();
-	//}
-	//public static RubyHash createHash() {
-	//	return ObjectFactory.createHash();
-	//}
-	public static RubyInteger createInteger(long val) {
-		return ObjectFactory.createInteger(val);
-	}
-	//public static RubyString createString(String val) {
-	//	return ObjectFactory.createString(val);
-	//}
-	
-	// @RubyLevelMethod(name="dosync")
-	/**
-	 * Dosync.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the ruby value
-	 */
-	public static RubyValue dosync(RubyValue receiver) {
-		wakeUp();
-		return RubyConstant.QTRUE;
-	}
+class SyncEngine implements NetRequest.IRhoSession
+{
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("Sync");
 
-	public static RubyValue login(RubyValue arg1, RubyValue arg2) {
-		boolean bRes = SyncUtil.fetch_client_login(arg1.toString(), arg2.toString());
-		return bRes ? createInteger(1L) : createInteger(0L); 
-	}
-	
-	public static RubyValue logged_in() {
-		boolean bRes = SyncUtil.logged_in();
-		return bRes ? createInteger(1L) : createInteger(0L); 
-	}
-	
-	public static RubyValue logout() {
-		SyncUtil.logout();
-		return RubyConstant.QNIL; 
-	}
-	
-	public static RubyValue reset_sync_db() {
-		SyncThread.setDbResetDelay(true);
-		wakeUp();
-		return RubyConstant.QNIL; 
-	}
+    class SyncNotification
+    {
+        String m_strUrl, m_strParams;
+        SyncNotification(String strUrl, String strParams){ m_strUrl = strUrl; m_strParams = strParams; }
+    };
 
-	public static RubyValue set_notification(RubyArray args) {
+    public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esStop = 3, esExit = 4;
+
+    public static final int DEFAULT_SYNC_PORT = 100;
+    static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
+    static String SYNC_ASK_ACTION() { return "/ask"; }
+    static String SYNC_PAGE_SIZE() { return "200"; }
+	
+    Vector/*<SyncSource*>*/ m_sources = new Vector();
+    DBAdapter   m_dbAdapter;
+    NetRequest m_NetRequest;
+    int         m_syncState;
+    String     m_clientID = "";
+    Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
+    Mutex m_mxNotifications = new Mutex();
+    String m_strSession = "";
+    
+    void setState(int eState){ m_syncState = eState; }
+    int getState(){ return m_syncState; }
+    boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
+    void stopSync(){ if (isContinueSync()) setState(esStop); }
+    void exitSync(){ setState(esExit); getNet().cancelAll(); }
+    String getClientID(){ return m_clientID; }
+    void setSession(String strSession){m_strSession=strSession;}
+    public String getSession(){ return m_strSession; }
+    boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
+    DBAdapter getDB(){ return m_dbAdapter; }
+    NetRequest getNet(){ return m_NetRequest;}
+    
+    SyncEngine(DBAdapter db){
+    	m_dbAdapter = db;
+		m_dbAdapter.setDbCallback(new DBCallback());
+
+    	m_NetRequest = null; 
+    	m_syncState = esNone; 
+    }
+
+    void setFactory(RhoClassFactory factory){ 
+        m_NetRequest = factory.createNetRequest();
+    }
+    
+	void doSyncAllSources()throws Exception
+	{
+		LOG.INFO( "Start syncing all sources" );
 		
-		if ( args.size() != 3 )
-			throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'SyncEngine': wrong number of arguments (" + 
-					args.length() + " for 3)");
-        
-		int nSourceID = args.get(0).toInt();
-		String url = args.get(1).toStr();
-		String params = "";
-		if ( args.get(2) != RubyConstant.QNIL )
-			params = args.get(2).toStr();
-		
-		sNotifications.setNotification(nSourceID, url, params);
-		return RubyConstant.QNIL;
-	}
-
-	public static RubyValue clear_notification(RubyValue arg1) {
-		int nSourceID = arg1.toInt();
-		
-		sNotifications.clearNotification(nSourceID);
-		return RubyConstant.QNIL;
-	}
+	    setState(esSyncAllSources);
 	
-	/**
-	 * Inits the methods.
-	 * 
-	 * @param klass the klass
-	 */
-	public static void initMethods(RubyClass klass) {
-		klass.defineMethod("initialize", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return ((SyncEngine) receiver).initialize();
-			}
-		});
-		klass.defineAllocMethod(new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return SyncEngine.alloc(receiver);
-			}
-		});
-		klass.getSingletonClass().defineMethod("start", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return SyncEngine.start(receiver);
-			}
-		});
-		klass.getSingletonClass().defineMethod("stop", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return SyncEngine.stop(receiver);
-			}
-		});
-		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return SyncEngine.dosync(receiver);
-			}
-		});
-		klass.getSingletonClass().defineMethod("lock_sync_mutex",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						return SyncEngine.lock_sync_mutex(receiver);
-					}
-				});
-		klass.getSingletonClass().defineMethod("unlock_sync_mutex",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						return SyncEngine.unlock_sync_mutex(receiver);
-					}
-				});
-		klass.getSingletonClass().defineMethod("login",
-				new RubyTwoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-						return SyncEngine.login(arg1,arg2);
-					}
-				});
+	    loadAllSources();
+	
+	    m_strSession = loadSession();
+	    if ( m_strSession != null && m_strSession.length() > 0  )
+	        loadClientID();
+	    else
+	    	LOG.INFO("Client is not logged in. No sync will be performed.");
+	    
+	    syncAllSources();
+	
+	    setState(esNone);
 		
-		klass.getSingletonClass().defineMethod("logged_in",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						return SyncEngine.logged_in();
-					}
-				});
-		
-		klass.getSingletonClass().defineMethod("logout",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						return SyncEngine.logout();
-					}
-				});
-		
-		klass.getSingletonClass().defineMethod("trigger_sync_db_reset",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						return SyncEngine.reset_sync_db();
-					}
-				});
-
-		klass.getSingletonClass().defineMethod("set_notification",
-				new RubyVarArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-						return SyncEngine.set_notification(args);
-					}
-				});
-		klass.getSingletonClass().defineMethod("clear_notification",
-				new RubyTwoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-						return SyncEngine.clear_notification(arg1);
-					}
-				});
-		
+		LOG.INFO( "End syncing all sources" );
 	}
 
-	// @RubyLevelMethod(name="lock_sync_mutex")
-	/**
-	 * Lock_sync_mutex.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the ruby value
-	 */
-	public static RubyValue lock_sync_mutex(RubyValue receiver) {
-		return RubyConstant.QFALSE;
+	void doSyncSource()
+	{
+	    //TODO:doSyncSource
 	}
 
-	// @RubyLevelMethod(name="start")
-	/**
-	 * Start.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the ruby value
-	 */
-	public static RubyValue start(RubyValue receiver) {
-		// Initialize only one thread
-		if (sThread == null) {
-			sThread = new SyncThread();
+	void loadAllSources()throws DBException
+	{
+	    m_sources.removeAllElements();
+	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token from sources order by source_id");
+	
+	    for ( ; !res.isEnd(); res.next() )
+	    { 
+	        String strUrl = res.getStringByIdx(1);
+	        if ( strUrl.length() > 0 )
+	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
+	    }
+	}
+
+	void loadClientID()throws Exception
+	{
+	    if ( m_clientID.length() > 0 )
+	        return;
+	    {
+	        IDBResult res = getDB().executeSQL("SELECT client_id from client_info");
+	        if ( !res.isEnd() )
+	            m_clientID = res.getStringByIdx(0);
+	    }
+	
+	    if ( m_clientID.length() == 0 )
+	    {
+	        m_clientID = requestClientIDByNet();
+	
+	        getDB().executeSQL("DELETE FROM client_info");
+	        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", m_clientID);
+	    }
+	}
+
+	String requestClientIDByNet()throws Exception
+	{
+	    if ( m_sources.size() == 0 )
+	        return "";
+	
+	    SyncSource src = (SyncSource)m_sources.elementAt(0);
+	    String strUrl = src.getUrl() + "/clientcreate";
+	    String strQuery = SYNC_SOURCE_FORMAT();
+	    String strBody = "";
+	    try{
+			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
+	    }catch(Exception e)
+		{
+			LOG.ERROR("getDeviceId or getPlatform failed", e);
 		}
-		return RubyConstant.QTRUE;
+	    
+	    int port = RhoConf.getInstance().getInt("push_port");
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    
+	    String szData = getNet().pullData(strUrl+strQuery, strBody, this).getCharData();
+	    if ( szData != null )
+	    {
+	        JSONEntry oJsonEntry = new JSONEntry(szData);
+	
+	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
+	        if ( !oJsonObject.isEmpty() )
+	            return oJsonObject.getString("client_id");
+	    }
+	
+	    return "";
 	}
 
-	public static void wakeUp() {
-		// Initialize only one thread
-		if (sThread != null) {
-			sThread.wakeUpSyncEngine();
-		}
-	}
+	int getStartSource()
+	{
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        if ( !src.isEmptyToken() )
+	            return i;
+	    }
 	
-	// @RubyLevelMethod(name="stop")
-	/**
-	 * Stop.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the ruby value
-	 */
-	public static RubyValue stop(RubyValue receiver) {
-		if ( sThread != null ){
-			sThread.quit();
-			sThread = null;
+	    return 0;
+	}
+
+	void syncAllSources()throws Exception
+	{
+	    for( int i = getStartSource(); i < m_sources.size() && getState() != esExit; i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        if ( isSessionExist() && getState() != esStop )
+	            src.sync();
+	
+	        fireNotification(src.getID().intValue(),src.getServerObjectsCount());
+	    }
+	}
+
+	boolean login(String name, String password)throws Exception
+	{
+	    loadAllSources();
+	    return doLogin(name,password);
+	}
+
+	boolean doLogin(String name, String password)throws Exception
+	{
+	    if ( m_sources.size() == 0 )
+	        return true;
+	
+	    //All sources should be from one domain
+	    SyncSource src0 = (SyncSource)m_sources.elementAt(0);
+	    String srv0 = getServerFromUrl(src0.getUrl());
+	    for( int i = 1; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        String srv = getServerFromUrl(src.getUrl());
+	        if ( srv.equals( srv0 ) != true )
+	            return false;
+	    }
+	
+	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
+
+	    try{
+			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
+	    }catch(Exception e)
+		{
+			LOG.ERROR("getDeviceId or getPlatform failed", e);
 		}
 		
-		return RubyConstant.QTRUE;
+	    int port = RhoConf.getInstance().getInt("push_port");
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    
+	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
+	    if ( strSession == null )
+	        return false;
+	
+	    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
+	
+	    return true;
 	}
 
-	// @RubyLevelMethod(name="unlock_sync_mutex")
-	/**
-	 * Unlock_sync_mutex.
-	 * 
-	 * @param receiver the receiver
-	 * 
-	 * @return the ruby value
-	 */
-	public static RubyValue unlock_sync_mutex(RubyValue receiver) {
-		return RubyConstant.QFALSE;
+	boolean isLoggedIn()throws DBException
+	{
+	    int nCount = 0;
+	    IDBResult res = getDB().executeSQL("SELECT count(session) FROM sources");
+	    
+	    if ( !res.isEnd() )
+	        nCount = res.getIntByIdx(0);
+	    
+	    return nCount > 0;
 	}
 
-	/**
-	 * Instantiates a new sync engine.
-	 * 
-	 * @param c the c
-	 */
-	SyncEngine(RubyClass c) {
-		super(c);
+	String loadSession()throws DBException
+	{
+	    String strRes = "";
+	    IDBResult res = getDB().executeSQL("SELECT session FROM sources");
+	    
+	    if ( !res.isEnd() )
+	    	strRes = res.getStringByIdx(0);
+	    
+	    return strRes;
+	}
+	
+	public void logout()throws Exception
+	{
+	    getDB().executeSQL( "UPDATE sources SET session=NULL" );
+	    getNet().deleteCookie("");
+	
+	    loadAllSources();
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        getNet().deleteCookie(src.getUrl());
+	    }
+	
 	}
 
-	// @RubyLevelMethod(name="initialize")
-	/**
-	 * Initialize.
-	 * 
-	 * @return the sync engine
-	 */
-	public SyncEngine initialize() {
-		return this;
+	void resetSyncDB()throws DBException
+	{
+	    getDB().executeSQL( "DELETE from object_values" );
+	    getDB().executeSQL( "DELETE from client_info" );
+	    getDB().executeSQL( "UPDATE sources SET token=?", "" );
+	    //getDB().executeSQL( "VACUUM" );
+	
+	    m_clientID = "";
 	}
+
+	void setNotification(int source_id, String strUrl, String strParams )
+	{
+		LOG.INFO( "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
+	    clearNotification(source_id);
+	
+	    String strFullUrl = getNet().resolveUrl(strUrl);
+	
+	    if ( strFullUrl.length() > 0 )
+	    {
+			LOG.INFO( " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
+			
+	        synchronized(m_mxNotifications){
+	        	m_mapNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams ) );
+	        }	
+	    }
+	}
+
+	void fireNotification( int source_id, int nSyncObjectsCount)throws Exception
+	{
+	    String strBody, strUrl;
+	    {
+	    	synchronized(m_mxNotifications){
+		        SyncNotification sn = (SyncNotification)m_mapNotifications.get(new Integer(source_id));
+		        if ( sn == null )
+		            return;
+		
+		        strUrl = sn.m_strUrl;
+		        strBody = "status=";
+		        strBody += (nSyncObjectsCount > 0 ?"ok":"error");
+		        if ( sn.m_strParams.length() > 0 )
+		            strBody += "&" + sn.m_strParams;
+	        }
+	    }
+		LOG.INFO( "Fire notification. Source ID: " + source_id + "; Url :" + strUrl + "; Body: " + strBody );
+		
+	    getNet().pushData( strUrl, strBody, this );
+	
+	    clearNotification(source_id);
+	}
+
+	void clearNotification(int source_id) 
+	{
+		LOG.INFO( "Clear notification. Source ID: " + source_id );
+		
+		synchronized(m_mxNotifications){
+			m_mapNotifications.remove(new Integer(source_id));
+		}
+	}
+
+	static String getServerFromUrl( String strUrl )
+	{
+		URI uri = new URI(strUrl);
+		return uri.getHost();
+	}
+
+	public static class DBCallback implements IDBCallback{
+
+		public void OnDeleteAll() {
+			OnDeleteAllFromTable("object_values");
+		}
+		
+		public void OnDeleteAllFromTable(String tableName) {
+			if ( !tableName.equals("object_values") )
+				return;
+
+			try{
+				String fName = DBAdapter.makeBlobFolderName();
+				RhoClassFactory.createFile().delete(fName);
+			}catch(Exception exc){
+				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
+			}
+		}
+
+		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
+		{
+			if ( !tableName.equalsIgnoreCase("object_values") )
+				return;
+			
+			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
+			{
+				if ( !rows2Delete.getString("attrib_type").equals("blob.file") )
+					continue;
+				String strUpdateType = rows2Delete.getString("update_type");
+				if ( strUpdateType.equals("create") || strUpdateType.equals("update") )
+					continue;
+
+				String url = rows2Delete.getString("value");
+				if ( url == null || url.length() == 0 )
+					continue;
+				
+				try{
+				    SimpleFile oFile = RhoClassFactory.createFile();
+				    oFile.delete(url);
+				}catch(Exception exc){
+					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
+				}
+				
+			}
+		}
+		
+	}
+	
 }

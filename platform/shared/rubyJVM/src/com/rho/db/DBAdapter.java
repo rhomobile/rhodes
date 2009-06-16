@@ -16,6 +16,9 @@ public class DBAdapter extends RubyBasic {
 	private String  m_strDBPath;
 	private String  m_strDBVerPath;
 	
+    Mutex m_mxDB = new Mutex();
+    boolean m_bUnlockDB = false;
+	
 	DBAdapter(RubyClass c) {
 		super(c);
 		
@@ -44,9 +47,63 @@ public class DBAdapter extends RubyBasic {
 		
 		return m_dbStorage.executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		return executeSQL(strStatement,null);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, int arg1)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = { new Integer(arg1)};
+		return executeSQL(strStatement,values);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2};
+		return executeSQL(strStatement,values);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6,arg7};
+		return executeSQL(strStatement,values);
+	}
 
+	public boolean isUnlockDB(){ return m_bUnlockDB; }
+	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
+	public void Lock(){ m_mxDB.Lock(); }
+	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+	
 	public static IDBResult createResult(){
 		return getInstance().m_dbStorage.createResult();
+	}
+	
+	public static String makeBlobFolderName()throws Exception{
+		String fName = RhoClassFactory.createFile().getDirPath("blobs");
+		
+		return fName;
 	}
 	
 	RubyString[] getColNames(IDBResult rows)
@@ -62,21 +119,16 @@ public class DBAdapter extends RubyBasic {
     {
     	RubyArray res = new RubyArray(); 
     	try{
-    		IDBResult rows = null;
-    		try {
-	    		rows = executeSQL(v.toStr(), null);
-	    		RubyString[] colNames = getColNames(rows);
-	    		
-	    		for( int i = 0; i < rows.getCount(); i++ )
-	    		{
-	    			RubyHash row = ObjectFactory.createHash();
-	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-	    				row.add( colNames[nCol], rows.getRubyValueByIdx(i, nCol) );
-	    			
-	    			res.add( row );
-	    		}
-    		}finally {
-    			rows.close(); //release locks
+    		IDBResult rows = executeSQL(v.toStr(), null);
+    		RubyString[] colNames = getColNames(rows);
+    		
+    		for( ; !rows.isEnd(); rows.next() )
+    		{
+    			RubyHash row = ObjectFactory.createHash();
+    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+    			
+    			res.add( row );
     		}
     	}catch(DBException exc){
     		LOG.ERROR("executeSQL failed.", exc);
@@ -158,24 +210,34 @@ public class DBAdapter extends RubyBasic {
     
     public void startTransaction()throws DBException
     {
+    	Lock();
     	m_dbStorage.startTransaction();
     }
     
     public void commit()throws DBException
     {
     	m_dbStorage.commit();
+    	Unlock();
+    }
+    public void endTransaction()throws DBException
+    {
+    	commit();
     }
 
     public void rollback()throws DBException
     {
+    	Unlock();
     	throw new DBException("Not implemented");
     }
     
     private RubyValue rb_start_transaction() {
     	try{
+    		setUnlockDB(true);
     		startTransaction();
-    	}catch( Exception exc ){
-    		LOG.ERROR("Start transaction failed.", exc);
+    	}catch( Exception e ){
+    		LOG.ERROR("Start transaction failed.", e);
+    		
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
     	}
     	
         return ObjectFactory.createInteger(0);

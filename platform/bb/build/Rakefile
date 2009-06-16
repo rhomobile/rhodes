@@ -99,9 +99,21 @@ end
 
 namespace "build" do
 
+  task :copyrubyvm do
+    cp config["build"]["rubyVMdir"] + "/RubyVM.jar", config["build"]["preverified"]    
+  end
+
+  desc "Build dev rhoBundle"
+  task :rhobundledev => [:copyrubyvm, :rhobundle1] do
+  end
+  
   desc "Build rhoBundle"
   #XXX change to ns build, rhobundle
-  task :rhobundle => :rubyvm do
+  task :rhobundle => [:rubyvm, :rhobundle1] do
+  end
+  
+  task :rhobundle1 => :rubyvm do
+  
     java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
     jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
     jarexe =  config["env"]["paths"][config["env"]["bbver"]]["java"] + "/jar.exe"

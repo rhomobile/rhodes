@@ -5,6 +5,9 @@ import java.io.IOException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import rhomobile.RhodesApplication.PrimaryResourceFetchThread;
+import rhomobile.RhodesApplication;
+
 import net.rim.device.api.servicebook.ServiceBook;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.system.DeviceInfo;
@@ -13,6 +16,8 @@ import net.rim.device.api.system.RadioInfo;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.bb.BBHttpConnection;
+import com.rho.net.bb.NativeBBHttpConnection;
+import net.rim.device.api.io.http.HttpHeaders;
 
 public class NetworkAccess implements INetworkAccess {
 
@@ -23,6 +28,11 @@ public class NetworkAccess implements INetworkAccess {
 	private static String WIFIsuffix;
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
+	
+	public String getHomeUrl()
+	{
+		return "http://localhost:8080/";
+	}
 	
 	public void configure() {
 		networkConfigured = false;
@@ -81,23 +91,33 @@ public class NetworkAccess implements INetworkAccess {
 		}
 		
 		if (networkConfigured == false) {
-			URLsuffix = ";deviceside=true";
+			//URLsuffix = ";deviceside=true";
 			networkConfigured = true;
 		}
 		
 	}
 
-	public IHttpConnection connect(String server) throws IOException 
+	public boolean doLocalRequest(String strUrl, String strBody)
+	{
+		HttpHeaders headers = new HttpHeaders();
+		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		RhodesApplication.getInstance().postUrl(strUrl, strBody, headers);
+		
+		return true;
+	}
+	
+	public IHttpConnection connect(String url) throws IOException 
 	{
 		HttpConnection http = null;
 
-		int fragment = server.indexOf('#');
+		int fragment = url.indexOf('#');
 		if (-1 != fragment) {
-			server = server.substring(0, fragment);
+			url = url.substring(0, fragment);
 		}
-		
+
 		//Try wifi first
-		if ( WIFIsuffix != null ){
+/*		if ( WIFIsuffix != null ){
 			try {
 				LOG.INFO(server + WIFIsuffix);
 				http = (HttpConnection) Connector.open(server + WIFIsuffix);
@@ -111,10 +131,10 @@ public class NetworkAccess implements INetworkAccess {
 			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
 				throw new IOException("Network Data Service Not Available");
 			}
-			
+			*/
 			try {
-				LOG.INFO(server + URLsuffix);
-				http = (HttpConnection) Connector.open(server + URLsuffix);
+				LOG.INFO(url + URLsuffix);
+				http = (HttpConnection) Connector.open(url + URLsuffix);
 			} catch (IOException ioe) {
 				LOG.ERROR("Connector.open exception", ioe );
 				if (http != null)
@@ -122,7 +142,7 @@ public class NetworkAccess implements INetworkAccess {
 				http = null;
 				throw ioe;
 			}
-		}
+		//}
 		
 		return new BBHttpConnection(http);
 	}
