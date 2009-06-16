@@ -5,6 +5,7 @@ import android.telephony.*;
 
 import com.rho.IRhoRubyHelper;
 import com.rhomobile.rhodes.camera.Camera;
+import com.rhomobile.rhodes.datetime.DateTimePicker;
 import com.rhomobile.rhodes.phonebook.RhoPhonebook;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
@@ -21,6 +22,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
 		Camera.initMethods(RubyRuntime.CameraClass);
 		WebView.initMethods(RubyRuntime.WebViewClass);
+		DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
 	}
 
 	public String getPlatform() {
