@@ -164,10 +164,10 @@ module Rho
     data << "Expires: 0" << CRLF
 
       data << CRLF
-	  if ( !res['request-body'].nil? )
-		data << res['request-body']
-	  end
-	  	
+      if ( !res['request-body'].nil? )
+        data << res['request-body']
+      end
+        
       data
     end
 
@@ -190,10 +190,10 @@ module Rho
       body << <<-_HTML_STRING_
         <html>
             <head>
-                <title>Server Error</title>
                 <meta name="viewport" content="width=320"/>
             </head>
             <body>
+                <h2>Server Error</h2>
                 <p>
       _HTML_STRING_
       body << 'Error: ' << exception.message << "<br/>" if exception
