@@ -224,19 +224,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      **************************************************************************/
     public static void main(String[] args)
     {
-    	RhoLogger.InitRhoLog();
-    	LOG.TRACE("Rhodes MAIN started ***--------------------------***");
+    	//RhoLogger.InitRhoLog();
+    	//LOG.TRACE("Rhodes MAIN started ***--------------------------***");
     	
-    	_pushListeningThread = new PushListeningThread();
-    	_pushListeningThread.start();
+    	//_pushListeningThread = new PushListeningThread();
+    	//_pushListeningThread.start();
     	
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
-				
 		_pushListeningThread.stop();
 		
         RhoLogger.close();
-		LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
+		//LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
     }
 
     void doClose(){   	
@@ -354,8 +353,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     private void doStartupWork() {
+    	RhoLogger.InitRhoLog();
+    	
         LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
       
+    	
+    	_pushListeningThread = new PushListeningThread();
+    	_pushListeningThread.start();
+        
     	try {
     		RhoClassFactory.getNetworkAccess().configure();
     	} catch(IOException exc) {
