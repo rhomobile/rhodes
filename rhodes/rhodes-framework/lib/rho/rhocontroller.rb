@@ -4,6 +4,7 @@ require 'rho/rhoviewhelpers'
 
 module Rho
   class RhoController
+  	attr_accessor :menu
 
     def default_action
       return Hash['GET','show','PUT','update','POST','update',
@@ -11,11 +12,16 @@ module Rho
       return Hash['GET','index','POST','create'][@request['request-method']]
     end
 
-    def serve(object_mapping,req,res)
+    def serve(application, object_mapping,req,res)
       @request, @response = req, res;
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
-      send req['action'].nil? ? default_action : req['action']
+      res = send req['action'].nil? ? default_action : req['action']
+      disp_menu = @menu.nil? ? application.default_menu : @menu
+      puts "RhoController: Using menu - #{disp_menu.inspect}"
+  	  WebView.set_menu_items(disp_menu)
+  	  @menu = nil
+  	  res
     end
 
     # Returns true if the request's header contains "XMLHttpRequest".
