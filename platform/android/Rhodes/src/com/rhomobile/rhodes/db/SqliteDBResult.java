@@ -73,13 +73,13 @@ public class SqliteDBResult implements IDBResult {
 		//	lock.releaseLock();
 	}
 
-	public void close() {
+	/*public void close() {
 
 		if (this.cursor != null)
 			this.cursor.close();
 
 		//lock.releaseLock();
-	}
+	}*/
 
 	public int getColCount() {
 		if (this.cursor != null) {
@@ -206,4 +206,39 @@ public class SqliteDBResult implements IDBResult {
 		
 		return -1;
 	}
+	
+	//New
+    public boolean isEnd()
+    {
+    	return curIndex >= getCount();
+    }
+    
+    public void next()
+    {
+    	moveToPosition(curIndex+1);
+    }
+
+	public String getStringByIdx(int col) {
+		String val = getValueByIdx(curIndex,col);
+		return val != null ? val : "";
+	}
+
+	public int getIntByIdx(int col) {
+		String val = getValueByIdx(curIndex,col);
+		return val != null ? Integer.parseInt(val) : 0; 
+	}
+	
+	public String getUInt64ByIdx(int nCol)
+	{
+		return getStringByIdx(nCol);
+	}
+
+	public RubyValue getRubyValueByIdx(int col) {
+		return getRubyValueByIdx(curIndex, col);
+	}
+	
+	public RubyValue getRubyValue(String colname){ return getRubyValueByIdx( findColIndex(colname) ); }
+	public int getInt(String colname){ return getIntByIdx( findColIndex(colname) ); }
+	public String getString(String colname){ return getStringByIdx(findColIndex(colname) ); }
+	
 }
