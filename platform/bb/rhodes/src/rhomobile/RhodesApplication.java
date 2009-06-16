@@ -32,6 +32,8 @@ import com.rho.sync.SyncUtil;
 import com.rho.sync.SyncNotifications;
 
 import java.util.Enumeration;
+=======
+import com.rho.sync.SyncThread;
 import java.util.Vector;
 
 
@@ -87,21 +89,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
 
-    class SyncNotificationsImpl extends SyncNotifications{
+    /*class SyncNotificationsImpl extends SyncNotifications{
     	public void performNotification(String url, String body){
 
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
     		postUrl(url, body, headers);
-
+*/
 /*    		String curUrl = (String)_history.lastElement();
     		curUrl.replace('\\', '/');
     		if ( curUrl.equalsIgnoreCase(url) )
     			navigateUrl(curUrl);*/
 
-    	}
+  //  	}
 
-    }
+    //}
 
     String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
@@ -312,7 +314,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
-					SyncEngine.wakeUp();
+					SyncThread.doSyncAllSources();
 				}
 			};
 		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {
@@ -439,15 +441,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		LOG.ERROR(exc.getMessage());
     	}
     	
-    	SyncUtil.init();
         RhoRuby.RhoRubyStart("");
-		SyncEngine.start(null);
+		SyncThread.Create( new RhoClassFactory() );
    	
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
 
-        SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
+        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
 
         _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);
@@ -533,8 +534,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void navigateHome(){
-        String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) +
-        	RhoRuby.getStartPage();
+    	String strHomePage = RhoRuby.getStartPage();
+    	String strStartPage = _httpRoot;
+    	if ( strHomePage != null && strHomePage.length() > 0 )
+    	{
+    		strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + strHomePage;
+    	}
+    	
         _history.removeAllElements();
 	    _history.addElement(strStartPage);
 	    navigateUrl(strStartPage);
@@ -770,33 +776,33 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         (new Thread(runnable)).start();
     }
 
-}
+    public static class PrimaryResourceFetchThread extends Thread {
 
-class PrimaryResourceFetchThread extends Thread {
+        private RhodesApplication _application;
 
-    private RhodesApplication _application;
+        private Event _event;
 
-    private Event _event;
+        private byte[] _postData;
 
-    private byte[] _postData;
+        private HttpHeaders _requestHeaders;
 
-    private HttpHeaders _requestHeaders;
+        private String _url;
 
-    private String _url;
+        public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
+                                      Event event, RhodesApplication application) {
 
-    public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                  Event event, RhodesApplication application) {
+            _url = url;
+            _requestHeaders = requestHeaders;
+            _postData = postData;
+            _application = application;
+            _event = event;
+        }
 
-        _url = url;
-        _requestHeaders = requestHeaders;
-        _postData = postData;
-        _application = application;
-        _event = event;
+        public void run() {
+            HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+            _application.processConnection(connection, _event);
+        }
     }
-
-    public void run() {
-        HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        _application.processConnection(connection, _event);
-    }
+    
 }
 
