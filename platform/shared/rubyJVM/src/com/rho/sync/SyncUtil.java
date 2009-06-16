@@ -967,7 +967,7 @@ public class SyncUtil {
 							+ "&password=" + strPwd
 							+ "&remember_me=1"
 							+ "&device_pin=" + helper.getDeviceId()
-							+ "&device_port" + port
+							+ "&device_port=" + port
 							+ "&device_type=" + helper.getPlatform();
 						} catch (Exception e) {
 							e.printStackTrace();
