@@ -27,12 +27,8 @@ import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
 import com.rho.location.GeoLocation;
-import com.rho.sync.SyncEngine;
-import com.rho.sync.SyncUtil;
-import com.rho.sync.SyncNotifications;
 
 import java.util.Enumeration;
-=======
 import com.rho.sync.SyncThread;
 import java.util.Vector;
 
