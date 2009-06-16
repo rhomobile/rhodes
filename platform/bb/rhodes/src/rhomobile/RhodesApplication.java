@@ -40,6 +40,13 @@ import java.util.Vector;
  */
 final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener
 {
+	// Menu Labels
+	public static final String LABEL_HOME = "Home";
+	public static final String LABEL_REFRESH = "Refresh";
+	public static final String LABEL_SYNC = "Sync";
+	public static final String LABEL_OPTIONS = "Options";
+	public static final String LABEL_LOG = "Log";
+	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
 
@@ -117,9 +124,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         thread.start();                       
     }
     
-    void addMenuItem(String title, String url){
-		url = _httpRoot + url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
-    	_mainScreen.addCustomMenuItem(title, url);
+	public String getPathForMenuItem(String url) {
+		url = _httpRoot +
+			url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
+		return url;
+	}
+    
+    void addMenuItem(String label, String value){
+    	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
+    	_mainScreen.addCustomMenuItem(label, value);
     }
 
     public void postUrl(String url, String body, HttpHeaders headers){
@@ -285,35 +298,34 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     class CMainScreen extends MainScreen{
     	
-    	private Vector customItems = new Vector();
+    	private Vector menuItems = new Vector();
 
-		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
+		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
 					navigateHome();
 				}
 			};
-		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
+		private MenuItem refreshItem = new MenuItem(RhodesApplication.LABEL_REFRESH, 200000, 10) {
 			public void run() {
 				refreshCurrentPage();
 				}
 			};
-		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
 					SyncEngine.wakeUp();
 				}
 			};
-		private MenuItem optionsItem = new MenuItem("Options", 200000, 10) {
+		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {
 			public void run() {
 					String curUrl = RhoRuby.getOptionsPage();
-					curUrl = _httpRoot +
-						curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
+					curUrl = getPathForMenuItem(curUrl);
 
 					addToHistory(curUrl, null );
 			    	
 					navigateUrl(curUrl);
 				}
 			};
-		private MenuItem logItem = new MenuItem("Log", 200000, 10) {
+		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
 			public void run() {
 					LogScreen screen = new LogScreen();
 			        //Push this screen to display it to the user.
@@ -334,41 +346,59 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	    	if ( i > 0 )
 	    	    		i = i - 1;
 	    	    }
-	    	}
+	    	}	
 			
-			menu.add(homeItem);
-			menu.add(refreshItem);
-			menu.add(syncItem);
-			menu.add(optionsItem);
-			menu.add(logItem);
-			
+			// Draw default menu
+			if ((menu.getSize() <= 2) && (menuItems == null || menuItems.size() == 0)) {
+				menu.add(homeItem);
+				menu.add(refreshItem);
+				menu.add(syncItem);
+				menu.add(optionsItem);
+				menu.add(logItem);
+			}
 
-			Enumeration elements = customItems.elements();
+			// Draw menu from rhodes framework
+			Enumeration elements = menuItems.elements();
 			while (elements.hasMoreElements()) {
 				MenuItem item = (MenuItem)elements.nextElement();
-				// Don't redraw the same item!
+				// Don't redraw the menu item!
 				for(int i=0; i < menu.getSize(); i++)
-		    	{
-		    	    MenuItem itm = menu.getItem(i);
-		    	    String label = itm.toString();
-		    	    if(label.equalsIgnoreCase(item.toString())) {
-		    	    	menu.deleteItem(i);
-		    	    }
-		    	}
+				{
+					MenuItem itm = menu.getItem(i);
+					String label = itm.toString();
+					if(label.equalsIgnoreCase(item.toString())) {
+						menu.deleteItem(i);
+					}
+				}
 				menu.add(item);
 			}
-			
 			super.makeMenu(menu, instance);
+			// Reset the menu
+			menuItems.removeAllElements();
 		}
 		
-		public void addCustomMenuItem(String title, final String url) {
-			MenuItem itemToAdd = new MenuItem(title, 200000, 10) {
-				public void run() {
-					addToHistory(url, null );
-					navigateUrl(url);
-				}
-			};
-			customItems.addElement(itemToAdd);
+		public void addCustomMenuItem(String label, final String value) {
+			// Is this a default item?
+    	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
+    	    	menuItems.addElement(homeItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
+    	    	menuItems.addElement(refreshItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
+    	    	menuItems.addElement(syncItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
+    	    	menuItems.addElement(optionsItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_LOG)) {
+    	    	menuItems.addElement(logItem);
+    	    } else {
+				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+					public void run() {
+				    	String val = getPathForMenuItem(value);
+						addToHistory(val, null );
+						navigateUrl(val);
+					}
+				};
+				menuItems.addElement(itemToAdd);
+    	    }
 		}
 
 		public void close() {

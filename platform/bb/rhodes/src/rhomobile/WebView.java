@@ -42,13 +42,14 @@ public class WebView extends RubyBasic {
 		return ObjectFactory.createString(url);
 	}
 	
-	public static RubyValue add_menu_items(RubyValue arg0, RubyValue arg1) {
-		RubyArray items = (RubyArray) (new RubyArray(arg0)).get(0);
-		for(int i = 0; i < items.size(); i++) {
-			RubyHash currentItem = (RubyHash)items.get(i);
-			RubyString title = (RubyString)currentItem.keys().get(0);
-			RubyString path = (RubyString)currentItem.get(title);
-			RhodesApplication.getInstance().addMenuItem(title.toString(), path.toString());
+	public static RubyValue set_menu_items(RubyValue arg0) {
+		RubyHash items = (RubyHash)arg0;
+		RubyArray keys = items.keys();
+		RubyArray values = items.values();
+		for( int i = 0; i < keys.size(); i++ ){
+			String label = keys.get(i).toString();
+			String value = values.get(i).toString();
+			RhodesApplication.getInstance().addMenuItem(label, value);
 		}
 		return RubyConstant.QTRUE;
 	}
@@ -69,9 +70,9 @@ public class WebView extends RubyBasic {
 				return WebView.current_location();
 			}
 		});		
-		klass.getSingletonClass().defineMethod("add_menu_items", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return WebView.add_menu_items(arg0, arg1);
+		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return WebView.set_menu_items(arg0);
 			}
 		});
 	}
