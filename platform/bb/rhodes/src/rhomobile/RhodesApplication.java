@@ -350,11 +350,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			
 			// Draw default menu
 			if ((menu.getSize() <= 2) && (menuItems == null || menuItems.size() == 0)) {
-				menu.add(homeItem);
-				menu.add(refreshItem);
-				menu.add(syncItem);
-				menu.add(optionsItem);
-				menu.add(logItem);
+				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, menu);
 			}
 
 			// Draw menu from rhodes framework
@@ -378,17 +378,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
 		
 		public void addCustomMenuItem(String label, final String value) {
-			// Is this a default item?
+			// Is this a default item? If so, use the existing menu item we have.
     	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
-    	    	menuItems.addElement(homeItem);
+    	    	setDefaultItemToMenuItems(label, homeItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
-    	    	menuItems.addElement(refreshItem);
+    	    	setDefaultItemToMenuItems(label, refreshItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
-    	    	menuItems.addElement(syncItem);
+    	    	setDefaultItemToMenuItems(label, syncItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
-    	    	menuItems.addElement(optionsItem);
+    	    	setDefaultItemToMenuItems(label, optionsItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_LOG)) {
-    	    	menuItems.addElement(logItem);
+    	    	setDefaultItemToMenuItems(label, logItem);
     	    } else {
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
@@ -399,6 +399,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				};
 				menuItems.addElement(itemToAdd);
     	    }
+		}
+
+		private void setDefaultItemToMenuItems(String label, MenuItem item) {
+			item.setText(label);
+	    	menuItems.addElement(item);
+		}
+		
+		private void setDefaultItemToMenu(String label, MenuItem item, Menu menu) {
+			item.setText(label);
+	    	menu.add(item);
 		}
 
 		public void close() {
