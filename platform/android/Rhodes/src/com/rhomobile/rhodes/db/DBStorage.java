@@ -71,8 +71,8 @@ public class DBStorage implements IDBStorage {
 		catch( Exception e ){
 			LOG.ERROR(e.getMessage());
 		}finally{
-			if ( rows2Delete != null)
-				rows2Delete.close();
+			//if ( rows2Delete != null)
+			//	rows2Delete.close();
 		}
 	}
 

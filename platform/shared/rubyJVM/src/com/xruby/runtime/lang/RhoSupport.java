@@ -119,11 +119,10 @@ public class RhoSupport {
                 return p.invoke();
             }
         }
-        catch (RubyException e) {
-            throw e;
-        }
         catch (Exception e) {
-            throw new RubyException(e.toString());
+        	
+			LOG.ERROR("evalPrecompiledFile failed : " + name, e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
         }
 	}
     

@@ -8,7 +8,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import com.rho.db.DBAdapter;
-import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncThread;
 import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
 import com.rho.location.GeoLocation;
@@ -35,7 +35,7 @@ public class RhoRuby {
 			RubyRuntime.init(args);
 	
 	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
-	        SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
 	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
 	        
 	        helper = RhoClassFactory.createRhoRubyHelper();
