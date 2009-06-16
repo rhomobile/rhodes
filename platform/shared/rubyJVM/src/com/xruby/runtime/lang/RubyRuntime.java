@@ -91,6 +91,7 @@ public class RubyRuntime {
     public static RubyClass GeoLocationClass;
     public static RubyClass CameraClass;
     public static RubyClass WebViewClass;    
+    public static RubyClass DateTimePickerClass;
     
     //RHO
 
@@ -249,6 +250,7 @@ public class RubyRuntime {
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);        
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
         WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);        
+        DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
         
 //      RhoPhonebook.initMethods(PhonebookClass);
         
