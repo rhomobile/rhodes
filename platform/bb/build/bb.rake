@@ -1,9 +1,31 @@
-require '../../../rhodes/rhodes-build/lib/jake.rb'
 
-config = Jake.config(File.open('build.yml'))
 
-rhobundleimplib = config["env"]["paths"][config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" + Jake.get_absolute(config["build"]["preverified"]+"/RubyVM.jar")
-rhodesimplib = rhobundleimplib + ";"+ Jake.get_absolute(config["build"]["preverified"]+"/RhoBundle.jar")
+namespace "config" do
+  namespace "bb" do
+    task :config => ["config:common"] do
+      bbpath = $config["build"]["bbpath"]
+      $bindir = bbpath + "/bin"
+      $rhobundledir =  bbpath + "/RhoBundle"
+      $srcdir =  $bindir + "/RhoBundle"
+      $preverified = $bindir + "/preverified"
+      #rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
+      #shareddir: ../../shared/build
+      $targetdir = bbpath + "/target/" + $config["env"]["bbver"]
+      $rubyVMdir = bbpath + "/RubyVM"
+      $excludelib = "**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
+      $compileERB = bbpath + "/build/compileERB.rb"
+      #bblib: ../../../rhodes/rhodes-build/res
+      $tmpdir =  $bindir +"/tmp"
+      $excludeapps = "public/js/iui/**,**/jquery*"
+
+      $rhobundleimplib = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" +
+                          Jake.get_absolute($preverified+"/RubyVM.jar")
+      $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
+
+    end
+  end
+end
+
 
 namespace "package" do
   desc "Package rhoBundle"

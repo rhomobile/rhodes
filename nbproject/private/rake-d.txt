@@ -1,0 +1,4 @@
+get_version=Get versions
+prebuild_mac=Update prebuild binaries on mac
+prebuild_win=Update prebuild binaries on windows
+set_version[version]=Set version

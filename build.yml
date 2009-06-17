@@ -16,17 +16,11 @@ env:
       sim: 8100
 
 build:
-  bindir: ../bin
-  rhobundledir: ../RhoBundle
-  srcdir: %bindir%/RhoBundle
-  preverified: ../preverified
-  rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
-  shareddir: ../../shared/build
-  targetdir: ../target/%bbver%
-  rubyVMdir: ../RubyVM
-  excludelib: "**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
-  compileERB: compileERB.rb
-  bblib: ../../../rhodes/rhodes-build/res
-  tmpdir: %bindir%/tmp
-  excludeapps: "public/js/iui/**,**/jquery*"   
+  bbpath: platform/bb
+  wmpath: platform/wm
+  androidpath: platform/android
+  iphonepath: platform/iphone
+  symbianpath: platform/symbian
+  bb:
+
 

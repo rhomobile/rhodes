@@ -1,3 +1,15 @@
+require 'rhodes/rhodes-build/lib/jake.rb'
+
+namespace "config" do
+  task :common do
+    $startdir = File.dirname(__FILE__)
+    $config = Jake.config(File.open('build.yml'))
+  end
+end
+
+
+
+
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
 # run "rake -T" to see list of available tasks
 
