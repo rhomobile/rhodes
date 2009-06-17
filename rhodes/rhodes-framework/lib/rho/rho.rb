@@ -26,6 +26,14 @@ module Rho
       Rhom::RhomDbAdapter::close
     end
     
+    def get_app(appname)
+      if (APPLICATIONS[appname].nil?)
+        require RhoApplication::get_app_path(appname)+'application'
+        APPLICATIONS[appname] = Object.const_get('AppApplication').new
+      end
+      APPLICATIONS[appname]
+    end
+    
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename).each do |line|
@@ -77,15 +85,6 @@ module Rho
     
     def source_initialized?(source_id)
       Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
-    end
-    
-    def get_app(appname)
-      if (APPLICATIONS[appname].nil?)
-        require RhoApplication::get_app_path(appname)+'application'
-        #APPLICATIONS[appname] = Object.const_get(appname+'Application').new
-        APPLICATIONS[appname] = Object.const_get('AppApplication').new
-      end
-      APPLICATIONS[appname]
     end
 
     def serve(req)

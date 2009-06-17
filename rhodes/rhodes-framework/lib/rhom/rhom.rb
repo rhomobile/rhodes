@@ -24,7 +24,6 @@ require 'rhom/rhom_object'
 require 'rhom/rhom_db_adapter'
 
 module Rhom
-  #UPDATE_TYPES = ["'create'","'update'","'query'","'ask'"]
   UPDATE_TYPES = ["'create'","'query'","'ask'"]
   
   class Rhom
