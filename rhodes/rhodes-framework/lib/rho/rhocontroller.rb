@@ -1,7 +1,6 @@
 require 'rho/render'
 require 'rho/rhosupport'
 require 'rho/rhoviewhelpers'
-require 'rho/rhoapplication'
 
 module Rho
   class RhoController
@@ -13,7 +12,7 @@ module Rho
       return Hash['GET','index','POST','create'][@request['request-method']]
     end
 
-    def serve(application, object_mapping,req,res)
+    def serve(application,object_mapping,req,res)
       @request, @response = req, res;
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req

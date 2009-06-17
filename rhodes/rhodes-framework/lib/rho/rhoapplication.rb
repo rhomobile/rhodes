@@ -16,7 +16,7 @@ module Rho
       disp_menu = menu ? menu : self.default_menu
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
-	end
+	  end
 	
     class << self
       def get_app_path(appname)
