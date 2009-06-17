@@ -11,6 +11,12 @@ module Rho
       end
       @default_menu = { "Home" => :home, "Refresh" => :refresh, "Sync" => :sync, "Options" => :options, "Log" => :log }
     end
+    
+    def set_menu(menu=nil)
+      disp_menu = menu ? menu : self.default_menu
+      puts "RhoApplication: Using menu - #{disp_menu.inspect}"
+  	  WebView.set_menu_items(disp_menu)
+	end
 	
     class << self
       def get_app_path(appname)

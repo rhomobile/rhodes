@@ -7,6 +7,7 @@ require 'rhofsconnector'
 module Rho
   class RHO
     APPLICATIONS = {}
+    APPNAME = 'app'
     
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
@@ -110,6 +111,8 @@ module Rho
     end
     
     def serve_index(index_name)
+    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
         begin
             puts 'inside RHO.serve_index: ' + index_name
             res = init_response
@@ -121,6 +124,8 @@ module Rho
     end
 
     def serve_index_hash(index_name)
+    	    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
         begin
             puts 'inside RHO.serve_index: ' + index_name
             res = init_response
