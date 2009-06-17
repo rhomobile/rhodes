@@ -470,7 +470,7 @@ public class Session implements SessionInterface {
      * @param  autocommit the new value
      * @throws  HsqlException
      */
-    public void setAutoCommit(boolean autocommit) {
+    public void setAutoCommit(boolean autocommit)throws HsqlException{
 
         if (isClosed) {
             return;
@@ -482,9 +482,9 @@ public class Session implements SessionInterface {
 
                 isAutoCommit = autocommit;
 
-                try {
+                //try {
                     database.logger.writeToLog(this, getAutoCommitStatement());
-                } catch (HsqlException e) {}
+                //} catch (HsqlException e) {}
             }
         }
     }
