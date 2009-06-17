@@ -1,6 +1,7 @@
 require 'rho/render'
 require 'rho/rhosupport'
 require 'rho/rhoviewhelpers'
+require 'rho/rhoapplication'
 
 module Rho
   class RhoController
@@ -17,9 +18,7 @@ module Rho
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       res = send req['action'].nil? ? default_action : req['action']
-      disp_menu = @menu.nil? ? application.default_menu : @menu
-      puts "RhoController: Using menu - #{disp_menu.inspect}"
-  	  WebView.set_menu_items(disp_menu)
+      application.set_menu(@menu)
   	  @menu = nil
   	  res
     end
