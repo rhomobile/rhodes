@@ -124,7 +124,7 @@ module Rhom
       def string_from_key_vals(values, delim)
         vals = ""
         values.each do |key,value|
-          vals << " #{key} = #{get_value_for_sql_stmt(value)} #{delim}"
+          vals << " \"#{key}\" = #{get_value_for_sql_stmt(value)} #{delim}"
         end
         vals
       end

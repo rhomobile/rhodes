@@ -423,7 +423,7 @@ final public class CompiledStatementManager {
      * @return a MULTI Result describing the compiled statement.
      */
     public synchronized CompiledStatement compile(Session session,
-                                           String sql) throws Throwable {
+                                           String sql) throws HsqlException {
 
         int               csid = getStatementID(session.currentSchema, sql);
         CompiledStatement cs   = (CompiledStatement) csidMap.get(csid);
@@ -439,7 +439,7 @@ final public class CompiledStatementManager {
     }
 
     private CompiledStatement compileSql(Session session, String sql,
-                                         String schemaName) throws Throwable {
+                                         String schemaName) throws HsqlException {
 
         Session sys = database.sessionManager.getSysSession(schemaName,
             session.getUser());
