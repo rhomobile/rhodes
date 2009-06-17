@@ -29,7 +29,7 @@ public class SyncThread extends RhoThread
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
 	private static final int SYNC_POLL_INTERVAL_SECONDS = 300;
-	private static final int SYNC_POLL_INTERVAL_INFINITE = -1;
+	private static final int SYNC_POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
 	private static final int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 	
 	static SyncThread m_pInstance;
@@ -126,7 +126,7 @@ public class SyncThread extends RhoThread
 	    m_curCommand = scNone;
 	}
 
-	void setPollInterval(int nInterval)
+	public void setPollInterval(int nInterval)
 	{ 
 	    m_nPollInterval = nInterval; 
 	    if ( m_nPollInterval == 0 )
