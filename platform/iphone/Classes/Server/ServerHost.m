@@ -291,6 +291,11 @@ char* webview_current_location() {
 	return get_current_location();
 }
 
+void webview_set_menu_items(VALUE argv)
+{
+	//TODO: webview_set_menu_items
+}
+
 void take_picture(char* callback_url) {
 	[[ServerHost sharedInstance] takePicture:[NSString stringWithCString:callback_url]];		
 }
