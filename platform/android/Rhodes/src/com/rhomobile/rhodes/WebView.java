@@ -26,6 +26,20 @@ public class WebView extends RubyBasic {
 		return RubyConstant.QNIL;
 	}
 
+	public static RubyValue set_menu_items(RubyValue arg0) {
+		//TODO: Implement me!
+		/*RubyHash items = (RubyHash)arg0;
+		RubyArray keys = items.keys();
+		RubyArray values = items.values();
+		for( int i = 0; i < keys.size(); i++ ){
+			String label = keys.get(i).toString();
+			String value = values.get(i).toString();
+			RhodesApplication.getInstance().addMenuItem(label, value);
+		}*/
+		return RubyConstant.QTRUE;
+	}
+	
+	
 	public static RubyValue current_location() {
 		String url = RhodesInstance.getInstance().getCurrentUrl();
 		return ObjectFactory.createString(url);
@@ -46,7 +60,12 @@ public class WebView extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				return WebView.current_location();
 			}
-		});		
+		});	
+		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return WebView.set_menu_items(arg0);
+			}
+		});
 		
 	}
 	
