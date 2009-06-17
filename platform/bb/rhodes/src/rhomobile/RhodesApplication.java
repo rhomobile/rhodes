@@ -44,6 +44,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public static final String LABEL_SYNC = "Sync";
 	public static final String LABEL_OPTIONS = "Options";
 	public static final String LABEL_LOG = "Log";
+	public static final String LABEL_SEPARATOR = "separator";
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
@@ -330,6 +331,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				}
 			};
 
+		private MenuItem separatorItem = MenuItem.separator(200000);
+
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
 			
@@ -386,6 +389,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    	setDefaultItemToMenuItems(label, optionsItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_LOG)) {
     	    	setDefaultItemToMenuItems(label, logItem);
+    	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR) || 
+    	    		   (value != null && value.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR))) {
+    	    	menuItems.addElement(separatorItem);
     	    } else {
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
