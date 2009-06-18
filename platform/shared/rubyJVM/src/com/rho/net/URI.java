@@ -1273,6 +1273,10 @@ package com.rho.net;
   public String getHost() {
     return m_host;
   }
+  
+  public void setHost(String strHost) {
+	m_host = strHost;
+  }
 
  /**
   * Get the port for this URI.

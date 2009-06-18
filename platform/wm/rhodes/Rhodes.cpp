@@ -6,6 +6,10 @@
 #include "ServerHost.h"
 #include "logging/RhoLog.h"
 
+#ifndef RUBY_RUBY_H
+typedef unsigned long VALUE;
+#endif //!RUBY_RUBY_H
+
 //void runAllLogTests();
 extern "C" const char* RhoGetRootPath();
 
@@ -216,6 +220,10 @@ extern "C" void webview_navigate(char* url) {
 extern "C" char* webview_execute_js(char* js) {
 //TODO: webview_execute_js
     return "";
+}
+
+extern "C" void webview_set_menu_items(VALUE argv) {
+//TODO: Implement me!
 }
 
 extern "C" char* get_current_location() {

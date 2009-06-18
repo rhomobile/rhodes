@@ -120,23 +120,32 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 				m_dbSess.commit();
 			
 			return new HsqlDBResult(res);
-		}catch(Throwable exc ){
+		}catch(HsqlException exc ){
 			throw new DBException(exc);
 		}
 	}
 	
 	public void startTransaction()throws DBException
 	{
-		if ( m_dbSess == null )
-			m_bPendingNoAutoCommit = true;
-		else
-			m_dbSess.setAutoCommit(false);
+		try{
+			if ( m_dbSess == null )
+				m_bPendingNoAutoCommit = true;
+			else
+				m_dbSess.setAutoCommit(false);
+		}catch(HsqlException exc ){
+			throw new DBException(exc);
+		}
 	}
 	
 	public void commit()throws DBException
 	{
-		if ( m_dbSess!= null )
-			m_dbSess.setAutoCommit(true);
+		try{
+			if ( m_dbSess!= null )
+				m_dbSess.setAutoCommit(true);
+		}catch(HsqlException exc ){
+			throw new DBException(exc);
+		}
+			
 	}
 	
 }

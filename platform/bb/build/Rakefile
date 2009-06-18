@@ -59,6 +59,7 @@ namespace "package" do
           )
       $stdout.flush
       cp "./rhodesApp.alx", config["build"]["targetdir"] if not FileUtils.uptodate?( config["build"]["targetdir"]+"/rhodesApp.alx", "./rhodesApp.alx")
+      cp "./rhodesApp.csl", config["build"]["targetdir"]
   end
 
   desc "Package all production"
@@ -88,7 +89,7 @@ namespace "package" do
       )
       $stdout.flush
       cp "./rhodesApp.alx", config["build"]["targetdir"] if not FileUtils.uptodate?( config["build"]["targetdir"]+"/rhodesApp.alx", "./rhodesApp.alx")
-
+      cp "./rhodesApp.csl", config["build"]["targetdir"]
     
   end
 
