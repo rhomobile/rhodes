@@ -37,6 +37,11 @@ public class Jsr75File implements SimpleFile
 		FileConnection fdir = null;
 		try{
 			fdir = (FileConnection)Connector.open(strDir);//,Connector.READ_WRITE);
+			if ( fdir == null )
+			{
+				log("Dir Connection opened failed : null.");
+				throw new RuntimeException("Dir Connection opened failed : null.");
+			}
 			log("Dir Connection opened.");
 	        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
 	        if (!fdir.exists()) { 
@@ -104,31 +109,35 @@ public class Jsr75File implements SimpleFile
 	  return strVer; 
     }
     
-    static class SoftVersion{
-		int nMajor = 0;
-		int nMinor = 0;
+    public static class SoftVersion{
+		public int nMajor = 0;
+		public int nMinor = 0;
     };
-    
-    static SoftVersion getSoftVersion(){
-    	SoftVersion ver = new SoftVersion();
+    private static SoftVersion m_softVer;
+    public static SoftVersion getSoftVersion()
+    {
+    	if ( m_softVer != null )
+    		return m_softVer;
+    	
+    	m_softVer = new SoftVersion();
 		String strVer = getSoftwareVersion();//DeviceInfo.getPlatformVersion();
     	
 		int nDot = strVer.indexOf('.');
 		
 		if ( nDot >= 0 )
 		{
-			ver.nMajor = Integer.parseInt( strVer.substring(0, nDot) );
+			m_softVer.nMajor = Integer.parseInt( strVer.substring(0, nDot) );
 			
 			int nDot2 = strVer.indexOf('.',nDot+1);
 			if ( nDot2 >= 0 )
-				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
+				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
 			else
-				ver.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
+				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
 		}else
-			ver.nMajor = Integer.parseInt( strVer );
+			m_softVer.nMajor = Integer.parseInt( strVer );
 		
 	
-		return ver;
+		return m_softVer;
     }
     
     static String makeRootPath(){
@@ -216,7 +225,7 @@ public class Jsr75File implements SimpleFile
 					
 					try{fc2.delete();}finally{ fc2.close();};
 				}catch( IOException exc) {
-					log(exc.getMessage());
+					log("deleteFilesInFolder exception: " + exc.getMessage());
 	        	}
 	        }
     	}catch(IOException exc){
@@ -236,7 +245,7 @@ public class Jsr75File implements SimpleFile
 	            	String strRhoPath = getRhoPath();
 	            	url = strRhoPath + path;
             	} catch (IOException x) { 
-                 	log("Exception: " + x.getMessage());
+                 	log("getRhoPath exception: " + x.getMessage());
                      //throw new IOException(StorageError.FILE_ACCESS_ERROR, x);
                  }              	
             }
@@ -250,7 +259,7 @@ public class Jsr75File implements SimpleFile
         	
         	fc.delete();
         } catch (IOException x) { 
-        	log("Exception: " + x.getMessage());
+        	log("delete Exception: " + x.getMessage());
             //throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
         }finally{
         	if (fc !=null)
@@ -278,7 +287,7 @@ public class Jsr75File implements SimpleFile
     {
         String url = path;
         this.noFlush = noFlush;
-        log(path);
+        log("Open file:" + path);
         if (!url.startsWith("file:")) { 
             /*if (url.startsWith("/")) { 
                 url = "file:///" + path;
@@ -292,8 +301,8 @@ public class Jsr75File implements SimpleFile
 	            		url += path;
 	            	
             	} catch (IOException x) { 
-                 	log("Exception: " + x.getMessage());
-                     throw x;
+                 	log("getRhoPath Exception: " + x.getMessage());
+                    throw x;
                  }              	
            // }
         }
@@ -306,13 +315,21 @@ public class Jsr75File implements SimpleFile
                     fconn.create();  // create the file if it doesn't exist
                 }
             }
-            fileSize = fconn.fileSize();
-            m_bOpened = true;
-            if (!readOnly) {
-                //fconn.setWritable(true);	                    
+            if ( fconn.exists() )
+            {
+            	fileSize = fconn.fileSize();
+            	m_bOpened = true;
+	            if (!readOnly) {
+	                //fconn.setWritable(true);	                    
+	            	
+	                out = fconn.openOutputStream();
+	                outPos = 0;
+	            }
+            }else
+            {
+            	fileSize = 0;
+            	m_bOpened = false;
             	
-                out = fconn.openOutputStream();
-                outPos = 0;
             }
         } catch (IOException x) { 
         	log("Exception: " + x.getMessage());
@@ -434,7 +451,13 @@ public class Jsr75File implements SimpleFile
                 out.close();
                 out = null;
             }
-            fconn.close();
+            
+            if ( fconn != null )
+            {
+	        	log("File close: " + fconn.getName());
+	            
+	            fconn.close();
+            }
         } catch(IOException x) { 
             throw x;
         }
@@ -448,5 +471,12 @@ public class Jsr75File implements SimpleFile
                 throw x;
             }
         }
+    }
+
+    public InputStream getResourceAsStream(Class fromClass, String path){
+	 if ( fromClass == null )
+          return null;
+
+       return fromClass.getResourceAsStream(path);
     }
 }

@@ -1,17 +1,22 @@
 #include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "rhoruby/rhoruby.h"
+#include "common/RhoConf.h"
+#include "ext/rho/rhoruby.h"
 #include "HttpServer.h"
-#include "syncengine/rsyncengine.h"
+//#include "syncengine/rsyncengine.h"
 #if defined(_WIN32_WCE)
 #include "geolocation/LocationController.h"
 #endif
-#include "SyncEngine.h"
+//#include "SyncEngine.h"
 #include "rdispatcher.h"
 #include "shttpd.h"
 
 #include "ports_mngt.h"
+#include "resource.h"
+#include "sync/SyncThread.h"
+using namespace rho::sync;
+#include "common/StringConverter.h"
 
 IMPLEMENT_LOGCLASS(CHttpServer,"HttpServer");
 #if defined(_WIN32_WCE)
@@ -23,7 +28,7 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
 extern "C" int	set_ports(struct shttpd_ctx *ctx, const char *p);
 
-char* canonicalizeURL(char* path);
+char* canonicalizeURL(const char* path);
 
 static CHttpServer* m_instance = NULL;
 
@@ -61,6 +66,8 @@ CHttpServer::CHttpServer(void)
 
 CHttpServer::~CHttpServer(void)
 {
+  rho_sync_destroy();
+
   shutdown_poll(ctx);
   m_thread.RemoveHandle(m_hEvent);
   m_thread.Shutdown();
@@ -94,19 +101,27 @@ void CHttpServer::FreezeThread()
 
 HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 {
-  if (!m_bRubyInitialized) {
+  if (!m_bRubyInitialized) 
+  {
     InitRubyFramework();
 //    InitHttpServer();
   
   InitStartandOptionPages();
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	m_szRhobundleReloadUrl = str_assign( callGetRhobundleZipUrl() );
+	m_szRhobundleReloadUrl = strdup(RHOCONF().getString("rhobundle_zip_url").c_str());
 #endif
-    LOG(INFO) + "Starting SYNC";
+    //LOG(INFO) + "Starting SYNC";
 
-    CSyncEngine* sync = CSyncEngine::Instance();
-    if (sync) sync->ShowStartPage();
+//    CSyncEngine* sync = CSyncEngine::Instance();
+//    if (sync) sync->ShowStartPage();
+    if (m_hMainWindow) 
+    {
+        ::PostMessage( m_hMainWindow, WM_COMMAND, IDM_START_PAGE, 0 );
+        m_hMainWindow = NULL;
+    }
+
+    rho_sync_create();
 
 //    if (logged_in()){
       
@@ -125,7 +140,8 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
 
 HRESULT CHttpServer::CloseHandle(HANDLE hHandle)
 {
-  if (m_bRubyInitialized) {
+  if (m_bRubyInitialized) 
+  {
     LOG(INFO) + "Shutting-down ruby framework";
 //    shttpd_fini(ctx);
     RhoRubyStop();
@@ -178,12 +194,12 @@ bool CHttpServer::InitStartandOptionPages() {
 	if (m_bRubyInitialized) {
 		char* _page;
 		if (m_pStartPage==NULL) {
-			_page = canonicalizeURL(callGetStartPage());
+			_page = canonicalizeURL(RHOCONF().getString("start_path").c_str());
 			m_pStartPage = wce_mbtowc(_page);
 			free(_page);
 		}
 		if (m_pOptionsPage==NULL) {
-			_page = canonicalizeURL(callGetOptionsPage());
+			_page = canonicalizeURL(RHOCONF().getString("options_path").c_str());
 			m_pOptionsPage = wce_mbtowc(_page);
 			free(_page);
 		}
@@ -206,13 +222,13 @@ LPTSTR CHttpServer::GetOptionsPage() {
 		return (LPTSTR)get_home_url_w();
 }
 
-char* canonicalizeURL(char* path) {
+char* canonicalizeURL(const char* path) {
 	if (!path) {
 		return wce_wctomb(get_home_url_w());
 	}
 
 	if ( strncmp("http://",path,7)==0 ) {
-		return path;
+		return strdup(path);
 	}
 
 	char* slash = "";
@@ -224,6 +240,15 @@ char* canonicalizeURL(char* path) {
 	char* url = (char*) malloc(len+1);
 	sprintf(url,"%s%s%s",get_home_url(),slash,path);
 	
+	return url;
+}
+
+const char* strip_local_domain(const char* url) {
+	const char* _home = get_home_url();
+	int _home_len = strlen(_home);
+	if (url && strncmp(_home,url,_home_len) == 0 ) {
+		return url+_home_len;
+	}
 	return url;
 }
 

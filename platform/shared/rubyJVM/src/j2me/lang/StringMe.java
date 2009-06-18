@@ -38,21 +38,43 @@ public class StringMe {
 
     public static String replaceAll(String strThis, String regex, String replacement) {
     	//TODO: String.replaceAll - implement regex replace
+    	StringBuffer strRes = new StringBuffer();
     	
-        int i = strThis.indexOf(regex);
-        return (i < 0) ? strThis : // No target sequence found.
-        	strThis.substring(0, i).concat(replacement).concat(
-        			replaceAll( strThis.substring(i+replacement.length()), regex, 
-        					replacement ) );  					
+        int nEnd = strThis.indexOf(regex);
+        if ( nEnd < 0 )
+        	return strThis;
+
+        int nStart = 0;
+        for( ; nEnd >=0 ; nEnd = strThis.indexOf(regex,nStart) )
+        {
+        	strRes.append(strThis.substring(nStart, nEnd));
+        	strRes.append(replacement);
+        	
+        	nStart = nEnd + regex.length();
+        }
+        
+    	strRes.append(strThis.substring(nStart, strThis.length()));
+        return strRes.toString();
     }
 
     public static String replaceFirst(String strThis, String regex, String replacement) {
-    	//TODO: String.replaceFirst - implement regex replace
+    	StringBuffer strRes = new StringBuffer();
     	
-        int i = strThis.indexOf(regex);
-        return (i < 0) ? strThis : // No target sequence found.
-        	strThis.substring(0, i).concat(replacement).concat( 
-        			strThis.substring(i+replacement.length()));
+        int nEnd = strThis.indexOf(regex);
+        if ( nEnd < 0 )
+        	return strThis;
+
+        int nStart = 0;
+        for( ; nEnd >=0 ; nEnd = -1 )
+        {
+        	strRes.append(strThis.substring(nStart, nEnd));
+        	strRes.append(replacement);
+        	
+        	nStart = nEnd + regex.length();
+        }
+        
+    	strRes.append(strThis.substring(nStart, strThis.length()));
+        return strRes.toString();
     }
     
     public static boolean matches(String strThis, String regex) {

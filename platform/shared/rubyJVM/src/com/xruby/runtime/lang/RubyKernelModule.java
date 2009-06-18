@@ -488,6 +488,24 @@ public class RubyKernelModule {
 	public static RubyInteger toInteger(RubyValue receiver, RubyValue arg) {
 		return arg.toRubyInteger();		
 	}
+
+	//@RubyLevelMethod(name="String", module=true)
+	public static RubyString toString(RubyValue receiver, RubyValue arg) {
+		return arg.toRubyString();		
+	}
+
+	//@RubyLevelMethod(name="Array", module=true)
+	public static RubyArray toArray(RubyValue receiver, RubyValue arg) {
+		RubyArray res = null;
+		try{
+			res = arg.toRubyArray();
+		}catch(RubyException exc)
+		{}
+		if ( res == null )
+			res = ObjectFactory.createArray(1, arg);
+				
+		return res;
+	}
 	
 	//@RubyLevelMethod(name="puts", module=true)
 	public static RubyValue puts(RubyValue receiver) {
@@ -637,7 +655,9 @@ public class RubyKernelModule {
         RubySymbol method_name = (RubySymbol)args.get(0);
         RubyClass klass = receiver.getRubyClass();
         klass = (klass != null) ? klass.getRealClass() : null;
-        throw new RubyException(RubyRuntime.NoMethodErrorClass, "undefined method '" + method_name.toString() + "' for " + klass.getName());
+        String msg =  "undefined method '" + method_name.toString() + "' for " + klass.getName();
+        LOG.ERROR(msg);
+        throw new RubyException(RubyRuntime.NoMethodErrorClass,msg);
     }
     
     //@RubyLevelMethod(name="sleep", module=true)

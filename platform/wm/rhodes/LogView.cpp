@@ -39,16 +39,15 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	m_grip.ShowSizeGrip();
 	CWindow edit = GetDlgItem(IDC_LOGEDIT);
 	::SendMessage(edit.m_hWnd,EM_EXLIMITTEXT,0,2147483647);
+	::SendMessage(edit.m_hWnd, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS);
 	SetTimer(100,1000,NULL);
 
 	RECT rc = { 0,0,500,400 };
-	rc.left = RHOCONF().getInt("log_view_left");
-	rc.top = RHOCONF().getInt("log_view_top");
-	int width = RHOCONF().getInt("log_view_width");
-	if (width <= 0) width = 500;
+	rc.left = getIniInt(_T("log_view_left"),0);
+	rc.top = getIniInt(_T("log_view_top"),0);
+	int width = getIniInt(_T("log_view_width"),500);
 	rc.right = rc.left+width;
-	int height = RHOCONF().getInt("log_view_height");
-	if (height <= 0) height = 400;
+	int height = getIniInt(_T("log_view_height"),400);
 	rc.bottom = rc.top+height;
 	
 	MoveWindow(&rc);
@@ -72,7 +71,7 @@ void CLogView::loadLogText(){
     rho::StringW strText;
     LOGCONF().getLogTextW(strText);
     //strText += L"\r\n";
-    SetDlgItemText(IDC_LOGEDIT, strText.c_str() );
+    SetDlgItemText(IDC_LOGEDIT, strText.c_str());
 
     int nPos = LOGCONF().getLogTextPos();
     int nLine = SendDlgItemMessage(IDC_LOGEDIT,EM_LINEFROMCHAR,nPos,0);
@@ -153,17 +152,20 @@ LRESULT CLogView::OnSizing(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL
 LRESULT CLogView::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
-	RHOCONF().setInt("log_view_left",lp->x);
-	RHOCONF().setInt("log_view_top",lp->y);
-	RHOCONF().setInt("log_view_width",lp->cx);
-	RHOCONF().setInt("log_view_height",lp->cy);
-	RHOCONF().saveToFile();
+	setIniInt(_T("log_view_left"),lp->x);
+	setIniInt(_T("log_view_top"),lp->y);
+	setIniInt(_T("log_view_width"),lp->cx);
+	setIniInt(_T("log_view_height"),lp->cy);
 	bHandled = FALSE;
 	return 0;
 }
 
 LRESULT CLogView::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	if(m_pFindDialog) {
+		m_pFindDialog->DestroyWindow();
+		m_pFindDialog = NULL;
+	}
 	ShowWindow(SW_HIDE);
     bHandled = TRUE;
     return 0;
@@ -179,7 +181,96 @@ LRESULT CLogView::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	}
 	return 0;
 }
-#endif
+
+LRESULT CLogView::OnCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendDlgItemMessage(IDC_LOGEDIT,WM_COPY);
+    bHandled = TRUE;
+	return 0;
+}
+
+LRESULT CLogView::OnSelectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	SendDlgItemMessage(IDC_LOGEDIT,EM_SETSEL,0,-1);
+    bHandled = TRUE;
+	return 0;
+}
+
+LRESULT CLogView::OnFind(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	if (m_pFindDialog == NULL) {
+		m_pFindDialog = new CFindReplaceDialog();
+		m_pFindDialog->Create(TRUE, m_findText.c_str(), NULL, m_findParams, this->m_hWnd);
+	}
+	m_pFindDialog->ShowWindow(SW_SHOW);
+    bHandled = TRUE;
+	return 0;
+}
+
+LRESULT CLogView::OnFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+    if (m_pFindDialog->IsTerminating()) {
+        m_pFindDialog = NULL;
+	} else {
+		m_findText = m_pFindDialog->GetFindString();
+		CWindow edit = GetDlgItem(IDC_LOGEDIT);
+		CHARRANGE curr_sel = {0,-1};
+		::SendMessage(edit.m_hWnd,EM_EXGETSEL,0,(LPARAM)&curr_sel);
+		m_findParams = 0;
+		m_findParams |= m_pFindDialog->MatchWholeWord() ? FR_WHOLEWORD : 0;
+		m_findParams |= m_pFindDialog->MatchCase() ? FR_MATCHCASE : 0;
+		FINDTEXTEX findtext = { {curr_sel.cpMin,0},m_pFindDialog->GetFindString() };
+		if (m_pFindDialog->SearchDown()) {
+			m_findParams |= FR_DOWN;
+			findtext.chrg.cpMin = curr_sel.cpMax;
+			findtext.chrg.cpMax = -1;
+		} 
+		int pos = ::SendMessage(edit.m_hWnd, EM_FINDTEXTEXW,m_findParams,(LPARAM)&findtext);
+		if (pos!=-1) {
+			int nLine = ::SendMessage(edit.m_hWnd,EM_LINEFROMCHAR,pos,0);
+			::SendMessage(edit.m_hWnd,EM_LINESCROLL,0,nLine);
+			::SendMessage(edit.m_hWnd,EM_SETSEL,pos,findtext.chrgText.cpMax);
+		} else {
+			::MessageBox(m_pFindDialog->m_hWnd,
+				L"Can't find specifyed text",L"Find",MB_OK);
+		}
+	}
+	bHandled = TRUE;
+	return 0;
+}
+
+void CLogView::OnPopupMenuCommand() {
+	CMenu menu;
+	CMenu sub;
+    POINT point;                                            
+    ::GetCursorPos(&point); //where is the mouse?
+
+	RECT  rect;
+
+	GetWindowRect(&rect);
+
+	VERIFY(menu.LoadMenu(IDR_LOGVIEW_MENU));
+	sub.Attach(menu.GetSubMenu(0));
+    sub.TrackPopupMenu(
+            TPM_RIGHTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+			point.x, 
+			point.y,
+			m_hWnd);
+	sub.Detach();
+}
+
+LRESULT CLogView::OnNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	MSGFILTER * lpMsgFilter = (MSGFILTER *)lParam; 
+	if ( (wParam == IDC_LOGEDIT) && (lpMsgFilter->nmhdr.code == EN_MSGFILTER)   
+		&& (lpMsgFilter->msg == WM_RBUTTONDOWN)) {
+		OnPopupMenuCommand();
+		bHandled = TRUE;
+	} else {
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+#endif  //OS_WINDOWS
 
 LRESULT CLogView::OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
@@ -326,6 +417,36 @@ LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 	}
 
 	return ::CallWindowProc(oldWndProc, hwnd, msg, wParam, lParam);
+}
+
+LPCTSTR getIniPath() {
+	static TCHAR _inipath[MAX_PATH];
+	static bool path_loaded = false;
+	if (!path_loaded) {
+		int len = GetModuleFileName(NULL,_inipath,MAX_PATH);
+		if( len == 0 ) {
+			wcscpy(_inipath,_T("."));
+		} else {
+			while( !(_inipath[len] == '.') )
+				len--;
+			_inipath[len]=0;
+			swprintf(_inipath,MAX_PATH,_T("%s.ini"),_inipath);
+		}
+		path_loaded = 1;
+	}
+	return _inipath;
+}
+
+int getIniInt(LPCTSTR lpKeyName, int nDefault) {
+	return GetPrivateProfileInt( _T("properties"), 
+		lpKeyName, nDefault, getIniPath());
+}
+
+void setIniInt(LPCTSTR lpKeyName, int nValue) {
+	TCHAR value[128];
+	_itow_s(nValue,value,128,10);
+	WritePrivateProfileString( _T("properties"), 
+		lpKeyName, value, getIniPath());
 }
 
 #endif //OS_WINDOWS

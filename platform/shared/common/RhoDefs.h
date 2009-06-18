@@ -36,6 +36,8 @@
 #define RHO_STRIP_LOG 0
 #define RHO_STRIP_PROFILER 0
 
+typedef int LogSeverity;
+
 #if defined( OS_WINDOWS ) || defined( OS_WINCE )
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS 1

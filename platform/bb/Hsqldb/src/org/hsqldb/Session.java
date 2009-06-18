@@ -417,7 +417,7 @@ public class Session implements SessionInterface {
      * @throws  HsqlException
      */
     public boolean addDeleteAction(Table table, Row row) throws HsqlException {
-    	m_bNeedCommit = !isNestedTransaction;
+    	m_bNeedCommit = true;//!isNestedTransaction;
     	if ( m_deleteCallback != null )
     		m_deleteCallback.onDeleteRow(table, row);
     	
@@ -444,7 +444,7 @@ public class Session implements SessionInterface {
      */
     boolean addInsertAction(Table table, Row row) throws HsqlException {
     	
-    	m_bNeedCommit = !isNestedTransaction;
+    	m_bNeedCommit = true;//!isNestedTransaction;
 
         if (!isAutoCommit || isNestedTransaction) {
         	//RHO
@@ -470,7 +470,7 @@ public class Session implements SessionInterface {
      * @param  autocommit the new value
      * @throws  HsqlException
      */
-    public void setAutoCommit(boolean autocommit) {
+    public void setAutoCommit(boolean autocommit)throws HsqlException{
 
         if (isClosed) {
             return;
@@ -482,9 +482,9 @@ public class Session implements SessionInterface {
 
                 isAutoCommit = autocommit;
 
-                try {
+                //try {
                     database.logger.writeToLog(this, getAutoCommitStatement());
-                } catch (HsqlException e) {}
+                //} catch (HsqlException e) {}
             }
         }
     }

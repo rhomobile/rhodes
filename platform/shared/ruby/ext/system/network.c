@@ -20,9 +20,9 @@
 
 #include "network.h"
 
-extern int has_network_impl();
+extern int rho_net_has_network();
 
 VALUE has_network() {
-	int retval = has_network_impl();
+	int retval = rho_net_has_network();
 	return retval == 1 ? Qtrue : Qfalse;
 }

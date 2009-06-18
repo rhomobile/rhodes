@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#include "SyncEngine.h"
+//#include "SyncEngine.h"
 
 @interface WebViewController : UIViewController <UIActionSheetDelegate> {
 	IBOutlet UINavigationBar* navBar;

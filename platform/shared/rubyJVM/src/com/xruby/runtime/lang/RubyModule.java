@@ -29,12 +29,12 @@ import com.xruby.runtime.builtin.RubyTypesUtil;
         @DummyMethod(name="method_removed", privateMethod=true),
         @DummyMethod(name="method_undefined", privateMethod=true)
 })*/
-public class RubyModule extends RubyBasic {
+public class RubyModule extends RubyObject {
     protected String name_;
     private RubyModule scope_ = null;//where is the module is defined under.
     protected RubyClass superclass_;
     private int current_access_mode_ = RubyMethod.PUBLIC;
-    protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
+//    protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
     protected Map/*<RubyID, RubyMethod>*/ methods_ = new HashMap/*<RubyID, RubyMethod>*/();
     protected Map/*<String, RubyValue>*/ constants_ = new HashMap/*<String, RubyValue>*/();
     
@@ -56,7 +56,7 @@ public class RubyModule extends RubyBasic {
     	scope_ = m.scope_;
     	superclass_ = m.superclass_;
     	current_access_mode_ = m.current_access_mode_;
-    	instance_varibles_ = m.instance_varibles_;
+    	//instance_varibles_ = m.instance_varibles_;
     	methods_ = m.methods_;
     	constants_ = m.constants_;
     	
@@ -214,7 +214,11 @@ public class RubyModule extends RubyBasic {
         m.setScope(this);
         m.setID(id);
         m.setAccess(attribute);
-        methods_.put(id, m);
+
+        if ( id != null && id.toString() != null && id.toString().equals("pretty_inspect"))
+            methods_.put(id, m);
+        else
+            methods_.put(id, m);
 
         if (RubyRuntime.running && id != RubyID.ID_ALLOCATOR) {
             RubyAPI.callOneArgMethod(this, id.toSymbol(), null, RubyID.methodAddedID);
@@ -296,9 +300,11 @@ public class RubyModule extends RubyBasic {
         RubyClass c = (RubyClass)v;
 
         if (null != parent) {
-            if (!c.isMyParent(parent)){
+        	//RHO : TODO:superclass mismatch for class - mspec/pp.rb 
+            /*if (!c.isMyParent(parent)){
                 throw new RubyException(RubyRuntime.TypeErrorClass, "superclass mismatch for class "+ name);
-            }
+            }*/
+        	//RHO
         }
 
         c.setAccessPublic();
@@ -429,7 +435,7 @@ public class RubyModule extends RubyBasic {
     }
 
     // Class object instance variable
-    public RubyValue getInstanceVariable(RubyID id) {
+   /* public RubyValue getInstanceVariable(RubyID id) {
         if (null == instance_varibles_) {
             return RubyConstant.QNIL;
         }
@@ -441,12 +447,12 @@ public class RubyModule extends RubyBasic {
 
     public RubyValue setInstanceVariable(RubyValue value, RubyID id) {
         if (null == instance_varibles_) {
-            instance_varibles_ = new HashMap/*<RubyID, RubyValue>*/();
+            instance_varibles_ = new HashMap();//<RubyID, RubyValue>();
         }
 
         instance_varibles_.put(id, value);
         return value;
-    }
+    }*/
 
     // Class Variable
     public RubyValue getClassVariable(String name) {

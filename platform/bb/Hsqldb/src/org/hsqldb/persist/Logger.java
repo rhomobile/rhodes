@@ -107,7 +107,7 @@ public class Logger {
                                    !db.isFilesReadOnly());
         }
 
-        appLog.sendLine(SimpleLog.LOG_ERROR, "Database (re)opened");
+        appLog.sendLine(SimpleLog.LOG_NONE, "Database (re)opened");
 
         logStatements = false;
 
@@ -151,7 +151,7 @@ public class Logger {
     public boolean closeLog(int closemode) {
 
         if (log == null) {
-            appLog.sendLine(SimpleLog.LOG_ERROR, "Database closed");
+            appLog.sendLine(SimpleLog.LOG_NONE, "Database closed");
             appLog.close();
 
             return true;
@@ -182,7 +182,7 @@ public class Logger {
             return false;
         }
 
-        appLog.sendLine(SimpleLog.LOG_ERROR, "Database closed");
+        appLog.sendLine(SimpleLog.LOG_NONE, "Database closed");
         appLog.close();
 
         log = null;

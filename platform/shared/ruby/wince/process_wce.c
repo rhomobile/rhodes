@@ -10,7 +10,17 @@ int _getpid(void)
 	return (int)GetCurrentProcessId();
 }
 
+int rb_w32_getpid(void)
+{
+	return (int)GetCurrentProcessId();
+}
+
 int _getppid(void)
+{
+	return (int)GetCurrentProcessId();
+}
+
+int rb_w32_getppid(void)
 {
 	return (int)GetCurrentProcessId();
 }

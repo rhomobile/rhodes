@@ -65,7 +65,7 @@
            Replace default application parameters with the real application parameters.
         -->
         <replace file="${platform-prebuild-dir}/res/values/strings.xml" token="Rhodes" value="${application-name}"/>
-		<replace file="${platform-prebuild-dir}/res/values/strings.xml" token="Anton Antonov" value="${application-author}"/>
+		<replace file="${platform-prebuild-dir}/res/values/strings.xml" token="Anton Antonov" value="${vendor}"/>
 		<replace file="${platform-prebuild-dir}/res/values/strings.xml" token="all@rhomobile.com" value="${application-support-email}"/>
 		<replace file="${platform-prebuild-dir}/res/values/strings.xml" token="(C) 2008 Rhomobile. All rights reserved." value="${application-copyright}"/>
 		

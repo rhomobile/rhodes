@@ -1,7 +1,8 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
-//#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+//#ifndef __APPLE__
+#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 #include <stdlib.h>
 
 #ifndef _RHO_NO_MEMDEFINES
@@ -32,10 +33,18 @@ void *  rho_calloc(size_t num, size_t size);
 size_t  rho_msize(void *);
 void *  rho_realloc(void *, size_t);
 char *  rho_strdup(const char *);
-
+void    sys_free(void *);
 #ifdef __cplusplus
 }
 #endif
+
+#undef free
+#undef malloc
+#undef calloc
+#undef _msize
+#undef realloc
+#undef strdup
+#undef _strdup
 
 //#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
@@ -47,7 +56,7 @@ char *  rho_strdup(const char *);
 #define strdup(s) rho_strdup(s)
 #define _strdup(s) rho_strdup(s)
 
-#if 0//ndef __SYMBIAN32__
+#ifndef __SYMBIAN32__
 
 #ifdef __cplusplus
 void* cpp_alloc(size_t size, bool nothrow);
@@ -108,5 +117,6 @@ inline void* operator new(size_t size, const std::nothrow_t&) __THROW {
 #endif //_RHO_NO_MEMDEFINES
 
 //#endif// _WIN32_WCE
+#endif
 
 #endif  // RHO_MEMORY__

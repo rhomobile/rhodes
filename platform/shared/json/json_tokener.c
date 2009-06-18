@@ -44,6 +44,9 @@
 # error You do not have strncasecmp on your system.
 #endif /* HAVE_STRNCASECMP */
 
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "JSON"
 
 static const char* json_null_str = "null";
 static const char* json_true_str = "true";
@@ -278,7 +281,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_comment_eol:
       if(c == '\n') {
-	MC_DEBUG("json_tokener_comment: %s\n", tok->pb->buf);
+	RAWTRACE1("json_tokener_comment: %s", tok->pb->buf);
 	state = json_tokener_state_eatws;
       } else {
 	printbuf_memappend(tok->pb, &c, 1);
@@ -288,7 +291,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
     case json_tokener_state_comment_end:
       printbuf_memappend(tok->pb, &c, 1);
       if(c == '/') {
-	MC_DEBUG("json_tokener_comment: %s\n", tok->pb->buf);
+	RAWTRACE1("json_tokener_comment: %s", tok->pb->buf);
 	state = json_tokener_state_eatws;
       } else {
 	state = json_tokener_state_comment;
@@ -522,8 +525,11 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
     tok->err = json_tokener_error_parse_eof;
 
  out:
-  if(tok->err == json_tokener_success) return json_object_get(current);
-  MC_DEBUG2("json_tokener_parse_ex: error %s at offset %d\n",
-	   json_tokener_errors[tok->err], tok->char_offset);
+  if(tok->err == json_tokener_success) 
+      return json_object_get(current);
+
+  RAWLOG_ERROR3("json_tokener_parse_ex: error %s at offset %d; String: %s",
+      json_tokener_errors[tok->err], tok->char_offset, (tok->pb && tok->pb->buf&&tok->pb->bpos ? tok->pb->buf : "") );
+
   return NULL;
 }

@@ -1,5 +1,5 @@
 package com.rhomobile.rhodes;
 
-public class ${APPLICATIONNAME} extends Platform {
+public class APPLICATIONNAME extends Platform {
 
 }

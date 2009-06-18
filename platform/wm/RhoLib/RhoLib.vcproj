@@ -329,8 +329,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -691,8 +691,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -766,6 +766,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\InputStream.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\irhoclassfactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\IRhoThreadImpl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoConf.cpp"
 				>
 			</File>
@@ -807,6 +819,14 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\common\RhoSystem.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoThread.h"
 				>
 			</File>
 			<File
@@ -855,10 +875,6 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\logging\RhoPlainLog.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\logging\RhoPlainLog.h"
 				>
 			</File>
 		</Filter>

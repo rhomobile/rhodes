@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "defs.h"
 #include "Server.h"
@@ -19,6 +19,14 @@
 #include "ServerHost.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
+#include "common/RhoConf.h"
+#include "logging/RhoLogConf.h"
+#include "sync/syncthread.h"
+#include "JSString.h"
+
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "ServerHost"
 
 extern char* get_current_location();
 
@@ -39,7 +47,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
     
 	if (sock == ((CFSocketNativeHandle)(-1))) {
         
-		DBG(("AcceptConnection - Received an error (%d, %d)\n", (int)error->domain, (int)error->error));
+		RAWLOG_INFO2("AcceptConnection - Received an error (%d, %d)", (int)error->domain, (int)error->error );
 		
 		ServerInvalidate(server);
 		ServerRelease(server);
@@ -61,7 +69,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -86,6 +94,12 @@ static ServerHost* sharedSH = nil;
 - (void)navigateTo:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
 		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:url waitUntilDone:NO];
+	}
+}
+
+- (void)executeJs:(JSString*) js {
+	if(actionTarget && [actionTarget respondsToSelector:onExecuteJs]) {
+		[actionTarget performSelectorOnMainThread:onExecuteJs withObject:js waitUntilDone:YES];
 	}
 }
 
@@ -121,12 +135,18 @@ static ServerHost* sharedSH = nil;
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-	DBG(("Initializing ruby\n"));
+	RAWLOG_INFO("Initializing ruby");
 	RhoRubyStart();
-	homeUrl = [NSString stringWithCString:callGetStartPage() encoding:NSUTF8StringEncoding];
-	optionsUrl = [NSString stringWithCString:callGetOptionsPage() encoding:NSUTF8StringEncoding];
-	DBG(("Start page: %s\n", [homeUrl UTF8String]));
-	DBG(("Options page: %s\n", [optionsUrl UTF8String]));
+
+	char* _url = rho_conf_getString("start_path");
+	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
+	rho_conf_freeString(_url);
+	_url = rho_conf_getString("options_path");
+	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
+	rho_conf_freeString(_url);
+	
+	RAWLOG_INFO1("Start page: %s", [homeUrl UTF8String]);
+	RAWLOG_INFO1("Options page: %s", [optionsUrl UTF8String]);
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
 	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
 	
@@ -134,45 +154,52 @@ static ServerHost* sharedSH = nil;
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
-		DBG(("HTTP Server started and ready\n"));
+		RAWLOG_INFO("HTTP Server started and ready");
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
 							   withObject:homeUrl waitUntilDone:NO];
+		
+		RAWLOG_INFO("Create Sync");
+		rho_sync_create();
+		
         [[NSRunLoop currentRunLoop] run];
-        DBG(("Invalidating local server\n"));
+        RAWLOG_INFO("Invalidating local server");
         ServerInvalidate(server);
     } else {
-        DBG(("Failed to start HTTP Server\n"));
+        RAWLOG_INFO("Failed to start HTTP Server");
 		[self performSelectorOnMainThread:@selector(serverFailed:) 
 							   withObject:NULL waitUntilDone:NO];
     }
 	
-	DBG(("Stopping ruby"));
+	RAWLOG_INFO("Destroy Sync");
+	rho_sync_destroy();
+	
+	RAWLOG_INFO("Stopping ruby");
 	RhoRubyStop();
 	
-    DBG(("Server host thread routine is completed\n"));
+    RAWLOG_INFO("Server host thread routine is completed");
     [pool release];
 }
-
+/*
 - (int)initializeDatabaseConn {
     NSString *appRoot = [AppManager getApplicationsRootPath];
     NSString *path = [appRoot stringByAppendingPathComponent:@"../db/syncdb.sqlite"];
 	return sqlite3_open([path UTF8String], &database);
-}
+}*/
 
-extern void InitRhoLog(const char* szRootPath);
 extern const char* RhoGetRootPath();
 
 -(void) start {
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
+	rho_logconf_Init(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
-	InitRhoLog(RhoGetRootPath());
+	
 	//Start Sync engine
-	[self initializeDatabaseConn];
+	//[self initializeDatabaseConn];
 	// Startup the sync engine thread
-	start_sync_engine(database);
+	//start_sync_engine(database);
 	
 	
 	// Start server thread	
@@ -183,8 +210,8 @@ extern const char* RhoGetRootPath();
 -(void) stop {
     CFRunLoopStop(runLoop);
 	// Stop the sync engine
-	stop_sync_engine();
-	shutdown_database();
+	//stop_sync_engine();
+	//shutdown_database();
 }
 
 - (void)dealloc 
@@ -246,12 +273,27 @@ void webview_navigate(char* url) {
 	[[ServerHost sharedInstance] navigateTo:[NSString stringWithCString:url]];
 }
 
+char* webview_execute_js(char* js) {
+	char * retval;
+	JSString *javascript = [[[JSString alloc] init] autorelease];
+	javascript.inputJs = [NSString stringWithUTF8String:js];
+	[[ServerHost sharedInstance] executeJs:javascript];
+	// TBD: Does ruby GC pick this up?
+	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	return retval;
+}
+
 void perform_webview_refresh() {
 	[[ServerHost sharedInstance] performRefreshView];														
 }
 
 char* webview_current_location() {
 	return get_current_location();
+}
+
+void webview_set_menu_items(VALUE argv)
+{
+	//TODO: webview_set_menu_items
 }
 
 void take_picture(char* callback_url) {

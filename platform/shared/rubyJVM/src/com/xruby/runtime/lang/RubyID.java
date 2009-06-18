@@ -72,6 +72,7 @@ public class RubyID {
     public static final RubyID toStrID = intern("to_str");
     public static final RubyID toIntID = intern("to_int");
     public static final RubyID toAryID = intern("to_ary");
+    public static final RubyID toTimeID = intern("to_time");
 
     public static final RubyID methodAddedID = intern("method_added");
     public static final RubyID methodMissingId = intern("method_missing");

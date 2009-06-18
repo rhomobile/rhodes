@@ -1,26 +1,37 @@
-package 	com.rhomobile.rhodes;
+package com.rhomobile.rhodes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import android.content.Context;
-
-import com.rho.INetworkAccess;
+import com.rho.net.IHttpConnection;
+import com.rho.net.INetworkAccess;
+import com.rhomobile.rhodes.http.HttpHeader;
 
 public class NetworkAccessImpl implements INetworkAccess {
 
-	private NetworkStateTracker networkStateTracker;
-
-	public NetworkAccessImpl(Context context) {
-		networkStateTracker = new NetworkStateTracker(context);
-		networkStateTracker.enable();
+	public NetworkAccessImpl() {
 	}
 
 	public void autoConfigure() {
 	}
 
-	public HttpURLConnection connect(String server) throws IOException {
+	public String getHomeUrl()
+	{
+		return "http://127.0.0.1:8080";
+	}
+	
+	public boolean doLocalRequest(String strUrl, String strBody)
+	{
+		HttpHeader headers = new HttpHeader();
+		headers.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		
+		RhodesInstance.getInstance().postUrl(strUrl, strBody, headers);
+		
+		return true;
+	}
+	
+	public IHttpConnection connect(String server) throws IOException {
 		
 		int fragment = server.indexOf('#');
 		if (-1 != fragment) {
@@ -35,19 +46,23 @@ public class NetworkAccessImpl implements INetworkAccess {
 		urlc.setUseCaches(false);
 		urlc.setAllowUserInteraction(false);
 		urlc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		return urlc;
+		return new AndroidHttpConnection(urlc);
 	}
 
 	public String getSuffix() {
 		return "";
 	}
 
-	public synchronized boolean isNetworkAvailable() {
-		return networkStateTracker.isNetworkConnected();
-	}
-
 	public void log(String txt) {
 		HttpLog.v(txt);
+	}
+
+	public void close() {
+		
+	}
+
+	public void configure() {
+		
 	}
 
 }

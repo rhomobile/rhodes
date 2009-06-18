@@ -113,8 +113,6 @@ Boolean HttpContextOpen(HttpContextRef context);
 
 void HttpContextClose(HttpContextRef context);
 
-void _dbg_print_data(UInt8* buffer, CFIndex size);
-	
 #if defined(__cplusplus)
 }
 #endif

@@ -1,13 +1,23 @@
 package rhomobile;
 
+import j2me.util.ArrayList;
+
+import java.util.Hashtable;
+
+import javolution.util.FastTable;
+
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.builtin.RubyString;
 
 public class WebView extends RubyBasic {
 
@@ -32,6 +42,18 @@ public class WebView extends RubyBasic {
 		return ObjectFactory.createString(url);
 	}
 	
+	public static RubyValue set_menu_items(RubyValue arg0) {
+		RubyHash items = (RubyHash)arg0;
+		RubyArray keys = items.keys();
+		RubyArray values = items.values();
+		for( int i = 0; i < keys.size(); i++ ){
+			String label = keys.get(i).toString();
+			String value = values.get(i).toString();
+			RhodesApplication.getInstance().addMenuItem(label, value);
+		}
+		return RubyConstant.QTRUE;
+	}
+	
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("refresh", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -48,7 +70,11 @@ public class WebView extends RubyBasic {
 				return WebView.current_location();
 			}
 		});		
-		
+		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return WebView.set_menu_items(arg0);
+			}
+		});
 	}
 	
 }

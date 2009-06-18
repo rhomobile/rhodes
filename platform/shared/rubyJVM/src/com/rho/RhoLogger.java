@@ -16,7 +16,7 @@ public class RhoLogger {
 	private String LogSeverityNames[] = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
 	
 	private String m_category;
-	private static RhoLogConf m_oLogConf;
+	private static RhoLogConf m_oLogConf = new RhoLogConf();
 	private String m_strMessage;
 	private int    m_severity;
 	private static String m_SinkLock = "";
@@ -107,10 +107,13 @@ public class RhoLogger {
 	}
 
 	private void logMessage( int severity, String msg ){
-		logMessage(severity, msg, null );
+		logMessage(severity, msg, null, false );
+	}
+	private void logMessage( int severity, String msg, Throwable e ){
+		logMessage(severity, msg, e, false );
 	}
 	
-	private void logMessage( int severity, String msg, Throwable e ){
+	private void logMessage( int severity, String msg, Throwable e, boolean bOutputOnly ){
 		m_severity = severity;
 		if ( !isEnabled() )
 			return;
@@ -119,15 +122,22 @@ public class RhoLogger {
 	    if ( getLogConf().isLogPrefix() )
 	        addPrefix();
 		
-	    m_strMessage += msg;
+	    if ( msg != null )
+	    	m_strMessage += msg;
+	    
 	    if ( e != null )
-	    	m_strMessage += (msg.length() > 0 ? ";" : "") + "Exception:" + e.getMessage(); 
-	    		
+	    {
+	    	m_strMessage += (msg != null && msg.length() > 0 ? ";" : "") + e.getClass().getName() + ": ";
+	    	
+	    	if ( e.getMessage() != null )
+	    		m_strMessage += e.getMessage();
+	    }
+	    
 		if (m_strMessage.length() > 0 || m_strMessage.charAt(m_strMessage.length() - 1) != '\n')
 			m_strMessage += '\n';
 			
 	    synchronized( m_SinkLock ){
-	    	getLogConf().sinkLogMessage( m_strMessage );
+	    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
 		    if ( (RhoLogger.RHO_DEBUG || m_severity == L_FATAL) && e != null ){
 				//TODO: redirect printStackTrace to our log
 				e.printStackTrace();
@@ -152,6 +162,13 @@ public class RhoLogger {
 	public void INFO(String message) {
 		logMessage( L_INFO, message);
 	}
+	public void INFO_OUT(String message) {
+		//logMessage( L_INFO, message, null, true);
+		//TODO: INFO_OUT
+		System.out.print(m_category + ": " + message + "\n");
+		System.out.flush();
+	}
+	
 	public void WARNING(String message) {
 		logMessage( L_WARNING, message);
 	}
@@ -163,6 +180,15 @@ public class RhoLogger {
 	}
 	public void ERROR(String message,Throwable e) {
 		logMessage( L_ERROR, message, e );
+	}
+	public void ERROR_OUT(String message,Throwable e) {
+		//logMessage( L_ERROR, message, e, true );
+		System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
+				(e != null ? e.getMessage() : "" ) +"\n");
+		if ( e != null )
+			e.printStackTrace();
+		
+		System.out.flush();
 	}
 	
 	public void FATAL(String message) {
@@ -198,7 +224,6 @@ public class RhoLogger {
     	
         RhoConf.InitRhoConf();
     	
-    	m_oLogConf = new RhoLogConf();
         //Set defaults
 		if ( RhoLogger.RHO_DEBUG ) {
 			m_oLogConf.setMinSeverity( 0 );

@@ -16,10 +16,6 @@ module Kernel
         false
     end
     
-    def fork
-        raise NotImplementedError, "the fork() function is unimplemented on this machine"
-    end
-	
     def =~ x
         false
     end
@@ -56,6 +52,12 @@ module Kernel
     private
     def method_added symbol
     end
+    
+    public
+    def fork
+        raise NotImplementedError, "the fork() function is unimplemented on this machine"
+    end
+    
 end
 
 class Object
@@ -89,6 +91,13 @@ module Enumerable
         array_of_tuples = array_of_tuples.sort {|x, y| x[1] <=> y[1]}
         return array_of_tuples.collect {|x| x[0]}
     end
+
+    def detect(ifnone = nil)
+        each { |obj| return obj if yield(obj) }
+        ifnone.call if ifnone
+    end
+    
+    alias find :detect
 
     def each_with_index 
         i = 0;
@@ -135,6 +144,18 @@ module Enumerable
         else
             nil
         end
+    end
+	
+    def all?(&proc)
+        proc = lambda { |obj| obj } unless block_given?
+        each { |obj| return false unless proc.call(obj) }
+        true
+    end
+    
+    def any?(&proc)
+        proc = lambda { |obj| obj } unless block_given?
+        each { |obj| return true if proc.call(obj) }
+        false
     end
 	
     def collect
@@ -217,7 +238,7 @@ class File
         s = ""
         first = true
         aString.each {|x|
-            if !first
+            if !first and !s.end_with?(File::SEPARATOR)
                 s += File::SEPARATOR
             end
             s+= x

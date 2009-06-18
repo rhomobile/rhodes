@@ -1,3 +1,6 @@
+% CONFIG["DLDFLAGS"].sub!(/(\A|\s)(-\S+(?:\s*\w*)?\$\(TARGET\)\S*)/, '\1')
+% dldflags = $2
+% enable_shared = CONFIG['ENABLE_SHARED'] == 'yes'
 % deffile = (true if /\$\(DEFFILE\)/ =~ CONFIG["LINK_SO"])
 % encs = Dir.open($srcdir) {|d| d.grep(/.+\.c\z/)} - BUILTIN_ENCS
 % encs.each {|e| e.chomp!(".c")}
@@ -40,6 +43,12 @@
 
 VPATH = <%=%w[$(arch_hdrdir)/ruby $(hdrdir)/ruby $(srcdir) $(encsrcdir)].join(CONFIG["PATH_SEPARATOR"])%>
 LIBPATH = <%=libpathflag($DEFLIBPATH)%>
+LIBS = <%=
+if enable_shared or RbConfig.expand(CONFIG["LIBRUBY"].dup) != RbConfig.expand(CONFIG["LIBRUBY_A"].dup)
+  CONFIG['LIBRUBYARG']
+else
+  ''
+end %> <%=CONFIG['LIBS']%> $(EXTLIBS)
 
 ENCOBJS = <%=encs.map {|e|"enc/#{e}.$(OBJEXT)"}.join(" \\\n\t  ")%><%="\n" if encs.size>1%>
 ENCSOS = <%=encs.map {|e|"$(ENCSODIR)/#{e}.$(DLEXT)"}.join(" \\\n\t ")%><%="\n" if encs.size>1%>
@@ -69,16 +78,6 @@ trans: $(TRANSSOS)
 
 srcs: $(TRANSCSRCS)
 
-% if rule = (compile_rules = COMPILE_RULES).find(&/\$\(srcdir\)/.method(:=~))
-%   compile_rules = [rule.sub(/\$\(srcdir\)/, '\&/enc'), rule.sub(/\$\(srcdir\)/, '\&/enc/trans')] + compile_rules
-% end
-% compile_rules.each do |rule|
-<%=  rule % %w[c $(OBJEXT)] %>
-	-@$(MAKEDIRS) "$(@D)"
-	<%=COMPILE_C%>
-
-% end
-
 <%=transvpath_prefix%>.trans<%=transvpath_prefix%>.c:
 	$(MINIRUBY) "$(srcdir)/tool/transcode-tblgen.rb" -vo "$@" "$<"
 
@@ -105,25 +104,39 @@ $(TRANSOBJS): ruby.h intern.h config.h defines.h missing.h encoding.h oniguruma.
 %   obj = "enc/#{e}.$(OBJEXT)"
 %   df = ("enc/#{e}.def" if deffile)
 $(ENCSODIR)/<%=e%>.$(DLEXT): <%=obj%>
+%   cmd = link_so.sub(/\$\(OBJS\)/) {obj}
+%   base = File.basename(e)
+%   cmd.sub!(/(?=\$\(DLDFLAGS\))/) {dldflags.sub(/\$\(TARGET\)/) {base} + " "} if dldflags
 %   if df
 	echo> <%=df%> EXPORTS
-	echo>> <%=df%> <%=EXPORT_PREFIX%>Init_<%=File.basename(e)%>
+	echo>> <%=df%> <%=EXPORT_PREFIX%>Init_<%=base%>
+%     cmd.sub!(/\$\(DEFFILE\)/) {df}
+%     cmd.gsub!(/-(?:implib|pdb):/) {|s|"#{s}enc/#{e.sub(/[^\/]+\z/, '')}"}
 %   end
 	@$(MAKEDIRS) "$(@D)"
-	<%=link_so.sub(/\$\(OBJS\)/) {obj}.sub(/\$\(DEFFILE\)/) {df}.gsub(/-(?:implib|pdb):/) {|s|"#{s}enc/#{e.sub(/[^\/]+\z/, '')}"}%>
+	<%=cmd%>
 
 % end
 % dependencies.each do |e|
-<%=rule_subst % "enc/#{e}.$(OBJEXT)"%>: <%=rule_subst % "enc/#{e}.c"%>
+<%="enc/#{e}.$(OBJEXT)"%>: <%="$(encsrcdir)/#{e}.c"%>
+	-@$(MAKEDIRS) "$(@D)"
+	<%=COMPILE_C.gsub(/\$(\()?<(\:[^)]+)?(\))?/){"$(encsrcdir)/#{e}.c"}%>
+
 % end
 
 enc/encdb.$(OBJEXT): encdb.h
 enc/trans/transdb.$(OBJEXT): transdb.h
 
 clean:
-% %w[$(ENCSOS) $(ENCOBJS) $(ENCCLEANOBJS) $(ENCCLEANLIBS) $(TRANSSOS) $(TRANSOBJS) $(TRANSCLEANOBJS) $(TRANSCLEANLIBS) $(TRANSCSRCS)].each do |clean|
+% %w[$(ENCSOS) $(ENCOBJS) $(ENCCLEANOBJS) $(ENCCLEANLIBS) $(TRANSSOS) $(TRANSOBJS) $(TRANSCLEANOBJS) $(TRANSCLEANLIBS)].each do |clean|
 	@$(RM) <%=pathrep[clean]%>
 % end
-% %w[$(ENCSODIR)/trans $(ENCSODIR) enc/trans enc].each do|dir|
+% %w[$(TRANSSODIR) $(ENCSODIR)].each do|dir|
+	@-rmdir <%=pathrep[dir]%>
+% end
+
+clean-srcs:
+	@$(RM) <%=pathrep['$(TRANSCSRCS)']%>
+% %w[enc/trans enc].each do|dir|
 	@-rmdir <%=pathrep[dir]%>
 % end

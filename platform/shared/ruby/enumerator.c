@@ -2,13 +2,13 @@
 
   enumerator.c - provides Enumerator class
 
-  $Author: ko1 $
+  $Author: yugui $
 
   Copyright (C) 2001-2003 Akinori MUSHA
 
   $Idaemons: /home/cvs/rb/enumerator/enumerator.c,v 1.1.1.1 2001/07/15 10:12:48 knu Exp $
   $RoughId: enumerator.c,v 1.6 2003/07/27 11:03:24 nobu Exp $
-  $Id: enumerator.c 19466 2008-09-23 00:20:28Z ko1 $
+  $Id: enumerator.c 23219 2009-04-19 13:33:31Z yugui $
 
 ************************************************/
 
@@ -22,6 +22,7 @@
  */
 VALUE rb_cEnumerator;
 static VALUE sym_each;
+static ID id_rewind;
 
 VALUE rb_eStopIteration;
 
@@ -396,11 +397,17 @@ enumerator_each(VALUE obj)
 }
 
 static VALUE
-enumerator_with_index_i(VALUE val, VALUE *memo)
+enumerator_with_index_i(VALUE val, VALUE *memo, int argc, VALUE *argv)
 {
-    val = rb_yield_values(2, val, INT2FIX(*memo));
+    VALUE idx;
+
+    idx = INT2FIX(*memo);
     ++*memo;
-    return val;
+
+    if (argc <= 1)
+	return rb_yield_values(2, val, idx);
+
+    return rb_yield_values(2, rb_ary_new4(argc, argv), idx);
 }
 
 /*
@@ -431,9 +438,12 @@ enumerator_with_index(VALUE obj)
 }
 
 static VALUE
-enumerator_with_object_i(VALUE val, VALUE memo)
+enumerator_with_object_i(VALUE val, VALUE memo, int argc, VALUE *argv)
 {
-    return rb_yield_values(2, val, memo);
+    if (argc <= 1)
+	return rb_yield_values(2, val, memo);
+
+    return rb_yield_values(2, rb_ary_new4(argc, argv), memo);
 }
 
 /*
@@ -498,7 +508,7 @@ next_init(VALUE obj, struct enumerator *e)
  *
  * Returns the next object in the enumerator, and move the internal
  * position forward.  When the position reached at the end, internal
- * position is rewinded then StopIteration is raised.
+ * position is rewound then StopIteration is raised.
  *
  * Note that enumeration sequence by next method does not affect other
  * non-external enumeration methods, unless underlying iteration
@@ -532,12 +542,17 @@ enumerator_next(VALUE obj)
  *   e.rewind   => e
  *
  * Rewinds the enumeration sequence by the next method.
+ *
+ * If the enclosed object responds to a "rewind" method, it is called.
  */
 
 static VALUE
 enumerator_rewind(VALUE obj)
 {
     struct enumerator *e = enumerator_ptr(obj);
+
+    if (rb_respond_to(e->obj, id_rewind))
+	rb_funcall(e->obj, id_rewind, 0);
 
     e->fib = 0;
     e->dst = Qnil;
@@ -798,6 +813,7 @@ Init_Enumerator(void)
     rb_define_method(rb_cYielder, "<<", yielder_yield, -2);
 
     sym_each = ID2SYM(rb_intern("each"));
+    id_rewind = rb_intern("rewind");
 
     rb_provide("enumerator.so");	/* for backward compatibility */
 }

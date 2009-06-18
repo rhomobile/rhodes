@@ -18,181 +18,292 @@
  */
 package com.rho.sync;
 
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
+import com.rho.*;
+import com.rho.db.*;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.lang.*;
 
-/**
- * The Class SyncThread.
- */
-public class SyncThread implements Runnable {
+public class SyncThread extends RhoThread
+{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("SyncThread");
-
-	/** The quit. */
-	// private boolean quit = false;
-	/** The sync. */
-	private String sync = "sync";
-
-	//private static boolean delaySync = false;
-	private static boolean dbResetDelay = false;
-
-	/** The Constant SYNC_WAIT_INTERVAL. */
-	private static final long SYNC_WAIT_INTERVAL = 300000L;
-
-	private static final int STATE_NONE = 0;
-	private static final int STATE_SYNC = 1;
-	private static final int STATE_CANCEL = 2;
-	private static final int STATE_PAUSE = 3;
-	private static final int STATE_DOSTOP = 4;
-
-	private int m_nState = STATE_NONE;
-	private Thread m_thread;
+		new RhoLogger("Sync");
+	private static final int SYNC_POLL_INTERVAL_SECONDS = 300;
+	private static final int SYNC_POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
+	private static final int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 	
-	/**
-	 * Instantiates a new sync thread.
-	 */
-	SyncThread() {
-		//SyncUtil.adapter = PerstLiteAdapter.alloc(null);
-		//SyncBlob.DBCallback callback = new SyncBlob.DBCallback();
-		//SyncUtil.adapter.setDbCallback(callback);
-		
-		//delaySync = SyncUtil.getObjectCountFromDatabase("object_values") > 0 ? true
-		//		: false;
-		
-		m_thread = new Thread(this);
-		m_thread.start();
-		
-		LOG.INFO("SyncEngine is started...");
-		//printStats();
+	static SyncThread m_pInstance;
+
+   	public final static int scNone = 0, scResetDB = 1, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5; 
+    
+    SyncEngine  m_oSyncEngine;
+    RhoClassFactory m_ptrFactory;
+    int           m_curCommand;
+	int           m_nPollInterval;
+    
+	public static SyncThread Create(RhoClassFactory factory)
+	{
+	    if ( m_pInstance != null) 
+	        return m_pInstance;
+	
+	    m_pInstance = new SyncThread(factory);
+	    return m_pInstance;
 	}
 
-	/**
-	 * Quit.
-	 */
-	public void quit() {
-		synchronized (sync) {
-			if ( getState() != STATE_NONE ){
-				setState(STATE_DOSTOP);
-				sync.notify();
-			}
-		}
+	public void Destroy()
+	{
+	    m_oSyncEngine.exitSync();
+	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+	    LOG.INFO( "Sync engine thread shutdown" );
 		
-		SyncManager.closeConnection();
-		
-		try{
-			int nTry = 0;
-			while( nTry < 10 && getState() != STATE_NONE ){
-				Thread.sleep(100);
-				nTry++;
-			}
-			
-			if ( getState() != STATE_NONE )
-				m_thread.interrupt();
-			
-		}catch(Exception exc){
-			
-		}
-		
+	    m_pInstance = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+	SyncThread(RhoClassFactory factory)
+	{
+		super(factory);
 		
-		while (!isStop()) {
-			synchronized (sync) {
-				try {
-					if (!isStop()) {
-						setState(STATE_PAUSE);
-						LOG.INFO("SyncEngine wait for " + SYNC_WAIT_INTERVAL + " msec");
-						sync.wait(SYNC_WAIT_INTERVAL);
+		m_oSyncEngine = new SyncEngine(DBAdapter.getInstance());
+	    m_curCommand = scNone;
+		m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+		m_ptrFactory = factory;
+	
+	    m_oSyncEngine.setFactory(factory);
+	
+	    start(epLow);
+	}
+
+    public static SyncThread getInstance(){ return m_pInstance; }
+    static SyncEngine getSyncEngine(){ return m_pInstance.m_oSyncEngine; }
+    static DBAdapter getDBAdapter(){ return DBAdapter.getInstance(); }
+
+    void addSyncCommand(int curCommand){ m_curCommand = curCommand; stopWait(); }
+	
+	public void run()
+	{
+		LOG.INFO( "Starting sync engine main routine..." );
+	
+		while( m_oSyncEngine.getState() != SyncEngine.esExit )
+		{
+	        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
+			LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
+	        wait(nWait);
+	
+	        if ( m_oSyncEngine.getState() != SyncEngine.esExit )
+	        {
+	        	try{
+	        		processCommand();
+	        	}catch(Exception e)
+	        	{
+	        		LOG.ERROR("processCommand failed", e);
+	        	}
+	        }
+		}
+	}
+	
+	void processCommand()throws Exception
+	{
+	    //TODO: implement stack of commands
+	    switch(m_curCommand)
+	    {
+	    case scNone:
+	        if ( m_nPollInterval > 0 )
+	            m_oSyncEngine.doSyncAllSources();
+	        break;
+	    case scSyncAll:
+	        m_oSyncEngine.doSyncAllSources();
+	        break;
+	    case scChangePollInterval:
+	        break;
+	    case scSyncOne:
+	        //TODO:scSyncOne
+	        break;
+	    case scResetDB:
+	        m_oSyncEngine.resetSyncDB();
+	        break;
+	
+	    }
+	    m_curCommand = scNone;
+	}
+
+	public void setPollInterval(int nInterval)
+	{ 
+	    m_nPollInterval = nInterval; 
+	    if ( m_nPollInterval == 0 )
+	        m_oSyncEngine.stopSync();
+	
+	    addSyncCommand(scChangePollInterval); 
+	}
+	
+	public static void doSyncAllSources()
+	{
+		getInstance().addSyncCommand(SyncThread.scSyncAll);
+	}
+	
+	public static void initMethods(RubyClass klass) {
+		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					doSyncAllSources();
+				}catch(Exception e)
+				{
+					LOG.ERROR("dosync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				
+				return RubyConstant.QNIL;
+			}
+		});
+		klass.getSingletonClass().defineMethod("lock_sync_mutex",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					try{
+					    DBAdapter db = getDBAdapter();
+					    db.setUnlockDB(true);
+					    db.Lock();
+					}catch(Exception e)
+					{
+						LOG.ERROR("lock_sync_mutex failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}
-				} catch (Exception e) {
-					LOG.INFO("Wait exception:" + e.getMessage());
+				    
+				    return RubyConstant.QNIL;
 				}
-			}
-
-			if ( isStop() )
-				break;
-			
-			// synchronized (sync) {
-			//SyncUtil.adapter.initialize(null);
-			LOG.INFO("SyncEngine is awake...");
-			//printStats();
-
-			if (/*!delaySync &&*/ !dbResetDelay) {
-				// Thread is simple, process local changes and make sure
-				// there are no errors before waiting for SYNC_WAIT_INTERVAL
-				setState(STATE_SYNC);
-				if (SyncUtil.processLocalChanges(this) != SyncConstants.SYNC_PROCESS_CHANGES_OK) {
-					LOG.ERROR("There was an error processing local changes");
-					break;
+			});
+		klass.getSingletonClass().defineMethod("unlock_sync_mutex",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					try{
+					    DBAdapter db = getDBAdapter();
+					    db.Unlock();
+					}catch(Exception e)
+					{
+						LOG.ERROR("unlock_sync_mutex failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+				    return RubyConstant.QNIL;
 				}
-			} else if (dbResetDelay) {
-				SyncUtil.resetSyncDb();
-				dbResetDelay = false;
-				//delaySync = false;
-			} else {
-				//delaySync = false;
-			}
-
-			// }
-		}
-		setState(STATE_NONE);
-		LOG.INFO("Shutting down SyncEngine...");
-		// SyncUtil.adapter.close();
-		LOG.INFO("SyncEngine is shutdown...");
-	}
-
-	/**
-	 * Wake up sync engine.
-	 * 
-	 * @return true, if successful
-	 */
-	public void wakeUpSyncEngine() {
-		if (getState() == STATE_PAUSE) {
-			synchronized (sync) {
-				//delaySync = false;
-				sync.notify();
-				sync.notify();
-			}
-		}
-
-		// synchronized (sync) {
-		// if (!quit) {
-		// sync.notify();
-		// return true;
-		// }
-		// return false;
-		// }
-	}
-
-	public static void printStats() {
-		long free = java.lang.Runtime.getRuntime().freeMemory();
-		long total = java.lang.Runtime.getRuntime().totalMemory();
+			});
+		klass.getSingletonClass().defineMethod("login",
+			new RubyTwoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+					try{
+						String name = arg1.toStr();
+						String password = arg2.toStr();
+					    //TODO: stop sync
+					    return getSyncEngine().login(name,password) ? 
+					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
+					}catch(Exception e)
+					{
+						LOG.ERROR("login failed", e);
+						//throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+				    return ObjectFactory.createInteger(0);
+				    
+				}
+			});
 		
-		LOG.INFO("Memory stats (free / total) => usage: (" + free
-				+ " bytes / " + total + " bytes) => " + (total - free)
-				+ " bytes");
+		klass.getSingletonClass().defineMethod("logged_in",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+
+					try{
+						DBAdapter db = getDBAdapter();
+						db.setUnlockDB(true);
+					    return getSyncEngine().isLoggedIn() ? 
+					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
+					}catch(Exception e)
+					{
+						LOG.ERROR("logged_in failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+				    
+				}
+			});
+		
+		klass.getSingletonClass().defineMethod("logout",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+
+					try{
+					    //TODO: stop sync
+						DBAdapter db = getDBAdapter();
+						db.setUnlockDB(true);
+					    getSyncEngine().logout();
+					}catch(Exception e)
+					{
+						LOG.ERROR("logout failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+				    return RubyConstant.QNIL;
+				}
+			});
+		
+		klass.getSingletonClass().defineMethod("trigger_sync_db_reset",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					try{
+						getInstance().addSyncCommand(SyncThread.scResetDB);
+					}catch(Exception e)
+					{
+						LOG.ERROR("trigger_sync_db_reset failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+					return RubyConstant.QNIL;
+				}
+			});
+
+		klass.getSingletonClass().defineMethod("set_notification",
+			new RubyVarArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+					
+					try{
+						int source_id = args.get(0).toInt();
+						String url = args.get(1).toStr();
+						String params = args.get(2).toStr();
+						getSyncEngine().setNotification(source_id, url, params);
+					}catch(Exception e)
+					{
+						LOG.ERROR("set_notification failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					return RubyConstant.QNIL;
+				}
+			});
+		klass.getSingletonClass().defineMethod("clear_notification",
+			new RubyOneArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+					try{
+						int source_id = arg1.toInt();
+						getSyncEngine().clearNotification(source_id);
+					}catch(Exception e)
+					{
+						LOG.ERROR("clear_notification failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+					
+					return RubyConstant.QNIL;
+				}
+			});
+		klass.getSingletonClass().defineMethod("set_pollinterval",
+			new RubyOneArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+					try{
+						int nInterval = arg1.toInt();
+						getInstance().setPollInterval(nInterval);
+					}catch(Exception e)
+					{
+						LOG.ERROR("set_pollinterval failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+					return RubyConstant.QNIL;
+				}
+			});
 	}
 
-	public synchronized int getState() {
-		return m_nState;
-	}
-
-	public boolean isStop() {
-		return getState() == STATE_DOSTOP;
-	}
-
-	private synchronized void setState(int state) {
-		m_nState = state;
-	}
-
-	public static void setDbResetDelay(boolean dbResetDelay) {
-		SyncThread.dbResetDelay = dbResetDelay;
-	}
 }

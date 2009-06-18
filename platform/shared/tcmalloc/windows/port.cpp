@@ -152,9 +152,10 @@ static void NTAPI on_tls_callback(HINSTANCE h, DWORD dwReason, PVOID pv) {
 #pragma data_seg(".CRT$XLB")
 static void (NTAPI *p_thread_callback)(HINSTANCE h, DWORD dwReason, PVOID pv)
     = on_tls_callback;
-#pragma data_seg(".CRT$XTU")
+/*#pragma data_seg(".CRT$XTU")
 static int (*p_process_term)(void) = on_process_term;
 #pragma data_seg(pop, old_seg)
+*/
 
 #else  // #ifdef _MSC_VER  [probably msys/mingw]
 
@@ -215,7 +216,8 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
                               MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
   //RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
   g_nTotalMemory += size + extra;
-  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, g_nTotalMemory/(1024*1024));
+  int nTotal = g_nTotalMemory/(1024*1024);
+  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, nTotal);
 
   if (result == NULL)
     return NULL;

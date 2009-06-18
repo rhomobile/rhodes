@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import com.rho.RhoRuby;
-import com.rhomobile.rhodes.RhoRubyImpl;
 import com.rhomobile.rhodes.RhodesInstance;
 
 import android.util.Log;
@@ -327,7 +326,6 @@ abstract public class ThreadedServer implements Runnable {
 		int runs = 0;
 
 		Log.d(this.name, "RhoRubyStart...");
-		RhoRuby.setRhoRubyImpl(new RhoRubyImpl());
 		RhoRuby.RhoRubyStart("");
 
 		Log.d(this.name, "startSyncEngine...");

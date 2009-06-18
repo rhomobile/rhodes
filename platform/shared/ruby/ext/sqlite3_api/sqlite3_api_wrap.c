@@ -1,10 +1,18 @@
 #include "sqlite3.h"
 #include "ruby.h"
 
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "DB"
+
 static VALUE mSqlite3;
 static VALUE mDatabase;
 
-void setup_delete_db_callback(sqlite3 * db);
+extern int rho_sync_openDB(const char* szDBPath, void ** ppDB);
+extern int rho_sync_closeDB(void * pDB);
+extern int rho_db_startUITransaction(void * pDB);
+extern int rho_db_commitUITransaction(void * pDB);
+extern int rho_db_rollbackUITransaction(void * pDB);
 
 static VALUE db_allocate(VALUE klass)
 {
@@ -24,11 +32,9 @@ static VALUE db_init(int argc, VALUE *argv, VALUE self)
 	Data_Get_Struct(self, sqlite3 *, ppDB);
 	szDbName = STR2CSTR(argv[0]);
 	
-	result = (int)sqlite3_open(szDbName,ppDB);
+	result = (int)rho_sync_openDB(szDbName,(void**)ppDB);//sqlite3_open(szDbName,ppDB);
 	if ( result != SQLITE_OK )
 		rb_raise(rb_eArgError, "could open database:%d",result);
-	
-	setup_delete_db_callback(*ppDB);
 	
 	return self;
 }
@@ -44,9 +50,71 @@ static VALUE db_close(int argc, VALUE *argv, VALUE self){
 	Data_Get_Struct(self, sqlite3 *, ppDB);
 	db = *ppDB;
 	
-	rc = sqlite3_close(db);
+	rc = rho_sync_closeDB(db);//sqlite3_close(db);
 	
 	return INT2NUM(rc);
+}
+
+static VALUE db_start_transaction(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_startUITransaction(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE db_commit(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_commitUITransaction(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE db_rollback(int argc, VALUE *argv, VALUE self){
+	sqlite3 * db = NULL;
+	sqlite3 **ppDB = NULL;		
+	int rc = 0;
+	
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+	
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+	db = *ppDB;
+	
+	rc = rho_db_rollbackUITransaction(db);
+	
+	return INT2NUM(rc);
+}
+
+static VALUE* getColNames(sqlite3_stmt* statement, int nCount)
+{
+    int nCol = 0;
+    VALUE* res = malloc(sizeof(VALUE)*nCount);
+
+	for(;nCol<nCount;nCol++)
+    {
+		const char* szColName = sqlite3_column_name(statement,nCol);
+		res[nCol] = rb_str_new2(szColName);
+    }
+
+    return res;
 }
 
 static VALUE db_execute(int argc, VALUE *argv, VALUE self)
@@ -56,6 +124,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	sqlite3_stmt *statement = NULL;
 	const char* sql = NULL;
 	VALUE arRes = rb_ary_new();
+    VALUE* colNames = NULL;
 	int nRes = 0;
 	
 	if ((argc < 1) || (argc > 1))
@@ -65,14 +134,18 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	db = *ppDB;
 	sql = RSTRING_PTR(argv[0]);
 	
+    RAWTRACE1("db_execute: %s", sql);
 	if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
 		rb_raise(rb_eArgError, "could not prepare statement: %d",nRes);
-	
+
 	while(sqlite3_step(statement) == SQLITE_ROW) {
 		int nCount = sqlite3_data_count(statement);
 		int nCol = 0;
 		VALUE hashRec = rb_hash_new();
-		
+
+        //if ( !colNames )
+        //    colNames = getColNames(statement, nCount);
+
 		for(;nCol<nCount;nCol++){
 			int nColType = sqlite3_column_type(statement,nCol);
 			const char* szColName = sqlite3_column_name(statement,nCol);
@@ -95,7 +168,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 				}
 			}
 			
-			rb_hash_aset(hashRec, colName, colValue);
+			rb_hash_aset(hashRec, colName/*colNames[nCol]*/, colValue);
 		}
 		
 		rb_ary_push(arRes, hashRec);
@@ -103,6 +176,9 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	
 	sqlite3_finalize(statement);
 	
+    if ( colNames )
+        free(colNames);
+
 	return arRes;
 }
 
@@ -113,8 +189,11 @@ void Init_sqlite3_api(void)
 	
 	rb_define_alloc_func(mDatabase, db_allocate);
 	rb_define_method(mDatabase, "initialize", db_init, -1);
-	rb_define_method(mDatabase, "close", db_close, 0);
+	rb_define_method(mDatabase, "close", db_close, -1);
 	rb_define_method(mDatabase, "execute", db_execute, -1);	
+	rb_define_method(mDatabase, "start_transaction", db_start_transaction, -1);	
+	rb_define_method(mDatabase, "commit", db_commit, -1);	
+    rb_define_method(mDatabase, "rollback", db_rollback, -1);	
 }
 
 #if 0

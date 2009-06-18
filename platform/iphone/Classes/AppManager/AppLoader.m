@@ -9,6 +9,9 @@
 #import "defs.h"
 #import "AppManager.h"
 #import "AppLoader.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "AppLoader"
 
 @implementation AppLoader
 
@@ -47,7 +50,7 @@
 
 - (void)loadDidFinishWithError:(NSError*)error {
 	isLoading = NO;
-	DBG(("AppLoader: Failed Load Application\n"));
+	RAWLOG_ERROR("AppLoader: Failed Load Application");
 	//[loadUrl release];
 	//[appName release];
 	

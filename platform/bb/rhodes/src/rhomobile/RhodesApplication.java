@@ -3,6 +3,7 @@ package rhomobile;
 import java.io.IOException;
 
 import javax.microedition.io.HttpConnection;
+import net.rim.device.api.system.ApplicationManager;
 
 //import org.garret.perst.Storage;
 //import org.garret.perst.StorageFactory;
@@ -26,21 +27,28 @@ import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
 import com.rho.location.GeoLocation;
-import com.rho.sync.SyncEngine;
-import com.rho.sync.SyncUtil;
-import com.rho.sync.SyncNotifications;
 
+import java.util.Enumeration;
+import com.rho.sync.SyncThread;
 import java.util.Vector;
 
 
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication{
-
+final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener
+{
+	// Menu Labels
+	public static final String LABEL_HOME = "Home";
+	public static final String LABEL_REFRESH = "Refresh";
+	public static final String LABEL_SYNC = "Sync";
+	public static final String LABEL_OPTIONS = "Options";
+	public static final String LABEL_LOG = "Log";
+	public static final String LABEL_SEPARATOR = "separator";
+	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
-	
+
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -78,21 +86,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
 
-    class SyncNotificationsImpl extends SyncNotifications{
+    /*class SyncNotificationsImpl extends SyncNotifications{
     	public void performNotification(String url, String body){
 
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
     		postUrl(url, body, headers);
-
+*/
 /*    		String curUrl = (String)_history.lastElement();
     		curUrl.replace('\\', '/');
     		if ( curUrl.equalsIgnoreCase(url) )
     			navigateUrl(curUrl);*/
 
-    	}
+  //  	}
 
-    }
+    //}
 
     String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
@@ -110,9 +118,20 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void navigateUrl(String url){
-        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+    	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), null, null, null, this);
         thread.start();                       
+    }
+    
+	public String getPathForMenuItem(String url) {
+		url = _httpRoot +
+			url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
+		return url;
+	}
+    
+    void addMenuItem(String label, String value){
+    	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
+    	_mainScreen.addCustomMenuItem(label, value);
     }
 
     public void postUrl(String url, String body, HttpHeaders headers){
@@ -206,7 +225,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
-    private MainScreen _mainScreen;
+    private CMainScreen _mainScreen = null;
 
     private HttpConnection  _currentConnection;
 
@@ -214,6 +233,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private final String _httpRoot = "http://localhost:8080/";
 
+    private boolean _isFullBrowser = false;
+    
+    private static PushListeningThread _pushListeningThread = null;
+    
     private static RhodesApplication _instance;
 
     public static RhodesApplication getInstance(){ return _instance; }
@@ -222,32 +245,23 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      **************************************************************************/
     public static void main(String[] args)
     {
-    	RhoLogger.InitRhoLog();
-    	System.out.println("Rhodes STARTED");
+    	//RhoLogger.InitRhoLog();
+    	//LOG.TRACE("Rhodes MAIN started ***--------------------------***");
     	
-    	//TestRhoLog test = new TestRhoLog();
-    	//test.runAllTests();
-    	//TestProfiler.runAllTests();
-    	try{
-    		RhoClassFactory.getNetworkAccess().configure();
-    	}catch(IOException exc){
-    		LOG.ERROR(exc.getMessage());
-    	}
+    	//_pushListeningThread = new PushListeningThread();
+    	//_pushListeningThread.start();
     	
-    	SyncUtil.init();
-
-        RhoRuby.RhoRubyStart("");
-
-		SyncEngine.start(null);
-		//GeoLocation.start();
-
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
+		_pushListeningThread.stop();
 		
-		System.out.println("Rhodes EXIT");
+        RhoLogger.close();
+		//LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
     }
 
-    void doClose(){
+    void doClose(){   	
+    	LOG.TRACE("Rhodes DO CLOSE ***--------------------------***");
+/*    	
 		SyncEngine.stop(null);
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
@@ -257,11 +271,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}catch(IOException exc){
     		LOG.ERROR(exc);
     	}
-    		
-        RhoLogger.close();
+*/
     }
 
 	public void activate() {
+    	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
     	try{
     		GeoLocation.start();
@@ -273,6 +287,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 
 	public void deactivate() {
+    	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 
@@ -280,32 +295,35 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 
     class CMainScreen extends MainScreen{
+    	
+    	private Vector menuItems = new Vector();
 
-		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
+		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
 					navigateHome();
 				}
 			};
-		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
+		private MenuItem refreshItem = new MenuItem(RhodesApplication.LABEL_REFRESH, 200000, 10) {
 			public void run() {
 				refreshCurrentPage();
 				}
 			};
-		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
-					SyncEngine.wakeUp();
+					SyncThread.doSyncAllSources();
 				}
 			};
-		private MenuItem optionsItem = new MenuItem("Options", 200000, 10) {
+		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {
 			public void run() {
 					String curUrl = RhoRuby.getOptionsPage();
-					curUrl = _httpRoot +
-						curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
+					curUrl = getPathForMenuItem(curUrl);
 
+					addToHistory(curUrl, null );
+			    	
 					navigateUrl(curUrl);
 				}
 			};
-		private MenuItem logItem = new MenuItem("Log", 200000, 10) {
+		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
 			public void run() {
 					LogScreen screen = new LogScreen();
 			        //Push this screen to display it to the user.
@@ -313,16 +331,94 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				}
 			};
 
+		private MenuItem separatorItem = MenuItem.separator(200000);
+
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
+			
+			for(int i=0; i < menu.getSize(); i++)
+	    	{
+	    	    MenuItem item = menu.getItem(i);
+	    	    String label = item.toString();
+	    	    if(! ( label.equalsIgnoreCase("Get Link") || label.equalsIgnoreCase("Close") )) //TODO: catch by ID?
+	    	    {
+	    	    	menu.deleteItem(i);
+	    	    	if ( i > 0 )
+	    	    		i = i - 1;
+	    	    }
+	    	}	
+			
+			// Draw default menu
+			if ((menu.getSize() <= 2) && (menuItems == null || menuItems.size() == 0)) {
+				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, menu);
+			}
+
+			// Draw menu from rhodes framework
+			Enumeration elements = menuItems.elements();
+			while (elements.hasMoreElements()) {
+				MenuItem item = (MenuItem)elements.nextElement();
+				// Don't redraw the menu item!
+				for(int i=0; i < menu.getSize(); i++)
+				{
+					MenuItem itm = menu.getItem(i);
+					String label = itm.toString();
+					if(label.equalsIgnoreCase(item.toString())) {
+						menu.deleteItem(i);
+					}
+				}
+				menu.add(item);
+			}
 			super.makeMenu(menu, instance);
-			menu.add(homeItem);
-			menu.add(refreshItem);
-			menu.add(syncItem);
-			menu.add(optionsItem);
-			menu.add(logItem);
+			// Reset the menu
+			menuItems.removeAllElements();
+		}
+		
+		public void addCustomMenuItem(String label, final String value) {
+			// Is this a default item? If so, use the existing menu item we have.
+    	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
+    	    	setDefaultItemToMenuItems(label, homeItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
+    	    	setDefaultItemToMenuItems(label, refreshItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
+    	    	setDefaultItemToMenuItems(label, syncItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
+    	    	setDefaultItemToMenuItems(label, optionsItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_LOG)) {
+    	    	setDefaultItemToMenuItems(label, logItem);
+    	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR) || 
+    	    		   (value != null && value.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR))) {
+    	    	menuItems.addElement(separatorItem);
+    	    } else {
+				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+					public void run() {
+				    	String val = getPathForMenuItem(value);
+						addToHistory(val, null );
+						navigateUrl(val);
+					}
+				};
+				menuItems.addElement(itemToAdd);
+    	    }
 		}
 
+		private void setDefaultItemToMenuItems(String label, MenuItem item) {
+			item.setText(label);
+	    	menuItems.addElement(item);
+		}
+		
+		private void setDefaultItemToMenu(String label, MenuItem item, Menu menu) {
+			item.setText(label);
+	    	menu.add(item);
+		}
+
+		public void close() {
+			LOG.TRACE("Calling Screen.close");
+			Application.getApplication().requestBackground();
+		}
+		
 		public boolean onClose() {
 			doClose();
 			return super.onClose();
@@ -337,12 +433,29 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     }
 
-    private RhodesApplication() {
+    private void doStartupWork() {
+    	RhoLogger.InitRhoLog();
+    	
+        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
+      
+    	
+    	_pushListeningThread = new PushListeningThread();
+    	_pushListeningThread.start();
+        
+    	try {
+    		RhoClassFactory.getNetworkAccess().configure();
+    	} catch(IOException exc) {
+    		LOG.ERROR(exc.getMessage());
+    	}
+    	
+        RhoRuby.RhoRubyStart("");
+		SyncThread.Create( new RhoClassFactory() );
+   	
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
 
-        SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
+        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
 
         _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);
@@ -354,11 +467,68 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
-        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-        //_renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-
+        
+        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
+        {
+	        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+	        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+	        {
+		        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+		        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
+	        	_isFullBrowser = true;
+	        }
+        }
+        
         if(!restoreLocation()) {
         	navigateHome();
+        }    
+        
+        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );        
+    }
+    
+    private void invokeStartupWork() {
+        // I think this can get called twice
+        // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
+        // 2) From System Listener - after system restart and when the app is originally installed
+        // To make sure we don't actually do the startup stuff twice,
+        // we use _mainScreen as a flag
+        if ( _mainScreen == null ) {
+            LOG.TRACE(" Shedule doStartupWork() ***---------------------------------- " );
+            this.invokeLater( new Runnable() { 
+                public void run() { 
+                    doStartupWork(); 
+                }
+            } );
+        }
+    }
+
+    //----------------------------------------------------------------------
+    // SystemListener methods
+
+    public void powerUp() {
+        LOG.TRACE(" POWER UP ***----------------------------------*** " );
+        invokeStartupWork();
+        this.requestBackground();
+    }
+    public void powerOff() {
+        LOG.TRACE(" POWER DOWN ***----------------------------------*** " );
+//        _mainScreen = null;
+//        doClose();
+    }
+    public void batteryLow() { }
+    public void batteryGood() { }    
+    public void batteryStatusChange(int status) { }
+
+    // end of SystemListener methods
+    //----------------------------------------------------------------------
+    
+    private RhodesApplication() {
+        LOG.TRACE(" Construct RhodesApplication() ***----------------------------------*** " );
+        this.addSystemListener(this);
+        if ( ApplicationManager.getApplicationManager().inStartup() ) {
+            LOG.TRACE("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
+        } else {
+            invokeStartupWork();
         }
     }
 
@@ -371,8 +541,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void navigateHome(){
-        String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) +
-        	RhoRuby.getStartPage();
+    	String strHomePage = RhoRuby.getStartPage();
+    	String strStartPage = _httpRoot;
+    	if ( strHomePage != null && strHomePage.length() > 0 )
+    	{
+    		strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + strHomePage;
+    	}
+    	
         _history.removeAllElements();
 	    _history.addElement(strStartPage);
 	    navigateUrl(strStartPage);
@@ -405,9 +580,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     }
                 }
 
-                //synchronized (getAppEventLock())
-                {
+                if ( _isFullBrowser )
                 	browserContent.finishLoading();
+                else
+                {
+	                synchronized (getAppEventLock())
+	                {
+	                	browserContent.finishLoading();
+	                }
                 }
             }
 
@@ -603,33 +783,33 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         (new Thread(runnable)).start();
     }
 
-}
+    public static class PrimaryResourceFetchThread extends Thread {
 
-class PrimaryResourceFetchThread extends Thread {
+        private RhodesApplication _application;
 
-    private RhodesApplication _application;
+        private Event _event;
 
-    private Event _event;
+        private byte[] _postData;
 
-    private byte[] _postData;
+        private HttpHeaders _requestHeaders;
 
-    private HttpHeaders _requestHeaders;
+        private String _url;
 
-    private String _url;
+        public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
+                                      Event event, RhodesApplication application) {
 
-    public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                  Event event, RhodesApplication application) {
+            _url = url;
+            _requestHeaders = requestHeaders;
+            _postData = postData;
+            _application = application;
+            _event = event;
+        }
 
-        _url = url;
-        _requestHeaders = requestHeaders;
-        _postData = postData;
-        _application = application;
-        _event = event;
+        public void run() {
+            HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+            _application.processConnection(connection, _event);
+        }
     }
-
-    public void run() {
-        HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        _application.processConnection(connection, _event);
-    }
+    
 }
 

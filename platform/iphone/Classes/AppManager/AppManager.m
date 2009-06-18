@@ -16,9 +16,11 @@
 #import "HttpMessage.h"
 #import "Dispatcher.h"
 #import "AppLoader.h"
-#import "config.h"
+#import "common/RhoConf.h"
+#import "logging/RhoLogConf.h"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
+const char* RhoGetRootPath();
 
 @implementation AppManager
 
@@ -95,19 +97,17 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 - (void) configure {
 	
-#if TARGET_IPHONE_SIMULATOR	//DEBUG
+#if TARGET_IPHONE_SIMULATOR	
 	bool replaceFiles = YES;
 #else
 	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	char* currentVersion = config_getString("currentVersion");
+	char* currentVersion = rho_conf_getString("currentVersion");
     bool replaceFiles = NO;
 	if ( strcmp(version, currentVersion) ) {
-		config_setString("currentVersion", version);
-		config_save();
 		replaceFiles = YES;
 	}
-	free(currentVersion);	
+	rho_conf_freeString(currentVersion);
 #endif	
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
@@ -117,7 +117,13 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 #else
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 #endif	
-	
+	if (replaceFiles) {
+		rho_logconf_Init(RhoGetRootPath());
+#ifndef TARGET_IPHONE_SIMULATOR	
+		config_setString("currentVersion", version);
+		config_save();
+#endif	
+	}
 }
 
 @end

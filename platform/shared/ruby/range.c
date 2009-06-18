@@ -2,7 +2,7 @@
 
   range.c -
 
-  $Author: mame $
+  $Author: yugui $
   created at: Thu Aug 19 17:46:47 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -267,6 +267,8 @@ step_i(VALUE i, void *arg)
     return Qnil;
 }
 
+extern int ruby_float_step(VALUE from, VALUE to, VALUE step, int excl);
+
 /*
  *  call-seq:
  *     rng.step(n=1) {| obj | block }    => rng
@@ -333,6 +335,9 @@ range_step(int argc, VALUE *argv, VALUE range)
 	    i += unit;
 	}
 
+    }
+    else if (ruby_float_step(b, e, step, EXCL(range))) {
+	/* done */
     }
     else if (rb_obj_is_kind_of(b, rb_cNumeric) ||
 	     !NIL_P(rb_check_to_integer(b, "to_int")) ||
@@ -636,7 +641,7 @@ rb_range_beg_len(VALUE range, long *begp, long *lenp, long len, int err)
   out_of_range:
     if (err) {
 	rb_raise(rb_eRangeError, "%ld..%s%ld out of range",
-		 b, excl ? "." : "", e);
+		 NUM2LONG(b), excl ? "." : "", NUM2LONG(e));
     }
     return Qnil;
 }

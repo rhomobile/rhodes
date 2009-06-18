@@ -99,7 +99,7 @@ desc "Get versions"
 task :get_version do
   bbver = "unknown"
   iphonever = "unknown"
-  symver = "unknown"
+  #symver = "unknown"
   wmver = "unknown"
   androidver = "unknown"
   
@@ -118,24 +118,24 @@ task :get_version do
     end
   end
 
-  File.open("platform/symbian/build/release.properties","r") do |f|
-    file = f.read
-    major = ""
-    minor = ""
-    build = ""
-
-    if file.match(/release\.major=(\d+)/)
-      major =  $1
-    end
-    if file.match(/release\.minor=(\d+)/)
-      minor =  $1
-    end
-    if file.match(/build\.number=(\d+)/)
-      build =  $1
-    end
-
-    symver = major + "." + minor + "." + build
-  end
+  # File.open("platform/symbian/build/release.properties","r") do |f|
+  #     file = f.read
+  #     major = ""
+  #     minor = ""
+  #     build = ""
+  # 
+  #     if file.match(/release\.major=(\d+)/)
+  #       major =  $1
+  #     end
+  #     if file.match(/release\.minor=(\d+)/)
+  #       minor =  $1
+  #     end
+  #     if file.match(/build\.number=(\d+)/)
+  #       build =  $1
+  #     end
+  # 
+  #     symver = major + "." + minor + "." + build
+  #   end
 
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") do |f|
     file = f.read
@@ -181,7 +181,7 @@ task :get_version do
   puts "Versions:"
   puts "  Blackberry:       " + bbver
   puts "  iPhone:           " + iphonever
-  puts "  Symbian:          " + symver
+  #puts "  Symbian:          " + symver
   puts "  WinMo:            " + wmver
   puts "  Android:          " + androidver
   puts "  Rhodes:           " + rhodesver
@@ -218,13 +218,13 @@ task :set_version, [:version] do |t,args|
     f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n  <string>#{verstring}</string>")
   end
 
-  File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }
-  File.open("platform/symbian/build/release.properties","w") do |f|
-    origfile.gsub!(/release\.major=(\d+)/,"release.major=#{major}")
-    origfile.gsub!(/release\.minor=(\d+)/,"release.minor=#{minor}")
-    origfile.gsub!(/build\.number=(\d+)/,"build.number=#{build}")
-    f.write origfile
-  end
+  # File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }
+  # File.open("platform/symbian/build/release.properties","w") do |f|
+  #   origfile.gsub!(/release\.major=(\d+)/,"release.major=#{major}")
+  #   origfile.gsub!(/release\.minor=(\d+)/,"release.minor=#{minor}")
+  #   origfile.gsub!(/build\.number=(\d+)/,"build.number=#{build}")
+  #   f.write origfile
+  # end
 
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") { |f| origfile = f.read }
   File.open("platform/android/Rhodes/AndroidManifest.xml","w") do |f|
@@ -264,6 +264,7 @@ task :prebuild_win do
   end
 
   chdir 'platform/bb/build'
+  puts `#{rake} clean`
   puts `#{rake} build:all`
 
   throw "blackberry rhodes.jar missing" if not File.exists? '../preverified/rhodes.jar'
@@ -289,59 +290,114 @@ task :prebuild_win do
   
   cp "wm6.7z", "../../../rhodes/rhodes-build/res/prebuilt/wm"
 
+  # chdir basedir
+  #   chdir "platform/symbian/build"
+  #   filecontents = ""
+  #   File.open("build.properties","r") { |f| filecontents = f.read }
+  #   File.open("build.properties","w") do |f|
+  #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=GCCE UREL")
+  #     f.write filecontents
+  #   end
+  #   if filecontents.match(/S60_3rd_FP1=(.+)/)
+  #     epoc32 = $1
+  #   else
+  #     epoc32 = "\\Symbian\\9.2\\S60_3rd_FP1\\"
+  #   end
+  # 
+  #   epoc32.gsub!(/\\\\/,"\\")  
+  # 
+  #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+  #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
+  #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
+  # 
+  #   prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/symbian/"
+  # 
+  #   rm_rf prebuilt + "Epoc32"
+  # 
+  #   mkdir_p prebuilt + "Epoc32/data/z/private/10003a3f"
+  #   mkdir_p prebuilt + "Epoc32/data/z/resource"
+  #   mkdir_p prebuilt + "Epoc32/data/z/system"
+  #   mkdir_p prebuilt + "Epoc32/release/gcce/urel"
+  # 
+  #   cp_r epoc32 + "Epoc32\\data\\z\\private\\10003a3f\\apps\\", prebuilt + "Epoc32/data/z/private/10003a3f/", :verbose => true
+  #   cp_r epoc32 + "Epoc32\\data\\z\\resource\\apps\\", prebuilt + "Epoc32/data/z/resource/"
+  #   cp_r epoc32 + "Epoc32\\data\\z\\system\\data\\", prebuilt + "Epoc32/data/z/system/"
+  #   cp_r epoc32 + "Epoc32\\release\\gcce\\urel\\rhodes.exe", prebuilt + "Epoc32/release/gcce/urel/"
+  #   
+  # 
+  # 
+  #   File.open("build.properties","w") do |f|
+  #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
+  #     f.write filecontents
+  #   end
+  # 
+  #   
+  #   
+  #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+  #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\winscw\\deb\\rhodes.exe")
+  #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\winscw\\udeb\\rhodes.exe"))
+  # 
+  #   mkdir_p prebuilt + "Epoc32/winscw/c/Data/Rho"
+  #   mkdir_p prebuilt + "Epoc32/release/winscw/udeb"
+  # 
+  #   cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
+  #   cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
+
+###### build android pre-built binaries ######
+
   chdir basedir
-  chdir "platform/symbian/build"
-  filecontents = ""
-  File.open("build.properties","r") { |f| filecontents = f.read }
-  File.open("build.properties","w") do |f|
-    filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=GCCE UREL")
-    f.write filecontents
-  end
-  if filecontents.match(/S60_3rd_FP1=(.+)/)
-    epoc32 = $1
-  else
-    epoc32 = "\\Symbian\\9.2\\S60_3rd_FP1\\"
-  end
 
-  epoc32.gsub!(/\\\\/,"\\")  
+  require 'rhodes/rhodes-build/lib/jake.rb'
 
-  puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
-  puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
-  throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
+  prebuilt = "rhodes/rhodes-build/res/prebuilt/android/"
 
-  prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/symbian/"
+  chdir 'platform/android/build'
 
-  rm_rf prebuilt + "Epoc32"
+  config = Jake.config(File.open('build.yml'))
 
-  mkdir_p prebuilt + "Epoc32/data/z/private/10003a3f"
-  mkdir_p prebuilt + "Epoc32/data/z/resource"
-  mkdir_p prebuilt + "Epoc32/data/z/system"
-  mkdir_p prebuilt + "Epoc32/release/gcce/urel"
+  android_sdk = File.join( config["env"]["paths"]["android_sdk"], "platforms", "android-1.1")
 
-  cp_r epoc32 + "Epoc32\\data\\z\\private\\10003a3f\\apps\\", prebuilt + "Epoc32/data/z/private/10003a3f/", :verbose => true
-  cp_r epoc32 + "Epoc32\\data\\z\\resource\\apps\\", prebuilt + "Epoc32/data/z/resource/"
-  cp_r epoc32 + "Epoc32\\data\\z\\system\\data\\", prebuilt + "Epoc32/data/z/system/"
-  cp_r epoc32 + "Epoc32\\release\\gcce\\urel\\rhodes.exe", prebuilt + "Epoc32/release/gcce/urel/"
+  eclipse_home = config["env"]["paths"]["eclipse_home"]
+  javac_home = config["env"]["paths"]["javac_home"]
+
+  puts "Compile RhoBundle, required by Rhodes"
+  chdir basedir
+  chdir 'platform/android/RhoBundle'    
+  puts `#{ant} clean`  
+  puts `#{ant} -Djavac.home="#{javac_home}"`
+
+  puts "Compile Rhodes"
+  chdir basedir
+  chdir 'platform/android/Rhodes'
   
-
-
-  File.open("build.properties","w") do |f|
-    filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
-    f.write filecontents
-  end
-
+  puts `#{ant} clean`  
+  puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}" -DANDROID_SDK="#{android_sdk}"`
   
-  
-  puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
-  puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\winscw\\deb\\rhodes.exe")
-  throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\winscw\\udeb\\rhodes.exe"))
+  chdir basedir
+  chdir 'platform/android'
 
-  mkdir_p prebuilt + "Epoc32/winscw/c/Data/Rho"
-  mkdir_p prebuilt + "Epoc32/release/winscw/udeb"
+  rm_rf File.join( basedir, prebuilt)
+  mkdir_p File.join( basedir, prebuilt )
 
-  cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
-  cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
+  puts "copy classes"
+  mkdir_p File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
 
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2me' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2mex' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'javolution' ), File.join( basedir, prebuilt, 'classes' )
+  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'org' ), File.join( basedir, prebuilt, 'classes' )
+
+  puts "copy res folder"
+  mkdir_p File.join( basedir, prebuilt, 'res' )
+  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'res' ), File.join( basedir, prebuilt )
+
+  puts "copy manifest"
+  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'AndroidManifest.xml' ), File.join( basedir, prebuilt )
+
+  puts "copy loading.html"
+  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'assets', 'apps', 'loading.html' ), File.join( basedir, prebuilt )
 
 end
 

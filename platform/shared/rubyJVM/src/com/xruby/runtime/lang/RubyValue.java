@@ -9,6 +9,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyFloat;
 import com.xruby.runtime.builtin.RubyInteger;
 import com.xruby.runtime.builtin.RubyString;
+import com.xruby.runtime.builtin.RubyTime;
 
 import j2me.util.HashMap;
 import j2me.util.Map;
@@ -198,7 +199,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     }
 
     public RubyArray toAry() {
-        return this.contertToArray().toAry();
+        return this.convertToArray().toAry();
     }
 
     public double toFloat() {
@@ -230,11 +231,19 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         return this.convertToString().toRubyString();
     }
 
+    public RubyArray toRubyArray() {
+        return toAry();
+    }
+    
+    public RubyTime toRubyTime() {
+    	return (RubyTime)this.convertToTime();
+    }
+    
     private RubyValue convertToInteger() {
         return convertToType(RubyRuntime.IntegerClass, RubyID.toIntID);
     }
 
-    private RubyValue contertToArray() {
+    private RubyValue convertToArray() {
         return convertToType(RubyRuntime.ArrayClass, RubyID.toAryID);
     }
 
@@ -244,6 +253,10 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
 
     private RubyValue convertToString() {
         return convertToType(RubyRuntime.StringClass, RubyID.toStrID);
+    }
+    
+    private RubyValue convertToTime() {
+    	return convertToType(RubyRuntime.TimeClass, RubyID.toTimeID);
     }
 
     private RubyValue convertToType(RubyClass klass, RubyID id) {

@@ -3,7 +3,7 @@ require 'rhom/rhom_object'
 
 module Rhom
   class RhomSource
-    include RhomObject
+    include ::Rhom::RhomObject
     attr_accessor :source_url
     attr_reader   :source_id, :name, :last_updated, :last_inserted_size, 
                   :last_deleted_size, :last_sync_duration,
@@ -25,14 +25,14 @@ module Rhom
       @last_sync_duration = args['last_sync_duration'].to_i
       @last_sync_success = args['last_sync_success'].to_i == 1 ? true : false
       @distinct_objects = ::Rhom::RhomDbAdapter::select_from_table(
-                                                             ::Rhom::TABLE_NAME,
+                                                             'object_values',
                                                              'object',
                                                              {"source_id"=>@source_id},
                                                              {"distinct"=>true}).length
     end
     
     class << self
-      include RhomObject
+      include ::Rhom::RhomObject
       def find(*args)
         list = []
         if args.first == :all

@@ -32,11 +32,19 @@ public class FileUtilBB implements FileAccess {
 
     public long getFileLength(java.lang.String filename){
     	
+    	FileConnection fconn = null;
     	try{
-	    	FileConnection fconn = (FileConnection)Connector.open(filename);
+	    	fconn = (FileConnection)Connector.open(filename,Connector.READ);
 	    	return fconn.fileSize();
     	}catch(IOException exc){
-    		System.out.println("FileUtilBB:getFileLength Exception: " + exc.getMessage());
+    		System.out.println("FileUtilBB:getFileLength Exception: " + exc.getMessage() + ";File: " + filename);
+    	}finally{
+    		if ( fconn != null )
+    			try{ 
+    				fconn.close(); 
+    			}catch(IOException exc){
+    	    		System.out.println("FileUtilBB:getFileLength Close Exception: " + exc.getMessage() + ";File: " + filename);
+    	    	}
     	}
     	
     	return 0;
@@ -113,7 +121,8 @@ public class FileUtilBB implements FileAccess {
     		//if ( fc.isDirectory() )
     		//	deleteFilesInFolder(fc);
         	
-    		fconn.delete();
+    		if ( fconn != null && fconn.exists() )
+    			fconn.delete();
     	}catch(IOException exc){
     		System.out.println("FileUtilBB:delete '" + filename + "' Exception: " + exc.getMessage());
     	}finally{

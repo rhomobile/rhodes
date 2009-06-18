@@ -7,7 +7,8 @@ require 'rhofsconnector'
 module Rho
   class RHO
     APPLICATIONS = {}
-	
+    APPNAME = 'app'
+    
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       process_rhoconfig
@@ -25,10 +26,21 @@ module Rho
       Rhom::RhomDbAdapter::close
     end
     
+    def get_app(appname)
+      if (APPLICATIONS[appname].nil?)
+        require RhoApplication::get_app_path(appname)+'application'
+        APPLICATIONS[appname] = Object.const_get('AppApplication').new
+      end
+      APPLICATIONS[appname]
+    end
+    
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename).each do |line|
-        require File.join(File.dirname(app_manifest_filename), line.chop)
+        str = line.chomp
+        if str != nil and str.length > 0 
+            require File.join(File.dirname(app_manifest_filename), str )
+        end    
       end
     end
     
@@ -39,7 +51,10 @@ module Rho
           parts = line.chop.split('=')
           key = parts[0]
           value = parts[1..parts.length-1].join('=') if parts and parts.length > 1
-          Rho::RhoConfig.config[key.strip] = value.strip!.gsub(/'|"/,'') if key and value
+          if key and value
+            tmp = value.strip!
+            Rho::RhoConfig.config[key.strip] = tmp.gsub(/'|"/,'') if tmp
+          end  
         end
       rescue Exception => e
         puts "Error opening rhoconfig.txt: #{e}, using defaults."
@@ -54,7 +69,7 @@ module Rho
         uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
           result << h unless result.include?(h); result
         }
-		
+        
         # generate unique source list in database for sync
         uniq_sources.each do |source|
           
@@ -71,76 +86,55 @@ module Rho
     def source_initialized?(source_id)
       Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
     end
-	
-    def get_app(appname)
-      if (APPLICATIONS[appname].nil?)
-        require RhoApplication::get_app_path(appname)+'application'
-        #APPLICATIONS[appname] = Object.const_get(appname+'Application').new
-        APPLICATIONS[appname] = Object.const_get('AppApplication').new
-      end
-      APPLICATIONS[appname]
-    end
-
-    def get_start_path
-      Rho::RhoConfig.start_path
-    end
-    
-    def get_options_path
-      Rho::RhoConfig.options_path
-    end
-    
-    def get_rhobundle_zip_url
-      Rho::RhoConfig.rhobundle_zip_url
-    end
-    
-    def get_rhobundle_zip_pwd
-      Rho::RhoConfig.rhobundle_zip_pwd
-    end
 
     def serve(req)
       begin
-	    puts 'inside RHO.serve...'
+        puts 'inside RHO.serve...'
         res = init_response
         get_app(req['application']).send :serve, req, res
         return send_response(res)
       rescue Exception => e
         return send_error(e)
-      end	
+      end   
     end
 
     def serve_hash(req)
-		begin
-			puts 'inside RHO.serve...'
-			res = init_response
-			get_app(req['application']).send :serve, req, res
-			return send_response_hash(res)
-		rescue Exception => e
-			return send_error(e,500,true)
-		end	
+        begin
+            puts 'inside RHO.serve...'
+            res = init_response
+            get_app(req['application']).send :serve, req, res
+            return send_response_hash(res)
+        rescue Exception => e
+            return send_error(e,500,true)
+        end 
     end
-	
-	def serve_index(index_name)
-		begin
-			puts 'inside RHO.serve_index: ' + index_name
-			res = init_response
-			res['request-body'] = RhoController::renderfile(index_name)
-			return send_response(res)
-		rescue Exception => e
-			return send_error(e)
-		end
-	end
+    
+    def serve_index(index_name)
+    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
+        begin
+            puts 'inside RHO.serve_index: ' + index_name
+            res = init_response
+            res['request-body'] = RhoController::renderfile(index_name)
+            return send_response(res)
+        rescue Exception => e
+            return send_error(e)
+        end
+    end
 
-	def serve_index_hash(index_name)
-		begin
-			puts 'inside RHO.serve_index: ' + index_name
-			res = init_response
-			res['request-body'] = RhoController::renderfile(index_name)
-			return send_response_hash(res)
-		rescue Exception => e
-			return send_error(e.message, 500, true)
-		end
-	end
-	
+    def serve_index_hash(index_name)
+    	    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
+        begin
+            puts 'inside RHO.serve_index: ' + index_name
+            res = init_response
+            res['request-body'] = RhoController::renderfile(index_name)
+            return send_response_hash(res)
+        rescue Exception => e
+            return send_error(e.message, 500, true)
+        end
+    end
+    
     def init_response(status=200,message="OK",body="")
       res = Hash.new
       res['status'] = status
@@ -159,7 +153,7 @@ module Rho
     CR   = "\x0d"
     LF   = "\x0a"
     CRLF = "\x0d\x0a"
-	
+    
     def send_response(res)
       res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
       data = "HTTP/1.1 #{res['status'].to_s} #{res['message']}" + CRLF
@@ -167,49 +161,52 @@ module Rho
         tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
         data << "#{tmp}: #{value}" << CRLF
       }
-	data << "Pragma: no-cache" << CRLF
-	data << "Cache-Control: must-revalidate" << CRLF
-	data << "Cache-Control: no-cache" << CRLF
-	data << "Cache-Control: no-store" << CRLF
-	data << "Expires: 0" << CRLF
+    data << "Pragma: no-cache" << CRLF
+    data << "Cache-Control: must-revalidate" << CRLF
+    data << "Cache-Control: no-cache" << CRLF
+    data << "Cache-Control: no-store" << CRLF
+    data << "Expires: 0" << CRLF
 
       data << CRLF
-      data << res['request-body']
+      if ( !res['request-body'].nil? )
+        data << res['request-body']
+      end
+        
       data
     end
 
     def send_response_hash(res)
-		resp = Hash.new
-		res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
-		res['headers'].each{|key, value|
-			tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
-			resp[tmp] = value
-		}
+        resp = Hash.new
+        res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
+        res['headers'].each{|key, value|
+            tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
+            resp[tmp] = value
+        }
         resp['request-body'] = res['request-body']
         resp['status'] = res['status']        
         resp['message'] = res['message']
         
-		resp
+        resp
     end
-	
+    
     def send_error(exception=nil,status=500,hash=false)
       body=''
       body << <<-_HTML_STRING_
-		<html>
-			<head>
-				<title>Server Error</title>
-				<meta name="viewport" content="width=320"/>
-			</head>
-			<body>
-				<p>
+        <html>
+            <head>
+                <meta name="viewport" content="width=320"/>
+            </head>
+            <body>
+                <h2>Server Error</h2>
+                <p>
       _HTML_STRING_
       body << 'Error: ' << exception.message << "<br/>" if exception
       body << 'Trace: ' << exception.backtrace.join("\n") if exception
       body << <<-_HTML_STRING_
-				</p>	
-			</body>
-		</html>
-		
+                </p>    
+            </body>
+        </html>
+        
       _HTML_STRING_
       if ( hash )
         send_response_hash(init_response(status,"Server error",body))

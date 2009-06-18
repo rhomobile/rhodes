@@ -1187,6 +1187,10 @@ handle_connected_socket(struct shttpd_ctx *ctx,
 	}
 }
 
+#ifdef _WIN32
+HANDLE g_hWaitEvent = 0;
+#endif //_WIN32
+
 static int
 do_select(int max_fd, fd_set *read_set, fd_set *write_set, int milliseconds)
 {
@@ -1195,6 +1199,11 @@ do_select(int max_fd, fd_set *read_set, fd_set *write_set, int milliseconds)
 
 	tv.tv_sec = milliseconds / 1000;
 	tv.tv_usec = (milliseconds % 1000) * 1000;
+
+#ifdef _WIN32
+    if( !g_hWaitEvent )
+        g_hWaitEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+#endif // _WIN32
 
 	/* Check IO readiness */
 	if ((n = select(max_fd + 1, read_set, write_set, NULL, &tv)) < 0) {
@@ -1205,8 +1214,9 @@ do_select(int max_fd, fd_set *read_set, fd_set *write_set, int milliseconds)
 		 * (at least on my Windows XP Pro). So in this case,
 		 * we sleep here.
 		 */
-		Sleep(milliseconds);
-#endif /* _WIN32 */
+		//Sleep(milliseconds);
+        //WaitForSingleObject(g_hWaitEvent,milliseconds);
+#endif // _WIN32
 		DBG(("select: %d", ERRNO));
 	}
 
@@ -1272,9 +1282,13 @@ multiplex_worker_sockets(const struct worker *worker, int *max_fd,
 	return (nowait);
 }
 
-void shutdown_poll(struct shttpd_ctx *ctx){
+void shutdown_poll(struct shttpd_ctx *ctx)
+{
 	struct llhead	*lp;
 	struct listener	*l;
+
+    if( g_hWaitEvent )
+        SetEvent(g_hWaitEvent);
 
 	LL_FOREACH(&ctx->listeners, lp) {
 		l = LL_ENTRY(lp, struct listener, link);
@@ -1983,7 +1997,7 @@ shttpd_init(int argc, char *argv[])
 
 	return (ctx);
 }
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 void __shttpd_trace(const char* format, ... ){
     va_list ap;
     va_start(ap, format);

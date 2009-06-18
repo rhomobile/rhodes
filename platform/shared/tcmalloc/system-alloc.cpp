@@ -415,11 +415,57 @@ void InitSystemAllocators(void) {
   }
 }
 
-void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
+long long g_nTotalMemory = 0;
+extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
+                                  size_t alignment) {
+	// Safest is to make actual_size same as input-size.
+	if (actual_size) {
+		*actual_size = size;
+	}
+	
+	SpinLockHolder sh(&spinlock);
+	// Align on the pagesize boundary
+	const int pagesize = getpagesize();
+	if (alignment < pagesize) alignment = pagesize;
+	size = ((size + alignment - 1) / alignment) * alignment;
+	
+	// Ask for extra memory if alignment > pagesize
+	size_t extra = 0;
+	if (alignment > pagesize) {
+		extra = alignment - pagesize;
+	}
+	
+	//void* result = VirtualAlloc(0, size + extra,
+	//                            MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+	void* result = malloc(size + extra);//new unsigned char[size + extra];//malloc(size + extra);
+	
+	g_nTotalMemory += size+extra;
+	int nTotal = g_nTotalMemory/(1024*1024);
+	printf("TCMALLOC: alloc size %d (Bytes); Total : %d (Mb)\r\n",size, nTotal);
+	
+	if (result == NULL)
+		return NULL;
+	
+	// Adjust the return memory so it is aligned
+	uintptr_t ptr = reinterpret_cast<uintptr_t>(result);
+	  size_t adjust = 0;
+	 if ((ptr & (alignment - 1)) != 0) {
+	 adjust = alignment - (ptr & (alignment - 1));
+	 }
+	 
+	 ptr += adjust;
+	return reinterpret_cast<void*>(ptr);
+}
+
+/*void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
                            size_t alignment) {
   // Discard requests that overflow
   if (size + alignment < size) return NULL;
-
+	
+	g_nTotalMemory += size;
+	int nTotal = g_nTotalMemory/(1024*1024);
+printf("TCMALLOC: alloc size %d (Bytes); Total : %d (Mb)\r\n",size, nTotal);
+	
   SpinLockHolder lock_holder(&spinlock);
 
   if (!system_alloc_inited) {
@@ -450,7 +496,7 @@ void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
     }
   }
   return NULL;
-}
+}*/
 
 void TCMalloc_SystemRelease(void* start, size_t length) {
 #ifdef MADV_DONTNEED

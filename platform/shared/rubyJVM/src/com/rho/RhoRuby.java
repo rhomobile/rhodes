@@ -8,7 +8,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import java.io.IOException;
 import com.rho.db.DBAdapter;
-import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncThread;
 import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
 import com.rho.location.GeoLocation;
@@ -20,8 +20,8 @@ public class RhoRuby {
 	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
-	public static final RubyID getStartPath = RubyID.intern("get_start_path");
-	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
+//	public static final RubyID getStartPath = RubyID.intern("get_start_path");
+//	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
@@ -35,7 +35,7 @@ public class RhoRuby {
 			RubyRuntime.init(args);
 	
 	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
-	        SyncEngine.initMethods(RubyRuntime.SyncEngineClass);
+	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
 	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
 	        
 	        helper = RhoClassFactory.createRhoRubyHelper();
@@ -46,9 +46,12 @@ public class RhoRuby {
         
         try{
         	//Class mainRuby = Class.forName("xruby.ServeME.main");
-        	if ( helper != null ){
+        	if ( helper != null )
+        	{
+        		DBAdapter.getInstance().startTransaction();
 	    		mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
 	    		receiver = mainObj.invoke();
+        		DBAdapter.getInstance().commit();
         	}
         	
         /*}catch(ClassNotFoundException exc){
@@ -67,7 +70,12 @@ public class RhoRuby {
 	}
 	
 	static public InputStream loadFile(String path){
-		return mainObj.getClass().getResourceAsStream(path);		
+		try {
+			return RhoClassFactory.createFile().getResourceAsStream(mainObj.getClass(), path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return null;
 	}
 
 	public static RubyValue processIndexRequest(String strIndexArg ){
@@ -85,18 +93,19 @@ public class RhoRuby {
 		return value;
 	}
 
-	public static String getStartPage(){
-		
-		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
-		
-		return value.toString();
+	public static String getStartPage()
+	{
+		return RhoConf.getInstance().getString("start_path");
+		//RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getStartPath);
+		//return value.toString();
 	}
 
-	public static String getOptionsPage(){
-		
-		RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
-		
-		return value.toString();
+	public static String getOptionsPage()
+	{
+		return RhoConf.getInstance().getString("options_path");
+
+		//RubyValue value = RubyAPI.callPublicNoArgMethod(receiver, null, getOptionsPath);
+		//return value.toString();
 	}
 	
 	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{

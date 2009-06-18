@@ -1,9 +1,9 @@
 /* -*-c-*- */
 /**********************************************************************
 
-  vm_evalbody.c -
+  vm_exec.c -
 
-  $Author: ko1 $
+  $Author: yugui $
 
   Copyright (C) 2004-2007 Koichi Sasada
 
@@ -113,7 +113,7 @@ vm_exec_core(rb_thread_t *th, VALUE initial)
 }
 
 const void **
-vm_get_insns_address_table(void)
+rb_vm_get_insns_address_table(void)
 {
     return (const void **)vm_exec_core(0, 0);
 }
@@ -124,7 +124,7 @@ vm_get_insns_address_table(void)
 #include "vmtc.inc"
 
 const void *const *
-vm_get_insns_address_table(void)
+rb_vm_get_insns_address_table(void)
 {
     return insns_address_table;
 }

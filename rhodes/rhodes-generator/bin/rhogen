@@ -5,4 +5,11 @@ require 'rhodes'
 require 'templater'
 require File.join(File.dirname(__FILE__), '..', 'generators', 'rhogen')
 
+# Stub this method to force 1.8 compatibility (come on templater!)
+class String
+  def force_encoding(enc)
+    "utf-8"
+  end
+end
+
 Rhogen.run_cli(Dir.pwd, 'rhogen', Rhodes::VERSION, ARGV)

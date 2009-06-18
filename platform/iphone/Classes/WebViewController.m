@@ -1,7 +1,12 @@
 #import "WebViewController.h"
-#import "rhoruby.h"
-#import "UniversalLock.h"
-#import "config.h"
+#import "ruby/ext/rho/rhoruby.h"
+//#import "UniversalLock.h"
+#import "common/RhoConf.h"
+#import "sync/syncthread.h"
+#import "JSString.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "WebViewCtrl"
 
 static char currentLocation[4096] = "";
 
@@ -12,12 +17,12 @@ void set_current_location(CFStringRef location) {
 	CFStringGetCString((CFStringRef)location, currentLocation, sizeof(currentLocation), CFStringGetSystemEncoding());
 	char* fragment = strstr(currentLocation,"#");
 	if (fragment) *fragment = 0; //cut out fragment
-	printf("Current location: %s\n",currentLocation);
+	RAWLOG_INFO1("Current location: %s",currentLocation);
 	//UNLOCK(current_location);
 
-	if (config_getBool("KeepTrackOfLastVisitedPage")) {
-		config_setString("LastVisitedPage",currentLocation);
-		config_save();
+	if (rho_conf_getBool("KeepTrackOfLastVisitedPage")) {
+		rho_conf_setString("LastVisitedPage",currentLocation);
+		rho_conf_save();
 	}
 	
 }
@@ -59,8 +64,14 @@ NSString *loadingText = @"Loading...";
 }
 
 -(void)navigate:(NSString*)url {
-    printf("Navigating to the specifyed URL\n");
+    RAWLOG_INFO("Navigating to the specifyed URL");
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
+}
+
+-(void)executeJs:(JSString*)js {
+	RAWLOG_INFO1("Executing JS: %s", [js.inputJs UTF8String] );
+    //NSLog(@"Executing JS: %@\n", js.inputJs);
+	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
 }
 
 -(void)navigateRedirect:(NSString*)url {
@@ -155,7 +166,7 @@ NSString *loadingText = @"Loading...";
 
 - (void)runSync
 {
-	wake_up_sync_engine();
+	rho_sync_doSyncAllSources();
 }
 
 - (void)actionShowLog:(id)sender
