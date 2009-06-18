@@ -655,7 +655,9 @@ public class RubyKernelModule {
         RubySymbol method_name = (RubySymbol)args.get(0);
         RubyClass klass = receiver.getRubyClass();
         klass = (klass != null) ? klass.getRealClass() : null;
-        throw new RubyException(RubyRuntime.NoMethodErrorClass, "undefined method '" + method_name.toString() + "' for " + klass.getName());
+        String msg =  "undefined method '" + method_name.toString() + "' for " + klass.getName();
+        LOG.ERROR(msg);
+        throw new RubyException(RubyRuntime.NoMethodErrorClass,msg);
     }
     
     //@RubyLevelMethod(name="sleep", module=true)
