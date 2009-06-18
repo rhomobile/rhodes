@@ -15,7 +15,7 @@ public class DateTimePicker extends RubyBasic {
 		super(c);
 	}
 	
-	public static RubyValue choose(RubyValue arg1, RubyValue arg2, int v) {
+	public static RubyValue choose(RubyValue arg1, RubyValue arg2, RubyValue arg3, int v) {
 		// TODO:
 		throw new RubyException(RubyRuntime.NotImplementedErrorClass, "in `DateTimePicker': not implemented yet");
 		//return RubyConstant.QNIL;
@@ -24,18 +24,19 @@ public class DateTimePicker extends RubyBasic {
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("choose", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-				if(args.size() != 2 && args.size() != 3)
+				if(args.size() != 3 && args.size() != 4)
 					throw new RubyException(RubyRuntime.ArgumentErrorClass,
-							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 2 or 3)");
+							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 3 or 4)");
 				
 				RubyValue arg1 = args.get(0);
 				RubyValue arg2 = args.get(1);
+				RubyValue arg3 = args.get(2);
 				
 				int v = 0;
-				if(args.size() == 3)
-					v = args.get(2).toInt();
+				if(args.size() == 4)
+					v = args.get(3).toInt();
 				
-				return DateTimePicker.choose(arg1, arg2, v);
+				return DateTimePicker.choose(arg1, arg2, arg3, v);
 			}
 		});
 	}

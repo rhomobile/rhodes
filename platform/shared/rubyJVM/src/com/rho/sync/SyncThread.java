@@ -41,7 +41,7 @@ public class SyncThread extends RhoThread
     int           m_curCommand;
 	int           m_nPollInterval;
     
-	public static SyncThread Create(RhoClassFactory factory)
+	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
 	    if ( m_pInstance != null) 
 	        return m_pInstance;
@@ -59,7 +59,7 @@ public class SyncThread extends RhoThread
 	    m_pInstance = null;
 	}
 
-	SyncThread(RhoClassFactory factory)
+	SyncThread(RhoClassFactory factory)throws Exception
 	{
 		super(factory);
 		
