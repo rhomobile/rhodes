@@ -435,55 +435,61 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private void doStartupWork() {
     	RhoLogger.InitRhoLog();
-    	
-        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
-      
-    	
-    	_pushListeningThread = new PushListeningThread();
-    	_pushListeningThread.start();
-        
-    	try {
-    		RhoClassFactory.getNetworkAccess().configure();
-    	} catch(IOException exc) {
-    		LOG.ERROR(exc.getMessage());
-    	}
-    	
-        RhoRuby.RhoRubyStart("");
-		SyncThread.Create( new RhoClassFactory() );
-   	
-    	CKeyListener list = new CKeyListener();
-    	CTrackwheelListener wheel = new CTrackwheelListener();
-    	this._history = new Vector();
 
-        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
-
-        _mainScreen = new CMainScreen();
-        _mainScreen.addKeyListener(list);
-        _mainScreen.addTrackwheelListener(wheel);
-
-        pushScreen(_mainScreen);
-        _renderingSession = RenderingSession.getNewInstance();
-        // enable javascript
-        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
-        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
-        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
-        
-        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
-        {
-	        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
-	        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+    	try{
+	    	
+	        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
+	      
+	    	
+	    	_pushListeningThread = new PushListeningThread();
+	    	_pushListeningThread.start();
+	        
+	    	try {
+	    		RhoClassFactory.getNetworkAccess().configure();
+	    	} catch(IOException exc) {
+	    		LOG.ERROR(exc.getMessage());
+	    	}
+	    	
+	        RhoRuby.RhoRubyStart("");
+			SyncThread.Create( new RhoClassFactory() );
+	   	
+	    	CKeyListener list = new CKeyListener();
+	    	CTrackwheelListener wheel = new CTrackwheelListener();
+	    	this._history = new Vector();
+	
+	        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
+	
+	        _mainScreen = new CMainScreen();
+	        _mainScreen.addKeyListener(list);
+	        _mainScreen.addTrackwheelListener(wheel);
+	
+	        pushScreen(_mainScreen);
+	        _renderingSession = RenderingSession.getNewInstance();
+	        // enable javascript
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
+	        
+	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
-		        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-		        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-	        	_isFullBrowser = true;
+		        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+		        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+		        {
+			        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+			        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
+		        	_isFullBrowser = true;
+		        }
 	        }
-        }
-        
-        if(!restoreLocation()) {
-        	navigateHome();
-        }    
-        
-        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );        
+	        
+	        if(!restoreLocation()) {
+	        	navigateHome();
+	        }    
+	        
+	        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
+    	}catch(Exception exc)
+    	{
+    		LOG.ERROR("doStartupWork failed", exc);
+    	}
     }
     
     private void invokeStartupWork() {

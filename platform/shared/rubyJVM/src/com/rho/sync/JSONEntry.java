@@ -21,6 +21,11 @@ class JSONEntry
 	    return m_object == null;
 	}
 
+	boolean hasName(String name)
+	{
+		return m_object.has(name);
+	}
+	
 	String getString(String name)throws JSONException
 	{
 	    String szRes = null;

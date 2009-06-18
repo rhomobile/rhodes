@@ -1,7 +1,11 @@
 package rhomobile.datetime;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import rhomobile.RhodesApplication;
 import net.rim.device.api.i18n.DateFormat;
+import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.UiApplication;
@@ -15,20 +19,22 @@ import net.rim.device.api.ui.container.VerticalFieldManager;
 
 public class DateTimeScreen extends MainScreen {
 	
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("DateTimePicker");
+	
+	private String _callbackUrl;
+	
 	/** A reference to the current screen for listeners. */
 	private DateTimeScreen _dateTimeScreen;
 	
 	private DateField _dateTime;
 	
-	public Long retvalue;
-	
-	public DateTimeScreen(String title, long init, DateFormat fmt)
+	public DateTimeScreen(String callback, String title, long init, DateFormat fmt)
 	{
+		_callbackUrl = callback;
 		//A reference to this object, to be used in listeners.
 		_dateTimeScreen = this;
 		
-		retvalue = null;
-
 		setTitle( new LabelField( title, LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
 		
 		_dateTime = new DateField("", init, fmt);
@@ -76,7 +82,15 @@ public class DateTimeScreen extends MainScreen {
 		public void fieldChanged(Field field, int context)
 		{
 			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-			retvalue = new Long(_dateTime.getDate());
+			
+			HttpHeaders headers = new HttpHeaders();
+    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+    		
+    		// We need to divide returned value to 1000 because we send number of seconds
+    		// but returned value is actually number of milliseconds since Epoch.
+    		String body = "status=ok&result=" + _dateTime.getDate()/1000;
+    		LOG.INFO("Callback with result: " + body);
+			app.postUrl(_callbackUrl, body, headers);
 			app.popScreen( _dateTimeScreen );
 		}
 	}
@@ -86,7 +100,14 @@ public class DateTimeScreen extends MainScreen {
 		public void fieldChanged(Field field, int context)
 		{
 			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-        	retvalue = null;
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+			
+			String body = "status=cancel";
+			LOG.INFO("Callback with result: " + body);
+			
+			app.postUrl(_callbackUrl, body, headers);	
         	app.popScreen( _dateTimeScreen );
 		}
 	}

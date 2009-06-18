@@ -14,6 +14,11 @@ import com.xruby.runtime.lang.RubyRuntime;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
+	public String getAppProperty(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public RubyProgram createMainObject() {
 		return new xruby.ServeME.main();
 	}
