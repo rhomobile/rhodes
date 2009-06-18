@@ -110,19 +110,14 @@ class SyncEngine implements NetRequest.IRhoSession
 	    //TODO:doSyncSource
 	}
 
-	String updateSyncServer(String strUrl)
+/*	String updateSyncServer(String strUrl)
 	{
 		String strSyncServer = m_systemInfo.getAppProperty("RHO-SyncServer-Address");
 		if ( strSyncServer != null && strSyncServer.length() > 0 )
-		{
-			URI uri = new URI(strUrl);
-			uri.setHost(strSyncServer);
-			
-			return uri.toString();
-		}
+			return strSyncServer;
 		
 		return strUrl;
-	}
+	}*/
 	
 	void loadAllSources()throws DBException
 	{
@@ -131,7 +126,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
-	        String strUrl = updateSyncServer(res.getStringByIdx(1));
+	        String strUrl = res.getStringByIdx(1);//updateSyncServer(res.getStringByIdx(1));
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
 	    }
