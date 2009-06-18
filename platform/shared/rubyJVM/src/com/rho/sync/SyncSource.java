@@ -53,7 +53,9 @@ class SyncSource
     String m_strUrl;
     String m_token;
 
-    int m_nCurPageCount, m_nInserted, m_nDeleted;
+    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
+    boolean m_bGetAtLeastOnePage = false;
+    
     String m_strAskParams;
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
 
@@ -76,7 +78,9 @@ class SyncSource
     int getInsertedCount() { return m_nInserted; }
     int getDeletedCount() { return m_nDeleted; }
     void setCurPageCount(int nCurPageCount){m_nCurPageCount = nCurPageCount;}
+    void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
     int  getCurPageCount(){return m_nCurPageCount;}
+    int  getTotalCount(){return m_nTotalCount;}
     
     SyncEngine getSync(){ return m_syncEngine; }
 	DBAdapter getDB(){ return getSync().getDB(); }
@@ -98,10 +102,24 @@ class SyncSource
 	{
 		LOG.INFO("Start syncing source ID :" + getID() );
 		
-	    syncClientChanges();
-	    getAndremoveAsk();
-	    syncServerChanges();
+	    TimeInterval startTime = TimeInterval.getCurrentTime();
 		
+	    try{
+		    syncClientChanges();
+		    getAndremoveAsk();
+		    syncServerChanges();
+	    }catch(Exception exc)
+	    {
+	    	LOG.ERROR("sync failed", exc);
+	    	getSync().stopSync();
+	    }
+	    
+	    TimeInterval endTime = TimeInterval.getCurrentTime();
+	    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
+							 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
+	                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
+	                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
+	    
 		LOG.INFO( "End syncing source ID :" + getID() );
 	}
 
@@ -127,6 +145,7 @@ class SyncSource
 
 	void syncClientChanges()throws Exception
 	{
+		LOG.INFO("Sync client changes source ID :" + getID() );
 	    String arUpdateTypes[] = {"update", "create", "delete"};
 	    for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	    {
@@ -225,59 +244,47 @@ class SyncSource
 	    setAskParams(askParams);
 	}
 
-	void syncServerChanges()throws DBException
+	void syncServerChanges()throws Exception
 	{
-	    boolean bGetAtLeastOnePage = false;
-	    TimeInterval startTime = TimeInterval.getCurrentTime();
-	
-	    try{
-		    while( getSync().isContinueSync() )
-		    {
-		        setCurPageCount(0);
-		        String strUrl = getUrl();
-		        String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
-		                "&p_size=" + getSync().SYNC_PAGE_SIZE();
+		LOG.INFO("Sync server changes source ID :" + getID() );
 		
-		        if ( getAskParams().length() > 0 )
-		        {
-		            strUrl +=  getSync().SYNC_ASK_ACTION();
-		            strQuery += "&question=" + getAskParams();
-		        }
-		
-		        if ( isEmptyToken() )
-		            processToken("1");
-		        else if ( isTokenMoreThanOne() )
-		            strQuery += "&ack_token=" + getToken();
-		
-				LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );
-				
-		        String szData = getNet().pullData(strUrl+strQuery, "", getSync()).getCharData();
-		        if ( szData == null )
-		        {
-		            getSync().stopSync();
-		            continue;
-		        }
-		
-		        processServerData(szData);
-		
-		        bGetAtLeastOnePage = true;
-		
-		        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
-		            break;
-		    }
-	    }catch(Exception exc)
+	    while( getSync().isContinueSync() )
 	    {
-	    	LOG.ERROR("syncServerChanges failed", exc);
+	        setCurPageCount(0);
+	        String strUrl = getUrl();
+	        String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
+	                "&p_size=" + getSync().SYNC_PAGE_SIZE();
+	
+	        if ( getAskParams().length() > 0 )
+	        {
+	            strUrl +=  getSync().SYNC_ASK_ACTION();
+	            strQuery += "&question=" + getAskParams();
+	        }
+	
+	        if ( isEmptyToken() )
+	            processToken("1");
+	        else if ( isTokenMoreThanOne() )
+	            strQuery += "&ack_token=" + getToken();
+	
+			LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );
+			
+	        String szData = getNet().pullData(strUrl+strQuery, "", getSync()).getCharData();
+	        if ( szData == null )
+	        {
+	            getSync().stopSync();
+	            continue;
+	        }
+	
+	        processServerData(szData);
+	
+	        m_bGetAtLeastOnePage = true;
+	
+	        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
+	            break;
 	    }
-	    
-	    TimeInterval endTime = TimeInterval.getCurrentTime();
-	    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
-							 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-	                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
-	                         new Integer(bGetAtLeastOnePage?1:0), getID() );
 	}
 
-	void processServerData(String szData)throws DBException, JSONException
+	void processServerData(String szData)throws Exception
 	{
 	    JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
 	    if ( !oJsonArr.isEnd() )
@@ -285,6 +292,14 @@ class SyncSource
 	        setCurPageCount(oJsonArr.getCurItem().getInt("count"));
 	        oJsonArr.next();
 	    }
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("total_count") )
+	    {
+	        setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
+	        oJsonArr.next();
+	    }
+	    if ( getServerObjectsCount() == 0 )
+	    	m_syncEngine.fireNotification(this, false);
+	    
 	    if ( !oJsonArr.isEnd() )
 	    {
 	        processToken(oJsonArr.getCurItem().getUInt64("token"));
@@ -292,7 +307,7 @@ class SyncSource
 	    }else if ( getCurPageCount() == 0 )
 	        processToken("0");
 	
-		LOG.INFO( "Got " + getCurPageCount() + " records from server. Source ID: " + getID() );
+		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID() );
 		
 	    //TODO: support DBExceptions
 	    getDB().startTransaction();
@@ -315,6 +330,9 @@ class SyncSource
 	    }finally{    
 			getDB().endTransaction();
 		}
+	    
+	    if ( getServerObjectsCount() < getTotalCount() )
+	    	m_syncEngine.fireNotification(this, false);
 	}
 
 	void processSyncObject(JSONEntry oJsonEntry)throws DBException, JSONException
