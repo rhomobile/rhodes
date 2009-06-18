@@ -6,6 +6,7 @@ import java.net.URL;
 
 import com.rho.net.IHttpConnection;
 import com.rho.net.INetworkAccess;
+import com.rhomobile.rhodes.http.HttpHeader;
 
 public class NetworkAccessImpl implements INetworkAccess {
 
@@ -15,6 +16,21 @@ public class NetworkAccessImpl implements INetworkAccess {
 	public void autoConfigure() {
 	}
 
+	public String getHomeUrl()
+	{
+		return "http://127.0.0.1:8080";
+	}
+	
+	public boolean doLocalRequest(String strUrl, String strBody)
+	{
+		HttpHeader headers = new HttpHeader();
+		headers.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		
+		RhodesInstance.getInstance().postUrl(strUrl, strBody, headers);
+		
+		return true;
+	}
+	
 	public IHttpConnection connect(String server) throws IOException {
 		
 		int fragment = server.indexOf('#');

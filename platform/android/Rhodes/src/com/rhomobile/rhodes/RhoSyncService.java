@@ -1,6 +1,6 @@
 package com.rhomobile.rhodes;
 
-import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncThread;
 
 import android.app.Service;
 import android.content.Intent;
@@ -24,7 +24,8 @@ public class RhoSyncService extends Service {
 	public void onStart(Intent intent, int startId) {
 		// Start SyncEngine
 		try {
-			SyncEngine.start(null);
+			//SyncEngine.start(null);
+			SyncThread.Create( new com.rho.RhoClassFactory() );
 			
 		} catch (Exception e) {
 			Log.e(this.getClass().getSimpleName(), e.getMessage());
@@ -35,7 +36,7 @@ public class RhoSyncService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 	
-		SyncEngine.stop(null);
+		SyncThread.getInstance().Destroy();
 	}
 	
 }

@@ -7,7 +7,7 @@ import javax.microedition.io.*;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.sync.SyncEngine;
+import com.rho.sync.SyncThread;
 import com.rho.RhoConf;
 
 import net.rim.device.api.ui.component.*;
@@ -233,7 +233,7 @@ public class PushListeningThread extends Thread {
             	String[] ops = split(msg,"\n");
             	for (int loop = 0; loop < ops.length; loop++) {
             		if (ops[loop].startsWith("do_sync")) {
-                    	SyncEngine.dosync(null);
+                    	SyncThread.doSyncAllSources();
             		} else if (ops[loop].startsWith("show_popup")) {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {

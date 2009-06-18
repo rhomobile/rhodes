@@ -451,9 +451,13 @@ public class Jsr75File implements SimpleFile
                 out.close();
                 out = null;
             }
-        	log("File close: " + fconn.getName());
             
-            fconn.close();
+            if ( fconn != null )
+            {
+	        	log("File close: " + fconn.getName());
+	            
+	            fconn.close();
+            }
         } catch(IOException x) { 
             throw x;
         }

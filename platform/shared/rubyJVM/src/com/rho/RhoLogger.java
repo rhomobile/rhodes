@@ -16,7 +16,7 @@ public class RhoLogger {
 	private String LogSeverityNames[] = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
 	
 	private String m_category;
-	private static RhoLogConf m_oLogConf;
+	private static RhoLogConf m_oLogConf = new RhoLogConf();
 	private String m_strMessage;
 	private int    m_severity;
 	private static String m_SinkLock = "";
@@ -127,7 +127,8 @@ public class RhoLogger {
 	    
 	    if ( e != null )
 	    {
-	    	m_strMessage += (msg != null && msg.length() > 0 ? ";" : "") + "Exception:";
+	    	m_strMessage += (msg != null && msg.length() > 0 ? ";" : "") + e.getClass().getName() + ": ";
+	    	
 	    	if ( e.getMessage() != null )
 	    		m_strMessage += e.getMessage();
 	    }
@@ -182,7 +183,7 @@ public class RhoLogger {
 	}
 	public void ERROR_OUT(String message,Throwable e) {
 		//logMessage( L_ERROR, message, e, true );
-		System.out.print(m_category + ": " + message + ". Exception: " + 
+		System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
 				(e != null ? e.getMessage() : "" ) +"\n");
 		if ( e != null )
 			e.printStackTrace();
@@ -223,7 +224,6 @@ public class RhoLogger {
     	
         RhoConf.InitRhoConf();
     	
-    	m_oLogConf = new RhoLogConf();
         //Set defaults
 		if ( RhoLogger.RHO_DEBUG ) {
 			m_oLogConf.setMinSeverity( 0 );

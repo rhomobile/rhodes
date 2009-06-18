@@ -16,6 +16,9 @@ public class DBAdapter extends RubyBasic {
 	private String  m_strDBPath;
 	private String  m_strDBVerPath;
 	
+    Mutex m_mxDB = new Mutex();
+    boolean m_bUnlockDB = false;
+	
 	DBAdapter(RubyClass c) {
 		super(c);
 		
@@ -44,9 +47,63 @@ public class DBAdapter extends RubyBasic {
 		
 		return m_dbStorage.executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		return executeSQL(strStatement,null);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, int arg1)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = { new Integer(arg1)};
+		return executeSQL(strStatement,values);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2};
+		return executeSQL(strStatement,values);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
+		return executeSQL(strStatement,values);
+	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6,arg7};
+		return executeSQL(strStatement,values);
+	}
 
+	public boolean isUnlockDB(){ return m_bUnlockDB; }
+	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
+	public void Lock(){ m_mxDB.Lock(); }
+	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+	
 	public static IDBResult createResult(){
 		return getInstance().m_dbStorage.createResult();
+	}
+	
+	public static String makeBlobFolderName()throws Exception{
+		String fName = RhoClassFactory.createFile().getDirPath("blobs");
+		
+		return fName;
 	}
 	
 	RubyString[] getColNames(IDBResult rows)
@@ -57,44 +114,6 @@ public class DBAdapter extends RubyBasic {
 		
 		return colNames;
 	}
-	
-    public RubyValue rb_execute(RubyValue v) 
-    {
-    	RubyArray res = new RubyArray(); 
-    	try{
-    		IDBResult rows = null;
-    		try {
-	    		rows = executeSQL(v.toStr(), null);
-	    		RubyString[] colNames = getColNames(rows);
-	    		
-	    		for( int i = 0; i < rows.getCount(); i++ )
-	    		{
-	    			RubyHash row = ObjectFactory.createHash();
-	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-	    				row.add( colNames[nCol], rows.getRubyValueByIdx(i, nCol) );
-	    			
-	    			res.add( row );
-	    		}
-    		}finally {
-    			rows.close(); //release locks
-    		}
-    	}catch(DBException exc){
-    		LOG.ERROR("executeSQL failed.", exc);
-    	}
-    	
-        return res;
-    }
-	
-    //@RubyAllocMethod
-    private static RubyValue alloc(RubyValue receiver) {
-    	return getInstance();
-    }
-    
-    private RubyValue rb_initialize(RubyValue v) {
-    	openDB(v !=null && v != RubyConstant.QNIL ? v.toString() : "");
-    	
-        return this;
-    }
 
 	private String getNameNoExt(String strPath){
 		int nDot = strPath.lastIndexOf('.');
@@ -158,94 +177,20 @@ public class DBAdapter extends RubyBasic {
     
     public void startTransaction()throws DBException
     {
+    	Lock();
     	m_dbStorage.startTransaction();
     }
     
     public void commit()throws DBException
     {
     	m_dbStorage.commit();
+    	Unlock();
+    }
+    public void endTransaction()throws DBException
+    {
+    	commit();
     }
 
-    public void rollback()throws DBException
-    {
-    	throw new DBException("Not implemented");
-    }
-    
-    private RubyValue rb_start_transaction() {
-    	try{
-    		startTransaction();
-    	}catch( Exception exc ){
-    		LOG.ERROR("Start transaction failed.", exc);
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_commit() {
-    	try{
-    		commit();
-    	}catch( Exception exc ){
-    		LOG.ERROR("Commit transaction failed.", exc);
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_rollback() {
-    	try{
-    		rollback();
-    	}catch( Exception exc ){
-    		LOG.ERROR("Rollback transaction failed.", exc);
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private void openDB(String strDBName)
-    {
-    	if ( m_bIsOpen )
-    		return;
-    	
-    	try{
-			String strVer = RhoSupport.getRhoDBVersion();
-			initFilePaths(strDBName);
-			
-	    	//Check version
-			if ( strVer != null && strVer.length() > 0 ){
-	        	String dbVer = readDBVersion();
-				if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) )
-				{
-					m_dbStorage.deleteAllFiles(m_strDBPath);
-					if ( m_dbCallback != null )
-						m_dbCallback.OnDeleteAll();
-					
-		            writeDBVersion(strVer);
-				}
-	        }
-			
-			m_dbStorage.open(m_strDBPath, getSqlScript() );
-			
-			m_bIsOpen = true;
-    	}catch( Exception exc ){
-    		LOG.ERROR("Open database failed.", exc);
-    	}
-    }
-    
-    private RubyValue rb_close() {
-    	try{
-    		if ( m_dbStorage != null ){
-		    	m_dbStorage.close();
-		    	m_dbStorage = null;
-    		}
-    		
-	    	m_dbCallback = null;
-    	}catch( Exception exc ){
-    		LOG.ERROR("Close database failed.", exc);
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
 	String readDBVersion()throws Exception
 	{
         SimpleFile file = RhoClassFactory.createFile();
@@ -266,6 +211,130 @@ public class DBAdapter extends RubyBasic {
         file.write(0, ver.getBytes());
         file.close();
 	}
+    
+    private void openDB(String strDBName)throws Exception
+    {
+    	if ( m_bIsOpen )
+    		return;
+    	
+		String strVer = RhoSupport.getRhoDBVersion();
+		initFilePaths(strDBName);
+		
+    	//Check version
+		if ( strVer != null && strVer.length() > 0 ){
+        	String dbVer = readDBVersion();
+			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) )
+			{
+				m_dbStorage.deleteAllFiles(m_strDBPath);
+				if ( m_dbCallback != null )
+					m_dbCallback.OnDeleteAll();
+				
+	            writeDBVersion(strVer);
+			}
+        }
+		
+		m_dbStorage.open(m_strDBPath, getSqlScript() );
+		
+		m_bIsOpen = true;
+    }
+    
+    public void rollback()throws DBException
+    {
+    	Unlock();
+    	throw new DBException("Not implemented");
+    }
+    
+    public RubyValue rb_execute(RubyValue v) 
+    {
+    	RubyArray res = new RubyArray(); 
+    	try{
+    		IDBResult rows = executeSQL(v.toStr(), null);
+    		RubyString[] colNames = getColNames(rows);
+    		
+    		for( ; !rows.isEnd(); rows.next() )
+    		{
+    			RubyHash row = ObjectFactory.createHash();
+    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+    			
+    			res.add( row );
+    		}
+		}catch(Exception e)
+		{
+    		LOG.ERROR("execute failed.", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+    	
+        return res;
+    }
+	
+    //@RubyAllocMethod
+    private static RubyValue alloc(RubyValue receiver) {
+    	return getInstance();
+    }
+    
+    private RubyValue rb_initialize(RubyValue v) 
+    {
+    	try{
+    		openDB(v !=null && v != RubyConstant.QNIL ? v.toString() : "");
+		}catch(Exception e)
+		{
+			LOG.ERROR("initialize failed.", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+    	
+        return this;
+    }
+    
+    private RubyValue rb_start_transaction() {
+    	try{
+    		setUnlockDB(true);
+    		startTransaction();
+    	}catch( Exception e ){
+    		LOG.ERROR("start_transaction failed.", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
+    
+    private RubyValue rb_commit() {
+    	try{
+    		commit();
+    	}catch( Exception e ){
+    		LOG.ERROR("commit failed.", e);
+    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
+    
+    private RubyValue rb_rollback() {
+    	try{
+    		rollback();
+    	}catch( Exception e ){
+    		LOG.ERROR("rollback failed.", e);
+    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
+    
+    private RubyValue rb_close() {
+    	try{
+    		if ( m_dbStorage != null ){
+		    	m_dbStorage.close();
+		    	m_dbStorage = null;
+    		}
+    		
+	    	m_dbCallback = null;
+    	}catch( Exception e ){
+    		LOG.ERROR("close failed.", e);
+    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+    	}
+    	
+        return ObjectFactory.createInteger(0);
+    }
     
 	public static void initMethods(RubyClass klass) {
 		

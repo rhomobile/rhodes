@@ -7,6 +7,7 @@ require 'rhofsconnector'
 module Rho
   class RHO
     APPLICATIONS = {}
+    APPNAME = 'app'
     
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
@@ -23,6 +24,14 @@ module Rho
     # make sure we close the database file
     def self.finalize
       Rhom::RhomDbAdapter::close
+    end
+    
+    def get_app(appname)
+      if (APPLICATIONS[appname].nil?)
+        require RhoApplication::get_app_path(appname)+'application'
+        APPLICATIONS[appname] = Object.const_get('AppApplication').new
+      end
+      APPLICATIONS[appname]
     end
     
     # Return the directories where we need to load configuration files
@@ -77,15 +86,6 @@ module Rho
     def source_initialized?(source_id)
       Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
     end
-    
-    def get_app(appname)
-      if (APPLICATIONS[appname].nil?)
-        require RhoApplication::get_app_path(appname)+'application'
-        #APPLICATIONS[appname] = Object.const_get(appname+'Application').new
-        APPLICATIONS[appname] = Object.const_get('AppApplication').new
-      end
-      APPLICATIONS[appname]
-    end
 
     def serve(req)
       begin
@@ -110,6 +110,8 @@ module Rho
     end
     
     def serve_index(index_name)
+    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
         begin
             puts 'inside RHO.serve_index: ' + index_name
             res = init_response
@@ -121,6 +123,8 @@ module Rho
     end
 
     def serve_index_hash(index_name)
+    	    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_menu
         begin
             puts 'inside RHO.serve_index: ' + index_name
             res = init_response
