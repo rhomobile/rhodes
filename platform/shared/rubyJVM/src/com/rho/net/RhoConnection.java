@@ -7,20 +7,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-//import javax.microedition.io.HttpConnection;
-
 import com.rho.net.IHttpConnection;
-
-//import rhomobile.location.GeoLocation;
-
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RhoSupport;
 import com.rho.net.URI;
-import com.rho.sync.SyncEngine;
 import com.rho.*;
 import com.rho.location.GeoLocation;
 
@@ -554,10 +547,6 @@ public class RhoConnection implements IHttpConnection {
 		}else if ( application.equalsIgnoreCase("system") ){
 			if ( model.equalsIgnoreCase("geolocation") ){
 				showGeoLocation();
-				return true;
-			}else if ( model.equalsIgnoreCase("syncdb") ){
-				SyncEngine.wakeUp();
-				respondOK();
 				return true;
 			}
 		}else if ( application.equalsIgnoreCase("shared") )

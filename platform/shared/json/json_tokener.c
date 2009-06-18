@@ -44,7 +44,7 @@
 # error You do not have strncasecmp on your system.
 #endif /* HAVE_STRNCASECMP */
 
-#include "logging\RhoLog.h"
+#include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "JSON"
 

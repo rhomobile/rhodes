@@ -25,7 +25,7 @@ module Rhom
       @last_sync_duration = args['last_sync_duration'].to_i
       @last_sync_success = args['last_sync_success'].to_i == 1 ? true : false
       @distinct_objects = ::Rhom::RhomDbAdapter::select_from_table(
-                                                             ::Rhom::TABLE_NAME,
+                                                             'object_values',
                                                              'object',
                                                              {"source_id"=>@source_id},
                                                              {"distinct"=>true}).length

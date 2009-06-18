@@ -27,10 +27,9 @@ import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
 import com.rho.location.GeoLocation;
-import com.rho.sync.SyncEngine;
-import com.rho.sync.SyncUtil;
-import com.rho.sync.SyncNotifications;
 
+import java.util.Enumeration;
+import com.rho.sync.SyncThread;
 import java.util.Vector;
 
 
@@ -39,6 +38,14 @@ import java.util.Vector;
  */
 final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener
 {
+	// Menu Labels
+	public static final String LABEL_HOME = "Home";
+	public static final String LABEL_REFRESH = "Refresh";
+	public static final String LABEL_SYNC = "Sync";
+	public static final String LABEL_OPTIONS = "Options";
+	public static final String LABEL_LOG = "Log";
+	public static final String LABEL_SEPARATOR = "separator";
+	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
 
@@ -79,21 +86,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
 
-    class SyncNotificationsImpl extends SyncNotifications{
+    /*class SyncNotificationsImpl extends SyncNotifications{
     	public void performNotification(String url, String body){
 
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
     		postUrl(url, body, headers);
-
+*/
 /*    		String curUrl = (String)_history.lastElement();
     		curUrl.replace('\\', '/');
     		if ( curUrl.equalsIgnoreCase(url) )
     			navigateUrl(curUrl);*/
 
-    	}
+  //  	}
 
-    }
+    //}
 
     String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
@@ -114,6 +121,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), null, null, null, this);
         thread.start();                       
+    }
+    
+	public String getPathForMenuItem(String url) {
+		url = _httpRoot +
+			url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
+		return url;
+	}
+    
+    void addMenuItem(String label, String value){
+    	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
+    	_mainScreen.addCustomMenuItem(label, value);
     }
 
     public void postUrl(String url, String body, HttpHeaders headers){
@@ -207,7 +225,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
-    private MainScreen _mainScreen = null;
+    private CMainScreen _mainScreen = null;
 
     private HttpConnection  _currentConnection;
 
@@ -227,19 +245,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      **************************************************************************/
     public static void main(String[] args)
     {
-    	RhoLogger.InitRhoLog();
-    	LOG.TRACE("Rhodes MAIN started ***--------------------------***");
+    	//RhoLogger.InitRhoLog();
+    	//LOG.TRACE("Rhodes MAIN started ***--------------------------***");
     	
-    	_pushListeningThread = new PushListeningThread();
-    	_pushListeningThread.start();
+    	//_pushListeningThread = new PushListeningThread();
+    	//_pushListeningThread.start();
     	
 		_instance = new RhodesApplication();
 		_instance.enterEventDispatcher();
-				
 		_pushListeningThread.stop();
 		
         RhoLogger.close();
-		LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
+		//LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
     }
 
     void doClose(){   	
@@ -278,40 +295,43 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 
     class CMainScreen extends MainScreen{
+    	
+    	private Vector menuItems = new Vector();
 
-		private MenuItem homeItem = new MenuItem("Home", 200000, 10) {
+		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
 					navigateHome();
 				}
 			};
-		private MenuItem refreshItem = new MenuItem("Refresh", 200000, 10) {
+		private MenuItem refreshItem = new MenuItem(RhodesApplication.LABEL_REFRESH, 200000, 10) {
 			public void run() {
 				refreshCurrentPage();
 				}
 			};
-		private MenuItem syncItem = new MenuItem("Sync", 200000, 10) {
+		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
-					SyncEngine.wakeUp();
+					SyncThread.doSyncAllSources();
 				}
 			};
-		private MenuItem optionsItem = new MenuItem("Options", 200000, 10) {
+		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {
 			public void run() {
 					String curUrl = RhoRuby.getOptionsPage();
-					curUrl = _httpRoot +
-						curUrl.substring(curUrl.charAt(0) == '\\' || curUrl.charAt(0) == '/' ? 1 : 0 );
+					curUrl = getPathForMenuItem(curUrl);
 
 					addToHistory(curUrl, null );
 			    	
 					navigateUrl(curUrl);
 				}
 			};
-		private MenuItem logItem = new MenuItem("Log", 200000, 10) {
+		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
 			public void run() {
 					LogScreen screen = new LogScreen();
 			        //Push this screen to display it to the user.
 			        UiApplication.getUiApplication().pushScreen(screen);
 				}
 			};
+
+		private MenuItem separatorItem = MenuItem.separator(200000);
 
 		protected void makeMenu(Menu menu, int instance) {
 			// TODO Auto-generated method stub
@@ -326,15 +346,72 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	    	if ( i > 0 )
 	    	    		i = i - 1;
 	    	    }
-	    	}
+	    	}	
 			
-			menu.add(homeItem);
-			menu.add(refreshItem);
-			menu.add(syncItem);
-			menu.add(optionsItem);
-			menu.add(logItem);
-			
+			// Draw default menu
+			if ((menu.getSize() <= 2) && (menuItems == null || menuItems.size() == 0)) {
+				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, menu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, menu);
+			}
+
+			// Draw menu from rhodes framework
+			Enumeration elements = menuItems.elements();
+			while (elements.hasMoreElements()) {
+				MenuItem item = (MenuItem)elements.nextElement();
+				// Don't redraw the menu item!
+				for(int i=0; i < menu.getSize(); i++)
+				{
+					MenuItem itm = menu.getItem(i);
+					String label = itm.toString();
+					if(label.equalsIgnoreCase(item.toString())) {
+						menu.deleteItem(i);
+					}
+				}
+				menu.add(item);
+			}
 			super.makeMenu(menu, instance);
+			// Reset the menu
+			menuItems.removeAllElements();
+		}
+		
+		public void addCustomMenuItem(String label, final String value) {
+			// Is this a default item? If so, use the existing menu item we have.
+    	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
+    	    	setDefaultItemToMenuItems(label, homeItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
+    	    	setDefaultItemToMenuItems(label, refreshItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
+    	    	setDefaultItemToMenuItems(label, syncItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
+    	    	setDefaultItemToMenuItems(label, optionsItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_LOG)) {
+    	    	setDefaultItemToMenuItems(label, logItem);
+    	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR) || 
+    	    		   (value != null && value.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR))) {
+    	    	menuItems.addElement(separatorItem);
+    	    } else {
+				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+					public void run() {
+				    	String val = getPathForMenuItem(value);
+						addToHistory(val, null );
+						navigateUrl(val);
+					}
+				};
+				menuItems.addElement(itemToAdd);
+    	    }
+		}
+
+		private void setDefaultItemToMenuItems(String label, MenuItem item) {
+			item.setText(label);
+	    	menuItems.addElement(item);
+		}
+		
+		private void setDefaultItemToMenu(String label, MenuItem item, Menu menu) {
+			item.setText(label);
+	    	menu.add(item);
 		}
 
 		public void close() {
@@ -357,23 +434,28 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     private void doStartupWork() {
+    	RhoLogger.InitRhoLog();
+    	
         LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
       
+    	
+    	_pushListeningThread = new PushListeningThread();
+    	_pushListeningThread.start();
+        
     	try {
     		RhoClassFactory.getNetworkAccess().configure();
     	} catch(IOException exc) {
     		LOG.ERROR(exc.getMessage());
     	}
     	
-    	SyncUtil.init();
         RhoRuby.RhoRubyStart("");
-		SyncEngine.start(null);
+		SyncThread.Create( new RhoClassFactory() );
    	
     	CKeyListener list = new CKeyListener();
     	CTrackwheelListener wheel = new CTrackwheelListener();
     	this._history = new Vector();
 
-        SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
+        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
 
         _mainScreen = new CMainScreen();
         _mainScreen.addKeyListener(list);
@@ -459,8 +541,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void navigateHome(){
-        String strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) +
-        	RhoRuby.getStartPage();
+    	String strHomePage = RhoRuby.getStartPage();
+    	String strStartPage = _httpRoot;
+    	if ( strHomePage != null && strHomePage.length() > 0 )
+    	{
+    		strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + strHomePage;
+    	}
+    	
         _history.removeAllElements();
 	    _history.addElement(strStartPage);
 	    navigateUrl(strStartPage);
@@ -696,33 +783,33 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         (new Thread(runnable)).start();
     }
 
-}
+    public static class PrimaryResourceFetchThread extends Thread {
 
-class PrimaryResourceFetchThread extends Thread {
+        private RhodesApplication _application;
 
-    private RhodesApplication _application;
+        private Event _event;
 
-    private Event _event;
+        private byte[] _postData;
 
-    private byte[] _postData;
+        private HttpHeaders _requestHeaders;
 
-    private HttpHeaders _requestHeaders;
+        private String _url;
 
-    private String _url;
+        public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
+                                      Event event, RhodesApplication application) {
 
-    public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                  Event event, RhodesApplication application) {
+            _url = url;
+            _requestHeaders = requestHeaders;
+            _postData = postData;
+            _application = application;
+            _event = event;
+        }
 
-        _url = url;
-        _requestHeaders = requestHeaders;
-        _postData = postData;
-        _application = application;
-        _event = event;
+        public void run() {
+            HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+            _application.processConnection(connection, _event);
+        }
     }
-
-    public void run() {
-        HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        _application.processConnection(connection, _event);
-    }
+    
 }
 

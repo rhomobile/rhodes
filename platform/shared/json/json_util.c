@@ -62,7 +62,7 @@ extern char *strerror(int errno);
 #include "json_tokener.h"
 #include "json_util.h"
 
-#include "logging\RhoLog.h"
+#include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "JSON"
 

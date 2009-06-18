@@ -35,4 +35,9 @@ public class RubyException extends RuntimeException {
 	public String toString() {
 		return value_.toString();
 	}
+	
+	public String getMessage()
+	{
+		return value_ != null ? value_.toString() : super.getMessage();
+	}
 }

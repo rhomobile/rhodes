@@ -16,3 +16,5 @@
 ..\rhodes\src\rhomobile\SecondaryResourceFetchThread.java
 ..\rhodes\src\rhomobile\Utilities.java
 ..\rhodes\src\rhomobile\WebView.java
+..\rhodes\src\rhomobile\datetime\DateTimePicker.java
+..\rhodes\src\rhomobile\datetime\DateTimeScreen.java

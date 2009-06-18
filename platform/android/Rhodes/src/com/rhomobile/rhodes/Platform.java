@@ -23,8 +23,7 @@ package com.rhomobile.rhodes;
 import com.rho.RhoConf;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
-import com.rho.sync.SyncEngine;
-import com.rho.sync.SyncNotifications;
+import com.rho.sync.SyncThread;
 import com.rhomobile.rhodes.http.HttpHeader;
 import com.rhomobile.rhodes.http.HttpServer;
 import com.rhomobile.rhodes.ui.AboutDialog;
@@ -267,7 +266,7 @@ public class Platform extends Activity {
 			return true;
 
 		case R.id.sync:
-			SyncEngine.wakeUp();
+			SyncThread.doSyncAllSources();
 			return true;
 			
 		case R.id.logview:
@@ -328,7 +327,7 @@ public class Platform extends Activity {
 	public void startSyncEngine() {
 		Log.d(LOG_TAG, "startSyncEngine...");
 
-		SyncEngine.setNotificationImpl(new SyncNotificationsImpl());
+		//SyncEngine.setNotificationImpl(new SyncNotificationsImpl());
 
 		// start sync engine
 		startService(new Intent(this, RhoSyncService.class));
@@ -342,7 +341,7 @@ public class Platform extends Activity {
 			this.webView.loadUrl(startPage);
 	}
 
-	public class SyncNotificationsImpl extends SyncNotifications {
+	/*public class SyncNotificationsImpl extends SyncNotifications {
 		public void performNotification(String url, String body){
 
     		HttpHeader headers = new HttpHeader();
@@ -350,7 +349,7 @@ public class Platform extends Activity {
     		postUrl(url, body, headers);
 
 		}
-	}
+	}*/
 
 	String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
