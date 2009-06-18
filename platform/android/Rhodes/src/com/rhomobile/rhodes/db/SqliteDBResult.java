@@ -177,7 +177,7 @@ public class SqliteDBResult implements IDBResult {
 	}
 
 	private boolean moveToPosition(int nItem) {
-		if (curIndex == -1 || nItem < 0 || nItem >= getCount())
+		if (curIndex == -1 || nItem < 0)
 			return false;
 
 		if (curIndex != nItem) {
