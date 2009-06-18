@@ -1,3 +1,75 @@
+  def startmds
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    args = []
+    args << "/c"
+    args << "run.bat"
+
+    Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
+
+  end 
+
+ def startsim
+    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    bbver = $config["env"]["bbver"]
+    
+    command =  '"' + jde + "/simulator/fledge.exe\""
+    args = [] 
+    args << "/app=Jvm.dll"
+    args << "/handheld=" + sim
+    args << "/session=" + sim
+    args << "/app-param=DisableRegistration"
+    args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
+    args << "/data-port=0x4d44"
+    args << "/data-port=0x4d4e"
+    args << "/pin=0x2100000A"
+    
+    if bbver >= 4.3
+      args << "/fs-sdcard"
+    end
+        
+    args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
+
+    Thread.new { Jake.run(command,args,jde + "/simulator",true) }
+    $stdout.flush
+  end
+
+ def manualsign
+    java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+    args = []
+    args << "-jar"
+    args << '"' + jde + "/bin/SignatureTool.jar\""
+    args << "-r"
+    args << $targetdir
+
+    puts Jake.run(java,args)
+    $stdout.flush
+
+  end
+
+    desc "Sign cod files automatically"
+  def autosign
+    java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+    args = []
+    args << "-jar"
+    args << '"' + jde + "/bin/SignatureTool.jar\""
+    args << "-c"
+    args << "-a"
+    args << "-p"
+    args << '"' + $config["build"]["bbsignpwd"] +'"'
+    args << "-r"
+    args << $targetdir
+
+    puts Jake.run(java,args)
+    $stdout.flush
+
+  end
+
+
 namespace "config" do
   task :bb => ["config:common"] do
     bbpath = $config["build"]["bbpath"]
@@ -252,63 +324,66 @@ end
 
 
 namespace "device" do
+  namespace "bb" do
+    desc "Build and package dev for device"
+    task :dev => "package:bb:dev" do
 
-  desc "Build and package dev for device"
-  task :dev => "package:alldev" do
+      #make into functions
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+        autosign
+      else
+        manualsign
+      end
 
-    if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
-      Rake::Task["run:autosign"].execute
-    else
-      Rake::Task["run:manualsign"].execute
+      rm_rf $targetdir + "/web"
+      mkdir_p $targetdir + "/web"
+
+      cp $targetdir + "/RhoBundle.jad", $targetdir + "/web"
+      cp $targetdir + "/rhodesApp.jad", $targetdir + "/web"
+      cp $targetdir + "/RubyVM.jad", $targetdir + "/web"
+
+      Jake.unjar($targetdir + "/RhoBundle.cod", $targetdir + "/web")
+      Jake.unjar($targetdir + "/rhodesApp.cod", $targetdir + "/web")
+      Jake.unjar($targetdir + "/RubyVM.cod", $targetdir + "/web")
+
     end
 
-    rm_rf config["build"]["targetdir"] + "/web"
-    mkdir_p config["build"]["targetdir"] + "/web" 
+    desc "Build and package dev rhobundle for device"
+    task :rhobundle => "package:bb:rhobundle" do
 
-    cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
-    cp config["build"]["targetdir"] + "/rhodesApp.jad", config["build"]["targetdir"] + "/web"
-    cp config["build"]["targetdir"] + "/RubyVM.jad", config["build"]["targetdir"] + "/web"
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+        autosign
+      else
+        manualsign
+      end
 
-    Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
-    Jake.unjar(config["build"]["targetdir"] + "/rhodesApp.cod", config["build"]["targetdir"] + "/web")
-    Jake.unjar(config["build"]["targetdir"] + "/RubyVM.cod", config["build"]["targetdir"] + "/web")
+      rm_rf Dir.glob($targetdir + "/web/RhoBundle*.*")
 
-  end
+      cp $targetdir + "/RhoBundle.jad", $targetdir + "/web"
 
-  desc "Build and package dev rhobundle for device"
-  task :rhobundle => "package:rhobundle" do
+      Jake.unjar($targetdir + "/RhoBundle.cod", $targetdir + "/web")
 
-    if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
-      Rake::Task["run:autosign"].execute
-    else
-      Rake::Task["run:manualsign"].execute
     end
 
-    rm_rf Dir.glob(config["build"]["targetdir"] + "/web/RhoBundle*.*")
+    desc "Build and package for production"
+    task :production => "package:bb:production" do
 
-    cp config["build"]["targetdir"] + "/RhoBundle.jad", config["build"]["targetdir"] + "/web"
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+        autosign
+      else
+        manualsign
+      end
 
-    Jake.unjar(config["build"]["targetdir"] + "/RhoBundle.cod", config["build"]["targetdir"] + "/web")
+      rm_rf $targetdir + "/web"
+      mkdir_p $targetdir + "/web"
 
-  end
+      cp $targetdir + "/rhodesApp.jad", $targetdir + "/web"
 
-  desc "Build and package production for device"
-  task :production => "package:all" do
-    if config["build"]["bbsignpwd"] and config["build"]["bbsignpwd"] != ""
-      Rake::Task["run:autosign"].execute
-    else
-      Rake::Task["run:manualsign"].execute
+      Jake.unjar($targetdir + "/rhodesApp.cod", $targetdir + "/web")
+
     end
 
-    rm_rf config["build"]["targetdir"] + "/web"
-    mkdir_p config["build"]["targetdir"] + "/web" 
-
-    cp config["build"]["targetdir"] + "/rhodesApp.jad", config["build"]["targetdir"] + "/web"
-
-    Jake.unjar(config["build"]["targetdir"] + "/rhodesApp.cod", config["build"]["targetdir"] + "/web")
-
   end
-
 end
 
 namespace "clean" do
@@ -341,96 +416,32 @@ end
 
 namespace "run" do
 
-  desc "Run Sim"
-  task :sim do
-    sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
-    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    bbver = config["env"]["bbver"]
-    
-    command =  '"' + jde + "/simulator/fledge.exe\""
-    args = [] 
-    args << "/app=Jvm.dll"
-    args << "/handheld=" + sim
-    args << "/session=" + sim
-    args << "/app-param=DisableRegistration"
-    args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
-    args << "/data-port=0x4d44"
-    args << "/data-port=0x4d4e"
-    args << "/pin=0x2100000A"
-    
-    if bbver >= 4.3
-      args << "/fs-sdcard"
-    end
-        
-    args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
 
-    Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-    $stdout.flush
-  end
 
-  desc "Run MDS"
-  task :mds do
-    mdshome =  config["env"]["paths"][config["env"]["bbver"]]["mds"]
-    args = []
-    args << "/c"
-    args << "run.bat"
-
-    Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
-
-  end
+ 
 
   desc "Builds everything, loads and starts sim"
-  task :app  => [ "package:all", :mds, :sim ] do
-    sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
-    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    
-    puts "sleeping to allow simulator to get started"
+  task :bb  => "package:bb:production" do
+    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+      startmds
+    startsim
+
+      puts "sleeping to allow simulator to get started"
     sleep 25
   
     command = '"' + jde + "/simulator/fledgecontroller.exe\""
     args = []
     args << "/session="+sim
-    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join(config["build"]["targetdir"],"rhodesApp.cod")) + ")\""
+    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
   
     Jake.run(command,args, jde + "/simulator")
     $stdout.flush
   end
 
-  desc "Sign cod files automatically"
-  task :autosign do
-    java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
-    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"] 
-  
-    args = []
-    args << "-jar"
-    args << '"' + jde + "/bin/SignatureTool.jar\""
-    args << "-c"
-    args << "-a"
-    args << "-p"
-    args << '"' + config["build"]["bbsignpwd"] +'"'
-    args << "-r"
-    args << config["build"]["targetdir"]
 
-    puts Jake.run(java,args)
-    $stdout.flush
 
-  end
-
-  desc "Sign cod files manually"
-  task :manualsign do
-    java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
-    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"] 
-    
-    args = []
-    args << "-jar"
-    args << '"' + jde + "/bin/SignatureTool.jar\""
-    args << "-r"
-    args << config["build"]["targetdir"]
-  
-    puts Jake.run(java,args)
-    $stdout.flush
-  
-  end
 
 end
 
