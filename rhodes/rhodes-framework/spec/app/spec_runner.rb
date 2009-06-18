@@ -13,6 +13,7 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/rhom_spec'
     config[:files] << 'spec/rhoruby_spec'
     config[:files] << 'spec/rho_controller_spec'
+    config[:files] << 'spec/rhom_object_spec'
     config[:files] << 'spec/rho_spec'
     config[:files] << 'spec/spec_helper'
     config[:files] << 'spec/webview_spec'

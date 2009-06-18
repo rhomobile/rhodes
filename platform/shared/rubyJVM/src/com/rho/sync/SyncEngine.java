@@ -52,6 +52,7 @@ class SyncEngine implements NetRequest.IRhoSession
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
     NetRequest m_NetRequest;
+    IRhoRubyHelper m_systemInfo;
     int         m_syncState;
     String     m_clientID = "";
     Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
@@ -78,8 +79,9 @@ class SyncEngine implements NetRequest.IRhoSession
     	m_syncState = esNone; 
     }
 
-    void setFactory(RhoClassFactory factory){ 
+    void setFactory(RhoClassFactory factory)throws Exception{ 
         m_NetRequest = factory.createNetRequest();
+        m_systemInfo = factory.createRhoRubyHelper();
     }
     
 	void doSyncAllSources()throws Exception
@@ -108,6 +110,20 @@ class SyncEngine implements NetRequest.IRhoSession
 	    //TODO:doSyncSource
 	}
 
+	String updateSyncServer(String strUrl)
+	{
+		String strSyncServer = m_systemInfo.getAppProperty("RHO-SyncServer-Address");
+		if ( strSyncServer != null && strSyncServer.length() > 0 )
+		{
+			URI uri = new URI(strUrl);
+			uri.setHost(strSyncServer);
+			
+			return uri.toString();
+		}
+		
+		return strUrl;
+	}
+	
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
@@ -115,7 +131,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
-	        String strUrl = res.getStringByIdx(1);
+	        String strUrl = updateSyncServer(res.getStringByIdx(1));
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
 	    }
@@ -193,7 +209,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	        if ( isSessionExist() && getState() != esStop )
 	            src.sync();
 	
-	        fireNotification(src.getID().intValue(),src.getServerObjectsCount());
+	        fireNotification(src, true);
 	    }
 	}
 
@@ -233,7 +249,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
 	    
 	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
-	    if ( strSession == null )
+	    if ( strSession == null || strSession.length() == 0 )
 	        return false;
 	
 	    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
@@ -244,7 +260,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	boolean isLoggedIn()throws DBException
 	{
 	    int nCount = 0;
-	    IDBResult res = getDB().executeSQL("SELECT count(session) FROM sources");
+	    IDBResult res = getDB().executeSQL("SELECT count(session) FROM sources WHERE session IS NOT NULL");
 	    
 	    if ( !res.isEnd() )
 	        nCount = res.getIntByIdx(0);
@@ -255,7 +271,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	String loadSession()throws DBException
 	{
 	    String strRes = "";
-	    IDBResult res = getDB().executeSQL("SELECT session FROM sources");
+	    IDBResult res = getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL");
 	    
 	    if ( !res.isEnd() )
 	    	strRes = res.getStringByIdx(0);
@@ -265,7 +281,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
-	    getDB().executeSQL( "UPDATE sources SET session=NULL" );
+	    getDB().executeSQL( "UPDATE sources SET session = NULL");
 	    getNet().deleteCookie("");
 	
 	    loadAllSources();
@@ -287,44 +303,68 @@ class SyncEngine implements NetRequest.IRhoSession
 	    m_clientID = "";
 	}
 
-	void setNotification(int source_id, String strUrl, String strParams )
+	void setNotification(int source_id, String strUrl, String strParams )throws Exception
 	{
 		LOG.INFO( "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
-	    clearNotification(source_id);
-	
 	    String strFullUrl = getNet().resolveUrl(strUrl);
-	
-	    if ( strFullUrl.length() > 0 )
-	    {
-			LOG.INFO( " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
-			
-	        synchronized(m_mxNotifications){
-	        	m_mapNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams ) );
-	        }	
-	    }
+		
+		if ( source_id == -1 )
+		{
+			synchronized(m_mxNotifications){
+				m_mapNotifications.clear();
+				
+				if ( strFullUrl.length() > 0 )
+				{
+					loadAllSources();
+					
+				    for( int i = 0; i < m_sources.size(); i++ )
+				    {
+				    	m_mapNotifications.put(new Integer(i),new SyncNotification( strFullUrl, strParams ) );
+				    }
+				}
+			}
+			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
+		}else
+		{
+		    clearNotification(source_id);
+		    if ( strFullUrl.length() > 0 )
+		    {
+		        synchronized(m_mxNotifications){
+		        	m_mapNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams ) );
+		        }
+				LOG.INFO( " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
+		    }
+		}
 	}
 
-	void fireNotification( int source_id, int nSyncObjectsCount)throws Exception
+	void fireNotification( SyncSource src, boolean bFinish)throws Exception
 	{
-	    String strBody, strUrl;
+	    String strBody = "", strUrl;
 	    {
 	    	synchronized(m_mxNotifications){
-		        SyncNotification sn = (SyncNotification)m_mapNotifications.get(new Integer(source_id));
+		        SyncNotification sn = (SyncNotification)m_mapNotifications.get(src.getID());
 		        if ( sn == null )
 		            return;
 		
 		        strUrl = sn.m_strUrl;
-		        strBody = "status=";
-		        strBody += (nSyncObjectsCount > 0 ?"ok":"error");
+		        strBody += "total_count=" + src.getTotalCount();
+		        strBody += "&processed_count=" + src.getCurPageCount();
+		        
+		        strBody = "&status=";
+		        if ( bFinish )
+		        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
+		        else
+		        	strBody += "in_progress";
+		        
 		        if ( sn.m_strParams.length() > 0 )
 		            strBody += "&" + sn.m_strParams;
 	        }
 	    }
-		LOG.INFO( "Fire notification. Source ID: " + source_id + "; Url :" + strUrl + "; Body: " + strBody );
+		LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
 		
 	    getNet().pushData( strUrl, strBody, this );
 	
-	    clearNotification(source_id);
+	    clearNotification(src.getID().intValue());
 	}
 
 	void clearNotification(int source_id) 

@@ -48,14 +48,7 @@ public class NetRequest
 	
 	public NetData pullData(String strUrl, String strBody, IRhoSession oSession ) throws Exception
     {
-		NetData data = null;
-		
-		try{
-    		data = doRequestTry(strUrl, strBody, oSession, true);
-		}catch(IOException e)
-		{
-			LOG.ERROR("pullData failed", e);
-		}
+    	NetData	data = doRequestTry(strUrl, strBody, oSession, true);
 		
 		return data != null ? data : new NetData(null);
     }
@@ -154,14 +147,7 @@ public class NetRequest
 		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ) 
 			return RhoClassFactory.getNetworkAccess().doLocalRequest(strUrl, strBody);
 		
-		NetData data = null;
-		try{
-    		data = doRequestTry(strUrl, strBody, oSession, true);
-		}catch(IOException e)
-		{
-			LOG.ERROR("pushData failed", e);
-		}
-		
+   		NetData data = doRequestTry(strUrl, strBody, oSession, true);
 		return data != null && data.getCharData() != null;
     }
 	
@@ -176,11 +162,11 @@ public class NetRequest
 		
 		try{
     		doRequestTry(strUrl, strBody, oSession, false);
-			ParsedCookie cookie = makeCookie(connection);
-			strCookie = cookie.strAuth + ";" + cookie.strSession + ";";
-		}catch(IOException e)
-		{
-			LOG.ERROR("pullCookies failed", e);
+    		if ( connection.getResponseCode() == IHttpConnection.HTTP_OK )
+    		{
+    			ParsedCookie cookie = makeCookie(connection);
+    			strCookie = cookie.strAuth + ";" + cookie.strSession + ";";
+    		}
 		}finally
 		{
 			closeConnection();
@@ -222,9 +208,6 @@ public class NetRequest
 		        nTry++;
 			}while( true );
 			
-		}catch(IOException e)
-		{
-			LOG.ERROR("pushFile failed", e);
 		}finally{
 			if ( file != null )
 				try{ file.close(); }catch(IOException e){}
@@ -306,23 +289,18 @@ public class NetRequest
     {
     }
 
-	public String resolveUrl(String url)
+	public String resolveUrl(String url) throws Exception
     {
 		if ( url == null || url.length() == 0 )
 			return "";
 
-		try{
-			String _httpRoot = RhoClassFactory.getNetworkAccess().getHomeUrl();
-			url.replace('\\', '/');
-			if ( !url.startsWith(_httpRoot) ){
-	    		if ( url.charAt(0) == '/' )
-	    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
-	    		else
-	    			url = _httpRoot + url;
-			}
-		}catch(Exception exc)
-		{
-			LOG.ERROR("resolveUrl failed", exc);
+		String _httpRoot = RhoClassFactory.getNetworkAccess().getHomeUrl();
+		url.replace('\\', '/');
+		if ( !url.startsWith(_httpRoot) ){
+    		if ( url.charAt(0) == '/' )
+    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
+    		else
+    			url = _httpRoot + url;
 		}
 		return url;
     }
