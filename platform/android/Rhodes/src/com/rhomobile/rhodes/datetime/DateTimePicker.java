@@ -1,7 +1,11 @@
 package com.rhomobile.rhodes.datetime;
 
+import android.content.Intent;
+
+import com.rhomobile.rhodes.RhodesInstance;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
@@ -16,9 +20,10 @@ public class DateTimePicker extends RubyBasic {
 	}
 	
 	public static RubyValue choose(RubyValue arg1, RubyValue arg2, int v) {
-		// TODO:
-		throw new RubyException(RubyRuntime.NotImplementedErrorClass, "in `DateTimePicker': not implemented yet");
+		//Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(), DateTimePickerScreen.class);
+		//RhodesInstance.getInstance().startActivityForResult(intent, 5); 
 		//return RubyConstant.QNIL;
+		throw new RubyException(RubyRuntime.NotImplementedErrorClass, "in `DateTimePicker': not implemented yet");
 	}
 	
 	public static void initMethods(RubyClass klass) {
