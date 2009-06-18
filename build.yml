@@ -1,5 +1,5 @@
 env:
-  app: C:/work/spacey folder/testapp
+  app: C:/work/blah
   version: 1.1.0
   vendor: rhomobile
   bbver: 4.6

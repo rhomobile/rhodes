@@ -80,7 +80,7 @@ namespace "config" do
     $preverified = bbpath + "/preverified"
     $targetdir = bbpath + "/target/" + $config["env"]["bbver"].to_s
     $rubyVMdir = bbpath + "/RubyVM"
-    $excludelib = "**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $compileERB = bbpath + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
@@ -275,7 +275,7 @@ namespace "package" do
         "rhodesApp",
         $config["env"]["vendor"],
         $config["env"]["version"],
-        $builddir + "/../resources/icon.png",
+        "resources/icon.png",
         false,
         true
       )
@@ -304,7 +304,7 @@ namespace "package" do
         "rhodesApp",
         $config["env"]["vendor"],
         $config["env"]["version"],
-        $builddir + "/resources/icon.png",
+        "resources/icon.png",
         false,
         true
       )
@@ -429,7 +429,7 @@ namespace "run" do
     startsim
 
       puts "sleeping to allow simulator to get started"
-    sleep 25
+    sleep 45
   
     command = '"' + jde + "/simulator/fledgecontroller.exe\""
     args = []
