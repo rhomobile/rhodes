@@ -1,280 +1,255 @@
-
-
 namespace "config" do
-  namespace "bb" do
-    task :config => ["config:common"] do
-      bbpath = $config["build"]["bbpath"]
-      $bindir = bbpath + "/bin"
-      $rhobundledir =  bbpath + "/RhoBundle"
-      $srcdir =  $bindir + "/RhoBundle"
-      $preverified = $bindir + "/preverified"
-      #rubypath: ../../../rhodes/rhodes-build/res/RhoRuby.exe
-      #shareddir: ../../shared/build
-      $targetdir = bbpath + "/target/" + $config["env"]["bbver"]
-      $rubyVMdir = bbpath + "/RubyVM"
-      $excludelib = "**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
-      $compileERB = bbpath + "/build/compileERB.rb"
-      #bblib: ../../../rhodes/rhodes-build/res
-      $tmpdir =  $bindir +"/tmp"
-      $excludeapps = "public/js/iui/**,**/jquery*"
+  task :bb => ["config:common"] do
+    bbpath = $config["build"]["bbpath"]
+    $builddir = bbpath + "/build"
+    $bindir = bbpath + "/bin"
+    $rhobundledir =  bbpath + "/RhoBundle"
+    $srcdir =  $bindir + "/RhoBundle"
+    $preverified = bbpath + "/preverified"
+    $targetdir = bbpath + "/target/" + $config["env"]["bbver"].to_s
+    $rubyVMdir = bbpath + "/RubyVM"
+    $excludelib = "**/rhom_db_adapterME.rb,**/singleton.rb,**/TestServe.rb,**/rhoframework.rb,**/date.rb"
+    $compileERB = bbpath + "/build/compileERB.rb"
+    $tmpdir =  $bindir +"/tmp"
+    $excludeapps = "public/js/iui/**,**/jquery*"
 
-      $rhobundleimplib = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" +
-                          Jake.get_absolute($preverified+"/RubyVM.jar")
-      $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
-
-    end
-  end
-end
+    $rhobundleimplib = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" +
+      Jake.get_absolute($preverified+"/RubyVM.jar")
+    $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
 
 
-namespace "package" do
-  desc "Package rhoBundle"
-  task :rhobundle => ["build:rubyvm", "build:rhobundle"] do
-    Jake.rapc("RhoBundle",
-       config["build"]["targetdir"],
-       rhobundleimplib ,
-       '"' + Jake.get_absolute(config["build"]["preverified"] + "/RhoBundle.jar") + '"',
-       "RhoBundle",
-       config["env"]["vendor"],
-       config["env"]["version"]
-    )
-
-    cp "RhoBundle.alx", config["build"]["targetdir"] if not FileUtils.uptodate?(config["build"]["targetdir"] + "/RhoBundle.alx", "RhoBundle.alx")
-
-  end
-
-  desc "Package rubyVM"
-  task :rubyvm => "build:rubyvm" do
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-
-    if not FileUtils.uptodate?(config["build"]["targetdir"] + '/RubyVM.cod',config["build"]["preverified"] + "/RubyVM.jar") 
-      Jake.rapc("RubyVM", 
-           config["build"]["targetdir"],
-           jdehome + "/lib/net_rim_api.jar",
-           '"' + Jake.get_absolute(config["build"]["preverified"] + "/RubyVM.jar") +'"',
-           "RubyVM",
-           config["env"]["vendor"],
-           config["env"]["version"]
-        )
-      $stdout.flush
-    else
-      puts 'RubyVM .cod files are up to date'
-      $stdout.flush
-    end
-
-  end
-
-  desc "Package rhodesApp"
-  task :rhodes => ["build:rubyvm","build:rhodes"] do
-        Jake.rapc("rhodesApp", 
-           config["build"]["targetdir"],
-           rhodesimplib,
-           '"' + Jake.get_absolute( config["build"]["preverified"] + "/rhodes.jar") +'"',
-           "rhodesApp",
-           config["env"]["vendor"],
-           config["env"]["version"],
-           "resources/icon.png",
-           false,
-           true
-          )
-      $stdout.flush
-      cp "./rhodesApp.alx", config["build"]["targetdir"] if not FileUtils.uptodate?( config["build"]["targetdir"]+"/rhodesApp.alx", "./rhodesApp.alx")
-  end
-
-  desc "Package all production"
-  task :all => ["build:all"] do
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    rm_rf config["build"]["tmpdir"]
-    mkdir_p config["build"]["tmpdir"]
-
-    rm_rf config["build"]["targetdir"]
-    mkdir_p config["build"]["targetdir"]
-
-    Jake.unjar(config["build"]["preverified"] + "/RubyVM.jar", config["build"]["tmpdir"]) 
-    Jake.unjar(config["build"]["preverified"] + "/RhoBundle.jar", config["build"]["tmpdir"]) 
-    Jake.unjar(config["build"]["preverified"] + "/rhodes.jar", config["build"]["tmpdir"]) 
-
-    Jake.jar(config["build"]["bindir"] + "/rhodesApp.jar","manifest.mf",config["build"]["tmpdir"],true)
-    Jake.rapc("rhodesApp", 
-           config["build"]["targetdir"],
-           jdehome + "/lib/net_rim_api.jar",
-           '"' + Jake.get_absolute( config["build"]["bindir"] + "/rhodesApp.jar") +'"',
-           "rhodesApp",
-           config["env"]["vendor"],
-           config["env"]["version"],
-           "resources/icon.png",
-           false,
-           true
-      )
-      $stdout.flush
-      cp "./rhodesApp.alx", config["build"]["targetdir"] if not FileUtils.uptodate?( config["build"]["targetdir"]+"/rhodesApp.alx", "./rhodesApp.alx")
-
-    
-  end
-
-  desc "Package all dev"
-  task :alldev => ["clean:packaged",:rubyvm,:rhobundle,:rhodes] do
   end
 end
 
 namespace "build" do
+  namespace "bb" do
+    desc "Build rhoBundle"
+    #XXX change to ns build, rhobundle
+    task :rhobundle => :rubyvm do
+      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jarexe =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
 
-  desc "Build rhoBundle"
-  #XXX change to ns build, rhobundle
-  task :rhobundle => :rubyvm do
-    java = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/java.exe"
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    jarexe =  config["env"]["paths"][config["env"]["bbver"]]["java"] + "/jar.exe"
+      #common bundle task goes here#
+      Rake::Task["build:bundle:xruby"].execute
 
-    Jake.ant(config["build"]["shareddir"],"bundleCommon")
+      rm_rf $srcdir
 
-    rm_rf config["build"]["srcdir"] + "/apps/shared"
-
-    args = []
-
-    args << "-jar"
-    args << Jake.get_absolute(config["build"]["bblib"]) + "/xruby-0.3.3.jar"
-    args << "-c"
-    args << "RhoBundle"
-
-    puts Jake.run(java,args,config["build"]["bindir"])
-    $stdout.flush
-    Jake.ant(config["build"]["shareddir"],"deleteRBandERB")
-
-  #XXX jar function should handle this
-    args = []
-    args << "uf"
-    args << "../RhoBundle.jar"
-    args << "apps/*.*"
-    puts Jake.run(jarexe,args,config["build"]["srcdir"])
-    $stdout.flush
-    rm_rf config["build"]["srcdir"]
-
-  #XXX make preverify function in Jake  
-    args = []
-    args << "-classpath"
-    args << '"' + jdehome + "/lib/net_rim_api.jar;"+config["build"]["preverified"]+"/RubyVM.jar\""
-    args << "-d"
-    args << config["build"]["preverified"]
-    args << config["build"]["bindir"] + "/RhoBundle.jar"
-    puts Jake.run(jdehome + "/bin/preverify.exe",args)
-    $stdout.flush
-
-    cp config["build"]["preverified"] + "/RhoBundle.jar", config["build"]["rhobundledir"] + "/RhoBundle.jar"
-
-  end
-
-  desc "Build RubyVM"
-  task :rubyvm do
-    javac = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/javac.exe"
-    tmpdir = config["build"]["tmpdir"]
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-
-    rubyvmfiles = File.readlines('RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
-  
-    if not uptodate?(config["build"]["preverified"] + '/RubyVM.jar',rubyvmfiles)
-
-      mkdir_p tmpdir + "/RubyVM" if not FileTest.exists? tmpdir + "/RubyVM"
-      mkdir_p  config["build"]["targetdir"] if not FileTest.exists?  config["build"]["targetdir"]
-
-      args = []
-      args << "-g"
-      args << "-d"
-      args << '"' +tmpdir + '/RubyVM"'
-      args << "-bootclasspath"
-      args << '"' + config["env"]["paths"][config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
-      args << "-source"
-      args << "1.3"
-      args << "-target"
-      args << "1.3"
-      args << "-nowarn"
-      args << "@RubyVM_build.files"
-
-      puts Jake.run(javac,args)
-      $stdout.flush
-      #XXX Move to task/function
+      #XXX make preverify function in Jake
       args = []
       args << "-classpath"
-      args << '"' + jdehome + "/lib/net_rim_api.jar\""
+      args << '"' + jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar\""
       args << "-d"
-      args << config["build"]["tmpdir"] + "/RubyVM.preverify"
-      args << '"' + config["build"]["tmpdir"] + "/RubyVM\""
+      args << $preverified
+      args << $bindir + "/RhoBundle.jar"
       puts Jake.run(jdehome + "/bin/preverify.exe",args)
       $stdout.flush
 
-      Jake.jar(config["build"]["preverified"]+"/RubyVM.jar", "RubyVM_manifest.mf", config["build"]["tmpdir"] + "/RubyVM.preverify",true)
-      $stdout.flush
-    else
-      puts 'RubyVM.jar is up to date'
-      $stdout.flush
+      cp $preverified + "/RhoBundle.jar", $rhobundledir + "/RhoBundle.jar"
+      
     end
 
- 
+    desc "Build RubyVM"
+    task :rubyvm => ["config:bb"] do
+      javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
-    rm_rf config["build"]["tmpdir"]
-    mkdir_p config["build"]["tmpdir"]
+      rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
+
+      if not uptodate?($preverified + '/RubyVM.jar',rubyvmfiles)
+
+        mkdir_p $tmpdir + "/RubyVM" if not FileTest.exists? $tmpdir + "/RubyVM"
+        mkdir_p  $targetdir if not FileTest.exists?  $targetdir
+        mkdir_p  $preverified if not FileTest.exists?  $preverified
+
+        args = []
+        args << "-g"
+        args << "-d"
+        args << '"' +$tmpdir + '/RubyVM"'
+        args << "-bootclasspath"
+        args << '"' + $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
+        args << "-source"
+        args << "1.3"
+        args << "-target"
+        args << "1.3"
+        args << "-nowarn"
+        args << "@#{$builddir}/RubyVM_build.files"
+        puts Jake.run(javac,args)
+
+        $stdout.flush
+        #XXX Move to task/function
+        args = []
+        args << "-classpath"
+        args << '"' + jdehome + "/lib/net_rim_api.jar\""
+        args << "-d"
+        args << $tmpdir + "/RubyVM.preverify"
+        args << '"' + $tmpdir + "/RubyVM\""
+        puts Jake.run(jdehome + "/bin/preverify.exe",args)
+        $stdout.flush
+
+        Jake.jar($preverified+"/RubyVM.jar", $builddir + "/RubyVM_manifest.mf", $tmpdir + "/RubyVM.preverify",true)
+        $stdout.flush
+      else
+        puts 'RubyVM.jar is up to date'
+        $stdout.flush
+      end
+
+
+
+      rm_rf $tmpdir
+      mkdir_p $tmpdir
+    end
+
+    desc "Build rhodes"
+    task :rhodes => [ :rubyvm, :rhobundle ] do
+      javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+      jde =  $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+      sources = Dir.glob($builddir + "/../rhodes/resources/**/*") |
+      File.readlines($builddir + '/hsqldb_build.files').map { |l| l.gsub!(/\\/,'/').strip! } |
+      File.readlines($builddir +'/rhodes_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
+
+      sources.delete(nil)
+
+      if not FileUtils.uptodate?($preverified + "/rhodes.jar",sources)
+
+        args = []
+        args << "-g"
+        args << "-d"
+        args << $tmpdir
+        args << "-classpath"
+        args << '"' + $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar\""
+        args << "-bootclasspath"
+        args << '"' + jde + "/lib/net_rim_api.jar\""
+        args << "-source"
+        args << "1.3"
+        args << "-target"
+        args << "1.3"
+        args << "-nowarn"
+        #args << "@RubyVM_build.files"
+        args << "@#{$builddir}/hsqldb_build.files"
+        args << "@#{$builddir}/rhodes_build.files"
+        puts "\texecuting javac"
+        puts Jake.run(javac,args)
+        $stdout.flush
+
+        cp_r $builddir + "/../rhodes/resources", $tmpdir + "/resources"
+
+        Jake.jar($bindir + "/rhodes.jar", $builddir + "/manifest.mf", $tmpdir,true)
+        $stdout.flush
+        args = []
+        args << "-classpath"
+        args << '"' + $rhodesimplib + '"'
+        args << "-d"
+        args << '"' + $preverified + '"'
+        args << '"' + $bindir + "/rhodes.jar\""
+        puts Jake.run(jdehome + "/bin/preverify.exe",args)
+
+        $stdout.flush
+
+      else
+        puts "rhodes up to date"
+      end
+
+    end
   end
-
-
-  desc "Build rhodesApp"
-  task :rhodes => :rubyvm do
-    javac = config["env"]["paths"][config["env"]["bbver"]]["java"] + "/javac.exe"
-    jde =  config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-
-    sources = Dir.glob("../rhodes/resources/**/*") | 
-              File.readlines('hsqldb_build.files').map { |l| l.gsub!(/\\/,'/').strip! } |
-              File.readlines('rhodes_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
-    
-    sources.delete(nil)
-
-    if not FileUtils.uptodate?(config["build"]["preverified"] + "/rhodes.jar",sources)
-
-      args = [] 
-      args << "-g"
-      args << "-d"
-      args << config["build"]["tmpdir"] 
-      args << "-classpath"
-      args << '"' + config["build"]["bindir"] + "/RhoBundle.jar;"+config["build"]["preverified"]+"/RubyVM.jar\""
-      args << "-bootclasspath"
-      args << '"' + jde + "/lib/net_rim_api.jar\""
-      args << "-source"
-      args << "1.3"
-      args << "-target"
-      args << "1.3"
-      args << "-nowarn"
-      #args << "@RubyVM_build.files"
-      args << "@hsqldb_build.files"
-      args << "@rhodes_build.files"
-      puts "\texecuting javac"
-      puts Jake.run(javac,args)
-      $stdout.flush
-   
-      cp_r "../rhodes/resources", config["build"]["tmpdir"] + "/resources" 
-  
-      Jake.jar(config["build"]["bindir"] + "/rhodes.jar", "manifest.mf", config["build"]["tmpdir"],true)
-      $stdout.flush
-      args = []
-      args << "-classpath"
-      args << '"' + rhodesimplib + '"'
-      args << "-d"
-      args << '"' + config["build"]["preverified"] + '"'
-      args << '"' + config["build"]["bindir"] + "/rhodes.jar\""
-      puts Jake.run(jdehome + "/bin/preverify.exe",args)  
-
-      $stdout.flush
-
-    else
-      puts "rhodes up to date"
-    end  
-
-  end
-
-  desc "Build all"
-  task :all => [:rubyvm,:rhobundle,:rhodes] do
-  end
-
 end
+
+namespace "package" do
+  namespace "bb" do
+    desc "Package rhoBundle"
+    task :rhobundle => ["build:bb:rhobundle"] do
+      Jake.rapc("RhoBundle",
+        $targetdir,
+        $rhobundleimplib ,
+        '"' + Jake.get_absolute($preverified + "/RhoBundle.jar") + '"',
+        "RhoBundle",
+        $config["env"]["vendor"],
+        $config["env"]["version"]
+      )
+
+      cp $builddir + "/RhoBundle.alx", $targetdir if not FileUtils.uptodate?($targetdir + "/RhoBundle.alx", $builddir + "/RhoBundle.alx")
+
+    end
+
+    desc "Package rubyVM"
+    task :rubyvm => "build:bb:rubyvm" do
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+      if not FileUtils.uptodate?($targetdir + '/RubyVM.cod',$preverified + "/RubyVM.jar")
+        Jake.rapc("RubyVM",
+          $targetdir,
+          jdehome + "/lib/net_rim_api.jar",
+          '"' + Jake.get_absolute($preverified + "/RubyVM.jar") +'"',
+          "RubyVM",
+          $config["env"]["vendor"],
+          $config["env"]["version"]
+        )
+        $stdout.flush
+      else
+        puts 'RubyVM .cod files are up to date'
+        $stdout.flush
+      end
+
+    end
+
+    desc "Package rhodesApp"
+    task :rhodes => ["build:bb:rhodes"] do
+      Jake.rapc("rhodesApp",
+        $targetdir,
+        $rhodesimplib,
+        '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
+        "rhodesApp",
+        $config["env"]["vendor"],
+        $config["env"]["version"],
+        $builddir + "/../resources/icon.png",
+        false,
+        true
+      )
+      $stdout.flush
+      cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+    end
+
+    desc "Package all production (all parts in one package)"
+    task :production => ["build:bb:rhodes"] do
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      rm_rf $tmpdir
+      mkdir_p $tmpdir
+
+      rm_rf $targetdir
+      mkdir_p $targetdir
+
+      Jake.unjar($preverified + "/RubyVM.jar", $tmpdir)
+      Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir)
+      Jake.unjar($preverified + "/rhodes.jar", $tmpdir)
+
+      Jake.jar($bindir + "/rhodesApp.jar",$builddir + "/manifest.mf",$tmpdir,true)
+      Jake.rapc("rhodesApp",
+        $targetdir,
+        jdehome + "/lib/net_rim_api.jar",
+        '"' + Jake.get_absolute( $bindir + "/rhodesApp.jar") +'"',
+        "rhodesApp",
+        $config["env"]["vendor"],
+        $config["env"]["version"],
+        $builddir + "/resources/icon.png",
+        false,
+        true
+      )
+      $stdout.flush
+      cp $builddir +"/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir+"/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+
+
+    end
+
+    desc "Package all dev (each part in separate package)"
+    task :dev => [ "clean:bb:packaged", :rubyvm,:rhobundle,:rhodes] do
+    end
+  end
+end
+
+
+
 
 namespace "device" do
 
@@ -337,31 +312,30 @@ namespace "device" do
 end
 
 namespace "clean" do
-  desc "Clean preverified jars"
-  task :preverified do
-    rm_rf config["build"]["preverified"]
-    mkdir_p config["build"]["preverified"]
-  end
+  namespace "bb" do
+    desc "Clean preverified jars"
+    task :preverified => "config:bb" do
+      rm_rf $preverified if File.exists? $preverified
+      mkdir_p $preverified
+    end
 
-  desc "Clean packaged files"
-  task :packaged do
-    rm_rf config["build"]["targetdir"]
-    mkdir_p config["build"]["targetdir"]
-  end
+    desc "Clean packaged files"
+    task :packaged => "config:bb" do
+      rm_rf $targetdir
+      mkdir_p $targetdir
+    end
 
-  desc "Clean temp dir"
-  task :tempdir do
-    rm_rf config["build"]["tmpdir"]
-    mkdir_p config["build"]["tmpdir"]
-  end
+    desc "Clean temp dir"
+    task :tempdir => "config:bb" do
+      rm_rf $tmpdir
+      mkdir_p $tmpdir
+    end
 
-  desc "Clean all"
-  task :all => [:preverified,:packaged,:tempdir] do
-    rubyvmdir = config["build"]["rubyVMdir"]
+    desc "Clean all"
+    task :all => [:preverified,:packaged,:tempdir] do
+      rm_rf $bindir
+    end
 
-    rm config["build"]["bindir"] + "/*.jar", :force => true
-    rm "../RhoBundle/RhoBundle.jar", :force => true
-    rm rubyvmdir + '/RubyVM.jar', :force => true
   end
 end
 
@@ -385,7 +359,7 @@ namespace "run" do
     args << "/pin=0x2100000A"
     
     if bbver >= 4.3
-        args << "/fs-sdcard"
+      args << "/fs-sdcard"
     end
         
     args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute(config["env"]["applog"]) +'"'
@@ -407,19 +381,19 @@ namespace "run" do
 
   desc "Builds everything, loads and starts sim"
   task :app  => [ "package:all", :mds, :sim ] do
-      sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
-      jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
+    sim = config["env"]["paths"][config["env"]["bbver"]]["sim"].to_s
+    jde = config["env"]["paths"][config["env"]["bbver"]]["jde"]
     
-      puts "sleeping to allow simulator to get started"
-      sleep 25
+    puts "sleeping to allow simulator to get started"
+    sleep 25
   
-      command = '"' + jde + "/simulator/fledgecontroller.exe\""
-      args = []
-      args << "/session="+sim
-      args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join(config["build"]["targetdir"],"rhodesApp.cod")) + ")\""
+    command = '"' + jde + "/simulator/fledgecontroller.exe\""
+    args = []
+    args << "/session="+sim
+    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join(config["build"]["targetdir"],"rhodesApp.cod")) + ")\""
   
-      Jake.run(command,args, jde + "/simulator")
-      $stdout.flush
+    Jake.run(command,args, jde + "/simulator")
+    $stdout.flush
   end
 
   desc "Sign cod files automatically"
@@ -460,62 +434,60 @@ namespace "run" do
 
 end
 
-desc "clean:all"
-task :clean => "clean:all"
 
-desc "run:app"
-task :run => "run:app"
 
 namespace "config" do
-  task :check do
-    javahome = config["env"]["paths"][config["env"]["bbver"]]["java"]
-    jdehome = config["env"]["paths"][config["env"]["bbver"]]["jde"]
-    mdshome = config["env"]["paths"][config["env"]["bbver"]]["mds"]
+  namespace "bb" do
+    task :check do
+      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
 
-    puts "BBVER: " + config["env"]["bbver"].to_s
-    puts "JAVAHOME: " + javahome
-    puts "JDEHOME: " + jdehome
-    puts "MDSHOME: " + mdshome
+      puts "BBVER: " + $config["env"]["bbver"].to_s
+      puts "JAVAHOME: " + javahome
+      puts "JDEHOME: " + jdehome
+      puts "MDSHOME: " + mdshome
 
-    if not FileTest.exists? javahome
-      puts "JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
-      throw "JAVAHOME missing"
-    end
+      if not FileTest.exists? javahome
+        puts "JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
+        throw "JAVAHOME missing"
+      end
 
-    if not FileTest.exists? javahome + "/javac.exe"
-      puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-      throw "javac missing"
-    end
+      if not FileTest.exists? javahome + "/javac.exe"
+        puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+        throw "javac missing"
+      end
 
-    if not FileTest.exists? javahome + "/java.exe"
-      puts "java.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-      throw "java missing"
-    end
+      if not FileTest.exists? javahome + "/java.exe"
+        puts "java.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+        throw "java missing"
+      end
 
-    if not FileTest.exists? javahome + "/jar.exe"
-      puts "jar.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-      throw "jar missing"
-    end
+      if not FileTest.exists? javahome + "/jar.exe"
+        puts "jar.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+        throw "jar missing"
+      end
 
-    if not FileTest.exists? jdehome
-      puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
-      throw "JDEHOME missing"
-    end
-    if not FileTest.exists? mdshome
-      puts "MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
-      throw "MDSHOME missing"
-    end
+      if not FileTest.exists? jdehome
+        puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+        throw "JDEHOME missing"
+      end
+      if not FileTest.exists? mdshome
+        puts "MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+        throw "MDSHOME missing"
+      end
 
-    if not FileTest.exists? jdehome + "/bin/preverify.exe"
-      puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
-      throw "preverify missing"
-    end
+      if not FileTest.exists? jdehome + "/bin/preverify.exe"
+        puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
+        throw "preverify missing"
+      end
 
-    if not FileTest.exists? jdehome + "/bin/rapc.jar"
-      puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
-      throw "rapc missing"
+      if not FileTest.exists? jdehome + "/bin/rapc.jar"
+        puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
+        throw "rapc missing"
+      end
+
+      puts "Config appears valid"
     end
-    
-    puts "Config appears valid"
   end
 end
