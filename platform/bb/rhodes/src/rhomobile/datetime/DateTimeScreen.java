@@ -104,7 +104,7 @@ public class DateTimeScreen extends MainScreen {
 			HttpHeaders headers = new HttpHeaders();
 			headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 			
-			String body = "status=fail";
+			String body = "status=cancel";
 			LOG.INFO("Callback with result: " + body);
 			
 			app.postUrl(_callbackUrl, body, headers);	
