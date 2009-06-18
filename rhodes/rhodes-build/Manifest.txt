@@ -134,6 +134,7 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/RhodesInstance.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$2.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$3.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$4.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/camera/Camera$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/camera/Camera$2.class
@@ -1037,7 +1038,6 @@ res/prebuilt/android/classes/javolution/context/StackContext$Default$2.class
 res/prebuilt/android/classes/javolution/context/StackContext$Default.class
 res/prebuilt/android/classes/javolution/context/StackContext$StackAllocator.class
 res/prebuilt/android/classes/javolution/context/StackContext.class
-res/prebuilt/android/classes/javolution/context/package.html
 res/prebuilt/android/classes/javolution/io/AppendableWriter$1.class
 res/prebuilt/android/classes/javolution/io/AppendableWriter.class
 res/prebuilt/android/classes/javolution/io/CharSequenceReader.class
@@ -1045,7 +1045,6 @@ res/prebuilt/android/classes/javolution/io/UTF8ByteBufferReader.class
 res/prebuilt/android/classes/javolution/io/UTF8ByteBufferWriter.class
 res/prebuilt/android/classes/javolution/io/UTF8StreamReader.class
 res/prebuilt/android/classes/javolution/io/UTF8StreamWriter.class
-res/prebuilt/android/classes/javolution/io/package.html
 res/prebuilt/android/classes/javolution/lang/ClassInitializer.class
 res/prebuilt/android/classes/javolution/lang/Configurable$1.class
 res/prebuilt/android/classes/javolution/lang/Configurable$Logic.class
@@ -1066,7 +1065,6 @@ res/prebuilt/android/classes/javolution/lang/Reflection$Method.class
 res/prebuilt/android/classes/javolution/lang/Reflection.class
 res/prebuilt/android/classes/javolution/lang/Reusable.class
 res/prebuilt/android/classes/javolution/lang/ValueType.class
-res/prebuilt/android/classes/javolution/lang/package.html
 res/prebuilt/android/classes/javolution/text/Appendable.class
 res/prebuilt/android/classes/javolution/text/CharArray.class
 res/prebuilt/android/classes/javolution/text/CharSet.class
@@ -1089,7 +1087,6 @@ res/prebuilt/android/classes/javolution/text/TextFormat$Cursor$1.class
 res/prebuilt/android/classes/javolution/text/TextFormat$Cursor.class
 res/prebuilt/android/classes/javolution/text/TextFormat.class
 res/prebuilt/android/classes/javolution/text/TypeFormat.class
-res/prebuilt/android/classes/javolution/text/package.html
 res/prebuilt/android/classes/javolution/util/FastCollection$1.class
 res/prebuilt/android/classes/javolution/util/FastCollection$Record.class
 res/prebuilt/android/classes/javolution/util/FastCollection$Unmodifiable.class
@@ -1153,9 +1150,6 @@ res/prebuilt/android/classes/javolution/util/Index.class
 res/prebuilt/android/classes/javolution/util/LocalMap.class
 res/prebuilt/android/classes/javolution/util/ReentrantLock.class
 res/prebuilt/android/classes/javolution/util/StandardLog.class
-res/prebuilt/android/classes/javolution/util/doc-files/list-add.png
-res/prebuilt/android/classes/javolution/util/doc-files/map-put.png
-res/prebuilt/android/classes/javolution/util/package.html
 res/prebuilt/android/classes/org/apache/oro/io/GlobFilenameFilter.class
 res/prebuilt/android/classes/org/apache/oro/io/RegexFilenameFilter.class
 res/prebuilt/android/classes/org/apache/oro/text/GenericPatternCache.class
