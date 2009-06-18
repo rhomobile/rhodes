@@ -15,13 +15,13 @@ import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RubyVarArgMethod;
 
 class CallDateTimePickerScreen implements Runnable {
+	private String _callback;
 	private String _title;
 	private long _init;
 	private DateFormat _fmt;
 	
-	public Long retvalue;
-	
-	CallDateTimePickerScreen(String title, long init, DateFormat fmt) {
+	CallDateTimePickerScreen(String callback, String title, long init, DateFormat fmt) {
+		_callback = callback;
 		_title = title;
 		_init = init;
 		_fmt = fmt;
@@ -29,9 +29,8 @@ class CallDateTimePickerScreen implements Runnable {
 	
 	public void run(){
 		//Initialize the screen.
-		DateTimeScreen screen = new DateTimeScreen(_title, _init, _fmt);
+		DateTimeScreen screen = new DateTimeScreen(_callback, _title, _init, _fmt);
         UiApplication.getUiApplication().pushModalScreen(screen);
-        retvalue = screen.retvalue;
 	}
 }
 
@@ -41,33 +40,31 @@ public class DateTimePicker extends RubyBasic {
 		super(c);
 	}
 	
-	public static RubyValue choose(RubyValue arg1, RubyValue arg2, DateFormat fmt) {
-		String title = arg1.toStr();
-		long init = arg2.toRubyTime().getTime();
+	public static RubyValue choose(RubyValue arg1, RubyValue arg2, RubyValue arg3, DateFormat fmt) {
+		String callback = arg1.toStr();
+		String title = arg2.toStr();
+		long init = arg3.toRubyTime().getTime();
 		
-		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(title, (long)init, fmt);
-		UiApplication.getUiApplication().invokeAndWait(screen);
+		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt);
+		UiApplication.getUiApplication().invokeLater(screen);
         
-		//return RubyConstant.QNIL;
-		if(screen.retvalue == null)
-			return RubyConstant.QNIL;
-		else
-			return ObjectFactory.createTime(screen.retvalue.longValue());
+		return RubyConstant.QNIL;
 	}
 
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("choose", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-				if(args.size() != 2 && args.size() != 3)
+				if(args.size() != 3 && args.size() != 4)
 					throw new RubyException(RubyRuntime.ArgumentErrorClass,
-							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 2 or 3)");
+							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 3 or 4)");
 				
 				RubyValue arg1 = args.get(0);
 				RubyValue arg2 = args.get(1);
+				RubyValue arg3 = args.get(2);
 				
 				int v = 0;
-				if(args.size() == 3)
-					v = args.get(2).toInt();
+				if(args.size() == 4)
+					v = args.get(3).toInt();
 				
 				int fmt;
 				switch(v)
@@ -80,7 +77,7 @@ public class DateTimePicker extends RubyBasic {
 						v + ", should be 0, 1 or 2)");
 				}
 				
-				return DateTimePicker.choose(arg1, arg2, new SimpleDateFormat(fmt));
+				return DateTimePicker.choose(arg1, arg2, arg3, new SimpleDateFormat(fmt));
 			}
 		});		
 	}
