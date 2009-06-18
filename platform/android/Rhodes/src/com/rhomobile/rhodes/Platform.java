@@ -20,17 +20,15 @@
  */
 package com.rhomobile.rhodes;
 
-import java.io.IOException;
-import java.io.InputStream;
-import com.rho.NetworkAccess;
+import com.rho.RhoConf;
+import com.rho.RhoLogger;
 import com.rho.RhoRuby;
-import com.rho.sync.SyncEngine;
-import com.rho.sync.SyncNotifications;
+import com.rho.sync.SyncThread;
 import com.rhomobile.rhodes.http.HttpHeader;
 import com.rhomobile.rhodes.http.HttpServer;
 import com.rhomobile.rhodes.ui.AboutDialog;
-import com.xruby.runtime.builtin.IRubyPlatformUtils;
-import com.xruby.runtime.builtin.RubyPlatformUtils;
+import com.rhomobile.rhodes.ui.LogOptionsDialog;
+import com.rhomobile.rhodes.ui.LogViewDialog;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -49,7 +47,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class Platform extends Activity implements IRubyPlatformUtils {
+public class Platform extends Activity {
 
 	private static final String LOG_TAG = "Rhodes";
 	private static String HOME_URL = "http://127.0.0.1:8080";
@@ -63,6 +61,8 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 	private String startPage = HOME_URL + "/";
 
 	private boolean isStarted = false;
+
+	private NetworkStateTracker networkStateTracker;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -126,6 +126,17 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 
 		});
 
+		RhodesInstance.setInstance(this);
+		
+		RhoLogger.InitRhoLog();
+		
+		try {
+			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
+			networkStateTracker.enable();
+		}catch (Exception e){
+			Log.e( "NetworkAccessImpl", e.getMessage());
+		}
+		
 		Log.i(LOG_TAG, "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
 
@@ -133,16 +144,33 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 		
 		HOME_URL = "http://127.0.0.1:" + HttpServer.DEFAULT_PORT.toString();
 		startPage = HOME_URL + "/";
-				
-		RubyPlatformUtils.setRubyPlatformUtilsImpl(this);
-		NetworkAccess.setNetworkAccessImpl(new NetworkAccessImpl(
-				getBaseContext()));
-
-		RhodesInstance.setInstance(this);
 
 		// start http server
 		startService(new Intent(this, RhoHttpService.class));
 	}
+	
+	void saveCurrentLocation(String url) {
+		url = url.replace(HOME_URL, "");
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			RhoConf.getInstance().setString("LastVisitedPage",url);
+			RhoConf.getInstance().saveToFile();
+			Log.d(LOG_TAG,"Saved LastVisitedPage: " + url);
+		}   	
+    }
+
+    boolean restoreLocation() {
+    	Log.d(LOG_TAG,"Restore Location to LastVisitedPage");
+    	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
+			String url = RhoConf.getInstance().getString("LastVisitedPage");
+			if (url.length()>0) {
+				Log.d(LOG_TAG,"Navigating to LastVisitedPage: " + url);
+				this.navigateUrl(url);
+				return true;
+			}
+		} 
+		return false;
+    }
+
 
 	protected void onStartLoading() {
 		if (isStarted)
@@ -170,16 +198,13 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-
-		// Intent svcSync = new Intent(this, RhoSyncService.class);
-		// stopService(svcSync);
-
-		// Intent svc = new Intent(this, RhoHttpService.class);
-		// stopService(svc);
 	}
 
 	@Override
 	protected void onDestroy() {
+		
+		saveCurrentLocation(getCurrentUrl());
+		
 		super.onDestroy();
 
 		Intent svcSync = new Intent(this, RhoSyncService.class);
@@ -241,8 +266,36 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 			return true;
 
 		case R.id.sync:
-			SyncEngine.wakeUp();
+			SyncThread.doSyncAllSources();
 			return true;
+			
+		case R.id.logview:
+			this.runOnUiThread(new Runnable() {
+
+				public void run() {
+					final LogViewDialog logViewDialog = new LogViewDialog(RhodesInstance.getInstance());
+					logViewDialog.setTitle("Log View");
+					logViewDialog.setCancelable(true);
+					logViewDialog.show();
+				}
+		    	
+		    });
+			
+			return true;
+			
+		case R.id.logoptions:
+			this.runOnUiThread(new Runnable() {
+
+				public void run() {
+					final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesInstance.getInstance());
+					logOptionsDialog.setTitle("Logging Options");
+					logOptionsDialog.setCancelable(true);
+					logOptionsDialog.show();
+				}
+				
+		    });
+
+		return true;	
 
 		case R.id.exit:
 			Intent svcSync = new Intent(this, RhoSyncService.class);
@@ -271,30 +324,10 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 		return false;
 	}
 
-	public InputStream loadFile(String path, String mode) {
-
-		// load resource from assets
-		try {
-			if (path.startsWith("/")) {
-				return this.getAssets().open(path.substring(1));
-			} else {
-				return this.getAssets().open(path);
-			}
-		} catch (IOException e) {
-			Log.w(LOG_TAG, e.getMessage());
-		}
-
-		return null;
-	}
-
-	public String getPlatform() {
-		return "Android";
-	}
-
 	public void startSyncEngine() {
 		Log.d(LOG_TAG, "startSyncEngine...");
 
-		SyncEngine.setNotificationImpl(new SyncNotificationsImpl());
+		//SyncEngine.setNotificationImpl(new SyncNotificationsImpl());
 
 		// start sync engine
 		startService(new Intent(this, RhoSyncService.class));
@@ -303,10 +336,12 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 
 		// load start page
 		startPage = HOME_URL + RhoRuby.getStartPage();
-		this.webView.loadUrl(startPage);
+		
+		if ( !restoreLocation() )
+			this.webView.loadUrl(startPage);
 	}
 
-	public class SyncNotificationsImpl extends SyncNotifications {
+	/*public class SyncNotificationsImpl extends SyncNotifications {
 		public void performNotification(String url, String body){
 
     		HttpHeader headers = new HttpHeader();
@@ -314,7 +349,7 @@ public class Platform extends Activity implements IRubyPlatformUtils {
     		postUrl(url, body, headers);
 
 		}
-	}
+	}*/
 
 	String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
@@ -355,5 +390,12 @@ public class Platform extends Activity implements IRubyPlatformUtils {
 	public void refreshCurrentPage() {
 		this.webView.reload();
 	}
-	
+
+	public synchronized boolean isNetworkAvailable() {
+		if ( networkStateTracker != null )
+			return networkStateTracker.isNetworkConnected();
+		else
+			return true;
+	}
+
 }

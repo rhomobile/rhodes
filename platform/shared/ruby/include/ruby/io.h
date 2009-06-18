@@ -2,7 +2,7 @@
 
   rubyio.h -
 
-  $Author: mame $
+  $Author: yugui $
   created at: Fri Nov 12 16:47:09 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -73,6 +73,7 @@ typedef struct rb_io_t {
     VALUE writeconv_pre_ecopts;
     int writeconv_initialized;
 
+    VALUE write_lock;
 } rb_io_t;
 
 #define HAVE_RB_IO_T 1
@@ -91,6 +92,7 @@ typedef struct rb_io_t {
 #define FMODE_WSPLIT_INITIALIZED    0x00000400
 #define FMODE_TRUNC                 0x00000800
 #define FMODE_TEXTMODE              0x00001000
+#define FMODE_EOF                   0x00002000
 /* #define FMODE_PREP               0x00010000 */
 
 #define GetOpenFile(obj,fp) rb_io_check_closed((fp) = RFILE(rb_io_taint_check(obj))->fptr)
@@ -133,6 +135,7 @@ typedef struct rb_io_t {
     fp->encs.enc2 = NULL;\
     fp->encs.ecflags = 0;\
     fp->encs.ecopts = Qnil;\
+    fp->write_lock = 0;\
 } while (0)
 
 FILE *rb_io_stdio_file(rb_io_t *fptr);

@@ -96,7 +96,7 @@ namespace "bundle" do
 end
 
 namespace "device" do
-  desc "Create downloadable app for symbian mobile"
+  #desc "Create downloadable app for symbian mobile"
   task :symbian => "bundle:symbian" do
       tools = $config["env"]["paths"]["symbiantools"]
       chdir $tmpdir
@@ -124,7 +124,7 @@ end
 namespace "run" do
   namespace "symbian" do
   
-    desc "Run app in symbian Sim"
+    #desc "Run app in symbian Sim"
     task :app  => ["bundle:symbian"] do
     
     symroot = $config["env"]["paths"]["symroot"]
@@ -140,7 +140,7 @@ namespace "run" do
 
     executable = File.join(symroot,"epoc32","release","winscw","udeb","rhodes.exe")
     Thread.new { system(executable) }
-		
+    
 
 
     end

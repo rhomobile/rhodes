@@ -1,10 +1,10 @@
 package com.rhomobile.rhodes;
 
-import java.net.HttpURLConnection;
+import java.io.IOException;
 
 import android.util.Log;
 
-import com.rho.IHttpConnection;
+import com.rho.net.IHttpConnection;
 import com.rhomobile.rhodes.http.HttpHeader;
 
 class ResourceFetchThread extends Thread {
@@ -23,7 +23,7 @@ class ResourceFetchThread extends Thread {
     }
 
     public void run() {
-    	HttpURLConnection connection = MyRhoConnection.makeConnection(_url, _requestHeaders, _postData);
+    	IHttpConnection connection = AndroidHttpConnection.makeConnection(_url, _requestHeaders, _postData);
     	int code;
 		try {
 			code = connection.getResponseCode();
@@ -35,7 +35,11 @@ class ResourceFetchThread extends Thread {
 		}
 		finally {
 			if ( connection != null )
-				connection.disconnect();
+				try {
+					connection.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
     }
     

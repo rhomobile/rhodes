@@ -79,7 +79,7 @@ void RhoSettings::loadProperty( const char* start, int len ){
     int nValueLen = len - (i+1);
 
     while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"') nValueLen--;
+    while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
 
     setPropertyByName(start, nNameLen, szValue, nValueLen );
 }
@@ -87,15 +87,16 @@ void RhoSettings::loadProperty( const char* start, int len ){
 void RhoSettings::setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen ){
     String name(szName,nNameLen);
     String value(szValue,nValueLen);
-
+	printf("name: %s, value: %s\n", name.c_str(), value.c_str());
     m_mapValues[name] = value;
 }
 
 void RhoSettings::saveToString(String& strData){
 	for ( std::map<String,String>::iterator it=m_mapValues.begin() ; it != m_mapValues.end(); it++ ) {
         strData += it->first;
-        strData += "=";
+        strData += "='";
         strData += it->second;
+        strData += "'";
         strData += LOG_NEWLINE;
 	}
 }
@@ -140,8 +141,58 @@ bool   RhoSettings::isExist(const char* szName){
 }
 }
 
-extern "C" void InitRhoConf(const char* szRootPath){
+extern "C" {
+	
+void rho_conf_Init(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+}
+
+bool rho_conf_getBool(const char* szName) {
+	return RHOCONF().getBool(szName);
+}
+
+void rho_conf_setBool(const char* szName, bool value) {
+	RHOCONF().setBool(szName,value);
+}
+
+char* rho_conf_getString(const char* szName) {
+	return strdup(RHOCONF().getString(szName).c_str());
+}
+
+void rho_conf_freeString(char* str) {
+	free(str);
+}
+
+void rho_conf_setString(const char* szName, const char* value){
+	RHOCONF().setString(szName,value);
+}
+
+void rho_conf_save() {
+	RHOCONF().saveToFile();
+}
+
+char* str_assign_ex( char* data, int len) 
+{
+	if (data) 
+	{
+		char* a = (char*)malloc(len+1);
+		strncpy(a,data,len);
+		a[len] = 0;
+		return a;
+	}
+	return 0;
+}
+
+char* str_assign(char* data) 
+{
+	if (data) 
+	{
+		int len = strlen(data);
+		return str_assign_ex(data,len);
+	}
+	return 0;
+}
+	
 }

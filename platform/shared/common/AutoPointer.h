@@ -15,10 +15,10 @@ class CNonCopyable
 };
 
 template <typename PTRTYPE>
-class CBaseAutoPointer : public CNonCopyable
+class CBaseAutoPointer //: public CNonCopyable
 {
 public:
-    CBaseAutoPointer() { m_ptr = NULL; }
+    CBaseAutoPointer() { m_ptr = 0; }
 
     PTRTYPE* operator &(){ Close(); return &m_ptr; }
     void Set( PTRTYPE ptr ){ Close(); m_ptr = ptr; }
@@ -32,7 +32,7 @@ public:
         if ( m_ptr ) 
         { 
             FreePtr(); 
-            m_ptr = NULL;
+            m_ptr = 0;
         }
     }
 
@@ -45,11 +45,23 @@ class CAutoPtr : public CBaseAutoPointer<PTRTYPE>
 {
 public:
     CAutoPtr( PTRTYPE ptr ){ Set(ptr); }
-    ~CAutoPtr(){ Close(); }
+    CAutoPtr(){}
+    ~CAutoPtr(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
+    CAutoPtr( const CAutoPtr& orig){ *this = orig; }
+    CAutoPtr& operator=( const CAutoPtr& orig)
+    {
+        CBaseAutoPointer<PTRTYPE>::m_ptr = orig.m_ptr;
+        const_cast<CAutoPtr&>(orig).m_ptr = 0;
+        return *this;
+    }
+
+    bool operator==(const CAutoPtr& orig)const{ return true;}
+
+    //operator PTRTYPE(){ return m_ptr; }
     virtual void FreePtr()
     { 
-        delete m_ptr;
+        delete CBaseAutoPointer<PTRTYPE>::m_ptr;
     }
 };
 
@@ -57,11 +69,11 @@ template <typename PTRTYPE, class BaseClass>
 class CAutoPointer1 : public CBaseAutoPointer<PTRTYPE>, public BaseClass
 {
 public:
-    ~CAutoPointer1(){ Close(); }
+    ~CAutoPointer1(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
     { 
-        (*((BaseClass*)this))(m_ptr); 
+        (*((BaseClass*)this))(CBaseAutoPointer<PTRTYPE>::m_ptr); 
     }
 };
 /*
@@ -75,12 +87,12 @@ template <typename PTRTYPE, typename FUNCTYPE, FUNCTYPE pFunc>
 class CAutoPointer2 : public CBaseAutoPointer<PTRTYPE>
 {
 public:
-    ~CAutoPointer2(){ Close(); }
+    ~CAutoPointer2(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
     { 
         if(pFunc) 
-            (*pFunc)(m_ptr); 
+            (*pFunc)(CBaseAutoPointer<PTRTYPE>::m_ptr); 
     }
 };
 
@@ -107,15 +119,15 @@ public:
     CAutoPointer( FUNCTYPE pFunc ) 
     { 
         static CDeleter<FUNCTYPE> oDeleter(pFunc);
-        m_ptr = NULL; 
+        CBaseAutoPointer<PTRTYPE>::m_ptr = 0; 
         m_pDeleter = &oDeleter;
     }
-    ~CAutoPointer(){ Close(); }
+    ~CAutoPointer(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
     { 
         if(m_pDeleter) 
-            m_pDeleter->Delete(m_ptr); 
+            m_pDeleter->Delete(CBaseAutoPointer<PTRTYPE>::m_ptr); 
     }
 private:
     CBaseDeleter* m_pDeleter;

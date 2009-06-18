@@ -6,15 +6,14 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#if TARGET_IPHONE_SIMULATOR
-#import <CoreServices/CoreServices.h>
-#else
 #import <CFNetwork/CFNetwork.h>
-#endif
 
 #import "defs.h"
 #import <CoreLocation/CoreLocation.h>
 #import "LocationController.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Location"
 
 char* GeoGetLocation() {
 	return [[LocationController sharedInstance] getLocation];
@@ -133,13 +132,13 @@ static char location_message[256];
 	didUpdateToLocation:(CLLocation *)newLocation
 		   fromLocation:(CLLocation *)oldLocation
 {
-	DBG(("Updated location\n"));
+	RAWLOG_INFO("Updated location");
 }
 
 - (void)locationManager:(CLLocationManager *)manager
 	   didFailWithError:(NSError *)error
 {
-	DBG(("Error reading location\n"));
+	RAWLOG_ERROR("Error reading location");
 }
 
 + (LocationController *)sharedInstance {
@@ -186,7 +185,7 @@ static char location_message[256];
 
 /* static */ void
 _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
-	DBG(("Stopping location controller on timeout\n"));
+	RAWLOG_INFO("Stopping location controller on timeout");
 	//[[LocationController sharedInstance] stop];
 }
 

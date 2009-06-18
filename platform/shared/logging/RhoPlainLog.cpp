@@ -46,7 +46,7 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
         int len = vswnprintf(buf, buflen, format, ap);
 
         if (len < 0 || len >= buflen){
-#ifdef __SYMBIAN32__
+#ifdef OS_SYMBIAN
             len = buflen - 1;
 #else
             len = buflen;
@@ -75,4 +75,12 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
     return 1;
 }
 
+int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
+				const void* data, int len ){
+		
+	rho::LogMessage oMsg(file, line, severity, LOGCONF(), rho::LogCategory(szCategory) );
+	oMsg.addRawString( static_cast<const char*>(data),len);	
+	return 1;
+}
+	
 }

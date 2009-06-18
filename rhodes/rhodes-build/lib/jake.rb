@@ -85,10 +85,10 @@ class Jake
   
     args.each do |x|
       x = x.to_s
-      x.gsub!(/^"/,"")
-      x.gsub!(/"$/,"")
-      #argstr +=  x + " "
-      argstr += '"' + x + '" '
+      #x.gsub!(/^"/,"")
+      #x.gsub!(/"$/,"")
+      argstr +=  x + " "
+      #argstr += '"' + x + '" '
     end
   
     if not wd.nil?
@@ -195,7 +195,7 @@ class Jake
 
       if cldc and icon
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
-        f.write "RIM-MIDLET-Flags-1: 0\n"
+        f.write "RIM-MIDlet-Flags-1: 1\n"
       end
 
       f.close
@@ -236,7 +236,7 @@ class Jake
     args << "-buildfile"
     args << dir + "/build.xml"
     args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
-    args << '"-Druby.path=' + get_absolute(rubypath) + '"'
+#    args << '"-Druby.path=' + get_absolute(rubypath) + '"'
     args << '"-Dexclude.lib=' + excludelib + '"'
     args << '"-Dexclude.apps=' + excludeapps + '"'
     args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'

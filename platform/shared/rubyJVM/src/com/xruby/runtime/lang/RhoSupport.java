@@ -1,5 +1,6 @@
 package com.xruby.runtime.lang;
 
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -7,6 +8,9 @@ import com.xruby.runtime.builtin.RubyArray;
 
 public class RhoSupport {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhoSupport");
+	
 	public static RubyModule SystemModule;
 	private static String    m_strCurAppPath;
 	
@@ -70,8 +74,8 @@ public class RhoSupport {
         if ( required_file.charAt(0) == '/' || required_file.charAt(0) == '\\' )
         	required_file = required_file.substring(1);
         
-        required_file = required_file.replace('/', '$');
-        required_file = required_file.replace('\\', '$');
+        required_file = required_file.replace('/', '.');
+        required_file = required_file.replace('\\', '.');
         required_file += ".main";
         return "xruby." + required_file;
     }
@@ -115,11 +119,10 @@ public class RhoSupport {
                 return p.invoke();
             }
         }
-        catch (RubyException e) {
-            throw e;
-        }
         catch (Exception e) {
-            throw new RubyException(e.toString());
+        	
+			LOG.ERROR("evalPrecompiledFile failed : " + name, e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
         }
 	}
     
@@ -127,7 +130,11 @@ public class RhoSupport {
     public static RubyValue get_property(RubyValue receiver, RubyValue arg) {
     	String strPropName = arg.toStr();
     	if ( strPropName.equalsIgnoreCase("platform") ){
-    		return ObjectFactory.createString("Blackberry");
+    		try {
+    			return ObjectFactory.createString( RhoClassFactory.createRhoRubyHelper().getPlatform() );
+    		}catch ( Exception e ) {
+    			return ObjectFactory.createString("Unknown");
+    		}
     	}
     	
     	return RubyConstant.QNIL;
@@ -135,13 +142,20 @@ public class RhoSupport {
 
     //@RubyLevelMethod(name="has_network", module=true)
     public static RubyValue has_network(RubyValue receiver) {
-    	//TODO: has_network
-    	return RubyConstant.QTRUE;
+    	try {
+			return RhoClassFactory.createRhoRubyHelper().hasNetwork() ? RubyConstant.QTRUE : RubyConstant.QFALSE;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return RubyConstant.QFALSE;
     }
     
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)
     public static RubyValue loadWithReflection(RubyValue receiver, RubyValue arg, RubyBlock block) {
         String required_file = arg.toStr();
+        if ( required_file.endsWith("/") || required_file.endsWith("\\") )
+        	return RubyConstant.QTRUE;
+        
         String name = RhoSupport.createMainClassName(required_file);
         try {
         	
@@ -151,6 +165,9 @@ public class RhoSupport {
             } catch (ClassNotFoundException e) {
             }
             if ( c == null ){
+            	if ( m_strCurAppPath == null || m_strCurAppPath.length() == 0 )
+            		return RubyConstant.QFALSE;
+            	
             	name = RhoSupport.createMainClassName(m_strCurAppPath+required_file);
             	c = Class.forName(name);
             	

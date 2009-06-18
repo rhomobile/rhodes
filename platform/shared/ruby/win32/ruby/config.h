@@ -79,8 +79,6 @@
 #define HAVE_STRTOL 1
 #define HAVE_STRTOUL 1
 #define HAVE_FLOCK 1
-#define HAVE_SNPRINTF 1
-#define HAVE_VSNPRINTF 1
 #define HAVE_ISNAN 1
 #define HAVE_FINITE 1
 #define HAVE_HYPOT 1
@@ -110,17 +108,19 @@
 #define RSHIFT(x,y) ((x)>>(int)y)
 #define FILE_COUNT _cnt
 #define FILE_READPTR _ptr
+#define HAVE_RB_FD_INIT 1
 #define RUBY_SETJMP(env) _setjmp(env)
 #define RUBY_LONGJMP(env,val) longjmp(env,val)
 #define RUBY_JMP_BUF jmp_buf
 #define inline __inline
 #define NEED_IO_SEEK_BETWEEN_RW 1
 #define STACK_GROW_DIRECTION -1
+#define CANONICALIZATION_FOR_MATHN 1
 #define DEFAULT_KCODE KCODE_NONE
 #define DLEXT ".so"
 #define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/lib"
-#define RUBY_SITE_LIB2 "/lib"
+#define RUBY_SITE_LIB "/apps"
+#define RUBY_SITE_LIB2 "/apps/app"
 #define RUBY_VENDOR_LIB "/lib"
 #define RUBY_VENDOR_LIB2 "/lib"
 #define RUBY_PLATFORM "i386-mswin32_80"
@@ -132,8 +132,10 @@
 #define RUBY_EXPORT 1
 //#define CPDEBUG 2
 
+#include "tcmalloc/rhomem.h"
+
 #if 0
-!if "msvcr80-ruby190"!="$(RUBY_SO_NAME)" || "i386-mswin32_80"!="$(ARCH)-$(PLATFORM)"
+!if "msvcr80-ruby191"!="$(RUBY_SO_NAME)" || "i386-mswin32_80"!="$(ARCH)-$(PLATFORM)"
 config.h: nul
 !endif
 #endif

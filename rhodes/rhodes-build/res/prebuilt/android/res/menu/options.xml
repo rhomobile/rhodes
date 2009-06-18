@@ -6,4 +6,7 @@
      <item android:title="@string/sync" android:icon="@drawable/sync" android:id="@+id/sync" />
      <item android:title="@string/options" android:icon="@drawable/options" android:id="@+id/options" />
      <item android:title="@string/about" android:icon="@drawable/info" android:id="@+id/about" />
+     <item android:title="@string/exit" android:icon="@drawable/exit" android:id="@+id/exit" />
+     <item android:title="@string/logview" android:id="@+id/logview" />
+     <item android:title="@string/logoptions" android:id="@+id/logoptions" />
 </menu>

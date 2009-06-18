@@ -6,6 +6,7 @@ import java.util.Enumeration;
 
 import android.util.Log;
 
+import com.rho.net.RhoConnection;
 import com.rhomobile.rhodes.http.HttpRequest;
 import com.rhomobile.rhodes.http.HttpResponse;
 import com.rhomobile.rhodes.http.HttpServer;
@@ -28,7 +29,7 @@ public class RhoHttpHandler implements IHttpHandler {
 		Log.i(RHO_HTTP_HANDLER, "handle request");
 		try {
 
-			MyRhoConnection conn = new MyRhoConnection(request.getRequestURI());
+			RhoConnection conn = new RhoConnection(new com.rho.net.URI(request.getRequestURI()));
 			
 			Log.i(RHO_HTTP_HANDLER, "Process URI: " + request.getRequestURI());
 			
@@ -63,8 +64,14 @@ public class RhoHttpHandler implements IHttpHandler {
 			}
 			while (key != null);
 			
+			if ( conn.getLength() > 0 ){
+				response.setHeader("Connection", "close");
+			}
+			
 			response.writeHeaders();
 			response.writeInputStream(conn.openInputStream(), conn.getLength());
+			
+			conn.close();
 		} 
 		catch ( FileNotFoundException fe)
 		{

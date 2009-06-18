@@ -348,10 +348,16 @@ rb_hash_s_create(int argc, VALUE *argv, VALUE klass)
 	    hash = hash_alloc(klass);
 	    for (i = 0; i < RARRAY_LEN(tmp); ++i) {
 		VALUE v = rb_check_array_type(RARRAY_PTR(tmp)[i]);
-		
+		VALUE key, val = Qnil;
+
 		if (NIL_P(v)) continue;
-		if (RARRAY_LEN(v) < 1 || 2 < RARRAY_LEN(v)) continue;
-		rb_hash_aset(hash, RARRAY_PTR(v)[0], RARRAY_PTR(v)[1]);
+		switch (RARRAY_LEN(v)) {
+		  case 2:
+		    val = RARRAY_PTR(v)[1];
+		  case 1:
+		    key = RARRAY_PTR(v)[0];
+		    rb_hash_aset(hash, key, val);
+		}
 	    }
 	    return hash;
 	}
@@ -463,14 +469,20 @@ rb_hash_aref(VALUE hash, VALUE key)
 }
 
 VALUE
-rb_hash_lookup(VALUE hash, VALUE key)
+rb_hash_lookup2(VALUE hash, VALUE key, VALUE def)
 {
     VALUE val;
 
     if (!RHASH(hash)->ntbl || !st_lookup(RHASH(hash)->ntbl, key, &val)) {
-	return Qnil; /* without Hash#default */
+	return def; /* without Hash#default */
     }
     return val;
+}
+
+VALUE
+rb_hash_lookup(VALUE hash, VALUE key)
+{
+    return rb_hash_lookup2(hash, key, Qnil);
 }
 
 /*

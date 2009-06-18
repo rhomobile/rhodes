@@ -1,11 +1,15 @@
 *~
 *.iseq
 .DS_Store
+rhodes/*/pkg/
+rhodes/rhodes-framework/spec/bin/
+platform/mac/**/build/*
 platform/iphone/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
 platform/iphone/tcmalloc/build/*
 platform/iphone/RhoLib/build/*
+platform/iphone/Tests/build/*
 platform/iphone/bin/*
 platform/mac/bin/*
 platform/iphone/*/*.link
@@ -44,6 +48,8 @@ platform/android/.metadata/*
 platform/android/Rhodes/assets
 platform/android/Rhodes/bin
 platform/android/Rhodes/libs
+platform/android/**/bin
+
 platform/shared/*/bin
 
 #*.jar

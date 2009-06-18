@@ -2,9 +2,9 @@
 
 #include "defs.h"
 #include "llist.h"
-#include "rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
-#include "logging/RhoPlainLog.h"
+#include "logging/RhoLog.h"
 
 #include "common/RhoMutexLock.h"
 
@@ -405,6 +405,12 @@ void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 
     state->data = data;
     state->nDataLen = getStringLenFromValue(data);
+#if defined(OS_WINDOWS)
+	{
+		char* reply = getStringFromValue(state->data);
+		RAWTRACE1("Reply: [%s]",reply);
+	}
+#endif
 }
 
 void rho_serve(struct shttpd_arg *arg) {

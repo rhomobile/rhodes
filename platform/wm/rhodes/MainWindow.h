@@ -8,7 +8,6 @@
 #endif
 #include "resource.h"
 #include "GetURLDialog.h"
-#include "NetRequest.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #if defined(OS_WINDOWS)
@@ -19,6 +18,8 @@
 static const UINT ID_BROWSER = 1;
 static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
+
+static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
@@ -41,8 +42,9 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
-    //DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
-
+#if defined(OS_WINDOWS)
+    DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
+#else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
 	{ 
 		CString tmp;
@@ -56,8 +58,9 @@ public:
 		}; 
 		return wc; 
 	}
-
-    BEGIN_MSG_MAP(CMainWindow)
+#endif
+    
+	BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
         MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
@@ -83,6 +86,7 @@ public:
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
+		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount);
     END_MSG_MAP()
 
 private:
@@ -115,7 +119,8 @@ private:
 
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-
+	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	
 public:
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
@@ -172,6 +177,6 @@ private:
 	void SetRhobundleReloadMenu();
 
 private:
-	CNetRequest m_callbackRequest;
 	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
+

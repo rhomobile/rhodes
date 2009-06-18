@@ -35,4 +35,10 @@ public interface SimpleFile extends IFile {
      */
     String getDirPath(String path) throws IOException;
 
+    /**
+     * @param fromClass
+     * @param path
+     * @return
+     */
+    public abstract InputStream getResourceAsStream(Class fromClass, String path);
 }

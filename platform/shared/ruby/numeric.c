@@ -2,7 +2,7 @@
 
   numeric.c -
 
-  $Author: matz $
+  $Author: yugui $
   created at: Fri Aug 13 18:33:09 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -22,6 +22,13 @@
 #ifdef HAVE_FLOAT_H
 #include <float.h>
 #endif
+//RHO
+// LB (5/14/09): iPhone 3.0 OS redefines FLT_ROUNDS (through float.h above) and causes
+// link error so we need to define it here.
+#if defined(__APPLE__)
+#undef FLT_ROUNDS
+#endif
+//RHO
 
 #ifdef HAVE_IEEEFP_H
 #include <ieeefp.h>
@@ -530,12 +537,12 @@ flo_to_s(VALUE flt)
     else if(isnan(value))
 	return rb_usascii_str_new2("NaN");
 
-    sprintf(buf, "%#.15g", value); /* ensure to print decimal point */
+    snprintf(buf, sizeof(buf), "%#.15g", value); /* ensure to print decimal point */
     if (!(e = strchr(buf, 'e'))) {
 	e = buf + strlen(buf);
     }
     if (!ISDIGIT(e[-1])) { /* reformat if ended with decimal point (ex 111111111111111.) */
-	sprintf(buf, "%#.14e", value);
+	snprintf(buf, sizeof(buf), "%#.14e", value);
 	if (!(e = strchr(buf, 'e'))) {
 	    e = buf + strlen(buf);
 	}
@@ -1424,6 +1431,34 @@ num_truncate(VALUE num)
 }
 
 
+int
+ruby_float_step(VALUE from, VALUE to, VALUE step, int excl)
+{
+    if (TYPE(from) == T_FLOAT || TYPE(to) == T_FLOAT || TYPE(step) == T_FLOAT) {
+	const double epsilon = DBL_EPSILON;
+	double beg = NUM2DBL(from);
+	double end = NUM2DBL(to);
+	double unit = NUM2DBL(step);
+	double n = (end - beg)/unit;
+	double err = (fabs(beg) + fabs(end) + fabs(end-beg)) / fabs(unit) * epsilon;
+	long i;
+
+	if (isinf(unit)) {
+	    if (unit > 0) rb_yield(DBL2NUM(beg));
+	}
+	else {
+	    if (err>0.5) err=0.5;
+	    n = floor(n + err);
+	    if (!excl) n++;
+	    for (i=0; i<n; i++) {
+		rb_yield(DBL2NUM(i*unit+beg));
+	    }
+	}
+	return Qtrue;
+    }
+    return Qfalse;
+}
+
 /*
  *  call-seq:
  *     num.step(limit, step ) {|i| block }     => num
@@ -1494,22 +1529,7 @@ num_step(int argc, VALUE *argv, VALUE from)
 	    }
 	}
     }
-    else if (TYPE(from) == T_FLOAT || TYPE(to) == T_FLOAT || TYPE(step) == T_FLOAT) {
-	const double epsilon = DBL_EPSILON;
-	double beg = NUM2DBL(from);
-	double end = NUM2DBL(to);
-	double unit = NUM2DBL(step);
-	double n = (end - beg)/unit;
-	double err = (fabs(beg) + fabs(end) + fabs(end-beg)) / fabs(unit) * epsilon;
-	long i;
-
-	if (err>0.5) err=0.5;
-	n = floor(n + err) + 1;
-	for (i=0; i<n; i++) {
-	    rb_yield(DBL2NUM(i*unit+beg));
-	}
-    }
-    else {
+    else if (!ruby_float_step(from, to, step, Qfalse)) {
 	VALUE i = from;
 	ID cmp;
 
@@ -1548,7 +1568,7 @@ rb_num2long(VALUE val)
 	    char buf[24];
 	    char *s;
 
-	    sprintf(buf, "%-.10g", RFLOAT_VALUE(val));
+	    snprintf(buf, sizeof(buf), "%-.10g", RFLOAT_VALUE(val));
 	    if ((s = strchr(buf, ' ')) != 0) *s = '\0';
 	    rb_raise(rb_eRangeError, "float %s out of range of integer", buf);
 	}
@@ -1694,7 +1714,7 @@ rb_num2ll(VALUE val)
 	    char buf[24];
 	    char *s;
 
-	    sprintf(buf, "%-.10g", RFLOAT_VALUE(val));
+	    snprintf(buf, sizeof(buf), "%-.10g", RFLOAT_VALUE(val));
 	    if ((s = strchr(buf, ' ')) != 0) *s = '\0';
 	    rb_raise(rb_eRangeError, "float %s out of range of long long", buf);
 	}
@@ -1918,6 +1938,26 @@ int_chr(int argc, VALUE *argv, VALUE num)
     str = rb_enc_str_new(0, n, enc);
     rb_enc_mbcput(i, RSTRING_PTR(str), enc);
     return str;
+}
+
+/*
+ *  call-seq:
+ *     int.ord    => int
+ *
+ *  Returns the int itself.
+ *
+ *     ?a.ord    #=> 97
+ *
+ *  This method is intended for compatibility to
+ *  character constant in Ruby 1.9.
+ *  For example, ?a.ord returns 97 both in 1.8 and 1.9.
+ */
+
+static VALUE
+int_ord(num)
+    VALUE num;
+{
+    return num;
 }
 
 static VALUE
@@ -3118,6 +3158,7 @@ Init_Numeric(void)
     rb_define_method(rb_cInteger, "next", int_succ, 0);
     rb_define_method(rb_cInteger, "pred", int_pred, 0);
     rb_define_method(rb_cInteger, "chr", int_chr, -1);
+    rb_define_method(rb_cInteger, "ord", int_ord, 0);
     rb_define_method(rb_cInteger, "to_i", int_to_i, 0);
     rb_define_method(rb_cInteger, "to_int", int_to_i, 0);
     rb_define_method(rb_cInteger, "floor", int_to_i, 0);
@@ -3125,10 +3166,10 @@ Init_Numeric(void)
     rb_define_method(rb_cInteger, "truncate", int_to_i, 0);
     rb_define_method(rb_cInteger, "round", int_round, -1);
 
-    rb_cFixnum = rb_define_class("Fixnum", rb_cInteger);
-
     rb_define_method(rb_cInteger, "numerator", int_numerator, 0);
     rb_define_method(rb_cInteger, "denominator", int_denominator, 0);
+
+    rb_cFixnum = rb_define_class("Fixnum", rb_cInteger);
 
     rb_define_method(rb_cFixnum, "to_s", fix_to_s, -1);
 

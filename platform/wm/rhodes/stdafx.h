@@ -125,3 +125,15 @@ using namespace ATL;
 
 #include "tcmalloc/rhomem.h"
 #include "logging/RhoLog.h"
+
+#if defined(OS_WINDOWS)
+#include <atlapp.h>
+//#include <atlwin.h>
+//#include <atlcrack.h>
+//#include <atlframe.h>
+#include <atlctrls.h>
+#include <atldlgs.h>
+//#include <atlctrlx.h>
+//#include <atlmisc.h>
+//#include <atlddx.h>
+#endif

@@ -25,9 +25,9 @@ public class RhoConf {
 
     	try{
 	        oFile = RhoClassFactory.createFile();
+	        oFile.delete(getConfFilePath());
 	        
         	oFile.open( getConfFilePath(), false, false);
-        	oFile.truncate(0);
 	        oFile.write( 0, strData.getBytes() );
 	        oFile.close();
     	}catch(Exception exc){
@@ -63,6 +63,10 @@ public class RhoConf {
 			if (tok.length() == 0) {
 				continue;
 			}
+			
+			if ( tok.length() > 0 && tok.charAt(0) == '#' )
+				continue;
+			
 			int i = tok.indexOf('=');
 			String name;
 			String value;
@@ -76,6 +80,10 @@ public class RhoConf {
 			name = name.trim();
 			value = value.trim();
 			
+			if (value.startsWith("\'") && value.endsWith("\'")) {
+				value = value.substring(1,value.length()-1);
+			}
+				
 			setPropertyByName(name,value);
 		}
 	}
@@ -93,9 +101,9 @@ public class RhoConf {
 			String value = (String)enValues.nextElement();
 			
             strData += key;
-            strData += "=";
+            strData += "=\'";
             strData += value;
-            strData += "\n";
+            strData += "\'\n";
 		}
 		
     	return strData;
@@ -159,8 +167,14 @@ public class RhoConf {
     
     private void loadFromConfFromJar()
     {
-		java.io.InputStream fstream = getClass().getResourceAsStream(
+		java.io.InputStream fstream = null;
+		try {
+			fstream = RhoClassFactory.createFile().getResourceAsStream(getClass(),
 				 "/" + CONF_FILENAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if ( fstream == null )
 			return;
 		 

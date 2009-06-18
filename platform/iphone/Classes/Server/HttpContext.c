@@ -2,22 +2,19 @@
 #include <unistd.h>
 
 #pragma mark Includes
-#if TARGET_IPHONE_SIMULATOR
-#import <CoreServices/CoreServices.h>
-#else
 #import <CFNetwork/CFNetwork.h>
-#endif
 
 #include "defs.h"
 #include "HttpContext.h"
 #include "HttpMessage.h"
 #include "Dispatcher.h"
 #include "AppManagerI.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "HttpContext"
 
 #pragma mark -
 #pragma mark Type Declarations
-
-
 
 #pragma mark -
 #pragma mark Constant Definitions
@@ -296,15 +293,6 @@ HttpGetSiteRoot() {
 #pragma mark -
 #pragma mark Static Function Definitions
 
-void 
-_dbg_print_data(UInt8* buffer, CFIndex size) {
-    
-    for(CFIndex i = 0; i < size; i++) {
-        DBG(("%c",buffer[i]));
-    }
-    
-}
-
 /* static */ void
 _HttpContextHandleHasBytesAvailable(HttpContextRef context) {
 
@@ -342,7 +330,7 @@ _HttpContextHandleHasBytesAvailable(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleEndEncountered(HttpContextRef context) {
-    DBG(("Handle End Encountered 0x%X\n",context));
+    RAWTRACE1("Handle End Encountered 0x%X",context);
 	// End was hit, so destroy the context.
     HttpContextClose(context);
     HttpContextRelease(context);
@@ -350,7 +338,7 @@ _HttpContextHandleEndEncountered(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
-	DBG(("Sending data to the view\n"));
+	RAWTRACE("Sending data to the view");
 	
 	// Get the start of the buffer to send.
 	const UInt8* start = CFDataGetBytePtr(context->_sendBytes);
@@ -366,7 +354,7 @@ _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
 		
 		// Write all of the bytes redy to be sent
 		CFIndex bytesWritten = CFWriteStreamWrite(context->_outStream, start, size);
-		DBG(("%d bytes sent\n", bytesWritten));
+		RAWTRACE1("%d bytes sent", bytesWritten);
 			 
 		// If successfully sent the data, remove the bytes from the buffer.
 		if (bytesWritten > 0)
@@ -377,7 +365,7 @@ _HttpContextHandleCanAcceptBytes(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleErrorOccurred(HttpContextRef context) {
-    DBG(("Handle Error Occurred 0x%X\n",context));
+    RAWLOG_ERROR1("Handle Error Occurred 0x%X",context);
 	// Hit an error, so destroy the context which will close the streams.
     HttpContextClose(context);
 	HttpContextRelease(context);
@@ -386,7 +374,7 @@ _HttpContextHandleErrorOccurred(HttpContextRef context) {
 
 /* static */ void
 _HttpContextHandleTimeOut(HttpContextRef context) {
-    DBG(("Handle Timeout 0x%X\n",context));
+    RAWLOG_INFO1("Handle Timeout 0x%X",context);
 	// Haven't heard from the client so kill everything.
     HttpContextClose(context);
     HttpContextRelease(context);

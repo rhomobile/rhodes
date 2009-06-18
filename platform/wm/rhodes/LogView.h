@@ -7,6 +7,8 @@
 
 #if defined(OS_WINDOWS)
 
+static UINT WM_FIND_TEXT = ::RegisterWindowMessage(FINDMSGSTRING);
+
 #define WS_EX_LAYOUT_RTL	0x00400000
 
 class CResizableGrip  
@@ -66,7 +68,12 @@ class CLogView :
 
     void loadLogText();
 public:
-    CLogView() : m_hBrush ( NULL ){}
+    CLogView() : 
+	  m_hBrush ( NULL )
+#if defined(OS_WINDOWS)
+	, m_pFindDialog(NULL), m_findText(L""), m_findParams(FR_DOWN)
+#endif
+	{}
 	~CLogView(){}
 
 #if defined(OS_WINDOWS)
@@ -76,6 +83,7 @@ public:
 	void writeLogMessage( rho::String& strMsg );
     int getCurPos(){ return -1; }
     void clear(){}
+	void OnPopupMenuCommand();
 #endif
 
 // Dialog
@@ -95,6 +103,12 @@ BEGIN_MSG_MAP(CLogView)
 	MESSAGE_HANDLER(WM_CLOSE,OnClose)
 	MESSAGE_HANDLER(WM_TIMER, OnTimer)
 	MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
+	MESSAGE_HANDLER(WM_FIND_TEXT,OnFindText)
+	MESSAGE_HANDLER(WM_NOTIFY, OnNotify)
+
+	COMMAND_ID_HANDLER(ID_MENU_COPY, OnCopy)
+	COMMAND_ID_HANDLER(ID_MENU_SELECTALL, OnSelectAll)
+	COMMAND_ID_HANDLER(ID_MENU_FIND, OnFind)
 #endif
     COMMAND_ID_HANDLER(IDM_BACK, OnBack)
     COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptions)
@@ -122,6 +136,12 @@ END_MSG_MAP()
 	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+
+	LRESULT OnCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnSelectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnFind(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 #endif
     virtual void OnFinalMessage(HWND /*hWnd*/);
 
@@ -138,7 +158,16 @@ END_MSG_MAP()
 #if defined(OS_WINDOWS)
 protected:
   CResizableGrip m_grip;
+  CFindReplaceDialog *m_pFindDialog;
+  rho::StringW m_findText;
+  WPARAM m_findParams;
 #endif
 };
 
+#if defined(OS_WINDOWS)
+
+int  getIniInt(LPCTSTR lpKeyName, int nDefault);
+void setIniInt(LPCTSTR lpKeyName, int nValue);
+
+#endif
 

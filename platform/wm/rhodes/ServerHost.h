@@ -1,7 +1,12 @@
 #pragma once
 
 class CHttpServer;
-class CSyncEngine;
+/*namespace rho{
+namespace sync{
+    class CSyncThread;
+};
+};*/
+
 class CServerHost
 {
 public:
@@ -13,5 +18,5 @@ public:
 
 private:
     CHttpServer* m_httpserver;
-    CSyncEngine* m_syncengine;
+    //rho::sync::CSyncThread* m_syncThread;
 };

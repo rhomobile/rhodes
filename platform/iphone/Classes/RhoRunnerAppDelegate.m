@@ -9,7 +9,10 @@
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 #import "AppManager.h"
-#import "config.h"
+#import "common/RhoConf.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
 
 @implementation RhoRunnerAppDelegate
 
@@ -25,16 +28,17 @@
 }
 
 - (void)onServerStarted:(NSString*)data {
-	printf("Server Started notification is recived\n");
+	RAWLOG_INFO("Server Started notification is recived");
 	NSString* location = NULL;
 	
 	//try to restore previous location
-	if ( config_getBool("KeepTrackOfLastVisitedPage") ) {
-		char* lastVisitedPage = config_getString("LastVisitedPage");
+	if ( rho_conf_getBool("KeepTrackOfLastVisitedPage") ) {
+		char* lastVisitedPage = rho_conf_getString("LastVisitedPage");
 		if (lastVisitedPage && strlen(lastVisitedPage)>0) {
 			location = [NSString stringWithCString:lastVisitedPage
 										  encoding:[NSString defaultCStringEncoding]];
 		}
+		rho_conf_freeString(lastVisitedPage);
 	} 
 	
 	//if there is no previous location navigate to the default start page 
@@ -51,6 +55,10 @@
 
 - (void)onNavigateTo:(NSString *)url {
 	[webViewController navigateRedirect:url];
+}
+
+- (void)onExecuteJs:(NSString *)js {
+	[webViewController executeJs:js];
 }
 
 - (void)onSetViewHomeUrl:(NSString *)url {
@@ -76,8 +84,9 @@
 		} else {
 			[controller presentModalViewController:picker animated:YES]; 
 		}
-	} @catch(id theException) {
-		NSLog(@"%@", theException);
+	} @catch(NSException* theException) {
+		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+		//NSLog(@"%@", theException);
 		return NO;
 	}
 	
@@ -139,6 +148,7 @@
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
 	serverHost->onNavigateTo = @selector(onNavigateTo:);
+	serverHost->onExecuteJs = @selector(onExecuteJs:);
 	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
@@ -151,7 +161,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    DBG(("Runner will terminate\n"));
+    RAWLOG_INFO("Runner will terminate");
 	//Stop HTTP server host 
     [serverHost stop];
 }

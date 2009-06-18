@@ -1,5 +1,9 @@
 ## RIM Java Development Environment
 # RIM Project file
+#
+# This file is generated and managed by BlackBerry developer tools.
+# It SHOULD NOT BE modified manually.
+#
 AddOn=0
 AlwaysBuild=0
 [AlxImports
@@ -31,8 +35,11 @@ src\com\rho\RhoRubyHelper.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraScreen.java
 src\rhomobile\camera\ImageBrowserScreen.java
+src\rhomobile\datetime\DateTimePicker.java
+src\rhomobile\datetime\DateTimeScreen.java
 src\rhomobile\LogOptionsScreen.java
 src\rhomobile\LogScreen.java
+src\rhomobile\PushListeningThread.java
 src\rhomobile\RhodesApplication.java
 src\rhomobile\RhoPhonebook.java
 src\rhomobile\SecondaryResourceFetchThread.java
@@ -55,8 +62,11 @@ OutputFileName=rhodes
 [PackageProtection
 ]
 RibbonPosition=0
-RunOnStartup=0
+[RolloverIcons
+]
+RunOnStartup=1
 StartupTier=7
 SystemModule=0
 Type=0
+UserData=|src
 Version=1.51

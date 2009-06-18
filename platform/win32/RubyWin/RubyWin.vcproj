@@ -40,11 +40,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared"
+				AdditionalIncludeDirectories="..\..\shared\ruby\include;..\..\shared;..\..\shared\ruby\win32"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="false"
@@ -118,9 +118,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared"
+				AdditionalIncludeDirectories="..\..\shared\ruby\include;..\..\shared;..\..\shared\ruby\win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="1"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="false"

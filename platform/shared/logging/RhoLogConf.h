@@ -1,8 +1,10 @@
 #ifndef _RHOLOGCONF_H_
 #define _RHOLOGCONF_H_
 
+#ifdef __cplusplus
+
 #include "common/RhoStd.h"
-#include "RhoPlainLog.h"
+//#include "RhoPlainLog.h"
 #include "common/RhoMutexLock.h"
 
 namespace rho {
@@ -89,6 +91,33 @@ extern LogSettings g_LogSettings;
 }
 
 inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
-extern "C" void InitRhoLog(const char* szRootPath);
+
+#else
+#include "common/RhoPort.h"
+#endif //__cplusplus
+
+#ifdef __cplusplus
+extern "C"{
+#endif //__cplusplus
+
+void rho_logconf_Init(const char* szRootPath);
+
+char* rho_logconf_getText();
+int   rho_logconf_getTextPos();
+
+char* rho_logconf_getEnabledCategories();	
+char* rho_logconf_getDisabledCategories();
+int   rho_logconf_getSeverity();
+
+void rho_logconf_setEnabledCategories(const char* categories);
+void rho_logconf_setDisabledCategories(const char* categories);
+void rho_logconf_setSeveity(int nLevel);
+	
+void rho_logconf_saveSettings();
+void rho_logconf_freeString(char* str);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 
 #endif //_RHOLOGCONF_H_

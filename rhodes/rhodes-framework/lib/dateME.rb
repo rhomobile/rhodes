@@ -3,8 +3,9 @@ require 'date/format'
 class Time
 
   def strftime(fmt='%F')
-    DateTimeME.new(self).strftime(fmt);
+    DateTimeME.new(self.localtime).strftime(fmt)
   end
+
 end
 
 class DateTimeME < Date

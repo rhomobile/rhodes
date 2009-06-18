@@ -1,14 +1,15 @@
 #include "stdafx.h"
 
 #include "AppManager.h"
-#include "NetRequest.h"
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
+#include "rho/net/NetRequest.h"
 
 #include "HttpServer.h"
 
 #include "unzip.h"
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
+#include "common/AutoPointer.h"
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 
@@ -49,9 +50,11 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 	if ( szUrl )
 	{
 		//get zip file with rhodes
-		DWORD dwDataSize = 0;
-		CNetRequest request;
-		char* zipData = request.doRequest( L"GET",const_cast<char*>(szUrl),NULL,0,NULL,0,false,true,false,&dwDataSize);
+		//DWORD dwDataSize = 0;
+        rho::net::CNetRequest request;
+        NetRequestStr(zipData, request.pullData(szUrl));
+        DWORD dwDataSize = pzipData->getDataSize();
+		//char* zipData = request.doRequest( L"GET",const_cast<char*>(szUrl),NULL,0,NULL,0,false,true,false,&dwDataSize);
 
 		if ( zipData && dwDataSize > 0 )
 		{
@@ -71,7 +74,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 			if( ret ) {
 				ZIPENTRY ze; 
 				// Open zip file
-				HZIP hz = OpenZip(zipData, dwDataSize, szZipPassword);
+				HZIP hz = OpenZip(const_cast<char*>(zipData), dwDataSize, szZipPassword);
 			
 				if ( hz ) {
 					//Stop HTTP Server
@@ -116,8 +119,8 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 			MessageBox(hwnd, _T("Error loading rhobundle."), _T("Stop"), MB_OK | MB_ICONSTOP );
 		}
 
-		if ( zipData )
-			free( zipData );
+//		if ( zipData )
+//			free( zipData );
 	}
 
 }

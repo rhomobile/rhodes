@@ -108,8 +108,8 @@ public class RhoLogConf {
         return m_strEnabledCategories.equals("*") || m_strEnabledCategories.indexOf(cat) >= 0;
     }
 
-    void sinkLogMessage( String strMsg ){
-        if ( isLogToFile() )
+    void sinkLogMessage( String strMsg, boolean bOutputOnly ){
+        if ( !bOutputOnly && isLogToFile() )
             m_pFileSink.writeLogMessage(strMsg);
 
         //Should be at the end

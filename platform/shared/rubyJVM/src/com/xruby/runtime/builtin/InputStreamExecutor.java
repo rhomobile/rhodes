@@ -1,5 +1,6 @@
 package com.xruby.runtime.builtin;
 
+import com.rho.RhoClassFactory;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 import java.io.InputStream;
@@ -21,7 +22,11 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		if ( mode != "r" )
 			throw new Error("Read Only!");
 		
-    	m_is = filename.getClass().getResourceAsStream(filename);
+    	try {
+			m_is = RhoClassFactory.createFile().getResourceAsStream(filename.getClass(), filename);
+		} catch (Exception e) {
+			throw new Error( e.getMessage() );
+		}
 	}
 	
 	public void close() {
@@ -62,7 +67,10 @@ public class InputStreamExecutor implements RubyIOExecutor {
 			else
 				strLine = m_strInput.substring(m_nPos);
 				
-			m_nPos = nPos + chSep.length(); 
+			if ( nPos > 0 )
+				m_nPos = nPos + chSep.length(); 
+			else
+				m_nPos = m_strInput.length();
 					
 			return strLine;
 		}catch(IOException exc){

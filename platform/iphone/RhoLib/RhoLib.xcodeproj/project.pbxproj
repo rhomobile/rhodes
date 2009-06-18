@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
+		5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335510FC2977600F268F0 /* RhoThread.cpp */; };
+		5C5335550FC2977600F268F0 /* RhoThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335520FC2977600F268F0 /* RhoThread.h */; };
 		5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B448A0F946589003CB43A /* RhoConf.cpp */; };
 		5C6B448D0F946589003CB43A /* RhoConf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6B448B0F946589003CB43A /* RhoConf.h */; };
 		5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B452A0F9468E2003CB43A /* RhoProfiler.cpp */; };
@@ -30,10 +33,15 @@
 		5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */; };
 		5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162800F8B7E330096B6AA /* RhoLogSink.h */; };
 		5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */; };
-		5C71628B0F8B7E330096B6AA /* RhoPlainLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162820F8B7E330096B6AA /* RhoPlainLog.h */; };
+		5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817490FBC4FCE002597A5 /* AutoPointer.h */; };
+		5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174A0FBC4FCE002597A5 /* InputStream.h */; };
+		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
+		5C5335510FC2977600F268F0 /* RhoThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThread.cpp; path = ../../shared/common/RhoThread.cpp; sourceTree = SOURCE_ROOT; };
+		5C5335520FC2977600F268F0 /* RhoThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThread.h; path = ../../shared/common/RhoThread.h; sourceTree = SOURCE_ROOT; };
 		5C6B448A0F946589003CB43A /* RhoConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConf.cpp; path = ../../shared/common/RhoConf.cpp; sourceTree = SOURCE_ROOT; };
 		5C6B448B0F946589003CB43A /* RhoConf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoConf.h; path = ../../shared/common/RhoConf.h; sourceTree = SOURCE_ROOT; };
 		5C6B452A0F9468E2003CB43A /* RhoProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoProfiler.cpp; path = ../../shared/statistic/RhoProfiler.cpp; sourceTree = SOURCE_ROOT; };
@@ -57,7 +65,9 @@
 		5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoLogSink.cpp; path = ../../shared/logging/RhoLogSink.cpp; sourceTree = SOURCE_ROOT; };
 		5C7162800F8B7E330096B6AA /* RhoLogSink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLogSink.h; path = ../../shared/logging/RhoLogSink.h; sourceTree = SOURCE_ROOT; };
 		5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPlainLog.cpp; path = ../../shared/logging/RhoPlainLog.cpp; sourceTree = SOURCE_ROOT; };
-		5C7162820F8B7E330096B6AA /* RhoPlainLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPlainLog.h; path = ../../shared/logging/RhoPlainLog.h; sourceTree = SOURCE_ROOT; };
+		5C9817490FBC4FCE002597A5 /* AutoPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoPointer.h; path = ../../shared/common/AutoPointer.h; sourceTree = SOURCE_ROOT; };
+		5C98174A0FBC4FCE002597A5 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStream.h; path = ../../shared/common/InputStream.h; sourceTree = SOURCE_ROOT; };
+		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -112,6 +122,12 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */,
+				5C5335510FC2977600F268F0 /* RhoThread.cpp */,
+				5C5335520FC2977600F268F0 /* RhoThread.h */,
+				5C9817490FBC4FCE002597A5 /* AutoPointer.h */,
+				5C98174A0FBC4FCE002597A5 /* InputStream.h */,
+				5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */,
 				5C6B448A0F946589003CB43A /* RhoConf.cpp */,
 				5C6B448B0F946589003CB43A /* RhoConf.h */,
 				5C7162640F8B7E170096B6AA /* RhoDefs.h */,
@@ -140,7 +156,6 @@
 				5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */,
 				5C7162800F8B7E330096B6AA /* RhoLogSink.h */,
 				5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */,
-				5C7162820F8B7E330096B6AA /* RhoPlainLog.h */,
 			);
 			name = logging;
 			sourceTree = "<group>";
@@ -173,9 +188,13 @@
 				5C7162850F8B7E330096B6AA /* RhoLogCat.h in Headers */,
 				5C7162870F8B7E330096B6AA /* RhoLogConf.h in Headers */,
 				5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */,
-				5C71628B0F8B7E330096B6AA /* RhoPlainLog.h in Headers */,
 				5C6B448D0F946589003CB43A /* RhoConf.h in Headers */,
 				5C6B452D0F9468E2003CB43A /* RhoProfiler.h in Headers */,
+				5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */,
+				5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */,
+				5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */,
+				5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */,
+				5C5335550FC2977600F268F0 /* RhoThread.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +247,7 @@
 				5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */,
 				5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */,
 				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
+				5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

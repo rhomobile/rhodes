@@ -6,7 +6,7 @@ import java.util.Vector;
 
 //import java.io.IOException;
 
-import com.rho.sync.SyncBlob;
+import com.rho.db.DBAdapter;
 import rhomobile.RhodesApplication;
 import rhomobile.Utilities;
 
@@ -222,7 +222,7 @@ public class ImageBrowserScreen extends MainScreen {
 	{
 		private String makeFileName(String ext)throws Exception {
 
-			String fullname = SyncBlob.makeBlobFolderName();
+			String fullname = DBAdapter.makeBlobFolderName();
 			SimpleDateFormat format =
 				new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
 			

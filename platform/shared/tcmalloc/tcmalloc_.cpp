@@ -1007,6 +1007,11 @@ void    rho_free(void * p)
 {
     do_free(p);
 }
+void    sys_free(void *p)
+{
+    free(p);
+}
+
 void *  rho_malloc(size_t s)
 {
     return do_malloc(s);

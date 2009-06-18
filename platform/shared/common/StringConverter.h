@@ -38,6 +38,10 @@ inline String convertToStringA( wchar_t* szValue ){
     return convertToStringA( (const wchar_t*)szValue );
 }
 
+/*inline String convertToStringA( const char* szValue ){ 
+	return String(szValue);
+}*/
+	
 template<>  inline String convertToStringA<StringW>( const StringW& strValue ){
     return convertToStringA(strValue.c_str());
 }
@@ -103,6 +107,8 @@ CONVERT_TYPE_A( short, "%d" );
 CONVERT_TYPE_A( bool, "%d" );
 CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%f" );
+
+CONVERT_TYPE_A( uint64, "%llu" );
 
 }
 }

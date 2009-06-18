@@ -1,11 +1,7 @@
 
 #pragma mark Includes
 
-#if TARGET_IPHONE_SIMULATOR
-#import <CoreServices/CoreServices.h>
-#else
 #import <CFNetwork/CFNetwork.h>
-#endif
 
 #include <assert.h>
 
@@ -14,6 +10,9 @@
 
 #include "defs.h"
 #include "Server.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "HttpServer"
 
 #pragma mark -
 #pragma mark Type Declarations
@@ -69,7 +68,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 									  (void(*)(const void*))&ServerRelease,
 									  (CFStringRef(*)(const void *))&_ServerCopyDescription};
 			
-		DBG(("Allocate the buffer for the server.\n"));
+		RAWLOG_INFO("Allocate the buffer for the server.");
 		server = CFAllocatorAllocate(alloc, sizeof(server[0]), 0);
 		
 		// Fail if unable to create the server
@@ -78,7 +77,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		
 		memset(server, 0, sizeof(server[0]));
 		
-		DBG(("Save the allocator for deallocating later.\n"));
+		RAWLOG_INFO("Save the allocator for deallocating later.");
 		server->_alloc = alloc ? CFRetain(alloc) : NULL;
 		
         // Bump the retain count.
@@ -87,7 +86,7 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		// Make sure the server is saved for the callback.
 		socketCtxt.info = server;
 		
-		DBG(("Create the IPv4 server socket.\n"));
+		RAWLOG_INFO("Create the IPv4 server socket.");
 		server->_sockets[0] = CFSocketCreate(alloc,
 										 PF_INET,
 										 SOCK_STREAM,
@@ -116,24 +115,24 @@ ServerCreate(CFAllocatorRef alloc, ServerCallBack callback, ServerContext* conte
 		// In order to accomadate stopping and starting the process without closing the socket,
 		// set the addr for resuse on the native socket.  This is not required if the port is
 		// being supplied by the OS opposed to being specified by the user.
-		DBG(("Set socket options as SO_REUSEADDR\n"));
+		RAWLOG_INFO("Set socket options as SO_REUSEADDR");
 		setsockopt(CFSocketGetNative(server->_sockets[0]), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
 		//setsockopt(CFSocketGetNative(server->_sockets[1]), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
         
-		DBG(("Save the user's callback in context.\n"));
+		RAWLOG_INFO("Save the user's callback in context.");
 		server->_callback = callback;
 		memcpy(&(server->_ctxt), context, sizeof(server->_ctxt));
 		
-		DBG(("If there is info and a retain function, retain the info.\n"));
+		RAWLOG_INFO("If there is info and a retain function, retain the info.");
 		if (server->_ctxt.info && server->_ctxt.retain)
 			server->_ctxt.info = server->_ctxt.retain(server->_ctxt.info);
 		
-		DBG(("Server created\n"));
+		RAWLOG_INFO("Server created");
 		return server;
 			
 	} while (0);
 	
-	DBG(("Something failed in ServerCreate, so clean up.\n"));
+	RAWLOG_ERROR("Something failed in ServerCreate, so clean up.");
 	if (server) {
 		ServerInvalidate((ServerRef)server);
 		ServerRelease((ServerRef)server);
@@ -326,7 +325,7 @@ ServerInvalidate(ServerRef s) {
     // Release the socket.
     _ServerReleaseSocket(s);
     
-    DBG(("Server Invalidated\n"));
+    RAWLOG_INFO("Server Invalidated");
 }
 
 

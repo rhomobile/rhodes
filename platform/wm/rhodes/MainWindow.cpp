@@ -14,18 +14,31 @@
 #include "MainWindow.h"
 #include "HttpServer.h"
 #include "AppManager.h"
-#include "rhoruby/rhoruby.h"
+#include "ext/rho/rhoruby.h"
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
+#include "rho/net/NetRequest.h"
+#include "sync/SyncThread.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-char* canonicalizeURL(char* path);
+char* canonicalizeURL(const char* path);
+const char* strip_local_domain(const char* url);
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
 
 extern "C" void pause_sync( int nPause );
+
+#if defined(_WIN32_WCE)
+#include <regext.h>
+
+// Global Notification Handle
+extern HREGNOTIFY g_hNotify;
+
+#endif
+
+extern "C" int g_rho_net_has_network;
 
 CMainWindow::CMainWindow()
 {
@@ -87,8 +100,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #else
 	LOGCONF().setLogView(&m_logView);
 
-	rcMainWindow.left = RHOCONF().getInt("main_view_left");
-	rcMainWindow.top = RHOCONF().getInt("main_view_top");
+	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
+	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
 	int width = RHOCONF().getInt("client_area_width");
 	if (width <= 0) width = 320;
 	rcMainWindow.right = rcMainWindow.left+width;
@@ -240,6 +253,11 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
+	if ( g_hNotify )
+		RegistryCloseNotification(g_hNotify);
+#endif
+
     SendMessage(WM_CLOSE);
     return 0;
 }
@@ -291,7 +309,9 @@ LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	rho::String lastPage = RHOCONF().getString("LastVisitedPage");
 	LPTSTR lastPageW = NULL;
 	if (lastPage.length() > 0) {
-		startPage = lastPageW = wce_mbtowc(lastPage.c_str());
+		char* _page = canonicalizeURL(lastPage.c_str());
+		startPage = lastPageW = wce_mbtowc(_page);
+		free(_page);
 	} else {
 		startPage = CHttpServer::Instance()->GetStartPage();
 	}
@@ -356,11 +376,10 @@ LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-extern "C" void dosync();
 
 LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	dosync();
+	rho_sync_doSyncAllSources();
     return 0;
 }
 
@@ -403,9 +422,8 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
-	RHOCONF().setInt("main_view_left",lp->x);
-	RHOCONF().setInt("main_view_top",lp->y);
-	RHOCONF().saveToFile();
+	setIniInt(_T("main_view_left"),lp->x);
+	setIniInt(_T("main_view_top"),lp->y);
 	bHandled = FALSE;
 	return 0;
 }
@@ -429,9 +447,11 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 			(status==S_FALSE?"cancel":"error"),status_message);
 	}
 
-	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
-	char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
-	if ( res ) free(res);
+//	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
+	//char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
+	//if ( res ) free(res);
+    rho::net::CNetRequest oNetReq;
+    oNetReq.pushData( callback, message );
 
 	free(message);
 	if (imageuri) free(imageuri);
@@ -445,6 +465,15 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	TCHAR image_uri[MAX_PATH];
 	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
 	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+#endif
+	return 0;
+}
+
+LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+#if defined (_WIN32_WCE)
+
+	g_rho_net_has_network = (int)wParam;
+
 #endif
 	return 0;
 }
@@ -586,7 +615,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	m_current_url = wce_wctomb(url);
 	
 	if( store_current_url ) {
-		RHOCONF().setString("LastVisitedPage",m_current_url);
+		const char* _page = strip_local_domain(m_current_url);
+		RHOCONF().setString("LastVisitedPage",_page);		
 		RHOCONF().saveToFile();
 	}
 
@@ -715,4 +745,5 @@ char* wce_wctomb(const wchar_t* w)
 
 	return pChar;
 }
+
 #endif //OS_WINDOWS

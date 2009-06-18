@@ -872,7 +872,7 @@ public class Tokenizer {
 
                     iIndex++;
 
-                    sToken = getString('"');
+                    sToken = getString('"').toUpperCase();
 
                     if (iIndex == sCommand.length()) {
                         return;

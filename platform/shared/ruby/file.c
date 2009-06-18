@@ -62,11 +62,18 @@ int flock(int, int);
 #include <sys/mkdev.h>
 #endif
 
+#if defined(HAVE_FCNTL_H)
+#include <fcntl.h>
+#endif
+
 #if !defined HAVE_LSTAT && !defined lstat
 #define lstat stat
 #endif
 
-static int file_load_ok(const char *path);
+//RHO
+static int
+file_load_ok(const char *path);
+//RHO
 
 #ifdef __BEOS__ /* should not change ID if -1 */
 static int
@@ -108,7 +115,6 @@ rb_get_path_check(VALUE obj, int check)
     if (check) rb_check_safe_obj(obj);
     tmp = rb_check_string_type(obj);
     if (!NIL_P(tmp)) goto exit;
-
 
     CONST_ID(to_path, "to_path");
     if (rb_respond_to(obj, to_path)) {
@@ -296,7 +302,6 @@ rb_stat_dev_minor(VALUE self)
 #endif
 }
 
-
 /*
  *  call-seq:
  *     stat.ino   => fixnum
@@ -354,7 +359,6 @@ rb_stat_nlink(VALUE self)
     return UINT2NUM(get_stat(self)->st_nlink);
 }
 
-
 /*
  *  call-seq:
  *     stat.uid    => fixnum
@@ -386,7 +390,6 @@ rb_stat_gid(VALUE self)
 {
     return GIDT2NUM(get_stat(self)->st_gid);
 }
-
 
 /*
  *  call-seq:
@@ -775,7 +778,8 @@ rb_file_s_stat(VALUE klass, VALUE fname)
     rb_secure(4);
     FilePathValue(fname);
     if (rb_stat(fname, &st) < 0) {
-	rb_sys_fail(StringValueCStr(fname));
+	FilePathValue(fname);
+	rb_sys_fail(RSTRING_PTR(fname));
     }
     return stat_new(&st);
 }
@@ -839,7 +843,6 @@ rb_file_s_lstat(VALUE klass, VALUE fname)
     return rb_file_s_stat(klass, fname);
 #endif
 }
-
 
 /*
  *  call-seq:
@@ -966,7 +969,6 @@ eaccess(const char *path, int mode)
  *     
  */
 
-
 /*
  *   File.directory?(file_name)   =>  true or false
  *   File.directory?(file_name)   =>  true or false
@@ -1014,7 +1016,6 @@ rb_file_directory_p(VALUE obj, VALUE fname)
     if (S_ISDIR(st.st_mode)) return Qtrue;
     return Qfalse;
 }
-
 
 /*
  * call-seq:
@@ -1159,7 +1160,6 @@ rb_file_chardev_p(VALUE obj, VALUE fname)
     return Qfalse;
 }
 
-
 /*
  * call-seq:
  *    File.exist?(file_name)    =>  true or false
@@ -1171,13 +1171,16 @@ rb_file_chardev_p(VALUE obj, VALUE fname)
 static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
-    //RHO : improve perfomance
-    /*struct stat st;
+//RHO
+/*    struct stat st;
 
     if (rb_stat(fname, &st) < 0) return Qfalse;
     return Qtrue;*/
-    if( file_load_ok(RSTRING_PTR(fname)) ) return Qtrue;
+
+    if( file_load_ok(RSTRING_PTR(fname)) ) 
+        return Qtrue;
     return Qfalse;
+//RHO
 }
 
 /*
@@ -1304,7 +1307,7 @@ rb_file_world_writable_p(VALUE obj, VALUE fname)
 #ifdef S_IWOTH
     struct stat st;
 
-    if (rb_stat(fname, &st) < 0) return Qfalse;
+    if (rb_stat(fname, &st) < 0) return Qnil;
     if ((st.st_mode & (S_IWOTH)) == S_IWOTH) {
 	return UINT2NUM(st.st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
     }
@@ -1595,8 +1598,10 @@ rb_file_s_size(VALUE klass, VALUE fname)
 {
     struct stat st;
 
-    if (rb_stat(fname, &st) < 0)
-	rb_sys_fail(StringValueCStr(fname));
+    if (rb_stat(fname, &st) < 0) {
+	FilePathValue(fname);
+	rb_sys_fail(RSTRING_PTR(fname));
+    }
     return OFFT2NUM(st.st_size);
 }
 
@@ -1685,8 +1690,10 @@ rb_file_s_atime(VALUE klass, VALUE fname)
 {
     struct stat st;
 
-    if (rb_stat(fname, &st) < 0)
-	rb_sys_fail(StringValueCStr(fname));
+    if (rb_stat(fname, &st) < 0) {
+	FilePathValue(fname);
+	rb_sys_fail(RSTRING_PTR(fname));
+    }
     return stat_atime(&st);
 }
 
@@ -1729,8 +1736,10 @@ rb_file_s_mtime(VALUE klass, VALUE fname)
 {
     struct stat st;
 
-    if (rb_stat(fname, &st) < 0)
+    if (rb_stat(fname, &st) < 0) {
+	FilePathValue(fname);
 	rb_sys_fail(RSTRING_PTR(fname));
+    }
     return stat_mtime(&st);
 }
 
@@ -1774,8 +1783,10 @@ rb_file_s_ctime(VALUE klass, VALUE fname)
 {
     struct stat st;
 
-    if (rb_stat(fname, &st) < 0)
+    if (rb_stat(fname, &st) < 0) {
+	FilePathValue(fname);
 	rb_sys_fail(RSTRING_PTR(fname));
+    }
     return stat_ctime(&st);
 }
 
@@ -1994,7 +2005,7 @@ rb_file_chown(VALUE obj, VALUE owner, VALUE group)
     o = NIL_P(owner) ? -1 : NUM2INT(owner);
     g = NIL_P(group) ? -1 : NUM2INT(group);
     GetOpenFile(obj, fptr);
-#if defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__) || defined(__SYMBIAN32__)
+#if defined(__CYGWIN32__) || defined(_WIN32) || defined(__EMX__)
     if (NIL_P(fptr->pathv)) return Qnil;
     if (chown(RSTRING_PTR(fptr->pathv), o, g) == -1)
 	rb_sys_fail_path(fptr->pathv);
@@ -2014,7 +2025,6 @@ lchown_internal(const char *path, void *arg)
     if (lchown(path, args->owner, args->group) < 0)
 	rb_sys_fail(path);
 }
-
 
 /*
  *  call-seq:
@@ -2151,7 +2161,6 @@ rb_file_s_utime(int argc, VALUE *argv)
     n = apply2files(utime_internal, rest, tsp);
     return LONG2FIX(n);
 }
-
 
 NORETURN(static void sys_fail2(VALUE,VALUE));
 static void
@@ -2398,10 +2407,8 @@ rb_file_s_umask(int argc, VALUE *argv)
 #undef DOSISH
 #endif
 #if defined __CYGWIN__ || defined DOSISH
-#ifndef _WIN32_WCE
 #define DOSISH_UNC
 #define DOSISH_DRIVE_LETTER
-#endif //_WIN32_WCE
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 #else
 #define isdirsep(x) ((x) == '/')
@@ -2606,37 +2613,6 @@ file_expand_path(VALUE fname, VALUE dname, int abs_mode, VALUE result)
     long buflen, dirlen;
     int tainted;
     rb_encoding *extenc = 0;
-/*
-    if (NIL_P(dname)) {
-        rb_str_set_len(result,0);
-        rb_str_append(result, fname);
-
-        s = RSTRING_PTR(result);
-	    for (p = s; *p; p = CharNext(p)) {
-		    if (*p == '\\') {
-		        *p = '/';
-		    }
-        }
-
-        return result;
-    }else
-    {
-        rb_str_set_len(result,0);
-        rb_str_append(result, dname);
-        rb_str_append(result, rb_str_new2("/"));
-        rb_str_append(result, fname);
-
-        s = RSTRING_PTR(result);
-	    for (p = s; *p; p = CharNext(p)) {
-		    if (*p == '\\') {
-		        *p = '/';
-		    }
-        }
-
-        return result;
-
-    }
-*/
 
     FilePathValue(fname);
     s = StringValuePtr(fname);
@@ -3191,7 +3167,7 @@ rb_file_s_extname(VALUE klass, VALUE fname)
 		p = last;
 		break;
 	    }
-	    if (*last == '.') e = dot;
+	    if (*last == '.' || dot > last) e = dot;
 	    continue;
 #else
 	    e = p;	  /* get the last dot of the last component */
@@ -3450,7 +3426,6 @@ extern unsigned long __attribute__((stdcall)) GetLastError(void);
 static VALUE
 rb_thread_flock(void *data)
 {
-#ifndef __SYMBIAN32__
 #ifdef __CYGWIN__
     int old_errno = errno;
 #endif
@@ -3463,10 +3438,6 @@ rb_thread_flock(void *data)
     }
 #endif
     return (VALUE)ret;
-#else
-	rb_sys_fail("not implemented");
-	return (VALUE)0;
-#endif
 }
 
 /*
@@ -3703,10 +3674,12 @@ rb_f_test(int argc, VALUE *argv)
 
     if (strchr("MAC", cmd)) {
 	struct stat st;
+	VALUE fname = argv[1];
 
 	CHECK(1);
-	if (rb_stat(argv[1], &st) == -1) {
-	    rb_sys_fail(RSTRING_PTR(argv[1]));
+	if (rb_stat(fname, &st) == -1) {
+	    FilePathValue(fname);
+	    rb_sys_fail(RSTRING_PTR(fname));
 	}
 
 	switch (cmd) {
@@ -3755,7 +3728,6 @@ rb_f_test(int argc, VALUE *argv)
     }
     return Qnil;		/* not reached */
 }
-
 
 
 /*
@@ -4060,8 +4032,6 @@ rb_stat_r(VALUE obj)
     return Qtrue;
 }
 
-
-
 /*
  *  call-seq:
  *     stat.readable_real? -> true or false
@@ -4258,7 +4228,6 @@ rb_stat_x(VALUE obj)
  *  the process.
  */
 
-
 static VALUE
 rb_stat_X(VALUE obj)
 {
@@ -4318,7 +4287,6 @@ rb_stat_z(VALUE obj)
     if (get_stat(obj)->st_size == 0) return Qtrue;
     return Qfalse;
 }
-
 
 /*
  *  call-seq:
@@ -4414,17 +4382,14 @@ is_absolute_path(const char *path)
 {
 #ifdef DOSISH_DRIVE_LETTER
     if (has_drive_letter(path) && isdirsep(path[2])) return 1;
-    else return 0;
 #endif
 #ifdef DOSISH_UNC
     if (isdirsep(path[0]) && isdirsep(path[1])) return 1;
-    else return 0;
 #endif
-//#ifndef DOSISH
-//    if (path[0] == '/') return 1;
-//#endif
-
-    return isdirsep(path[0]) ? 1 : 0;
+#ifndef DOSISH
+    if (path[0] == '/') return 1;
+#endif
+    return 0;
 }
 
 #ifndef ENABLE_PATH_CHECK
@@ -4517,7 +4482,19 @@ rb_path_check(const char *path)
 static int
 file_load_ok(const char *path)
 {
-    return eaccess(path, R_OK) == 0;
+    int ret = 1;
+    int fd = open(path, O_RDONLY);
+    if (fd == -1) return 0;
+#if !defined DOSISH
+    {
+	struct stat st;
+	if (fstat(fd, &st) || !S_ISREG(st.st_mode)) {
+	    ret = 0;
+	}
+    }
+#endif
+    (void)close(fd);
+    return ret;
 }
 
 static int
@@ -4580,15 +4557,13 @@ rb_find_file_ext(VALUE *filep, const char *const *ext)
 	    FilePathValue(str);
 	    if (RSTRING_LEN(str) == 0) continue;
 	    file_expand_path(fname, str, 0, tmp);
-      {//trv
-        //printf("Looking for: %s\n", RSTRING_PTR(tmp));
-      }
 	    if (file_load_ok(RSTRING_PTR(tmp))) {
 		RBASIC(tmp)->klass = rb_obj_class(*filep);
 		OBJ_FREEZE(tmp);
 		*filep = tmp;
 		return j+1;
 	    }
+	    FL_UNSET(tmp, FL_TAINT | FL_UNTRUSTED);
 	}
 	rb_str_set_len(fname, fnlen);
     }
