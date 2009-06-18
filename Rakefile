@@ -75,7 +75,7 @@ namespace "build" do
       end
 
       chdir $bindir
-      puts `java -jar "#{xruby}" -c RhoBundle`
+      puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
       chdir startdir
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
