@@ -222,19 +222,29 @@ module Rhom
                 # iterate over each instance variable and insert create row to table
 				        obj = self.inst_strip_braces(self.object)
 				        update_type=self.get_update_type_by_source('create')
-                self.vars.each do |key,value|
-                  val = self.inst_strip_braces(value)
-                  # add rows excluding object, source_id and update_type
-                  unless self.method_name_reserved?(key)
-                    fields = {"source_id"=>self.get_inst_source_id,
-                              "object"=>obj,
-                              "attrib"=>key,
-                              "value"=>val,
-                              "update_type"=>update_type}
-                    fields = key == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
-                    result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
-                  end
-                end
+                begin
+                    ::Rhom::RhomDbAdapter.start_transaction
+                
+                    self.vars.each do |key,value|
+                      val = self.inst_strip_braces(value)
+                      # add rows excluding object, source_id and update_type
+                      unless self.method_name_reserved?(key)
+                        fields = {"source_id"=>self.get_inst_source_id,
+                                  "object"=>obj,
+                                  "attrib"=>key,
+                                  "value"=>val,
+                                  "update_type"=>update_type}
+                        fields = key == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                        result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
+                      end
+                    end
+                    
+                    ::Rhom::RhomDbAdapter.commit
+
+                rescue Exception => e
+                    ::Rhom::RhomDbAdapter.rollback    
+                end    
+                
                 result
               end
           
