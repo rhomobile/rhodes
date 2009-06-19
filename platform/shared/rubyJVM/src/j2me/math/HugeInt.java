@@ -449,7 +449,7 @@ public class HugeInt extends Number implements Comparable {
         return new HugeInt(r, this.signum);
     }
 
-    public HugeInt pow(int exponent) {
+    public HugeInt pow(long exponent) {
     	if (exponent < 0)
     	    throw new ArithmeticException("Negative exponent");
     	if (signum==0)

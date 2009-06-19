@@ -746,7 +746,7 @@ class ArrayPacker {
                             throw new RubyException(RubyRuntime.RuntimeErrorClass, "too few for type " + type); // #TODO: message
 
                         if (from instanceof RubyFixnum) {
-                            f = (long) (((RubyFixnum) from).toInt() & 0xffffffff);
+                            f = (long) (((RubyFixnum) from).toLong() & 0xffffffff);
                         } else if (from instanceof RubyFloat) {
                             f = ((long) ((RubyFloat) from).toFloat() & 0xffffffffffffffffL);
                         } else if (from instanceof RubyBignum) {

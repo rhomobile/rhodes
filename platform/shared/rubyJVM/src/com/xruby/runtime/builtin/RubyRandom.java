@@ -29,7 +29,7 @@ public class RubyRandom {
 		RubyInteger seed = vseed.toRubyInteger();
 		
 		if (seed instanceof RubyFixnum) {
-			randomSeed = seed.toInt();
+			randomSeed = seed.toLong();
 		} else if (seed instanceof RubyBignum) {
 			randomSeed = ((RubyBignum)seed).longValue();
 		} else {
@@ -81,7 +81,7 @@ public class RubyRandom {
 			if (vmax.doubleValue() <= Long.MAX_VALUE && vmax.doubleValue() >= Long.MIN_VALUE) {
 				RubyValue tmp = vmax.floor();
 				if (tmp instanceof RubyFixnum) {
-					max = ((RubyFixnum)tmp).toInt();
+					max = ((RubyFixnum)tmp).toLong();
 				} else if (tmp instanceof RubyBignum) {
 					max = ((RubyBignum)tmp).longValue();
 				}
@@ -96,7 +96,7 @@ public class RubyRandom {
 			max = 0;
 		} else if (arg instanceof RubyFixnum) {
 			arg = arg.toRubyInteger();
-			max = arg.toInt();
+			max = arg.toLong();
 		}
 		
 		if (arg instanceof RubyBignum) {

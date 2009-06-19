@@ -65,6 +65,10 @@ public class RubyFloat extends RubyNumeric {
 		return (int)this.value_;
 	}
 
+	public long toLong() {
+		return (long)this.value_;
+	}
+	
 	public double toFloat() {
 		return this.value_;
 	}
@@ -74,7 +78,7 @@ public class RubyFloat extends RubyNumeric {
 	}
 	
 	public RubyInteger toRubyInteger() {
-		return RubyBignum.bignorm((int)this.value_);
+		return RubyBignum.bignorm((long)this.value_);
 	}
 
 	//@RubyLevelMethod(name="to_s")
@@ -84,7 +88,7 @@ public class RubyFloat extends RubyNumeric {
 	
 	//@RubyLevelMethod(name="to_i")
 	public RubyFixnum to_i() {
-		return ObjectFactory.createFixnum((int)this.value_);
+		return ObjectFactory.createFixnum((long)this.value_);
 	}
 	
 	//@RubyLevelMethod(name="coerce")
@@ -212,7 +216,7 @@ public class RubyFloat extends RubyNumeric {
 
 	private RubyInteger createRubyInteger(double value) {
 		if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
-			return ObjectFactory.createFixnum((int) value);
+			return ObjectFactory.createFixnum((long) value);
 		}
 		return ObjectFactory.createBignum(HugeDigit.valueOf(value).toBigInteger());
 	}
