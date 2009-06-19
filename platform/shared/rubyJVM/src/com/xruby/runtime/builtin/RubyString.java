@@ -53,11 +53,14 @@ public class RubyString extends RubyBasic {
     }
 
     public int toInt() {
-        return Integer.valueOf(sb_.toString()).intValue();
+        return Integer.parseInt(sb_.toString());
+    }
+    public long toLong() {
+        return Long.parseLong(sb_.toString());
     }
 
     public RubyInteger toRubyInteger() {
-        return RubyBignum.bignorm(this.toInt());
+        return RubyBignum.bignorm(this.toLong());
     }
 
     public double toFloat() {
@@ -914,7 +917,7 @@ public class RubyString extends RubyBasic {
         }
 
         try {
-            return ObjectFactory.createFixnum(Integer.valueOf(s, 16).intValue());
+            return ObjectFactory.createFixnum(Long.parseLong(s, 16));
         } catch (NumberFormatException e) {
             return ObjectFactory.FIXNUM0;
         }

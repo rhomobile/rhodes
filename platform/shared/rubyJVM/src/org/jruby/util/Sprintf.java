@@ -747,7 +747,7 @@ public class Sprintf {
                     // uses C-sprintf, in part, to format numeric output, while
                     // we'll use Java's numeric formatting code (and our own).
                     if (type.equals("Fixnum")) {
-                        negative = ((RubyFixnum)arg).toInt() < 0;
+                        negative = ((RubyFixnum)arg).toLong() < 0;
                         if (negative && fchar == 'u') {
                             bytes = getUnsignedNegativeBytes((RubyFixnum)arg);
                         } else {
@@ -1535,7 +1535,7 @@ public class Sprintf {
     }
 
     private static final byte[] getFixnumBytes(RubyFixnum arg, int base, boolean sign, boolean upper) {
-        long val = arg.toInt();//.getLongValue();
+        long val = arg.toLong();//.getLongValue();
 
         // limit the length of negatives if possible (also faster)
         if (val >= Integer.MIN_VALUE && val <= Integer.MAX_VALUE) {
@@ -1592,7 +1592,7 @@ public class Sprintf {
         
         if (arg instanceof RubyFixnum) {
             // relatively cheap test for 32-bit values
-            longval = ((RubyFixnum)arg).toInt();//.getLongValue();
+            longval = ((RubyFixnum)arg).toLong();//.getLongValue();
             if (longval >= (long)Integer.MIN_VALUE << 1) {
                 return Convert.longToCharBytes((((long)Integer.MAX_VALUE + 1L) << 1) + longval);
             }

@@ -47,14 +47,22 @@ public class ObjectFactory {
         }
     }
 
-    public static RubyFixnum createFixnum(int value) {
+    public static RubyFixnum createFixnum(long value) {
         if (value >= 0 && value < CACHE_SIZE) {
-            return FixnumCache.cache[value];
+            return FixnumCache.cache[(int)value];
         }
 
         return new RubyFixnum(value);
     }
 
+    public static RubyFixnum createFixnum(int value) {
+        if (value >= 0 && value < CACHE_SIZE) {
+            return FixnumCache.cache[(int)value];
+        }
+
+        return new RubyFixnum(value);
+    }
+    
     public static RubyInteger createInteger(long value) {
         return RubyBignum.bignorm(value);
     }

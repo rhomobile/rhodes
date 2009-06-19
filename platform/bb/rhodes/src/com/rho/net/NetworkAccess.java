@@ -91,7 +91,7 @@ public class NetworkAccess implements INetworkAccess {
 		}
 		
 		if (networkConfigured == false) {
-			//URLsuffix = ";deviceside=true";
+			URLsuffix = ";deviceside=true";
 			networkConfigured = true;
 		}
 		
@@ -117,17 +117,17 @@ public class NetworkAccess implements INetworkAccess {
 		}
 
 		//Try wifi first
-/*		if ( WIFIsuffix != null ){
+		if ( WIFIsuffix != null ){
 			try {
-				LOG.INFO(server + WIFIsuffix);
-				http = (HttpConnection) Connector.open(server + WIFIsuffix);
+				LOG.INFO(url + WIFIsuffix);
+				http = (HttpConnection) Connector.open(url + WIFIsuffix);
 			} catch (IOException ioe) {
-				LOG.INFO("WIFI connection faild: " + ioe.getMessage() );
+				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );
 			}
 		}
 		
 		if ( http == null ){
-			int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
+/*			int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
 			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
 				throw new IOException("Network Data Service Not Available");
 			}
@@ -142,7 +142,7 @@ public class NetworkAccess implements INetworkAccess {
 				http = null;
 				throw ioe;
 			}
-		//}
+		}
 		
 		return new BBHttpConnection(http);
 	}
