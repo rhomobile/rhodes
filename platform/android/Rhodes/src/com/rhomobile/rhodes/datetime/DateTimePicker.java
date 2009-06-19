@@ -5,7 +5,6 @@ import android.content.Intent;
 import com.rhomobile.rhodes.RhodesInstance;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
@@ -25,7 +24,6 @@ public class DateTimePicker extends RubyBasic {
 		long init = arg3.toRubyTime().getTime();
 		
 		Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(), DateTimePickerScreen.class);
-		String prefix = "com.rhomobile.rhodes.datetime.DateTimePicker";
 		intent.putExtra("callback", callback);
 		intent.putExtra("title", title);
 		intent.putExtra("init", init);
