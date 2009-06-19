@@ -154,6 +154,20 @@ public class SyncThread extends RhoThread
 				return RubyConstant.QNIL;
 			}
 		});
+		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					getSyncEngine().stopSync();
+				}catch(Exception e)
+				{
+					LOG.ERROR("stop_sync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				
+				return RubyConstant.QNIL;
+			}
+		});
+		
 		klass.getSingletonClass().defineMethod("lock_sync_mutex",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {

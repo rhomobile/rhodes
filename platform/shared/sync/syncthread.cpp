@@ -112,6 +112,11 @@ void rho_sync_db_reset()
     CSyncThread::getInstance()->addSyncCommand(CSyncThread::scResetDB);
 }
 
+void rho_sync_stop()
+{
+    CSyncThread::getSyncEngine().stopSync();
+}
+
 void rho_sync_set_pollinterval(int nInterval)
 {
     CSyncThread::getInstance()->setPollInterval(nInterval);
