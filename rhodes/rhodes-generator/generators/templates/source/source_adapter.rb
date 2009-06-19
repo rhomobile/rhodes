@@ -17,7 +17,7 @@ class <%=name.camelize%> < SourceAdapter
   def sync
     # TODO: write code here that converts the data you got back from query into an @result object
     # where @result is a hash of hashes,  each array item representing an object
-    # for example: @result={{"name"=>"Acme","industry"=>"Electronics"},{"name"=>"Best","industry"=>"Software"}}
+    # for example: @result={"1"=>{"name"=>"Acme","industry"=>"Electronics"},"2"=>{"name"=>"Best","industry"=>"Software"}}
     # if you have such a hash of hashes, then you can just call "super" as shown below
     super # this creates object value triples from an @result variable that contains a hash of hashes 
   end
