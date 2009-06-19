@@ -122,7 +122,7 @@ public class RubyID {
     }
 
     public RubyFixnum toFixnum() {
-        return ObjectFactory.createFixnum((int)this.id);
+        return ObjectFactory.createFixnum(this.id);
     }
 
     //used by the compiler to use common ruby id

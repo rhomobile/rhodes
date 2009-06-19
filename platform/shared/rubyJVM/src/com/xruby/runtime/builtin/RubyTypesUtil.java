@@ -41,7 +41,7 @@ public class RubyTypesUtil {
 
     public static long convertToJavaLong(RubyValue arg) {
         if (arg instanceof RubyFixnum) {
-            return ((RubyFixnum) arg).toInt();
+            return ((RubyFixnum) arg).toLong();
         } else if (arg instanceof RubyBignum) {
             return ((RubyBignum) arg).getInternal().longValue();
         } else if (arg instanceof RubyFloat) {
@@ -53,7 +53,7 @@ public class RubyTypesUtil {
 
     public static double convertToJavaDouble(RubyValue arg) {
         if (arg instanceof RubyFixnum) {
-            return ((RubyFixnum) arg).toInt();
+            return ((RubyFixnum) arg).toLong();
         } else if (arg instanceof RubyBignum) {
             return ((RubyBignum) arg).getInternal().longValue();
         } else if (arg instanceof RubyFloat) {
@@ -65,7 +65,7 @@ public class RubyTypesUtil {
 
     public static float convertToJavaFloat(RubyValue arg) {
         if (arg instanceof RubyFixnum) {
-            return ((RubyFixnum) arg).toInt();
+            return ((RubyFixnum) arg).toLong();
         } else if (arg instanceof RubyBignum) {
             return ((RubyBignum) arg).getInternal().longValue();
         } else if (arg instanceof RubyFloat) {

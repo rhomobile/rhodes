@@ -66,7 +66,7 @@ public class RubyTime extends RubyBasic {
     	return date_.getTime().getTime();
     }
 
-    private final int getUsec() {
+    private final long getUsec() {
         long t = getTime();
 
         if (t > 0 && t < 1000) {
@@ -75,7 +75,7 @@ public class RubyTime extends RubyBasic {
 
         float t1 = ((float)t / 1000);
         float t2 = (long)t1;
-        return (int)((t1 - t2) * 1000000);
+        return (long)((t1 - t2) * 1000000);
     }
 
     public String toString() {
@@ -125,7 +125,7 @@ public class RubyTime extends RubyBasic {
 
     //@RubyLevelMethod(name="nsec")
     public RubyValue nsec() {
-        return ObjectFactory.createFixnum(date_.get(Calendar.MILLISECOND)*1000000);
+        return ObjectFactory.createFixnum( ((long)date_.get(Calendar.MILLISECOND))*1000000L);
     }
     
     //@RubyLevelMethod(name="to_f")
@@ -135,7 +135,7 @@ public class RubyTime extends RubyBasic {
 
     //@RubyLevelMethod(name="to_i", alias="tv_sec")
     public RubyFixnum to_i() {
-        return ObjectFactory.createFixnum((int) (getTime() / 1000));
+        return ObjectFactory.createFixnum(getTime() / 1000);
     }
 
     //@RubyLevelMethod(name="usec", alias="tv_usec")
@@ -160,7 +160,7 @@ public class RubyTime extends RubyBasic {
             RubyTime time2 = (RubyTime)value;
             long timeInteval = getTime() - time2.getTime();
             if (timeInteval % 1000 == 0) {
-                return ObjectFactory.createFixnum((int) (timeInteval / 1000));
+                return ObjectFactory.createFixnum((long) (timeInteval / 1000));
             }
             return ObjectFactory.createFloat((double) timeInteval / 1000);
         }
@@ -284,7 +284,7 @@ public class RubyTime extends RubyBasic {
     public static RubyTime at(RubyValue receiver, RubyValue value) {
         double time = 0;
         if (value instanceof RubyFixnum) {
-            time = value.toInt();
+            time = value.toLong();
         } else if (value instanceof RubyBignum) {
             time = value.toFloat();
         } else if (value instanceof RubyFloat) {

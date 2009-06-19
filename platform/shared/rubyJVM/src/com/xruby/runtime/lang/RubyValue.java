@@ -198,6 +198,10 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         return this.convertToInteger().toInt();
     }
 
+    public long toLong() {
+        return this.convertToInteger().toLong();
+    }
+    
     public RubyArray toAry() {
         return this.convertToArray().toAry();
     }
