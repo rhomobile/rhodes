@@ -23,6 +23,7 @@ module Rhom
   class RhomDbAdapter
     
     @@database = nil
+    @@inside_transaction = false
     
     class << self
       
@@ -46,6 +47,7 @@ module Rhom
     
       def start_transaction
           begin
+            @@inside_transaction = true
             @@database.start_transaction
           rescue Exception => e
             puts "exception when start_transaction"
@@ -54,6 +56,7 @@ module Rhom
 
       def commit
           begin
+            @@inside_transaction = false
             @@database.commit
           rescue Exception => e
             puts "exception when commit transaction"
@@ -62,6 +65,7 @@ module Rhom
 
       def rollback
           begin
+            @@inside_transaction = false
             @@database.rollback
           rescue Exception => e
             puts "exception when rollback transaction"
@@ -79,13 +83,18 @@ module Rhom
           # before we perform a database transaction.
           # This prevents concurrency issues.
           begin
-            SyncEngine.lock_sync_mutex
+            SyncEngine.lock_sync_mutex unless @@inside_transaction
             result = @@database.execute sql
-            SyncEngine.unlock_sync_mutex
+            SyncEngine.unlock_sync_mutex unless @@inside_transaction
           rescue Exception => e
             #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
-            SyncEngine.unlock_sync_mutex
+            if @@inside_transaction
+                raise
+            else
+                SyncEngine.unlock_sync_mutex
+            end    
+            
           end
         end
         #puts "result is: #{result.inspect}"

@@ -12,9 +12,12 @@ import com.xruby.runtime.lang.*;
 
 ////@RubyLevelClass(name="Fixnum", superclass="Integer")
 public class RubyFixnum extends RubyInteger {
-    private final int value_;
+    private final long value_;
 
     RubyFixnum(int i) {
+        value_ = i;
+    }
+    RubyFixnum(long i) {
         value_ = i;
     }
     
@@ -31,6 +34,9 @@ public class RubyFixnum extends RubyInteger {
 	}
     
 	public int toInt() {
+		return (int)value_;
+	}
+	public long toLong() {
 		return value_;
 	}
 	
@@ -47,7 +53,7 @@ public class RubyFixnum extends RubyInteger {
     }
 
 	public int hashCode() {
-        return value_;
+        return (int)value_;
     }
 
     public RubyClass getRubyClass() {
@@ -65,11 +71,11 @@ public class RubyFixnum extends RubyInteger {
     }
 
     public String toString() {
-        return Integer.toString(value_);
+        return Long.toString(value_);
     }
 
     public String toString(int radix) {
-        return Integer.toString(value_, radix);
+        return Long.toString(value_, radix);
     }
     
     //@RubyLevelMethod(name="-@")
@@ -137,13 +143,13 @@ public class RubyFixnum extends RubyInteger {
     //@RubyLevelMethod(name="/")
     public RubyValue opDiv(RubyValue v) {
     	if (v instanceof RubyFixnum) {
-    		int intValue1 = this.value_;
-            int intValue2 = ((RubyFixnum)v).value_;
+    		long intValue1 = this.value_;
+            long intValue2 = ((RubyFixnum)v).value_;
             if (intValue2 == 0) {
             	zeroDiv();
             }
-    		int div = intValue1 / intValue2;
-            int mod = intValue1 - div * intValue2;
+    		long div = intValue1 / intValue2;
+            long mod = intValue1 - div * intValue2;
             if (mod != 0 && div < 0) {
                 --div;
             }
@@ -171,7 +177,7 @@ public class RubyFixnum extends RubyInteger {
     //@RubyLevelMethod(name="**")
     public RubyValue pow(RubyValue v) {
     	if (v instanceof RubyFixnum) {
-    		int p = ((RubyFixnum)v).value_;
+    		long p = ((RubyFixnum)v).value_;
     		if (p == 0) {
     			return ObjectFactory.FIXNUM1;
     		} else if (p == 1) {
@@ -306,7 +312,7 @@ public class RubyFixnum extends RubyInteger {
 		}
 		
 		if (v instanceof RubyFixnum) {
-			int a = ((RubyFixnum)v).value_;
+			long a = ((RubyFixnum)v).value_;
 			if (this.value_ > a) {
 				return ObjectFactory.FIXNUM1;
 			} else if (this.value_ == a) {
@@ -325,7 +331,7 @@ public class RubyFixnum extends RubyInteger {
 			return ((RubyBignum)v).op_bor(this);
 		}
 		
-		return RubyBignum.bignorm(this.value_ | v.toInt());
+		return RubyBignum.bignorm(this.value_ | v.toLong());
 	}
 	
 	//@RubyLevelMethod(name="&")
@@ -334,7 +340,7 @@ public class RubyFixnum extends RubyInteger {
 			return ((RubyBignum)v).op_band(this);
 		}
 		
-		return RubyBignum.bignorm(this.value_ & v.toInt());
+		return RubyBignum.bignorm(this.value_ & v.toLong());
 	}
 	
 	//@RubyLevelMethod(name="^")
@@ -343,7 +349,7 @@ public class RubyFixnum extends RubyInteger {
 			return ((RubyBignum)v).op_bxor(this);
 		}
 		
-		return RubyBignum.bignorm(this.value_ ^ v.toInt());
+		return RubyBignum.bignorm(this.value_ ^ v.toLong());
 	}
 	
 	//@RubyLevelMethod(name="to_s")
@@ -398,9 +404,9 @@ public class RubyFixnum extends RubyInteger {
 
 	protected RubyValue doStep(RubyValue toArg, RubyValue stepArg, RubyBlock block) {
 		if ((toArg instanceof RubyFixnum) && (stepArg instanceof RubyFixnum)) {
-			int i = this.value_;
-			int end = ((RubyFixnum)toArg).value_;
-			int diff = ((RubyFixnum)stepArg).value_;
+			long i = this.value_;
+			long end = ((RubyFixnum)toArg).value_;
+			long diff = ((RubyFixnum)stepArg).value_;
 			if (diff > 0) {
 				while (i <= end) {
 					RubyValue v = block.invoke(this, ObjectFactory.createFixnum(i));
@@ -426,7 +432,7 @@ public class RubyFixnum extends RubyInteger {
 	}
 
 	public RubyValue times(RubyBlock block) {
-		int value = this.value_;
+		long value = this.value_;
         for (int i = 0; i < value; ++i) {
             RubyValue v = block.invoke(this, ObjectFactory.createFixnum(i));
             if (block.breakedOrReturned()) {

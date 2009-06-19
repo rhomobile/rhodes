@@ -29,8 +29,8 @@ public class DBStorage implements IDBStorage {
 	}
 
 	synchronized public void commit() throws DBException {
-		// if ( rhoDB != null && rhoDB.isOpen())
-		// rhoDB.endTransaction();
+		if ( rhoDB != null && rhoDB.isOpen())
+		    rhoDB.endTransaction();
 	}
 
 	synchronized public IDBResult createResult() {
@@ -99,8 +99,8 @@ public class DBStorage implements IDBStorage {
 	}
 
 	synchronized public void startTransaction() throws DBException {
-		// if ( rhoDB != null && rhoDB.isOpen())
-		// rhoDB.beginTransaction();
+		 if ( rhoDB != null && rhoDB.isOpen())
+		    rhoDB.beginTransaction();
 	}
 
 	private void parsePath(String strPath) {
