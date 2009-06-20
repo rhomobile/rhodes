@@ -1547,15 +1547,27 @@ static VALUE mSyncEngine;
 
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources();
+	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
+	#define lock_sync_mutex rho_sync_lock
 	extern void rho_sync_unlock();
+	#define unlock_sync_mutex rho_sync_unlock
 	extern int rho_sync_login(const char *login, const char *password);
+	#define login rho_sync_login
 	extern int rho_sync_logged_in();
+	#define logged_in rho_sync_logged_in
 	extern void rho_sync_logout();
+	#define logout rho_sync_logout
 	extern void rho_sync_db_reset();
+	#define trigger_sync_db_reset rho_sync_db_reset
+	extern void rho_sync_stop();
+	#define stop_sync rho_sync_stop
 	extern void rho_sync_set_notification(int source_id, const char *url, char* params);
+	#define set_notification rho_sync_set_notification
 	extern void rho_sync_clear_notification(int source_id);
+	#define clear_notification rho_sync_clear_notification
 	extern void rho_sync_set_pollinterval(int interval);
+	#define set_pollinterval rho_sync_set_pollinterval
 
 
 SWIGINTERN swig_type_info*
@@ -1686,11 +1698,11 @@ SWIG_AsVal_int (VALUE obj, int *val)
 }
 
 SWIGINTERN VALUE
-_wrap_rho_sync_doSyncAllSources(int argc, VALUE *argv, VALUE self) {
+_wrap_dosync(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  rho_sync_doSyncAllSources();
+  dosync();
   return Qnil;
 fail:
   return Qnil;
@@ -1698,11 +1710,11 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_lock(int argc, VALUE *argv, VALUE self) {
+_wrap_lock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  rho_sync_lock();
+  lock_sync_mutex();
   return Qnil;
 fail:
   return Qnil;
@@ -1710,11 +1722,11 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_unlock(int argc, VALUE *argv, VALUE self) {
+_wrap_unlock_sync_mutex(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  rho_sync_unlock();
+  unlock_sync_mutex();
   return Qnil;
 fail:
   return Qnil;
@@ -1722,7 +1734,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_login(int argc, VALUE *argv, VALUE self) {
+_wrap_login(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   int result;
@@ -1739,15 +1751,15 @@ _wrap_rho_sync_login(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "rho_sync_login" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "login" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "rho_sync_login" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "login" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  result = (int)rho_sync_login((char const *)arg1,(char const *)arg2);
+  result = (int)login((char const *)arg1,(char const *)arg2);
   vresult = SWIG_From_int((int)(result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -1760,14 +1772,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_logged_in(int argc, VALUE *argv, VALUE self) {
+_wrap_logged_in(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)rho_sync_logged_in();
+  result = (int)logged_in();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -1776,11 +1788,11 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_logout(int argc, VALUE *argv, VALUE self) {
+_wrap_logout(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  rho_sync_logout();
+  logout();
   return Qnil;
 fail:
   return Qnil;
@@ -1788,11 +1800,11 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_db_reset(int argc, VALUE *argv, VALUE self) {
+_wrap_trigger_sync_db_reset(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  rho_sync_db_reset();
+  trigger_sync_db_reset();
   return Qnil;
 fail:
   return Qnil;
@@ -1800,7 +1812,19 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_set_notification(int argc, VALUE *argv, VALUE self) {
+_wrap_stop_sync(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  stop_sync();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_notification(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1818,20 +1842,20 @@ _wrap_rho_sync_set_notification(int argc, VALUE *argv, VALUE self) {
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "rho_sync_set_notification" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_notification" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "rho_sync_set_notification" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_notification" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "rho_sync_set_notification" "', argument " "3"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "set_notification" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
-  rho_sync_set_notification(arg1,(char const *)arg2,arg3);
+  set_notification(arg1,(char const *)arg2,arg3);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
@@ -1843,7 +1867,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_clear_notification(int argc, VALUE *argv, VALUE self) {
+_wrap_clear_notification(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int val1 ;
   int ecode1 = 0 ;
@@ -1853,10 +1877,10 @@ _wrap_rho_sync_clear_notification(int argc, VALUE *argv, VALUE self) {
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "rho_sync_clear_notification" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "clear_notification" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  rho_sync_clear_notification(arg1);
+  clear_notification(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -1864,7 +1888,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_rho_sync_set_pollinterval(int argc, VALUE *argv, VALUE self) {
+_wrap_set_pollinterval(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int val1 ;
   int ecode1 = 0 ;
@@ -1874,10 +1898,10 @@ _wrap_rho_sync_set_pollinterval(int argc, VALUE *argv, VALUE self) {
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "rho_sync_set_pollinterval" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_pollinterval" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  rho_sync_set_pollinterval(arg1);
+  set_pollinterval(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -2146,15 +2170,16 @@ SWIGEXPORT void Init_SyncEngine(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mSyncEngine, "dosync", _wrap_rho_sync_doSyncAllSources, -1);
-  rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_rho_sync_lock, -1);
-  rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_rho_sync_unlock, -1);
-  rb_define_module_function(mSyncEngine, "login", _wrap_rho_sync_login, -1);
-  rb_define_module_function(mSyncEngine, "logged_in", _wrap_rho_sync_logged_in, -1);
-  rb_define_module_function(mSyncEngine, "logout", _wrap_rho_sync_logout, -1);
-  rb_define_module_function(mSyncEngine, "trigger_sync_db_reset", _wrap_rho_sync_db_reset, -1);
-  rb_define_module_function(mSyncEngine, "set_notification", _wrap_rho_sync_set_notification, -1);
-  rb_define_module_function(mSyncEngine, "clear_notification", _wrap_rho_sync_clear_notification, -1);
-  rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_rho_sync_set_pollinterval, -1);
+  rb_define_module_function(mSyncEngine, "dosync", _wrap_dosync, -1);
+  rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
+  rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
+  rb_define_module_function(mSyncEngine, "login", _wrap_login, -1);
+  rb_define_module_function(mSyncEngine, "logged_in", _wrap_logged_in, -1);
+  rb_define_module_function(mSyncEngine, "logout", _wrap_logout, -1);
+  rb_define_module_function(mSyncEngine, "trigger_sync_db_reset", _wrap_trigger_sync_db_reset, -1);
+  rb_define_module_function(mSyncEngine, "stop_sync", _wrap_stop_sync, -1);
+  rb_define_module_function(mSyncEngine, "set_notification", _wrap_set_notification, -1);
+  rb_define_module_function(mSyncEngine, "clear_notification", _wrap_clear_notification, -1);
+  rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_set_pollinterval, -1);
 }
 
