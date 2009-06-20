@@ -31,6 +31,9 @@ describe "Rhom" do
     Rhom::Rhom::database_full_reset
     Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
     Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
+    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
+      source['token'].should == 0
+    end
     Rhom::Rhom::client_id.should be_nil
   end
   
@@ -38,6 +41,9 @@ describe "Rhom" do
     Rhom::Rhom::database_full_reset_and_logout
     Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
     Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
+    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
+      source['token'].should == 0
+    end
     Rhom::Rhom::client_id.should be_nil
   end
   
