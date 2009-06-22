@@ -41,7 +41,7 @@ id|source_id|attrib|object|value|update_type|attrib_type
 -8943188|1|phone_alternate|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 63546948|1|billing_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 114237576|1|modified_user_id|44e804f2-4933-4e20-271c-48fcecd9450d|1|query|
-220076107|1|description|44e804f2-4933-4e20-271c-48fcecd9450d||query|
+220076107|1|description|44e804f2-4933-4e20-271c-48fcecd9450d|Hello description!|query|
 326182291|1|modified_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|query|
 517349454|1|employees|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 596458092|1|shipping_address_postalcode|44e804f2-4933-4e20-271c-48fcecd9450d||query|
@@ -53,7 +53,7 @@ id|source_id|attrib|object|value|update_type|attrib_type
 1065948343|1|created_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|query|
 1072561171|1|shipping_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||query|
 -1036293295|1|phone_fax|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
--1015063951|1|description|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
+-1015063951|1|description|63cf13da-cff4-99e7-f946-48fcec93f1cc|NULL|query|
 -992493612|1|ownership|63cf13da-cff4-99e7-f946-48fcec93f1cc||query|
 -991176969|1|date_modified|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-22 20:30:48|query|
 -981671585|1|billing_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc|Mountain View|query|
