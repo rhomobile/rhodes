@@ -3,6 +3,8 @@
 %{
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources();
+	#define dosync_source rho_sync_doSyncSource
+	extern void rho_sync_doSyncSource(int source_id);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -27,6 +29,7 @@
 %}
 
 extern void dosync();
+extern void dosync_source(int source_id);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
 extern int login(const char *login, const char *password);
