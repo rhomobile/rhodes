@@ -77,45 +77,58 @@ public class Journal {
 		if ( !FileUtilBB.getDefaultInstance().isStreamElement(m_journalName))
 			return;
 		
-		RandomAccessFile jf = new RandomAccessFile(m_journalName, "r");
-		long nDataSize = jf.readLong();
-		byte byteConfirm = (byte)jf.read();
-		
-		if ( byteConfirm != BLOCK_CONFIRM )
-			return;
-		
-		RandomAccessFile df = new RandomAccessFile(m_dataName, "rw");
-		df.setLength(nDataSize);
-		
-		while(true){
-			long nPos = 0;
-			byte[] buf = null;
+		RandomAccessFile jf = null;
+		RandomAccessFile df = null;
+		try{
+			jf = new RandomAccessFile(m_journalName, "r");
+			long nDataSize = jf.readLong();
+			byte byteConfirm = (byte)jf.read();
 			
-			try{
-				nPos = jf.readLong();
-				long nLen = jf.readLong();
-	
-				buf = new byte[(int)nLen];
-				long nReaded = jf.read(buf);
+			if ( byteConfirm == BLOCK_CONFIRM )
+			{		
+				df = new RandomAccessFile(m_dataName, "rw");
+				df.setLength(nDataSize);
 				
-				byteConfirm = (byte)jf.read();
-				if ( byteConfirm != BLOCK_CONFIRM || nReaded != nLen )
-					break;
+				while(true){
+					long nPos = 0;
+					byte[] buf = null;
+					
+					try{
+						nPos = jf.readLong();
+						long nLen = jf.readLong();
+			
+						buf = new byte[(int)nLen];
+						long nReaded = jf.read(buf);
+						
+						byteConfirm = (byte)jf.read();
+						if ( byteConfirm != BLOCK_CONFIRM || nReaded != nLen )
+							break;
+						
+					}catch(EOFException exc){
+						break;
+					}
+					
+					df.seek(nPos);
+					df.write(buf);
+				}
 				
-			}catch(EOFException exc){
-				break;
 			}
 			
-			df.seek(nPos);
-			df.write(buf);
+			FileUtilBB.getDefaultInstance().removeElement(m_journalName);
+		}finally{
+			if ( df != null )
+			{
+				df.close();
+				df = null;
+			}
+
+			if ( jf != null )
+			{
+				jf.close();
+				jf = null;
+			}
+			
 		}
-		
-		df.close();
-		df = null;
-		jf.close();
-		jf = null;
-		
-		FileUtilBB.getDefaultInstance().removeElement(m_journalName);
 	}
 	
 	public void write( long nPos, long nLen)throws IOException{
