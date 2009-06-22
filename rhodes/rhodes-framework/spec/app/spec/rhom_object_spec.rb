@@ -444,7 +444,6 @@ describe "Rhom::RhomObject" do
   
   it "should support find with conditions => nil" do
     @accts = Account.find(:all, :conditions => {'description' => nil})
-    puts "accounts: #{@accts.inspect}"
     @accts.length.should == 1
     @accts[0].name.should == "Aeroprise"
     @accts[0].industry.should == "Technology"
