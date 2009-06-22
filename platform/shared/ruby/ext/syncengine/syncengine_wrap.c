@@ -1547,6 +1547,8 @@ static VALUE mSyncEngine;
 
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources();
+	#define dosync_source rho_sync_doSyncSource
+	extern void rho_sync_doSyncSource(int source_id);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -1568,6 +1570,70 @@ static VALUE mSyncEngine;
 	#define clear_notification rho_sync_clear_notification
 	extern void rho_sync_set_pollinterval(int interval);
 	#define set_pollinterval rho_sync_set_pollinterval
+
+
+#include <limits.h>
+#ifndef LLONG_MIN
+# define LLONG_MIN	LONG_LONG_MIN
+#endif
+#ifndef LLONG_MAX
+# define LLONG_MAX	LONG_LONG_MAX
+#endif
+#ifndef ULLONG_MAX
+# define ULLONG_MAX	ULONG_LONG_MAX
+#endif
+
+
+SWIGINTERN VALUE
+SWIG_ruby_failed(void)
+{
+  return Qnil;
+} 
+
+
+/*@SWIG:%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  return obj;
+}
+/*@SWIG@*/
+
+SWIGINTERN int
+SWIG_AsVal_long (VALUE obj, long* val)
+{
+  VALUE type = TYPE(obj);
+  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
+    long v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
 
 
 SWIGINTERN swig_type_info*
@@ -1624,18 +1690,6 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
-#include <limits.h>
-#ifndef LLONG_MIN
-# define LLONG_MIN	LONG_LONG_MIN
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX	LONG_LONG_MAX
-#endif
-#ifndef ULLONG_MAX
-# define ULLONG_MAX	ULONG_LONG_MAX
-#endif
-
-
   #define SWIG_From_long   LONG2NUM 
 
 
@@ -1645,64 +1699,33 @@ SWIG_From_int  (int value)
   return SWIG_From_long  (value);
 }
 
-
-SWIGINTERN VALUE
-SWIG_ruby_failed(void)
-{
-  return Qnil;
-} 
-
-
-/*@SWIG:%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
-{
-  VALUE obj = args[0];
-  VALUE type = TYPE(obj);
-  long *res = (long *)(args[1]);
-  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
-  return obj;
-}
-/*@SWIG@*/
-
-SWIGINTERN int
-SWIG_AsVal_long (VALUE obj, long* val)
-{
-  VALUE type = TYPE(obj);
-  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
-    long v;
-    VALUE a[2];
-    a[0] = obj;
-    a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
-      if (val) *val = v;
-      return SWIG_OK;
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int (VALUE obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (int)(v);
-    }
-  }  
-  return res;
-}
-
 SWIGINTERN VALUE
 _wrap_dosync(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
   dosync();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "dosync_source" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  dosync_source(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -2171,6 +2194,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mSyncEngine, "dosync", _wrap_dosync, -1);
+  rb_define_module_function(mSyncEngine, "dosync_source", _wrap_dosync_source, -1);
   rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "login", _wrap_login, -1);
