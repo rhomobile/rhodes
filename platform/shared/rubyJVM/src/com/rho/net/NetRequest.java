@@ -18,6 +18,7 @@ public class NetRequest
 		new RhoLogger("Net");
 	
 	static final int  MAX_NETREQUEST_RETRY  = 3;
+	boolean m_bCancel = false;
 	
 	public static interface IRhoSession
 	{
@@ -58,6 +59,7 @@ public class NetRequest
 		NetData data = null;
 		
 		int nTry = 0;
+		m_bCancel = false;
 	    do
 	    {
 	    	try{
@@ -65,6 +67,8 @@ public class NetRequest
 	    		break;
 	    	}catch(IOException exc)
 	    	{
+	    		if ( m_bCancel )
+	    			break;
 	    		if ( nTry+1 >= MAX_NETREQUEST_RETRY )
 	    			throw exc;
 	    	}
@@ -307,6 +311,7 @@ public class NetRequest
 
 	public void cancelAll()
     {
+		m_bCancel = true;
 		closeConnection();
     }
 
