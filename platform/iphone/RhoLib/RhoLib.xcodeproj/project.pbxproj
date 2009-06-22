@@ -266,7 +266,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rholib;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphonesimulator2.2.1;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = ../../shared;
 			};
@@ -297,7 +297,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = iphonesimulator2.2.1;
 			};
 			name = Debug;
 		};
