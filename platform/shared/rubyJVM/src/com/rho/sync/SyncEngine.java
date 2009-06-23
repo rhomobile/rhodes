@@ -93,7 +93,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    loadAllSources();
 	
 	    m_strSession = loadSession();
-	    if ( m_strSession != null && m_strSession.length() > 0  )
+	    if ( isSessionExist()  )
 	        loadClientID();
 	    else
 	    	LOG.INFO("Client is not logged in. No sync will be performed.");
@@ -114,7 +114,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    loadAllSources();
 	
 	    m_strSession = loadSession();
-	    if ( m_strSession != null && m_strSession.length() > 0  )
+	    if ( isSessionExist()  )
 	        loadClientID();
 	    else
 	    	LOG.INFO("Client is not logged in. No sync will be performed.");
@@ -139,7 +139,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    for( int i = 0; i < m_sources.size(); i++ )
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( src.m_nID.intValue() == nSrcId )
+	        if ( src.getID().intValue() == nSrcId )
 	            return src;
 	    }
 	    
@@ -350,7 +350,8 @@ class SyncEngine implements NetRequest.IRhoSession
 					
 				    for( int i = 0; i < m_sources.size(); i++ )
 				    {
-				    	m_mapNotifications.put(new Integer(i),new SyncNotification( strFullUrl, strParams ) );
+				    	SyncSource src = (SyncSource)m_sources.elementAt(i); 
+				    	m_mapNotifications.put( src.getID(),new SyncNotification( strFullUrl, strParams ) );
 				    }
 				}
 			}
