@@ -42,6 +42,7 @@ class CNetRequestImpl
     HINTERNET  hInet, hConnection, hRequest;
     URL_COMPONENTS uri;
     CAtlStringW strReqUrlW;
+    String      m_strUrl;
     static CNetRequestImpl* m_pInstance;
 public :
     CNetRequestImpl(const char* method, const String& strUrl);

@@ -179,6 +179,8 @@ public class SyncThread extends RhoThread
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
 					getSyncEngine().stopSync();
+					while( getSyncEngine().getState() != SyncEngine.esNone )
+						getInstance().sleep(100);
 				}catch(Exception e)
 				{
 					LOG.ERROR("stop_sync failed", e);

@@ -66,5 +66,10 @@ void CRhoThreadImpl::stopWait()
     ::SetEvent(m_hAwakeEvent);
 }
 
+void CRhoThreadImpl::sleep(unsigned int nTimeout)
+{
+    ::Sleep(nTimeout);
+}
+
 }
 }
