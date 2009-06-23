@@ -140,7 +140,7 @@ public class AndroidHttpConnection implements IHttpConnection {
 	public void setRequestProperty(String key, String value) throws IOException {
 		urlc.setRequestProperty(key, value);
 	}
-
+	
     @SuppressWarnings("unchecked")
 	public static IHttpConnection makeConnection(String url,
 			HttpHeader requestHeaders, byte[] postData) {
@@ -172,7 +172,7 @@ public class AndroidHttpConnection implements IHttpConnection {
 			         conn.setRequestProperty(key, requestHeaders.getHeader( key ) );
 			     }
 			}
-
+			
 			if (postData == null) {
 				conn.setRequestMethod(IHttpConnection.GET);
 			} else {

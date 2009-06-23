@@ -105,11 +105,47 @@ class SyncEngine implements NetRequest.IRhoSession
 		LOG.INFO( "End syncing all sources" );
 	}
 
-	void doSyncSource()
+	void doSyncSource(int nSrcId)throws Exception
 	{
-	    //TODO:doSyncSource
+		LOG.INFO( "Start syncing source : " + nSrcId );
+		
+	    setState(esSyncSource);
+	
+	    loadAllSources();
+	
+	    m_strSession = loadSession();
+	    if ( m_strSession != null && m_strSession.length() > 0  )
+	        loadClientID();
+	    else
+	    	LOG.INFO("Client is not logged in. No sync will be performed.");
+	    
+        SyncSource src = findSourceByID(nSrcId);
+        if ( src != null )
+        {
+	        if ( isSessionExist() && getState() != esStop )
+	            src.sync();
+	
+	        fireNotification(src, true);
+        }else
+        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+        
+	    setState(esNone);
+		
+		LOG.INFO( "End  syncing source : " + nSrcId  );
 	}
 
+	SyncSource findSourceByID(int nSrcId)
+	{
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        if ( src.m_nID.intValue() == nSrcId )
+	            return src;
+	    }
+	    
+	    return null;
+	}
+	
 /*	String updateSyncServer(String strUrl)
 	{
 		String strSyncServer = m_systemInfo.getAppProperty("RHO-SyncServer-Address");

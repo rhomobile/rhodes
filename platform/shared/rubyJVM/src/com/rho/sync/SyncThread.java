@@ -40,6 +40,7 @@ public class SyncThread extends RhoThread
     RhoClassFactory m_ptrFactory;
     int           m_curCommand;
 	int           m_nPollInterval;
+    int           m_nCmdParam;
     
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
@@ -78,6 +79,7 @@ public class SyncThread extends RhoThread
     static DBAdapter getDBAdapter(){ return DBAdapter.getInstance(); }
 
     void addSyncCommand(int curCommand){ m_curCommand = curCommand; stopWait(); }
+    void addSyncCommand(int curCommand, int nCmdParam){ m_curCommand = curCommand; m_nCmdParam = nCmdParam; stopWait(); }
 	
 	public void run()
 	{
@@ -116,7 +118,7 @@ public class SyncThread extends RhoThread
 	    case scChangePollInterval:
 	        break;
 	    case scSyncOne:
-	        //TODO:scSyncOne
+	    	m_oSyncEngine.doSyncSource(m_nCmdParam);
 	        break;
 	    case scResetDB:
 	        m_oSyncEngine.resetSyncDB();
@@ -139,9 +141,25 @@ public class SyncThread extends RhoThread
 	{
 		getInstance().addSyncCommand(SyncThread.scSyncAll);
 	}
+
+	public static void doSyncSource(int nSrcID)
+	{
+		getInstance().addSyncCommand(SyncThread.scSyncOne, nSrcID );
+	}
 	
 	public static void initMethods(RubyClass klass) {
-		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
+		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
+				try{
+					doSyncSource(arg.toInt());
+				}catch(Exception e)
+				{
+					LOG.ERROR("dosync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				
+				return RubyConstant.QNIL;
+			}
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
 					doSyncAllSources();
@@ -153,7 +171,22 @@ public class SyncThread extends RhoThread
 				
 				return RubyConstant.QNIL;
 			}
+			
 		});
+		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					getSyncEngine().stopSync();
+				}catch(Exception e)
+				{
+					LOG.ERROR("stop_sync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				
+				return RubyConstant.QNIL;
+			}
+		});
+		
 		klass.getSingletonClass().defineMethod("lock_sync_mutex",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -207,9 +240,9 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("logged_in",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					DBAdapter db = getDBAdapter();
 
 					try{
-						DBAdapter db = getDBAdapter();
 						db.setUnlockDB(true);
 					    return getSyncEngine().isLoggedIn() ? 
 					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
@@ -217,6 +250,9 @@ public class SyncThread extends RhoThread
 					{
 						LOG.ERROR("logged_in failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}finally
+					{
+						db.setUnlockDB(false);
 					}
 				    
 				}
@@ -225,16 +261,19 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("logout",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					DBAdapter db = getDBAdapter();
 
 					try{
 					    //TODO: stop sync
-						DBAdapter db = getDBAdapter();
 						db.setUnlockDB(true);
 					    getSyncEngine().logout();
 					}catch(Exception e)
 					{
 						LOG.ERROR("logout failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}finally
+					{
+						db.setUnlockDB(false);
 					}
 					
 				    return RubyConstant.QNIL;

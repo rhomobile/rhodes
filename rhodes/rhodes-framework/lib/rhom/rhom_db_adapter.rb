@@ -133,17 +133,18 @@ module Rhom
       def string_from_key_vals(values, delim)
         vals = ""
         values.each do |key,value|
-          vals << " \"#{key}\" = #{get_value_for_sql_stmt(value)} #{delim}"
+          op = value.nil? ? 'is ' : '= '
+          vals << " \"#{key}\" #{op} #{get_value_for_sql_stmt(value)} #{delim}"
         end
         vals
       end
       
       # generates a value for sql statement
       def get_value_for_sql_stmt(value)
-        if value.is_a?(String)
-          "'#{value}'"
-        elsif value.nil?
+        if value.nil? or value == 'NULL'
           "NULL"
+        elsif value.is_a?(String)
+          "'#{value}'"
         else
           "#{value}"
         end

@@ -800,7 +800,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         private HttpHeaders _requestHeaders;
 
         private String _url;
-
+        private static Object m_syncObject = new Object(); 
+        	
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
                                       Event event, RhodesApplication application) {
 
@@ -812,8 +813,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         public void run() {
-            HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-            _application.processConnection(connection, _event);
+        	synchronized(m_syncObject)
+        	{
+        		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+        		_application.processConnection(connection, _event);
+        	}
         }
     }
     
