@@ -43,12 +43,13 @@ INetData* CNetRequest::pullData(const String& strUrl )
 {
     int bRespRecieved = 0;
 	int nTry = 0;
+	m_bCancel = false;
 	char* response = 0;
 	
 	do{
 		response = rho_net_impl_request("GET", strUrl.c_str(), "", &bRespRecieved );
 		nTry++;
-	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
 	return new CNetData(response);
 }
@@ -57,12 +58,13 @@ boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 {
     int bRespRecieved = 0;
 	int nTry = 0;
+	m_bCancel = false;
 	char* response = 0;
 	
 	do{
 		response = rho_net_impl_request("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved );
 		nTry++;
-	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 		
 	boolean bRet = response!=0;
 	if ( response!=0 )
@@ -117,12 +119,13 @@ boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 {
     int bRespRecieved = 0;
 	int nTry = 0;
+	m_bCancel = false;
 	boolean bRet = false;
 	
 	do{
 		bRet = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved ) != 0;
 		nTry++;
-	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
 	return bRet;
 }
@@ -144,6 +147,7 @@ String CNetRequest::resolveUrl(const String& strUrl)
 
 void CNetRequest::cancelAll()
 {
+	m_bCancel = true;
 	rho_net_impl_cancelAll();
 }
 
