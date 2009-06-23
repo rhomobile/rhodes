@@ -178,9 +178,12 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
-					getSyncEngine().stopSync();
-					while( getSyncEngine().getState() != SyncEngine.esNone )
-						getInstance().sleep(100);
+					if ( getSyncEngine().isSyncing() )
+					{
+						getSyncEngine().stopSync();
+						while( getSyncEngine().getState() != SyncEngine.esNone )
+							getInstance().sleep(100);
+					}
 				}catch(Exception e)
 				{
 					LOG.ERROR("stop_sync failed", e);

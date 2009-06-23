@@ -61,6 +61,7 @@ class SyncEngine implements NetRequest.IRhoSession
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
+	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
     void exitSync(){ setState(esExit); getNet().cancelAll(); }
     String getClientID(){ return m_clientID; }
