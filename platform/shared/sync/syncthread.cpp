@@ -120,9 +120,12 @@ void rho_sync_db_reset()
 
 void rho_sync_stop()
 {
-    CSyncThread::getSyncEngine().stopSync();
-    while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
-        CSyncThread::getInstance()->sleep(100);
+	if (CSyncThread::getSyncEngine().isSyncing() )
+	{
+		CSyncThread::getSyncEngine().stopSync();
+		while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
+			CSyncThread::getInstance()->sleep(100);
+	}
 }
 
 void rho_sync_set_pollinterval(int nInterval)
