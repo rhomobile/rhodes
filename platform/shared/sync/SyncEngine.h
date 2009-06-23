@@ -64,7 +64,7 @@ public:
     void setState(ESyncState eState){ m_syncState = eState; }
     ESyncState getState()const{ return m_syncState; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
-    void stopSync(){ if (isContinueSync()) setState(esStop); }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
     void exitSync(){ setState(esExit); getNet().cancelAll(); }
 //private:
     String getClientID()const{ return m_clientID; }
