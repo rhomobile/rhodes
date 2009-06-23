@@ -52,7 +52,6 @@ class SyncEngine implements NetRequest.IRhoSession
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
     NetRequest m_NetRequest;
-    IRhoRubyHelper m_systemInfo;
     int         m_syncState;
     String     m_clientID = "";
     Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
@@ -81,7 +80,6 @@ class SyncEngine implements NetRequest.IRhoSession
 
     void setFactory(RhoClassFactory factory)throws Exception{ 
         m_NetRequest = factory.createNetRequest();
-        m_systemInfo = factory.createRhoRubyHelper();
     }
     
 	void doSyncAllSources()throws Exception
@@ -146,15 +144,6 @@ class SyncEngine implements NetRequest.IRhoSession
 	    return null;
 	}
 	
-/*	String updateSyncServer(String strUrl)
-	{
-		String strSyncServer = m_systemInfo.getAppProperty("RHO-SyncServer-Address");
-		if ( strSyncServer != null && strSyncServer.length() > 0 )
-			return strSyncServer;
-		
-		return strUrl;
-	}*/
-	
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
@@ -162,7 +151,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
-	        String strUrl = res.getStringByIdx(1);//updateSyncServer(res.getStringByIdx(1));
+	        String strUrl = res.getStringByIdx(1);
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
 	    }
