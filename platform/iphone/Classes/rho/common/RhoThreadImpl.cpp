@@ -70,7 +70,7 @@ void CRhoThreadImpl::wait(unsigned int nTimeout)
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
 {
-    //TODO: sleep
+    ::usleep(1000*nTimeout);
 }
 
 void CRhoThreadImpl::stopWait()

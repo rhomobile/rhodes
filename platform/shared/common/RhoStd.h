@@ -39,7 +39,7 @@ template<class Type>
 class VectorPtr : public Vector<Type>{
 public:
     VectorPtr(){}
-    ~VectorPtr(){clear();}
+    ~VectorPtr(){removeAllElements();}
 
     void removeAllElements()
     {
