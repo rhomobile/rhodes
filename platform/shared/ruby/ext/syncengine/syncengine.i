@@ -3,24 +3,40 @@
 %{
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources();
+	#define dosync_source rho_sync_doSyncSource
+	extern void rho_sync_doSyncSource(int source_id);
+	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
+	#define lock_sync_mutex rho_sync_lock
 	extern void rho_sync_unlock();
+	#define unlock_sync_mutex rho_sync_unlock
 	extern int rho_sync_login(const char *login, const char *password);
+	#define login rho_sync_login
 	extern int rho_sync_logged_in();
+	#define logged_in rho_sync_logged_in
 	extern void rho_sync_logout();
+	#define logout rho_sync_logout
 	extern void rho_sync_db_reset();
+	#define trigger_sync_db_reset rho_sync_db_reset
+	extern void rho_sync_stop();
+	#define stop_sync rho_sync_stop
 	extern void rho_sync_set_notification(int source_id, const char *url, char* params);
+	#define set_notification rho_sync_set_notification
 	extern void rho_sync_clear_notification(int source_id);
+	#define clear_notification rho_sync_clear_notification
 	extern void rho_sync_set_pollinterval(int interval);
+	#define set_pollinterval rho_sync_set_pollinterval
 %}
 
-extern void rho_sync_doSyncAllSources();
-extern void rho_sync_lock();
-extern void rho_sync_unlock();
-extern int rho_sync_login(const char *login, const char *password);
-extern int rho_sync_logged_in();
-extern void rho_sync_logout();
-extern void rho_sync_db_reset();
-extern void rho_sync_set_notification(int source_id, const char *url, char* params);
-extern void rho_sync_clear_notification(int source_id);
-extern void rho_sync_set_pollinterval(int interval);
+extern void dosync();
+extern void dosync_source(int source_id);
+extern void lock_sync_mutex();
+extern void unlock_sync_mutex();
+extern int login(const char *login, const char *password);
+extern int logged_in();
+extern void logout();
+extern void trigger_sync_db_reset();
+extern void stop_sync();
+extern void set_notification(int source_id, const char *url, char* params);
+extern void clear_notification(int source_id);
+extern void set_pollinterval(int interval);

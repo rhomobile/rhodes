@@ -16,6 +16,18 @@
 	<property name="rhodes.apps.dir" value="${bin.dir}/../../Rhodes/assets/apps" />
 	<property name="rhodes.lib.dir" value="${bin.dir}/../../Rhodes/libs" />
 	
+	<condition property="mask.allfiles" value="*.*" else="*">
+		<os name="windows" />
+	</condition>
+	
+	<condition property="exe.java" value="${javac.home}/java.exe" else="java">
+		<os name="windows" />
+	</condition>
+	
+	<condition property="exe.jar" value="${javac.home}/jar.exe" else="jar">
+		<os name="windows" />
+	</condition>
+	
   	<condition property="exclude.lib" value="**/singleton.rb,**/rhoframework.rb,**/date.rb,**/rational.rb">
     	<not><isset property="exclude.lib"/></not>
   	</condition>
@@ -56,7 +68,7 @@
     	
    		<ant dir = "${sharedAnt.dir}" target="compileERB_Java" />
     	
-        <exec executable="${javac.home}/java.exe" dir="${bin.dir}">
+        <exec executable="${exe.java}" dir="${bin.dir}">
           <arg value="-jar" />
           <arg value="${xruby.dir}/xruby-0.3.3.jar" />
           <arg value="-c" />
@@ -71,23 +83,23 @@
     	<ant dir="${sharedAnt.dir}" target="deleteRBandERB" />
     	
     	<delete includeemptydirs="true">
-    		<fileset dir="${rhodes.apps.dir}" includes="**/*.*" excludes="loading.html"/>
+    		<fileset dir="${rhodes.apps.dir}" includes="**/${mask.allfiles}" excludes="loading.html"/>
         </delete>
     	
     	<copy todir="${rhodes.apps.dir}">
     	  <fileset dir="${src.dir}/apps"
-    	           includes="**/*.*"
+    	           includes="**/${mask.allfiles}"
     	  />
     	</copy>
 
     	<delete>
-    		<fileset dir="${src.dir}/apps" includes="**/*.*" />
+    		<fileset dir="${src.dir}/apps" includes="**/${mask.allfiles}" />
         </delete>
     	
-    	<exec executable="${javac.home}/jar.exe" dir="${src.dir}">
+    	<exec executable="${exe.jar}" dir="${src.dir}">
           <arg value="uf" />
           <arg value="../RhoBundle.jar" />
-          <arg value="apps/*.*" />
+          <arg value="apps/${mask.allfiles}" />
         </exec>
 
     	<copy overwrite="true" todir="${rhodes.lib.dir}">
