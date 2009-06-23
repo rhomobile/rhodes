@@ -61,7 +61,7 @@ class SyncEngine implements NetRequest.IRhoSession
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
-    void stopSync(){ if (isContinueSync()) setState(esStop); }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
     void exitSync(){ setState(esExit); getNet().cancelAll(); }
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
@@ -82,50 +82,63 @@ class SyncEngine implements NetRequest.IRhoSession
         m_NetRequest = factory.createNetRequest();
     }
     
-	void doSyncAllSources()throws Exception
+	void doSyncAllSources()
 	{
 		LOG.INFO( "Start syncing all sources" );
 		
 	    setState(esSyncAllSources);
 	
-	    loadAllSources();
-	
-	    m_strSession = loadSession();
-	    if ( isSessionExist()  )
-	        loadClientID();
-	    else
-	    	LOG.INFO("Client is not logged in. No sync will be performed.");
+	    try
+	    {
+		    loadAllSources();
+		
+		    m_strSession = loadSession();
+		    if ( isSessionExist()  )
+		        loadClientID();
+		    else
+		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    
+		    syncAllSources();
+	    }catch(Exception exc)
+	    {
+	    	LOG.ERROR("Sync all sources failed.", exc);
+	    }
 	    
-	    syncAllSources();
-	
 	    setState(esNone);
 		
 		LOG.INFO( "End syncing all sources" );
 	}
 
-	void doSyncSource(int nSrcId)throws Exception
+	void doSyncSource(int nSrcId)
 	{
 		LOG.INFO( "Start syncing source : " + nSrcId );
 		
 	    setState(esSyncSource);
-	
-	    loadAllSources();
-	
-	    m_strSession = loadSession();
-	    if ( isSessionExist()  )
-	        loadClientID();
-	    else
-	    	LOG.INFO("Client is not logged in. No sync will be performed.");
-	    
-        SyncSource src = findSourceByID(nSrcId);
-        if ( src != null )
-        {
-	        if ( isSessionExist() && getState() != esStop )
-	            src.sync();
-	
-	        fireNotification(src, true);
-        }else
-        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+
+	    try
+	    {
+		    loadAllSources();
+		
+		    m_strSession = loadSession();
+		    if ( isSessionExist()  )
+		        loadClientID();
+		    else
+		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    
+	        SyncSource src = findSourceByID(nSrcId);
+	        if ( src != null )
+	        {
+		        if ( isSessionExist() && getState() != esStop )
+		            src.sync();
+		
+		        fireNotification(src, true);
+	        }else
+	        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+        
+	    }catch(Exception exc)
+	    {
+	    	LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+	    }
         
 	    setState(esNone);
 		

@@ -45,6 +45,7 @@ String CNetRequest::resolveUrl(const String& strUrl)
 
 void CNetRequest::cancelAll()
 {
+    m_bCancel = true;
     CNetRequestImpl::cancel();
 }
 

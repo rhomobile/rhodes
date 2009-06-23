@@ -19,6 +19,7 @@ public:
     virtual void stop(unsigned int nTimeoutToKill){ m_pImpl->stop(nTimeoutToKill); }
     virtual void wait(unsigned int nTimeout){ m_pImpl->wait(nTimeout); }
     virtual void stopWait(){ m_pImpl->stopWait(); }
+    virtual void sleep(unsigned int nTimeout){ m_pImpl->sleep(nTimeout); }
 };
 
 }
