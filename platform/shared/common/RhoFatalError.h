@@ -25,7 +25,7 @@ public:
             User::Invariant();
 //            exit(-1);
         #elif defined(OS_MACOSX)
-			__assert_rtn(__func__, __FILE__, __LINE__,"RhoFatalError");
+//			__assert_rtn(__func__, __FILE__, __LINE__,"RhoFatalError");
         #else
             exit(-1);
         #endif
