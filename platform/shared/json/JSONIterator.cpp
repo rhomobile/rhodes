@@ -76,6 +76,11 @@ boolean CJSONEntry::isEmpty()
     return m_object == 0;
 }
 
+boolean CJSONEntry::hasName(String name)
+{
+	return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
+}
+
 const char* CJSONEntry::getString(const char* name)
 {
     const char* szRes = 0;

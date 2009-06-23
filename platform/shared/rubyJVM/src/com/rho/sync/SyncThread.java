@@ -148,18 +148,7 @@ public class SyncThread extends RhoThread
 	}
 	
 	public static void initMethods(RubyClass klass) {
-		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
-				try{
-					doSyncSource(arg.toInt());
-				}catch(Exception e)
-				{
-					LOG.ERROR("dosync failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				
-				return RubyConstant.QNIL;
-			}
+		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
 					doSyncAllSources();
@@ -172,6 +161,19 @@ public class SyncThread extends RhoThread
 				return RubyConstant.QNIL;
 			}
 			
+		});
+		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
+				try{
+					doSyncSource(arg.toInt());
+				}catch(Exception e)
+				{
+					LOG.ERROR("dosync_source failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				
+				return RubyConstant.QNIL;
+			}
 		});
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {

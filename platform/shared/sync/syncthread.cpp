@@ -28,6 +28,7 @@ CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory
 {
     m_curCommand = scNone;
 	m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+    m_nCmdParam = 0;
 	m_ptrFactory = factory;
 
     m_oSyncEngine.setFactory(factory);
@@ -65,7 +66,7 @@ void CSyncThread::processCommand()
     case scChangePollInterval:
         break;
     case scSyncOne:
-        //TODO:scSyncOne
+        m_oSyncEngine.doSyncSource(m_nCmdParam);
         break;
     case scResetDB:
         m_oSyncEngine.resetSyncDB();
@@ -109,6 +110,7 @@ void rho_sync_doSyncAllSources()
 
 void rho_sync_doSyncSource(int nSrcID)
 {
+    CSyncThread::getInstance()->addSyncCommand(CSyncThread::scSyncOne, nSrcID );
 }	
 	
 void rho_sync_db_reset()
@@ -137,6 +139,7 @@ int rho_sync_logged_in()
 	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
 	db.setUnlockDB(true);
     int nRes = CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
+    db.setUnlockDB(false);
 	return nRes;
 }
 
@@ -146,6 +149,7 @@ void rho_sync_logout()
 	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
 	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();
+    db.setUnlockDB(false);
 }
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)
