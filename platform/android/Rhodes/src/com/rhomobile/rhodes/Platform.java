@@ -63,6 +63,10 @@ public class Platform extends Activity {
 	private boolean isStarted = false;
 
 	private NetworkStateTracker networkStateTracker;
+	
+	public String getHomeUrl() {
+		return HOME_URL;
+	}
 
 	/** Called when the activity is first created. */
 	@Override
