@@ -3,18 +3,25 @@ require 'erb'
 require 'rhodes/rhodes-build/lib/jake.rb'
 
 load 'platform/bb/build/bb.rake'
+load 'platform/android/build/android.rake'
 
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
     $config = Jake.config(File.open('build.yml'))
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      $all_files_mask = "*.*"
+    else
+      $all_files_mask = "*.*"
+    end
+
   end
 end
 
 namespace "build" do
   namespace "bundle" do
     task :xruby do
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      #needs $config, $srcdir, $excludelib, $bindir
       app = $config["env"]["app"]
       startdir = pwd
       rhodeslib = "rhodes/rhodes-framework/lib"
@@ -80,7 +87,7 @@ namespace "build" do
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-      puts `jar uf ../RhoBundle.jar apps/*.*`
+      puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
 
       chdir startdir
     end

@@ -35,7 +35,7 @@
   end
 
  def manualsign
-    java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+    java = $config["env"]["paths"]["java"] + "/java.exe"
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     args = []
@@ -51,7 +51,7 @@
 
     desc "Sign cod files automatically"
   def autosign
-    java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+    java = $config["env"]["paths"]["java"] + "/java.exe"
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     args = []
@@ -98,9 +98,9 @@ namespace "build" do
     desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
-      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+      java = $config["env"]["paths"]["java"] + "/java.exe"
       jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      jarexe =  $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/jar.exe"
+      jarexe =  $config["env"]["paths"]["java"] + "/jar.exe"
 
       #common bundle task goes here#
       Rake::Task["build:bundle:xruby"].execute
@@ -123,7 +123,7 @@ namespace "build" do
 
     desc "Build RubyVM"
     task :rubyvm => ["config:bb"] do
-      javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+      javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
       rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
@@ -174,7 +174,7 @@ namespace "build" do
 
     desc "Build rhodes"
     task :rhodes => [ :rubyvm, :rhobundle ] do
-      javac = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/javac.exe"
+      javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jde =  $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
       jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
@@ -448,9 +448,8 @@ end
 
 
 namespace "config" do
-  namespace "bb" do
-    task :check do
-      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
+    task :checkbb do
+      javahome = $config["env"]["paths"]["java"]
       jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
       mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
 
@@ -500,5 +499,5 @@ namespace "config" do
 
       puts "Config appears valid"
     end
-  end
+
 end
