@@ -1,3 +1,107 @@
+require 'find'
+require 'erb'
+require 'rhodes/rhodes-build/lib/jake.rb'
+
+load 'platform/bb/build/bb.rake'
+load 'platform/android/build/android.rake'
+
+namespace "config" do
+  task :common do
+    $startdir = File.dirname(__FILE__)
+    buildyml = 'rhobuild.yml'
+
+    buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+    $config = Jake.config(File.open(buildyml))
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      $all_files_mask = "*.*"
+    else
+      $all_files_mask = "*.*"
+    end
+
+  end
+end
+
+namespace "build" do
+  namespace "bundle" do
+    task :xruby do
+      #needs $config, $srcdir, $excludelib, $bindir
+      app = $config["env"]["app"]
+      startdir = pwd
+      rhodeslib = "rhodes/rhodes-framework/lib"
+
+      rm_rf $srcdir
+      mkdir_p $srcdir
+      mkdir_p File.join($srcdir,'apps')
+
+      xruby =  File.dirname(__FILE__) + '/rhodes/rhodes-build/res/xruby-0.3.3.jar'
+
+      dest = startdir + "/" + $srcdir
+      chdir rhodeslib
+      Dir.glob("*").each { |f|
+        src = f
+        cp_r src,dest
+      }
+      chdir dest
+      Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
+      Dir.glob("**/erb.rb").each {|f| rm f}
+      Dir.glob("**/find.rb").each {|f| rm f}
+      $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
+
+      chdir startdir
+      #throw "ME"
+      cp_r app + '/app',File.join($srcdir,'apps')
+      cp_r app + '/public', File.join($srcdir,'apps')
+      cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+
+
+      #create manifest
+      dir = File.join($srcdir, 'apps')
+      fname = "config.rb"
+      fappManifest = File.new( File.join(dir,'app_manifest.txt'), "w")
+
+      Find.find(dir) do |path|
+        if File.basename(path) == fname
+
+          relPath = path[dir.length+1, File.dirname(path).length-1]   #relative path
+          relPath = relPath[0, relPath.length-3] #remove .rb extension
+          fappManifest.puts( relPath )
+
+        end
+      end
+
+      fappManifest.close()
+
+      #"compile ERB"
+      ext = ".erb"
+      Find.find($srcdir) do |path|
+        if File.extname(path) == ext
+          rbText = ERB.new( IO.read(path) ).src
+          newName = File.basename(path).sub('.erb','_erb.rb')
+          fName = File.join(File.dirname(path), newName)
+          frb = File.new(fName, "w")
+          frb.write( rbText )
+          frb.close()
+        end
+      end
+
+      chdir $bindir
+      puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      chdir startdir
+      chdir $srcdir
+      Dir.glob("**/*.rb") { |f| rm f }
+      Dir.glob("**/*.erb") { |f| rm f }
+      puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
+
+      chdir startdir
+    end
+
+    task :noxruby do
+
+    end
+  end
+end
+
+
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
 # run "rake -T" to see list of available tasks
 
@@ -143,10 +247,10 @@ task :set_version, [:version] do |t,args|
   end
 
   ["rhodes/rhodes/lib/rhodes.rb",
-   "rhodes/rhodes-build/lib/version.rb",
-   "rhodes/rhodes-framework/lib/version.rb",
-   "rhodes/rhodes-framework/lib/rhodes.rb",
-   "rhodes/rhodes-generator/lib/version.rb"].each do |versionfile|
+    "rhodes/rhodes-build/lib/version.rb",
+    "rhodes/rhodes-framework/lib/version.rb",
+    "rhodes/rhodes-framework/lib/rhodes.rb",
+    "rhodes/rhodes-generator/lib/version.rb"].each do |versionfile|
   
     File.open(versionfile,"r") { |f| origfile = f.read }
     File.open(versionfile,"w") do |f|
