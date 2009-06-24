@@ -31,7 +31,6 @@ public class DateTimePicker extends RubyBasic {
 		
 		RhodesInstance.getInstance().startActivityForResult(intent, 5);
 		return arg1;
-		//throw new RubyException(RubyRuntime.NotImplementedErrorClass, "in `DateTimePicker': not implemented yet");
 	}
 	
 	public static void initMethods(RubyClass klass) {

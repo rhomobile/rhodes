@@ -199,16 +199,16 @@ class SyncEngine implements NetRequest.IRhoSession
 	    String strUrl = src.getUrl() + "/clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
 	    String strBody = "";
-	    try{
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
-	    }catch(Exception e)
-		{
-			LOG.ERROR("getDeviceId or getPlatform failed", e);
-		}
+	    //try{
+		//	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+		//	strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
+	    //}catch(Exception e)
+		//{
+		//	LOG.ERROR("getDeviceId or getPlatform failed", e);
+		//}
 	    
-	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    //int port = RhoConf.getInstance().getInt("push_port");
+	    //strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
 	    
 	    String szData = getNet().pullData(strUrl+strQuery, strBody, this).getCharData();
 	    if ( szData != null )
@@ -271,16 +271,16 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
-	    try{
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
-	    }catch(Exception e)
-		{
-			LOG.ERROR("getDeviceId or getPlatform failed", e);
-		}
+	    //try{
+		//	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+		//	strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
+	    //}catch(Exception e)
+		//{
+		//	LOG.ERROR("getDeviceId or getPlatform failed", e);
+		//}
 		
-	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    //int port = RhoConf.getInstance().getInt("push_port");
+	    //strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
 	    
 	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
 	    if ( strSession == null || strSession.length() == 0 )
