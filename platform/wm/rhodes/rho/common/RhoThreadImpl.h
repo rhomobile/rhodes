@@ -18,7 +18,7 @@ public:
     virtual void stop(unsigned int nTimeoutToKill);
     virtual void wait(unsigned int nTimeout);
     virtual void stopWait();
-
+    virtual void sleep(unsigned int nTimeout);
 private:
     void setThreadPriority(IRhoRunnable::EPriority ePriority);
 };

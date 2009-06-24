@@ -17,3 +17,5 @@ LogCategories = *
 ExcludeLogCategories =
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
+
+arbitrary_option = 'rhodes rocks!'

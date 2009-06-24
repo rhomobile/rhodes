@@ -97,9 +97,9 @@ const char* RhoGetRootPath();
  */
 - (void) configure {
 	
-#if TARGET_IPHONE_SIMULATOR	
-	bool replaceFiles = YES;
-#else
+//#if TARGET_IPHONE_SIMULATOR	
+//	bool replaceFiles = YES;
+//#else
 	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	char* currentVersion = rho_conf_getString("currentVersion");
@@ -108,21 +108,21 @@ const char* RhoGetRootPath();
 		replaceFiles = YES;
 	}
 	rho_conf_freeString(currentVersion);
-#endif	
+//#endif	
 	
 	[self copyFromMainBundle:@"apps" replace:replaceFiles];
 	[self copyFromMainBundle:@"lib" replace:replaceFiles];
-#if TARGET_IPHONE_SIMULATOR	
-	[self copyFromMainBundle:@"db" replace:NO];  //TBD: need to check db version reset db if different
-#else
+//#if TARGET_IPHONE_SIMULATOR	
+//	[self copyFromMainBundle:@"db" replace:NO];  //TBD: need to check db version reset db if different
+//#else
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
-#endif	
+//#endif	
 	if (replaceFiles) {
 		rho_logconf_Init(RhoGetRootPath());
-#ifndef TARGET_IPHONE_SIMULATOR	
-		config_setString("currentVersion", version);
-		config_save();
-#endif	
+//#ifndef TARGET_IPHONE_SIMULATOR	
+		rho_conf_setString("currentVersion", version);
+		rho_conf_save();
+//#endif	
 	}
 }
 

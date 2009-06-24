@@ -42,22 +42,13 @@ class CSyncSource
     String m_strUrl;
     uint64 m_token;
 
-    int m_nCurPageCount, m_nInserted, m_nDeleted;
+    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     String m_strAskParams;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
+    boolean m_bGetAtLeastOnePage;
 
 public:
-    CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
-    {
-        m_nID = id;
-        m_strUrl = strUrl;
-        m_token = token;
-
-        m_nCurPageCount = 0;
-        m_nInserted = 0;
-        m_nDeleted = 0;
-    }
-
+    CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine );
     virtual void sync();
 
     String getUrl()const { return m_strUrl; }
@@ -95,7 +86,9 @@ public:
     int getInsertedCount()const { return m_nInserted; }
     int getDeletedCount()const { return m_nDeleted; }
     void setCurPageCount(int nCurPageCount){m_nCurPageCount = nCurPageCount;}
-    int  getCurPageCount()const{return m_nCurPageCount;}
+    void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
+    int  getCurPageCount(){return m_nCurPageCount;}
+    int  getTotalCount(){return m_nTotalCount;}
 
     void processServerData(const char* szData);
     void processSyncObject(json::CJSONEntry& oJsonEntry);

@@ -20,9 +20,11 @@ void CSyncEngine::doSyncAllSources()
 
     loadAllSources();
 
-    m_isLoggedIn = isLoggedIn();
-    if ( m_isLoggedIn )
+    m_strSession = loadSession();
+    if ( isSessionExist()  )
         loadClientID();
+    else
+    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
 
     syncAllSources();
 
@@ -31,9 +33,46 @@ void CSyncEngine::doSyncAllSources()
 	LOG(INFO) + "End syncing all sources";
 }
 
-void CSyncEngine::doSyncSource()
+void CSyncEngine::doSyncSource(int nSrcId)
 {
-    //TODO:doSyncSource
+	LOG(INFO) + "Start syncing source : " + nSrcId;
+	
+    setState(esSyncSource);
+
+    loadAllSources();
+
+    m_strSession = loadSession();
+    if ( isSessionExist()  )
+        loadClientID();
+    else
+    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
+    
+    CSyncSource* pSrc = findSourceByID(nSrcId);
+    if ( pSrc != null )
+    {
+        CSyncSource& src = *pSrc;
+        if ( isSessionExist() && getState() != esStop )
+            src.sync();
+
+        fireNotification(src, true);
+    }else
+    	LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
+    
+    setState(esNone);
+	
+	LOG(INFO) + "End  syncing source : " + nSrcId;
+}
+
+CSyncSource* CSyncEngine::findSourceByID(int nSrcId)
+{
+    for( int i = 0; i < (int)m_sources.size(); i++ )
+    {
+        CSyncSource& src = *m_sources.elementAt(i);
+        if ( src.getID() == nSrcId )
+            return &src;
+    }
+    
+    return null;
 }
 
 void CSyncEngine::loadAllSources()
@@ -45,7 +84,7 @@ void CSyncEngine::loadAllSources()
     { 
         String strUrl = res.getStringByIdx(1);
         if ( strUrl.length() > 0 )
-            m_sources.add( new CSyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), *this) );
+            m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), *this) );
     }
 }
 
@@ -73,7 +112,7 @@ String CSyncEngine::requestClientIDByNet()
     if ( m_sources.size() == 0 )
         return "";
 
-    CSyncSource& src = *m_sources.get(0);
+    CSyncSource& src = *m_sources.elementAt(0);
     String strUrl = src.getUrl() + "/clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
 
@@ -92,9 +131,9 @@ String CSyncEngine::requestClientIDByNet()
 
 int CSyncEngine::getStartSource()
 {
-    for( int i = 0; i < m_sources.size(); i++ )
+    for( int i = 0; i < (int)m_sources.size(); i++ )
     {
-        CSyncSource& src = *m_sources.get(i);
+        CSyncSource& src = *m_sources.elementAt(i);
         if ( !src.isEmptyToken() )
             return i;
     }
@@ -104,13 +143,13 @@ int CSyncEngine::getStartSource()
 
 void CSyncEngine::syncAllSources()
 {
-    for( int i = getStartSource(); i < m_sources.size() && getState() != esExit; i++ )
+    for( int i = getStartSource(); i < (int)m_sources.size() && getState() != esExit; i++ )
     {
-        CSyncSource& src = *m_sources.get(i);
-        if ( m_isLoggedIn && getState() != esStop )
+        CSyncSource& src = *m_sources.elementAt(i);
+        if ( isSessionExist() && getState() != esStop )
             src.sync();
 
-        fireNotification(src.getID(),src.getServerObjectsCount());
+        fireNotification(src, true);
     }
 }
 
@@ -127,11 +166,11 @@ boolean CSyncEngine::doLogin(String name, String password)
         return true;
 
     //All sources should be from one domain
-    CSyncSource& src0 = *m_sources.get(0);
+    CSyncSource& src0 = *m_sources.elementAt(0);
     String srv0 = getServerFromUrl(src0.getUrl());
-    for( int i = 1; i < m_sources.size(); i++ )
+    for( int i = 1; i < (int)m_sources.size(); i++ )
     {
-        CSyncSource& src = *m_sources.get(i);
+        CSyncSource& src = *m_sources.elementAt(i);
         String srv = getServerFromUrl(src.getUrl());
         if ( srv.compare( srv0 ) != 0 )
             return false;
@@ -151,17 +190,32 @@ extern "C" int rho_sync_logged_in_cookies();
 #endif
 
 boolean CSyncEngine::isLoggedIn()
-{
+ {
     //TODO: read cookies from DB and set them for each request
-#ifdef OS_MACOSX
+ #ifdef OS_MACOSX
     return rho_sync_logged_in_cookies() == 0 ? false : true;
-#else
+ #else
     int nCount = 0;
     DBResult( res , getDB().executeSQL("SELECT count(session) FROM sources") );
-    if ( !res.isEnd() )
+     if ( !res.isEnd() )
         nCount = res.getIntByIdx(0);
 
     return nCount > 0;
+ #endif
+}
+
+String CSyncEngine::loadSession()
+{
+#ifdef OS_MACOSX
+    return rho_sync_logged_in_cookies() == 0 ? "" : "exist";
+#else
+    String strRes = "";
+    DBResult( res , getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL") );
+    
+    if ( !res.isEnd() )
+    	strRes = res.getStringByIdx(0);
+    
+    return strRes;
 #endif
 }
 
@@ -171,9 +225,9 @@ void CSyncEngine::logout()
     getNet().deleteCookie("");
 
     loadAllSources();
-    for( int i = 0; i < m_sources.size(); i++ )
+    for( int i = 0; i < (int)m_sources.size(); i++ )
     {
-        CSyncSource& src = *m_sources.get(i);
+        CSyncSource& src = *m_sources.elementAt(i);
         getNet().deleteCookie(src.getUrl());
     }
 
@@ -192,41 +246,66 @@ void CSyncEngine::resetSyncDB()
 void CSyncEngine::setNotification(int source_id, String strUrl, String strParams )
 {
 	LOG(INFO) + "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams;
-    clearNotification(source_id);
-
     String strFullUrl = getNet().resolveUrl(strUrl);
 
-    if ( strFullUrl.length() > 0 )
-    {
-		LOG(INFO) + " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
+	if ( source_id == -1 )
+	{
+		CMutexLock lockNotify(m_mxNotifications);
+		m_mapNotifications.clear();
 		
-        CMutexLock lockNotify(m_mxNotifications);
-        m_mapNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams ) );
+		if ( strFullUrl.length() > 0 )
+		{
+			loadAllSources();
+			
+		    for( int i = 0; i < (int)m_sources.size(); i++ )
+		    {
+		    	CSyncSource& src = *m_sources.elementAt(i); 
+		    	m_mapNotifications.put( src.getID(),new CSyncNotification( strFullUrl, strParams ) );
+    	    }
+		}
+		LOG(INFO) + " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams;
+	}else
+	{
+        clearNotification(source_id);
+        if ( strFullUrl.length() > 0 )
+        {
+            CMutexLock lockNotify(m_mxNotifications);
+            m_mapNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams ) );
+
+		    LOG(INFO) + " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
+        }
     }
 }
 
-void CSyncEngine::fireNotification( int source_id, int nSyncObjectsCount)
+void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
 {
     String strBody, strUrl;
     {
         CMutexLock lockNotify(m_mxNotifications);
 
-        CSyncNotification* pSN = m_mapNotifications.get(source_id);
+        CSyncNotification* pSN = m_mapNotifications.get(src.getID());
         if ( pSN == 0 )
             return;
         CSyncNotification& sn = *pSN;
 
         strUrl = sn.m_strUrl;
-        strBody = "status=";
-        strBody += (nSyncObjectsCount > 0 ?"ok":"error");
+        strBody += "total_count=" + src.getTotalCount();
+        strBody += "&processed_count=" + src.getCurPageCount();
+        
+        strBody = "&status=";
+        if ( bFinish )
+        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
+        else
+        	strBody += "in_progress";
+        
         if ( sn.m_strParams.length() > 0 )
             strBody += "&" + sn.m_strParams;
     }
-	LOG(INFO) + "Fire notification. Source ID: " + source_id + "; Url :" + strUrl + "; Body: " + strBody;
+	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
     getNet().pushData( strUrl, strBody );
 
-    clearNotification(source_id);
+    clearNotification(src.getID());
 }
 
 void CSyncEngine::clearNotification(int source_id) 

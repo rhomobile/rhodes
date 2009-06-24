@@ -52,7 +52,6 @@ class SyncEngine implements NetRequest.IRhoSession
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
     NetRequest m_NetRequest;
-    IRhoRubyHelper m_systemInfo;
     int         m_syncState;
     String     m_clientID = "";
     Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
@@ -62,7 +61,8 @@ class SyncEngine implements NetRequest.IRhoSession
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
-    void stopSync(){ if (isContinueSync()) setState(esStop); }
+	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
     void exitSync(){ setState(esExit); getNet().cancelAll(); }
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
@@ -81,53 +81,65 @@ class SyncEngine implements NetRequest.IRhoSession
 
     void setFactory(RhoClassFactory factory)throws Exception{ 
         m_NetRequest = factory.createNetRequest();
-        m_systemInfo = factory.createRhoRubyHelper();
     }
     
-	void doSyncAllSources()throws Exception
+	void doSyncAllSources()
 	{
 		LOG.INFO( "Start syncing all sources" );
 		
 	    setState(esSyncAllSources);
 	
-	    loadAllSources();
-	
-	    m_strSession = loadSession();
-	    if ( m_strSession != null && m_strSession.length() > 0  )
-	        loadClientID();
-	    else
-	    	LOG.INFO("Client is not logged in. No sync will be performed.");
+	    try
+	    {
+		    loadAllSources();
+		
+		    m_strSession = loadSession();
+		    if ( isSessionExist()  )
+		        loadClientID();
+		    else
+		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    
+		    syncAllSources();
+	    }catch(Exception exc)
+	    {
+	    	LOG.ERROR("Sync all sources failed.", exc);
+	    }
 	    
-	    syncAllSources();
-	
 	    setState(esNone);
 		
 		LOG.INFO( "End syncing all sources" );
 	}
 
-	void doSyncSource(int nSrcId)throws Exception
+	void doSyncSource(int nSrcId)
 	{
 		LOG.INFO( "Start syncing source : " + nSrcId );
 		
 	    setState(esSyncSource);
-	
-	    loadAllSources();
-	
-	    m_strSession = loadSession();
-	    if ( m_strSession != null && m_strSession.length() > 0  )
-	        loadClientID();
-	    else
-	    	LOG.INFO("Client is not logged in. No sync will be performed.");
-	    
-        SyncSource src = findSourceByID(nSrcId);
-        if ( src != null )
-        {
-	        if ( isSessionExist() && getState() != esStop )
-	            src.sync();
-	
-	        fireNotification(src, true);
-        }else
-        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+
+	    try
+	    {
+		    loadAllSources();
+		
+		    m_strSession = loadSession();
+		    if ( isSessionExist()  )
+		        loadClientID();
+		    else
+		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    
+	        SyncSource src = findSourceByID(nSrcId);
+	        if ( src != null )
+	        {
+		        if ( isSessionExist() && getState() != esStop )
+		            src.sync();
+		
+		        fireNotification(src, true);
+	        }else
+	        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+        
+	    }catch(Exception exc)
+	    {
+	    	LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+	    }
         
 	    setState(esNone);
 		
@@ -139,21 +151,12 @@ class SyncEngine implements NetRequest.IRhoSession
 	    for( int i = 0; i < m_sources.size(); i++ )
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( src.m_nID.intValue() == nSrcId )
+	        if ( src.getID().intValue() == nSrcId )
 	            return src;
 	    }
 	    
 	    return null;
 	}
-	
-/*	String updateSyncServer(String strUrl)
-	{
-		String strSyncServer = m_systemInfo.getAppProperty("RHO-SyncServer-Address");
-		if ( strSyncServer != null && strSyncServer.length() > 0 )
-			return strSyncServer;
-		
-		return strUrl;
-	}*/
 	
 	void loadAllSources()throws DBException
 	{
@@ -162,7 +165,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
-	        String strUrl = res.getStringByIdx(1);//updateSyncServer(res.getStringByIdx(1));
+	        String strUrl = res.getStringByIdx(1);
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
 	    }
@@ -350,7 +353,8 @@ class SyncEngine implements NetRequest.IRhoSession
 					
 				    for( int i = 0; i < m_sources.size(); i++ )
 				    {
-				    	m_mapNotifications.put(new Integer(i),new SyncNotification( strFullUrl, strParams ) );
+				    	SyncSource src = (SyncSource)m_sources.elementAt(i); 
+				    	m_mapNotifications.put( src.getID(),new SyncNotification( strFullUrl, strParams ) );
 				    }
 				}
 			}

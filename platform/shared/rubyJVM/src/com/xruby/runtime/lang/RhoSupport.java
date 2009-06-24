@@ -1,5 +1,6 @@
 package com.xruby.runtime.lang;
 
+import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -46,7 +47,11 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return has_network(receiver);}
 		});
-		
+
+		RubyRuntime.KernelModule.defineModuleMethod( "rho_get_app_property", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return rb_rho_get_app_property(receiver, arg, block);}
+		});
 	}
 
 	private static final RhoLogger RHOLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -148,6 +153,22 @@ public class RhoSupport {
 			e.printStackTrace();
 		} 
 		return RubyConstant.QFALSE;
+    }
+
+    public static RubyValue rb_rho_get_app_property(RubyValue receiver, RubyValue arg, RubyBlock block) {
+        String name = arg.toStr();
+        String strValue = null;
+        try{
+	        IRhoRubyHelper systemInfo = RhoClassFactory.createRhoRubyHelper();
+			strValue = systemInfo.getAppProperty(name);
+        }catch(Exception exc)
+        {
+        }
+        
+        if ( strValue == null || strValue.length() == 0 )
+        	return RubyConstant.QNIL;
+        
+        return ObjectFactory.createString(strValue);
     }
     
     //@RubyLevelMethod(name="__load_with_reflection__", module=true)

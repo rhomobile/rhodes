@@ -27,7 +27,7 @@ CNetRequestImpl::CNetRequestImpl(const char* method, const String& strUrl)
     hInet = NULL, hConnection = NULL, hRequest = NULL;
     memset(&uri, 0, sizeof(uri) );
     m_pInstance = this;
-
+    m_strUrl = strUrl;
     CAtlStringW strUrlW(strUrl.c_str());
 
     do 
@@ -310,7 +310,7 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
     }
 
     rho::LogMessage oLogMsg(__FILE__, __LINE__, L_ERROR, LOGCONF(), getLogCategory() );
-    oLogMsg + "Call " + pszFunction + " failed. With code : " + dwLastError;
+    oLogMsg + "Call " + pszFunction + " failed. Url:" + m_strUrl.c_str() + ". With code : " + dwLastError;
 
     if ( pszMessage ) 
         oLogMsg + ".Message: " + pszMessage;

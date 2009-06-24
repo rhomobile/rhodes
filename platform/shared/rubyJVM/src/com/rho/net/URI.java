@@ -33,9 +33,9 @@ package com.rho.net;
     * Constructs a <code>MalformedURIException</code> with no specified
     * detail message.
     */
-    public MalformedURIException() {
-      super();
-    }
+//    public MalformedURIException() {
+//      super();
+//    }
 
     /**
     * Constructs a <code>MalformedURIException</code> with the
@@ -613,8 +613,8 @@ package com.rho.net;
     int uriSpecLen = (uriSpec != null) ? uriSpec.length() : 0;
 	
     if (p_base == null && uriSpecLen == 0) {
-      throw new MalformedURIException(
-                  /* "Cannot initialize URI with empty parameters." */);
+      throw new MalformedURIException("Url: " + p_uriSpec + 
+                   "; Cannot initialize URI with empty parameters.");
     }
 
     // just make a copy of the base if spec is empty
@@ -638,7 +638,7 @@ package com.rho.net;
             queryIdx != -1 || fragmentIdx != -1) {
             // A standalone base is a valid URI according to spec
             if (colonIdx == 0 || (p_base == null && fragmentIdx != 0)) {
-                throw new MalformedURIException(/*"No scheme found in URI."*/);
+                throw new MalformedURIException("Url: " + p_uriSpec + "; No scheme found in URI.");
             }
         }
         else {
@@ -647,13 +647,13 @@ package com.rho.net;
             
             // Neither 'scheme:' or 'scheme:#fragment' are valid URIs.
             if (colonIdx == uriSpecLen - 1 || uriSpec.charAt(colonIdx+1) == '#') {
-            	throw new MalformedURIException(/*"Scheme specific part cannot be empty."*/);	
+            	throw new MalformedURIException("Url: " + p_uriSpec +"; Scheme specific part cannot be empty.");	
             }
         }
     }
     
     else if (p_base == null && uriSpec.indexOf('#') != 0) {
-        throw new MalformedURIException(/*"No scheme found in URI."*/);    
+        throw new MalformedURIException("Url: " + p_uriSpec + "; No scheme found in URI.");    
     }
 
     // Two slashes means we may have authority, but definitely means we're either
@@ -858,7 +858,7 @@ package com.rho.net;
     scheme = p_uriSpec.substring(0, index);
 
     if (scheme.length() == 0) {
-      throw new MalformedURIException(/*"No scheme found in URI."*/);
+      throw new MalformedURIException("Url: " + p_uriSpec +"; No scheme found in URI.");
     }
     else {
       setScheme(scheme);
@@ -1066,8 +1066,8 @@ package com.rho.net;
   private void initializePath(String p_uriSpec, int p_nStartIndex)
                  throws MalformedURIException {
     if (p_uriSpec == null) {
-      throw new MalformedURIException(
-                /*"Cannot initialize path from null string!"*/);
+      throw new MalformedURIException("Url: " + p_uriSpec +
+                "; Cannot initialize path from null string!");
     }
 
     int index = p_nStartIndex;
@@ -1091,8 +1091,8 @@ package com.rho.net;
                     if (index+2 >= end ||
                     !isHex(p_uriSpec.charAt(index+1)) ||
                     !isHex(p_uriSpec.charAt(index+2))) {
-                        throw new MalformedURIException(
-                            /*"Path contains invalid escape sequence!"*/);
+                        throw new MalformedURIException("Url: " + p_uriSpec +
+                            "; Path contains invalid escape sequence!");
                     }
                     index += 2;
                 }
@@ -1102,8 +1102,8 @@ package com.rho.net;
       	            if (testChar == '?' || testChar == '#') {
       	                break;
       	            }
-                    throw new MalformedURIException(
-                        /*"Path contains invalid character: " + testChar*/);
+                    throw new MalformedURIException("Url: " + p_uriSpec +
+                        "; Path contains invalid character: " + testChar);
                 }
                 ++index;
             }
@@ -1124,8 +1124,8 @@ package com.rho.net;
                     if (index+2 >= end ||
                     !isHex(p_uriSpec.charAt(index+1)) ||
                     !isHex(p_uriSpec.charAt(index+2))) {
-                        throw new MalformedURIException(
-                           /* "Opaque part contains invalid escape sequence!"*/);
+                        throw new MalformedURIException("Url: " + p_uriSpec +
+                            "; Opaque part contains invalid escape sequence!");
                     }
                     index += 2;
                 }
@@ -1135,8 +1135,8 @@ package com.rho.net;
                 // production should be equivalent to (uric - '/'), and uric
                 // contains '[' and ']'. - mrglavas
                 else if (!isURICharacter(testChar)) {
-                    throw new MalformedURIException(
-                        /*"Opaque part contains invalid character: " + testChar*/);
+                    throw new MalformedURIException("Url: " + p_uriSpec +
+                        "Opaque part contains invalid character: " + testChar);
                 }
                 ++index;
             }
@@ -1157,14 +1157,14 @@ package com.rho.net;
            if (index+2 >= end ||
               !isHex(p_uriSpec.charAt(index+1)) ||
               !isHex(p_uriSpec.charAt(index+2))) {
-            throw new MalformedURIException(
-                    /*"Query string contains invalid escape sequence!"*/);
+            throw new MalformedURIException("Url: " + p_uriSpec +
+                    "; Query string contains invalid escape sequence!");
            }
            index += 2;
         }
         else if (!isURICharacter(testChar)) {
-          throw new MalformedURIException(
-                /*"Query string contains invalid character: " + testChar*/);
+          throw new MalformedURIException("Url: " + p_uriSpec +
+                "; Query string contains invalid character: " + testChar);
         }
         index++;
       }
@@ -1182,14 +1182,14 @@ package com.rho.net;
            if (index+2 >= end ||
               !isHex(p_uriSpec.charAt(index+1)) ||
               !isHex(p_uriSpec.charAt(index+2))) {
-            throw new MalformedURIException(
-                    /*"Fragment contains invalid escape sequence!"*/);
+            throw new MalformedURIException("Url: " + p_uriSpec +
+                    "; Fragment contains invalid escape sequence!");
            }
            index += 2;
         }
         else if (!isURICharacter(testChar)) {
-          throw new MalformedURIException(
-               /* "Fragment contains invalid character: "+testChar*/);
+          throw new MalformedURIException("Url: " + p_uriSpec +
+                "Fragment contains invalid character: "+testChar);
         }
         index++;
       }
@@ -1406,11 +1406,11 @@ package com.rho.net;
   */
   public void setScheme(String p_scheme) throws MalformedURIException {
     if (p_scheme == null) {
-      throw new MalformedURIException(
-               /* "Cannot set scheme from null string!"*/);
+      throw new MalformedURIException("Url: " + p_scheme +
+               "; Cannot set scheme from null string!");
     }
     if (!isConformantSchemeName(p_scheme)) {
-      throw new MalformedURIException(/*"The scheme is not conformant."*/);
+      throw new MalformedURIException("Url: " + p_scheme +"; The scheme is not conformant.");
     }
     m_scheme = p_scheme.toLowerCase();
     mHashCode=-1;
@@ -1636,16 +1636,16 @@ package com.rho.net;
       m_queryString = null;
     }
     else if (!isGenericURI()) {
-      throw new MalformedURIException(
-             /* "Query string can only be set for a generic URI!"*/);
+      throw new MalformedURIException("Url: " + p_queryString +
+              "; Query string can only be set for a generic URI!");
     }
     else if (getPath() == null) {
-      throw new MalformedURIException(
-             /* "Query string cannot be set when path is null!"*/);
+      throw new MalformedURIException("Url: " + p_queryString +
+             "; Query string cannot be set when path is null!");
     }
     else if (!isURIString(p_queryString)) {
-      throw new MalformedURIException(
-             /* "Query string contains invalid character!"*/);
+      throw new MalformedURIException("Url: " + p_queryString +
+              "; Query string contains invalid character!");
     }
     else {
       m_queryString = p_queryString;

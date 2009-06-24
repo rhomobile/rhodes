@@ -14,6 +14,8 @@ import com.xruby.runtime.builtin.*;
 import com.xruby.GeneratedMethods.*; 
 //import com.rho.db.PerstLiteAdapter;
 //import com.rho.sync.SyncEngine;
+import com.rho.IRhoRubyHelper;
+import com.rho.RhoClassFactory;
 import com.rho.StringScanner;
 
 public class RubyRuntime {
