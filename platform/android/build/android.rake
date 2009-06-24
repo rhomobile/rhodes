@@ -38,13 +38,28 @@ end
 
 namespace "build" do
   namespace "android" do
+    desc "Generate R.java file"
+    task :rjava => "config:android" do
+
+      manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
+      resource = Jake.get_absolute $androidpath + "/Rhodes/res"
+      assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
+      rjava = Jake.get_absolute $androidpath + "/Rhodes/gen/com/rhomobile/rhodes"
+      androidjar = $config["env"]["paths"]["android"] + "/platforms/android-1.1/android.jar"
+
+      args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
+
+      puts Jake.run($aapt,args)
+
+    end
     desc "Build RhoBundle for android"
     task :rhobundle => "config:android" do
       Rake::Task["build:bundle:xruby"].execute
 
       cp_r $srcdir + "/apps", $androidpath + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
-      
+
+      Rake::Task["build:android:rjava"].execute
     end
 
     desc "Build RubyVM for android"
@@ -196,5 +211,22 @@ namespace "run" do
         theoutput = `#{$adb} install -r "#{apkfile}"`
       end
       puts "Loading complete, you may now run the application"
+  end
+end
+
+namespace "clean" do
+  namespace "android" do
+    task :assets => "config:android" do
+      Dir.glob($androidpath + "/Rhodes/assets/apps/**/*") do |f|
+        rm_rf f unless f =~ /\/loading.html$/
+      end
+    end
+    task :files => "config:android" do
+      rm_rf $targetdir
+      rm_rf $bindir
+      rm_rf $srcdir
+    end
+    desc "clean android"
+    task :all => [:assets,:files]
   end
 end

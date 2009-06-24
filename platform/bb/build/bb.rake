@@ -49,7 +49,6 @@
 
   end
 
-    desc "Sign cod files automatically"
   def autosign
     java = $config["env"]["paths"]["java"] + "/java.exe"
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
