@@ -1,36 +1,49 @@
 package rhomobile;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
-import net.rim.device.api.system.ApplicationManager;
 
-//import org.garret.perst.Storage;
-//import org.garret.perst.StorageFactory;
-
-import com.rho.*;
-
-import net.rim.device.api.browser.field.*;
+import net.rim.blackberry.api.browser.Browser;
+import net.rim.device.api.browser.field.BrowserContent;
+import net.rim.device.api.browser.field.BrowserContentChangedEvent;
+import net.rim.device.api.browser.field.Event;
+import net.rim.device.api.browser.field.RedirectEvent;
+import net.rim.device.api.browser.field.RenderingApplication;
+import net.rim.device.api.browser.field.RenderingException;
+import net.rim.device.api.browser.field.RenderingOptions;
+import net.rim.device.api.browser.field.RenderingSession;
+import net.rim.device.api.browser.field.RequestedResource;
+import net.rim.device.api.browser.field.UrlRequestedEvent;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
+import net.rim.device.api.system.ApplicationManager;
+import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.KeyListener;
-import net.rim.device.api.ui.*;
+import net.rim.device.api.system.SystemListener;
+import net.rim.device.api.system.TrackwheelListener;
+import net.rim.device.api.ui.ContextMenu;
+import net.rim.device.api.ui.Field;
+import net.rim.device.api.ui.Font;
+import net.rim.device.api.ui.Graphics;
+import net.rim.device.api.ui.Keypad;
+import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.LabelField;
+import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
-import net.rim.device.api.ui.component.Menu;
-import net.rim.device.api.system.Characters;
-import net.rim.device.api.system.TrackwheelListener;
-import net.rim.device.api.system.SystemListener;
 
-import com.rho.net.INetworkAccess;
-import com.rho.net.RhoConnection;
-import rhomobile.camera.CameraScreen;
-import rhomobile.camera.ImageBrowserScreen;
+import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+import com.rho.RhoRuby;
 import com.rho.location.GeoLocation;
-
-import java.util.Enumeration;
+import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
-import java.util.Vector;
 
 
 /**
@@ -45,6 +58,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public static final String LABEL_OPTIONS = "Options";
 	public static final String LABEL_LOG = "Log";
 	public static final String LABEL_SEPARATOR = "separator";
+	public static final String LABEL_CLOSE = "Close";
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
@@ -53,6 +67,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public boolean keyChar(char key, int status, int time) {
 	        if( key == Characters.ENTER ) {
+	        
 	        	openLink();
 	        	return true;
 	        }
@@ -133,6 +148,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
     	_mainScreen.addCustomMenuItem(label, value);
     }
+    
+    void resetMenuItems() {
+    	_mainScreen.setMenuItems(new Vector());
+    }
 
     public void postUrl(String url, String body, HttpHeaders headers){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
@@ -208,17 +227,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void openLink(){
-        Menu menu = _mainScreen.getMenu(0);
-    	int size = menu.getSize();
-    	for(int i=0; i<size; i++)
-    	{
-    	    MenuItem item = menu.getItem(i);
-    	    String label = item.toString();
-    	    if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
-    	    {
-    	    	item.run();
-    	    }
-    	}
+    	Menu menu = _mainScreen.getMenu(0);
+        int size = menu.getSize();
+        for(int i=0; i<size; i++)
+        {
+            MenuItem item = menu.getItem(i);
+            String label = item.toString();
+            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+            {
+              item.run();
+            }
+        }
     }
 
 	private static final String REFERER = "referer";
@@ -297,6 +316,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     class CMainScreen extends MainScreen{
     	
     	private Vector menuItems = new Vector();
+    	
+    	// required so we can open links!
+    	private MenuItem linkOpener = null;
 
 		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
@@ -332,49 +354,49 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 
 		private MenuItem separatorItem = MenuItem.separator(200000);
+		
+		private MenuItem closeItem = new MenuItem(RhodesApplication.LABEL_CLOSE, 200000, 10) {
+			public void run() {
+					close();
+				}
+			};
 
 		protected void makeMenu(Menu menu, int instance) {
-			// TODO Auto-generated method stub
-			
-			for(int i=0; i < menu.getSize(); i++)
-	    	{
+	        //TODO: This is really a hack, we should replicate the "Get Link" functionality
+	    	for(int i=0; i < menu.getSize(); i++) {
 	    	    MenuItem item = menu.getItem(i);
 	    	    String label = item.toString();
-	    	    if(! ( label.equalsIgnoreCase("Get Link") || label.equalsIgnoreCase("Close") )) //TODO: catch by ID?
-	    	    {
+	    	    if(!label.equalsIgnoreCase("Get Link")) {
 	    	    	menu.deleteItem(i);
-	    	    	if ( i > 0 )
-	    	    		i = i - 1;
 	    	    }
-	    	}	
+	    	}
+	    	
+			// Remove default items
+			//menu.deleteAll();
 			
+			ContextMenu contextMenu = ContextMenu.getInstance();
+	        contextMenu.clear();
+	        
 			// Draw default menu
-			if ((menu.getSize() <= 2) && (menuItems == null || menuItems.size() == 0)) {
-				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, menu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, menu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, menu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, menu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, menu);
+			if (menuItems == null || menuItems.size() == 0) {
+				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_SEPARATOR, separatorItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_CLOSE, closeItem, contextMenu);
 			}
 
 			// Draw menu from rhodes framework
 			Enumeration elements = menuItems.elements();
 			while (elements.hasMoreElements()) {
 				MenuItem item = (MenuItem)elements.nextElement();
-				// Don't redraw the menu item!
-				for(int i=0; i < menu.getSize(); i++)
-				{
-					MenuItem itm = menu.getItem(i);
-					String label = itm.toString();
-					if(label.equalsIgnoreCase(item.toString())) {
-						menu.deleteItem(i);
-					}
-				}
-				menu.add(item);
+				contextMenu.addItem(item);
 			}
-			super.makeMenu(menu, instance);
-			// Reset the menu
-			menuItems.removeAllElements();
+		
+			this.makeContextMenu(contextMenu);
+			menu.add(contextMenu);
 		}
 		
 		public void addCustomMenuItem(String label, final String value) {
@@ -392,6 +414,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR) || 
     	    		   (value != null && value.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR))) {
     	    	menuItems.addElement(separatorItem);
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_CLOSE)) {
+    	    	setDefaultItemToMenuItems(label, closeItem);
     	    } else {
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
@@ -409,9 +433,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	menuItems.addElement(item);
 		}
 		
-		private void setDefaultItemToMenu(String label, MenuItem item, Menu menu) {
+		private void setDefaultItemToMenu(String label, MenuItem item, ContextMenu menu) {
 			item.setText(label);
-	    	menu.add(item);
+	    	menu.addItem(item);
 		}
 
 		public void close() {
@@ -431,6 +455,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			return super.onMenu(instance);
 		}
 
+		public Vector getMenuItems() {
+			return menuItems;
+		}
+
+		public void setMenuItems(Vector menuItems) {
+			this.menuItems = menuItems;
+		}
+
+		public MenuItem getLinkOpener() {
+			return linkOpener;
+		}
     }
 
     private void doStartupWork() {
@@ -698,7 +733,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     break;
 
             } case Event.EVENT_CLOSE :
-                // TODO: close the appication
+                // TODO: close the application
                 break;
 
             case Event.EVENT_SET_HEADER :        // no cache support
@@ -819,6 +854,31 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         		_application.processConnection(connection, _event);
         	}
         }
+    }
+    
+    public class HyperlinkField extends LabelField
+    {
+        private String mUrl;
+        private MenuItem mGetLinkMenuItem;
+
+        public HyperlinkField(String label, long style, String url)
+        {
+            super(label, style | FOCUSABLE);
+            Font font = this.getFont().derive(Font.UNDERLINED);
+            setFont(font);
+
+            mUrl = url;
+
+            mGetLinkMenuItem = new MenuItem("Get Link", 0, 0) {
+                public void run() {
+                    Browser.getDefaultSession().displayPage(mUrl);
+                }
+            };
+        }
+
+        public HyperlinkField(String label, String url) {
+            this(label, 0, url);
+        }     
     }
     
 }
