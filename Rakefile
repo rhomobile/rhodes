@@ -8,7 +8,10 @@ load 'platform/android/build/android.rake'
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
-    $config = Jake.config(File.open('build.yml'))
+    buildyml = 'rhobuild.yml'
+
+    buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+    $config = Jake.config(File.open(buildyml))
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
     else
