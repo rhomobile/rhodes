@@ -50,10 +50,11 @@ module Rho
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
           parts = line.chop.split('=')
           key = parts[0]
-          value = parts[1..parts.length-1].join('=') if parts and parts.length > 1
+          value = parts[1] if parts[1]
           if key and value
-            tmp = value.strip!
-            Rho::RhoConfig.config[key.strip] = tmp.gsub(/'|"/,'') if tmp
+            val = value.strip.gsub(/\'|\"/,'')
+            val = val == 'nil' ? nil : val
+            Rho::RhoConfig.add_config(key.strip,val)
           end  
         end
       rescue Exception => e
@@ -220,12 +221,11 @@ module Rho
   class RhoConfig
     
     @@sources = {}
-    @@config = {'start_path' => '/app', 
-                'options_path' => '/app/Settings'}
+    @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
     
     class << self
       def method_missing(name, *args)
-        varname = name.to_s.sub(/=/,'')
+        varname = name.to_s.sub(/\=/,'').strip
         @@config[varname]
       end
       
@@ -235,6 +235,10 @@ module Rho
       
       def config
         @@config
+      end
+      
+      def add_config(key,value)
+        @@config[key] = value if key # allow nil value
       end
       
       def add_source(modelname, new_source=nil)
