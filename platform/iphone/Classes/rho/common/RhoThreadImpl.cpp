@@ -68,6 +68,11 @@ void CRhoThreadImpl::wait(unsigned int nTimeout)
 	pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
 }
 
+void CRhoThreadImpl::sleep(unsigned int nTimeout)
+{
+    ::usleep(1000*nTimeout);
+}
+
 void CRhoThreadImpl::stopWait()
 {
 	pthread_cond_broadcast(&m_condSync);

@@ -45,6 +45,7 @@ String CNetRequest::resolveUrl(const String& strUrl)
 
 void CNetRequest::cancelAll()
 {
+    m_bCancel = true;
     CNetRequestImpl::cancel();
 }
 
@@ -58,6 +59,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
     }
 
     int nTry = 0;
+    m_bCancel = false;
     CNetDataImpl* pData = 0;
     do
     {
@@ -68,7 +70,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
         pData = oImpl.sendStream(oFile.getInputStream());
         nTry++;
 
-    }while( !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
 
     boolean bRet = pData->getCharData() != null;
     delete pData;
@@ -78,6 +80,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 INetData* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody )
 {
     int nTry = 0;
+    m_bCancel = false;
     CNetDataImpl* pData = 0;
     do
     {
@@ -88,7 +91,7 @@ INetData* CNetRequest::doRequest( const char* method, const String& strUrl, cons
         pData = oImpl.sendString(strBody);
         nTry++;
 
-    }while( !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
 
     return pData;
 }

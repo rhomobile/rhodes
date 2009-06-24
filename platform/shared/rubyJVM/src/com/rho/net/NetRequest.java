@@ -299,6 +299,8 @@ public class NetRequest
 			return "";
 
 		String _httpRoot = RhoClassFactory.getNetworkAccess().getHomeUrl();
+		if(!_httpRoot.endsWith("/"))
+			_httpRoot = _httpRoot + "/";
 		url.replace('\\', '/');
 		if ( !url.startsWith(_httpRoot) ){
     		if ( url.charAt(0) == '/' )

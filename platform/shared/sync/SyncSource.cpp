@@ -21,26 +21,45 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
 {
 }
 
+CSyncSource::CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
+{
+    m_nID = id;
+    m_strUrl = strUrl;
+    m_token = token;
+
+    m_nCurPageCount = 0;
+    m_nInserted = 0;
+    m_nDeleted = 0;
+    m_nTotalCount = 0;
+    m_bGetAtLeastOnePage = false;
+}
+
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
 
 void CSyncSource::sync()
 {
 	LOG(INFO) + "Start syncing source ID :" + getID();
+    CTimeInterval startTime = CTimeInterval::getCurrentTime();
 	
     syncClientChanges();
     getAndremoveAsk();
     syncServerChanges();
-	
+
+    CTimeInterval endTime = CTimeInterval::getCurrentTime();
+    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
+						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
+                         endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+
 	LOG(INFO) + "End syncing source ID :" + getID();
 }
 
 void CSyncSource::syncClientBlobs(const String& strBaseQuery)
 {
     String strQuery;
-    for( int i = 0; i < m_arSyncBlobs.size(); i ++)
+    for( int i = 0; i < (int)m_arSyncBlobs.size(); i ++)
     {
-        CSyncBlob& blob = *m_arSyncBlobs.get(i);
+        CSyncBlob& blob = *m_arSyncBlobs.elementAt(i);
 
         //CRhoFile oFile;
         //if ( !oFile.open(blob.getFilePath().c_str(),CRhoFile::OpenReadOnly) ) 
@@ -132,7 +151,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
                 strSrcBody += oBlobPath.getBaseName();
                 strSrcBody += "&attrvals[][attrib_type]=blob";
 
-                m_arSyncBlobs.add(new CSyncBlob(strSrcBody,value));
+                m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
                 continue;
             }else
                 strSrcBody += "&attrvals[][value]=" + value;
@@ -161,9 +180,6 @@ void CSyncSource::getAndremoveAsk()
 
 void CSyncSource::syncServerChanges()
 {
-    boolean bGetAtLeastOnePage = false;
-    CTimeInterval startTime = CTimeInterval::getCurrentTime();
-
     while( getSync().isContinueSync() )
     {
         setCurPageCount(0);
@@ -193,16 +209,11 @@ void CSyncSource::syncServerChanges()
 
         processServerData(szData);
 
-        bGetAtLeastOnePage = true;
+        m_bGetAtLeastOnePage = true;
 
         if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
             break;
     }
-
-    CTimeInterval endTime = CTimeInterval::getCurrentTime();
-    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-                         endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), bGetAtLeastOnePage, getID() );
 }
 
 void CSyncSource::processServerData(const char* szData)
@@ -213,6 +224,14 @@ void CSyncSource::processServerData(const char* szData)
         setCurPageCount(oJsonArr.getCurItem().getInt("count"));
         oJsonArr.next();
     }
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("total_count") )
+    {
+        setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
+        oJsonArr.next();
+    }
+    if ( getServerObjectsCount() == 0 )
+    	m_syncEngine.fireNotification(*this, false);
+
     if ( !oJsonArr.isEnd() )
     {
         processToken(oJsonArr.getCurItem().getUInt64("token"));
@@ -220,7 +239,7 @@ void CSyncSource::processServerData(const char* szData)
     }else if ( getCurPageCount() == 0 )
         processToken(0);
 
-	LOG(INFO) + "Got " + this->getCurPageCount() + " records from server. Source ID: " + getID();
+	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID();
 	
     //TODO: support DBExceptions
     getDB().startTransaction();
@@ -240,6 +259,9 @@ void CSyncSource::processServerData(const char* szData)
             processSyncObject(oJsonObject);
     }
     getDB().endTransaction();
+
+    if ( getServerObjectsCount() < getTotalCount() )
+    	m_syncEngine.fireNotification(*this, false);
 }
 
 void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)

@@ -18,6 +18,7 @@ struct IRhoThreadImpl
     virtual void stop(unsigned int nTimeoutToKill) = 0;
     virtual void wait(unsigned int nTimeout) = 0;
     virtual void stopWait() = 0;
+    virtual void sleep(unsigned int nTimeout) = 0;
 };
 
 }

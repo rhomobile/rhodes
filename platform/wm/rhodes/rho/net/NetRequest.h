@@ -8,6 +8,7 @@ namespace net {
 class CNetRequest : public INetRequest
 {
     DEFINE_LOGCLASS;
+    boolean m_bCancel;
 public:
     CNetRequest(void){}
     virtual ~CNetRequest(void){}

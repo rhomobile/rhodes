@@ -29,6 +29,7 @@ private:
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
     ESyncCommands m_curCommand;
 	int           m_nPollInterval;
+    int           m_nCmdParam;
 
 public:
     ~CSyncThread(void);
@@ -40,6 +41,8 @@ public:
     static db::CDBAdapter& getDBAdapter(){ return m_pInstance->m_oDBAdapter; }
 
     void addSyncCommand(ESyncCommands curCommand){ m_curCommand = curCommand; stopWait(); }
+    void addSyncCommand(ESyncCommands curCommand, int nCmdParam){ m_curCommand = curCommand; m_nCmdParam = nCmdParam; stopWait(); }
+
 	virtual void run();
 
 	void setPollInterval(int nInterval);

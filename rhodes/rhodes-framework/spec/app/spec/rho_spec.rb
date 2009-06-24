@@ -22,7 +22,8 @@ require 'spec/spec_helper'
 describe "Rho" do
 
   before(:each) do
-    Rho::RhoConfig.config = {'start_path'=>'/app','options_path'=>'/app/Settings'}
+    Rho::RhoConfig.config['start_path'] = '/app'
+    Rho::RhoConfig.config['options_path'] = '/app/Settings'
   end
   
   it "should populate configuration in sources table" do
@@ -50,5 +51,9 @@ describe "Rho" do
   it "should set options_path" do
     Rho::RhoConfig.config['options_path'] = '/ops2'
     Rho::RhoConfig.options_path.should == '/ops2'
+  end
+  
+  it "should read arbitrary options" do
+    Rho::RhoConfig.arbitrary_option.should == 'rhodes rocks!'
   end
 end

@@ -41,10 +41,10 @@ private:
     String     m_clientID;
     HashtablePtr<int,CSyncNotification*> m_mapNotifications;
     common::CMutex m_mxNotifications;
-    boolean m_isLoggedIn;
+    String m_strSession;
 
 public:
-    CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone), m_isLoggedIn(false){}
+    CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone){}
     ~CSyncEngine(void){}
 
     void setFactory(common::IRhoClassFactory* factory){ 
@@ -52,9 +52,10 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource();
+    void doSyncSource(int nSrcId);
     boolean login(String name, String password);
     boolean isLoggedIn();
+    String loadSession();
     void logout();
     void resetSyncDB();
     void setNotification(int source_id, String strUrl, String strParams );
@@ -63,14 +64,16 @@ public:
     void setState(ESyncState eState){ m_syncState = eState; }
     ESyncState getState()const{ return m_syncState; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
-    void stopSync(){ if (isContinueSync()) setState(esStop); }
+	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
     void exitSync(){ setState(esExit); getNet().cancelAll(); }
 //private:
     String getClientID()const{ return m_clientID; }
+    void setSession(String strSession){m_strSession=strSession;}
+    String getSession(){ return m_strSession; }
+    boolean isSessionExist(){ return m_strSession.length() > 0; }
 
     //CSyncEngine(): m_dbAdapter(db::CDBAdapter()), m_NetRequest(0), m_isLoggedIn(true){}
-
-    void setLoggedIn(boolean b){m_isLoggedIn=b;}
 
     void loadAllSources();
     void syncAllSources();
@@ -81,11 +84,13 @@ public:
 
     boolean doLogin(String name, String password);
 
-    void fireNotification( int nSourceID, int nSyncObjectsCount);
+    void fireNotification( CSyncSource& src, boolean bFinish );
 
 private:
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
     net::INetRequest& getNet(){ return *m_NetRequest;}
+
+    CSyncSource* CSyncEngine::findSourceByID(int nSrcId);
 
     friend class CSyncSource;
 };

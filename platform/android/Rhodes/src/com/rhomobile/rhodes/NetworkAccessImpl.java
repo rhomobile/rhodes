@@ -18,7 +18,7 @@ public class NetworkAccessImpl implements INetworkAccess {
 
 	public String getHomeUrl()
 	{
-		return "http://127.0.0.1:8080";
+		return RhodesInstance.getInstance().getHomeUrl();
 	}
 	
 	public boolean doLocalRequest(String strUrl, String strBody)
