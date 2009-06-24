@@ -50,7 +50,15 @@ module Rho
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
           parts = line.chop.split('=')
           key = parts[0]
-          value = parts[1] if parts[1]
+          value = nil
+          if key and defined? RHO_ME
+            value = rho_get_app_property(key.strip)
+          end
+          
+          if !value
+            value = parts[1] if parts[1]
+          end
+            
           if key and value
             val = value.strip.gsub(/\'|\"/,'')
             val = val == 'nil' ? nil : val
