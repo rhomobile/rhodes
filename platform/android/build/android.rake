@@ -230,3 +230,25 @@ namespace "clean" do
     task :all => [:assets,:files]
   end
 end
+
+namespace "prebuild" do
+  desc "Build binaries for anroid to be inserted into gem"
+  task :android => "build:android:all" do
+    prebuilt = "rhodes/rhodes-build/res/prebuilt"
+
+    rm_rf   prebuilt + "/android" if File.exists? prebuilt + "/android"
+    mkdir_p prebuilt + "/android"
+
+    prebuilt = prebuilt + "/android"
+
+    cp $androidpath + "/Rhodes/assets/apps/loading.html", prebuilt
+    cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt
+
+    cp_r $androidpath + "/Rhodes/res", prebuilt
+    
+    mkdir_p prebuilt + "/classes"
+
+    Jake.unjar($bindir + "/RubyVM.jar", prebuilt + "/classes")
+    Jake.unjar($bindir + "/Rhodes.jar", prebuilt + "/classes")
+  end
+end
