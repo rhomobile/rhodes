@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
 
-import net.rim.blackberry.api.browser.Browser;
 import net.rim.device.api.browser.field.BrowserContent;
 import net.rim.device.api.browser.field.BrowserContentChangedEvent;
 import net.rim.device.api.browser.field.Event;
@@ -26,12 +25,10 @@ import net.rim.device.api.system.SystemListener;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.ui.ContextMenu;
 import net.rim.device.api.ui.Field;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Keypad;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.UiApplication;
-import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
