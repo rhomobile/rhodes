@@ -30,6 +30,10 @@ class Jake
     @@config
   end
 
+  def self.reconfig(config)
+    @@confg = config
+  end
+
   def self.get_absolute(path)
     currentdir = pwd
     
