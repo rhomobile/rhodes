@@ -234,13 +234,11 @@ end
 namespace "prebuild" do
   desc "Build binaries for anroid to be inserted into gem"
   task :android => "build:android:all" do
-    prebuilt = "rhodes/rhodes-build/res/prebuilt"
+    prebuilt = "rhodes/rhodes-build/res/prebuilt/android"
 
     if File.exists? $bindir + "/RubyVM.jar" and File.exists? $bindir + "/Rhodes.jar"
-      rm_rf   prebuilt + "/android" if File.exists? prebuilt + "/android"
-      mkdir_p prebuilt + "/android"
-
-      prebuilt = prebuilt + "/android"
+      rm_rf prebuilt if File.exists? prebuilt
+      mkdir_p prebuilt 
 
       cp $androidpath + "/Rhodes/assets/apps/loading.html", prebuilt
       cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt

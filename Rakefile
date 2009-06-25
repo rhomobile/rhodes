@@ -262,175 +262,112 @@ task :set_version, [:version] do |t,args|
   Rake::Task[:get_version].invoke  
 end
 
-desc "Update prebuild binaries on windows"
-task :prebuild_win do
-  basedir = pwd
-  if RUBY_PLATFORM =~ /(win|w)32$/
-    rake = "cmd.exe /c rake"
-    ant = "ant.bat"
-  else
-    rake = "rake"
-    ant = "ant"
+namespace "prebuild" do
+  desc "Prebuild binaries for WM gems"
+  task :wm do
+    basedir = pwd
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      rake = "cmd.exe /c rake"
+      ant = "ant.bat"
+    else
+      rake = "rake"
+      ant = "ant"
+    end
+
+    chdir 'platform/wm/build'
+
+    zip = File.join(basedir,'rhodes/rhodes-build/res/7z.exe')
+
+    puts `#{rake} compile`
+
+    chdir '../bin'
+    throw "windows build missing" if not File.exists? 'Windows Mobile 6 Professional SDK (ARMV4I)'
+  
+    puts `#{zip} a -mx=9 -r wm6.7z "Windows Mobile 6 Professional SDK (ARMV4I)"`
+    throw "windows zip missing" if not File.exists? 'wm6.7z'
+  
+    cp "wm6.7z", "../../../rhodes/rhodes-build/res/prebuilt/wm"
+
+    chdir basedir
+
+    #   chdir "platform/symbian/build"
+    #   filecontents = ""
+    #   File.open("build.properties","r") { |f| filecontents = f.read }
+    #   File.open("build.properties","w") do |f|
+    #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=GCCE UREL")
+    #     f.write filecontents
+    #   end
+    #   if filecontents.match(/S60_3rd_FP1=(.+)/)
+    #     epoc32 = $1
+    #   else
+    #     epoc32 = "\\Symbian\\9.2\\S60_3rd_FP1\\"
+    #   end
+    #
+    #   epoc32.gsub!(/\\\\/,"\\")
+    #
+    #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+    #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
+    #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
+    #
+    #   prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/symbian/"
+    #
+    #   rm_rf prebuilt + "Epoc32"
+    #
+    #   mkdir_p prebuilt + "Epoc32/data/z/private/10003a3f"
+    #   mkdir_p prebuilt + "Epoc32/data/z/resource"
+    #   mkdir_p prebuilt + "Epoc32/data/z/system"
+    #   mkdir_p prebuilt + "Epoc32/release/gcce/urel"
+    #
+    #   cp_r epoc32 + "Epoc32\\data\\z\\private\\10003a3f\\apps\\", prebuilt + "Epoc32/data/z/private/10003a3f/", :verbose => true
+    #   cp_r epoc32 + "Epoc32\\data\\z\\resource\\apps\\", prebuilt + "Epoc32/data/z/resource/"
+    #   cp_r epoc32 + "Epoc32\\data\\z\\system\\data\\", prebuilt + "Epoc32/data/z/system/"
+    #   cp_r epoc32 + "Epoc32\\release\\gcce\\urel\\rhodes.exe", prebuilt + "Epoc32/release/gcce/urel/"
+    #
+    #
+    #
+    #   File.open("build.properties","w") do |f|
+    #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
+    #     f.write filecontents
+    #   end
+    #
+    #
+    #
+    #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
+    #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\winscw\\deb\\rhodes.exe")
+    #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\winscw\\udeb\\rhodes.exe"))
+    #
+    #   mkdir_p prebuilt + "Epoc32/winscw/c/Data/Rho"
+    #   mkdir_p prebuilt + "Epoc32/release/winscw/udeb"
+    #
+    #   cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
+    #   cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
+
+
   end
 
-  chdir 'platform/bb/build'
-  puts `#{rake} clean`
-  puts `#{rake} build:all`
+  desc "Prebuild iPhone binaries for gems"
+  task :iphone do
+    basedir = pwd
+    rake = "rake"
+    ant = "ant"
+    prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/iphone/"
 
-  throw "blackberry rhodes.jar missing" if not File.exists? '../preverified/rhodes.jar'
-  throw "blackberry RubyVM.jar missing" if not File.exists? '../preverified/RubyVM.jar'
+    chdir 'platform/iphone/rbuild'
+    puts `#{ant} clean`
+    puts `#{ant} runapp`
 
-  cp "MANIFEST.MF", "../../../rhodes/rhodes-build/res/prebuilt/bb"
-  cp "rhodesApp.alx", "../../../rhodes/rhodes-build/res/prebuilt/bb"
-  cp "../preverified/rhodes.jar", "../../../rhodes/rhodes-build/res/prebuilt/bb" 
-  cp "../preverified/RubyVM.jar", "../../../rhodes/rhodes-build/res/prebuilt/bb" 
+    throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
 
-  chdir basedir
-  chdir 'platform/wm/build'
 
-  zip = File.join(basedir,'rhodes/rhodes-build/res/7z.exe')
+    rm_rf prebuilt + "sim/rhorunner.app"
+    cp_r  "../build/Debug-iphonesimulator/rhorunner.app", prebuilt + "sim/"
 
-  puts `#{rake} compile`
+    rm_rf prebuilt + "sim/rhorunner.app/apps"
+    rm_rf prebuilt + "sim/rhorunner.app/lib"
 
-  chdir '../bin'
-  throw "windows build missing" if not File.exists? 'Windows Mobile 6 Professional SDK (ARMV4I)'
-  
-  puts `#{zip} a -mx=9 -r wm6.7z "Windows Mobile 6 Professional SDK (ARMV4I)"`
-  throw "windows zip missing" if not File.exists? 'wm6.7z'
-  
-  cp "wm6.7z", "../../../rhodes/rhodes-build/res/prebuilt/wm"
 
-  # chdir basedir
-  #   chdir "platform/symbian/build"
-  #   filecontents = ""
-  #   File.open("build.properties","r") { |f| filecontents = f.read }
-  #   File.open("build.properties","w") do |f|
-  #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=GCCE UREL")
-  #     f.write filecontents
-  #   end
-  #   if filecontents.match(/S60_3rd_FP1=(.+)/)
-  #     epoc32 = $1
-  #   else
-  #     epoc32 = "\\Symbian\\9.2\\S60_3rd_FP1\\"
-  #   end
-  # 
-  #   epoc32.gsub!(/\\\\/,"\\")  
-  # 
-  #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
-  #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe")
-  #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\gcce\\urel\\rhodes.exe"))
-  # 
-  #   prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/symbian/"
-  # 
-  #   rm_rf prebuilt + "Epoc32"
-  # 
-  #   mkdir_p prebuilt + "Epoc32/data/z/private/10003a3f"
-  #   mkdir_p prebuilt + "Epoc32/data/z/resource"
-  #   mkdir_p prebuilt + "Epoc32/data/z/system"
-  #   mkdir_p prebuilt + "Epoc32/release/gcce/urel"
-  # 
-  #   cp_r epoc32 + "Epoc32\\data\\z\\private\\10003a3f\\apps\\", prebuilt + "Epoc32/data/z/private/10003a3f/", :verbose => true
-  #   cp_r epoc32 + "Epoc32\\data\\z\\resource\\apps\\", prebuilt + "Epoc32/data/z/resource/"
-  #   cp_r epoc32 + "Epoc32\\data\\z\\system\\data\\", prebuilt + "Epoc32/data/z/system/"
-  #   cp_r epoc32 + "Epoc32\\release\\gcce\\urel\\rhodes.exe", prebuilt + "Epoc32/release/gcce/urel/"
-  #   
-  # 
-  # 
-  #   File.open("build.properties","w") do |f|
-  #     filecontents.gsub!(/build\.target=[A-Z ]+/,"build.target=WINSCW UDEB")
-  #     f.write filecontents
-  #   end
-  # 
-  #   
-  #   
-  #   puts `#{ant} build-prebuilt  -DSDK=S60_3rd_FP1`
-  #   puts "Looking for: " + File.join(epoc32,"Epoc32\\release\\winscw\\deb\\rhodes.exe")
-  #   throw "symbian rhodes.exe missing" if not File.exists?(File.join(epoc32,"Epoc32\\release\\winscw\\udeb\\rhodes.exe"))
-  # 
-  #   mkdir_p prebuilt + "Epoc32/winscw/c/Data/Rho"
-  #   mkdir_p prebuilt + "Epoc32/release/winscw/udeb"
-  # 
-  #   cp_r epoc32 + "Epoc32\\winscw\\c\\Data\\Rho\\rhologpath.txt", prebuilt + "Epoc32/winscw/c/data/Rho"
-  #   cp_r epoc32 + "Epoc32\\release\\winscw\\udeb\\rhodes.exe", prebuilt + "Epoc32/release/winscw/udeb/"
-
-###### build android pre-built binaries ######
-
-  chdir basedir
-
-  require 'rhodes/rhodes-build/lib/jake.rb'
-
-  prebuilt = "rhodes/rhodes-build/res/prebuilt/android/"
-
-  chdir 'platform/android/build'
-
-  config = Jake.config(File.open('build.yml'))
-
-  android_sdk = File.join( config["env"]["paths"]["android_sdk"], "platforms", "android-1.1")
-
-  eclipse_home = config["env"]["paths"]["eclipse_home"]
-  javac_home = config["env"]["paths"]["javac_home"]
-
-  puts "Compile RhoBundle, required by Rhodes"
-  chdir basedir
-  chdir 'platform/android/RhoBundle'    
-  puts `#{ant} clean`  
-  puts `#{ant} -Djavac.home="#{javac_home}"`
-
-  puts "Compile Rhodes"
-  chdir basedir
-  chdir 'platform/android/Rhodes'
-  
-  puts `#{ant} clean`  
-  puts `#{ant} build -DECLIPSE_HOME="#{eclipse_home}" -DANDROID_SDK="#{android_sdk}"`
-  
-  chdir basedir
-  chdir 'platform/android'
-
-  rm_rf File.join( basedir, prebuilt)
-  mkdir_p File.join( basedir, prebuilt )
-
-  puts "copy classes"
-  mkdir_p File.join( basedir, prebuilt, 'classes' )
-  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
-
-  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'com' ), File.join( basedir, prebuilt, 'classes' )
-  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2me' ), File.join( basedir, prebuilt, 'classes' )
-  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'j2mex' ), File.join( basedir, prebuilt, 'classes' )
-  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'javolution' ), File.join( basedir, prebuilt, 'classes' )
-  cp_r File.join( basedir, 'platform', 'android', 'RubyJVM', 'bin', 'org' ), File.join( basedir, prebuilt, 'classes' )
-
-  puts "copy res folder"
-  mkdir_p File.join( basedir, prebuilt, 'res' )
-  cp_r File.join( basedir, 'platform', 'android', 'Rhodes', 'res' ), File.join( basedir, prebuilt )
-
-  puts "copy manifest"
-  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'AndroidManifest.xml' ), File.join( basedir, prebuilt )
-
-  puts "copy loading.html"
-  cp File.join( basedir, 'platform', 'android', 'Rhodes', 'assets', 'apps', 'loading.html' ), File.join( basedir, prebuilt )
+    chdir basedir
+  end
 
 end
 
-desc "Update prebuild binaries on mac"
-task :prebuild_mac do
-  basedir = pwd
-  rake = "rake"
-  ant = "ant"
-  prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/iphone/"
-
-  chdir 'platform/iphone/rbuild'
-  puts `#{ant} clean`
-  puts `#{ant} runapp`
-  
-  throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
-  
-  
-  rm_rf prebuilt + "sim/rhorunner.app"
-  cp_r  "../build/Debug-iphonesimulator/rhorunner.app", prebuilt + "sim/"
-  
-  rm_rf prebuilt + "sim/rhorunner.app/apps"
-  rm_rf prebuilt + "sim/rhorunner.app/lib"
-  
-
-  chdir basedir
-end

@@ -500,3 +500,22 @@ namespace "config" do
     end
 
 end
+
+namespace "prebuild" do
+  desc "Prebuild binaries for blackberry gems"
+  task :bb => ["build:bb:rubyvm", "build:bb:rhodes"] do
+    if File.exists? $preverified + "/RubyVM.jar" and File.exists? $preverified + "/rhodes.jar"
+      prebuilt = "rhodes/rhodes-build/res/prebuilt/bb"
+
+      rm_rf prebuilt if File.exists? prebuilt
+      mkdir_p prebuilt
+
+      cp $preverified + "/RubyVM.jar", prebuilt
+      cp $preverified + "/rhodes.jar", prebuilt
+
+      cp $builddir + "/MANIFEST.MF", prebuilt
+      cp $builddir + "/rhodesApp.alx", prebuilt
+      
+    end
+  end
+end
