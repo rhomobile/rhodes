@@ -251,6 +251,7 @@ namespace "prebuild" do
 
       Jake.unjar($bindir + "/RubyVM.jar", prebuilt + "/classes")
       Jake.unjar($bindir + "/Rhodes.jar", prebuilt + "/classes")
+      rm_rf prebuilt + "/classes/META-INF"
     end
   end
 end
