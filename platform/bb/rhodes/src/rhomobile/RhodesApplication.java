@@ -303,6 +303,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		LOG.ERROR("GeoLocation failed to start", exc);
     	}
 
+        if(!restoreLocation()) {
+        	navigateHome();
+        }    
+    	
 		super.activate();
 	}
 
@@ -526,9 +530,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		        }
 	        }
 	        
-	        if(!restoreLocation()) {
-	        	navigateHome();
-	        }    
+	        //Do it in onActivate
+	        //if(!restoreLocation()) {
+	        //	navigateHome();
+	        //}    
 	        
 	        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
