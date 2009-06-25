@@ -225,17 +225,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void openLink(){
-    	Menu menu = _mainScreen.getMenu(0);
-        int size = menu.getSize();
-        for(int i=0; i<size; i++)
-        {
-            MenuItem item = menu.getItem(i);
-            String label = item.toString();
-            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
-            {
-              item.run();
-            }
-        }
+//    	Menu menu = _mainScreen.getMenu(0);
+//        int size = menu.getSize();
+//        for(int i=0; i<size; i++)
+//        {
+//            MenuItem item = menu.getItem(i);
+//            String label = item.toString();
+//            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+//            {
+//              item.run();
+//            }
+//        }
+    	MenuItem item = _mainScreen.getSavedGetLinkItem();
+    	if ( item != null ) {
+    		item.run();
+    	}
     }
 
 	private static final String REFERER = "referer";
@@ -365,6 +369,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				}
 			};
 
+		private MenuItem savedGetLinkItem = null;
+
 		protected void makeMenu(Menu menu, int instance) {
 	        // TODO: This is really a hack, we should replicate the "Get Link" functionality
 			// Also, for some reason the menu size becomes 0 when there is 1 item left (page view)
@@ -372,14 +378,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		System.out.println("Getting menu item: " + i);
 	    	    MenuItem item = menu.getItem(i);
 	    	    String label = item.toString();
-	    	    if(!label.equalsIgnoreCase("Get Link")) {
-	    	    	menu.deleteItem(i);
-	                if ( i > 0 ) 
-	                	i = i - 1;
+	    	    // Save the get link menuitem
+	    	    if(label.equalsIgnoreCase("Get Link")) {
+	    	    	savedGetLinkItem = item;
 	    	    } 
+	    	    menu.deleteItem(i);
+                if ( i > 0 ) 
+                	i = i - 1;
 	    	}
-			// Remove default items
-			//menu.deleteAll();
 			// Delete Page View
 	    	// TODO: menu.getSize() above incorrectly reports size 0 when
 	    	// there is 1 item left!
@@ -476,6 +482,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public void setMenuItems(Vector menuItems) {
 			this.menuItems = menuItems;
+		}
+
+		public MenuItem getSavedGetLinkItem() {
+			return savedGetLinkItem;
 		}
     }
 
