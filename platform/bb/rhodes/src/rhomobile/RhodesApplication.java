@@ -359,18 +359,27 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 
 		protected void makeMenu(Menu menu, int instance) {
-	        //TODO: This is really a hack, we should replicate the "Get Link" functionality
+	        // TODO: This is really a hack, we should replicate the "Get Link" functionality
+			// Also, for some reason the menu size becomes 0 when there is 1 item left (page view)
 	    	for(int i=0; i < menu.getSize(); i++) {
+	    		System.out.println("Getting menu item: " + i);
 	    	    MenuItem item = menu.getItem(i);
 	    	    String label = item.toString();
 	    	    if(!label.equalsIgnoreCase("Get Link")) {
 	    	    	menu.deleteItem(i);
+	                if ( i > 0 ) 
+	                	i = i - 1;
 	    	    }
 	    	}
-	    	
 			// Remove default items
 			//menu.deleteAll();
-			
+			// Delete Page View
+	    	// TODO: menu.getSize() above incorrectly reports size 0 when
+	    	// there is 1 item left!
+	    	MenuItem pgview = menu.getItem(0);
+	    	if (pgview != null && pgview.getId() == 853)
+	    		menu.deleteItem(0);
+	    	
 			ContextMenu contextMenu = ContextMenu.getInstance();
 	        contextMenu.clear();
 	        
