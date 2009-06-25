@@ -371,3 +371,38 @@ namespace "prebuild" do
 
 end
 
+namespace "buildall" do
+  namespace "bb" do
+    desc "Build all jdk versions for blackberry"
+    task :production => "config:common" do
+      $config["env"]["paths"].each do |k,v|
+        if k.to_s =~ /^4/
+          puts "BUILDING VERSION: #{k}"
+          $config["env"]["bbver"] = k
+          Jake.reconfig($config)
+ 
+          #reset all tasks used for building
+          Rake::Task["config:bb"].reenable
+          Rake::Task["build:bb:rhobundle"].reenable
+          Rake::Task["build:bb:rhodes"].reenable
+          Rake::Task["build:bb:rubyvm"].reenable
+          Rake::Task["device:bb:dev"].reenable
+          Rake::Task["device:bb:production"].reenable
+          Rake::Task["device:bb:rhobundle"].reenable
+          Rake::Task["package:bb:dev"].reenable
+          Rake::Task["package:bb:production"].reenable
+          Rake::Task["package:bb:rhobundle"].reenable
+          Rake::Task["package:bb:rhodes"].reenable
+          Rake::Task["package:bb:rubyvm"].reenable
+          Rake::Task["device:bb:production"].reenable
+          Rake::Task["clean:bb:preverified"].reenable
+
+          Rake::Task["clean:bb:preverified"].invoke
+          Rake::Task["device:bb:production"].invoke
+        end
+      end
+
+    end
+  end
+end
+
