@@ -43,6 +43,7 @@ public class WebView extends RubyBasic {
 	}
 	
 	public static RubyValue set_menu_items(RubyValue arg0) {
+		RhodesApplication.getInstance().resetMenuItems();
 		RubyHash items = (RubyHash)arg0;
 		RubyArray keys = items.keys();
 		RubyArray values = items.values();
