@@ -185,32 +185,32 @@ end
 namespace "run" do
   desc "build and launch emulator"
   task :android => "device:android:debug" do
-      apkfile = Jake.get_absolute $targetdir + "/Rhodes-debug.apk"
-      puts `#{$adb} start-server`
-      sleep 5
+    apkfile = Jake.get_absolute $targetdir + "/Rhodes-debug.apk"
+    puts `#{$adb} start-server`
+    sleep 5
 
-      system("#{$config["env"]["paths"]["android"]}/tools/android.bat create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+    system("#{$config["env"]["paths"]["android"]}/tools/android.bat create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
 
-      Thread.new { system("#{$emulator} -avd rhoAndroid11") }
+    Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
-      sleep 10
+    sleep 10
 
-      puts "Waiting for emulator to get started"
+    puts "Waiting for emulator to get started"
+    $stdout.flush
+    puts `#{$adb} wait-for-device`
+    sleep 60
+
+    puts "Loading package into emulator"
+    theoutput = `#{$adb} install -r "#{apkfile}"`
+    count = 0
+    while (theoutput.to_s.match(/Error Type/) or theoutput.to_s.match(/Fail/))  and count < 15 do
+      puts "Failed to load (possibly because emulator not done launching)- retrying"
       $stdout.flush
-      puts `#{$adb} wait-for-device`
-      sleep 60
-
-      puts "Loading package into emulator"
+      sleep 5
+      count += 1
       theoutput = `#{$adb} install -r "#{apkfile}"`
-      count = 0
-      while (theoutput.to_s.match(/Error Type/) or theoutput.to_s.match(/Fail/))  and count < 15 do
-        puts "Failed to load (possibly because emulator not done launching)- retrying"
-        $stdout.flush
-        sleep 5
-        count += 1
-        theoutput = `#{$adb} install -r "#{apkfile}"`
-      end
-      puts "Loading complete, you may now run the application"
+    end
+    puts "Loading complete, you may now run the application"
   end
 end
 
@@ -236,19 +236,21 @@ namespace "prebuild" do
   task :android => "build:android:all" do
     prebuilt = "rhodes/rhodes-build/res/prebuilt"
 
-    rm_rf   prebuilt + "/android" if File.exists? prebuilt + "/android"
-    mkdir_p prebuilt + "/android"
+    if File.exists? $bindir + "/RubyVM.jar" and File.exists? $bindir + "/Rhodes.jar"
+      rm_rf   prebuilt + "/android" if File.exists? prebuilt + "/android"
+      mkdir_p prebuilt + "/android"
 
-    prebuilt = prebuilt + "/android"
+      prebuilt = prebuilt + "/android"
 
-    cp $androidpath + "/Rhodes/assets/apps/loading.html", prebuilt
-    cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt
+      cp $androidpath + "/Rhodes/assets/apps/loading.html", prebuilt
+      cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt
 
-    cp_r $androidpath + "/Rhodes/res", prebuilt
+      cp_r $androidpath + "/Rhodes/res", prebuilt
     
-    mkdir_p prebuilt + "/classes"
+      mkdir_p prebuilt + "/classes"
 
-    Jake.unjar($bindir + "/RubyVM.jar", prebuilt + "/classes")
-    Jake.unjar($bindir + "/Rhodes.jar", prebuilt + "/classes")
+      Jake.unjar($bindir + "/RubyVM.jar", prebuilt + "/classes")
+      Jake.unjar($bindir + "/Rhodes.jar", prebuilt + "/classes")
+    end
   end
 end
