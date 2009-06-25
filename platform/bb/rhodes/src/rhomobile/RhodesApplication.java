@@ -54,6 +54,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";
 	public static final String LABEL_REFRESH = "Refresh";
+	public static final String LABEL_BACK = "Back";
 	public static final String LABEL_SYNC = "Sync";
 	public static final String LABEL_OPTIONS = "Options";
 	public static final String LABEL_LOG = "Log";
@@ -324,7 +325,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem refreshItem = new MenuItem(RhodesApplication.LABEL_REFRESH, 200000, 10) {
 			public void run() {
-				refreshCurrentPage();
+					refreshCurrentPage();
+				}
+			};
+		private MenuItem backItem = new MenuItem(RhodesApplication.LABEL_BACK, 200000, 10) {
+			public void run() {
+					back();
 				}
 			};
 		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
@@ -369,7 +375,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	    	menu.deleteItem(i);
 	                if ( i > 0 ) 
 	                	i = i - 1;
-	    	    }
+	    	    } 
 	    	}
 			// Remove default items
 			//menu.deleteAll();
@@ -411,7 +417,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    	setDefaultItemToMenuItems(label, homeItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
     	    	setDefaultItemToMenuItems(label, refreshItem);
-    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_BACK)) {
+    	    	setDefaultItemToMenuItems(label, backItem);
+    	    }  else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
     	    	setDefaultItemToMenuItems(label, syncItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
     	    	setDefaultItemToMenuItems(label, optionsItem);
