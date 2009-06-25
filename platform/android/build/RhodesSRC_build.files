@@ -6,6 +6,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/camera/FileList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/DBStorage.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/RhoDB.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/RWLock.java
