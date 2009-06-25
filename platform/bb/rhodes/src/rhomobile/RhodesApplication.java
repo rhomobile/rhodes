@@ -316,9 +316,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     class CMainScreen extends MainScreen{
     	
     	private Vector menuItems = new Vector();
-    	
-    	// required so we can open links!
-    	private MenuItem linkOpener = null;
 
 		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
@@ -461,10 +458,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		public void setMenuItems(Vector menuItems) {
 			this.menuItems = menuItems;
-		}
-
-		public MenuItem getLinkOpener() {
-			return linkOpener;
 		}
     }
 
@@ -855,31 +848,5 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         	}
         }
     }
-    
-    public class HyperlinkField extends LabelField
-    {
-        private String mUrl;
-        private MenuItem mGetLinkMenuItem;
-
-        public HyperlinkField(String label, long style, String url)
-        {
-            super(label, style | FOCUSABLE);
-            Font font = this.getFont().derive(Font.UNDERLINED);
-            setFont(font);
-
-            mUrl = url;
-
-            mGetLinkMenuItem = new MenuItem("Get Link", 0, 0) {
-                public void run() {
-                    Browser.getDefaultSession().displayPage(mUrl);
-                }
-            };
-        }
-
-        public HyperlinkField(String label, String url) {
-            this(label, 0, url);
-        }     
-    }
-    
 }
 
