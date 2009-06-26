@@ -13,7 +13,7 @@ public class RhoSupport {
 		new RhoLogger("RhoSupport");
 	
 	public static RubyModule SystemModule;
-	private static String    m_strCurAppPath;
+//	private static String    m_strCurAppPath;
 	
 	public static void init(){
 
@@ -186,13 +186,11 @@ public class RhoSupport {
             } catch (ClassNotFoundException e) {
             }
             if ( c == null ){
-            	if ( m_strCurAppPath == null || m_strCurAppPath.length() == 0 )
-            		return RubyConstant.QFALSE;
-            	
-            	name = RhoSupport.createMainClassName(m_strCurAppPath+required_file);
+            	String altPath = "/apps/app/";
+            	name = RhoSupport.createMainClassName(altPath+required_file);
             	c = Class.forName(name);
             	
-            	arg = ObjectFactory.createString(m_strCurAppPath+required_file);
+            	arg = ObjectFactory.createString(altPath+required_file);
             }
             
             Object o = c.newInstance();
@@ -218,9 +216,9 @@ public class RhoSupport {
         }
     }
 
-	public static void setCurAppPath(String curAppPath) {
-		m_strCurAppPath = curAppPath;
-	}
+//	public static void setCurAppPath(String curAppPath) {
+//		m_strCurAppPath = curAppPath;
+//	}
     
 	
 	public static String getRhoDBVersion(){
