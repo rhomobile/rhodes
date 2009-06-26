@@ -98,9 +98,11 @@ class SyncSource
         m_nDeleted = 0;
     }
 	
-	void sync()throws Exception
+	void sync(SyncStatusListener statusListener) throws Exception
 	{
-		LOG.INFO("Start syncing source ID :" + getID() );
+		String status_report = "Completed synchronization of the data source #" + getID();
+		
+		reportStatus( statusListener, "Started synchronization of the data source #" + getID() );
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 		
@@ -110,6 +112,7 @@ class SyncSource
 		    syncServerChanges();
 	    }catch(Exception exc)
 	    {
+	    	status_report = "Failed synchronize data source #" + getID();
 	    	LOG.ERROR("sync failed", exc);
 	    	getSync().stopSync();
 	    }
@@ -120,7 +123,7 @@ class SyncSource
 	                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 	                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
 	    
-		LOG.INFO( "End syncing source ID :" + getID() );
+	    reportStatus(statusListener,status_report);
 	}
 
 	void syncClientBlobs(String strBaseQuery)throws Exception
@@ -369,4 +372,11 @@ class SyncSource
 		}
 	
 	}
+	
+    private void reportStatus(SyncStatusListener statusListener, String status) {
+    	if (statusListener != null) {
+    		statusListener.reportStatus(status);
+    	}
+    	LOG.INFO(status);
+    }	
 }

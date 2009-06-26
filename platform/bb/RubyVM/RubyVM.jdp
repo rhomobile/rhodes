@@ -53,6 +53,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\sync\JSONEntry.java
 ..\..\shared\rubyJVM\src\com\rho\sync\SyncEngine.java
 ..\..\shared\rubyJVM\src\com\rho\sync\SyncSource.java
+..\..\shared\rubyJVM\src\com\rho\sync\SyncStatusListener.java
 ..\..\shared\rubyJVM\src\com\rho\sync\SyncThread.java
 ..\..\shared\rubyJVM\src\com\rho\TestProfiler.java
 ..\..\shared\rubyJVM\src\com\rho\TestRhoLog.java

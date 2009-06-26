@@ -15,28 +15,38 @@ import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.ui.*;
+import net.rim.device.api.ui.component.ButtonField;
+import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Status;
+import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.MainScreen;
+import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.system.SystemListener;
+import net.rim.device.api.ui.container.VerticalFieldManager;
+import net.rim.device.api.ui.component.RichTextField;
+import net.rim.device.api.ui.Manager;
+import net.rim.device.api.system.Display;
 
 import com.rho.net.INetworkAccess;
 import com.rho.net.RhoConnection;
 import rhomobile.camera.CameraScreen;
 import rhomobile.camera.ImageBrowserScreen;
+
 import com.rho.location.GeoLocation;
 
 import java.util.Enumeration;
 import com.rho.sync.SyncThread;
+import com.rho.sync.SyncStatusListener;
 import java.util.Vector;
 
 
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener
+final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, SyncStatusListener
 {
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";
@@ -226,6 +236,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private RenderingSession _renderingSession;
 
     private CMainScreen _mainScreen = null;
+    
+    private SyncStatusPopup _syncStatusPopup = null;
 
     private HttpConnection  _currentConnection;
 
@@ -293,6 +305,60 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		super.deactivate();
 	}
+	
+	synchronized public void setSyncStatusPopup(SyncStatusPopup popup) {
+		_syncStatusPopup = popup;
+	}
+	
+	synchronized public void reportStatus(String status) {
+		if (_syncStatusPopup != null) {
+			LOG.INFO("Sync status: " + status);
+			_syncStatusPopup.showStatus(status);
+		} else {
+			LOG.INFO("Undisplayed sync status: " + status);			
+		}
+	}
+	
+	class SyncStatusPopup extends PopupScreen {
+		LabelField _labelStatus;
+	    public SyncStatusPopup() {
+	        super( new VerticalFieldManager( Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR) );
+			
+	        add(_labelStatus = new LabelField("Synchronizing data...", Field.FIELD_HCENTER));
+	        add(new LabelField(""));
+	        
+	        ButtonField hideButton = new ButtonField( "Hide sync status", Field.FIELD_HCENTER );
+			hideButton.setChangeListener( new HideListener(this) );
+			add(hideButton);
+	    }
+	    
+	    public void showStatus(String status) {
+            synchronized (Application.getEventLock()) {	    	
+	    		_labelStatus.setText(status);
+            }
+	    }
+	    
+	    protected boolean keyDown( int keycode, int status ) {
+	        if ( Keypad.key( keycode ) == Keypad.KEY_ESCAPE ) {
+	            close();
+	            RhodesApplication.getInstance().setSyncStatusPopup(null);
+	            return true;
+	        }
+	        return super.keyDown( keycode, status );
+	    }
+	    
+		private class HideListener implements FieldChangeListener {
+			SyncStatusPopup owner;
+			public HideListener(SyncStatusPopup _owner) {
+				super();
+				owner = _owner;
+			}
+			public void fieldChanged(Field field, int context) {
+				owner.close();
+				RhodesApplication.getInstance().setSyncStatusPopup(null);
+			}
+		}
+	}
 
     class CMainScreen extends MainScreen{
     	
@@ -310,6 +376,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
+		        	UiApplication.getUiApplication().invokeLater( new Runnable() {
+		        		public void run() {
+		        			SyncStatusPopup popup = new SyncStatusPopup();
+		        			RhodesApplication.getInstance().setSyncStatusPopup(popup);
+		        			pushScreen(popup);
+		        		}
+		        	});
 					SyncThread.doSyncAllSources();
 				}
 			};
@@ -451,8 +524,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	}
 	    	
 	        RhoRuby.RhoRubyStart("");
-			SyncThread.Create( new RhoClassFactory() );
-	   	
+	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
+	        if (sync != null) {
+	        	sync.setStatusListener(this);
+	        }
+	        
 	    	CKeyListener list = new CKeyListener();
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
 	    	this._history = new Vector();
