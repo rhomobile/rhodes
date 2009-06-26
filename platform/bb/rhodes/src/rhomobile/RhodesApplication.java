@@ -57,6 +57,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public static final String LABEL_LOG = "Log";
 	public static final String LABEL_SEPARATOR = "separator";
 	public static final String LABEL_CLOSE = "Close";
+	public static final String LABEL_NONE = "none";
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
@@ -225,21 +226,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void openLink(){
-//    	Menu menu = _mainScreen.getMenu(0);
-//        int size = menu.getSize();
-//        for(int i=0; i<size; i++)
-//        {
-//            MenuItem item = menu.getItem(i);
-//            String label = item.toString();
-//            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
-//            {
-//              item.run();
-//            }
-//        }
-    	MenuItem item = _mainScreen.getSavedGetLinkItem();
-    	if ( item != null ) {
-    		item.run();
-    	}
+    	Menu menu = _mainScreen.getMenu(0);
+        int size = menu.getSize();
+        for(int i=0; i<size; i++)
+        {
+            MenuItem item = menu.getItem(i);
+            String label = item.toString();
+            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+            {
+              item.run();
+            }
+        }
+//    	MenuItem item = _mainScreen.getSavedGetLinkItem();
+//    	if ( item != null ) {
+//    		item.run();
+//    	}
     }
 
 	private static final String REFERER = "referer";
@@ -379,12 +380,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	    MenuItem item = menu.getItem(i);
 	    	    String label = item.toString();
 	    	    // Save the get link menuitem
-	    	    if(label.equalsIgnoreCase("Get Link")) {
-	    	    	savedGetLinkItem = item;
+	    	    if(!label.equalsIgnoreCase("Get Link")) {
+	    	    	//savedGetLinkItem = item;
+	    	    	menu.deleteItem(i);
+	                if ( i > 0 ) 
+	                	i = i - 1;
 	    	    } 
-	    	    menu.deleteItem(i);
-                if ( i > 0 ) 
-                	i = i - 1;
+	    	    
 	    	}
 			// Delete Page View
 	    	// TODO: menu.getSize() above incorrectly reports size 0 when
@@ -393,11 +395,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	if (pgview != null && pgview.getId() == 853)
 	    		menu.deleteItem(0);
 	    	
+			// Don't draw menu if menuItems is null
+			if (menuItems == null)
+				return;
+	    	
 			ContextMenu contextMenu = ContextMenu.getInstance();
 	        contextMenu.clear();
 	        
 			// Draw default menu
-			if (menuItems == null || menuItems.size() == 0) {
+			if (menuItems != null && menuItems.size() == 0) {
 				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
@@ -437,6 +443,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    	menuItems.addElement(separatorItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_CLOSE)) {
     	    	setDefaultItemToMenuItems(label, closeItem);
+    	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_NONE)) {
+    	    	menuItems = null;
     	    } else {
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
