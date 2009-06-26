@@ -13,7 +13,7 @@ module Rho
     end
 
     def serve(application,object_mapping,req,res)
-      @request, @response = req, res;
+      @request, @response = req, res
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       res = send req['action'].nil? ? default_action : req['action']

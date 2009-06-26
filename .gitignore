@@ -43,6 +43,7 @@ ABLD.BAT
 .cproject
 #*.hlp
 *.hrh
+nbproject
 
 platform/android/.metadata/*
 platform/android/Rhodes/assets
