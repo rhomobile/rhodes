@@ -136,7 +136,6 @@ public class Platform extends Activity {
 		
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
-			networkStateTracker.enable();
 		}catch (Exception e){
 			Log.e( "NetworkAccessImpl", e.getMessage());
 		}
@@ -203,7 +202,27 @@ public class Platform extends Activity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		try {
+			networkStateTracker.enable();
+		} catch (Exception e) {
+			Log.e( "NetworkAccessImpl", e.getMessage());
+		}
+	}
 
+	@Override
+	protected void onStop() {
+		try {
+			networkStateTracker.disable();
+		} catch (Exception e) {
+			Log.e( "NetworkAccessImpl", e.getMessage());
+		}
+		super.onStop();
+	}
+	
 	@Override
 	protected void onDestroy() {
 		

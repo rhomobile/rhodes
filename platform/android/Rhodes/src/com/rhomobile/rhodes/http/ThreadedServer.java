@@ -252,6 +252,19 @@ abstract public class ThreadedServer implements Runnable {
 			return;
 
 		this.running = false;
+		
+		try {
+			// Just connect to the listen socket in order to get listen
+			// thread interrupted
+			Socket sock = new Socket();
+			sock.connect(listen.getLocalSocketAddress());
+			
+			listen.close();
+			listen = null;
+			
+		} catch (Exception e) {
+			Log.e(this.name, e.getMessage());
+		}
 
 		// interrupt the threads
 		Enumeration enumThreads = this.threadSet.keys();
@@ -259,24 +272,23 @@ abstract public class ThreadedServer implements Runnable {
 			Thread thread = (Thread) enumThreads.nextElement();
 			thread.interrupt();
 		}
-
-		// wait a while for all threads to die
+		
 		try {
 			long end_wait = System.currentTimeMillis() + 5000;
-			while (this.threadSet.size() > 0
-					&& end_wait > System.currentTimeMillis())
+			while (this.threadSet.size() > 0 && end_wait > System.currentTimeMillis()) {
 				this.wait(1000);
-
+			}
+			
 			// Stop any still running
 			if (this.threadSet.size() > 0) {
 				enumThreads = this.threadSet.keys();
 				while (enumThreads.hasMoreElements()) {
-					Thread thread = (Thread) enumThreads.nextElement();
-					if (thread.isAlive())
+					Thread thread = (Thread)enumThreads.nextElement();
+					if(thread.isAlive())
 						thread.stop();
 				}
-
-				// wait until all threads are dead.
+				
+				// wait until all threads are dead
 				while (this.threadSet.size() > 0) {
 					Log.d(this.name, "waiting for threads to stop...");
 					this.wait(1000);
@@ -285,10 +297,11 @@ abstract public class ThreadedServer implements Runnable {
 		} catch (Exception e) {
 			Log.w(this.name, e.getMessage());
 		}
-
+		
 		this.threadSet.clear();
 		this.threadSet = null;
 
+		/*
 		// Close the port
 		if (listen != null) {
 			try {
@@ -305,6 +318,7 @@ abstract public class ThreadedServer implements Runnable {
 
 			listen = null;
 		}
+		*/
 	}
 
 	final public void join() throws java.lang.InterruptedException {
@@ -348,14 +362,18 @@ abstract public class ThreadedServer implements Runnable {
 					connection = accept(listen);
 				} catch (Exception e) {
 					//Log.d(this.name, e.getMessage());
-
+					
 					synchronized (this) {
+						if (!this.running) {
+							Log.d(this.name, "Stop request received, shutdown thread");
+							return;
+						}
+						
 						// If we are still running, interrupt was due to accept
 						// timeout
 						//Log.d(this.name, "Threads=" + this.threadSet.size());
-
-						if (this.running
-								&& this.threadSet.size() > this.minThreads) {
+						
+						if (this.threadSet.size() > this.minThreads) {
 							// Kill thread if it is in excess of the minimum.
 							Log.d(this.name, "Idle death: " + thread);
 							this.threadSet.remove(thread);
@@ -366,7 +384,12 @@ abstract public class ThreadedServer implements Runnable {
 					// If not more threads accepting and this
 					// thread is not idle - start a new thread.
 					synchronized (this) {
-						if (--this.accepting == 0 && this.running
+						if (!this.running) {
+							Log.d(this.name, "Stop request received, shutdown thread");
+							return;
+						}
+						
+						if (--this.accepting == 0
 								&& connection != null
 								&& this.threadSet.size() < this.maxThreads) {
 							Log.d(this.name, "New Thread");
