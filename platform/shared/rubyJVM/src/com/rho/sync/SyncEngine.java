@@ -57,6 +57,16 @@ class SyncEngine implements NetRequest.IRhoSession
     Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
     Mutex m_mxNotifications = new Mutex();
     String m_strSession = "";
+
+    SyncStatusListener m_statusListener = null;
+    
+    public void setStatusListener(SyncStatusListener listener) { m_statusListener = listener; }
+    private void reportStatus(String status) {
+    	if (m_statusListener != null) {
+    		m_statusListener.reportStatus(status);
+    	}
+    	LOG.INFO(status);
+    }
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -85,7 +95,9 @@ class SyncEngine implements NetRequest.IRhoSession
     
 	void doSyncAllSources()
 	{
-		LOG.INFO( "Start syncing all sources" );
+		String status_report = "Completed synchronization of data...";
+		
+		reportStatus( "Started synchronizing data..." );
 		
 	    setState(esSyncAllSources);
 	
@@ -94,25 +106,29 @@ class SyncEngine implements NetRequest.IRhoSession
 		    loadAllSources();
 		
 		    m_strSession = loadSession();
-		    if ( isSessionExist()  )
+		    if ( isSessionExist()  ) {
 		        loadClientID();
-		    else
-		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    } else {
+		    	status_report = "Client is not logged in. No synchronization will be performed.";
+		    }
 		    
 		    syncAllSources();
 	    }catch(Exception exc)
 	    {
-	    	LOG.ERROR("Sync all sources failed.", exc);
+	    	LOG.ERROR("Sync failed.", exc);
+	    	status_report = "Failed synchronize all sources.";
 	    }
 	    
 	    setState(esNone);
 		
-		LOG.INFO( "End syncing all sources" );
+	    reportStatus( status_report );
 	}
 
 	void doSyncSource(int nSrcId)
 	{
-		LOG.INFO( "Start syncing source : " + nSrcId );
+		String status_report = null;
+		
+		LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
 	    setState(esSyncSource);
 
@@ -121,29 +137,32 @@ class SyncEngine implements NetRequest.IRhoSession
 		    loadAllSources();
 		
 		    m_strSession = loadSession();
-		    if ( isSessionExist()  )
+		    if ( isSessionExist()  ) {
 		        loadClientID();
-		    else
-		    	LOG.INFO("Client is not logged in. No sync will be performed.");
+		    } else {
+		    	status_report = "Client is not logged in. No sync will be performed.";
+		    }
 		    
 	        SyncSource src = findSourceByID(nSrcId);
 	        if ( src != null )
 	        {
 		        if ( isSessionExist() && getState() != esStop )
-		            src.sync();
+		            src.sync(m_statusListener);
 		
 		        fireNotification(src, true);
-	        }else
+	        } else {
 	        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
-        
-	    }catch(Exception exc)
-	    {
+	        }
+	    } catch(Exception exc) {
 	    	LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+	    	status_report = "Failed synchronize data source #" + nSrcId;
 	    }
         
 	    setState(esNone);
 		
-		LOG.INFO( "End  syncing source : " + nSrcId  );
+	    if(status_report != null) {
+	    	reportStatus(status_report);
+	    }
 	}
 
 	SyncSource findSourceByID(int nSrcId)
@@ -241,7 +260,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
 	        if ( isSessionExist() && getState() != esStop )
-	            src.sync();
+	            src.sync(m_statusListener);
 	
 	        fireNotification(src, true);
 	    }

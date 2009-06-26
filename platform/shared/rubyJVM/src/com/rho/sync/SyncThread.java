@@ -128,6 +128,14 @@ public class SyncThread extends RhoThread
 	    m_curCommand = scNone;
 	}
 
+	public boolean setStatusListener(SyncStatusListener listener) {
+		if (m_oSyncEngine != null) {
+			m_oSyncEngine.setStatusListener(listener);
+			return true;
+		}
+		return false;
+	}
+	
 	public void setPollInterval(int nInterval)
 	{ 
 	    m_nPollInterval = nInterval; 
