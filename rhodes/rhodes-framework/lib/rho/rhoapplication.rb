@@ -6,17 +6,20 @@ module Rho
   	attr_accessor :default_menu
 	
     def initialize
-      if @rhom.nil?
+      unless @rhom
         @rhom = Rhom::Rhom.new
       end
-      @default_menu = { "Home" => :home, "Refresh" => :refresh, "Sync" => :sync, "Options" => :options, "Log" => :log }
+      unless @default_menu
+      	@default_menu = { "Home" => :home, "Refresh" => :refresh, 
+      		"Sync" => :sync, "Options" => :options, "Log" => :log, :separator => nil, "Close" => :close }
+  	  end
     end
     
     def set_menu(menu=nil)
-      disp_menu = menu ? menu : self.default_menu
+      disp_menu = menu ? menu : @default_menu
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
-	  end
+	end
 	
     class << self
       def get_app_path(appname)

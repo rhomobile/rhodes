@@ -59,6 +59,15 @@ describe "Rhom::RhomObject" do
     results[1].industry.should == "Technology"
   end
   
+  it "should respond to find_all" do
+    results = Account.find_all
+    results.length.should == 2
+    results[0].name.should == "Mobio India"
+    results[0].industry.should == "Technology"
+    results[1].name.should == "Aeroprise"
+    results[1].industry.should == "Technology"
+  end
+  
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
   
@@ -446,6 +455,34 @@ describe "Rhom::RhomObject" do
     @accts = Account.find(:all, :conditions => {'description' => nil})
     @accts.length.should == 1
     @accts[0].name.should == "Aeroprise"
+    @accts[0].industry.should == "Technology"
+  end
+  
+  it "should support sql conditions arg" do
+    @accts = Account.find(:all, :conditions => "name = 'Mobio India'")
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+  
+  it "should support complex sql conditions arg" do
+    @accts = Account.find(:all, :conditions => "name like 'Mobio%'")
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+  
+  it "should support sql conditions single filter" do
+    @accts = Account.find(:all, :conditions => ["name like ?", "'Mob%'"])
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+  
+  it "should support sql conditions with multiple filters" do
+    @accts = Account.find(:all, :conditions => ["name like ? and industry like ?", "'Mob%'", "'Tech%'"])
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
 end

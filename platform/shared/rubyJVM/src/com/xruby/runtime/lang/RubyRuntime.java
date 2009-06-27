@@ -386,14 +386,6 @@ public class RubyRuntime {
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby - Copyright (C)"), "RUBY_COPYRIGHT");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby"), "RUBY_ENGINE");
         
-        try{
-	        IRhoRubyHelper systemInfo = RhoClassFactory.createRhoRubyHelper();
-			String strSyncServer = systemInfo.getAppProperty("RHO-SyncServer");
-			if ( strSyncServer != null && strSyncServer.length() > 0 )
-				RubyAPI.setTopLevelConstant(ObjectFactory.createString(strSyncServer), "SYNC_SERVER");
-        }catch(Exception exc)
-        {
-        }
         //
         
         updateStdout();

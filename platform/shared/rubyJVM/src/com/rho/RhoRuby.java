@@ -81,12 +81,12 @@ public class RhoRuby {
 	public static RubyValue processIndexRequest(String strIndexArg ){
 		
 		String strIndex = strIndexArg.replace('\\', '/');
-		int nAppsIndex = strIndex.indexOf("/apps/");
+/*		int nAppsIndex = strIndex.indexOf("/apps/");
 		if ( nAppsIndex >= 0 ){
 			int endIndex = strIndex.indexOf('/', nAppsIndex+6);
 			if ( endIndex >= 0 )
 				RhoSupport.setCurAppPath( strIndex.substring(nAppsIndex, endIndex+1));
-		}
+		}*/
 		
 		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createString(strIndex), null, serveIndexID);
 		
