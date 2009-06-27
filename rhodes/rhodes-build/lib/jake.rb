@@ -30,6 +30,10 @@ class Jake
     @@config
   end
 
+  def self.reconfig(config)
+    @@confg = config
+  end
+
   def self.get_absolute(path)
     currentdir = pwd
     
@@ -119,7 +123,7 @@ class Jake
   end
   
   def self.unjar(src,targetdir)
-    cmd =  @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+    cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
     p = Pathname.new(src)
     src = p.realpath
     currentdir = pwd()
@@ -135,7 +139,7 @@ class Jake
     chdir currentdir
   end
   def self.jarfilelist(target)
-    cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+    cmd = @@config["env"]["paths"]["java"] + "/jar.exe"
     target.gsub!(/"/,"")
 
     args = []
@@ -149,7 +153,7 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-    cmd =  @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/jar.exe"
+    cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
     target.gsub!(/"/,"")
     
     args = []
@@ -174,7 +178,7 @@ class Jake
 #   cmd = "java.exe"
     
     jdehome = @@config["env"]["paths"][@@config["env"]["bbver"]]["jde"]
-    javabin = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"]
+    javabin = @@config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
     
     currentdir = pwd()
