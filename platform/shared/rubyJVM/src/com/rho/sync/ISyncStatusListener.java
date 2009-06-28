@@ -1,5 +1,5 @@
 package com.rho.sync;
 
-public interface SyncStatusListener {
+public interface ISyncStatusListener {
 	public abstract void reportStatus(String status);
 }

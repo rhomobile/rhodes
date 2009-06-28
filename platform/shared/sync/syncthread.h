@@ -13,6 +13,7 @@ namespace sync {
 #define SYNC_POLL_INTERVAL_SECONDS 300
 #define SYNC_POLL_INTERVAL_INFINITE (unsigned int)(-1)
 #define SYNC_WAIT_BEFOREKILL_SECONDS 3
+#define SYNC_STARTUP_INTERVAL_SECONDS 10
 
 class CSyncThread : public common::CRhoThread
 {
@@ -48,6 +49,7 @@ public:
 	void setPollInterval(int nInterval);
 private:
     CSyncThread(common::IRhoClassFactory* factory);
+    int getLastSyncInterval();
 
     void processCommand();
 };

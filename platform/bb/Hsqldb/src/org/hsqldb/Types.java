@@ -468,9 +468,9 @@ public class Types {
     static {
         typeAliases = new IntValueHashMap(50);
 
-        typeAliases.put("INTEGER", Types.INTEGER);
-        typeAliases.put("INT", Types.INTEGER);
-        typeAliases.put("int", Types.INTEGER);
+        typeAliases.put("INTEGER", Types.BIGINT);
+        typeAliases.put("INT", Types.BIGINT);
+        typeAliases.put("int", Types.BIGINT);
         typeAliases.put("java.lang.Integer", Types.INTEGER);
         typeAliases.put("IDENTITY", Types.INTEGER);
         typeAliases.put("DOUBLE", Types.DOUBLE);

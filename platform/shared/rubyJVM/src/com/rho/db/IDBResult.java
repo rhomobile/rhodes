@@ -24,6 +24,7 @@ public interface IDBResult {
     public abstract void next();
 	public abstract String getStringByIdx(int nCol);
 	public abstract int getIntByIdx(int nCol);
+	public abstract long getLongByIdx(int nCol);
 	public abstract String getUInt64ByIdx(int nCol);
 
 	public abstract RubyValue getRubyValueByIdx(int nCol);

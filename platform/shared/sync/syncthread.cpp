@@ -1,7 +1,10 @@
 #include "SyncThread.h"
+#include "common/RhoTime.h"
 
 namespace rho {
 namespace sync {
+
+using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CSyncThread,"Sync");
 CSyncThread* CSyncThread::m_pInstance = 0;
@@ -36,15 +39,42 @@ CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory
     start(epLow);
 }
 
+int CSyncThread::getLastSyncInterval()
+{
+    CTimeInterval nowTime = CTimeInterval::getCurrentTime();
+	
+    DBResult( res, m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources") );
+    uint64 latestTimeUpdated = 0;
+    for ( ; !res.isEnd(); res.next() )
+    { 
+        uint64 timeUpdated = res.getUInt64ByIdx(0);
+        if ( latestTimeUpdated < timeUpdated )
+        	latestTimeUpdated = timeUpdated;
+    }
+	
+	return latestTimeUpdated > 0 ? (int)(nowTime.toULong()-latestTimeUpdated) : 0;
+}
+
 void CSyncThread::run()
 {
 	LOG(INFO) + "Starting sync engine main routine...";
 
+	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
-        int nWait = m_nPollInterval ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
-		LOG(INFO) + "Sync engine blocked for " + nWait + " seconds...";
-        wait(nWait);
+        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
+
+        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
+            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+        if ( nWait <= 0 )
+            nWait = SYNC_STARTUP_INTERVAL_SECONDS;
+
+		if ( nWait >= 0 )
+		{
+		    LOG(INFO) + "Sync engine blocked for " + nWait + " seconds...";
+            wait(nWait);
+        }
+        nLastSyncInterval = 0;
 
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
     		processCommand();

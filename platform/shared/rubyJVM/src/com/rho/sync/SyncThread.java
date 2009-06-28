@@ -81,16 +81,47 @@ public class SyncThread extends RhoThread
     void addSyncCommand(int curCommand){ m_curCommand = curCommand; stopWait(); }
     void addSyncCommand(int curCommand, int nCmdParam){ m_curCommand = curCommand; m_nCmdParam = nCmdParam; stopWait(); }
 	
+    int getLastSyncInterval()
+    {
+    	try{
+	    	TimeInterval nowTime = TimeInterval.getCurrentTime();
+	    	
+		    IDBResult res = m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources");
+		    long latestTimeUpdated = 0;
+		    for ( ; !res.isEnd(); res.next() )
+		    { 
+		        long timeUpdated = res.getLongByIdx(0);
+		        if ( latestTimeUpdated < timeUpdated )
+		        	latestTimeUpdated = timeUpdated;
+		    }
+	    	
+	    	return latestTimeUpdated > 0 ? (int)(nowTime.toULong()-latestTimeUpdated) : 0;
+    	}catch(Exception exc)
+    	{
+    		LOG.ERROR("isStartSyncNow failed.", exc);
+    	}
+    	return 0;
+    }
+    
 	public void run()
 	{
 		LOG.INFO( "Starting sync engine main routine..." );
 	
+		int nLastSyncInterval = getLastSyncInterval();
 		while( m_oSyncEngine.getState() != SyncEngine.esExit )
 		{
 	        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
-			LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
-	        wait(nWait);
-	
+
+	        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
+	            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+
+			if ( nWait >= 0 )
+			{
+				LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
+		        wait(nWait);
+			}
+	        nLastSyncInterval = 0;
+			
 	        if ( m_oSyncEngine.getState() != SyncEngine.esExit )
 	        {
 	        	try{
@@ -128,7 +159,7 @@ public class SyncThread extends RhoThread
 	    m_curCommand = scNone;
 	}
 
-	public boolean setStatusListener(SyncStatusListener listener) {
+	public boolean setStatusListener(ISyncStatusListener listener) {
 		if (m_oSyncEngine != null) {
 			m_oSyncEngine.setStatusListener(listener);
 			return true;

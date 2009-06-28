@@ -228,6 +228,11 @@ public class SqliteDBResult implements IDBResult {
 		return val != null ? Integer.parseInt(val) : 0; 
 	}
 	
+	public long getLongByIdx(int col) {
+		String val = getValueByIdx(curIndex,col);
+		return val != null ? Long.parseLong(val) : 0;
+	}
+	
 	public String getUInt64ByIdx(int nCol)
 	{
 		return getStringByIdx(nCol);
