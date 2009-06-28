@@ -58,9 +58,9 @@ class SyncEngine implements NetRequest.IRhoSession
     Mutex m_mxNotifications = new Mutex();
     String m_strSession = "";
 
-    SyncStatusListener m_statusListener = null;
+    ISyncStatusListener m_statusListener = null;
     
-    public void setStatusListener(SyncStatusListener listener) { m_statusListener = listener; }
+    public void setStatusListener(ISyncStatusListener listener) { m_statusListener = listener; }
     private void reportStatus(String status) {
     	if (m_statusListener != null) {
     		m_statusListener.reportStatus(status);

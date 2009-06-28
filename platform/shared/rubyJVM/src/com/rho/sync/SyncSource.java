@@ -98,7 +98,7 @@ class SyncSource
         m_nDeleted = 0;
     }
 	
-	void sync(SyncStatusListener statusListener) throws Exception
+	void sync(ISyncStatusListener statusListener) throws Exception
 	{
 		String status_report = "Completed synchronization of the data source #" + getID();
 		
@@ -373,7 +373,7 @@ class SyncSource
 	
 	}
 	
-    private void reportStatus(SyncStatusListener statusListener, String status) {
+    private void reportStatus(ISyncStatusListener statusListener, String status) {
     	if (statusListener != null) {
     		statusListener.reportStatus(status);
     	}

@@ -48,12 +48,12 @@ import com.rho.RhoRuby;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
-import com.rho.sync.SyncStatusListener;
+import com.rho.sync.ISyncStatusListener;
 
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, SyncStatusListener
+final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, ISyncStatusListener
 {
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";

@@ -174,6 +174,12 @@ public class HsqlDBResult implements IDBResult
 		return val != null ? Number.intValue(val) : 0; 
 	}
 	
+	public long getLongByIdx(int nCol)
+	{
+		Object val = m_current.data[nCol];
+		return val != null ? Number.longValue(val) : 0; 
+	}
+	
 	public String getUInt64ByIdx(int nCol)
 	{
 		return getStringByIdx(nCol);
@@ -203,6 +209,7 @@ public class HsqlDBResult implements IDBResult
         	
         case Types.BIGINT :
         	return ObjectFactory.createInteger(Number.longValue(val));
+        	
         case Types.REAL :
         case Types.FLOAT :
         case Types.DOUBLE :

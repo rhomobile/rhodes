@@ -86,8 +86,9 @@ public:
 
     void fireNotification( CSyncSource& src, boolean bFinish );
 
-private:
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
+
+private:
     net::INetRequest& getNet(){ return *m_NetRequest;}
 
     CSyncSource* CSyncEngine::findSourceByID(int nSrcId);
