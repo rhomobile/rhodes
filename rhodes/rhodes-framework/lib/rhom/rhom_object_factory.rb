@@ -69,7 +69,10 @@ module Rhom
               class << self
               
                 def count
-                  ::Rhom::RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
+                  SyncEngine.lock_sync_mutex
+                  res = ::Rhom::RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
+                  SyncEngine.unlock_sync_mutex
+                  res
                 end
               
                 def get_source_id
