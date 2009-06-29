@@ -78,11 +78,11 @@ describe "Rhom::RhomObject" do
     Account.count.should == 2
   end
   
-  # it "should raise RecordNotFound error if nil given as find argument" do
-  #   lambda {
-  #     Account.find(nil)
-  #   }.should_raise(Rhom::RecordNotFound)
-  # end
+  it "should raise RecordNotFound error if nil given as find argument" do
+    lambda {
+      Account.find(nil)
+    }.should raise_error(::Rhom::RecordNotFound)
+  end
   
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
