@@ -79,6 +79,7 @@ module Rhom
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
                 def find(*args)
+                  raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0
                   puts "Inside find: args - #{args.inspect}"
                   ret_list = []
                   conditions = {}

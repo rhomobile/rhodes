@@ -26,6 +26,9 @@ require 'rhom/rhom_db_adapter'
 module Rhom
   UPDATE_TYPES = ["'create'","'query'","'ask'"]
   
+  class RecordNotFound < StandardError
+  end
+  
   class Rhom
     attr_accessor :factory
   
