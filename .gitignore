@@ -1,6 +1,7 @@
 *~
 *.iseq
 .DS_Store
+rhobuild.yml
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 platform/mac/**/build/*

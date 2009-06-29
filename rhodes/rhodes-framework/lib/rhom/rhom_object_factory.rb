@@ -95,6 +95,8 @@ module Rhom
                   condition_hash = nil
                   select_arr = nil
                   condition_str = nil
+                  limit = nil
+                  offset = nil
                   if args[1]
                     if args[1][:conditions]
                       condition_hash = args[1][:conditions] if args[1][:conditions].is_a?(Hash)
@@ -106,6 +108,10 @@ module Rhom
                           param << args[1][:conditions][i+1].to_s
                         }.join(' ').to_s 
                       end
+                    end
+                    if args[1][:per_page] and args[1][:offset]
+                      limit = args[1][:per_page].to_s
+                      offset = args[1][:offset].to_s
                     end
                     select_arr = args[1][:select] if args[1][:select]
                   end
@@ -136,6 +142,7 @@ module Rhom
                     sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
                     sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                     sql << ") WHERE " + condition_str if condition_str
+                    sql << " LIMIT " + limit + " OFFSET " + offset if limit and offset
                   
                     list = ::Rhom::RhomDbAdapter.execute_sql(sql)
                     puts "Database query took #{Time.new - start} sec, #{list.length} rows"
@@ -152,7 +159,18 @@ module Rhom
                   args.first == :first || args.first.is_a?(String) ? ret_list[0] : ret_list
                 end
               
+                # Alias for find
                 def find_all(args=nil)
+                  find(:all, args)
+                end
+                
+                # Returns a set of rhom objects, limiting the set to length :per_page
+                # If no :per_page is specified, the default size is 10
+                def paginate(args=nil)
+                  # Default to 10 items per page
+                  args[:page] ||= 0
+                  args[:per_page] ||= 10
+                  args[:offset] = args[:page] * args[:per_page]
                   find(:all, args)
                 end
   
