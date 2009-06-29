@@ -1,6 +1,6 @@
 env:
-  app: C:/work/blah
-  version: 1.1.0
+  app: C:/rhodes-app
+  version: 1.2.0
   vendor: rhomobile
   bbver: 4.6
   applog: rholog.txt
