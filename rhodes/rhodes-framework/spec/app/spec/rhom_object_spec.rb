@@ -485,4 +485,54 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
+  
+  describe "Rhom#paginate" do
+    before(:each) do
+      Rho::RhoUtils.load_offline_data(['object_values'], 'spec/pagination')
+    end
+
+    after(:each) do
+      Rhom::RhomDbAdapter.start_transaction
+      Rhom::RhomDbAdapter.delete_all_from_table('client_info')
+      Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+      Rhom::RhomDbAdapter.commit
+    end
+    
+    @expected = [{:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},
+                {:object => '7480317731', :name => '79nqr7ekzr', :address => 'emv1tezmdf', :industry => '1zg7f7q6ib'},
+                {:object => '9897778878', :name => 'n5qx54qcye', :address => 'stzc1x7upn', :industry => '9kdinrjlcx'}]
+  
+    it "should support paginate with no options" do
+      3.times do |x|
+        @accts = Account.paginate(:page => x)
+        @accts.length.should == 10
+        @accts[9].object.should == "{#{@expected[x][:object]}}"
+        @accts[9].name.should == @expected[x][:name]
+        @accts[9].address.should == @expected[x][:address]
+        @accts[9].industry.should == @expected[x][:industry]
+      end
+      @accts = Account.paginate(:page => 3)
+      @accts.length.should == 0
+    end
+    
+    it "should support paginate with options" do
+      @accts = Account.paginate(:page => 0, :per_page => 20)
+      @accts.length.should == 20
+      @accts[9].object.should == "{#{@expected[0][:object]}}"
+      @accts[9].name.should == @expected[0][:name]
+      @accts[9].address.should == @expected[0][:address]
+      @accts[9].industry.should == @expected[0][:industry]
+      @accts = Account.paginate(:page => 3)
+      @accts.length.should == 0
+    end
+    
+    it "should support paginate with options and conditions" do
+      @accts = Account.paginate(:page => 0, :per_page => 20, :conditions => {'name' => 'c2z5izd8w9'})
+      @accts.length.should == 1
+      @accts[0].object.should == "{#{@expected[0][:object]}}"
+      @accts[0].name.should == @expected[0][:name]
+      @accts[0].address.should == @expected[0][:address]
+      @accts[0].industry.should == @expected[0][:industry]
+    end
+  end
 end
