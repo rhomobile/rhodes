@@ -350,7 +350,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        add(_labelStatus = new LabelField("Synchronizing data...", Field.FIELD_HCENTER));
 	        add(new LabelField(""));
 	        
-	        ButtonField hideButton = new ButtonField( "Hide sync status", Field.FIELD_HCENTER );
+	        ButtonField hideButton = new ButtonField( "Hide", Field.FIELD_HCENTER );
 			hideButton.setChangeListener( new HideListener(this) );
 			add(hideButton);
 	    }
