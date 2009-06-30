@@ -59,9 +59,9 @@ public class RandomAccessFile
     private void open(String name, int mode) throws FileNotFoundException{
     	try{
     		m_file = (FileConnection)Connector.open(name, mode);
-    		LOG.INFO("Open file: " + name);
+    		LOG.TRACE("Open file: " + name);
             if (!m_file.exists() && mode == Connector.READ_WRITE ) {
-            	LOG.INFO("Create file: " + name);
+            	LOG.TRACE("Create file: " + name);
             	m_file.create();  // create the file if it doesn't exist
             }
     		
@@ -90,7 +90,7 @@ public class RandomAccessFile
 
     	if ( m_file != null )
     	{
-    		LOG.INFO("Close file: " + m_file.getName());
+    		LOG.TRACE("Close file: " + m_file.getName());
     		m_file.close();
     	}
     	

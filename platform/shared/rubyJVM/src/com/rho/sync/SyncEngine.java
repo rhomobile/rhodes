@@ -192,8 +192,7 @@ class SyncEngine implements NetRequest.IRhoSession
 
 	void loadClientID()throws Exception
 	{
-	    if ( m_clientID.length() > 0 )
-	        return;
+	    m_clientID = "";
 	    {
 	        IDBResult res = getDB().executeSQL("SELECT client_id from client_info");
 	        if ( !res.isEnd() )
