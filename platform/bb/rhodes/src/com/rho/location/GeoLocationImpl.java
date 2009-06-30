@@ -47,7 +47,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 			}			
 		}catch(LocationException ex)
 		{
-			LOG.ERROR(errorStrDontSupport, ex);
+			LOG.TRACE(errorStrDontSupport, ex);
 		}
 		
 	}
@@ -58,10 +58,10 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 		try{
 			loc = m_lp.getLocation(REQUEST_TIMEOUT); //seconds
 		}catch(InterruptedException ex){ //Interrupted by user
-			LOG.ERROR("getLocation:InterruptedException", ex);
+			LOG.TRACE("getLocation:InterruptedException", ex);
 		}catch(Exception ex)
 		{
-			LOG.ERROR("getLocation:LocationException: errorStrLocationException", ex );
+			LOG.TRACE("getLocation:LocationException: errorStrLocationException", ex );
 		}
 		
 		if ( loc != null ){
@@ -74,9 +74,9 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 				  m_bDetermined = true;
 				}
 			}else
-				LOG.INFO("GetLocation - getQualifiedCoordinates: return null.");
+				LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
 		}else
-			LOG.INFO("GetLocation - getLocation: return null.");
+			LOG.TRACE("GetLocation - getLocation: return null.");
 	}
 	
 	public synchronized double GetLatitude(){
@@ -136,7 +136,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 						sync.wait(WAIT_INTERVAL);
 					}
 				} catch (Exception e) {
-					LOG.INFO("Wait exception:" + e.getMessage());
+					LOG.TRACE("Wait exception:" + e.getMessage());
 				}
 			}
 		}

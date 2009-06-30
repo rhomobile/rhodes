@@ -415,7 +415,7 @@ public class Jsr75File implements SimpleFile
                         fileSize += size;
                         
                         //BB
-                        fconn.truncate(fileSize);
+                        //fconn.truncate(fileSize);
                     } while (pos != fileSize);
                 }
                 outPos = pos;
@@ -426,7 +426,7 @@ public class Jsr75File implements SimpleFile
                 fileSize = outPos;
             }
             //BB
-            fconn.truncate(fileSize);
+            //fconn.truncate(fileSize);
             if (in != null) { 
                 in.close();
                 in = null;
