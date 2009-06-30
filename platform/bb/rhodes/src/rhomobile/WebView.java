@@ -10,10 +10,13 @@ import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
+import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.RubyVarArgMethod;
 
 public class WebView extends RubyBasic {
 
@@ -50,7 +53,7 @@ public class WebView extends RubyBasic {
 		}
 		return RubyConstant.QTRUE;
 	}
-	
+		
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("refresh", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
