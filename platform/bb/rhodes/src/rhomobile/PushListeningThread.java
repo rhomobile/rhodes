@@ -10,7 +10,6 @@ import com.rho.RhoLogger;
 import com.rho.sync.SyncThread;
 import com.rho.RhoConf;
 
-import net.rim.device.api.ui.component.*;
 import net.rim.device.api.system.*;
 import net.rim.device.api.util.*;
 import net.rim.device.api.io.http.*;
@@ -201,25 +200,17 @@ public class PushListeningThread extends Thread {
     }
     
     private void showPopup(String message) {
-		String[] choices = { "Ok" };
-		Application.getApplication().requestForeground();
-		Dialog.ask(message,choices,0);
+    	RhodesApplication.getInstance().showPopup(message);
 	}
     
     private void vibrate(String duration) {
-    	int dt = 2500;
-    	try {
-    		dt = Integer.parseInt(duration);
-    	} catch (NumberFormatException e) {    		
-    	}
-    	
-    	if (dt > 25500) dt = 25500;
-    	
-    	if (dt > 0) {
-    		Alert.startVibrate(dt);
-    	}
+    	RhodesApplication.getInstance().vibrate(duration);
     }
-    
+
+    private void play_file(String file_name, String media_type) {
+    	RhodesApplication.getInstance().play_file(file_name, media_type);
+    }
+   
     private void processPushMessage(final byte[] data)
     {
         Application.getApplication().invokeLater(new Runnable() 
@@ -246,9 +237,18 @@ public class PushListeningThread extends Thread {
             			} else {
             				vibrate("2500");
             			}
+            		} else if (ops[loop].startsWith("play_file")) {
+            			op = splitOnce(ops[loop],"=");
+            			if (op.length>1) {
+            				op = splitOnce(op[1],",");
+            				if (op.length>1) {
+            					play_file(op[0],op[1]);
+            				} else {
+            					play_file(op[0],null);
+            				}
+            			}            			
             		}
-            	}
-            	
+            	}            	
             }
         });
     }
