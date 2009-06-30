@@ -67,7 +67,7 @@ public class RhoClassFactory
 
     public static IRhoRubyHelper createRhoRubyHelper() throws Exception
     {
-    	LOG.INFO("createRhoRubyHelper");    	
+    	LOG.TRACE("createRhoRubyHelper");    	
     	
         Class wrapperClass;
         try {
@@ -95,7 +95,7 @@ public class RhoClassFactory
 
     public static IGeoLocationImpl createGeoLocationImpl() throws Exception
     {
-    	LOG.INFO("createGeoLocationImpl");    	
+    	LOG.TRACE("createGeoLocationImpl");    	
         Class wrapperClass;
         try {
             wrapperClass = Class.forName("com.rho.location.GeoLocationImpl");
@@ -125,7 +125,7 @@ public class RhoClassFactory
     	try{
 	    	if ( m_NAInstance == null )
 	    	{    	
-	        	LOG.INFO("getNetworkAccess");    	
+	        	LOG.TRACE("getNetworkAccess");    	
 	    		
 		        Class wrapperClass;
 		        try {

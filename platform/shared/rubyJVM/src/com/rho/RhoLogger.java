@@ -159,9 +159,14 @@ public class RhoLogger {
 	public void TRACE(String message) {
 		logMessage( L_TRACE, message);
 	}
+	public void TRACE(String message,Throwable e) {
+		logMessage( L_TRACE, message, e );
+	}
+	
 	public void INFO(String message) {
 		logMessage( L_INFO, message);
 	}
+	
 	public void INFO_OUT(String message) {
 		//logMessage( L_INFO, message, null, true);
 		//TODO: INFO_OUT
