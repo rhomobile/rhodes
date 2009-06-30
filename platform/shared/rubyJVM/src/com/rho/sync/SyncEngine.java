@@ -95,9 +95,7 @@ class SyncEngine implements NetRequest.IRhoSession
     
 	void doSyncAllSources()
 	{
-		String status_report = "Completed synchronization of data...";
-		
-		reportStatus( "Started synchronizing data..." );
+		String status_report = "Sync complete.";
 		
 	    setState(esSyncAllSources);
 	
@@ -109,14 +107,14 @@ class SyncEngine implements NetRequest.IRhoSession
 		    if ( isSessionExist()  ) {
 		        loadClientID();
 		    } else {
-		    	status_report = "Client is not logged in. No synchronization will be performed.";
+		    	status_report = "Client is not logged in. No sync will be performed.";
 		    }
 		    
 		    syncAllSources();
 	    }catch(Exception exc)
 	    {
 	    	LOG.ERROR("Sync failed.", exc);
-	    	status_report = "Failed synchronize all sources.";
+	    	status_report = "Sync failed.";
 	    }
 	    
 	    setState(esNone);
@@ -131,6 +129,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
 	    setState(esSyncSource);
+        SyncSource src = null;
 
 	    try
 	    {
@@ -143,7 +142,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		    	status_report = "Client is not logged in. No sync will be performed.";
 		    }
 		    
-	        SyncSource src = findSourceByID(nSrcId);
+		    src = findSourceByID(nSrcId);
 	        if ( src != null )
 	        {
 		        if ( isSessionExist() && getState() != esStop )
@@ -155,7 +154,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	        }
 	    } catch(Exception exc) {
 	    	LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
-	    	status_report = "Failed synchronize data source #" + nSrcId;
+	    	status_report = "Sync failed for " + src.getName() + ".";
 	    }
         
 	    setState(esNone);
@@ -180,13 +179,14 @@ class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token from sources order by source_id");
+	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources order by source_id");
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
 	        String strUrl = res.getStringByIdx(1);
+	        String name = res.getStringByIdx(3);
 	        if ( strUrl.length() > 0 )
-	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), this) );
+	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getUInt64ByIdx(2), this) );
 	    }
 	}
 
