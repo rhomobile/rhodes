@@ -50,7 +50,7 @@ public class NetworkAccess implements INetworkAccess {
 					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
 						continue;
 					
-					WIFIsuffix = ";interface=wifi"; 
+					WIFIsuffix = ";interface=wifi;deviceside=true"; 
 						//";deviceside=true;ConnectionUID=" + 
 						//wifis[i].getUid();
 					
@@ -117,21 +117,21 @@ public class NetworkAccess implements INetworkAccess {
 		}
 
 		//Try wifi first
-		if ( WIFIsuffix != null ){
+		/*if ( WIFIsuffix != null ){
 			try {
 				LOG.INFO(url + WIFIsuffix);
 				http = (HttpConnection) Connector.open(url + WIFIsuffix);
 			} catch (IOException ioe) {
 				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );
 			}
-		}
+		}*/
 		
 		if ( http == null ){
-/*			int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
+			/*int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
 			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
 				throw new IOException("Network Data Service Not Available");
-			}
-			*/
+			}*/
+			
 			try {
 				LOG.INFO(url + URLsuffix);
 				http = (HttpConnection) Connector.open(url + URLsuffix);

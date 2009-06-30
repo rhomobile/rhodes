@@ -90,8 +90,7 @@ void CSyncEngine::loadAllSources()
 
 void CSyncEngine::loadClientID()
 {
-    if ( m_clientID.length() > 0 )
-        return;
+    m_clientID = "";
     {
         DBResult( res, getDB().executeSQL("SELECT client_id from client_info limit 1") );
         if ( !res.isEnd() )

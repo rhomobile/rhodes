@@ -84,9 +84,10 @@ module Rho
           
           src_id = source['source_id']
           url = source['url']
+          name = source['name']
           if !self.source_initialized?(src_id)
             Rhom::RhomDbAdapter::insert_into_table('sources',
-                                                  {"source_id"=>src_id,"source_url"=>url})
+                                                  {"source_id"=>src_id,"source_url"=>url,"name"=>name})
           end
         end
       end
@@ -253,6 +254,7 @@ module Rho
         if new_source
           unless @@sources[new_source]
             @@sources[modelname] = new_source
+            @@sources[modelname]['name'] ||= modelname
           end
         end
       end

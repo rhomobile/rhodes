@@ -50,6 +50,7 @@ class SyncSource
     SyncEngine m_syncEngine;
 
     Integer  m_nID;
+    String m_name;
     String m_strUrl;
     String m_token;
 
@@ -61,6 +62,7 @@ class SyncSource
 
     String getUrl() { return m_strUrl; }
     Integer getID() { return m_nID; }
+    String getName() { return m_name; }
     int getServerObjectsCount(){ return m_nInserted+m_nDeleted; }
 
     String getToken(){ return m_token; }
@@ -86,11 +88,12 @@ class SyncSource
 	DBAdapter getDB(){ return getSync().getDB(); }
 	NetRequest getNet(){ return getSync().getNet(); }
 
-    SyncSource(int id, String strUrl, String token, SyncEngine syncEngine )
+    SyncSource(int id, String strUrl, String name, String token, SyncEngine syncEngine )
     {
     	m_syncEngine = syncEngine;
         m_nID = new Integer(id);
         m_strUrl = strUrl;
+        m_name = name;
         m_token = token;
 
         m_nCurPageCount = 0;
@@ -100,9 +103,8 @@ class SyncSource
 	
 	void sync(ISyncStatusListener statusListener) throws Exception
 	{
-		String status_report = "Completed synchronization of the data source #" + getID();
-		
-		reportStatus( statusListener, "Started synchronization of the data source #" + getID() );
+	
+		reportStatus( statusListener, "Synchronizing " + getName() + "...");
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 		
@@ -112,7 +114,7 @@ class SyncSource
 		    syncServerChanges();
 	    }catch(Exception exc)
 	    {
-	    	status_report = "Failed synchronize data source #" + getID();
+	    	reportStatus(statusListener, "Failed to synchronize " + getName());
 	    	LOG.ERROR("sync failed", exc);
 	    	getSync().stopSync();
 	    }
@@ -122,8 +124,6 @@ class SyncSource
 							 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
 	                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 	                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
-	    
-	    reportStatus(statusListener,status_report);
 	}
 
 	void syncClientBlobs(String strBaseQuery)throws Exception
