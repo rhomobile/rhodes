@@ -1,6 +1,8 @@
 namespace "config" do
   task :android => ["config:common"] do
     $java = $config["env"]["paths"]["java"]
+    $androidsdkpath = $config["env"]["paths"]["android"]
+    $androidplatform = "android-1.1"
     $androidpath = $config["build"]["androidpath"]
     $bindir = $androidpath + "/bin"
     $builddir = $androidpath + "/build"
@@ -12,19 +14,23 @@ namespace "config" do
     $libs = $androidpath + "/Rhodes/libs"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
-      $aapt = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "aapt.exe" )
-      $apkbuilder = File.join( $config["env"]["paths"]["android"], "tools", "apkbuilder.bat" )
-      $emulator = "cmd /c " + File.join( $config["env"]["paths"]["android"], "tools", "emulator.exe" )
-      $adb = File.join( $config["env"]["paths"]["android"], "tools", "adb.exe" )
+      $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx.bat" )
+      $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt.exe" )
+      $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder.bat" )
+      $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
+      $adb = File.join( $androidsdkpath, "tools", "adb.exe" )
+      $exe_ext = ".exe"
+      $path_separator = ";"
 
     else
       #XXX make these absolute
-      $dx = "dx"
-      $aapt = "aapt"
-      $apkbuilder = "apkbuilder"
-      $emulator = "emulator"
-      $adb = "adb"
+      $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" )
+      $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" )
+      $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" )
+      $emulator = File.join( $androidsdkpath, "tools", "emulator" )
+      $adb = File.join( $androidsdkpath, "tools", "adb" )
+      $exe_ext = ""
+      $path_separator = ":"
     end
 
     mkdir_p $bindir if not File.exists? $bindir
@@ -45,7 +51,7 @@ namespace "build" do
       resource = Jake.get_absolute $androidpath + "/Rhodes/res"
       assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
       rjava = Jake.get_absolute $androidpath + "/Rhodes/gen/com/rhomobile/rhodes"
-      androidjar = $config["env"]["paths"]["android"] + "/platforms/android-1.1/android.jar"
+      androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
 
       args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
 
@@ -64,7 +70,7 @@ namespace "build" do
 
     desc "Build RubyVM for android"
     task :rubyvm => "config:android" do
-      javac = $config["env"]["paths"]["java"] + "/javac.exe"
+      javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
       cp_r "platform/shared/rubyJVM", $bindir
 
       rm_rf $tmpdir + "/RubyVM"
@@ -79,18 +85,20 @@ namespace "build" do
       args << "-target"
       args << "1.6"
       args << "-nowarn"
+      args << "-encoding"
+      args << "latin1"
       args << "@#{$builddir}/RubyVM_build.files"
       puts Jake.run(javac,args)
 
       args = ["cf","../../RubyVM.jar", "#{$all_files_mask}"]
-      puts Jake.run("jar",args,"#{$tmpdir}/RubyVM/")
+      puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/RubyVM/")
 
       cp_r $bindir + "/RubyVM.jar", $libs
 
     end
     desc "Build Rhodes for android"
     task :rhodes => [:rubyvm, :rhobundle] do
-      javac = $config["env"]["paths"]["java"] + "/javac.exe"
+      javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
       rm_rf $tmpdir + "/Rhodes"
       mkdir_p $tmpdir + "/Rhodes"
@@ -104,6 +112,8 @@ namespace "build" do
       args << "-target"
       args << "1.6"
       args << "-nowarn"
+      args << "-encoding"
+      args << "latin1"
       args << "@#{$builddir}/RhodesGEN_build.files"
       puts Jake.run(javac,args)
 
@@ -117,7 +127,7 @@ namespace "build" do
       args << "1.6"
       args << "-nowarn"
       args << "-classpath"
-      args << "#{$config["env"]["paths"]["android"]}/platforms/android-1.1/android.jar;#{$tmpdir}/Rhodes;#{$libs}/RubyVM.jar;#{$libs}/RhoBundle.jar"
+      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RubyVM.jar" + $path_separator + "#{$libs}/RhoBundle.jar"
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
 
@@ -125,7 +135,7 @@ namespace "build" do
 
 
       args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
-      puts Jake.run("jar",args,"#{$tmpdir}/Rhodes/")
+      puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/Rhodes/")
     end
 
     desc "build all"
@@ -148,7 +158,7 @@ namespace "package" do
     manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
     resource = Jake.get_absolute $androidpath + "/Rhodes/res"
     assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
-    androidjar = $config["env"]["paths"]["android"] + "/platforms/android-1.1/android.jar"
+    androidjar = "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar"
     resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
@@ -189,7 +199,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$config["env"]["paths"]["android"]}/tools/android.bat create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+    system("#{$androidsdkpath}/tools/android.bat create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 

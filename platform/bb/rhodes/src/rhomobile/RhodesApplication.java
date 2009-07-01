@@ -1,6 +1,7 @@
 package rhomobile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -17,6 +18,7 @@ import net.rim.device.api.browser.field.RenderingSession;
 import net.rim.device.api.browser.field.RequestedResource;
 import net.rim.device.api.browser.field.UrlRequestedEvent;
 import net.rim.device.api.io.http.HttpHeaders;
+import net.rim.device.api.system.Alert;
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.Characters;
@@ -30,6 +32,7 @@ import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Keypad;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
@@ -40,11 +43,14 @@ import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
 
+import javax.microedition.media.*;
+
 import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
+import com.rho.SimpleFile;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
@@ -250,6 +256,95 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 //    	}
     }
 
+    public void showPopup(final String message) {
+    	Application.getApplication().invokeLater(new Runnable() {
+            public void run() {    	
+            	String[] choices = { "Ok" };
+            	requestForeground();
+            	Dialog.ask(message,choices,0);
+            }
+    	});
+    }
+    
+    public void vibrate(final String duration) {
+    	Application.getApplication().invokeLater(new Runnable() {
+            public void run() {    	
+		    	int dt = 2500;
+		    	try {
+		    		dt = Integer.parseInt(duration);
+		    	} catch (NumberFormatException e) {    		
+		    	}
+		    	
+		    	if (dt > 25500) dt = 25500;
+		    	
+		    	if (dt > 0) {
+		    		Alert.startVibrate(dt);
+		    	}
+            }
+    	});
+    }
+
+    private static final String[][] filetypes = { {"mp3", "audio/mpeg"}, {"wav","audio/x-wav"} };
+    private String getTypeFromExt(String file_name) {
+    	int pt = file_name.lastIndexOf('.');
+    	if (pt<0) {
+    		return filetypes[0][1];
+    	}
+    	String ext = file_name.substring(pt+1);
+    	for (int cnt = filetypes.length - 1; cnt >= 0; --cnt) {
+    		if(filetypes[cnt][0].equals(ext)) {
+    			return filetypes[cnt][1];
+    		}
+    	}
+    	return null;
+    }
+    
+    public void play_file(final String file_name, final String media_type) {
+    	Application.getApplication().invokeLater(new Runnable() {
+            public void run() {            	
+            	String type = media_type == null ? getTypeFromExt(file_name) : media_type;
+            	if (type != null) {
+            		LOG.INFO("File type: " + type);
+            	} else {
+            		LOG.ERROR("Error - can't play unknown file type");
+            		return;
+            	}
+            	
+            	String types[] = 
+            		javax.microedition.media.Manager.getSupportedContentTypes(null);
+            	for (int cnt = types.length - 1; cnt >= 0; --cnt) {
+            		if (type.equals(types[cnt])) {
+            			LOG.INFO( "Playing file " + file_name + " of type: " + types[cnt]);
+            			
+            			SimpleFile file = null;
+            			try {
+            				//retrieve the file
+            				Class clazz = Class.forName("rhomobile.RhodesApplication");
+            				file = RhoClassFactory.createFile();
+            				InputStream is = file.getResourceAsStream(clazz.getClass(), file_name);
+            				//create an instance of the player from the InputStream
+            				Player player = javax.microedition.media.Manager.createPlayer(is,type);
+            				player.realize();
+            				player.prefetch();
+            				//start the player
+            				player.start();
+            	        } catch (Exception ex) { 
+            	        	LOG.ERROR("Error playing " + file_name + " :" + ex.getMessage());
+                        } finally {
+                			try{
+                				if ( file != null )
+                					file.close();
+                			}catch(Exception exc){}         	
+                        }
+            			return;
+            		}
+            	}
+            	
+            	LOG.ERROR("Error - media type " + type + " isn't supported.");
+            }
+    	});
+    }
+    
 	private static final String REFERER = "referer";
 
     private RenderingSession _renderingSession;
