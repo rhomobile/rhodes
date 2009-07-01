@@ -46,6 +46,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.os.Process;
 
 public class Platform extends Activity {
 
@@ -62,10 +63,20 @@ public class Platform extends Activity {
 
 	private boolean isStarted = false;
 
-	private NetworkStateTracker networkStateTracker;
+	//private NetworkStateTracker networkStateTracker;
 	
 	public String getHomeUrl() {
 		return HOME_URL;
+	}
+	
+	//private void stopServices() {
+	//	stopService(new Intent(this, RhoSyncService.class));
+	//	stopService(new Intent(this, RhoHttpService.class));
+	//}
+	
+	private void stopSelf() {
+		//stopServices();
+		Process.killProcess(Process.myPid());
 	}
 
 	/** Called when the activity is first created. */
@@ -134,11 +145,13 @@ public class Platform extends Activity {
 		
 		RhoLogger.InitRhoLog();
 		
+		/*
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
 		}catch (Exception e){
 			Log.e( "NetworkAccessImpl", e.getMessage());
 		}
+		*/
 		
 		Log.i(LOG_TAG, "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
@@ -204,39 +217,26 @@ public class Platform extends Activity {
 	}
 	
 	@Override
-	protected void onStart() {
-		super.onStart();
-		try {
-			networkStateTracker.enable();
-		} catch (Exception e) {
-			Log.e( "NetworkAccessImpl", e.getMessage());
-		}
+	protected void onPause() {
+		super.onPause();
+		
+		saveCurrentLocation(getCurrentUrl());
 	}
-
+	
 	@Override
-	protected void onStop() {
-		try {
-			networkStateTracker.disable();
-		} catch (Exception e) {
-			Log.e( "NetworkAccessImpl", e.getMessage());
-		}
-		super.onStop();
+	protected void onResume() {
+		restoreLocation();
+		
+		super.onResume();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		
-		saveCurrentLocation(getCurrentUrl());
+		//stopServices();
 		
 		super.onDestroy();
-
-		Intent svcSync = new Intent(this, RhoSyncService.class);
-		stopService(svcSync);
-
-		Intent svc = new Intent(this, RhoHttpService.class);
-		stopService(svc);
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -252,13 +252,7 @@ public class Platform extends Activity {
 			this.webView.goBack();
 			return true;
 		case KeyEvent.KEYCODE_HOME:
-			Intent svcSync = new Intent(this, RhoSyncService.class);
-			stopService(svcSync);
-
-			Intent svc = new Intent(this, RhoHttpService.class);
-			stopService(svc);
-			
-			this.finish();
+			stopSelf();
 			return true;
 		}
 		
@@ -321,13 +315,7 @@ public class Platform extends Activity {
 		return true;	
 
 		case R.id.exit:
-			Intent svcSync = new Intent(this, RhoSyncService.class);
-			stopService(svcSync);
-
-			Intent svc = new Intent(this, RhoHttpService.class);
-			stopService(svc);
-			
-			this.finish();
+			stopSelf();
 			return true;
 
 		case R.id.options:
@@ -415,10 +403,13 @@ public class Platform extends Activity {
 	}
 
 	public synchronized boolean isNetworkAvailable() {
+		/*
 		if ( networkStateTracker != null )
 			return networkStateTracker.isNetworkConnected();
 		else
 			return true;
+		*/
+		return true;
 	}
 
 }
