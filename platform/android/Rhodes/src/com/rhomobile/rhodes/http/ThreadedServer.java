@@ -254,10 +254,11 @@ abstract public class ThreadedServer implements Runnable {
 		this.running = false;
 		
 		try {
-			// Just connect to the listen socket in order to get listen
-			// thread interrupted
+			// Just connect to the listen socket and close connection in
+			// order to get listen thread interrupted
 			Socket sock = new Socket();
 			sock.connect(listen.getLocalSocketAddress());
+			sock.close();
 			
 			listen.close();
 			listen = null;
@@ -273,6 +274,19 @@ abstract public class ThreadedServer implements Runnable {
 			thread.interrupt();
 		}
 		
+		// And wait until all threads would be stopped
+		try {
+			while (this.threadSet.size() > 0) {
+				Log.d(this.name, "waiting for threads to stop...");
+				this.wait(1000);
+			}
+		} catch (Exception e) {
+			Log.w(this.name, e.getMessage());
+		}
+		
+		// TODO: remove this code as it belongs to the deprecated method Thread.stop
+		// which is not implemented in the Dalvik VM
+		/*
 		try {
 			long end_wait = System.currentTimeMillis() + 5000;
 			while (this.threadSet.size() > 0 && end_wait > System.currentTimeMillis()) {
@@ -297,28 +311,11 @@ abstract public class ThreadedServer implements Runnable {
 		} catch (Exception e) {
 			Log.w(this.name, e.getMessage());
 		}
+		*/
 		
+		Log.d(this.name, "threadSet size: " + this.threadSet.size());
 		this.threadSet.clear();
 		this.threadSet = null;
-
-		/*
-		// Close the port
-		if (listen != null) {
-			try {
-				try {
-					listen.setSoTimeout(1);
-				} catch (Exception e) {
-					Log.e(this.name, e.getMessage());
-				}
-
-				listen.close();
-			} catch (Exception e) {
-				Log.e(this.name, e.getMessage());
-			}
-
-			listen = null;
-		}
-		*/
 	}
 
 	final public void join() throws java.lang.InterruptedException {
@@ -339,7 +336,7 @@ abstract public class ThreadedServer implements Runnable {
 		String name = thread.getName();
 		int runs = 0;
 
-		Log.d(this.name, "RhoRubyStart...");
+		Log.d(this.name, "Call RhoRubyStart...");
 		RhoRuby.RhoRubyStart("");
 
 		Log.d(this.name, "startSyncEngine...");
@@ -423,6 +420,10 @@ abstract public class ThreadedServer implements Runnable {
 
 			if (this.threadSet != null)
 				Log.d(this.name, "Stopped listening... \nthreads=" + this.threadSet.size());
+			
+			Log.d(this.name, "Call RhoRubyStop...");
+			RhoRuby.RhoRubyStop();
+			Log.d(this.name, "RhoRubyStop done");
 		}
 	}
 }
