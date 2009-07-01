@@ -1,32 +1,22 @@
   def startmds
-    currentdir = pwd()
-  
     mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     args = []
     args << "/c"
     args << "run.bat"
 
-    Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
-
-    chdir currentdir
+    Jake.run("cmd.exe",args, mdshome,true)
   end 
 
   def stopmds
-    currentdir = pwd()
-  
     mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     args = []
     args << "/c"
     args << "shutdown.bat"
 
-    Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
-    
-    chdir currentdir
+    Jake.run("cmd.exe",args, mdshome,true)
   end 
 
  def startsim
-    currentdir = pwd()
-
     sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
     bbver = $config["env"]["bbver"]
@@ -50,13 +40,9 @@
 
     Thread.new { Jake.run(command,args,jde + "/simulator",true) }
     $stdout.flush
-    
-    chdir currentdir
   end
 
  def stopsim
-    currentdir = pwd() 
-    
     sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
     
@@ -65,8 +51,6 @@
     args << "/session="+sim
     args << "/execute=Exit(true)"
     Jake.run(command,args, jde + "/simulator")
- 
-    chdir currentdir
  end
 
  def manualsign
