@@ -15,7 +15,7 @@ namespace "config" do
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
     else
-      $all_files_mask = "*.*"
+      $all_files_mask = "*"
     end
 
   end
