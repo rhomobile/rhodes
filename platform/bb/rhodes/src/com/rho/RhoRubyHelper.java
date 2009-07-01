@@ -2,6 +2,7 @@ package com.rho;
 
 import rhomobile.RhoPhonebook;
 import rhomobile.WebView;
+import rhomobile.Alert;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
 
@@ -25,6 +26,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
         Camera.initMethods(RubyRuntime.CameraClass);
         WebView.initMethods(RubyRuntime.WebViewClass);
+        Alert.initMethods(RubyRuntime.AlertClass);        
         DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
 	}
 	
