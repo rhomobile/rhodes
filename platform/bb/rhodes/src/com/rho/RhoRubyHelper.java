@@ -15,7 +15,7 @@ import com.xruby.runtime.lang.RubyRuntime;
 import net.rim.device.api.system.DeviceInfo;
 import java.util.Hashtable;
 import net.rim.device.api.system.CodeModuleGroup;
-import net.rim.device.api.system.CodeModuleGroupManager;
+//import net.rim.device.api.system.CodeModuleGroupManager;
 import net.rim.device.api.system.ApplicationDescriptor;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
@@ -70,6 +70,26 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 				strRes = (String)m_appProperties.get(name);
 			else	
 			{
+				CodeModuleGroup[] codeModule = CodeModuleGroup.loadAll();
+
+				if ( codeModule != null )
+				{
+					String moduleName = ApplicationDescriptor
+					   .currentApplicationDescriptor().getModuleName();
+					
+					for(int i = 0; i < codeModule.length; i++) 
+					{
+						String module = codeModule[i].getName();
+						if( module.indexOf( moduleName ) != -1)
+						{
+							CodeModuleGroup group = codeModule[i];
+							if ( group != null )
+								strRes = group.getProperty(name);
+							break;
+						}
+					}
+				}
+/*				
 				CodeModuleGroup[] allGroups = CodeModuleGroupManager.loadAll();
 				if ( allGroups != null )
 				{
@@ -86,7 +106,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	
 					if ( myGroup != null )
 						strRes = myGroup.getProperty(name);
-				}
+				} */
 				
 				if ( strRes == null )
 					strRes = "";
