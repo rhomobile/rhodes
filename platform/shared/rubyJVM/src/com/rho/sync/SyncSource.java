@@ -104,7 +104,7 @@ class SyncSource
 	void sync(ISyncStatusListener statusListener) throws Exception
 	{
 	
-		reportStatus( statusListener, "Synchronizing " + getName() + "...");
+		reportStatus( statusListener, "Synchronizing " + getName() + "...", 0);
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 		
@@ -114,7 +114,7 @@ class SyncSource
 		    syncServerChanges();
 	    }catch(Exception exc)
 	    {
-	    	reportStatus(statusListener, "Failed to synchronize " + getName());
+	    	reportStatus(statusListener, "Failed to synchronize " + getName(), 0);
 	    	LOG.ERROR("sync failed", exc);
 	    	getSync().stopSync();
 	    }
@@ -373,9 +373,9 @@ class SyncSource
 	
 	}
 	
-    private void reportStatus(ISyncStatusListener statusListener, String status) {
+    private void reportStatus(ISyncStatusListener statusListener, String status, int error) {
     	if (statusListener != null) {
-    		statusListener.reportStatus(status);
+    		statusListener.reportStatus(status, error);
     	}
     	LOG.INFO(status);
     }	
