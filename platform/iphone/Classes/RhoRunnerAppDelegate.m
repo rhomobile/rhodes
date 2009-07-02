@@ -158,8 +158,27 @@
     //Create View
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
+#ifdef __IPHONE_3_0
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
+								| UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+#endif
 }
-
+#ifdef __IPHONE_3_0
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+	NSLog(@"Device token is %@", deviceToken);
+}
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+	NSLog(@"Push Notification Error: %@", [error localizedDescription]);
+}
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	NSString *alert = [aps objectForKey:@"alert"];
+	NSLog(@"Push Alert: %@", alert);
+}
+#endif
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
 	//Stop HTTP server host 

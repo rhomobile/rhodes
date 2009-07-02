@@ -4,8 +4,16 @@
     args << "/c"
     args << "run.bat"
 
-    Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
+    Jake.run("cmd.exe",args, mdshome,true)
+  end 
 
+  def stopmds
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    args = []
+    args << "/c"
+    args << "shutdown.bat"
+
+    Jake.run("cmd.exe",args, mdshome,true)
   end 
 
  def startsim
@@ -25,7 +33,7 @@
     args << "/pin=0x2100000A"
     
     if bbver >= 4.3
-      args << "/fs-sdcard"
+      args << "/fs-sdcard=true"
     end
         
     args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
@@ -33,6 +41,17 @@
     Thread.new { Jake.run(command,args,jde + "/simulator",true) }
     $stdout.flush
   end
+
+ def stopsim
+    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    
+    command =  '"' + jde + "/simulator/fledgecontroller.exe\""
+    args = []
+    args << "/session="+sim
+    args << "/execute=Exit(true)"
+    Jake.run(command,args, jde + "/simulator")
+ end
 
  def manualsign
     java = $config["env"]["paths"]["java"] + "/java.exe"
@@ -267,19 +286,25 @@ namespace "package" do
 
     desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
-      Jake.rapc("rhodesApp",
-        $targetdir,
-        $rhodesimplib,
-        '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
-        "rhodesApp",
-        $config["env"]["vendor"],
-        $config["env"]["version"],
-        "resources/icon.png",
-        false,
-        true
-      )
-      $stdout.flush
-      cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+      if not FileUtils.uptodate?($targetdir + '/rhodesApp.cod',$preverified + "/rhodes.jar")
+          Jake.rapc("rhodesApp",
+            $targetdir,
+            $rhodesimplib,
+            '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
+            "rhodesApp",
+            $config["env"]["vendor"],
+            $config["env"]["version"],
+            "resources/icon.png",
+            false,
+            true
+          )
+          $stdout.flush
+          cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+      else
+        puts 'rhodes .cod files are up to date'
+        $stdout.flush
+      end
+          
     end
 
     desc "Package all production (all parts in one package)"
@@ -314,7 +339,7 @@ namespace "package" do
     end
 
     desc "Package all dev (each part in separate package)"
-    task :dev => [ "clean:bb:packaged", :rubyvm,:rhobundle,:rhodes] do
+    task :dev => [ :rubyvm,:rhobundle,:rhodes] do
     end
   end
 end
@@ -415,36 +440,34 @@ end
 
 namespace "run" do
 
-
-
- 
-
+  task :stopmdsandsim => ["config:bb"] do
+    stopsim  
+    stopmds
+  end
+  
   desc "Builds everything, loads and starts sim"
-  task :bb  => "package:bb:production" do
-    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+  task :bb => [:stopmdsandsim, "package:bb:dev"] do
+    #sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
     jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-
-      startmds
+    
+    cp_r Jake.get_absolute(File.join($targetdir,"/.")), jde + "/simulator"
+    
+    startmds
     startsim
 
-      puts "sleeping to allow simulator to get started"
-    sleep 45
+#    puts "sleeping to allow simulator to get started"
+#    sleep 45
   
-    command = '"' + jde + "/simulator/fledgecontroller.exe\""
-    args = []
-    args << "/session="+sim
-    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
+#    command = '"' + jde + "/simulator/fledgecontroller.exe\""
+#    args = []
+#    args << "/session="+sim
+#    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
   
-    Jake.run(command,args, jde + "/simulator")
+#    Jake.run(command,args, jde + "/simulator")
     $stdout.flush
   end
-
-
-
-
+  
 end
-
-
 
 namespace "config" do
     task :checkbb do

@@ -663,9 +663,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     private void doStartupWork() {
-    	RhoLogger.InitRhoLog();
 
     	try{
+        	RhoLogger.InitRhoLog();
 	    	
 	        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
 	      
