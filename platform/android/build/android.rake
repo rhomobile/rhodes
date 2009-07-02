@@ -17,6 +17,7 @@ namespace "config" do
       $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx.bat" )
       $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt.exe" )
       $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder.bat" )
+      $androidbin = File.join( $androidsdkpath, "tools", "android.bat" )
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
       $adb = File.join( $androidsdkpath, "tools", "adb.exe" )
       $exe_ext = ".exe"
@@ -27,6 +28,7 @@ namespace "config" do
       $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" )
       $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" )
       $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" )
+      $androidbin = File.join( $androidsdkpath, "tools", "android" )
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
       $adb = File.join( $androidsdkpath, "tools", "adb" )
       $exe_ext = ""
@@ -199,7 +201,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidsdkpath}/tools/android.bat create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
