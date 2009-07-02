@@ -23,6 +23,7 @@ import com.rho.db.*;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
+import java.io.IOException;
 
 public class SyncThread extends RhoThread
 {
@@ -186,6 +187,16 @@ public class SyncThread extends RhoThread
 		getInstance().addSyncCommand(SyncThread.scSyncOne, nSrcID );
 	}
 	
+	public static void stopSync()
+	{
+		if ( getSyncEngine().isSyncing() )
+		{
+			getSyncEngine().stopSync();
+			while( getSyncEngine().getState() != SyncEngine.esNone )
+				try{ getInstance().sleep(100); }catch(Exception e){}
+		}
+	}
+	
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -217,12 +228,7 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
-					if ( getSyncEngine().isSyncing() )
-					{
-						getSyncEngine().stopSync();
-						while( getSyncEngine().getState() != SyncEngine.esNone )
-							getInstance().sleep(100);
-					}
+					stopSync();
 				}catch(Exception e)
 				{
 					LOG.ERROR("stop_sync failed", e);
@@ -267,18 +273,24 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("login",
 			new RubyTwoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+					int nRes = 0;
 					try{
 						String name = arg1.toStr();
 						String password = arg2.toStr();
-					    //TODO: stop sync
-					    return getSyncEngine().login(name,password) ? 
-					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
+						
+						stopSync();
+						nRes = getSyncEngine().login(name,password) ? 1 : 0;
+					}catch(IOException e)
+					{
+						LOG.ERROR("login failed", e);
+						RhoRuby.raise_RhoError(RhoRuby.ERR_NETWORK);
 					}catch(Exception e)
 					{
 						LOG.ERROR("login failed", e);
-						//throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
 					}
-				    return ObjectFactory.createInteger(0);
+					
+				    return ObjectFactory.createInteger(nRes);
 				    
 				}
 			});
@@ -310,7 +322,8 @@ public class SyncThread extends RhoThread
 					DBAdapter db = getDBAdapter();
 
 					try{
-					    //TODO: stop sync
+						stopSync();
+						
 						db.setUnlockDB(true);
 					    getSyncEngine().logout();
 					}catch(Exception e)
