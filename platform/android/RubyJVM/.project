@@ -18,7 +18,7 @@
 		<link>
 			<name>shared</name>
 			<type>2</type>
-			<location>/home/crystax/work/rhomobile/rhodes/platform/shared/rubyJVM/src</location>
+			<locationURI>RHO_SHARED/rubyJVM/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
