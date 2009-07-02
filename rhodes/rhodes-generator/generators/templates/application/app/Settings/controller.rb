@@ -14,18 +14,22 @@ class SettingsController < Rho::RhoController
   end
 
   def do_login
+    success = 0
+    @msg = ""
     if @params['login'] and @params['password']
-      success = SyncEngine::login(@params['login'], @params['password'])
-    else
-      @msg = "You entered an invalid login/password, please try again."
-      render :action => :login, :query => {:msg => @msg}
+      begin
+        success = SyncEngine::login(@params['login'], @params['password'])
+      rescue RhoError => e
+          @msg = e.message
+      end  
     end
+    
     if success > 0
       # run sync if we were successful
       SyncEngine::dosync
       redirect Rho::RhoConfig.start_path
     else
-      @msg = "You entered an invalid login/password, please try again."
+      @msg = "You entered an invalid login/password, please try again." unless @msg.length
       render :action => :login, :query => {:msg => @msg}
     end
   end
