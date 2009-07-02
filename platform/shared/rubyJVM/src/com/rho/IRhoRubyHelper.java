@@ -13,4 +13,5 @@ public interface IRhoRubyHelper {
 	public boolean hasNetwork();
 	
 	public String getAppProperty(String name);
+	public boolean isSimulator();
 }

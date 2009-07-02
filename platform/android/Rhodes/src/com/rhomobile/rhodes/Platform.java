@@ -143,8 +143,12 @@ public class Platform extends Activity {
 
 		RhodesInstance.setInstance(this);
 		
-		RhoLogger.InitRhoLog();
-		
+        try{
+		    RhoLogger.InitRhoLog();
+		}catch(Exception exc)
+        {
+            //TODO: we should stop if InitRhoLog failed
+        }
 		/*
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
