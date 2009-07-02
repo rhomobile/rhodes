@@ -353,6 +353,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private SyncStatusPopup _syncStatusPopup = null;
     
+    private String _lastStatusMessage = null;
+    
     private HttpConnection  _currentConnection;
 
     private Vector _history;
@@ -426,15 +428,31 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 	synchronized public void setSyncStatusPopup(SyncStatusPopup popup) {
 		_syncStatusPopup = popup;
+		if (_syncStatusPopup != null) {
+			_syncStatusPopup.showStatus(_lastStatusMessage);
+		} else {
+			_lastStatusMessage = null;
+		}
 	}
 	
-	synchronized public void reportStatus(String status) {
-		if (_syncStatusPopup != null) {
-			LOG.INFO("Sync status: " + status);
+	synchronized public void reportStatus(String status, int error) {
+		_lastStatusMessage = status;
+		LOG.INFO("Sync status: " + status);
+		if (_syncStatusPopup == null && error != 0) {
+			createStatusPopup();
+		} else if (_syncStatusPopup != null) { 
 			_syncStatusPopup.showStatus(status);
-		} else {
-			LOG.INFO("Undisplayed sync status: " + status);			
 		}
+	}
+	
+	public void createStatusPopup() {
+		invokeLater( new Runnable() {
+			public void run() {
+				SyncStatusPopup popup = new SyncStatusPopup();
+				RhodesApplication.getInstance().setSyncStatusPopup(popup);
+				pushScreen(popup);
+			}
+		});	
 	}
 	
 	class SyncStatusPopup extends PopupScreen {
@@ -451,7 +469,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    }
 	    
 	    public void showStatus(String status) {
-            synchronized (Application.getEventLock()) {	    	
+	    	if (status == null) return;
+            synchronized (Application.getEventLock()) {	
 	    		_labelStatus.setText(status);
             }
 	    }
@@ -499,13 +518,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
-					UiApplication.getUiApplication().invokeLater( new Runnable() {
-						public void run() {
-							SyncStatusPopup popup = new SyncStatusPopup();
-							RhodesApplication.getInstance().setSyncStatusPopup(popup);
-							pushScreen(popup);
-						}
-					});				
+					RhodesApplication.getInstance().createStatusPopup();		
 					SyncThread.doSyncAllSources();
 				}
 			};
