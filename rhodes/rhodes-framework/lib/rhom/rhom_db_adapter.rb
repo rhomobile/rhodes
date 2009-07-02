@@ -146,7 +146,7 @@ module Rhom
         elsif value.is_a?(String)
           "'#{value}'"
         else
-          "#{value}"
+          "'#{value.to_s}'"
         end
       end
     
