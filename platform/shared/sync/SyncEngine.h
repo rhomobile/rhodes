@@ -91,7 +91,7 @@ public:
 private:
     net::INetRequest& getNet(){ return *m_NetRequest;}
 
-    CSyncSource* CSyncEngine::findSourceByID(int nSrcId);
+    CSyncSource* findSourceByID(int nSrcId);
 
     friend class CSyncSource;
 };
