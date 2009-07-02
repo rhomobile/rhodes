@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 public class RhoLogger {
 	public static final boolean RHO_STRIP_LOG = false;
-	public static final boolean RHO_DEBUG = false;
 
 	private static final int L_TRACE = 0;
 	private static final int L_INFO = 1;
@@ -20,6 +19,7 @@ public class RhoLogger {
 	private String m_strMessage;
 	private int    m_severity;
 	private static String m_SinkLock = "";
+	private static IRhoRubyHelper m_sysInfo;
 	
 	public RhoLogger(String name){
 		m_category = name;
@@ -138,7 +138,7 @@ public class RhoLogger {
 			
 	    synchronized( m_SinkLock ){
 	    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
-		    if ( (RhoLogger.RHO_DEBUG || m_severity == L_FATAL) && e != null ){
+		    if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
 				//TODO: redirect printStackTrace to our log
 				e.printStackTrace();
 		    }
@@ -148,8 +148,13 @@ public class RhoLogger {
 	    	processFatalError();
 	}
 
+	static boolean isSimulator()
+	{
+		return m_sysInfo.isSimulator();
+	}
+	
 	protected void processFatalError(){
-    	if ( RHO_DEBUG )
+    	if ( isSimulator() )
     		throw new RuntimeException();
     	
     	System.exit(0);
@@ -225,25 +230,30 @@ public class RhoLogger {
 	    }
 	}
 	
-    public static void InitRhoLog(){
+    public static void InitRhoLog()throws Exception{
+    	
+    	m_sysInfo = RhoClassFactory.createRhoRubyHelper();
     	
         RhoConf.InitRhoConf();
     	
         //Set defaults
-		if ( RhoLogger.RHO_DEBUG ) {
-			m_oLogConf.setMinSeverity( 0 );
+    	m_oLogConf.setLogPrefix(true);		
+    	
+    	m_oLogConf.setLogToFile(true);
+        
+		if ( isSimulator() ) {
+			m_oLogConf.setMinSeverity( L_INFO );
 			m_oLogConf.setLogToOutput(true);
 			m_oLogConf.setEnabledCategories("*");
 			m_oLogConf.setDisabledCategories("");
+	    	m_oLogConf.setMaxLogFileSize(0);//No limit
 		}else{
 			m_oLogConf.setMinSeverity( L_ERROR );
 			m_oLogConf.setLogToOutput(false);
 			m_oLogConf.setEnabledCategories("");
-		}    	
-    	m_oLogConf.setLogPrefix(true);		
-    	
-    	m_oLogConf.setLogToFile(true);
-    	m_oLogConf.setMaxLogFileSize(1024*50);
+	    	m_oLogConf.setMaxLogFileSize(1024*50);
+		}
+		
     	if ( RhoConf.getInstance().getRhoRootPath().length() > 0 )
 	    	m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + "RhoLog.txt" );
 

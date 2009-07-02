@@ -59,6 +59,10 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	public String getDeviceId(){
 		return new Integer( DeviceInfo.getDeviceId() ).toString();
     }
+
+	public boolean isSimulator(){
+		return DeviceInfo.isSimulator();
+    }
 	
 	static Hashtable m_appProperties = new Hashtable(); 
 	public String getAppProperty(String name)

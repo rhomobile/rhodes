@@ -85,6 +85,12 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		return mTelephonyMgr.getDeviceId();
 	}
 
+    public boolean isSimulator()
+    {
+        //TODO: implement isSimulator
+        return false;
+    }
+
 	public boolean hasNetwork() {
 		return RhodesInstance.getInstance().isNetworkAvailable();
 	}
