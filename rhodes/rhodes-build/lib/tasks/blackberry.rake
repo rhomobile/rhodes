@@ -124,57 +124,85 @@ end
 
 namespace "run" do
   namespace "bb" do
-    task :sim do
-      sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      bbver = $config["env"]["bbver"]
-  
-      command =  '"' + jde + "/simulator/fledge.exe\""
-      args = [] 
-      args << "/app=Jvm.dll"
-      args << "/handheld=" + sim
-      args << "/session=" + sim
-      args << "/app-param=DisableRegistration"
-      args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
-      args << "/data-port=0x4d44"
-      args << "/data-port=0x4d4e"
-      args << "/pin=0x2100000A"
-      
-      if bbver >= 4.3
-        args << "/fs-sdcard"
-      end
-      
-      args << "\"/app-param=JvmDebugFile:"+ File.join($basedir,'applog.txt') +'"'
-  
-      Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-      $stdout.flush
+    def startmds
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        args = []
+        args << "/c"
+        args << "run.bat"
+
+        Jake.run("cmd.exe",args, mdshome,true)
+    end 
+
+    def stopmds
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        args = []
+        args << "/c"
+        args << "shutdown.bat"
+
+        Jake.run("cmd.exe",args, mdshome,true)
+    end 
+
+    def startsim
+        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+        bbver = $config["env"]["bbver"]
+
+        command =  '"' + jde + "/simulator/fledge.exe\""
+        args = [] 
+        args << "/app=Jvm.dll"
+        args << "/handheld=" + sim
+        args << "/session=" + sim
+        args << "/app-param=DisableRegistration"
+        args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
+        args << "/data-port=0x4d44"
+        args << "/data-port=0x4d4e"
+        args << "/pin=0x2100000A"
+
+        if bbver >= 4.3
+          args << "/fs-sdcard=true"
+        end
+            
+        args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
+
+        Thread.new { Jake.run(command,args,jde + "/simulator",true) }
+        $stdout.flush
+    end
+
+    def stopsim
+        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
+        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+        command =  '"' + jde + "/simulator/fledgecontroller.exe\""
+        args = []
+        args << "/session="+sim
+        args << "/execute=Exit(true)"
+        Jake.run(command,args, jde + "/simulator")
     end
   
-    task :mds do
-      mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
-      args = []
-      args << "/c"
-      args << "run.bat"
-  
-      Thread.new { Jake.run("cmd.exe",args, mdshome,true) }
-  
+    task :stopmdsandsim => ["config:bb"] do
+        stopsim  
+        stopmds
     end
-  
+
     desc "Run app in BlackBerry Sim"
-    task :app  => ["bundle:bb", "run:bb:mds", "run:bb:sim"] do
-      sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-    
-      puts "sleeping to allow simulator to get started"
-      sleep 25
-  
-      command = '"' + jde + "/simulator/fledgecontroller.exe\""
-      args = []
-      args << "/session="+sim
-      args << "\"/execute=LoadCod(" + File.join($targetdir,"rhodesApp.cod") + ")\""
-  
-      Jake.run(command,args, jde + "/simulator")
-      $stdout.flush
+    task :app => [:stopmdsandsim, "bundle:bb"] do
+        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+
+        cp_r File.join($targetdir,"/."), jde + "/simulator"
+
+        startmds
+        startsim
+
+#        puts "sleeping to allow simulator to get started"
+#        sleep 25
+
+#        command = '"' + jde + "/simulator/fledgecontroller.exe\""
+#        args = []
+#        args << "/session="+sim
+#        args << "\"/execute=LoadCod(" + File.join($targetdir,"rhodesApp.cod") + ")\""
+
+#        Jake.run(command,args, jde + "/simulator")
+        $stdout.flush
     end
   
     task :autosign do

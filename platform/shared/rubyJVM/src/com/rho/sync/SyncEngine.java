@@ -61,9 +61,9 @@ class SyncEngine implements NetRequest.IRhoSession
     ISyncStatusListener m_statusListener = null;
     
     public void setStatusListener(ISyncStatusListener listener) { m_statusListener = listener; }
-    private void reportStatus(String status) {
+    private void reportStatus(String status, int error) {
     	if (m_statusListener != null) {
-    		m_statusListener.reportStatus(status);
+    		m_statusListener.reportStatus(status, error);
     	}
     	LOG.INFO(status);
     }
@@ -96,9 +96,10 @@ class SyncEngine implements NetRequest.IRhoSession
 	void doSyncAllSources()
 	{
 		String status_report = "Sync complete.";
-		
+	    int error = 0;
+	    
 	    setState(esSyncAllSources);
-	
+
 	    try
 	    {
 		    loadAllSources();
@@ -108,6 +109,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        loadClientID();
 		    } else {
 		    	status_report = "Client is not logged in. No sync will be performed.";
+		    	error = 1;
 		    }
 		    
 		    syncAllSources();
@@ -119,12 +121,13 @@ class SyncEngine implements NetRequest.IRhoSession
 	    
 	    setState(esNone);
 		
-	    reportStatus( status_report );
+	    reportStatus( status_report, error );
 	}
 
 	void doSyncSource(int nSrcId)
 	{
 		String status_report = null;
+		int error = 0;
 		
 		LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
@@ -140,6 +143,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        loadClientID();
 		    } else {
 		    	status_report = "Client is not logged in. No sync will be performed.";
+		    	error = 1;
 		    }
 		    
 		    src = findSourceByID(nSrcId);
@@ -160,7 +164,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    setState(esNone);
 		
 	    if(status_report != null) {
-	    	reportStatus(status_report);
+	    	reportStatus(status_report, error);
 	    }
 	}
 

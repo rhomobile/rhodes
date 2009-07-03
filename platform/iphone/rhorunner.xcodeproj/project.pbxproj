@@ -31,6 +31,8 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
+		F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F516695F0FFD78770079F023 /* AVFoundation.framework */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
 		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
 		F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = F547F2870F9945D2007C2CD2 /* LogOptionsController.m */; };
@@ -159,6 +161,8 @@
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F51668DF0FFD5F740079F023 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		F516695F0FFD78770079F023 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
 		F52181120F96B13500B7F974 /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
 		F547F1DA0F990084007C2CD2 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -200,6 +204,8 @@
 				F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */,
 				F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */,
 				4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */,
+				F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */,
+				F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +302,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F516695F0FFD78770079F023 /* AVFoundation.framework */,
+				F51668DF0FFD5F740079F023 /* AudioToolbox.framework */,
 				4678FCA80F8185920054340C /* SystemConfiguration.framework */,
 				F58E80100F008B3F00E46829 /* AddressBook.framework */,
 				F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */,
