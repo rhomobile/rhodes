@@ -20,11 +20,17 @@ public class RhoRuby {
 	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
+	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
 //	public static final RubyID getStartPath = RubyID.intern("get_start_path");
 //	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
+	
+	public static final int ERR_NONE = 0;
+	public static final int ERR_NETWORK = 1;
+	public static final int ERR_REMOTESERVER = 2;
+	public static final int ERR_RUNTIME = 3;
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
@@ -93,6 +99,11 @@ public class RhoRuby {
 		return value;
 	}
 
+	public static void raise_RhoError(int errCode)
+	{
+		RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createInteger(errCode), null, raiseRhoError);
+	}
+	
 	public static String getStartPage()
 	{
 		return RhoConf.getInstance().getString("start_path");
