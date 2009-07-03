@@ -69,7 +69,8 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs, onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture;
+@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
+@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onShowPopup, onVibrate, onPlayFile;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -130,6 +131,24 @@ static ServerHost* sharedSH = nil;
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewOptionsUrl]) {
 		[actionTarget performSelector:onSetViewOptionsUrl withObject:url];
 	}	
+}
+
+- (void)showPopup:(NSString*) message {
+	if(actionTarget && [actionTarget respondsToSelector:onShowPopup]) {
+		[actionTarget performSelectorOnMainThread:onShowPopup withObject:message waitUntilDone:NO];
+	}
+}
+
+- (void)vibrate:(int) duration {
+	if(actionTarget && [actionTarget respondsToSelector:onVibrate]) {
+		[actionTarget performSelectorOnMainThread:onVibrate withObject:(void*)duration waitUntilDone:NO];
+	}
+}
+
+- (void)playFile:(NSString*) fileName mediaType:(NSString*) media_type {
+	if(actionTarget && [actionTarget respondsToSelector:onPlayFile]) {
+		[actionTarget performSelectorOnMainThread:onPlayFile withObject:fileName waitUntilDone:NO];
+	}
 }
 
 - (void)ServerHostThreadRoutine:(id)anObject {
@@ -291,9 +310,29 @@ char* webview_current_location() {
 	return get_current_location();
 }
 
-void webview_set_menu_items(VALUE argv)
-{
+void webview_set_menu_items(VALUE argv) {
 	//TODO: webview_set_menu_items
+}
+
+void alert_show_popup(char* message) {
+	if (message==NULL) {
+		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
+	} else {
+		[[ServerHost sharedInstance] showPopup:[NSString stringWithCString:message]];
+	}
+}
+
+void alert_vibrate(int duration) {
+	[[ServerHost sharedInstance] vibrate:duration];
+}
+
+void alert_play_file(char* file_name, char* media_type) {
+	if (file_name==NULL) {
+		RAWLOG_ERROR("Alert.play_file - please specify file name to play");
+	} else {
+		[[ServerHost sharedInstance] playFile:[NSString stringWithCString:file_name] 
+								mediaType:media_type?[NSString stringWithCString:media_type]:NULL];
+	}
 }
 
 void take_picture(char* callback_url) {
