@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import "ServerHost.h"
 #import "PickImageDelegate.h"
 #import "LogViewController.h"
@@ -14,17 +15,19 @@
 
 @class WebViewController;
 
-@interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate> {
+@interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate, AVAudioPlayerDelegate> {
 	IBOutlet UIWindow *window;
 	IBOutlet WebViewController *webViewController;
 	LogViewController* logViewController;
 	LogOptionsController* logOptionsController;
     ServerHost * serverHost;
 	PickImageDelegate* pickImageDelegate;
+	AVAudioPlayer *player;
 }
 
 @property (nonatomic, retain) UIWindow *window;
 @property (nonatomic, retain) WebViewController *webViewController;
+@property (nonatomic, retain) AVAudioPlayer *player;
 
 @end
 
