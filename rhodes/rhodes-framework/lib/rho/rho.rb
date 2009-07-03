@@ -3,6 +3,7 @@ require 'rho/render'
 require 'rho/rhoapplication'
 require 'rhom'
 require 'rhofsconnector'
+require 'rho/rhoerror'
 
 module Rho
   class RHO
@@ -24,6 +25,10 @@ module Rho
     # make sure we close the database file
     def self.finalize
       Rhom::RhomDbAdapter::close
+    end
+    
+    def raise_rhoerror(errCode)
+        raise Rho::RhoError.new(errCode)
     end
     
     def get_app(appname)
