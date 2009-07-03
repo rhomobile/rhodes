@@ -31,10 +31,13 @@ import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -149,6 +152,27 @@ public class Platform extends Activity {
         {
             //TODO: we should stop if InitRhoLog failed
         }
+		
+		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
+		String state = Environment.getExternalStorageState();
+		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
+		if(!Environment.MEDIA_MOUNTED.equals(state)) {
+			new AlertDialog.Builder(this)
+				.setTitle("SD card error")
+				.setMessage("SD card is not accessible!")
+				.setCancelable(false)
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Log.e(this.getClass().getSimpleName(), "Exit - SD card is not accessible");
+						stopSelf();
+					}					
+				})
+				.create()
+				.show();
+			return;
+		}
+		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
+		
 		/*
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
