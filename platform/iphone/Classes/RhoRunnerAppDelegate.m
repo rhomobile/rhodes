@@ -5,6 +5,8 @@
 //  Created by adam blum on 9/4/08.
 //  Copyright __MyCompanyName__ 2008. All rights reserved.
 //
+#import <AudioToolbox/AudioToolbox.h>
+
 #import "defs.h"
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
@@ -18,6 +20,7 @@
 
 @synthesize window;
 @synthesize webViewController;
+@synthesize player; 
 
 - (NSString*)normalizeUrl:(NSString*)url {
 	if([url hasPrefix:@"http://"]) {
@@ -126,6 +129,52 @@
 	}
 }
 
+- (void)onShowPopup:(NSString *)message {
+	UIAlertView *alert = [[UIAlertView alloc]
+							   initWithTitle: @"Alert"
+							   message: message
+							   delegate:nil
+							   cancelButtonTitle:@"OK"
+							   otherButtonTitles:nil];
+    [alert show];
+    [alert release];
+}
+
+- (void)onVibrate:(int)duration {
+	AudioServicesPlaySystemSound (kSystemSoundID_Vibrate);
+}
+
+- (void)onPlayFile:(NSString *)fileName {
+	NSString *soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
+	NSLog(@"Playing %@: ", soundFilePath);
+	
+	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
+	NSError* err = nil;
+	AVAudioPlayer *newPlayer =
+		[[AVAudioPlayer alloc] initWithContentsOfURL: fileURL error: &err];
+	NSLog(@"Init media player returns: %@", err);
+	
+	[fileURL release];
+	self.player = newPlayer;
+	[newPlayer release];
+	
+	[player prepareToPlay];	
+	[player setDelegate: self];
+	 [self.player play];
+}
+
+- (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *) player successfully: (BOOL) flag {
+	if (flag == YES) {
+		//[self.button setTitle: @"Play" forState: UIControlStateNormal];
+		NSLog(@"Audio player finished playing...");
+	}	
+}
+
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
+	NSLog(@"Audio player decoding error %@", error);
+}
+
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	
 	// Log View
@@ -153,6 +202,9 @@
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
 	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
+	serverHost->onShowPopup = @selector(onShowPopup:);
+	serverHost->onVibrate = @selector(onVibrate:);
+	serverHost->onPlayFile = @selector(onPlayFile:);
     [serverHost start];
 	
     //Create View
@@ -163,6 +215,7 @@
 								| UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif
 }
+
 #ifdef __IPHONE_3_0
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -179,6 +232,7 @@
 	NSLog(@"Push Alert: %@", alert);
 }
 #endif
+
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
 	//Stop HTTP server host 
