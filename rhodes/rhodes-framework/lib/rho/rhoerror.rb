@@ -14,9 +14,9 @@ module Rho
     def message
         if code == ERR_NETWORK
             return "Could not establish network connection"
-        elif code == ERR_REMOTESERVER
-            return "Server return error"
-        elif code ==  ERR_RUNTIME
+        elsif code == ERR_REMOTESERVER
+            return "Server returned an error"
+        elsif code ==  ERR_RUNTIME
             return "Internal error"
         end
         
