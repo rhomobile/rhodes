@@ -174,7 +174,7 @@ class SyncSource
 	        {
 			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
 	
-	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
 	            syncClientBlobs(strUrl+strQuery);
 	        }else
 	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -206,7 +206,10 @@ class SyncSource
 	
 	        /*if ( bFirst )
 	        {
-	            value = "d:\\work\\blobtest.png";
+	        	try{
+	            	value = DBAdapter.makeBlobFolderName() + "blobtest.png";
+	        	}catch(Exception e){}
+	        	
 	            attribType = "blob.file";
 	            bFirst = false;
 	        }*/
