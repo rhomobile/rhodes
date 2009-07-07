@@ -156,8 +156,7 @@ class SyncSource
 	        strUrl += "objects";
 	        String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
 	
-	        String strBody = "";
-	        makePushBody(strBody, arUpdateTypes[i]);
+	        String strBody = makePushBody(arUpdateTypes[i]);
 	        if ( strBody.length() > 0 )
 	        {
 			    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + strBody.length());
@@ -174,7 +173,7 @@ class SyncSource
 	        {
 			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
 	
-	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
 	            syncClientBlobs(strUrl+strQuery);
 	        }else
 	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -189,8 +188,9 @@ class SyncSource
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
-	void makePushBody(String strBody, String szUpdateType)throws DBException
+	String makePushBody( String szUpdateType)throws DBException
 	{
+		String strBody = "";
 	    //boolean bFirst = true;
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
 						 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType );
@@ -206,7 +206,10 @@ class SyncSource
 	
 	        /*if ( bFirst )
 	        {
-	            value = "d:\\work\\blobtest.png";
+	        	try{
+	            	value = DBAdapter.makeBlobFolderName() + "blobtest.png";
+	        	}catch(Exception e){}
+	        	
 	            attribType = "blob.file";
 	            bFirst = false;
 	        }*/
@@ -231,6 +234,8 @@ class SyncSource
 	
 	        strBody += strSrcBody;
 	    }
+	    
+	    return strBody;
 	}
 
 	void getAndremoveAsk()throws DBException
@@ -351,7 +356,7 @@ class SyncSource
 	        m_nInserted++;
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
-	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getUInt64("id") );
+	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getLong("id") );
 	
 	        m_nDeleted++;
 	    }else{

@@ -234,6 +234,18 @@ extern "C" char* webview_current_location() {
 	return get_current_location();
 }
 
+extern "C" void alert_show_popup(char* message) {
+    //TODO: alert_show_popup
+}
+
+extern "C" void alert_vibrate(int duration) {
+    //TODO: alert_vibrate
+}
+
+extern "C" void alert_play_file(char* file_name, char* media_type) {
+    //TODO: alert_play_file
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
