@@ -23,7 +23,6 @@ namespace "config" do
       $adb = File.join( $androidsdkpath, "tools", "adb.exe" )
       $exe_ext = ".exe"
       $path_separator = ";"
-
     else
       #XXX make these absolute
       $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" )
@@ -35,6 +34,11 @@ namespace "config" do
       $exe_ext = ""
       $path_separator = ":"
     end
+
+    $keytool = File.join( $java, "keytool" + $exe_ext )
+    $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
+    $keystoredir = ENV['HOME'] + "/.rhomobile"
+    $keystore = $keystoredir + "/keystore"
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
@@ -182,15 +186,43 @@ namespace "device" do
       puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
 
     end
-    desc "build unsigned for production"
+    desc "build signed for production"
     task :production => "package:android" do
       dexfile = Jake.get_absolute $bindir + "/classes.dex"
       apkfile = Jake.get_absolute $targetdir + "/Rhodes.apk"
+      signedapkfile = Jake.get_absolute $targetdir + "/Rhodes_signed.apk"
       resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
 
+      if not File.exists? $keystore
+        puts "Generating private keystore..."
+        mkdir_p $keystoredir
+
+        args = []
+        args << "-genkey"
+        args << "-alias"
+        args << "rhomobile.keystore"
+        args << "-keyalg"
+        args << "RSA"
+        args << "-validity"
+        args << "20000"
+        args << "-keystore"
+        args << '"' + $keystore + '"'
+        puts Jake.run($keytool, args)
+      end
+
+      puts "Signing APK file"
+      args = []
+      args << "-verbose"
+      args << "-keystore"
+      args << '"' + $keystore + '"'
+      args << "-signedjar"
+      args << '"' + signedapkfile + '"'
+      args << '"' + apkfile + '"'
+      args << "rhomobile.keystore"
+      puts Jake.run($jarsigner, args)
     end
   end
 end
