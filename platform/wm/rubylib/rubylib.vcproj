@@ -1580,6 +1580,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="alert"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\alert\alert_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"
