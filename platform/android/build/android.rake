@@ -1,3 +1,4 @@
+#
 namespace "config" do
   task :android => ["config:common"] do
     $java = $config["env"]["paths"]["java"]
