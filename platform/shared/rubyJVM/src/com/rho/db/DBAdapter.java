@@ -154,6 +154,9 @@ public class DBAdapter extends RubyBasic {
     	//TODO: read script from jar
 		return "CREATE TABLE client_info ("+
 		"client_id VARCHAR(255) PRIMARY KEY,"+
+		"token VARCHAR(255) default NULL,"+
+		"reset INTEGER(1) default 0,"+
+		"port VARCHAR(10) default NULL,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
 		" id INTEGER default NULL,"+
