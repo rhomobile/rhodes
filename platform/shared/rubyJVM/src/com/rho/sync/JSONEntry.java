@@ -30,7 +30,7 @@ class JSONEntry
 	{
 	    String szRes = null;
 	    if ( m_object.has(name))
-	    	szRes = (String) m_object.get(name);	    	
+	    	szRes = m_object.getString(name);	    	
 	
 	    return szRes;
 	}
@@ -39,11 +39,20 @@ class JSONEntry
 	{
 	    int nRes = 0;
 	    if ( m_object.has(name))
-	    	nRes = ((Integer) m_object.get(name)).intValue();	    	
+	    	nRes = m_object.getInt(name);	    	
 	
 	    return nRes;
 	}
 
+	long getLong(String name)throws JSONException
+	{
+	    long nRes = 0;
+	    if ( m_object.has(name))
+	    	nRes = m_object.getLong(name);	    	
+	
+	    return nRes;
+	}
+	
 	String getUInt64(String name)throws JSONException
 	{
 	    return getString(name);
