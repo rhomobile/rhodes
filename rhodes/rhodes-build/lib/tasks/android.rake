@@ -7,6 +7,8 @@ namespace "config" do
     $deploydir = File.join($basedir,'deploy','android')
     $excludelib = ['**/singleton.rb','**/rational.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
+    $java = $config["env"]["paths"]["java"]
+
     if RUBY_PLATFORM =~ /(win|w)32$/
       $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
       $aapt = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "aapt.exe" )
@@ -14,7 +16,7 @@ namespace "config" do
       $emulator = "cmd /c " + File.join( $config["env"]["paths"]["android"], "tools", "emulator.exe" )
       $adb = File.join( $config["env"]["paths"]["android"], "tools", "adb.exe" )
       $all_files_mask = "*.*"
-
+      $exe_ext = ".exe"
     else
       $dx = "dx"
       $aapt = "aapt"
@@ -22,7 +24,14 @@ namespace "config" do
       $emulator = "emulator"
       $adb = "adb"
       $all_files_mask = "*"
+      $exe_ext = ""
     end
+
+    $keytool = File.join( $java, "keytool" + $exe_ext )
+    $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
+    
+    $keystoredir = ENV['HOME'] + "/.rhomobile"
+    $keystore = $keystoredir + "/keystore"
 
   end
 end
@@ -108,16 +117,28 @@ namespace "bundle" do
 end
 
 namespace "device" do
-  desc "Create downloadable app for android"
+  desc "Create downloadable signed app for android"
   task :android => "bundle:android" do
       chdir $bindir
 
       dexfile = File.join($bindir,"classes.dex")
       apkfile = File.join($targetdir,"Rhodes.apk")
+      signedapkfile = File.join($targetdir,"Rhodes_signed.apk")
       resourcepkg = File.join($bindir,"rhodes.ap_")
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
+
+      if not File.exists? $keystore
+        puts "Generating private keystore..."
+        mkdir_p $keystoredir
+
+        puts `#{$keytool} -genkey -alias rhomobile.keystore -keyalg RSA -validity 20000 -keystore "#{$keystore}"`
+      end
+
+      puts "Signing APK file"
+      puts `#{$jarsigner} -verbose -keystore "#{$keystore}" -signedjar "#{signedapkfile}" "#{apkfile}" rhomobile.keystore`
+
       chdir $basedir
   end
 end
