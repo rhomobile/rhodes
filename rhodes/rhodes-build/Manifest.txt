@@ -83,6 +83,7 @@ res/prebuilt/android/classes/com/rho/net/RhoConnection$UrlParser.class
 res/prebuilt/android/classes/com/rho/net/RhoConnection.class
 res/prebuilt/android/classes/com/rho/net/URI$MalformedURIException.class
 res/prebuilt/android/classes/com/rho/net/URI.class
+res/prebuilt/android/classes/com/rho/sync/ISyncStatusListener.class
 res/prebuilt/android/classes/com/rho/sync/JSONArrayIterator.class
 res/prebuilt/android/classes/com/rho/sync/JSONEntry.class
 res/prebuilt/android/classes/com/rho/sync/SyncEngine$DBCallback.class
@@ -92,6 +93,8 @@ res/prebuilt/android/classes/com/rho/sync/SyncSource$SyncBlob.class
 res/prebuilt/android/classes/com/rho/sync/SyncSource.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$1.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$10.class
+res/prebuilt/android/classes/com/rho/sync/SyncThread$11.class
+res/prebuilt/android/classes/com/rho/sync/SyncThread$12.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$2.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$3.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$4.class
@@ -116,6 +119,7 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$2.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$3.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$4.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$5.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/R$attr.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/R$drawable.class
@@ -652,6 +656,7 @@ res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport$4.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport$5.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport$6.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport$7.class
+res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport$8.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RhoSupport.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyAPI.class
 res/prebuilt/android/classes/com/xruby/runtime/lang/RubyBasic.class

@@ -64,6 +64,12 @@ public class DBAdapter extends RubyBasic {
 		Object[] values = { new Integer(arg1)};
 		return executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement, long arg1)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = { new Long(arg1)};
+		return executeSQL(strStatement,values);
+	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
@@ -148,6 +154,9 @@ public class DBAdapter extends RubyBasic {
     	//TODO: read script from jar
 		return "CREATE TABLE client_info ("+
 		"client_id VARCHAR(255) PRIMARY KEY,"+
+		"token VARCHAR(255) default NULL,"+
+		"reset INTEGER default 0,"+
+		"port VARCHAR(10) default NULL,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
 		" id INTEGER default NULL,"+
