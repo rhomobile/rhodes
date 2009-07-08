@@ -53,7 +53,8 @@ class SyncSource
     String m_name;
     String m_strUrl;
     String m_token;
-
+    boolean m_bTokenFromDB; 
+    
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     boolean m_bGetAtLeastOnePage = false;
     
@@ -66,7 +67,7 @@ class SyncSource
     int getServerObjectsCount(){ return m_nInserted+m_nDeleted; }
 
     String getToken(){ return m_token; }
-    void setToken(String token){ m_token = token; }
+    void setToken(String token){ m_token = token; m_bTokenFromDB = false; }
     boolean isEmptyToken()
     {
         return m_token == null || m_token.length() == 0 || m_token.equals("0");
@@ -95,7 +96,8 @@ class SyncSource
         m_strUrl = strUrl;
         m_name = name;
         m_token = token;
-
+        m_bTokenFromDB = true;
+        
         m_nCurPageCount = 0;
         m_nInserted = 0;
         m_nDeleted = 0;
@@ -271,7 +273,7 @@ class SyncSource
 	
 	        if ( isEmptyToken() )
 	            processToken("1");
-	        else if ( isTokenMoreThanOne() )
+	        else if ( !m_bTokenFromDB && isTokenMoreThanOne() )
 	            strQuery += "&ack_token=" + getToken();
 	
 			LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );

@@ -81,7 +81,7 @@ public:
     int getStartSource();
     void loadClientID();
     String requestClientIDByNet();
-
+    boolean resetClientIDByNet();//throws Exception
     boolean doLogin(String name, String password);
 
     void fireNotification( CSyncSource& src, boolean bFinish );

@@ -20,10 +20,13 @@ static DWORD WINAPI runProc(void* pv) throw()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
-    m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-	DWORD dwThreadID;
-	m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, &dwThreadID);
-    setThreadPriority(ePriority);
+    if ( !m_hThread )
+    {
+        m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	    DWORD dwThreadID;
+	    m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, &dwThreadID);
+        setThreadPriority(ePriority);
+    }
 }
 
 void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
@@ -48,6 +51,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
             LOG(INFO) + "Terminate thread. ID: " + ::GetCurrentThreadId() + "; Result: " + dwRes;
             ::TerminateThread(m_hThread,0);
         }
+        m_hThread = NULL;
     }
 
     if ( m_hAwakeEvent )
