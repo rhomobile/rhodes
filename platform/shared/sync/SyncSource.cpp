@@ -356,8 +356,8 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     {
     	CValue value(oJsonEntry);
     	//
-    	value.m_strAttrType = "blob.url";
-    	value.m_strValue = "http://img.gazeta.ru/files3/661/3219661/ld.jpg";
+    	//value.m_strAttrType = "blob.url";
+    	//value.m_strValue = "http://img.gazeta.ru/files3/661/3219661/ld.jpg";
     	//
     	if ( !downloadBlob(value) )
     		return false;
