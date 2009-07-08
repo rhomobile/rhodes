@@ -20,36 +20,41 @@
 require 'spec/spec_helper'
 
 describe "Rhom" do
+  
+  CLIENT_ID = '67320d31-e42e-4156-af91-5d9bd7175b08'
 
   it_should_behave_like "rhom initializer"
   
   it "should get client_id" do
-    Rhom::Rhom::client_id.should == '67320d31-e42e-4156-af91-5d9bd7175b08'
+    Rhom::Rhom::client_id.should == CLIENT_ID
   end
   
   it "should perform full reset of database" do
     Rhom::Rhom::database_full_reset
-    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
-    Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
-    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
-      source['token'].should == 0
-    end
-    Rhom::Rhom::client_id.should be_nil
+    verify_reset
   end
   
   it "should perform full database reset and logout" do
     Rhom::Rhom::database_full_reset_and_logout
-    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
-    Rhom::RhomDbAdapter::select_from_table('client_info','*').length.should == 0
-    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
-      source['token'].should == 0
-    end
-    Rhom::Rhom::client_id.should be_nil
+    verify_reset
   end
   
   it "should call select_from_table with select array" do
     sel_arr = ['name','industry']
     @res = Rhom::RhomDbAdapter::select_from_table('object_values', '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
     @res.length.should == 2
+  end
+  
+  def verify_reset
+    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
+    res = Rhom::RhomDbAdapter::select_from_table('client_info','*')
+    res.length.should == 1
+    res[0]['reset'].should == 1
+    res[0]['client_id'].should == CLIENT_ID
+    
+    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
+      source['token'].should == 0
+    end
+    Rhom::Rhom::client_id.should == CLIENT_ID
   end
 end

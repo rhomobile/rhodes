@@ -90,11 +90,10 @@ module Rhom
             #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
             if @@inside_transaction
-                raise
+              raise
             else
-                SyncEngine.unlock_sync_mutex
+              SyncEngine.unlock_sync_mutex
             end    
-            
           end
         end
         #puts "result is: #{result.inspect}"
