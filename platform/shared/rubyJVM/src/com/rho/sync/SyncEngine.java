@@ -216,9 +216,9 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }else if ( bResetClient )
 	    {
 	    	if ( !resetClientIDByNet() )
-	    		this.stopSync();
+	    		stopSync();
 	    	else
-	    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(1), m_clientID );	    	
+	    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), m_clientID );	    	
 	    }
 	    	
 	}
