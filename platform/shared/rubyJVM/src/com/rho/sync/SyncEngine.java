@@ -230,7 +230,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    SyncSource src = (SyncSource)m_sources.elementAt(0);
 	    String strUrl = src.getUrl() + "/clientreset";
-	    String strQuery = SYNC_SOURCE_FORMAT();
+	    String strQuery = "?client_id=" + getClientID();
 /*	    String strBody = "";
 	    try{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
