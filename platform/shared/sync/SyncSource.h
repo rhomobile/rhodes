@@ -31,6 +31,16 @@ public:
     const String& getFilePath()const{ return m_strFilePath; }
 };
 
+class CValue
+{
+public:
+    String m_strValue;
+	String m_strAttrType;
+	uint64 m_nID;
+	
+    CValue(json::CJSONEntry& oJsonEntry);//throws JSONException
+};
+
 class CSyncEngine;
 class CSyncSource
 {
@@ -41,6 +51,7 @@ class CSyncSource
     int    m_nID;
     String m_strUrl;
     uint64 m_token;
+    boolean m_bTokenFromDB;
 
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     String m_strAskParams;
@@ -56,7 +67,7 @@ public:
     int getServerObjectsCount()const{ return m_nInserted+m_nDeleted; }
 
     uint64 getToken()const{ return m_token; }
-    void setToken(uint64 token){ m_token = token; }
+    void setToken(uint64 token){ m_token = token; m_bTokenFromDB = false; }
     virtual boolean isEmptyToken()
     {
         return m_token == 0;
@@ -91,11 +102,13 @@ public:
     int  getTotalCount(){return m_nTotalCount;}
 
     void processServerData(const char* szData);
-    void processSyncObject(json::CJSONEntry& oJsonEntry);
+    boolean processSyncObject(json::CJSONEntry& oJsonEntry);
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);
 
+    String makeFileName(const CValue& value);//throws Exception
+    boolean downloadBlob(CValue& value);//throws Exception
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     db::CDBAdapter& getDB();

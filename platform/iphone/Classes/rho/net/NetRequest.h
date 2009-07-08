@@ -19,6 +19,7 @@ public:
     virtual INetData* pullData(const String& strUrl );
     virtual boolean pushData(const String& strUrl, const String& strBody);
     virtual boolean pushFile(const String& strUrl, const String& strFileName);
+    virtual boolean pullFile(const String& strUrl, const String& strFilePath);
     virtual boolean pullCookies(const String& strUrl, const String& strBody);
     //if strUrl.length() == 0 delete all cookies if possible
     virtual void deleteCookie(const String& strUrl);

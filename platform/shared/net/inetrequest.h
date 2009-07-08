@@ -22,6 +22,7 @@ struct INetRequest
     virtual INetData* pullData(const String& strUrl ) = 0;
     virtual boolean pushData(const String& strUrl, const String& strBody)=0;
     virtual boolean pushFile(const String& strUrl, const String& strFileName)=0;
+    virtual boolean pullFile(const String& strUrl, const String& strFileName)=0;
     virtual boolean pullCookies(const String& strUrl, const String& strBody)=0;
     //if strUrl.length() == 0 delete all cookies if possible
     virtual void deleteCookie(const String& strUrl)=0;
