@@ -197,10 +197,14 @@ class SyncEngine implements NetRequest.IRhoSession
 	void loadClientID()throws Exception
 	{
 	    m_clientID = "";
+	    boolean bResetClient = false;
 	    {
-	        IDBResult res = getDB().executeSQL("SELECT client_id from client_info");
+	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
 	        if ( !res.isEnd() )
+	        {
 	            m_clientID = res.getStringByIdx(0);
+	            bResetClient = res.getIntByIdx(1) > 0;
+	        }
 	    }
 	
 	    if ( m_clientID.length() == 0 )
@@ -209,9 +213,40 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	        getDB().executeSQL("DELETE FROM client_info");
 	        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", m_clientID);
+	    }else if ( bResetClient )
+	    {
+	    	if ( !resetClientIDByNet() )
+	    		this.stopSync();
+	    	else
+	    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(1), m_clientID );	    	
 	    }
+	    	
 	}
 
+	boolean resetClientIDByNet()throws Exception
+	{
+	    if ( m_sources.size() == 0 )
+	        return true;
+	
+	    SyncSource src = (SyncSource)m_sources.elementAt(0);
+	    String strUrl = src.getUrl() + "/clientreset";
+	    String strQuery = SYNC_SOURCE_FORMAT();
+	    String strBody = "";
+	    try{
+			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
+	    }catch(Exception e)
+		{
+			LOG.ERROR("getDeviceId or getPlatform failed", e);
+		}
+	    
+	    int port = RhoConf.getInstance().getInt("push_port");
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    
+	    String szData = getNet().pullData(strUrl+strQuery, strBody, this).getCharData();
+	    return szData != null;
+	}
+	
 	String requestClientIDByNet()throws Exception
 	{
 	    if ( m_sources.size() == 0 )

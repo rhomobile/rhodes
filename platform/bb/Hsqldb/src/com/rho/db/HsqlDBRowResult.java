@@ -29,12 +29,27 @@ public class HsqlDBRowResult extends HsqlDBResult {
 		return ((Column)col).columnName.name.toLowerCase();
 	}
 
-	Object[] getItem(int nItem){
-		if ( m_row == null || nItem < 0 || nItem >= getCount() )
-			return null;
+	//Object[] getItem(int nItem){
+	//	if ( m_row == null || nItem < 0 || nItem >= getCount() )
+	//		return null;
 
-		return m_row.getData();  
-	}
+	//	return m_row.getData();  
+	//}
+	
+    public boolean isEnd()
+    {
+    	return m_row == null;
+    }
+    
+    public void next()
+    {
+    	m_row = null;
+    }
+    
+    protected Object getCurValue(int nCol)
+    {
+    	return m_row.getData()[nCol];
+    }
 	
 	int findColIndex(String colname )
 	{
