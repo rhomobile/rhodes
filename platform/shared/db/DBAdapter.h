@@ -131,6 +131,7 @@ public:
     void endTransaction();
     void rollback();
 
+    static String makeBlobFolderName();
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
 

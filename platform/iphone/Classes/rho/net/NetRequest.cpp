@@ -73,15 +73,15 @@ boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 	return bRet;
 }
 
-	static const char* szMultipartPrefix = 
-	"------------A6174410D6AD474183FDE48F5662FCC5\r\n"
-	"Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
-	"Content-Type: application/octet-stream\r\n\r\n";
-	static const char* szMultipartPostfix = 
-    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
-	
-	static const char* szMultipartContType = 
-    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
+static const char* szMultipartPrefix = 
+"------------A6174410D6AD474183FDE48F5662FCC5\r\n"
+"Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
+"Content-Type: application/octet-stream\r\n\r\n";
+static const char* szMultipartPostfix = 
+"\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
+
+static const char* szMultipartContType = 
+"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
 	
 boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 {
@@ -114,7 +114,13 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 		
 	return bRet;*/
 }
-	
+
+boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+{
+    //TODO: pullFile
+    return true;
+}
+
 boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 {
     int bRespRecieved = 0;

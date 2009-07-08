@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "NetRequestImpl.h"
+#include "common/RhoFile.h"
 
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
@@ -103,14 +104,15 @@ CNetDataImpl* CNetRequestImpl::sendString(const String& strBody)
             pszErrFunction = L"HttpSendRequest";
             break;
         }
-        //Sleep(5000);
-        readResponse(pNetData);
+
+        if ( readResponse(pNetData) )
+            readInetFile(hRequest,pNetData);
     }while(0);
 
     return pNetData;
 }
 
-void CNetRequestImpl::readResponse(CNetDataImpl* pNetData)
+boolean CNetRequestImpl::readResponse(CNetDataImpl* pNetData)
 {
     DWORD dwLen = 10;
     wchar_t szHttpRes[10];
@@ -119,7 +121,7 @@ void CNetRequestImpl::readResponse(CNetDataImpl* pNetData)
     if( !HttpQueryInfo( hRequest, HTTP_QUERY_STATUS_CODE, szHttpRes, &dwLen, &nIndex) )
     {
         pszErrFunction = L"HttpSendRequest";
-        return;
+        return false;
     }
     pNetData->setResponseRecieved(true);
 
@@ -141,10 +143,33 @@ void CNetRequestImpl::readResponse(CNetDataImpl* pNetData)
             ::InternetSetCookieA(strUrlA, NULL, "");
         }
 
-        return;
+        return false;
 	}
 
-    readInetFile(hRequest,pNetData);
+    return true;
+}
+
+CNetDataImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
+{
+    CNetDataImpl* pNetData = new CNetDataImpl;
+
+    do
+    {
+        if ( isError() )
+            break;
+
+        if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
+        {
+            pszErrFunction = L"HttpSendRequest";
+            break;
+        }
+
+        if ( readResponse(pNetData) )
+            readInetFile(hRequest,pNetData, &oFile);
+
+    }while(0);
+
+    return pNetData;
 }
 
 static const char* szMultipartPrefix = 
@@ -224,7 +249,9 @@ CNetDataImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
         if ( isError() )
             break;
 
-        readResponse(pNetData);
+        if ( readResponse(pNetData) )
+            readInetFile(hRequest,pNetData);
+
     }while(0);
 
     return pNetData;
@@ -258,7 +285,7 @@ CNetRequestImpl::~CNetRequestImpl()
     m_pInstance = 0;
 }
 
-void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetDataImpl* pNetData )
+void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetDataImpl* pNetData, common::CRhoFile* pFile /*=NULL*/ )
 {
     DWORD dwBufSize = 4096;
     char* pBuf = (char*)malloc(dwBufSize);
@@ -270,7 +297,12 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetDataImpl* pNetData )
         if ( bRead )
         {
             if (dwBytesRead > 0)
-                pNetData->getRawData().append(pBuf,dwBytesRead);
+            {
+                if ( pFile )
+                    pFile->write(pBuf,dwBytesRead);
+                else
+                    pNetData->getRawData().append(pBuf,dwBytesRead);
+            }
 
             pNetData->setValid(true);
         }

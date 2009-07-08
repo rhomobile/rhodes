@@ -91,10 +91,14 @@ void CSyncEngine::loadAllSources()
 void CSyncEngine::loadClientID()
 {
     m_clientID = "";
+    boolean bResetClient = false;
     {
-        DBResult( res, getDB().executeSQL("SELECT client_id from client_info limit 1") );
+        DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
         if ( !res.isEnd() )
+        {
             m_clientID = res.getStringByIdx(0);
+            bResetClient = res.getIntByIdx(1) > 0;
+        }
     }
 
     if ( m_clientID.length() == 0 )
@@ -103,7 +107,26 @@ void CSyncEngine::loadClientID()
 
         getDB().executeSQL("DELETE FROM client_info");
         getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", m_clientID);
+    }else if ( bResetClient )
+    {
+    	if ( !resetClientIDByNet() )
+    		stopSync();
+    	else
+    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, m_clientID );	    	
     }
+}
+
+boolean CSyncEngine::resetClientIDByNet()//throws Exception
+{
+    if ( m_sources.size() == 0 )
+        return true;
+
+    CSyncSource& src = *m_sources.elementAt(0);
+    String strUrl = src.getUrl() + "/clientreset";
+    String strQuery = "?client_id=" + getClientID();
+    
+    NetRequestStr( szData, getNet().pullData(strUrl+strQuery) );
+    return szData != null;
 }
 
 String CSyncEngine::requestClientIDByNet()

@@ -321,7 +321,7 @@ void Init_RhoSupport()
 	rb_define_global_function("load", rb_require_compiled, 1);
 	
 	Init_RhoLog();
-	//Init_RhoBlobs();
+	Init_RhoBlobs();
 }
 
 static void Init_RhoBlobs()
