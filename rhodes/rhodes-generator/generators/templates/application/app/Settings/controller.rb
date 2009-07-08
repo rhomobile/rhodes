@@ -18,7 +18,7 @@ class SettingsController < Rho::RhoController
     @msg = ""
     if @params['login'] and @params['password']
       begin
-        success = SyncEngine::login(@params['login'], @params['password'])
+        success = SyncEngine.login(@params['login'], @params['password'])
       rescue RhoError => e
           @msg = e.message
       end  
@@ -26,7 +26,7 @@ class SettingsController < Rho::RhoController
     
     if success > 0
       # run sync if we were successful
-      SyncEngine::dosync
+      SyncEngine.dosync
       redirect Rho::RhoConfig.start_path
     else
       @msg = "You entered an invalid login/password, please try again." unless @msg.length
@@ -35,7 +35,7 @@ class SettingsController < Rho::RhoController
   end
   
   def logout
-    SyncEngine::logout
+    SyncEngine.logout
     @msg = "You have been logged out."
     render :action => :login, :query => {:msg => @msg}
   end
@@ -45,14 +45,13 @@ class SettingsController < Rho::RhoController
   end
   
   def do_reset
-    SyncEngine::trigger_sync_db_reset
-    SyncEngine::dosync
+    SyncEngine.database_full_reset
     @msg = "Database has been reset."
     redirect :action => :index, :query => {:msg => @msg}
   end
   
   def do_sync
-    SyncEngine::dosync
+    SyncEngine.dosync
     @msg =  "Sync has been triggered."
     redirect :action => :index, :query => {:msg => @msg}
   end
