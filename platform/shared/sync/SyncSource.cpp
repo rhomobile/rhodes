@@ -26,6 +26,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine
     m_nID = id;
     m_strUrl = strUrl;
     m_token = token;
+    m_bTokenFromDB = true;
 
     m_nCurPageCount = 0;
     m_nInserted = 0;
@@ -105,7 +106,7 @@ void CSyncSource::syncClientChanges()
         {
 		    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
 
-            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
             syncClientBlobs(strUrl+strQuery);
         }else
             getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -195,7 +196,7 @@ void CSyncSource::syncServerChanges()
 
         if ( isEmptyToken() )
             processToken(1);
-        else if ( getToken() > 1 )
+        else if ( !m_bTokenFromDB && getToken() > 1 )
             strQuery += "&ack_token=" + convertToStringA(getToken());
 
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
@@ -256,7 +257,13 @@ void CSyncSource::processServerData(const char* szData)
 
         CJSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
         if ( !oJsonObject.isEmpty() )
-            processSyncObject(oJsonObject);
+        {
+            if ( !processSyncObject(oJsonObject) )
+            {
+	            getSync().stopSync();
+	            break;
+            }
+        }
     }
     getDB().endTransaction();
 
@@ -264,15 +271,101 @@ void CSyncSource::processServerData(const char* szData)
     	m_syncEngine.fireNotification(*this, false);
 }
 
-void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
+CValue::CValue(json::CJSONEntry& oJsonEntry)//throws JSONException
+{
+	m_strValue = oJsonEntry.getString("value");
+	const char* szAttribType = oJsonEntry.getString("attrib_type");
+    m_strAttrType = szAttribType ? szAttribType : "";
+	m_nID = oJsonEntry.getUInt64("id");
+}
+
+String CSyncSource::makeFileName(const CValue& value)//throws Exception
+{
+    String fName = CDBAdapter::makeBlobFolderName();
+	
+	String strExt = ".bin";
+
+    const char* url = value.m_strValue.c_str();
+    const char* quest = strchr(url,'?');
+    char szExt[20];
+    szExt[0] = 0;
+    if (quest){
+        const char* extStart = strstr(quest,"extension=");
+        if ( extStart ){
+            const char* extEnd = strstr(extStart,"&");
+            if (extEnd){
+                int nExtLen = extEnd-(extStart+10);
+                strncpy(szExt,extStart+10,nExtLen);
+                szExt[nExtLen] = 0;
+            }
+            else
+                strcpy(szExt,extStart+10);
+        }
+    }
+
+    if ( !szExt[0] ){
+        const char* dot = strrchr(url,'.');
+        //TODO: process :http://img.lenta.ru/news/2009/03/11/acid/picture.jpg?test=.img
+        if (dot){
+            if (quest){
+                if(quest>dot){
+                    strncpy(szExt,dot,quest-dot);
+                    szExt[quest-dot] = 0;
+                }
+            }
+            else
+                strcpy(szExt,dot);
+        }
+    }
+
+    if ( szExt[0] )
+        strExt = szExt;
+
+	fName += "id_" + convertToStringA(value.m_nID) + strExt;
+	
+	return fName;
+}
+
+boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
+{
+	if ( value.m_strAttrType != "blob.url"  )
+		return true;
+	
+	String fName = makeFileName( value );
+	String url = value.m_strValue;
+	const char* nQuest = strchr(url.c_str(),'?');
+	if ( nQuest > 0 )
+		url += "&";
+	else
+		url += "?";
+	url += "client_id=" + getSync().getClientID();
+
+    if ( !getNet().pullFile(url, fName) )
+        return false;
+    
+    value.m_strAttrType = "blob.file";
+    value.m_strValue = fName;
+    
+    return true;
+}
+	
+boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
 {
     const char* szDbOp = oJsonEntry.getString("db_operation");
     if ( szDbOp && strcmp(szDbOp,"insert")==0 )
     {
+    	CValue value(oJsonEntry);
+    	//
+    	value.m_strAttrType = "blob.url";
+    	value.m_strValue = "http://img.gazeta.ru/files3/661/3219661/ld.jpg";
+    	//
+    	if ( !downloadBlob(value) )
+    		return false;
+
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
             oJsonEntry.getUInt64("id"), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
-            oJsonEntry.getString("value"), oJsonEntry.getString("update_type"), oJsonEntry.getString("attrib_type") );
+            value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
 
         m_nInserted++;
     }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
@@ -283,6 +376,8 @@ void CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     }else{
         LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");
     }
+
+    return true;
 }
 
 void CSyncSource::processToken(uint64 token)
