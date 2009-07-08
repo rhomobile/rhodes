@@ -13,6 +13,8 @@
 #import "AppManager.h"
 #import "common/RhoConf.h"
 #import "logging/RhoLog.h"
+#include "RhoPushToken.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
 
@@ -211,6 +213,8 @@
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
 #ifdef __IPHONE_3_0
+	rho_push_token_create();
+	
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
 								| UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif
@@ -220,6 +224,8 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	NSLog(@"Device token is %@", deviceToken);
+	//NSString* str;
+	//str = [[NSString alloc] initWithData:aData encoding:NSASCIIStringEncoding];
 }
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
