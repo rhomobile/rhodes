@@ -231,7 +231,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    SyncSource src = (SyncSource)m_sources.elementAt(0);
 	    String strUrl = src.getUrl() + "/clientreset";
 	    String strQuery = SYNC_SOURCE_FORMAT();
-	    String strBody = "";
+/*	    String strBody = "";
 	    try{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
 			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
@@ -241,9 +241,9 @@ class SyncEngine implements NetRequest.IRhoSession
 		}
 	    
 	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
 	    
-	    String szData = getNet().pullData(strUrl+strQuery, strBody, this).getCharData();
+	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
 	    return szData != null;
 	}
 	
@@ -255,7 +255,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    SyncSource src = (SyncSource)m_sources.elementAt(0);
 	    String strUrl = src.getUrl() + "/clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
-	    String strBody = "";
+	    /*String strBody = "";
 	    try{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
 			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
@@ -265,9 +265,9 @@ class SyncEngine implements NetRequest.IRhoSession
 		}
 	    
 	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
 	    
-	    String szData = getNet().pullData(strUrl+strQuery, strBody, this).getCharData();
+	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
 	    if ( szData != null )
 	    {
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
@@ -328,7 +328,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
-	    try{
+/*	    try{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
 			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
 	    }catch(Exception e)
@@ -337,7 +337,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		}
 		
 	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);
+	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
 	    
 	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
 	    if ( strSession == null || strSession.length() == 0 )
