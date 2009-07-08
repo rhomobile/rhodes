@@ -27,7 +27,21 @@ bool CRhoPushToken::post_token() {
 	LOG(INFO)+"Running push token operation...";
 	CSyncThread* pSync = CSyncThread::getInstance();
 	if (pSync) {
-		db::CDBAdapter& db = pSync->getDBAdapter();
+		db::CDBAdapter& db = pSync->getDBAdapter();		
+		DBResult( res, db.executeSQL("SELECT client_id, token, token_sent from client_info limit 1") );
+		if ( !res.isEnd() ) {
+			int token_sent = res.getIntByIdx(2);
+			String token = res.getStringByIdx(1); 
+			if ( (m_token.compare(token) == 0) && (token_sent == 0) ) {
+				//token in db same as new one and it was already send to the server
+				//so we do nothing
+				return true; 
+			}
+			//Send token to the server
+			
+			//save token db and set reset flag to false
+			db.executeSQL( "UPDATE client_info SET reset=?, token=?", 0, m_token.c_str() );			
+		}
 	}
 	return false;
 }		
