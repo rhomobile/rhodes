@@ -4,6 +4,10 @@
 #include "net/INetRequest.h"
 
 namespace rho {
+namespace common {
+    class CRhoFile;
+}
+
 namespace net {
 
 class CNetDataImpl : public INetData
@@ -52,12 +56,13 @@ public :
     bool isError(){ return pszErrFunction!= null; }
     CNetDataImpl* sendString(const String& strBody);
     CNetDataImpl* sendStream(common::InputStream* body);
+    CNetDataImpl* downloadFile(common::CRhoFile& oFile);
 
     void ErrorMessage(LPCTSTR pszFunction);
-    void readInetFile( void* hRequest, CNetDataImpl* pNetData );
+    void readInetFile( void* hRequest, CNetDataImpl* pNetData, common::CRhoFile* pFile = NULL );
     void alloc_url_components(URL_COMPONENTS *uri, const wchar_t *url);
     void free_url_components(URL_COMPONENTS *uri);
-    void readResponse(CNetDataImpl* pNetData);
+    boolean readResponse(CNetDataImpl* pNetData);
     bool SetupInternetConnection(LPCTSTR url);
 
     static void cancel()

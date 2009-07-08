@@ -77,6 +77,34 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
     return bRet;
 }
 
+boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+{
+    common::CRhoFile oFile;
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
+    {
+        LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
+        return false;
+    }
+
+    int nTry = 0;
+    m_bCancel = false;
+    CNetDataImpl* pData = 0;
+    do
+    {
+        if ( pData )
+            delete pData;
+
+        CNetRequestImpl oImpl("GET",strUrl);
+        pData = oImpl.downloadFile(oFile);
+        nTry++;
+
+    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+
+    boolean bRet = pData->getCharData() != null;
+    delete pData;
+    return bRet;
+}
+
 INetData* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody )
 {
     int nTry = 0;
