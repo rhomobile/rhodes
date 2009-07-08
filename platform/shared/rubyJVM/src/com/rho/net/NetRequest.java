@@ -288,6 +288,95 @@ public class NetRequest
 		return buffer != null;
     }
 	
+	public boolean pullFile( String strUrl, String strFileName, IRhoSession oSession )throws Exception
+	{
+		SimpleFile file = null;
+		OutputStream fstream = null;
+		boolean bRes = false;
+		try{
+			file = RhoClassFactory.createFile();
+			file.open(strFileName, false, true);
+			fstream = file.getOutStream();
+			
+			int nTry = 0;
+			do{
+				try{
+					bRes = pullFile1( strUrl, fstream, oSession );
+					break;
+				}catch(IOException e)
+				{
+		    		if ( nTry+1 >= MAX_NETREQUEST_RETRY )
+		    			throw e;
+		    	}
+		        nTry++;
+			}while( true );
+			
+		}finally{
+			if ( fstream != null )
+				try{ fstream.close();}catch(IOException e){}
+			
+			if ( file != null )
+				try{ file.close(); }catch(IOException e){}
+		}
+		
+		return bRes;
+	}
+	
+	boolean pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession )throws Exception
+	{
+		StringBuffer buffer = null;
+		InputStream is = null;
+		boolean bRes = false;
+		
+		try{
+			closeConnection();
+			connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			
+			String strSession = oSession.getSession();
+			if ( strSession != null && strSession.length() > 0 )
+				connection.setRequestProperty("Cookie", strSession );
+			
+			connection.setRequestMethod(IHttpConnection.GET);
+			
+			is = connection.openInputStream();
+			int code = connection.getResponseCode();
+			
+			LOG.INFO("getResponseCode : " + code);
+			
+			if (code != IHttpConnection.HTTP_OK) 
+			{
+				LOG.ERROR("Error retrieving data: " + code);
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+					oSession.logout();
+			}else
+			{
+				//long len = connection.getLength();
+				//LOG.INFO("pullFile data size:" + len );
+				//int nAvail = is.available();
+					
+				synchronized (m_byteBuffer) {			
+					int nRead = 0;
+		    		do{
+		    			nRead = bufferedReadNet(m_byteBuffer,is);
+		    			if ( nRead > 0 )
+		    				fstream.write(m_byteBuffer, 0, nRead);
+		    		}while( nRead > 0 );
+				}
+				
+				bRes = true;
+			}
+
+		}finally
+		{
+			if ( is != null )
+				try{ is.close(); }catch(IOException exc){}
+			
+			closeConnection();
+		}
+		
+		return bRes;
+	}
+	
     //if strUrl.length() == 0 delete all cookies if possible
 	public void deleteCookie(String strUrl)
     {
@@ -424,6 +513,19 @@ public class NetRequest
 				break;
 			}
 			bytesRead += read;
+		}
+		return bytesRead;
+	}
+	
+	private static final int bufferedReadNet(byte[] a, InputStream in) throws IOException {
+		int bytesRead = 0;
+		while (bytesRead < (a.length)) {
+			int read = in.read();// a, 0, a.length );
+			if (read < 0) {
+				break;
+			}
+			a[bytesRead] = (byte)read;
+			bytesRead ++;
 		}
 		return bytesRead;
 	}

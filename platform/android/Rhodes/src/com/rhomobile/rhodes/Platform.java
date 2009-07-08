@@ -66,6 +66,8 @@ public class Platform extends Activity {
 
 	private boolean isStarted = false;
 
+	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
+
 	//private NetworkStateTracker networkStateTracker;
 	
 	public String getHomeUrl() {
@@ -159,7 +161,7 @@ public class Platform extends Activity {
 		if(!Environment.MEDIA_MOUNTED.equals(state)) {
 			new AlertDialog.Builder(this)
 				.setTitle("SD card error")
-				.setMessage("SD card is not accessible!")
+				.setMessage(sdCardError)
 				.setCancelable(false)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {

@@ -186,7 +186,6 @@
 		F58E7FDA0F008A6B00E46829 /* phonebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = phonebook.m; path = Classes/Phonebook/phonebook.m; sourceTree = SOURCE_ROOT; };
 		F58E80100F008B3F00E46829 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = ../../../../../../System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		F59F16660E9455B0004103B4 /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ../shared/ruby/rhoruby/rhoruby.h; sourceTree = SOURCE_ROOT; };
 		F5B32263100408C700C63255 /* RhoPushToken.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushToken.cpp; path = Classes/rho/common/RhoPushToken.cpp; sourceTree = SOURCE_ROOT; };
 		F5B32264100408C700C63255 /* RhoPushToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPushToken.h; path = Classes/rho/common/RhoPushToken.h; sourceTree = SOURCE_ROOT; };
 		F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
@@ -242,7 +241,6 @@
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
-				F568940B0E92FC1A004DBB2D /* Rhoruby */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				05377CEE0E74D6CB003B8BD1 /* Server */,
@@ -403,14 +401,6 @@
 				F563D5450EA8240E0062DA57 /* librhosynclib.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F568940B0E92FC1A004DBB2D /* Rhoruby */ = {
-			isa = PBXGroup;
-			children = (
-				F59F16660E9455B0004103B4 /* rhoruby.h */,
-			);
-			name = Rhoruby;
 			sourceTree = "<group>";
 		};
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {

@@ -17,6 +17,7 @@ lib/rho/rho.rb
 lib/rho/rhoapplication.rb
 lib/rho/rhocontact.rb
 lib/rho/rhocontroller.rb
+lib/rho/rhoerror.rb
 lib/rho/rhofsconnector.rb
 lib/rho/rhosupport.rb
 lib/rho/rhoutils.rb

@@ -162,21 +162,26 @@ public class HsqlDBResult implements IDBResult
     		m_current = m_current.next;
     }
     
+    protected Object getCurValue(int nCol)
+    {
+    	return m_current.data[nCol];
+    }
+    
 	public String getStringByIdx(int nCol)
 	{
-		Object val = m_current.data[nCol];
+		Object val = getCurValue(nCol);
 		return val != null ? val.toString() : ""; 
 	}
 	
 	public int getIntByIdx(int nCol)
 	{
-		Object val = m_current.data[nCol];
+		Object val = getCurValue(nCol);
 		return val != null ? Number.intValue(val) : 0; 
 	}
 	
 	public long getLongByIdx(int nCol)
 	{
-		Object val = m_current.data[nCol];
+		Object val = getCurValue(nCol);
 		return val != null ? Number.longValue(val) : 0; 
 	}
 	
@@ -187,7 +192,7 @@ public class HsqlDBResult implements IDBResult
 
 	public RubyValue getRubyValueByIdx(int nCol)
 	{ 
-		Object val = m_current.data[nCol];
+		Object val = getCurValue(nCol);
 		if (val == null)
 			return RubyConstant.QNIL;
 		

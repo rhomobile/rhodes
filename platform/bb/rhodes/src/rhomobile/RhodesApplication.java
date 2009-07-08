@@ -185,7 +185,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			String url = RhoConf.getInstance().getString("LastVisitedPage");
 			if (url.length()>0) {
 				LOG.TRACE("Navigating to LastVisitedPage: " + url);
-				this.navigateUrl(url);
+				
+				if ( _history.size() == 0 )
+					_history.addElement(url);
+				
+				navigateUrl(url);
 				return true;
 			}
 		} 
@@ -321,7 +325,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             				//retrieve the file
             				Class clazz = Class.forName("rhomobile.RhodesApplication");
             				file = RhoClassFactory.createFile();
-            				InputStream is = file.getResourceAsStream(clazz.getClass(), file_name);
+            				InputStream is = file.getResourceAsStream(clazz.getClass(), "/apps" + file_name);
             				//create an instance of the player from the InputStream
             				Player player = javax.microedition.media.Manager.createPlayer(is,type);
             				player.realize();

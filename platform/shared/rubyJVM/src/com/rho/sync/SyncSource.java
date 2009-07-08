@@ -156,8 +156,7 @@ class SyncSource
 	        strUrl += "objects";
 	        String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
 	
-	        String strBody = "";
-	        makePushBody(strBody, arUpdateTypes[i]);
+	        String strBody = makePushBody(arUpdateTypes[i]);
 	        if ( strBody.length() > 0 )
 	        {
 			    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + strBody.length());
@@ -174,7 +173,7 @@ class SyncSource
 	        {
 			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
 	
-	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type ISNULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
+	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
 	            syncClientBlobs(strUrl+strQuery);
 	        }else
 	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -189,8 +188,9 @@ class SyncSource
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
-	void makePushBody(String strBody, String szUpdateType)throws DBException
+	String makePushBody( String szUpdateType)throws DBException
 	{
+		String strBody = "";
 	    //boolean bFirst = true;
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
 						 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType );
@@ -206,7 +206,10 @@ class SyncSource
 	
 	        /*if ( bFirst )
 	        {
-	            value = "d:\\work\\blobtest.png";
+	        	try{
+	            	value = DBAdapter.makeBlobFolderName() + "blobtest.png";
+	        	}catch(Exception e){}
+	        	
 	            attribType = "blob.file";
 	            bFirst = false;
 	        }*/
@@ -231,6 +234,8 @@ class SyncSource
 	
 	        strBody += strSrcBody;
 	    }
+	    
+	    return strBody;
 	}
 
 	void getAndremoveAsk()throws DBException
@@ -328,7 +333,13 @@ class SyncSource
 		
 		        JSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
 		        if ( !oJsonObject.isEmpty() )
-		            processSyncObject(oJsonObject);
+		        {
+		            if ( !processSyncObject(oJsonObject) )
+		            {
+			            getSync().stopSync();
+			            break;
+		            }
+		        }
 		    }
 	    }finally{    
 			getDB().endTransaction();
@@ -338,25 +349,97 @@ class SyncSource
 	    	m_syncEngine.fireNotification(this, false);
 	}
 
-	void processSyncObject(JSONEntry oJsonEntry)throws DBException, JSONException
+	class CValue
+	{
+	    String m_strValue;
+		String m_strAttrType;
+		long   m_nID;
+		
+		CValue(JSONEntry oJsonEntry)throws JSONException
+		{
+			m_strValue = oJsonEntry.getString("value");
+			m_strAttrType = oJsonEntry.getString("attrib_type");
+			m_nID = oJsonEntry.getLong("id");
+		}
+	}
+	
+	private String makeFileName(CValue value)throws Exception
+	{
+		String fName = DBAdapter.makeBlobFolderName();
+		
+		String strExt = ".bin";
+		URI uri = new URI(value.m_strValue);
+		int nDot = uri.getPath().lastIndexOf('.');
+		if ( nDot >= 0 )
+			strExt = uri.getPath().substring(nDot);
+		else{
+			int nExt = uri.getQueryString().indexOf("extension=");
+			if ( nExt >= 0 ){
+				int nExtEnd = uri.getQueryString().indexOf("&", nExt);
+				if (nExtEnd < 0 )
+					nExtEnd = uri.getQueryString().length();
+				
+				strExt = uri.getQueryString().substring(nExt+10, nExtEnd);
+			}
+		}
+		
+		fName += "id_" + Long.toString(value.m_nID) + strExt;
+		
+		return fName;
+	}
+	
+	boolean downloadBlob(CValue value)throws Exception
+	{
+		if ( value.m_strAttrType == null || !value.m_strAttrType.equals("blob.url")  )
+			return true;
+		
+		String fName = makeFileName( value );
+		String url = value.m_strValue;
+		int nQuest = url.lastIndexOf('?');
+		if ( nQuest > 0 )
+			url += "&";
+		else
+			url += "?";
+		url += "client_id=" + getSync().getClientID();
+		
+        if ( !getNet().pullFile(url, fName, getSync()) )
+        	return false;
+        
+        value.m_strAttrType = "blob.file";
+        value.m_strValue = fName;
+        
+        return true;
+	}
+	
+	boolean processSyncObject(JSONEntry oJsonEntry)throws Exception
 	{
 	    String szDbOp = oJsonEntry.getString("db_operation");
 	    if ( szDbOp != null && szDbOp.equals("insert") )
 	    {
+	    	CValue value = new CValue(oJsonEntry);
+	    	//
+	    	//value.m_strAttrType = "blob.url";
+	    	//value.m_strValue = "http://img.gazeta.ru/files3/661/3219661/ld.jpg";
+	    	//
+	    	if ( !downloadBlob(value) )
+	    		return false;
+	    	
 	        getDB().executeSQL("INSERT INTO object_values " +
 	            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-	            new Integer(oJsonEntry.getInt("id")), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
-	            oJsonEntry.getString("value"), oJsonEntry.getString("update_type"), oJsonEntry.getString("attrib_type") );
+	            new Long(value.m_nID), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
+	            value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
 	
 	        m_nInserted++;
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
-	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getUInt64("id") );
+	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getLong("id") );
 	
 	        m_nDeleted++;
 	    }else{
 	        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );
 	    }
+	    
+	    return true;
 	}
 
 	void processToken(String token)throws DBException

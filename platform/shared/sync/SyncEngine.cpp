@@ -235,7 +235,7 @@ void CSyncEngine::logout()
 void CSyncEngine::resetSyncDB()
 {
     getDB().executeSQL( "DELETE from object_values" );
-    getDB().executeSQL( "DELETE from client_info" );
+    getDB().executeSQL( "UPDATE client_info SET reset=?", 1 );
     getDB().executeSQL( "UPDATE sources SET token=?", 0 );
     getDB().executeSQL( "VACUUM" );
 
