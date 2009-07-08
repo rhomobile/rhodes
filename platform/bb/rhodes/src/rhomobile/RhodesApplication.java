@@ -185,7 +185,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			String url = RhoConf.getInstance().getString("LastVisitedPage");
 			if (url.length()>0) {
 				LOG.TRACE("Navigating to LastVisitedPage: " + url);
-				this.navigateUrl(url);
+				
+				if ( _history.size() == 0 )
+					_history.addElement(url);
+				
+				navigateUrl(url);
 				return true;
 			}
 		} 
