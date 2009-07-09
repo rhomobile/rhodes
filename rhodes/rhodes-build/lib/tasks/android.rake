@@ -4,33 +4,31 @@ require File.join(File.dirname(__FILE__),'..','jake.rb')
 namespace "config" do
   task :android => :common do
 
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      $all_files_mask = "*.*"
+      $exe_ext = ".exe"
+      $bat_ext = ".bat"
+    else
+      $all_files_mask = "*"
+      $exe_ext = ""
+      $bat_ext = ""
+    end
+
     $deploydir = File.join($basedir,'deploy','android')
     $excludelib = ['**/singleton.rb','**/rational.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
     $java = $config["env"]["paths"]["java"]
+    $keytool = File.join( $java, "keytool" + $exe_ext )
+    $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
+
     $androidsdk = $config["env"]["paths"]["android"]
     $androidplatform = "android-1.1"
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx.bat" )
-      $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt.exe" )
-      $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder.bat" )
-      $emulator = "cmd /c " + File.join( $androidsdk, "tools", "emulator.exe" )
-      $adb = File.join( $androidsdk, "tools", "adb.exe" )
-      $all_files_mask = "*.*"
-      $exe_ext = ".exe"
-    else
-      $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx" )
-      $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt" )
-      $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder" )
-      $emulator = File.join( $androidsdk, "tools", "emulator" )
-      $adb = File.join( $androidsdk, "tools", "adb" )
-      $all_files_mask = "*"
-      $exe_ext = ""
-    end
-
-    $keytool = File.join( $java, "keytool" + $exe_ext )
-    $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
+    $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
+    $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
+    $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder" + $bat_ext )
+    $emulator = "cmd /c " + File.join( $androidsdk, "tools", "emulator" + $exe_ext )
+    $adb = File.join( $androidsdk, "tools", "adb" + $exe_ext )
 
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
