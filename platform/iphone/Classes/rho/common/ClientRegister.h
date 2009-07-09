@@ -10,20 +10,19 @@
 namespace rho{
 namespace common{
 
-class CRhoPushToken : public common::CRhoThread
+class CClientRegister : public common::CRhoThread
 {
     DEFINE_LOGCLASS;
 public:
-	static CRhoPushToken* create(IRhoClassFactory* factory);
-	static CRhoPushToken* getInstance() { return m_pInstance; }
+	static CClientRegister* create(IRhoClassFactory* factory,const char* device_pin);
+	static CClientRegister* getInstance() { return m_pInstance; }
 	
 	virtual void run();	
 
-	void set(char* data);
 private:	
-	CRhoPushToken(common::IRhoClassFactory* factory);
+	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);
 	
-	static CRhoPushToken* m_pInstance;
+	static CClientRegister* m_pInstance;
 	net::INetRequest* m_NetRequest;
 	String m_token;
 	bool   m_set;
@@ -40,9 +39,7 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-void rho_push_token_create();
-void rho_push_token_set(char* data);
-	
+void rho_client_register(const char* device_pin);
 
 #ifdef __cplusplus
 };
