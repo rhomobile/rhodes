@@ -26,7 +26,7 @@ CRhoPushToken::CRhoPushToken(common::IRhoClassFactory* factory) : CRhoThread(fac
 }
 
 bool CRhoPushToken::post_token() {
-	LOG(INFO)+"Running push token operation...";
+	LOG(INFO)+"Running register client operation...";
 	CSyncThread* pSync = CSyncThread::getInstance();
 	if (pSync&&m_NetRequest) {
 		db::CDBAdapter& db = pSync->getDBAdapter();		
@@ -42,12 +42,20 @@ bool CRhoPushToken::post_token() {
 					return true; 
 				}
 				//Send token to the server
-				String strBody = "client_id=" + client_id + "&device_pin=" + m_token + "&device_type=iPhone&device_port=0";
 				String strUrl = rho_conf_getString("syncserver");
-				if (m_NetRequest->pushData(strUrl + "clientregister", strBody)) {
-					//save token db and set reset flag to false
-					db.executeSQL( "UPDATE client_info SET reset=?, token=?", 0, m_token.c_str() );	
-					return true;
+				if (strUrl.size() > 0) {
+					String strBody = "client_id=" + client_id + "&device_pin=" + m_token + "&device_type=Iphone&device_port=0";
+					if (m_NetRequest->pushData(strUrl + "clientregister", strBody)) {
+						//save token db and set reset flag to false
+						db.executeSQL( "UPDATE client_info SET reset=?, token=?", 0, m_token.c_str() );
+						LOG(INFO)+"Registered client sucessfully...";
+						return true;
+					} else {
+						LOG(INFO)+"Network error POST-ing device pin to the server...";
+					}
+				} else {
+					LOG(ERROR)+"Can't register client because syncserver url is not configured...";
+					return true; //stop client registration
 				}
 			}
 		}
@@ -57,13 +65,15 @@ bool CRhoPushToken::post_token() {
 	
 void CRhoPushToken::run() {	
 	int nWait = THREAD_WAIT_TIMEOUT;
+	LOG(INFO)+"Started client registration...";
 	while(true) {
 		if (m_set && post_token()) {
 			break;
 		}
-		LOG(INFO) + "Token blocked for " + nWait + " seconds...";
+		LOG(INFO) + "Register client blocked for " + nWait + " seconds...";
 		wait(nWait);
 	}
+	LOG(INFO)+"Stoped client registration...";
 }
 
 void CRhoPushToken::set(char* data) { 
