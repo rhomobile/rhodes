@@ -90,6 +90,11 @@ class SyncEngine implements NetRequest.IRhoSession
     	m_NetRequest = null; 
     	m_syncState = esNone; 
     	
+    	try {
+    		loadClientIDFormDB();
+    	} catch (Exception ex) {
+    		LOG.ERROR("Error loading client info from DB...");
+    	}
     	registerClient();
     }
 
@@ -201,15 +206,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	void loadClientID()throws Exception
 	{
 	    m_clientID = "";
-	    boolean bResetClient = false;
-	    {
-	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
-	        if ( !res.isEnd() )
-	        {
-	            m_clientID = res.getStringByIdx(0);
-	            bResetClient = res.getIntByIdx(1) > 0;
-	        }
-	    }
+	    boolean bResetClient = loadClientIDFormDB();
 	
 	    if ( m_clientID.length() == 0 )
 	    {
@@ -227,6 +224,19 @@ class SyncEngine implements NetRequest.IRhoSession
 	    	
 	}
 
+	boolean loadClientIDFormDB()throws Exception
+	{
+	    m_clientID = "";
+	    boolean bResetClient = false;
+        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+        if ( !res.isEnd() )
+        {
+            m_clientID = res.getStringByIdx(0);
+            bResetClient = res.getIntByIdx(1) > 0;
+        }
+        return bResetClient;
+	}
+		
 	boolean resetClientIDByNet()throws Exception
 	{
 	    if ( m_sources.size() == 0 )
@@ -334,12 +344,23 @@ class SyncEngine implements NetRequest.IRhoSession
         					"&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT) +
         					"&device_type=" + helper.getPlatform();
         				String serverUrl = RhoConf.getInstance().getString("syncserver");
-        				if( getNet().pushData(serverUrl+"clientregister", strBody, _engine) ) {
-        					_engine.getDB().executeSQL("UPDATE client_info SET token_sent=? where client_id=?", new Integer(1), client_id );	    	
-        					break;
+        				if (serverUrl.length()>0) {
+        					if( getNet().pushData(serverUrl+"clientregister", strBody, _engine) ) {
+        						try {
+        							_engine.getDB().executeSQL("UPDATE client_info SET token_sent=? where client_id=?", new Integer(1), client_id );
+        						} catch(Exception ex) {
+        							LOG.ERROR("Error saving token_sent to the DB...");
+        						}	
+        						LOG.INFO("Registered client sucessfully...");
+        						break;
+        					} else {
+        						LOG.INFO("Network error POST-ing device pin to the server...");
+        					}
+        				} else {
+        					LOG.INFO("Can't register client because syncserver url is not configured...");
         				}
         			} catch(Exception e) {
-        				LOG.INFO("Error reading DB: " + e.getMessage());
+        				LOG.INFO("Error: " + e.getMessage());
         			}
         		}
     			synchronized (_sync) {
