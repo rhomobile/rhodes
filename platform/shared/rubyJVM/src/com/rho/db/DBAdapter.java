@@ -155,7 +155,8 @@ public class DBAdapter extends RubyBasic {
 		return "CREATE TABLE client_info ("+
 		"client_id VARCHAR(255) PRIMARY KEY,"+
 		"token VARCHAR(255) default NULL,"+
-		"reset INTEGER default 0,"+
+		"token_sent int default 0,"+
+		"reset int default 0,"+
 		"port VARCHAR(10) default NULL,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
