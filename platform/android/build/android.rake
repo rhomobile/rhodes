@@ -39,6 +39,8 @@ namespace "config" do
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
+    $storepass = "81719ef3a881469d96debda3112854eb"
+    $keypass = $storepass
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
@@ -210,6 +212,10 @@ namespace "device" do
         args << "20000"
         args << "-keystore"
         args << '"' + $keystore + '"'
+        args << "-storepass"
+        args << $storepass
+        args << "-keypass"
+        args << $keypass
         puts Jake.run($keytool, args)
       end
 
@@ -218,6 +224,8 @@ namespace "device" do
       args << "-verbose"
       args << "-keystore"
       args << '"' + $keystore + '"'
+      args << "-storepass"
+      args << $storepass
       args << "-signedjar"
       args << '"' + signedapkfile + '"'
       args << '"' + apkfile + '"'
