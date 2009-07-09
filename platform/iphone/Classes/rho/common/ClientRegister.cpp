@@ -1,4 +1,4 @@
-#include "RhoPushToken.h"
+#include "ClientRegister.h"
 #include "common/IRhoThreadImpl.h"
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
@@ -9,23 +9,25 @@ using namespace rho::sync;
 
 #define THREAD_WAIT_TIMEOUT 10
 
-IMPLEMENT_LOGCLASS(CRhoPushToken,"RhoPushToken");
+IMPLEMENT_LOGCLASS(CClientRegister,"RhoPushToken");
 
-CRhoPushToken* CRhoPushToken::m_pInstance = 0;
+CClientRegister* CClientRegister::m_pInstance = 0;
 	
-/*static*/ CRhoPushToken* CRhoPushToken::create(IRhoClassFactory* factory) {
+/*static*/ CClientRegister* CClientRegister::create(IRhoClassFactory* factory,const char* device_pin) {
 	if ( m_pInstance ) 
 		return m_pInstance;
-		
-	m_pInstance = new CRhoPushToken(factory);
+	m_pInstance = new CClientRegister(factory, device_pin);
 	return m_pInstance;
 }
 	
-CRhoPushToken::CRhoPushToken(common::IRhoClassFactory* factory) : CRhoThread(factory), m_set(false) {
+CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* device_pin) : CRhoThread(factory) {
 	m_NetRequest = factory->createNetRequest();
+	m_token = device_pin;
+	m_set = true;
+	start(epLow);
 }
 
-bool CRhoPushToken::post_token() {
+bool CClientRegister::post_token() {
 	LOG(INFO)+"Running register client operation...";
 	CSyncThread* pSync = CSyncThread::getInstance();
 	if (pSync&&m_NetRequest) {
@@ -63,7 +65,7 @@ bool CRhoPushToken::post_token() {
 	return false;
 }		
 	
-void CRhoPushToken::run() {	
+void CClientRegister::run() {	
 	int nWait = THREAD_WAIT_TIMEOUT;
 	LOG(INFO)+"Started client registration...";
 	while(true) {
@@ -76,22 +78,12 @@ void CRhoPushToken::run() {
 	LOG(INFO)+"Stoped client registration...";
 }
 
-void CRhoPushToken::set(char* data) { 
-	m_token = data;
-	m_set = true;
-	//TBD: check if thread is already started
-	start(epLow);
-}
-	
 }
 }
 
 extern "C" { 
 using namespace rho::common;	
-void rho_push_token_create() {
-    CRhoPushToken::create(new CRhoClassFactory);
+void rho_client_register(const char* device_pin) {
+    CClientRegister::create(new CRhoClassFactory, device_pin);
 }
-void rho_push_token_set(char* data) {
-	CRhoPushToken::getInstance()->set(data);
-}	
 };

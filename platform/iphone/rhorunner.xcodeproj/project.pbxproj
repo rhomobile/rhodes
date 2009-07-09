@@ -40,12 +40,12 @@
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
 		F563D8080EA95EDC0062DA57 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = F563D7680EA95EDC0062DA57 /* apps */; };
+		F569D3B7100676AA00F5111D /* ClientRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569D3B5100676AA00F5111D /* ClientRegister.cpp */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
-		F5B32265100408C700C63255 /* RhoPushToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5B32263100408C700C63255 /* RhoPushToken.cpp */; };
 		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 /* End PBXBuildFile section */
@@ -175,6 +175,8 @@
 		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		F563D7680EA95EDC0062DA57 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = bin/RhoBundle/apps; sourceTree = "<group>"; };
+		F569D3B5100676AA00F5111D /* ClientRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientRegister.cpp; path = Classes/rho/common/ClientRegister.cpp; sourceTree = SOURCE_ROOT; };
+		F569D3B6100676AA00F5111D /* ClientRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientRegister.h; path = Classes/rho/common/ClientRegister.h; sourceTree = SOURCE_ROOT; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
 		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
 		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
@@ -186,8 +188,6 @@
 		F58E7FDA0F008A6B00E46829 /* phonebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = phonebook.m; path = Classes/Phonebook/phonebook.m; sourceTree = SOURCE_ROOT; };
 		F58E80100F008B3F00E46829 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = ../../../../../../System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		F5B32263100408C700C63255 /* RhoPushToken.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushToken.cpp; path = Classes/rho/common/RhoPushToken.cpp; sourceTree = SOURCE_ROOT; };
-		F5B32264100408C700C63255 /* RhoPushToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPushToken.h; path = Classes/rho/common/RhoPushToken.h; sourceTree = SOURCE_ROOT; };
 		F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
 		F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera/PickImageDelegate.m; sourceTree = "<group>"; };
 		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
@@ -357,8 +357,8 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				F5B32263100408C700C63255 /* RhoPushToken.cpp */,
-				F5B32264100408C700C63255 /* RhoPushToken.h */,
+				F569D3B5100676AA00F5111D /* ClientRegister.cpp */,
+				F569D3B6100676AA00F5111D /* ClientRegister.h */,
 				5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */,
 				5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */,
 				5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */,
@@ -614,7 +614,7 @@
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
 				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
-				F5B32265100408C700C63255 /* RhoPushToken.cpp in Sources */,
+				F569D3B7100676AA00F5111D /* ClientRegister.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
