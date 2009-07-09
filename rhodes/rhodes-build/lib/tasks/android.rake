@@ -32,6 +32,8 @@ namespace "config" do
 
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
+    $storepass = "81719ef3a881469d96debda3112854eb"
+    $keypass = $storepass
 
   end
 end
@@ -133,11 +135,11 @@ namespace "device" do
         puts "Generating private keystore..."
         mkdir_p $keystoredir
 
-        puts `#{$keytool} -genkey -alias rhomobile.keystore -keyalg RSA -validity 20000 -keystore "#{$keystore}"`
+        puts `#{$keytool} -genkey -alias rhomobile.keystore -keyalg RSA -validity 20000 -keystore "#{$keystore}" -storepass #{$storepass} -keypass #{$keypass}`
       end
 
       puts "Signing APK file"
-      puts `#{$jarsigner} -verbose -keystore "#{$keystore}" -signedjar "#{signedapkfile}" "#{apkfile}" rhomobile.keystore`
+      puts `#{$jarsigner} -verbose -keystore "#{$keystore}" -storepass #{$storepass} -signedjar "#{signedapkfile}" "#{apkfile}" rhomobile.keystore`
 
       chdir $basedir
   end
