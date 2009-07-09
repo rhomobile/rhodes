@@ -7,6 +7,7 @@ char* HTTPResolveUrl(char* url);
 char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
 int   rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
 int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved);
+	int  rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThis);
 int   rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType);	
 void rho_net_impl_deleteAllCookies();
 void rho_net_impl_cancelAll();
@@ -115,10 +116,31 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 	return bRet;*/
 }
 
+extern "C"	int writeToFile(void* pThis, void* pData, int nSize)
+{
+	common::CRhoFile& oFile = *((common::CRhoFile*)pThis);
+	return oFile.write(pData, nSize);
+}
+	
 boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 {
-    //TODO: pullFile
-    return true;
+    common::CRhoFile oFile;
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
+    {
+        LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
+        return false;
+    }
+	
+	int bRespRecieved = 0;
+	int nTry = 0;
+	m_bCancel = false;
+	boolean bRes = false;
+	do{
+		bRes = rho_net_impl_pullFile(strUrl.c_str(), &bRespRecieved, writeToFile, &oFile ) != 0 ? true : false;
+		nTry++;
+	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
+	
+	return bRes;
 }
 
 boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)

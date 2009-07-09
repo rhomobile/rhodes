@@ -40,6 +40,7 @@
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
 		F563D8080EA95EDC0062DA57 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = F563D7680EA95EDC0062DA57 /* apps */; };
+		F569D3B7100676AA00F5111D /* ClientRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569D3B5100676AA00F5111D /* ClientRegister.cpp */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
@@ -174,6 +175,8 @@
 		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		F563D7680EA95EDC0062DA57 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = bin/RhoBundle/apps; sourceTree = "<group>"; };
+		F569D3B5100676AA00F5111D /* ClientRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientRegister.cpp; path = Classes/rho/common/ClientRegister.cpp; sourceTree = SOURCE_ROOT; };
+		F569D3B6100676AA00F5111D /* ClientRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientRegister.h; path = Classes/rho/common/ClientRegister.h; sourceTree = SOURCE_ROOT; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
 		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
 		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
@@ -354,6 +357,8 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				F569D3B5100676AA00F5111D /* ClientRegister.cpp */,
+				F569D3B6100676AA00F5111D /* ClientRegister.h */,
 				5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */,
 				5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */,
 				5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */,
@@ -609,6 +614,7 @@
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
 				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
+				F569D3B7100676AA00F5111D /* ClientRegister.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
