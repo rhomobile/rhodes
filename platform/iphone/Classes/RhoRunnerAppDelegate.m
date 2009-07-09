@@ -214,6 +214,7 @@
     [window makeKeyAndVisible];
 #ifdef __IPHONE_3_0
 	rho_push_token_create();
+	rho_push_token_set("test-test-test-1");
 	
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
 								| UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];

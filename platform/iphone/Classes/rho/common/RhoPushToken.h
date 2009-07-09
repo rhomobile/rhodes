@@ -5,6 +5,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
 #include "RhoClassfactory.h"
+#include "net/INetRequest.h"
 
 namespace rho{
 namespace common{
@@ -23,6 +24,7 @@ private:
 	CRhoPushToken(common::IRhoClassFactory* factory);
 	
 	static CRhoPushToken* m_pInstance;
+	net::INetRequest* m_NetRequest;
 	String m_token;
 	bool   m_set;
 
