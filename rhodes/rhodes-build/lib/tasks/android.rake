@@ -8,28 +8,30 @@ namespace "config" do
     $excludelib = ['**/singleton.rb','**/rational.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
 
     $java = $config["env"]["paths"]["java"]
+    $androidsdk = $config["env"]["paths"]["android"]
+    $androidplatform = "android-1.1"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $dx = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "dx.bat" )
-      $aapt = File.join( $config["env"]["paths"]["android"], "platforms", "android-1.1", "tools", "aapt.exe" )
-      $apkbuilder = File.join( $config["env"]["paths"]["android"], "tools", "apkbuilder.bat" )
-      $emulator = "cmd /c " + File.join( $config["env"]["paths"]["android"], "tools", "emulator.exe" )
-      $adb = File.join( $config["env"]["paths"]["android"], "tools", "adb.exe" )
+      $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx.bat" )
+      $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt.exe" )
+      $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder.bat" )
+      $emulator = "cmd /c " + File.join( $androidsdk, "tools", "emulator.exe" )
+      $adb = File.join( $androidsdk, "tools", "adb.exe" )
       $all_files_mask = "*.*"
       $exe_ext = ".exe"
     else
-      $dx = "dx"
-      $aapt = "aapt"
-      $apkbuilder = "apkbuilder"
-      $emulator = "emulator"
-      $adb = "adb"
+      $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx" )
+      $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt" )
+      $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder" )
+      $emulator = File.join( $androidsdk, "tools", "emulator" )
+      $adb = File.join( $androidsdk, "tools", "adb" )
       $all_files_mask = "*"
       $exe_ext = ""
     end
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
-    
+
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
 
