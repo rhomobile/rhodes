@@ -78,7 +78,7 @@
     args << "-c"
     args << "-a"
     args << "-p"
-    args << '"' + $config["build"]["bbsignpwd"] +'"'
+    args << '"' + $config["build"]["bbsignpwd"].to_s() +'"'
     args << "-r"
     args << $targetdir
 
@@ -353,7 +353,7 @@ namespace "device" do
     task :dev => "package:bb:dev" do
 
       #make into functions
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
         autosign
       else
         manualsign
@@ -375,7 +375,7 @@ namespace "device" do
     desc "Build and package dev rhobundle for device"
     task :rhobundle => "package:bb:rhobundle" do
 
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
         autosign
       else
         manualsign
@@ -392,7 +392,7 @@ namespace "device" do
     desc "Build and package for production"
     task :production => "package:bb:production" do
 
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
         autosign
       else
         manualsign
