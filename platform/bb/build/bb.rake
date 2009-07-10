@@ -13,7 +13,7 @@
     args << "/c"
     args << "shutdown.bat"
 
-    Jake.run("cmd.exe",args, mdshome,true)
+    Jake.run("cmd.exe",args, mdshome, true, true)
   end 
 
  def startsim
