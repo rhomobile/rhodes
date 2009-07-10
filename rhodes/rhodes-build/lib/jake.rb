@@ -191,8 +191,8 @@ class Jake
       f.write "MicroEdition-Profile: MIDP-2.0\n"
       f.write "MicroEdition-Configuration: CLDC-1.1\n"
       f.write "MIDlet-Name: " + output + "\n"
-      f.write "MIDlet-Version: " + version + "\n"
-      f.write "MIDlet-Vendor: " + vendor + "\n"
+      f.write "MIDlet-Version: " + version.to_s + "\n"
+      f.write "MIDlet-Vendor: " + vendor.to_s + "\n"
       f.write "MIDlet-Jar-URL: " + output + ".jar\n"
       f.write "MIDlet-Jar-Size: 0\n"
       f.write "RIM-Library-Flags: 2\n" if library
