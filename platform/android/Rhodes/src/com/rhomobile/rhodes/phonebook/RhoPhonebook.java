@@ -87,10 +87,16 @@ public class RhoPhonebook extends RubyBasic {
 					String name = cursor.getString(cursor
 							.getColumnIndex(People.NAME));
 
+					contact.setField(RUBY_PB_FIRST_NAME.asString(), "");
+					contact.setField(RUBY_PB_LAST_NAME.asString(), "");
+					
 					if (name != null) {
 						String[] names = name.split(" ");
 
-						if (names.length > 1) {
+						if (names.length == 1) {
+							contact.setField(RUBY_PB_FIRST_NAME.asString(), names[0]);
+						}
+						else if (names.length > 1) {
 							contact.setField(RUBY_PB_FIRST_NAME.asString(),
 									names[0]);
 							contact.setField(RUBY_PB_LAST_NAME.asString(), name
