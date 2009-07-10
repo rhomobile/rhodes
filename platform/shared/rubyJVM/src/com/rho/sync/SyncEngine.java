@@ -29,6 +29,8 @@ import com.rho.*;
 import java.util.Vector;
 import java.util.Hashtable;
 
+import net.rim.device.api.system.Application;
+
 import org.json.me.JSONException;
 
 class SyncEngine implements NetRequest.IRhoSession
@@ -87,6 +89,13 @@ class SyncEngine implements NetRequest.IRhoSession
 
     	m_NetRequest = null; 
     	m_syncState = esNone; 
+    	
+    	try {
+    		loadClientIDFormDB();
+    	} catch (Exception ex) {
+    		LOG.ERROR("Error loading client info from DB...");
+    	}
+    	registerClient();
     }
 
     void setFactory(RhoClassFactory factory)throws Exception{ 
@@ -197,15 +206,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	void loadClientID()throws Exception
 	{
 	    m_clientID = "";
-	    boolean bResetClient = false;
-	    {
-	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
-	        if ( !res.isEnd() )
-	        {
-	            m_clientID = res.getStringByIdx(0);
-	            bResetClient = res.getIntByIdx(1) > 0;
-	        }
-	    }
+	    boolean bResetClient = loadClientIDFormDB();
 	
 	    if ( m_clientID.length() == 0 )
 	    {
@@ -223,6 +224,19 @@ class SyncEngine implements NetRequest.IRhoSession
 	    	
 	}
 
+	boolean loadClientIDFormDB()throws Exception
+	{
+	    m_clientID = "";
+	    boolean bResetClient = false;
+        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+        if ( !res.isEnd() )
+        {
+            m_clientID = res.getStringByIdx(0);
+            bResetClient = res.getIntByIdx(1) > 0;
+        }
+        return bResetClient;
+	}
+		
 	boolean resetClientIDByNet()throws Exception
 	{
 	    if ( m_sources.size() == 0 )
@@ -304,6 +318,67 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 
+	class CRegisterClient extends Thread {
+		private SyncEngine _engine;
+		private String _sync = "sync";		
+		
+		CRegisterClient(SyncEngine engine) {
+			_engine = engine;
+		}
+		
+        public void run() 
+        {
+        	while(true) {
+        		String client_id = getClientID();
+        		if (client_id.length()>0) {
+        			try {
+        				IDBResult res = _engine.getDB().executeSQL("SELECT token_sent from client_info");
+        		        if ( !res.isEnd() ) {
+        		            if ( res.getIntByIdx(0) > 0 )
+        		            	break;
+        		        }        				
+        				IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+        				int port = RhoConf.getInstance().getInt("push_port");
+        				String strBody = "client_id=" + client_id +
+        					"&device_pin=" + helper.getDeviceId() + 
+        					"&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT) +
+        					"&device_type=" + helper.getPlatform();
+        				String serverUrl = RhoConf.getInstance().getString("syncserver");
+        				if (serverUrl.length()>0) {
+        					if( getNet().pushData(serverUrl+"clientregister", strBody, _engine) ) {
+        						try {
+        							_engine.getDB().executeSQL("UPDATE client_info SET token_sent=? where client_id=?", new Integer(1), client_id );
+        						} catch(Exception ex) {
+        							LOG.ERROR("Error saving token_sent to the DB...");
+        						}	
+        						LOG.INFO("Registered client sucessfully...");
+        						break;
+        					} else {
+        						LOG.INFO("Network error POST-ing device pin to the server...");
+        					}
+        				} else {
+        					LOG.INFO("Can't register client because syncserver url is not configured...");
+        				}
+        			} catch(Exception e) {
+        				LOG.INFO("Error: " + e.getMessage());
+        			}
+        		}
+    			synchronized (_sync) {
+	        		try {
+	        			LOG.INFO("Waiting for 10 sec to try again to register client");
+	        			_sync.wait(10000L);
+	        		} catch(Exception e) {
+	        			LOG.INFO("Wait on register client thread interrupted: " + e);
+	        		}
+    			}
+    		}
+        }
+	}
+	
+	void registerClient() {
+		(new CRegisterClient(this)).start();
+	}
+	
 	boolean login(String name, String password)throws Exception
 	{
 	    loadAllSources();

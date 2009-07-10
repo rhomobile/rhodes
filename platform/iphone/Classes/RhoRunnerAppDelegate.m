@@ -13,6 +13,8 @@
 #import "AppManager.h"
 #import "common/RhoConf.h"
 #import "logging/RhoLog.h"
+#include "ClientRegister.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
 
@@ -220,6 +222,17 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	NSLog(@"Device token is %@", deviceToken);
+	
+	NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
+	const unsigned char *dataBuffer = [deviceToken bytes];
+	for (int i = 0; i < [deviceToken length]; ++i)
+		[stringBuffer appendFormat:@"%02x", (unsigned long)dataBuffer[ i ]];
+	
+	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	RAWLOG_INFO1("device pin: %s\n", szpin);
+
+	rho_client_register(szpin);
+	free(szpin);
 }
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {

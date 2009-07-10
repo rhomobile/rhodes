@@ -204,6 +204,8 @@ boolean CSyncEngine::doLogin(String name, String password)
 
     getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
 
+	loadClientID();
+	
     return true;
 }
 
