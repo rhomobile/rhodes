@@ -29,8 +29,6 @@ import com.rho.*;
 import java.util.Vector;
 import java.util.Hashtable;
 
-import net.rim.device.api.system.Application;
-
 import org.json.me.JSONException;
 
 class SyncEngine implements NetRequest.IRhoSession
