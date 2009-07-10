@@ -320,6 +320,60 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	return respData;
 }
 
+int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThis)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	int nRet = 0;
+	if ( pbRespRecieved )
+		*pbRespRecieved = 0;
+	
+	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
+	{
+		RAWLOG_INFO1("Request Url: %s", szUrl);
+		
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+		NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+		NSError *error = nil;
+		NSHTTPURLResponse *response;
+		[request setURL:[NSURL URLWithString:linkString]];
+		
+		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
+		if (conn) 
+		{
+			g_curConn = conn;
+			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+			NSInteger errorCode = [error code];
+			NSInteger code = [response statusCode];
+			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+			g_curConn = NULL;
+			
+			if ( pbRespRecieved )
+				*pbRespRecieved = code > 0;
+			
+			if (code != 200) 
+			{
+				RAWLOG_ERROR3("Request failed. HTTP Code: %d returned. NSError: %d. NSErrorInfo : %s", 
+							  code, errorCode, [[error localizedDescription] UTF8String]);
+				
+				if (errorCode == NSURLErrorUserCancelledAuthentication || 
+					errorCode == NSURLErrorUserAuthenticationRequired) 
+				{
+					rho_net_impl_deleteAllCookies();
+				}
+			} else 
+			{
+				nRet = (*writeFunc)(pThis, [returnData bytes], [returnData length]);
+			}
+		}
+		
+		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	}
+	
+	[pool drain];
+	[pool release];
+	return nRet;
+}
+
 int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved)
 {
 	//TODO: test rho_net_impl_pushFile
