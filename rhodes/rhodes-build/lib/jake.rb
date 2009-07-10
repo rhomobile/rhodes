@@ -83,7 +83,7 @@ class Jake
     end
   end
   
-  def self.run(command, args, wd=nil,system = false)
+  def self.run(command, args, wd=nil,system = false, hideerrors = false)
     argstr = " "
     currentdir = ""
   
@@ -94,16 +94,25 @@ class Jake
       argstr +=  x + " "
       #argstr += '"' + x + '" '
     end
-  
+
     if not wd.nil?
       currentdir = pwd()
       chdir wd  
     end
-  puts "PWD:" + pwd
-  puts "CMD:" + command
-  puts "ARGS:" + argstr
+    
+    puts "PWD:" + pwd
+    puts "CMD:" + command
+    puts "ARGS:" + argstr
     
     command = command + " " + argstr
+    if hideerrors
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        nul = "nul"
+      else
+        nul = "/dev/null"
+      end
+      command = command + " 2>" + nul
+    end
     #retval =  `#{command} #{argstr}`
     #retval = %x[#{command}]
     if system
