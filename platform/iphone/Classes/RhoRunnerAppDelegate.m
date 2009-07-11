@@ -162,7 +162,7 @@
 	
 	[player prepareToPlay];	
 	[player setDelegate: self];
-	 [self.player play];
+	[self.player play];
 }
 
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *) player successfully: (BOOL) flag {
@@ -176,14 +176,60 @@
 	NSLog(@"Audio player decoding error %@", error);
 }
 
+#ifdef __IPHONE_3_0
+- (void)processDoSync:(NSDictionary *)userInfo
+{
+	NSArray *do_sync = [userInfo objectForKey:@"do_sync"];
+	if (do_sync) {
+		NSEnumerator *enumerator = [do_sync objectEnumerator];
+		id obj;
+		
+		NSLog(@"do_sync array: ");
+		bool sync_all = false;
+		while ( obj = [enumerator nextObject] ) {
+			NSLog( @"url = %@", obj );
+			if ([@"all" caseInsensitiveCompare:obj] == NSOrderedSame) {
+				sync_all = true;
+				//TDB: call sync of individual source
+			}
+		}
+		
+		if (sync_all) {
+			[serverHost doSync];
+		}
+	}
+}
+- (void)processPushMessage:(NSDictionary *)userInfo
+{
+	RAWLOG_INFO("Processing PUSH message...");
+	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	if (aps) {
+		NSString *alert = [aps objectForKey:@"alert"];
+		if (alert && [alert length] > 0) {
+			NSLog(@"Push Alert: %@", alert);
+			[self onShowPopup:alert];
+		}
+		NSString *sound = [aps objectForKey:@"sound"];
+		if (sound && [sound length] > 0) {
+			NSLog(@"Sound file name: %@", sound);
+			[self onPlayFile:sound];
+		}
+		NSString *vibrate = [aps objectForKey:@"vibrate"];
+		if (vibrate && [vibrate length] > 0) {
+			NSLog(@"Do vibrate...");
+			[self onVibrate:1];
+		}
+	}
+	[self processDoSync:userInfo];
+}
+#endif
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {
-	
+- (void) doStartUp {
 	// Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
 	logViewController->onShowLogOptions = @selector(onShowLogOptions);
-
+	
 	logOptionsController = [[LogOptionsController alloc] init];
 	
 	webViewController->actionTarget = self;
@@ -214,8 +260,20 @@
     [window makeKeyAndVisible];
 #ifdef __IPHONE_3_0
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
-								| UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+																		   | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif
+}
+
+#ifdef __IPHONE_3_0
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	[self doStartUp];
+	[self processDoSync:launchOptions];
+	return NO;
+}
+#endif
+
+- (void)applicationDidFinishLaunching:(UIApplication *)application {
+	[self doStartUp];
 }
 
 #ifdef __IPHONE_3_0
@@ -234,15 +292,15 @@
 	rho_client_register(szpin);
 	free(szpin);
 }
+
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
 	NSLog(@"Push Notification Error: %@", [error localizedDescription]);
 }
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-	NSDictionary *aps = [userInfo objectForKey:@"aps"];
-	NSString *alert = [aps objectForKey:@"alert"];
-	NSLog(@"Push Alert: %@", alert);
+	[self processPushMessage:userInfo];
 }
 #endif
 
