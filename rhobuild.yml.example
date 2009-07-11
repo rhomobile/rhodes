@@ -23,5 +23,6 @@ build:
   iphonepath: platform/iphone
   symbianpath: platform/symbian
   bb:
+  bbsignpwd: "somepasswordhere"
 
 

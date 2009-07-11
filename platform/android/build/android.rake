@@ -251,7 +251,7 @@ namespace "run" do
     puts "Waiting for emulator to get started"
     $stdout.flush
     puts `#{$adb} wait-for-device`
-    sleep 60
+    sleep 10
 
     puts "Loading package into emulator"
     theoutput = `#{$adb} install -r "#{apkfile}"`
