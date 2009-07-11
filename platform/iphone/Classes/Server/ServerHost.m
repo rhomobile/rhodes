@@ -233,6 +233,11 @@ extern const char* RhoGetRootPath();
 	//shutdown_database();
 }
 
+//Sync all sources
+- (void) doSync {
+	rho_sync_doSyncAllSources();
+}
+
 - (void)dealloc 
 {
     [appManager release];
