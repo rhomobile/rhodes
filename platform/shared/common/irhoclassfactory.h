@@ -7,6 +7,7 @@ namespace net{
 
 namespace common {
 struct IRhoThreadImpl;
+struct ISystemInfo;
 
 struct IRhoClassFactory
 {
@@ -14,6 +15,7 @@ struct IRhoClassFactory
 
     virtual net::INetRequest* createNetRequest() = 0;
     virtual IRhoThreadImpl* createThreadImpl() = 0;
+    virtual ISystemInfo* createSystemInfo() = 0;
 };
 
 }

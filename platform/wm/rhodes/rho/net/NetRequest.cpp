@@ -43,10 +43,11 @@ String CNetRequest::resolveUrl(const String& strUrl)
     return res;
 }
 
-void CNetRequest::cancelAll()
+void CNetRequest::cancel()
 {
     m_bCancel = true;
-    CNetRequestImpl::cancel();
+    if ( m_pCurNetRequestImpl != null )
+        m_pCurNetRequestImpl->close();
 }
 
 boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
@@ -66,7 +67,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
         if ( pData )
             delete pData;
 
-        CNetRequestImpl oImpl("POST",strUrl);
+        CNetRequestImpl oImpl(this, "POST",strUrl);
         pData = oImpl.sendStream(oFile.getInputStream());
         nTry++;
 
@@ -94,7 +95,7 @@ boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
         if ( pData )
             delete pData;
 
-        CNetRequestImpl oImpl("GET",strUrl);
+        CNetRequestImpl oImpl(this, "GET",strUrl);
         pData = oImpl.downloadFile(oFile);
         nTry++;
 
@@ -115,7 +116,7 @@ INetData* CNetRequest::doRequest( const char* method, const String& strUrl, cons
         if ( pData )
             delete pData;
 
-        CNetRequestImpl oImpl(method,strUrl);
+        CNetRequestImpl oImpl(this, method,strUrl);
         pData = oImpl.sendString(strBody);
         nTry++;
 

@@ -50,6 +50,8 @@
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
 - (void) stop;
+//Sync all sources
+- (void) doSync;
 
 + (ServerHost *)sharedInstance;
 

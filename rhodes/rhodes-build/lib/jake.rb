@@ -83,7 +83,7 @@ class Jake
     end
   end
   
-  def self.run(command, args, wd=nil,system = false)
+  def self.run(command, args, wd=nil,system = false, hideerrors = false)
     argstr = " "
     currentdir = ""
   
@@ -94,16 +94,25 @@ class Jake
       argstr +=  x + " "
       #argstr += '"' + x + '" '
     end
-  
+
     if not wd.nil?
       currentdir = pwd()
       chdir wd  
     end
-  puts "PWD:" + pwd
-  puts "CMD:" + command
-  puts "ARGS:" + argstr
+    
+    puts "PWD:" + pwd
+    puts "CMD:" + command
+    puts "ARGS:" + argstr
     
     command = command + " " + argstr
+    if hideerrors
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        nul = "nul"
+      else
+        nul = "/dev/null"
+      end
+      command = command + " 2>" + nul
+    end
     #retval =  `#{command} #{argstr}`
     #retval = %x[#{command}]
     if system
@@ -191,8 +200,8 @@ class Jake
       f.write "MicroEdition-Profile: MIDP-2.0\n"
       f.write "MicroEdition-Configuration: CLDC-1.1\n"
       f.write "MIDlet-Name: " + output + "\n"
-      f.write "MIDlet-Version: " + version + "\n"
-      f.write "MIDlet-Vendor: " + vendor + "\n"
+      f.write "MIDlet-Version: " + version.to_s + "\n"
+      f.write "MIDlet-Vendor: " + vendor.to_s + "\n"
       f.write "MIDlet-Jar-URL: " + output + ".jar\n"
       f.write "MIDlet-Jar-Size: 0\n"
       f.write "RIM-Library-Flags: 2\n" if library

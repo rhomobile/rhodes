@@ -15,6 +15,7 @@
 #include "ports_mngt.h"
 #include "resource.h"
 #include "sync/SyncThread.h"
+#include "sync/ClientRegister.h"
 using namespace rho::sync;
 #include "common/StringConverter.h"
 
@@ -122,6 +123,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
     }
 
     rho_sync_create();
+    //rho_clientregister_create("PIN_1");
 
 //    if (logged_in()){
       

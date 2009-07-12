@@ -33,6 +33,7 @@ extern void rho_net_impl_deleteAllCookies();
 extern NSString *get_session();
 //extern int has_network_impl();
 extern int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags);
+typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
 
 /*
  An enumeration that defines the return values of the network state
@@ -174,8 +175,8 @@ int login(const char *login, const char *password) {
 	return retval;
 }*/
 
-static NSURLConnection* g_curConn = NULL;
-int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved )
+//static NSURLConnection* g_curConn = NULL;
+int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *session;
@@ -204,12 +205,12 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
 		{
-			g_curConn = conn;
+			(*fSave)(pThis,conn);
 			NSData *returnData = [NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			g_curConn = NULL;
+			(*fSave)(pThis,NULL);
 			
 			if ( pbRespRecieved )
 				*pbRespRecieved = code > 0;
@@ -253,7 +254,7 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 	return cookie_size > 0;
 }
 
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved )
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -282,12 +283,12 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
 		{
-			g_curConn = conn;
+			(*fSave)(pThis,conn);
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			g_curConn = NULL;
+			(*fSave)(pThis,NULL);
 
 			if ( pbRespRecieved )
 				*pbRespRecieved = code > 0;
@@ -320,7 +321,7 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	return respData;
 }
 
-int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThis)
+int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThisFile, FSAVECONNDATA fSave, void* pThis)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	int nRet = 0;
@@ -340,12 +341,12 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
 		{
-			g_curConn = conn;
+			(*fSave)(pThis,conn);
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			g_curConn = NULL;
+			(*fSave)(pThis,NULL);
 			
 			if ( pbRespRecieved )
 				*pbRespRecieved = code > 0;
@@ -362,7 +363,7 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 				}
 			} else 
 			{
-				nRet = (*writeFunc)(pThis, [returnData bytes], [returnData length]);
+				nRet = (*writeFunc)(pThisFile, [returnData bytes], [returnData length]);
 			}
 		}
 		
@@ -374,7 +375,7 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 	return nRet;
 }
 
-int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved)
+int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis)
 {
 	//TODO: test rho_net_impl_pushFile
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -400,12 +401,12 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
 		{
-			g_curConn = conn;
+			(*fSave)(pThis,conn);
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			g_curConn = NULL;
+			(*fSave)(pThis,NULL);
 			
 			if ( pbRespRecieved )
 				*pbRespRecieved = code > 0;
@@ -432,16 +433,17 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 	return nRet;
 }
 
-void rho_net_impl_cancelAll()
+void rho_net_impl_cancel(void* pConnData)
 {
-	if ( g_curConn != NULL )
-		[g_curConn cancel];
+	NSURLConnection* pConn = (NSURLConnection*)pConnData;
+	if ( pConn != NULL )
+		[pConn cancel];
 }
 /*
  * Pushes changes from list to rhosync server
  */
 
-int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType) 
+int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType, FSAVECONNDATA fSave, void* pThis) 
 {
 	int nRet = 0;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -471,12 +473,12 @@ int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,co
 		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) {
-			g_curConn = conn;
+			(*fSave)(pThis,conn);
 			NSData *returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
 			NSInteger errorCode = [error code];
 			NSInteger code = [response statusCode];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			g_curConn = NULL;
+			(*fSave)(pThis,NULL);
 
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 			if (code != 200) 

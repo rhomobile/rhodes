@@ -5,12 +5,15 @@
 namespace rho {
 namespace net {
 
+class CNetRequestImpl;
 class CNetRequest : public INetRequest
 {
     DEFINE_LOGCLASS;
     boolean m_bCancel;
 public:
-    CNetRequest(void){}
+    CNetRequestImpl* m_pCurNetRequestImpl;
+
+    CNetRequest(void) : m_pCurNetRequestImpl(null), m_bCancel(false){}
     virtual ~CNetRequest(void){}
 
     virtual INetData* pullData(const String& strUrl );
@@ -23,7 +26,7 @@ public:
 
     virtual String resolveUrl(const String& strUrl);
 
-    virtual void cancelAll();
+    virtual void cancel();
 
 protected:
     virtual INetData* doRequest( const char* method, const String& strUrl, const String& strBody );

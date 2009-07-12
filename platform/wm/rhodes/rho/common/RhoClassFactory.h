@@ -3,6 +3,7 @@
 #include "common/IRhoClassFactory.h"
 #include "../net/NetRequest.h"
 #include "RhoThreadImpl.h"
+#include "SystemInfoImpl.h"
 
 namespace rho {
 namespace common {
@@ -21,6 +22,10 @@ public:
         return new CRhoThreadImpl;
     }
 
+    virtual ISystemInfo* createSystemInfo()
+    {
+        return new CSystemInfoImpl;
+    }
 };
 
 }

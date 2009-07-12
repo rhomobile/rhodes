@@ -1,4 +1,4 @@
-%w[rubygems rake rake/clean spec/rake/spectask fileutils newgem].each { |f| require f }
+%w[rubygems rake rake/clean spec/rake/spectask fileutils newgem hoe].each { |f| require f }
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/version.rb'
 
