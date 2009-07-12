@@ -10,9 +10,9 @@ void rho_sync_create()
     rho::sync::CSyncThread::Create(new rho::common::CRhoClassFactory);
 }
 
-void rho_clientregister_create()
+void rho_clientregister_create(const char* szDevicePin)
 {
-    rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, "PIN_1");
+    rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, szDevicePin);
 }
 
 };

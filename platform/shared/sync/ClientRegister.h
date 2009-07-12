@@ -47,7 +47,7 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-void rho_clientregister_create();
+void rho_clientregister_create(const char* szDevicePin);
 
 #ifdef __cplusplus
 };
