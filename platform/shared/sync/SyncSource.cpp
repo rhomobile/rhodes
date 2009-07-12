@@ -383,6 +383,7 @@ void CSyncSource::processToken(uint64 token)
     if ( token > 1 && getToken() == token ){
 		//Delete non-confirmed records
 
+        setToken( token ); //For m_bTokenFromDB = false;
         getDB().executeSQL("DELETE FROM object_values where source_id=? and token=?", getID(), token );
 	}else
     {

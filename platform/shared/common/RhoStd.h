@@ -31,6 +31,11 @@ public:
         push_back(item);
     }
 
+    boolean isEmpty()
+    {
+        return size()==0;
+    }
+
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
     typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return at(i); }
 };
@@ -48,6 +53,28 @@ public:
         
         Vector<Type>::clear();
     }
+};
+
+template<class Type>
+class LinkedListPtr : public VectorPtr<Type>{
+public:
+
+    void add(const Type& item)
+    {
+        addElement(item);
+    }
+
+    Type removeFirst()
+    {
+        if ( isEmpty() )
+            return null;
+
+        Type ptrFirst = elementAt(0);
+        erase(begin());
+
+        return ptrFirst;
+    }
+
 };
 
 template<class TKEY, class TVALUE>

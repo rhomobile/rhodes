@@ -257,16 +257,6 @@ void CSyncEngine::logout()
 
 }
 
-void CSyncEngine::resetSyncDB()
-{
-    getDB().executeSQL( "DELETE from object_values" );
-    getDB().executeSQL( "UPDATE client_info SET reset=?", 1 );
-    getDB().executeSQL( "UPDATE sources SET token=?", 0 );
-    getDB().executeSQL( "VACUUM" );
-
-    m_clientID = "";
-}
-
 void CSyncEngine::setNotification(int source_id, String strUrl, String strParams )
 {
 	LOG(INFO) + "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams;
