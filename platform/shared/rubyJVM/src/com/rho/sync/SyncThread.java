@@ -72,6 +72,7 @@ public class SyncThread extends RhoThread
 	
 	    m_oSyncEngine.setFactory(factory);
 	
+	    ClientRegister.Create(factory);
 	    start(epLow);
 	}
 

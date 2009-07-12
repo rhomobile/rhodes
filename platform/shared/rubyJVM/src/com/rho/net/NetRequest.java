@@ -43,9 +43,9 @@ public class NetRequest
 	    }
 	}
 	
-	private static IHttpConnection connection = null;
-	private static char[] m_charBuffer = new char[1024];
-	public static byte[]  m_byteBuffer = new byte[4096];
+	private IHttpConnection m_connection = null;
+	private char[] m_charBuffer = new char[1024];
+	public  byte[]  m_byteBuffer = new byte[4096];
 	
 	public NetData pullData(String strUrl, String strBody, IRhoSession oSession ) throws Exception
     {
@@ -87,24 +87,24 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
 			String strSession = oSession.getSession();
 			if ( strSession != null && strSession.length() > 0 )
-				connection.setRequestProperty("Cookie", strSession );
+				m_connection.setRequestProperty("Cookie", strSession );
 			
-			connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+			m_connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 			
 			if ( strBody != null && strBody.length() > 0 )
 			{
-				connection.setRequestMethod(IHttpConnection.POST);
-				os = connection.openOutputStream();
+				m_connection.setRequestMethod(IHttpConnection.POST);
+				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
 			}else
-				connection.setRequestMethod(IHttpConnection.GET);
+				m_connection.setRequestMethod(IHttpConnection.GET);
 			
-			is = connection.openInputStream();
-			int code = connection.getResponseCode();
+			is = m_connection.openInputStream();
+			int code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -115,7 +115,7 @@ public class NetRequest
 					oSession.logout();
 			}else
 			{
-				long len = connection.getLength();
+				long len = m_connection.getLength();
 				LOG.INFO("fetchRemoteData data size:" + len );
 		
 				buffer = readFully(is);
@@ -166,9 +166,9 @@ public class NetRequest
 		
 		try{
     		doRequestTry(strUrl, strBody, oSession, false);
-    		if ( connection.getResponseCode() == IHttpConnection.HTTP_OK )
+    		if ( m_connection.getResponseCode() == IHttpConnection.HTTP_OK )
     		{
-    			ParsedCookie cookie = makeCookie(connection);
+    			ParsedCookie cookie = makeCookie(m_connection);
     			strCookie = cookie.strAuth + ";" + cookie.strSession + ";";
     		}
 		}finally
@@ -228,17 +228,17 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
 			String strSession = oSession.getSession();
 			if ( strSession != null && strSession.length() > 0 )
-				connection.setRequestProperty("Cookie", strSession );
+				m_connection.setRequestProperty("Cookie", strSession );
 			
-			connection.setRequestProperty("content-type", szMultipartContType);
-			connection.setRequestMethod(IHttpConnection.POST);
+			m_connection.setRequestProperty("content-type", szMultipartContType);
+			m_connection.setRequestMethod(IHttpConnection.POST);
 			
 			//PUSH specific
-			os = connection.openOutputStream();
+			os = m_connection.openOutputStream();
 			os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
 				
 			synchronized (m_byteBuffer) {			
@@ -254,8 +254,8 @@ public class NetRequest
 			os.flush();
 			//PUSH specific
 			
-			is = connection.openInputStream();
-			int code = connection.getResponseCode();
+			is = m_connection.openInputStream();
+			int code = m_connection.getResponseCode();
 		
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -266,7 +266,7 @@ public class NetRequest
 					oSession.logout();
 			}else
 			{
-				long len = connection.getLength();
+				long len = m_connection.getLength();
 				LOG.INFO("fetchRemoteData data size:" + len );
 		
 				buffer = readFully(is);
@@ -324,22 +324,21 @@ public class NetRequest
 	
 	boolean pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession )throws Exception
 	{
-		StringBuffer buffer = null;
 		InputStream is = null;
 		boolean bRes = false;
 		
 		try{
 			closeConnection();
-			connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
 			String strSession = oSession.getSession();
 			if ( strSession != null && strSession.length() > 0 )
-				connection.setRequestProperty("Cookie", strSession );
+				m_connection.setRequestProperty("Cookie", strSession );
 			
-			connection.setRequestMethod(IHttpConnection.GET);
+			m_connection.setRequestMethod(IHttpConnection.GET);
 			
-			is = connection.openInputStream();
-			int code = connection.getResponseCode();
+			is = m_connection.openInputStream();
+			int code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -400,7 +399,7 @@ public class NetRequest
 		return url;
     }
 
-	public void cancelAll()
+	public void cancel()
     {
 		m_bCancel = true;
 		closeConnection();
@@ -489,7 +488,7 @@ public class NetRequest
 		return cookie;
 	}
 	
-	private static final StringBuffer readFully(InputStream in) throws IOException {
+	private final StringBuffer readFully(InputStream in) throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		UTF8StreamReader reader = new UTF8StreamReader();
 		reader.setInput(in);
@@ -505,7 +504,7 @@ public class NetRequest
 		return buffer;
 	}
 
-	private static final int bufferedRead(byte[] a, InputStream in) throws Exception {
+	private final int bufferedRead(byte[] a, InputStream in) throws Exception {
 		int bytesRead = 0;
 		while (bytesRead < (a.length)) {
 			int read = in.read(a);//, bytesRead, (a.length - bytesRead));
@@ -517,7 +516,7 @@ public class NetRequest
 		return bytesRead;
 	}
 	
-	private static final int bufferedReadNet(byte[] a, InputStream in) throws IOException {
+	private final int bufferedReadNet(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
 		while (bytesRead < (a.length)) {
 			int read = in.read();// a, 0, a.length );
@@ -530,16 +529,16 @@ public class NetRequest
 		return bytesRead;
 	}
 	
-	public static void closeConnection(){
-		if ( connection != null ){
+	public void closeConnection(){
+		if ( m_connection != null ){
 			try{
-				connection.close();
+				m_connection.close();
 			}catch(IOException exc){
 				LOG.ERROR("There was an error close connection", exc);
 			}
 		}
 		
-		connection = null;
+		m_connection = null;
 	}
 	
 }

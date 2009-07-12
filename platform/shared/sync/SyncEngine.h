@@ -36,11 +36,12 @@ public:
 private:
     VectorPtr<CSyncSource*> m_sources;
     db::CDBAdapter& m_dbAdapter;
-    net::INetRequest* m_NetRequest;
+    common::CAutoPtr<net::INetRequest> m_NetRequest;
     ESyncState m_syncState;
     String     m_clientID;
     HashtablePtr<int,CSyncNotification*> m_mapNotifications;
     common::CMutex m_mxNotifications;
+    common::CMutex m_mxLoadClientID;
     String m_strSession;
 
 public:
@@ -65,8 +66,8 @@ public:
     ESyncState getState()const{ return m_syncState; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
-    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
-    void exitSync(){ setState(esExit); getNet().cancelAll(); }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest->cancel();} }
+    void exitSync(){ setState(esExit); m_NetRequest->cancel(); }
 //private:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
@@ -79,7 +80,7 @@ public:
     void syncAllSources();
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
     int getStartSource();
-    void loadClientID();
+    String loadClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet();//throws Exception
     boolean doLogin(String name, String password);
@@ -89,7 +90,7 @@ public:
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
 
 private:
-    net::INetRequest& getNet(){ return *m_NetRequest;}
+    net::INetRequest& getNet(){ return *m_NetRequest; }
 
     CSyncSource* findSourceByID(int nSrcId);
 
