@@ -37,6 +37,8 @@
 		5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817300FBC4F70002597A5 /* DBAdapter.h */; };
 		5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817310FBC4F70002597A5 /* DBResult.cpp */; };
 		5C9817360FBC4F70002597A5 /* DBResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817320FBC4F70002597A5 /* DBResult.h */; };
+		5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE294091009D8B7009A75F6 /* ClientRegister.cpp */; };
+		5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2940A1009D8B7009A75F6 /* ClientRegister.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +75,8 @@
 		5C9817300FBC4F70002597A5 /* DBAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAdapter.h; path = ../../shared/db/DBAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C9817310FBC4F70002597A5 /* DBResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBResult.cpp; path = ../../shared/db/DBResult.cpp; sourceTree = SOURCE_ROOT; };
 		5C9817320FBC4F70002597A5 /* DBResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBResult.h; path = ../../shared/db/DBResult.h; sourceTree = SOURCE_ROOT; };
+		5CE294091009D8B7009A75F6 /* ClientRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientRegister.cpp; path = ../../shared/sync/ClientRegister.cpp; sourceTree = SOURCE_ROOT; };
+		5CE2940A1009D8B7009A75F6 /* ClientRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientRegister.h; path = ../../shared/sync/ClientRegister.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librhosynclib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhosynclib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -149,6 +153,8 @@
 		5C9817250FBC4F27002597A5 /* sync */ = {
 			isa = PBXGroup;
 			children = (
+				5CE294091009D8B7009A75F6 /* ClientRegister.cpp */,
+				5CE2940A1009D8B7009A75F6 /* ClientRegister.h */,
 				5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */,
 				5C5335AB0FC2F3AB00F268F0 /* syncthread.h */,
 				5C9817260FBC4F41002597A5 /* SyncEngine.cpp */,
@@ -201,6 +207,7 @@
 				5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */,
 				5C9817360FBC4F70002597A5 /* DBResult.h in Headers */,
 				5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */,
+				5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +266,7 @@
 				5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */,
 				5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */,
 				5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */,
+				5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
