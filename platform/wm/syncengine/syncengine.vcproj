@@ -1144,6 +1144,14 @@
 			Name="sync"
 			>
 			<File
+				RelativePath="..\..\shared\sync\ClientRegister.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\sync\ClientRegister.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\sync\SyncEngine.cpp"
 				>
 			</File>

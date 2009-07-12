@@ -1045,6 +1045,10 @@
 					RelativePath=".\rho\common\RhoThreadImpl.h"
 					>
 				</File>
+				<File
+					RelativePath=".\rho\common\SystemInfoImpl.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

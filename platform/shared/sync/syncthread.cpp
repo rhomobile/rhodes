@@ -39,6 +39,13 @@ CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory
     start(epLow);
 }
 
+CSyncThread::~CSyncThread(void)
+{
+    m_oSyncEngine.exitSync();
+    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+    LOG(INFO) + "Sync engine thread shutdown";
+}
+
 int CSyncThread::getLastSyncInterval()
 {
     CTimeInterval nowTime = CTimeInterval::getCurrentTime();
@@ -104,13 +111,6 @@ void CSyncThread::processCommand()
 
     }
     m_curCommand = scNone;
-}
-
-CSyncThread::~CSyncThread(void)
-{
-    m_oSyncEngine.exitSync();
-    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
-    LOG(INFO) + "Sync engine thread shutdown";
 }
 
 void CSyncThread::setPollInterval(int nInterval)

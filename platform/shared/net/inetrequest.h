@@ -29,7 +29,7 @@ struct INetRequest
 
     virtual String resolveUrl(const String& strUrl)=0;
 
-    virtual void cancelAll() = 0;
+    virtual void cancel() = 0;
 
 };
 

@@ -3,6 +3,8 @@
 
 #include "common/AutoPointer.h"
 #include "json/JSONIterator.h"
+#include "common/RhoConf.h"
+#include "sync/ClientRegister.h"
 
 namespace rho {
 namespace sync {
@@ -22,7 +24,7 @@ void CSyncEngine::doSyncAllSources()
 
     m_strSession = loadSession();
     if ( isSessionExist()  )
-        loadClientID();
+        m_clientID = loadClientID();
     else
     	LOG(INFO) + "Client is not logged in. No sync will be performed.";
 
@@ -43,7 +45,7 @@ void CSyncEngine::doSyncSource(int nSrcId)
 
     m_strSession = loadSession();
     if ( isSessionExist()  )
-        loadClientID();
+        m_clientID = loadClientID();
     else
     	LOG(INFO) + "Client is not logged in. No sync will be performed.";
     
@@ -88,41 +90,41 @@ void CSyncEngine::loadAllSources()
     }
 }
 
-void CSyncEngine::loadClientID()
+String CSyncEngine::loadClientID()
 {
-    m_clientID = "";
+    String clientID = "";
+    CMutexLock lockNotify(m_mxLoadClientID);
     boolean bResetClient = false;
     {
         DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
         if ( !res.isEnd() )
         {
-            m_clientID = res.getStringByIdx(0);
+            clientID = res.getStringByIdx(0);
             bResetClient = res.getIntByIdx(1) > 0;
         }
     }
 
-    if ( m_clientID.length() == 0 )
+    if ( clientID.length() == 0 )
     {
-        m_clientID = requestClientIDByNet();
+        clientID = requestClientIDByNet();
 
         getDB().executeSQL("DELETE FROM client_info");
-        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", m_clientID);
+        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
     }else if ( bResetClient )
     {
     	if ( !resetClientIDByNet() )
     		stopSync();
     	else
-    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, m_clientID );	    	
+    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
     }
+
+    return clientID;
 }
 
 boolean CSyncEngine::resetClientIDByNet()//throws Exception
 {
-    if ( m_sources.size() == 0 )
-        return true;
-
-    CSyncSource& src = *m_sources.elementAt(0);
-    String strUrl = src.getUrl() + "/clientreset";
+    String serverUrl = RHOCONF().getString("syncserver");
+    String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + getClientID();
     
     NetRequestStr( szData, getNet().pullData(strUrl+strQuery) );
@@ -131,11 +133,8 @@ boolean CSyncEngine::resetClientIDByNet()//throws Exception
 
 String CSyncEngine::requestClientIDByNet()
 {
-    if ( m_sources.size() == 0 )
-        return "";
-
-    CSyncSource& src = *m_sources.elementAt(0);
-    String strUrl = src.getUrl() + "/clientcreate";
+    String serverUrl = RHOCONF().getString("syncserver");
+    String strUrl = serverUrl + "clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
 
     NetRequestStr(szData,getNet().pullData(strUrl+strQuery));
@@ -204,7 +203,8 @@ boolean CSyncEngine::doLogin(String name, String password)
 
     getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
 
-	loadClientID();
+    if ( CClientRegister::getInstance() != null )
+        CClientRegister::getInstance()->stopWait();
 	
     return true;
 }

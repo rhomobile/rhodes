@@ -38,6 +38,7 @@ public:
 
 };
 
+class CNetRequest;
 class CNetRequestImpl
 {
     DEFINE_LOGCLASS;
@@ -47,9 +48,9 @@ class CNetRequestImpl
     URL_COMPONENTS uri;
     CAtlStringW strReqUrlW;
     String      m_strUrl;
-    static CNetRequestImpl* m_pInstance;
+    CNetRequest* m_pParent;
 public :
-    CNetRequestImpl(const char* method, const String& strUrl);
+    CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl);
     ~CNetRequestImpl();
 
     void close();
@@ -64,19 +65,6 @@ public :
     void free_url_components(URL_COMPONENTS *uri);
     boolean readResponse(CNetDataImpl* pNetData);
     bool SetupInternetConnection(LPCTSTR url);
-
-    static void cancel()
-    {
-        if ( m_pInstance )
-        {
-            int i = 0;
-            if ( m_pInstance->hRequest ) 
-                i = 3;
-
-            m_pInstance->close();
-        }
-    }
-
 };
 
 }
