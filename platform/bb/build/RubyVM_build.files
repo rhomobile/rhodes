@@ -33,6 +33,7 @@ platform\shared\rubyJVM\src\com\rho\StringScanner.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONArrayIterator.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONEntry.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncEngine.java
+platform\shared\rubyJVM\src\com\rho\sync\ClientRegister.java
 platform\shared\rubyJVM\src\com\rho\sync\ISyncStatusListener.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncSource.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncThread.java

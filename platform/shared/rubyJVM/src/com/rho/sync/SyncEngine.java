@@ -20,6 +20,7 @@ package com.rho.sync;
 
 import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.db.*;
@@ -28,10 +29,6 @@ import com.rho.*;
 
 import java.util.Vector;
 import java.util.Hashtable;
-
-import net.rim.device.api.system.Application;
-
-import org.json.me.JSONException;
 
 class SyncEngine implements NetRequest.IRhoSession
 {
@@ -46,7 +43,6 @@ class SyncEngine implements NetRequest.IRhoSession
 
     public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esStop = 3, esExit = 4;
 
-    public static final int DEFAULT_SYNC_PORT = 100;
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
     static String SYNC_PAGE_SIZE() { return "200"; }
@@ -58,6 +54,7 @@ class SyncEngine implements NetRequest.IRhoSession
     String     m_clientID = "";
     Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
     Mutex m_mxNotifications = new Mutex();
+    Mutex m_mxLoadClientID = new Mutex();
     String m_strSession = "";
 
     ISyncStatusListener m_statusListener = null;
@@ -74,32 +71,25 @@ class SyncEngine implements NetRequest.IRhoSession
     int getState(){ return m_syncState; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
-    void stopSync(){ if (isContinueSync()){ setState(esStop); getNet().cancelAll();} }
-    void exitSync(){ setState(esExit); getNet().cancelAll(); }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel(); } }
+    void exitSync(){ setState(esExit); m_NetRequest.cancel(); }
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
     public String getSession(){ return m_strSession; }
     boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
     DBAdapter getDB(){ return m_dbAdapter; }
-    NetRequest getNet(){ return m_NetRequest;}
+    NetRequest getNet() { return m_NetRequest;}
     
     SyncEngine(DBAdapter db){
     	m_dbAdapter = db;
 		m_dbAdapter.setDbCallback(new DBCallback());
 
-    	m_NetRequest = null; 
+		m_NetRequest = null;
     	m_syncState = esNone; 
-    	
-    	try {
-    		loadClientIDFormDB();
-    	} catch (Exception ex) {
-    		LOG.ERROR("Error loading client info from DB...");
-    	}
-    	registerClient();
     }
 
     void setFactory(RhoClassFactory factory)throws Exception{ 
-        m_NetRequest = factory.createNetRequest();
+		m_NetRequest = factory.createNetRequest();
     }
     
 	void doSyncAllSources()
@@ -115,7 +105,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		
 		    m_strSession = loadSession();
 		    if ( isSessionExist()  ) {
-		        loadClientID();
+		    	m_clientID = loadClientID();
 		    } else {
 		    	status_report = "Client is not logged in. No sync will be performed.";
 		    	error = 1;
@@ -149,7 +139,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		
 		    m_strSession = loadSession();
 		    if ( isSessionExist()  ) {
-		        loadClientID();
+		    	m_clientID = loadClientID();
 		    } else {
 		    	status_report = "Client is not logged in. No sync will be performed.";
 		    	error = 1;
@@ -203,84 +193,52 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 
-	void loadClientID()throws Exception
+	String loadClientID()throws Exception
 	{
-	    m_clientID = "";
-	    boolean bResetClient = loadClientIDFormDB();
-	
-	    if ( m_clientID.length() == 0 )
-	    {
-	        m_clientID = requestClientIDByNet();
-	
-	        getDB().executeSQL("DELETE FROM client_info");
-	        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", m_clientID);
-	    }else if ( bResetClient )
-	    {
-	    	if ( !resetClientIDByNet() )
-	    		stopSync();
-	    	else
-	    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), m_clientID );	    	
-	    }
-	    	
+	    String clientID = "";
+		
+		synchronized( m_mxLoadClientID )
+		{
+		    boolean bResetClient = false;
+	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+	        if ( !res.isEnd() )
+	        {
+	            clientID = res.getStringByIdx(0);
+	            bResetClient = res.getIntByIdx(1) > 0;
+	        }
+		
+		    if ( clientID.length() == 0 )
+		    {
+		        clientID = requestClientIDByNet();
+		
+		        getDB().executeSQL("DELETE FROM client_info");
+		        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
+		    }else if ( bResetClient )
+		    {
+		    	if ( !resetClientIDByNet() )
+		    		stopSync();
+		    	else
+		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
+		    }
+		}
+		
+		return clientID;
 	}
 
-	boolean loadClientIDFormDB()throws Exception
-	{
-	    m_clientID = "";
-	    boolean bResetClient = false;
-        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
-        if ( !res.isEnd() )
-        {
-            m_clientID = res.getStringByIdx(0);
-            bResetClient = res.getIntByIdx(1) > 0;
-        }
-        return bResetClient;
-	}
-		
 	boolean resetClientIDByNet()throws Exception
 	{
-	    if ( m_sources.size() == 0 )
-	        return true;
-	
-	    SyncSource src = (SyncSource)m_sources.elementAt(0);
-	    String strUrl = src.getUrl() + "/clientreset";
+	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + getClientID();
-/*	    String strBody = "";
-	    try{
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
-	    }catch(Exception e)
-		{
-			LOG.ERROR("getDeviceId or getPlatform failed", e);
-		}
-	    
-	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
-	    
 	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
 	    return szData != null;
 	}
 	
 	String requestClientIDByNet()throws Exception
 	{
-	    if ( m_sources.size() == 0 )
-	        return "";
-	
-	    SyncSource src = (SyncSource)m_sources.elementAt(0);
-	    String strUrl = src.getUrl() + "/clientcreate";
+	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
-	    /*String strBody = "";
-	    try{
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
-	    }catch(Exception e)
-		{
-			LOG.ERROR("getDeviceId or getPlatform failed", e);
-		}
-	    
-	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
-	    
 	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
 	    if ( szData != null )
 	    {
@@ -317,67 +275,6 @@ class SyncEngine implements NetRequest.IRhoSession
 	        fireNotification(src, true);
 	    }
 	}
-
-	class CRegisterClient extends Thread {
-		private SyncEngine _engine;
-		private String _sync = "sync";		
-		
-		CRegisterClient(SyncEngine engine) {
-			_engine = engine;
-		}
-		
-        public void run() 
-        {
-        	while(true) {
-        		String client_id = getClientID();
-        		if (client_id.length()>0) {
-        			try {
-        				IDBResult res = _engine.getDB().executeSQL("SELECT token_sent from client_info");
-        		        if ( !res.isEnd() ) {
-        		            if ( res.getIntByIdx(0) > 0 )
-        		            	break;
-        		        }        				
-        				IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-        				int port = RhoConf.getInstance().getInt("push_port");
-        				String strBody = "client_id=" + client_id +
-        					"&device_pin=" + helper.getDeviceId() + 
-        					"&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT) +
-        					"&device_type=" + helper.getPlatform();
-        				String serverUrl = RhoConf.getInstance().getString("syncserver");
-        				if (serverUrl.length()>0) {
-        					if( getNet().pushData(serverUrl+"clientregister", strBody, _engine) ) {
-        						try {
-        							_engine.getDB().executeSQL("UPDATE client_info SET token_sent=? where client_id=?", new Integer(1), client_id );
-        						} catch(Exception ex) {
-        							LOG.ERROR("Error saving token_sent to the DB...");
-        						}	
-        						LOG.INFO("Registered client sucessfully...");
-        						break;
-        					} else {
-        						LOG.INFO("Network error POST-ing device pin to the server...");
-        					}
-        				} else {
-        					LOG.INFO("Can't register client because syncserver url is not configured...");
-        				}
-        			} catch(Exception e) {
-        				LOG.INFO("Error: " + e.getMessage());
-        			}
-        		}
-    			synchronized (_sync) {
-	        		try {
-	        			LOG.INFO("Waiting for 10 sec to try again to register client");
-	        			_sync.wait(10000L);
-	        		} catch(Exception e) {
-	        			LOG.INFO("Wait on register client thread interrupted: " + e);
-	        		}
-    			}
-    		}
-        }
-	}
-	
-	void registerClient() {
-		(new CRegisterClient(this)).start();
-	}
 	
 	boolean login(String name, String password)throws Exception
 	{
@@ -403,23 +300,15 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
-/*	    try{
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			strBody += "&device_pin=" + helper.getDeviceId() + "&device_type=" + helper.getPlatform();
-	    }catch(Exception e)
-		{
-			LOG.ERROR("getDeviceId or getPlatform failed", e);
-		}
-		
-	    int port = RhoConf.getInstance().getInt("push_port");
-	    strBody += "&device_port=" + (port > 0 ? port : DEFAULT_SYNC_PORT);*/
-	    
 	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
 	    if ( strSession == null || strSession.length() == 0 )
 	        return false;
 	
 	    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
 	
+	    if ( ClientRegister.getInstance() != null )
+	    	ClientRegister.getInstance().stopWait();
+	    
 	    return true;
 	}
 

@@ -2,6 +2,7 @@
 
 #include "NetRequestImpl.h"
 #include "common/RhoFile.h"
+#include "NetRequest.h"
 
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
@@ -13,7 +14,6 @@ extern "C" int strnicmp( const char *s1, const char *s2, size_t count );
 
 namespace rho {
 namespace net {
-CNetRequestImpl* CNetRequestImpl::m_pInstance;
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
 
 static boolean isLocalHost(const char* szUrl)
@@ -22,12 +22,14 @@ static boolean isLocalHost(const char* szUrl)
         strnicmp(szUrl, "http://127.0.0.0", strlen("http://127.0.0.0")) == 0;
 }
 
-CNetRequestImpl::CNetRequestImpl(const char* method, const String& strUrl)
+CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl)
 {
+    m_pParent = pParent;
+    m_pParent->m_pCurNetRequestImpl = this;
+
     pszErrFunction = NULL;
     hInet = NULL, hConnection = NULL, hRequest = NULL;
     memset(&uri, 0, sizeof(uri) );
-    m_pInstance = this;
     m_strUrl = strUrl;
     CAtlStringW strUrlW(strUrl.c_str());
 
@@ -281,8 +283,7 @@ void CNetRequestImpl::close()
 CNetRequestImpl::~CNetRequestImpl()
 {
     close();
-
-    m_pInstance = 0;
+    m_pParent->m_pCurNetRequestImpl = null;
 }
 
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetDataImpl* pNetData, common::CRhoFile* pFile /*=NULL*/ )
