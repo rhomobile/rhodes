@@ -7,10 +7,11 @@ public class RhoThread extends Thread
 	
 	public final static int epNormal = 0, epHigh = 1, epLow = 2;
 	private Object m_syncObj = new Object();
+	boolean m_isInWaitState;
 	
     public RhoThread(RhoClassFactory factory)
     {
-    	
+    	m_isInWaitState = false;
     }
 
     public void start(int ePriority)
@@ -51,10 +52,13 @@ public class RhoThread extends Thread
     {
 		synchronized (m_syncObj) {
 			try{
+				m_isInWaitState = true;
 				m_syncObj.wait(nTimeout*1000);
 			}catch(Exception e)
 			{
 				LOG.ERROR("wait failed", e);
+			}finally{
+				m_isInWaitState = false;
 			}
 		}
     	
@@ -62,9 +66,11 @@ public class RhoThread extends Thread
     
     public void stopWait()
     {
-		synchronized (m_syncObj) {
-			m_syncObj.notify();
-		}
-    	
+    	if ( m_isInWaitState )
+    	{
+			synchronized (m_syncObj) {
+				m_syncObj.notify();
+			}
+    	}    	
     }
 };

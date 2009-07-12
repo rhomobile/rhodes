@@ -348,16 +348,6 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	}
 
-	void resetSyncDB()throws DBException
-	{
-	    getDB().executeSQL( "DELETE from object_values" );
-	    getDB().executeSQL( "DELETE from client_info" );
-	    getDB().executeSQL( "UPDATE sources SET token=?", "" );
-	    //getDB().executeSQL( "VACUUM" );
-	
-	    m_clientID = "";
-	}
-
 	void setNotification(int source_id, String strUrl, String strParams )throws Exception
 	{
 		LOG.INFO( "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );

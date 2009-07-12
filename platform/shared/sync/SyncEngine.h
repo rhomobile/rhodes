@@ -58,7 +58,6 @@ public:
     boolean isLoggedIn();
     String loadSession();
     void logout();
-    void resetSyncDB();
     void setNotification(int source_id, String strUrl, String strParams );
     void clearNotification(int source_id);
 
