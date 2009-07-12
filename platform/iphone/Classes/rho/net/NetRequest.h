@@ -13,7 +13,9 @@ class CNetRequest : public INetRequest
     DEFINE_LOGCLASS;
 	boolean m_bCancel;
 public:
-    CNetRequest(void){}
+	void* m_pConnData;
+	
+    CNetRequest(void) : m_pConnData(0){}
     virtual ~CNetRequest(void){}
 
     virtual INetData* pullData(const String& strUrl );
@@ -26,7 +28,7 @@ public:
 
     virtual String resolveUrl(const String& strUrl);
 
-    virtual void cancelAll();
+    virtual void cancel();
 };
 
 }

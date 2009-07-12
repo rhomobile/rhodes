@@ -3,14 +3,16 @@
 #include "common/RhoFile.h"
 
 extern "C" {
+typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
+	
 char* HTTPResolveUrl(char* url);
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
-int   rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved );
-int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved);
-	int  rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThis);
-int   rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType);	
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis );
+int   rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis );
+int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis);
+int  rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThisFile, FSAVECONNDATA fSave, void* pThis);
+int   rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType, FSAVECONNDATA fSave, void* pThis);	
 void rho_net_impl_deleteAllCookies();
-void rho_net_impl_cancelAll();
+void rho_net_impl_cancel(void* pConnData);
 }
 
 namespace rho {
@@ -39,6 +41,12 @@ public:
 		return pData ? strlen(pData) : 0;
 	}
 };
+
+extern "C" void saveConnData(void* pThis, void* pData)
+{
+	CNetRequest* pNetRequest = (CNetRequest*)pThis;
+	pNetRequest->m_pConnData = pData;
+}
 	
 INetData* CNetRequest::pullData(const String& strUrl )
 {
@@ -48,7 +56,7 @@ INetData* CNetRequest::pullData(const String& strUrl )
 	char* response = 0;
 	
 	do{
-		response = rho_net_impl_request("GET", strUrl.c_str(), "", &bRespRecieved );
+		response = rho_net_impl_request("GET", strUrl.c_str(), "", &bRespRecieved, saveConnData, this );
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
@@ -63,7 +71,7 @@ boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 	char* response = 0;
 	
 	do{
-		response = rho_net_impl_request("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved );
+		response = rho_net_impl_request("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved, saveConnData, this );
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 		
@@ -100,7 +108,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 	oFile.readData(data,strlen(szMultipartPrefix),nFileSize);
 	memcpy(data+nFileSize-strlen(szMultipartPostfix), szMultipartPostfix, strlen(szMultipartPostfix) );
 	
-	boolean bRet = rho_net_impl_pushData(strUrl.c_str(), data, nDataLen, szMultipartContType ) != 0;					
+	boolean bRet = rho_net_impl_pushData(strUrl.c_str(), data, nDataLen, szMultipartContType, saveConnData, this ) != 0;					
 	free(data);
 	
 	return bRet;
@@ -109,7 +117,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 	boolean bRet = false;
 	
 	do{
-		bRet = rho_net_impl_pushFile(strUrl.c_str(), strFileName.c_str(), &bRespRecieved ) != 0;
+		bRet = rho_net_impl_pushFile(strUrl.c_str(), strFileName.c_str(), &bRespRecieved, saveConnData, this ) != 0;
 		nTry++;
 	}while( !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 		
@@ -136,7 +144,7 @@ boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 	m_bCancel = false;
 	boolean bRes = false;
 	do{
-		bRes = rho_net_impl_pullFile(strUrl.c_str(), &bRespRecieved, writeToFile, &oFile ) != 0 ? true : false;
+		bRes = rho_net_impl_pullFile(strUrl.c_str(), &bRespRecieved, writeToFile, &oFile, saveConnData, this ) != 0 ? true : false;
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
@@ -151,7 +159,7 @@ boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 	boolean bRet = false;
 	
 	do{
-		bRet = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved ) != 0;
+		bRet = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved, saveConnData, this ) != 0;
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
@@ -173,10 +181,11 @@ String CNetRequest::resolveUrl(const String& strUrl)
     return res;
 }
 
-void CNetRequest::cancelAll()
+void CNetRequest::cancel()
 {
 	m_bCancel = true;
-	rho_net_impl_cancelAll();
+	if ( m_pConnData != null )
+		rho_net_impl_cancel(m_pConnData);
 }
 
 }

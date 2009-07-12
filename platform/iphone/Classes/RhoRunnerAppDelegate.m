@@ -13,7 +13,7 @@
 #import "AppManager.h"
 #import "common/RhoConf.h"
 #import "logging/RhoLog.h"
-#include "ClientRegister.h"
+#include "sync/ClientRegister.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -289,7 +289,7 @@
 	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	RAWLOG_INFO1("device pin: %s\n", szpin);
 
-	rho_client_register(szpin);
+	rho_clientregister_create(szpin);
 	free(szpin);
 }
 
