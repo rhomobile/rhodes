@@ -33,7 +33,7 @@ public:
 
     boolean isEmpty()
     {
-        return size()==0;
+        return std::vector<Type>::size()==0;
     }
 
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
@@ -66,11 +66,11 @@ public:
 
     Type removeFirst()
     {
-        if ( isEmpty() )
+        if ( VectorPtr<Type>::isEmpty() )
             return null;
 
-        Type ptrFirst = elementAt(0);
-        erase(begin());
+        Type ptrFirst = VectorPtr<Type>::elementAt(0);
+        VectorPtr<Type>::erase(VectorPtr<Type>::begin());
 
         return ptrFirst;
     }
