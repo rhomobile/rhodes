@@ -20,11 +20,17 @@ class CSyncCommand
 public:
 	int m_nCmdCode;
 	int m_nCmdParam;
-	
+	String m_strCmdParam;
+
 	CSyncCommand(int nCode, int nParam)
 	{
 		m_nCmdCode = nCode;
 		m_nCmdParam = nParam;
+	}
+	CSyncCommand(int nCode, String strParam)
+	{
+		m_nCmdCode = nCode;
+		m_strCmdParam = strParam;
 	}
 	CSyncCommand(int nCode)
 	{
@@ -83,6 +89,8 @@ void rho_sync_create();
 void rho_sync_destroy();
 
 void rho_sync_doSyncAllSources();
+void rho_sync_doSyncSource(int nSrcID);
+void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();
 int rho_sync_login(const char *login, const char *password);

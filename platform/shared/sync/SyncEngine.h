@@ -53,7 +53,7 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(int nSrcId);
+    void doSyncSource(int nSrcId, String strSrcUrl);
     boolean login(String name, String password);
     boolean isLoggedIn();
     String loadSession();
@@ -92,6 +92,7 @@ private:
     net::INetRequest& getNet(){ return *m_NetRequest; }
 
     CSyncSource* findSourceByID(int nSrcId);
+    CSyncSource* findSourceByUrl(const String& strSrcUrl);
 
     friend class CSyncSource;
 };
