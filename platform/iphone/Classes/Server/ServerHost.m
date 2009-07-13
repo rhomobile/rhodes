@@ -238,6 +238,10 @@ extern const char* RhoGetRootPath();
 	rho_sync_doSyncAllSources();
 }
 
+- (void) doSyncFor:(NSString*)url {
+	rho_sync_doSyncSourceByUrl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+}
+
 - (void)dealloc 
 {
     [appManager release];
