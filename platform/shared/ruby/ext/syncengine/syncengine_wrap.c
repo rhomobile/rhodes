@@ -1823,18 +1823,6 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_trigger_sync_db_reset(int argc, VALUE *argv, VALUE self) {
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  trigger_sync_db_reset();
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
 _wrap_stop_sync(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
@@ -2200,7 +2188,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "login", _wrap_login, -1);
   rb_define_module_function(mSyncEngine, "logged_in", _wrap_logged_in, -1);
   rb_define_module_function(mSyncEngine, "logout", _wrap_logout, -1);
-  rb_define_module_function(mSyncEngine, "trigger_sync_db_reset", _wrap_trigger_sync_db_reset, -1);
   rb_define_module_function(mSyncEngine, "stop_sync", _wrap_stop_sync, -1);
   rb_define_module_function(mSyncEngine, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mSyncEngine, "clear_notification", _wrap_clear_notification, -1);

@@ -161,11 +161,12 @@ public class RhoConf {
     }
 
     public void loadConf(){
-    	loadFromConfFromJar();
+    	loadFromJar();
     	loadFromFile();
+    	loadFromJad();
     }
     
-    private void loadFromConfFromJar()
+    private void loadFromJar()
     {
 		java.io.InputStream fstream = null;
 		try {
@@ -191,4 +192,20 @@ public class RhoConf {
 		}
    }
     
+   void loadFromJad()
+   {
+		try{
+			IRhoRubyHelper systemInfo = RhoClassFactory.createRhoRubyHelper();
+			Enumeration keysEnum = m_mapValues.keys();
+			while( keysEnum.hasMoreElements() )
+			{
+				String name = (String)keysEnum.nextElement(); 
+				String strValue = systemInfo.getAppProperty(name);
+				if ( strValue != null && strValue.length() > 0 )
+					m_mapValues.put(name, strValue);
+			}
+		}catch(Exception exc){
+			 
+		}
+   }
 }

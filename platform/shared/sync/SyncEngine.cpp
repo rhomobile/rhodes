@@ -35,10 +35,13 @@ void CSyncEngine::doSyncAllSources()
 	LOG(INFO) + "End syncing all sources";
 }
 
-void CSyncEngine::doSyncSource(int nSrcId)
+void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl)
 {
-	LOG(INFO) + "Start syncing source : " + nSrcId;
-	
+    if ( strSrcUrl.length()>0 )
+        LOG(ERROR) + "Start syncing source : " + strSrcUrl;
+    else
+        LOG(ERROR) + "Start syncing source : " + nSrcId;
+
     setState(esSyncSource);
 
     loadAllSources();
@@ -49,7 +52,12 @@ void CSyncEngine::doSyncSource(int nSrcId)
     else
     	LOG(INFO) + "Client is not logged in. No sync will be performed.";
     
-    CSyncSource* pSrc = findSourceByID(nSrcId);
+    CSyncSource* pSrc = null;
+    if ( strSrcUrl.length()>0 )
+    	pSrc = findSourceByUrl(strSrcUrl);
+    else
+        pSrc = findSourceByID(nSrcId);
+
     if ( pSrc != null )
     {
         CSyncSource& src = *pSrc;
@@ -58,11 +66,19 @@ void CSyncEngine::doSyncSource(int nSrcId)
 
         fireNotification(src, true);
     }else
-    	LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
-    
+    {
+        if ( strSrcUrl.length()>0 )
+            LOG(ERROR) + "Sync one source : Unknown Source Url: " + strSrcUrl;
+        else
+            LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
+    }
+
     setState(esNone);
-	
-	LOG(INFO) + "End  syncing source : " + nSrcId;
+
+    if ( strSrcUrl.length()>0 )
+        LOG(ERROR) + "End syncing source : " + strSrcUrl;
+    else
+        LOG(ERROR) + "End syncing source : " + nSrcId;
 }
 
 CSyncSource* CSyncEngine::findSourceByID(int nSrcId)
@@ -71,6 +87,18 @@ CSyncSource* CSyncEngine::findSourceByID(int nSrcId)
     {
         CSyncSource& src = *m_sources.elementAt(i);
         if ( src.getID() == nSrcId )
+            return &src;
+    }
+    
+    return null;
+}
+
+CSyncSource* CSyncEngine::findSourceByUrl(const String& strSrcUrl)
+{
+    for( int i = 0; i < (int)m_sources.size(); i++ )
+    {
+        CSyncSource& src = *m_sources.elementAt(i);
+        if ( src.getUrl() == strSrcUrl )
             return &src;
     }
     
@@ -255,16 +283,6 @@ void CSyncEngine::logout()
         getNet().deleteCookie(src.getUrl());
     }
 
-}
-
-void CSyncEngine::resetSyncDB()
-{
-    getDB().executeSQL( "DELETE from object_values" );
-    getDB().executeSQL( "UPDATE client_info SET reset=?", 1 );
-    getDB().executeSQL( "UPDATE sources SET token=?", 0 );
-    getDB().executeSQL( "VACUUM" );
-
-    m_clientID = "";
 }
 
 void CSyncEngine::setNotification(int source_id, String strUrl, String strParams )

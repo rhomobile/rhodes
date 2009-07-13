@@ -16,8 +16,6 @@
 	#define logged_in rho_sync_logged_in
 	extern void rho_sync_logout();
 	#define logout rho_sync_logout
-	extern void rho_sync_db_reset();
-	#define trigger_sync_db_reset rho_sync_db_reset
 	extern void rho_sync_stop();
 	#define stop_sync rho_sync_stop
 	extern void rho_sync_set_notification(int source_id, const char *url, char* params);
@@ -35,7 +33,6 @@ extern void unlock_sync_mutex();
 extern int login(const char *login, const char *password);
 extern int logged_in();
 extern void logout();
-extern void trigger_sync_db_reset();
 extern void stop_sync();
 extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);

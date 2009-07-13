@@ -6,6 +6,7 @@ namespace common {
 
 CRhoThread::CRhoThread(IRhoClassFactory* factory)
 {
+    m_isInWaitState = false;
     m_pImpl = factory->createThreadImpl();
 }
 

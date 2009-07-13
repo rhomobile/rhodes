@@ -224,7 +224,12 @@ public class PushListeningThread extends Thread {
             	String[] ops = split(msg,"\n");
             	for (int loop = 0; loop < ops.length; loop++) {
             		if (ops[loop].startsWith("do_sync")) {
-                    	SyncThread.doSyncAllSources();
+            			op = splitOnce(ops[loop],"=");
+            			if(op.length <= 1 || "all".equalsIgnoreCase(op[1])) {
+            				SyncThread.doSyncAllSources();
+            			} else if ((op[1] != null) && (op[1].length()>0)){
+            				SyncThread.doSyncSource(op[1].trim());
+            			}
             		} else if (ops[loop].startsWith("show_popup")) {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {

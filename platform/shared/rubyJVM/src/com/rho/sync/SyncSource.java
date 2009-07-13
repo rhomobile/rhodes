@@ -448,7 +448,8 @@ class SyncSource
 	{
 	    if ( this.isTokenMoreThanOne() && getToken().equals(token) ){
 			//Delete non-confirmed records
-	
+	    	
+	        setToken( token ); //For m_bTokenFromDB = false;
 	        getDB().executeSQL("DELETE FROM object_values where source_id=? and token=?", getID(), token );
 		}else
 	    {
