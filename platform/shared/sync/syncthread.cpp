@@ -127,7 +127,7 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
     case scChangePollInterval:
         break;
     case scSyncOne:
-        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam);
+        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
         break;
     }
 }
@@ -154,14 +154,20 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources()
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
+    //CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
+    rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(int nSrcID)
 {
     CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
 }	
-	
+
+void rho_sync_doSyncSourceByUrl(const char* szSrcID)
+{
+    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
+}	
+
 void rho_sync_stop()
 {
 	if (CSyncThread::getSyncEngine().isSyncing() )

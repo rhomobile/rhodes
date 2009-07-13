@@ -22,6 +22,7 @@ import com.rho.*;
 import com.rho.db.*;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
 import java.io.IOException;
 import j2me.util.LinkedList;
@@ -42,12 +43,19 @@ public class SyncThread extends RhoThread
    	{
    		int m_nCmdCode;
    		int m_nCmdParam;
+   		String m_strCmdParam;
    		
    		SyncCommand(int nCode, int nParam)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = nParam;
    		}
+   		SyncCommand(int nCode, String strParam)
+   		{
+   			m_nCmdCode = nCode;
+   			m_strCmdParam = strParam;
+   		}
+   		
    		SyncCommand(int nCode)
    		{
    			m_nCmdCode = nCode;
@@ -193,7 +201,7 @@ public class SyncThread extends RhoThread
 	    case scChangePollInterval:
 	        break;
 	    case scSyncOne:
-	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam);
+	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
 	        break;
 	    }
 	}
@@ -224,6 +232,11 @@ public class SyncThread extends RhoThread
 	{
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, nSrcID) );
 	}
+
+	public static void doSyncSource(String strSrcUrl)
+	{
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcUrl) );
+	}
 	
 	public static void stopSync()
 	{
@@ -253,7 +266,10 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
 				try{
-					doSyncSource(arg.toInt());
+//					if ( arg instanceof RubyString )
+//						doSyncSource(arg.toStr());
+//					else
+						doSyncSource(arg.toInt());
 				}catch(Exception e)
 				{
 					LOG.ERROR("dosync_source failed", e);
