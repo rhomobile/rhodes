@@ -182,15 +182,18 @@
 	NSArray *do_sync = [userInfo objectForKey:@"do_sync"];
 	if (do_sync) {
 		NSEnumerator *enumerator = [do_sync objectEnumerator];
-		id obj;
+		id url;
 		
 		NSLog(@"do_sync array: ");
 		bool sync_all = false;
-		while ( obj = [enumerator nextObject] ) {
-			NSLog( @"url = %@", obj );
-			if ([@"all" caseInsensitiveCompare:obj] == NSOrderedSame) {
+		while ( url = [enumerator nextObject] ) {
+			NSLog( @"url = %@", url );
+			if ([@"all" caseInsensitiveCompare:url] == NSOrderedSame) {
 				sync_all = true;
-				//TDB: call sync of individual source
+			} else {
+				//do sync of individual source
+				[serverHost  doSyncFor:[url stringByTrimmingCharactersInSet:
+										[NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]]];
 			}
 		}
 		
