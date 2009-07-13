@@ -192,7 +192,8 @@
 				sync_all = true;
 			} else {
 				//do sync of individual source
-				[serverHost  doSyncFor:url];
+				[serverHost  doSyncFor:[url stringByTrimmingCharactersInSet:
+										[NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]]];
 			}
 		}
 		
