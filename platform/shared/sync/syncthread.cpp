@@ -29,9 +29,7 @@ db::CDBAdapter  CSyncThread::m_oDBAdapter;
 
 CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBAdapter)
 {
-    m_curCommand = scNone;
 	m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
-    m_nCmdParam = 0;
 	m_ptrFactory = factory;
 
     m_oSyncEngine.setFactory(factory);
@@ -44,6 +42,16 @@ CSyncThread::~CSyncThread(void)
     m_oSyncEngine.exitSync();
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
     LOG(INFO) + "Sync engine thread shutdown";
+}
+
+void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
+{ 
+	//TODO: check for duplicates ???
+	{
+        CMutexLock lockNotify(m_mxStackCommands);
+		m_stackCommands.add(pSyncCmd);
+	}
+	stopWait(); 
 }
 
 int CSyncThread::getLastSyncInterval()
@@ -84,14 +92,30 @@ void CSyncThread::run()
         nLastSyncInterval = 0;
 
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
-    		processCommand();
+    		processCommands();
 	}
 }
 
-void CSyncThread::processCommand()
+void CSyncThread::processCommands()//throws Exception
 {
-    //TODO: implement stack of commands
-    switch(m_curCommand)
+	if ( m_stackCommands.isEmpty() )
+		addSyncCommand(new CSyncCommand(scNone));
+	
+	while(!m_stackCommands.isEmpty())
+	{
+		common::CAutoPtr<CSyncCommand> pSyncCmd = null;
+    	{
+        	CMutexLock lockNotify(m_mxStackCommands);
+    		pSyncCmd = (CSyncCommand*)m_stackCommands.removeFirst();
+    	}
+		
+		processCommand(*pSyncCmd);
+	}
+}
+
+void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
+{
+    switch(oSyncCmd.m_nCmdCode)
     {
     case scNone:
         if ( m_nPollInterval )
@@ -103,14 +127,9 @@ void CSyncThread::processCommand()
     case scChangePollInterval:
         break;
     case scSyncOne:
-        m_oSyncEngine.doSyncSource(m_nCmdParam);
+        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
         break;
-    case scResetDB:
-        m_oSyncEngine.resetSyncDB();
-        break;
-
     }
-    m_curCommand = scNone;
 }
 
 void CSyncThread::setPollInterval(int nInterval)
@@ -119,7 +138,7 @@ void CSyncThread::setPollInterval(int nInterval)
     if ( m_nPollInterval == 0 )
         m_oSyncEngine.stopSync();
 
-    addSyncCommand(scChangePollInterval); 
+    addSyncCommand( new CSyncCommand(scChangePollInterval) );
 }
 
 };
@@ -135,18 +154,19 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources()
 {
-    CSyncThread::getInstance()->addSyncCommand(CSyncThread::scSyncAll);
+    //CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
+    rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(int nSrcID)
 {
-    CSyncThread::getInstance()->addSyncCommand(CSyncThread::scSyncOne, nSrcID );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
 }	
-	
-void rho_sync_db_reset()
+
+void rho_sync_doSyncSourceByUrl(const char* szSrcID)
 {
-    CSyncThread::getInstance()->addSyncCommand(CSyncThread::scResetDB);
-}
+    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
+}	
 
 void rho_sync_stop()
 {

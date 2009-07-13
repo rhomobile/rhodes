@@ -15,10 +15,34 @@ namespace sync {
 #define SYNC_WAIT_BEFOREKILL_SECONDS 3
 #define SYNC_STARTUP_INTERVAL_SECONDS 10
 
+class CSyncCommand
+{
+public:
+	int m_nCmdCode;
+	int m_nCmdParam;
+	String m_strCmdParam;
+
+	CSyncCommand(int nCode, int nParam)
+	{
+		m_nCmdCode = nCode;
+		m_nCmdParam = nParam;
+	}
+	CSyncCommand(int nCode, String strParam)
+	{
+		m_nCmdCode = nCode;
+		m_strCmdParam = strParam;
+	}
+	CSyncCommand(int nCode)
+	{
+		m_nCmdCode = nCode;
+		m_nCmdParam = 0;
+	}
+};
+
 class CSyncThread : public common::CRhoThread
 {
 public:
-    enum ESyncCommands{ scNone = 0, scResetDB, scSyncAll, scSyncOne, scChangePollInterval, scExit};
+    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit};
 
 private:
 
@@ -28,10 +52,9 @@ private:
     static db::CDBAdapter  m_oDBAdapter;
     CSyncEngine     m_oSyncEngine;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-    ESyncCommands m_curCommand;
 	int           m_nPollInterval;
-    int           m_nCmdParam;
-
+   	common::CMutex m_mxStackCommands;
+	LinkedListPtr<CSyncCommand*> m_stackCommands;
 public:
     ~CSyncThread(void);
 
@@ -41,8 +64,7 @@ public:
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
     static db::CDBAdapter& getDBAdapter(){ return m_pInstance->m_oDBAdapter; }
 
-    void addSyncCommand(ESyncCommands curCommand){ m_curCommand = curCommand; stopWait(); }
-    void addSyncCommand(ESyncCommands curCommand, int nCmdParam){ m_curCommand = curCommand; m_nCmdParam = nCmdParam; stopWait(); }
+    void addSyncCommand(CSyncCommand* pSyncCmd);
 
 	virtual void run();
 
@@ -51,7 +73,8 @@ private:
     CSyncThread(common::IRhoClassFactory* factory);
     int getLastSyncInterval();
 
-    void processCommand();
+    void processCommands();
+    void processCommand(CSyncCommand& oSyncCmd);
 };
 
 }
@@ -66,12 +89,13 @@ void rho_sync_create();
 void rho_sync_destroy();
 
 void rho_sync_doSyncAllSources();
+void rho_sync_doSyncSource(int nSrcID);
+void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();
 int rho_sync_login(const char *login, const char *password);
 int rho_sync_logged_in();
 void rho_sync_logout();
-void rho_sync_db_reset();
 void rho_sync_set_notification(int source_id, const char *url, char* params);
 void rho_sync_clear_notification(int source_id);
 void rho_sync_set_pollinterval(int nInterval);

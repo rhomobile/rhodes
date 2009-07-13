@@ -123,12 +123,15 @@ class SyncEngine implements NetRequest.IRhoSession
 	    reportStatus( status_report, error );
 	}
 
-	void doSyncSource(int nSrcId)
+	void doSyncSource(int nSrcId, String strSrcUrl)
 	{
 		String status_report = null;
 		int error = 0;
-		
-		LOG.INFO( "Started synchronization of the data source #" + nSrcId );
+
+	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
+	    	LOG.INFO( "Started synchronization of the data source url" + strSrcUrl );
+	    else
+	    	LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
 	    setState(esSyncSource);
         SyncSource src = null;
@@ -145,7 +148,11 @@ class SyncEngine implements NetRequest.IRhoSession
 		    	error = 1;
 		    }
 		    
-		    src = findSourceByID(nSrcId);
+		    if ( strSrcUrl != null && strSrcUrl.length()>0 )
+		    	src = findSourceByUrl(strSrcUrl);
+		    else
+		    	src = findSourceByID(nSrcId);
+		    
 	        if ( src != null )
 	        {
 		        if ( isSessionExist() && getState() != esStop )
@@ -153,10 +160,17 @@ class SyncEngine implements NetRequest.IRhoSession
 		
 		        fireNotification(src, true);
 	        } else {
-	        	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+	    	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
+	    	    	throw new RuntimeException("Sync one source : Unknown Source Url: " + strSrcUrl );
+	    	    else
+	    	    	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
 	        }
 	    } catch(Exception exc) {
-	    	LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+	    	if ( strSrcUrl != null && strSrcUrl.length()>0 )	    	
+	    		LOG.ERROR("Sync source: " + strSrcUrl + " failed.", exc);
+	    	else
+	    		LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+	    	
 	    	status_report = "Sync failed for " + src.getName() + ".";
 	    }
         
@@ -173,6 +187,18 @@ class SyncEngine implements NetRequest.IRhoSession
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
 	        if ( src.getID().intValue() == nSrcId )
+	            return src;
+	    }
+	    
+	    return null;
+	}
+	
+	SyncSource findSourceByUrl(String strSrcUrl)
+	{
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        if ( src.getUrl().equals(strSrcUrl) )
 	            return src;
 	    }
 	    
@@ -346,16 +372,6 @@ class SyncEngine implements NetRequest.IRhoSession
 	        getNet().deleteCookie(src.getUrl());
 	    }
 	
-	}
-
-	void resetSyncDB()throws DBException
-	{
-	    getDB().executeSQL( "DELETE from object_values" );
-	    getDB().executeSQL( "DELETE from client_info" );
-	    getDB().executeSQL( "UPDATE sources SET token=?", "" );
-	    //getDB().executeSQL( "VACUUM" );
-	
-	    m_clientID = "";
 	}
 
 	void setNotification(int source_id, String strUrl, String strParams )throws Exception
