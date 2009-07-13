@@ -52,6 +52,7 @@
 - (void) stop;
 //Sync all sources
 - (void) doSync;
+- (void) doSyncFor:(NSString*)url;
 
 + (ServerHost *)sharedInstance;
 
