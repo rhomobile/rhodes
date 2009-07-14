@@ -117,13 +117,13 @@ static ServerHost* sharedSH = nil;
 
 - (void)takePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onTakePicture]) {
-		[actionTarget performSelector:onTakePicture withObject:url];
+		[actionTarget performSelectorOnMainThread:onTakePicture withObject:url waitUntilDone:NO];
 	}
 }
 
 - (void)choosePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onChoosePicture]) {
-		[actionTarget performSelector:onChoosePicture withObject:url];
+		[actionTarget performSelectorOnMainThread:onChoosePicture withObject:url waitUntilDone:NO];
 	}
 }
 
