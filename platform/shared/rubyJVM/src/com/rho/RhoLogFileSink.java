@@ -50,6 +50,10 @@ public class RhoLogFileSink implements IRhoLogSink{
 		return m_nCirclePos >= 0 ? m_nCirclePos : m_nFileLogSize;
 	}
 
+	static private void log(String txt) {
+		System.out.println("RhoLogFileSink: " + txt);
+	}
+	
 	public void writeLogMessage(String strMsg) {
 		try{
 		    int len = strMsg.length();
@@ -84,6 +88,7 @@ public class RhoLogFileSink implements IRhoLogSink{
 	
 		    saveLogPosition();
 		}catch(Exception exc){
+			log(exc.getMessage());
 		}
 	}
 
