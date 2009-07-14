@@ -44,6 +44,8 @@ public class RhoRuby {
 	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
 	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
 	        
+	        GeoLocation.start();
+	        
 	        helper = RhoClassFactory.createRhoRubyHelper();
 	        helper.initRubyExtensions();
         }catch(Throwable exc){
