@@ -681,29 +681,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
-    private void doStartupWork() {
-
+    private void doStartupWork() 
+    {
+    	if (_mainScreen!=null)
+    		return;
+    	
     	try{
         	RhoLogger.InitRhoLog();
 	    	
 	        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
-	      
 	    	
-	    	_pushListeningThread = new PushListeningThread();
-	    	_pushListeningThread.start();
-	        
-	    	try {
-	    		RhoClassFactory.getNetworkAccess().configure();
-	    	} catch(IOException exc) {
-	    		LOG.ERROR(exc.getMessage());
-	    	}
-	    	
-	        RhoRuby.RhoRubyStart("");
-	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
-	        if (sync != null) {
-	        	sync.setStatusListener(this);
-	        }
-	        	   	
 	    	CKeyListener list = new CKeyListener();
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
 	    	this._history = new Vector();
@@ -732,6 +719,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		        }
 	        }
 	        
+	    	_pushListeningThread = new PushListeningThread();
+	    	_pushListeningThread.start();
+	        
+	    	try {
+	    		RhoClassFactory.getNetworkAccess().configure();
+	    	} catch(IOException exc) {
+	    		LOG.ERROR(exc.getMessage());
+	    	}
+	    	
+	        RhoRuby.RhoRubyStart("");
+	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
+	        if (sync != null) {
+	        	sync.setStatusListener(this);
+	        }
+	        
 	        //Do it in onActivate
 	        //if(!restoreLocation()) {
 	        //	navigateHome();
@@ -751,7 +753,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         // To make sure we don't actually do the startup stuff twice,
         // we use _mainScreen as a flag
         if ( _mainScreen == null ) {
-            LOG.TRACE(" Shedule doStartupWork() ***---------------------------------- " );
+            LOG.INFO_OUT(" Shedule doStartupWork() ***---------------------------------- " );
             this.invokeLater( new Runnable() { 
                 public void run() { 
                     doStartupWork(); 
@@ -764,7 +766,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     // SystemListener methods
 
     public void powerUp() {
-        LOG.TRACE(" POWER UP ***----------------------------------*** " );
+        LOG.INFO_OUT(" POWER UP ***----------------------------------*** " );
         invokeStartupWork();
         this.requestBackground();
     }
@@ -781,10 +783,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     //----------------------------------------------------------------------
     
     private RhodesApplication() {
-        LOG.TRACE(" Construct RhodesApplication() ***----------------------------------*** " );
+        LOG.INFO_OUT(" Construct RhodesApplication() ***----------------------------------*** " );
         this.addSystemListener(this);
         if ( ApplicationManager.getApplicationManager().inStartup() ) {
-            LOG.TRACE("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
+            LOG.INFO_OUT("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
         } else {
             invokeStartupWork();
         }
