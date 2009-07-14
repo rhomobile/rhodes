@@ -68,12 +68,13 @@ public class ClientRegister extends RhoThread
 	    				break;
     			}
     			
-				LOG.INFO("Waiting for "+ POLL_INTERVAL_SECONDS+ " sec to try again to register client");
-				wait(POLL_INTERVAL_SECONDS);
     		}catch(Exception exc)
     		{
     			LOG.ERROR("doRegister failed", exc);
     		}
+    		
+			LOG.INFO("Waiting for "+ POLL_INTERVAL_SECONDS+ " sec to try again to register client");
+			wait(POLL_INTERVAL_SECONDS);
 		}
         LOG.INFO( "ClientRegister thread shutdown" );
     	
