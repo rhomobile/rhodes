@@ -26,44 +26,25 @@ public class NetRequest
 		public abstract String getSession();
 	}
 	
-	public static class NetData
-	{
-		private String m_strData = null;
-
-		public NetData( String strData){ m_strData = strData; }
-		
-		public String getCharData()
-	    {
-	    	return m_strData;
-	    }
-	    
-		public int getDataSize()
-	    {
-	    	return m_strData != null ? m_strData.length() : 0;
-	    }
-	}
-	
 	private IHttpConnection m_connection = null;
 	private char[] m_charBuffer = new char[1024];
 	public  byte[]  m_byteBuffer = new byte[4096];
 	
-	public NetData pullData(String strUrl, String strBody, IRhoSession oSession ) throws Exception
+	public NetResponse pullData(String strUrl, String strBody, IRhoSession oSession ) throws Exception
     {
-    	NetData	data = doRequestTry(strUrl, strBody, oSession, true);
-		
-		return data != null ? data : new NetData(null);
+		return doRequestTry(strUrl, strBody, oSession, true);
     }
 
-	public NetData doRequestTry(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
+	public NetResponse doRequestTry(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
     {
-		NetData data = null;
+		NetResponse resp = null;
 		
 		int nTry = 0;
 		m_bCancel = false;
 	    do
 	    {
 	    	try{
-	    		data = doRequest(strUrl, strBody, oSession, bCloseConnection);
+	    		resp = doRequest(strUrl, strBody, oSession, bCloseConnection);
 	    		break;
 	    	}catch(IOException exc)
 	    	{
@@ -76,14 +57,15 @@ public class NetRequest
 
 	    }while( true );
 		
-		return data;
+		return resp;
     }
 	
-	public NetData doRequest(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
+	public NetResponse doRequest(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
     {
 		StringBuffer buffer = null;
 		InputStream is = null;
 		OutputStream os = null;
+		int code = -1;
 		
 		try{
 			closeConnection();
@@ -104,7 +86,7 @@ public class NetRequest
 				m_connection.setRequestMethod(IHttpConnection.GET);
 			
 			is = m_connection.openInputStream();
-			int code = m_connection.getResponseCode();
+			code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -113,6 +95,10 @@ public class NetRequest
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 					oSession.logout();
+				
+				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					buffer = readFully(is);
+
 			}else
 			{
 				long len = m_connection.getLength();
@@ -142,17 +128,19 @@ public class NetRequest
 			throw e;
 		}
 		
-		return new NetData(buffer != null ? buffer.toString() : null );
+		return new NetResponse(buffer != null ? buffer.toString() : "", code );
     }
 	
-	public boolean pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
+	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
 		URI uri = new URI(strUrl);
-		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ) 
-			return RhoClassFactory.getNetworkAccess().doLocalRequest(strUrl, strBody);
+		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) )
+		{
+			boolean bRes = RhoClassFactory.getNetworkAccess().doLocalRequest(strUrl, strBody);
+			return new NetResponse("", bRes ? IHttpConnection.HTTP_OK : IHttpConnection.HTTP_INTERNAL_ERROR);
+		}
 		
-   		NetData data = doRequestTry(strUrl, strBody, oSession, true);
-		return data != null && data.getCharData() != null;
+		return doRequestTry(strUrl, strBody, oSession, true);
     }
 	
 	static class ParsedCookie {
@@ -160,23 +148,22 @@ public class NetRequest
 		String strSession;
 	};
 
-	public String pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
+	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		String strCookie = "";
-		
+		NetResponse resp = null;
 		try{
-    		doRequestTry(strUrl, strBody, oSession, false);
-    		if ( m_connection.getResponseCode() == IHttpConnection.HTTP_OK )
+    		resp = doRequestTry(strUrl, strBody, oSession, false);
+    		if ( resp.isOK() )
     		{
     			ParsedCookie cookie = makeCookie(m_connection);
-    			strCookie = cookie.strAuth + ";" + cookie.strSession + ";";
+    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
     		}
 		}finally
 		{
 			closeConnection();
 		}
 		
-		return strCookie;
+		return resp;
     }
 	
 	static String szMultipartPrefix = 
@@ -190,10 +177,10 @@ public class NetRequest
 	static String szMultipartContType = 
 	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 
-	public boolean pushFile( String strUrl, String strFileName, IRhoSession oSession)throws Exception
+	public NetResponse pushFile( String strUrl, String strFileName, IRhoSession oSession)throws Exception
 	{
 		SimpleFile file = null;
-		boolean bRes = false;
+		NetResponse resp = null;
 		
 		try{
 			file = RhoClassFactory.createFile();
@@ -202,7 +189,7 @@ public class NetRequest
 			int nTry = 0;
 			do{
 				try{
-					bRes = pushFile1(strUrl, file, oSession );
+					resp = pushFile1(strUrl, file, oSession );
 					break;
 				}catch(IOException e)
 				{
@@ -217,14 +204,15 @@ public class NetRequest
 				try{ file.close(); }catch(IOException e){}
 		}
 		
-		return bRes;
+		return resp;
 	}
 	
-	private boolean pushFile1( String strUrl, SimpleFile file, IRhoSession oSession)throws Exception
+	private NetResponse pushFile1( String strUrl, SimpleFile file, IRhoSession oSession)throws Exception
     {
 		StringBuffer buffer = null;
 		InputStream is = null;
 		OutputStream os = null;
+		int code  = -1;
 		
 		try{
 			closeConnection();
@@ -255,7 +243,7 @@ public class NetRequest
 			//PUSH specific
 			
 			is = m_connection.openInputStream();
-			int code = m_connection.getResponseCode();
+			code = m_connection.getResponseCode();
 		
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -264,6 +252,10 @@ public class NetRequest
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 					oSession.logout();
+				
+				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					buffer = readFully(is);
+				
 			}else
 			{
 				long len = m_connection.getLength();
@@ -285,14 +277,14 @@ public class NetRequest
 			}catch(IOException exc2){}
 		}
 		
-		return buffer != null;
+		return new NetResponse(buffer != null ? buffer.toString() : "", code );
     }
 	
-	public boolean pullFile( String strUrl, String strFileName, IRhoSession oSession )throws Exception
+	public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession )throws Exception
 	{
 		SimpleFile file = null;
 		OutputStream fstream = null;
-		boolean bRes = false;
+		NetResponse resp = null;
 		try{
 			file = RhoClassFactory.createFile();
 			file.open(strFileName, false, true);
@@ -301,7 +293,7 @@ public class NetRequest
 			int nTry = 0;
 			do{
 				try{
-					bRes = pullFile1( strUrl, fstream, oSession );
+					resp = pullFile1( strUrl, fstream, oSession );
 					break;
 				}catch(IOException e)
 				{
@@ -319,13 +311,14 @@ public class NetRequest
 				try{ file.close(); }catch(IOException e){}
 		}
 		
-		return bRes;
+		return resp;
 	}
 	
-	boolean pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession )throws Exception
+	NetResponse pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession )throws Exception
 	{
+		StringBuffer buffer = null;
 		InputStream is = null;
-		boolean bRes = false;
+		int code = -1;
 		
 		try{
 			closeConnection();
@@ -338,7 +331,7 @@ public class NetRequest
 			m_connection.setRequestMethod(IHttpConnection.GET);
 			
 			is = m_connection.openInputStream();
-			int code = m_connection.getResponseCode();
+			code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
 			
@@ -347,6 +340,9 @@ public class NetRequest
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 					oSession.logout();
+				
+				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					buffer = readFully(is);
 			}else
 			{
 				//long len = connection.getLength();
@@ -362,7 +358,6 @@ public class NetRequest
 		    		}while( nRead > 0 );
 				}
 				
-				bRes = true;
 			}
 
 		}finally
@@ -373,7 +368,7 @@ public class NetRequest
 			closeConnection();
 		}
 		
-		return bRes;
+		return new NetResponse(buffer != null ? buffer.toString() : "", code );
 	}
 	
     //if strUrl.length() == 0 delete all cookies if possible

@@ -136,7 +136,8 @@ class SyncSource
 	        SyncBlob blob = (SyncBlob)m_arSyncBlobs.elementAt(i);
 	
 	        strQuery = strBaseQuery + "&" + blob.getBody();
-	        if ( !getNet().pushFile(strQuery, blob.getFilePath(), getSync() ) )
+	        NetResponse resp = getNet().pushFile(strQuery, blob.getFilePath(), getSync() );
+	        if ( !resp.isOK() )
 	        {
 	            getSync().setState(SyncEngine.esStop);
 	            return;
@@ -164,7 +165,8 @@ class SyncSource
 			    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + strBody.length());
 			    LOG.TRACE( "Push body: " + strBody );		
 	
-	            if ( !getNet().pushData(strUrl+strQuery,strBody, getSync() ) )
+			    NetResponse resp = getNet().pushData(strUrl+strQuery,strBody, getSync() ); 
+	            if ( !resp.isOK() )
 	            {
 	                getSync().setState(SyncEngine.esStop);
 	                continue;
@@ -278,14 +280,14 @@ class SyncSource
 	
 			LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );
 			
-	        String szData = getNet().pullData(strUrl+strQuery, "", getSync()).getCharData();
-	        if ( szData == null )
+			NetResponse resp = getNet().pullData(strUrl+strQuery, "", getSync());
+	        if ( !resp.isOK() )
 	        {
 	            getSync().stopSync();
 	            continue;
 	        }
 	
-	        processServerData(szData);
+	        processServerData(resp.getCharData());
 	
 	        m_bGetAtLeastOnePage = true;
 	
@@ -404,7 +406,8 @@ class SyncSource
 			url += "?";
 		url += "client_id=" + getSync().getClientID();
 		
-        if ( !getNet().pullFile(url, fName, getSync()) )
+		NetResponse resp = getNet().pullFile(url, fName, getSync());
+        if ( !resp.isOK() )
         	return false;
         
         value.m_strAttrType = "blob.file";
