@@ -206,7 +206,9 @@ public class SyncThread extends RhoThread
 	    }
 	}
 
+	static ISyncStatusListener m_statusListener = null;
 	public boolean setStatusListener(ISyncStatusListener listener) {
+		m_statusListener = listener;
 		if (m_oSyncEngine != null) {
 			m_oSyncEngine.setStatusListener(listener);
 			return true;
@@ -252,6 +254,9 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
+					if (m_statusListener != null) {
+						m_statusListener.createStatusPopup();
+					}
 					doSyncAllSources();
 				}catch(Exception e)
 				{
@@ -269,7 +274,10 @@ public class SyncThread extends RhoThread
 //					if ( arg instanceof RubyString )
 //						doSyncSource(arg.toStr());
 //					else
-						doSyncSource(arg.toInt());
+					if (m_statusListener != null) {
+						m_statusListener.createStatusPopup();
+					}
+					doSyncSource(arg.toInt());
 				}catch(Exception e)
 				{
 					LOG.ERROR("dosync_source failed", e);
