@@ -27,8 +27,8 @@ namespace "config" do
     $dx = File.join( $androidsdk, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
     $aapt = File.join( $androidsdk, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
     $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder" + $bat_ext )
-    $emulator = "cmd /c " + File.join( $androidsdk, "tools", "emulator" + $exe_ext )
     $adb = File.join( $androidsdk, "tools", "adb" + $exe_ext )
+    $emulator = File.join( $androidsdk, "tools", "emulator" + $exe_ext )
 
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
@@ -172,7 +172,7 @@ namespace "run" do
       puts "Waiting for emulator to get started"
       $stdout.flush
       puts `#{$adb} wait-for-device`
-      sleep 60
+      sleep 10
       apkfile = File.join($targetdir,"Rhodes-debug.apk")    
 
       puts "Loading package into emulator"
