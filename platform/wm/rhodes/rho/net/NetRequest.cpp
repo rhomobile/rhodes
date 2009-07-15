@@ -11,21 +11,19 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
-INetData* CNetRequest::pullData(const String& strUrl )
+INetResponse* CNetRequest::pullData(const String& strUrl )
 {
     return doRequest("GET",strUrl,String());
 }
 
-boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody)
 {
-    common::CAutoPtr<INetData> ptrData = doRequest("POST",strUrl,strBody);
-    return ptrData->getCharData() != null;
+    return doRequest("POST",strUrl,strBody);
 }
 
-boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 {
-    common::CAutoPtr<INetData> ptrData = doRequest("POST",strUrl,strBody);
-    return ptrData->getCharData() != null;
+    return doRequest("POST",strUrl,strBody);
 }
 
 //if strUrl.length() == 0 delete all cookies if possible
@@ -50,7 +48,7 @@ void CNetRequest::cancel()
         m_pCurNetRequestImpl->close();
 }
 
-boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
@@ -61,24 +59,22 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 
     int nTry = 0;
     m_bCancel = false;
-    CNetDataImpl* pData = 0;
+    CNetResponseImpl* pResp = 0;
     do
     {
-        if ( pData )
-            delete pData;
+        if ( pResp )
+            delete pResp;
 
         CNetRequestImpl oImpl(this, "POST",strUrl);
-        pData = oImpl.sendStream(oFile.getInputStream());
+        pResp = oImpl.sendStream(oFile.getInputStream());
         nTry++;
 
-    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
 
-    boolean bRet = pData->getCharData() != null;
-    delete pData;
-    return bRet;
+    return pResp;
 }
 
-boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
@@ -89,40 +85,38 @@ boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 
     int nTry = 0;
     m_bCancel = false;
-    CNetDataImpl* pData = 0;
+    CNetResponseImpl* pResp = 0;
     do
     {
-        if ( pData )
-            delete pData;
+        if ( pResp )
+            delete pResp;
 
         CNetRequestImpl oImpl(this, "GET",strUrl);
-        pData = oImpl.downloadFile(oFile);
+        pResp = oImpl.downloadFile(oFile);
         nTry++;
 
-    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
 
-    boolean bRet = pData->getCharData() != null;
-    delete pData;
-    return bRet;
+    return pResp;
 }
 
-INetData* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody )
+INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody )
 {
     int nTry = 0;
     m_bCancel = false;
-    CNetDataImpl* pData = 0;
+    CNetResponseImpl* pResp = 0;
     do
     {
-        if ( pData )
-            delete pData;
+        if ( pResp )
+            delete pResp;
 
         CNetRequestImpl oImpl(this, method,strUrl);
-        pData = oImpl.sendString(strBody);
+        pResp = oImpl.sendString(strBody);
         nTry++;
 
-    }while( !m_bCancel && !pData->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
+    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
 
-    return pData;
+    return pResp;
 }
 
 }

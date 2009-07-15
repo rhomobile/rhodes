@@ -52,10 +52,10 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 		//get zip file with rhodes
 		//DWORD dwDataSize = 0;
         rho::net::CNetRequest request;
-        NetRequestStr(zipData, request.pullData(szUrl));
-        DWORD dwDataSize = pzipData->getDataSize();
+        NetResponse(resp, request.pullData(szUrl));
+        DWORD dwDataSize = resp.getDataSize();
 		//char* zipData = request.doRequest( L"GET",const_cast<char*>(szUrl),NULL,0,NULL,0,false,true,false,&dwDataSize);
-
+        const char* zipData = resp.getCharData();
 		if ( zipData && dwDataSize > 0 )
 		{
 			LPWSTR rootw = wce_mbtowc(RhoGetRootPath());

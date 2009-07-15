@@ -98,7 +98,8 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
             "&device_port=" + convertToStringA(port > 0 ? port : DEFAULT_PUSH_PORT) +
 		    "&device_type=" + m_sysInfo->getPlatform();
 
-		if( getNet().pushData(serverUrl+"clientregister", strBody ) ) 
+        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody ));
+		if( resp.isOK() )
         {
 //				try {
 				oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", 1, m_strDevicePin );
