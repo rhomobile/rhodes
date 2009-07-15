@@ -1,5 +1,7 @@
 #pragma once
 
+typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
+
 #ifdef __cplusplus
 
 #include "net/INetRequest.h"
@@ -29,6 +31,11 @@ public:
     virtual String resolveUrl(const String& strUrl);
 
     virtual void cancel();
+private:
+	typedef char* (*Frho_net_impl_request)(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
+	
+	INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody, Frho_net_impl_request func );
+	
 };
 
 }
