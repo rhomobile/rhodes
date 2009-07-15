@@ -48,12 +48,12 @@ module Rhom
         end
         list.size > 1 ? list : list[0]
       end
-    end
-    
-    def update_attributes(params=nil)
-      if params
-        ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_url"=>params['source_url']},
-                                                 {"source_id"=>strip_braces(params['source_id'])})
+      
+      def update_attributes(params=nil)
+        if params
+          ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_url"=>params['source_url']},
+                                                   {"source_id"=>strip_braces(params['source_id'])})
+        end
       end
     end
   end
