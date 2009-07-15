@@ -155,8 +155,8 @@ boolean CSyncEngine::resetClientIDByNet()//throws Exception
     String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + getClientID();
     
-    NetRequestStr( szData, getNet().pullData(strUrl+strQuery) );
-    return szData != null;
+    NetResponse( resp, getNet().pullData(strUrl+strQuery) );
+    return resp.isOK();
 }
 
 String CSyncEngine::requestClientIDByNet()
@@ -165,9 +165,10 @@ String CSyncEngine::requestClientIDByNet()
     String strUrl = serverUrl + "clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
 
-    NetRequestStr(szData,getNet().pullData(strUrl+strQuery));
-    if ( szData != null )
+    NetResponse(resp,getNet().pullData(strUrl+strQuery));
+    if ( resp.isOK() && resp.getCharData() != null )
     {
+        const char* szData = resp.getCharData();
         CJSONEntry oJsonEntry(szData);
 
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
@@ -175,7 +176,7 @@ String CSyncEngine::requestClientIDByNet()
             return oJsonObject.getString("client_id");
     }
 
-    return String();
+    return "";
 }
 
 int CSyncEngine::getStartSource()
@@ -226,7 +227,8 @@ boolean CSyncEngine::doLogin(String name, String password)
     }
 
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-    if ( !getNet().pullCookies( src0.getUrl()+"/client_login", strBody) )
+    NetResponse(resp, getNet().pullCookies( src0.getUrl()+"/client_login", strBody));
+    if ( !resp.isOK() )
         return false;
 
     getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
@@ -274,6 +276,7 @@ String CSyncEngine::loadSession()
 void CSyncEngine::logout()
 {
     getDB().executeSQL( "UPDATE sources SET session=NULL" );
+    m_strSession = "";
     getNet().deleteCookie("");
 
     loadAllSources();
@@ -345,7 +348,9 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
     }
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
-    getNet().pushData( strUrl, strBody );
+    NetResponse(resp,getNet().pushData( strUrl, strBody ));
+    if ( !resp.isOK() )
+        LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
     clearNotification(src.getID());
 }

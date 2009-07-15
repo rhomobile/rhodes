@@ -69,7 +69,8 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         //    continue;
 
         strQuery = strBaseQuery + "&" + blob.getBody();
-        if ( !getNet().pushFile(strQuery, blob.getFilePath() ) ) //oFile.getInputStream()) )
+        NetResponse( resp, getNet().pushFile(strQuery, blob.getFilePath()) );
+        if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
             return;
@@ -97,7 +98,8 @@ void CSyncSource::syncClientChanges()
 		    LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
 		    LOG(TRACE) + "Push body: " + strBody;		
 
-            if ( !getNet().pushData(strUrl+strQuery,strBody) )
+            NetResponse( resp, getNet().pushData(strUrl+strQuery,strBody) );
+            if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
                 continue;
@@ -206,14 +208,14 @@ void CSyncSource::syncServerChanges()
 
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
 		
-        NetRequestStr(szData,getNet().pullData(strUrl+strQuery));
-        if ( szData == 0 )
+        NetResponse(resp,getNet().pullData(strUrl+strQuery));
+        if ( !resp.isOK() )
         {
             getSync().stopSync();
             continue;
         }
 
-        processServerData(szData);
+        processServerData(resp.getCharData());
 
         m_bGetAtLeastOnePage = true;
 
@@ -345,7 +347,8 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 		url += "?";
 	url += "client_id=" + getSync().getClientID();
 
-    if ( !getNet().pullFile(url, fName) )
+    NetResponse(resp, getNet().pullFile(url, fName));
+    if ( !resp.isOK() )
         return false;
     
     value.m_strAttrType = "blob.file";

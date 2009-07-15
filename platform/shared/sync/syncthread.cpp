@@ -46,10 +46,21 @@ CSyncThread::~CSyncThread(void)
 
 void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
 { 
-	//TODO: check for duplicates ???
 	{
         CMutexLock lockNotify(m_mxStackCommands);
-		m_stackCommands.add(pSyncCmd);
+
+		boolean bExist = false;
+		for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
+		{
+			if ( m_stackCommands.get(i)->equals(*pSyncCmd) )
+			{
+				bExist = true;
+				break;
+			}
+		}
+		
+		if ( !bExist )
+    		m_stackCommands.add(pSyncCmd);
 	}
 	stopWait(); 
 }

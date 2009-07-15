@@ -370,7 +370,6 @@ class SyncEngine implements NetRequest.IRhoSession
 	    getNet().deleteCookie("");
 	
 	    loadAllSources();
-	    m_strSession = "";
 	    for( int i = 0; i < m_sources.size(); i++ )
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
@@ -439,7 +438,9 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 		LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
 		
-	    getNet().pushData( strUrl, strBody, this );
+	    NetResponse resp = getNet().pushData( strUrl, strBody, this );
+	    if ( !resp.isOK() )
+	        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
 	
 	    clearNotification(src.getID().intValue());
 	}

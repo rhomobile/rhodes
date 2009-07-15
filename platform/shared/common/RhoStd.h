@@ -75,6 +75,10 @@ public:
         return ptrFirst;
     }
 
+    Type get(typename std::vector<Type>::size_type i)
+    {
+        return VectorPtr<Type>::elementAt(i);
+    }
 };
 
 template<class TKEY, class TVALUE>

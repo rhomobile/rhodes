@@ -37,6 +37,13 @@ public:
 		m_nCmdCode = nCode;
 		m_nCmdParam = 0;
 	}
+
+	boolean equals(const CSyncCommand& oSyncCmd)
+	{
+		return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
+			m_strCmdParam == oSyncCmd.m_strCmdParam;
+	}
+
 };
 
 class CSyncThread : public common::CRhoThread
