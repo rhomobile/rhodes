@@ -6,6 +6,10 @@
 #include "common/StringConverter.h"
 #include "json/JSONIterator.h"
 
+#ifdef __APPLE__
+extern "C" const char* RhoGetRootPath();
+#endif
+
 namespace rho {
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncSource,"Sync");
@@ -149,7 +153,10 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
                 strSrcBody += "&attrvals[][value]=";
                 strSrcBody += oBlobPath.getBaseName();
                 strSrcBody += "&attrvals[][attrib_type]=blob";
-
+#ifdef __APPLE__
+				value = String(RhoGetRootPath()) + "apps" + value;
+#endif
+				
                 m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
                 continue;
             }else
