@@ -154,8 +154,8 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources()
 {
-    //CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
-    rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
+    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
+    //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(int nSrcID)
