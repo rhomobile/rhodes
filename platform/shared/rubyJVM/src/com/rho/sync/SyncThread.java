@@ -62,6 +62,13 @@ public class SyncThread extends RhoThread
    			m_nCmdParam = 0;
    		}
    		
+   		public boolean equals(Object obj)
+   		{
+   			SyncCommand oSyncCmd = (SyncCommand)obj;
+   			return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
+   				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
+   				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)));  		
+   		}
    	};
    	
     SyncEngine  m_oSyncEngine;
@@ -108,10 +115,20 @@ public class SyncThread extends RhoThread
 
     void addSyncCommand(SyncCommand oSyncCmd)
     { 
-    	//TODO: check for duplicates ???
     	synchronized(m_mxStackCommands)
     	{
-    		m_stackCommands.add(oSyncCmd);
+    		boolean bExist = false;
+    		for ( int i = 0; i < m_stackCommands.size(); i++ )
+    		{
+    			if ( m_stackCommands.get(i).equals(oSyncCmd) )
+    			{
+    				bExist = true;
+    				break;
+    			}
+    		}
+    		
+    		if ( !bExist )
+    			m_stackCommands.add(oSyncCmd);
     	}
     	stopWait(); 
     }

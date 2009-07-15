@@ -18,7 +18,6 @@
  */
 package com.rho.sync;
 
-import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
@@ -256,8 +255,9 @@ class SyncEngine implements NetRequest.IRhoSession
 	    String serverUrl = RhoConf.getInstance().getString("syncserver");
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + getClientID();
-	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
-	    return szData != null;
+	    
+	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
+	    return resp.isOK();
 	}
 	
 	String requestClientIDByNet()throws Exception
@@ -265,9 +265,11 @@ class SyncEngine implements NetRequest.IRhoSession
 	    String serverUrl = RhoConf.getInstance().getString("syncserver");
 	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
-	    String szData = getNet().pullData(strUrl+strQuery, "", this).getCharData();
-	    if ( szData != null )
+	    
+	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
+	    if ( resp.isOK() && resp.getCharData() != null )
 	    {
+	    	String szData = resp.getCharData();
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
 	
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
@@ -326,7 +328,8 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
-	    String strSession = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
+	    NetResponse resp = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
+	    String strSession = resp.isOK() ? resp.getCharData() : "";
 	    if ( strSession == null || strSession.length() == 0 )
 	        return false;
 	
@@ -363,9 +366,11 @@ class SyncEngine implements NetRequest.IRhoSession
 	public void logout()throws Exception
 	{
 	    getDB().executeSQL( "UPDATE sources SET session = NULL");
+	    m_strSession = "";
 	    getNet().deleteCookie("");
 	
 	    loadAllSources();
+	    m_strSession = "";
 	    for( int i = 0; i < m_sources.size(); i++ )
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);

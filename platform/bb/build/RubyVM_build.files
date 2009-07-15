@@ -14,6 +14,7 @@ platform\shared\rubyJVM\src\com\rho\Mutex.java
 platform\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 platform\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 platform\shared\rubyJVM\src\com\rho\net\NetRequest.java
+platform\shared\rubyJVM\src\com\rho\net\NetResponse.java
 platform\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 platform\shared\rubyJVM\src\com\rho\net\URI.java
 platform\shared\rubyJVM\src\com\rho\Properties.java

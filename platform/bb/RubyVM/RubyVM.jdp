@@ -33,6 +33,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 ..\..\shared\rubyJVM\src\com\rho\net\NetRequest.java
+..\..\shared\rubyJVM\src\com\rho\net\NetResponse.java
 ..\..\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\URI.java
 ..\..\shared\rubyJVM\src\com\rho\Properties.java
@@ -442,4 +443,4 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=2
-Version=1.44
+Version=1.45

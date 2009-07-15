@@ -8,6 +8,7 @@ import com.rho.RhoLogger;
 import com.rho.RhoThread;
 import com.rho.db.IDBResult;
 import com.rho.net.NetRequest;
+import com.rho.net.NetResponse;
 
 public class ClientRegister extends RhoThread 
 {
@@ -111,7 +112,8 @@ public class ClientRegister extends RhoThread
 			"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
 			"&device_type=" + m_sysInfo.getPlatform();
 			
-			if( getNet().pushData(serverUrl+"clientregister", strBody, oSync) ) 
+			NetResponse resp = getNet().pushData(serverUrl+"clientregister", strBody, oSync);
+			if( resp.isOK() ) 
 			{
 				try {
 					oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", new Integer(1), m_strDevicePin );
