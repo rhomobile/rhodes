@@ -176,15 +176,16 @@ int login(const char *login, const char *password) {
 }*/
 
 //static NSURLConnection* g_curConn = NULL;
-int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis )
+char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *session;
 	int cookie_size = 0;
 	
-	if ( pbRespRecieved )
-		*pbRespRecieved = 0;
+	if ( pnRespCode )
+		*pnRespCode = -1;
 	
+	char* respData = NULL;	
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
 	session = get_session(szUrl);
 	if (!session) 
@@ -212,22 +213,20 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			(*fSave)(pThis,NULL);
 			
-			if ( pbRespRecieved )
-				*pbRespRecieved = code > 0;
+			if ( pnRespCode )
+				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			respData = str_assign( (char *)[strData UTF8String] );			
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Request cookies failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
+							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired ||
 					errorCode == NSURLErrorBadServerResponse ) 
 				{
 					rho_net_impl_deleteAllCookies();
-					
-					if ( pbRespRecieved )
-						*pbRespRecieved = 1;
 				}
 			} else 
 			{
@@ -247,19 +246,21 @@ int  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const 
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	} else {
 		RAWLOG_INFO("Found existing session for url...");
+		if ( pnRespCode )
+			*pnRespCode = 200;
 	}
 
 	[pool drain];
 	[pool release];
-	return cookie_size > 0;
+	return respData;
 }
 
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis )
+char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	if ( pbRespRecieved )
-		*pbRespRecieved = 0;
+	if ( pnRespCode )
+		*pnRespCode = -1;
 	
 	char* respData = NULL;
 	size_t	data_size = szBody != NULL ? strlen(szBody) : 0;
@@ -290,14 +291,16 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			(*fSave)(pThis,NULL);
 
-			if ( pbRespRecieved )
-				*pbRespRecieved = code > 0;
+			if ( pnRespCode )
+				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			respData = str_assign( (char *)[strData UTF8String] );
+			
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
+							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -306,7 +309,6 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 				}
 			} else 
 			{
-				respData = str_assign( (char *)[strData UTF8String] );
 				RAWTRACE("RESPONSE-----");
 				RAWTRACE(respData);
 				RAWTRACE("END RESPONSE-----");
@@ -321,12 +323,13 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 	return respData;
 }
 
-int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThisFile, FSAVECONNDATA fSave, void* pThis)
+char* rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThisFile, FSAVECONNDATA fSave, void* pThis)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	int nRet = 0;
-	if ( pbRespRecieved )
-		*pbRespRecieved = 0;
+	if ( pnRespCode )
+		*pnRespCode = -1;
+	
+	char* respData = NULL;
 	
 	NSString *linkString = [[NSString alloc] initWithUTF8String:szUrl];
 	{
@@ -348,13 +351,16 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			(*fSave)(pThis,NULL);
 			
-			if ( pbRespRecieved )
-				*pbRespRecieved = code > 0;
+			if ( pnRespCode )
+				*pnRespCode = code;
 			
 			if (code != 200) 
 			{
-				RAWLOG_ERROR3("Request failed. HTTP Code: %d returned. NSError: %d. NSErrorInfo : %s", 
-							  code, errorCode, [[error localizedDescription] UTF8String]);
+				NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+				respData = str_assign( (char *)[strData UTF8String] );
+
+				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
+							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -363,7 +369,7 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 				}
 			} else 
 			{
-				nRet = (*writeFunc)(pThisFile, [returnData bytes], [returnData length]);
+				(*writeFunc)(pThisFile, [returnData bytes], [returnData length]);
 			}
 		}
 		
@@ -372,7 +378,7 @@ int rho_net_impl_pullFile(const char* szUrl, int* pbRespRecieved, int (*writeFun
 	
 	[pool drain];
 	[pool release];
-	return nRet;
+	return respData;
 }
 
 int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis)
@@ -443,11 +449,14 @@ void rho_net_impl_cancel(void* pConnData)
  * Pushes changes from list to rhosync server
  */
 
-int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,const char* contentType, FSAVECONNDATA fSave, void* pThis) 
+char* rho_net_impl_pushMultipartData(const char* url, const char* data, size_t data_size, int* pnRespCode, FSAVECONNDATA fSave, void* pThis) 
 {
-	int nRet = 0;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
+	char* respData = NULL;
+	if ( pnRespCode )
+		*pnRespCode = -1;
+	
 	NSString *session = get_session(url);
 	if (session) {
 		RAWLOG_INFO2("Push data. Url: %s; Size: %d", url, data_size);
@@ -480,11 +489,15 @@ int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,co
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			(*fSave)(pThis,NULL);
 
+			if ( pnRespCode )
+				*pnRespCode = code;
+			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+			respData = str_assign( (char *)[strData UTF8String] );
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Push file failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
+							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -494,9 +507,9 @@ int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,co
 
 			} else 
 			{
-				nRet = 1;
-				NSString *output = [NSString stringWithCString:[returnData bytes]];
-				NSLog(@"RESPONSE: %@", output);
+				RAWTRACE("RESPONSE-----");
+				RAWTRACE(respData);
+				RAWTRACE("END RESPONSE-----");
 			}
 		}
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -504,7 +517,7 @@ int rho_net_impl_pushData(const char* url, const char* data, size_t data_size,co
 	
 	[pool drain];
 	[pool release];
-	return nRet;
+	return respData;
 }
 
 NSArray *get_all_cookies() 
