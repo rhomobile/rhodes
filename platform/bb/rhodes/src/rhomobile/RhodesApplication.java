@@ -452,9 +452,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void createStatusPopup() {
 		invokeLater( new Runnable() {
 			public void run() {
-				SyncStatusPopup popup = new SyncStatusPopup();
-				RhodesApplication.getInstance().setSyncStatusPopup(popup);
-				pushScreen(popup);
+				if (_syncStatusPopup == null) {
+					SyncStatusPopup popup = new SyncStatusPopup();
+					RhodesApplication.getInstance().setSyncStatusPopup(popup);
+					pushScreen(popup);
+				}
 			}
 		});	
 	}
