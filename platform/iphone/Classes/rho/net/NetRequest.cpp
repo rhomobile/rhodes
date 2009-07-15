@@ -19,13 +19,14 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
-class CNetData : public INetData
+class CNetResponseImpl : public INetResponse
 {
 	char* pData;
-			
+	int   m_nRespCode;
+	
 public:
-	CNetData(char* data) : pData(data){}
-	~CNetData()
+	CNetResponseImpl(char* data, int nRespCode) : pData(data), m_nRespCode(nRespCode){}
+	~CNetResponseImpl()
 	{
 		if (pData)
 			free(pData);
@@ -33,12 +34,27 @@ public:
 			
 	virtual const char* getCharData()
 	{
-		return pData;
+		return pData ? pData : "";
 	}
 			
 	virtual unsigned int getDataSize()
 	{
 		return pData ? strlen(pData) : 0;
+	}
+	
+	void setRespCode(int nRespCode) 
+	{
+		m_nRespCode = nRespCode;
+	}
+	
+	virtual int getRespCode() 
+	{
+		return m_nRespCode;
+	}
+	
+	virtual boolean isOK()
+	{
+		return m_nRespCode == 200;
 	}
 };
 
@@ -48,7 +64,7 @@ extern "C" void saveConnData(void* pThis, void* pData)
 	pNetRequest->m_pConnData = pData;
 }
 	
-INetData* CNetRequest::pullData(const String& strUrl )
+INetResponse* CNetRequest::pullData(const String& strUrl )
 {
     int bRespRecieved = 0;
 	int nTry = 0;
@@ -60,10 +76,10 @@ INetData* CNetRequest::pullData(const String& strUrl )
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
-	return new CNetData(response);
+	return new CNetResponseImpl(response, response ? 200 : 500);
 }
 	
-boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody)
 {
     int bRespRecieved = 0;
 	int nTry = 0;
@@ -75,11 +91,7 @@ boolean CNetRequest::pushData(const String& strUrl, const String& strBody)
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 		
-	boolean bRet = response!=0;
-	if ( response!=0 )
-		free(response);
-	
-	return bRet;
+	return new CNetResponseImpl(response, response ? 200 : 500);
 }
 
 static const char* szMultipartPrefix = 
@@ -92,7 +104,7 @@ static const char* szMultipartPostfix =
 static const char* szMultipartContType = 
 "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
 	
-boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
@@ -111,7 +123,7 @@ boolean CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 	boolean bRet = rho_net_impl_pushData(strUrl.c_str(), data, nDataLen, szMultipartContType, saveConnData, this ) != 0;					
 	free(data);
 	
-	return bRet;
+	return new CNetResponseImpl("",bRet ? 200 : 500);
 /*    int bRespRecieved = 0;
 	int nTry = 0;
 	boolean bRet = false;
@@ -130,7 +142,7 @@ extern "C"	int writeToFile(void* pThis, void* pData, int nSize)
 	return oFile.write(pData, nSize);
 }
 	
-boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
@@ -148,22 +160,22 @@ boolean CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
-	return bRes;
+	return new CNetResponseImpl("",bRes ? 200 : 500);
 }
 
-boolean CNetRequest::pullCookies(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody)
 {
     int bRespRecieved = 0;
 	int nTry = 0;
 	m_bCancel = false;
-	boolean bRet = false;
+	boolean bRes = false;
 	
 	do{
-		bRet = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved, saveConnData, this ) != 0;
+		bRes = rho_net_impl_requestCookies("POST", strUrl.c_str(), strBody.c_str(), &bRespRecieved, saveConnData, this ) != 0;
 		nTry++;
 	}while( !m_bCancel && !bRespRecieved && nTry < MAX_NETREQUEST_RETRY);
 	
-	return bRet;
+	return new CNetResponseImpl("",bRes ? 200 : 500);
 }
 
 //if strUrl.length() == 0 delete all cookies if possible
