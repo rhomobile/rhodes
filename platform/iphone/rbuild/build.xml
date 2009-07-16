@@ -39,6 +39,13 @@
 
     <mkdir dir="${target.dir}" />
     <ant dir = "${sharedAnt.dir}"/>
+	
+	<move todir="${src.dir}" failonerror="false">
+		<fileset dir="${src.dir}/apps/public/alerts">
+			<include name="**/*.*"/>
+		</fileset>	
+	</move>
+	<delete dir="${src.dir}/apps/public/alerts" failonerror="false"/>	
   </target>
   
   <target name="rhobundle" depends="RhoBundle"></target>
