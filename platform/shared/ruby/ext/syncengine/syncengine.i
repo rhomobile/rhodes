@@ -10,10 +10,8 @@
 	#define lock_sync_mutex rho_sync_lock
 	extern void rho_sync_unlock();
 	#define unlock_sync_mutex rho_sync_unlock
-	extern int rho_sync_login(const char *login, const char *password);
+	extern void rho_sync_login(const char *login, const char *password, const char* callback);
 	#define login rho_sync_login
-	extern void rho_sync_login_async(const char *login, const char *password, const char* callback);
-	#define login_async rho_sync_login_async
 	extern int rho_sync_logged_in();
 	#define logged_in rho_sync_logged_in
 	extern void rho_sync_logout();
@@ -32,8 +30,7 @@ extern void dosync();
 extern void dosync_source(int source_id);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
-extern int login(const char *login, const char *password);
-extern void login_async(const char *login, const char *password, const char* callback);
+extern void login(const char *login, const char *password, const char* callback);
 extern int logged_in();
 extern void logout();
 extern void stop_sync();

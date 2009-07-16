@@ -14,6 +14,7 @@ static int ERR_NETWORK = 1;
 static int ERR_REMOTESERVER = 2;
 static int ERR_RUNTIME = 3;
 static int ERR_UNEXPECTEDSERVERRESPONSE = 4;
+static int ERR_DIFFDOMAINSINSYNCSRC = 5;
 }
 
 namespace sync {
@@ -230,9 +231,37 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
 	//}
 }
 
+static String getServerFromUrl( const String& strUrl );
+boolean CSyncEngine::checkAllSourcesFromOneDomain()//throws Exception
+{
+	loadAllSources();
+	
+    if ( m_sources.size() == 0 )
+        return true;
+
+    //All sources should be from one domain
+    CSyncSource& src0 = *m_sources.elementAt(0);
+    String srv0 = getServerFromUrl(src0.getUrl());
+    for( int i = 1; i < (int)m_sources.size(); i++ )
+    {
+        CSyncSource& src = *m_sources.elementAt(i);
+        String srv = getServerFromUrl(src.getUrl());
+        if ( srv.compare( srv0 ) != 0 )
+            return false;
+    }
+	
+    return true;
+}
+
 void CSyncEngine::login(String name, String password, String callback)
 {
 	//try {
+	if ( !checkAllSourcesFromOneDomain() )
+	{
+        callLoginCallback(callback, RhoRuby::ERR_DIFFDOMAINSINSYNCSRC, "");
+    	return;
+	}
+
     String serverUrl = RHOCONF().getString("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
@@ -255,42 +284,6 @@ void CSyncEngine::login(String name, String password, String callback)
 	//	LOG.ERROR("Login failed.", exc);
     //	callLoginCallback(callback, RhoRuby.ERR_RUNTIME, exc.getMessage() );
 	//}
-}
-
-static String getServerFromUrl( const String& strUrl );
-boolean CSyncEngine::login(String name, String password)
-{
-    loadAllSources();
-    return doLogin(name,password);
-}
-
-boolean CSyncEngine::doLogin(String name, String password)
-{
-    if ( m_sources.size() == 0 )
-        return true;
-
-    //All sources should be from one domain
-    CSyncSource& src0 = *m_sources.elementAt(0);
-    String srv0 = getServerFromUrl(src0.getUrl());
-    for( int i = 1; i < (int)m_sources.size(); i++ )
-    {
-        CSyncSource& src = *m_sources.elementAt(i);
-        String srv = getServerFromUrl(src.getUrl());
-        if ( srv.compare( srv0 ) != 0 )
-            return false;
-    }
-
-    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-    NetResponse(resp, getNet().pullCookies( src0.getUrl()+"/client_login", strBody));
-    if ( !resp.isOK() )
-        return false;
-
-    getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
-
-    if ( CClientRegister::getInstance() != null )
-        CClientRegister::getInstance()->stopWait();
-	
-    return true;
 }
 
 #ifdef OS_MACOSX

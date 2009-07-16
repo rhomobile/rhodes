@@ -200,13 +200,7 @@ void rho_sync_set_pollinterval(int nInterval)
     CSyncThread::getInstance()->setPollInterval(nInterval);
 }
 
-int rho_sync_login(const char *name, const char *password)
-{
-    rho_sync_stop();
-    return CSyncThread::getSyncEngine().login(name,password) ? 1 : 0;
-}
-
-void rho_sync_login_async(const char *name, const char *password, const char* callback)
+void rho_sync_login(const char *name, const char *password, const char* callback)
 {
     rho_sync_stop();
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncLoginCommand(name, password, callback) );

@@ -369,36 +369,11 @@ public class SyncThread extends RhoThread
 				}
 			});
 		klass.getSingletonClass().defineMethod("login",
-			new RubyTwoArgMethod() {
-				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-					int nRes = 0;
-					try{
-						String name = arg1.toStr();
-						String password = arg2.toStr();
-						
-						stopSync();
-						nRes = getSyncEngine().login(name,password) ? 1 : 0;
-					}catch(IOException e)
-					{
-						LOG.ERROR("login failed", e);
-						RhoRuby.raise_RhoError(RhoRuby.ERR_NETWORK);
-					}catch(Exception e)
-					{
-						LOG.ERROR("login failed", e);
-						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
-					}
-					
-				    return ObjectFactory.createInteger(nRes);
-				    
-				}
-			});
-
-		klass.getSingletonClass().defineMethod("login_async",
 				new RubyVarArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 						if ( args.size() != 3 )
 							throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-									"in SyncEngine.login_async: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
+									"in SyncEngine.login: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
 						
 						try{
 							String name = args.get(0).toStr();
@@ -410,7 +385,7 @@ public class SyncThread extends RhoThread
 							getInstance().addSyncCommand(new SyncLoginCommand(name, password, callback) );
 						}catch(Exception e)
 						{
-							LOG.ERROR("SyncEngine.login_async", e);
+							LOG.ERROR("SyncEngine.login", e);
 							RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
 						}
 						
