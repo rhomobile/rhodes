@@ -1784,7 +1784,7 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "login_async" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "login" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   login((char const *)arg1,(char const *)arg2,(char const *)arg3);

@@ -23,7 +23,7 @@ public:
 private:
 
     DEFINE_LOGCLASS;
-
+public:
     class CSyncCommand
     {
     public:
@@ -65,7 +65,7 @@ private:
 		    m_strPassword = password;
 	    }
     };
-
+private:
     static CSyncThread* m_pInstance;
 
     static db::CDBAdapter  m_oDBAdapter;
