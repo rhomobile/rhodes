@@ -409,11 +409,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void activate() {
     	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
-    	try{
-    		GeoLocation.start();
-    	}catch(Exception exc){
-    		LOG.ERROR("GeoLocation failed to start", exc);
-    	}
 
         if(!restoreLocation()) {
         	navigateHome();

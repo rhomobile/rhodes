@@ -11,10 +11,16 @@ import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.rho.RhoClassFactory;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 public class GeoLocation extends RubyBasic {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhodesApplication");
+	
 	private static IGeoLocationImpl m_locImpl = null;
+	private static boolean initialized = false;
 	
 	GeoLocation(RubyClass c) {
 		super(c);
@@ -57,7 +63,20 @@ public class GeoLocation extends RubyBasic {
 		
 	}
 	
+	private static void startSelf() {
+		try {
+			if (!initialized) {
+				GeoLocation.start();
+				initialized = true;
+			}
+		} catch (Exception e) {
+			LOG.ERROR("GeoLocation failed to start", e);
+		}
+	}
+	
 	public static double GetLatitude(){
+		startSelf();
+		
 		if (m_locImpl != null)
 		  return m_locImpl.GetLatitude();
 		
@@ -65,6 +84,8 @@ public class GeoLocation extends RubyBasic {
 	}
 	
 	public static double GetLongitude(){
+		startSelf();
+		
 		if (m_locImpl != null)
 		  return m_locImpl.GetLongitude();
 		
@@ -76,6 +97,7 @@ public class GeoLocation extends RubyBasic {
 	}
 
 	public static boolean isKnownPosition(){
+		startSelf();
 		return m_locImpl != null && m_locImpl.isKnownPosition();
 	}
 	
