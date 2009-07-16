@@ -20,7 +20,6 @@ public class GeoLocation extends RubyBasic {
 		new RhoLogger("RhodesApplication");
 	
 	private static IGeoLocationImpl m_locImpl = null;
-	private static boolean initialized = false;
 	
 	GeoLocation(RubyClass c) {
 		super(c);
@@ -65,10 +64,7 @@ public class GeoLocation extends RubyBasic {
 	
 	private static void startSelf() {
 		try {
-			if (!initialized) {
-				GeoLocation.start();
-				initialized = true;
-			}
+			GeoLocation.start();
 		} catch (Exception e) {
 			LOG.ERROR("GeoLocation failed to start", e);
 		}
