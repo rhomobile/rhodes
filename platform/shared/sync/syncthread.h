@@ -112,7 +112,7 @@ void rho_sync_doSyncSource(int nSrcID);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();
-int rho_sync_login(const char *login, const char *password);
+void rho_sync_login(const char *login, const char *password, const char* callback);
 int rho_sync_logged_in();
 void rho_sync_logout();
 void rho_sync_set_notification(int source_id, const char *url, char* params);

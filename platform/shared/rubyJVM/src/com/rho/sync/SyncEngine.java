@@ -323,9 +323,36 @@ class SyncEngine implements NetRequest.IRhoSession
 		}
 	}
 	
+	boolean checkAllSourcesFromOneDomain()throws Exception
+	{
+		loadAllSources();
+		
+	    if ( m_sources.size() == 0 )
+	        return true;
+	
+	    //All sources should be from one domain
+	    SyncSource src0 = (SyncSource)m_sources.elementAt(0);
+	    String srv0 = getServerFromUrl(src0.getUrl());
+	    for( int i = 1; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        String srv = getServerFromUrl(src.getUrl());
+	        if ( srv.equals( srv0 ) != true )
+	            return false;
+	    }
+		
+	    return true;
+	}
+	
 	void login(String name, String password, String callback)
 	{
 		try {
+			if ( !checkAllSourcesFromOneDomain() )
+			{
+		    	callLoginCallback(callback, RhoRuby.ERR_DIFFDOMAINSINSYNCSRC, "");
+		    	return;
+			}
+			
 		    String serverUrl = RhoConf.getInstance().getString("syncserver");
 		    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 	
@@ -355,43 +382,6 @@ class SyncEngine implements NetRequest.IRhoSession
 			LOG.ERROR("Login failed.", exc);
 	    	callLoginCallback(callback, RhoRuby.ERR_RUNTIME, exc.getMessage() );
 		}
-	}
-
-	boolean login(String name, String password)throws Exception
-	{
-	    loadAllSources();
-	    return doLogin(name,password);
-	}
-	
-	boolean doLogin(String name, String password)throws Exception
-	{
-	    if ( m_sources.size() == 0 )
-	        return true;
-	
-	    //All sources should be from one domain
-	    SyncSource src0 = (SyncSource)m_sources.elementAt(0);
-	    String srv0 = getServerFromUrl(src0.getUrl());
-	    for( int i = 1; i < m_sources.size(); i++ )
-	    {
-	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        String srv = getServerFromUrl(src.getUrl());
-	        if ( srv.equals( srv0 ) != true )
-	            return false;
-	    }
-	
-	    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-
-	    NetResponse resp = getNet().pullCookies( src0.getUrl()+"/client_login", strBody, this);
-	    String strSession = resp.isOK() ? resp.getCharData() : "";
-	    if ( strSession == null || strSession.length() == 0 )
-	        return false;
-	
-	    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
-	
-	    if ( ClientRegister.getInstance() != null )
-	    	ClientRegister.getInstance().stopWait();
-	    
-	    return true;
 	}
 
 	boolean isLoggedIn()throws DBException

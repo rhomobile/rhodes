@@ -54,7 +54,6 @@ public:
 
     void doSyncAllSources();
     void doSyncSource(int nSrcId, String strSrcUrl);
-    boolean login(String name, String password);
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
@@ -83,7 +82,6 @@ public:
     String loadClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet();//throws Exception
-    boolean doLogin(String name, String password);
 
     void fireNotification( CSyncSource& src, boolean bFinish );
 
@@ -96,6 +94,7 @@ private:
     CSyncSource* findSourceByUrl(const String& strSrcUrl);
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
+    boolean checkAllSourcesFromOneDomain();
 
     friend class CSyncSource;
 };
