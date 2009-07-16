@@ -140,6 +140,12 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
     case scSyncOne:
         m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
         break;
+    case scLogin:
+    	{
+    		CSyncLoginCommand& oLoginCmd = (CSyncLoginCommand&)oSyncCmd;
+    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_strCmdParam );
+    	}
+        break;
     }
 }
 
@@ -165,18 +171,18 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources()
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncAll));
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll));
     //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(int nSrcID)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
 }	
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcID)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
 }	
 
 void rho_sync_stop()
@@ -196,8 +202,14 @@ void rho_sync_set_pollinterval(int nInterval)
 
 int rho_sync_login(const char *name, const char *password)
 {
-    //TODO: stop sync
+    rho_sync_stop();
     return CSyncThread::getSyncEngine().login(name,password) ? 1 : 0;
+}
+
+void rho_sync_login_async(const char *name, const char *password, const char* callback)
+{
+    rho_sync_stop();
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncLoginCommand(name, password, callback) );
 }
 
 int rho_sync_logged_in()
@@ -211,7 +223,8 @@ int rho_sync_logged_in()
 
 void rho_sync_logout()
 {
-    //TODO: stop sync
+    rho_sync_stop();
+
 	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
 	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();

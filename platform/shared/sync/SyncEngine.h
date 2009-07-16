@@ -55,6 +55,7 @@ public:
     void doSyncAllSources();
     void doSyncSource(int nSrcId, String strSrcUrl);
     boolean login(String name, String password);
+    void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
     void logout();
@@ -93,6 +94,8 @@ private:
 
     CSyncSource* findSourceByID(int nSrcId);
     CSyncSource* findSourceByUrl(const String& strSrcUrl);
+
+    void callLoginCallback(String callback, int nErrCode, String strMessage);
 
     friend class CSyncSource;
 };
