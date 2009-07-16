@@ -22,6 +22,7 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhoRuby;
 import com.rho.db.*;
 import com.rho.net.*;
 import com.rho.*;
@@ -304,12 +305,64 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 	
+	void callLoginCallback(String callback, int nErrCode, String strMessage)
+	{
+		try{
+		    String strBody = "error_code=" + nErrCode;
+	        strBody += "&error_message=" + (strMessage != null? strMessage : "");
+	        String strUrl = getNet().resolveUrl(callback);
+	        
+			LOG.INFO( "Login callback: " + callback + ". Body: "+ strBody );
+	
+		    NetResponse resp = getNet().pushData( strUrl, strBody, this );
+		    if ( !resp.isOK() )
+		        LOG.ERROR( "Call Login callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+		}catch(Exception exc)
+		{
+			LOG.ERROR("Call Login callback failed.", exc);
+		}
+	}
+	
+	void login(String name, String password, String callback)
+	{
+		try {
+		    String serverUrl = RhoConf.getInstance().getString("syncserver");
+		    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
+	
+		    NetResponse resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
+		    if ( !resp.isOK() )
+		    {
+		    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
+		    	return;
+		    }
+		    
+		    String strSession = resp.getCharData();
+		    if ( strSession == null || strSession.length() == 0 )
+		    {
+		    	callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+		        return;
+		    }
+		    
+		    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
+		
+		    if ( ClientRegister.getInstance() != null )
+		    	ClientRegister.getInstance().stopWait();
+		    
+	    	callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
+		    
+		}catch(Exception exc)
+		{
+			LOG.ERROR("Login failed.", exc);
+	    	callLoginCallback(callback, RhoRuby.ERR_RUNTIME, exc.getMessage() );
+		}
+	}
+
 	boolean login(String name, String password)throws Exception
 	{
 	    loadAllSources();
 	    return doLogin(name,password);
 	}
-
+	
 	boolean doLogin(String name, String password)throws Exception
 	{
 	    if ( m_sources.size() == 0 )

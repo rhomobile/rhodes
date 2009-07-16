@@ -15,45 +15,57 @@ namespace sync {
 #define SYNC_WAIT_BEFOREKILL_SECONDS 3
 #define SYNC_STARTUP_INTERVAL_SECONDS 10
 
-class CSyncCommand
-{
-public:
-	int m_nCmdCode;
-	int m_nCmdParam;
-	String m_strCmdParam;
-
-	CSyncCommand(int nCode, int nParam)
-	{
-		m_nCmdCode = nCode;
-		m_nCmdParam = nParam;
-	}
-	CSyncCommand(int nCode, String strParam)
-	{
-		m_nCmdCode = nCode;
-		m_strCmdParam = strParam;
-	}
-	CSyncCommand(int nCode)
-	{
-		m_nCmdCode = nCode;
-		m_nCmdParam = 0;
-	}
-
-	boolean equals(const CSyncCommand& oSyncCmd)
-	{
-		return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
-			m_strCmdParam == oSyncCmd.m_strCmdParam;
-	}
-
-};
-
 class CSyncThread : public common::CRhoThread
 {
 public:
-    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit};
+    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit, scLogin};
 
 private:
 
     DEFINE_LOGCLASS;
+
+    class CSyncCommand
+    {
+    public:
+	    int m_nCmdCode;
+	    int m_nCmdParam;
+	    String m_strCmdParam;
+
+	    CSyncCommand(int nCode, int nParam)
+	    {
+		    m_nCmdCode = nCode;
+		    m_nCmdParam = nParam;
+	    }
+	    CSyncCommand(int nCode, String strParam)
+	    {
+		    m_nCmdCode = nCode;
+		    m_strCmdParam = strParam;
+	    }
+	    CSyncCommand(int nCode)
+	    {
+		    m_nCmdCode = nCode;
+		    m_nCmdParam = 0;
+	    }
+
+	    boolean equals(const CSyncCommand& oSyncCmd)
+	    {
+		    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
+			    m_strCmdParam == oSyncCmd.m_strCmdParam;
+	    }
+
+    };
+
+    class CSyncLoginCommand : public CSyncCommand
+    {
+    public:
+	    String m_strName, m_strPassword;
+        CSyncLoginCommand(String name, String password, String callback) : CSyncCommand(CSyncThread::scLogin,callback)
+	    {
+		    m_strName = name;
+		    m_strPassword = password;
+	    }
+    };
+
     static CSyncThread* m_pInstance;
 
     static db::CDBAdapter  m_oDBAdapter;

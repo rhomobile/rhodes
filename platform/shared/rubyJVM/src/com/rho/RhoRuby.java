@@ -31,6 +31,7 @@ public class RhoRuby {
 	public static final int ERR_NETWORK = 1;
 	public static final int ERR_REMOTESERVER = 2;
 	public static final int ERR_RUNTIME = 3;
+	public static final int ERR_UNEXPECTEDSERVERRESPONSE = 4;
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
