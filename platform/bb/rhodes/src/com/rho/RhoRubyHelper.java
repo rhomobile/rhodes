@@ -5,6 +5,7 @@ import rhomobile.WebView;
 import rhomobile.Alert;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
+import rhomobile.RingtoneManager;
 
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
@@ -28,6 +29,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         WebView.initMethods(RubyRuntime.WebViewClass);
         Alert.initMethods(RubyRuntime.AlertClass);        
         DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
+        RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
 	}
 	
 	public RubyProgram createMainObject() {
