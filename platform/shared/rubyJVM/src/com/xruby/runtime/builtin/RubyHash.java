@@ -16,7 +16,7 @@ public class RubyHash extends RubyBasic {
     private RubyValue default_value_ = RubyConstant.QNIL;
     private RubyBlock default_value_as_block_ = null;
 
-    RubyHash() {
+    public RubyHash() {
         super(RubyRuntime.HashClass);
     }
 
