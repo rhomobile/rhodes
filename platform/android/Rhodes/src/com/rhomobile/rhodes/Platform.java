@@ -254,6 +254,7 @@ public class Platform extends Activity {
 		saveCurrentLocation(getCurrentUrl());
 		
 		GeoLocation.stop();
+		RingtoneManager.stop();
 	}
 	
 	@Override
