@@ -13,6 +13,8 @@ import net.rim.device.api.i18n.DateFormat;
 import net.rim.device.api.i18n.SimpleDateFormat;
 import rhomobile.datetime.DateTimePicker;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.builtin.RubyString;
@@ -35,24 +37,36 @@ public class RingtoneManager extends RubyBasic {
 			System.getProperty("fileconn.dir.memorycard.music")
 	};
 	
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RingtoneManager");
+	
 	private static Player p = null;
 	
 	public RingtoneManager(RubyClass c) {
 		super(c);
 	}
 	
-	public static void play(String url) throws MediaException, IOException {
+	public static void play(String url) {
 		stop();
 		
-		p = Manager.createPlayer(url);
-		p.realize();
-		p.prefetch();
-		p.start();
+		try {
+			p = Manager.createPlayer(url);
+			p.realize();
+			p.prefetch();
+			p.start();
+		} catch (Exception e) {
+			stop();
+			LOG.ERROR("RingtoneManager", e);
+		}
 	}
 	
-	public static void stop() throws MediaException {
+	public static void stop() {
 		if (p != null) {
-			p.stop();
+			try {
+				p.stop();
+			} catch (Exception e) {
+				LOG.ERROR("RingtoneManager", e);
+			}
 			p = null;
 		}
 	}
