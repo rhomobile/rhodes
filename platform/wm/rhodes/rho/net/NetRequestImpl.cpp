@@ -294,6 +294,9 @@ CNetRequestImpl::~CNetRequestImpl()
 
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/ )
 {
+    if ( pNetResp->getRespCode() == 500 )
+        return;
+
     DWORD dwBufSize = 4096;
     char* pBuf = (char*)malloc(dwBufSize);
     DWORD dwBytesRead = 0;
@@ -335,7 +338,7 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
         (LPTSTR)&pszMessage,
         0, NULL );
 
-    CAtlStringW strExtError;
+    CAtlStringW strExtError = L"";
     if ( dwLastError == ERROR_INTERNET_EXTENDED_ERROR )
     {
         DWORD  dwInetError =0, dwExtLength = 0;

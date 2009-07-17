@@ -217,11 +217,12 @@ char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, cons
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			respData = str_assign( (char *)[strData UTF8String] );			
+			if ( code !=500)
+				respData = str_assign( (char *)[strData UTF8String] );			
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Request cookies failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired ||
 					errorCode == NSURLErrorBadServerResponse ) 
@@ -295,12 +296,13 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			respData = str_assign( (char *)[strData UTF8String] );
+			if (code!=500)
+				respData = str_assign( (char *)[strData UTF8String] );
 			
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -357,10 +359,11 @@ char* rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)
 			if (code != 200) 
 			{
 				NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-				respData = str_assign( (char *)[strData UTF8String] );
+				if (code!=500)
+					respData = str_assign( (char *)[strData UTF8String] );
 
 				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
@@ -493,11 +496,13 @@ char* rho_net_impl_pushMultipartData(const char* url, const char* data, size_t d
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			respData = str_assign( (char *)[strData UTF8String] );
+			if(code!=500)
+				respData = str_assign( (char *)[strData UTF8String] );
+			
 			if (code != 200) 
 			{
 				RAWLOG_ERROR4("Push file failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
-							  code, respData, errorCode, [[error localizedDescription] UTF8String]);
+							  code, [strData UTF8String], errorCode, [[error localizedDescription] UTF8String]);
 				
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
