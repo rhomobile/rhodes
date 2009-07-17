@@ -421,11 +421,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
-		try {
-			RingtoneManager.stop();
-		} catch (MediaException e) {
-			LOG.ERROR("RingtoneManager", e);
-		}
+		RingtoneManager.stop();
 
 		super.deactivate();
 	}
