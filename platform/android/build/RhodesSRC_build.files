@@ -13,6 +13,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/db/RWLock.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/SqliteDBResult.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/http/HttpHeader.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/http/HttpInputStream.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/http/HttpListener.java
