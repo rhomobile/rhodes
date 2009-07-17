@@ -24,6 +24,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
+
 import java.io.IOException;
 import j2me.util.LinkedList;
 
@@ -37,7 +38,7 @@ public class SyncThread extends RhoThread
 	
 	static SyncThread m_pInstance;
 
-   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5; 
+   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5, scLogin = 6; 
     
    	static private class SyncCommand
    	{
@@ -68,6 +69,17 @@ public class SyncThread extends RhoThread
    			return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
    				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
    				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)));  		
+   		}
+   	};
+   	static private class SyncLoginCommand extends SyncCommand
+   	{
+   		String m_strName, m_strPassword;
+   		public SyncLoginCommand(String name, String password, String callback)
+   		{
+   			super(scLogin,callback);
+   			
+   			m_strName = name;
+   			m_strPassword = password;
    		}
    	};
    	
@@ -220,6 +232,13 @@ public class SyncThread extends RhoThread
 	    case scSyncOne:
 	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
 	        break;
+	    case scLogin:
+	    	{
+	    		SyncLoginCommand oLoginCmd = (SyncLoginCommand)oSyncCmd;
+	    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_strCmdParam );
+	    	}
+	        break;
+	        
 	    }
 	}
 
@@ -350,29 +369,30 @@ public class SyncThread extends RhoThread
 				}
 			});
 		klass.getSingletonClass().defineMethod("login",
-			new RubyTwoArgMethod() {
-				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-					int nRes = 0;
-					try{
-						String name = arg1.toStr();
-						String password = arg2.toStr();
+				new RubyVarArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+						if ( args.size() != 3 )
+							throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+									"in SyncEngine.login: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
 						
-						stopSync();
-						nRes = getSyncEngine().login(name,password) ? 1 : 0;
-					}catch(IOException e)
-					{
-						LOG.ERROR("login failed", e);
-						RhoRuby.raise_RhoError(RhoRuby.ERR_NETWORK);
-					}catch(Exception e)
-					{
-						LOG.ERROR("login failed", e);
-						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
+						try{
+							String name = args.get(0).toStr();
+							String password = args.get(1).toStr();
+							String callback = args.get(2).toStr();
+							
+							stopSync();
+							
+							getInstance().addSyncCommand(new SyncLoginCommand(name, password, callback) );
+						}catch(Exception e)
+						{
+							LOG.ERROR("SyncEngine.login", e);
+							RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
+						}
+						
+						return RubyConstant.QNIL;
+					    
 					}
-					
-				    return ObjectFactory.createInteger(nRes);
-				    
-				}
-			});
+				});
 		
 		klass.getSingletonClass().defineMethod("logged_in",
 			new RubyNoArgMethod() {

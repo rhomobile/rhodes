@@ -7,6 +7,16 @@
 #include "sync/ClientRegister.h"
 
 namespace rho {
+
+namespace RhoRuby {
+static int ERR_NONE = 0;
+static int ERR_NETWORK = 1;
+static int ERR_REMOTESERVER = 2;
+static int ERR_RUNTIME = 3;
+static int ERR_UNEXPECTEDSERVERRESPONSE = 4;
+static int ERR_DIFFDOMAINSINSYNCSRC = 5;
+}
+
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
 
@@ -203,15 +213,29 @@ void CSyncEngine::syncAllSources()
     }
 }
 
-static String getServerFromUrl( const String& strUrl );
-boolean CSyncEngine::login(String name, String password)
+void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMessage)
 {
-    loadAllSources();
-    return doLogin(name,password);
+	//try{
+    String strBody = "error_code=" + convertToStringA(nErrCode);
+    strBody += "&error_message=" + strMessage;
+    String strUrl = getNet().resolveUrl(callback);
+    
+	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
+
+    NetResponse( resp, getNet().pushData( strUrl, strBody ) );
+    if ( !resp.isOK() )
+        LOG(ERROR) + "Call Login callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+	//}catch(Exception exc)
+	//{
+	//	LOG.ERROR("Call Login callback failed.", exc);
+	//}
 }
 
-boolean CSyncEngine::doLogin(String name, String password)
+static String getServerFromUrl( const String& strUrl );
+boolean CSyncEngine::checkAllSourcesFromOneDomain()//throws Exception
 {
+	loadAllSources();
+	
     if ( m_sources.size() == 0 )
         return true;
 
@@ -225,18 +249,41 @@ boolean CSyncEngine::doLogin(String name, String password)
         if ( srv.compare( srv0 ) != 0 )
             return false;
     }
+	
+    return true;
+}
 
+void CSyncEngine::login(String name, String password, String callback)
+{
+	//try {
+	if ( !checkAllSourcesFromOneDomain() )
+	{
+        callLoginCallback(callback, RhoRuby::ERR_DIFFDOMAINSINSYNCSRC, "");
+    	return;
+	}
+
+    String serverUrl = RHOCONF().getString("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-    NetResponse(resp, getNet().pullCookies( src0.getUrl()+"/client_login", strBody));
-    if ( !resp.isOK() )
-        return false;
 
+    NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody ) );
+    if ( !resp.isOK() )
+    {
+        callLoginCallback(callback, RhoRuby::ERR_REMOTESERVER, resp.getCharData());
+    	return;
+    }
+    
     getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
 
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->stopWait();
-	
-    return true;
+    
+    callLoginCallback(callback, RhoRuby::ERR_NONE, "" );
+	    
+	//}catch(Exception exc)
+	//{
+	//	LOG.ERROR("Login failed.", exc);
+    //	callLoginCallback(callback, RhoRuby.ERR_RUNTIME, exc.getMessage() );
+	//}
 }
 
 #ifdef OS_MACOSX
