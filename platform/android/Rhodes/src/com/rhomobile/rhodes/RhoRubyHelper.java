@@ -28,6 +28,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		Camera.initMethods(RubyRuntime.CameraClass);
 		WebView.initMethods(RubyRuntime.WebViewClass);
 		DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
+		RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
 	}
 
 	public String getPlatform() {

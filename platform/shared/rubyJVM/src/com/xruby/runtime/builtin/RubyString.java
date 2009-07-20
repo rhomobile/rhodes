@@ -28,12 +28,12 @@ public class RubyString extends RubyBasic {
         sb_ = new StringBuffer(s);
     }
 
-    RubyString(String s) {
+    public RubyString(String s) {
         super(RubyRuntime.StringClass);
         sb_ = new StringBuffer(s != null ? s : "");
     }
 
-    RubyString(StringBuffer sb) {
+    public RubyString(StringBuffer sb) {
         super(RubyRuntime.StringClass);
         sb_ = sb;
     }
