@@ -18,5 +18,5 @@ ExcludeLogCategories =
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
 
-# Sync server url. For example: http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/
-syncserver = ''
+# Sync server url.  This must be the full path to your sources.  For example: http://rhomobile.rhohub.com/apps/SugarCRM/sources/
+syncserver = '<%=syncserver%>'
