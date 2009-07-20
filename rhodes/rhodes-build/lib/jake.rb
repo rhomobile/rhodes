@@ -132,8 +132,13 @@ class Jake
   end
   
   def self.unjar(src,targetdir)
-    cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
-    p = Pathname.new(src)
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+    else
+      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+    end
+
+      p = Pathname.new(src)
     src = p.realpath
     currentdir = pwd()
     src = src.to_s.gsub(/"/,"")
@@ -148,7 +153,11 @@ class Jake
     chdir currentdir
   end
   def self.jarfilelist(target)
-    cmd = @@config["env"]["paths"]["java"] + "/jar.exe"
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+    else
+      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+    end
     target.gsub!(/"/,"")
 
     args = []
@@ -162,7 +171,11 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-    cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+     if RUBY_PLATFORM =~ /(win|w)32$/
+      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+    else
+      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+    end
     target.gsub!(/"/,"")
     
     args = []
