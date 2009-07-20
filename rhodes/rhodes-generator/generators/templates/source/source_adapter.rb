@@ -22,7 +22,7 @@ class <%=name.camelize%> < SourceAdapter
     super # this creates object value triples from an @result variable that contains a hash of hashes 
   end
  
-  def create(name_value_list)
+  def create(name_value_list,blob=nil)
     #TODO: write some code here
     # the backend application will provide the object hash key and corresponding value
     raise "Please provide some code to create a single object in the backend application using the hash values in name_value_list"

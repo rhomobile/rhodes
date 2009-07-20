@@ -15,15 +15,15 @@ class SettingsController < Rho::RhoController
   end
 
   def login_callback
-    errCode = @params['error_code'].to_i
-    if errCode == 0
+    err_code = @params['error_code'].to_i
+    if err_code == 0
       # run sync if we were successful
       WebView.navigate Rho::RhoConfig.start_path
       SyncEngine::dosync
     else
       @msg = @params['error_message']
       if @msg == nil or @msg.length == 0 
-        @msg = Rho::RhoError.new(errCode).message
+        @msg = Rho::RhoError.new(err_code).message
       end
       WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )
     end  

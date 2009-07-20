@@ -9,8 +9,8 @@ module Rho
     
     attr_reader :code
     
-    def initialize(errCode)
-        @code = errCode
+    def initialize(err_code)
+        @code = err_code
     end
     
     def message
