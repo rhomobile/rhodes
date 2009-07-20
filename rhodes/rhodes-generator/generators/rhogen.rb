@@ -25,15 +25,24 @@ module Rhogen
 
     desc <<-DESC
       Generates a new rhodes application.
+      
+      Required:
+        name        - application name
+        
+      Optional:
+        syncserver  - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
+        zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
     first_argument :name, :required => true, :desc => "application name"
-    second_argument :zip_url, :required => false, :desc => "optional url to zipfile download of bundle"
+    second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
+    third_argument :zip_url, :required => false, :desc => "optional url to zipfile download of bundle"
 
     template :config do |template|
-      zip_url = zip_url.nil? or zip_url.length == 0 ? 'nil' : "'#{zip_url}'"
+      zip_url ||= ''
+      syncserver ||= ''
       template.source = 'rhoconfig.txt'
       template.destination = "#{name}/rhoconfig.txt"
     end
@@ -96,7 +105,6 @@ module Rhogen
       
       Required:
         name        - model name
-        source_url  - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/account")
         attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
         
       Optional:
@@ -106,9 +114,8 @@ module Rhogen
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
     first_argument :name, :required => true, :desc => "model name"
-    second_argument :source_url, :required => true, :desc => "source url"
-    third_argument :attributes, :as => :array, :required => true, :desc => "list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes"
-    fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
+    second_argument :attributes, :as => :array, :required => true, :desc => "list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes"
+    third_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
     template :config do |template|
       template.source = 'config.rb'
