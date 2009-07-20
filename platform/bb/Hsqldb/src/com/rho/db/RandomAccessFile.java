@@ -1,6 +1,7 @@
 package com.rho.db;
 
 import java.io.*;
+
 import j2me.io.FileNotFoundException;
 
 import javax.microedition.io.Connector;
@@ -149,11 +150,24 @@ public class RandomAccessFile
         }
     }
     
-    public void write(int b) throws IOException{
-    	
-    	prepareWrite();
-        m_out.write(b);
-        postWrite(1);
+    public void write(int b) throws IOException
+    {
+    	int nTry = 0;
+        while (nTry <= 1){
+	        try {
+		    	prepareWrite();
+		        m_out.write(b);
+		        postWrite(1);
+		        break;
+	        }catch(IOException exc){
+	        	nTry++;
+	        	if ( nTry > 1 )
+	        		throw exc;
+	        	else{
+	        		m_outPos = -m_nSeekPos; //reopen out stream
+	        	}
+	        }
+        }
     }
     
     private void postWrite(int len)throws IOException{
@@ -174,9 +188,22 @@ public class RandomAccessFile
     
     private void writeBytes(byte b[], int off, int len) throws IOException
     {
-    	prepareWrite();
-        m_out.write(b, off, len);
-        postWrite(len);
+    	int nTry = 0;
+        while (nTry <= 1){
+	        try {
+		    	prepareWrite();
+		        m_out.write(b, off, len);
+		        postWrite(len);
+		        break;
+	        }catch(IOException exc){
+	        	nTry++;
+	        	if ( nTry > 1 )
+	        		throw exc;
+	        	else{
+	        		m_outPos = -m_nSeekPos; //reopen out stream
+	        	}
+	        }
+        }
     }
     
     public final void writeLong(long v) throws IOException {

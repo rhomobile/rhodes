@@ -24,6 +24,7 @@ import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.Characters;
 import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.system.SystemListener;
+//import javax.microedition.io.file.FileSystemListener;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.ui.ContextMenu;
 import net.rim.device.api.ui.Field;
@@ -38,7 +39,7 @@ import net.rim.device.api.ui.component.Status;
 import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
-import net.rim.device.api.ui.container.HorizontalFieldManager;
+//import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
@@ -55,11 +56,12 @@ import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
+import com.rho.Jsr75File;
 
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, ISyncStatusListener
+final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, ISyncStatusListener//, FileSystemListener
 {
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";
@@ -75,6 +77,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
 
+	/*boolean m_bSDCardAdded = false;
+	public void rootChanged(int arg0, String arg1)
+	{
+		LOG.INFO_OUT( "rootChanged. arg0 :" + arg0 + "arg1: " + arg1);
+		if ( arg0 == FileSystemListener.ROOT_ADDED && arg1 != null &&
+			  arg1.equals("SDCard/") )
+			m_bSDCardAdded = true;
+	}*/
+	
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -406,7 +417,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 */
     }
 
-	public void activate() {
+    boolean m_bActivated = false;
+	public void activate() 
+	{
+		m_bActivated = true;
+		doStartupWork();
+		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
 
@@ -457,7 +473,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		});	
 	}
 	
-	class SyncStatusPopup extends PopupScreen {
+	static class SyncStatusPopup extends PopupScreen {
 		LabelField _labelStatus;
 	    public SyncStatusPopup() {
 	        super( new VerticalFieldManager( Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR) );
@@ -677,15 +693,38 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
+    boolean isWaitForSDCardAtStartup()
+    {
+    	if ( Jsr75File.isRhoFolderExist() )
+    		return false;
+    	
+    	if ( Jsr75File.isSDCardExist() )
+    		return false;
+    	
+    	return !m_bActivated;
+    }
+    
     private void doStartupWork() 
     {
     	if (_mainScreen!=null)
     		return;
     	
+    	if ( ApplicationManager.getApplicationManager().inStartup() || isWaitForSDCardAtStartup() )
+    	{
+            this.invokeLater( new Runnable() {
+                public void run() 
+                {
+                    doStartupWork(); 
+                }
+            } );
+            
+            return;
+    	}
+    	
     	try{
         	RhoLogger.InitRhoLog();
 	    	
-	        LOG.TRACE(" STARTING RHODES: ***----------------------------------*** " );
+	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
 	    	
 	    	CKeyListener list = new CKeyListener();
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
@@ -735,7 +774,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        //	navigateHome();
 	        //}    
 	        
-	        LOG.TRACE("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
+	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
     		LOG.ERROR("doStartupWork failed", exc);
@@ -751,7 +790,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         if ( _mainScreen == null ) {
             LOG.INFO_OUT(" Shedule doStartupWork() ***---------------------------------- " );
             this.invokeLater( new Runnable() { 
-                public void run() { 
+                public void run() 
+                {
                     doStartupWork(); 
                 }
             } );
@@ -781,6 +821,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private RhodesApplication() {
         LOG.INFO_OUT(" Construct RhodesApplication() ***----------------------------------*** " );
         this.addSystemListener(this);
+        //this.addFileSystemListener(this);
         if ( ApplicationManager.getApplicationManager().inStartup() ) {
             LOG.INFO_OUT("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
         } else {
