@@ -23,6 +23,7 @@ package com.rhomobile.rhodes;
 import com.rho.RhoConf;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
+import com.rho.location.GeoLocation;
 import com.rho.sync.SyncThread;
 import com.rhomobile.rhodes.http.HttpHeader;
 import com.rhomobile.rhodes.http.HttpServer;
@@ -251,6 +252,9 @@ public class Platform extends Activity {
 		super.onPause();
 		
 		saveCurrentLocation(getCurrentUrl());
+		
+		GeoLocation.stop();
+		RingtoneManager.stop();
 	}
 	
 	@Override

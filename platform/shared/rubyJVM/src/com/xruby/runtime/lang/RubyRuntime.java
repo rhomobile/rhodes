@@ -95,6 +95,8 @@ public class RubyRuntime {
     public static RubyClass WebViewClass;
     public static RubyClass AlertClass;    
     public static RubyClass DateTimePickerClass;
+    public static RubyClass RingtoneManagerClass;
+    public static RubyClass MediaErrorClass;
     
     //RHO
 
@@ -255,6 +257,8 @@ public class RubyRuntime {
         WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);        
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
+        RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
+        MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         
 //      RhoPhonebook.initMethods(PhonebookClass);
         
