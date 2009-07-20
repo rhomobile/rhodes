@@ -6,9 +6,7 @@
 #include "common/StringConverter.h"
 #include "json/JSONIterator.h"
 
-#ifdef __APPLE__
 extern "C" const char* RhoGetRootPath();
-#endif
 
 namespace rho {
 namespace sync {
@@ -68,8 +66,11 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         //if ( !oFile.open(blob.getFilePath().c_str(),CRhoFile::OpenReadOnly) ) 
         //    continue;
 
+        String strFilePath = RhoGetRootPath();
+        strFilePath += "apps" + blob.getFilePath() ;
+
         strQuery = strBaseQuery + "&" + blob.getBody();
-        NetResponse( resp, getNet().pushFile(strQuery, blob.getFilePath()) );
+        NetResponse( resp, getNet().pushFile(strQuery, strFilePath) );
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
@@ -328,7 +329,7 @@ String CSyncSource::makeFileName(const CValue& value)//throws Exception
     if ( szExt[0] )
         strExt = szExt;
 
-	fName += "id_" + convertToStringA(value.m_nID) + strExt;
+	fName += "/id_" + convertToStringA(value.m_nID) + strExt;
 	
 	return fName;
 }
@@ -352,7 +353,10 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
         return false;
     
     value.m_strAttrType = "blob.file";
-    value.m_strValue = fName;
+
+    String strAppsPath = RhoGetRootPath();
+    strAppsPath += "apps";
+    value.m_strValue = fName.substr(strAppsPath.length());
     
     return true;
 }

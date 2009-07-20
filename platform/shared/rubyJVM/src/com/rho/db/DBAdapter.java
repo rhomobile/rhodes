@@ -107,7 +107,7 @@ public class DBAdapter extends RubyBasic {
 	}
 	
 	public static String makeBlobFolderName()throws Exception{
-		String fName = RhoClassFactory.createFile().getDirPath("blobs");
+		String fName = RhoClassFactory.createFile().getDirPath("apps/public/db-files");
 		
 		return fName;
 	}

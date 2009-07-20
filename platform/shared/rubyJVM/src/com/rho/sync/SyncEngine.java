@@ -530,9 +530,6 @@ class SyncEngine implements NetRequest.IRhoSession
 			{
 				if ( !rows2Delete.getString("attrib_type").equals("blob.file") )
 					continue;
-				String strUpdateType = rows2Delete.getString("update_type");
-				if ( strUpdateType.equals("create") || strUpdateType.equals("update") )
-					continue;
 
 				String url = rows2Delete.getString("value");
 				if ( url == null || url.length() == 0 )
@@ -540,7 +537,11 @@ class SyncEngine implements NetRequest.IRhoSession
 				
 				try{
 				    SimpleFile oFile = RhoClassFactory.createFile();
-				    oFile.delete(url);
+				    
+			        String strFilePath = oFile.getDirPath("");
+			        strFilePath += url;
+				    
+				    oFile.delete(strFilePath);
 				}catch(Exception exc){
 					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
 				}

@@ -680,3 +680,68 @@ int __cdecl _getdrive (
 
     return drivenum;
 }
+
+BOOL RemoveDirectoryA( LPCSTR lpPathName  )
+{
+	wchar_t *wdir;
+	BOOL rc;
+
+	/* replace with RemoveDirectory. */
+	wdir = wce_mbtowc(lpPathName);
+	rc = RemoveDirectoryW(wdir);
+	free(wdir);
+
+	return rc;
+}
+
+BOOL CreateDirectoryA(LPCSTR lpPathName,  LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+{
+	wchar_t* wdir;
+	BOOL rc;
+
+	/* replace with CreateDirectory. */
+	wdir = wce_mbtowc(lpPathName);
+	rc = CreateDirectoryW(wdir, lpSecurityAttributes);
+	free(wdir);
+
+	return rc;
+}
+
+HMODULE GetModuleHandleA(  LPCSTR lpModuleName  )
+{
+	wchar_t* wdir;
+	HMODULE rc;
+
+	/* replace with CreateDirectory. */
+	wdir = wce_mbtowc(lpModuleName);
+	rc = GetModuleHandleW(wdir);
+	free(wdir);
+
+	return rc;
+}
+
+SOCKET
+WSASocketA(
+    IN int af,
+    IN int type,
+    IN int protocol,
+    IN LPWSAPROTOCOL_INFOA lpProtocolInfo,
+    IN GROUP g,
+    IN DWORD dwFlags
+    )
+{
+    //TODO:WSASocketA 
+	return 0;
+}
+
+int
+WSAAPI
+WSAEnumProtocolsA(
+    IN LPINT lpiProtocols,
+    OUT LPWSAPROTOCOL_INFOA lpProtocolBuffer,
+    IN OUT LPDWORD lpdwBufferLength
+    )
+{
+    //TODO: WSAEnumProtocolsA
+    return 0;
+}

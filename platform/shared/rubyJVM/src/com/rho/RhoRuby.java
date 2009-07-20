@@ -48,6 +48,12 @@ public class RhoRuby {
 	        
 	        helper = RhoClassFactory.createRhoRubyHelper();
 	        helper.initRubyExtensions();
+	        
+    		//TODO: implement recursive dir creation
+    		RhoClassFactory.createFile().getDirPath("apps");
+    		RhoClassFactory.createFile().getDirPath("apps/public");
+    		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+	        
         }catch(Throwable exc){
         	LOG.ERROR("Cannot init ruby", exc);
         }

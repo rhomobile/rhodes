@@ -151,8 +151,6 @@ public class RhoConf {
     	String szRootPath = "";
     	try{
     		szRootPath = RhoClassFactory.createFile().getDirPath("");
-    		//TODO: implement recursive dir creation
-    		RhoClassFactory.createFile().getDirPath("apps");
     	}catch(Exception exc){}
 
     	
