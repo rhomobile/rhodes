@@ -176,6 +176,52 @@ public class Jsr75File implements SimpleFile
     	return m_strRhoPath;
     }
 
+    public static boolean isRhoFolderExist()
+    {
+    	String strSdCardPath = "file:///SDCard/Rho/";
+    	String strMemoryPath = "file:///SDCard/store/home/user/Rho/";
+    	
+		FileConnection fdir = null;
+		try{
+			fdir = (FileConnection)Connector.open(strSdCardPath);
+			if ( fdir != null && fdir.exists() )
+				return true;
+			
+			if (fdir != null)
+				fdir.close();
+			
+			fdir = (FileConnection)Connector.open(strMemoryPath);
+			if ( fdir != null && fdir.exists() )
+				return true;
+		}catch(IOException exc){
+			log("isRhoFolderExist failed." + exc.getMessage());
+		}finally{
+			if ( fdir != null )
+				try{ fdir.close(); }catch(Exception exc){}
+		}
+
+		return false;
+    }
+    
+    public static boolean isSDCardExist()
+    {
+    	String strSdCardPath = "file:///SDCard/";
+    	
+		FileConnection fdir = null;
+		try{
+			fdir = (FileConnection)Connector.open(strSdCardPath);
+			if ( fdir != null && fdir.exists() )
+				return true;
+		}catch(IOException exc){
+			log("isSDCardExist failed." + exc.getMessage());
+		}finally{
+			if ( fdir != null )
+				try{ fdir.close(); }catch(Exception exc){}
+		}
+
+		return false;
+    }
+    
     public String getDirPath(String strDir) throws IOException{
     	String strRoot = getRhoPath();
     	if ( strRoot == null )
@@ -403,36 +449,53 @@ public class Jsr75File implements SimpleFile
         if (out == null) { 
             throw new IOException("Illegal mode");
         }
-        try {
-            if (outPos != pos) {                         
-                out.close();
-                out = fconn.openOutputStream(pos);
-                if (pos > fileSize) { 
-                    byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
-                    do { 
-                        int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
-                        out.write(zeroBuf, 0, size);
-                        fileSize += size;
-                        
-                        //BB
-                        //fconn.truncate(fileSize);
-                    } while (pos != fileSize);
-                }
-                outPos = pos;
-            }
-            out.write(b, 0, len);
-            outPos += len;
-            if (outPos > fileSize) { 
-                fileSize = outPos;
-            }
-            //BB
-            //fconn.truncate(fileSize);
-            if (in != null) { 
-                in.close();
-                in = null;
-            }
-        }catch(IOException exc){
-        	throw exc;
+        int nTry = 0;
+        while (nTry <= 1){
+	        try {
+	            if (outPos != pos) {                         
+	                out.close();
+	                out = fconn.openOutputStream(pos);
+	                if (pos > fileSize) { 
+	                    byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
+	                    do { 
+	                        int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
+	                        out.write(zeroBuf, 0, size);
+	                        fileSize += size;
+	                        
+	                        //BB
+	                        //fconn.truncate(fileSize);
+	                    } while (pos != fileSize);
+	                }
+	                outPos = pos;
+	            }
+	            out.write(b, 0, len);
+	            outPos += len;
+	            if (outPos > fileSize) { 
+	                fileSize = outPos;
+	            }
+	            //BB
+	            //fconn.truncate(fileSize);
+	            if (in != null) { 
+	                in.close();
+	                in = null;
+	            }
+	            break;
+	        }catch(IOException exc){
+	        	nTry++;
+	        	if ( nTry > 1 )
+	        		throw exc;
+	        	else{
+	                outPos = -pos;
+	        		
+/*	        		String name = fconn.getURL();
+	        		//boolean bRead = fconn.canRead();
+	        		boolean bWrite = fconn.canWrite();
+	        		
+	        		close();
+	        		open(name, !bWrite, noFlush);*/
+	        	}
+	        		
+	        }
         }
     }
 
@@ -457,6 +520,7 @@ public class Jsr75File implements SimpleFile
 	        	log("File close: " + fconn.getName());
 	            
 	            fconn.close();
+	            fconn = null;
             }
         } catch(IOException x) { 
             throw x;
