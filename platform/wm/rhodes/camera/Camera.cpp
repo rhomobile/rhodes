@@ -27,6 +27,7 @@ static bool copy_file(LPTSTR from, LPTSTR to);
 static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
 static LPTSTR generate_filename(LPTSTR filename);
 static void create_folder(LPTSTR Path);
+extern "C" const wchar_t* RhoGetRelativeBlobsPathW();
 
 Camera::Camera(void) {
 }
@@ -39,7 +40,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
     SHCAMERACAPTURE shcc;
 
     wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-    wsprintf(pszFilename,L"%s%s",root,L"apps\\public\\db-files");
+    wsprintf(pszFilename,L"%s%s",root, RhoGetRelativeBlobsPathW() );
     free(root);
 
 	create_folder(pszFilename);
@@ -95,7 +96,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 
 		TCHAR rhoroot[MAX_PATH];
 		wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-		wsprintf(rhoroot,L"%s%s",root,L"apps\\public\\db-files");
+		wsprintf(rhoroot,L"%s%s",root,RhoGetRelativeBlobsPathW());
 		free(root);
 
 		create_folder(rhoroot);

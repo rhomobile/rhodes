@@ -18,6 +18,7 @@
  */
 package com.rho.sync;
 
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.*;
@@ -135,8 +136,11 @@ class SyncSource
 	    {
 	        SyncBlob blob = (SyncBlob)m_arSyncBlobs.elementAt(i);
 	
+	        String strFilePath = RhoClassFactory.createFile().getDirPath("");
+	        strFilePath += blob.getFilePath();
+	        
 	        strQuery = strBaseQuery + "&" + blob.getBody();
-	        NetResponse resp = getNet().pushFile(strQuery, blob.getFilePath(), getSync() );
+	        NetResponse resp = getNet().pushFile(strQuery, strFilePath, getSync() );
 	        if ( !resp.isOK() )
 	        {
 	            getSync().setState(SyncEngine.esStop);
@@ -220,7 +224,7 @@ class SyncSource
 	
 	        if ( value.length() > 0 )
 	        {
-	            if ( attribType == "blob.file" )
+	            if ( attribType.equals("blob.file") )
 	            {
 	                FilePath oBlobPath = new FilePath(value);
 	                strSrcBody += "&attrvals[][value]=";
@@ -411,7 +415,10 @@ class SyncSource
         	return false;
         
         value.m_strAttrType = "blob.file";
-        value.m_strValue = fName;
+        
+    	String root = RhoClassFactory.createFile().getDirPath("");
+        
+        value.m_strValue = "/" + fName.substring(root.length());;
         
         return true;
 	}

@@ -17,6 +17,7 @@
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 extern const char* RhoGetRootPath();
+extern const char* RhoGetRelativeBlobsPath();
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
 VALUE RhoPreparePath(VALUE path);
@@ -327,7 +328,7 @@ void Init_RhoSupport()
 static void Init_RhoBlobs()
 {
   VALUE path = __rhoGetCurrentDir();
-  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2("blobs"));
+  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2(RhoGetRelativeBlobsPath()));
 
   if ( rb_funcall(rb_cDir, rb_intern("exist?"), 1, path)==Qfalse )
     rb_funcall(rb_cDir, rb_intern("mkdir"), 1, path);

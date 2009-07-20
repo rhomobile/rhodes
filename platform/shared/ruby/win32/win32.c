@@ -4709,7 +4709,7 @@ int
 rb_w32_mkdir(const char *path, int mode)
 {
     int ret = -1;
-    RUBY_CRITICAL(do {
+    RUBY_CRITICAL(
 	if (CreateDirectory(path, NULL) == FALSE) {
 	    errno = map_errno(GetLastError());
 	    break;
@@ -4719,7 +4719,7 @@ rb_w32_mkdir(const char *path, int mode)
 	    break;
 	}
 	ret = 0;
-    } while (0));
+    );
     return ret;
 }
 

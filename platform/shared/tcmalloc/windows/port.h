@@ -250,7 +250,7 @@ enum { STDIN_FILENO = 0, STDOUT_FILENO = 1, STDERR_FILENO = 2 };
 #define close     _close
 #define popen     _popen
 #define pclose    _pclose
-#define mkdir(dirname, mode)  _mkdir(dirname)
+//#define mkdir(dirname, mode)  _mkdir(dirname)
 #ifndef O_RDONLY
 #define O_RDONLY  _O_RDONLY
 #endif

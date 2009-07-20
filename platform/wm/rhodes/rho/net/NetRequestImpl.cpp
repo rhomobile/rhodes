@@ -304,18 +304,22 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
     do
     {
         bRead = InternetReadFile(hRequest, pBuf, dwBufSize, &dwBytesRead);
-        if ( bRead )
+        if ( !bRead )
         {
-            if (dwBytesRead > 0)
-            {
-                if ( pFile )
-                    pFile->write(pBuf,dwBytesRead);
-                else
-                    pNetResp->getRawData().append(pBuf,dwBytesRead);
-            }
-
-            pNetResp->setValid(true);
+            pszErrFunction = L"InternetReadFile";
+            break;
         }
+
+        if (dwBytesRead > 0)
+        {
+            if ( pFile )
+                pFile->write(pBuf,dwBytesRead);
+            else
+                pNetResp->getRawData().append(pBuf,dwBytesRead);
+        }
+
+        pNetResp->setValid(true);
+
     }while(bRead && dwBytesRead > 0);
 
     free(pBuf);

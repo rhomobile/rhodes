@@ -54,7 +54,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
     {
         LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return false;
+        return new CNetResponseImpl();
     }
 
     int nTry = 0;
@@ -80,7 +80,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
     {
         LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
-        return false;
+        return new CNetResponseImpl();
     }
 
     int nTry = 0;

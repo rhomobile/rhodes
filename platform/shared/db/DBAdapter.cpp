@@ -3,6 +3,7 @@
 #include "common/RhoFile.h"
 
 extern "C" const char* RhoGetRootPath();
+extern "C" const char* RhoGetRelativeBlobsPath();
 
 namespace rho{
 namespace db{
@@ -23,16 +24,19 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         return;
 
     type = (char*)sqlite3_value_text(*(ppArgs+1));
-    if ( type && strcmp(type,"blob.file") == 0 ){
-        char* pFilePath = (char*)sqlite3_value_text(*(ppArgs));
-        CRhoFile::deleteFile(pFilePath);
+    if ( type && strcmp(type,"blob.file") == 0 )
+    {
+        String strFilePath = RhoGetRootPath();
+        strFilePath += "apps";
+        strFilePath += (char*)sqlite3_value_text(*(ppArgs));
+        CRhoFile::deleteFile(strFilePath.c_str());
     }
 }
 
 /*static*/ String CDBAdapter::makeBlobFolderName()
 {
     String strBlobPath = RhoGetRootPath();
-    return strBlobPath + "blobs/";
+    return strBlobPath + RhoGetRelativeBlobsPath();
 }
 
 void CDBAdapter::open (String strDbPath, String strVer)
