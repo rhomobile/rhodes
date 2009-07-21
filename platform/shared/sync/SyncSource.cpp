@@ -156,9 +156,9 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
                 strSrcBody += "&attrvals[][value]=";
                 strSrcBody += oBlobPath.getBaseName();
                 strSrcBody += "&attrvals[][attrib_type]=blob";
-#ifdef __APPLE__
-				value = String(RhoGetRootPath()) + "apps" + value;
-#endif
+//#ifdef __APPLE__
+//				value = String(RhoGetRootPath()) + "apps" + value;
+//#endif
 				
                 m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
                 continue;
