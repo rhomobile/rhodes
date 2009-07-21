@@ -372,6 +372,13 @@ describe "Rhom::RhomObject" do
     @accts[1].industry.should == "Technology"
   end
   
+  it "should find with multiple conditions" do
+    @accts = Account.find(:all, :conditions => {'name' => 'Mobio India', 'industry' => 'Technology'})
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+  
   it "should find first with conditions" do
     @mobio_ind_acct = Account.find(:first, :conditions => {'name' => 'Mobio India'})
     @mobio_ind_acct.name.should == "Mobio India"
