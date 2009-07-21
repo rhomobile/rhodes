@@ -34,13 +34,13 @@ class SettingsController < Rho::RhoController
       begin
         SyncEngine::login(@params['login'], @params['password'], (url_for :action => :login_callback) )
         render :action => :wait
-      rescue RhoError => e
-          @msg = e.message
-          render :action => :login, :query => {:msg => @msg}
+      rescue Rho::RhoError => e
+        @msg = e.message
+        render :action => :login, :query => {:msg => @msg}
       end
     else
-        @msg = "You entered an invalid login/password, please try again." unless @msg.length    
-        render :action => :login, :query => {:msg => @msg}
+      @msg = "You entered an invalid login/password, please try again." unless @msg.length    
+      render :action => :login, :query => {:msg => @msg}
     end
   end
   
@@ -55,7 +55,8 @@ class SettingsController < Rho::RhoController
   end
   
   def do_reset
-    SyncEngine.database_full_reset
+    Rhom::Rhom.database_full_reset
+    SyncEngine.dosync
     @msg = "Database has been reset."
     redirect :action => :index, :query => {:msg => @msg}
   end
