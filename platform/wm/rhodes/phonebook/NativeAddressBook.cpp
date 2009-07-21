@@ -11,6 +11,10 @@ IMPLEMENT_LOGCLASS(CABRecord,"ABRecord");
 IMPLEMENT_LOGCLASS(CABOutlookRecord,"ABOutlookRecord");
 IMPLEMENT_LOGCLASS(CNativeAddressBook,"NativeAddressBook");
 
+// Note that return type is std::string, not LPCSTR!!!
+// It is required to get live object even after function exit
+// In case if it is LPCSTR we actually get pointer to the
+// dead object internal member
 std::string bstr2str(BSTR s) {
 	_bstr_t bstr(s);
 	return (LPCSTR)bstr;
