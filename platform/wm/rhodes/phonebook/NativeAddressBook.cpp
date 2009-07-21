@@ -11,7 +11,7 @@ IMPLEMENT_LOGCLASS(CABRecord,"ABRecord");
 IMPLEMENT_LOGCLASS(CABOutlookRecord,"ABOutlookRecord");
 IMPLEMENT_LOGCLASS(CNativeAddressBook,"NativeAddressBook");
 
-LPCSTR bstr2str(BSTR s) {
+std::string bstr2str(BSTR s) {
 	_bstr_t bstr(s);
 	return (LPCSTR)bstr;
 }
@@ -67,7 +67,7 @@ int CABOutlookRecord::load() {
 		BSTR pwsz = NULL;
 		if(SUCCEEDED(m_pContact->get_MobileTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				LPCSTR number = bstr2str(pwsz);
+				std::string const &number = bstr2str(pwsz);
 				setValue(RUBY_PB_MOBILE_NUMBER,number);
 			}
 			::SysFreeString( pwsz);
@@ -75,42 +75,48 @@ int CABOutlookRecord::load() {
 		
 		if(SUCCEEDED(m_pContact->get_HomeTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_HOME_NUMBER,bstr2str(pwsz));
+				std::string const &number = bstr2str(pwsz);
+				setValue(RUBY_PB_HOME_NUMBER,number);
 			}
 			::SysFreeString( pwsz);
 		}	
 		
 		if(SUCCEEDED(m_pContact->get_BusinessTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_BUSINESS_NUMBER,bstr2str(pwsz));
+				std::string const &number = bstr2str(pwsz);
+				setValue(RUBY_PB_BUSINESS_NUMBER,number);
 			}
 			::SysFreeString( pwsz);
 		}
 
 		if(SUCCEEDED(m_pContact->get_FirstName(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_FIRST_NAME,bstr2str(pwsz));
+				std::string const &name = bstr2str(pwsz);
+				setValue(RUBY_PB_FIRST_NAME,name);
 			}
 			::SysFreeString(pwsz);
 		}
 
 		if(SUCCEEDED(m_pContact->get_LastName(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_LAST_NAME,bstr2str(pwsz));
+				std::string const &name = bstr2str(pwsz);
+				setValue(RUBY_PB_LAST_NAME,name);
 			}
 			::SysFreeString(pwsz);
 		}
 
 		if(SUCCEEDED(m_pContact->get_CompanyName(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_COMPANY_NAME,bstr2str(pwsz));
+				std::string const &name = bstr2str(pwsz);
+				setValue(RUBY_PB_COMPANY_NAME,name);
 			}
 			::SysFreeString(pwsz);
 		}
 		
 		if(SUCCEEDED(m_pContact->get_Email1Address(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
-				setValue(RUBY_PB_EMAIL_ADDRESS,bstr2str(pwsz));
+				std::string const &address = bstr2str(pwsz);
+				setValue(RUBY_PB_EMAIL_ADDRESS,address);
 			}
 			::SysFreeString(pwsz);
 		}
