@@ -7,6 +7,7 @@ generators/templates/application/app/Settings/controller.rb
 generators/templates/application/app/Settings/index.erb
 generators/templates/application/app/Settings/login.erb
 generators/templates/application/app/Settings/reset.erb
+generators/templates/application/app/Settings/wait.erb
 generators/templates/application/app/application.rb
 generators/templates/application/app/helpers/application_helper.rb
 generators/templates/application/app/index.erb
