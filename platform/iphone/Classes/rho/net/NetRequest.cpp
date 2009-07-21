@@ -109,7 +109,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
     {
         LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return false;
+        return new CNetResponseImpl(0,-1);
     }
 
 	//TODO: call rho_net_impl_pushFile
@@ -118,7 +118,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
 	char* data = (char*)malloc(nDataLen);
 	memcpy(data, szMultipartPrefix, strlen(szMultipartPrefix) );
 	oFile.readData(data,strlen(szMultipartPrefix),nFileSize);
-	memcpy(data+nFileSize-strlen(szMultipartPostfix), szMultipartPostfix, strlen(szMultipartPostfix) );
+	memcpy(data+nFileSize+strlen(szMultipartPrefix), szMultipartPostfix, strlen(szMultipartPostfix) );
 	
 	int nRespCode = -1;
 	int nTry = 0;
@@ -145,7 +145,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
     {
         LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
-        return false;
+        return new CNetResponseImpl(0,-1);
     }
 	
 	int nRespCode = -1;
