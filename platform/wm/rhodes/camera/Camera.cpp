@@ -25,7 +25,7 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 
 static bool copy_file(LPTSTR from, LPTSTR to);
 static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
-static LPTSTR generate_filename(LPTSTR filename);
+static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt );
 static void create_folder(LPTSTR Path);
 extern "C" const wchar_t* RhoGetRelativeBlobsPathW();
 
@@ -45,8 +45,9 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
 
 	create_folder(pszFilename);
 
+    LPCTSTR szExt = wcsrchr(pszFilename, '.');
     TCHAR filename[256];
-	generate_filename(filename);
+	generate_filename(filename,szExt);
 
     // Set the SHCAMERACAPTURE structure.
     ZeroMemory(&shcc, sizeof(shcc));
@@ -101,8 +102,9 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 
 		create_folder(rhoroot);
 
+        LPCTSTR szExt = wcsrchr(pszFilename, '.');
 		TCHAR filename[256];
-		generate_filename(filename);
+		generate_filename(filename, szExt);
 		
 		int len = wcslen(rhoroot) + wcslen(L"\\") + wcslen(filename);
 		wchar_t* full_name = (wchar_t*) malloc((len+2)*sizeof(wchar_t));
@@ -166,7 +168,7 @@ LPTSTR get_file_name(LPTSTR from, LPTSTR to) {
 	}
 }
 
-LPTSTR generate_filename(LPTSTR filename) {
+LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 	RHO_ASSERT(filename);
 
 	CTime time(CTime::GetCurrentTime());
@@ -175,9 +177,9 @@ LPTSTR generate_filename(LPTSTR filename) {
 	time.GetGmtTm(&tg);
 	int tz = tl.tm_hour-tg.tm_hour; //TBD: fix tz
 
-    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i.jpg", 
+    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s", 
 		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,  
-		tz>0?'_':'-',abs(tz));
+        tz>0?'_':'-',abs(tz),(szExt?szExt:L""));
 
 	return filename;
 }
