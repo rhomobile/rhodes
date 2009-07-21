@@ -92,16 +92,18 @@ public class FileList extends Activity implements OnClickListener{
 	
 	private void fill(File[] files) {
 		items = new ArrayList<String>();
-		for (File file : files) {
-			if (!file.isDirectory()) {
-				
-				boolean skip = false;
-				
-				if ( file.getName().indexOf(".png") == -1 && file.getName().indexOf(".jpg") == -1 )
-					skip = true;
-				
-				if ( !skip )
-					items.add(file.getName());
+		if (files != null) {
+			for (File file : files) {
+				if (!file.isDirectory()) {
+					
+					boolean skip = false;
+					
+					if ( file.getName().indexOf(".png") == -1 && file.getName().indexOf(".jpg") == -1 )
+						skip = true;
+					
+					if ( !skip )
+						items.add(file.getName());
+				}
 			}
 		}
 		ArrayAdapter<String> fileList = new ArrayAdapter<String>(this,
