@@ -18,15 +18,23 @@
   <property name="simlink.dir" location="${user.home}/Library/Application Support/iPhone Simulator/User/Library/Preferences" />
   <property name="sim.dir" location="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications" />
 
+  <condition property="iphone.config" value="Debug">
+    <not> <isset property="iphone.config"/> </not>
+  </condition>
+
+  <condition property="iphone.sdk" value="iphonesimulator2.2.1">
+    <not> <isset property="iphone.sdk"/> </not>
+  </condition>
+
   <target name="appclean">
     <exec executable="xcodebuild" dir="${rhodesproj.dir}">
       <arg value="clean" />
       <arg value="-target" />
       <arg value="rhorunner" />
       <arg value="-configuration" />
-      <arg value="Debug" />
+      <arg value="${iphone.config}" />
       <arg value="-sdk" />
-      <arg value="iphonesimulator2.1" />
+      <arg value="${iphone.sdk}" />
     </exec>
   </target>
 
@@ -63,6 +71,18 @@
 	<move file="${simapp.dir}/rhodesguid.properties" todir="."/>
   </target>
 
+  <target name="buildapp">
+    <exec executable="xcodebuild" dir="${rhodesproj.dir}">
+      <arg value="build" />
+      <arg value="-target" />
+      <arg value="rhorunner" />
+      <arg value="-configuration" />
+      <arg value="${iphone.config}" />
+      <arg value="-sdk" />
+      <arg value="${iphone.sdk}" />
+    </exec>
+  </target>
+
   <target name="runapp" depends="RhoBundle,findRhodesGuid">
     <property file="rhodesguid.properties"/>
 
@@ -76,9 +96,9 @@
       <arg value="-target" />
       <arg value="rhorunner" />
       <arg value="-configuration" />
-      <arg value="Debug" />
+      <arg value="${iphone.config}" />
       <arg value="-sdk" />
-      <arg value="iphonesimulator2.1" />
+      <arg value="${iphone.sdk}" />
     </exec>
 
     <mkdir dir="${simapp.dir}" />

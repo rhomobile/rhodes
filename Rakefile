@@ -353,18 +353,33 @@ namespace "prebuild" do
     prebuilt = "../../../rhodes/rhodes-build/res/prebuilt/iphone/"
 
     chdir 'platform/iphone/rbuild'
-    puts `#{ant} clean`
-    puts `#{ant} runapp`
+	# Simulator
+    puts `#{ant} clean -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
+    puts `#{ant} buildapp -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
 
     throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
 
-
+	mkdir_p prebuilt + "sim"
     rm_rf prebuilt + "sim/rhorunner.app"
     cp_r  "../build/Debug-iphonesimulator/rhorunner.app", prebuilt + "sim/"
 
     rm_rf prebuilt + "sim/rhorunner.app/apps"
     rm_rf prebuilt + "sim/rhorunner.app/lib"
+    chdir basedir
+	
+	# Device
+    chdir 'platform/iphone/rbuild'	
+    puts `#{ant} clean -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
+    puts `#{ant} buildapp -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
 
+    throw "cant find rhorunner.app!" if not File.exists? "../build/Release-iphoneos/rhorunner.app"
+
+	mkdir_p prebuilt + "device"
+    rm_rf prebuilt + "device/rhorunner.app"
+    cp_r  "../build/Release-iphoneos/rhorunner.app", prebuilt + "device/"
+
+    rm_rf prebuilt + "device/rhorunner.app/apps"
+    rm_rf prebuilt + "device/rhorunner.app/lib"
 
     chdir basedir
   end
