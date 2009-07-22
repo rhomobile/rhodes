@@ -1,4 +1,6 @@
+History.txt
 Manifest.txt
+README.txt
 Rakefile
 bin/rhogen
 generators/rhogen.rb

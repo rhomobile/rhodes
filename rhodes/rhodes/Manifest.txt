@@ -1,5 +1,7 @@
 .gitignore
+History.txt
 Manifest.txt
+README.txt
 Rakefile
 lib/rhodes.rb
 rhodes.gemspec
