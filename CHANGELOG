@@ -1,7 +1,11 @@
 == 1.2.0
+* Push support for RIM & iPhone
 * Improved Rhom performance by using horizontal resultset to rhom object conversion
 * Support android 1.5
-* 
+* Several bugfixes to blob/image capture & sync
+* Dynamic menu support (RIM)
+* Alert (popup) ruby API
+* DateTime Picker ruby API
 
 == 1.1.1
 * #630 - handle rhoconfig.txt without newline at EOF
