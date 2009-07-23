@@ -31,6 +31,7 @@
     args << "/data-port=0x4d44"
     args << "/data-port=0x4d4e"
     args << "/pin=0x2100000A"
+    args << "/no-compact-filesystem"
     
     if bbver >= 4.3
       args << "/fs-sdcard=true"
