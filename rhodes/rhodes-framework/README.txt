@@ -1,3 +1,1 @@
 = Rhodes
-
-* See README.textile
