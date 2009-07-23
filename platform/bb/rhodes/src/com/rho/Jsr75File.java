@@ -141,18 +141,19 @@ public class Jsr75File implements SimpleFile
     }
     
     static String makeRootPath(){
-    	SoftVersion ver = getSoftVersion();    	
+    	//SoftVersion ver = getSoftVersion();    	
 		
     	String strRoot = findRoot("SDCard/");
     	
     	if ( strRoot != null )
     		return strRoot;
-    	
+    	/*
     	if ( ver.nMajor == 0 )//emulator
 			strRoot = findRoot("store/");
 		else if ( ver.nMajor >= 4 && ver.nMinor >= 3 )
-			strRoot = findRoot("store/");	    		
-		
+			strRoot = findRoot("store/");*/
+    	
+    	strRoot = findRoot("store/");
     	return strRoot;
     }
     
