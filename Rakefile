@@ -368,20 +368,20 @@ namespace "prebuild" do
     chdir basedir
 	
 	# Device
-    chdir 'platform/iphone/rbuild'	
-    puts `#{ant} clean -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
-    puts `#{ant} buildapp -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
+    #chdir 'platform/iphone/rbuild'	
+    #puts `#{ant} clean -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
+    #puts `#{ant} buildapp -Diphone.sdk=iphoneos2.2.1 -Diphone.config=Release`
 
-    throw "cant find rhorunner.app!" if not File.exists? "../build/Release-iphoneos/rhorunner.app"
+    #throw "cant find rhorunner.app!" if not File.exists? "../build/Release-iphoneos/rhorunner.app"
 
-	mkdir_p prebuilt + "device"
-    rm_rf prebuilt + "device/rhorunner.app"
-    cp_r  "../build/Release-iphoneos/rhorunner.app", prebuilt + "device/"
+	#mkdir_p prebuilt + "device"
+    #rm_rf prebuilt + "device/rhorunner.app"
+    #cp_r  "../build/Release-iphoneos/rhorunner.app", prebuilt + "device/"
 
-    rm_rf prebuilt + "device/rhorunner.app/apps"
-    rm_rf prebuilt + "device/rhorunner.app/lib"
+    #rm_rf prebuilt + "device/rhorunner.app/apps"
+    #rm_rf prebuilt + "device/rhorunner.app/lib"
 
-    chdir basedir
+    #chdir basedir
   end
 
 end
