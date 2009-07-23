@@ -1,3 +1,3 @@
 = Rhodes
 
-* See rhodes/README.textile
+* See README.textile
