@@ -240,7 +240,7 @@ module Rho
     class << self
       def method_missing(name, *args)
       	unless name == Fixnum
-		  varname = name.to_s.gsub(/\=/,"")
+		      varname = name.to_s.gsub(/\=/,"")
           setting = (name.to_s =~ /=/)
           if setting
             @@config[varname] = args[0]
