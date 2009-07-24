@@ -49,6 +49,8 @@ public class GeoLocationImpl implements LocationListener {
 				determined = false;
 			}
 
+			LOG.TRACE("gps enabled: " + new Boolean(locationManager.isProviderEnabled(
+					LocationManager.GPS_PROVIDER)).toString());
 			LOG.TRACE("determined: " + new Boolean(determined).toString());
 			if (determined) {
 				LOG.TRACE("longitude: " + new Double(longitude).toString());
