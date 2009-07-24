@@ -1,21 +1,19 @@
 package rhomobile;
 
+import j2me.util.HashSet;
+import j2me.util.Iterator;
+
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.media.Manager;
-import javax.microedition.media.MediaException;
 import javax.microedition.media.Player;
-
-import net.rim.device.api.i18n.DateFormat;
-import net.rim.device.api.i18n.SimpleDateFormat;
-import rhomobile.datetime.DateTimePicker;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyBasic;
@@ -30,12 +28,12 @@ import com.xruby.runtime.lang.RubyValue;
 
 public class RingtoneManager extends RubyBasic {
 
-	private static final String mediaDirs[] = {
-			System.getProperty("fileconn.dir.tones"),
-			System.getProperty("fileconn.dir.memorycard.tones"),
-			System.getProperty("fileconn.dir.music"),
-			System.getProperty("fileconn.dir.memorycard.music")
-	};
+	//private static final String mediaDirProperties[] = {
+	//		"fileconn.dir.tones",
+	//		"fileconn.dir.memorycard.tones",
+	//		"fileconn.dir.music",
+	//		"fileconn.dir.memorycard.music"
+	//};
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RingtoneManager");
@@ -74,10 +72,17 @@ public class RingtoneManager extends RubyBasic {
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("get_all_ringtones", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				HashSet mediaDirs = new HashSet();
+				mediaDirs.add("file:///store/home/user/ringtones/");
+				mediaDirs.add("file:///store/home/user/music/");
+				mediaDirs.add("file:///SDCard/blackberry/ringones/");
+				mediaDirs.add("file:///SDCard/blackberry/music/");
 				RubyHash tmp = new RubyHash();
-				for(int i = 0; i < mediaDirs.length; i++) {
+				Iterator it = mediaDirs.iterator();
+				while (it.hasNext()) {
 					try {
-						FileConnection dir = (FileConnection)Connector.open(mediaDirs[i], Connector.READ);
+						String mediaDir = (String)it.next();
+						FileConnection dir = (FileConnection)Connector.open(mediaDir);
 						if(dir.exists() && dir.isDirectory()) {
 							Enumeration list = dir.list();
 							while(list.hasMoreElements()) {
@@ -86,10 +91,14 @@ public class RingtoneManager extends RubyBasic {
 								int idx = s.lastIndexOf('.');
 								if (idx > 0)
 									name = name.substring(0, idx);
-								tmp.setValue(new RubyString(name), new RubyString(new String(mediaDirs[i] + s)));
+								String fileName = mediaDir + s;
+								LOG.TRACE("RingtoneManager: retrieved ringtone: " + name + " => " + fileName);
+								tmp.setValue(new RubyString(name), new RubyString(new String(fileName)));
 							}
 						}
-					} catch(IOException e) {}
+					} catch(IOException e) {
+						LOG.ERROR("RingtoneManager", e);
+					}
 				}
 				
 				return tmp;

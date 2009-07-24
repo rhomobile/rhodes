@@ -17,7 +17,7 @@ import com.rho.RhoLogger;
 public class GeoLocation extends RubyBasic {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("RhodesApplication");
+		new RhoLogger("Common GeoLocation");
 	
 	private static IGeoLocationImpl m_locImpl = null;
 	
@@ -71,6 +71,8 @@ public class GeoLocation extends RubyBasic {
 	}
 	
 	public static double GetLatitude(){
+		LOG.TRACE("GeoLocation.GetLatitude");
+		
 		startSelf();
 		
 		if (m_locImpl != null)
@@ -80,6 +82,7 @@ public class GeoLocation extends RubyBasic {
 	}
 	
 	public static double GetLongitude(){
+		LOG.TRACE("GeoLocation.GetLongitude");
 		startSelf();
 		
 		if (m_locImpl != null)
@@ -93,21 +96,25 @@ public class GeoLocation extends RubyBasic {
 	}
 
 	public static boolean isKnownPosition(){
+		LOG.TRACE("GeoLocation.isKnownPosition");
 		startSelf();
 		return m_locImpl != null && m_locImpl.isKnownPosition();
 	}
 	
 	public static void start() throws Exception {
+		LOG.TRACE("GeoLocation.start");
 		if (m_locImpl == null)
 			m_locImpl = RhoClassFactory.createGeoLocationImpl();
 	}
 
 	public static void wakeUp() {
+		LOG.TRACE("GeoLocation.wakeUp");
 		if (m_locImpl != null)
 			m_locImpl.wakeUp();
 	}
 	
 	public static void stop() {
+		LOG.TRACE("GeoLocation.stop");
 		if ( m_locImpl != null ){
 			m_locImpl.quit();
 			m_locImpl = null;

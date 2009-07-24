@@ -239,8 +239,17 @@ module Rho
     
     class << self
       def method_missing(name, *args)
-        varname = name.to_s.sub(/\=/,'').strip
-        @@config[varname]
+      	unless name == Fixnum
+		  varname = name.to_s.gsub(/\=/,"")
+          setting = (name.to_s =~ /=/)
+          if setting
+            @@config[varname] = args[0]
+            # save changes to file
+            RhoConf.set_property_by_name(varname,args[0]) 
+          else
+            @@config[varname]
+          end
+        end
       end
       
       def sources
