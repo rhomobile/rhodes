@@ -118,6 +118,7 @@ void rho_sync_logout();
 void rho_sync_set_notification(int source_id, const char *url, char* params);
 void rho_sync_clear_notification(int source_id);
 void rho_sync_set_pollinterval(int nInterval);
+void rho_sync_set_syncserver(char* syncserver);
 
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath, void** ppDB);

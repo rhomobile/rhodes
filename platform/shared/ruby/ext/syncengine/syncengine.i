@@ -24,6 +24,8 @@
 	#define clear_notification rho_sync_clear_notification
 	extern void rho_sync_set_pollinterval(int interval);
 	#define set_pollinterval rho_sync_set_pollinterval
+	extern void rho_sync_set_syncserver(char* syncserver);
+	#define set_syncserver rho_sync_set_syncserver
 %}
 
 extern void dosync();
@@ -37,3 +39,4 @@ extern void stop_sync();
 extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
 extern void set_pollinterval(int interval);
+extern void set_syncserver(char* syncserver);
