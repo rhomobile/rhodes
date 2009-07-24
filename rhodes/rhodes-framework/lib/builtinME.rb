@@ -596,6 +596,47 @@ class FalseClass
     end
 end
 
+class Range
+    include Enumerable
+
+    def ==(value)
+        if value.first == first and value.last == last and value.exclude_end? == exclude_end?
+            true
+        else
+            false
+        end
+    end
+
+    def ===(value)
+        each do |item|
+            return true if value == item
+        end
+        false
+    end
+
+    def to_s
+        return self.begin.to_s + "..." + self.end.to_s if exclude_end?
+        return self.begin.to_s + ".." + self.end.to_s
+    end
+
+    alias inspect :to_s
+
+    alias first :begin
+    alias last :end
+
+    def step(n=1)
+        if n == 1 then
+            each{|i|yield(i)}
+        else
+            counter = 0
+		        each do |i|
+            yield(i) if counter%n == 0
+			      counter = counter + 1
+		    end
+	   end
+    end
+end
+
 class String
     include Comparable
 	

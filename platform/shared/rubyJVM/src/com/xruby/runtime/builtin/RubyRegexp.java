@@ -274,7 +274,12 @@ public class RubyRegexp extends RubyBasic {
             } else {
                 RubyArray subarray = new RubyArray();
                 for (int i = 1; i < r.groups(); ++i) {
-                    subarray.add(ObjectFactory.createString(r.group(i)));
+                	
+                	String res = r.group(i);
+                	if ( res != null )
+                		subarray.add(ObjectFactory.createString(res));
+                	else
+                		subarray.add(RubyConstant.QNIL);
                 }
                 block.invoke(this, subarray);
             }
