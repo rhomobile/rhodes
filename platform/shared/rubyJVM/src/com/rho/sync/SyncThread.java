@@ -18,15 +18,29 @@
  */
 package com.rho.sync;
 
-import com.rho.*;
-import com.rho.db.*;
-import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.builtin.RubyString;
-import com.xruby.runtime.lang.*;
-
-import java.io.IOException;
 import j2me.util.LinkedList;
+
+import com.rho.Mutex;
+import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+import com.rho.RhoRuby;
+import com.rho.RhoThread;
+import com.rho.TimeInterval;
+import com.rho.db.DBAdapter;
+import com.rho.db.IDBResult;
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.lang.RubyBlock;
+import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyException;
+import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyOneArgMethod;
+import com.xruby.runtime.lang.RubyRuntime;
+import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.RubyVarArgMethod;
 
 public class SyncThread extends RhoThread
 {
@@ -485,6 +499,22 @@ public class SyncThread extends RhoThread
 					
 					return RubyConstant.QNIL;
 				}
+			});
+		klass.getSingletonClass().defineMethod("set_syncserver",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							String url = arg1.toStr();
+							RhoConf.getInstance().setPropertyByName("syncserver", url);
+							getSyncEngine().logout();
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_syncserver failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
 			});
 	}
 
