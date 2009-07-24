@@ -212,7 +212,8 @@ class SyncEngine implements NetRequest.IRhoSession
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
-	        String strUrl = res.getStringByIdx(1);
+	        String strDbUrl = res.getStringByIdx(1);
+	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getString("syncserver") + strDbUrl);
 	        String name = res.getStringByIdx(3);
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getUInt64ByIdx(2), this) );

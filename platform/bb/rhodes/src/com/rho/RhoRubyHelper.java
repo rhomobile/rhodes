@@ -1,23 +1,20 @@
 package com.rho;
 
-import rhomobile.RhoPhonebook;
-import rhomobile.WebView;
+import java.util.Hashtable;
+
+import net.rim.device.api.system.ApplicationDescriptor;
+import net.rim.device.api.system.CodeModuleGroup;
+import net.rim.device.api.system.DeviceInfo;
 import rhomobile.Alert;
+import rhomobile.RhoPhonebook;
+import rhomobile.RingtoneManager;
+import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
-import rhomobile.RingtoneManager;
 
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
-
-//import net.rim.device.api.system.CoverageInfo;
-//import net.rim.device.api.system.RadioInfo;
-import net.rim.device.api.system.DeviceInfo;
-import java.util.Hashtable;
-import net.rim.device.api.system.CodeModuleGroup;
-//import net.rim.device.api.system.CodeModuleGroupManager;
-import net.rim.device.api.system.ApplicationDescriptor;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
@@ -27,6 +24,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
         Camera.initMethods(RubyRuntime.CameraClass);
         WebView.initMethods(RubyRuntime.WebViewClass);
+        RhoConf.initMethods(RubyRuntime.RhoConfClass);
         Alert.initMethods(RubyRuntime.AlertClass);        
         DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
