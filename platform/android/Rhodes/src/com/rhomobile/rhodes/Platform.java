@@ -412,9 +412,10 @@ public class Platform extends Activity {
     }
 
 	void navigateUrl(String url){
-        ResourceFetchThread thread = new ResourceFetchThread(
-        		canonicalizeURL(url), null, null);
-        thread.start();                       
+		String fullUrl = canonicalizeURL(url);
+        ResourceFetchThread thread = new ResourceFetchThread(fullUrl, null, null);
+        thread.start();        
+        this.webView.loadUrl(fullUrl);
     }
 
     public void postUrl(String url, String body, HttpHeader headers){

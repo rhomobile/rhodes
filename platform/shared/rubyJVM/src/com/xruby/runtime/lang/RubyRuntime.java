@@ -93,6 +93,7 @@ public class RubyRuntime {
     public static RubyClass GeoLocationClass;
     public static RubyClass CameraClass;
     public static RubyClass WebViewClass;
+    public static RubyClass RhoConfClass;
     public static RubyClass AlertClass;    
     public static RubyClass DateTimePickerClass;
     public static RubyClass RingtoneManagerClass;
@@ -254,7 +255,8 @@ public class RubyRuntime {
         PBRecordClass = RubyAPI.defineClass("PBRecord", RubyRuntime.ObjectClass);
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);        
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
-        WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);        
+        WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);
+        RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
         RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);

@@ -1,12 +1,21 @@
 package com.rho;
 
-import java.util.Enumeration;
 import java.io.IOException;
+import java.util.Enumeration;
+
+import com.xruby.runtime.lang.RubyBlock;
+import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyException;
+import com.xruby.runtime.lang.RubyTwoArgMethod;
+import com.xruby.runtime.lang.RubyValue;
 
 public class RhoConf {
     String      m_strConfFilePath = "";
     String      m_strRhoRootPath = "";
     private java.util.Hashtable m_mapValues = new java.util.Hashtable();
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhoConf");
     
     private static RhoConf m_Instance;
 	private static String CONF_FILENAME = "apps/rhoconfig.txt";
@@ -88,7 +97,7 @@ public class RhoConf {
 		}
 	}
 
-    void setPropertyByName(String name, String value ){
+    public void setPropertyByName(String name, String value ){
     	m_mapValues.put(name,value);
     }
 	
@@ -206,4 +215,20 @@ public class RhoConf {
 			 
 		}
    }
+   
+   public static void initMethods(RubyClass klass) {
+	   klass.getSingletonClass().defineMethod("set_property_by_name", new RubyTwoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
+				try {
+					RhoConf.getInstance().setPropertyByName(arg0.toString(), arg1.toString());
+					RhoConf.getInstance().saveToFile();
+					RhoConf.getInstance().loadFromFile();
+				} catch (RuntimeException e) {
+					LOG.ERROR("set_property_by_name failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
+		});
+	}
 }

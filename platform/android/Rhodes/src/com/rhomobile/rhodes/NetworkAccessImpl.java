@@ -45,7 +45,6 @@ public class NetworkAccessImpl implements INetworkAccess {
 		urlc.setDoInput(true);
 		urlc.setUseCaches(false);
 		urlc.setAllowUserInteraction(false);
-		urlc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		urlc.setInstanceFollowRedirects(true);
 		return new AndroidHttpConnection(urlc);
 	}
