@@ -40,7 +40,7 @@ describe "Rho" do
   end
   
   it "should set start_path" do
-    Rho::RhoConfig.config['start_path'] = '/foo/bar'
+    Rho::RhoConfig.start_path = '/foo/bar'
     Rho::RhoConfig.start_path.should == '/foo/bar'
   end
   
@@ -49,7 +49,7 @@ describe "Rho" do
   end
   
   it "should set options_path" do
-    Rho::RhoConfig.config['options_path'] = '/ops2'
+    Rho::RhoConfig.options_path = '/ops2'
     Rho::RhoConfig.options_path.should == '/ops2'
   end
   
