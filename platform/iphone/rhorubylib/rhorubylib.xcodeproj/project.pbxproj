@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4678FCCC0F8187A10054340C /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = 4678FCCA0F8187A10054340C /* network.c */; };
 		4678FCCD0F8187A10054340C /* network.h in Headers */ = {isa = PBXBuildFile; fileRef = 4678FCCB0F8187A10054340C /* network.h */; };
+		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
 		5C2E6F470F30E05700CCFE20 /* geolocation_rhowrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C2E6F460F30E05700CCFE20 /* geolocation_rhowrap.c */; };
 		5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527B0FD3E3C100CB43FD /* rhoruby.c */; };
 		5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C76527C0FD3E3C100CB43FD /* rhoruby.h */; };
@@ -112,6 +113,7 @@
 /* Begin PBXFileReference section */
 		4678FCCA0F8187A10054340C /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../shared/ruby/ext/system/network.c; sourceTree = SOURCE_ROOT; };
 		4678FCCB0F8187A10054340C /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../shared/ruby/ext/system/network.h; sourceTree = SOURCE_ROOT; };
+		46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoconf_wrap.c; path = ../../shared/ruby/ext/rhoconf/rhoconf_wrap.c; sourceTree = SOURCE_ROOT; };
 		5C2E6F460F30E05700CCFE20 /* geolocation_rhowrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_rhowrap.c; path = ext/geolocation/geolocation_rhowrap.c; sourceTree = "<group>"; };
 		5C76527B0FD3E3C100CB43FD /* rhoruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoruby.c; path = ext/rho/rhoruby.c; sourceTree = "<group>"; };
 		5C76527C0FD3E3C100CB43FD /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ext/rho/rhoruby.h; sourceTree = "<group>"; };
@@ -241,6 +243,15 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		46A4ABBC101A25DD00AF74C7 /* rhoconf */ = {
+			isa = PBXGroup;
+			children = (
+				46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */,
+			);
+			name = rhoconf;
+			path = ../../shared/ruby/ext/rhoconf;
+			sourceTree = SOURCE_ROOT;
 		};
 		5C043EB60EF7B7CF0014E5C6 /* rho */ = {
 			isa = PBXGroup;
@@ -402,6 +413,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				46A4ABBC101A25DD00AF74C7 /* rhoconf */,
 				F516687C0FFD399C0079F023 /* alert */,
 				5C7652810FD3E3C500CB43FD /* stringio */,
 				F5B8FACD0F44E8F900C9AF85 /* camera */,
@@ -645,6 +657,7 @@
 				5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */,
 				5C7652830FD3E3E000CB43FD /* stringio.c in Sources */,
 				F51668800FFD39D80079F023 /* alert_wrap.c in Sources */,
+				46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

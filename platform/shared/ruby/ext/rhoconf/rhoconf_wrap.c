@@ -1545,7 +1545,8 @@ static VALUE mRhoConf;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void set_property_by_name(char* name, char* value);
+	extern void rho_conf_set_property_by_name(char* name, char* value);
+	#define set_property_by_name rho_conf_set_property_by_name
 
 
 SWIGINTERN swig_type_info*
