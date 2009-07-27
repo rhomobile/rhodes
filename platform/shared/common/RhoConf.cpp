@@ -168,7 +168,7 @@ void rho_conf_freeString(char* str) {
 }
 
 void rho_conf_setString(const char* szName, const char* value){
-	RHOCONF().setString(szName,value);
+    RHOCONF().setString(szName,value ? value : "");
 }
 
 void rho_conf_save() {
