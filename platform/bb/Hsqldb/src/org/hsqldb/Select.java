@@ -967,31 +967,34 @@ class Select {
             gResult.addRow(row);
         }
 
-        Iterator it = gResult.iterator();
-
-        while (it.hasNext()) {
-            Object[] row = (Object[]) it.next();
-
-            if (isAggregated) {
-                for (int i = 0; i < len; i++) {
-                    if (exprColumns[i].isAggregate()) {
-                        row[i] = exprColumns[i].getAggregatedValue(session,
-                                row[i]);
-                    }
-                }
-            }
-
-            if (iHavingLen > 0) {
-
-                // The test value, either aggregate or not, is set already.
-                // Removes the row that does not satisfy the HAVING
-                // condition.
-                if (!Boolean.TRUE.equals(row[iResultLen + iGroupLen])) {
-                    it.remove();
-                }
-            }
+        if (isAggregated || iHavingLen > 0 )
+        {        
+	        Iterator it = gResult.iterator();
+	
+	        while (it.hasNext()) {
+	            Object[] row = (Object[]) it.next();
+	
+	            if (isAggregated) {
+	                for (int i = 0; i < len; i++) {
+	                    if (exprColumns[i].isAggregate()) {
+	                        row[i] = exprColumns[i].getAggregatedValue(session,
+	                                row[i]);
+	                    }
+	                }
+	            }
+	
+	            if (iHavingLen > 0) {
+	
+	                // The test value, either aggregate or not, is set already.
+	                // Removes the row that does not satisfy the HAVING
+	                // condition.
+	                if (!Boolean.TRUE.equals(row[iResultLen + iGroupLen])) {
+	                    it.remove();
+	                }
+	            }
+	        }
         }
-
+        
         return gResult.getResult();
     }
 
