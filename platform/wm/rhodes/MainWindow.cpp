@@ -306,15 +306,21 @@ LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	SetRhobundleReloadMenu();
 	
 	LPTSTR startPage = NULL;
-	rho::String lastPage = RHOCONF().getString("LastVisitedPage");
-	LPTSTR lastPageW = NULL;
-	if (lastPage.length() > 0) {
-		char* _page = canonicalizeURL(lastPage.c_str());
-		startPage = lastPageW = wce_mbtowc(_page);
-		free(_page);
-	} else {
+    LPTSTR lastPageW = NULL;
+
+	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
+    {
+	    rho::String lastPage = RHOCONF().getString("LastVisitedPage");
+	    if (lastPage.length() > 0) {
+		    char* _page = canonicalizeURL(lastPage.c_str());
+		    startPage = lastPageW = wce_mbtowc(_page);
+		    free(_page);
+        }
+    }
+
+	if ( !startPage )
 		startPage = CHttpServer::Instance()->GetStartPage();
-	}
+
 	m_spIWebBrowser2->Navigate(startPage, NULL, NULL, NULL, NULL);
 	if (lastPageW) {
 		free(lastPageW);
