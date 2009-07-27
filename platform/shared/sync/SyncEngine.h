@@ -60,6 +60,7 @@ public:
     void logout();
     void setNotification(int source_id, String strUrl, String strParams );
     void clearNotification(int source_id);
+	void setSyncServer(char* syncserver);
 
     void setState(ESyncState eState){ m_syncState = eState; }
     ESyncState getState()const{ return m_syncState; }
