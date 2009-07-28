@@ -1588,6 +1588,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="rhoconf"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

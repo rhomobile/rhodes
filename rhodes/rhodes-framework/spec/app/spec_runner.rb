@@ -17,7 +17,8 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/rho_spec'
     config[:files] << 'spec/spec_helper'
     config[:files] << 'spec/webview_spec'
-    
+    config[:files] << 'spec/syncengine_spec'
+    config[:files] << 'spec/rhom_db_adapter_spec'
   end
 
   def run

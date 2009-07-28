@@ -122,7 +122,8 @@ void CSyncEngine::loadAllSources()
     DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token from sources order by source_id") );
     for ( ; !res.isEnd(); res.next() )
     { 
-        String strUrl = res.getStringByIdx(1);
+        String strDbUrl = res.getStringByIdx(1);
+		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getString("syncserver") + strDbUrl);
         if ( strUrl.length() > 0 )
             m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), *this) );
     }
@@ -408,6 +409,13 @@ void CSyncEngine::clearNotification(int source_id)
 	
     CMutexLock lockNotify(m_mxNotifications);
     m_mapNotifications.remove(source_id);
+}
+	
+void CSyncEngine::setSyncServer(char* syncserver)
+{
+	rho_conf_setString("syncserver", syncserver);
+	rho_conf_save();
+	logout();
 }
 
 static String getServerFromUrl( const String& strUrl )

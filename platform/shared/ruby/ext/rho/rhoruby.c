@@ -30,6 +30,7 @@ extern void enable_gc_profile(void);
 extern void Init_System(void);
 extern void Init_Phonebook(void);
 extern void Init_WebView(void);
+extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
 extern void Init_stringio(void);
@@ -75,6 +76,7 @@ void RhoRubyStart()
 		Init_System();
 		Init_Phonebook();
 		Init_WebView();
+		Init_RhoConf();
 		Init_Alert();
         Init_Camera();
 		Init_stringio();
