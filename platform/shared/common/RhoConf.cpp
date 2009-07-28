@@ -5,6 +5,8 @@
 
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
 
+extern "C" void rho_conf_set_property_by_name(char* name, char* value);
+
 namespace rho{
 namespace common{
 
@@ -166,7 +168,7 @@ void rho_conf_freeString(char* str) {
 }
 
 void rho_conf_setString(const char* szName, const char* value){
-	RHOCONF().setString(szName,value);
+    RHOCONF().setString(szName,value ? value : "");
 }
 
 void rho_conf_save() {
@@ -195,4 +197,11 @@ char* str_assign(char* data)
 	return 0;
 }
 	
+}
+
+// RhoConf.set_property_by_name
+void rho_conf_set_property_by_name(char* name, char* value)
+{
+	rho_conf_setString(name, value);
+	rho_conf_save();
 }

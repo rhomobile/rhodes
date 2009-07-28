@@ -506,6 +506,8 @@ public class SyncThread extends RhoThread
 						try{
 							String url = arg1.toStr();
 							RhoConf.getInstance().setPropertyByName("syncserver", url);
+							RhoConf.getInstance().saveToFile();
+							RhoConf.getInstance().loadConf();
 							getSyncEngine().logout();
 						}catch(Exception e)
 						{

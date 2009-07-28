@@ -45,6 +45,8 @@ ABLD.BAT
 #*.hlp
 *.hrh
 nbproject
+rholog.txt
+LogFile.txt
 
 platform/android/.metadata/*
 platform/android/Rhodes/assets
