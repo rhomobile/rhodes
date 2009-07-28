@@ -63,10 +63,11 @@ public class FileList extends Activity implements OnClickListener{
 				try {
 					File file = new File(BASE_CAMERA_DIR + items.get(selectionRowID));
 					selectedFilePath = file.getAbsolutePath();
-
-					Bitmap bm;
-					bm = Bitmap.createScaledBitmap(BitmapFactory
-							.decodeFile(file.getAbsolutePath()), 176, 144, true);
+					
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inSampleSize = 10;
+					Bitmap obm = BitmapFactory.decodeFile(selectedFilePath, options);
+					Bitmap bm = Bitmap.createScaledBitmap(obm, 176, 144, true);
 					imagePreview.setImageBitmap(bm);
 				} catch (Exception e) {
 					Log.e("FileList", e.getMessage());
