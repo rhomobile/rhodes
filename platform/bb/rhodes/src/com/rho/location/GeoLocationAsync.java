@@ -34,6 +34,8 @@ public class GeoLocationAsync {
 					  m_lon = coord.getLongitude();
 					  m_bDetermined = true;
 					}
+					LOG.TRACE("GetLocation - latitude: " + Double.toString(m_lat));
+					LOG.TRACE("GetLocation - longitude: " + Double.toString(m_lon));
 				}else
 					LOG.INFO("GetLocation - getQualifiedCoordinates: return null.");
 			}else
