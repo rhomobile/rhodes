@@ -43,7 +43,7 @@ public class LogScreen extends MainScreen {
 			}
 		};*/
 	
-	private class MyEdit extends RichTextField{
+	private static class MyEdit extends RichTextField{
 	};
 	
 	private class MyTimerTask extends  java.util.TimerTask {

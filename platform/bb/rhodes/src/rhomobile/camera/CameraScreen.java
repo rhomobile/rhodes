@@ -275,7 +275,7 @@ public class CameraScreen extends MainScreen {
 	 * A wrapper for the various encoding properties available
 	 * for use with the VideoControl.getSnapshot() method.
 	 */
-	public final class EncodingProperties
+	public final static class EncodingProperties
 	{   
 	    /** The file format of the picture. */
 	    private String _format;

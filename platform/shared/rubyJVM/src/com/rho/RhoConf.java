@@ -223,7 +223,7 @@ public class RhoConf {
 					RhoConf.getInstance().setPropertyByName(arg0.toString(), arg1.toString());
 					RhoConf.getInstance().saveToFile();
 					RhoConf.getInstance().loadFromFile();
-				} catch (RuntimeException e) {
+				} catch (Exception e) {
 					LOG.ERROR("set_property_by_name failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
