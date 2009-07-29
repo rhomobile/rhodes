@@ -138,7 +138,7 @@ public final class Perl5Util implements MatchResult {
   /** The compiled match expression parsing regular expression. */
   private Pattern __matchPattern;
 
-  class ThreadState {
+  static class ThreadState {
     /** The last match from a successful call to a matching method. */
     MatchResult lastMatch = null;
 

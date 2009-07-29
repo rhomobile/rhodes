@@ -407,7 +407,7 @@ class TriggerDef extends Thread {
      * is not used but it allows developers to change the signature of the
      * fire method of the Trigger class and pass the user name to the Trigger.
      */
-    class TriggerData {
+    static class TriggerData {
 
         public Object[] oldRow;
         public Object[] newRow;

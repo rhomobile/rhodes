@@ -35,7 +35,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
 
-    class SyncNotification
+    static class SyncNotification
     {
         String m_strUrl, m_strParams;
         SyncNotification(String strUrl, String strParams){ m_strUrl = strUrl; m_strParams = strParams; }
