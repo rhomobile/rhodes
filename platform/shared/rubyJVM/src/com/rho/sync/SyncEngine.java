@@ -45,7 +45,7 @@ class SyncEngine implements NetRequest.IRhoSession
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
-    static String SYNC_PAGE_SIZE() { return "200"; }
+    static String SYNC_PAGE_SIZE() { return "1000"; }
 	
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
