@@ -213,8 +213,8 @@ task :set_version, [:version] do |t,args|
   verstring = major+"."+minor+"."+build
   origfile = ""
 
-  File.open("platform/bb/build/build.yml","r") { |f| origfile = f.read }
-  File.open("platform/bb/build/build.yml","w") do |f| 
+  File.open("rhobuild.yml","r") { |f| origfile = f.read }
+  File.open("rhobuild.yml","w") do |f| 
     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   end
   
