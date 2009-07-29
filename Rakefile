@@ -114,7 +114,7 @@ task :get_version do
   androidver = "unknown"
   
 
-  File.open("platform/bb/build/build.yml","r") do |f|
+  File.open("rhobuild.yml","r") do |f|
     file = f.read
     if file.match(/version: (\d+\.\d+\.\d+)/)
       bbver = $1
