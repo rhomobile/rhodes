@@ -364,9 +364,11 @@ class ArrayPacker {
                             }
                             break;
                         }
-                        
+
                         // obtain d
-                        s1 = str.charAt(s++);
+                        if ( s < send )
+                        	s1 = str.charAt(s++);
+                        
                         while (((d = b64_xtable[s1]) == -1) && s + 1 < send) {
                             if (s1 == '=') break;
                             s1 = str.charAt(s++);
