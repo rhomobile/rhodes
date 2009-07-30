@@ -19,7 +19,7 @@ public class DateTimePicker extends RubyBasic {
 		super(c);
 	}
 	
-	public static RubyValue choose(RubyValue arg1, RubyValue arg2, RubyValue arg3, int v) {
+	public static RubyValue choose(RubyValue arg1, RubyValue arg2, RubyValue arg3, int v, String opaque) {
 		String callback = arg1.toStr();
 		String title = arg2.toStr();
 		long init = arg3.toRubyTime().getTime();
@@ -30,6 +30,7 @@ public class DateTimePicker extends RubyBasic {
 		intent.putExtra("title", title);
 		intent.putExtra("init", init);
 		intent.putExtra("fmt", v);
+		intent.putExtra("opaque", opaque);
 		
 		RhodesInstance.getInstance().startActivityForResult(intent, 5);
 		return RubyConstant.QNIL;
@@ -38,19 +39,20 @@ public class DateTimePicker extends RubyBasic {
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("choose", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-				if(args.size() != 3 && args.size() != 4)
+				if(args.size() != 4 && args.size() != 5)
 					throw new RubyException(RubyRuntime.ArgumentErrorClass,
-							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 3 or 4)");
+							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 4 or 5)");
 				
 				RubyValue arg1 = args.get(0);
 				RubyValue arg2 = args.get(1);
 				RubyValue arg3 = args.get(2);
+				int v = args.get(3).toInt();
 				
-				int v = 0;
-				if(args.size() == 4)
-					v = args.get(3).toInt();
+				String opaque = null;
+				if(args.size() == 5)
+					opaque = args.get(4).toStr();
 				
-				return DateTimePicker.choose(arg1, arg2, arg3, v);
+				return DateTimePicker.choose(arg1, arg2, arg3, v, opaque);
 			}
 		});
 	}
