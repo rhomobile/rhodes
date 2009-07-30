@@ -34,6 +34,11 @@ public class HsqlDBResult implements IDBResult
 		Result.ResultMetaData md = m_result.metaData;
 		return md.colNames[nCol].toLowerCase();
 	}
+	
+	public Result getResult(){
+		return m_result;
+	}
+	
 	/*
 	public RubyValue getRubyValueByIdx(int nItem, int nCol)
 	{ 
@@ -165,6 +170,11 @@ public class HsqlDBResult implements IDBResult
     protected Object getCurValue(int nCol)
     {
     	return m_current.data[nCol];
+    }
+
+    public Object[] getCurData()
+    {
+    	return m_current.data;
     }
     
 	public String getStringByIdx(int nCol)

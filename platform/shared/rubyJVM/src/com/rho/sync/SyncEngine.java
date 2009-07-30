@@ -517,6 +517,7 @@ class SyncEngine implements NetRequest.IRhoSession
 			try{
 				String fName = DBAdapter.makeBlobFolderName();
 				RhoClassFactory.createFile().delete(fName);
+				DBAdapter.makeBlobFolderName(); //Create folder back
 			}catch(Exception exc){
 				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
 			}
