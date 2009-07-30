@@ -385,6 +385,14 @@ public class RubyRuntime {
 
         //RHO_ADED
         RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_ME");
+        
+        try{
+	        if( RhoClassFactory.createRhoRubyHelper().getPlatform().equals("Blackberry" ) )
+	        	RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_DBME");
+        }catch(Exception e)
+        {
+        }
+        
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("1.9.1"), "RUBY_VERSION");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("2009-05-12"), "RUBY_RELEASE_DATE");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("java"), "RUBY_PLATFORM");

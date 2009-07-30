@@ -1,9 +1,12 @@
 package com.rho.db;
 
+import com.rho.RhoClassFactory;
 import com.rho.db.DBException;
 import com.rho.db.IDBResult;
 import com.rho.db.IDBStorage;
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.lang.RubyConstant;
+import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
@@ -15,6 +18,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	private IDBCallback m_dbCallback;
 	private HsqlDBRowResult m_rowResult = new HsqlDBRowResult();
 	private boolean m_bPendingNoAutoCommit = false;
+	private String m_strSqlScript;
 	
 	public HsqlDBStorage(){
 		m_fs = FileUtilBB.getDefaultInstance(); 
@@ -43,6 +47,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	public void open(String strPath, String strSqlScript) throws DBException 
 	{
 		try{
+			m_strSqlScript = strSqlScript;
 			String strDbName = getNameNoExt(strPath);
 			
 			HsqlProperties props = new HsqlProperties();
@@ -113,6 +118,12 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 			if ( m_dbSess == null )
 				throw new RuntimeException("executeSQL: m_dbSess == null");
 			
+			if ( strStatement.startsWith("destroy ") )
+			{
+				destroy_table(strStatement.substring(8));
+				return new HsqlDBResult();
+			}
+			
 			CompiledStatement st = m_dbSess.compiledStatementManager.compile(m_dbSess, strStatement);
 			Result res = m_dbSess.sqlExecuteCompiledNoPreChecksSafe(st, values);
 			
@@ -147,5 +158,71 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 		}
 			
 	}
+
+	private String createInsertStatement(HsqlDBResult res)
+	{
+		String strInsert = "INSERT INTO ";
+		
+		strInsert += res.getResult().metaData.tableNames[0];
+		strInsert += "(";
+		String strQuest = ") VALUES(";
+		for (int i = 0; i < res.getColCount(); i++ )
+		{
+			if ( i > 0 )
+			{
+				strInsert += ",";
+				strQuest += ",";
+			}
+			
+			strInsert += res.getColName(i);
+			strQuest += "?";
+		}
+		
+		strInsert += strQuest + ")"; 
+		return strInsert;
+	}
+	
+    private void destroy_table(String strTable)throws DBException 
+    {
+		if ( m_dbSess == null )
+			return;
+		
+		String dbName = getNameNoExt(m_dbSess.getDatabase().getPath());
+		String dbNewName  = dbName + "new";
+		HsqlDBStorage db = new HsqlDBStorage();
+		db.open(dbNewName, m_strSqlScript);
+		
+		org.hsqldb.lib.HsqlArrayList arTables = m_dbSess.getDatabase().schemaManager.getAllTables();
+		//String[] tables = {"sources", "client_info"};
+		//Copy all other tables
+		HsqlDBResult res;
+
+	    db.startTransaction();
+		
+		for ( int i = 0; i< arTables.size(); i++ )
+		{
+			String tableName = ((Table)arTables.get(i)).getName().name;
+			if ( tableName.equalsIgnoreCase(strTable) )
+				continue;
+			
+			res = (HsqlDBResult)executeSQL("SELECT * from " + tableName, null);
+			String strInsert = "";
+		    for ( ; !res.isEnd(); res.next() )
+		    {
+		    	if ( strInsert.length() == 0 )
+		    		strInsert = createInsertStatement(res);
+		    	
+		    	db.executeSQL(strInsert, res.getCurData() );
+		    }
+		}
+		
+	    db.commit();
+	    db.close();
+	    close();
+	    
+	    m_fs.renameElement(dbNewName + ".data", dbName+".data");
+	    m_fs.renameElement(dbNewName + ".script", dbName+".script");
+	    open(dbName, m_strSqlScript );
+    }
 	
 }
