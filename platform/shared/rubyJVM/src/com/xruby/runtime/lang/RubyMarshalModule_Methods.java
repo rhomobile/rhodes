@@ -7,14 +7,14 @@ public static void initMethods( RubyModule klass){
 
 klass.defineModuleMethod( "dump", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyMarshalModule.dump(receiver, arg);}
+		return RubyMarshalModule.dump(arg);}
 });
 klass.defineModuleMethod( "load", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyMarshalModule.load(receiver, arg);}
+		return RubyMarshalModule.load(arg);}
 });
 klass.defineModuleMethod( "load", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return RubyMarshalModule.load(receiver, arg);}
+		return RubyMarshalModule.load(arg);}
 });
 }}

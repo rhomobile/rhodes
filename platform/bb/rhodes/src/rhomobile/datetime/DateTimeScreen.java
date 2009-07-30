@@ -23,15 +23,17 @@ public class DateTimeScreen extends MainScreen {
 		new RhoLogger("DateTimePicker");
 	
 	private String _callbackUrl;
+	private String _opaque;
 	
 	/** A reference to the current screen for listeners. */
 	private DateTimeScreen _dateTimeScreen;
 	
 	private DateField _dateTime;
 	
-	public DateTimeScreen(String callback, String title, long init, DateFormat fmt)
+	public DateTimeScreen(String callback, String title, long init, DateFormat fmt, String opaque)
 	{
 		_callbackUrl = callback;
+		_opaque = opaque;
 		//A reference to this object, to be used in listeners.
 		_dateTimeScreen = this;
 		
@@ -89,6 +91,8 @@ public class DateTimeScreen extends MainScreen {
     		// We need to divide returned value to 1000 because we send number of seconds
     		// but returned value is actually number of milliseconds since Epoch.
     		String body = "status=ok&result=" + _dateTime.getDate()/1000;
+    		if (_opaque != null)
+    			body += "&opaque=" + _opaque;
     		LOG.INFO("Callback with result: " + body);
 			app.postUrl(_callbackUrl, body, headers);
 			app.popScreen( _dateTimeScreen );
