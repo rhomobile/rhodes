@@ -173,6 +173,16 @@ public class Jsr75File implements SimpleFile
     	
     	m_strRhoPath += "Rho/";
     	createDir( m_strRhoPath );
+
+    	RhoRubyHelper helper = new RhoRubyHelper();
+    	String appName = helper.getAppProperty("MIDlet-Name");
+    	if ( appName == null || appName.length() == 0 )
+    		appName = helper.getModuleName();
+    	if ( appName == null || appName.length() == 0 )
+    		appName = "rhodesApp";
+    	
+    	m_strRhoPath += appName + "/";
+    	createDir( m_strRhoPath );
     	
     	return m_strRhoPath;
     }
@@ -180,7 +190,7 @@ public class Jsr75File implements SimpleFile
     public static boolean isRhoFolderExist()
     {
     	String strSdCardPath = "file:///SDCard/Rho/";
-    	String strMemoryPath = "file:///SDCard/store/home/user/Rho/";
+    	String strMemoryPath = "file:///store/home/user/Rho/";
     	
 		FileConnection fdir = null;
 		try{
