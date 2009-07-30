@@ -13,17 +13,17 @@ describe Rhogen::ModelGenerator do
   
   it "should require attributes" do
     lambda {
-      @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "", 10)
+      @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name)
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
   
   it "should use type argument" do
-    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address", "ask")
-    @generator.arguments[4].should == "ask"
+    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "name,industry,address", "ask")
+    @generator.arguments[2].should == "ask"
   end
 
   before do
-    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "http://something.com/sources/5", 5, "name,industry,address")
+    @generator = Rhogen::ModelGenerator.new('/tmp', {}, model_name, "name,industry,address")
   end
   
   it "should have attributes" do

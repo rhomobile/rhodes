@@ -214,7 +214,7 @@ task :set_version, [:version] do |t,args|
   origfile = ""
 
   File.open("rhobuild.yml","r") { |f| origfile = f.read }
-  File.open("rhobuild.yml","w") do |f| 
+  File.open("rhoibuild.yml","w") do |f| 
     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   end
   
