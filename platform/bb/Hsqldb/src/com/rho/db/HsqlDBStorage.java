@@ -189,6 +189,10 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 		
 		String dbName = getNameNoExt(m_dbSess.getDatabase().getPath());
 		String dbNewName  = dbName + "new";
+		
+	    m_fs.delete(dbNewName + ".data");
+	    m_fs.delete(dbNewName + ".script");
+		
 		HsqlDBStorage db = new HsqlDBStorage();
 		db.open(dbNewName, m_strSqlScript);
 		
