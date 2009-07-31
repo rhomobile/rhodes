@@ -166,7 +166,7 @@ NSString *loadingText = @"Loading...";
 
 - (void)runSync
 {
-	rho_sync_doSyncAllSources();
+	rho_sync_doSyncAllSources(TRUE);
 }
 
 - (void)actionShowLog:(id)sender
