@@ -35,14 +35,11 @@ end
 namespace "check" do
   desc "Check that your system setup is correct for building"
   task :all do
-    Rake::Task["check:bb"].invoke
-    puts "-------------------------------"
-    Rake::Task["check:wm"].invoke
-    puts "-------------------------------"
-    Rake::Task["check:android"].invoke
-    puts "-------------------------------"
-    # Rake::Task["check:symbian"].invoke
-    #     puts "-------------------------------"
+    platforms = RUBY_PLATFORM =~ /(win|w)32$/ ? ["bb","wm","android"] : ["android"]
+    platforms.each do |platform|
+      Rake::Task["check:#{platform}"].invoke
+      puts "-------------------------------"
+    end
   end
 end
 
