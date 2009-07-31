@@ -584,7 +584,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app";
+			shellScript = "if [ -d ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts ]; then\n\tmv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
