@@ -217,7 +217,16 @@ module Rhom
         end
         execute_sql query
       end
-    
+
+      # deletes all rows from a given table by recreating db-file and save all other tables
+      def destroy_table(table)
+        query = nil
+        if table
+          query = "destroy #{table}"
+        end
+        execute_sql query
+      end
+      
       # updates values (hash) in a given table which satisfy condition (hash)
       # example usage is the following:
       # update_into_table('object_values',{"value"=>"Electronics"},{"object"=>"some-object", "attrib"=>"industry"})
