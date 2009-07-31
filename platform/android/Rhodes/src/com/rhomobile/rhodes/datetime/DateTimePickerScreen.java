@@ -32,6 +32,7 @@ public class DateTimePickerScreen extends Activity {
 	private String _callback;
 	private Date _init;
 	private int _fmt;
+	private String _opaque;
 	
 	private static final int FORMAT_DATE_TIME = 0;
 	private static final int FORMAT_DATE = 1;
@@ -120,6 +121,7 @@ public class DateTimePickerScreen extends Activity {
 		_callback = extras.getString("callback");
 		_init = new Date(extras.getLong("init"));
 		_fmt = extras.getInt("fmt");
+		_opaque = extras.getString("opaque");
 		
 		this.setTitle(extras.getString("title"));
 		
@@ -192,7 +194,14 @@ public class DateTimePickerScreen extends Activity {
 			HttpHeader headers = new HttpHeader();
 			headers.setHeader("Content-Type", "application/x-www-form-urlencoded");
 			
-			String body = _result == null ? "status=cancel" : "status=ok&result=" + _result.getTime()/1000;
+			String body;
+			if (_result == null)
+				body = "status=cancel";
+			else {
+				body = "status=ok&result=" + _result.getTime()/1000;
+				if (_opaque != null)
+					body += "&opaque=" + _opaque;
+			}
 			
 			try {
 				connection = AndroidHttpConnection.makeConnection(fullUrl, headers, body.getBytes());
