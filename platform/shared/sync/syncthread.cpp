@@ -169,13 +169,13 @@ void rho_sync_destroy()
 	CSyncThread::Destroy();
 }
 	
-void rho_sync_doSyncAllSources()
+void rho_sync_doSyncAllSources(int show_status_popup)
 {
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll));
     //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
-void rho_sync_doSyncSource(int nSrcID)
+void rho_sync_doSyncSource(int nSrcID,int show_status_popup)
 {
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
 }	
