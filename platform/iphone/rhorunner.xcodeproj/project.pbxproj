@@ -451,11 +451,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
 			buildPhases = (
-				5C0442920EFBE79D0014E5C6 /* ShellScript */,
+				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
+				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
-				5C61F2BD1022321A0013E321 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -557,7 +557,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5C0442920EFBE79D0014E5C6 /* ShellScript */ = {
+		5C0442920EFBE79D0014E5C6 /* Create RhoBundle */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			comments = "Compile ruby sources";
@@ -565,24 +565,26 @@
 			);
 			inputPaths = (
 			);
+			name = "Create RhoBundle";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd rbuild\nant rhobundle";
 		};
-		5C61F2BD1022321A0013E321 /* ShellScript */ = {
+		5C61F2BD1022321A0013E321 /* Move alerts to root of app */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Move alerts to root of app";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp ${PROJECT_DIR}/bin/RhoBundle/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app";
+			shellScript = "mv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app";
 		};
 /* End PBXShellScriptBuildPhase section */
 
