@@ -46,6 +46,13 @@ namespace "check" do
   end
 end
 
+namespace "clean" do
+  desc "Clean all build artifacts (removes bin/ directory)"
+  task :all do
+    rm_rf 'bin'
+  end
+end
+
 Rake::TaskManager.class_eval do
   def remove_task(task_name)
     @tasks.delete(task_name.to_s)
