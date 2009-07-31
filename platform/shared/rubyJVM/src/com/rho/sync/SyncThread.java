@@ -36,11 +36,15 @@ import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
+import com.xruby.runtime.lang.RubyModule;
 import com.xruby.runtime.lang.RubyNoArgMethod;
+import com.xruby.runtime.lang.RubyNoOrOneArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
+import com.xruby.runtime.lang.RubyOneOrTwoArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RubyVarArgMethod;
+import com.xruby.runtime.stdlib.RubyStringIO;
 
 public class SyncThread extends RhoThread
 {
@@ -300,43 +304,51 @@ public class SyncThread extends RhoThread
 		}
 	}
 	
+	public static RubyValue _dosync(RubyValue show_status)
+	{
+		try {
+			String str = show_status.asString();
+			boolean show = show_status.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+			if (show&&(m_statusListener != null)) {
+				m_statusListener.createStatusPopup();
+			}
+			doSyncAllSources();
+		} catch(Exception e) {
+			LOG.ERROR("dosync failed", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+		return RubyConstant.QNIL;
+	}
+
+	public static RubyValue _dosync_source(RubyValue sourceID, RubyValue show_status)
+	{
+		try {
+			String str = show_status.asString();
+			boolean show = show_status.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+			if (show&&(m_statusListener != null)) {
+				m_statusListener.createStatusPopup();
+			}
+			doSyncSource(sourceID.toInt());
+		} catch(Exception e) {
+			LOG.ERROR("dosync_source failed", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+		return RubyConstant.QNIL;
+	}
+	
 	public static void initMethods(RubyClass klass) {
-		klass.getSingletonClass().defineMethod("dosync", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				try{
-					if (m_statusListener != null) {
-						m_statusListener.createStatusPopup();
-					}
-					doSyncAllSources();
-				}catch(Exception e)
-				{
-					LOG.ERROR("dosync failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				
-				return RubyConstant.QNIL;
-			}
-			
-		});
-		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
-				try{
-//					if ( arg instanceof RubyString )
-//						doSyncSource(arg.toStr());
-//					else
-					if (m_statusListener != null) {
-						m_statusListener.createStatusPopup();
-					}
-					doSyncSource(arg.toInt());
-				}catch(Exception e)
-				{
-					LOG.ERROR("dosync_source failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				
-				return RubyConstant.QNIL;
-			}
-		});
+		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return _dosync(RubyConstant.QTRUE);}
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return _dosync(arg);}
+		});		
+		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneOrTwoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return _dosync_source(arg,RubyConstant.QTRUE);}
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
+				return _dosync_source(arg0,arg1);}
+		});		
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{

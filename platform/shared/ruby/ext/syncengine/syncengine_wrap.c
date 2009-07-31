@@ -1546,9 +1546,9 @@ static VALUE mSyncEngine;
 
 
 /* Put header files here or function declarations like below */
-	extern void rho_sync_doSyncAllSources();
+	extern void rho_sync_doSyncAllSources(int show_status_popup);
 	#define dosync_source rho_sync_doSyncSource
-	extern void rho_sync_doSyncSource(int source_id);
+	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -1570,6 +1570,11 @@ static VALUE mSyncEngine;
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
+	#if !defined(bool)
+	#define bool int
+	#define true  1
+	#define false 0
+	#endif
 
 
 #include <limits.h>
@@ -1633,6 +1638,26 @@ SWIG_AsVal_int (VALUE obj, int *val)
     }
   }  
   return res;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_bool (VALUE obj, bool *val)
+{
+  if (obj == Qtrue) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == Qfalse) {
+    if (val) *val = false;
+    return SWIG_OK;
+  } else {
+    int res = 0;
+    if (SWIG_AsVal_int (obj, &res) == SWIG_OK) {    
+      if (val) *val = res ? true : false;
+      return SWIG_OK;
+    }
+  }  
+  return SWIG_TypeError;
 }
 
 
@@ -1701,10 +1726,24 @@ SWIG_From_int  (int value)
 
 SWIGINTERN VALUE
 _wrap_dosync(int argc, VALUE *argv, VALUE self) {
-  if ((argc < 0) || (argc > 0)) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  {
+    arg1 = 1;
+  }
+  if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  dosync();
+  if (argc > 0) {
+    ecode1 = SWIG_AsVal_bool(argv[0], &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "dosync" "', argument " "1"" of type '" "bool""'");
+    } 
+    arg1 = (bool)(val1);
+  }
+  dosync(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -1714,10 +1753,16 @@ fail:
 SWIGINTERN VALUE
 _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
+  bool arg2 ;
   int val1 ;
   int ecode1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
+  {
+    arg2 = 1;
+  }
+  if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
@@ -1725,7 +1770,14 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "dosync_source" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  dosync_source(arg1);
+  if (argc > 1) {
+    ecode2 = SWIG_AsVal_bool(argv[1], &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "dosync_source" "', argument " "2"" of type '" "bool""'");
+    } 
+    arg2 = (bool)(val2);
+  }
+  dosync_source(arg1,arg2);
   return Qnil;
 fail:
   return Qnil;
