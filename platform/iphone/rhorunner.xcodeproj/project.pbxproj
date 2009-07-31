@@ -570,7 +570,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd rbuild\nant rhobundle";
+			shellScript = "cd ../../\nrake build:iphone:rhobundle";
 		};
 		5C61F2BD1022321A0013E321 /* Move alerts to root of app */ = {
 			isa = PBXShellScriptBuildPhase;
