@@ -385,7 +385,7 @@ LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	rho_sync_doSyncAllSources();
+	rho_sync_doSyncAllSources(TRUE);
     return 0;
 }
 
