@@ -235,7 +235,7 @@ extern const char* RhoGetRootPath();
 
 //Sync all sources
 - (void) doSync {
-	rho_sync_doSyncAllSources();
+	rho_sync_doSyncAllSources(TRUE);
 }
 
 - (void) doSyncFor:(NSString*)url {

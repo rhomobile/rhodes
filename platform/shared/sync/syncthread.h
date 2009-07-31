@@ -107,8 +107,8 @@ extern "C" {
 void rho_sync_create();
 void rho_sync_destroy();
 
-void rho_sync_doSyncAllSources();
-void rho_sync_doSyncSource(int nSrcID);
+void rho_sync_doSyncAllSources(int show_status_popup);
+void rho_sync_doSyncSource(int nSrcID,int show_status_popup);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();
