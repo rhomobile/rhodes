@@ -5,6 +5,7 @@ require 'rhodes/rhodes-build/lib/jake.rb'
 load 'platform/bb/build/bb.rake'
 load 'platform/android/build/android.rake'
 load 'platform/iphone/rbuild/iphone.rake'
+load 'platform/wm/build/wm.rake'
 
 namespace "config" do
   task :common do
