@@ -147,7 +147,14 @@
 }
 
 - (void)onPlayFile:(NSString *)fileName {
-	NSString *soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
+	NSString *soundFilePath;
+	//hack to work around iphone limitation when it will play push alerts only from the main bundle root
+	if ([fileName hasPrefix:@"/public/alerts/"] || [fileName hasPrefix:@"/apps/public/alerts/"]) {
+		NSString *file = [fileName lastPathComponent];
+		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];		
+	} else {
+		soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
+	}
 	NSLog(@"Playing %@: ", soundFilePath);
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
@@ -215,7 +222,7 @@
 		NSString *sound = [aps objectForKey:@"sound"];
 		if (sound && [sound length] > 0) {
 			NSLog(@"Sound file name: %@", sound);
-			[self onPlayFile:sound];
+			[self onPlayFile:[@"/public/alerts/" stringByAppendingPathComponent:sound]];
 		}
 		NSString *vibrate = [aps objectForKey:@"vibrate"];
 		if (vibrate && [vibrate length] > 0) {
