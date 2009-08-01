@@ -570,7 +570,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ../../\nrake build:iphone:rhobundle";
+			shellScript = "source ~/.profile\ncd ../../\nrake build:iphone:rhobundle";
 		};
 		5C61F2BD1022321A0013E321 /* Move alerts to root of app */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -584,7 +584,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -d ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts ]; then\n\tmv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nfi";
+			shellScript = "if [ -d ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts ]; then\n\tnf=$(ls ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts | wc -l)\n\tif [ \"$nf\" -eq \"0\" ];  then \n\t\techo 'Alerts folder is empty...' \n\telse\n\t\techo Moving $nf alert\\(s\\)...\n\t\tmv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app\n\tfi\nelse\n\techo 'Alerts folder is not found...'\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
