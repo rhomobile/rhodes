@@ -294,13 +294,24 @@ public class SyncThread extends RhoThread
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcUrl) );
 	}
 	
-	public static void stopSync()
+	public static void stopSync()throws Exception
 	{
 		if ( getSyncEngine().isSyncing() )
 		{
 			getSyncEngine().stopSync();
-			while( getSyncEngine().getState() != SyncEngine.esNone )
-				try{ getInstance().sleep(100); }catch(Exception e){}
+			int nWait = 0;
+			while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
+				try{ getInstance().sleep(100); nWait += 100; }catch(Exception e){}
+				
+			if (getSyncEngine().getState() != SyncEngine.esNone)
+			{
+				getSyncEngine().exitSync();
+				getInstance().stop(0);
+				RhoClassFactory ptrFactory = getInstance().m_ptrFactory;
+				m_pInstance = null;
+				
+				Create(ptrFactory);
+			}
 		}
 	}
 	
