@@ -940,7 +940,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\sqlite3;..\..\shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
