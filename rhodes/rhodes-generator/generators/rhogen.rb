@@ -118,6 +118,7 @@ module Rhogen
     third_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
     template :config do |template|
+      @model_sync_server = syncserver_exists? ? class_name : ''
       template.source = 'config.rb'
       template.destination = "app/#{name.camel_case}/config.rb"
     end
@@ -150,7 +151,14 @@ module Rhogen
     def attributes?
       self.attributes && !self.attributes.empty?
     end
-
+    
+    def syncserver_exists?
+      found = true
+      File.open('rhoconfig.txt').each do |line|
+        found = false if line.match("syncserver\ =\ ''") or line.match("syncserver\ =\ \"\"") or line.match("syncserver\ =\ nil")
+      end
+      found
+    end
   end
 
   class SourceGenerator < BaseGenerator
