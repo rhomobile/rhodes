@@ -202,6 +202,7 @@ char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, cons
 		[request setHTTPMethod:[[NSString alloc] initWithUTF8String:szMethod]];
 		[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 		[request setHTTPBody:postBody];
+		[request setTimeoutInterval:180];
 		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
@@ -281,6 +282,7 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 		[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 		[request setValue:session forHTTPHeaderField:@"Cookie"];
 		[request setHTTPBody:postBody];
+		[request setTimeoutInterval:180];
 		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
@@ -342,6 +344,7 @@ char* rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)
 		NSError *error = nil;
 		NSHTTPURLResponse *response;
 		[request setURL:[NSURL URLWithString:linkString]];
+		[request setTimeoutInterval:180];
 		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
@@ -406,6 +409,7 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 		[request setURL:[NSURL URLWithString:linkString]];
 		[request setValue:session forHTTPHeaderField:@"Cookie"];
 		[request setHTTPBodyStream:[NSInputStream inputStreamWithFileAtPath:[[NSString alloc] initWithUTF8String:szFilePath]]];
+		[request setTimeoutInterval:180];
 		
 		NSURLConnection *conn=[[NSURLConnection alloc] initWithRequest:request delegate:nil];
 		if (conn) 
@@ -476,6 +480,7 @@ char* rho_net_impl_pushMultipartData(const char* url, const char* data, size_t d
 		
 		[request setValue:session forHTTPHeaderField:@"Cookie"];
 		[request setHTTPBody:postBody];
+		[request setTimeoutInterval:180];
 		
 		//if (contentType){
 		//	NSString *temp = [[NSString alloc] initWithUTF8String:contentType];

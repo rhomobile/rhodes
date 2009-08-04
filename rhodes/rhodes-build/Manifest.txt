@@ -32,6 +32,7 @@ res/prebuilt/android/classes/com/rho/IRhoRubyHelper.class
 res/prebuilt/android/classes/com/rho/Mutex.class
 res/prebuilt/android/classes/com/rho/Properties.class
 res/prebuilt/android/classes/com/rho/RhoClassFactory.class
+res/prebuilt/android/classes/com/rho/RhoConf$1.class
 res/prebuilt/android/classes/com/rho/RhoConf.class
 res/prebuilt/android/classes/com/rho/RhoEmptyLogger.class
 res/prebuilt/android/classes/com/rho/RhoEmptyProfiler.class
@@ -65,6 +66,7 @@ res/prebuilt/android/classes/com/rho/db/DBAdapter$4.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$5.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$6.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$7.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$DBVersion.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter.class
 res/prebuilt/android/classes/com/rho/db/DBException.class
 res/prebuilt/android/classes/com/rho/db/IDBCallback.class
@@ -78,19 +80,21 @@ res/prebuilt/android/classes/com/rho/location/IGeoLocationImpl.class
 res/prebuilt/android/classes/com/rho/net/IHttpConnection.class
 res/prebuilt/android/classes/com/rho/net/INetworkAccess.class
 res/prebuilt/android/classes/com/rho/net/NetRequest$IRhoSession.class
-res/prebuilt/android/classes/com/rho/net/NetRequest$NetData.class
 res/prebuilt/android/classes/com/rho/net/NetRequest$ParsedCookie.class
 res/prebuilt/android/classes/com/rho/net/NetRequest.class
+res/prebuilt/android/classes/com/rho/net/NetResponse.class
 res/prebuilt/android/classes/com/rho/net/RhoConnection$UrlParser.class
 res/prebuilt/android/classes/com/rho/net/RhoConnection.class
 res/prebuilt/android/classes/com/rho/net/URI$MalformedURIException.class
 res/prebuilt/android/classes/com/rho/net/URI.class
+res/prebuilt/android/classes/com/rho/sync/ClientRegister.class
 res/prebuilt/android/classes/com/rho/sync/ISyncStatusListener.class
 res/prebuilt/android/classes/com/rho/sync/JSONArrayIterator.class
 res/prebuilt/android/classes/com/rho/sync/JSONEntry.class
 res/prebuilt/android/classes/com/rho/sync/SyncEngine$DBCallback.class
 res/prebuilt/android/classes/com/rho/sync/SyncEngine$SyncNotification.class
 res/prebuilt/android/classes/com/rho/sync/SyncEngine.class
+res/prebuilt/android/classes/com/rho/sync/SyncSource$CValue.class
 res/prebuilt/android/classes/com/rho/sync/SyncSource$SyncBlob.class
 res/prebuilt/android/classes/com/rho/sync/SyncSource.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$1.class
@@ -105,6 +109,8 @@ res/prebuilt/android/classes/com/rho/sync/SyncThread$6.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$7.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$8.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread$9.class
+res/prebuilt/android/classes/com/rho/sync/SyncThread$SyncCommand.class
+res/prebuilt/android/classes/com/rho/sync/SyncThread$SyncLoginCommand.class
 res/prebuilt/android/classes/com/rho/sync/SyncThread.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/AndroidFile.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/AndroidHttpConnection.class
@@ -137,6 +143,10 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/RhoRubyHelper.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhoSyncService.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Rhodes.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhodesInstance.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/RingtoneManager$1.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/RingtoneManager$2.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/RingtoneManager$3.class
+res/prebuilt/android/classes/com/rhomobile/rhodes/RingtoneManager.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$2.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/WebView$3.class
@@ -1051,7 +1061,6 @@ res/prebuilt/android/classes/javolution/context/StackContext$Default$2.class
 res/prebuilt/android/classes/javolution/context/StackContext$Default.class
 res/prebuilt/android/classes/javolution/context/StackContext$StackAllocator.class
 res/prebuilt/android/classes/javolution/context/StackContext.class
-res/prebuilt/android/classes/javolution/context/package.html
 res/prebuilt/android/classes/javolution/io/AppendableWriter$1.class
 res/prebuilt/android/classes/javolution/io/AppendableWriter.class
 res/prebuilt/android/classes/javolution/io/CharSequenceReader.class
@@ -1059,7 +1068,6 @@ res/prebuilt/android/classes/javolution/io/UTF8ByteBufferReader.class
 res/prebuilt/android/classes/javolution/io/UTF8ByteBufferWriter.class
 res/prebuilt/android/classes/javolution/io/UTF8StreamReader.class
 res/prebuilt/android/classes/javolution/io/UTF8StreamWriter.class
-res/prebuilt/android/classes/javolution/io/package.html
 res/prebuilt/android/classes/javolution/lang/ClassInitializer.class
 res/prebuilt/android/classes/javolution/lang/Configurable$1.class
 res/prebuilt/android/classes/javolution/lang/Configurable$Logic.class
@@ -1080,7 +1088,6 @@ res/prebuilt/android/classes/javolution/lang/Reflection$Method.class
 res/prebuilt/android/classes/javolution/lang/Reflection.class
 res/prebuilt/android/classes/javolution/lang/Reusable.class
 res/prebuilt/android/classes/javolution/lang/ValueType.class
-res/prebuilt/android/classes/javolution/lang/package.html
 res/prebuilt/android/classes/javolution/text/Appendable.class
 res/prebuilt/android/classes/javolution/text/CharArray.class
 res/prebuilt/android/classes/javolution/text/CharSet.class
@@ -1103,7 +1110,6 @@ res/prebuilt/android/classes/javolution/text/TextFormat$Cursor$1.class
 res/prebuilt/android/classes/javolution/text/TextFormat$Cursor.class
 res/prebuilt/android/classes/javolution/text/TextFormat.class
 res/prebuilt/android/classes/javolution/text/TypeFormat.class
-res/prebuilt/android/classes/javolution/text/package.html
 res/prebuilt/android/classes/javolution/util/FastCollection$1.class
 res/prebuilt/android/classes/javolution/util/FastCollection$Record.class
 res/prebuilt/android/classes/javolution/util/FastCollection$Unmodifiable.class
@@ -1167,10 +1173,6 @@ res/prebuilt/android/classes/javolution/util/Index.class
 res/prebuilt/android/classes/javolution/util/LocalMap.class
 res/prebuilt/android/classes/javolution/util/ReentrantLock.class
 res/prebuilt/android/classes/javolution/util/StandardLog.class
-res/prebuilt/android/classes/javolution/util/doc-files/.xvpics/map-put.png
-res/prebuilt/android/classes/javolution/util/doc-files/list-add.png
-res/prebuilt/android/classes/javolution/util/doc-files/map-put.png
-res/prebuilt/android/classes/javolution/util/package.html
 res/prebuilt/android/classes/org/apache/oro/io/GlobFilenameFilter.class
 res/prebuilt/android/classes/org/apache/oro/io/RegexFilenameFilter.class
 res/prebuilt/android/classes/org/apache/oro/text/GenericPatternCache.class

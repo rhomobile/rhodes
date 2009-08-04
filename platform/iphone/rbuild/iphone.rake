@@ -10,6 +10,9 @@ namespace "build" do
     task :rhobundle => ["config:iphone"] do
       currentdir = pwd
       chdir 'platform/iphone/rbuild'
+      rm_rf '../bin'
+      rm_rf '../build/Debug-*'
+      rm_rf '../build/Release-*'
       puts `ant RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
       chdir currentdir
     end
