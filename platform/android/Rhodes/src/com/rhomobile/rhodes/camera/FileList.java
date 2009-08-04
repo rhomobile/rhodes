@@ -1,10 +1,13 @@
 package com.rhomobile.rhodes.camera;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rho.RhoClassFactory;
 import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.RhodesInstance;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -23,7 +26,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class FileList extends Activity implements OnClickListener{
 
-	public final static String BASE_CAMERA_DIR = "/sdcard/dcim/Camera/";
+	//public final static String BASE_CAMERA_DIR = "/sdcard/dcim/Camera/";
 	
 	private Button okButton;
 	private Button cancelButton;
@@ -43,15 +46,15 @@ public class FileList extends Activity implements OnClickListener{
 		imagePreview = (ImageView) findViewById(R.id.preview);
 
 		filesList = (ListView) findViewById(R.id.filesList);
-			
-		fill(new File(BASE_CAMERA_DIR).listFiles());
+		
+		fill(new File(Camera.BASE_CAMERA_DIR).listFiles());
 
 		okButton = (Button) findViewById(R.id.okButton);
 		cancelButton = (Button) findViewById(R.id.cancelButton);
 
 		lookIn = (TextView) findViewById(R.id.lookIn);
 
-		lookIn.setText("Look In: " + BASE_CAMERA_DIR);
+		lookIn.setText("Look In: " + Camera.BASE_CAMERA_DIR);
 
 		okButton.setOnClickListener(this);
 		cancelButton.setOnClickListener(this);
@@ -61,7 +64,7 @@ public class FileList extends Activity implements OnClickListener{
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				int selectionRowID = position;
 				try {
-					File file = new File(BASE_CAMERA_DIR + items.get(selectionRowID));
+					File file = new File(Camera.BASE_CAMERA_DIR + "/" + items.get(selectionRowID));
 					selectedFilePath = file.getAbsolutePath();
 					
 					BitmapFactory.Options options = new BitmapFactory.Options();

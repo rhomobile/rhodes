@@ -149,7 +149,8 @@ public class AndroidFile implements SimpleFile {
 	}
 
 	public String getDirPath(String path) {
-		String fullPath = path.startsWith("/sdcard/") ? path : rootDir + path;
+		//String fullPath = path.startsWith("/sdcard/") ? path : rootDir + path;
+		String fullPath = rootDir + path;
 		try {
 			File sddir = new File(fullPath);
 			sddir.mkdirs();

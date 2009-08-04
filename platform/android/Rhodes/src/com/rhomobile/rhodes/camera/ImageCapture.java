@@ -69,7 +69,9 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		ImageCaptureCallback iccb = null;
-		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+		case KeyEvent.KEYCODE_CAMERA:
 			try {
 				String filename = "Image_" + timeStampFormat.format(new Date());
 				ContentValues values = new ContentValues(5);
@@ -82,24 +84,21 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 				Uri uri = getContentResolver().insert(
 						Media.EXTERNAL_CONTENT_URI, values);
 				// String filename = timeStampFormat.format(new Date());
-				iccb = new ImageCaptureCallback(getContentResolver()
-						.openOutputStream(uri), FileList.BASE_CAMERA_DIR
-						+ filename + ".jpg");
+				iccb = new ImageCaptureCallback(getContentResolver().openOutputStream(uri),
+						com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR + "/" +
+						filename + ".jpg");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				Log.e(getClass().getSimpleName(), ex.getMessage(), ex);
 			}
-		}
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return super.onKeyDown(keyCode, event);
-		}
-
-		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			
 			camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
 			return true;
+		case KeyEvent.KEYCODE_BACK:
+			return super.onKeyDown(keyCode, event);
+		default:
+			return false;
 		}
-
-		return false;
 	}
 
 	protected void onResume() {

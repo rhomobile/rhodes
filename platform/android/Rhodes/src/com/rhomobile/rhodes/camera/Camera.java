@@ -1,7 +1,9 @@
 package com.rhomobile.rhodes.camera;
 
 import android.content.Intent;
+import android.util.Log;
 
+import com.rho.RhoClassFactory;
 import com.rhomobile.rhodes.RhodesInstance;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.RubyBasic;
@@ -14,6 +16,8 @@ public class Camera extends RubyBasic {
 
 	//private static CameraListener cameraListener = new CameraListener();
 	private static String selectPictureUrl = "";
+	
+	public static String BASE_CAMERA_DIR = null;
 
 	Camera(RubyClass c) {
 
@@ -30,6 +34,13 @@ public class Camera extends RubyBasic {
 
 	public static void initMethods(RubyClass klass) {
 
+		try {
+			BASE_CAMERA_DIR = RhoClassFactory.createFile().getDirPath("Camera");
+		} catch (Exception e) {
+			Log.e("FileList", e.getMessage());
+			RhodesInstance.getInstance().stopSelf();
+		}
+		
 		klass.getSingletonClass().defineMethod("take_picture",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg0,
