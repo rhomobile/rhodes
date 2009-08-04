@@ -160,14 +160,16 @@ public class AndroidFile implements SimpleFile {
 	}
 	
 	public InputStream getInputStream() throws IOException {
-		fis = new FileInputStream(this.currentFile);
+		if (fis == null)
+			fis = new FileInputStream(this.currentFile);
 		return fis;
 	}
 
 	public OutputStream getOutStream() {
 		try
 		{
-			fos = new FileOutputStream( this.currentFile );
+			if (fos == null)
+				fos = new FileOutputStream( this.currentFile );
 			return fos;
 		}
 		catch ( Exception e ){
