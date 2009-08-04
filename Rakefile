@@ -4,6 +4,8 @@ require 'rhodes/rhodes-build/lib/jake.rb'
 
 load 'platform/bb/build/bb.rake'
 load 'platform/android/build/android.rake'
+load 'platform/iphone/rbuild/iphone.rake'
+load 'platform/wm/build/wm.rake'
 
 namespace "config" do
   task :common do
@@ -114,7 +116,7 @@ task :get_version do
   androidver = "unknown"
   
 
-  File.open("platform/bb/build/build.yml","r") do |f|
+  File.open("rhobuild.yml","r") do |f|
     file = f.read
     if file.match(/version: (\d+\.\d+\.\d+)/)
       bbver = $1
@@ -213,8 +215,8 @@ task :set_version, [:version] do |t,args|
   verstring = major+"."+minor+"."+build
   origfile = ""
 
-  File.open("platform/bb/build/build.yml","r") { |f| origfile = f.read }
-  File.open("platform/bb/build/build.yml","w") do |f| 
+  File.open("rhobuild.yml","r") { |f| origfile = f.read }
+  File.open("rhobuild.yml","w") do |f| 
     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   end
   

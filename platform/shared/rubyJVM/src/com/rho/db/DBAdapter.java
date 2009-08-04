@@ -183,6 +183,7 @@ public class DBAdapter extends RubyBasic {
 		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
 		"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
 		"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
+		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
 		"CREATE INDEX by_type ON object_values (attrib_type)";
     }
     
@@ -202,48 +203,90 @@ public class DBAdapter extends RubyBasic {
     	commit();
     }
 
-	String readDBVersion()throws Exception
+    class DBVersion
+    {
+    	String m_strRhoVer = "";
+    	String m_strAppVer = "";
+    	
+    	DBVersion(){}
+    	
+    	DBVersion( String strRhoVer, String strAppVer )
+    	{
+    		m_strRhoVer = strRhoVer;
+    		m_strAppVer = strAppVer;
+    	}
+    };
+    
+    DBVersion readDBVersion()throws Exception
 	{
         SimpleFile file = RhoClassFactory.createFile();
         file.open(m_strDBVerPath, true, true);
         byte buf[] = new byte[20];
 		int len = file.read(0, buf);
 		file.close();
+		String strFullVer = "";
 		if ( len > 0 )
-			return new String(buf,0,len);
-		else
-			return null;
+			strFullVer = new String(buf,0,len);
+		
+		if ( strFullVer.length() == 0 )
+			return new DBVersion();
+		
+		int nSep = strFullVer.indexOf(';');
+		if ( nSep == -1 )
+			return new DBVersion(strFullVer, "");
+		
+		return new DBVersion(strFullVer.substring(0,nSep), strFullVer.substring(nSep+1) );
 	}
 	
-	void writeDBVersion(String ver)throws Exception
+	void writeDBVersion(DBVersion ver)throws Exception
 	{
         SimpleFile file = RhoClassFactory.createFile();
         file.open(m_strDBVerPath, false, false);
-        file.write(0, ver.getBytes());
+        String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
+        file.write(0, strFullVer.getBytes() );
         file.close();
 	}
     
+	void checkDBVersion()throws Exception
+	{
+		String strRhoDBVer = RhoSupport.getRhoDBVersion();
+		String strAppDBVer = RhoConf.getInstance().getString("app_db_version");
+		
+		DBVersion dbVer = readDBVersion();
+
+		boolean bReset = false;
+		
+		if ( strRhoDBVer != null && strRhoDBVer.length() > 0 )
+		{
+			if ( dbVer == null || dbVer.m_strRhoVer == null || !dbVer.m_strRhoVer.equalsIgnoreCase(strRhoDBVer) )
+				bReset = true;
+		}
+		if ( strAppDBVer != null && strAppDBVer.length() > 0 )
+		{
+			if ( dbVer == null || dbVer.m_strAppVer == null || !dbVer.m_strAppVer.equalsIgnoreCase(strAppDBVer) )
+				bReset = true;
+		}
+		
+		if ( bReset )
+		{
+			m_dbStorage.deleteAllFiles(m_strDBPath);
+			
+			String fName = makeBlobFolderName();
+			RhoClassFactory.createFile().delete(fName);
+			DBAdapter.makeBlobFolderName(); //Create folder back
+			
+            writeDBVersion(new DBVersion(strRhoDBVer, strAppDBVer) );
+		}
+		
+	}
+	
     private void openDB(String strDBName)throws Exception
     {
     	if ( m_bIsOpen )
     		return;
     	
-		String strVer = RhoSupport.getRhoDBVersion();
 		initFilePaths(strDBName);
-		
-    	//Check version
-		if ( strVer != null && strVer.length() > 0 ){
-        	String dbVer = readDBVersion();
-			if ( dbVer == null || !dbVer.equalsIgnoreCase(strVer) )
-			{
-				m_dbStorage.deleteAllFiles(m_strDBPath);
-				if ( m_dbCallback != null )
-					m_dbCallback.OnDeleteAll();
-				
-	            writeDBVersion(strVer);
-			}
-        }
-		
+		checkDBVersion();
 		m_dbStorage.open(m_strDBPath, getSqlScript() );
 		
 		m_bIsOpen = true;

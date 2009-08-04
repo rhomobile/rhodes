@@ -4,15 +4,17 @@ import javax.microedition.location.Coordinates;
 import javax.microedition.location.Criteria;
 import javax.microedition.location.Location;
 import javax.microedition.location.LocationException;
+import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.location.GeoLocationAsync.LocationListenerImpl;
 
 public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GeoLocationImpl");
-
+	
 	private final int HORIZONTAL_ACCURANCE = 500;
 	private final int REQUEST_TIMEOUT = 60;
 	private double m_lat = 0.0;
@@ -24,6 +26,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private final String errorStrLocationException= "Location could not be determined";
 	
 	private static final long WAIT_INTERVAL = 60000L;
+	private static final long WAIT_START_INTERVAL = 1000L;
 
 	private static final int STATE_NONE = 0;
 	private static final int STATE_LOCATING = 1;
@@ -56,6 +59,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 		// Request the location, setting a one-minute timeout
 		Location loc = null;
 		try{
+			LOG.TRACE("Start getLocation");
 			loc = m_lp.getLocation(REQUEST_TIMEOUT); //seconds
 		}catch(InterruptedException ex){ //Interrupted by user
 			LOG.TRACE("getLocation:InterruptedException", ex);
@@ -72,6 +76,8 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 				  m_lat = coord.getLatitude();
 				  m_lon = coord.getLongitude();
 				  m_bDetermined = true;
+				  
+				  LOG.TRACE("determineLocation lat : " + m_lat + "; lon : " + m_lon );
 				}
 			}else
 				LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
@@ -125,6 +131,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 		LOG.INFO("GeoLocation is started...");
 		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 		
+		int nFirstTry = 0;
 		while (!isStop()) {
 			setState(STATE_LOCATING);
 			determineLocation();
@@ -133,7 +140,14 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 				try {
 					if (!isStop()){
 						setState(STATE_PAUSE);
-						sync.wait(WAIT_INTERVAL);
+						long nTimeout = WAIT_INTERVAL;
+						if ( nFirstTry < 40 && !m_bDetermined )
+						{
+							nFirstTry ++;
+							nTimeout = WAIT_START_INTERVAL;
+						}
+						LOG.TRACE("Wait :" + nTimeout/1000 + " sec.");
+						sync.wait(nTimeout);
 					}
 				} catch (Exception e) {
 					LOG.TRACE("Wait exception:" + e.getMessage());
@@ -164,5 +178,5 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private synchronized void setState(int state) {
 		m_nState = state;
 	}	
-
+	
 }

@@ -44,10 +44,22 @@ module Rhom
       
       def database_full_reset
         SyncEngine.stop_sync
-        ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+        
         ::Rhom::RhomDbAdapter.execute_sql("UPDATE client_info SET reset=1")
-        ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
-        ::Rhom::RhomDbAdapter.execute_sql("VACUUM") unless defined? RHO_ME  # hsql doesn't support this
+
+        if defined? RHO_ME
+            ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=NULL")
+        else
+            ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
+        end
+        
+        if defined? RHO_DBME
+            ::Rhom::RhomDbAdapter.destroy_table('object_values')
+            #::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+        else
+            ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+            ::Rhom::RhomDbAdapter.execute_sql("VACUUM")
+        end    
       end
       
       def database_full_reset_and_logout

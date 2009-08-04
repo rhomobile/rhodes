@@ -10,7 +10,7 @@ end
 
 desc "regenerate manifest for all gems"
 task :manifest do
-  run_tasks_in_subdirs(['manifest'])
+  run_tasks_in_subdirs(['check_manifest'])
 end
 
 desc "release all gems"
