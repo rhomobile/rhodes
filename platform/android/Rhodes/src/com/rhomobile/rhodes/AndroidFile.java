@@ -95,9 +95,16 @@ public class AndroidFile implements SimpleFile {
 	public void open(String filePath, boolean readOnly, boolean noFlush) {
 		this.noFlush = noFlush;
 		this.readOnly = readOnly;
+		
+		String fpath = filePath;
+		
 		try {
-
-			file = new RandomAccessFile(filePath, readOnly ? "r"
+			if (filePath.startsWith(getDirPath(""))) {
+				fpath = filePath.substring(getDirPath("").length());
+			} 
+			if (!fpath.startsWith("/sdcard/"))
+				fpath = filePath;
+			file = new RandomAccessFile(fpath, readOnly ? "r"
 					: "rw");
 
 		} catch (IOException x) {
@@ -115,7 +122,7 @@ public class AndroidFile implements SimpleFile {
 			}
 		}
 
-		currentFile = filePath;
+		currentFile = fpath;
 	}
 
 	public long length() {
@@ -142,15 +149,16 @@ public class AndroidFile implements SimpleFile {
 	}
 
 	public String getDirPath(String path) {
+		String fullPath = path.startsWith("/sdcard/") ? path : rootDir + path;
 		try {
-			File sddir = new File(rootDir + path);
+			File sddir = new File(fullPath);
 			sddir.mkdirs();
 		} catch (Exception e) {
 		}
 
-		return rootDir + path;
+		return fullPath;
 	}
-
+	
 	public InputStream getInputStream() throws IOException {
 		fis = new FileInputStream(this.currentFile);
 		return fis;

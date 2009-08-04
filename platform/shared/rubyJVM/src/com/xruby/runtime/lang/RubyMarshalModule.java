@@ -276,12 +276,12 @@ class MarshalLoader {
 //@RubyLevelModule(name="Marshal")
 public class RubyMarshalModule {
 	//@RubyLevelMethod(name="dump", module=true)
-    public static RubyValue dump(RubyValue receiver, RubyValue arg) {
+    public static RubyValue dump(RubyValue arg) {
         return MarshalDumper.dump(arg);
     }
 	
 	//@RubyLevelMethod(name="load", module=true, alias="restore")
-	public static RubyValue load(RubyValue receiver, RubyValue arg) {
+	public static RubyValue load(RubyValue arg) {
 		MarshalLoader loader = new MarshalLoader();
 		return loader.load((RubyString) arg);
 	}
