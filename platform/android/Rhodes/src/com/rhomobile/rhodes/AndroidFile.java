@@ -149,7 +149,8 @@ public class AndroidFile implements SimpleFile {
 	}
 
 	public String getDirPath(String path) {
-		String fullPath = path.startsWith("/sdcard/") ? path : rootDir + path;
+		//String fullPath = path.startsWith("/sdcard/") ? path : rootDir + path;
+		String fullPath = rootDir + path;
 		try {
 			File sddir = new File(fullPath);
 			sddir.mkdirs();
@@ -160,14 +161,16 @@ public class AndroidFile implements SimpleFile {
 	}
 	
 	public InputStream getInputStream() throws IOException {
-		fis = new FileInputStream(this.currentFile);
+		if (fis == null)
+			fis = new FileInputStream(this.currentFile);
 		return fis;
 	}
 
 	public OutputStream getOutStream() {
 		try
 		{
-			fos = new FileOutputStream( this.currentFile );
+			if (fos == null)
+				fos = new FileOutputStream( this.currentFile );
 			return fos;
 		}
 		catch ( Exception e ){
