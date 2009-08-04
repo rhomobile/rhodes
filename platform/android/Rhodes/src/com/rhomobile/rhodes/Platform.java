@@ -80,7 +80,7 @@ public class Platform extends Activity {
 	//	stopService(new Intent(this, RhoHttpService.class));
 	//}
 	
-	private void stopSelf() {
+	public void stopSelf() {
 		//stopServices();
 		Process.killProcess(Process.myPid());
 	}

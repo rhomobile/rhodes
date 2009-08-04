@@ -391,7 +391,7 @@ class SyncSource
 			}
 		}
 		
-		fName += "id_" + Long.toString(value.m_nID) + strExt;
+		fName += "/id_" + Long.toString(value.m_nID) + strExt;
 		
 		return fName;
 	}
