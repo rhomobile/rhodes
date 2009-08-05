@@ -246,4 +246,13 @@ public class SqliteDBResult implements IDBResult {
 	public int getInt(String colname){ return getIntByIdx( findColIndex(colname) ); }
 	public String getString(String colname){ return getStringByIdx(findColIndex(colname) ); }
 	
+	public Object[] getCurData()
+	{
+		List<String> row = localDataCopy.get(curIndex);
+		Object[] res = new Object[row.size()];
+		for( int i = 0; i < row.size(); i++ )
+			res[i] = row.get(i);
+		
+		return res;
+	}
 }

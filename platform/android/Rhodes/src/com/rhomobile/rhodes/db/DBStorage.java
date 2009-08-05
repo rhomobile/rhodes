@@ -110,4 +110,16 @@ public class DBStorage implements IDBStorage {
 		dbName = strPath.substring(lastSep+1, strPath.length());
 	}
 
+	public String[] getAllTableNames()throws DBException
+	{
+		IDBResult res = rhoDB.executeSQL("SELECT name FROM sqlite_master WHERE type='table' ", null);
+		java.util.Vector<String> arTables = new java.util.Vector<String>();
+	    for ( ; !res.isEnd(); res.next() )
+	    	arTables.add(res.getStringByIdx(0));
+	    
+		String[] resTables = new String[arTables.size()];
+		arTables.copyInto(resTables);
+		
+		return resTables;
+	}
 }
