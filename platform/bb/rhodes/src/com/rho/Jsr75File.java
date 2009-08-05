@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import javax.microedition.io.*;
 import javax.microedition.io.file.*;
+
 import java.util.Vector;
 import net.rim.device.api.system.*;
 
@@ -328,6 +329,32 @@ public class Jsr75File implements SimpleFile
         }
     }
 
+    public void renameOverwrite(String oldname, String newname)
+    {
+        delete(newname);
+
+        FileConnection fconn = null;
+    	try{
+        	fconn = (FileConnection)Connector.open(oldname, Connector.READ_WRITE);
+        	
+        	String name = newname;
+        	int nSlash = newname.lastIndexOf('/');
+        	if ( nSlash >= 0 )
+        		name = newname.substring(nSlash+1);
+        	
+        	if ( fconn.exists() ){
+        		fconn.rename(name);
+        	}
+    	}catch(IOException exc){
+    		log("renameOverwrite from '" + oldname + "' to '" + newname + "' Exception: " + exc.getMessage());
+    	}finally{
+    		if ( fconn != null )
+    			try{fconn.close();}catch(IOException exc){
+    				log("renameOverwrite close Exception: " + exc.getMessage());
+			    }
+    	}
+    }
+    
     public OutputStream getOutStream(){ return out; }
     public InputStream getInputStream()throws IOException{
     	if ( in  == null )

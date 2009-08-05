@@ -126,7 +126,8 @@ int rho_sync_closeDB(void* pDB);
 int rho_db_startUITransaction(void * pDB);
 int rho_db_commitUITransaction(void * pDB);
 int rho_db_rollbackUITransaction(void * pDB);
-	
+int rho_db_destroy_table(void * pDB, const char* szTableName);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
