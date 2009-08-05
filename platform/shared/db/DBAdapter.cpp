@@ -141,7 +141,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
 	return stInsert;
 }
 
-void CDBAdapter::destroy_table(String& strTable)
+void CDBAdapter::destroy_table(String strTable)
 {
     CFilePath oFilePath(m_strDbPath);
 	String dbNewName  = oFilePath.changeBaseName("resetdbtemp.sqlite");
