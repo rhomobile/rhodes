@@ -130,7 +130,7 @@ public:
     void startTransaction();
     void endTransaction();
     void rollback();
-    void destroy_table(String& strTable);
+    void destroy_table(String strTable);
 
     static String makeBlobFolderName();
 //private:

@@ -281,7 +281,7 @@ int rho_db_rollbackUITransaction(void * pDB)
 
 int rho_db_destroy_table(void * pDB, const char* szTableName)
 {
-    CSyncThread::getDBAdapter().destroy_table(rho::String(szTableName));
+    CSyncThread::getDBAdapter().destroy_table(szTableName);
     return 0;
 }
 
