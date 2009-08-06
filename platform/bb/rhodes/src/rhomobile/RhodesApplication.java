@@ -742,7 +742,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.SHOW_IMAGE_PLACEHOLDERS, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_WML, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
 	        
+	        	        	        
 	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
 		        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
@@ -1059,18 +1066,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         // if referrer is null we must return the connection
-        if (referrer == null) {
+        //if (referrer == null) {
             HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
             return connection;
 
-        } else {
+        //} else {
 
             // if referrer is provided we can set up the connection on a separate thread
-            SecondaryResourceFetchThread.enqueue(resource, referrer);
+        //    SecondaryResourceFetchThread.enqueue(resource, referrer);
 
-        }
+        //}
 
-        return null;
+        //return null;
     }
 
     /**
