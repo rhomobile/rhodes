@@ -206,7 +206,7 @@ namespace "run" do
     end
   
     task :autosign do
-      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+      java = $config["env"]["paths"]["java"] + "/java.exe"
       jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
     
       args = []
@@ -225,7 +225,7 @@ namespace "run" do
     end
   
     task :manualsign do
-      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
+      java = $config["env"]["paths"]["java"] + "/java.exe"
       jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
       
       args = []
@@ -246,7 +246,7 @@ namespace "check" do
     errors = Array.new
     
     begin
-      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
+      javahome = $config["env"]["paths"]["java"]
       jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
       mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     rescue
