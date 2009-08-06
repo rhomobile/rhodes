@@ -224,5 +224,15 @@ public class AndroidFile implements SimpleFile {
 		return null;
 	}
 
+	public void renameOverwrite(String oldName, String newName)
+	{
+		delete(newName);
 
+		try {
+			File oldfile = new File(oldName);
+			File newfile = new File(newName);
+			oldfile.renameTo(newfile);
+		} catch (Exception e) {
+		}
+	}
 }

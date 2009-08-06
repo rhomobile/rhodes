@@ -220,11 +220,14 @@ module Rhom
 
       # deletes all rows from a given table by recreating db-file and save all other tables
       def destroy_table(table)
-        query = nil
-        if table
-          query = "destroy #{table}"
-        end
-        execute_sql query
+          begin
+            SyncEngine.lock_sync_mutex unless @@inside_transaction
+            @@database.destroy_table table
+            SyncEngine.unlock_sync_mutex unless @@inside_transaction
+          rescue Exception => e
+            SyncEngine.unlock_sync_mutex
+            raise
+          end
       end
       
       # updates values (hash) in a given table which satisfy condition (hash)

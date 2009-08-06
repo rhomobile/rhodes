@@ -88,10 +88,10 @@ module Rhom
                   conditions = {}
                   where_cond = nil
                   # first find all query objects
-                  if args.first == :all
+                  if args.first == :all || args.first == :first
                     where_cond = {"source_id"=>get_source_id}
                   elsif args.first.is_a?(String)
-                    where_cond = {"object"=>strip_braces(args.first.to_s)}
+                    where_cond = {"object"=>strip_braces(args.first.to_s),"source_id"=>get_source_id}
                   end
 
                   # do we have conditions?

@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
+
 import com.rho.net.IHttpConnection;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
@@ -460,12 +462,33 @@ public class RhoConnection implements IHttpConnection {
 		return true;
 	}
 
+	private String getLocalHttpTimeString()
+	{
+		final String[] months= { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+		final String[] wdays= { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+		
+		//Thu, 01 Dec 2010 16:00:00 GMT
+		Calendar time = Calendar.getInstance();
+		String strTime = "";
+		strTime += wdays[time.get(Calendar.DAY_OF_WEEK)-1] + ", " +
+			time.get(Calendar.DATE) + " " +
+			months[time.get(Calendar.MONTH)] + " " +
+			time.get(Calendar.YEAR) + " " + 
+			time.get(Calendar.HOUR_OF_DAY) + ":" + 
+			time.get(Calendar.MINUTE) +	":" + 
+			time.get(Calendar.SECOND) + " " + 
+			"GMT";
+		
+		return strTime;
+	}
+	
 	protected boolean httpServeFile(String strContType)throws IOException{
 		
 		String strPath = uri.getPath();
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
+		LOG.INFO("httpServeFile: " + strPath);
 		if ( strContType.equals("application/javascript")){
 			responseData = RhoRuby.loadFile(strPath);
 			if ( responseData == null ){
@@ -508,6 +531,10 @@ public class RhoConnection implements IHttpConnection {
 			resHeaders.addProperty("Content-Type", strContType );
 		
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
+		
+		//resHeaders.addProperty("Date",getLocalHttpTimeString());
+		//resHeaders.addProperty("Cache-control", "public, max-age=3600" );
+		//resHeaders.addProperty("Expires", "Thu, 01 Dec 2010 16:00:00 GMT" );
 		
 		return true;
 	}

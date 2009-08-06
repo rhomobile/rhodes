@@ -41,4 +41,6 @@ public interface SimpleFile extends IFile {
      * @return
      */
     public abstract InputStream getResourceAsStream(Class fromClass, String path);
+    
+    public abstract void renameOverwrite(String oldName, String newName);
 }

@@ -279,6 +279,12 @@ int rho_db_rollbackUITransaction(void * pDB)
     return 0;
 }
 
+int rho_db_destroy_table(void * pDB, const char* szTableName)
+{
+    CSyncThread::getDBAdapter().destroy_table(szTableName);
+    return 0;
+}
+
 void rho_sync_lock()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
