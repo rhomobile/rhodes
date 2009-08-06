@@ -1,14 +1,15 @@
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'lib/rhodes.rb'
-require '../deps.rb'
 require 'rubygems'
 require 'hoe'
 
-Hoe.spec 'rhodes' do
-  developer 'Rhomobile Dev', 'dev@rhomobile.com'
-  extra_deps         = $rhodesdeps + [
-    ['rhodes-framework', "= #{Rhodes::VERSION}"],
-    ['rhodes-generator', "= #{Rhodes::VERSION}"],
-    ['rhodes-build', "= #{Rhodes::VERSION}"]
+Hoe.spec 'rhodes' do |p|
+  p.developer 'Rhomobile Dev', 'dev@rhomobile.com'
+  p.extra_deps = [
+    ['activesupport', '>=2.2.2'],
+    ['templater', '>=0.5.0'],
+    ["rhodes-framework", "= #{Rhodes::VERSION}"],
+    ["rhodes-generator", "= #{Rhodes::VERSION}"],
+    ["rhodes-build", "= #{Rhodes::VERSION}"]
   ]
 end
