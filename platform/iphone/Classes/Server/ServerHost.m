@@ -23,6 +23,7 @@
 #include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
 #include "JSString.h"
+#import  "ParamsWrapper.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -70,7 +71,7 @@ static ServerHost* sharedSH = nil;
 @implementation ServerHost
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onShowPopup, onVibrate, onPlayFile;
+@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onShowPopup, onVibrate, onPlayFile, onSysCall;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -148,6 +149,16 @@ static ServerHost* sharedSH = nil;
 - (void)playFile:(NSString*) fileName mediaType:(NSString*) media_type {
 	if(actionTarget && [actionTarget respondsToSelector:onPlayFile]) {
 		[actionTarget performSelectorOnMainThread:onPlayFile withObject:fileName waitUntilDone:NO];
+	}
+}
+
+- (void)sysCall:(PARAMS_WRAPPER*)params {
+}
+
+- (void)doSysCall:(PARAMS_WRAPPER*)params {
+	ParamsWrapper* pw = [ParamsWrapper wrap:params]; 	
+	if(actionTarget && [actionTarget respondsToSelector:onSysCall]) {
+		[actionTarget performSelectorOnMainThread:onSysCall withObject:pw waitUntilDone:NO];
 	}
 }
 
@@ -350,4 +361,8 @@ void take_picture(char* callback_url) {
 
 void choose_picture(char* callback_url) {
 	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
+}
+
+void _rho_ext_syscall(PARAMS_WRAPPER* params) {
+	[[ServerHost sharedInstance] doSysCall:params];
 }

@@ -14,6 +14,7 @@
 #import "common/RhoConf.h"
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
+#import  "ParamsWrapper.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -183,6 +184,12 @@
 	NSLog(@"Audio player decoding error %@", error);
 }
 
+- (void)onSysCall:(ParamsWrapper*)params {
+	PARAMS_WRAPPER pw;
+	do_syscall([params unwrap:&pw]);
+	[params release];
+}
+
 #ifdef __IPHONE_3_0
 - (void)processDoSync:(NSDictionary *)userInfo
 {
@@ -263,6 +270,7 @@
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
 	serverHost->onPlayFile = @selector(onPlayFile:);
+	serverHost->onSysCall = @selector(onSysCall:);
     [serverHost start];
 	
     //Create View
