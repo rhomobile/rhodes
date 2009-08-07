@@ -4,5 +4,4 @@ Manifest.txt
 README.txt
 Rakefile
 lib/rhodes.rb
-rhodes.gemspec
 spec/spec.opts

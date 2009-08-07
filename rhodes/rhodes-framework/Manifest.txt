@@ -37,7 +37,6 @@ lib/rhom/rhom_source.rb
 lib/singleton.rb
 lib/time.rb
 lib/version.rb
-rhodes-framework.gemspec
 spec/README
 spec/Rakefile
 spec/app/Account/config.rb
