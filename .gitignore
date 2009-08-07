@@ -6,6 +6,7 @@ rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 platform/mac/**/build/*
 platform/iphone/build/*
+platform/iphone/rhoextlib/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
 platform/iphone/tcmalloc/build/*
