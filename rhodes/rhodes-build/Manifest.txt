@@ -66,6 +66,7 @@ res/prebuilt/android/classes/com/rho/db/DBAdapter$4.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$5.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$6.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$7.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$8.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$DBVersion.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter.class
 res/prebuilt/android/classes/com/rho/db/DBException.class
@@ -1261,5 +1262,4 @@ res/prebuilt/iphone/sim/rhorunner.app/rhorunner
 res/prebuilt/wm/wm6.7z
 res/rhodes_pid.key
 res/xruby-0.3.3.jar
-rhodes-build.gemspec
 spec/spec.opts
