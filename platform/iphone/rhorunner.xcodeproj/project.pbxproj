@@ -118,7 +118,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* rhoextlib */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = rhoextlib;
 		};
 /* End PBXContainerItemProxy section */
