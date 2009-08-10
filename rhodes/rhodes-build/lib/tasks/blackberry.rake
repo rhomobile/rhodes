@@ -1,10 +1,29 @@
+#
 require File.join(File.dirname(__FILE__),'..','jake.rb')
+
+def freplace( fname, pattern, str )
+  f = File.open( fname )
+  strings = f.read
+  f.close
+
+  strings.gsub!( pattern, str )
+
+  f = File.new( fname, "w" )
+  f.print strings
+  f.close
+end
 
 namespace "config" do
   task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
+
+    if $config["env"].has_key? "application-name"
+      $appname = $config["env"]["application-name"]
+    else
+      $appname = "rhodesApp"
+    end
 
   end
 end
@@ -81,21 +100,25 @@ namespace "bundle" do
     Jake.unjar($bindir + "/RhoBundle.jar", $tmpdir) 
     Jake.unjar(File.join($prebuilt, "bb","rhodes.jar"), $tmpdir) 
 
-    Jake.jar($bindir + "/rhodesApp.jar",'"' + File.join($prebuilt, "bb","manifest.mf") + '"',$tmpdir,true)
-    Jake.rapc("rhodesApp", 
+    Jake.jar($bindir + "/" + $appname + ".jar",'"' + File.join($prebuilt, "bb","manifest.mf") + '"',$tmpdir,true)
+
+    vendor = $config["env"]["vendor"]
+    version = $config["env"]["version"]
+    Jake.rapc($appname, 
            $targetdir,
            jdehome + "/lib/net_rim_api.jar",
-           '"' + $bindir + "/rhodesApp.jar" +'"',
-           "rhodesApp",
-           $config["env"]["vendor"],
-           $config["env"]["version"],
+           '"' + $bindir + "/" + $appname + ".jar" +'"',
+           $appname,
+           vendor,
+           version,
            "resources/icon.png",
            false,
            true
       )
-      $stdout.flush
+    $stdout.flush
 
-    cp  File.join($prebuilt, "bb","rhodesApp.alx"), $targetdir
+    cp  File.join($prebuilt, "bb","rhodesApp.alx"), File.join($targetdir, $appname + ".alx")
+    freplace( File.join( $targetdir, $appname + ".alx" ), /rhodesApp/, $appname )
   end
 end
 
@@ -111,9 +134,9 @@ namespace "device" do
     webdir = File.join($targetdir, "web")  
     mkdir_p webdir
 
-    cp File.join($targetdir, "rhodesApp.jad"), webdir
+    cp File.join($targetdir, $appname + ".jad"), webdir
 
-    Jake.unjar(File.join($targetdir, "rhodesApp.cod"), webdir)
+    Jake.unjar(File.join($targetdir, $appname + ".cod"), webdir)
 
     rm_rf $deploydir
     mkdir_p $deploydir 
@@ -199,7 +222,7 @@ namespace "run" do
 #        command = '"' + jde + "/simulator/fledgecontroller.exe\""
 #        args = []
 #        args << "/session="+sim
-#        args << "\"/execute=LoadCod(" + File.join($targetdir,"rhodesApp.cod") + ")\""
+#        args << "\"/execute=LoadCod(" + File.join($targetdir,$appname + ".cod") + ")\""
 
 #        Jake.run(command,args, jde + "/simulator")
         $stdout.flush
