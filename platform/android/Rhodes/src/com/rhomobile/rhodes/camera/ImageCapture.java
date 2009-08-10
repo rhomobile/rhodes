@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.AndroidR;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -35,8 +35,8 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 		super.onCreate(icicle);
 		Log.e(getClass().getSimpleName(), "onCreate");
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
-		setContentView(R.layout.camera);
-		surfaceView = (SurfaceView) findViewById(R.id.surface);
+		setContentView(AndroidR.layout.camera);
+		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);

@@ -130,13 +130,6 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$3.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$4.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$5.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$attr.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$drawable.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$id.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$layout.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$menu.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$string.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/ResourceFetchThread.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhoHttpHandler.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhoHttpService.class

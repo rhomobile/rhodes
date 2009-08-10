@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.rho.db.DBException;
 import com.rho.db.IDBResult;
-import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.AndroidR;
 import android.content.Context;
 import android.database.DatabaseUtils;
 import android.database.SQLException;
@@ -73,14 +73,14 @@ public class RhoDB extends SQLiteOpenHelper {
 				st.execute();
 			}
 
-			statements = ctx.getString(R.string.db_schema).split(";");
+			statements = ctx.getString(AndroidR.string.db_schema).split(";");
 			for (int i = 0; i < statements.length; i++) {
 				SQLiteStatement st = db.compileStatement(statements[i]);
 				st.execute();
 			}
 			
 			SQLiteStatement stTrigger = db.compileStatement(ctx
-					.getString(R.string.deleteTrigger));
+					.getString(AndroidR.string.deleteTrigger));
 			stTrigger.execute();
 
 			db.setVersion(dbVersion);
