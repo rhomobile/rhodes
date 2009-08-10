@@ -87,7 +87,7 @@ namespace "resources" do
     puts `#{$aapt} package -M #{manifest} -S #{res} -I #{$androidjar} -J #{$tmpdir}`
     puts `javac -d #{classes} #{genr}`
     # Modify AndroidR import section and compile it
-    freplace( androidr, /^import com\.rhomobile\..*\.R;$/, "import #{$appid}.R;" )
+    freplace( androidr, /import com\.rhomobile\..*\.R;/, "import #{$appid}.R;" )
     puts `javac -cp #{classes} -d #{classes} #{androidr}`
   end
 end
@@ -172,8 +172,8 @@ namespace "device" do
       chdir $bindir
 
       dexfile = File.join($bindir,"classes.dex")
-      apkfile = File.join($targetdir,"Rhodes.apk")
-      signedapkfile = File.join($targetdir,"Rhodes_signed.apk")
+      apkfile = File.join($targetdir,$appname + ".apk")
+      signedapkfile = File.join($targetdir,$appname + "_signed.apk")
       resourcepkg = File.join($bindir,"rhodes.ap_")
 
       puts "Building APK file"
@@ -201,7 +201,7 @@ namespace "run" do
       chdir $bindir
 
       dexfile = File.join($bindir,"classes.dex")
-      apkfile = File.join($targetdir,"Rhodes-debug.apk")
+      apkfile = File.join($targetdir,$appname + "-debug.apk")
       resourcepkg = File.join($bindir,"rhodes.ap_")
 
       puts "Building APK file"
@@ -221,7 +221,7 @@ namespace "run" do
       $stdout.flush
       puts `#{$adb} wait-for-device`
       sleep 10
-      apkfile = File.join($targetdir,"Rhodes-debug.apk")    
+      apkfile = File.join($targetdir,$appname + "-debug.apk")    
 
       puts "Loading package into emulator"
       theoutput = `#{$adb} install -r "#{apkfile}"`
