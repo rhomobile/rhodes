@@ -1,6 +1,18 @@
 #
 require File.join(File.dirname(__FILE__),'..','jake.rb')
 
+def freplace( fname, pattern, str )
+  f = File.open( fname )
+  strings = f.read
+  f.close
+
+  strings.gsub!( pattern, str )
+
+  f = File.new( fname, "w" )
+  f.print strings
+  f.close
+end
+
 namespace "config" do
   task :android => :common do
 
@@ -13,6 +25,8 @@ namespace "config" do
       $exe_ext = ""
       $bat_ext = ""
     end
+
+    $tmpdir = File.join( $bindir, "tmp" )
 
     $deploydir = File.join($basedir,'deploy','android')
     $excludelib = ['**/singleton.rb','**/rational.rb','**/TestServe.rb','**/rhoframework.rb','**/date.rb']
@@ -29,11 +43,20 @@ namespace "config" do
     $apkbuilder = File.join( $androidsdk, "tools", "apkbuilder" + $bat_ext )
     $adb = File.join( $androidsdk, "tools", "adb" + $exe_ext )
     $emulator = File.join( $androidsdk, "tools", "emulator" + $exe_ext )
+    $androidjar = File.join( $androidsdk, "platforms", $androidplatform, "android.jar" )
 
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
+
+    if $config["env"].has_key? "application-name"
+      $appname = $config["env"]["application-name"]
+    else
+      $appname = "Rhodes"
+    end
+
+    $appid = "com.rhomobile.rhodes." + $appname
 
   end
 end
@@ -43,8 +66,34 @@ task :loadframework do
   puts $rhodeslib
 end
 
+namespace "resources" do
+  task :android => ["config:android", "loadframework", "makedirs"] do
+    android = $config["env"]["paths"]["android"]
+
+    rm_rf $tmpdir
+    cp_r File.join( $prebuilt, "android" ), $tmpdir
+
+    manifest = File.join( $tmpdir, "AndroidManifest.xml" )
+    res = File.join( $tmpdir, "res" )
+    classes = File.join( $tmpdir, "classes" )
+    androidr = File.join( $tmpdir, "src", "com", "rhomobile", "rhodes", "AndroidR.java" )
+    genr = File.join( $tmpdir, "R.java" )
+
+    # Modify app_name
+    freplace( File.join( res, "values", "strings.xml" ), /<string name="app_name">[^>]*<\/string>/, "<string name=\"app_name\">#{$appname}</string>" )
+    # Modify package name
+    freplace( manifest, /package="[^"]*"/, "package=\"#{$appid}\"" )
+    # Generate new R.java and compile it
+    puts `#{$aapt} package -M #{manifest} -S #{res} -I #{$androidjar} -J #{$tmpdir}`
+    puts `javac -d #{classes} #{genr}`
+    # Modify AndroidR import section and compile it
+    freplace( androidr, /^import com\.rhomobile\..*\.R;$/, "import #{$appid}.R;" )
+    puts `javac -cp #{classes} -d #{classes} #{androidr}`
+  end
+end
+
 namespace "bundle" do
-  task :android =>  ["config:android", "loadframework", "makedirs"] do
+  task :android =>  ["config:android", "resources:android", "loadframework", "makedirs"] do
     android = $config["env"]["paths"]["android"]
 
     rm_rf $srcdir
@@ -97,21 +146,20 @@ namespace "bundle" do
 
     chdir $bindir
   
-    classes = File.join($prebuilt,"android","classes")
+    classes = File.join($tmpdir,"classes")
     rhobundle = File.join($bindir,"RhoBundle.jar")
     dexfile = File.join($bindir,"classes.dex")
 
     puts "Running dx utility"
     puts `#{$dx} --dex "--output=#{dexfile}" #{classes} #{rhobundle}`
 
-    manifest = File.join($prebuilt,"android","AndroidManifest.xml")
-    resource = File.join($prebuilt,"android","res")
+    manifest = File.join($tmpdir,"AndroidManifest.xml")
+    resource = File.join($tmpdir,"res")
     assets = File.join($bindir,"assets")
-    androidjar = File.join(android,"platforms","android-1.1","android.jar")
     resourcepkg = File.join($bindir,"rhodes.ap_")
 
     puts "Packaging Assets and Jars"
-    puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
+    puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{$androidjar}" -F "#{resourcepkg}"`
 
 
     chdir $basedir

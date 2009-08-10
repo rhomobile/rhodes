@@ -37,6 +37,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/RhoPhonebook.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Platform.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ResourceFetchThread.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoHttpHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoHttpService.java

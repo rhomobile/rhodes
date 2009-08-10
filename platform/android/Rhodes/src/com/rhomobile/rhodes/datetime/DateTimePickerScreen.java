@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.rho.net.IHttpConnection;
 import com.rhomobile.rhodes.AndroidHttpConnection;
-import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesInstance;
 import com.rhomobile.rhodes.http.HttpHeader;
 
@@ -114,7 +114,7 @@ public class DateTimePickerScreen extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Log.d(getClass().getSimpleName(), "onCreate");
-		setContentView(R.layout.dialog_activity);
+		setContentView(AndroidR.layout.dialog_activity);
 		
 		Bundle extras = this.getIntent().getExtras();
 		
