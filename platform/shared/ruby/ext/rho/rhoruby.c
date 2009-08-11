@@ -282,7 +282,7 @@ void RhoRuby_RhomAttribManager_save(int nSrcID)
     rb_funcall(classRhomAttribManager, midRhomAttribManager_save, 1, INT2FIX(nSrcID));
 }
 
-void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,unsigned __int64 objID)
+void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64 objID)
 {
     rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
 }
