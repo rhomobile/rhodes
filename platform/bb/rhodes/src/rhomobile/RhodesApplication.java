@@ -176,9 +176,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	_mainScreen.setMenuItems(new Vector());
     }
 
-    public void postUrl(String url, String body, HttpHeaders headers){
+    public void postUrl(String url, String body, HttpHeaders headers) {
+    	postUrl(url, body, headers, null);
+    }
+    
+    public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), headers, body.getBytes(), null, this);
+        		canonicalizeURL(url), headers, body.getBytes(), null, this, callback);
         thread.start();                       
     }
 
@@ -1090,6 +1094,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static class PrimaryResourceFetchThread extends Thread {
 
         private RhodesApplication _application;
+        private Callback _callback;
 
         private Event _event;
 
@@ -1099,15 +1104,27 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         private String _url;
         private static Object m_syncObject = new Object(); 
-        	
+        
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      Event event, RhodesApplication application) {
+                						Event event, RhodesApplication application) {
+		
+			_url = url;
+			_requestHeaders = requestHeaders;
+			_postData = postData;
+			_application = application;
+			_event = event;
+			_callback = null;
+		}
+        
+        public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
+                                      	Event event, RhodesApplication application, Callback callback) {
 
             _url = url;
             _requestHeaders = requestHeaders;
             _postData = postData;
             _application = application;
             _event = event;
+            _callback = callback;
         }
 
         public void run() {
@@ -1116,6 +1133,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
         		_application.processConnection(connection, _event);
         	}
+        	if (_callback != null ) _callback.run();
         }
     }
 }
