@@ -150,7 +150,7 @@ public class RhoConf {
         setInt(szName, bVal ? 1 : 0 );
     }
 
-    boolean  isExist(String szName){
+    public boolean  isExist(String szName){
     	return m_mapValues.containsKey(szName);
     }
     
