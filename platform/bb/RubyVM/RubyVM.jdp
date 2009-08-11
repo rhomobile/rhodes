@@ -118,6 +118,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyIOPipeSourceExecutor.java
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyMatchData.java
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyMethodValue.java
+..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyMutex.java
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyNumeric.java
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyProc.java
 ..\..\shared\rubyJVM\src\com\xruby\runtime\builtin\RubyRandom.java

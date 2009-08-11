@@ -29,6 +29,7 @@ import org.json.me.JSONException;
 
 import com.rho.FilePath;
 import com.rho.TimeInterval;
+import com.rho.RhoRuby;
 
 class SyncSource
 {
@@ -322,37 +323,42 @@ class SyncSource
 	        oJsonArr.next();
 	    }else if ( getCurPageCount() == 0 )
 	        processToken("0");
-	
+	    
 		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID() );
 		
-	    //TODO: support DBExceptions
-	    getDB().startTransaction();
-	    try{
-		    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
-		    {
-		        if ( getDB().isUnlockDB() )
-		        {
-					LOG.INFO( "Commit transaction because of UI request." );
-		            getDB().endTransaction();
-		            getDB().startTransaction();
-		        }
-		
-		        JSONEntry oJsonEntry = oJsonArr.getCurItem();
-		
-		        JSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-		        if ( !oJsonObject.isEmpty() )
-		        {
-		            if ( !processSyncObject(oJsonObject) )
-		            {
-			            getSync().stopSync();
-			            break;
-		            }
-		        }
-		    }
-	    }finally{    
-			getDB().endTransaction();
+		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
+		{
+		    //TODO: support DBExceptions
+		    getDB().startTransaction();
+		    try{
+			    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+			    {
+			        if ( getDB().isUnlockDB() )
+			        {
+						LOG.INFO( "Commit transaction because of UI request." );
+						RhoRuby.RhomAttribManager_save(getID());
+			            getDB().endTransaction();
+			            getDB().startTransaction();
+			        }
+			
+			        JSONEntry oJsonEntry = oJsonArr.getCurItem();
+			
+			        JSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
+			        if ( !oJsonObject.isEmpty() )
+			        {
+			            if ( !processSyncObject(oJsonObject) )
+			            {
+				            getSync().stopSync();
+				            break;
+			            }
+			        }
+			    }
+		    }finally{
+		    	RhoRuby.RhomAttribManager_save(getID());
+				getDB().endTransaction();
+			}
 		}
-	    
+		
 	    if ( getServerObjectsCount() < getTotalCount() )
 	    	m_syncEngine.fireNotification(this, false);
 	}
@@ -436,16 +442,20 @@ class SyncSource
 	    	if ( !downloadBlob(value) )
 	    		return false;
 	    	
+	    	String strAttrib = oJsonEntry.getString("attrib");
 	        getDB().executeSQL("INSERT INTO object_values " +
 	            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-	            new Long(value.m_nID), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
+	            new Long(value.m_nID), strAttrib, getID(), oJsonEntry.getString("object"),
 	            value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
-	
+	        
+	        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
 	        m_nInserted++;
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
-	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getLong("id") );
+	    	long id = oJsonEntry.getLong("id");
+	        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 	
+	        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 	        m_nDeleted++;
 	    }else{
 	        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );

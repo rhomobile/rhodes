@@ -1,5 +1,6 @@
 #include "SyncThread.h"
 #include "common/RhoTime.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
 namespace sync {
@@ -85,6 +86,8 @@ void CSyncThread::run()
 {
 	LOG(INFO) + "Starting sync engine main routine...";
 
+    RhoRubyThreadStart();
+
 	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
@@ -105,6 +108,8 @@ void CSyncThread::run()
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
     		processCommands();
 	}
+
+    RhoRubyThreadStop();
 }
 
 void CSyncThread::processCommands()//throws Exception
@@ -240,22 +245,21 @@ void rho_sync_clear_notification(int source_id)
     return CSyncThread::getSyncEngine().clearNotification(source_id);
 }
 
-int rho_sync_openDB(const char* szDBPath, void ** ppDB)
+int rho_sync_openDB(const char* szDBPath)
 {
     rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
     rho::String strVer = "";//TODO: get version from rhodes 
     db.open(szDBPath,strVer);
-    *ppDB = db.getDbHandle();
     return 0;
 }
 
-int rho_sync_closeDB(void * pDB)
+int rho_sync_closeDB()
 {
     CSyncThread::getDBAdapter().close();
     return 0;
 }
 
-int rho_db_startUITransaction(void * pDB)
+int rho_db_startUITransaction()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
     db.setUnlockDB(true);
@@ -265,24 +269,29 @@ int rho_db_startUITransaction(void * pDB)
     return 0;
 }
 
-int rho_db_commitUITransaction(void * pDB)
+int rho_db_commitUITransaction()
 {
     CSyncThread::getDBAdapter().endTransaction();
     //TODO: get error code from DBException
     return 0;
 }
 
-int rho_db_rollbackUITransaction(void * pDB)
+int rho_db_rollbackUITransaction()
 {
     CSyncThread::getDBAdapter().rollback();
     //TODO: get error code from DBException
     return 0;
 }
 
-int rho_db_destroy_table(void * pDB, const char* szTableName)
+int rho_db_destroy_table(const char* szTableName)
 {
     CSyncThread::getDBAdapter().destroy_table(szTableName);
     return 0;
+}
+
+void* rho_db_get_handle()
+{
+    return CSyncThread::getDBAdapter().getDbHandle();
 }
 
 void rho_sync_lock()

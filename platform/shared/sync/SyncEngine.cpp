@@ -151,7 +151,7 @@ String CSyncEngine::loadClientID()
         getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
     }else if ( bResetClient )
     {
-    	if ( !resetClientIDByNet() )
+    	if ( !resetClientIDByNet(clientID) )
     		stopSync();
     	else
     		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
@@ -160,11 +160,11 @@ String CSyncEngine::loadClientID()
     return clientID;
 }
 
-boolean CSyncEngine::resetClientIDByNet()//throws Exception
+boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
     String serverUrl = RHOCONF().getString("syncserver");
     String strUrl = serverUrl + "clientreset";
-    String strQuery = "?client_id=" + getClientID();
+    String strQuery = "?client_id=" + strClientID;
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery) );
     return resp.isOK();

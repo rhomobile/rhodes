@@ -20,6 +20,8 @@ platform/win32/bin/*
 platform/wm/target/*
 platform/wm/build/cleanup.js
 platform/iphone/*/rholog.txt
+platform/win32/**/*.pch
+platform/wm/**/*.pch
 
 platform/bb/.metadata/*
 platform/bb/bin/*
@@ -71,7 +73,6 @@ platform/shared/*/bin
 *.idb
 *.lib
 
-*.pch
 *.mode1v3
 *.pbxuser
 *.CAB

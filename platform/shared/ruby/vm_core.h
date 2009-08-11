@@ -601,9 +601,21 @@ NOINLINE(void rb_gc_save_machine_context(rb_thread_t *));
 #if RUBY_VM_THREAD_MODEL == 2
 RUBY_EXTERN rb_thread_t *ruby_current_thread;
 extern rb_vm_t *ruby_current_vm;
+//RHO
+extern rb_thread_t * ruby_thread_from_native(void);
+inline rb_thread_t * __getCurrentThread()
+{
+    rb_thread_t * res = ruby_thread_from_native();
+    if ( res )
+        return res;
+
+    return ruby_current_thread;
+}
 
 #define GET_VM() ruby_current_vm
-#define GET_THREAD() ruby_current_thread
+#define GET_THREAD() __getCurrentThread()
+//ruby_current_thread
+//RHO
 #define rb_thread_set_current_raw(th) (void)(ruby_current_thread = (th))
 #define rb_thread_set_current(th) do { \
     rb_thread_set_current_raw(th); \

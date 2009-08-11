@@ -5,6 +5,7 @@
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
 #include "json/JSONIterator.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 extern "C" const char* RhoGetRootPath();
 
@@ -250,30 +251,35 @@ void CSyncSource::processServerData(const char* szData)
 
 	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID();
 	
-    //TODO: support DBExceptions
-    getDB().startTransaction();
-    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+    if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
     {
-        if ( getDB().isUnlockDB() )
+        //TODO: support DBExceptions
+        getDB().startTransaction();
+        for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
         {
-			LOG(INFO) + "Commit transaction because of UI request.";
-            getDB().endTransaction();
-            getDB().startTransaction();
-        }
-
-        CJSONEntry oJsonEntry = oJsonArr.getCurItem();
-
-        CJSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-        if ( !oJsonObject.isEmpty() )
-        {
-            if ( !processSyncObject(oJsonObject) )
+            if ( getDB().isUnlockDB() )
             {
-	            getSync().stopSync();
-	            break;
+			    LOG(INFO) + "Commit transaction because of UI request.";
+                RhoRuby_RhomAttribManager_save(getID());
+                getDB().endTransaction();
+                getDB().startTransaction();
+            }
+
+            CJSONEntry oJsonEntry = oJsonArr.getCurItem();
+
+            CJSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
+            if ( !oJsonObject.isEmpty() )
+            {
+                if ( !processSyncObject(oJsonObject) )
+                {
+	                getSync().stopSync();
+	                break;
+                }
             }
         }
+        RhoRuby_RhomAttribManager_save(getID());
+        getDB().endTransaction();
     }
-    getDB().endTransaction();
 
     if ( getServerObjectsCount() < getTotalCount() )
     	m_syncEngine.fireNotification(*this, false);
@@ -374,16 +380,20 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     	if ( !downloadBlob(value) )
     		return false;
 
+        String strAttrib = oJsonEntry.getString("attrib");
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-            oJsonEntry.getUInt64("id"), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
+            oJsonEntry.getUInt64("id"), strAttrib, getID(), oJsonEntry.getString("object"),
             value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
 
+        RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
         m_nInserted++;
     }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
     {
-        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getUInt64("id") );
+        uint64 id = oJsonEntry.getUInt64("id");
+        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
+        RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
         m_nDeleted++;
     }else{
         LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");

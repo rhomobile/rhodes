@@ -90,7 +90,11 @@ module Rho
           src_id = source['source_id']
           url = source['url']
           name = source['name']
-          if !self.source_initialized?(src_id)
+          attribs = Rhom::RhomDbAdapter::select_from_table('sources','source_attribs', 'source_id'=>src_id)
+
+          if attribs && attribs.size > 0 
+            Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
+          else
             Rhom::RhomDbAdapter::insert_into_table('sources',
                                                   {"source_id"=>src_id,"source_url"=>url,"name"=>name})
           end
@@ -98,9 +102,9 @@ module Rho
       end
     end
     
-    def source_initialized?(source_id)
-      Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
-    end
+#    def source_initialized?(source_id)
+#      Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
+#    end
 
     def serve(req)
       begin

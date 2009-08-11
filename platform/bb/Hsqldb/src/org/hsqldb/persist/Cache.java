@@ -173,7 +173,11 @@ public class Cache {
         }
 
         cacheMap.setAccessCountFloor(accessTarget);
+        //RHO
+        dataFileCache.getJournal().start();
         saveRows(savecount);
+        dataFileCache.getJournal().stop();
+        //RHO
     }
 
     private synchronized void saveRows(int count) throws IOException {

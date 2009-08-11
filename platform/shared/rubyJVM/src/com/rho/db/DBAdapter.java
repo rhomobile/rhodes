@@ -179,7 +179,8 @@ public class DBAdapter extends RubyBasic {
 		"last_inserted_size int default 0,"+
 		"last_deleted_size int default 0,"+
 		"last_sync_duration int default 0,"+
-		"last_sync_success int default 0);"+
+		"last_sync_success int default 0," +
+		"source_attribs varchar default NULL);"+
 		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
 		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
 		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
@@ -291,6 +292,7 @@ public class DBAdapter extends RubyBasic {
 		checkDBVersion();
 		m_dbStorage.open(m_strDBPath, getSqlScript() );
 		
+		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
 		m_bIsOpen = true;
     }
     

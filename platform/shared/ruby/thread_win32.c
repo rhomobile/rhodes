@@ -32,13 +32,13 @@ static void native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex);
 static void native_cond_initialize(rb_thread_cond_t *cond);
 static void native_cond_destroy(rb_thread_cond_t *cond);
 
-static rb_thread_t *
+rb_thread_t *
 ruby_thread_from_native(void)
 {
     return TlsGetValue(ruby_native_thread_key);
 }
 
-static int
+int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return TlsSetValue(ruby_native_thread_key, th);

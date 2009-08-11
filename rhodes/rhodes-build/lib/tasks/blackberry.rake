@@ -62,6 +62,13 @@ namespace "bundle" do
     cp_r 'app',File.join($srcdir,'apps')
     cp_r 'public', File.join($srcdir,'apps')
     cp   'rhoconfig.txt', File.join($srcdir,'apps')
+    
+    chdir File.join($srcdir,'apps/public')
+    rm_rf 'js/iui'
+    Dir.glob("js/jquery*").each {|f| rm_rf f}
+    Dir.glob("js/prototype*").each {|f| rm f}
+    chdir $basedir
+    
     #cp   'index.erb', File.join($srcdir,'apps')
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')

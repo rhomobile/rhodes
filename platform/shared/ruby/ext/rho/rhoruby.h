@@ -22,6 +22,8 @@ typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 
 void RhoRubyStart();
+void RhoRubyThreadStart();
+void RhoRubyThreadStop();
 
 VALUE getnil();	
 VALUE createHash();
@@ -36,6 +38,9 @@ void  releaseValue(VALUE val);
 
 VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name);
+void RhoRuby_RhomAttribManager_save(int nSrcID);
+void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,unsigned __int64 objID);
+void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib);
 
 void RhoRubyStop();
 
