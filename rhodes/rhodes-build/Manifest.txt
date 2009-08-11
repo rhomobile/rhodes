@@ -1233,6 +1233,7 @@ res/prebuilt/android/res/layout/file_row.xml
 res/prebuilt/android/res/layout/logoptions.xml
 res/prebuilt/android/res/layout/logview.xml
 res/prebuilt/android/res/layout/main.xml
+res/prebuilt/android/res/layout/datetime.xml
 res/prebuilt/android/res/menu/options.xml
 res/prebuilt/android/res/values/strings.xml
 res/prebuilt/android/src/com/rhomobile/rhodes/AndroidR.java

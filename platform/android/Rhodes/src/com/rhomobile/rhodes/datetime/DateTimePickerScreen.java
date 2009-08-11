@@ -19,7 +19,11 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
 public class DateTimePickerScreen extends Activity {
@@ -34,79 +38,29 @@ public class DateTimePickerScreen extends Activity {
 	private int _fmt;
 	private String _opaque;
 	
+	private DatePicker _datePicker;
+	private TimePicker _timePicker;
+	private Button _okButton;
+	private Button _cancelButton;
+	
 	private static final int FORMAT_DATE_TIME = 0;
 	private static final int FORMAT_DATE = 1;
 	private static final int FORMAT_TIME = 2;
 	
-	private static final int EVENT_NONE = 0;
-	private static final int EVENT_START = 1;
-	private static final int EVENT_DATE_SET = 2;
-	private static final int EVENT_DATE_CANCELLED = 3;
-	private static final int EVENT_TIME_SET = 4;
-	private static final int EVENT_TIME_CANCELLED = 5;
-	
-	private int currentEvent = EVENT_NONE;
-	private void next(int event) {
-		currentEvent = event;
-		switch(event) {
-		case EVENT_START:
-			switch(_fmt) {
-			case FORMAT_DATE_TIME:
-			case FORMAT_DATE:
-				showDialog(DIALOG_DATE_PICKER_ID);
-				break;
-			case FORMAT_TIME:
-				showDialog(DIALOG_TIME_PICKER_ID);
-				break;
-			}
-			break;
-		case EVENT_DATE_SET:
-			if(_fmt != FORMAT_DATE)
-				showDialog(DIALOG_TIME_PICKER_ID);
-			break;
-		case EVENT_DATE_CANCELLED:
-		case EVENT_TIME_CANCELLED:
-			sendResult(_callback, null);
-			break;
-		case EVENT_TIME_SET:
+	private OnClickListener mOkListener = new OnClickListener() {
+		public void onClick(View arg0) {
+			_init.setYear(_datePicker.getYear() - 1900);
+			_init.setMonth(_datePicker.getMonth());
+			_init.setDate(_datePicker.getDayOfMonth());
+			_init.setHours(_timePicker.getCurrentHour());
+			_init.setMinutes(_timePicker.getCurrentMinute());
 			sendResult(_callback, _init);
 		}
-	}
-	
-	private OnDateSetListener mDateSetListener = new OnDateSetListener() {
-		public void onDateSet(DatePicker view, int year, int monthOfYear,
-				int dayOfMonth) {
-			Log.d(getClass().getSimpleName(), "onDateSet");
-			_init.setYear(year - 1900);
-			_init.setMonth(monthOfYear);
-			_init.setDate(dayOfMonth);
-			_dateTimePicker.next(EVENT_DATE_SET);
-		}
 	};
 	
-	private OnDismissListener mDateDismissListener = new OnDismissListener() {
-		public void onDismiss(DialogInterface arg0) {
-			Log.d(getClass().getSimpleName(), "onDismiss");
-			if(_dateTimePicker.currentEvent != EVENT_DATE_SET)
-				_dateTimePicker.next(EVENT_DATE_CANCELLED);
-		}
-	};
-	
-	private OnTimeSetListener mTimeSetListener = new OnTimeSetListener() {
-		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			Log.d(getClass().getSimpleName(), "onTimeSet");
-			_init.setHours(hourOfDay);
-			_init.setMinutes(minute);
-			_dateTimePicker.next(EVENT_TIME_SET);
-		}
-	};
-	
-	private OnDismissListener mTimeDismissListener = new OnDismissListener() {
-		public void onDismiss(DialogInterface dialog) {
-			// TODO Auto-generated method stub
-			Log.d(getClass().getSimpleName(), "onDismiss");
-			if(_dateTimePicker.currentEvent != EVENT_TIME_SET)
-				_dateTimePicker.next(EVENT_TIME_CANCELLED);
+	private OnClickListener mCancelListener = new OnClickListener() {
+		public void onClick(View v) {
+			sendResult(_callback, null);
 		}
 	};
 	
@@ -114,7 +68,7 @@ public class DateTimePickerScreen extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Log.d(getClass().getSimpleName(), "onCreate");
-		setContentView(AndroidR.layout.dialog_activity);
+		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();
 		
@@ -125,30 +79,33 @@ public class DateTimePickerScreen extends Activity {
 		
 		this.setTitle(extras.getString("title"));
 		
-		next(EVENT_START);
+		_datePicker = (DatePicker)findViewById(AndroidR.id.datePicker);
+		_timePicker = (TimePicker)findViewById(AndroidR.id.timePicker);
+		_okButton = (Button)findViewById(AndroidR.id.okButton);
+		_cancelButton = (Button)findViewById(AndroidR.id.cancelButton);
+		
+		_okButton.setOnClickListener(mOkListener);
+		_cancelButton.setOnClickListener(mCancelListener);
+		
+		_datePicker.init(_init.getYear() + 1900, _init.getMonth(), _init.getDay(), null);
+		_timePicker.setCurrentHour(_init.getHours());
+		_timePicker.setCurrentMinute(_init.getMinutes());
+		
+		switch (_fmt) {
+		case FORMAT_DATE:
+			_timePicker.setVisibility(View.INVISIBLE);
+			break;
+		case FORMAT_TIME:
+			_datePicker.setVisibility(View.INVISIBLE);
+			break;
+		}
 	}
 	
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog;
-		OnDismissListener dls; 
-		switch(id) {
-		case DIALOG_DATE_PICKER_ID:
-			dialog = new DatePickerDialog(this, mDateSetListener,
-					_init.getYear() + 1900, _init.getMonth(), _init.getDate());
-			dls = mDateDismissListener;
-			break;
-		case DIALOG_TIME_PICKER_ID:
-			dialog = new TimePickerDialog(this, mTimeSetListener,
-					_init.getHours(), _init.getMinutes(), true);
-			dls = mTimeDismissListener;
-			break;
-		default:
-			return null;
-		}
-		
-		dialog.setOnDismissListener(dls);
-		return dialog;
+	private void setFieldsEnabled(boolean v) {
+		_datePicker.setEnabled(v);
+		_timePicker.setEnabled(v);
+		_okButton.setEnabled(v);
+		_cancelButton.setEnabled(v);
 	}
 	
 	private class ResultSender implements Runnable {
@@ -218,12 +175,13 @@ public class DateTimePickerScreen extends Activity {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				finish();
 			}
 		}
 	};
 	
 	private void sendResult(String callback, Date result) {
+		this.setFieldsEnabled(false);
 		new Thread(new ResultSender(callback, result)).start();
-		finish();
 	}
 }
