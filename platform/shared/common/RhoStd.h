@@ -9,12 +9,14 @@ namespace std
 }
 
 #include <string>
+#include <sstream>
 #include <vector>
 #include <map>
 
 namespace rho {
 
 typedef std::string String;
+typedef std::stringstream StringStream;
 typedef std::wstring StringW;
 typedef bool boolean;
 //#define Vector std::vector
