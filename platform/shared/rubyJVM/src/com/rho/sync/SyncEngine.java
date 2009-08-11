@@ -245,7 +245,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 		    }else if ( bResetClient )
 		    {
-		    	if ( !resetClientIDByNet() )
+		    	if ( !resetClientIDByNet(clientID) )
 		    		stopSync();
 		    	else
 		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
@@ -255,11 +255,11 @@ class SyncEngine implements NetRequest.IRhoSession
 		return clientID;
 	}
 
-	boolean resetClientIDByNet()throws Exception
+	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
 	    String serverUrl = RhoConf.getInstance().getString("syncserver");
 	    String strUrl = serverUrl + "clientreset";
-	    String strQuery = "?client_id=" + getClientID();
+	    String strQuery = "?client_id=" + strClientID;
 	    
 	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
 	    return resp.isOK();

@@ -40,8 +40,10 @@ describe "Rho" do
   end
   
   it "should set start_path" do
+    oldpath = Rho::RhoConfig.start_path
     Rho::RhoConfig.start_path = '/foo/bar'
     Rho::RhoConfig.start_path.should == '/foo/bar'
+    Rho::RhoConfig.start_path = oldpath
   end
   
   it "should have options_path" do
@@ -49,8 +51,10 @@ describe "Rho" do
   end
   
   it "should set options_path" do
+    oldpath = Rho::RhoConfig.options_path
     Rho::RhoConfig.options_path = '/ops2'
     Rho::RhoConfig.options_path.should == '/ops2'
+    Rho::RhoConfig.options_path = oldpath
   end
   
   it "should read arbitrary options" do

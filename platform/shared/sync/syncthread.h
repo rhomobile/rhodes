@@ -121,12 +121,13 @@ void rho_sync_set_pollinterval(int nInterval);
 void rho_sync_set_syncserver(char* syncserver);
 
 //struct sqlite3;
-int rho_sync_openDB(const char* szDBPath, void** ppDB);
-int rho_sync_closeDB(void* pDB);
-int rho_db_startUITransaction(void * pDB);
-int rho_db_commitUITransaction(void * pDB);
-int rho_db_rollbackUITransaction(void * pDB);
-int rho_db_destroy_table(void * pDB, const char* szTableName);
+int rho_sync_openDB(const char* szDBPath);
+int rho_sync_closeDB();
+int rho_db_startUITransaction();
+int rho_db_commitUITransaction();
+int rho_db_rollbackUITransaction();
+int rho_db_destroy_table(const char* szTableName);
+void* rho_db_get_handle();
 
 #ifdef __cplusplus
 };

@@ -113,6 +113,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
     if ( !checkDbError(rc) )
     	return 0;
     
+    int nBindCol = 1;
 	for (int nCol = 0; nCol < nColCount; nCol++ )
 	{
 		int nColType = sqlite3_column_type(res.getStatement(),nCol);
@@ -122,20 +123,21 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
 
 		switch(nColType){
 			case SQLITE_NULL:
-                sqlite3_bind_text(stInsert, nCol, null, -1, SQLITE_TRANSIENT);
+                rc = sqlite3_bind_text(stInsert, nBindCol, null, -1, SQLITE_TRANSIENT);
                 break;
             case SQLITE_INTEGER:
             {
                 sqlite_int64 nValue = sqlite3_column_int64(res.getStatement(), nCol);
-                sqlite3_bind_int64(stInsert, nCol, nValue);
+                rc = sqlite3_bind_int64(stInsert, nBindCol, nValue);
                 break;
             }
 			default:{
                 char* szValue = (char *)sqlite3_column_text(res.getStatement(), nCol);
-                sqlite3_bind_text(stInsert, nCol, szValue, -1, SQLITE_TRANSIENT);
+                rc = sqlite3_bind_text(stInsert, nBindCol, szValue, -1, SQLITE_TRANSIENT);
 				break;
 			}
 		}
+        nBindCol++;
     }
 
 	return stInsert;
@@ -226,7 +228,8 @@ static const char* g_szDbSchema =
     " last_inserted_size int default 0,"
     " last_deleted_size int default 0,"
     " last_sync_duration int default 0,"
-    " last_sync_success int default 0);"
+    " last_sync_success int default 0,"
+    " source_attribs varchar default NULL);"
     "CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"
     "CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"
     "CREATE INDEX by_src_utype on object_values (source_id,update_type);"

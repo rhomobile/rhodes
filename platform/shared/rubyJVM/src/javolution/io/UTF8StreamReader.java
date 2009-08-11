@@ -67,7 +67,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
      * Holds the bytes buffer.
      */
     private final byte[] _bytes;
-
+    private boolean m_bReadByByte = false;
     /**
      * Creates a UTF-8 reader having a byte buffer of moderate capacity (2048).
      */
@@ -80,8 +80,9 @@ public final class UTF8StreamReader extends Reader implements Reusable {
      * 
      * @param capacity the capacity of the byte buffer.
      */
-    public UTF8StreamReader(int capacity) {
+    public UTF8StreamReader(int capacity, boolean bReadByByte) {
         _bytes = new byte[capacity];
+        m_bReadByByte = bReadByByte;
     }
 
     /**
@@ -209,6 +210,19 @@ public final class UTF8StreamReader extends Reader implements Reusable {
 
     private int _moreBytes;
 
+	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
+		int bytesRead = 0;
+		while (bytesRead < (a.length)) {
+			int read = in.read();// a, 0, a.length );
+			if (read < 0) {
+				return bytesRead > 0 ? bytesRead : -1;
+			}
+			a[bytesRead] = (byte)read;
+			bytesRead ++;
+		}
+		return bytesRead;
+	}
+    
     /**
      * Reads characters into a portion of an array.  This method will block
      * until some input is available, an I/O error occurs or the end of 
@@ -229,7 +243,11 @@ public final class UTF8StreamReader extends Reader implements Reusable {
             throw new IOException("No input stream or stream closed");
         if (_start >= _end) { // Fills buffer.
             _start = 0;
-            _end = _inputStream.read(_bytes, 0, _bytes.length);
+            if ( m_bReadByByte )
+            	_end = bufferedReadByByte(_bytes, _inputStream);
+            else
+            	_end = _inputStream.read(_bytes, 0, _bytes.length);
+            
             if (_end <= 0) { // Done.
                 return _end;
             }

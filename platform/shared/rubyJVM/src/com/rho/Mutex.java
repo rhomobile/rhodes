@@ -39,4 +39,34 @@ public class Mutex
 			m_mutex.notifyAll();
 		}
 	}
+	
+	public boolean isLocked()
+	{
+		synchronized (m_mutex) {
+			return m_lockThread != null && m_lockThread.equals(Thread.currentThread());
+		}
+	}
+	
+	public boolean tryLock()
+	{
+		synchronized (m_mutex) {
+			
+			if ( isLocked() )
+				return false;
+			
+			Lock();
+			return true;
+		}
+	}
+
+	public int Sleep(int nSec)
+	{
+		Unlock();
+		try{
+			Thread.sleep(nSec*1000);
+		}catch(InterruptedException exc){}
+		Lock();
+		return nSec;
+	}
+	
 };

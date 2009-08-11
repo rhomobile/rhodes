@@ -26,6 +26,8 @@ public class RhoRuby {
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
+	static RubyMethod m_RhomAttribManager_delete_attribs, m_RhomAttribManager_add_attrib, m_RhomAttribManager_save; 
+	static RubyClass m_classRhomAttribManager;
 	
 	public static final int ERR_NONE = 0;
 	public static final int ERR_NETWORK = 1;
@@ -66,6 +68,13 @@ public class RhoRuby {
 	    		mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
 	    		receiver = mainObj.invoke();
         		DBAdapter.getInstance().commit();
+        		
+        		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");
+        		m_classRhomAttribManager = (RubyClass)modRhom.getConstant("RhomAttribManager");
+        		m_RhomAttribManager_delete_attribs = m_classRhomAttribManager.findMethod( RubyID.intern("delete_attribs") );
+        		m_RhomAttribManager_add_attrib = m_classRhomAttribManager.findMethod( RubyID.intern("add_attrib") );
+        		m_RhomAttribManager_save = m_classRhomAttribManager.findMethod( RubyID.intern("save") );
+        		
         	}
         	
         /*}catch(ClassNotFoundException exc){
@@ -176,6 +185,23 @@ public class RhoRuby {
 
 	public static RubyValue addHashToHash(RubyHash hash, String key, RubyValue val) {
 		return hash.add( ObjectFactory.createString(key), val);	
+	}
+	
+	public static void RhomAttribManager_add_attrib( Integer nSrcID, String strAttribute)
+	{
+		m_RhomAttribManager_add_attrib.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
+				ObjectFactory.createString(strAttribute), null);
+	}
+	
+	public static void RhomAttribManager_delete_attribs( Integer nSrcID, long objID)
+	{
+		m_RhomAttribManager_delete_attribs.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
+				ObjectFactory.createInteger(objID), null);
+	}
+
+	public static void RhomAttribManager_save(Integer nSrcID)
+	{
+		m_RhomAttribManager_save.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), null);
 	}
 	
 }
