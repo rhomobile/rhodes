@@ -473,7 +473,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        strBody += "total_count=" + src.getTotalCount();
 		        strBody += "&processed_count=" + src.getCurPageCount();
 		        
-		        strBody = "&status=";
+		        strBody += "&status=";
 		        if ( bFinish )
 		        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
 		        else

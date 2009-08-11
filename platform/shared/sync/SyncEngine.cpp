@@ -381,11 +381,18 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
             return;
         CSyncNotification& sn = *pSN;
 
+        StringStream ss;
+
         strUrl = sn.m_strUrl;
-        strBody += "total_count=" + src.getTotalCount();
-        strBody += "&processed_count=" + src.getCurPageCount();
+		strBody = "";
+		ss << src.getTotalCount();
+        strBody = "total_count=" + ss.str();
+		ss.str("");
+		ss << src.getCurPageCount();
+        strBody += "&processed_count=" + ss.str();
         
-        strBody = "&status=";
+        strBody += "&status=";
+
         if ( bFinish )
         	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
         else
