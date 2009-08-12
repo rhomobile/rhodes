@@ -750,6 +750,40 @@
 			};
 			name = Release;
 		};
+		46B0043910332DDD00D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				SYMROOT = ../build;
+			};
+			name = Distribution;
+		};
+		46B0043A10332DDD00D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+					../../shared,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = rhorubylib;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+			};
+			name = Distribution;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -758,6 +792,7 @@
 			buildConfigurations = (
 				1DEB91EC08733DB70010E9CD /* Debug */,
 				1DEB91ED08733DB70010E9CD /* Release */,
+				46B0043A10332DDD00D0C2F4 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -767,6 +802,7 @@
 			buildConfigurations = (
 				1DEB91F008733DB70010E9CD /* Debug */,
 				1DEB91F108733DB70010E9CD /* Release */,
+				46B0043910332DDD00D0C2F4 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
