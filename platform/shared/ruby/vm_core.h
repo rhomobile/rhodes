@@ -603,14 +603,7 @@ RUBY_EXTERN rb_thread_t *ruby_current_thread;
 extern rb_vm_t *ruby_current_vm;
 //RHO
 extern rb_thread_t * ruby_thread_from_native(void);
-inline rb_thread_t * __getCurrentThread()
-{
-    rb_thread_t * res = ruby_thread_from_native();
-    if ( res )
-        return res;
-
-    return ruby_current_thread;
-}
+extern rb_thread_t * __getCurrentThread();
 
 #define GET_VM() ruby_current_vm
 #define GET_THREAD() __getCurrentThread()

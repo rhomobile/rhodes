@@ -54,6 +54,15 @@ static char* rb_type_to_s(VALUE obj);
 extern int ruby_thread_set_native(rb_thread_t *th);
 extern int native_mutex_lock(rb_thread_lock_t *);
 
+rb_thread_t * __getCurrentThread()
+{
+    rb_thread_t * res = ruby_thread_from_native();
+    if ( res )
+        return res;
+	
+    return ruby_current_thread;
+}
+
 void RhoRubyThreadStart()
 {
     rb_thread_t *th;
@@ -61,11 +70,14 @@ void RhoRubyThreadStart()
     VALUE self = rb_thread_alloc(rb_cThread);
     GetThreadPtr(self, th);
 
+#if defined( OS_WINDOWS ) || defined( OS_WINCE )	
     ruby_thread_init_stack(th);
+#endif	
     ruby_thread_set_native(th);
 
     rb_gc_register_mark_object(self);
 
+//	RhoRuby_RhomAttribManager_add_attrib(0, "test");
     //native_mutex_lock(&th->vm->global_vm_lock);
 }
 
@@ -282,7 +294,7 @@ void RhoRuby_RhomAttribManager_save(int nSrcID)
     rb_funcall(classRhomAttribManager, midRhomAttribManager_save, 1, INT2FIX(nSrcID));
 }
 
-void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,unsigned __int64 objID)
+void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID)
 {
     rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
 }

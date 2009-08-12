@@ -26,7 +26,7 @@ import com.rho.RhoRuby;
 import com.rho.db.*;
 import com.rho.net.*;
 import com.rho.*;
-
+import java.io.IOException;
 import java.util.Vector;
 import java.util.Hashtable;
 
@@ -360,16 +360,25 @@ class SyncEngine implements NetRequest.IRhoSession
 		    String serverUrl = RhoConf.getInstance().getString("syncserver");
 		    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 	
-		    NetResponse resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
-		    if ( !resp.isOK() )
+		    NetResponse resp = null;
+		    try{
+			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
+			    if ( !resp.isOK() )
+			    {
+			    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
+			    	return;
+			    }
+		    }catch(IOException exc)
 		    {
-		    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
+				LOG.ERROR("Login failed.", exc);
+		    	callLoginCallback(callback, RhoRuby.ERR_NETWORK, exc.getMessage() );
 		    	return;
 		    }
 		    
 		    String strSession = resp.getCharData();
 		    if ( strSession == null || strSession.length() == 0 )
 		    {
+		    	LOG.ERROR("Return empty session.");
 		    	callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		        return;
 		    }
