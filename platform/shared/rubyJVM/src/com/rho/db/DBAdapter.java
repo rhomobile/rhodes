@@ -324,6 +324,7 @@ public class DBAdapter extends RubyBasic {
 		if ( !m_bIsOpen )
 			return RubyConstant.QNIL;
 		
+		IDBStorage db = null;
 		try{
 			String strTable = v.toStr();
 			
@@ -335,7 +336,7 @@ public class DBAdapter extends RubyBasic {
 		    fs.delete(dbNewName + ".data");
 		    fs.delete(dbNewName + ".script");
 	
-		    IDBStorage db = RhoClassFactory.createDBStorage();	    
+		    db = RhoClassFactory.createDBStorage();	    
 			db.open( dbNewName, getSqlScript() );
 			
 			String[] vecTables = m_dbStorage.getAllTableNames();
@@ -387,6 +388,13 @@ public class DBAdapter extends RubyBasic {
 				{
 					LOG.ERROR("destroy_table open old table failed.", exc);
 				}
+			}
+			
+			try {
+				if ( db != null)
+					db.close();
+			} catch (DBException e1) {
+				LOG.ERROR("closing of DB caused exception: " + e1.getMessage());
 			}
     		
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

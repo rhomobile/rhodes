@@ -16,7 +16,7 @@ public class ClientRegister extends RhoThread
 		new RhoLogger("ClientRegister");
 	
 	private static final int WAIT_BEFOREKILL_SECONDS  = 3;
-	private static final int POLL_INTERVAL_SECONDS = 60;
+	private static final int POLL_INTERVAL_SECONDS = 30*60;
     public static final int DEFAULT_PUSH_PORT = 100;
 
 	static ClientRegister m_pInstance;
