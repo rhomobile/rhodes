@@ -15,6 +15,7 @@ struct INetResponse
     virtual unsigned int getDataSize() = 0;
 	virtual int getRespCode() = 0;
 	virtual boolean isOK() = 0;
+    virtual boolean isResponseRecieved() = 0;
 };
 
 struct INetRequest
