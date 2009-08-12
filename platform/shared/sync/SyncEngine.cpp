@@ -267,6 +267,13 @@ void CSyncEngine::login(String name, String password, String callback)
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody ) );
+    
+    if ( !resp.isResponseRecieved())
+    {
+        callLoginCallback(callback, RhoRuby::ERR_NETWORK, resp.getCharData());
+        return;
+    }
+
     if ( !resp.isOK() )
     {
         callLoginCallback(callback, RhoRuby::ERR_REMOTESERVER, resp.getCharData());
