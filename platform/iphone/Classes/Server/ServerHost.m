@@ -71,7 +71,7 @@ static ServerHost* sharedSH = nil;
 @implementation ServerHost
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onShowPopup, onVibrate, onPlayFile, onSysCall;
+@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onShowPopup, onVibrate, onPlayFile, onSysCall;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -125,6 +125,12 @@ static ServerHost* sharedSH = nil;
 - (void)choosePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onChoosePicture]) {
 		[actionTarget performSelectorOnMainThread:onChoosePicture withObject:url waitUntilDone:NO];
+	}
+}
+
+- (void)chooseDateTime:(NSString*) url initialTime:(int) initial_time format:(NSString*) format {
+	if(actionTarget && [actionTarget respondsToSelector:onChooseDateTime]) {
+		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:url withObject:initial_time withObject:format waitUntilDone:NO];
 	}
 }
 
@@ -361,6 +367,13 @@ void take_picture(char* callback_url) {
 
 void choose_picture(char* callback_url) {
 	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
+}
+
+void choose_datetime(char* callback, char* title, int initial_time, char* format, char* opaque) {
+	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithCString:callback] 
+										  title:[NSString stringWithCString:title] 
+									initialTime:initial_time
+										 format:[NSString stringWithCString:format]];
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {

@@ -11,28 +11,6 @@
 
 @implementation PickImageDelegate
 
-@synthesize postUrl;
-
-
-- (void)NotifyViewThreadRoutine:(id)object {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-	// Get message body and its length
-	NSData *postBody = (NSData*)object;	
-	NSString *postLength = [NSString stringWithFormat:@"%d", [postBody length]];
-	
-	// Create post request
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:[NSURL URLWithString:postUrl]];
-	[request setHTTPMethod:@"POST"];
-	[request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-	[request setHTTPBody:postBody];
-	
-	// Send request
-	[NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-	
-    [pool release];
-}
 
 - (void)doCallback:(NSString*) message {
 	// Create post body
