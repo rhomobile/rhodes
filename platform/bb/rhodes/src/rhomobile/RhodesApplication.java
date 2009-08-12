@@ -183,6 +183,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), headers, body.getBytes(), null, this, callback);
+        thread.setInternalRequest(true);
         thread.start();                       
     }
 
@@ -224,7 +225,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	navigateUrl(url);
     }
 
-    void addToHistory(String strUrl, String refferer ){
+    void addToHistory(String strUrl, String refferer )
+    {
+        if ( !strUrl.startsWith(_httpRoot) )
+        	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
+    	
     	int nPos = -1;
     	for( int i = _history.size()-1; i >= 0; i-- ){
     		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
@@ -1104,6 +1109,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         private String _url;
         private static Object m_syncObject = new Object(); 
+        private boolean m_bInternalRequest = false;
+        
+        public void setInternalRequest(boolean b)
+        {
+        	m_bInternalRequest = b;
+        }
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
                 						Event event, RhodesApplication application) {
@@ -1131,7 +1142,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         	synchronized(m_syncObject)
         	{
         		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        		_application.processConnection(connection, _event);
+        		
+        		if ( m_bInternalRequest )
+        		{
+        			try{
+        				connection.getResponseCode();
+        			}catch(IOException exc)
+        			{
+        				LOG.ERROR("Callback failed: " + _url, exc);
+        			}
+        		}
+        		else	
+        			_application.processConnection(connection, _event);
         	}
         	if (_callback != null ) _callback.run();
         }
