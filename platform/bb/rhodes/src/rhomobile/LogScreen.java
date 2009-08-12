@@ -36,6 +36,20 @@ public class LogScreen extends MainScreen {
 			trackwheelRoll(m_nCurLine, 0, 0);
 		}
 	};
+	private MenuItem sendItem = new MenuItem("Send", 100000, 10) {
+		public void run() {
+			try{
+				com.rho.RhoConf.sendLog();
+			}catch(Exception exc)
+			{
+			}
+		}
+	};
+	private MenuItem copyLogItem = new MenuItem("Copy to sdcard", 100000, 10) {
+		public void run() {
+			com.rho.Jsr75File.copyRhoFileFromDeviceMemory(RhoLogger.LOGFILENAME);
+		}
+	};
 		
 	/*private MenuItem posItem = new MenuItem("Pos", 100000, 10) {
 		public void run() {
@@ -78,6 +92,8 @@ public class LogScreen extends MainScreen {
         addMenuItem(optionsItem);
         addMenuItem(clearItem);
         addMenuItem(refreshItem);
+        addMenuItem(sendItem);
+        addMenuItem(copyLogItem);
         
         m_logText = new MyEdit();
         m_logText.setEditable(false);

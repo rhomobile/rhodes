@@ -724,6 +724,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
@@ -784,8 +785,6 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -803,6 +802,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -810,8 +810,6 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -821,8 +819,6 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -840,6 +836,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -860,8 +857,6 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -879,7 +874,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -931,8 +926,6 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -942,8 +935,6 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
