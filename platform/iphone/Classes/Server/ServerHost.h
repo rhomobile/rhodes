@@ -52,6 +52,7 @@
 @property (assign) SEL onSysCall;
 
 - (void) start;
+- (void)chooseDateTime:(NSString*)url title:(NSString*)title initialTime:(long)initial_time format:(int)format;
 //TODO - implement pause and stop operations and graceful termination of the thread...
 - (void) stop;
 //Sync all sources
