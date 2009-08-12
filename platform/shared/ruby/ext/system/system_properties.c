@@ -37,8 +37,3 @@ char* get_property(char* property) {
 	}
 	return NULL;
 }
-
-//TODO :rho_syscall
-VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
-    return Qnil;
-}

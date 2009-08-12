@@ -55,6 +55,8 @@ public:
 	{
 		return m_nRespCode == 200;
 	}
+
+    virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 };
 
 extern "C" void saveConnData(void* pThis, void* pData)
