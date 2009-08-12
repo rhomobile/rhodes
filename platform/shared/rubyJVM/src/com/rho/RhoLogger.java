@@ -20,6 +20,7 @@ public class RhoLogger {
 	private int    m_severity;
 	private static String m_SinkLock = "";
 	private static IRhoRubyHelper m_sysInfo;
+	public static String LOGFILENAME = "RhoLog.txt";
 	
 	public RhoLogger(String name){
 		m_category = name;
@@ -255,7 +256,7 @@ public class RhoLogger {
 		}
 		
     	if ( RhoConf.getInstance().getRhoRootPath().length() > 0 )
-	    	m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + "RhoLog.txt" );
+	    	m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + LOGFILENAME );
 
         //load configuration if exist
     	//
