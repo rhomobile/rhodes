@@ -561,9 +561,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
 			public void run() {
-					LogScreen screen = new LogScreen();
-			        //Push this screen to display it to the user.
-			        UiApplication.getUiApplication().pushScreen(screen);
+					showLogScreen();
 				}
 			};
 
@@ -702,6 +700,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
+    public void showLogScreen()
+    {
+		LogScreen screen = new LogScreen();
+	    //Push this screen to display it to the user.
+	    UiApplication.getUiApplication().pushScreen(screen);
+    }
+    
     boolean isWaitForSDCardAtStartup()
     {
     	if ( Jsr75File.isRhoFolderExist() )
@@ -718,7 +723,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	if (_mainScreen!=null)
     		return;
     	
-    	if ( ApplicationManager.getApplicationManager().inStartup() || isWaitForSDCardAtStartup() )
+    	if ( ApplicationManager.getApplicationManager().inStartup() )// || isWaitForSDCardAtStartup() )
     	{
             this.invokeLater( new Runnable() {
                 public void run() 
@@ -731,6 +736,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     	
     	try{
+    		if ( !Jsr75File.isSDCardExist() )
+    			Thread.sleep(5000); //Wait till SDCard may appear
+    		
         	RhoLogger.InitRhoLog();
 	    	
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );

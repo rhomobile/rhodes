@@ -218,9 +218,12 @@ public class NetRequest
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
-			String strSession = oSession.getSession();
-			if ( strSession != null && strSession.length() > 0 )
-				m_connection.setRequestProperty("Cookie", strSession );
+			if ( oSession != null )
+			{
+				String strSession = oSession.getSession();
+				if ( strSession != null && strSession.length() > 0 )
+					m_connection.setRequestProperty("Cookie", strSession );
+			}
 			
 			m_connection.setRequestProperty("content-type", szMultipartContType);
 			m_connection.setRequestMethod(IHttpConnection.POST);

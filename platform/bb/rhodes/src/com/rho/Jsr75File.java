@@ -188,6 +188,52 @@ public class Jsr75File implements SimpleFile
     	return m_strRhoPath;
     }
 
+    public static void copyRhoFileFromDeviceMemory(String strFileName)
+    {
+    	InputStream in = null;
+    	OutputStream out = null;
+    	FileConnection fSDCard = null;
+    	FileConnection fMem = null;
+		try{
+	    	String strSDCardPath = getRhoPath() + strFileName;
+	    	int nSDcardPos = strSDCardPath.indexOf("SDCard"); 
+	    	String strMemoryPath = strSDCardPath.substring(0,nSDcardPos) + "store/home/user" + 
+	    		strSDCardPath.substring(nSDcardPos+6);
+	    	strSDCardPath += "_mem";
+	    		
+	    	fMem = (FileConnection)Connector.open(strMemoryPath);
+    		in = fMem.openInputStream();
+    		
+    		fSDCard = (FileConnection)Connector.open(strSDCardPath,Connector.READ_WRITE);
+    		if ( !fSDCard.exists() )
+    			fSDCard.create();
+    		out = fSDCard.openOutputStream();
+    		int nSize = (int)fMem.fileSize();
+    		byte[] buf = new byte[nSize];
+    		in.read(buf);
+    		out.write(buf);
+    		
+		}catch(IOException exc){
+			log("copyRhoFileFromDeviceMemory failed." + exc.getMessage());
+		}finally{
+			try{
+				if ( in != null )
+					in.close();
+				if ( out != null )
+					out.close();
+				if ( fMem != null )
+					fMem.close();
+				if ( fSDCard != null )
+					fSDCard.close();
+				
+			}catch(Exception exc){
+				log("copyRhoFileFromDeviceMemory failed." + exc.getMessage());
+			}
+					
+		}
+    	
+    }
+    
     public static boolean isRhoFolderExist()
     {
     	String strSdCardPath = "file:///SDCard/Rho/";

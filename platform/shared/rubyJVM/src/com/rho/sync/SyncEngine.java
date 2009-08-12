@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Hashtable;
 
-class SyncEngine implements NetRequest.IRhoSession
+public class SyncEngine implements NetRequest.IRhoSession
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
@@ -223,7 +223,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 
-	String loadClientID()throws Exception
+	public String loadClientID()throws Exception
 	{
 	    String clientID = "";
 		
@@ -356,12 +356,15 @@ class SyncEngine implements NetRequest.IRhoSession
 		    	callLoginCallback(callback, RhoRuby.ERR_DIFFDOMAINSINSYNCSRC, "");
 		    	return;
 			}
-			
-		    String serverUrl = RhoConf.getInstance().getString("syncserver");
-		    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-	
+
 		    NetResponse resp = null;
+			
 		    try{
+				
+			    String serverUrl = RhoConf.getInstance().getString("syncserver");
+			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
+			    strBody += ClientRegister.getInstance().getRegisterBody(this);
+			    
 			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
 			    if ( !resp.isOK() )
 			    {
