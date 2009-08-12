@@ -146,13 +146,16 @@ null_func(int i)
     /* null */
 }
 
-static rb_thread_t *
+rb_thread_t *
 ruby_thread_from_native(void)
 {
+	if ( !ruby_native_thread_key )
+		return 0;
+	
     return pthread_getspecific(ruby_native_thread_key);
 }
 
-static int
+int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return pthread_setspecific(ruby_native_thread_key, th) == 0;

@@ -20,13 +20,13 @@ extern "C" {
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
-
+	
 #if defined( OS_WINDOWS ) || defined( OS_WINCE )
-typedef unsigned __int64 uint64;
+typedef unsigned __int64 uint64__;
 #else
-typedef unsigned long long uint64;
+typedef unsigned long long uint64__;
 #endif
-
+	
 void RhoRubyStart();
 void RhoRubyThreadStart();
 void RhoRubyThreadStop();
@@ -45,7 +45,7 @@ void  releaseValue(VALUE val);
 VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name);
 void RhoRuby_RhomAttribManager_save(int nSrcID);
-void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64 objID);
+void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID);
 void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib);
 
 void RhoRubyStop();
