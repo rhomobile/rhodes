@@ -99,6 +99,12 @@
 	return YES;
 } 
 
+//-(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
+//							 usingDelegate:(id<DateTimePickerDelegate>)delegateObject
+//{ 
+//	return YES;
+//} 
+
 - (void)onTakePicture:(NSString*) url {
 	[pickImageDelegate setPostUrl:[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
@@ -111,6 +117,12 @@
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+}
+
+- (void)onChooseDateTime:(NSString*) url initialTime:(int) initial_time format:(NSString*) format {
+	[dateTimePickerDelegate setPostUrl:[self normalizeUrl:url]];
+	[self startDateTimePickerFromViewController:webViewController
+								  usingDelegate:dateTimePickerDelegate];
 }
 
 - (void)onSetViewOptionsUrl:(NSString *)url {
@@ -255,6 +267,9 @@
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];
 	
+	//DateTime delegate
+	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
+	
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];
@@ -266,6 +281,7 @@
 	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
+	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
 	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
@@ -333,6 +349,7 @@
 	[webViewController release];
 	[window release];
 	[pickImageDelegate release];
+	[dateTimePickerDelegate release];
 	[super dealloc];
 }
 
