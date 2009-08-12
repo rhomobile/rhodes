@@ -698,7 +698,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess (6NFKZD4L75)";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -725,7 +727,8 @@
 					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8AFD0D6A-1C0C-43A5-9B9D-BB00ECCEE887";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -749,14 +752,16 @@
 					"-lrhosynclib",
 					"-ltcmalloc",
 					"-lrholib",
+					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
-					CoreServices,
+					CFNetwork,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
 					"-lrholib",
+					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -769,26 +774,31 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess (6NFKZD4L75)";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
+					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
-					CoreServices,
-					"-framework",
-					CoreGraphics,
+					CFNetwork,
+					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8AFD0D6A-1C0C-43A5-9B9D-BB00ECCEE887";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.0;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -798,7 +808,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lars Burgess";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
@@ -811,17 +822,19 @@
 					"-lrhosynclib",
 					"-ltcmalloc",
 					"-lrholib",
+					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
-					CoreServices,
+					CFNetwork,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
 					"-lrholib",
+					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BEA4354B-B3F7-48D5-B319-CCED440D5534";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -831,9 +844,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess (6NFKZD4L75)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess (6NFKZD4L75)";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -863,8 +876,8 @@
 					"-lrhoextlib",
 				);
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "8AFD0D6A-1C0C-43A5-9B9D-BB00ECCEE887";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8AFD0D6A-1C0C-43A5-9B9D-BB00ECCEE887";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				SYMROOT = build;
@@ -883,16 +896,20 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
+					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
-					CoreServices,
-					"-framework",
-					CoreGraphics,
+					CFNetwork,
+					"-lrhorubylib",
 					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
