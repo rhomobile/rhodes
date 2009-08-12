@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "RhoDelegate.h"
+#import "DateTime.h"
 
 @interface DateTimePickerDelegate : RhoDelegate
 {
@@ -16,8 +17,9 @@
 	UIDatePicker *pickerView;
 	UIBarButtonItem *doneButton;	
 	NSArray *dataArray;
-	
 	NSDateFormatter *dateFormatter;
+	
+	DateTime *dateTime;
 }
 
 @property (nonatomic, retain) IBOutlet UIDatePicker *pickerView; 
@@ -25,5 +27,6 @@
 
 @property (nonatomic, retain) NSArray *dataArray; 
 @property (nonatomic, retain) NSDateFormatter *dateFormatter; 
+@property (nonatomic, retain) DateTime *dateTime;
 
 @end

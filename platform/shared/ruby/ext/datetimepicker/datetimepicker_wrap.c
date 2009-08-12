@@ -1545,7 +1545,7 @@ static VALUE mDateTimePicker;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-	extern void choose_datetime(char* callback, char* title, int initial_time, char* format, char* opaque);
+	extern void choose_datetime(char* callback, char* title, long initial_time, int format, char* data);
 	#define choose choose_datetime
 
 
@@ -1670,8 +1670,8 @@ SWIGINTERN VALUE
 _wrap_choose(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
-  int arg3 ;
-  char *arg4 = (char *) 0 ;
+  long arg3 ;
+  int arg4 ;
   char *arg5 = (char *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -1679,11 +1679,8 @@ _wrap_choose(int argc, VALUE *argv, VALUE self) {
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
@@ -1704,16 +1701,29 @@ _wrap_choose(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "choose" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  ecode3 = SWIG_AsVal_int(argv[2], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "choose" "', argument " "3"" of type '" "int""'");
-  } 
-  arg3 = (int)(val3);
-  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "choose" "', argument " "4"" of type '" "char *""'");
+  {
+    VALUE t;
+    long val;
+    VALUE class;
+    VALUE class_str;
+    char *class_val;
+    
+    class = rb_funcall(argv[2], rb_intern("class"), 0);
+    class_str = rb_funcall(class, rb_intern("to_s"), 0);
+    class_val = StringValuePtr(class_str);
+    
+    if (!strcmp(class_val, "Time") == 0) {
+      rb_raise(SWIG_Ruby_ErrorType(SWIG_AttributeError), " of type '" "Time""'");
+    }
+    t = rb_funcall(argv[2], rb_intern("to_i"), 0);
+    val = NUM2INT(t);
+    arg3 = (long)val;
   }
-  arg4 = (char *)(buf4);
+  ecode4 = SWIG_AsVal_int(argv[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "choose" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = (int)(val4);
   if (argc > 4) {
     res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
     if (!SWIG_IsOK(res5)) {
@@ -1724,13 +1734,11 @@ _wrap_choose(int argc, VALUE *argv, VALUE self) {
   choose(arg1,arg2,arg3,arg4,arg5);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return Qnil;
 }

@@ -11,6 +11,6 @@
 
 @implementation DateTimePickerDelegate
 
-@synthesize pickerView, doneButton, dataArray, dateFormatter;
+@synthesize pickerView, doneButton, dataArray, dateFormatter, dateTime;
 
 @end

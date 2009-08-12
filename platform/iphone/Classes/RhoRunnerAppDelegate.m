@@ -14,7 +14,8 @@
 #import "common/RhoConf.h"
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
-#import  "ParamsWrapper.h"
+#import "ParamsWrapper.h"
+#import "DateTime.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -99,11 +100,11 @@
 	return YES;
 } 
 
-//-(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
-//							 usingDelegate:(id<DateTimePickerDelegate>)delegateObject
-//{ 
-//	return YES;
-//} 
+-(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
+							 usingDelegate:(DateTimePickerDelegate*)delegateObject
+{
+	return YES;
+} 
 
 - (void)onTakePicture:(NSString*) url {
 	[pickImageDelegate setPostUrl:[self normalizeUrl:url]];
@@ -119,8 +120,8 @@
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
-- (void)onChooseDateTime:(NSString*) url initialTime:(int) initial_time format:(NSString*) format {
-	[dateTimePickerDelegate setPostUrl:[self normalizeUrl:url]];
+- (void)onChooseDateTime:(DateTime*)dateTime {
+	dateTimePickerDelegate.dateTime = dateTime;
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
 }

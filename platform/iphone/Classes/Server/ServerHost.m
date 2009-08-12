@@ -23,7 +23,8 @@
 #include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
 #include "JSString.h"
-#import  "ParamsWrapper.h"
+#import "ParamsWrapper.h"
+#import "DateTime.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -128,9 +129,15 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-- (void)chooseDateTime:(NSString*) url initialTime:(int) initial_time format:(NSString*) format {
+- (void)chooseDateTime:(NSString*)url title:(NSString*)title initialTime:(long)initial_time format:(int)format {
 	if(actionTarget && [actionTarget respondsToSelector:onChooseDateTime]) {
-		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:url withObject:initial_time withObject:format waitUntilDone:NO];
+		DateTime* dateTime = [[DateTime alloc] init];
+		dateTime.url = url;
+		dateTime.title = title;
+		dateTime.initialTime = initial_time;
+		dateTime.format = format;
+		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:NO];
+		[dateTime release];
 	}
 }
 
@@ -369,11 +376,11 @@ void choose_picture(char* callback_url) {
 	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
 }
 
-void choose_datetime(char* callback, char* title, int initial_time, char* format, char* opaque) {
+void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
 	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithCString:callback] 
-										  title:[NSString stringWithCString:title] 
-									initialTime:initial_time
-										 format:[NSString stringWithCString:format]];
+									title:[NSString stringWithCString:title]
+									initialTime:initial_time 
+									format:format];
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {
