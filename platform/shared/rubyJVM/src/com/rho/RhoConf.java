@@ -3,10 +3,13 @@ package com.rho;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import com.rho.db.DBAdapter;
+import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
+import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 
@@ -216,6 +219,32 @@ public class RhoConf {
 		}
    }
    
+   public static void sendLog()throws Exception
+   {
+		com.rho.net.NetRequest nq = RhoClassFactory.createNetRequest();
+		String strDevicePin = "";
+		String strClientID = "";
+		
+		try{
+			IRhoRubyHelper sysInfo = RhoClassFactory.createRhoRubyHelper();
+			strDevicePin = sysInfo.getDeviceId();
+		}catch(Exception exc)
+		{
+			LOG.ERROR("send_log:getDeviceId failed", exc);
+		}
+
+		try{
+			strClientID = com.rho.sync.SyncThread.getSyncEngine().loadClientID();
+		}catch(Exception exc)
+		{
+			LOG.ERROR("send_log:loadClientID failed", exc);
+		}
+		
+		String strQuery = RhoConf.getInstance().getString("syncserver") + "client_log?" +
+		"client_id=" + strClientID + "&device_pin=" + strDevicePin;
+		nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), null );
+   }
+   
    public static void initMethods(RubyClass klass) {
 	   klass.getSingletonClass().defineMethod("set_property_by_name", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
@@ -230,5 +259,35 @@ public class RhoConf {
 				return RubyConstant.QNIL;
 			}
 		});
+	   
+		klass.getSingletonClass().defineMethod("show_log",	new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					IRhoRubyHelper systemInfo = RhoClassFactory.createRhoRubyHelper();
+					systemInfo.showLog();
+					return RubyConstant.QNIL;
+				}catch(Exception e)
+				{
+					LOG.ERROR("show_log failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			    
+			}
+		});
+
+		klass.getSingletonClass().defineMethod("send_log",	new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					sendLog();
+					return RubyConstant.QNIL;
+				}catch(Exception e)
+				{
+					LOG.ERROR("send_log failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			    
+			}
+		});
+		
 	}
 }

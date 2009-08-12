@@ -14,4 +14,7 @@ public interface IRhoRubyHelper {
 	
 	public String getAppProperty(String name);
 	public boolean isSimulator();
+	
+	public void showLog();
+	
 }

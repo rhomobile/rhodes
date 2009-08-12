@@ -35,6 +35,11 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		return "Android";
 	}
 
+    public void showLog()
+    {
+        //TODO: showLog
+    }
+
 	public void loadBackTrace(RubyArray backtrace) {
 		try {
 			if ( backtrace != null )

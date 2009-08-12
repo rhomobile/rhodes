@@ -143,7 +143,7 @@ public class SyncThread extends RhoThread
 	}
 
     public static SyncThread getInstance(){ return m_pInstance; }
-    static SyncEngine getSyncEngine(){ return m_pInstance.m_oSyncEngine; }
+    public static SyncEngine getSyncEngine(){ return m_pInstance.m_oSyncEngine; }
     static DBAdapter getDBAdapter(){ return DBAdapter.getInstance(); }
 
     void addSyncCommand(SyncCommand oSyncCmd)
