@@ -46,56 +46,68 @@
 }
 
 - (void)createPicker:(UIWindow*)window {
-	int mode = self.dateTime.format;
-	if (self.pickerView == NULL) {
+	// Create the picker
+	if (self.pickerView == nil) {
 		self.pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
 	}
-	self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	
-	// Determine picker type
-	switch (mode) {
-		case 0:
-			self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
-			break;
-		case 1:
-			self.pickerView.datePickerMode = UIDatePickerModeDate;
-			break;
-		case 2:
-			self.pickerView.datePickerMode = UIDatePickerModeTime;
-			break;
-		default:
-			self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
-			break;
-	}
-	
-	// Add toolbar to view
-	CGRect mainViewBounds = self.pickerView.bounds;
-	[self createPickerBar:mainViewBounds];	
-	[window addSubview:self.toolbar];
-	
-	// Add picker to view
-	[window addSubview:self.pickerView];
-	CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-	CGSize pickerSize = [self.pickerView sizeThatFits:CGSizeZero];
-	CGRect startRect = CGRectMake(0.0,
-								  screenRect.origin.y + screenRect.size.height,
-								  pickerSize.width, pickerSize.height);
-	self.pickerView.frame = startRect;
-	
-	// compute the end frame
-	CGRect pickerRect = CGRectMake(0.0,
-								   screenRect.origin.y + screenRect.size.height - pickerSize.height,
-								   pickerSize.width,
-								   pickerSize.height);
+	if (self.pickerView.superview == nil) {
+		self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		
+		// Determine picker type
+		int mode = self.dateTime.format;
+		switch (mode) {
+			case 0:
+				self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
+				break;
+			case 1:
+				self.pickerView.datePickerMode = UIDatePickerModeDate;
+				break;
+			case 2:
+				self.pickerView.datePickerMode = UIDatePickerModeTime;
+				break;
+			default:
+				self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
+				break;
+		}
+		
+		// Add toolbar to view
+		CGRect mainViewBounds = self.pickerView.bounds;
+		if (self.toolbar == nil) {
+			[self createPickerBar:mainViewBounds];	
+		}
+		[window addSubview:self.toolbar];
+		
+		// Add picker to view
+		[window addSubview:self.pickerView];
+		CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+		CGSize pickerSize = [self.pickerView sizeThatFits:CGSizeZero];
+		CGRect startRect = CGRectMake(0.0,
+									  screenRect.origin.y + screenRect.size.height,
+									  pickerSize.width, pickerSize.height);
+		self.pickerView.frame = startRect;
+		
+		// compute the end frame
+		CGRect pickerRect = CGRectMake(0.0,
+									   screenRect.origin.y + screenRect.size.height - pickerSize.height,
+									   pickerSize.width,
+									   pickerSize.height);
 
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.3];
-	
-	[UIView setAnimationDelegate:self];
-	
-	self.pickerView.frame = pickerRect;
-	
-	[UIView commitAnimations];
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.3];
+		
+		[UIView setAnimationDelegate:self];
+		
+		self.pickerView.frame = pickerRect;
+		
+		[UIView commitAnimations];
+	}
+}
+
+- (void)slideDownDidStop
+{
+	// the date picker has finished sliding downwards, so remove it
+	[self.pickerView removeFromSuperview];
 }
 
 - (IBAction)dateAction:(id)sender
