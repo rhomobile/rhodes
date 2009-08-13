@@ -256,6 +256,14 @@ module Rho
         end
       end
       
+      def show_log
+        RhoConf.show_log
+      end
+      
+      def send_log
+        RhoConf.send_log
+      end
+      
       def sources
         @@sources
       end
