@@ -1107,7 +1107,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static class PrimaryResourceFetchThread extends Thread {
 
         private RhodesApplication _application;
-        private Callback _callback;
+        private static Callback _callback;
 
         private Event _event;
 
@@ -1132,7 +1132,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			_postData = postData;
 			_application = application;
 			_event = event;
-			_callback = null;
+			//_callback = null;
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
@@ -1143,7 +1143,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             _postData = postData;
             _application = application;
             _event = event;
-            _callback = callback;
+            if ( callback != null )
+            	_callback = callback;
         }
 
         public void run() {
@@ -1160,10 +1161,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         				LOG.ERROR("Callback failed: " + _url, exc);
         			}
         		}
-        		else	
+        		else
+        		{
         			_application.processConnection(connection, _event);
+        			
+                	if (_callback != null )
+                	{
+                		_callback.run();
+                		_callback = null;
+                	}
+        			
+        		}
         	}
-        	if (_callback != null ) _callback.run();
         }
     }
 }
