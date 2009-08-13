@@ -136,7 +136,7 @@ static ServerHost* sharedSH = nil;
 		dateTime.title = title;
 		dateTime.initialTime = initial_time;
 		dateTime.format = format;
-		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:NO];
+		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:YES];
 		[dateTime release];
 	}
 }
