@@ -72,7 +72,9 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	
 	public void showLog()
 	{
-		RhodesApplication.getInstance().showLogScreen();
+		synchronized ( RhodesApplication.getEventLock() ) {		
+			RhodesApplication.getInstance().showLogScreen();
+		}
 	}
 	
 	static Hashtable m_appProperties = new Hashtable(); 
