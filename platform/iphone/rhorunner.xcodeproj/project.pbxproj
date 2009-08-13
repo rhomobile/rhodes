@@ -28,6 +28,7 @@
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 46B0044810332E5C00D0C2F4 /* Entitlements.plist */; };
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
+		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
 		46E9DE330FC3577B00726D6B /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 46E9DE320FC3577B00726D6B /* JSString.m */; };
@@ -160,6 +161,7 @@
 		46B0044810332E5C00D0C2F4 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		46B005F51033690F00D0C2F4 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
 		46B005F61033690F00D0C2F4 /* DateTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTime.m; sourceTree = "<group>"; };
+		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
@@ -223,6 +225,7 @@
 				4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */,
 				F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */,
 				F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */,
+				46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +326,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				46B007061033776600D0C2F4 /* CoreGraphics.framework */,
 				F516695F0FFD78770079F023 /* AVFoundation.framework */,
 				F51668DF0FFD5F740079F023 /* AudioToolbox.framework */,
 				4678FCA80F8185920054340C /* SystemConfiguration.framework */,

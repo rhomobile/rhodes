@@ -103,6 +103,7 @@
 -(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
 							 usingDelegate:(DateTimePickerDelegate*)delegateObject
 {
+	[delegateObject createPicker:window];
 	return YES;
 } 
 
