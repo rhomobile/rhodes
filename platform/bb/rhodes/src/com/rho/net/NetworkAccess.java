@@ -39,6 +39,10 @@ public class NetworkAccess implements INetworkAccess {
 		bes = false;
 		URLsuffix = null;
 
+		String strDeviceside = ";deviceside=true";
+		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
+			strDeviceside = "";
+		
 		if (DeviceInfo.isSimulator()) {
 			URLsuffix = ";deviceside=true";
 			networkConfigured = true;
@@ -50,7 +54,7 @@ public class NetworkAccess implements INetworkAccess {
 					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
 						continue;
 					
-					WIFIsuffix = ";interface=wifi;deviceside=true"; 
+					WIFIsuffix = ";interface=wifi" + strDeviceside; 
 						//";deviceside=true;ConnectionUID=" + 
 						//wifis[i].getUid();
 					
@@ -91,7 +95,7 @@ public class NetworkAccess implements INetworkAccess {
 		}
 		
 		if (networkConfigured == false) {
-			URLsuffix = ";deviceside=true";
+			URLsuffix = strDeviceside;//";deviceside=true";
 			networkConfigured = true;
 		}
 		
