@@ -160,7 +160,7 @@ public class DBAdapter extends RubyBasic {
 		"port VARCHAR(10) default NULL,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
-		" id INTEGER default NULL,"+
+		" id INTEGER PRIMARY KEY,"+
 		" token varchar(30) default NULL,"+
 		" source_id int default NULL,"+
 		" attrib varchar(255) default NULL,"+

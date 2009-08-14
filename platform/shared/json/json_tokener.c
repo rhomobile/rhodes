@@ -456,15 +456,19 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 	printbuf_reset(tok->pb);
 	state = json_tokener_state_object_field;
       } else {
-	tok->err = json_tokener_error_parse_object_key_name;
-	goto out;
+	//tok->err = json_tokener_error_parse_object_key_name;
+	//goto out;
+    tok->quote_char = ':';
+	printbuf_reset(tok->pb);
+    printbuf_memappend(tok->pb, &c, 1);
+	state = json_tokener_state_object_field;
       }
       break;
 
     case json_tokener_state_object_field:
       if(c == tok->quote_char) {
 	obj_field_name = strdup(tok->pb->buf);
-	saved_state = json_tokener_state_object_field_end;
+    saved_state = c == ':' ? json_tokener_state_object_value : json_tokener_state_object_field_end;
 	state = json_tokener_state_eatws;
       } else if(c == '\\') {
 	saved_state = json_tokener_state_object_field;

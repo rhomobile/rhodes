@@ -218,6 +218,13 @@ void CSyncSource::syncServerChanges()
         }
 
         processServerData(resp.getCharData());
+/*		String strData =
+		"[{count: 124},{total_count: 5425},{token: 123},{version: 1},"
+		"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:["
+		"{i:26478681,d:\"delete\"},"
+		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:\"insert\"}]}]";
+		//u:\"query\",
+		processServerData(strData.c_str());*/
 
         m_bGetAtLeastOnePage = true;
 
@@ -249,7 +256,15 @@ void CSyncSource::processServerData(const char* szData)
     }else if ( getCurPageCount() == 0 )
         processToken(0);
 
-	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID();
+    int nVersion = 0;
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
+    {
+        nVersion = oJsonArr.getCurItem().getInt("version");
+        oJsonArr.next();
+    }
+
+	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+         + ". Version: " + nVersion;
 	
     if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
     {
@@ -265,16 +280,14 @@ void CSyncSource::processServerData(const char* szData)
                 getDB().startTransaction();
             }
 
-            CJSONEntry oJsonEntry = oJsonArr.getCurItem();
-
-            CJSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-            if ( !oJsonObject.isEmpty() )
+	        CJSONEntry oJsonObject = oJsonArr.getCurItem();
+	        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
+	        	processSyncObject_ver1(oJsonObject);
+	        
+	        if( !bRes)
             {
-                if ( !processSyncObject(oJsonObject) )
-                {
-	                getSync().stopSync();
-	                break;
-                }
+	            getSync().stopSync();
+	            break;
             }
         }
         RhoRuby_RhomAttribManager_save(getID());
@@ -291,6 +304,17 @@ CValue::CValue(json::CJSONEntry& oJsonEntry)//throws JSONException
 	const char* szAttribType = oJsonEntry.getString("attrib_type");
     m_strAttrType = szAttribType ? szAttribType : "";
 	m_nID = oJsonEntry.getUInt64("id");
+}
+
+CValue::CValue(json::CJSONEntry& oJsonEntry, int nVer)//throws JSONException
+{
+    if ( nVer == 1 )
+    {
+	    m_strValue = oJsonEntry.getString("v");
+	    const char* szAttribType = oJsonEntry.getString("t");
+        m_strAttrType = szAttribType ? szAttribType : "";
+	    m_nID = oJsonEntry.getUInt64("i");
+    }
 }
 
 String CSyncSource::makeFileName(const CValue& value)//throws Exception
@@ -366,9 +390,58 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
     
     return true;
 }
-	
-boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
+
+boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exception
 {
+	const char* strObject = oJsonObject.getString("o");
+	CJSONArrayIterator oJsonArr(oJsonObject, "av");
+	
+    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+	{
+		CJSONEntry oJsonEntry = oJsonArr.getCurItem();
+        if ( oJsonEntry.isEmpty() )
+        	continue;
+
+        const char* szDbOp = oJsonEntry.getString("d");
+        if ( szDbOp && strcmp(szDbOp,"insert")==0 )
+        {
+    	    CValue value(oJsonEntry,1);
+    	    if ( !downloadBlob(value) )
+    		    return false;
+
+            String strAttrib = oJsonEntry.getString("a");
+	    	String strUpdateType = "query";
+	    	if( oJsonEntry.hasName("u") )
+	    		strUpdateType = oJsonEntry.getString("u");
+
+            getDB().executeSQL("INSERT INTO object_values \
+                (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+                value.m_nID, strAttrib, getID(), strObject,
+                value.m_strValue,strUpdateType, value.m_strAttrType );
+
+            RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
+            m_nInserted++;
+        }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
+        {
+            uint64 id = oJsonEntry.getUInt64("i");
+            getDB().executeSQL("DELETE FROM object_values where id=?", id );
+
+            RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
+            m_nDeleted++;
+        }else{
+            LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");
+        }
+	}
+	
+	return true;
+}
+
+boolean CSyncSource::processSyncObject(CJSONEntry& oJsonObject)
+{
+	CJSONEntry oJsonEntry = oJsonObject.getEntry("object_value");
+    if ( oJsonEntry.isEmpty() )
+    	return true;
+
     const char* szDbOp = oJsonEntry.getString("db_operation");
     if ( szDbOp && strcmp(szDbOp,"insert")==0 )
     {
@@ -383,7 +456,7 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
         String strAttrib = oJsonEntry.getString("attrib");
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-            oJsonEntry.getUInt64("id"), strAttrib, getID(), oJsonEntry.getString("object"),
+            value.m_nID, strAttrib, getID(), oJsonEntry.getString("object"),
             value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
 
         RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());

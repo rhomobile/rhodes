@@ -293,7 +293,14 @@ class SyncSource
 	        }
 	
 	        processServerData(resp.getCharData());
-	
+/*			String strData =
+			"[{count: 124},{total_count: 5425},{token: 123},{version: 1}," +
+			"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:[" +
+			"{i:26478681,d:\"delete\"}," +
+			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",d:\"insert\"}]}]";
+			//u:\"query\",
+			processServerData(strData);*/
+			
 	        m_bGetAtLeastOnePage = true;
 	
 	        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
@@ -323,8 +330,16 @@ class SyncSource
 	        oJsonArr.next();
 	    }else if ( getCurPageCount() == 0 )
 	        processToken("0");
+
+	    int nVersion = 0;
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
+	    {
+	        nVersion = oJsonArr.getCurItem().getInt("version");
+	        oJsonArr.next();
+	    }
 	    
-		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID() );
+		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+				+ ". Version: " + nVersion );
 		
 		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 		{
@@ -341,17 +356,15 @@ class SyncSource
 			            getDB().startTransaction();
 			        }
 			
-			        JSONEntry oJsonEntry = oJsonArr.getCurItem();
-			
-			        JSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-			        if ( !oJsonObject.isEmpty() )
-			        {
-			            if ( !processSyncObject(oJsonObject) )
-			            {
-				            getSync().stopSync();
-				            break;
-			            }
-			        }
+			        JSONEntry oJsonObject = oJsonArr.getCurItem();
+			        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
+			        	processSyncObject_ver1(oJsonObject);
+			        
+			        if( !bRes)
+		            {
+			            getSync().stopSync();
+			            break;
+		            }
 			    }
 		    }finally{
 		    	RhoRuby.RhomAttribManager_save(getID());
@@ -375,6 +388,16 @@ class SyncSource
 			m_strAttrType = oJsonEntry.getString("attrib_type");
 			m_nID = oJsonEntry.getLong("id");
 		}
+		CValue(JSONEntry oJsonEntry, int nVer)throws JSONException
+		{
+			if ( nVer == 1 )
+			{
+				m_strValue = oJsonEntry.getString("v");
+				m_strAttrType = oJsonEntry.getString("t");
+				m_nID = oJsonEntry.getLong("i");
+			}
+		}
+		
 	}
 	
 	private String makeFileName(CValue value)throws Exception
@@ -429,8 +452,58 @@ class SyncSource
         return true;
 	}
 	
-	boolean processSyncObject(JSONEntry oJsonEntry)throws Exception
+	boolean processSyncObject_ver1(JSONEntry oJsonObject)throws Exception
 	{
+		String strObject = oJsonObject.getString("o");
+		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
+		
+	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+		{
+			JSONEntry oJsonEntry = oJsonArr.getCurItem();
+	        if ( oJsonEntry.isEmpty() )
+	        	continue;
+	        
+		    String szDbOp = oJsonEntry.getString("d");
+		    if ( szDbOp != null && szDbOp.equals("insert") )
+		    {
+		    	CValue value = new CValue(oJsonEntry,1);
+		    	if ( !downloadBlob(value) )
+		    		return false;
+		    	
+		    	String strAttrib = oJsonEntry.getString("a");
+		    	String strUpdateType = "query";
+		    	if( oJsonEntry.hasName("u") )
+		    		strUpdateType = oJsonEntry.getString("u");
+		    	
+		        getDB().executeSQL("INSERT INTO object_values " +
+		            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+		            new Long(value.m_nID), strAttrib, getID(), strObject,
+		            value.m_strValue, strUpdateType, value.m_strAttrType );
+		        
+		        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
+		        m_nInserted++;
+		    }else if ( szDbOp != null && szDbOp.equals("delete") )
+		    {
+		    	long id = oJsonEntry.getLong("i");
+		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
+		
+		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
+		        m_nDeleted++;
+		    }else{
+		        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );
+		    }
+		}
+		
+		return true;
+	}
+
+	boolean processSyncObject(JSONEntry oJsonObject)throws Exception
+	{
+    	JSONEntry oJsonEntry = oJsonObject.getEntry("object_value");
+        
+        if ( oJsonEntry.isEmpty() )
+        	return true;
+        
 	    String szDbOp = oJsonEntry.getString("db_operation");
 	    if ( szDbOp != null && szDbOp.equals("insert") )
 	    {

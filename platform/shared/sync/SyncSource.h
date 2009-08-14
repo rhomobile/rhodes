@@ -39,6 +39,7 @@ public:
 	uint64 m_nID;
 	
     CValue(json::CJSONEntry& oJsonEntry);//throws JSONException
+    CValue(json::CJSONEntry& oJsonEntry, int nVer);//throws JSONException
 };
 
 class CSyncEngine;
@@ -103,6 +104,7 @@ public:
 
     void processServerData(const char* szData);
     boolean processSyncObject(json::CJSONEntry& oJsonEntry);
+    boolean processSyncObject_ver1(json::CJSONEntry oJsonObject);//throws Exception
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);

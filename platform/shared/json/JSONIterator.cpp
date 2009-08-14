@@ -32,6 +32,17 @@ CJSONArrayIterator::CJSONArrayIterator(const char* szData)
         m_array = json_object_get_array((struct json_object *)m_rootObject);
 }
 
+CJSONArrayIterator::CJSONArrayIterator(CJSONEntry& oEntry, const char* strName)
+{
+    m_array = 0;
+    m_nCurItem = 0;
+    m_rootObject = 0;
+
+    CJSONEntry oItem = oEntry.getEntry(strName);
+    if ( !oItem.isEmpty() )
+        m_array = json_object_get_array( oItem.getObject() );
+}
+
 CJSONArrayIterator::~CJSONArrayIterator(void)
 {
     if ( m_rootObject != 0 )
