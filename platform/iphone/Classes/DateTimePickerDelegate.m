@@ -144,6 +144,7 @@
 {
 	// the date picker has finished sliding downwards, so remove it
 	[self.pickerView removeFromSuperview];
+	[self.barLabel removeFromSuperview];
 }
 
 - (void)animateDown
