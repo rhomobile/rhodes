@@ -12,6 +12,14 @@
 
 @synthesize postUrl;
 
+- (void)doCallback:(NSString*)message {
+	// Create post body
+	NSData* postBody = [message dataUsingEncoding:NSUTF8StringEncoding];
+	// Start notification thread	
+	[NSThread detachNewThreadSelector:@selector(NotifyViewThreadRoutine:)
+							 toTarget:self withObject:postBody];		
+}
+
 - (void)NotifyViewThreadRoutine:(id)object {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     

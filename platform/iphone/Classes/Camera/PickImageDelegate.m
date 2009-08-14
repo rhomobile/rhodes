@@ -11,15 +11,6 @@
 
 @implementation PickImageDelegate
 
-
-- (void)doCallback:(NSString*) message {
-	// Create post body
-	NSData* postBody = [message dataUsingEncoding:NSUTF8StringEncoding];
-	// Start notification thread	
-	[NSThread detachNewThreadSelector:@selector(NotifyViewThreadRoutine:)
-							 toTarget:self withObject:postBody];		
-}
-
 - (void)useImage:(UIImage*)theImage { 
 	NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/public/db-files"];
 	

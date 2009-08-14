@@ -17,11 +17,13 @@
 	UIDatePicker *pickerView;
 	UIToolbar *toolbar;
 	DateTime *dateTime;
+	NSDateFormatter *dateFormatter;
 }
 
 @property (nonatomic, retain) DateTime *dateTime;
 @property (nonatomic, retain) UIDatePicker *pickerView;
 @property (nonatomic, retain) UIToolbar *toolbar;
+@property (nonatomic, retain) NSDateFormatter *dateFormatter; 
 
 - (IBAction)dateAction:(id)sender;
 - (void)createPicker:(UIWindow*)window;
