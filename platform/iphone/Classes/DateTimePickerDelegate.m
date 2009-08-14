@@ -33,19 +33,24 @@
 	
 	// TODO: This is an approximate y-origin, figure out why it is off by 3.5
 	[self.toolbar setFrame:CGRectMake(frame.origin.x,
-									  frame.origin.y + frame.size.height + 3.5,
+									  frame.origin.y + frame.size.height + 3.7,
 									  frame.size.width,
 									  toolbarHeight)];	
 	
-    UIBarButtonItem *saveItem = [[UIBarButtonItem alloc]
-								 initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-								 target:self action:@selector(dateAction:)];
-	saveItem.style = UIBarButtonItemStylePlain;
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc]
+								 initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+								 target:self action:@selector(cancelAction:)];
+	cancelItem.style = UIBarButtonItemStylePlain;
 	
 	UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
 																			  target:self action:nil];
 	
-	NSArray *items = [NSArray arrayWithObjects: flexItem, saveItem, nil];
+	UIBarButtonItem *saveItem = [[UIBarButtonItem alloc]
+								 initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+								 target:self action:@selector(dateAction:)];
+	saveItem.style = UIBarButtonItemStylePlain;
+	
+	NSArray *items = [NSArray arrayWithObjects: cancelItem, flexItem, saveItem, nil];
 	[self.toolbar setItems:items animated:NO];
 	[saveItem release];
 }
@@ -135,11 +140,17 @@
 	[UIView setAnimationDelegate:self];
 	[UIView setAnimationDidStopSelector:@selector(slideDownDidStop)];
 	
-	self.pickerView.frame = endFrame;
-	[UIView commitAnimations];	
-	
 	// Remove toolbar immediately
 	[self.toolbar removeFromSuperview];
+	self.pickerView.frame = endFrame;
+	[UIView commitAnimations];	
+}
+
+- (IBAction)cancelAction:(id)sender
+{	
+	NSString *message = @"status=cancel";
+	[self doCallback:message];
+	[self animateDown];
 }
 
 - (IBAction)dateAction:(id)sender
