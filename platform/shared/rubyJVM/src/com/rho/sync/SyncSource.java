@@ -296,8 +296,8 @@ class SyncSource
 /*			String strData =
 			"[{count: 124},{total_count: 5425},{token: 123},{version: 1}," +
 			"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:[" +
-			"{i:26478681,d:\"delete\"}," +
-			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",d:\"insert\"}]}]";
+			"{i:26478681,d:1}," +
+			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",d:0}]}]";
 			//u:\"query\",
 			processServerData(strData);*/
 			
@@ -463,8 +463,8 @@ class SyncSource
 	        if ( oJsonEntry.isEmpty() )
 	        	continue;
 	        
-		    String szDbOp = oJsonEntry.getString("d");
-		    if ( szDbOp != null && szDbOp.equals("insert") )
+		    int nDbOp = oJsonEntry.getInt("d");
+		    if ( nDbOp == 0 ) //insert
 		    {
 		    	CValue value = new CValue(oJsonEntry,1);
 		    	if ( !downloadBlob(value) )
@@ -482,7 +482,7 @@ class SyncSource
 		        
 		        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
 		        m_nInserted++;
-		    }else if ( szDbOp != null && szDbOp.equals("delete") )
+		    }else if ( nDbOp == 1 ) //delete
 		    {
 		    	long id = oJsonEntry.getLong("i");
 		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
@@ -490,7 +490,7 @@ class SyncSource
 		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 		        m_nDeleted++;
 		    }else{
-		        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );
+		        LOG.ERROR("Unknown DB operation: " + nDbOp );
 		    }
 		}
 		

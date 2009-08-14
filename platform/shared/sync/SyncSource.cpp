@@ -221,8 +221,8 @@ void CSyncSource::syncServerChanges()
 /*		String strData =
 		"[{count: 124},{total_count: 5425},{token: 123},{version: 1},"
 		"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:["
-		"{i:26478681,d:\"delete\"},"
-		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:\"insert\"}]}]";
+		"{i:26478681,d:1},"
+		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0}]}]";
 		//u:\"query\",
 		processServerData(strData.c_str());*/
 
@@ -402,8 +402,8 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exce
         if ( oJsonEntry.isEmpty() )
         	continue;
 
-        const char* szDbOp = oJsonEntry.getString("d");
-        if ( szDbOp && strcmp(szDbOp,"insert")==0 )
+        int nDbOp = oJsonEntry.getInt("d");
+        if ( nDbOp == 0 ) //insert
         {
     	    CValue value(oJsonEntry,1);
     	    if ( !downloadBlob(value) )
@@ -421,7 +421,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exce
 
             RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
             m_nInserted++;
-        }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
+        }else if ( nDbOp == 1 ) //delete
         {
             uint64 id = oJsonEntry.getUInt64("i");
             getDB().executeSQL("DELETE FROM object_values where id=?", id );
@@ -429,7 +429,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exce
             RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
             m_nDeleted++;
         }else{
-            LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");
+            LOG(ERROR) + "Unknown DB operation: " + nDbOp;
         }
 	}
 	
