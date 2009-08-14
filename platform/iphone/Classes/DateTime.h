@@ -16,11 +16,13 @@
 	NSString* title;
 	long	  initialTime;
 	int		  format;
+	NSString* data;
 }
 
 @property (nonatomic, retain) NSString* url;
 @property (nonatomic, retain) NSString* title;
 @property (assign) long initialTime;
 @property (assign) int format;
+@property (nonatomic, retain) NSString* data;
 
 @end

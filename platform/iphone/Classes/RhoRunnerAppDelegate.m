@@ -77,9 +77,13 @@
 							 usingDelegate:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
 							 sourceType:(UIImagePickerControllerSourceType)type
 { 
-	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) 
-		|| (delegateObject == nil) || (controller == nil)) 
+#if !defined __IPHONE_3_0
+	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
+		 (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
+		 (delegateObject == nil) || (controller == nil)) {
 		return NO; 
+	}
+#endif
 	
 	@try {
 		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
@@ -123,6 +127,7 @@
 
 - (void)onChooseDateTime:(DateTime*)dateTime {
 	dateTimePickerDelegate.dateTime = dateTime;
+	[dateTimePickerDelegate setPostUrl:[self normalizeUrl:dateTime.url]];
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
 }

@@ -14,4 +14,6 @@
 
 @property (readwrite, copy) NSString *postUrl;
 
+- (void)doCallback:(NSString*)message;
+
 @end

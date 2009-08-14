@@ -129,13 +129,14 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-- (void)chooseDateTime:(NSString*)url title:(NSString*)title initialTime:(long)initial_time format:(int)format {
+- (void)chooseDateTime:(NSString*)url title:(NSString*)title initialTime:(long)initial_time format:(int)format data:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onChooseDateTime]) {
 		DateTime* dateTime = [[DateTime alloc] init];
 		dateTime.url = url;
 		dateTime.title = title;
 		dateTime.initialTime = initial_time;
 		dateTime.format = format;
+		dateTime.data = data;
 		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:YES];
 		[dateTime release];
 	}
@@ -378,9 +379,10 @@ void choose_picture(char* callback_url) {
 
 void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
 	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithCString:callback] 
-									title:[NSString stringWithCString:title]
+										  title:[NSString stringWithCString:title]
 									initialTime:initial_time 
-									format:format];
+										 format:format
+										   data:[NSString stringWithCString:data]];
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {

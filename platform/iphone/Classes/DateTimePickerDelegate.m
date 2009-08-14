@@ -11,13 +11,14 @@
 
 @implementation DateTimePickerDelegate
 
-@synthesize dateTime, pickerView, toolbar;
+@synthesize dateTime, pickerView, toolbar, dateFormatter;
 
 - (void)dealloc
 {	
 	[pickerView release];
 	[toolbar release];
 	[dateTime release];
+	[dateFormatter release];
 	[super dealloc];
 }
 
@@ -30,17 +31,21 @@
 	[self.toolbar sizeToFit];
 	CGFloat toolbarHeight = [self.toolbar frame].size.height;
 	
+	// TODO: This is an approximate y-origin, figure out why it is off by 3.5
 	[self.toolbar setFrame:CGRectMake(frame.origin.x,
-								 frame.origin.y + frame.size.height - toolbarHeight,
-								 frame.size.width,
-								 toolbarHeight)];	
+									  frame.origin.y + frame.size.height + 3.5,
+									  frame.size.width,
+									  toolbarHeight)];	
 	
     UIBarButtonItem *saveItem = [[UIBarButtonItem alloc]
 								 initWithBarButtonSystemItem:UIBarButtonSystemItemSave
 								 target:self action:@selector(dateAction:)];
 	saveItem.style = UIBarButtonItemStylePlain;
 	
-	NSArray *items = [NSArray arrayWithObjects: saveItem, nil];
+	UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+																			  target:self action:nil];
+	
+	NSArray *items = [NSArray arrayWithObjects: flexItem, saveItem, nil];
 	[self.toolbar setItems:items animated:NO];
 	[saveItem release];
 }
@@ -51,6 +56,8 @@
 		self.pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
 	}
 	
+	self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+	
 	if (self.pickerView.superview == nil) {
 		self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
@@ -59,9 +66,13 @@
 		switch (mode) {
 			case 0:
 				self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
+				[self.dateFormatter setDateStyle:NSDateFormatterLongStyle];
+				[self.dateFormatter setTimeStyle:NSDateFormatterShortStyle];
 				break;
 			case 1:
 				self.pickerView.datePickerMode = UIDatePickerModeDate;
+				[self.dateFormatter setDateStyle:NSDateFormatterShortStyle];
+				[self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
 				break;
 			case 2:
 				self.pickerView.datePickerMode = UIDatePickerModeTime;
@@ -73,9 +84,7 @@
 		
 		// Add toolbar to view
 		CGRect mainViewBounds = self.pickerView.bounds;
-		if (self.toolbar == nil) {
-			[self createPickerBar:mainViewBounds];	
-		}
+		[self createPickerBar:mainViewBounds];
 		[window addSubview:self.toolbar];
 		
 		// Add picker to view
@@ -110,7 +119,7 @@
 	[self.pickerView removeFromSuperview];
 }
 
-- (IBAction)dateAction:(id)sender
+- (void)animateDown
 {
 	CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
 	CGRect endFrame = self.pickerView.frame;
@@ -125,7 +134,20 @@
 	
 	self.pickerView.frame = endFrame;
 	[UIView commitAnimations];	
+	
+	// Remove toolbar immediately
 	[self.toolbar removeFromSuperview];
+}
+
+- (IBAction)dateAction:(id)sender
+{	
+	long ldate = [self.pickerView.date timeIntervalSince1970];
+	NSMutableString *message = [[NSMutableString alloc] initWithFormat:@"status=ok&result=%@", [NSNumber numberWithLong:ldate]];
+	if (self.dateTime.data) {
+		[message appendFormat:@"&opaque=%@", self.dateTime.data];
+	}
+	[self doCallback:message];
+	[self animateDown];
 }
 
 @end
