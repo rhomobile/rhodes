@@ -67,18 +67,21 @@
 			case 0:
 				self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
 				[self.dateFormatter setDateStyle:NSDateFormatterLongStyle];
-				[self.dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+				[self.dateFormatter setTimeStyle:NSDateFormatterLongStyle];
 				break;
 			case 1:
 				self.pickerView.datePickerMode = UIDatePickerModeDate;
-				[self.dateFormatter setDateStyle:NSDateFormatterShortStyle];
+				[self.dateFormatter setDateStyle:NSDateFormatterLongStyle];
 				[self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
 				break;
 			case 2:
 				self.pickerView.datePickerMode = UIDatePickerModeTime;
+				[self.dateFormatter setDateStyle:NSDateFormatterNoStyle];
 				break;
 			default:
 				self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
+				[self.dateFormatter setDateStyle:NSDateFormatterLongStyle];
+				[self.dateFormatter setTimeStyle:NSDateFormatterLongStyle];
 				break;
 		}
 		
