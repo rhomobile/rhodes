@@ -11,12 +11,13 @@
 
 @implementation DateTimePickerDelegate
 
-@synthesize dateTime, pickerView, toolbar, dateFormatter;
+@synthesize dateTime, pickerView, mainWindow, toolbar, barLabel, dateFormatter;
 
 - (void)dealloc
 {	
 	[pickerView release];
 	[toolbar release];
+	[barLabel release];
 	[dateTime release];
 	[dateFormatter release];
 	[super dealloc];
@@ -32,33 +33,44 @@
 	CGFloat toolbarHeight = [self.toolbar frame].size.height;
 	
 	// TODO: This is an approximate y-origin, figure out why it is off by 3.5
-	[self.toolbar setFrame:CGRectMake(frame.origin.x,
+	CGRect toolbarFrame = CGRectMake(frame.origin.x,
 									  frame.origin.y + frame.size.height + 3.7,
 									  frame.size.width,
-									  toolbarHeight)];	
+									  toolbarHeight);
+	[self.toolbar setFrame:toolbarFrame];	
 	
     UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc]
 								 initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
 								 target:self action:@selector(cancelAction:)];
 	cancelItem.style = UIBarButtonItemStylePlain;
 	
+	// Setup label for toolbar
+	self.barLabel = [[UILabel alloc] initWithFrame:toolbarFrame];
+	barLabel.text = self.dateTime.title;
+	barLabel.textColor = [UIColor whiteColor]; 
+	barLabel.backgroundColor = [UIColor clearColor];
+	barLabel.textAlignment = UITextAlignmentCenter;
+
 	UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-																			  target:self action:nil];
+																				  target:self action:nil];
 	
-	UIBarButtonItem *saveItem = [[UIBarButtonItem alloc]
+	UIBarButtonItem *doneItem= [[UIBarButtonItem alloc]
 								 initWithBarButtonSystemItem:UIBarButtonSystemItemDone
 								 target:self action:@selector(dateAction:)];
-	saveItem.style = UIBarButtonItemStylePlain;
-	
-	NSArray *items = [NSArray arrayWithObjects: cancelItem, flexItem, saveItem, nil];
-	[self.toolbar setItems:items animated:NO];
-	[saveItem release];
+	doneItem.style = UIBarButtonItemStylePlain;
+
+	[self.toolbar setItems:[NSArray arrayWithObjects: cancelItem, flexItem, doneItem, nil] animated:NO];
+	[cancelItem release];
+	[self.barLabel release];
+	[flexItem release];
+	[doneItem release];
 }
 
 - (void)createPicker:(UIWindow*)window {
 	// Create the picker
 	if (self.pickerView == nil) {
 		self.pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+		self.mainWindow = window;
 	}
 	
 	self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
@@ -93,7 +105,6 @@
 		// Add toolbar to view
 		CGRect mainViewBounds = self.pickerView.bounds;
 		[self createPickerBar:mainViewBounds];
-		[window addSubview:self.toolbar];
 		
 		// Add picker to view
 		[window addSubview:self.pickerView];
@@ -114,11 +125,19 @@
 		[UIView setAnimationDuration:0.3];
 		
 		[UIView setAnimationDelegate:self];
+		[UIView setAnimationDidStopSelector:@selector(slideUpDidStop)];
 		
 		self.pickerView.frame = pickerRect;
 		
 		[UIView commitAnimations];
 	}
+}
+
+- (void)slideUpDidStop
+{
+	// the date picker has finished sliding upwards, so add toolbar
+	[self.mainWindow addSubview:self.toolbar];
+	[self.mainWindow addSubview:self.barLabel];
 }
 
 - (void)slideDownDidStop

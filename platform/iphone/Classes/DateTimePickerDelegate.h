@@ -15,14 +15,18 @@
 {
 @private
 	UIDatePicker *pickerView;
+	UIWindow *mainWindow;
 	UIToolbar *toolbar;
+	UILabel *barLabel;
 	DateTime *dateTime;
 	NSDateFormatter *dateFormatter;
 }
 
 @property (nonatomic, retain) DateTime *dateTime;
 @property (nonatomic, retain) UIDatePicker *pickerView;
+@property (nonatomic, retain) UIWindow *mainWindow;
 @property (nonatomic, retain) UIToolbar *toolbar;
+@property (nonatomic, retain) UILabel *barLabel;
 @property (nonatomic, retain) NSDateFormatter *dateFormatter; 
 
 - (IBAction)dateAction:(id)sender;
