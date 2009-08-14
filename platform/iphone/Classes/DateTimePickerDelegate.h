@@ -26,6 +26,7 @@
 @property (nonatomic, retain) NSDateFormatter *dateFormatter; 
 
 - (IBAction)dateAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
 - (void)createPicker:(UIWindow*)window;
 
 @end
