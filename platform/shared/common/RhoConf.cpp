@@ -159,6 +159,14 @@ void rho_conf_setBool(const char* szName, bool value) {
 	RHOCONF().setBool(szName,value);
 }
 
+int rho_conf_getInt(const char* szName) {
+	return RHOCONF().getInt(szName);
+}
+	
+void rho_conf_setInt(const char* szName, int value) {
+	RHOCONF().setInt(szName,value);
+}
+	
 char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
 }
