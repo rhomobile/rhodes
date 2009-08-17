@@ -58,7 +58,7 @@ class CSyncSource
     String m_strAskParams;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
     boolean m_bGetAtLeastOnePage;
-
+    String m_strPushBody;
 public:
     CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine );
     virtual void sync();
@@ -90,6 +90,7 @@ public:
     void syncClientChanges();
     void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
+    void makePushBody1( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();
     void setAskParams(const String& ask){ m_strAskParams = ask;}
     String getAskParams()const{ return m_strAskParams;}
@@ -108,6 +109,7 @@ public:
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);
+    boolean sendClientChanges(String strUpdateType);//throws Exception
 
     String makeFileName(const CValue& value);//throws Exception
     boolean downloadBlob(CValue& value);//throws Exception
