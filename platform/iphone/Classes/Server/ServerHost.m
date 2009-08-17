@@ -23,7 +23,8 @@
 #include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
 #include "JSString.h"
-#import  "ParamsWrapper.h"
+#import "ParamsWrapper.h"
+#import "DateTime.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -71,7 +72,7 @@ static ServerHost* sharedSH = nil;
 @implementation ServerHost
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onShowPopup, onVibrate, onPlayFile, onSysCall;
+@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onShowPopup, onVibrate, onPlayFile, onSysCall;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -125,6 +126,19 @@ static ServerHost* sharedSH = nil;
 - (void)choosePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onChoosePicture]) {
 		[actionTarget performSelectorOnMainThread:onChoosePicture withObject:url waitUntilDone:NO];
+	}
+}
+
+- (void)chooseDateTime:(NSString*)url title:(NSString*)title initialTime:(long)initial_time format:(int)format data:(NSString*)data {
+	if(actionTarget && [actionTarget respondsToSelector:onChooseDateTime]) {
+		DateTime* dateTime = [[DateTime alloc] init];
+		dateTime.url = url;
+		dateTime.title = title;
+		dateTime.initialTime = initial_time;
+		dateTime.format = format;
+		dateTime.data = data;
+		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:YES];
+		[dateTime release];
 	}
 }
 
@@ -361,6 +375,14 @@ void take_picture(char* callback_url) {
 
 void choose_picture(char* callback_url) {
 	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
+}
+
+void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
+	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithCString:callback] 
+										  title:[NSString stringWithCString:title]
+									initialTime:initial_time 
+										 format:format
+										   data:[NSString stringWithCString:data]];
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {

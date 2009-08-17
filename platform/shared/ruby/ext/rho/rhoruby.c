@@ -121,6 +121,7 @@ void RhoRubyStart()
 		Init_Alert();
         Init_Camera();
 		Init_stringio();
+		Init_DateTimePicker();
 
     Init_RhoSupport();
 

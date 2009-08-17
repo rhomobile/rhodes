@@ -1,13 +1,21 @@
 package rhomobile.camera;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Vector;
 import java.util.Date;
 //import java.io.IOException;
+import javax.microedition.io.Connector;
+import javax.microedition.io.file.FileConnection;
+import javax.microedition.media.MediaException;
 
 import com.rho.db.DBAdapter;
 import rhomobile.RhodesApplication;
 import rhomobile.Utilities;
 
+import net.rim.blackberry.api.invoke.CameraArguments;
+import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.UiApplication;
@@ -58,12 +66,18 @@ public class CameraScreen extends MainScreen {
 	/** Callback URL **/
 	private String _callbackUrl;
 	
+	private CameraFilesListener _fileListener = null;
+	
+	private boolean _cameraConnected;
+	
 	/**
 	 * Constructor.
 	 * @param raw A byte array representing an image.
 	 */
 	public CameraScreen(String callbackUrl)
 	{
+		_cameraConnected = false;
+		
 		//
 		_callbackUrl = callbackUrl;
 
@@ -74,60 +88,198 @@ public class CameraScreen extends MainScreen {
 
         //Initialize the camera object and video field.
         initializeCamera();
-	
-        //Initialize the list of possible encodings.
-        initializeEncodingList();
         
-        //If the field was constructed successfully, create the UI.
-        if(_videoField != null)
-        {
-            createUI();
-        }
-        //If not, display an error message to the user.
-        else
-        {
-            add( new RichTextField( "Error connecting to camera." ) );
-        }        
+        createUI();
+	}
+	
+	public void closeScreen(boolean ok) {
+		closeScreen(ok, null);
+	}
+	
+	public void closeScreen(boolean ok, String fileName) {
+		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+    	
+    	if (_fileListener != null) {
+    		app.removeFileSystemJournalListener(_fileListener);
+    		_fileListener = null;
+    	}
+    	
+		String body;
+		if (ok) {
+			boolean error = false;
+			String fname = "";
+			
+			SimpleFile file = null;
+			FileConnection fconnsrc = null;
+			FileConnection fconndst = null;
+	        try
+	        {
+	        	file = RhoClassFactory.createFile();
+	        	
+	        	if (fileName != null) {
+	        		String ext = fileName.substring(fileName.lastIndexOf('.'));
+	        		fname = makeFileName(ext);
+					fconnsrc = (FileConnection)Connector.open(fileName, Connector.READ_WRITE);
+					fconndst = (FileConnection)Connector.open(fname, Connector.READ_WRITE);
+					if (fconndst.exists())
+						fconndst.delete();
+					fconndst.create();
+					
+					InputStream src = fconnsrc.openInputStream();
+					OutputStream dst = fconndst.openOutputStream();
+					
+					byte[] buf = new byte[1024];
+					int ret;
+					while((ret = src.read(buf)) > 0)
+						dst.write(buf, 0, ret);
+				}
+	        	else {
+		            //A null encoding indicates that the camera should
+		            //use the default snapshot encoding.
+		            String encoding = null;
+		            String ext = ".";
+		            //If there are encoding options available:
+		            if( _encodings != null && _encodingField != null )
+		            {
+		                //Use the user-selected encoding instead.
+		                encoding = _encodings[_encodingField.getSelectedIndex()].getFullEncoding();
+		                ext += _encodings[_encodingField.getSelectedIndex()].getFormat();
+		            }
+		            
+		            fname = makeFileName(ext);
+	        		
+		        	file.open(fname, false, false);
+		        	
+		            //Retrieve the raw image from the VideoControl
+		        	byte[] image = _videoControl.getSnapshot(encoding);
+		        	//Write image data
+		        	file.getOutStream().write(image,0,image.length);
+		        	image = null;
+	        	}
+	
+	        	String root = file.getDirPath("");
+	        	fname = "/" + fname.substring(root.length());
+	        	fname = Utilities.replaceAll(fname,"/","%2F");
+	        } catch(Exception e) {
+	        	error = true;
+	        	LOG.ERROR(e);
+	        	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
+	        } finally {
+				try{
+					if ( file != null )
+						file.close();
+					
+					if (fconnsrc != null)
+						fconnsrc.close();
+					if (fconndst != null)
+						fconndst.close();
+				}catch(Exception exc){}
+	        }
+	        if (error)
+	        	body = "status=error&message=Error";
+	        else
+	        	body = "status=ok&image_uri=" + fname;
+		}
+		else
+			body = "status=cancel&message=User cancelled operation";
+	
+		HttpHeaders headers = new HttpHeaders();
+		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		app.invokeLater(new UrlPost(_cameraScreen, _callbackUrl, body, headers));
+	}
+	
+	private class UrlPost implements Runnable {
+		private CameraScreen _screen;
+		private String _url;
+		private String _body;
+		private HttpHeaders _headers;
+
+		UrlPost(CameraScreen screen, String url, String body, HttpHeaders headers) {
+			_screen = screen;
+			_url = url;
+			_body = body;
+			_headers = headers;
+		}
+		
+		public void run() {
+			synchronized (UiApplication.getEventLock()) {
+				RhodesApplication app = RhodesApplication.getInstance();
+				
+				LOG.INFO("Callback with uri: " + _url + ": " + _body);
+				app.postUrl(_url, _body, _headers);
+				app.popScreen(_screen);
+				
+				//app.requestForeground();
+			}
+		}
+	};
+	
+	private String makeFileName(String ext)throws Exception {
+		
+		String fullname = DBAdapter.makeBlobFolderName();
+		SimpleDateFormat format = 
+			new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
+		
+		String name = format.format(new Date());
+		name = Utilities.replaceAll(name,"/","_");
+		fullname += "image_" + name + ext;
+		
+		return fullname;
 	}
 
-//	String canonicalizeURL(String url) {
-//		if (!url.startsWith("http://")) {
-//			String slash = "/";
-//			if (url.startsWith("\\") || url.startsWith("/")) {
-//				slash = "";
-//			}
-//			return "http://localhost:8080" + slash + url;
-//		}
-//		return url;
-//	}
     /**
      * Initializes the Player, VideoControl and VideoField.
      */
     private void initializeCamera()
     {
-        try
-        {
+    	LOG.TRACE("initializeCamera");
+    	Player player = null;
+    	try {
+    		// First of all, attempting to record video using MM API
+    		
             //Create a player for the Blackberry's camera.
-            Player player = Manager.createPlayer( "capture://video" );
-
-            //Set the player to the REALIZED state (see Player docs.)
-            player.realize();
-
-            //Grab the video control and set it to the current display.
-            _videoControl = (VideoControl)player.getControl( "VideoControl" );
-
-            if (_videoControl != null)
-            {
-                //Create the video field as a GUI primitive (as opposed to a
-                //direct video, which can only be used on platforms with
-                //LCDUI support.)
-                _videoField = (Field) _videoControl.initDisplayMode (VideoControl.USE_GUI_PRIMITIVE, "net.rim.device.api.ui.Field");
-                //Display the video control
-                _videoControl.setVisible(true);
-            }
-
-            //Set the player to the STARTED state (see Player docs.)
-            player.start();
+            player = Manager.createPlayer( "capture://video" ); 
+            LOG.TRACE("Recording using MM API");
+    	}
+    	catch(Exception e) {
+    		// Try to record video using BB Camera application
+    		LOG.TRACE("Recording using BB Camera application");
+    	}
+    	
+    	try
+        {
+    		if (player != null) {
+	            //Set the player to the REALIZED state (see Player docs.)
+	            player.realize();
+	
+	            //Grab the video control and set it to the current display.
+	            _videoControl = (VideoControl)player.getControl( "VideoControl" );
+	
+	            if (_videoControl != null)
+	            {
+	                //Create the video field as a GUI primitive (as opposed to a
+	                //direct video, which can only be used on platforms with
+	                //LCDUI support.)
+	                _videoField = (Field) _videoControl.initDisplayMode (VideoControl.USE_GUI_PRIMITIVE, "net.rim.device.api.ui.Field");
+	                //Display the video control
+	                _videoControl.setVisible(true);
+	            }
+	
+	            //Set the player to the STARTED state (see Player docs.)
+	            player.start();
+	            
+	            //Initialize the list of possible encodings.
+	            initializeEncodingList();
+    		}
+    		else {
+    			_fileListener = new CameraFilesListener(this);
+    			RhodesApplication.getInstance().addFileSystemJournalListener(_fileListener);
+    			
+    			CameraArguments vidargs = new CameraArguments();
+            	Invoke.invokeApplication(Invoke.APP_TYPE_CAMERA, vidargs);
+    		}
+    		_cameraConnected = true;
         }
         catch(Exception e)
         {
@@ -218,13 +370,23 @@ public class CameraScreen extends MainScreen {
      */
     private void createUI()
     {
-        //Add the video field to the screen.
-        add(_videoField);
-
-        //Initialize the button used to take photos.
-        _photoButton = new ButtonField( "Take Photo" );
-        _photoButton.setChangeListener( new SaveListener() );
-
+        if (!_cameraConnected) {
+        	add( new RichTextField( "Error connecting to camera." ) );
+        	return;
+        }
+    	
+        if (_videoField != null) {
+	        //Add the video field to the screen.
+	        add(_videoField);
+	
+	        //Initialize the button used to take photos.
+	        _photoButton = new ButtonField( "Take Photo" );
+	        _photoButton.setChangeListener( new SaveListener() );
+    	}
+        else {
+        	add( new RichTextField( "Waiting for Camera start..." ) );
+        }
+	
 		//Create the CANCEL button which returns the user to the main camera
 		//screen without saving the picture.
 		ButtonField cancelButton = new ButtonField( "Cancel" );
@@ -234,7 +396,8 @@ public class CameraScreen extends MainScreen {
         //the screen.
 
         HorizontalFieldManager hfm = new HorizontalFieldManager(Field.FIELD_HCENTER);
-        hfm.add(_photoButton);
+        if (_photoButton != null)
+        	hfm.add(_photoButton);
 		hfm.add(cancelButton);
 
         //Add the FieldManager containing the button to the screen.
@@ -247,7 +410,6 @@ public class CameraScreen extends MainScreen {
             _encodingField = new ObjectChoiceField("Encoding: ", _encodings, 0);
             add(_encodingField);
         }        
-        
     }
     
 	/**
@@ -256,6 +418,11 @@ public class CameraScreen extends MainScreen {
 	 */   
 	protected boolean invokeAction(int action)
 	{
+		if (_fileListener != null) {
+    		RhodesApplication.getInstance().removeFileSystemJournalListener(_fileListener);
+    		_fileListener = null;
+    	}
+		
 		boolean handled = super.invokeAction(action); 
 
 		if(!handled)
@@ -400,78 +567,12 @@ public class CameraScreen extends MainScreen {
 	 */
 	private class SaveListener implements FieldChangeListener
 	{
-		private String makeFileName(String ext)throws Exception {
-			
-			String fullname = DBAdapter.makeBlobFolderName();
-			SimpleDateFormat format = 
-				new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
-			
-			String name = format.format(new Date());
-			name = Utilities.replaceAll(name,"/","_");
-			fullname += "image_" + name + ext;
-			
-			return fullname;
-		}		
 	    /**
 	     * Save file, send notification, and return to the main camera screen.
 	     */
 		public void fieldChanged(Field field, int context)
 		{
-        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-    		HttpHeaders headers = new HttpHeaders();
-    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-			boolean error = false;
-			String fname = "";
-			
-			SimpleFile file = null;
-            try
-            {
-    			file = RhoClassFactory.createFile();
-            	
-                //A null encoding indicates that the camera should
-                //use the default snapshot encoding.
-                String encoding = null;
-                String ext = ".";
-                //If there are encoding options available:
-                if( _encodings != null && _encodingField != null )
-                {
-                    //Use the user-selected encoding instead.
-                    encoding = _encodings[_encodingField.getSelectedIndex()].getFullEncoding();
-                    ext += _encodings[_encodingField.getSelectedIndex()].getFormat();
-                }
-                
-            	fname = makeFileName(ext);
-            	file.open(fname, false, false);
-            	
-                //Retrieve the raw image from the VideoControl
-            	byte[] image = _videoControl.getSnapshot(encoding);
-            	//Write image data
-            	file.getOutStream().write(image,0,image.length);
-            	image = null;
-
-            	String root = file.getDirPath("");
-            	fname = "/" + fname.substring(root.length());
-            	fname = Utilities.replaceAll(fname,"/","%2F");
-            } catch(Exception e) {
-            	error = true;
-            	LOG.ERROR(e);
-            	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
-            } finally {
-    			try{
-    				if ( file != null )
-    					file.close();
-    			}catch(Exception exc){}         	
-            }
-
-            if (error) {
-            	LOG.ERROR("Callback with error: status=error&message=Error");
-            	app.postUrl(_callbackUrl, "status=error&message=Error", headers);
-            } else {
-            	LOG.INFO("Callback with uri: status=ok&image_uri="+fname);
-            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers);
-            }
-
-        	app.popScreen( _cameraScreen );
+        	_cameraScreen.closeScreen(true);
 		}
 	}
 	
@@ -485,11 +586,7 @@ public class CameraScreen extends MainScreen {
 	     */
 		public void fieldChanged(Field field, int context)
 		{
-        	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-    		HttpHeaders headers = new HttpHeaders();
-    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-    		app.postUrl(_callbackUrl, "status=cancel&message=User canceled operation", headers);
-			app.popScreen( _cameraScreen );
+			_cameraScreen.closeScreen(false);
 		}
 	}
 }

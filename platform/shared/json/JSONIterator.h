@@ -26,6 +26,8 @@ public:
     const char* getString(const char* name);
 
     CJSONEntry getEntry(const char* name);
+
+    struct json_object* getObject(){ return m_object; }
 };
 
 class CJSONArrayIterator
@@ -36,6 +38,7 @@ class CJSONArrayIterator
 
 public:
     CJSONArrayIterator(const char* szData);
+	CJSONArrayIterator(CJSONEntry& oEntry, const char* strName);
     ~CJSONArrayIterator(void);
 
     boolean isEnd();

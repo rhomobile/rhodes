@@ -251,7 +251,8 @@ public class RhoConf {
 				try {
 					RhoConf.getInstance().setPropertyByName(arg0.toString(), arg1.toString());
 					RhoConf.getInstance().saveToFile();
-					RhoConf.getInstance().loadFromFile();
+					//RhoConf.getInstance().loadFromFile();
+					RhoLogger.getLogConf().loadFromConf(RhoConf.getInstance());
 				} catch (Exception e) {
 					LOG.ERROR("set_property_by_name failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

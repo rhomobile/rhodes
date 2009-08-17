@@ -18,6 +18,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
 		461B5A880F82D89700B08CB9 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = 461B5A870F82D89700B08CB9 /* gears.png */; };
 		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
 		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
@@ -26,6 +27,9 @@
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 46B0044810332E5C00D0C2F4 /* Entitlements.plist */; };
+		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
+		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
+		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
 		46E9DE330FC3577B00726D6B /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 46E9DE320FC3577B00726D6B /* JSString.m */; };
 		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
@@ -145,6 +149,8 @@
 		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
+		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
+		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
 		461B5A870F82D89700B08CB9 /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = SOURCE_ROOT; };
 		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
@@ -153,6 +159,11 @@
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		46B0044810332E5C00D0C2F4 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		46B005F51033690F00D0C2F4 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
+		46B005F61033690F00D0C2F4 /* DateTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTime.m; sourceTree = "<group>"; };
+		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
+		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		46E9DE310FC3577B00726D6B /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../JSString.h; sourceTree = "<group>"; };
 		46E9DE320FC3577B00726D6B /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = ../JSString.m; sourceTree = "<group>"; };
@@ -214,6 +225,7 @@
 				4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */,
 				F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */,
 				F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */,
+				46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +253,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				46056CEE1031CFB700C21967 /* DateTimePicker */,
 				5C5332610FBD6AC700F268F0 /* rho */,
 				F547F3D10F9CEB05007C2CD2 /* Log */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
@@ -254,6 +267,8 @@
 				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
 				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
+				46C25E39103240A400A26428 /* RhoDelegate.h */,
+				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 			);
 			path = Classes;
@@ -311,6 +326,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				46B007061033776600D0C2F4 /* CoreGraphics.framework */,
 				F516695F0FFD78770079F023 /* AVFoundation.framework */,
 				F51668DF0FFD5F740079F023 /* AudioToolbox.framework */,
 				4678FCA80F8185920054340C /* SystemConfiguration.framework */,
@@ -322,6 +338,17 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		46056CEE1031CFB700C21967 /* DateTimePicker */ = {
+			isa = PBXGroup;
+			children = (
+				46056D201031EDA900C21967 /* DateTimePickerDelegate.h */,
+				46056D211031EDA900C21967 /* DateTimePickerDelegate.m */,
+				46B005F51033690F00D0C2F4 /* DateTime.h */,
+				46B005F61033690F00D0C2F4 /* DateTime.m */,
+			);
+			name = DateTimePicker;
 			sourceTree = "<group>";
 		};
 		466B0FC90F3CFA8000A52314 /* Icons */ = {
@@ -385,8 +412,8 @@
 		F547F3D10F9CEB05007C2CD2 /* Log */ = {
 			isa = PBXGroup;
 			children = (
-				F52181110F96B13500B7F974 /* LogViewController.h */,
 				F52181120F96B13500B7F974 /* LogViewController.m */,
+				F52181110F96B13500B7F974 /* LogViewController.h */,
 				F547F2860F9945D2007C2CD2 /* LogOptionsController.h */,
 				F547F2870F9945D2007C2CD2 /* LogOptionsController.m */,
 			);
@@ -660,6 +687,9 @@
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
 				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
 				F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */,
+				46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */,
+				46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */,
+				46B005F71033690F00D0C2F4 /* DateTime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -748,6 +778,8 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
+					"-framework",
+					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -818,6 +850,8 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
+					"-framework",
+					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",

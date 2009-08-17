@@ -4,6 +4,7 @@
 #include "common/AutoPointer.h"
 #include "json/JSONIterator.h"
 #include "common/RhoConf.h"
+#include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
 
 namespace rho {
@@ -388,15 +389,10 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
             return;
         CSyncNotification& sn = *pSN;
 
-        StringStream ss;
-
         strUrl = sn.m_strUrl;
 		strBody = "";
-		ss << src.getTotalCount();
-        strBody = "total_count=" + ss.str();
-		ss.str("");
-		ss << src.getCurPageCount();
-        strBody += "&processed_count=" + ss.str();
+        strBody = "total_count=" + convertToStringA(src.getTotalCount());
+        strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
         
         strBody += "&status=";
 

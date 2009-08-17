@@ -1,5 +1,7 @@
 #include "SyncThread.h"
 #include "common/RhoTime.h"
+#include "common/RhoConf.h"
+
 #include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
@@ -31,6 +33,9 @@ db::CDBAdapter  CSyncThread::m_oDBAdapter;
 CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBAdapter)
 {
 	m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+	if( RHOCONF().isExist("sync_poll_interval") )
+    	m_nPollInterval = RHOCONF().getInt("sync_poll_interval");
+
 	m_ptrFactory = factory;
 
     m_oSyncEngine.setFactory(factory);
@@ -91,12 +96,16 @@ void CSyncThread::run()
 	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
-        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
+        unsigned int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
 
         if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
-            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
-        if ( nWait <= 0 )
-            nWait = SYNC_STARTUP_INTERVAL_SECONDS;
+        {
+            int nWait2 = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+            if ( nWait2 <= 0 )
+                nWait = SYNC_STARTUP_INTERVAL_SECONDS;
+            else
+                nWait = nWait2;
+        }
 
 		if ( nWait >= 0 )
 		{

@@ -184,7 +184,8 @@ public class DBAdapter extends RubyBasic {
 		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
 		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
 		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
-		"CREATE INDEX by_src_update ON object_values (source_id, update_type);";
+		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
+		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
 		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
 		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
 		//"CREATE INDEX by_type ON object_values (attrib_type)";
