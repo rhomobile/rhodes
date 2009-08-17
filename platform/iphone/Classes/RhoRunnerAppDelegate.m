@@ -324,6 +324,9 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
+	int now = [[NSDate date] timeIntervalSince1970];
+	rho_conf_setInt("LastTimeUsed",now);
+	rho_conf_save();
 	//Stop HTTP server host 
     [serverHost stop];
 }
