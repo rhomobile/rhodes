@@ -39,7 +39,7 @@ char* get_current_location() {
 NSString *loadingText = @"Loading...";
 
 @synthesize viewHomeUrl, viewOptionsUrl;
-@synthesize actionTarget, onShowLog;
+@synthesize actionTarget, onShowLog, toolbar;
 
 -(void)viewDidLoad {
 	[super viewDidLoad];
@@ -128,15 +128,11 @@ NSString *loadingText = @"Loading...";
 
 - (void)webViewDidStartLoad:(UIWebView *)webview
 {
-	// starting the load, show the activity indicator in the status bar
-	//[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = YES;
 	[self active];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview
 {
-	// finished loading, hide the activity indicator in the status bar
-	//[UIApplication sharedApplication].isNetworkActivityIndicatorVisible = NO;
 	[self inactive];
 	
 	if ([webView canGoBack]) {
@@ -152,15 +148,6 @@ NSString *loadingText = @"Loading...";
 	
 	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	set_current_location((CFStringRef)location);
-	
-	/*self.navigationItem.title = [webview stringByEvaluatingJavaScriptFromString:@"document.title"];
-	 
-	 syncBtn = [[[UIBarButtonItem alloc]
-	 initWithTitle:@"Sync"
-	 style:UIBarButtonItemStyleBordered
-	 target:self 
-	 action:@selector(runSync:)] autorelease];
-	 self.navigationItem.leftBarButtonItem = syncBtn;*/
 	
 }
 

@@ -32,16 +32,16 @@
 	[self.toolbar sizeToFit];
 	CGFloat toolbarHeight = [self.toolbar frame].size.height;
 	
-	// TODO: This is an approximate y-origin, figure out why it is off by 3.5
+	// TODO: This is an approximate y-origin, figure out why it is off by 3.7
 	CGRect toolbarFrame = CGRectMake(frame.origin.x,
-									  frame.origin.y + frame.size.height + 3.7,
-									  frame.size.width,
-									  toolbarHeight);
+									 frame.origin.y + frame.size.height + 3.7,
+									 frame.size.width,
+									 toolbarHeight);
 	[self.toolbar setFrame:toolbarFrame];	
 	
-    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc]
-								 initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-								 target:self action:@selector(cancelAction:)];
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+																				target:self 
+																				action:@selector(cancelAction:)];
 	cancelItem.style = UIBarButtonItemStylePlain;
 	
 	// Setup label for toolbar
@@ -52,11 +52,11 @@
 	barLabel.textAlignment = UITextAlignmentCenter;
 
 	UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-																				  target:self action:nil];
+																			  target:self action:nil];
 	
-	UIBarButtonItem *doneItem= [[UIBarButtonItem alloc]
-								 initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-								 target:self action:@selector(dateAction:)];
+	UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+																			  target:self 
+																			  action:@selector(dateAction:)];
 	doneItem.style = UIBarButtonItemStylePlain;
 
 	[self.toolbar setItems:[NSArray arrayWithObjects: cancelItem, flexItem, doneItem, nil] animated:NO];

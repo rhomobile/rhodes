@@ -98,32 +98,31 @@ void RhoRubyStart()
     g_collect_stat = 1; 
 #endif    
     
-		RUBY_INIT_STACK;
-		ruby_init();
+	RUBY_INIT_STACK;
+	ruby_init();
 #if defined(WIN32)
-		rb_w32_sysinit(NULL,NULL);
+	rb_w32_sysinit(NULL,NULL);
 #endif
 
 #if defined(DEBUG)
-		//enable_gc_profile();
+	//enable_gc_profile();
 #endif
-        //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
+	//rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
-		ruby_init_loadpath(RhoGetRootPath());
-		Init_strscan();
-		Init_sqlite3_api();
-		Init_GeoLocation();
-		Init_SyncEngine();
-		Init_System();
-		Init_Phonebook();
-		Init_WebView();
-		Init_RhoConf();
-		Init_Alert();
-        Init_Camera();
-		Init_stringio();
-		Init_DateTimePicker();
-
-    Init_RhoSupport();
+	ruby_init_loadpath(RhoGetRootPath());
+	Init_strscan();
+	Init_sqlite3_api();
+	Init_GeoLocation();
+	Init_SyncEngine();
+	Init_System();
+	Init_Phonebook();
+	Init_WebView();
+	Init_RhoConf();
+	Init_Alert();
+	Init_Camera();
+	Init_stringio();
+	Init_DateTimePicker();
+	Init_RhoSupport();
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;

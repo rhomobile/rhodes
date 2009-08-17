@@ -118,40 +118,42 @@ module Rho
     end
 
     def serve_hash(req)
-        begin
-            puts 'inside RHO.serve...'
-            res = init_response
-            get_app(req['application']).send :serve, req, res
-            return send_response_hash(res)
-        rescue Exception => e
-            return send_error(e,500,true)
-        end 
+      begin
+        puts 'inside RHO.serve...'
+        res = init_response
+        get_app(req['application']).send :serve, req, res
+        return send_response_hash(res)
+      rescue Exception => e
+        return send_error(e,500,true)
+      end 
     end
     
     def serve_index(index_name)
     	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_tabs
     	get_app(APPNAME).set_menu
-        begin
-            puts 'inside RHO.serve_index: ' + index_name
-            res = init_response
-            res['request-body'] = RhoController::renderfile(index_name)
-            return send_response(res)
-        rescue Exception => e
-            return send_error(e)
-        end
+      begin
+        puts 'inside RHO.serve_index: ' + index_name
+        res = init_response
+        res['request-body'] = RhoController::renderfile(index_name)
+        return send_response(res)
+      rescue Exception => e
+        return send_error(e)
+      end
     end
 
     def serve_index_hash(index_name)
-    	    	# TODO: Removed hardcoded appname
+    	# TODO: Removed hardcoded appname
+    	get_app(APPNAME).set_tabs
     	get_app(APPNAME).set_menu
-        begin
-            puts 'inside RHO.serve_index: ' + index_name
-            res = init_response
-            res['request-body'] = RhoController::renderfile(index_name)
-            return send_response_hash(res)
-        rescue Exception => e
-            return send_error(e.message, 500, true)
-        end
+      begin
+        puts 'inside RHO.serve_index: ' + index_name
+        res = init_response
+        res['request-body'] = RhoController::renderfile(index_name)
+        return send_response_hash(res)
+      rescue Exception => e
+        return send_error(e.message, 500, true)
+      end
     end
     
     def init_response(status=200,message="OK",body="")
@@ -180,11 +182,11 @@ module Rho
         tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
         data << "#{tmp}: #{value}" << CRLF
       }
-    data << "Pragma: no-cache" << CRLF
-    data << "Cache-Control: must-revalidate" << CRLF
-    data << "Cache-Control: no-cache" << CRLF
-    data << "Cache-Control: no-store" << CRLF
-    data << "Expires: 0" << CRLF
+      data << "Pragma: no-cache" << CRLF
+      data << "Cache-Control: must-revalidate" << CRLF
+      data << "Cache-Control: no-cache" << CRLF
+      data << "Cache-Control: no-store" << CRLF
+      data << "Expires: 0" << CRLF
 
       data << CRLF
       if ( !res['request-body'].nil? )
@@ -195,17 +197,17 @@ module Rho
     end
 
     def send_response_hash(res)
-        resp = Hash.new
-        res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
-        res['headers'].each{|key, value|
-            tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
-            resp[tmp] = value
-        }
-        resp['request-body'] = res['request-body']
-        resp['status'] = res['status']        
-        resp['message'] = res['message']
-        
-        resp
+      resp = Hash.new
+      res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
+      res['headers'].each{|key, value|
+          tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
+          resp[tmp] = value
+      }
+      resp['request-body'] = res['request-body']
+      resp['status'] = res['status']        
+      resp['message'] = res['message']
+      
+      resp
     end
     
     def send_error(exception=nil,status=500,hash=false)
