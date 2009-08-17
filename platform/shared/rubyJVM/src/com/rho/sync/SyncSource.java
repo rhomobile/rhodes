@@ -59,9 +59,11 @@ class SyncSource
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     boolean m_bGetAtLeastOnePage = false;
+
+	String m_strPushBody = "";
+    Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
     
     String m_strAskParams;
-    Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
 
     String getUrl() { return m_strUrl; }
     Integer getID() { return m_nID; }
@@ -157,6 +159,40 @@ class SyncSource
 	void syncClientChanges()throws Exception
 	{
 		LOG.INFO("Sync client changes source ID :" + getID() );
+		
+	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "+
+				 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() );
+	    
+	    String strUpdateType = "";
+    	m_arSyncBlobs.removeAllElements();
+    	m_strPushBody = "";
+    	
+	    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+	    {
+	    	String strTemp  = res.getStringByIdx(4);
+	    	if ( !strUpdateType.equals(strTemp) )
+	    	{
+	    		if ( strUpdateType.length() > 0 )
+	    		{
+	    			if ( !sendClientChanges(strUpdateType) )
+	    			{
+	    				getSync().setState(SyncEngine.esStop);
+	                	continue;
+	    			}	
+	    		}
+	    		
+	    		m_strPushBody = "";
+	    		strUpdateType = strTemp;
+	    	}
+	    	
+	    	makePushBody1( res );
+	    }
+	    
+	    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
+	    	sendClientChanges(strUpdateType);
+	    	
+/*	    
+	    
 	    String arUpdateTypes[] = {"update", "create", "delete"};
 	    for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	    {
@@ -186,9 +222,37 @@ class SyncSource
 	            syncClientBlobs(strUrl+strQuery);
 	        }else
 	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
-	    }
+	    }*/
 	}
 
+	boolean sendClientChanges(String strUpdateType)throws Exception
+	{
+	    String strUrl = getUrl() + "/" + strUpdateType;
+	    strUrl += "objects";
+	    String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+	
+	    if ( m_strPushBody.length() > 0 )
+	    {
+		    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length());
+		    LOG.TRACE( "Push body: " + m_strPushBody );		
+	
+		    NetResponse resp = getNet().pushData(strUrl+strQuery,m_strPushBody, getSync() ); 
+	        if ( !resp.isOK() )
+	            return false;
+	    }
+	
+	    if ( m_arSyncBlobs.size() > 0  )
+	    {
+		    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
+	
+	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
+	        syncClientBlobs(strUrl+strQuery);
+	    }else if ( m_strPushBody.length() > 0 )
+	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
+	    
+	    return true;
+	}
+	
 /*
  * Construct the body of the request by filtering 
  * the attr_filter string. The body format should
@@ -197,6 +261,37 @@ class SyncSource
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
+	void makePushBody1( IDBResult res )throws DBException
+	{
+        String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
+
+        if ( res.getStringByIdx(1).length() > 0 ) 
+            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+        String value = res.getStringByIdx(2);
+        String attribType = res.getStringByIdx(3);
+
+        if ( value.length() > 0 )
+        {
+            if ( attribType.equals("blob.file") )
+            {
+                FilePath oBlobPath = new FilePath(value);
+                strSrcBody += "&attrvals[][value]=";
+                strSrcBody += oBlobPath.getBaseName();
+                strSrcBody += "&attrvals[][attrib_type]=blob";
+
+                m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
+                return;
+            }else
+                strSrcBody += "&attrvals[][value]=" + value;
+        }
+
+        if ( m_strPushBody.length() > 0 )
+        	m_strPushBody += "&";
+
+        m_strPushBody += strSrcBody;
+	}
+	
 	String makePushBody( String szUpdateType)throws DBException
 	{
 		String strBody = "";
