@@ -86,6 +86,40 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
 
 void CSyncSource::syncClientChanges()
 {
+	LOG(INFO) + "Sync client changes source ID :" + getID();
+
+    DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "
+					 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() ) );
+
+    String strUpdateType = "";
+	m_arSyncBlobs.removeAllElements();
+	m_strPushBody = "";
+	
+    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+    {
+    	String strTemp  = res.getStringByIdx(4);
+    	if ( strUpdateType != strTemp )
+    	{
+    		if ( strUpdateType.length() > 0 )
+    		{
+    			if ( !sendClientChanges(strUpdateType) )
+    			{
+                    getSync().setState(CSyncEngine::esStop);
+                	continue;
+    			}	
+    		}
+    		
+    		m_strPushBody = "";
+    		strUpdateType = strTemp;
+    	}
+    	
+    	makePushBody1( res );
+    }
+    
+    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
+    	sendClientChanges(strUpdateType);
+
+/*
     const char* arUpdateTypes[] = {"update", "create", "delete"};
     for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
     {
@@ -116,7 +150,35 @@ void CSyncSource::syncClientChanges()
             syncClientBlobs(strUrl+strQuery);
         }else
             getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+    }*/
+}
+
+boolean CSyncSource::sendClientChanges(String strUpdateType)//throws Exception
+{
+    String strUrl = getUrl() + "/" + strUpdateType;
+    strUrl += "objects";
+    String strQuery = CSyncEngine::SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+
+    if ( m_strPushBody.length() > 0 )
+    {
+	    LOG(INFO)+"Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length();
+	    LOG(TRACE) + "Push body: " + m_strPushBody;
+
+        NetResponse( resp, getNet().pushData(strUrl+strQuery,m_strPushBody) );
+        if ( !resp.isOK() )
+            return false;
     }
+
+    if ( m_arSyncBlobs.size() > 0  )
+    {
+	    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
+
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
+        syncClientBlobs(strUrl+strQuery);
+    }else if ( m_strPushBody.length() > 0 )
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
+    
+    return true;
 }
 
 /*
@@ -127,6 +189,37 @@ void CSyncSource::syncClientChanges()
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
+void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
+{
+    String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
+
+    if ( res.getStringByIdx(1).length() > 0 ) 
+        strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+    String value = res.getStringByIdx(2);
+    String attribType = res.getStringByIdx(3);
+
+    if ( value.length() > 0 )
+    {
+        if ( attribType == "blob.file" )
+        {
+            common::CFilePath oBlobPath(value);
+            strSrcBody += "&attrvals[][value]=";
+            strSrcBody += oBlobPath.getBaseName();
+            strSrcBody += "&attrvals[][attrib_type]=blob";
+
+            m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
+            return;
+        }else
+            strSrcBody += "&attrvals[][value]=" + value;
+    }
+
+    if ( m_strPushBody.length() > 0 )
+	    m_strPushBody += "&";
+
+    m_strPushBody += strSrcBody;
+}
+
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     //boolean bFirst = true;
