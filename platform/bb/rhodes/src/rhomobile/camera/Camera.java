@@ -62,7 +62,7 @@ public class Camera extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				return Camera.take_picture(arg0);
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("choose_picture", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				return Camera.choose_picture(arg0);
