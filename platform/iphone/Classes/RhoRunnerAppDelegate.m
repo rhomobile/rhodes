@@ -53,7 +53,30 @@
 		location = [self normalizeUrl:(NSString*)data];
 	}
 	
-	[webViewController navigateRedirect:location];
+	// Load the tab or nav bar
+	
+	UITabBarController *tabBarController = nil;
+	tabBarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+	NSMutableArray *tabs = [[[NSMutableArray alloc] init] autorelease];
+	
+	for(int i=0; i < 4; i++) {
+		UIViewController *subController = [[[WebViewController alloc] initWithNibName:@"MainWindow" bundle:nil] autorelease];
+		UIWebView *wView = [[[UIWebView alloc] init] autorelease];
+		subController.title = [NSString stringWithFormat:@"tab-%i", i];
+		subController.view = wView;
+		[tabs addObject:subController];
+	}
+	
+	tabBarController.viewControllers = tabs;
+	[webViewController.toolbar removeFromSuperview];
+	[window addSubview:tabBarController.view];
+	tabBarController.view.hidden = NO;
+
+	NSString* escapedUrl = [location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
+	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
+	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+	UIWebView* currentWebView = [[tabBarController.viewControllers objectAtIndex:0] view];
+	[currentWebView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 }
 
 - (void)onRefreshView {

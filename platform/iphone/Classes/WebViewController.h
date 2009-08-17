@@ -24,6 +24,7 @@
 @property (assign) NSString *viewOptionsUrl;
 
 @property (assign) id   actionTarget;
+@property (assign) UIToolbar* toolbar;
 @property (assign) SEL  onShowLog;
 
 
