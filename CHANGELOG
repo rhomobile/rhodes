@@ -1,3 +1,6 @@
+== 1.2.1
+* Fixed issue with broken gem dependencies
+
 == 1.2.0
 * Push support for RIM & iPhone
 * Improved Rhom performance by using horizontal resultset to rhom object conversion

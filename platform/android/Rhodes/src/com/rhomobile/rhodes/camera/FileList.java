@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rho.RhoClassFactory;
-import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesInstance;
 
 import android.app.Activity;
@@ -41,18 +41,18 @@ public class FileList extends Activity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		setContentView(R.layout.directory_list);
+		setContentView(AndroidR.layout.directory_list);
 
-		imagePreview = (ImageView) findViewById(R.id.preview);
+		imagePreview = (ImageView) findViewById(AndroidR.id.preview);
 
-		filesList = (ListView) findViewById(R.id.filesList);
+		filesList = (ListView) findViewById(AndroidR.id.filesList);
 		
 		fill(new File(Camera.BASE_CAMERA_DIR).listFiles());
 
-		okButton = (Button) findViewById(R.id.okButton);
-		cancelButton = (Button) findViewById(R.id.cancelButton);
+		okButton = (Button) findViewById(AndroidR.id.okButton);
+		cancelButton = (Button) findViewById(AndroidR.id.cancelButton);
 
-		lookIn = (TextView) findViewById(R.id.lookIn);
+		lookIn = (TextView) findViewById(AndroidR.id.lookIn);
 
 		lookIn.setText("Look In: " + Camera.BASE_CAMERA_DIR);
 
@@ -82,11 +82,11 @@ public class FileList extends Activity implements OnClickListener{
 
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case R.id.okButton:
+		case AndroidR.id.okButton:
 			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
 			finish();
 			break;
-		case R.id.cancelButton:
+		case AndroidR.id.cancelButton:
 			selectedFilePath = "";
 			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
 			finish();
@@ -111,7 +111,7 @@ public class FileList extends Activity implements OnClickListener{
 			}
 		}
 		ArrayAdapter<String> fileList = new ArrayAdapter<String>(this,
-				R.layout.file_row, items);
+				AndroidR.layout.file_row, items);
 		
 		filesList.setAdapter(fileList);
 	}

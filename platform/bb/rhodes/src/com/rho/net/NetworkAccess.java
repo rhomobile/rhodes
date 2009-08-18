@@ -39,6 +39,10 @@ public class NetworkAccess implements INetworkAccess {
 		bes = false;
 		URLsuffix = null;
 
+		String strDeviceside = ";deviceside=true";
+		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
+			strDeviceside = "";
+		
 		if (DeviceInfo.isSimulator()) {
 			URLsuffix = ";deviceside=true";
 			networkConfigured = true;
@@ -50,7 +54,7 @@ public class NetworkAccess implements INetworkAccess {
 					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
 						continue;
 					
-					WIFIsuffix = ";interface=wifi;deviceside=true"; 
+					WIFIsuffix = ";interface=wifi" + strDeviceside; 
 						//";deviceside=true;ConnectionUID=" + 
 						//wifis[i].getUid();
 					
@@ -91,7 +95,7 @@ public class NetworkAccess implements INetworkAccess {
 		}
 		
 		if (networkConfigured == false) {
-			URLsuffix = ";deviceside=true";
+			URLsuffix = strDeviceside;//";deviceside=true";
 			networkConfigured = true;
 		}
 		
@@ -107,6 +111,25 @@ public class NetworkAccess implements INetworkAccess {
 		return true;
 	}
 	
+	public boolean isWifiActive()
+	{
+		boolean bRes = false;
+		//4.3+
+		/*if (net.rim.device.api.system.WLANInfo.getWLANState() == net.rim.device.api.system.WLANInfo.WLAN_STATE_CONNECTED )
+		{
+			LOG.INFO("getWLANState");
+			bRes = true;
+		}*/
+		//4.2.1 & 4.2.2
+		/*if ( (RadioInfo.getActiveWAFs() & RadioInfo.WAF_WLAN ) != 0 )
+		{
+			LOG.INFO("getActiveWAFs");
+			bRes = true;
+		}*/
+		
+		return bRes;
+	}
+	
 	public IHttpConnection connect(String url) throws IOException 
 	{
 		HttpConnection http = null;
@@ -117,14 +140,14 @@ public class NetworkAccess implements INetworkAccess {
 		}
 
 		//Try wifi first
-		/*if ( WIFIsuffix != null ){
+		if ( WIFIsuffix != null && isWifiActive() ){
 			try {
 				LOG.INFO(url + WIFIsuffix);
 				http = (HttpConnection) Connector.open(url + WIFIsuffix);
 			} catch (IOException ioe) {
 				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );
 			}
-		}*/
+		}
 		
 		if ( http == null ){
 			/*int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();

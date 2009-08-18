@@ -294,7 +294,7 @@ CNetRequestImpl::~CNetRequestImpl()
 
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/ )
 {
-    if ( pNetResp->getRespCode() == 500 )
+    if ( pNetResp->getRespCode() == 500 || pNetResp->getRespCode() == 422 )
         return;
 
     DWORD dwBufSize = 4096;

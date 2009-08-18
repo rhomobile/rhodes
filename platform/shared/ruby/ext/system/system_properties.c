@@ -37,4 +37,3 @@ char* get_property(char* property) {
 	}
 	return NULL;
 }
-

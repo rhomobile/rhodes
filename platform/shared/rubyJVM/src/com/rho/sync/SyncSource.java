@@ -29,6 +29,7 @@ import org.json.me.JSONException;
 
 import com.rho.FilePath;
 import com.rho.TimeInterval;
+import com.rho.RhoRuby;
 
 class SyncSource
 {
@@ -58,9 +59,11 @@ class SyncSource
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     boolean m_bGetAtLeastOnePage = false;
+
+	String m_strPushBody = "";
+    Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
     
     String m_strAskParams;
-    Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
 
     String getUrl() { return m_strUrl; }
     Integer getID() { return m_nID; }
@@ -156,6 +159,40 @@ class SyncSource
 	void syncClientChanges()throws Exception
 	{
 		LOG.INFO("Sync client changes source ID :" + getID() );
+		
+	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "+
+				 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() );
+	    
+	    String strUpdateType = "";
+    	m_arSyncBlobs.removeAllElements();
+    	m_strPushBody = "";
+    	
+	    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+	    {
+	    	String strTemp  = res.getStringByIdx(4);
+	    	if ( !strUpdateType.equals(strTemp) )
+	    	{
+	    		if ( strUpdateType.length() > 0 )
+	    		{
+	    			if ( !sendClientChanges(strUpdateType) )
+	    			{
+	    				getSync().setState(SyncEngine.esStop);
+	                	continue;
+	    			}	
+	    		}
+	    		
+	    		m_strPushBody = "";
+	    		strUpdateType = strTemp;
+	    	}
+	    	
+	    	makePushBody1( res );
+	    }
+	    
+	    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
+	    	sendClientChanges(strUpdateType);
+	    	
+/*	    
+	    
 	    String arUpdateTypes[] = {"update", "create", "delete"};
 	    for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	    {
@@ -185,9 +222,37 @@ class SyncSource
 	            syncClientBlobs(strUrl+strQuery);
 	        }else
 	            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
-	    }
+	    }*/
 	}
 
+	boolean sendClientChanges(String strUpdateType)throws Exception
+	{
+	    String strUrl = getUrl() + "/" + strUpdateType;
+	    strUrl += "objects";
+	    String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+	
+	    if ( m_strPushBody.length() > 0 )
+	    {
+		    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length());
+		    LOG.TRACE( "Push body: " + m_strPushBody );		
+	
+		    NetResponse resp = getNet().pushData(strUrl+strQuery,m_strPushBody, getSync() ); 
+	        if ( !resp.isOK() )
+	            return false;
+	    }
+	
+	    if ( m_arSyncBlobs.size() > 0  )
+	    {
+		    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
+	
+	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
+	        syncClientBlobs(strUrl+strQuery);
+	    }else if ( m_strPushBody.length() > 0 )
+	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
+	    
+	    return true;
+	}
+	
 /*
  * Construct the body of the request by filtering 
  * the attr_filter string. The body format should
@@ -196,6 +261,37 @@ class SyncSource
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
+	void makePushBody1( IDBResult res )throws DBException
+	{
+        String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
+
+        if ( res.getStringByIdx(1).length() > 0 ) 
+            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+        String value = res.getStringByIdx(2);
+        String attribType = res.getStringByIdx(3);
+
+        if ( value.length() > 0 )
+        {
+            if ( attribType.equals("blob.file") )
+            {
+                FilePath oBlobPath = new FilePath(value);
+                strSrcBody += "&attrvals[][value]=";
+                strSrcBody += oBlobPath.getBaseName();
+                strSrcBody += "&attrvals[][attrib_type]=blob";
+
+                m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
+                return;
+            }else
+                strSrcBody += "&attrvals[][value]=" + value;
+        }
+
+        if ( m_strPushBody.length() > 0 )
+        	m_strPushBody += "&";
+
+        m_strPushBody += strSrcBody;
+	}
+	
 	String makePushBody( String szUpdateType)throws DBException
 	{
 		String strBody = "";
@@ -292,7 +388,14 @@ class SyncSource
 	        }
 	
 	        processServerData(resp.getCharData());
-	
+/*			String strData =
+			"[{count: 124},{total_count: 5425},{token: 123},{version: 1}," +
+			"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:[" +
+			"{i:26478681,d:1}," +
+			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",d:0}]}]";
+			//u:\"query\",
+			processServerData(strData);*/
+			
 	        m_bGetAtLeastOnePage = true;
 	
 	        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
@@ -322,37 +425,48 @@ class SyncSource
 	        oJsonArr.next();
 	    }else if ( getCurPageCount() == 0 )
 	        processToken("0");
-	
-		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID() );
+
+	    int nVersion = 0;
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
+	    {
+	        nVersion = oJsonArr.getCurItem().getInt("version");
+	        oJsonArr.next();
+	    }
+	    
+		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+				+ ". Version: " + nVersion );
 		
-	    //TODO: support DBExceptions
-	    getDB().startTransaction();
-	    try{
-		    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
-		    {
-		        if ( getDB().isUnlockDB() )
-		        {
-					LOG.INFO( "Commit transaction because of UI request." );
-		            getDB().endTransaction();
-		            getDB().startTransaction();
-		        }
-		
-		        JSONEntry oJsonEntry = oJsonArr.getCurItem();
-		
-		        JSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-		        if ( !oJsonObject.isEmpty() )
-		        {
-		            if ( !processSyncObject(oJsonObject) )
+		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
+		{
+		    //TODO: support DBExceptions
+		    getDB().startTransaction();
+		    try{
+			    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+			    {
+			        if ( getDB().isUnlockDB() )
+			        {
+						LOG.INFO( "Commit transaction because of UI request." );
+						RhoRuby.RhomAttribManager_save(getID());
+			            getDB().endTransaction();
+			            getDB().startTransaction();
+			        }
+			
+			        JSONEntry oJsonObject = oJsonArr.getCurItem();
+			        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
+			        	processSyncObject_ver1(oJsonObject);
+			        
+			        if( !bRes)
 		            {
 			            getSync().stopSync();
 			            break;
 		            }
-		        }
-		    }
-	    }finally{    
-			getDB().endTransaction();
+			    }
+		    }finally{
+		    	RhoRuby.RhomAttribManager_save(getID());
+				getDB().endTransaction();
+			}
 		}
-	    
+		
 	    if ( getServerObjectsCount() < getTotalCount() )
 	    	m_syncEngine.fireNotification(this, false);
 	}
@@ -369,6 +483,16 @@ class SyncSource
 			m_strAttrType = oJsonEntry.getString("attrib_type");
 			m_nID = oJsonEntry.getLong("id");
 		}
+		CValue(JSONEntry oJsonEntry, int nVer)throws JSONException
+		{
+			if ( nVer == 1 )
+			{
+				m_strValue = oJsonEntry.getString("v");
+				m_strAttrType = oJsonEntry.getString("t");
+				m_nID = oJsonEntry.getLong("i");
+			}
+		}
+		
 	}
 	
 	private String makeFileName(CValue value)throws Exception
@@ -423,8 +547,58 @@ class SyncSource
         return true;
 	}
 	
-	boolean processSyncObject(JSONEntry oJsonEntry)throws Exception
+	boolean processSyncObject_ver1(JSONEntry oJsonObject)throws Exception
 	{
+		String strObject = oJsonObject.getString("o");
+		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
+		
+	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+		{
+			JSONEntry oJsonEntry = oJsonArr.getCurItem();
+	        if ( oJsonEntry.isEmpty() )
+	        	continue;
+	        
+		    int nDbOp = oJsonEntry.getInt("d");
+		    if ( nDbOp == 0 ) //insert
+		    {
+		    	CValue value = new CValue(oJsonEntry,1);
+		    	if ( !downloadBlob(value) )
+		    		return false;
+		    	
+		    	String strAttrib = oJsonEntry.getString("a");
+		    	String strUpdateType = "query";
+		    	if( oJsonEntry.hasName("u") )
+		    		strUpdateType = oJsonEntry.getString("u");
+		    	
+		        getDB().executeSQL("INSERT INTO object_values " +
+		            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+		            new Long(value.m_nID), strAttrib, getID(), strObject,
+		            value.m_strValue, strUpdateType, value.m_strAttrType );
+		        
+		        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
+		        m_nInserted++;
+		    }else if ( nDbOp == 1 ) //delete
+		    {
+		    	long id = oJsonEntry.getLong("i");
+		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
+		
+		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
+		        m_nDeleted++;
+		    }else{
+		        LOG.ERROR("Unknown DB operation: " + nDbOp );
+		    }
+		}
+		
+		return true;
+	}
+
+	boolean processSyncObject(JSONEntry oJsonObject)throws Exception
+	{
+    	JSONEntry oJsonEntry = oJsonObject.getEntry("object_value");
+        
+        if ( oJsonEntry.isEmpty() )
+        	return true;
+        
 	    String szDbOp = oJsonEntry.getString("db_operation");
 	    if ( szDbOp != null && szDbOp.equals("insert") )
 	    {
@@ -436,16 +610,20 @@ class SyncSource
 	    	if ( !downloadBlob(value) )
 	    		return false;
 	    	
+	    	String strAttrib = oJsonEntry.getString("attrib");
 	        getDB().executeSQL("INSERT INTO object_values " +
 	            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-	            new Long(value.m_nID), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
+	            new Long(value.m_nID), strAttrib, getID(), oJsonEntry.getString("object"),
 	            value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
-	
+	        
+	        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
 	        m_nInserted++;
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
-	        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getLong("id") );
+	    	long id = oJsonEntry.getLong("id");
+	        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 	
+	        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 	        m_nDeleted++;
 	    }else{
 	        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );

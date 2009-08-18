@@ -57,7 +57,6 @@ generators/templates/model/show.erb
 generators/templates/source/source_adapter.rb
 lib/rhodes-generator.rb
 lib/version.rb
-rhodes-generator.gemspec
 spec/app_generator_spec.rb
 spec/generator_spec_helper.rb
 spec/model_generator_spec.rb

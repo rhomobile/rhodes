@@ -5,6 +5,7 @@
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
 #include "json/JSONIterator.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 extern "C" const char* RhoGetRootPath();
 
@@ -85,6 +86,40 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
 
 void CSyncSource::syncClientChanges()
 {
+	LOG(INFO) + "Sync client changes source ID :" + getID();
+
+    DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "
+					 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() ) );
+
+    String strUpdateType = "";
+	m_arSyncBlobs.removeAllElements();
+	m_strPushBody = "";
+	
+    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+    {
+    	String strTemp  = res.getStringByIdx(4);
+    	if ( strUpdateType != strTemp )
+    	{
+    		if ( strUpdateType.length() > 0 )
+    		{
+    			if ( !sendClientChanges(strUpdateType) )
+    			{
+                    getSync().setState(CSyncEngine::esStop);
+                	continue;
+    			}	
+    		}
+    		
+    		m_strPushBody = "";
+    		strUpdateType = strTemp;
+    	}
+    	
+    	makePushBody1( res );
+    }
+    
+    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
+    	sendClientChanges(strUpdateType);
+
+/*
     const char* arUpdateTypes[] = {"update", "create", "delete"};
     for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
     {
@@ -115,7 +150,35 @@ void CSyncSource::syncClientChanges()
             syncClientBlobs(strUrl+strQuery);
         }else
             getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+    }*/
+}
+
+boolean CSyncSource::sendClientChanges(String strUpdateType)//throws Exception
+{
+    String strUrl = getUrl() + "/" + strUpdateType;
+    strUrl += "objects";
+    String strQuery = CSyncEngine::SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+
+    if ( m_strPushBody.length() > 0 )
+    {
+	    LOG(INFO)+"Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length();
+	    LOG(TRACE) + "Push body: " + m_strPushBody;
+
+        NetResponse( resp, getNet().pushData(strUrl+strQuery,m_strPushBody) );
+        if ( !resp.isOK() )
+            return false;
     }
+
+    if ( m_arSyncBlobs.size() > 0  )
+    {
+	    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
+
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
+        syncClientBlobs(strUrl+strQuery);
+    }else if ( m_strPushBody.length() > 0 )
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
+    
+    return true;
 }
 
 /*
@@ -126,6 +189,37 @@ void CSyncSource::syncClientChanges()
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
+void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
+{
+    String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
+
+    if ( res.getStringByIdx(1).length() > 0 ) 
+        strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+    String value = res.getStringByIdx(2);
+    String attribType = res.getStringByIdx(3);
+
+    if ( value.length() > 0 )
+    {
+        if ( attribType == "blob.file" )
+        {
+            common::CFilePath oBlobPath(value);
+            strSrcBody += "&attrvals[][value]=";
+            strSrcBody += oBlobPath.getBaseName();
+            strSrcBody += "&attrvals[][attrib_type]=blob";
+
+            m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
+            return;
+        }else
+            strSrcBody += "&attrvals[][value]=" + value;
+    }
+
+    if ( m_strPushBody.length() > 0 )
+	    m_strPushBody += "&";
+
+    m_strPushBody += strSrcBody;
+}
+
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     //boolean bFirst = true;
@@ -217,6 +311,13 @@ void CSyncSource::syncServerChanges()
         }
 
         processServerData(resp.getCharData());
+/*		String strData =
+		"[{count: 124},{total_count: 5425},{token: 123},{version: 1},"
+		"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:["
+		"{i:26478681,d:1},"
+		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0}]}]";
+		//u:\"query\",
+		processServerData(strData.c_str());*/
 
         m_bGetAtLeastOnePage = true;
 
@@ -248,32 +349,43 @@ void CSyncSource::processServerData(const char* szData)
     }else if ( getCurPageCount() == 0 )
         processToken(0);
 
-	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID();
-	
-    //TODO: support DBExceptions
-    getDB().startTransaction();
-    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+    int nVersion = 0;
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
     {
-        if ( getDB().isUnlockDB() )
-        {
-			LOG(INFO) + "Commit transaction because of UI request.";
-            getDB().endTransaction();
-            getDB().startTransaction();
-        }
+        nVersion = oJsonArr.getCurItem().getInt("version");
+        oJsonArr.next();
+    }
 
-        CJSONEntry oJsonEntry = oJsonArr.getCurItem();
-
-        CJSONEntry oJsonObject = oJsonEntry.getEntry("object_value");
-        if ( !oJsonObject.isEmpty() )
+	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+         + ". Version: " + nVersion;
+	
+    if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
+    {
+        //TODO: support DBExceptions
+        getDB().startTransaction();
+        for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
         {
-            if ( !processSyncObject(oJsonObject) )
+            if ( getDB().isUnlockDB() )
+            {
+			    LOG(INFO) + "Commit transaction because of UI request.";
+                RhoRuby_RhomAttribManager_save(getID());
+                getDB().endTransaction();
+                getDB().startTransaction();
+            }
+
+	        CJSONEntry oJsonObject = oJsonArr.getCurItem();
+	        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
+	        	processSyncObject_ver1(oJsonObject);
+	        
+	        if( !bRes)
             {
 	            getSync().stopSync();
 	            break;
             }
         }
+        RhoRuby_RhomAttribManager_save(getID());
+        getDB().endTransaction();
     }
-    getDB().endTransaction();
 
     if ( getServerObjectsCount() < getTotalCount() )
     	m_syncEngine.fireNotification(*this, false);
@@ -285,6 +397,17 @@ CValue::CValue(json::CJSONEntry& oJsonEntry)//throws JSONException
 	const char* szAttribType = oJsonEntry.getString("attrib_type");
     m_strAttrType = szAttribType ? szAttribType : "";
 	m_nID = oJsonEntry.getUInt64("id");
+}
+
+CValue::CValue(json::CJSONEntry& oJsonEntry, int nVer)//throws JSONException
+{
+    if ( nVer == 1 )
+    {
+	    m_strValue = oJsonEntry.getString("v");
+	    const char* szAttribType = oJsonEntry.getString("t");
+        m_strAttrType = szAttribType ? szAttribType : "";
+	    m_nID = oJsonEntry.getUInt64("i");
+    }
 }
 
 String CSyncSource::makeFileName(const CValue& value)//throws Exception
@@ -360,9 +483,58 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
     
     return true;
 }
-	
-boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
+
+boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exception
 {
+	const char* strObject = oJsonObject.getString("o");
+	CJSONArrayIterator oJsonArr(oJsonObject, "av");
+	
+    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+	{
+		CJSONEntry oJsonEntry = oJsonArr.getCurItem();
+        if ( oJsonEntry.isEmpty() )
+        	continue;
+
+        int nDbOp = oJsonEntry.getInt("d");
+        if ( nDbOp == 0 ) //insert
+        {
+    	    CValue value(oJsonEntry,1);
+    	    if ( !downloadBlob(value) )
+    		    return false;
+
+            String strAttrib = oJsonEntry.getString("a");
+	    	String strUpdateType = "query";
+	    	if( oJsonEntry.hasName("u") )
+	    		strUpdateType = oJsonEntry.getString("u");
+
+            getDB().executeSQL("INSERT INTO object_values \
+                (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+                value.m_nID, strAttrib, getID(), strObject,
+                value.m_strValue,strUpdateType, value.m_strAttrType );
+
+            RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
+            m_nInserted++;
+        }else if ( nDbOp == 1 ) //delete
+        {
+            uint64 id = oJsonEntry.getUInt64("i");
+            getDB().executeSQL("DELETE FROM object_values where id=?", id );
+
+            RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
+            m_nDeleted++;
+        }else{
+            LOG(ERROR) + "Unknown DB operation: " + nDbOp;
+        }
+	}
+	
+	return true;
+}
+
+boolean CSyncSource::processSyncObject(CJSONEntry& oJsonObject)
+{
+	CJSONEntry oJsonEntry = oJsonObject.getEntry("object_value");
+    if ( oJsonEntry.isEmpty() )
+    	return true;
+
     const char* szDbOp = oJsonEntry.getString("db_operation");
     if ( szDbOp && strcmp(szDbOp,"insert")==0 )
     {
@@ -374,16 +546,20 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonEntry)
     	if ( !downloadBlob(value) )
     		return false;
 
+        String strAttrib = oJsonEntry.getString("attrib");
         getDB().executeSQL("INSERT INTO object_values \
             (id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
-            oJsonEntry.getUInt64("id"), oJsonEntry.getString("attrib"), getID(), oJsonEntry.getString("object"),
+            value.m_nID, strAttrib, getID(), oJsonEntry.getString("object"),
             value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
 
+        RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
         m_nInserted++;
     }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
     {
-        getDB().executeSQL("DELETE FROM object_values where id=?", oJsonEntry.getUInt64("id") );
+        uint64 id = oJsonEntry.getUInt64("id");
+        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
+        RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
         m_nDeleted++;
     }else{
         LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");

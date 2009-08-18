@@ -198,10 +198,3 @@ char* str_assign(char* data)
 }
 	
 }
-
-// RhoConf.set_property_by_name
-void rho_conf_set_property_by_name(char* name, char* value)
-{
-	rho_conf_setString(name, value);
-	rho_conf_save();
-}

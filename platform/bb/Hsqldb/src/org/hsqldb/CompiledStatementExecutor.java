@@ -36,6 +36,9 @@ import org.hsqldb.lib.HashMappedList;
 import org.hsqldb.lib.HsqlArrayList;
 import org.hsqldb.lib.java.JavaSystem;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 // boucherb@users 200404xx - fixed broken CALL statement result set unwrapping;
 //                           fixed broken support for prepared SELECT...INTO
 
@@ -53,6 +56,8 @@ import org.hsqldb.lib.java.JavaSystem;
  * @since 1.7.2
  */
 final class CompiledStatementExecutor {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("DB");
 
     private Session session;
     private Result  updateResult;
@@ -98,6 +103,7 @@ final class CompiledStatementExecutor {
 
             result = executeImpl(cs);
         } catch (Throwable t) {
+        	LOG.ERROR("execute statement failed.", t);
             result = new Result(t, cs.sql);
         }
 

@@ -111,6 +111,7 @@ platform/shared/rubyJVM/src/com/xruby/runtime/builtin/RubyThreadGroup.java
 platform/shared/rubyJVM/src/com/xruby/runtime/builtin/RubyTime.java
 platform/shared/rubyJVM/src/com/xruby/runtime/builtin/RubyTopSelf.java
 platform/shared/rubyJVM/src/com/xruby/runtime/builtin/RubyTypesUtil.java
+platform/shared/rubyJVM/src/com/xruby/runtime/builtin/RubyMutex.java
 platform/shared/rubyJVM/src/com/xruby/runtime/lang/annotation/DummyMethod.java
 platform/shared/rubyJVM/src/com/xruby/runtime/lang/annotation/RubyAllocMethod.java
 platform/shared/rubyJVM/src/com/xruby/runtime/lang/annotation/RubyLevelClass.java

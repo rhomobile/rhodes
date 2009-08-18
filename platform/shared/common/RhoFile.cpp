@@ -172,5 +172,19 @@ void CRhoFile::deleteFile( const char* szFilePath ){
 #endif
 }
 
+/*static*/ void CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
+{
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    StringW wNewFileName, wOldFileName;
+    common::convertToStringW(szNewFilePath,wNewFileName);
+    common::convertToStringW(szOldFilePath,wOldFileName);
+
+	BOOL res = MoveFileW( wOldFileName.c_str(), wNewFileName.c_str());
+#else
+    rename( szOldFilePath, szNewFilePath );
+#endif
+
+}
+
 }
 }

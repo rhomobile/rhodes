@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46056D151031DC7E00C21967 /* datetimepicker_wrap.c */; };
 		4678FCCC0F8187A10054340C /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = 4678FCCA0F8187A10054340C /* network.c */; };
 		4678FCCD0F8187A10054340C /* network.h in Headers */ = {isa = PBXBuildFile; fileRef = 4678FCCB0F8187A10054340C /* network.h */; };
 		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
@@ -111,6 +112,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		46056D151031DC7E00C21967 /* datetimepicker_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = datetimepicker_wrap.c; path = ../../shared/ruby/ext/datetimepicker/datetimepicker_wrap.c; sourceTree = SOURCE_ROOT; };
 		4678FCCA0F8187A10054340C /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../shared/ruby/ext/system/network.c; sourceTree = SOURCE_ROOT; };
 		4678FCCB0F8187A10054340C /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../shared/ruby/ext/system/network.h; sourceTree = SOURCE_ROOT; };
 		46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoconf_wrap.c; path = ../../shared/ruby/ext/rhoconf/rhoconf_wrap.c; sourceTree = SOURCE_ROOT; };
@@ -243,6 +245,15 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		46056D131031DC7E00C21967 /* datetimepicker */ = {
+			isa = PBXGroup;
+			children = (
+				46056D151031DC7E00C21967 /* datetimepicker_wrap.c */,
+			);
+			name = datetimepicker;
+			path = ../../shared/ruby/ext/datetimepicker;
+			sourceTree = SOURCE_ROOT;
 		};
 		46A4ABBC101A25DD00AF74C7 /* rhoconf */ = {
 			isa = PBXGroup;
@@ -413,6 +424,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				46056D131031DC7E00C21967 /* datetimepicker */,
 				46A4ABBC101A25DD00AF74C7 /* rhoconf */,
 				F516687C0FFD399C0079F023 /* alert */,
 				5C7652810FD3E3C500CB43FD /* stringio */,
@@ -658,6 +670,7 @@
 				5C7652830FD3E3E000CB43FD /* stringio.c in Sources */,
 				F51668800FFD39D80079F023 /* alert_wrap.c in Sources */,
 				46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */,
+				46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +733,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
 			};
 			name = Debug;
 		};
@@ -732,8 +746,43 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
+				SYMROOT = ../build;
 			};
 			name = Release;
+		};
+		46B0043910332DDD00D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				SYMROOT = ../build;
+			};
+			name = Distribution;
+		};
+		46B0043A10332DDD00D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+					../../shared,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = rhorubylib;
+				SDKROOT = iphoneos2.2.1;
+				SYMROOT = ../build;
+			};
+			name = Distribution;
 		};
 /* End XCBuildConfiguration section */
 
@@ -743,6 +792,7 @@
 			buildConfigurations = (
 				1DEB91EC08733DB70010E9CD /* Debug */,
 				1DEB91ED08733DB70010E9CD /* Release */,
+				46B0043A10332DDD00D0C2F4 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -752,6 +802,7 @@
 			buildConfigurations = (
 				1DEB91F008733DB70010E9CD /* Debug */,
 				1DEB91F108733DB70010E9CD /* Release */,
+				46B0043910332DDD00D0C2F4 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

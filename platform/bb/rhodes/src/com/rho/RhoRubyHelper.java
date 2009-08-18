@@ -11,6 +11,7 @@ import rhomobile.RingtoneManager;
 import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
+import rhomobile.RhodesApplication;
 
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
@@ -67,6 +68,13 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	public String getModuleName()
 	{
 		return ApplicationDescriptor.currentApplicationDescriptor().getModuleName();
+	}
+	
+	public void showLog()
+	{
+		synchronized ( RhodesApplication.getEventLock() ) {		
+			RhodesApplication.getInstance().showLogScreen();
+		}
 	}
 	
 	static Hashtable m_appProperties = new Hashtable(); 

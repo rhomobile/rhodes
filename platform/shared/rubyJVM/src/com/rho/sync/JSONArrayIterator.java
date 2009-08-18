@@ -15,6 +15,12 @@ class JSONArrayIterator
 	    m_nCurItem = 0;
 	}
 
+	JSONArrayIterator(JSONEntry oEntry, String strName)throws JSONException
+	{
+	    m_array = (JSONArray)oEntry.m_object.get(strName);
+	    m_nCurItem = 0;
+	}
+	
 	boolean isEnd()
 	{
 	    return !(m_array != null && m_nCurItem < m_array.length());

@@ -95,9 +95,9 @@ public class Platform extends Activity {
 
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
-		setContentView(R.layout.main);
+		setContentView(AndroidR.layout.main);
 
-		webView = (WebView) findViewById(R.id.webview);
+		webView = (WebView) findViewById(AndroidR.id.webview);
 
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setSavePassword(false);
@@ -275,7 +275,7 @@ public class Platform extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater mi = new MenuInflater(getApplication());
-		mi.inflate(R.menu.options, menu);
+		mi.inflate(AndroidR.menu.options, menu);
 		return true;
 	}
 
@@ -296,7 +296,7 @@ public class Platform extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.about:
+		case AndroidR.id.about:
 			AboutDialog aboutDialog = new AboutDialog(this);
 			aboutDialog.setTitle("About");
 			aboutDialog.setCanceledOnTouchOutside(true);
@@ -304,23 +304,23 @@ public class Platform extends Activity {
 			aboutDialog.show();
 
 			return true;
-		case R.id.navigation_back:
+		case AndroidR.id.navigation_back:
 			this.webView.goBack();
 			return true;
 
-		case R.id.navigation_forward:
+		case AndroidR.id.navigation_forward:
 			this.webView.goForward();
 			return true;
 
-		case R.id.navigation_home:
+		case AndroidR.id.navigation_home:
 			this.webView.loadUrl(startPage);
 			return true;
 
-		case R.id.sync:
+		case AndroidR.id.sync:
 			SyncThread.doSyncAllSources();
 			return true;
 			
-		case R.id.logview:
+		case AndroidR.id.logview:
 			this.runOnUiThread(new Runnable() {
 
 				public void run() {
@@ -334,7 +334,7 @@ public class Platform extends Activity {
 			
 			return true;
 			
-		case R.id.logoptions:
+		case AndroidR.id.logoptions:
 			this.runOnUiThread(new Runnable() {
 
 				public void run() {
@@ -348,11 +348,11 @@ public class Platform extends Activity {
 
 		return true;	
 
-		case R.id.exit:
+		case AndroidR.id.exit:
 			stopSelf();
 			return true;
 
-		case R.id.options:
+		case AndroidR.id.options:
 			String curUrl = RhoRuby.getOptionsPage();
 			curUrl = HOME_URL
 					+ "/"
@@ -361,7 +361,7 @@ public class Platform extends Activity {
 			this.webView.loadUrl(curUrl);
 			return true;
 
-		case R.id.refresh:
+		case AndroidR.id.refresh:
 			webView.reload();
 			return true;
 		}

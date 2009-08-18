@@ -1,5 +1,5 @@
   def startmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
     args = []
     args << "/c"
     args << "run.bat"
@@ -8,7 +8,7 @@
   end 
 
   def stopmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
     args = []
     args << "/c"
     args << "shutdown.bat"
@@ -17,9 +17,9 @@
   end 
 
  def startsim
-    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-    bbver = $config["env"]["bbver"]
+    bbver = $config["env"]["bbver"].to_s
+    sim = $config["env"]["paths"][bbver]["sim"].to_s
+    jde = $config["env"]["paths"][bbver]["jde"]
     
     command =  '"' + jde + "/simulator/fledge.exe\""
     args = [] 
@@ -33,7 +33,7 @@
     args << "/pin=0x2100000A"
     args << "/no-compact-filesystem"
     
-    if bbver >= 4.3
+    if bbver !~ /^4\.[012](\..*)?$/
       args << "/fs-sdcard=true"
     end
         
@@ -44,8 +44,8 @@
   end
 
  def stopsim
-    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    sim = $config["env"]["paths"][$config["env"]["bbver"].to_s]["sim"].to_s
+    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
     
     command =  '"' + jde + "/simulator/fledgecontroller.exe\""
     args = []
@@ -56,7 +56,7 @@
 
  def manualsign
     java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
     args = []
     args << "-jar"
@@ -71,7 +71,7 @@
 
   def autosign
     java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
     args = []
     args << "-jar"
@@ -92,19 +92,20 @@
 namespace "config" do
   task :bb => ["config:common"] do
     bbpath = $config["build"]["bbpath"]
+    $bbver = $config["env"]["bbver"].to_s
     $builddir = bbpath + "/build"
     $bindir = bbpath + "/bin"
     $rhobundledir =  bbpath + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
     $preverified = bbpath + "/preverified"
-    $targetdir = bbpath + "/target/" + $config["env"]["bbver"].to_s
+    $targetdir = bbpath + "/target/" + $bbver
     $rubyVMdir = bbpath + "/RubyVM"
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $compileERB = bbpath + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
 
-    $rhobundleimplib = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + "/lib/net_rim_api.jar;" +
+    $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       Jake.get_absolute($preverified+"/RubyVM.jar")
     $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
 
@@ -118,7 +119,7 @@ namespace "build" do
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
       java = $config["env"]["paths"]["java"] + "/java.exe"
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
       jarexe =  $config["env"]["paths"]["java"] + "/jar.exe"
 
       #common bundle task goes here#
@@ -143,7 +144,7 @@ namespace "build" do
     desc "Build RubyVM"
     task :rubyvm => ["config:bb"] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
 
@@ -158,7 +159,7 @@ namespace "build" do
         args << "-d"
         args << '"' +$tmpdir + '/RubyVM"'
         args << "-bootclasspath"
-        args << '"' + $config["env"]["paths"][$config["env"]["bbver"]]["jde"] + '/lib/net_rim_api.jar"'
+        args << '"' + $config["env"]["paths"][$bbver]["jde"] + '/lib/net_rim_api.jar"'
         args << "-source"
         args << "1.3"
         args << "-target"
@@ -194,8 +195,8 @@ namespace "build" do
     desc "Build rhodes"
     task :rhodes => [ :rubyvm, :rhobundle ] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
-      jde =  $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jde =  $config["env"]["paths"][$bbver]["jde"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       sources = Dir.glob($builddir + "/../rhodes/resources/**/*") |
       File.readlines($builddir + '/hsqldb_build.files').map { |l| l.gsub!(/\\/,'/').strip! } |
@@ -266,7 +267,7 @@ namespace "package" do
 
     desc "Package rubyVM"
     task :rubyvm => "build:bb:rubyvm" do
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       if not FileUtils.uptodate?($targetdir + '/RubyVM.cod',$preverified + "/RubyVM.jar")
         Jake.rapc("RubyVM",
@@ -310,7 +311,7 @@ namespace "package" do
 
     desc "Package all production (all parts in one package)"
     task :production => ["build:bb:rhodes"] do
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
       rm_rf $tmpdir
       mkdir_p $tmpdir
 
@@ -448,8 +449,8 @@ namespace "run" do
   
   desc "Builds everything, loads and starts sim"
   task :bb => [:stopmdsandsim, "package:bb:dev"] do
-    #sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    #sim = $config["env"]["paths"][$bbver]["sim"].to_s
+    jde = $config["env"]["paths"][$bbver]["jde"]
     
     cp_r Jake.get_absolute(File.join($targetdir,"/.")), jde + "/simulator"
     
@@ -473,10 +474,10 @@ end
 namespace "config" do
     task :checkbb do
       javahome = $config["env"]["paths"]["java"]
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
+      mdshome = $config["env"]["paths"][$bbver]["mds"]
 
-      puts "BBVER: " + $config["env"]["bbver"].to_s
+      puts "BBVER: " + $bbver
       puts "JAVAHOME: " + javahome
       puts "JDEHOME: " + jdehome
       puts "MDSHOME: " + mdshome

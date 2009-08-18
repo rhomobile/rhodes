@@ -30,4 +30,6 @@
 	INSERT INTO object_values_to_delete VALUES (OLD.id, OLD.value,OLD.attrib_type,OLD.update_type);
 	END;
 	</string>    
+<string name="ok">   Ok   </string>
+<string name="cancel">Cancel</string>
 </resources>

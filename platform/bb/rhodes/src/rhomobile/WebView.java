@@ -32,6 +32,7 @@ public class WebView extends RubyBasic {
 
 	public static RubyValue navigate(RubyValue arg0) {
 		String url = arg0.toString();
+		RhodesApplication.getInstance().addToHistory(url, null);
 		RhodesApplication.getInstance().navigateUrl(url);
 		return RubyConstant.QNIL;
 	}

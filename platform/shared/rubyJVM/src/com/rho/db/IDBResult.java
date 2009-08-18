@@ -33,4 +33,5 @@ public interface IDBResult {
 	public abstract int getInt(String colname);
 	public abstract String getString(String colname);
 	
+	public abstract Object[] getCurData();
 }

@@ -15,16 +15,18 @@ class SettingsController < Rho::RhoController
   end
 
   def login_callback
-    err_code = @params['error_code'].to_i
-    if err_code == 0
+    errCode = @params['error_code'].to_i
+    if errCode == 0
       # run sync if we were successful
       WebView.navigate Rho::RhoConfig.start_path
       SyncEngine.dosync
     else
-      @msg = @params['error_message']
-      if @msg == nil or @msg.length == 0 
-        @msg = Rho::RhoError.new(err_code).message
+      if errCode == Rho::RhoError::ERR_REMOTESERVER
+        @msg = "You entered an invalid login/password, please try again."
+      else  
+        @msg = Rho::RhoError.new(errCode).message
       end
+      
       WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )
     end  
   end

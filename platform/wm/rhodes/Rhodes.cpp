@@ -234,6 +234,14 @@ extern "C" char* webview_current_location() {
 	return get_current_location();
 }
 
+extern "C" VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
+	return 0;
+}
+
+extern "C" void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
+	//TODO: Implement me!
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};

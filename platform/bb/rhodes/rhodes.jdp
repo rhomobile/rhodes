@@ -33,7 +33,9 @@ src\com\rho\net\bb\NativeBBHttpConnection.java
 src\com\rho\net\NetworkAccess.java
 src\com\rho\RhoRubyHelper.java
 src\rhomobile\Alert.java
+src\rhomobile\Callback.java
 src\rhomobile\camera\Camera.java
+src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java
 src\rhomobile\camera\ImageBrowserScreen.java
 src\rhomobile\datetime\DateTimePicker.java
