@@ -179,12 +179,16 @@ public class DBAdapter extends RubyBasic {
 		"last_inserted_size int default 0,"+
 		"last_deleted_size int default 0,"+
 		"last_sync_duration int default 0,"+
-		"last_sync_success int default 0);"+
+		"last_sync_success int default 0," +
+		"source_attribs varchar default NULL);"+
 		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
-		"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
-		"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
+		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
+		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
 		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
-		"CREATE INDEX by_type ON object_values (attrib_type)";
+		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
+		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
+		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
+		//"CREATE INDEX by_type ON object_values (attrib_type)";
     }
     
     public void startTransaction()throws DBException
@@ -289,7 +293,115 @@ public class DBAdapter extends RubyBasic {
 		checkDBVersion();
 		m_dbStorage.open(m_strDBPath, getSqlScript() );
 		
+		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
 		m_bIsOpen = true;
+    }
+    
+	private String createInsertStatement(IDBResult res, String tableName)
+	{
+		String strInsert = "INSERT INTO ";
+		
+		strInsert += tableName;
+		strInsert += "(";
+		String strQuest = ") VALUES(";
+		for (int i = 0; i < res.getColCount(); i++ )
+		{
+			if ( i > 0 )
+			{
+				strInsert += ",";
+				strQuest += ",";
+			}
+			
+			strInsert += res.getColName(i);
+			strQuest += "?";
+		}
+		
+		strInsert += strQuest + ")"; 
+		return strInsert;
+	}
+    
+    private RubyValue rb_destroy_table(RubyValue v) 
+    {
+		if ( !m_bIsOpen )
+			return RubyConstant.QNIL;
+		
+		IDBStorage db = null;
+		try{
+			String strTable = v.toStr();
+			
+			String dbName = getNameNoExt(m_strDBPath);
+			String dbNewName  = dbName + "new";
+			
+			SimpleFile fs = RhoClassFactory.createFile();
+			
+		    fs.delete(dbNewName + ".data");
+		    fs.delete(dbNewName + ".script");
+	
+		    db = RhoClassFactory.createDBStorage();	    
+			db.open( dbNewName, getSqlScript() );
+			
+			String[] vecTables = m_dbStorage.getAllTableNames();
+			IDBResult res;
+	
+		    db.startTransaction();
+			
+			for ( int i = 0; i< vecTables.length; i++ )
+			{
+				String tableName = vecTables[i];
+				if ( tableName.equalsIgnoreCase(strTable) )
+					continue;
+				
+				res = executeSQL("SELECT * from " + tableName, null);
+				String strInsert = "";
+			    for ( ; !res.isEnd(); res.next() )
+			    {
+			    	if ( strInsert.length() == 0 )
+			    		strInsert = createInsertStatement(res, tableName);
+			    	
+			    	db.executeSQL(strInsert, res.getCurData() );
+			    }
+			}
+			
+		    db.commit();
+		    db.close();
+		    
+		    m_dbStorage.close();
+		    m_dbStorage = null;
+		    m_bIsOpen = false;
+		    
+		    fs.renameOverwrite(dbNewName + ".data", dbName+".data");
+		    fs.renameOverwrite(dbNewName + ".script", dbName+".script");
+		    
+		    m_dbStorage = RhoClassFactory.createDBStorage();
+			m_dbStorage.open(m_strDBPath, getSqlScript() );
+			m_bIsOpen = true;
+		}catch(Exception e)
+		{
+    		LOG.ERROR("execute failed.", e);
+    		
+			if ( !m_bIsOpen )
+			{
+				LOG.ERROR("destroy_table error.Try to open old DB.");
+				try{
+					m_dbStorage.open(m_strDBPath, getSqlScript() );
+					m_bIsOpen = true;
+				}catch(Exception exc)
+				{
+					LOG.ERROR("destroy_table open old table failed.", exc);
+				}
+			}
+			
+			try {
+				if ( db != null)
+					db.close();
+			} catch (DBException e1) {
+				LOG.ERROR("closing of DB caused exception: " + e1.getMessage());
+			}
+    		
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+		
+		return RubyConstant.QNIL;
     }
     
     public void rollback()throws DBException
@@ -420,6 +532,10 @@ public class DBAdapter extends RubyBasic {
 		klass.defineMethod( "rollback", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_rollback();}
+		});
+		klass.defineMethod( "destroy_table", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_destroy_table(arg);}
 		});
 		
 	}

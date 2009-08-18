@@ -8,7 +8,7 @@ namespace db{
 
 class CDBAdapter
 {
-    String   m_strDbPath;
+    String   m_strDbPath, m_strDbVer;
     sqlite3* m_dbHandle;
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
     common::CMutex m_mxDB;
@@ -130,6 +130,7 @@ public:
     void startTransaction();
     void endTransaction();
     void rollback();
+    void destroy_table(String strTable);
 
     static String makeBlobFolderName();
 //private:
@@ -137,6 +138,8 @@ public:
 
     void checkVersion(String& strVer);
     void createSchema();
+    boolean checkDbError(int rc);
+    sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
 
     virtual DBResultPtr prepareStatement( const char* szSt );
 };

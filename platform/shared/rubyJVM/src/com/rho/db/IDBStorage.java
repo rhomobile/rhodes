@@ -14,4 +14,6 @@ public interface IDBStorage {
 	public abstract void commit()throws DBException;
 	
 	public abstract void setDbCallback(IDBCallback callback);
+	
+	public abstract String[] getAllTableNames()throws DBException;
 }

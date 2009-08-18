@@ -1596,6 +1596,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="datetimepicker"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\datetimepicker\datetimepicker_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

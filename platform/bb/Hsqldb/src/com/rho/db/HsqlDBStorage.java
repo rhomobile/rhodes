@@ -118,11 +118,11 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 			if ( m_dbSess == null )
 				throw new RuntimeException("executeSQL: m_dbSess == null");
 			
-			if ( strStatement.startsWith("destroy ") )
+			/*if ( strStatement.startsWith("destroy ") )
 			{
 				destroy_table(strStatement.substring(8));
 				return new HsqlDBResult();
-			}
+			}*/
 			
 			CompiledStatement st = m_dbSess.compiledStatementManager.compile(m_dbSess, strStatement);
 			Result res = m_dbSess.sqlExecuteCompiledNoPreChecksSafe(st, values);
@@ -159,6 +159,18 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 			
 	}
 
+	public String[] getAllTableNames()throws DBException
+	{
+		org.hsqldb.lib.HsqlArrayList arTables = m_dbSess.getDatabase().schemaManager.getAllTables();
+		
+		String[] vecTables = new String[arTables.size()]; 
+		
+		for ( int i = 0; i< arTables.size(); i++ )
+			vecTables[i] = ((Table)arTables.get(i)).getName().name;
+		
+		return vecTables;
+	}
+/*	
 	private String createInsertStatement(HsqlDBResult res)
 	{
 		String strInsert = "INSERT INTO ";
@@ -227,6 +239,6 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 	    m_fs.renameElement(dbNewName + ".data", dbName+".data");
 	    m_fs.renameElement(dbNewName + ".script", dbName+".script");
 	    open(dbName, m_strSqlScript );
-    }
+    }*/
 	
 }

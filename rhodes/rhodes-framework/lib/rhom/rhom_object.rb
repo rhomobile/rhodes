@@ -45,7 +45,7 @@ module Rhom
                       "clear_notification" => "1" }
     
 
-    def method_name_reserved?(method)
+    def RhomObject.method_name_reserved?(method)
       @@reserved_names.has_key?(method)
     end
   end # RhomObject

@@ -82,7 +82,7 @@ public:
     int getStartSource();
     String loadClientID();
     String requestClientIDByNet();
-    boolean resetClientIDByNet();//throws Exception
+    boolean resetClientIDByNet(const String& strClientID);//throws Exception
 
     void fireNotification( CSyncSource& src, boolean bFinish );
 

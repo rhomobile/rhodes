@@ -4,6 +4,7 @@
 #include "common/AutoPointer.h"
 #include "json/JSONIterator.h"
 #include "common/RhoConf.h"
+#include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
 
 namespace rho {
@@ -151,7 +152,7 @@ String CSyncEngine::loadClientID()
         getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
     }else if ( bResetClient )
     {
-    	if ( !resetClientIDByNet() )
+    	if ( !resetClientIDByNet(clientID) )
     		stopSync();
     	else
     		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
@@ -160,11 +161,11 @@ String CSyncEngine::loadClientID()
     return clientID;
 }
 
-boolean CSyncEngine::resetClientIDByNet()//throws Exception
+boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
     String serverUrl = RHOCONF().getString("syncserver");
     String strUrl = serverUrl + "clientreset";
-    String strQuery = "?client_id=" + getClientID();
+    String strQuery = "?client_id=" + strClientID;
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery) );
     return resp.isOK();
@@ -267,6 +268,13 @@ void CSyncEngine::login(String name, String password, String callback)
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody ) );
+    
+    if ( !resp.isResponseRecieved())
+    {
+        callLoginCallback(callback, RhoRuby::ERR_NETWORK, resp.getCharData());
+        return;
+    }
+
     if ( !resp.isOK() )
     {
         callLoginCallback(callback, RhoRuby::ERR_REMOTESERVER, resp.getCharData());
@@ -382,10 +390,12 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
         CSyncNotification& sn = *pSN;
 
         strUrl = sn.m_strUrl;
-        strBody += "total_count=" + src.getTotalCount();
-        strBody += "&processed_count=" + src.getCurPageCount();
+		strBody = "";
+        strBody = "total_count=" + convertToStringA(src.getTotalCount());
+        strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
         
-        strBody = "&status=";
+        strBody += "&status=";
+
         if ( bFinish )
         	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
         else

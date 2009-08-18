@@ -45,10 +45,51 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 
+static VALUE classRhomAttribManager;
+static ID midRhomAttribManager_save;
+static ID midRhomAttribManager_delete_attribs;
+static ID midRhomAttribManager_add_attrib;
+
 static char* rb_type_to_s(VALUE obj);
+extern int ruby_thread_set_native(rb_thread_t *th);
+extern int native_mutex_lock(rb_thread_lock_t *);
+
+rb_thread_t * __getCurrentThread()
+{
+    rb_thread_t * res = ruby_thread_from_native();
+    if ( res )
+        return res;
+	
+    return ruby_current_thread;
+}
+
+void RhoRubyThreadStart()
+{
+    rb_thread_t *th;
+
+    VALUE self = rb_thread_alloc(rb_cThread);
+    GetThreadPtr(self, th);
+
+#if defined( OS_WINDOWS ) || defined( OS_WINCE )	
+    ruby_thread_init_stack(th);
+#endif	
+    ruby_thread_set_native(th);
+
+    rb_gc_register_mark_object(self);
+
+//	RhoRuby_RhomAttribManager_add_attrib(0, "test");
+    //native_mutex_lock(&th->vm->global_vm_lock);
+}
+
+void RhoRubyThreadStop()
+{
+    //rb_thread_t *th = GET_THREAD();
+    //native_mutex_unlock(&th->vm->global_vm_lock);
+}
 
 void RhoRubyStart()
 {
+    VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -80,6 +121,7 @@ void RhoRubyStart()
 		Init_Alert();
         Init_Camera();
 		Init_stringio();
+		Init_DateTimePicker();
 
     Init_RhoSupport();
 
@@ -103,9 +145,17 @@ void RhoRubyStart()
 #endif    
 
     rb_gc_register_mark_object(framework);
-		CONST_ID(framework_mid, "serve");
-		CONST_ID(framework_mid2, "serve_index");
-		
+
+	CONST_ID(framework_mid, "serve");
+	CONST_ID(framework_mid2, "serve_index");
+
+    moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
+    classRhomAttribManager = rb_const_get(moduleRhom, rb_intern("RhomAttribManager"));
+
+	CONST_ID(midRhomAttribManager_save, "save");
+	CONST_ID(midRhomAttribManager_delete_attribs, "delete_attribs");
+	CONST_ID(midRhomAttribManager_add_attrib, "add_attrib");
+
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
 #endif    
@@ -238,6 +288,21 @@ VALUE callServeIndex(char* index_name) {
 	rb_gc();
 	
 	return callres;
+}
+
+void RhoRuby_RhomAttribManager_save(int nSrcID)
+{
+    rb_funcall(classRhomAttribManager, midRhomAttribManager_save, 1, INT2FIX(nSrcID));
+}
+
+void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID)
+{
+    rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
+}
+
+void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib)
+{
+    rb_funcall(classRhomAttribManager, midRhomAttribManager_add_attrib, 2, INT2FIX(nSrcID), rb_str_new2(szAttrib) );
 }
 
 static char*

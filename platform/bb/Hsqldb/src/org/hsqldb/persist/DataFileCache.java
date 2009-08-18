@@ -163,7 +163,7 @@ public class DataFileCache {
         dataFile        = null;
     }
 
-    private com.rho.db.Journal getJournal()throws IOException {
+    public com.rho.db.Journal getJournal()throws IOException {
     	return ((ScaledRAFile)dataFile).getJournal();
     }
     

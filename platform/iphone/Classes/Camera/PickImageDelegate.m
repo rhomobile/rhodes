@@ -11,37 +11,6 @@
 
 @implementation PickImageDelegate
 
-@synthesize postUrl;
-
-
-- (void)NotifyViewThreadRoutine:(id)object {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-	// Get message body and its length
-	NSData *postBody = (NSData*)object;	
-	NSString *postLength = [NSString stringWithFormat:@"%d", [postBody length]];
-	
-	// Create post request
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:[NSURL URLWithString:postUrl]];
-	[request setHTTPMethod:@"POST"];
-	[request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-	[request setHTTPBody:postBody];
-	
-	// Send request
-	[NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-	
-    [pool release];
-}
-
-- (void)doCallback:(NSString*) message {
-	// Create post body
-	NSData* postBody = [message dataUsingEncoding:NSUTF8StringEncoding];
-	// Start notification thread	
-	[NSThread detachNewThreadSelector:@selector(NotifyViewThreadRoutine:)
-							 toTarget:self withObject:postBody];		
-}
-
 - (void)useImage:(UIImage*)theImage { 
 	NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/public/db-files"];
 	

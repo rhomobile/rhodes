@@ -33,6 +33,8 @@ res/prebuilt/android/classes/com/rho/Mutex.class
 res/prebuilt/android/classes/com/rho/Properties.class
 res/prebuilt/android/classes/com/rho/RhoClassFactory.class
 res/prebuilt/android/classes/com/rho/RhoConf$1.class
+res/prebuilt/android/classes/com/rho/RhoConf$2.class
+res/prebuilt/android/classes/com/rho/RhoConf$3.class
 res/prebuilt/android/classes/com/rho/RhoConf.class
 res/prebuilt/android/classes/com/rho/RhoEmptyLogger.class
 res/prebuilt/android/classes/com/rho/RhoEmptyProfiler.class
@@ -66,6 +68,7 @@ res/prebuilt/android/classes/com/rho/db/DBAdapter$4.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$5.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$6.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$7.class
+res/prebuilt/android/classes/com/rho/db/DBAdapter$8.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter$DBVersion.class
 res/prebuilt/android/classes/com/rho/db/DBAdapter.class
 res/prebuilt/android/classes/com/rho/db/DBException.class
@@ -129,13 +132,6 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$3.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$4.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform$5.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/Platform.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$attr.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$drawable.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$id.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$layout.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$menu.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R$string.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/R.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/ResourceFetchThread.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhoHttpHandler.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/RhoHttpService.class
@@ -167,8 +163,6 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePicker$1.clas
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePicker.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$2.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$3.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$4.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$ResultSender.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/db/DBStorage.class
@@ -631,6 +625,14 @@ res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyIOPipeSourceExecutor.
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyInteger.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMatchData.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMethodValue.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$1.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$2.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$3.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$4.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$5.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$6.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$7.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyNumeric.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyProc$Invoke.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyProc.class
@@ -1239,13 +1241,14 @@ res/prebuilt/android/res/layout/file_row.xml
 res/prebuilt/android/res/layout/logoptions.xml
 res/prebuilt/android/res/layout/logview.xml
 res/prebuilt/android/res/layout/main.xml
+res/prebuilt/android/res/layout/datetime.xml
 res/prebuilt/android/res/menu/options.xml
 res/prebuilt/android/res/values/strings.xml
+res/prebuilt/android/src/com/rhomobile/rhodes/AndroidR.java
 res/prebuilt/bb/MANIFEST.MF
 res/prebuilt/bb/RubyVM.jar
 res/prebuilt/bb/rhodes.jar
 res/prebuilt/bb/rhodesApp.alx
-res/prebuilt/common/db/syncdb.sqlite
 res/prebuilt/iphone/sim/rhorunner.app/Info.plist
 res/prebuilt/iphone/sim/rhorunner.app/MainWindow.nib
 res/prebuilt/iphone/sim/rhorunner.app/PkgInfo
@@ -1261,5 +1264,4 @@ res/prebuilt/iphone/sim/rhorunner.app/rhorunner
 res/prebuilt/wm/wm6.7z
 res/rhodes_pid.key
 res/xruby-0.3.3.jar
-rhodes-build.gemspec
 spec/spec.opts

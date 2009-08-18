@@ -26,10 +26,12 @@
 	SEL onSetViewHomeUrl;
 	SEL onTakePicture;
 	SEL onChoosePicture;
+	SEL onChooseDateTime;
 	SEL onSetViewOptionsUrl;
 	SEL onShowPopup;
 	SEL onVibrate;
 	SEL onPlayFile;
+	SEL onSysCall;
 }
 
 // callbacks
@@ -42,10 +44,12 @@
 @property (assign) SEL onSetViewHomeUrl;
 @property (assign) SEL onTakePicture;
 @property (assign) SEL onChoosePicture;
+@property (assign) SEL onChooseDateTime;
 @property (assign) SEL onSetViewOptionsUrl;
 @property (assign) SEL onShowPopup;
 @property (assign) SEL onVibrate;
 @property (assign) SEL onPlayFile;
+@property (assign) SEL onSysCall;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...

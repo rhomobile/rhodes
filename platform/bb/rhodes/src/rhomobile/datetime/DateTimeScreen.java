@@ -3,6 +3,7 @@ package rhomobile.datetime;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
+import rhomobile.Callback;
 import rhomobile.RhodesApplication;
 import net.rim.device.api.i18n.DateFormat;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -28,7 +29,9 @@ public class DateTimeScreen extends MainScreen {
 	/** A reference to the current screen for listeners. */
 	private DateTimeScreen _dateTimeScreen;
 	
-	private DateField _dateTime;
+	private DateField _dateTimeField;
+	private ButtonField _okButton;
+	private ButtonField _cancelButton;
 	
 	public DateTimeScreen(String callback, String title, long init, DateFormat fmt, String opaque)
 	{
@@ -39,23 +42,29 @@ public class DateTimeScreen extends MainScreen {
 		
 		setTitle( new LabelField( title, LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
 		
-		_dateTime = new DateField("", init, fmt);
+		_dateTimeField = new DateField("", init, fmt);
 		
-		ButtonField okButton = new ButtonField("OK");
-		okButton.setChangeListener(new OkListener());
-		ButtonField cancelButton = new ButtonField("Cancel");
-		cancelButton.setChangeListener(new CancelListener());
+		_okButton = new ButtonField("OK");
+		_okButton.setChangeListener(new OkListener());
+		_cancelButton = new ButtonField("Cancel");
+		_cancelButton.setChangeListener(new CancelListener());
 		
 		HorizontalFieldManager hfm = new HorizontalFieldManager(Field.FIELD_HCENTER);
-		hfm.add(okButton);
-		hfm.add(cancelButton);
+		hfm.add(_okButton);
+		hfm.add(_cancelButton);
 		
 		VerticalFieldManager vfm = new VerticalFieldManager(Field.FIELD_VCENTER);
-		vfm.add(_dateTime);
+		vfm.add(_dateTimeField);
 		vfm.add(new SeparatorField());
 		vfm.add(hfm);
 		
 		add(vfm);
+	}
+	
+	private void setFieldsEditable(boolean v) {
+		_okButton.setEditable(v);
+		_cancelButton.setEditable(v);
+		_dateTimeField.setEditable(v);
 	}
 	
 	/**
@@ -79,6 +88,23 @@ public class DateTimeScreen extends MainScreen {
 		return handled;
 	}
 	
+	private class RemoveScreen implements Callback
+	{
+		private RhodesApplication _app = null;
+		private DateTimeScreen _screen = null;
+		
+		public RemoveScreen(RhodesApplication app, DateTimeScreen screen) {
+			_app = app;
+			_screen = screen;
+		}
+		
+		public void run() {
+			synchronized ( RhodesApplication.getEventLock() ) {
+				_app.popScreen( _screen );
+			}
+		}
+	};
+	
 	private class OkListener implements FieldChangeListener
 	{
 		public void fieldChanged(Field field, int context)
@@ -90,12 +116,13 @@ public class DateTimeScreen extends MainScreen {
     		
     		// We need to divide returned value to 1000 because we send number of seconds
     		// but returned value is actually number of milliseconds since Epoch.
-    		String body = "status=ok&result=" + _dateTime.getDate()/1000;
+    		String body = "status=ok&result=" + _dateTimeField.getDate()/1000;
     		if (_opaque != null)
     			body += "&opaque=" + _opaque;
     		LOG.INFO("Callback with result: " + body);
-			app.postUrl(_callbackUrl, body, headers);
-			app.popScreen( _dateTimeScreen );
+    		
+    		_dateTimeScreen.setFieldsEditable(false);
+			app.postUrl(_callbackUrl, body, headers, new RemoveScreen(app, _dateTimeScreen));
 		}
 	}
 	
@@ -111,8 +138,8 @@ public class DateTimeScreen extends MainScreen {
 			String body = "status=cancel";
 			LOG.INFO("Callback with result: " + body);
 			
-			app.postUrl(_callbackUrl, body, headers);	
-        	app.popScreen( _dateTimeScreen );
+			_dateTimeScreen.setFieldsEditable(false);
+			app.postUrl(_callbackUrl, body, headers, new RemoveScreen(app, _dateTimeScreen));
 		}
 	}
 }

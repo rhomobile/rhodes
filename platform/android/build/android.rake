@@ -297,6 +297,10 @@ namespace "prebuild" do
       cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt
 
       cp_r $androidpath + "/Rhodes/res", prebuilt
+
+      mkdir_p prebuilt + "/src/com/rhomobile/rhodes"
+
+      cp_r $androidpath + "/Rhodes/src/com/rhomobile/rhodes/AndroidR.java", prebuilt + "/src/com/rhomobile/rhodes"
     
       mkdir_p prebuilt + "/classes"
 

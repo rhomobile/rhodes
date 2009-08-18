@@ -1,10 +1,29 @@
+#
 require File.join(File.dirname(__FILE__),'..','jake.rb')
+
+def freplace( fname, pattern, str )
+  f = File.open( fname )
+  strings = f.read
+  f.close
+
+  strings.gsub!( pattern, str )
+
+  f = File.new( fname, "w" )
+  f.print strings
+  f.close
+end
 
 namespace "config" do
   task :bb => :common do
 
     $deploydir = File.join($basedir,'deploy','bb')
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
+
+    if $config["env"].has_key? "application-name"
+      $appname = $config["env"]["application-name"]
+    else
+      $appname = "rhodesApp"
+    end
 
   end
 end
@@ -16,7 +35,7 @@ end
 
 namespace "bundle" do
   task :bb =>  ["config:bb", "loadframework", "makedirs"] do
-    jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
     rm_rf $srcdir
     mkdir_p $srcdir
@@ -43,6 +62,13 @@ namespace "bundle" do
     cp_r 'app',File.join($srcdir,'apps')
     cp_r 'public', File.join($srcdir,'apps')
     cp   'rhoconfig.txt', File.join($srcdir,'apps')
+    
+    chdir File.join($srcdir,'apps/public')
+    rm_rf 'js/iui'
+    Dir.glob("js/jquery*").each {|f| rm_rf f}
+    Dir.glob("js/prototype*").each {|f| rm f}
+    chdir $basedir
+    
     #cp   'index.erb', File.join($srcdir,'apps')
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
@@ -81,21 +107,25 @@ namespace "bundle" do
     Jake.unjar($bindir + "/RhoBundle.jar", $tmpdir) 
     Jake.unjar(File.join($prebuilt, "bb","rhodes.jar"), $tmpdir) 
 
-    Jake.jar($bindir + "/rhodesApp.jar",'"' + File.join($prebuilt, "bb","manifest.mf") + '"',$tmpdir,true)
-    Jake.rapc("rhodesApp", 
+    Jake.jar($bindir + "/" + $appname + ".jar",'"' + File.join($prebuilt, "bb","manifest.mf") + '"',$tmpdir,true)
+
+    vendor = $config["env"]["vendor"]
+    version = $config["env"]["version"]
+    Jake.rapc($appname, 
            $targetdir,
            jdehome + "/lib/net_rim_api.jar",
-           '"' + $bindir + "/rhodesApp.jar" +'"',
-           "rhodesApp",
-           $config["env"]["vendor"],
-           $config["env"]["version"],
+           '"' + $bindir + "/" + $appname + ".jar" +'"',
+           $appname,
+           vendor,
+           version,
            "resources/icon.png",
            false,
            true
       )
-      $stdout.flush
+    $stdout.flush
 
-    cp  File.join($prebuilt, "bb","rhodesApp.alx"), $targetdir
+    cp  File.join($prebuilt, "bb","rhodesApp.alx"), File.join($targetdir, $appname + ".alx")
+    freplace( File.join( $targetdir, $appname + ".alx" ), /rhodesApp/, $appname )
   end
 end
 
@@ -111,9 +141,9 @@ namespace "device" do
     webdir = File.join($targetdir, "web")  
     mkdir_p webdir
 
-    cp File.join($targetdir, "rhodesApp.jad"), webdir
+    cp File.join($targetdir, $appname + ".jad"), webdir
 
-    Jake.unjar(File.join($targetdir, "rhodesApp.cod"), webdir)
+    Jake.unjar(File.join($targetdir, $appname + ".cod"), webdir)
 
     rm_rf $deploydir
     mkdir_p $deploydir 
@@ -125,7 +155,7 @@ end
 namespace "run" do
   namespace "bb" do
     def startmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
         args = []
         args << "/c"
         args << "run.bat"
@@ -134,7 +164,7 @@ namespace "run" do
     end 
 
     def stopmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
         args = []
         args << "/c"
         args << "shutdown.bat"
@@ -143,9 +173,9 @@ namespace "run" do
     end 
 
     def startsim
-        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-        bbver = $config["env"]["bbver"]
+        bbver = $config["env"]["bbver"].to_s
+        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledge.exe\""
         args = [] 
@@ -158,7 +188,7 @@ namespace "run" do
         args << "/data-port=0x4d4e"
         args << "/pin=0x2100000A"
 
-        if bbver >= 4.3
+        if bbver !~ /^4\.[012](\..*)?$/
           args << "/fs-sdcard=true"
         end
             
@@ -169,8 +199,9 @@ namespace "run" do
     end
 
     def stopsim
-        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+        bbver = $config["env"]["bbver"].to_s
+        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledgecontroller.exe\""
         args = []
@@ -186,7 +217,7 @@ namespace "run" do
 
     desc "Run app in BlackBerry Sim"
     task :app => [:stopmdsandsim, "bundle:bb"] do
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+        jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
         cp_r File.join($targetdir,"/."), jde + "/simulator"
 
@@ -199,15 +230,15 @@ namespace "run" do
 #        command = '"' + jde + "/simulator/fledgecontroller.exe\""
 #        args = []
 #        args << "/session="+sim
-#        args << "\"/execute=LoadCod(" + File.join($targetdir,"rhodesApp.cod") + ")\""
+#        args << "\"/execute=LoadCod(" + File.join($targetdir,$appname + ".cod") + ")\""
 
 #        Jake.run(command,args, jde + "/simulator")
         $stdout.flush
     end
   
     task :autosign do
-      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
+      java = $config["env"]["paths"]["java"] + "/java.exe"
+      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
     
       args = []
       args << "-jar"
@@ -225,8 +256,8 @@ namespace "run" do
     end
   
     task :manualsign do
-      java = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
+      java = $config["env"]["paths"]["java"] + "/java.exe"
+      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
       
       args = []
       args << "-jar"
@@ -246,9 +277,9 @@ namespace "check" do
     errors = Array.new
     
     begin
-      javahome = $config["env"]["paths"][$config["env"]["bbver"]]["java"]
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+      javahome = $config["env"]["paths"]["java"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
     rescue
       puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
       errors << "invalid build.yml"

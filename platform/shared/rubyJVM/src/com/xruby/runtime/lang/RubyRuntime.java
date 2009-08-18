@@ -98,7 +98,7 @@ public class RubyRuntime {
     public static RubyClass DateTimePickerClass;
     public static RubyClass RingtoneManagerClass;
     public static RubyClass MediaErrorClass;
-    
+    public static RubyClass MutexClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -261,7 +261,8 @@ public class RubyRuntime {
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
         RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
-        
+        MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
+        RubyMutex.initMethods(MutexClass);        
 //      RhoPhonebook.initMethods(PhonebookClass);
         
 //

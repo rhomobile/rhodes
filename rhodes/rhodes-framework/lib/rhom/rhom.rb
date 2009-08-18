@@ -53,13 +53,14 @@ module Rhom
             ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
         end
         
-        if defined? RHO_DBME
+#        if defined? RHO_DBME
+            ::Rhom::RhomAttribManager.reset_all
             ::Rhom::RhomDbAdapter.destroy_table('object_values')
             #::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-        else
-            ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-            ::Rhom::RhomDbAdapter.execute_sql("VACUUM")
-        end    
+#        else
+#            ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+#            ::Rhom::RhomDbAdapter.execute_sql("VACUUM")
+#        end    
       end
       
       def database_full_reset_and_logout

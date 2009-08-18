@@ -55,7 +55,12 @@ namespace "build" do
       cp_r app + '/public', File.join($srcdir,'apps')
       cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
-
+      chdir File.join($srcdir,'apps/public')
+      rm_rf 'js/iui'
+      Dir.glob("js/jquery*").each {|f| rm_rf f}
+      Dir.glob("js/prototype*").each {|f| rm f}
+      chdir startdir
+      
       #create manifest
       dir = File.join($srcdir, 'apps')
       fname = "config.rb"

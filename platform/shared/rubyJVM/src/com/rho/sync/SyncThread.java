@@ -131,6 +131,9 @@ public class SyncThread extends RhoThread
 		
 		m_oSyncEngine = new SyncEngine(DBAdapter.getInstance());
 		m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+		if( RhoConf.getInstance().isExist("sync_poll_interval") )
+			m_nPollInterval = RhoConf.getInstance().getInt("sync_poll_interval");
+		
 		m_ptrFactory = factory;
 	
 	    m_oSyncEngine.setFactory(factory);
@@ -140,7 +143,7 @@ public class SyncThread extends RhoThread
 	}
 
     public static SyncThread getInstance(){ return m_pInstance; }
-    static SyncEngine getSyncEngine(){ return m_pInstance.m_oSyncEngine; }
+    public static SyncEngine getSyncEngine(){ return m_pInstance.m_oSyncEngine; }
     static DBAdapter getDBAdapter(){ return DBAdapter.getInstance(); }
 
     void addSyncCommand(SyncCommand oSyncCmd)

@@ -16,7 +16,7 @@ public class ClientRegister extends RhoThread
 		new RhoLogger("ClientRegister");
 	
 	private static final int WAIT_BEFOREKILL_SECONDS  = 3;
-	private static final int POLL_INTERVAL_SECONDS = 60;
+	private static final int POLL_INTERVAL_SECONDS = 30*60;
     public static final int DEFAULT_PUSH_PORT = 100;
 
 	static ClientRegister m_pInstance;
@@ -81,15 +81,11 @@ public class ClientRegister extends RhoThread
     	
     }
 
-    private boolean doRegister(	SyncEngine oSync )throws Exception
+    public String getRegisterBody(SyncEngine oSync)throws Exception
     {
-    	String session = oSync.loadSession();
-    	if ( session == null || session.length() == 0 )
-    		return false;
-    	
 		String client_id = oSync.loadClientID();
 		if ( client_id == null || client_id.length() == 0 )
-			return false;
+			return "";
 	
 		IDBResult res = oSync.getDB().executeSQL("SELECT token,token_sent from client_info");
         if ( !res.isEnd() ) {
@@ -99,19 +95,33 @@ public class ClientRegister extends RhoThread
 			{
 				//token in db same as new one and it was already send to the server
 				//so we do nothing
-				return true; 
+				return ""; 
 			}
         }
         
 		int port = RhoConf.getInstance().getInt("push_port");
+    	
+		String strBody = "client_id=" + client_id +
+		"&device_pin=" + m_strDevicePin + 
+		"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
+		"&device_type=" + m_sysInfo.getPlatform();
+    	
+		return strBody;
+    }
+    
+    private boolean doRegister(	SyncEngine oSync )throws Exception
+    {
+    	String session = oSync.loadSession();
+    	if ( session == null || session.length() == 0 )
+    		return false;
+    	
+    	String strBody = getRegisterBody(oSync);
+    	if ( strBody == null || strBody.length() == 0 )
+    		return false;
+    	
 		String serverUrl = RhoConf.getInstance().getString("syncserver");
 		if (serverUrl != null && serverUrl.length()>0) 
 		{
-			String strBody = "client_id=" + client_id +
-			"&device_pin=" + m_strDevicePin + 
-			"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
-			"&device_type=" + m_sysInfo.getPlatform();
-			
 			NetResponse resp = getNet().pushData(serverUrl+"clientregister", strBody, oSync);
 			if( resp.isOK() ) 
 			{

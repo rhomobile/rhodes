@@ -6,6 +6,7 @@ rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 platform/mac/**/build/*
 platform/iphone/build/*
+platform/iphone/rhoextlib/build/*
 platform/iphone/rhorubylib/build/*
 platform/iphone/rhosynclib/build/*
 platform/iphone/tcmalloc/build/*
@@ -19,6 +20,8 @@ platform/win32/bin/*
 platform/wm/target/*
 platform/wm/build/cleanup.js
 platform/iphone/*/rholog.txt
+platform/win32/**/*.pch
+platform/wm/**/*.pch
 
 platform/bb/.metadata/*
 platform/bb/bin/*
@@ -70,7 +73,6 @@ platform/shared/*/bin
 *.idb
 *.lib
 
-*.pch
 *.mode1v3
 *.pbxuser
 *.CAB

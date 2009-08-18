@@ -26,11 +26,11 @@ import com.rho.RhoRuby;
 import com.rho.db.*;
 import com.rho.net.*;
 import com.rho.*;
-
+import java.io.IOException;
 import java.util.Vector;
 import java.util.Hashtable;
 
-class SyncEngine implements NetRequest.IRhoSession
+public class SyncEngine implements NetRequest.IRhoSession
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
@@ -223,7 +223,7 @@ class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 
-	String loadClientID()throws Exception
+	public String loadClientID()throws Exception
 	{
 	    String clientID = "";
 		
@@ -245,7 +245,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 		    }else if ( bResetClient )
 		    {
-		    	if ( !resetClientIDByNet() )
+		    	if ( !resetClientIDByNet(clientID) )
 		    		stopSync();
 		    	else
 		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
@@ -255,11 +255,11 @@ class SyncEngine implements NetRequest.IRhoSession
 		return clientID;
 	}
 
-	boolean resetClientIDByNet()throws Exception
+	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
 	    String serverUrl = RhoConf.getInstance().getString("syncserver");
 	    String strUrl = serverUrl + "clientreset";
-	    String strQuery = "?client_id=" + getClientID();
+	    String strQuery = "?client_id=" + strClientID;
 	    
 	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
 	    return resp.isOK();
@@ -356,20 +356,32 @@ class SyncEngine implements NetRequest.IRhoSession
 		    	callLoginCallback(callback, RhoRuby.ERR_DIFFDOMAINSINSYNCSRC, "");
 		    	return;
 			}
+
+		    NetResponse resp = null;
 			
-		    String serverUrl = RhoConf.getInstance().getString("syncserver");
-		    String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-	
-		    NetResponse resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
-		    if ( !resp.isOK() )
+		    try{
+				
+			    String serverUrl = RhoConf.getInstance().getString("syncserver");
+			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
+			    strBody += ClientRegister.getInstance().getRegisterBody(this);
+			    
+			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
+			    if ( !resp.isOK() )
+			    {
+			    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
+			    	return;
+			    }
+		    }catch(IOException exc)
 		    {
-		    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
+				LOG.ERROR("Login failed.", exc);
+		    	callLoginCallback(callback, RhoRuby.ERR_NETWORK, exc.getMessage() );
 		    	return;
 		    }
 		    
 		    String strSession = resp.getCharData();
 		    if ( strSession == null || strSession.length() == 0 )
 		    {
+		    	LOG.ERROR("Return empty session.");
 		    	callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		        return;
 		    }
@@ -473,7 +485,7 @@ class SyncEngine implements NetRequest.IRhoSession
 		        strBody += "total_count=" + src.getTotalCount();
 		        strBody += "&processed_count=" + src.getCurPageCount();
 		        
-		        strBody = "&status=";
+		        strBody += "&status=";
 		        if ( bFinish )
 		        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
 		        else

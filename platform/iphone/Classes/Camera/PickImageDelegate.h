@@ -8,13 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "RhoDelegate.h"
 
-@interface PickImageDelegate : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-{
-	NSString* postUrl; 
+@interface PickImageDelegate : RhoDelegate <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
 }
-
-@property (readwrite, copy) NSString *postUrl;
 
 - (void)imagePickerController:(UIImagePickerController *)picker
 		didFinishPickingImage:(UIImage *)image

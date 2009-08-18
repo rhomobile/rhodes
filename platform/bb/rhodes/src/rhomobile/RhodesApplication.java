@@ -176,9 +176,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	_mainScreen.setMenuItems(new Vector());
     }
 
-    public void postUrl(String url, String body, HttpHeaders headers){
+    public void postUrl(String url, String body, HttpHeaders headers) {
+    	postUrl(url, body, headers, null);
+    }
+    
+    public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), headers, body.getBytes(), null, this);
+        		canonicalizeURL(url), headers, body.getBytes(), null, this, callback);
+        thread.setInternalRequest(true);
         thread.start();                       
     }
 
@@ -220,7 +225,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	navigateUrl(url);
     }
 
-    void addToHistory(String strUrl, String refferer ){
+    void addToHistory(String strUrl, String refferer )
+    {
+        if ( !strUrl.startsWith(_httpRoot) )
+        	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
+    	
     	int nPos = -1;
     	for( int i = _history.size()-1; i >= 0; i-- ){
     		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
@@ -552,9 +561,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
 			public void run() {
-					LogScreen screen = new LogScreen();
-			        //Push this screen to display it to the user.
-			        UiApplication.getUiApplication().pushScreen(screen);
+					showLogScreen();
 				}
 			};
 
@@ -693,6 +700,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
+    public void showLogScreen()
+    {
+		LogScreen screen = new LogScreen();
+	    //Push this screen to display it to the user.
+	    UiApplication.getUiApplication().pushScreen(screen);
+    }
+    
     boolean isWaitForSDCardAtStartup()
     {
     	if ( Jsr75File.isRhoFolderExist() )
@@ -709,7 +723,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	if (_mainScreen!=null)
     		return;
     	
-    	if ( ApplicationManager.getApplicationManager().inStartup() || isWaitForSDCardAtStartup() )
+    	if ( ApplicationManager.getApplicationManager().inStartup() )// || isWaitForSDCardAtStartup() )
     	{
             this.invokeLater( new Runnable() {
                 public void run() 
@@ -722,6 +736,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     	
     	try{
+    		if ( !Jsr75File.isSDCardExist() )
+    			Thread.sleep(5000); //Wait till SDCard may appear
+    		
         	RhoLogger.InitRhoLog();
 	    	
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
@@ -742,7 +759,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.SHOW_IMAGE_PLACEHOLDERS, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_WML, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
 	        
+	        	        	        
 	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
 		        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
@@ -1059,18 +1083,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         // if referrer is null we must return the connection
-        if (referrer == null) {
+        //if (referrer == null) {
             HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
             return connection;
 
-        } else {
+        //} else {
 
             // if referrer is provided we can set up the connection on a separate thread
-            SecondaryResourceFetchThread.enqueue(resource, referrer);
+        //    SecondaryResourceFetchThread.enqueue(resource, referrer);
 
-        }
+        //}
 
-        return null;
+        //return null;
     }
 
     /**
@@ -1083,6 +1107,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static class PrimaryResourceFetchThread extends Thread {
 
         private RhodesApplication _application;
+        private static Callback _callback;
 
         private Event _event;
 
@@ -1092,22 +1117,61 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         private String _url;
         private static Object m_syncObject = new Object(); 
-        	
+        private boolean m_bInternalRequest = false;
+        
+        public void setInternalRequest(boolean b)
+        {
+        	m_bInternalRequest = b;
+        }
+        
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      Event event, RhodesApplication application) {
+                						Event event, RhodesApplication application) {
+		
+			_url = url;
+			_requestHeaders = requestHeaders;
+			_postData = postData;
+			_application = application;
+			_event = event;
+			//_callback = null;
+		}
+        
+        public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
+                                      	Event event, RhodesApplication application, Callback callback) {
 
             _url = url;
             _requestHeaders = requestHeaders;
             _postData = postData;
             _application = application;
             _event = event;
+            if ( callback != null )
+            	_callback = callback;
         }
 
         public void run() {
         	synchronized(m_syncObject)
         	{
         		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        		_application.processConnection(connection, _event);
+        		
+        		if ( m_bInternalRequest )
+        		{
+        			try{
+        				connection.getResponseCode();
+        			}catch(IOException exc)
+        			{
+        				LOG.ERROR("Callback failed: " + _url, exc);
+        			}
+        		}
+        		else
+        		{
+        			_application.processConnection(connection, _event);
+        			
+                	if (_callback != null )
+                	{
+                		_callback.run();
+                		_callback = null;
+                	}
+        			
+        		}
         	}
         }
     }

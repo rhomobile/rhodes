@@ -1,5 +1,8 @@
 #include "SyncThread.h"
 #include "common/RhoTime.h"
+#include "common/RhoConf.h"
+
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
 namespace sync {
@@ -30,6 +33,9 @@ db::CDBAdapter  CSyncThread::m_oDBAdapter;
 CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBAdapter)
 {
 	m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+	if( RHOCONF().isExist("sync_poll_interval") )
+    	m_nPollInterval = RHOCONF().getInt("sync_poll_interval");
+
 	m_ptrFactory = factory;
 
     m_oSyncEngine.setFactory(factory);
@@ -85,15 +91,21 @@ void CSyncThread::run()
 {
 	LOG(INFO) + "Starting sync engine main routine...";
 
+    RhoRubyThreadStart();
+
 	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
-        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
+        unsigned int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
 
         if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
-            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
-        if ( nWait <= 0 )
-            nWait = SYNC_STARTUP_INTERVAL_SECONDS;
+        {
+            int nWait2 = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+            if ( nWait2 <= 0 )
+                nWait = SYNC_STARTUP_INTERVAL_SECONDS;
+            else
+                nWait = nWait2;
+        }
 
 		if ( nWait >= 0 )
 		{
@@ -105,6 +117,8 @@ void CSyncThread::run()
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
     		processCommands();
 	}
+
+    RhoRubyThreadStop();
 }
 
 void CSyncThread::processCommands()//throws Exception
@@ -240,22 +254,21 @@ void rho_sync_clear_notification(int source_id)
     return CSyncThread::getSyncEngine().clearNotification(source_id);
 }
 
-int rho_sync_openDB(const char* szDBPath, void ** ppDB)
+int rho_sync_openDB(const char* szDBPath)
 {
     rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
     rho::String strVer = "";//TODO: get version from rhodes 
     db.open(szDBPath,strVer);
-    *ppDB = db.getDbHandle();
     return 0;
 }
 
-int rho_sync_closeDB(void * pDB)
+int rho_sync_closeDB()
 {
     CSyncThread::getDBAdapter().close();
     return 0;
 }
 
-int rho_db_startUITransaction(void * pDB)
+int rho_db_startUITransaction()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
     db.setUnlockDB(true);
@@ -265,18 +278,29 @@ int rho_db_startUITransaction(void * pDB)
     return 0;
 }
 
-int rho_db_commitUITransaction(void * pDB)
+int rho_db_commitUITransaction()
 {
     CSyncThread::getDBAdapter().endTransaction();
     //TODO: get error code from DBException
     return 0;
 }
 
-int rho_db_rollbackUITransaction(void * pDB)
+int rho_db_rollbackUITransaction()
 {
     CSyncThread::getDBAdapter().rollback();
     //TODO: get error code from DBException
     return 0;
+}
+
+int rho_db_destroy_table(const char* szTableName)
+{
+    CSyncThread::getDBAdapter().destroy_table(szTableName);
+    return 0;
+}
+
+void* rho_db_get_handle()
+{
+    return CSyncThread::getDBAdapter().getDbHandle();
 }
 
 void rho_sync_lock()

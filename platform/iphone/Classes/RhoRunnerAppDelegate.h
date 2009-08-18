@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ServerHost.h"
 #import "PickImageDelegate.h"
+#import "DateTimePickerDelegate.h"
 #import "LogViewController.h"
 #import "LogOptionsController.h"
 
@@ -22,6 +23,7 @@
 	LogOptionsController* logOptionsController;
     ServerHost * serverHost;
 	PickImageDelegate* pickImageDelegate;
+	DateTimePickerDelegate* dateTimePickerDelegate;
 	AVAudioPlayer *player;
 }
 

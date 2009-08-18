@@ -218,9 +218,12 @@ public class NetRequest
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
-			String strSession = oSession.getSession();
-			if ( strSession != null && strSession.length() > 0 )
-				m_connection.setRequestProperty("Cookie", strSession );
+			if ( oSession != null )
+			{
+				String strSession = oSession.getSession();
+				if ( strSession != null && strSession.length() > 0 )
+					m_connection.setRequestProperty("Cookie", strSession );
+			}
 			
 			m_connection.setRequestProperty("content-type", szMultipartContType);
 			m_connection.setRequestMethod(IHttpConnection.POST);
@@ -348,14 +351,18 @@ public class NetRequest
 				//long len = connection.getLength();
 				//LOG.INFO("pullFile data size:" + len );
 				//int nAvail = is.available();
-					
+				boolean bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();	
 				synchronized (m_byteBuffer) {			
 					int nRead = 0;
 		    		do{
-		    			nRead = bufferedReadNet(m_byteBuffer,is);
+		    			if ( bReadByBytes )
+		    				nRead = bufferedReadByByte(m_byteBuffer,is);
+		    			else
+		    				nRead = bufferedRead(m_byteBuffer,is);
+		    			
 		    			if ( nRead > 0 )
 		    				fstream.write(m_byteBuffer, 0, nRead);
-		    		}while( nRead > 0 );
+		    		}while( nRead >= 0 );
 				}
 				
 			}
@@ -483,9 +490,11 @@ public class NetRequest
 		return cookie;
 	}
 	
-	private final StringBuffer readFully(InputStream in) throws IOException {
+	private final StringBuffer readFully(InputStream in) throws Exception 
+	{
+		boolean bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();
 		StringBuffer buffer = new StringBuffer();
-		UTF8StreamReader reader = new UTF8StreamReader();
+		UTF8StreamReader reader = new UTF8StreamReader(4096,bReadByBytes);
 		reader.setInput(in);
 		while (true) {
 			synchronized (m_charBuffer) {
@@ -511,12 +520,12 @@ public class NetRequest
 		return bytesRead;
 	}
 	
-	private final int bufferedReadNet(byte[] a, InputStream in) throws IOException {
+	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
 		while (bytesRead < (a.length)) {
 			int read = in.read();// a, 0, a.length );
 			if (read < 0) {
-				break;
+				return bytesRead > 0 ? bytesRead : -1;
 			}
 			a[bytesRead] = (byte)read;
 			bytesRead ++;
