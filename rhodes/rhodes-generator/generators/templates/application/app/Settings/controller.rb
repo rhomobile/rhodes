@@ -15,8 +15,8 @@ class SettingsController < Rho::RhoController
   end
 
   def login_callback
-    err_code = @params['error_code'].to_i
-    if err_code == 0
+    errCode = @params['error_code'].to_i
+    if errCode == 0
       # run sync if we were successful
       WebView.navigate Rho::RhoConfig.start_path
       SyncEngine.dosync
