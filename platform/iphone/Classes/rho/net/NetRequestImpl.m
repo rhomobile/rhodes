@@ -218,7 +218,7 @@ char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, cons
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			if ( code !=500)
+			if ( code !=500 && code !=422)
 				respData = str_assign( (char *)[strData UTF8String] );			
 			if (code != 200) 
 			{
@@ -298,7 +298,7 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			if (code!=500)
+			if (code!=500 && code !=422)
 				respData = str_assign( (char *)[strData UTF8String] );
 			
 			if (code != 200) 
@@ -362,7 +362,7 @@ char* rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)
 			if (code != 200) 
 			{
 				NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-				if (code!=500)
+				if (code!=500 && code !=422)
 					respData = str_assign( (char *)[strData UTF8String] );
 
 				RAWLOG_ERROR4("Request failed. HTTP Code: %d returned. HTTP Response: %s. NSError: %d. NSErrorInfo : %s", 
@@ -501,7 +501,7 @@ char* rho_net_impl_pushMultipartData(const char* url, const char* data, size_t d
 				*pnRespCode = code;
 			
 			NSString* strData = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-			if(code!=500)
+			if(code!=500 && code !=422)
 				respData = str_assign( (char *)[strData UTF8String] );
 			
 			if (code != 200) 
