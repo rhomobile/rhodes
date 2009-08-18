@@ -3,7 +3,6 @@
 //#import "UniversalLock.h"
 #import "common/RhoConf.h"
 #import "sync/syncthread.h"
-#import "JSString.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebViewCtrl"

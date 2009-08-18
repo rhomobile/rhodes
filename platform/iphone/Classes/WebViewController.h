@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "JSString.h"
 //#include "SyncEngine.h"
 
 @interface WebViewController : UIViewController <UIActionSheetDelegate> {
