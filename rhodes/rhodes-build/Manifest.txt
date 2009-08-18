@@ -33,6 +33,8 @@ res/prebuilt/android/classes/com/rho/Mutex.class
 res/prebuilt/android/classes/com/rho/Properties.class
 res/prebuilt/android/classes/com/rho/RhoClassFactory.class
 res/prebuilt/android/classes/com/rho/RhoConf$1.class
+res/prebuilt/android/classes/com/rho/RhoConf$2.class
+res/prebuilt/android/classes/com/rho/RhoConf$3.class
 res/prebuilt/android/classes/com/rho/RhoConf.class
 res/prebuilt/android/classes/com/rho/RhoEmptyLogger.class
 res/prebuilt/android/classes/com/rho/RhoEmptyProfiler.class
@@ -161,8 +163,6 @@ res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePicker$1.clas
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePicker.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$1.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$2.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$3.class
-res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$4.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen$ResultSender.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/datetime/DateTimePickerScreen.class
 res/prebuilt/android/classes/com/rhomobile/rhodes/db/DBStorage.class
@@ -625,6 +625,14 @@ res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyIOPipeSourceExecutor.
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyInteger.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMatchData.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMethodValue.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$1.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$2.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$3.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$4.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$5.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$6.class
+res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyMutex$7.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyNumeric.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyProc$Invoke.class
 res/prebuilt/android/classes/com/xruby/runtime/builtin/RubyProc.class
@@ -1241,7 +1249,6 @@ res/prebuilt/bb/MANIFEST.MF
 res/prebuilt/bb/RubyVM.jar
 res/prebuilt/bb/rhodes.jar
 res/prebuilt/bb/rhodesApp.alx
-res/prebuilt/common/db/syncdb.sqlite
 res/prebuilt/iphone/sim/rhorunner.app/Info.plist
 res/prebuilt/iphone/sim/rhorunner.app/MainWindow.nib
 res/prebuilt/iphone/sim/rhorunner.app/PkgInfo
