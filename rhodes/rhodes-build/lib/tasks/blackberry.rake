@@ -35,7 +35,7 @@ end
 
 namespace "bundle" do
   task :bb =>  ["config:bb", "loadframework", "makedirs"] do
-    jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+    jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
     rm_rf $srcdir
     mkdir_p $srcdir
@@ -155,7 +155,7 @@ end
 namespace "run" do
   namespace "bb" do
     def startmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
         args = []
         args << "/c"
         args << "run.bat"
@@ -164,7 +164,7 @@ namespace "run" do
     end 
 
     def stopmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
         args = []
         args << "/c"
         args << "shutdown.bat"
@@ -173,9 +173,9 @@ namespace "run" do
     end 
 
     def startsim
-        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-        bbver = $config["env"]["bbver"]
+        bbver = $config["env"]["bbver"].to_s
+        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledge.exe\""
         args = [] 
@@ -188,7 +188,7 @@ namespace "run" do
         args << "/data-port=0x4d4e"
         args << "/pin=0x2100000A"
 
-        if bbver >= 4.3
+        if bbver !~ /^4\.[012](\..*)?$/
           args << "/fs-sdcard=true"
         end
             
@@ -199,8 +199,9 @@ namespace "run" do
     end
 
     def stopsim
-        sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"].to_s
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+        bbver = $config["env"]["bbver"].to_s
+        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledgecontroller.exe\""
         args = []
@@ -216,7 +217,7 @@ namespace "run" do
 
     desc "Run app in BlackBerry Sim"
     task :app => [:stopmdsandsim, "bundle:bb"] do
-        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+        jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
 
         cp_r File.join($targetdir,"/."), jde + "/simulator"
 
@@ -237,7 +238,7 @@ namespace "run" do
   
     task :autosign do
       java = $config["env"]["paths"]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
+      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
     
       args = []
       args << "-jar"
@@ -256,7 +257,7 @@ namespace "run" do
   
     task :manualsign do
       java = $config["env"]["paths"]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
+      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
       
       args = []
       args << "-jar"
@@ -277,8 +278,8 @@ namespace "check" do
     
     begin
       javahome = $config["env"]["paths"]["java"]
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
-      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
     rescue
       puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
       errors << "invalid build.yml"
