@@ -25,6 +25,7 @@
 	PickImageDelegate* pickImageDelegate;
 	DateTimePickerDelegate* dateTimePickerDelegate;
 	AVAudioPlayer *player;
+	bool appStarted;
 }
 
 @property (nonatomic, retain) UIWindow *window;

@@ -16,6 +16,7 @@
 #include "sync/ClientRegister.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
+#import "RhoDelegate.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -54,6 +55,7 @@
 	}
 	
 	[webViewController navigateRedirect:location];
+	appStarted = true;	
 }
 
 - (void)onRefreshView {
@@ -261,6 +263,8 @@
 #endif
 
 - (void) doStartUp {
+	//
+	appStarted = false;
 	// Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
@@ -345,11 +349,34 @@
 }
 #endif
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	if (appStarted) {
+		RhoDelegate* callback = [[RhoDelegate alloc] init];
+		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
+		if (callbackUrl && strlen(callbackUrl) > 0) {
+			callback.postUrl = [self normalizeUrl:[NSString stringWithCString:callbackUrl
+								  encoding:[NSString defaultCStringEncoding]]];
+			[callback doCallback:@""];
+		}
+		[callback release];
+	}
+}
+
+
+- (void) saveLastUsedTime {
+	int now = [[NSDate date] timeIntervalSince1970];
+	rho_conf_setInt("last_time_used",now);
+	rho_conf_save();
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application {
+	RAWLOG_INFO("Runner will resign active");
+	[self saveLastUsedTime];
+}
+
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
-	int now = [[NSDate date] timeIntervalSince1970];
-	rho_conf_setInt("LastTimeUsed",now);
-	rho_conf_save();
+	[self saveLastUsedTime];
 	//Stop HTTP server host 
     [serverHost stop];
 }
