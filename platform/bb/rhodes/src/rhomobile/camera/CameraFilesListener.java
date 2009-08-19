@@ -64,7 +64,7 @@ public class CameraFilesListener implements FileSystemJournalListener {
 				} catch (IOException e) {
 					continue;
 				}
-        		_screen.closeScreen(true, path);
+        		_screen.invokeCloseScreen(true, path);
         		_screen = null;
         	}
         }
