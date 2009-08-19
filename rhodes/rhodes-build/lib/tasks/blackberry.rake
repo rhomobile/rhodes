@@ -35,7 +35,7 @@ end
 
 namespace "bundle" do
   task :bb =>  ["config:bb", "loadframework", "makedirs"] do
-    jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+    jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     rm_rf $srcdir
     mkdir_p $srcdir
@@ -155,7 +155,7 @@ end
 namespace "run" do
   namespace "bb" do
     def startmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
         args = []
         args << "/c"
         args << "run.bat"
@@ -164,7 +164,7 @@ namespace "run" do
     end 
 
     def stopmds
-        mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
+        mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
         args = []
         args << "/c"
         args << "shutdown.bat"
@@ -173,8 +173,8 @@ namespace "run" do
     end 
 
     def startsim
-        bbver = $config["env"]["bbver"].to_s
-        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        bbver = $config["env"]["bbver"]
+        sim = $config["env"]["paths"][bbver]["sim"]
         jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledge.exe\""
@@ -199,8 +199,8 @@ namespace "run" do
     end
 
     def stopsim
-        bbver = $config["env"]["bbver"].to_s
-        sim = $config["env"]["paths"][bbver]["sim"].to_s
+        bbver = $config["env"]["bbver"]
+        sim = $config["env"]["paths"][bbver]["sim"]
         jde = $config["env"]["paths"][bbver]["jde"]
 
         command =  '"' + jde + "/simulator/fledgecontroller.exe\""
@@ -217,7 +217,7 @@ namespace "run" do
 
     desc "Run app in BlackBerry Sim"
     task :app => [:stopmdsandsim, "bundle:bb"] do
-        jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+        jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
         cp_r File.join($targetdir,"/."), jde + "/simulator"
 
@@ -238,7 +238,7 @@ namespace "run" do
   
     task :autosign do
       java = $config["env"]["paths"]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
+      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
     
       args = []
       args << "-jar"
@@ -257,7 +257,7 @@ namespace "run" do
   
     task :manualsign do
       java = $config["env"]["paths"]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"] 
+      jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"] 
       
       args = []
       args << "-jar"
@@ -278,8 +278,8 @@ namespace "check" do
     
     begin
       javahome = $config["env"]["paths"]["java"]
-      jdehome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
-      mdshome = $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
+      jdehome = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+      mdshome = $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     rescue
       puts " - Error parsing build.yml make sure you have all of the required fields (see generated build.yml)"
       errors << "invalid build.yml"
@@ -339,7 +339,7 @@ namespace "check" do
       errors << "java not on path"
     end
 
-    puts "\nBBVER: " + $config["env"]["bbver"].to_s
+    puts "\nBBVER: " + $config["env"]["bbver"]
     puts "JAVAHOME: " + javahome
     puts "JDEHOME: " + jdehome
     puts "MDSHOME: " + mdshome

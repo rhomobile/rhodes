@@ -1,5 +1,6 @@
+#
   def startmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     args = []
     args << "/c"
     args << "run.bat"
@@ -8,7 +9,7 @@
   end 
 
   def stopmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"].to_s]["mds"]
+    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
     args = []
     args << "/c"
     args << "shutdown.bat"
@@ -17,8 +18,8 @@
   end 
 
  def startsim
-    bbver = $config["env"]["bbver"].to_s
-    sim = $config["env"]["paths"][bbver]["sim"].to_s
+    bbver = $config["env"]["bbver"]
+    sim = $config["env"]["paths"][bbver]["sim"]
     jde = $config["env"]["paths"][bbver]["jde"]
     
     command =  '"' + jde + "/simulator/fledge.exe\""
@@ -44,8 +45,8 @@
   end
 
  def stopsim
-    sim = $config["env"]["paths"][$config["env"]["bbver"].to_s]["sim"].to_s
-    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"]
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
     
     command =  '"' + jde + "/simulator/fledgecontroller.exe\""
     args = []
@@ -56,7 +57,7 @@
 
  def manualsign
     java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     args = []
     args << "-jar"
@@ -71,7 +72,7 @@
 
   def autosign
     java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"].to_s]["jde"]
+    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
     args = []
     args << "-jar"
@@ -79,7 +80,7 @@
     args << "-c"
     args << "-a"
     args << "-p"
-    args << '"' + $config["build"]["bbsignpwd"].to_s() +'"'
+    args << '"' + $config["build"]["bbsignpwd"] +'"'
     args << "-r"
     args << $targetdir
 
@@ -92,7 +93,7 @@
 namespace "config" do
   task :bb => ["config:common"] do
     bbpath = $config["build"]["bbpath"]
-    $bbver = $config["env"]["bbver"].to_s
+    $bbver = $config["env"]["bbver"]
     $builddir = bbpath + "/build"
     $bindir = bbpath + "/bin"
     $rhobundledir =  bbpath + "/RhoBundle"
@@ -108,8 +109,6 @@ namespace "config" do
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       Jake.get_absolute($preverified+"/RubyVM.jar")
     $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
-
-
   end
 end
 
@@ -206,12 +205,43 @@ namespace "build" do
 
       if not FileUtils.uptodate?($preverified + "/rhodes.jar",sources)
 
+        vsrcdir = $builddir + "/../rhodes/platform/" + $bbver
+        if !File.exist?( vsrcdir ) || !File.directory?( vsrcdir )
+          vsrcdir = $builddir + "/../rhodes/platform/common"
+        end
+
+        vsrclist = $builddir + "/../bin/vsrc_build.files"
+
+        fvsrc = File.new( vsrclist, "w" )
+        Dir.glob( vsrcdir + "/**/*.java" ).each do |line|
+          fvsrc.puts line
+        end
+        fvsrc.close
+
         args = []
         args << "-g"
         args << "-d"
         args << $tmpdir
         args << "-classpath"
         args << '"' + $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar\""
+        args << "-bootclasspath"
+        args << '"' + jde + "/lib/net_rim_api.jar\""
+        args << "-source"
+        args << "1.3"
+        args << "-target"
+        args << "1.3"
+        args << "-nowarn"
+        args << "@#{vsrclist}"
+        puts "\texecuting javac"
+        puts Jake.run(javac,args)
+        $stdout.flush
+
+        args = []
+        args << "-g"
+        args << "-d"
+        args << $tmpdir
+        args << "-classpath"
+        args << '"' + $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar;"+$tmpdir+'"'
         args << "-bootclasspath"
         args << '"' + jde + "/lib/net_rim_api.jar\""
         args << "-source"
@@ -355,7 +385,7 @@ namespace "device" do
     task :dev => "package:bb:dev" do
 
       #make into functions
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
         autosign
       else
         manualsign
@@ -377,7 +407,7 @@ namespace "device" do
     desc "Build and package dev rhobundle for device"
     task :rhobundle => "package:bb:rhobundle" do
 
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
         autosign
       else
         manualsign
@@ -394,7 +424,7 @@ namespace "device" do
     desc "Build and package for production"
     task :production => "package:bb:production" do
 
-      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"].to_s() != ""
+      if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
         autosign
       else
         manualsign
@@ -449,7 +479,7 @@ namespace "run" do
   
   desc "Builds everything, loads and starts sim"
   task :bb => [:stopmdsandsim, "package:bb:dev"] do
-    #sim = $config["env"]["paths"][$bbver]["sim"].to_s
+    #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
     cp_r Jake.get_absolute(File.join($targetdir,"/.")), jde + "/simulator"
