@@ -25,6 +25,7 @@ platform/wm/**/*.pch
 
 platform/bb/.metadata/*
 platform/bb/bin/*
+platform/bb/**/bin/*
 platform/bb/target/*
 platform/bb/build/LogFile.txt
 platform/bb/*/.settings
