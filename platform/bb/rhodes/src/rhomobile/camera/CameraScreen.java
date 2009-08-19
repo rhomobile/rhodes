@@ -69,6 +69,7 @@ public class CameraScreen extends MainScreen {
 	private CameraFilesListener _fileListener = null;
 	
 	private boolean _cameraConnected;
+	private int m_hookNo = 0;
 	
 	/**
 	 * Constructor.
@@ -92,11 +93,43 @@ public class CameraScreen extends MainScreen {
         createUI();
 	}
 	
-	public void closeScreen(boolean ok) {
+	public void invokeCloseScreen(boolean ok) {
+		invokeCloseScreen(ok, null);
+	}
+	
+	public void invokeCloseScreen(boolean ok, String fileName) {
+		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+		app.invokeLater(new CloseScreen(_cameraScreen, ok, fileName));
+		app.requestForeground();
+	}
+	
+	private class CloseScreen implements Runnable {
+		private CameraScreen _screen;
+		private boolean _ok;
+		private String _fileName;
+		
+		CloseScreen(CameraScreen screen, boolean ok, String fileName) {
+			_screen = screen;
+			_ok = ok;
+			_fileName = fileName;
+		}
+
+		public void run() {
+			synchronized(UiApplication.getEventLock()) {
+				if (_screen != null)
+					_screen.closeScreen(_ok, _fileName);
+			}
+		}
+	};
+	
+	private void closeScreen(boolean ok) {
 		closeScreen(ok, null);
 	}
 	
-	public void closeScreen(boolean ok, String fileName) {
+	private void closeScreen(boolean ok, String fileName) {
+		if (_cameraScreen == null)
+			return;
+		
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
     	
     	if (_fileListener != null) {
@@ -125,13 +158,22 @@ public class CameraScreen extends MainScreen {
 						fconndst.delete();
 					fconndst.create();
 					
+					LOG.TRACE("should be readed " + fconnsrc.fileSize() + " bytes");
+					
 					InputStream src = fconnsrc.openInputStream();
 					OutputStream dst = fconndst.openOutputStream();
 					
-					byte[] buf = new byte[1024];
+					long fullLength = 0;
+					
+					byte[] buf = new byte[64*1024];
 					int ret;
-					while((ret = src.read(buf)) > 0)
+					while((ret = src.read(buf)) > 0) {
+						fullLength += ret;
 						dst.write(buf, 0, ret);
+					}
+					dst.flush();
+					
+					LOG.TRACE("readed: " + fullLength + " bytes");
 				}
 	        	else {
 		            //A null encoding indicates that the camera should
@@ -186,34 +228,11 @@ public class CameraScreen extends MainScreen {
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		app.invokeLater(new UrlPost(_cameraScreen, _callbackUrl, body, headers));
+		LOG.INFO("Callback with uri: " + _callbackUrl + ": " + body);
+		app.postUrl(_callbackUrl, body, headers);
+		app.popScreen(_cameraScreen);
+		_cameraScreen = null;
 	}
-	
-	private class UrlPost implements Runnable {
-		private CameraScreen _screen;
-		private String _url;
-		private String _body;
-		private HttpHeaders _headers;
-
-		UrlPost(CameraScreen screen, String url, String body, HttpHeaders headers) {
-			_screen = screen;
-			_url = url;
-			_body = body;
-			_headers = headers;
-		}
-		
-		public void run() {
-			synchronized (UiApplication.getEventLock()) {
-				RhodesApplication app = RhodesApplication.getInstance();
-				
-				LOG.INFO("Callback with uri: " + _url + ": " + _body);
-				app.postUrl(_url, _body, _headers);
-				app.popScreen(_screen);
-				
-				//app.requestForeground();
-			}
-		}
-	};
 	
 	private String makeFileName(String ext)throws Exception {
 		
@@ -236,14 +255,14 @@ public class CameraScreen extends MainScreen {
     	LOG.TRACE("initializeCamera");
     	Player player = null;
     	try {
-    		// First of all, attempting to record video using MM API
+    		// First of all, attempting to capture picture using MM API
     		
             //Create a player for the Blackberry's camera.
             player = Manager.createPlayer( "capture://video" ); 
             LOG.TRACE("Recording using MM API");
     	}
     	catch(Exception e) {
-    		// Try to record video using BB Camera application
+    		// Try to capture picture using BB Camera application
     		LOG.TRACE("Recording using BB Camera application");
     	}
     	
@@ -273,8 +292,11 @@ public class CameraScreen extends MainScreen {
 	            initializeEncodingList();
     		}
     		else {
+    			RhodesApplication app = RhodesApplication.getInstance();
     			_fileListener = new CameraFilesListener(this);
-    			RhodesApplication.getInstance().addFileSystemJournalListener(_fileListener);
+    			app.addFileSystemJournalListener(_fileListener);
+    			
+    			m_hookNo = app.addActivateHook(new ActivateHook(_cameraScreen));
     			
     			CameraArguments vidargs = new CameraArguments();
             	Invoke.invokeApplication(Invoke.APP_TYPE_CAMERA, vidargs);
@@ -286,6 +308,16 @@ public class CameraScreen extends MainScreen {
             Dialog.alert( "ERROR " + e.getClass() + ":  " + e.getMessage() );
         }
     }
+    
+    private class ActivateHook extends RhodesApplication.ActivateHook {
+    	private CameraScreen _screen;
+    	public ActivateHook(CameraScreen screen) {
+    		_screen = screen;
+    	}
+		public void run() {
+			_screen.invokeCloseScreen(false);
+		}
+    };
 
     /**
      * Initialize the list of encodings.
