@@ -60,4 +60,10 @@ describe "Rho" do
   it "should read arbitrary options" do
     Rho::RhoConfig.arbitrary_option.should == 'rhodes rocks!'
   end
+  
+  it "should reload" do
+    oldpath = Rho::RhoConfig.start_path
+    Rho::RhoConfig.reload
+    Rho::RhoConfig.start_path.should == oldpath
+  end  
 end
