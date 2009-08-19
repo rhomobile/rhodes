@@ -3,6 +3,7 @@ package rhomobile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
@@ -52,6 +53,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
 import com.rho.SimpleFile;
+import com.rho.Version;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
@@ -390,7 +392,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private static PushListeningThread _pushListeningThread = null;
     
     private static RhodesApplication _instance;
-
+    
     public static RhodesApplication getInstance(){ return _instance; }
     /***************************************************************************
      * Main.
@@ -425,10 +427,42 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
 */
     }
+    
+    private int m_activateHookNo = 0;
+    private Hashtable m_activateHooks;
+    
+    public static abstract class ActivateHook {
+    	public abstract void run();
+    };
+    
+    public int addActivateHook(ActivateHook hook) {
+    	synchronized(m_activateHooks) {
+	    	int no = ++m_activateHookNo;
+	    	m_activateHooks.put(new Integer(no), hook);
+	    	return no;
+    	}
+    }
+    public void removeActivateHook(int no) {
+    	synchronized (m_activateHooks) {
+    		m_activateHooks.remove(new Integer(no));
+		}
+    }
 
     boolean m_bActivated = false;
-	public void activate() 
+	public void activate()
 	{
+		synchronized(m_activateHooks) {
+			if (m_activateHooks.size() != 0) {
+				Enumeration e = m_activateHooks.elements();
+				while(e.hasMoreElements()) {
+					ActivateHook hook = (ActivateHook)e.nextElement();
+					hook.run();
+				}
+				m_activateHooks.clear();
+				return;
+			}
+		}
+		
 		m_bActivated = true;
 		doStartupWork();
 		
@@ -769,7 +803,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        	        	        
 	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
-		        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+		        Version.SoftVersion ver = Version.getSoftVersion();
 		        if ( ver.nMajor == 4 && ver.nMinor == 6 )
 		        {
 			        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
@@ -844,6 +878,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     private RhodesApplication() {
         LOG.INFO_OUT(" Construct RhodesApplication() ***----------------------------------*** " );
+        m_activateHooks = new Hashtable();
         this.addSystemListener(this);
         //this.addFileSystemListener(this);
         if ( ApplicationManager.getApplicationManager().inStartup() ) {

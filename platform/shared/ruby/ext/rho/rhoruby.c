@@ -34,6 +34,7 @@ extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
 extern void Init_stringio(void);
+extern void Init_DateTimePicker(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);

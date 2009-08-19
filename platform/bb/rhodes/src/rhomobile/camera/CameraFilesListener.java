@@ -1,6 +1,8 @@
 package rhomobile.camera;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
@@ -21,8 +23,31 @@ public class CameraFilesListener implements FileSystemJournalListener {
 	
 	private CameraScreen _screen;
 	
+	private Hashtable _exists;
+	
+	private final String[] _folders = {
+			"file://store/home/user/pictures/",
+			"file://sdcard/blackberry/pictures/"
+	};
+	
 	public CameraFilesListener(CameraScreen screen) {
 		_screen = screen;
+		_exists = new Hashtable();
+		
+		for(int i = 0; i < _folders.length; i++) {
+			try {
+				FileConnection fconn = (FileConnection)Connector.open(_folders[i], Connector.READ);
+				if (!fconn.isDirectory())
+					continue;
+				Enumeration e = fconn.list();
+				while(e.hasMoreElements()) {
+					_exists.put(e.nextElement(), new Boolean(true));
+				}
+			} catch (IOException e) {
+				LOG.ERROR("CameraFilesListener", e);
+				continue;
+			}
+		}
 	}
 
 	public void fileJournalChanged() {
@@ -54,6 +79,9 @@ public class CameraFilesListener implements FileSystemJournalListener {
         	if (lpath.endsWith(".dat"))
         		continue;
         	
+        	if (_exists.get(path) != null)
+    			continue;
+        	
         	if (_screen != null) {
 				try {
 					FileConnection fconn = (FileConnection)Connector.open(path, Connector.READ);
@@ -64,7 +92,8 @@ public class CameraFilesListener implements FileSystemJournalListener {
 				} catch (IOException e) {
 					continue;
 				}
-        		_screen.closeScreen(true, path);
+				_exists.put(path, new Boolean(true));
+        		_screen.invokeCloseScreen(true, path);
         		_screen = null;
         	}
         }

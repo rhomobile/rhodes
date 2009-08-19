@@ -58,6 +58,8 @@ extern "C"{
 void  rho_conf_Init(const char* szRootPath);
 bool  rho_conf_getBool(const char* szName);
 void  rho_conf_setBool(const char* szName, bool value);
+int   rho_conf_getInt(const char* szName);
+void  rho_conf_setInt(const char* szName, int value);
 char* rho_conf_getString(const char* szName);
 void  rho_conf_freeString(char* str);
 void  rho_conf_setString(const char* szName, const char* value);

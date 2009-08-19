@@ -16,6 +16,7 @@
 #include "sync/ClientRegister.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
+#import "RhoDelegate.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -57,7 +58,7 @@
 	
 	UITabBarController *tabBarController = nil;
 	tabBarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
-	tabBarController.moreNavigationController.toolbar.barStyle = UIBarStyleBlackOpaque;
+	tabBarController.moreNavigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
 	NSMutableArray *tabs = [[[NSMutableArray alloc] init] autorelease];
 	
 	for(int i=0; i < 10; i++) {
@@ -69,7 +70,7 @@
 	}
 	
 	tabBarController.viewControllers = tabs;
-	[webViewController.toolbar removeFromSuperview];
+	tabBarController.customizableViewControllers = nil;
 	[window addSubview:tabBarController.view];
 	tabBarController.view.hidden = NO;
 
@@ -79,6 +80,7 @@
 	UIWebView* currentWebView = (UIWebView*)[[tabBarController.viewControllers objectAtIndex:0] view];
 
 	[currentWebView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
+	appStarted = true;
 }
 
 - (void)onRefreshView {
@@ -286,6 +288,8 @@
 #endif
 
 - (void) doStartUp {
+	//
+	appStarted = false;
 	// Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
@@ -339,6 +343,8 @@
 #endif
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	// Hide the toolbar initially, we will re-draw it if there are no tabs
+	[webViewController.toolbar removeFromSuperview];
 	[self doStartUp];
 }
 
@@ -370,8 +376,34 @@
 }
 #endif
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	if (appStarted) {
+		RhoDelegate* callback = [[RhoDelegate alloc] init];
+		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
+		if (callbackUrl && strlen(callbackUrl) > 0) {
+			callback.postUrl = [self normalizeUrl:[NSString stringWithCString:callbackUrl
+								  encoding:[NSString defaultCStringEncoding]]];
+			[callback doCallback:@""];
+		}
+		[callback release];
+	}
+}
+
+
+- (void) saveLastUsedTime {
+	int now = [[NSDate date] timeIntervalSince1970];
+	rho_conf_setInt("last_time_used",now);
+	rho_conf_save();
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application {
+	RAWLOG_INFO("Runner will resign active");
+	[self saveLastUsedTime];
+}
+
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
+	[self saveLastUsedTime];
 	//Stop HTTP server host 
     [serverHost stop];
 }

@@ -12,7 +12,7 @@ module Rho
     
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
-      process_rhoconfig
+      RHO.process_rhoconfig
       Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
@@ -50,7 +50,7 @@ module Rho
     end
     
     # Return the directories where we need to load configuration files
-    def process_rhoconfig
+    def self.process_rhoconfig
       begin
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
           parts = line.chop.split('=')
@@ -258,6 +258,11 @@ module Rho
         end
       end
       
+      def reload
+        @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
+        Rho::RHO.process_rhoconfig
+      end
+        
       def show_log
         RhoConf.show_log
       end
