@@ -3,6 +3,7 @@ package rhomobile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
@@ -391,7 +392,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private static PushListeningThread _pushListeningThread = null;
     
     private static RhodesApplication _instance;
-
+    
     public static RhodesApplication getInstance(){ return _instance; }
     /***************************************************************************
      * Main.
@@ -426,10 +427,42 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
 */
     }
+    
+    private int m_activateHookNo = 0;
+    private Hashtable m_activateHooks;
+    
+    public static abstract class ActivateHook {
+    	public abstract void run();
+    };
+    
+    public int addActivateHook(ActivateHook hook) {
+    	synchronized(m_activateHooks) {
+	    	int no = ++m_activateHookNo;
+	    	m_activateHooks.put(new Integer(no), hook);
+	    	return no;
+    	}
+    }
+    public void removeActivateHook(int no) {
+    	synchronized (m_activateHooks) {
+    		m_activateHooks.remove(new Integer(no));
+		}
+    }
 
     boolean m_bActivated = false;
-	public void activate() 
+	public void activate()
 	{
+		synchronized(m_activateHooks) {
+			if (m_activateHooks.size() != 0) {
+				Enumeration e = m_activateHooks.elements();
+				while(e.hasMoreElements()) {
+					ActivateHook hook = (ActivateHook)e.nextElement();
+					hook.run();
+				}
+				m_activateHooks.clear();
+				return;
+			}
+		}
+		
 		m_bActivated = true;
 		doStartupWork();
 		
@@ -845,6 +878,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     private RhodesApplication() {
         LOG.INFO_OUT(" Construct RhodesApplication() ***----------------------------------*** " );
+        m_activateHooks = new Hashtable();
         this.addSystemListener(this);
         //this.addFileSystemListener(this);
         if ( ApplicationManager.getApplicationManager().inStartup() ) {
