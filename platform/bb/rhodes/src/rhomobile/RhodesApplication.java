@@ -52,6 +52,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
 import com.rho.SimpleFile;
+import com.rho.Version;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
@@ -769,7 +770,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        	        	        
 	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
-		        com.rho.Jsr75File.SoftVersion ver = com.rho.Jsr75File.getSoftVersion();
+		        Version.SoftVersion ver = Version.getSoftVersion();
 		        if ( ver.nMajor == 4 && ver.nMinor == 6 )
 		        {
 			        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine

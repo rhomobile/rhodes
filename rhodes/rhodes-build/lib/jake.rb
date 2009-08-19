@@ -26,7 +26,7 @@ class Jake
 
   def self.config(configfile)
     @@config = YAML::load(configfile)
-    self.config_parse(@@config)
+    @@config = self.config_parse(@@config)
     @@config
   end
 
@@ -58,29 +58,35 @@ class Jake
     if conf.is_a?(Array)
       conf.collect! do |x|
         if x.is_a?(Hash) or x.is_a?(Array)
-          config_parse(x)
-  	x
+          x = config_parse(x)
+          x
         else
-  	if x =~ /%(.*?)%/
-  	  x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
+          if x =~ /%(.*?)%/
+            x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
           end
-  	x
+  	      x.to_s
         end
       end
     elsif conf.is_a?(Hash)
-      conf = conf.collect do |k,x|
+      confarray = conf.collect do |k,x|
   	    
         if x.is_a?(Hash) or x.is_a?(Array)
-          config_parse(x)
-  	x
+          x = config_parse(x)
+          [ k.to_s, x ]
         else 
-  	if x.to_s =~ /%(.*?)%/
-  	  x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
+          if x.to_s =~ /%(.*?)%/
+            x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
           end
-  	x
+          [ k.to_s, x.to_s ]
         end
       end
+
+      conf = Hash[*confarray.flatten]
+
+      conf
     end
+
+    conf
   end
   
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
