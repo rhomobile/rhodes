@@ -25,6 +25,7 @@ RubyVM
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
+src\com\rho\BBVersionSpecific.java
 src\com\rho\Jsr75File.java
 src\com\rho\location\GeoLocationAsync.java
 src\com\rho\location\GeoLocationImpl.java
@@ -32,6 +33,7 @@ src\com\rho\net\bb\BBHttpConnection.java
 src\com\rho\net\bb\NativeBBHttpConnection.java
 src\com\rho\net\NetworkAccess.java
 src\com\rho\RhoRubyHelper.java
+src\com\rho\Version.java
 src\rhomobile\Alert.java
 src\rhomobile\Callback.java
 src\rhomobile\camera\Camera.java

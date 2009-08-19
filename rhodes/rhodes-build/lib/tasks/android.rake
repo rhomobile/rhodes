@@ -124,10 +124,10 @@ namespace "bundle" do
     #cp   'layout.erb', File.join($srcdir,'apps')
     #cp   'loading.html', File.join($srcdir,'apps')
     cp   $appmanifest, $srcdir
-    puts `ruby #{$srcdir}/createAppManifest.rb`
+    puts `ruby "#{$srcdir}/createAppManifest.rb"`
     rm   File.join($srcdir,'createAppManifest.rb')
     cp   compileERB, $srcdir
-    puts `ruby #{$srcdir}/bb.rb`
+    puts `ruby "#{$srcdir}/bb.rb"`
     
     chdir $bindir
     puts `java -jar #{xruby} -c RhoBundle`
@@ -151,7 +151,7 @@ namespace "bundle" do
     dexfile = File.join($bindir,"classes.dex")
 
     puts "Running dx utility"
-    puts `#{$dx} --dex "--output=#{dexfile}" #{classes} #{rhobundle}`
+    puts `#{$dx} --dex "--output=#{dexfile}" "#{classes}" "#{rhobundle}"`
 
     manifest = File.join($tmpdir,"AndroidManifest.xml")
     resource = File.join($tmpdir,"res")

@@ -13,8 +13,10 @@ import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.RadioInfo;
 
+import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.Version;
 import com.rho.net.bb.BBHttpConnection;
 import com.rho.net.bb.NativeBBHttpConnection;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -113,21 +115,7 @@ public class NetworkAccess implements INetworkAccess {
 	
 	public boolean isWifiActive()
 	{
-		boolean bRes = false;
-		//4.3+
-		/*if (net.rim.device.api.system.WLANInfo.getWLANState() == net.rim.device.api.system.WLANInfo.WLAN_STATE_CONNECTED )
-		{
-			LOG.INFO("getWLANState");
-			bRes = true;
-		}*/
-		//4.2.1 & 4.2.2
-		/*if ( (RadioInfo.getActiveWAFs() & RadioInfo.WAF_WLAN ) != 0 )
-		{
-			LOG.INFO("getActiveWAFs");
-			bRes = true;
-		}*/
-		
-		return bRes;
+		return BBVersionSpecific.isWifiActive();
 	}
 	
 	public IHttpConnection connect(String url) throws IOException 
