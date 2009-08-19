@@ -258,7 +258,7 @@ public class CameraScreen extends MainScreen {
     		// First of all, attempting to capture picture using MM API
     		
             //Create a player for the Blackberry's camera.
-            player = Manager.createPlayer( "capture1://video" ); 
+            player = Manager.createPlayer( "capture://video" ); 
             LOG.TRACE("Recording using MM API");
     	}
     	catch(Exception e) {
