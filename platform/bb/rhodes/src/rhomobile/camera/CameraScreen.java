@@ -305,7 +305,8 @@ public class CameraScreen extends MainScreen {
         }
         catch(Exception e)
         {
-            Dialog.alert( "ERROR " + e.getClass() + ":  " + e.getMessage() );
+        	LOG.ERROR("Camera initialization failed", e);
+        	//Dialog.alert( "ERROR : can not connect to camera");
         }
     }
     
