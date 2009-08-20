@@ -1,5 +1,7 @@
 package rhomobile;
 
+import j2me.util.LinkedList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -47,11 +49,13 @@ import net.rim.device.api.ui.Manager;
 
 import javax.microedition.media.*;
 
+import com.rho.Mutex;
 import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
+import com.rho.RhoThread;
 import com.rho.SimpleFile;
 import com.rho.Version;
 import com.rho.location.GeoLocation;
@@ -265,6 +269,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     void openLink(){
+    	LOG.INFO("openLink");
     	Menu menu = _mainScreen.getMenu(0);
         int size = menu.getSize();
         for(int i=0; i<size; i++)
@@ -832,6 +837,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        //	navigateHome();
 	        //}    
 	        
+	        PrimaryResourceFetchThread.Create();
+	        
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
@@ -1139,8 +1146,59 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         (new Thread(runnable)).start();
     }
 
-    public static class PrimaryResourceFetchThread extends Thread {
+    public static class PrimaryResourceFetchThread {//extends Thread {
 
+    	private static class HttpServerThread extends RhoThread
+    	{
+    		private Mutex         m_mxStackCommands = new Mutex();
+    		private LinkedList	  m_stackCommands = new LinkedList();	         
+    		boolean m_bExit = false;
+    		private static final int INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
+    		static final int WAIT_BEFOREKILL_SECONDS  = 3;
+    		
+    		HttpServerThread()
+    		{
+    			super(new RhoClassFactory());
+    			start(epNormal);
+    		}
+    		
+            public void run() 
+            {
+        		LOG.INFO( "Starting HttpServerThread main routine..." );
+            	
+        		while( !m_bExit )
+        		{
+	        		while(!m_stackCommands.isEmpty())
+	        		{
+	        			PrimaryResourceFetchThread oCmd = null;
+	        	    	synchronized(m_mxStackCommands)
+	        	    	{
+	        	    		oCmd = (PrimaryResourceFetchThread)m_stackCommands.removeFirst();
+	        	    	}
+	        			
+	        	    	oCmd.processCommand();
+	        		}
+	        		
+	        		wait(INTERVAL_INFINITE);
+        		}
+        		
+        		LOG.INFO( "Exit HttpServerThread main routine..." );
+        		
+            }
+            
+            void addCommand(PrimaryResourceFetchThread oCmd)
+            { 
+            	synchronized(m_mxStackCommands)
+            	{
+          			m_stackCommands.add(oCmd);
+            	}
+            	stopWait(); 
+            }
+            
+    	};
+    	
+    	private static HttpServerThread m_oFetchThread;
+    	
         private RhodesApplication _application;
         private static Callback _callback;
 
@@ -1151,7 +1209,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         private HttpHeaders _requestHeaders;
 
         private String _url;
-        private static Object m_syncObject = new Object(); 
         private boolean m_bInternalRequest = false;
         
         public void setInternalRequest(boolean b)
@@ -1182,33 +1239,53 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             	_callback = callback;
         }
 
-        public void run() {
-        	synchronized(m_syncObject)
-        	{
-        		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
-        		
-        		if ( m_bInternalRequest )
-        		{
-        			try{
-        				connection.getResponseCode();
-        			}catch(IOException exc)
-        			{
-        				LOG.ERROR("Callback failed: " + _url, exc);
-        			}
-        		}
-        		else
-        		{
-        			_application.processConnection(connection, _event);
-        			
-                	if (_callback != null )
-                	{
-                		_callback.run();
-                		_callback = null;
-                	}
-        			
-        		}
-        	}
+        static void Create()
+        {
+        	if ( m_oFetchThread != null )
+        		return;
+        	
+        	m_oFetchThread = new HttpServerThread(); 
         }
+        
+    	public void Destroy()
+    	{
+    		m_oFetchThread.m_bExit = true;
+    		m_oFetchThread.stop(HttpServerThread.WAIT_BEFOREKILL_SECONDS);
+    		
+    		m_oFetchThread = null;
+    	}
+        
+    	void start()
+    	{
+            m_oFetchThread.addCommand(this);
+    	}
+    	
+        void processCommand()
+        {
+    		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+    		
+    		if ( m_bInternalRequest )
+    		{
+    			try{
+    				connection.getResponseCode();
+    			}catch(IOException exc)
+    			{
+    				LOG.ERROR("Callback failed: " + _url, exc);
+    			}
+    		}
+    		else
+    		{
+    			_application.processConnection(connection, _event);
+    			
+            	if (_callback != null )
+            	{
+            		_callback.run();
+            		_callback = null;
+            	}
+    			
+    		}
+        }
+        
     }
 }
 
