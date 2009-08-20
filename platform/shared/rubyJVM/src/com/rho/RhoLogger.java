@@ -130,8 +130,9 @@ public class RhoLogger {
 	    {
 	    	m_strMessage += (msg != null && msg.length() > 0 ? ";" : "") + e.getClass().getName() + ": ";
 	    	
-	    	if ( e.getMessage() != null )
-	    		m_strMessage += e.getMessage();
+	    	String emsg = e.getMessage();
+	    	if ( emsg != null )
+	    		m_strMessage += emsg;
 	    }
 	    
 		if (m_strMessage.length() > 0 || m_strMessage.charAt(m_strMessage.length() - 1) != '\n')
