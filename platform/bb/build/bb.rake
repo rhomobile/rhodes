@@ -232,23 +232,6 @@ namespace "build" do
         args << "1.3"
         args << "-nowarn"
         args << "@#{vsrclist}"
-        puts "\texecuting javac"
-        puts Jake.run(javac,args)
-        $stdout.flush
-
-        args = []
-        args << "-g"
-        args << "-d"
-        args << $tmpdir
-        args << "-classpath"
-        args << '"' + $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar;"+$tmpdir+'"'
-        args << "-bootclasspath"
-        args << '"' + jde + "/lib/net_rim_api.jar\""
-        args << "-source"
-        args << "1.3"
-        args << "-target"
-        args << "1.3"
-        args << "-nowarn"
         #args << "@RubyVM_build.files"
         args << "@#{$builddir}/hsqldb_build.files"
         args << "@#{$builddir}/rhodes_build.files"
