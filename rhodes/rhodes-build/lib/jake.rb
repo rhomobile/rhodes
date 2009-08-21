@@ -92,7 +92,7 @@ class Jake
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
     argstr = " "
     currentdir = ""
-  
+    retval = ""
     args.each do |x|
       x = x.to_s
       #x.gsub!(/^"/,"")
@@ -125,14 +125,16 @@ class Jake
       system(command)
       retval = ""
     else
-      bb = IO.popen(command)
-      b = bb.readlines
-      retval = b.join
+      bb = IO.popen(command) { |bb|
+        b = bb.readlines
+        retval = b.join
+        #puts "exitstatus is #{Process.waitpid(bb.pid)}"
+      }
     end
     if not wd.nil?
       chdir currentdir
     end
-  
+    
     return retval
   
   end
