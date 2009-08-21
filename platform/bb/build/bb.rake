@@ -335,6 +335,19 @@ namespace "package" do
       Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir)
       Jake.unjar($preverified + "/rhodes.jar", $tmpdir)
 
+      if $bbver =~ /^4\.[012](\..*)$/
+        max_size = 65536
+        Dir.glob( $tmpdir + "/**/*" ).each do |f|
+          if File.size( f ) > max_size
+            puts "File size of " + f + " is more than " + max_size.to_s + " bytes"
+            puts "There is no ability to pack this file into .cod file for BB " + $bbver
+            puts "Please reduce its size and try again"
+            $stdout.flush
+            Process.exit
+          end
+        end
+      end
+
       Jake.jar($bindir + "/rhodesApp.jar",$builddir + "/manifest.mf",$tmpdir,true)
       Jake.rapc("rhodesApp",
         $targetdir,
