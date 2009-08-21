@@ -20,19 +20,16 @@
 	[super dealloc];
 }
 
-- (void)loadTabBarItemFirstPage:(NSString*)location {
+- (void)loadTabBarItemFirstPage:(NSString*)location itemIndex:(int)index {
 	NSString* escapedUrl = [location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
 	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 	NSString* startLocation = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
-	UIWebView* currentWebView = (UIWebView*)[[tabBarController.viewControllers objectAtIndex:0] view];
-	
-	[currentWebView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:startLocation]]];
-	[self.mainWindow addSubview:currentWebView];
+	UIWebView* wView = (UIWebView*)[[tabBarController.viewControllers objectAtIndex:index] view];
+	[wView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:startLocation]]];
 }
 
 - (void)createTabBar:(UIWindow*)window {
 	self.mainWindow = window;
-	CGRect mainViewBounds = [[UIScreen mainScreen] applicationFrame];
 	
 	// Load the tab bar (just one of them)
 	if(!self.tabBarController) {
@@ -52,7 +49,7 @@
 		NSString* itemImage = (NSString*)[tabBar.barItems objectAtIndex:(i*3)+2];
 		if (itemLabel && itemLocation && itemImage) {
 			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
-			UIWebView *wView = [[[UIWebView alloc] initWithFrame:mainViewBounds] autorelease];
+			UIWebView *wView = [[[UIWebView alloc] init] autorelease];
 			subController.title = itemLabel;
 			subController.tabBarItem.image = [UIImage imageNamed:@"home_btn.png"];
 			subController.view = wView;
@@ -65,14 +62,15 @@
 	self.tabBarController.view.hidden = NO;
 	[self.mainWindow addSubview:tabBarController.view];
 	
-	// Load location for tab #0
-	[self loadTabBarItemFirstPage:(NSString*)[tabBar.barItems objectAtIndex:1]];
+	// Load tab #0 location
+	[self loadTabBarItemFirstPage:(NSString*)[tabBar.barItems objectAtIndex:1] itemIndex:0];
 	[tabs release];
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
 	printf("selected index: %i\n", self.tabBarController.selectedIndex);
-	[self loadTabBarItemFirstPage:(NSString*)[self.tabBar.barItems objectAtIndex:(self.tabBarController.selectedIndex*3)+1]];
+	[self loadTabBarItemFirstPage:(NSString*)[self.tabBar.barItems objectAtIndex:(self.tabBarController.selectedIndex*3)+1]
+						itemIndex:self.tabBarController.selectedIndex];
 }
 
 @end
