@@ -5,26 +5,18 @@
 
 package com.xruby.runtime.builtin;
 
-//import java.text.SimpleDateFormat;
 import java.util.Calendar;
-//import j2me.util.Locale;
 import java.util.TimeZone;
 import java.util.Date;
 
-//import com.rho.db.PerstLiteAdapter;
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
 import com.xruby.runtime.lang.*;
-//import com.xruby.runtime.lang.annotation.RubyAllocMethod;
-//import com.xruby.runtime.lang.annotation.RubyLevelClass;
-//import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 
 import j2me.lang.*;
 
 //@RubyLevelClass(name="Time")
 public class RubyTime extends RubyBasic {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("RubyTime");
+	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	//	new RhoLogger("RubyTime");
 	private final Calendar date_;
 
     private RubyTime(Calendar date){

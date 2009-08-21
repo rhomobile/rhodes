@@ -9,12 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import com.xruby.runtime.builtin.*;
-//import com.xruby.runtime.lang.util.RubyTypeFactory;
-//import com.xruby.runtime.stdlib.*;
 import com.xruby.GeneratedMethods.*; 
-//import com.rho.db.PerstLiteAdapter;
-//import com.rho.sync.SyncEngine;
-import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
 import com.rho.StringScanner;
 

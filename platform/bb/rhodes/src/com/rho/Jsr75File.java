@@ -1,8 +1,6 @@
 package com.rho;
-//import net.rim.device.api.system.DeviceInfo;
 
 import java.io.IOException;
-//import java.io.EOFException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -10,7 +8,6 @@ import javax.microedition.io.*;
 import javax.microedition.io.file.*;
 
 import java.util.Vector;
-import net.rim.device.api.system.*;
 
 public class Jsr75File implements SimpleFile 
 {
@@ -19,7 +16,7 @@ public class Jsr75File implements SimpleFile
     private OutputStream   out;
     private long           inPos;
     private long           outPos = 0;
-    private long           currPos = 0;
+    //private long           currPos = 0;
     private long           fileSize = 0;
     private boolean        noFlush;
     private boolean        m_bOpened = false;
@@ -418,12 +415,12 @@ public class Jsr75File implements SimpleFile
 
     public String readString()throws IOException{
     	if ( !isOpened() || fileSize == 0 )
-    		return new String("");
+    		return "";
     	
 	    byte[] data = new byte[(int)fileSize];
 	    int len = read(0,data);
 	    if ( len == 0 )
-	        return new String("");
+	        return "";
 
 	    return new String(data,0,len);
     }
