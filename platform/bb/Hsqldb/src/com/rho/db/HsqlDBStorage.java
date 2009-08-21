@@ -1,13 +1,8 @@
 package com.rho.db;
 
-import com.rho.RhoClassFactory;
 import com.rho.db.DBException;
 import com.rho.db.IDBResult;
 import com.rho.db.IDBStorage;
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyValue;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
 

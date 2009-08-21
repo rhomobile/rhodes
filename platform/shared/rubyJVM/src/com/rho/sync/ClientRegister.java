@@ -47,9 +47,9 @@ public class ClientRegister extends RhoThread
 	{
 		super(factory);
 		
-		m_sysInfo = factory.createRhoRubyHelper();
+		m_sysInfo = RhoClassFactory.createRhoRubyHelper();
 		m_strDevicePin = m_sysInfo.getDeviceId();
-		m_NetRequest = factory.createNetRequest();
+		m_NetRequest = RhoClassFactory.createNetRequest();
 		
 		start(epLow);
 	}

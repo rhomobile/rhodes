@@ -31,11 +31,7 @@
 
 package org.hsqldb.scriptio;
 
-//import java.io.BufferedInputStream;
-//import java.io.BufferedReader;
 import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
 import com.rho.db.RandomAccessFile;
 
 import org.hsqldb.Database;
@@ -44,8 +40,6 @@ import org.hsqldb.Result;
 import org.hsqldb.Session;
 import org.hsqldb.Trace;
 import org.hsqldb.lib.SimpleLog;
-import org.hsqldb.lib.StringConverter;
-import org.hsqldb.rowio.RowInputTextLog;
 
 /**
  * Handles operations involving reading back a script or log file written

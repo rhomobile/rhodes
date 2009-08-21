@@ -4,18 +4,16 @@ import javax.microedition.location.Coordinates;
 import javax.microedition.location.Criteria;
 import javax.microedition.location.Location;
 import javax.microedition.location.LocationException;
-import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.location.GeoLocationAsync.LocationListenerImpl;
 
 public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GeoLocationImpl");
 	
-	private final int HORIZONTAL_ACCURANCE = 500;
+	//private final int HORIZONTAL_ACCURANCE = 500;
 	private final int REQUEST_TIMEOUT = 60;
 	private double m_lat = 0.0;
 	private double m_lon = 0.0;
@@ -23,7 +21,7 @@ public class GeoLocationImpl implements Runnable, IGeoLocationImpl {
 	private boolean m_bDetermined = false;
 	
 	private final String errorStrDontSupport = "Location API doesn't support";
-	private final String errorStrLocationException= "Location could not be determined";
+	//private final String errorStrLocationException= "Location could not be determined";
 	
 	private static final long WAIT_INTERVAL = 60000L;
 	private static final long WAIT_START_INTERVAL = 1000L;

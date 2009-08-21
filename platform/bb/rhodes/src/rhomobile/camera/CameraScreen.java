@@ -1,14 +1,11 @@
 package rhomobile.camera;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Vector;
 import java.util.Date;
-//import java.io.IOException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
-import javax.microedition.media.MediaException;
 
 import com.rho.db.DBAdapter;
 import rhomobile.RhodesApplication;
@@ -69,7 +66,6 @@ public class CameraScreen extends MainScreen {
 	private CameraFilesListener _fileListener = null;
 	
 	private boolean _cameraConnected;
-	private int m_hookNo = 0;
 	
 	/**
 	 * Constructor.
@@ -296,7 +292,7 @@ public class CameraScreen extends MainScreen {
     			_fileListener = new CameraFilesListener(this);
     			app.addFileSystemJournalListener(_fileListener);
     			
-    			m_hookNo = app.addActivateHook(new ActivateHook(_cameraScreen));
+    			app.addActivateHook(new ActivateHook(_cameraScreen));
     			
     			CameraArguments vidargs = new CameraArguments();
             	Invoke.invokeApplication(Invoke.APP_TYPE_CAMERA, vidargs);
