@@ -19,7 +19,10 @@ module Rho
       else
         process_model_dirs(Rho::RhoFSConnector::get_app_manifest_filename)
       end
+      
+      # Initialize application and sources
       init_sources
+      get_app(APPNAME)
     end
     
     # make sure we close the database file
@@ -130,7 +133,6 @@ module Rho
     
     def serve_index(index_name)
     	# TODO: Removed hardcoded appname
-    	get_app(APPNAME).set_tabs
     	get_app(APPNAME).set_menu
       begin
         puts 'inside RHO.serve_index: ' + index_name
@@ -144,7 +146,6 @@ module Rho
 
     def serve_index_hash(index_name)
     	# TODO: Removed hardcoded appname
-    	get_app(APPNAME).set_tabs
     	get_app(APPNAME).set_menu
       begin
         puts 'inside RHO.serve_index: ' + index_name
