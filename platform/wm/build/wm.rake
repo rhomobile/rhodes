@@ -11,6 +11,11 @@ namespace "build" do
       currentdir = pwd
       chdir 'platform/wm/build'
       puts `ant.bat RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
+      unless $? == 0
+        puts "Error building wm"
+        exit 1
+      end
+
       chdir currentdir
     end
   end

@@ -65,6 +65,10 @@ namespace "build" do
       args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
 
       puts Jake.run($aapt,args)
+      unless $? == 0
+        puts "Error in AAPT"
+        exit 1
+      end
 
     end
     desc "Build RhoBundle for android"
@@ -98,9 +102,17 @@ namespace "build" do
       args << "latin1"
       args << "@#{$builddir}/RubyVM_build.files"
       puts Jake.run(javac,args)
+      unless $? == 0
+        puts "Error compiling java code"
+        exit 1
+      end
 
       args = ["cf","../../RubyVM.jar", "#{$all_files_mask}"]
       puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/RubyVM/")
+      unless $? == 0
+        puts "Error running jar"
+        exit 1
+      end
 
       cp_r $bindir + "/RubyVM.jar", $libs
 
@@ -125,6 +137,10 @@ namespace "build" do
       args << "latin1"
       args << "@#{$builddir}/RhodesGEN_build.files"
       puts Jake.run(javac,args)
+      unless $? == 0
+        puts "Error compiling java code"
+        exit 1
+      end
 
       args = []
       args << "-g"
@@ -139,12 +155,20 @@ namespace "build" do
       args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RubyVM.jar" + $path_separator + "#{$libs}/RhoBundle.jar"
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
+      unless $? == 0
+        puts "Error compiling java code"
+        exit 1
+      end
 
 
 
 
       args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
       puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/Rhodes/")
+      unless $? == 0
+        puts "Error running jar"
+        exit 1
+      end
     end
 
     desc "build all"
@@ -163,6 +187,10 @@ namespace "package" do
     args << Jake.get_absolute("#{$bindir}/RubyVM.jar")
     args << Jake.get_absolute("#{$bindir}/RhoBundle.jar")
     puts Jake.run($dx,args)
+    unless $? == 0
+      puts "Error running DX utility"
+      exit 1
+    end
 
     manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
     resource = Jake.get_absolute $androidpath + "/Rhodes/res"
@@ -172,6 +200,10 @@ namespace "package" do
 
     puts "Packaging Assets and Jars"
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
+    unless $? == 0
+      puts "Error running AAPT"
+      exit 1
+    end
     
   end
 end
@@ -186,6 +218,10 @@ namespace "device" do
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
+      unless $? == 0
+        puts "Error building APK file"
+        exit 1
+      end
 
     end
     desc "build signed for production"
@@ -197,6 +233,10 @@ namespace "device" do
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
+      unless $? == 0
+        puts "Error building APK file"
+        exit 1
+      end
 
       if not File.exists? $keystore
         puts "Generating private keystore..."
@@ -217,6 +257,10 @@ namespace "device" do
         args << "-keypass"
         args << $keypass
         puts Jake.run($keytool, args)
+        unless $? == 0
+          puts "Error generating keystore file"
+          exit 1
+        end
       end
 
       puts "Signing APK file"
@@ -231,6 +275,10 @@ namespace "device" do
       args << '"' + apkfile + '"'
       args << "rhomobile.keystore"
       puts Jake.run($jarsigner, args)
+      unless $? == 0
+        puts "Error running jarsigner"
+        exit 1
+      end
     end
   end
 end
@@ -243,6 +291,10 @@ namespace "run" do
     sleep 5
 
     system("#{$androidbin} create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+    unless $? == 0
+      puts "Error creating AVD"
+      exit 1
+    end
 
     Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
