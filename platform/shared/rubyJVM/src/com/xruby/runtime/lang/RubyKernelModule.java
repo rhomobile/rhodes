@@ -751,8 +751,8 @@ public class RubyKernelModule {
     }
 
     private static int RDWR = 2;
-    private static int CREAT = 256;
-    private static int EXCL = 1024;
+    //private static int CREAT = 256;
+    //private static int EXCL = 1024;
 
     //@RubyLevelMethod(name="open")
     public static RubyValue open(RubyValue receiver, RubyArray args, RubyBlock block) {

@@ -631,9 +631,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	    
 	    	}
 			// Delete Page View
-	    	// TODO: menu.getSize() above incorrectly reports size 0 when
-	    	// there is 1 item left!
-	    	MenuItem pgview = menu.getItem(0);
+	    	MenuItem pgview = null;
+	    	try {
+		    	// TODO: menu.getSize() above incorrectly reports size 0 when
+		    	// there is 1 item left! (Correct for BB 4.6 and less)
+		    	pgview = menu.getItem(0);
+	    	}
+	    	catch (Exception e) {
+	    		// This is ok. On BB 4.7 there is correct behavior so attempting to get
+	    		// item with index 0 cause exception - menu is actually empty!
+	    	}
 	    	if (pgview != null && pgview.getId() == 853)
 	    		menu.deleteItem(0);
 	    	

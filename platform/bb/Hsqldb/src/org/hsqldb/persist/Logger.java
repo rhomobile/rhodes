@@ -338,12 +338,12 @@ public class Logger {
     public synchronized void checkpoint(boolean mode) throws HsqlException {
 
         if (logStatements) {
-            appLog.logContext(appLog.LOG_NORMAL, "start");
+            appLog.logContext(SimpleLog.LOG_NORMAL, "start");
 
             needsCheckpoint = false;
 
             log.checkpoint(mode);
-            appLog.logContext(appLog.LOG_NORMAL, "end");
+            appLog.logContext(SimpleLog.LOG_NORMAL, "end");
         }
     }
 

@@ -18,7 +18,7 @@ public class GeoLocationAsync {
 	private LocationListenerImpl m_locListener;
 	
 	private final String errorStrDontSupport = "Location API doesn't support";
-	private final String errorStrLocationException= "Location could not be determined";
+	//private final String errorStrLocationException= "Location could not be determined";
 	
 	class LocationListenerImpl implements LocationListener{
 

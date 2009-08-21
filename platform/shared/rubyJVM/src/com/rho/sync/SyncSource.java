@@ -364,12 +364,15 @@ class SyncSource
 	    {
 	        setCurPageCount(0);
 	        String strUrl = getUrl();
-	        String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
-	                "&p_size=" + getSync().SYNC_PAGE_SIZE();
+	        getSync();
+			getSync();
+			String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
+	                "&p_size=" + SyncEngine.SYNC_PAGE_SIZE();
 	
 	        if ( getAskParams().length() > 0 )
 	        {
-	            strUrl +=  getSync().SYNC_ASK_ACTION();
+	            getSync();
+				strUrl +=  SyncEngine.SYNC_ASK_ACTION();
 	            strQuery += "&question=" + getAskParams();
 	        }
 	
