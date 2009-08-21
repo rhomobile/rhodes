@@ -1546,62 +1546,8 @@ static VALUE mNativeBar;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-	extern void create_nativebar(char *bar_type, int nparams, char** params);
+	extern void create_nativebar(int bar_type, int nparams, char** params);
 	#define create create_nativebar
-
-
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
-{
-  if (TYPE(obj) == T_STRING) {
-    
-
-
-    char *cstr = STR2CSTR(obj);
-    
-    size_t size = RSTRING_LEN(obj) + 1;
-    if (cptr)  {
-      if (alloc) {
-	if (*alloc == SWIG_NEWOBJ) {
-	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
-	} else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      }
-    }
-    if (psize) *psize = size;
-    return SWIG_OK;
-  } else {
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *)vptr;
-	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }  
-  return SWIG_TypeError;
-}
-
-
-
 
 
 #include <limits.h>
@@ -1669,21 +1615,20 @@ SWIG_AsVal_int (VALUE obj, int *val)
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
+  int arg1 ;
   int arg2 ;
   char **arg3 = (char **) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "create" "', argument " "1"" of type '" "char *""'");
-  }
-  arg1 = (char *)(buf1);
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "create" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
   {
     VALUE input_arr = argv[1];
     int arr_len = 0;
@@ -1730,13 +1675,11 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
     arg3 = ret_val;
   }
   create(arg1,arg2,arg3);
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   {
     free((void *) arg3);
   }
   return Qnil;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   {
     free((void *) arg3);
   }
