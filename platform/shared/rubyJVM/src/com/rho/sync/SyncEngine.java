@@ -89,7 +89,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     }
 
     void setFactory(RhoClassFactory factory)throws Exception{ 
-		m_NetRequest = factory.createNetRequest();
+		m_NetRequest = RhoClassFactory.createNetRequest();
     }
     
 	void doSyncAllSources()

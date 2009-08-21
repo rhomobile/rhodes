@@ -3,8 +3,6 @@ package com.rho;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import com.rho.db.DBAdapter;
-import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;

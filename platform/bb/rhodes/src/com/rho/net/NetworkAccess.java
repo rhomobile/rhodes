@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
-import rhomobile.RhodesApplication.PrimaryResourceFetchThread;
 import rhomobile.RhodesApplication;
 
 import net.rim.device.api.servicebook.ServiceBook;
@@ -16,9 +15,7 @@ import net.rim.device.api.system.RadioInfo;
 import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.Version;
 import com.rho.net.bb.BBHttpConnection;
-import com.rho.net.bb.NativeBBHttpConnection;
 import net.rim.device.api.io.http.HttpHeaders;
 
 public class NetworkAccess implements INetworkAccess {

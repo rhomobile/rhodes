@@ -774,7 +774,7 @@ public class Log {
     }
 
 // fredt@users 20020221 - patch 513005 by sqlbob@users (RMP) - text tables
-    private HashMap textCacheList = new HashMap();
+    //private HashMap textCacheList = new HashMap();
 
     DataFileCache openTextCache(Table table, String source,
                                 boolean readOnlyData,
