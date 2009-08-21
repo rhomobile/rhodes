@@ -23,6 +23,6 @@
 @property (nonatomic, retain) UIWindow *mainWindow;
 
 - (void)createTabBar:(UIWindow*)window;
-- (void)loadTabBarItemFirstPage:(NSString*)location;
+- (void)loadTabBarItemFirstPage:(NSString*)location itemIndex:(int)index;
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
 @end
