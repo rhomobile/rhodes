@@ -393,11 +393,11 @@ public class DateTimeTokenizer {
 
     private int[] days_in_month = {31, 28, 31, 30, 31, 30, 31,
                                    31, 30, 31, 30, 31};
-    private String[] month_shorts = {"Jan", "Feb", "Mar", "Apr", 
-                                     "May", "Jun", "Jul", "Aug", 
-                                     "Sep", "Oct", "Nov", "Dec"};
-    private String[] weekday_shorts = {"Mon", "Tue", "Wed", "Thu",
-                                       "Fri", "Sat", "Sun"};
+    //private String[] month_shorts = {"Jan", "Feb", "Mar", "Apr", 
+    //                                 "May", "Jun", "Jul", "Aug", 
+    //                                 "Sep", "Oct", "Nov", "Dec"};
+    //private String[] weekday_shorts = {"Mon", "Tue", "Wed", "Thu",
+    //                                   "Fri", "Sat", "Sun"};
     
     private static long julianDayOffset = 2440588;
     private static int millisPerHour = 60 * 60 * 1000;

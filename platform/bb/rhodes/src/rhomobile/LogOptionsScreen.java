@@ -5,7 +5,6 @@ import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.component.ObjectChoiceField;
 import net.rim.device.api.ui.component.EditField;
 import com.rho.RhoLogger;
-import com.rho.RhoLogConf;
 
 public class LogOptionsScreen extends MainScreen {
 

@@ -66,8 +66,6 @@
 
 package org.hsqldb;
 
-import j2me.util.Locale;
-
 import org.hsqldb.HsqlNameManager.HsqlName;
 import org.hsqldb.lib.ArrayUtil;
 import org.hsqldb.lib.HashMap;
@@ -76,9 +74,7 @@ import org.hsqldb.lib.HsqlArrayList;
 import org.hsqldb.lib.IntKeyHashMap;
 import org.hsqldb.lib.IntValueHashMap;
 import org.hsqldb.lib.Iterator;
-import org.hsqldb.lib.StringConverter;
 import org.hsqldb.store.ValuePool;
-import org.hsqldb.lib.HashSet;
 
 // fredt@users 20020130 - patch 497872 by Nitin Chauhan - reordering for speed
 // fredt@users 20020215 - patch 1.7.0 by fredt - support GROUP BY with more than one column
@@ -310,7 +306,7 @@ class Parser {
         HsqlName sqtablename =
             database.nameManager.newHsqlName("SYSTEM_SUBQUERY", false);
 
-        sqtablename.schema = database.schemaManager.SYSTEM_SCHEMA_HSQLNAME;
+        sqtablename.schema = SchemaManager.SYSTEM_SCHEMA_HSQLNAME;
 
         Table table = new Table(database, sqtablename, Table.SYSTEM_SUBQUERY);
 
