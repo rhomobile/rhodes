@@ -54,32 +54,6 @@
 		location = [self normalizeUrl:(NSString*)data];
 	}
 	
-	// Load the tab or nav bar
-	
-	UITabBarController *tabBarController = nil;
-	tabBarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
-	tabBarController.moreNavigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-	NSMutableArray *tabs = [[[NSMutableArray alloc] init] autorelease];
-	
-	for(int i=0; i < 10; i++) {
-		UIViewController *subController = [[[WebViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-		UIWebView *wView = [[[UIWebView alloc] init] autorelease];
-		subController.title = [NSString stringWithFormat:@"tab-%i", i];
-		subController.view = wView;
-		[tabs addObject:subController];
-	}
-	
-	tabBarController.viewControllers = tabs;
-	tabBarController.customizableViewControllers = nil;
-	[window addSubview:tabBarController.view];
-	tabBarController.view.hidden = NO;
-
-	NSString* escapedUrl = [location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
-	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
-	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
-	UIWebView* currentWebView = (UIWebView*)[[tabBarController.viewControllers objectAtIndex:0] view];
-
-	[currentWebView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 	appStarted = true;
 }
 
@@ -96,7 +70,6 @@
 }
 
 - (void)onSetViewHomeUrl:(NSString *)url {
-	//[webViewController setViewHomeUrl:[localhost stringByAppendingPathComponent:url]];
 	[webViewController setViewHomeUrl:url];
 }
 
@@ -143,6 +116,18 @@
 	return YES;
 } 
 
+-(BOOL)startNativeBarFromViewController:(UIViewController*)controller 
+							   usingDelegate:(TabBarDelegate*)delegateObject
+{
+	@try {
+		[delegateObject createTabBar:window];
+	} @catch (NSException* theException) {
+		RAWLOG_ERROR2("startNativeBarFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+		return NO;
+	}
+	return YES;
+} 
+
 - (void)onTakePicture:(NSString*) url {
 	[pickImageDelegate setPostUrl:[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
@@ -164,8 +149,16 @@
 								  usingDelegate:dateTimePickerDelegate];
 }
 
+- (void)onCreateNativeBar:(NativeBar*)nativeBar {
+	if (nativeBar.barType == RhoTabBar) {
+		tabBarDelegate.tabBar = nativeBar;
+		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
+	} else {
+		[window addSubview:webViewController.toolbar];
+	}
+}
+
 - (void)onSetViewOptionsUrl:(NSString *)url {
-	//[webViewController setViewOptionsUrl:[localhost stringByAppendingPathComponent:url]];
 	[webViewController setViewOptionsUrl:url];
 }
 
@@ -311,6 +304,9 @@
 	//DateTime delegate
 	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
 	
+	//TabBar delegate
+	tabBarDelegate = [[TabBarDelegate alloc] init];
+	
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];
@@ -323,6 +319,7 @@
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
 	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
+	serverHost->onCreateNativeBar = @selector(onCreateNativeBar:);
 	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
@@ -333,6 +330,9 @@
     //Create View
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
+	
+	// TODO: Remove toolbar from interface builder
+	[webViewController.toolbar removeFromSuperview];
 #ifdef __IPHONE_3_0
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
 																		   | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
@@ -419,6 +419,7 @@
 	[window release];
 	[pickImageDelegate release];
 	[dateTimePickerDelegate release];
+	[tabBarDelegate release];
 	[super dealloc];
 }
 

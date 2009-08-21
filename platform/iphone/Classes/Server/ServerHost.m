@@ -25,6 +25,7 @@
 #include "JSString.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
+#import "NativeBar.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -72,7 +73,8 @@ static ServerHost* sharedSH = nil;
 @implementation ServerHost
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onShowPopup, onVibrate, onPlayFile, onSysCall;
+@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
+@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -139,6 +141,16 @@ static ServerHost* sharedSH = nil;
 		dateTime.data = data;
 		[actionTarget performSelectorOnMainThread:onChooseDateTime withObject:dateTime waitUntilDone:YES];
 		[dateTime release];
+	}
+}
+
+- (void)createNativeBar:(int)barType dataArray:(NSArray*)dataArray {
+	if(actionTarget && [actionTarget respondsToSelector:onCreateNativeBar]) {
+		NativeBar* nativeBar = [[NativeBar alloc] init];
+		nativeBar.barType = barType;
+		nativeBar.barItems = dataArray;
+		[actionTarget performSelectorOnMainThread:onCreateNativeBar withObject:nativeBar waitUntilDone:YES];
+		[nativeBar release];
 	}
 }
 
@@ -389,18 +401,17 @@ void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 	[[ServerHost sharedInstance] doSysCall:params];
 }
 
-void create_nativebar(char *bar_type, int nparams, char** params) {
-	printf("inside params: %s, %i\n", bar_type, nparams);
-	NSMutableArray *dataArray = [[NSMutableArray arrayWithCapacity:nparams];
+void create_nativebar(int bar_type, int nparams, char** params) {
+	printf("inside params: %i, %i\n", bar_type, nparams);
+	NSMutableArray *items = [NSMutableArray arrayWithCapacity:nparams];
 	for(int i = 0; i < nparams; i++) {
-		[dataArray addObject:[NSString stringWithCString:params[i]];
 		if (params[i]) {
 			printf("param: %s\n", params[i]);
+			[items addObject:[NSString stringWithCString:params[i]]];
 		} else {
-			printf("param: nil");
+			printf("param: nil");   
+			[items addObject:@""];
 		}
 	}
-	[[ServerHost sharedInstance] createNativeBar:[NSString stringWithCString:bar_type]
-										itemSize:nparams
-										   items:dataArray]];
+	[[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
 }

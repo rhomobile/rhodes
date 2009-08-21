@@ -1,7 +1,7 @@
 /* nativebar.i */
 %module NativeBar
 %{
-	extern void create_nativebar(char *bar_type, int nparams, char** params);
+	extern void create_nativebar(int bar_type, int nparams, char** params);
 	#define create create_nativebar
 %}
 
@@ -41,7 +41,7 @@
 				val2 = tmp;
 			} else if (!strcmp(key_str, "icon")) {
 				val3 = tmp;
-			}
+			} 
 		}
 		ret_val[arr_len++] = val1;
 		ret_val[arr_len++] = val2;
@@ -55,4 +55,4 @@
  free((void *) $2);
 }
 
-extern void create(char *bar_type, int nparams, char** params);
+extern void create(int bar_type, int nparams, char** params);

@@ -27,6 +27,7 @@
 	SEL onTakePicture;
 	SEL onChoosePicture;
 	SEL onChooseDateTime;
+	SEL onCreateNativeBar;
 	SEL onSetViewOptionsUrl;
 	SEL onShowPopup;
 	SEL onVibrate;
@@ -45,6 +46,7 @@
 @property (assign) SEL onTakePicture;
 @property (assign) SEL onChoosePicture;
 @property (assign) SEL onChooseDateTime;
+@property (assign) SEL onCreateNativeBar;
 @property (assign) SEL onSetViewOptionsUrl;
 @property (assign) SEL onShowPopup;
 @property (assign) SEL onVibrate;

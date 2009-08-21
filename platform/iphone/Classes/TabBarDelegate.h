@@ -7,10 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RhoDelegate.h"
+#import "NativeBar.h"
 
-
-@interface TabBarDelegate : NSObject {
-
+@interface TabBarDelegate : RhoDelegate <UITabBarControllerDelegate> 
+{
+@private
+	UITabBarController* tabBarController;
+	NativeBar* tabBar;
+	UIWindow *mainWindow;
 }
 
+@property(nonatomic, retain) NativeBar* tabBar;
+@property(nonatomic, retain) UITabBarController* tabBarController;
+@property (nonatomic, retain) UIWindow *mainWindow;
+
+- (void)createTabBar:(UIWindow*)window;
+- (void)loadTabBarItemFirstPage:(NSString*)location;
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
 @end

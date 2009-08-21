@@ -4,6 +4,9 @@ require 'rhofsconnector'
 module Rho
   class RhoApplication
   	attr_accessor :default_menu
+  	
+  	TOOLBAR_TYPE = 0
+  	TABBAR_TYPE = 1
 	
     def initialize
       unless @rhom
@@ -15,8 +18,7 @@ module Rho
   	  end
   	  if @tabs
   	    puts "Initializing application with tabs: #{@tabs.inspect}" 
-  	    #NativeBar.create({"hello" => "world"})
-  	    NativeBar.create('tabbar', @tabs)
+  	    NativeBar.create(TABBAR_TYPE, @tabs)
 	    end
     end
     

@@ -11,6 +11,7 @@
 #import "ServerHost.h"
 #import "PickImageDelegate.h"
 #import "DateTimePickerDelegate.h"
+#import "TabBarDelegate.h"
 #import "LogViewController.h"
 #import "LogOptionsController.h"
 
@@ -24,6 +25,7 @@
     ServerHost * serverHost;
 	PickImageDelegate* pickImageDelegate;
 	DateTimePickerDelegate* dateTimePickerDelegate;
+	TabBarDelegate* tabBarDelegate;
 	AVAudioPlayer *player;
 	bool appStarted;
 }
