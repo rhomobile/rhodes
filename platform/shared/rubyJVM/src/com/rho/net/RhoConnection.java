@@ -539,9 +539,8 @@ public class RhoConnection implements IHttpConnection {
 		return true;
 	}
 	
-	protected boolean httpGetFile()throws IOException{
+	protected boolean httpGetFile(String strContType)throws IOException{
 		
-		String strContType = getContentType();
 		if ( strContType.length() == 0 )
 		{
 			String strTemp = uri.getPath();
@@ -609,7 +608,10 @@ public class RhoConnection implements IHttpConnection {
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 	}
 	
-	protected boolean dispatch()throws IOException{
+	protected boolean dispatch()throws IOException
+	{
+		LOG.INFO("dispatch start");
+		
 		UrlParser up = new UrlParser(uri.getPath());
 		String apps = up.next();
 		String application;
@@ -625,6 +627,10 @@ public class RhoConnection implements IHttpConnection {
 		
 		if ( checkRhoExtensions(application, model ) )
 			return true;
+		
+		String strCtrl = "apps/" + application + '/' + model + '/' + "controller";
+		if( RhoSupport.findClass(strCtrl) == null )
+			return false;
 		
 		Properties reqHash = new Properties();
 		
@@ -655,6 +661,7 @@ public class RhoConnection implements IHttpConnection {
 		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
 		processResponse(res);
 		
+		LOG.INFO("dispatch end");
 		return true;
 	}
 	
@@ -662,9 +669,21 @@ public class RhoConnection implements IHttpConnection {
 		if (!requestProcessed) {
 			String strErr = "";
 			
-			if ( /*this.method == "GET" &&*/ httpGetFile() ){
+			LOG.INFO("processRequest: " + getURL() );
+			
+			String strContType = getContentType();
+			if ( this.method.equals("POST") || strContType.length() == 0 )
+			{
+				if ( dispatch() )
+				{
+					requestProcessed = true;
+					return;
+				}
+			}
+			
+			if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
 				
-			}else if ( dispatch() ){
+			//}else if ( dispatch() ){
 			}else{
 				respondNotFound(strErr);
 			}
