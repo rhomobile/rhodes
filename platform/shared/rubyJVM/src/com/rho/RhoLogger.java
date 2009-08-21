@@ -60,7 +60,11 @@ public class RhoLogger {
 			time.get(Calendar.YEAR) + " " + 
 			get2FixedDigit(time.get(Calendar.HOUR_OF_DAY)) + ":" + 
 			get2FixedDigit(time.get(Calendar.MINUTE)) +	":" + 
-			get2FixedDigit(time.get(Calendar.SECOND)); 
+			get2FixedDigit(time.get(Calendar.SECOND));
+			
+			if ( false ) //comment this to show milliseconds
+				strTime += ":" + get2FixedDigit(time.get(Calendar.MILLISECOND));
+			
 		//Date date = time.getTime();
 		return strTime;
 	}
