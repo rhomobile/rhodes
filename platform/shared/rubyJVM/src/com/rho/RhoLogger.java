@@ -10,7 +10,7 @@ public class RhoLogger {
 	private static final int L_WARNING = 2;
 	private static final int L_ERROR = 3;
 	private static final int L_FATAL = 4;
-	private static final int L_NUM_SEVERITIES = 5;
+	//private static final int L_NUM_SEVERITIES = 5;
 	
 	private String LogSeverityNames[] = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
 	

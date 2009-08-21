@@ -67,12 +67,6 @@
 package org.hsqldb.lib;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-//import java.util.zip.Deflater;
-//import java.util.zip.DeflaterOutputStream;
-//import java.util.zip.Inflater;
-//import java.util.zip.InflaterInputStream;
 
 // oj@openoffice.org - patch 1.8.0 - use FileAccess
 

@@ -66,15 +66,11 @@
 
 package org.hsqldb;
 
-//import java.sql.Connection;
 import j2me.sql.Date;
 import j2me.sql.Time;
 import j2me.sql.Timestamp;
 import j2me.math.Number;
-//import java.text.FieldPosition;
-//import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import j2me.util.Locale;
 import java.util.Random;
 import javax.microedition.io.Connection;
 
@@ -363,7 +359,7 @@ public class Library {
     }
 
     // this magic number works for 100000000000000; but not for 0.1 and 0.01
-    private static final double LOG10_FACTOR = 0.43429448190325183;
+    //private static final double LOG10_FACTOR = 0.43429448190325183;
 
     /**
      * Returns the base 10 logarithm of the given <code>double</code> value.

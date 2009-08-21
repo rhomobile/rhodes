@@ -108,7 +108,7 @@ class Function {
     private boolean[]      bArgNullable;
     Expression[]           eArg;
     private boolean        bConnection;
-    private static HashMap methodCache = new HashMap();
+    //private static HashMap methodCache = new HashMap();
     private int            fID;
     String                 name;        // name used to call function
     boolean                isSimple;    //CURRENT_TIME, NOW etc.

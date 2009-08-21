@@ -36,7 +36,6 @@ import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyModule;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyNoOrOneArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
@@ -44,7 +43,6 @@ import com.xruby.runtime.lang.RubyOneOrTwoArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RubyVarArgMethod;
-import com.xruby.runtime.stdlib.RubyStringIO;
 
 public class SyncThread extends RhoThread
 {
@@ -304,7 +302,7 @@ public class SyncThread extends RhoThread
 			getSyncEngine().stopSync();
 			int nWait = 0;
 			while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
-				try{ getInstance().sleep(100); nWait += 100; }catch(Exception e){}
+				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
 				
 			if (getSyncEngine().getState() != SyncEngine.esNone)
 			{
