@@ -13,6 +13,11 @@ module Rho
       	@default_menu = { "Home" => :home, "Refresh" => :refresh, 
       		"Sync" => :sync, "Options" => :options, "Log" => :log, :separator => nil, "Close" => :close }
   	  end
+  	  if @tabs
+  	    puts "Initializing application with tabs: #{@tabs.inspect}" 
+  	    #NativeBar.create({"hello" => "world"})
+  	    NativeBar.create('tabbar', @tabs)
+	    end
     end
     
     def set_menu(menu=nil)
@@ -20,12 +25,6 @@ module Rho
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
 	  end
-	  
-	  def set_tabs
-	    if @tabs
-	      puts "TABS: #{@tabs.inspect}"
-      end
-    end
 	
     class << self
       def get_app_path(appname)

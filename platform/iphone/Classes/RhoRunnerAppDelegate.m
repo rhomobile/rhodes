@@ -134,7 +134,12 @@
 -(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
 							 usingDelegate:(DateTimePickerDelegate*)delegateObject
 {
-	[delegateObject createPicker:window];
+	@try {
+		[delegateObject createPicker:window];
+	} @catch (NSException* theException) {
+		RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+		return NO;
+	}
 	return YES;
 } 
 

@@ -458,14 +458,14 @@ describe "Rhom::RhomObject" do
     @accts[0].vars.length.should == 3
   end
   
- #  it "should perform find with select and merged conditions" do
- #    @accts = Account.find(:all, :conditions => {'name' => 'Mobio India'}, :select => ['industry'])
- #    @accts.length.should == 1
- #    @accts[0].name.should == "Mobio India"
- #    @accts[0].industry.should == "Technology"
- #    @accts[0].shipping_address_street.should be_nil
- #    @accts[0].vars.length.should == 3
- #  end
+  it "should perform find with select and merged conditions" do
+    @accts = Account.find(:all, :conditions => {'name' => 'Mobio India'}, :select => ['industry'])
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[0].shipping_address_street.should be_nil
+    @accts[0].vars.length.should == 3
+  end
   
   it "should support find with conditions => nil" do
     @accts = Account.find(:all, :conditions => {'description' => nil})

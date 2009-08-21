@@ -388,3 +388,19 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 	[[ServerHost sharedInstance] doSysCall:params];
 }
+
+void create_nativebar(char *bar_type, int nparams, char** params) {
+	printf("inside params: %s, %i\n", bar_type, nparams);
+	NSMutableArray *dataArray = [[NSMutableArray arrayWithCapacity:nparams];
+	for(int i = 0; i < nparams; i++) {
+		[dataArray addObject:[NSString stringWithCString:params[i]];
+		if (params[i]) {
+			printf("param: %s\n", params[i]);
+		} else {
+			printf("param: nil");
+		}
+	}
+	[[ServerHost sharedInstance] createNativeBar:[NSString stringWithCString:bar_type]
+										itemSize:nparams
+										   items:dataArray]];
+}
