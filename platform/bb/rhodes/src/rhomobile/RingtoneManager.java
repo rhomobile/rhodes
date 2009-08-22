@@ -5,7 +5,6 @@ import j2me.util.Iterator;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
