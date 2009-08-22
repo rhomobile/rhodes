@@ -63,9 +63,14 @@ void CRhoThreadImpl::wait(unsigned int nTimeout)
 	/* Convert from timeval to timespec */
 	ts.tv_sec  = tp.tv_sec;
 	ts.tv_nsec = tp.tv_usec * 1000;
-	ts.tv_sec += nTimeout;
-		
-	pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+	
+	if ( ts.tv_sec + nTimeout < ts.tv_sec )
+		pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
+	else
+	{
+		ts.tv_sec += nTimeout;
+		pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+	}
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)

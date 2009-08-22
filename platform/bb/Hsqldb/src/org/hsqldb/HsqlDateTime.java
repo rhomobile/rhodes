@@ -237,10 +237,10 @@ public class HsqlDateTime {
         return new Timestamp(millis);
     }
 
-    private static final String sdftPattern     = "HH:mm:ss";
+    //private static final String sdftPattern     = "HH:mm:ss";
     private static final String sdfdPattern     = "yyyy-MM-dd";
-    private static final String sdftsPattern    = "yyyy-MM-dd HH:mm:ss.";
-    private static final String sdftsSysPattern = "yyyy-MM-dd HH:mm:ss.SSS";
+    //private static final String sdftsPattern    = "yyyy-MM-dd HH:mm:ss.";
+    //private static final String sdftsSysPattern = "yyyy-MM-dd HH:mm:ss.SSS";
 /*    static SimpleDateFormat     sdfd = new SimpleDateFormat(sdfdPattern);
     static SimpleDateFormat     sdft = new SimpleDateFormat(sdftPattern);
     static SimpleDateFormat     sdfts = new SimpleDateFormat(sdftsPattern);

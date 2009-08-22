@@ -1,93 +1,93 @@
 #
-  def startmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
-    args = []
-    args << "/c"
-    args << "run.bat"
+def startmds
+  mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+  args = []
+  args << "/c"
+  args << "run.bat"
 
-    Jake.run("cmd.exe",args, mdshome,true)
-  end 
+  Jake.run("cmd.exe",args, mdshome,true)
+end 
 
-  def stopmds
-    mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
-    args = []
-    args << "/c"
-    args << "shutdown.bat"
+def stopmds
+  mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+  args = []
+  args << "/c"
+  args << "shutdown.bat"
 
-    Jake.run("cmd.exe",args, mdshome, true, true)
-  end 
+  Jake.run("cmd.exe",args, mdshome, true, true)
+end 
 
- def startsim
-    bbver = $config["env"]["bbver"]
-    sim = $config["env"]["paths"][bbver]["sim"]
-    jde = $config["env"]["paths"][bbver]["jde"]
+def startsim
+  bbver = $config["env"]["bbver"]
+  sim = $config["env"]["paths"][bbver]["sim"]
+  jde = $config["env"]["paths"][bbver]["jde"]
     
-    command =  '"' + jde + "/simulator/fledge.exe\""
-    args = [] 
-    args << "/app=Jvm.dll"
-    args << "/handheld=" + sim
-    args << "/session=" + sim
-    args << "/app-param=DisableRegistration"
-    args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
-    args << "/data-port=0x4d44"
-    args << "/data-port=0x4d4e"
-    args << "/pin=0x2100000A"
-    args << "/no-compact-filesystem"
+  command =  '"' + jde + "/simulator/fledge.exe\""
+  args = []
+  args << "/app=Jvm.dll"
+  args << "/handheld=" + sim
+  args << "/session=" + sim
+  args << "/app-param=DisableRegistration"
+  args << "/app-param=JvmAlxConfigFile:"+sim+".xml"
+  args << "/data-port=0x4d44"
+  args << "/data-port=0x4d4e"
+  args << "/pin=0x2100000A"
+  args << "/no-compact-filesystem"
     
-    if bbver !~ /^4\.[012](\..*)?$/
-      args << "/fs-sdcard=true"
-    end
+  if bbver !~ /^4\.[012](\..*)?$/
+    args << "/fs-sdcard=true"
+  end
         
-    args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
+  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
 
-    Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-    $stdout.flush
-  end
+  Thread.new { Jake.run(command,args,jde + "/simulator",true) }
+  $stdout.flush
+end
 
- def stopsim
-    sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"]
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+def stopsim
+  sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"]
+  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
     
-    command =  '"' + jde + "/simulator/fledgecontroller.exe\""
-    args = []
-    args << "/session="+sim
-    args << "/execute=Exit(true)"
-    Jake.run(command,args, jde + "/simulator")
- end
+  command =  '"' + jde + "/simulator/fledgecontroller.exe\""
+  args = []
+  args << "/session="+sim
+  args << "/execute=Exit(true)"
+  Jake.run(command,args, jde + "/simulator")
+end
 
- def manualsign
-    java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+def manualsign
+  java = $config["env"]["paths"]["java"] + "/java.exe"
+  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
-    args = []
-    args << "-jar"
-    args << '"' + jde + "/bin/SignatureTool.jar\""
-    args << "-r"
-    args << $targetdir
+  args = []
+  args << "-jar"
+  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << "-r"
+  args << $targetdir
 
-    puts Jake.run(java,args)
-    $stdout.flush
+  puts Jake.run(java,args)
+  $stdout.flush
 
-  end
+end
 
-  def autosign
-    java = $config["env"]["paths"]["java"] + "/java.exe"
-    jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+def autosign
+  java = $config["env"]["paths"]["java"] + "/java.exe"
+  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
 
-    args = []
-    args << "-jar"
-    args << '"' + jde + "/bin/SignatureTool.jar\""
-    args << "-c"
-    args << "-a"
-    args << "-p"
-    args << '"' + $config["build"]["bbsignpwd"] +'"'
-    args << "-r"
-    args << $targetdir
+  args = []
+  args << "-jar"
+  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << "-c"
+  args << "-a"
+  args << "-p"
+  args << '"' + $config["build"]["bbsignpwd"] +'"'
+  args << "-r"
+  args << $targetdir
 
-    puts Jake.run(java,args)
-    $stdout.flush
+  puts Jake.run(java,args)
+  $stdout.flush
 
-  end
+end
 
 
 namespace "config" do
@@ -134,6 +134,10 @@ namespace "build" do
       args << $preverified
       args << $bindir + "/RhoBundle.jar"
       puts Jake.run(jdehome + "/bin/preverify.exe",args)
+      unless $? == 0
+        puts "Error preverifying"
+        exit 1
+      end
       $stdout.flush
 
       cp $preverified + "/RhoBundle.jar", $rhobundledir + "/RhoBundle.jar"
@@ -166,7 +170,10 @@ namespace "build" do
         args << "-nowarn"
         args << "@#{$builddir}/RubyVM_build.files"
         puts Jake.run(javac,args)
-
+        unless $? == 0
+          puts "Error compiling java code"
+          exit 1
+        end
         $stdout.flush
         #XXX Move to task/function
         args = []
@@ -176,6 +183,10 @@ namespace "build" do
         args << $tmpdir + "/RubyVM.preverify"
         args << '"' + $tmpdir + "/RubyVM\""
         puts Jake.run(jdehome + "/bin/preverify.exe",args)
+        unless $? == 0
+          puts "Error preverifying"
+          exit 1
+        end
         $stdout.flush
 
         Jake.jar($preverified+"/RubyVM.jar", $builddir + "/RubyVM_manifest.mf", $tmpdir + "/RubyVM.preverify",true)
@@ -237,6 +248,10 @@ namespace "build" do
         args << "@#{$builddir}/rhodes_build.files"
         puts "\texecuting javac"
         puts Jake.run(javac,args)
+        unless $? == 0
+          puts "Error compiling java code"
+          exit 1
+        end
         $stdout.flush
 
         cp_r $builddir + "/../rhodes/resources", $tmpdir + "/resources"
@@ -250,7 +265,10 @@ namespace "build" do
         args << '"' + $preverified + '"'
         args << '"' + $bindir + "/rhodes.jar\""
         puts Jake.run(jdehome + "/bin/preverify.exe",args)
-
+        unless $? == 0
+          puts "Error preverifying"
+          exit 1
+        end
         $stdout.flush
 
       else
@@ -273,7 +291,10 @@ namespace "package" do
         $config["env"]["vendor"],
         $config["env"]["version"]
       )
-
+      unless $? == 0
+        puts "Error in RAPC"
+        exit 1
+      end
       cp $builddir + "/RhoBundle.alx", $targetdir if not FileUtils.uptodate?($targetdir + "/RhoBundle.alx", $builddir + "/RhoBundle.alx")
 
     end
@@ -291,6 +312,10 @@ namespace "package" do
           $config["env"]["vendor"],
           $config["env"]["version"]
         )
+        unless $? == 0
+          puts "Error in RAPC"
+          exit 1
+        end
         $stdout.flush
       else
         puts 'RubyVM .cod files are up to date'
@@ -302,19 +327,23 @@ namespace "package" do
     desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
       if not FileUtils.uptodate?($targetdir + '/rhodesApp.cod',$preverified + "/rhodes.jar")
-          Jake.rapc("rhodesApp",
-            $targetdir,
-            $rhodesimplib,
-            '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
-            "rhodesApp",
-            $config["env"]["vendor"],
-            $config["env"]["version"],
-            "resources/icon.png",
-            false,
-            true
-          )
-          $stdout.flush
-          cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+        Jake.rapc("rhodesApp",
+          $targetdir,
+          $rhodesimplib,
+          '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
+          "rhodesApp",
+          $config["env"]["vendor"],
+          $config["env"]["version"],
+          "resources/icon.png",
+          false,
+          true
+        )
+        unless $? == 0
+          puts "Error in RAPC"
+          exit 1
+        end
+        $stdout.flush
+        cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -335,6 +364,19 @@ namespace "package" do
       Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir)
       Jake.unjar($preverified + "/rhodes.jar", $tmpdir)
 
+      if $bbver =~ /^4\.[012](\..*)$/
+        max_size = 65536
+        Dir.glob( $tmpdir + "/**/*" ).each do |f|
+          if File.size( f ) > max_size
+            puts "File size of " + f + " is more than " + max_size.to_s + " bytes"
+            puts "There is no ability to pack this file into .cod file for BB " + $bbver
+            puts "Please reduce its size and try again"
+            $stdout.flush
+            Process.exit
+          end
+        end
+      end
+
       Jake.jar($bindir + "/rhodesApp.jar",$builddir + "/manifest.mf",$tmpdir,true)
       Jake.rapc("rhodesApp",
         $targetdir,
@@ -347,6 +389,10 @@ namespace "package" do
         false,
         true
       )
+      unless $? == 0
+        puts "Error in RAPC"
+        exit 1
+      end
       $stdout.flush
       cp $builddir +"/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir+"/rhodesApp.alx", $builddir + "/rhodesApp.alx")
 
@@ -470,72 +516,72 @@ namespace "run" do
     startmds
     startsim
 
-#    puts "sleeping to allow simulator to get started"
-#    sleep 45
+    #    puts "sleeping to allow simulator to get started"
+    #    sleep 45
   
-#    command = '"' + jde + "/simulator/fledgecontroller.exe\""
-#    args = []
-#    args << "/session="+sim
-#    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
+    #    command = '"' + jde + "/simulator/fledgecontroller.exe\""
+    #    args = []
+    #    args << "/session="+sim
+    #    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
   
-#    Jake.run(command,args, jde + "/simulator")
+    #    Jake.run(command,args, jde + "/simulator")
     $stdout.flush
   end
   
 end
 
 namespace "config" do
-    task :checkbb do
-      javahome = $config["env"]["paths"]["java"]
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
-      mdshome = $config["env"]["paths"][$bbver]["mds"]
+  task :checkbb do
+    javahome = $config["env"]["paths"]["java"]
+    jdehome = $config["env"]["paths"][$bbver]["jde"]
+    mdshome = $config["env"]["paths"][$bbver]["mds"]
 
-      puts "BBVER: " + $bbver
-      puts "JAVAHOME: " + javahome
-      puts "JDEHOME: " + jdehome
-      puts "MDSHOME: " + mdshome
+    puts "BBVER: " + $bbver
+    puts "JAVAHOME: " + javahome
+    puts "JDEHOME: " + jdehome
+    puts "MDSHOME: " + mdshome
 
-      if not FileTest.exists? javahome
-        puts "JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
-        throw "JAVAHOME missing"
-      end
-
-      if not FileTest.exists? javahome + "/javac.exe"
-        puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-        throw "javac missing"
-      end
-
-      if not FileTest.exists? javahome + "/java.exe"
-        puts "java.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-        throw "java missing"
-      end
-
-      if not FileTest.exists? javahome + "/jar.exe"
-        puts "jar.exe not found. Make sure JAVAHOME points to a valid Java SDK"
-        throw "jar missing"
-      end
-
-      if not FileTest.exists? jdehome
-        puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
-        throw "JDEHOME missing"
-      end
-      if not FileTest.exists? mdshome
-        puts "MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
-        throw "MDSHOME missing"
-      end
-
-      if not FileTest.exists? jdehome + "/bin/preverify.exe"
-        puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
-        throw "preverify missing"
-      end
-
-      if not FileTest.exists? jdehome + "/bin/rapc.jar"
-        puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
-        throw "rapc missing"
-      end
-
-      puts "Config appears valid"
+    if not FileTest.exists? javahome
+      puts "JAVAHOME does not exist. Make sure you have the Java SDK installed and that build.yml has the correct path"
+      throw "JAVAHOME missing"
     end
+
+    if not FileTest.exists? javahome + "/javac.exe"
+      puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "javac missing"
+    end
+
+    if not FileTest.exists? javahome + "/java.exe"
+      puts "java.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "java missing"
+    end
+
+    if not FileTest.exists? javahome + "/jar.exe"
+      puts "jar.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+      throw "jar missing"
+    end
+
+    if not FileTest.exists? jdehome
+      puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      throw "JDEHOME missing"
+    end
+    if not FileTest.exists? mdshome
+      puts "MDSHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
+      throw "MDSHOME missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/preverify.exe"
+      puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
+      throw "preverify missing"
+    end
+
+    if not FileTest.exists? jdehome + "/bin/rapc.jar"
+      puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
+      throw "rapc missing"
+    end
+
+    puts "Config appears valid"
+  end
 
 end
 

@@ -14,6 +14,11 @@ namespace "build" do
       rm_rf '../build/Debug-*'
       rm_rf '../build/Release-*'
       puts `ant RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
+      unless $? == 0
+        puts "Error building iphone"
+        exit 1
+      end
+
       chdir currentdir
     end
   end

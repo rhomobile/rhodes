@@ -93,12 +93,19 @@ namespace "build" do
 
       chdir $bindir
       puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      unless $? == 0
+        puts "Error interpreting ruby code"
+        exit 1
+      end
       chdir startdir
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
       puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
-
+      unless $? == 0
+        puts "Error creating Rhobundle.jar"
+        exit 1
+      end
       chdir startdir
     end
 
@@ -286,7 +293,10 @@ namespace "prebuild" do
     zip = File.join(basedir,'rhodes/rhodes-build/res/7z.exe')
 
     puts `#{rake} compile`
-
+      unless $? == 0
+        puts "Error compiling WM code"
+        exit 1
+      end
     chdir '../bin'
     throw "windows build missing" if not File.exists? 'Windows Mobile 6 Professional SDK (ARMV4I)'
   
@@ -362,6 +372,10 @@ namespace "prebuild" do
     chdir 'platform/iphone/rbuild'
 	# Simulator
     puts `#{ant} clean -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
+    unless $? == 0
+      puts "Error cleaning iphone"
+      exit 1
+    end
     puts `#{ant} buildapp -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
 
     throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
