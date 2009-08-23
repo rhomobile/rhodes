@@ -163,6 +163,11 @@ public class DataFileCache {
         dataFile        = null;
     }
 
+    public void sync()throws IOException
+    {
+    	dataFile.sync();
+    }
+    
     public com.rho.db.Journal getJournal()throws IOException {
     	return ((ScaledRAFile)dataFile).getJournal();
     }
@@ -263,6 +268,7 @@ public class DataFileCache {
                 dataFile.seek(FLAGS_POS);
                 dataFile.writeInt(0);
                 
+                dataFile.sync();
                 getJournal().stop();
                 
             }
@@ -419,6 +425,7 @@ public class DataFileCache {
                 fileModified = false;
             }
         	
+            dataFile.sync();
             getJournal().stop();
         } catch (Throwable e) {
             appLog.logContext(e, null);

@@ -204,6 +204,11 @@ class ScaledRAFile implements ScaledRAInterface {
     	}
     }
     
+    public void sync()throws IOException
+    {
+    	file.sync();
+    }
+    
     public Journal getJournal()throws IOException{
     	createFiles();
     	

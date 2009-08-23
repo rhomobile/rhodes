@@ -176,6 +176,7 @@ public class Cache {
         //RHO
         dataFileCache.getJournal().start();
         saveRows(savecount);
+        dataFileCache.sync();
         dataFileCache.getJournal().stop();
         //RHO
     }
