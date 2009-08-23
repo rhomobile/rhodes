@@ -374,7 +374,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    }catch(IOException exc)
 		    {
 				LOG.ERROR("Login failed.", exc);
-		    	callLoginCallback(callback, RhoRuby.ERR_NETWORK, exc.getMessage() );
+				String strMsg = exc.getMessage(); 
+				
+		    	callLoginCallback(callback, 
+		    			strMsg.indexOf("timed out") >= 0 ? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK, strMsg );
 		    	return;
 		    }
 		    

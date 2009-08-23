@@ -6,6 +6,7 @@ module Rho
     ERR_RUNTIME = 3
     ERR_UNEXPECTEDSERVERRESPONSE = 4
     ERR_DIFFDOMAINSINSYNCSRC = 5
+    ERR_NOSERVERRESPONSE = 6
     
     attr_reader :code
     
@@ -24,6 +25,8 @@ module Rho
             return "Unexpected server response"
         elsif code ==  ERR_DIFFDOMAINSINSYNCSRC
             return "All sync sources should be from one domain"
+        elsif code ==  ERR_NOSERVERRESPONSE
+            return "Could not connect to sync server."
         end
         
         return "Unknown error"
