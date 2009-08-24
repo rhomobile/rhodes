@@ -19,6 +19,8 @@ module Rho
   	  if @tabs
   	    puts "Initializing application with tabs: #{@tabs.inspect}" 
   	    NativeBar.create(TABBAR_TYPE, @tabs)
+	    else
+	      NativeBar.create(TOOLBAR_TYPE, [])
 	    end
     end
     

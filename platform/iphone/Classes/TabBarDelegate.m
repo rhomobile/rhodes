@@ -8,7 +8,7 @@
 
 #import "TabBarDelegate.h"
 #import "WebViewController.h"
-
+#import "AppManager.h"
 
 @implementation TabBarDelegate
 
@@ -50,8 +50,10 @@
 		if (itemLabel && itemLocation && itemImage) {
 			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[[UIWebView alloc] init] autorelease];
+			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:itemImage];	
+			NSLog(@"PATH: %@", imagePath);
 			subController.title = itemLabel;
-			subController.tabBarItem.image = [UIImage imageNamed:@"home_btn.png"];
+			subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
 			subController.view = wView;
 			[tabs addObject:subController];
 			[subController release];

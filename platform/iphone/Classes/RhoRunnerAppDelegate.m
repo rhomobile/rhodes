@@ -16,6 +16,7 @@
 #include "sync/ClientRegister.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
+#import "NativeBar.h"
 #import "RhoDelegate.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -54,6 +55,10 @@
 		location = [self normalizeUrl:(NSString*)data];
 	}
 	
+	//only navigate main webViewController if there is one
+	if (webViewController.toolbar.hidden == NO) {
+		[webViewController navigateRedirect:location];
+	}
 	appStarted = true;
 }
 
@@ -150,11 +155,13 @@
 }
 
 - (void)onCreateNativeBar:(NativeBar*)nativeBar {
-	if (nativeBar.barType == RhoTabBar) {
+	if (nativeBar.barType == TABBAR_TYPE) {
 		tabBarDelegate.tabBar = nativeBar;
 		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
 	} else {
-		[window addSubview:webViewController.toolbar];
+		if (webViewController.toolbar!=NULL) {
+			webViewController.toolbar.hidden = NO;
+		}
 	}
 }
 
@@ -327,12 +334,14 @@
 	serverHost->onSysCall = @selector(onSysCall:);
     [serverHost start];
 	
-    //Create View
+	// TODO: Remove toolbar from interface builder
+	// We delegate this to onCreateNativeBar
+	webViewController.toolbar.hidden = YES;
+	
+	// Create View
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
 	
-	// TODO: Remove toolbar from interface builder
-	[webViewController.toolbar removeFromSuperview];
 #ifdef __IPHONE_3_0
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
 																		   | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
