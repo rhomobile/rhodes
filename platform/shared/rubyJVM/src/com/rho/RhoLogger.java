@@ -62,7 +62,7 @@ public class RhoLogger {
 			get2FixedDigit(time.get(Calendar.MINUTE)) +	":" + 
 			get2FixedDigit(time.get(Calendar.SECOND));
 			
-			if ( false ) //comment this to show milliseconds
+			//if ( false ) //comment this to show milliseconds
 				strTime += ":" + get2FixedDigit(time.get(Calendar.MILLISECOND));
 			
 		//Date date = time.getTime();

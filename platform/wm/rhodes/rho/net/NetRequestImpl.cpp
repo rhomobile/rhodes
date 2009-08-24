@@ -33,6 +33,7 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
     m_strUrl = strUrl;
     CAtlStringW strUrlW(strUrl.c_str());
 
+    LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
     do 
     {
         if ( !isLocalHost(strUrl.c_str()) && !SetupInternetConnection(strUrlW) )

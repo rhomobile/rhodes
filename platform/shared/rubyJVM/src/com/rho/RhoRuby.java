@@ -35,6 +35,7 @@ public class RhoRuby {
 	public static final int ERR_RUNTIME = 3;
 	public static final int ERR_UNEXPECTEDSERVERRESPONSE = 4;
 	public static final int ERR_DIFFDOMAINSINSYNCSRC = 5;
+	public static final int ERR_NOSERVERRESPONSE = 6;
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];
