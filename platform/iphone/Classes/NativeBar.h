@@ -9,19 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef enum {
-	RhoNativeBar,
-	RhoTabBar,
-} RhoBarType;
+#define TOOLBAR_TYPE 0
+#define TABBAR_TYPE 1
 
 @interface NativeBar : NSObject 
 {
 @private
-	RhoBarType barType;
+	int barType;
 	NSArray* barItems;
 }
 
-@property(assign) RhoBarType barType;
+@property(assign) int barType;
 @property(nonatomic, retain) NSArray* barItems;
 
 @end

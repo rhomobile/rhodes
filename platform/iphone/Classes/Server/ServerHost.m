@@ -402,7 +402,6 @@ void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 }
 
 void create_nativebar(int bar_type, int nparams, char** params) {
-	printf("inside params: %i, %i\n", bar_type, nparams);
 	NSMutableArray *items = [NSMutableArray arrayWithCapacity:nparams];
 	for(int i = 0; i < nparams; i++) {
 		if (params[i]) {
