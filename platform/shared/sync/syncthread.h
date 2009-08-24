@@ -18,7 +18,7 @@ namespace sync {
 class CSyncThread : public common::CRhoThread
 {
 public:
-    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit, scLogin};
+    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit, scLogin, scSearchOne};
 
 private:
 
@@ -41,6 +41,13 @@ public:
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
 	    }
+	    CSyncCommand(int nCode, String strParam, int nCmdParam)
+	    {
+		    m_nCmdCode = nCode;
+		    m_strCmdParam = strParam;
+            m_nCmdParam = nCmdParam;
+	    }
+
 	    CSyncCommand(int nCode)
 	    {
 		    m_nCmdCode = nCode;
@@ -65,6 +72,7 @@ public:
 		    m_strPassword = password;
 	    }
     };
+
 private:
     static CSyncThread* m_pInstance;
 

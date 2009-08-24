@@ -230,9 +230,9 @@ module Rhom
               class << self
               
                 def count
-                  SyncEngine.lock_sync_mutex
+                  #SyncEngine.lock_sync_mutex
                   res = ::Rhom::RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
-                  SyncEngine.unlock_sync_mutex
+                  #SyncEngine.unlock_sync_mutex
                   res
                 end
               
@@ -332,6 +332,47 @@ module Rhom
                     puts "Processing rhom objects took #{Time.new - start} sec, #{ret_list.length} objects"
                     
                   end
+                  
+                  if !args.first.is_a?(String) && args[1] && args[1][:callback]
+                    is_stop_sync = true
+                    res = nil
+                    is_run_search = true
+                    if !args[1][:order]
+                        if args.first == :first && ret_list.length > 0 
+                            res = ret_list[0]
+                            is_stop_sync = false
+                        end
+                        
+                        if args[1][:per_page] && args[1][:per_page] <= ret_list.length
+                            is_stop_sync = false
+                            res = ret_list
+                            is_run_search = false
+                        end
+                    end
+                                            
+                    SyncEngine.stop_sync() if is_stop_sync
+                    
+                    if is_run_search
+                        strCond = ""
+                        if condition_str
+                            strCond = condition_str
+                        else    
+                            strCond = ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                        end
+                            
+                        searchParams = "conditions=" + Rho::RhoSupport.url_encode(strCond)
+                        searchParams += "&order=" + Rho::RhoSupport.url_encode(args[1][:order]) if args[1][:order]
+
+                        maxitems_count = args[1][:per_page] ? args[1][:per_page].to_i-ret_list.length : 0
+                        searchParams += "&max_count=" + maxitems_count.to_s if maxitems_count > 0
+                        
+                        set_notification(args[1][:callback], args[1][:callback_param])
+                        SyncEngine.dosearch_source(get_source_id.to_i(), searchParams)
+                    end
+                        
+                    return res
+                  end
+                  
                   args.first == :first || args.first.is_a?(String) ? ret_list[0] : ret_list
                 end
               
