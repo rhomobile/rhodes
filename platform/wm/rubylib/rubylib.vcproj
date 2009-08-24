@@ -1604,6 +1604,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="nativebar"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"
