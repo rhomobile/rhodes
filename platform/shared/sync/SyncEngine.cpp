@@ -46,7 +46,7 @@ void CSyncEngine::doSyncAllSources()
 	LOG(INFO) + "End syncing all sources";
 }
 
-void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl)
+void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams)
 {
     if ( strSrcUrl.length()>0 )
         LOG(ERROR) + "Start syncing source : " + strSrcUrl;
@@ -73,7 +73,7 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl)
     {
         CSyncSource& src = *pSrc;
         if ( isSessionExist() && getState() != esStop )
-            src.sync();
+            src.sync(strParams);
 
         fireNotification(src, true);
     }else
@@ -209,7 +209,7 @@ void CSyncEngine::syncAllSources()
     {
         CSyncSource& src = *m_sources.elementAt(i);
         if ( isSessionExist() && getState() != esStop )
-            src.sync();
+            src.sync(String());
 
         fireNotification(src, true);
     }

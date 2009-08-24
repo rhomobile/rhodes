@@ -67,4 +67,6 @@ public interface Storage {
     boolean isReadOnly();
 
     boolean wasNio();
+    
+    void sync() throws IOException;
 }

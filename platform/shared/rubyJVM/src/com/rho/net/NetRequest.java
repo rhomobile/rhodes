@@ -152,7 +152,7 @@ public class NetRequest
     {
 		NetResponse resp = null;
 		try{
-    		resp = doRequestTry(strUrl, strBody, oSession, false);
+    		resp = doRequest/*Try*/(strUrl, strBody, oSession, false);
     		if ( resp.isOK() )
     		{
     			ParsedCookie cookie = makeCookie(m_connection);

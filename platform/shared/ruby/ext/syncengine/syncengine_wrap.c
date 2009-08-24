@@ -1549,6 +1549,8 @@ static VALUE mSyncEngine;
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
+	#define dosearch_source rho_sync_doSearchSource
+	extern void rho_sync_doSearchSource(int source_id, const char *params);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -1780,6 +1782,38 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   dosync_source(arg1,arg2);
   return Qnil;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "dosearch_source" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "dosearch_source" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  dosearch_source(arg1,(char const *)arg2);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return Qnil;
 }
 
@@ -2267,6 +2301,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mSyncEngine, "dosync", _wrap_dosync, -1);
   rb_define_module_function(mSyncEngine, "dosync_source", _wrap_dosync_source, -1);
+  rb_define_module_function(mSyncEngine, "dosearch_source", _wrap_dosearch_source, -1);
   rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "login", _wrap_login, -1);
