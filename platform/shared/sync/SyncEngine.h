@@ -53,7 +53,7 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(int nSrcId, String strSrcUrl);
+    void doSyncSource(int nSrcId, String strSrcUrl, String strParams);
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
