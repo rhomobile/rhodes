@@ -1525,10 +1525,9 @@ SWIG_Ruby_SetModule(swig_module_info *pointer)
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-#define SWIGTYPE_p_int swig_types[1]
-#define SWIGTYPE_p_p_char swig_types[2]
-static swig_type_info *swig_types[4];
-static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
+#define SWIGTYPE_p_p_char swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1633,18 +1632,18 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
   {
     VALUE input_arr = argv[1];
     int arr_len = 0;
-    int len = 0;
+    int i, j, len = 0;
     char **ret_val;
     if (input_arr) {
       len = RARRAY_LEN(input_arr);
       ret_val = (char **)malloc(3*len*sizeof(char*));
-      for(int i=0; i<len; i++) {
+      for(i=0; i<len; i++) {
         char *val1, *val2, *val3;
         VALUE hash = rb_ary_entry(argv[1],i);
         VALUE keys_arr = rb_funcall(hash, rb_intern("keys"), 0, NULL);
         int keys_len = RARRAY_LEN(keys_arr);
         val1 = val2 = val3 = NULL;
-        for(int j=0; j<keys_len; j++) {
+        for(j=0; j<keys_len; j++) {
           VALUE val;
           char *tmp;
           VALUE key = rb_ary_entry(keys_arr, j);
@@ -1696,22 +1695,18 @@ fail:
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_int = {"_p_int", "int *|LogSeverity *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
-  &_swigt__p_int,
   &_swigt__p_p_char,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
-  _swigc__p_int,
   _swigc__p_p_char,
 };
 

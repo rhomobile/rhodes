@@ -8,18 +8,18 @@
 %typemap(in) (int nparams, char** params) {
 	VALUE input_arr = $input;
 	int arr_len = 0;
-	int len = 0;
+	int i, j, len = 0;
 	char **ret_val;
 	if (input_arr) {
 	 	len = RARRAY_LEN(input_arr);
 		ret_val = (char **)malloc(3*len*sizeof(char*));
-		for(int i=0; i<len; i++) {
+		for(i=0; i<len; i++) {
 			char *val1, *val2, *val3;
 			VALUE hash = rb_ary_entry($input,i);
 			VALUE keys_arr = rb_funcall(hash, rb_intern("keys"), 0, NULL);
 			int keys_len = RARRAY_LEN(keys_arr);
 			val1 = val2 = val3 = NULL;
-			for(int j=0; j<keys_len; j++) {
+			for(j=0; j<keys_len; j++) {
 				VALUE val;
 				char *tmp;
 				VALUE key = rb_ary_entry(keys_arr, j);
