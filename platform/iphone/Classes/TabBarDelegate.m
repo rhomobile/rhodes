@@ -61,9 +61,6 @@
 	self.tabBarController.customizableViewControllers = nil;
 	self.tabBarController.view.hidden = NO;
 	[self.mainWindow addSubview:tabBarController.view];
-	
-	// Load tab #0 location
-	[self loadTabBarItemFirstPage:(NSString*)[tabBar.barItems objectAtIndex:1] itemIndex:0];
 	[tabs release];
 }
 
