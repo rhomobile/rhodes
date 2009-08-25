@@ -18,7 +18,7 @@
 	UIWindow *mainWindow;
 }
 
-@property(nonatomic, retain) NativeBar* tabBar;
+@property(nonatomic, assign) NativeBar* tabBar;
 @property(nonatomic, retain) UITabBarController* tabBarController;
 @property (nonatomic, retain) UIWindow *mainWindow;
 

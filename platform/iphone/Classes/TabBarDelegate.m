@@ -12,10 +12,9 @@
 
 @implementation TabBarDelegate
 
-@synthesize tabBar, tabBarController, mainWindow;
+@synthesize tabBarController, mainWindow, tabBar;
 
 - (void)dealloc {
-	[tabBar release];
 	[tabBarController release];
 	[super dealloc];
 }
@@ -30,7 +29,6 @@
 
 - (void)createTabBar:(UIWindow*)window {
 	self.mainWindow = window;
-	
 	// Load the tab bar (just one of them)
 	if(!self.tabBarController) {
 		self.tabBarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];

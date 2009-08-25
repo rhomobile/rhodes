@@ -27,6 +27,7 @@
 @synthesize window;
 @synthesize webViewController;
 @synthesize player; 
+@synthesize nativeBar;
 
 - (NSString*)normalizeUrl:(NSString*)url {
 	if([url hasPrefix:@"http://"]) {
@@ -55,8 +56,8 @@
 		location = [self normalizeUrl:(NSString*)data];
 	}
 	
-	//only navigate main webViewController if there is one
-	if (webViewController.toolbar.hidden == NO) {
+	// only navigate main webViewController if there is no tabbar
+	if (self.nativeBar.barType == TOOLBAR_TYPE || self.nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
 	}
 	appStarted = true;
@@ -154,14 +155,15 @@
 								  usingDelegate:dateTimePickerDelegate];
 }
 
-- (void)onCreateNativeBar:(NativeBar*)nativeBar {
+- (void)onCreateNativeBar:(NativeBar*)bar {
+	self.nativeBar = bar;
 	if (nativeBar.barType == TABBAR_TYPE) {
-		tabBarDelegate.tabBar = nativeBar;
+		tabBarDelegate.tabBar = self.nativeBar;
 		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
-	} else {
-		if (webViewController.toolbar!=NULL) {
-			webViewController.toolbar.hidden = NO;
-		}
+	} else if(nativeBar.barType == TOOLBAR_TYPE) {
+		webViewController.toolbar.hidden = NO;
+	} else if(nativeBar.barType == NOBAR_TYPE) {
+		webViewController.toolbar.hidden = YES;
 	}
 }
 
@@ -429,6 +431,7 @@
 	[pickImageDelegate release];
 	[dateTimePickerDelegate release];
 	[tabBarDelegate release];
+	[nativeBar release];
 	[super dealloc];
 }
 
