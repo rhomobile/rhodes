@@ -59,6 +59,9 @@
 	// only navigate main webViewController if there is no tabbar
 	if (self.nativeBar.barType == TOOLBAR_TYPE || self.nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
+	} else {
+		// Load tab #0 location
+		[tabBarDelegate loadTabBarItemFirstPage:(NSString*)[tabBarDelegate.tabBar.barItems objectAtIndex:1] itemIndex:0];
 	}
 	appStarted = true;
 }
