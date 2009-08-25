@@ -1,5 +1,6 @@
 env:
   app: C:/rhodes-app
+  appname: Rhodes
   version: 1.2.0
   vendor: rhomobile
   bbver: 4.6
