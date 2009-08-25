@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#define TOOLBAR_TYPE 0
-#define TABBAR_TYPE 1
+#define TOOLBAR_TYPE	0
+#define TABBAR_TYPE		1
+#define NOBAR_TYPE		2
 
 @interface NativeBar : NSObject 
 {

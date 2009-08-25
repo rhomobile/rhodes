@@ -14,6 +14,7 @@
 #import "TabBarDelegate.h"
 #import "LogViewController.h"
 #import "LogOptionsController.h"
+#import "NativeBar.h"
 
 @class WebViewController;
 
@@ -26,6 +27,7 @@
 	PickImageDelegate* pickImageDelegate;
 	DateTimePickerDelegate* dateTimePickerDelegate;
 	TabBarDelegate* tabBarDelegate;
+	NativeBar* nativeBar;
 	AVAudioPlayer *player;
 	bool appStarted;
 }
@@ -33,6 +35,7 @@
 @property (nonatomic, retain) UIWindow *window;
 @property (nonatomic, retain) WebViewController *webViewController;
 @property (nonatomic, retain) AVAudioPlayer *player;
+@property (nonatomic, retain) NativeBar* nativeBar;
 
 
 @end
