@@ -27,6 +27,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/http/ThreadedServer.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/http/util/URI.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/http/util/UrlEncoded.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/nativebar/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkAccessImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
