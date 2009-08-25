@@ -11,6 +11,7 @@ namespace "config" do
     $targetdir = $androidpath + "/target"
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $tmpdir =  $bindir +"/tmp"
+    $resourcedir = $tmpdir + "/resource"
     $excludeapps = "public/js/iui/**,**/jquery*"
     $libs = $androidpath + "/Rhodes/libs"
 
@@ -47,6 +48,7 @@ namespace "config" do
     mkdir_p $srcdir if not File.exists? $srcdir
     mkdir_p $libs if not File.exists? $libs
 
+
   end
 end
 
@@ -62,9 +64,13 @@ namespace "build" do
       rjava = Jake.get_absolute $androidpath + "/Rhodes/gen/com/rhomobile/rhodes"
       androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
 
+      cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
+      cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
       args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
 
       puts Jake.run($aapt,args)
+      mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
+
       unless $? == 0
         puts "Error in AAPT"
         exit 1
@@ -199,8 +205,15 @@ namespace "package" do
     resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
+
+    cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
+    cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
+
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
-    unless $? == 0
+    returnval = $?
+      mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
+
+    unless returnval == 0
       puts "Error running AAPT"
       exit 1
     end
@@ -291,10 +304,6 @@ namespace "run" do
     sleep 5
 
     system("#{$androidbin} create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
-    unless $? == 0
-      puts "Error creating AVD"
-      exit 1
-    end
 
     Thread.new { system("#{$emulator} -avd rhoAndroid11") }
 
