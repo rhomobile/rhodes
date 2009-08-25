@@ -242,6 +242,10 @@ extern "C" void choose_datetime(char* callback, char* title, long initial_time, 
 	//TODO: Implement me!
 }
 
+extern "C" void create_nativebar(int bar_type, int nparams, char** params) {
+	//TODO: Implement me!
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
