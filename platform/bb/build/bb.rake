@@ -255,7 +255,8 @@ namespace "build" do
         $stdout.flush
 
         cp_r $builddir + "/../rhodes/resources", $tmpdir + "/resources"
-
+        cp $config["env"]["app"] + "/icon/icon.png", $tmpdir +"/resources"
+        
         Jake.jar($bindir + "/rhodes.jar", $builddir + "/manifest.mf", $tmpdir,true)
         $stdout.flush
         args = []
@@ -326,12 +327,14 @@ namespace "package" do
 
     desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
+      appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+
       if not FileUtils.uptodate?($targetdir + '/rhodesApp.cod',$preverified + "/rhodes.jar")
         Jake.rapc("rhodesApp",
           $targetdir,
           $rhodesimplib,
           '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
-          "rhodesApp",
+          appname,
           $config["env"]["vendor"],
           $config["env"]["version"],
           "resources/icon.png",
@@ -378,11 +381,14 @@ namespace "package" do
       end
 
       Jake.jar($bindir + "/rhodesApp.jar",$builddir + "/manifest.mf",$tmpdir,true)
+
+      appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+
       Jake.rapc("rhodesApp",
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
         '"' + Jake.get_absolute( $bindir + "/rhodesApp.jar") +'"',
-        "rhodesApp",
+        appname,
         $config["env"]["vendor"],
         $config["env"]["version"],
         "resources/icon.png",
