@@ -7,6 +7,9 @@ module Rho
   	
   	TOOLBAR_TYPE = 0
   	TABBAR_TYPE = 1
+  	NOBAR_TYPE = 2
+  	
+  	@@toolbar = []
 	
     def initialize
       unless @rhom
@@ -19,8 +22,10 @@ module Rho
   	  if @tabs
   	    puts "Initializing application with tabs: #{@tabs.inspect}" 
   	    NativeBar.create(TABBAR_TYPE, @tabs)
-	    else
-	      NativeBar.create(TOOLBAR_TYPE, [])
+	    elsif @@toolbar
+	      NativeBar.create(TOOLBAR_TYPE, @@toolbar)
+      else
+        NativeBar.create(NOBAR_TYPE, [])
 	    end
     end
     
