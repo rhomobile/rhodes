@@ -39,9 +39,9 @@ CSyncSource::CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
 
-void CSyncSource::sync(const String& strParams)
+void CSyncSource::sync(const String& strParams, const String& strAction)
 {
-    LOG(INFO) + "Start syncing source ID :" + getID() + ";Params: " + strParams;
+    LOG(INFO) + "Start syncing source ID :" + getID() + ";Params: " + strParams + ";Action: " + strAction;
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
 	
     if ( strParams.length() == 0 )
@@ -49,7 +49,7 @@ void CSyncSource::sync(const String& strParams)
         syncClientChanges();
         getAndremoveAsk();
     }
-    syncServerChanges(strParams);
+    syncServerChanges(strParams, strAction);
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
@@ -284,16 +284,19 @@ void CSyncSource::getAndremoveAsk()
     setAskParams(askParams);
 }
 
-void CSyncSource::syncServerChanges(const String& strParams)
+void CSyncSource::syncServerChanges(const String& strParams, const String& strAction)
 {
     while( getSync().isContinueSync() )
     {
         setCurPageCount(0);
         String strUrl = getUrl();
+        if ( strAction.length() > 0 )
+            strUrl += '/' + strAction;
+
         String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
                 "&p_size=" + getSync().SYNC_PAGE_SIZE();
         if ( strParams.length() > 0 )
-            strQuery += "&" + strParams;
+            strQuery += strParams;
 
         if ( getAskParams().length() > 0 )
         {
