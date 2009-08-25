@@ -148,7 +148,7 @@ static ServerHost* sharedSH = nil;
 	if(actionTarget && [actionTarget respondsToSelector:onCreateNativeBar]) {
 		NativeBar* nativeBar = [[NativeBar alloc] init];
 		nativeBar.barType = barType;
-		nativeBar.barItems = dataArray;
+		nativeBar.barItemDataArray = dataArray;
 		[actionTarget performSelectorOnMainThread:onCreateNativeBar withObject:nativeBar waitUntilDone:YES];
 		[nativeBar release];
 	}

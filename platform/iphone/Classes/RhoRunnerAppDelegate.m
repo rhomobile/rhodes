@@ -17,6 +17,7 @@
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
+#import "BarItem.h"
 #import "RhoDelegate.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -60,8 +61,8 @@
 	if (self.nativeBar.barType == TOOLBAR_TYPE || self.nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
 	} else {
-		// Load tab #0 location
-		[tabBarDelegate loadTabBarItemFirstPage:(NSString*)[tabBarDelegate.tabBar.barItems objectAtIndex:1] itemIndex:0];
+		// Load tab #0 on app load
+		[tabBarDelegate loadTabBarItemFirstPage:(BarItem*)[tabBarDelegate.barItems objectAtIndex:0]];
 	}
 	appStarted = true;
 }
@@ -339,10 +340,6 @@
 	serverHost->onSysCall = @selector(onSysCall:);
     [serverHost start];
 	
-	// TODO: Remove toolbar from interface builder
-	// We delegate this to onCreateNativeBar
-	webViewController.toolbar.hidden = YES;
-	
 	// Create View
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
@@ -363,7 +360,7 @@
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	// Hide the toolbar initially, we will re-draw it if there are no tabs
-	[webViewController.toolbar removeFromSuperview];
+	webViewController.toolbar.hidden = YES;
 	[self doStartUp];
 }
 

@@ -17,10 +17,10 @@
 {
 @private
 	int barType;
-	NSArray* barItems;
+	NSArray* barItemDataArray;
 }
 
 @property(assign) int barType;
-@property(nonatomic, retain) NSArray* barItems;
+@property(nonatomic, retain) NSArray* barItemDataArray;
 
 @end
