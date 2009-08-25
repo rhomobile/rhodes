@@ -91,6 +91,7 @@ public class RubyRuntime {
     public static RubyClass RhoConfClass;
     public static RubyClass AlertClass;    
     public static RubyClass DateTimePickerClass;
+    public static RubyClass NativeBarClass;
     public static RubyClass RingtoneManagerClass;
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
@@ -254,6 +255,7 @@ public class RubyRuntime {
         RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
+        NativeBarClass = RubyAPI.defineClass("NativeBar", RubyRuntime.NativeBarClass);
         RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
