@@ -76,6 +76,12 @@ module Rhogen
       directory.source = 'app/helpers'
       directory.destination = "#{name}/app/helpers"
     end
+
+    directory :icon do |directory|
+      directory.source = 'icon'
+      directory.destination = "#{name}/icon"
+    end
+
     
     directory :settings do |directory|
       directory.source = 'app/Settings'

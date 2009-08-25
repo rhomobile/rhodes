@@ -23,3 +23,4 @@ platform\bb\rhodes\src\rhomobile\Alert.java
 platform\bb\rhodes\src\rhomobile\datetime\DateTimePicker.java
 platform\bb\rhodes\src\rhomobile\datetime\DateTimeScreen.java
 platform\bb\rhodes\src\rhomobile\RingtoneManager.java
+platform\bb\rhodes\src\rhomobile\NativeBar.java
