@@ -61,7 +61,7 @@ class CSyncSource
     String m_strPushBody;
 public:
     CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine );
-    virtual void sync(const String& strParams);
+    virtual void sync(const String& strParams, const String& strAction);
 
     String getUrl()const { return m_strUrl; }
     int getID()const { return m_nID; }
@@ -88,7 +88,7 @@ public:
     }
 
     void syncClientChanges();
-    void syncServerChanges(const String& strParams);
+    void syncServerChanges(const String& strParams, const String& strAction);
     void makePushBody(String& strBody, const char* szUpdateType);
     void makePushBody1( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();

@@ -11,6 +11,6 @@
 
 @implementation NativeBar
 
-@synthesize barType, barItems;
+@synthesize barType, barItemDataArray;
 
 @end

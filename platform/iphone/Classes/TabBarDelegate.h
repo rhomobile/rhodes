@@ -9,20 +9,23 @@
 #import <Foundation/Foundation.h>
 #import "RhoDelegate.h"
 #import "NativeBar.h"
+#import "BarItem.h"
 
 @interface TabBarDelegate : RhoDelegate <UITabBarControllerDelegate> 
 {
 @private
 	UITabBarController* tabBarController;
 	NativeBar* tabBar;
-	UIWindow *mainWindow;
+	UIWindow* mainWindow;
+	NSMutableArray* barItems;
 }
 
 @property(nonatomic, assign) NativeBar* tabBar;
 @property(nonatomic, retain) UITabBarController* tabBarController;
-@property (nonatomic, retain) UIWindow *mainWindow;
+@property(nonatomic, retain) UIWindow* mainWindow;
+@property(nonatomic, retain) NSMutableArray* barItems;
 
 - (void)createTabBar:(UIWindow*)window;
-- (void)loadTabBarItemFirstPage:(NSString*)location itemIndex:(int)index;
+- (void)loadTabBarItemFirstPage:(BarItem*)item;
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
 @end
