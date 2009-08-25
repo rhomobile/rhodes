@@ -6,12 +6,13 @@ import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
 import rhomobile.Alert;
+import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
+import rhomobile.RhodesApplication;
 import rhomobile.RingtoneManager;
 import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
-import rhomobile.RhodesApplication;
 
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
@@ -29,6 +30,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         Alert.initMethods(RubyRuntime.AlertClass);        
         DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
+        NativeBar.initMethods(RubyRuntime.NativeBarClass);
 	}
 	
 	public RubyProgram createMainObject() {
