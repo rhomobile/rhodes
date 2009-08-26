@@ -26,6 +26,7 @@
 		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
+		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
 		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
 		46AF5163103F150D006E02E1 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
 		46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 46B0044810332E5C00D0C2F4 /* Entitlements.plist */; };
@@ -160,6 +161,8 @@
 		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
+		4684391010445A810019C7F0 /* BarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarItem.h; sourceTree = "<group>"; };
+		4684391110445A810019C7F0 /* BarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarItem.m; sourceTree = "<group>"; };
 		468E57401035DBC100A2293C /* TabBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarDelegate.h; sourceTree = "<group>"; };
 		468E57411035DBC100A2293C /* TabBarDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarDelegate.m; sourceTree = "<group>"; };
 		46AF5161103F150D006E02E1 /* NativeBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeBar.h; sourceTree = "<group>"; };
@@ -372,6 +375,8 @@
 		468E573F1035DBA600A2293C /* NativeBar */ = {
 			isa = PBXGroup;
 			children = (
+				4684391010445A810019C7F0 /* BarItem.h */,
+				4684391110445A810019C7F0 /* BarItem.m */,
 				46AF5161103F150D006E02E1 /* NativeBar.h */,
 				46AF5162103F150D006E02E1 /* NativeBar.m */,
 				468E57401035DBC100A2293C /* TabBarDelegate.h */,
@@ -710,6 +715,7 @@
 				46B005F71033690F00D0C2F4 /* DateTime.m in Sources */,
 				468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */,
 				46AF5163103F150D006E02E1 /* NativeBar.m in Sources */,
+				4684391210445A810019C7F0 /* BarItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -750,7 +756,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess (6NFKZD4L75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -778,7 +784,7 @@
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EFC7808B-A0A1-4FFC-B92E-1D70164CFEC8";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
