@@ -1,4 +1,11 @@
 #
+def set_app_name(newname)
+  fname = Jake.get_absolute $androidpath + "/Rhodes/res/values/strings.xml"
+  buf = File.new(fname,"r").read.gsub(/"app_name">.*<\/string>/,"\"app_name\">#{newname}</string>")
+  File.open(fname,"w") { |f| f.write(buf) }
+
+end
+
 namespace "config" do
   task :android => ["config:common"] do
     $java = $config["env"]["paths"]["java"]
@@ -66,9 +73,12 @@ namespace "build" do
 
       cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
       cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
-      args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
+      set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
 
+      args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
       puts Jake.run($aapt,args)
+
+      set_app_name("Rhodes") unless $config["env"]["appname"].nil?
       mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
 
       unless $? == 0
@@ -208,10 +218,13 @@ namespace "package" do
 
     cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
     cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
+    set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
 
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
     returnval = $?
-      mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
+
+    set_app_name("Rhodes") unless $config["env"]["appname"].nil?
+    mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
 
     unless returnval == 0
       puts "Error running AAPT"
