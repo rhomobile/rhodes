@@ -8,15 +8,7 @@
 #include "sync/ClientRegister.h"
 
 namespace rho {
-
-namespace RhoRuby {
-static int ERR_NONE = 0;
-static int ERR_NETWORK = 1;
-static int ERR_REMOTESERVER = 2;
-static int ERR_RUNTIME = 3;
-static int ERR_UNEXPECTEDSERVERRESPONSE = 4;
-static int ERR_DIFFDOMAINSINSYNCSRC = 5;
-}
+_CRhoRuby& RhoRuby = _CRhoRuby();
 
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
@@ -27,42 +19,40 @@ using namespace rho::json;
 
 void CSyncEngine::doSyncAllSources()
 {
-	LOG(INFO) + "Start syncing all sources";
-	
     setState(esSyncAllSources);
 
     loadAllSources();
 
     m_strSession = loadSession();
     if ( isSessionExist()  )
+    {
         m_clientID = loadClientID();
-    else
-    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
+        syncAllSources();
 
-    syncAllSources();
+	    if ( getState() != esStop )
+            fireNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
+    }
+    else
+    {
+    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
+        fireNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
+    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
+    }
 
     setState(esNone);
-	
-	LOG(INFO) + "End syncing all sources";
 }
 
 void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction)
 {
     if ( strSrcUrl.length()>0 )
-        LOG(ERROR) + "Start syncing source : " + strSrcUrl;
+        LOG(INFO) +"Started synchronization of the data source url: " + strSrcUrl;
     else
-        LOG(ERROR) + "Start syncing source : " + nSrcId;
+    	LOG(INFO)+ "Started synchronization of the data source #" + nSrcId;
 
     setState(esSyncSource);
 
     loadAllSources();
 
-    m_strSession = loadSession();
-    if ( isSessionExist()  )
-        m_clientID = loadClientID();
-    else
-    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
-    
     CSyncSource* pSrc = null;
     if ( strSrcUrl.length()>0 )
     	pSrc = findSourceByUrl(strSrcUrl);
@@ -72,24 +62,46 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
     if ( pSrc != null )
     {
         CSyncSource& src = *pSrc;
-        if ( isSessionExist() && getState() != esStop )
-            src.sync(strParams, strAction);
 
-        fireNotification(src, true);
+    	src.m_strParams = strParams;
+    	src.m_strAction = strAction;
+    	
+	    m_strSession = loadSession();
+	    if ( isSessionExist()  ) {
+	    	m_clientID = loadClientID();
+	        if ( getState() != esStop )
+	            src.sync();
+	    } else {
+	    	src.m_strError = "Client is not logged in. No sync will be performed.";
+            src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+	    }
+
+        fireNotification(&src, true, src.m_nErrCode,
+            src.m_nErrCode != RhoRuby.ERR_NONE ?
+        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : 
+        			"Sync completed." );
     }else
     {
         if ( strSrcUrl.length()>0 )
             LOG(ERROR) + "Sync one source : Unknown Source Url: " + strSrcUrl;
         else
             LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
+
+        CSyncSource src(*this);
+    	src.m_strError = "Unknown sync source.";
+        src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+
+        fireNotification(&src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
+    				"Sync failed for " + src.getName() + ". Details: " + 
+    				(src.m_strError.length() > 0 ? src.m_strError : "") );
     }
 
     setState(esNone);
 
     if ( strSrcUrl.length()>0 )
-        LOG(ERROR) + "End syncing source : " + strSrcUrl;
+        LOG(ERROR) + "End synchronization of the data source url: " + strSrcUrl;
     else
-        LOG(ERROR) + "End syncing source : " + nSrcId;
+        LOG(ERROR) + "End synchronization of the data source #" + nSrcId;
 }
 
 CSyncSource* CSyncEngine::findSourceByID(int nSrcId)
@@ -120,13 +132,14 @@ void CSyncEngine::loadAllSources()
 {
     m_sources.clear();
 
-    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token from sources order by source_id") );
+    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token,name from sources order by source_id") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strDbUrl = res.getStringByIdx(1);
 		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getString("syncserver") + strDbUrl);
+        String strName = res.getStringByIdx(3);
         if ( strUrl.length() > 0 )
-            m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strUrl, res.getUInt64ByIdx(2), *this) );
+            m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strUrl, strName, res.getUInt64ByIdx(2), *this) );
     }
 }
 
@@ -209,9 +222,11 @@ void CSyncEngine::syncAllSources()
     {
         CSyncSource& src = *m_sources.elementAt(i);
         if ( isSessionExist() && getState() != esStop )
-            src.sync("", "");
+            src.sync();
 
-        fireNotification(src, true);
+        fireNotification(&src, true, src.m_nErrCode,
+            src.m_nErrCode != RhoRuby.ERR_NONE ?
+        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : "");
     }
 }
 
@@ -219,7 +234,7 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
 {
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);
-    strBody += "&error_message=" + strMessage;
+    strBody += "&error_message=" + strMessage;  //TODO: URI.urlEncode
     String strUrl = getNet().resolveUrl(callback);
     
 	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
@@ -260,7 +275,7 @@ void CSyncEngine::login(String name, String password, String callback)
 	//try {
 	if ( !checkAllSourcesFromOneDomain() )
 	{
-        callLoginCallback(callback, RhoRuby::ERR_DIFFDOMAINSINSYNCSRC, "");
+        callLoginCallback(callback, RhoRuby.ERR_DIFFDOMAINSINSYNCSRC, "");
     	return;
 	}
 
@@ -271,13 +286,13 @@ void CSyncEngine::login(String name, String password, String callback)
     
     if ( !resp.isResponseRecieved())
     {
-        callLoginCallback(callback, RhoRuby::ERR_NETWORK, resp.getCharData());
+        callLoginCallback(callback, RhoRuby.ERR_NETWORK, resp.getCharData());
         return;
     }
 
     if ( !resp.isOK() )
     {
-        callLoginCallback(callback, RhoRuby::ERR_REMOTESERVER, resp.getCharData());
+        callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
     	return;
     }
     
@@ -286,7 +301,7 @@ void CSyncEngine::login(String name, String password, String callback)
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->stopWait();
     
-    callLoginCallback(callback, RhoRuby::ERR_NONE, "" );
+    callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 	    
 	//}catch(Exception exc)
 	//{
@@ -378,8 +393,32 @@ void CSyncEngine::setNotification(int source_id, String strUrl, String strParams
     }
 }
 
-void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
+void CSyncEngine::reportStatus(String status, int error) 
 {
+    //TODO: reportStatus
+/*	if (m_statusListener != null) {
+		String strErrMsg = RhoRuby.getErrorText(error);
+		m_statusListener.reportStatus(status + (strErrMsg.length() > 0 ? " Details: " + strErrMsg: "") 
+				, error);
+	}*/
+    LOG(INFO)+ "Status: " + status;
+}
+
+void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strErrMessage)
+{
+	if ( getState() == esExit )
+		return;
+	
+	if( strErrMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+	{
+		if ( !( psrc != null && psrc->m_strParams.length()>0) )
+			reportStatus(strErrMessage,nErrCode);
+	}
+	
+	if ( psrc == null )
+		return; //TODO: implement all sources callback
+
+    CSyncSource& src = *psrc;
     String strBody, strUrl;
     {
         CMutexLock lockNotify(m_mxNotifications);
@@ -397,10 +436,20 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
         strBody += "&status=";
 
         if ( bFinish )
-        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
+        {
+            if ( nErrCode == RhoRuby.ERR_NONE )
+	        	strBody += "ok";
+	        else
+	        {
+	        	strBody += "error";				        	
+			    strBody += "&error_code=" + convertToStringA(nErrCode);
+		        strBody += "&error_message=" + strErrMessage; //TODO: URI.urlEncode
+		        	//URI.urlEncode(strErrMessage != null? strErrMessage : "");
+	        }
+        }
         else
         	strBody += "in_progress";
-        
+
         if ( sn.m_strParams.length() > 0 )
             strBody += "&" + sn.m_strParams;
     }
@@ -410,7 +459,8 @@ void CSyncEngine::fireNotification( CSyncSource& src, boolean bFinish)
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
-    clearNotification(src.getID());
+    if ( bFinish )
+        clearNotification(src.getID());
 }
 
 void CSyncEngine::clearNotification(int source_id) 
