@@ -2018,7 +2018,7 @@ class Parser {
 
             session.check(javaName);
 
-            int len = f.getArgCount();
+            //int len = f.getArgCount();
             int i   = 0;
 
             read();
