@@ -2050,7 +2050,7 @@ public class Expression {
             case FUNCTION :
                 function.resolveType(session);
 
-                dataType = function.getReturnType();
+                dataType = 0;//function.getReturnType();
                 break;
 
             case QUERY : {
@@ -4043,7 +4043,7 @@ public class Expression {
                     (dataType == Types.VARCHAR_IGNORECASE) ? Types.VARCHAR
                                                            : dataType);
             } else {
-                valueClassName = function.getReturnClassName();
+                valueClassName = "";//function.getReturnClassName();
             }
         }
 
