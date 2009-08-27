@@ -23,37 +23,64 @@ namespace "config" do
   end
 end
 
+def common_bundle_start(startdir, dest)
+  app = $config["env"]["app"]
+  rhodeslib = "rhodes/rhodes-framework/lib"
+
+  rm_rf $srcdir
+  mkdir_p $srcdir
+  mkdir_p dest if not File.exists? dest
+  mkdir_p File.join($srcdir,'apps')
+
+
+  
+  chdir rhodeslib
+  Dir.glob("*").each { |f|
+    src = f
+    cp_r src,dest
+  }
+  chdir dest
+  Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
+  Dir.glob("**/erb.rb").each {|f| rm f}
+  Dir.glob("**/find.rb").each {|f| rm f}
+  $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
+
+  chdir startdir
+  #throw "ME"
+  cp_r app + '/app',File.join($srcdir,'apps')
+  cp_r app + '/public', File.join($srcdir,'apps')
+  cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+end
+
+def create_manifest
+  dir = File.join($srcdir, 'apps')
+  fname = "config.rb"
+  fappManifest = File.new( File.join(dir,'app_manifest.txt'), "w")
+
+  Find.find(dir) do |path|
+    if File.basename(path) == fname
+
+      relPath = path[dir.length+1, File.dirname(path).length-1]   #relative path
+      relPath = relPath[0, relPath.length-3] #remove .rb extension
+      fappManifest.puts( relPath )
+
+    end
+  end
+
+  fappManifest.close()
+  
+end
+  
 namespace "build" do
   namespace "bundle" do
     task :xruby do
       #needs $config, $srcdir, $excludelib, $bindir
       app = $config["env"]["app"]
       startdir = pwd
-      rhodeslib = "rhodes/rhodes-framework/lib"
-
-      rm_rf $srcdir
-      mkdir_p $srcdir
-      mkdir_p File.join($srcdir,'apps')
-
+      dest = startdir + "/" + $srcdir
       xruby =  File.dirname(__FILE__) + '/rhodes/rhodes-build/res/xruby-0.3.3.jar'
 
-      dest = startdir + "/" + $srcdir
-      chdir rhodeslib
-      Dir.glob("*").each { |f|
-        src = f
-        cp_r src,dest
-      }
-      chdir dest
-      Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
-      Dir.glob("**/erb.rb").each {|f| rm f}
-      Dir.glob("**/find.rb").each {|f| rm f}
-      $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
-
-      chdir startdir
-      #throw "ME"
-      cp_r app + '/app',File.join($srcdir,'apps')
-      cp_r app + '/public', File.join($srcdir,'apps')
-      cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+      common_bundle_start(startdir,dest)
 
       chdir File.join($srcdir,'apps/public')
       rm_rf 'js/iui'
@@ -62,22 +89,8 @@ namespace "build" do
       chdir startdir
       
       #create manifest
-      dir = File.join($srcdir, 'apps')
-      fname = "config.rb"
-      fappManifest = File.new( File.join(dir,'app_manifest.txt'), "w")
-
-      Find.find(dir) do |path|
-        if File.basename(path) == fname
-
-          relPath = path[dir.length+1, File.dirname(path).length-1]   #relative path
-          relPath = relPath[0, relPath.length-3] #remove .rb extension
-          fappManifest.puts( relPath )
-
-        end
-      end
-
-      fappManifest.close()
-
+      create_manifest
+      
       #"compile ERB"
       ext = ".erb"
       Find.find($srcdir) do |path|
@@ -91,6 +104,7 @@ namespace "build" do
         end
       end
 
+
       chdir $bindir
       puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
       unless $? == 0
@@ -99,8 +113,10 @@ namespace "build" do
       end
       chdir startdir
       chdir $srcdir
+  
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
+      
       puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
         puts "Error creating Rhobundle.jar"
@@ -110,7 +126,32 @@ namespace "build" do
     end
 
     task :noxruby do
+      app = $config["env"]["app"]
+      rhodeslib = "rhodes/rhodes-framework/lib"
+      compileERB = "rhodes/rhodes-build/lib/compileERB/default.rb"
+      compileRB = "rhodes/rhodes-build/lib/compileRB/compileRB.rb"
+      startdir = pwd
+      dest = startdir + "/" + $srcdir + "/lib"      
 
+      common_bundle_start(startdir,dest)
+
+      create_manifest
+      
+      cp   compileERB, $srcdir
+      puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/default.rb` 
+
+      rm "#{$srcdir}/default.rb"
+
+      cp   compileRB, $srcdir
+      puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/compileRB.rb` 
+
+      chdir $srcdir
+      Dir.glob("**/*.rb") { |f| rm f }
+      Dir.glob("**/*.erb") { |f| rm f }
+  
+      chdir startdir
+
+      cp_r "rhodes/rhodes-build/res/prebuilt/common/db", $srcdir 
     end
   end
 end
