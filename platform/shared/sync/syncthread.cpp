@@ -198,16 +198,6 @@ void rho_sync_doSyncSource(int nSrcID,int show_status_popup)
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
 }	
 
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params)
-{
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id) );
-}	
-
-void rho_sync_doSyncSourceByUrl(const char* szSrcID)
-{
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
-}	
-
 void rho_sync_stop()
 {
 	if (CSyncThread::getSyncEngine().isSyncing() )
@@ -217,6 +207,17 @@ void rho_sync_stop()
 			CSyncThread::getInstance()->sleep(100);
 	}
 }
+
+void rho_sync_doSearchSource(int source_id, const char *from, const char *params)
+{
+    rho_sync_stop();
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id) );
+}	
+
+void rho_sync_doSyncSourceByUrl(const char* szSrcID)
+{
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
+}	
 
 void rho_sync_set_pollinterval(int nInterval)
 {

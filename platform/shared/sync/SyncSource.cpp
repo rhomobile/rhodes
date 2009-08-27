@@ -20,12 +20,35 @@ using namespace rho::json;
 
 CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter()))
 {
+    m_bTokenFromDB = true;
+
+    m_nCurPageCount = 0;
+    m_nInserted = 0;
+    m_nDeleted = 0;
+    m_nTotalCount = 0;
+    m_bGetAtLeastOnePage = false;
+
+    m_nErrCode = RhoRuby.ERR_NONE;
 }
 
-CSyncSource::CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
+CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
+{
+    m_bTokenFromDB = true;
+
+    m_nCurPageCount = 0;
+    m_nInserted = 0;
+    m_nDeleted = 0;
+    m_nTotalCount = 0;
+    m_bGetAtLeastOnePage = false;
+
+    m_nErrCode = RhoRuby.ERR_NONE;
+}
+
+CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
 {
     m_nID = id;
     m_strUrl = strUrl;
+    m_strName = strName;
     m_token = token;
     m_bTokenFromDB = true;
 
@@ -34,29 +57,30 @@ CSyncSource::CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+
+    m_nErrCode = RhoRuby.ERR_NONE;
 }
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
 
-void CSyncSource::sync(const String& strParams, const String& strAction)
+void CSyncSource::sync()
 {
-    LOG(INFO) + "Start syncing source ID :" + getID() + ";Params: " + strParams + ";Action: " + strAction;
+    m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "Synchronizing " + getName() + "...");
+
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
 	
-    if ( strParams.length() == 0 )
+    if ( m_strParams.length() == 0 )
     {
         syncClientChanges();
         getAndremoveAsk();
     }
-    syncServerChanges(strParams, strAction);
+    syncServerChanges();
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
                          endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
-
-	LOG(INFO) + "End syncing source ID :" + getID();
 }
 
 void CSyncSource::syncClientBlobs(const String& strBaseQuery)
@@ -78,6 +102,8 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
+            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            //m_strError = resp.getCharData();
             return;
         }
 
@@ -121,39 +147,6 @@ void CSyncSource::syncClientChanges()
     
     if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
     	sendClientChanges(strUpdateType);
-
-/*
-    const char* arUpdateTypes[] = {"update", "create", "delete"};
-    for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
-    {
-        String strUrl = getUrl() + "/" + arUpdateTypes[i];
-        strUrl += "objects";
-        String strQuery = CSyncEngine::SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
-
-        String strBody;
-        makePushBody(strBody, arUpdateTypes[i]);
-        if ( strBody.length() > 0 )
-        {
-		    LOG(INFO) + "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length();
-		    LOG(TRACE) + "Push body: " + strBody;		
-
-            NetResponse( resp, getNet().pushData(strUrl+strQuery,strBody) );
-            if ( !resp.isOK() )
-            {
-                getSync().setState(CSyncEngine::esStop);
-                continue;
-            }
-        }
-
-        if ( m_arSyncBlobs.size() )
-        {
-		    LOG(INFO) + "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size();
-
-            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), arUpdateTypes[i], "blob.file" );
-            syncClientBlobs(strUrl+strQuery);
-        }else
-            getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
-    }*/
 }
 
 boolean CSyncSource::sendClientChanges(String strUpdateType)//throws Exception
@@ -169,7 +162,11 @@ boolean CSyncSource::sendClientChanges(String strUpdateType)//throws Exception
 
         NetResponse( resp, getNet().pushData(strUrl+strQuery,m_strPushBody) );
         if ( !resp.isOK() )
+        {
+            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            //m_strError = resp.getCharData();
             return false;
+        }
     }
 
     if ( m_arSyncBlobs.size() > 0  )
@@ -284,19 +281,21 @@ void CSyncSource::getAndremoveAsk()
     setAskParams(askParams);
 }
 
-void CSyncSource::syncServerChanges(const String& strParams, const String& strAction)
+void CSyncSource::syncServerChanges()
 {
+    LOG(INFO) + "Sync server changes source ID :" + getID();
+
     while( getSync().isContinueSync() )
     {
         setCurPageCount(0);
         String strUrl = getUrl();
-        if ( strAction.length() > 0 )
-            strUrl += '/' + strAction;
+        if ( m_strAction.length() > 0 )
+            strUrl += '/' + m_strAction;
 
         String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
                 "&p_size=" + getSync().SYNC_PAGE_SIZE();
-        if ( strParams.length() > 0 )
-            strQuery += strParams;
+        if ( m_strParams.length() > 0 )
+            strQuery += m_strParams;
 
         if ( getAskParams().length() > 0 )
         {
@@ -315,6 +314,9 @@ void CSyncSource::syncServerChanges(const String& strParams, const String& strAc
         if ( !resp.isOK() )
         {
             getSync().stopSync();
+            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            //m_strError = resp.getCharData();
+
             continue;
         }
 
@@ -348,7 +350,7 @@ void CSyncSource::processServerData(const char* szData)
         oJsonArr.next();
     }
     if ( getServerObjectsCount() == 0 )
-    	m_syncEngine.fireNotification(*this, false);
+        m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "");
 
     if ( !oJsonArr.isEnd() )
     {
@@ -396,7 +398,7 @@ void CSyncSource::processServerData(const char* szData)
     }
 
     if ( getServerObjectsCount() < getTotalCount() )
-    	m_syncEngine.fireNotification(*this, false);
+        m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "");
 }
 
 CValue::CValue(json::CJSONEntry& oJsonEntry)//throws JSONException
@@ -481,8 +483,13 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 
     NetResponse(resp, getNet().pullFile(url, fName));
     if ( !resp.isOK() )
+    {
+        m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+        //m_strError = resp.getCharData();
+
         return false;
-    
+    }
+
     value.m_strAttrType = "blob.file";
 
     String strAppsPath = RhoGetRootPath();

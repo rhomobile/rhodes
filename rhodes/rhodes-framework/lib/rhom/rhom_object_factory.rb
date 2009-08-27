@@ -337,8 +337,6 @@ module Rhom
                 end
               
                 def search(args)
-                  SyncEngine.stop_sync()
-                  
                   searchParams = ""
                   if args[:search_params]
                     args[:search_params].each do |key,value|

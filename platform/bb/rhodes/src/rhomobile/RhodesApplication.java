@@ -502,9 +502,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	synchronized public void reportStatus(String status, int error) {
 		_lastStatusMessage = status;
 		LOG.INFO("Sync status: " + status);
-		if (_syncStatusPopup == null && error != 0) {
-			createStatusPopup();
-		} else if (_syncStatusPopup != null) { 
+		//if (_syncStatusPopup == null && error != 0) {
+		//	createStatusPopup();
+		//} else 
+		if (_syncStatusPopup != null) { 
 			_syncStatusPopup.showStatus(status);
 		}
 	}
@@ -584,8 +585,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			};
 		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
 			public void run() {
-					RhodesApplication.getInstance().createStatusPopup();		
-					SyncThread.doSyncAllSources();
+					//RhodesApplication.getInstance().createStatusPopup();		
+					SyncThread.doSyncAllSources(true);
 				}
 			};
 		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {

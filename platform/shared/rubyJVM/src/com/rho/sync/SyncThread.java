@@ -54,7 +54,7 @@ public class SyncThread extends RhoThread
 	
 	static SyncThread m_pInstance;
 
-   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5, scLogin = 6; 
+   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5, scLogin = 6, scSearchOne=7; 
     
    	static private class SyncCommand
    	{
@@ -72,6 +72,12 @@ public class SyncThread extends RhoThread
    			m_nCmdCode = nCode;
    			m_strCmdParam = strParam;
    		}
+	    SyncCommand(int nCode, String strParam, int nCmdParam)
+	    {
+		    m_nCmdCode = nCode;
+		    m_strCmdParam = strParam;
+            m_nCmdParam = nCmdParam;
+	    }
    		
    		SyncCommand(int nCode)
    		{
@@ -98,6 +104,15 @@ public class SyncThread extends RhoThread
    			m_strPassword = password;
    		}
    	};
+    static class SyncSearchCommand extends SyncCommand
+    {
+	    String m_strFrom;
+        public SyncSearchCommand(String from, String params, int source_id)
+	    {
+        	super(scSearchOne,params,source_id);
+		    m_strFrom = from;
+	    }
+    };
    	
     SyncEngine  m_oSyncEngine;
     RhoClassFactory m_ptrFactory;
@@ -249,8 +264,13 @@ public class SyncThread extends RhoThread
 	    case scChangePollInterval:
 	        break;
 	    case scSyncOne:
-	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam );
+	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","" );
 	        break;
+	    case scSearchOne:
+	        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
+	            ((SyncSearchCommand)oSyncCmd).m_strFrom);
+	        break;
+	        
 	    case scLogin:
 	    	{
 	    		SyncLoginCommand oLoginCmd = (SyncLoginCommand)oSyncCmd;
@@ -280,18 +300,30 @@ public class SyncThread extends RhoThread
 	    addSyncCommand(new SyncCommand(scChangePollInterval)); 
 	}
 	
-	public static void doSyncAllSources()
+	public static void doSyncAllSources(boolean bShowStatus)
 	{
+		if (bShowStatus&&(m_statusListener != null)) {
+			m_statusListener.createStatusPopup();
+		}
+		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll));
 	}
 
-	public static void doSyncSource(int nSrcID)
+	public static void doSyncSource(int nSrcID, boolean bShowStatus)
 	{
+		if (bShowStatus&&(m_statusListener != null)) {
+			m_statusListener.createStatusPopup();
+		}
+		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, nSrcID) );
 	}
 
-	public static void doSyncSource(String strSrcUrl)
+	public static void doSyncSource(String strSrcUrl, boolean bShowStatus)
 	{
+		if (bShowStatus&&(m_statusListener != null)) {
+			m_statusListener.createStatusPopup();
+		}
+		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcUrl) );
 	}
 	
@@ -316,51 +348,82 @@ public class SyncThread extends RhoThread
 		}
 	}
 	
-	public static RubyValue _dosync(RubyValue show_status)
-	{
-		try {
-			String str = show_status.asString();
-			boolean show = show_status.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
-			if (show&&(m_statusListener != null)) {
-				m_statusListener.createStatusPopup();
-			}
-			doSyncAllSources();
-		} catch(Exception e) {
-			LOG.ERROR("dosync failed", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-		}
-		return RubyConstant.QNIL;
-	}
-
-	public static RubyValue _dosync_source(RubyValue sourceID, RubyValue show_status)
-	{
-		try {
-			String str = show_status.asString();
-			boolean show = show_status.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
-			if (show&&(m_statusListener != null)) {
-				m_statusListener.createStatusPopup();
-			}
-			doSyncSource(sourceID.toInt());
-		} catch(Exception e) {
-			LOG.ERROR("dosync_source failed", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-		}
-		return RubyConstant.QNIL;
-	}
-	
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return _dosync(RubyConstant.QTRUE);}
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return _dosync(arg);}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+				try {
+					doSyncAllSources(true);
+				} catch(Exception e) {
+					LOG.ERROR("dosync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+			{
+				try {
+					String str = arg.asString();
+					boolean show = arg.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					doSyncAllSources(show);
+				} catch(Exception e) {
+					LOG.ERROR("dosync failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
 		});		
 		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneOrTwoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return _dosync_source(arg,RubyConstant.QTRUE);}
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
-				return _dosync_source(arg0,arg1);}
-		});		
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+			{
+				try {
+					doSyncSource(arg.toInt(), true);
+				} catch(Exception e) {
+					LOG.ERROR("dosync_source failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block )
+			{
+				try {
+					String str = arg1.asString();
+					boolean show = arg1.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					doSyncSource(arg0.toInt(), show);
+				} catch(Exception e) {
+					LOG.ERROR("dosync_source failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
+		});
+		
+		klass.getSingletonClass().defineMethod("dosearch_source",
+			new RubyVarArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+					if ( args.size() != 3 )
+						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
+					
+					try{
+						int source_id = args.get(0).toInt();
+						String from = args.get(1).toStr();
+						String params = args.get(2).toStr();
+						
+						stopSync();
+						
+						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id) );
+					}catch(Exception e)
+					{
+						LOG.ERROR("SyncEngine.login", e);
+						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
+					}
+					
+					return RubyConstant.QNIL;
+				    
+				}
+			});
+		
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
