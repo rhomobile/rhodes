@@ -821,50 +821,56 @@ public class ArrayUtil {
   
         if (source instanceof byte[]){
             byte[] arrayIn = (byte[])source;
+            byte[] newArray = new byte[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            byte[] newArray = new byte[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         } else if (source instanceof int[]){
             int[] arrayIn = (int[])source;
+            int[] newArray = new int[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            int[] newArray = new int[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         } else if (source instanceof double[]){
             double[] arrayIn = (double[])source;
+            double[] newArray = new double[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            double[] newArray = new double[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         } else if (source instanceof boolean[]){
             boolean[] arrayIn = (boolean[])source;
+            boolean[] newArray = new boolean[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            boolean[] newArray = new boolean[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         } else if (source instanceof short[]){
             short[] arrayIn = (short[])source;
+            short[] newArray = new short[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            short[] newArray = new short[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         } else if (source instanceof long[]){
             long[] arrayIn = (long[])source;
+            long[] newArray = new long[newsize];
+            
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
-            long[] newArray = new long[newsize];
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         }
@@ -876,11 +882,6 @@ public class ArrayUtil {
         else {
             return null;
         }
-        
-        if (oldsize < newsize){
-            newsize = oldsize;
-        }
-          
         
         Object[] newArray = null;
         if (source instanceof String[]){
@@ -919,7 +920,11 @@ public class ArrayUtil {
         else{
             newArray = new Object[newsize];
         }
-            
+
+        if (oldsize < newsize){
+            newsize = oldsize;
+        }
+        
         System.arraycopy(source, 0, newArray, 0, newsize);
         return newArray;   
     }

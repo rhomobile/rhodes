@@ -412,12 +412,12 @@ namespace "prebuild" do
 
     chdir 'platform/iphone/rbuild'
 	# Simulator
-    puts `#{ant} clean -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
+    puts `#{ant} clean -Diphone.sdk=iphonesimulator3.0 -Diphone.config=Debug`
     unless $? == 0
       puts "Error cleaning iphone"
       exit 1
     end
-    puts `#{ant} buildapp -Diphone.sdk=iphonesimulator2.2.1 -Diphone.config=Debug`
+    puts `#{ant} buildapp -Diphone.sdk=iphonesimulator3.0 -Diphone.config=Debug`
 
     throw "cant find rhorunner.app!" if not File.exists? "../build/Debug-iphonesimulator/rhorunner.app"
 

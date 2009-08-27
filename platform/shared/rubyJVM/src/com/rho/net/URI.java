@@ -2195,6 +2195,34 @@ package com.rho.net;
     return true;
   }
   
+  static public String urlEncode(String fullPath)
+  {
+	  StringBuffer sb = new StringBuffer();
+	  int len = fullPath.length();
+	  
+	  char c;
+	  for  (int index=0; index < len ; index++){
+		  c = fullPath.charAt(index);
+		  if ( c == '^'  || c == '_'
+				 || c == '\\' || c == '-'
+				 || c == '.'
+				 || (c >= 'A' && c <= 'Z')
+				 || (c >= 'a' && c <= 'z')
+				 || (c >= '0' && c <= '9') ) {
+				sb.append(c);
+			} else {
+				sb.append('%');
+				if (c > 15) { // is it a non-control char, ie. >x0F so 2 chars
+					sb.append(Integer.toHexString((int)c)); // just add % and the string
+				} else {
+					sb.append("0" + Integer.toHexString((int)c));
+					// otherwise need to add a leading 0
+				}
+			}
+			  
+	  }
+	  return sb.toString();
+  }
   /*
   public String getEscapedURL(){
 	  String fullPath = m_scheme + "://" + m_host + ":" + m_port + m_path;
