@@ -62,9 +62,11 @@ public class SyncEngine implements NetRequest.IRhoSession
     public void setStatusListener(ISyncStatusListener listener) { m_statusListener = listener; }
     private void reportStatus(String status, int error) {
     	if (m_statusListener != null) {
-    		m_statusListener.reportStatus(status, error);
+    		String strErrMsg = RhoRuby.getErrorText(error);
+    		m_statusListener.reportStatus(status + (strErrMsg.length() > 0 ? " Details: " + strErrMsg: "") 
+    				, error);
     	}
-    	LOG.INFO(status);
+    	LOG.INFO("Status: "+status);
     }
     
     void setState(int eState){ m_syncState = eState; }
@@ -94,9 +96,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     
 	void doSyncAllSources()
 	{
-		String status_report = "Sync complete.";
-	    int error = 0;
-	    
 	    setState(esSyncAllSources);
 
 	    try
@@ -106,30 +105,28 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    m_strSession = loadSession();
 		    if ( isSessionExist()  ) {
 		    	m_clientID = loadClientID();
+		    	
+			    syncAllSources();
+			    
+			    if ( getState() != esStop )
+			    	fireNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 		    } else {
-		    	status_report = "Client is not logged in. No sync will be performed.";
-		    	error = 1;
+		    	fireNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
+		    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
 		    }
 		    
-		    syncAllSources();
 	    }catch(Exception exc)
 	    {
 	    	LOG.ERROR("Sync failed.", exc);
-	    	status_report = "Sync failed.";
 	    }
 	    
 	    setState(esNone);
-		
-	    reportStatus( status_report, error );
 	}
 
-	void doSyncSource(int nSrcId, String strSrcUrl)
+	void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction)
 	{
-		String status_report = null;
-		int error = 0;
-
 	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
-	    	LOG.INFO( "Started synchronization of the data source url" + strSrcUrl );
+	    	LOG.INFO( "Started synchronization of the data source url: " + strSrcUrl );
 	    else
 	    	LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
@@ -139,15 +136,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    try
 	    {
 		    loadAllSources();
-		
-		    m_strSession = loadSession();
-		    if ( isSessionExist()  ) {
-		    	m_clientID = loadClientID();
-		    } else {
-		    	status_report = "Client is not logged in. No sync will be performed.";
-		    	error = 1;
-		    }
-		    
 		    if ( strSrcUrl != null && strSrcUrl.length()>0 )
 		    	src = findSourceByUrl(strSrcUrl);
 		    else
@@ -155,11 +143,28 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    
 	        if ( src != null )
 	        {
-		        if ( isSessionExist() && getState() != esStop )
-		            src.sync(m_statusListener);
+	        	src.m_strParams = strParams;
+	        	src.m_strAction = strAction;
+	        	
+			    m_strSession = loadSession();
+			    if ( isSessionExist()  ) {
+			    	m_clientID = loadClientID();
+			        if ( getState() != esStop )
+			            src.sync();
+			    } else {
+			    	src.m_strError = "Client is not logged in. No sync will be performed.";
+			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+			    }
 		
-		        fireNotification(src, true);
+		        fireNotification(src, true, src.m_nErrCode,
+		        		src.m_nErrCode != RhoRuby.ERR_NONE ?
+		        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : 
+		        			"Sync completed." );
 	        } else {
+	        	src = new SyncSource(this);
+		    	src.m_strError = "Unknown sync source.";
+		    	src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+	        	
 	    	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
 	    	    	throw new RuntimeException("Sync one source : Unknown Source Url: " + strSrcUrl );
 	    	    else
@@ -171,14 +176,17 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	else
 	    		LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
 	    	
-	    	status_report = "Sync failed for " + src.getName() + ".";
+    		fireNotification(src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
+	    				"Sync failed for " + src.getName() + ". Details: " + 
+	    				(src.m_strError.length() > 0 ? src.m_strError : exc.getMessage()) );
 	    }
         
 	    setState(esNone);
-		
-	    if(status_report != null) {
-	    	reportStatus(status_report, error);
-	    }
+	    
+	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
+	    	LOG.INFO( "End synchronization of the data source url: " + strSrcUrl );
+	    else
+	    	LOG.INFO( "End synchronization of the data source #" + nSrcId );
 	}
 
 	SyncSource findSourceByID(int nSrcId)
@@ -301,11 +309,23 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    for( int i = getStartSource(); i < m_sources.size() && getState() != esExit; i++ )
 	    {
-	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( isSessionExist() && getState() != esStop )
-	            src.sync(m_statusListener);
-	
-	        fireNotification(src, true);
+	    	SyncSource src = null;
+	    	try{
+		        src = (SyncSource)m_sources.elementAt(i);
+		        if ( isSessionExist() && getState() != esStop )
+		            src.sync();
+		
+		        fireNotification(src, true, src.m_nErrCode,
+		        		src.m_nErrCode != RhoRuby.ERR_NONE ?
+		        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : "");
+	    	}catch(Exception exc)
+	    	{
+	    		fireNotification(src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
+	    				"Sync failed for " + src.getName() + ". Details: " + 
+	    				(src.m_strError.length() > 0 ? src.m_strError : exc.getMessage()) );
+	    		
+	    		throw exc;
+	    	}
 	    }
 	}
 	
@@ -313,7 +333,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		try{
 		    String strBody = "error_code=" + nErrCode;
-	        strBody += "&error_message=" + (strMessage != null? strMessage : "");
+	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	        String strUrl = getNet().resolveUrl(callback);
 	        
 			LOG.INFO( "Login callback: " + callback + ". Body: "+ strBody );
@@ -475,36 +495,64 @@ public class SyncEngine implements NetRequest.IRhoSession
 		}
 	}
 
-	void fireNotification( SyncSource src, boolean bFinish)throws Exception
+	void fireNotification( SyncSource src, boolean bFinish, int nErrCode, String strErrMessage )
 	{
-	    String strBody = "", strUrl;
-	    {
-	    	synchronized(m_mxNotifications){
-		        SyncNotification sn = (SyncNotification)m_mapNotifications.get(src.getID());
-		        if ( sn == null )
-		            return;
+		if ( getState() == esExit )
+			return;
 		
-		        strUrl = sn.m_strUrl;
-		        strBody += "total_count=" + src.getTotalCount();
-		        strBody += "&processed_count=" + src.getCurPageCount();
-		        
-		        strBody += "&status=";
-		        if ( bFinish )
-		        	strBody += (src.getServerObjectsCount() > 0 ?"ok":"error");
-		        else
-		        	strBody += "in_progress";
-		        
-		        if ( sn.m_strParams.length() > 0 )
-		            strBody += "&" + sn.m_strParams;
-	        }
-	    }
-		LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
+		if( strErrMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+		{
+			if ( !( src != null && src.m_strParams.length()>0) )
+				reportStatus(strErrMessage,nErrCode);
+		}
 		
-	    NetResponse resp = getNet().pushData( strUrl, strBody, this );
-	    if ( !resp.isOK() )
-	        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
-	
-	    clearNotification(src.getID().intValue());
+		if ( src == null )
+			return; //TODO: implement all sources callback
+		
+		try{
+		    String strBody = "", strUrl;
+		    {
+		    	synchronized(m_mxNotifications){
+			        SyncNotification sn = (SyncNotification)m_mapNotifications.get(src.getID());
+			        if ( sn == null )
+			            return;
+			
+			        strUrl = sn.m_strUrl;
+			        strBody += "total_count=" + src.getTotalCount();
+			        strBody += "&processed_count=" + src.getCurPageCount();
+			        
+			        strBody += "&status=";
+			        if ( bFinish )
+			        {
+				        if ( nErrCode == RhoRuby.ERR_NONE )
+				        	strBody += "ok";
+				        else
+				        {
+				        	strBody += "error";				        	
+						    strBody += "&error_code=" + nErrCode;
+					        strBody += "&error_message=" + 
+					        	URI.urlEncode(strErrMessage != null? strErrMessage : "");
+				        }
+			        }
+			        else
+			        	strBody += "in_progress";
+			        
+			        if ( sn.m_strParams.length() > 0 )
+			            strBody += "&" + sn.m_strParams;
+		        }
+		    }
+			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
+			
+		    NetResponse resp = getNet().pushData( strUrl, strBody, this );
+		    if ( !resp.isOK() )
+		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+		
+		    if ( bFinish )
+		    	clearNotification(src.getID().intValue());
+		}catch(Exception exc)
+		{
+			LOG.ERROR("Fire notification failed.", exc);
+		}
 	}
 
 	void clearNotification(int source_id) 

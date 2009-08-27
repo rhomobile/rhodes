@@ -28,6 +28,8 @@ public class RhoRuby {
 	static RubyProgram mainObj;
 	static RubyMethod m_RhomAttribManager_delete_attribs, m_RhomAttribManager_add_attrib, m_RhomAttribManager_save; 
 	static RubyClass m_classRhomAttribManager;
+	static RubyClass m_classRhoError;
+	static RubyMethod m_RhoError_err_message;
 	
 	public static final int ERR_NONE = 0;
 	public static final int ERR_NETWORK = 1;
@@ -36,6 +38,41 @@ public class RhoRuby {
 	public static final int ERR_UNEXPECTEDSERVERRESPONSE = 4;
 	public static final int ERR_DIFFDOMAINSINSYNCSRC = 5;
 	public static final int ERR_NOSERVERRESPONSE = 6;
+	public static final int ERR_CLIENTISNOTLOGGEDIN = 7;
+	
+	public static int getNetErrorCode(Exception exc)
+	{
+		if ( exc instanceof IOException )
+		{
+			String strMsg = exc.getMessage(); 
+			
+	    	return strMsg.indexOf("timed out") >= 0 ? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK;
+		}
+		
+		return ERR_NONE;
+	}
+
+	public static int getErrorCode(Exception exc)
+	{
+		return ERR_RUNTIME; 
+	}
+	
+	public static String getErrorText(int nError)
+	{
+		if ( nError == ERR_NONE )
+			return "";
+		
+		if ( m_classRhoError == null )
+		{
+			RubyModule modRho = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rho");
+			m_classRhoError = (RubyClass)modRho.getConstant("RhoError");
+			m_RhoError_err_message = m_classRhoError.findMethod( RubyID.intern("err_message") );
+		}
+		
+		RubyValue res = m_RhoError_err_message.invoke( m_classRhoError, ObjectFactory.createInteger(nError), null );
+		
+		return res.toStr();
+	}
 	
 	public static void RhoRubyStart(String szAppPath){
 		String[] args = new String[0];

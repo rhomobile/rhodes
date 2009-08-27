@@ -50,21 +50,30 @@ class CSyncSource
     CSyncEngine& m_syncEngine;
 
     int    m_nID;
+    String m_strName;
     String m_strUrl;
     uint64 m_token;
     boolean m_bTokenFromDB;
 
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
-    String m_strAskParams;
-    VectorPtr<CSyncBlob*> m_arSyncBlobs;
     boolean m_bGetAtLeastOnePage;
-    String m_strPushBody;
 public:
-    CSyncSource(int id, const String& strUrl, uint64 token, CSyncEngine& syncEngine );
-    virtual void sync(const String& strParams, const String& strAction);
+    int m_nErrCode;
+    String m_strError;
+    String m_strParams;
+    String m_strAction;
+private:
+    String m_strPushBody;
+    VectorPtr<CSyncBlob*> m_arSyncBlobs;
+    String m_strAskParams;
+
+public:
+    CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine );
+    virtual void sync();
 
     String getUrl()const { return m_strUrl; }
     int getID()const { return m_nID; }
+    String getName() { return m_strName; }
     int getServerObjectsCount()const{ return m_nInserted+m_nDeleted; }
 
     uint64 getToken()const{ return m_token; }
@@ -76,19 +85,10 @@ public:
 
 //private:
     CSyncSource();
-    CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
-    {
-        m_nID = 0;
-        m_strUrl = "";
-        m_token = 0;
-
-        m_nCurPageCount = 0;
-        m_nInserted = 0;
-        m_nDeleted = 0;
-    }
+    CSyncSource(CSyncEngine& syncEngine );
 
     void syncClientChanges();
-    void syncServerChanges(const String& strParams, const String& strAction);
+    void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
     void makePushBody1( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();
