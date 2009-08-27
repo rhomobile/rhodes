@@ -20,7 +20,7 @@ static const int ERR_DIFFDOMAINSINSYNCSRC = 5;
 static const int ERR_NOSERVERRESPONSE = 6;
 static const int ERR_CLIENTISNOTLOGGEDIN = 7;
 };
-extern _CRhoRuby& RhoRuby;
+extern const _CRhoRuby& RhoRuby;
 
 namespace sync {
 
