@@ -1,6 +1,15 @@
 namespace "config" do
   task :iphone => ["config:common"] do
-    #TODO: Implement
+    $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
+    iphonepath = $config["build"]["iphonepath"]
+    $bbver = $config["env"]["bbver"]
+    $builddir = iphonepath + "/rbuild"
+    $bindir = iphonepath + "/bin"
+    $srcdir =  $bindir + "/RhoBundle"
+    $targetdir = iphonepath + "/target" 
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
+    $tmpdir =  $bindir +"/tmp"
+
   end
 end
 
@@ -9,17 +18,15 @@ namespace "build" do
     desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
       currentdir = pwd
-      chdir 'platform/iphone/rbuild'
-      rm_rf '../bin'
-      rm_rf '../build/Debug-*'
-      rm_rf '../build/Release-*'
-      puts `ant RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
-      unless $? == 0
-        puts "Error building iphone"
-        exit 1
-      end
+      chdir 'platform/iphone'
+      rm_rf 'bin'
+      rm_rf 'build/Debug-*'
+      rm_rf 'build/Release-*'
+      
+      chdir $startdir
 
-      chdir currentdir
+      Rake::Task["build:bundle:noxruby"].execute
+
     end
   end
 end
