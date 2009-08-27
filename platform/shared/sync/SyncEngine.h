@@ -10,6 +10,18 @@
 #include "logging/RhoLog.h"
 
 namespace rho {
+struct _CRhoRuby {
+static const int ERR_NONE = 0;
+static const int ERR_NETWORK = 1;
+static const int ERR_REMOTESERVER = 2;
+static const int ERR_RUNTIME = 3;
+static const int ERR_UNEXPECTEDSERVERRESPONSE = 4;
+static const int ERR_DIFFDOMAINSINSYNCSRC = 5;
+static const int ERR_NOSERVERRESPONSE = 6;
+static const int ERR_CLIENTISNOTLOGGEDIN = 7;
+};
+extern _CRhoRuby& RhoRuby;
+
 namespace sync {
 
 class CSyncEngine
@@ -84,7 +96,7 @@ public:
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
 
-    void fireNotification( CSyncSource& src, boolean bFinish );
+    void fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strErrMessage );
 
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
 
@@ -96,7 +108,7 @@ private:
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
-
+    void reportStatus(String status, int error);
     friend class CSyncSource;
 };
 

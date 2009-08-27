@@ -226,9 +226,9 @@ public class PushListeningThread extends Thread {
             		if (ops[loop].startsWith("do_sync")) {
             			op = splitOnce(ops[loop],"=");
             			if(op.length <= 1 || "all".equalsIgnoreCase(op[1])) {
-            				SyncThread.doSyncAllSources();
+            				SyncThread.doSyncAllSources(false);
             			} else if ((op[1] != null) && (op[1].length()>0)){
-            				SyncThread.doSyncSource(op[1].trim());
+            				SyncThread.doSyncSource(op[1].trim(),false);
             			}
             		} else if (ops[loop].startsWith("show_popup")) {
             			op = splitOnce(ops[loop],"=");
