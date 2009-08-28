@@ -317,7 +317,7 @@ public class Platform extends Activity {
 			return true;
 
 		case AndroidR.id.sync:
-			SyncThread.doSyncAllSources();
+			SyncThread.doSyncAllSources(true);
 			return true;
 			
 		case AndroidR.id.logview:
