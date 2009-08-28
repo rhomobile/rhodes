@@ -19,6 +19,7 @@ static const int ERR_UNEXPECTEDSERVERRESPONSE = 4;
 static const int ERR_DIFFDOMAINSINSYNCSRC = 5;
 static const int ERR_NOSERVERRESPONSE = 6;
 static const int ERR_CLIENTISNOTLOGGEDIN = 7;
+static const int ERR_CUSTOMSYNCSERVER = 8;
 };
 extern const _CRhoRuby& RhoRuby;
 
@@ -96,7 +97,7 @@ public:
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
 
-    void fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strErrMessage );
+    void fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage );
 
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
 
@@ -108,7 +109,7 @@ private:
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
-    void reportStatus(String status, int error);
+    void reportStatus(String status, int error, String strDetails);
     friend class CSyncSource;
 };
 

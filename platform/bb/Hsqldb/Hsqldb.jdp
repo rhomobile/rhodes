@@ -1,5 +1,9 @@
 ## RIM Java Development Environment
 # RIM Project file
+#
+# This file is generated and managed by BlackBerry developer tools.
+# It SHOULD NOT BE modified manually.
+#
 AddOn=0
 AlwaysBuild=0
 [AlxImports
@@ -18,6 +22,9 @@ RubyVM
 ]
 ExcludeFromBuildAll=0
 [Files
+src\com\rho\db\file\Jsr75RAFileImpl.java
+src\com\rho\db\file\PersistRAFileImpl.java
+src\com\rho\db\file\RAFileImpl.java
 src\com\rho\db\FileUtilBB.java
 src\com\rho\db\HsqlDBResult.java
 src\com\rho\db\HsqlDBRowResult.java
@@ -186,8 +193,11 @@ OutputFileName=Hsqldb
 [PackageProtection
 ]
 RibbonPosition=0
+[RolloverIcons
+]
 RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=2
+UserData=|src
 Version=1.01
