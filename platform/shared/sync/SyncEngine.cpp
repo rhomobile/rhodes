@@ -8,7 +8,7 @@
 #include "sync/ClientRegister.h"
 
 namespace rho {
-_CRhoRuby& RhoRuby = _CRhoRuby();
+const _CRhoRuby& RhoRuby = _CRhoRuby();
 
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
