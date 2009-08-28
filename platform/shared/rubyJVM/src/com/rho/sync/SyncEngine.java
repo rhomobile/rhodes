@@ -504,7 +504,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
 					strMessage = "Sync failed for " + src.getName() + ".";
 				
-				reportStatus(strMessage,nErrCode,src.m_strError);
+				reportStatus(strMessage,nErrCode,src!= null?src.m_strError:"");
 			}
 		}
 		
