@@ -14,6 +14,8 @@ import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
 
+import com.rho.db.HsqlDBStorage;
+import com.rho.db.IDBStorage;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
@@ -135,5 +137,9 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		}
 		
 		return strRes;
+	}
+
+	public IDBStorage createDBStorage() {
+		return new HsqlDBStorage();
 	}
 }
