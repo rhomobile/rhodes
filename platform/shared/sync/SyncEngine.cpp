@@ -409,7 +409,7 @@ void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErr
 			if ( psrc != null && strMessage.length() == 0 )
 				strMessage = "Sync failed for " + psrc->getName() + ".";
 			
-			reportStatus(strMessage,nErrCode,psrc->m_strError);
+            reportStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
         }
 	}
 	
