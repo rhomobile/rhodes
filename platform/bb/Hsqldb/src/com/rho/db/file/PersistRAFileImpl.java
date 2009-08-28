@@ -24,11 +24,13 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final int version = 1;
+	private static final int version = 2;
 	
 	private static final String NAME = "name";
 	private static final String CONTENT = "content";
 	private static final String SIZE = "size";
+	
+	private static final int PAGE_SIZE = 4096;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
@@ -43,8 +45,32 @@ public class PersistRAFileImpl implements RAFileImpl {
 	
 	private PersistentObject m_persObj;
 	
+	private static class Page {
+		public byte[] content;
+		public long size;
+		
+		public Page() {
+			content = new byte[PAGE_SIZE];
+			size = 0;
+		}
+	};
 	private static class FileInfo {
-		public byte[] content = null;
+		private Page[] pages = null;
+		
+		public long getSize() {
+			long ret = 0;
+			for (int i = 0; i != pages.length; ++i)
+				ret += pages[i].size;
+			return ret;
+		}
+		
+		public byte[] getPage(int n) {
+			Page page = pages[n];
+			if (page.content == null) {
+				
+			}
+			return new byte[0];
+		}
 	};
 	
 	private FileInfo m_info = null;
@@ -64,26 +90,26 @@ public class PersistRAFileImpl implements RAFileImpl {
 	}
 	
 	private long getSize() throws IOException {
-		return getContent().length;
+		return getInfo().getSize();
 	}
 	
-	private byte[] getContent() throws IOException {
+	private Page[] getContent() throws IOException {
 		FileInfo info = getInfo();
-		if (info.content == null) {
-			byte[] content = (byte[])m_persObj.getContents();
-			if (content == null) {
-				content = new byte[0];
-				m_persObj.setContents(content);
+		if (info.pages == null) {
+			Page[] pages = (Page[])m_persObj.getContents();
+			if (pages == null) {
+				pages = new Page[0];
+				m_persObj.setContents(pages);
 			}
-			info.content = content;
+			info.pages = pages;
 		}
-		return info.content;
+		return info.pages;
 	}
 	
-	private void setContent(byte[] content) {
+	private void setContent(Page[] pages) {
 		FileInfo info = getInfo();
-		if (info.content != content)
-			info.content = content;
+		if (info.pages != pages)
+			info.pages = pages;
 	}
 
 	public void open(String name, int mode) throws FileNotFoundException {
@@ -122,16 +148,27 @@ public class PersistRAFileImpl implements RAFileImpl {
 		if (newSize < 0)
 			throw new IllegalArgumentException();
 		
-		synchronized (getInfo()) {
-			long size = getSize();
+		FileInfo info = getInfo();
+		synchronized (info) {
+			long size = info.getSize();
 			if (size == newSize)
 				return;
 			
-			byte[] newContent = new byte[(int)newSize];
-			if (newSize < size)
-				size = newSize;
-			System.arraycopy(getContent(), 0, newContent, 0, (int)size);
-			setContent(newContent);
+			long n = newSize/PAGE_SIZE;
+			if (newSize%PAGE_SIZE != 0)
+				++n;
+			Page[] newPages = new Page[(int)n];
+			Page[] pages = getContent();
+			if (n < pages.length)
+				n = pages.length;
+			System.arraycopy(pages, 0, newPages, 0, (int)n);
+			for (int i = 0; i != newPages.length; ++i) {
+				if (newSize <= 0)
+					throw new RuntimeException("Internal error in PersistRAFileImpl.setSize");
+				newPages[i].size = newSize > PAGE_SIZE ? PAGE_SIZE : newSize;
+				newSize -= PAGE_SIZE;
+			}
+			setContent(newPages);
 		}
 	}
 	
@@ -147,22 +184,29 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		FileInfo info = getInfo();
 		synchronized (info) {
-			if (m_persObj.getContents() != info.content) {
-				m_persObj.setContents(info.content);
+			Page[] content = getContent();
+			if (m_persObj.getContents() != content) {
+				m_persObj.setContents(content);
 				m_persObj.commit();
 			}
 		}
 	}
 	
 	public int read() throws IOException {
-		synchronized (getInfo()) {
-			if (m_nSeekPos >= getSize())
+		FileInfo info = getInfo();
+		synchronized (info) {
+			if (m_nSeekPos >= info.getSize())
 				return -1;
 			
+			long n = m_nSeekPos/PAGE_SIZE;
+			byte[] content = info.getPage(n);
+			
+			/*
 			byte[] content = getContent();
 			int pos = (int)m_nSeekPos;
 			++m_nSeekPos;
 			return content[pos];
+			*/
 		}
 	}
 
