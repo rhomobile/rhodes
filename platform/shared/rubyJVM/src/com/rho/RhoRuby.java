@@ -39,6 +39,7 @@ public class RhoRuby {
 	public static final int ERR_DIFFDOMAINSINSYNCSRC = 5;
 	public static final int ERR_NOSERVERRESPONSE = 6;
 	public static final int ERR_CLIENTISNOTLOGGEDIN = 7;
+	public static final int ERR_CUSTOMSYNCSERVER = 8;
 	
 	public static int getNetErrorCode(Exception exc)
 	{

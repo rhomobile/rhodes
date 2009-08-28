@@ -76,10 +76,7 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
             src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 	    }
 
-        fireNotification(&src, true, src.m_nErrCode,
-            src.m_nErrCode != RhoRuby.ERR_NONE ?
-        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : 
-        			"Sync completed." );
+        fireNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
     }else
     {
         if ( strSrcUrl.length()>0 )
@@ -88,12 +85,10 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
             LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
 
         CSyncSource src(*this);
-    	src.m_strError = "Unknown sync source.";
+    	//src.m_strError = "Unknown sync source.";
         src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 
-        fireNotification(&src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
-    				"Sync failed for " + src.getName() + ". Details: " + 
-    				(src.m_strError.length() > 0 ? src.m_strError : "") );
+        fireNotification(&src, true, src.m_nErrCode, "");
     }
 
     setState(esNone);
@@ -224,9 +219,7 @@ void CSyncEngine::syncAllSources()
         if ( isSessionExist() && getState() != esStop )
             src.sync();
 
-        fireNotification(&src, true, src.m_nErrCode,
-            src.m_nErrCode != RhoRuby.ERR_NONE ?
-        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : "");
+        fireNotification(&src, true, src.m_nErrCode, "");
     }
 }
 
@@ -393,26 +386,31 @@ void CSyncEngine::setNotification(int source_id, String strUrl, String strParams
     }
 }
 
-void CSyncEngine::reportStatus(String status, int error) 
-{
+void CSyncEngine::reportStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
-/*	if (m_statusListener != null) {
-		String strErrMsg = RhoRuby.getErrorText(error);
-		m_statusListener.reportStatus(status + (strErrMsg.length() > 0 ? " Details: " + strErrMsg: "") 
-				, error);
+	/*if (m_statusListener != null) {
+		if ( strDetails.length() == 0 )
+			strDetails = RhoRuby.getErrorText(error);
+        status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
+		m_statusListener.reportStatus( status, error);
 	}*/
-    LOG(INFO)+ "Status: " + status;
+	LOG(INFO) + "Status: "+status;
 }
 
-void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strErrMessage)
+void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
 {
 	if ( getState() == esExit )
 		return;
 	
-	if( strErrMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+	if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 	{
 		if ( !( psrc != null && psrc->m_strParams.length()>0) )
-			reportStatus(strErrMessage,nErrCode);
+        {
+			if ( psrc != null && strMessage.length() == 0 )
+				strMessage = "Sync failed for " + psrc->getName() + ".";
+			
+			reportStatus(strMessage,nErrCode,psrc->m_strError);
+        }
 	}
 	
 	if ( psrc == null )
@@ -443,7 +441,7 @@ void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErr
 	        {
 	        	strBody += "error";				        	
 			    strBody += "&error_code=" + convertToStringA(nErrCode);
-		        strBody += "&error_message=" + strErrMessage; //TODO: URI.urlEncode
+		        strBody += "&error_message=" + src.m_strError; //TODO: URI.urlEncode
 		        	//URI.urlEncode(strErrMessage != null? strErrMessage : "");
 	        }
         }
