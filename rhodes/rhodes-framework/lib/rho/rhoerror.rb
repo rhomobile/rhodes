@@ -17,7 +17,7 @@ module Rho
     end
     
     def message
-        err_message(code)        
+        ::Rho::RhoError.err_message(code)        
     end
     
     def self.err_message(code)
