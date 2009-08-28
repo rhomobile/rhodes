@@ -1,3 +1,26 @@
+def set_app_name(newname)
+  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  nextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      return if line =~ /#{newname}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      puts "set name"
+      replaced = true
+    else
+      buf << line
+    end
+
+    nextline = true if line =~ /CFBundleDisplayName/
+    
+  end
+  
+  File.open(fname,"w") { |f| f.write(buf) }
+
+end
+
 namespace "config" do
   task :iphone => ["config:common"] do
     $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
@@ -39,8 +62,11 @@ namespace "build" do
     desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
+      set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
+      cp $config["env"]["app"] + "/icon/icon.png", $config["build"]["iphonepath"] 
+
       chdir $config["build"]["iphonepath"]
-    
+      
       args = ['build', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
       puts Jake.run("xcodebuild",args)
       unless $? == 0
@@ -62,6 +88,7 @@ namespace "run" do
        puts "SDK must be one of the iphonesimulator sdks"
        exit 1       
      end
+     `killall "iPhone Simulator"`
      
      rhorunner = $config["build"]["iphonepath"] + "/build/#{$config["env"]["iphone"]["configuration"]}-iphonesimulator/rhorunner.app"
 
