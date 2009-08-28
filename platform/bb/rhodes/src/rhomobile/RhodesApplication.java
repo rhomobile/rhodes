@@ -955,6 +955,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 	browserContent.finishLoading();
                 else
                 {
+                	synchronized (Application.getEventLock())
 	                //synchronized (getAppEventLock())
 	                {
 	                	browserContent.finishLoading();
@@ -1007,8 +1008,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource();
                     String newTitle = browserField.getTitle();
                     if (newTitle != null) {
-                        //synchronized (getAppEventLock())
-                    	synchronized (Application.getEventLock())
+                        synchronized (getAppEventLock())
+                    	//synchronized (Application.getEventLock())
                         {
                         	_mainScreen.setTitle(newTitle);
                         }
