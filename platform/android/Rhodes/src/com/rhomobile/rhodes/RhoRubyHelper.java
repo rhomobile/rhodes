@@ -4,8 +4,10 @@ import android.content.Context;
 import android.telephony.*; 
 
 import com.rho.IRhoRubyHelper;
+import com.rho.db.IDBStorage;
 import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.datetime.DateTimePicker;
+import com.rhomobile.rhodes.db.DBStorage;
 import com.rhomobile.rhodes.nativebar.NativeBar;
 import com.rhomobile.rhodes.phonebook.RhoPhonebook;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -101,6 +103,10 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public boolean hasNetwork() {
 		return RhodesInstance.getInstance().isNetworkAvailable();
+	}
+
+	public IDBStorage createDBStorage() {
+		return new DBStorage();
 	}
 
 }
