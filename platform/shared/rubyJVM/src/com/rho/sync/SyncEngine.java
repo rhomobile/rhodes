@@ -60,11 +60,12 @@ public class SyncEngine implements NetRequest.IRhoSession
     ISyncStatusListener m_statusListener = null;
     
     public void setStatusListener(ISyncStatusListener listener) { m_statusListener = listener; }
-    private void reportStatus(String status, int error) {
+    private void reportStatus(String status, int error, String strDetails) {
     	if (m_statusListener != null) {
-    		String strErrMsg = RhoRuby.getErrorText(error);
-    		m_statusListener.reportStatus(status + (strErrMsg.length() > 0 ? " Details: " + strErrMsg: "") 
-    				, error);
+    		if ( strDetails.length() == 0 )
+    			strDetails = RhoRuby.getErrorText(error);
+    		status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
+    		m_statusListener.reportStatus( status, error);
     	}
     	LOG.INFO("Status: "+status);
     }
@@ -156,10 +157,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 			    }
 		
-		        fireNotification(src, true, src.m_nErrCode,
-		        		src.m_nErrCode != RhoRuby.ERR_NONE ?
-		        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : 
-		        			"Sync completed." );
+		        fireNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
 	        } else {
 	        	src = new SyncSource(this);
 		    	src.m_strError = "Unknown sync source.";
@@ -176,9 +174,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	else
 	    		LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
 	    	
-    		fireNotification(src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
-	    				"Sync failed for " + src.getName() + ". Details: " + 
-	    				(src.m_strError.length() > 0 ? src.m_strError : exc.getMessage()) );
+	    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
+	    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+	    	
+    		fireNotification(src, true, src.m_nErrCode, "" ); 
 	    }
         
 	    setState(esNone);
@@ -315,15 +314,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        if ( isSessionExist() && getState() != esStop )
 		            src.sync();
 		
-		        fireNotification(src, true, src.m_nErrCode,
-		        		src.m_nErrCode != RhoRuby.ERR_NONE ?
-		        		"Sync failed for " + src.getName() + "." + (src.m_strError.length() > 0 ? " Details: " + src.m_strError : "") : "");
+		        fireNotification(src, true, src.m_nErrCode, "" );
 	    	}catch(Exception exc)
 	    	{
-	    		fireNotification(src, true, src.m_nErrCode != RhoRuby.ERR_NONE ? src.m_nErrCode : RhoRuby.ERR_RUNTIME, 
-	    				"Sync failed for " + src.getName() + ". Details: " + 
-	    				(src.m_strError.length() > 0 ? src.m_strError : exc.getMessage()) );
-	    		
+		    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
+		    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+		    	
+	    		fireNotification(src, true, src.m_nErrCode, "" ); 
 	    		throw exc;
 	    	}
 	    }
@@ -495,15 +492,20 @@ public class SyncEngine implements NetRequest.IRhoSession
 		}
 	}
 
-	void fireNotification( SyncSource src, boolean bFinish, int nErrCode, String strErrMessage )
+	void fireNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
 	{
 		if ( getState() == esExit )
 			return;
 		
-		if( strErrMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 		{
 			if ( !( src != null && src.m_strParams.length()>0) )
-				reportStatus(strErrMessage,nErrCode);
+			{
+				if ( src != null && (strMessage==null || strMessage.length() == 0) )
+					strMessage = "Sync failed for " + src.getName() + ".";
+				
+				reportStatus(strMessage,nErrCode,src.m_strError);
+			}
 		}
 		
 		if ( src == null )
@@ -530,8 +532,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 				        {
 				        	strBody += "error";				        	
 						    strBody += "&error_code=" + nErrCode;
-					        strBody += "&error_message=" + 
-					        	URI.urlEncode(strErrMessage != null? strErrMessage : "");
+					        strBody += "&error_message=" + URI.urlEncode(src.m_strError);
 				        }
 			        }
 			        else
