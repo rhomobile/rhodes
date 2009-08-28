@@ -40,6 +40,8 @@ public class RhoClassFactory
     
     public static IDBStorage createDBStorage() throws Exception
     {
+    	return RhoClassFactory.createRhoRubyHelper().createDBStorage();
+    	/*
     	LOG.INFO("createDBStorage");    	
         Class wrapperClass;
         try {
@@ -62,7 +64,7 @@ public class RhoClassFactory
         	
         	throw e;
         }
-        	
+        */
     }
 
     public static IRhoRubyHelper createRhoRubyHelper() throws Exception

@@ -7,8 +7,12 @@ import j2me.io.FileNotFoundException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.db.file.Jsr75RAFileImpl;
+import com.rho.db.file.PersistRAFileImpl;
+import com.rho.db.file.RAFileImpl;
 
 import j2me.nio.channels.*;
 
@@ -19,15 +23,15 @@ public class RandomAccessFile
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RAFile");
 	
+	public static final int READ = Connector.READ;
+	public static final int WRITE = Connector.WRITE;
+	public static final int READ_WRITE = Connector.READ_WRITE;
+	
+	public static final String USE_PERSISTENT = "use_persistent_storage";
+	
+	private RAFileImpl m_impl = null;
+	
     private boolean        m_bWriteAccess;
-    private FileConnection m_file;
-    private long           m_nSeekPos;
-    private InputStream    m_in;
-    private OutputStream   m_out;
-    private long           m_outPos;
-    private long           m_inPos;    
-    private long           m_fileSize;
-    private static final int ZERO_BUF_SIZE = 4096;
     
     public RandomAccessFile(String name, String mode)
         throws FileNotFoundException
@@ -41,9 +45,9 @@ public class RandomAccessFile
     	String name = (file != null ? file.getPath() : null);
     	int imode = -1;
     	if (mode.equals("r"))
-    	    imode = Connector.READ;
+    	    imode = READ;
     	else if (mode.startsWith("rw")) {
-    	    imode = Connector.READ_WRITE;
+    	    imode = READ_WRITE;
     	    m_bWriteAccess = true;
     	}
     	
@@ -54,54 +58,30 @@ public class RandomAccessFile
         if (name == null) {
             throw new NullPointerException();
         }
-    	open(name, imode);
-    }
-    
-    private void open(String name, int mode) throws FileNotFoundException{
-    	try{
-    		m_file = (FileConnection)Connector.open(name, mode);
-    		LOG.TRACE("Open file: " + name);
-            if (!m_file.exists() && mode == Connector.READ_WRITE ) {
-            	LOG.TRACE("Create file: " + name);
-            	m_file.create();  // create the file if it doesn't exist
-            }
-    		
-            m_fileSize = m_file.fileSize();
-    	}catch(IOException exc){
-    		LOG.ERROR("Open '" + name +"'failed.", exc);
-    		throw new FileNotFoundException(exc.getMessage());
-    	}
-    		
+    	
+        if (RhoConf.getInstance().getBool(USE_PERSISTENT)) {
+        	LOG.TRACE("Use persistent storage implementation");
+        	m_impl = new PersistRAFileImpl();
+        }
+        else {
+        	LOG.TRACE("Use Jsr75 implementation");
+        	m_impl = new Jsr75RAFileImpl();
+        }
+        m_impl.open(name, imode);
     }
     
     public long length() throws IOException
     {
-   		return m_fileSize;
+   		return m_impl.size();
     }
     
     public void close() throws IOException {
-        if (m_in != null) { 
-            m_in.close();
-            m_in = null;
-        }
-        if (m_out != null) { 
-            m_out.close();
-            m_out = null;
-        }
-
-    	if ( m_file != null )
-    	{
-    		LOG.TRACE("Close file: " + m_file.getName());
-    		m_file.close();
-    	}
-    	
-    	m_file = null;
-    	m_fileSize = 0;
+        m_impl.close();
     }
     
     public void seek(long pos) throws IOException
     {
-    	m_nSeekPos = pos;
+    	m_impl.seek(pos);
     }
     
     public void write(byte b[]) throws IOException {
@@ -122,88 +102,19 @@ public class RandomAccessFile
     	//written += 4;
     }
 
-    private void prepareWrite() throws IOException{
-        if (m_out == null){
-			if ( !this.m_bWriteAccess )
-				throw new IOException("Illegal mode");
-        	
-            m_out = m_file.openOutputStream(m_nSeekPos);
-            m_outPos = m_nSeekPos;
-        }
-        
-        if (m_outPos != m_nSeekPos) 
-        {                         
-        	m_out.close();
-            m_out = m_file.openOutputStream(m_nSeekPos);
-            if (m_nSeekPos > m_fileSize) { 
-                byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
-                do { 
-                    int size = m_nSeekPos - m_fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(m_nSeekPos - m_fileSize);
-                    m_out.write(zeroBuf, 0, size);
-                    m_fileSize += size;
-                    
-                    //BB
-                    //m_file.truncate(m_fileSize);
-                } while (m_nSeekPos != m_fileSize);
-            }
-            m_outPos = m_nSeekPos;
-        }
-    }
-    
     public void write(int b) throws IOException
     {
-    	int nTry = 0;
-        while (nTry <= 1){
-	        try {
-		    	prepareWrite();
-		        m_out.write(b);
-		        postWrite(1);
-		        break;
-	        }catch(IOException exc){
-	        	nTry++;
-	        	if ( nTry > 1 )
-	        		throw exc;
-	        	else{
-	        		m_outPos = -m_nSeekPos; //reopen out stream
-	        	}
-	        }
-        }
-    }
-    
-    private void postWrite(int len)throws IOException{
-        
-        m_outPos += len;
-        if (m_outPos > m_fileSize) { 
-            m_fileSize = m_outPos;
-        }
-        //BB
-        //m_file.truncate(m_fileSize);
-        if (m_in != null) { 
-            m_in.close();
-            m_in = null;
-        }
-        
-        m_nSeekPos = m_outPos; 
+    	if ( !this.m_bWriteAccess )
+			throw new IOException("Illegal mode");
+    	
+    	m_impl.write(b);
     }
     
     private void writeBytes(byte b[], int off, int len) throws IOException
     {
-    	int nTry = 0;
-        while (nTry <= 1){
-	        try {
-		    	prepareWrite();
-		        m_out.write(b, off, len);
-		        postWrite(len);
-		        break;
-	        }catch(IOException exc){
-	        	nTry++;
-	        	if ( nTry > 1 )
-	        		throw exc;
-	        	else{
-	        		m_outPos = -m_nSeekPos; //reopen out stream
-	        	}
-	        }
-        }
+    	if ( !this.m_bWriteAccess )
+			throw new IOException("Illegal mode");
+    	m_impl.write(b, off, len);
     }
     
     public final void writeLong(long v) throws IOException {
@@ -247,94 +158,28 @@ public class RandomAccessFile
     	return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
     
-    private int readBytes(byte b[], int offData, int len) throws IOException{
-        if ( !prepareRead() )
-        	return -1;
-        
-        int off = offData;
-        while (len > 0) { 
-            int rc = m_in.read(b, off, len);
-            if (rc > 0) 
-            { 
-                m_inPos += rc;
-                off += rc;
-                len -= rc;
-            } else { 
-                break;
-            }
-        }
-        
-        m_nSeekPos = m_inPos;
-        return off;
+    private int readBytes(byte b[], int off, int len) throws IOException{
+        return m_impl.read(b, off, len);
     }
 
-    private boolean prepareRead()throws IOException{
-        if (m_in == null || m_inPos > m_nSeekPos) { 
-            sync(); 
-            if (m_in != null) { 
-                m_in.close();
-            }
-            m_in = m_file.openInputStream();
-            m_inPos = m_in.skip(m_nSeekPos);
-        } else if (m_inPos < m_nSeekPos) { 
-            m_inPos += m_in.skip(m_nSeekPos - m_inPos);
-        }
-        
-        if (m_inPos != m_nSeekPos) 
-            return false;
-        
-        return true;
-    }
-    
     public int read() throws IOException
     {
-        if ( !prepareRead() )
-        	return -1;
-        
-        int res = m_in.read();
-        if ( res >= 0 ){
-	        m_inPos += 1;
-	        m_nSeekPos = m_inPos;
-        }
-        
-        return res;
+        return m_impl.read();
     }
     
     public void sync() throws IOException 
     {
-        if (m_out != null) 
-        	m_out.flush();
+        m_impl.sync();
     }
 
     public long getFilePointer() throws IOException
     {
-        return m_nSeekPos;
+        return m_impl.seekPos();
     }
     
     public void setLength(long newLength) throws IOException
     {
-        if (m_in != null) { 
-            m_in.close();
-            m_in = null;
-        }
-        if (m_out != null) { 
-            m_out.close();
-            m_out = null;
-        }
-    	
-        if (newLength > m_fileSize) { 
-            byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
-            do { 
-                int size = newLength - m_fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(newLength - m_fileSize);
-                m_out.write(zeroBuf, 0, size);
-                m_fileSize += size;
-                
-                //m_file.truncate(m_fileSize);
-            } while (newLength != m_fileSize);
-        }else
-            m_file.truncate(newLength);
-        
-        m_fileSize = newLength;
+        m_impl.setSize(newLength);
     }
     
     public final FileChannel getChannel() {

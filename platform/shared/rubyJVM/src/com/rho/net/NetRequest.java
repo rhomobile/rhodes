@@ -17,7 +17,7 @@ public class NetRequest
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
 	
-	static final int  MAX_NETREQUEST_RETRY  = 3;
+	static final int  MAX_NETREQUEST_RETRY  = 1;
 	boolean m_bCancel = false;
 	
 	public static interface IRhoSession

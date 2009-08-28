@@ -417,8 +417,6 @@ class SyncSource
 			//u:\"query\",
 			processServerData(strData);*/
 			
-	        m_bGetAtLeastOnePage = true;
-	
 	        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
 	            break;
 	    }
@@ -427,6 +425,16 @@ class SyncSource
 	void processServerData(String szData)throws Exception
 	{
 	    JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
+	    
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("error") )
+	    {
+	        m_strError = oJsonArr.getCurItem().getString("error");
+	        m_nErrCode = RhoRuby.ERR_CUSTOMSYNCSERVER;
+	        processToken("0");
+	        getSync().stopSync();
+	        return;
+	    }
+	    
 	    if ( !oJsonArr.isEnd() )
 	    {
 	        setCurPageCount(oJsonArr.getCurItem().getInt("count"));
@@ -437,6 +445,7 @@ class SyncSource
 	        setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
 	        oJsonArr.next();
 	    }
+	    
 	    if ( getServerObjectsCount() == 0 )
 	    	m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "");
 	    
@@ -481,6 +490,8 @@ class SyncSource
 			            getSync().stopSync();
 			            break;
 		            }
+			        
+			        m_bGetAtLeastOnePage = true;
 			    }
 		    }finally{
 		    	RhoRuby.RhomAttribManager_save(getID());
