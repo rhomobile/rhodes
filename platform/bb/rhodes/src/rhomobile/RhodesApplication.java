@@ -501,7 +501,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	synchronized public void reportStatus(String status, int error) {
 		_lastStatusMessage = status;
-		LOG.INFO("Sync status: " + status);
+		//LOG.INFO("Sync status: " + status);
 		//if (_syncStatusPopup == null && error != 0) {
 		//	createStatusPopup();
 		//} else 
@@ -955,7 +955,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 	browserContent.finishLoading();
                 else
                 {
-	                synchronized (getAppEventLock())
+	                //synchronized (getAppEventLock())
 	                {
 	                	browserContent.finishLoading();
 	                }
@@ -1007,7 +1007,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource();
                     String newTitle = browserField.getTitle();
                     if (newTitle != null) {
-                        synchronized (getAppEventLock())
+                        //synchronized (getAppEventLock())
+                    	synchronized (Application.getEventLock())
                         {
                         	_mainScreen.setTitle(newTitle);
                         }

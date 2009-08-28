@@ -65,9 +65,11 @@ public class SyncEngine implements NetRequest.IRhoSession
     		if ( strDetails.length() == 0 )
     			strDetails = RhoRuby.getErrorText(error);
     		status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
+    		
+        	LOG.INFO("Status: "+status);
+    		
     		m_statusListener.reportStatus( status, error);
     	}
-    	LOG.INFO("Status: "+status);
     }
     
     void setState(int eState){ m_syncState = eState; }

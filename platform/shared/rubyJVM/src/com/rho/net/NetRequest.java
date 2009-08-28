@@ -144,8 +144,8 @@ public class NetRequest
     }
 	
 	static class ParsedCookie {
-		String strAuth;
-		String strSession;
+		String strAuth = "";
+		String strSession = "";
 	};
 
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
