@@ -47,7 +47,7 @@ public class RhoRuby {
 		{
 			String strMsg = exc.getMessage(); 
 			
-	    	return strMsg.indexOf("timed out") >= 0 ? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK;
+	    	return strMsg != null && strMsg.indexOf("timed out") >= 0 ? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK;
 		}
 		
 		return ERR_NONE;
