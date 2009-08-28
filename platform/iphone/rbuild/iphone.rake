@@ -1,6 +1,23 @@
 namespace "config" do
   task :iphone => ["config:common"] do
-    #TODO: Implement
+    $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
+    iphonepath = $config["build"]["iphonepath"]
+    $bbver = $config["env"]["bbver"]
+    $builddir = iphonepath + "/rbuild"
+    $bindir = iphonepath + "/bin"
+    $srcdir =  $bindir + "/RhoBundle"
+    $targetdir = iphonepath + "/target" 
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
+    $tmpdir =  $bindir +"/tmp"
+
+    $homedir = `echo ~`.to_s.strip
+    $simapp="#{$homedir}/Library/Application Support/iPhone Simulator/User/Applications"
+    $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
+    $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
+    $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
+    $applog = File.join($homedir,$config["env"]["applog"])
+
+
   end
 end
 
@@ -8,18 +25,96 @@ namespace "build" do
   namespace "iphone" do
     desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
-      currentdir = pwd
-      chdir 'platform/iphone/rbuild'
-      rm_rf '../bin'
-      rm_rf '../build/Debug-*'
-      rm_rf '../build/Release-*'
-      puts `ant RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
+      chdir 'platform/iphone'
+      rm_rf 'bin'
+      rm_rf 'build/Debug-*'
+      rm_rf 'build/Release-*'
+      
+      chdir $startdir
+
+      Rake::Task["build:bundle:noxruby"].execute
+
+    end
+    
+    desc "Build rhodes"
+    task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
+  
+      chdir $config["build"]["iphonepath"]
+    
+      args = ['build', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
+      puts Jake.run("xcodebuild",args)
       unless $? == 0
-        puts "Error building iphone"
+        puts "Error cleaning"
         exit 1
       end
+      chdir $startdir
 
-      chdir currentdir
+    end
+    
+  end
+end
+
+namespace "run" do
+  desc "Builds and launches app in simulator"
+  task :iphone => ["config:iphone", "build:iphone:rhodes"] do
+    
+     unless $config["env"]["iphone"]["sdk"] =~ /^iphonesimulator/
+       puts "SDK must be one of the iphonesimulator sdks"
+       exit 1       
+     end
+     
+     rhorunner = $config["build"]["iphonepath"] + "/build/#{$config["env"]["iphone"]["configuration"]}-iphonesimulator/rhorunner.app"
+
+     Find.find($simapp) do |path| 
+       if File.basename(path) == "rhorunner.app"
+         $guid = File.basename(File.dirname(path))
+       end
+     end
+    
+     simrhodes = File.join($simapp,$guid)
+     rm_rf simrhodes
+   
+     mkdir_p File.join(simrhodes,"Documents")
+     mkdir_p File.join(simrhodes,"Library","Preferences")
+     
+     puts `cp -R -p "#{rhorunner}" "#{simrhodes}"`
+     puts `ln -f -s "#{$simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
+     puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+
+     puts `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
+     
+     f = File.new("#{$simapp}/#{$guid}.sb","w")
+     f << "(version 1)\n(debug deny)\n(allow default)\n"
+     f.close
+     
+     system("open \"#{$sim}/iPhone Simulator.app\"")
+  end
+end
+
+namespace "clean" do
+  namespace "iphone" do
+    desc "Clean rhodes binaries"
+    task :rhodes => ["config:iphone"] do 
+      chdir $config["build"]["iphonepath"]
+    
+      args = ['clean', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
+      puts Jake.run("xcodebuild",args)
+      unless $? == 0
+        puts "Error cleaning"
+        exit 1
+      end
+      chdir $startdir
+      
+      chdir 'platform/iphone'
+       rm_rf 'build/Debug-*'
+       rm_rf 'build/Release-*'
+      chdir $startdir
+    
+    end
+    
+    desc "Clean rhobundle"
+    task :rhobundle => ["config:iphone"] do
+      rm_rf $bindir
     end
   end
 end

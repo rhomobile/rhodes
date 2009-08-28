@@ -71,6 +71,7 @@ package org.hsqldb;
 //import java.lang.reflect.Modifier;
 //import java.sql.Connection;
 
+import org.hsqldb.lib.ArrayUtil;
 import org.hsqldb.lib.HashMap;
 import org.hsqldb.lib.HsqlArrayList;
 import org.hsqldb.lib.StringConverter;
@@ -98,14 +99,14 @@ class Function {
 
     private String         sFunction;
     //private Method         mMethod;
-    private String         returnClassName;
-    private Class[]        aArgClasses;
-    private int            iReturnType;
-    private int            iArgCount;
-    private int            iSqlArgCount;
+    //private String         returnClassName;
+    //private Class[]        aArgClasses;
+    //private int            iReturnType;
+    //private int            iArgCount;
+    //private int            iSqlArgCount;
     private int            iSqlArgStart;
-    private int[]          iArgType;
-    private boolean[]      bArgNullable;
+    //private int[]          iArgType;
+    //private boolean[]      bArgNullable;
     Expression[]           eArg;
     private boolean        bConnection;
     //private static HashMap methodCache = new HashMap();
@@ -273,7 +274,7 @@ class Function {
                 iArgType[i]     = Types.getParameterTypeNr(a);
                 bArgNullable[i] = !a.isPrimitive();
             }
-        }*/
+        }
 
         iSqlArgCount = iArgCount;
 
@@ -283,9 +284,12 @@ class Function {
             iSqlArgStart = 1;
         } else {
             iSqlArgStart = 0;
-        }
+        }*/
 
-        eArg = new Expression[iArgCount];
+        //eArg = new Expression[iArgCount];
+        eArg = new Expression[0];
+        iSqlArgStart = 0;
+        bConnection = false;
     }
 
     /**
@@ -354,7 +358,7 @@ class Function {
             Object ret = (fID >= 0) ? Library.invoke(fID, arguments)
                                     : null;//mMethod.invoke(null, arguments);
 
-            return Column.convertObject(ret, iReturnType);
+            return /*Column.convertObject(*/ret;//, iReturnType);
         /*} catch (InvocationTargetException e) {
 
             // thrown by user functions
@@ -375,19 +379,19 @@ class Function {
 
         int      i    = bConnection ? 1
                                     : 0;
-        Object[] oArg = new Object[iArgCount];
+        Object[] oArg = new Object[eArg.length];
 
-        for (; i < iArgCount; i++) {
+        for (; i < eArg.length; i++) {
             Expression e = eArg[i];
             Object     o = null;
 
             if (e != null) {
 
                 // no argument: null
-                o = e.getValue(session, iArgType[i]);
+                o = e.getValue(session );//, iArgType[i]);
             }
 
-            if ((o == null) &&!bArgNullable[i]) {
+            if ((o == null) /*&&!bArgNullable[i]*/) {
 
                 // null argument for primitive datatype: don't call
                 return null;
@@ -413,10 +417,10 @@ class Function {
         int i = bConnection ? 1
                             : 0;
 
-        for (; i < iArgCount; i++) {
+        for (; i < values.length; i++) {
             Object o = values[i];
 
-            if (o == null &&!bArgNullable[i]) {
+            if (o == null /*&&!bArgNullable[i]*/) {
 
                 // null argument for primitive datatype: don't call
                 return null;
@@ -428,7 +432,7 @@ class Function {
 
     void collectInGroupByExpressions(HsqlArrayList colExps) {
 
-        for (int i = 0; i < iArgCount; i++) {
+        for (int i = 0; i < eArg.length; i++) {
             Expression e = eArg[i];
 
             if (e != null) {
@@ -443,19 +447,19 @@ class Function {
         Object[] valueArray = (Object[]) currValue;
 
         if (valueArray == null) {
-            valueArray = new Object[iArgCount];
+            valueArray = new Object[eArg.length];
         }
 
-        for (int i = 0; i < iArgCount; i++) {
+        for (int i = 0; i < eArg.length; i++) {
             Expression e = eArg[i];
 
             if (eArg[i] != null) {
                 if (eArg[i].isAggregate()) {
-                    valueArray[i] = Column.convertObject(
-                        e.getAggregatedValue(session, valueArray[i]),
-                        iArgType[i]);
+                    valueArray[i] = //Column.convertObject(
+                        e.getAggregatedValue(session, valueArray[i]);
+                        //,iArgType[i]);
                 } else {
-                    valueArray[i] = e.getValue(session, iArgType[i]);
+                    valueArray[i] = e.getValue(session);//, iArgType[i]);
                 }
             }
         }
@@ -475,10 +479,10 @@ class Function {
         Object[] valueArray = (Object[]) currValue;
 
         if (valueArray == null) {
-            valueArray = new Object[iArgCount];
+            valueArray = new Object[eArg.length];
         }
 
-        for (int i = 0; i < iArgCount; i++) {
+        for (int i = 0; i < eArg.length; i++) {
             Expression e = eArg[i];
 
             if (eArg[i] != null) {
@@ -500,9 +504,9 @@ class Function {
      * live Connection object constructed from the evaluating session context
      * if so.
      */
-    int getArgCount() {
+    /*int getArgCount() {
         return iSqlArgCount;
-    }
+    }*/
 
     /**
      * Remnoves the Table filters from Expression parameters to this Function.
@@ -529,7 +533,7 @@ class Function {
 
         Expression e;
 
-        for (int i = iSqlArgStart; i < iArgCount; i++) {
+        for (int i = iSqlArgStart; i < eArg.length; i++) {
             e = eArg[i];
 
             if (e != null) {
@@ -550,7 +554,7 @@ class Function {
 
         Expression e;
 
-        for (int i = iSqlArgStart; i < iArgCount; i++) {
+        for (int i = iSqlArgStart; i < eArg.length; i++) {
             e = eArg[i];
 
             if (e != null) {
@@ -567,7 +571,7 @@ class Function {
 
         Expression e;
 
-        for (int i = iSqlArgStart; i < iArgCount; i++) {
+        for (int i = iSqlArgStart; i < eArg.length; i++) {
             e = eArg[i];
 
             if (e != null) {
@@ -584,15 +588,15 @@ class Function {
 
         Expression e;
 
-        for (int i = iSqlArgStart; i < iArgCount; i++) {
+        for (int i = iSqlArgStart; i < eArg.length; i++) {
             e = eArg[i];
 
             if (e != null) {
                 if (e.isParam()) {
-                    e.setDataType(iArgType[i]);
+                    e.setDataType(0);//iArgType[i]);
 
-                    e.nullability    = getArgNullability(i);
-                    e.valueClassName = getArgClass(i).getName();
+                    e.nullability    = Expression.NULLABLE_UNKNOWN;//getArgNullability(i);
+                    e.valueClassName = null;//getArgClass(i).getName();
                 } else {
                     e.resolveTypes(session);
                 }
@@ -609,7 +613,7 @@ class Function {
 
         boolean result = true;
 
-        for (int i = iSqlArgStart; i < iArgCount; i++) {
+        for (int i = iSqlArgStart; i < eArg.length; i++) {
             if (eArg[i] != null) {
                 result = result && eArg[i].checkResolved(check);
             }
@@ -622,17 +626,17 @@ class Function {
      * Returns the type of the argument at the specified
      * offset in this Function object's paramter list. <p>
      */
-    int getArgType(int i) {
+    /*int getArgType(int i) {
         return iArgType[i];
-    }
+    }*/
 
     /**
      * Returns the type of this Function
      * object's return type. <p>
      */
-    int getReturnType() {
+    /*int getReturnType() {
         return iReturnType;
-    }
+    }*/
 
     /**
      * Binds the specified expression to the specified position in this
@@ -644,6 +648,9 @@ class Function {
             i++;
         }
 
+        if ( i >= eArg.length )
+        	eArg = (Expression[])ArrayUtil.resizeArray(eArg, i+1);
+        
         eArg[i]      = e;
         hasAggregate = hasAggregate || (e != null && e.isAggregate());
     }
@@ -720,7 +727,7 @@ class Function {
             sb.append("[").append(eArg[i].describe(session)).append("]");
         }
 
-        sb.append(") returns ").append(Types.getTypeString(getReturnType()));
+        sb.append(") returns ").append("Unknown");//Types.getTypeString(getReturnType()));
         sb.append("]\n");
 
         return sb.toString();
@@ -729,24 +736,24 @@ class Function {
     /**
      * Returns the Java Class of the object returned by getValue(). <p>
      */
-    String getReturnClassName() {
+    /*String getReturnClassName() {
         return returnClassName;
-    }
+    }*/
 
     /**
      * Returns the Java Class of the i'th argument. <p>
      */
-    Class getArgClass(int i) {
+    /*Class getArgClass(int i) {
         return aArgClasses[i];
-    }
+    }*/
 
     /**
      * Returns the SQL nullability code of the i'th argument. <p>
      */
-    int getArgNullability(int i) {
+    /*int getArgNullability(int i) {
         return bArgNullable[i] ? Expression.NULLABLE
                                : Expression.NO_NULLS;
-    }
+    }*/
 
     /*Method getMethod() {
         return mMethod;

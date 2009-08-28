@@ -329,8 +329,6 @@ void CSyncSource::syncServerChanges()
 		//u:\"query\",
 		processServerData(strData.c_str());*/
 
-        m_bGetAtLeastOnePage = true;
-
         if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
             break;
     }
@@ -339,6 +337,15 @@ void CSyncSource::syncServerChanges()
 void CSyncSource::processServerData(const char* szData)
 {
     CJSONArrayIterator oJsonArr(szData);
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("error") )
+    {
+        m_strError = oJsonArr.getCurItem().getString("error");
+        m_nErrCode = RhoRuby.ERR_CUSTOMSYNCSERVER;
+        processToken(0);
+        getSync().stopSync();
+        return;
+    }
+
     if ( !oJsonArr.isEnd() )
     {
         setCurPageCount(oJsonArr.getCurItem().getInt("count"));
@@ -392,6 +399,8 @@ void CSyncSource::processServerData(const char* szData)
 	            getSync().stopSync();
 	            break;
             }
+
+            m_bGetAtLeastOnePage = true;
         }
         RhoRuby_RhomAttribManager_save(getID());
         getDB().endTransaction();
