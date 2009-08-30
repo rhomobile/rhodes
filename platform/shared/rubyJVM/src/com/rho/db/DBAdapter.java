@@ -336,7 +336,8 @@ public class DBAdapter extends RubyBasic {
 			
 		    fs.delete(dbNewName + ".data");
 		    fs.delete(dbNewName + ".script");
-	
+		    fs.delete(dbNewName + ".journal");
+		    
 		    db = RhoClassFactory.createDBStorage();	    
 			db.open( dbNewName, getSqlScript() );
 			
@@ -369,6 +370,7 @@ public class DBAdapter extends RubyBasic {
 		    m_dbStorage = null;
 		    m_bIsOpen = false;
 		    
+		    fs.delete(dbName + ".journal");
 		    fs.renameOverwrite(dbNewName + ".data", dbName+".data");
 		    fs.renameOverwrite(dbNewName + ".script", dbName+".script");
 		    
