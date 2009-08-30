@@ -392,7 +392,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         // reduce the default 14 (3*16K rows) if memory is limited and rows
         // are large.
         // values between 8-16 are allowed
-        setProperty(hsqldb_cache_scale, 10);
+        setProperty(hsqldb_cache_scale, 14);
 
         // maximum size of .log file in megabytes
         setProperty(hsqldb_log_size, 200);
