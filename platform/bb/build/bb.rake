@@ -506,14 +506,21 @@ namespace "clean" do
 end
 
 namespace "run" do
+  namespace "bb" do
+      task :stopmdsandsim => ["config:bb"] do
+        stopsim  
+        stopmds
+      end
 
-  task :stopmdsandsim => ["config:bb"] do
-    stopsim  
-    stopmds
+      desc "Starts mds and sim"
+      task :startmdsandsim => ["config:bb"] do
+        startmds
+        startsim
+      end
   end
   
   desc "Builds everything, loads and starts sim"
-  task :bb => [:stopmdsandsim, "package:bb:dev"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
