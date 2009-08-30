@@ -74,7 +74,7 @@ public class ValuePool {
 
     //
     static {
-        initPool();
+        //initPool();
     }
 
     private static void initPool() {
@@ -104,78 +104,79 @@ public class ValuePool {
 
     public static void resetPool(int[] sizeArray, int sizeFactor) {
 
-        synchronized (ValuePool.class) {
+        /*synchronized (ValuePool.class) {
             for (int i = 0; i < POOLS_COUNT; i++) {
                 poolList[i].resetCapacity(sizeArray[i] * sizeFactor,
                                           BaseHashMap.PURGE_HALF);
             }
-        }
+        }*/
     }
 
     public static void resetPool() {
 
-        synchronized (ValuePool.class) {
-            resetPool(defaultPoolLookupSize, defaultSizeFactor);
-        }
+//        synchronized (ValuePool.class) {
+//            resetPool(defaultPoolLookupSize, defaultSizeFactor);
+//        }
     }
 
     public static void clearPool() {
 
-        synchronized (ValuePool.class) {
-            for (int i = 0; i < POOLS_COUNT; i++) {
-                poolList[i].clear();
-            }
-        }
+//        synchronized (ValuePool.class) {
+//            for (int i = 0; i < POOLS_COUNT; i++) {
+//                poolList[i].clear();
+//            }
+//        }
     }
 
     public static Integer getInt(int val) {
-
-        synchronized (intPool) {
+    	return new Integer(val);
+        /*synchronized (intPool) {
             return intPool.getOrAddInteger(val);
-        }
+        }*/
     }
 
     public static Long getLong(long val) {
-
-        synchronized (longPool) {
+    	return new Long(val);
+        /*synchronized (longPool) {
             return longPool.getOrAddLong(val);
-        }
+        }*/
     }
 
     public static Double getDouble(long val) {
-
-        synchronized (doublePool) {
+    	return new Double(val);
+        /*synchronized (doublePool) {
             return doublePool.getOrAddDouble(val);
-        }
+        }*/
     }
 
     public static String getString(String val) {
 
-        if (val == null || val.length() > maxStringLength) {
+        //if (val == null || val.length() > maxStringLength) {
             return val;
-        }
-
+        //}
+        /*    
         synchronized (stringPool) {
             return stringPool.getOrAddString(val);
-        }
+        }*/
     }
 
     public static Date getDate(long val) {
-
-        synchronized (datePool) {
-            return datePool.getOrAddDate(val);
-        }
+    	
+    	return new Date(val);
+        //synchronized (datePool) {
+        //    return datePool.getOrAddDate(val);
+        //}
     }
 
     public static BigDecimal getBigDecimal(BigDecimal val) {
 
-        if (val == null) {
+        //if (val == null) {
             return val;
-        }
+        //}
 
-        synchronized (bigdecimalPool) {
-            return (BigDecimal) bigdecimalPool.getOrAddObject(val);
-        }
+        //synchronized (bigdecimalPool) {
+        //    return (BigDecimal) bigdecimalPool.getOrAddObject(val);
+        //}
     }
 
     public static Boolean getBoolean(boolean b) {
