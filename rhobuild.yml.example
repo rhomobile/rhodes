@@ -18,7 +18,10 @@ env:
       sim: 8100
   iphone:
     configuration: Debug
-    sdk: iphonesimulator2.2.1
+    sdk: iphonesimulator3.0
+    codesignidentity: 
+    entitlements:
+
 build:
   bbpath: platform/bb
   wmpath: platform/wm
