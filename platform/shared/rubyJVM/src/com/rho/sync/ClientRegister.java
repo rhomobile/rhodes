@@ -85,7 +85,7 @@ public class ClientRegister extends RhoThread
     {
 		String client_id = oSync.loadClientID();
 		if ( client_id == null || client_id.length() == 0 )
-			return "";
+			return null;
 	
 		IDBResult res = oSync.getDB().executeSQL("SELECT token,token_sent from client_info");
         if ( !res.isEnd() ) {
@@ -116,8 +116,10 @@ public class ClientRegister extends RhoThread
     		return false;
     	
     	String strBody = getRegisterBody(oSync);
-    	if ( strBody == null || strBody.length() == 0 )
+    	if ( strBody == null )
     		return false;
+    	if ( strBody.length() == 0)
+    		return true; //already register
     	
 		String serverUrl = RhoConf.getInstance().getString("syncserver");
 		if (serverUrl != null && serverUrl.length()>0) 
