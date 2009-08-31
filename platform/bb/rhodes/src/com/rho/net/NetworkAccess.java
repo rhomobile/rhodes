@@ -41,6 +41,10 @@ public class NetworkAccess implements INetworkAccess {
 		String strDeviceside = ";deviceside=true";
 		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
 			strDeviceside = "";
+
+		String strConnUID = com.rho.RhoConf.getInstance().getString("bb_connection_uid");
+		if ( strConnUID.length() > 0 )
+			strConnUID = ";ConnectionUID=" + strConnUID;
 		
 		if (DeviceInfo.isSimulator()) {
 			URLsuffix = ";deviceside=true";
@@ -65,6 +69,11 @@ public class NetworkAccess implements INetworkAccess {
 				ServiceRecord[] srs = sb.getRecords();
 				// search for BES transport
 				for (int i = 0; i < srs.length; i++) {
+					LOG.INFO("SB: " + srs[i].toString() + ";UID: " + srs[i].getUid() +
+							";APN: " + srs[i].getAPN() + ";Descr: " + srs[i].getDataSourceId() +
+							";Valid: " + (srs[i].isValid() ? "true" : "false") + 
+							";Disabled: "+ (srs[i].isDisabled()? "true" : "false") );
+					
 					if (srs[i].isDisabled() || !srs[i].isValid())
 						continue;
 					if (srs[i].getCid().equals("IPPP")
@@ -94,7 +103,7 @@ public class NetworkAccess implements INetworkAccess {
 		}
 		
 		if (networkConfigured == false) {
-			URLsuffix = strDeviceside;//";deviceside=true";
+			URLsuffix = strDeviceside+strConnUID;//";deviceside=true";
 			networkConfigured = true;
 		}
 		
