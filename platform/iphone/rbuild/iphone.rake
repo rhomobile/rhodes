@@ -21,6 +21,23 @@ def set_app_name(newname)
 
 end
 
+def set_signing_identity(identity,entitlements)
+  fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+      line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
+      line.gsub!(/CODE_SIGN_IDENTITY = .*;/,"CODE_SIGN_IDENTITY = \"#{identity}\";")
+      line.gsub!(/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*;/,"\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"#{identity}\";")
+      
+      puts line if line =~ /CODE_SIGN/
+      buf << line
+  end
+  
+  File.open(fname,"w") { |f| f.write(buf) }
+
+end
+
+
 namespace "config" do
   task :iphone => ["config:common"] do
     $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
@@ -65,9 +82,11 @@ namespace "build" do
       set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
       cp $config["env"]["app"] + "/icon/icon.png", $config["build"]["iphonepath"] 
 
+      set_signing_identity($config["env"]["iphone"]["codesignidentity"],$config["env"]["iphone"]["entitlements"].to_s) if $config["env"]["iphone"]["codesignidentity"].to_s != ""
+
       chdir $config["build"]["iphonepath"]
-      
       args = ['build', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
+
       puts Jake.run("xcodebuild",args)
       unless $? == 0
         puts "Error cleaning"
