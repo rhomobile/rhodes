@@ -1,6 +1,7 @@
 package com.rho.db.file;
 
 import j2me.io.FileNotFoundException;
+import j2me.lang.AssertMe;
 
 import java.io.IOException;
 import java.util.Hashtable;
@@ -24,13 +25,9 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final int version = 2;
+	private static final String version = "2.0";
 	
-	private static final String NAME = "name";
-	private static final String CONTENT = "content";
-	private static final String SIZE = "size";
-	
-	private static final int PAGE_SIZE = 4096;
+	private static final int PAGE_SIZE = 256;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
@@ -40,84 +37,128 @@ public class PersistRAFileImpl implements RAFileImpl {
 	private String m_name;
 	private int m_mode;
 	
-	private long m_key;
 	private long m_nSeekPos;
 	
-	private PersistentObject m_persObj;
+	private String getObjName() {
+		return kprefix + "." + version + ":" + m_name + ";pagesize=" + PAGE_SIZE;
+	}
 	
-	private static class Page {
+	private class Page {
 		public byte[] content;
-		public long size;
 		
 		public Page() {
-			content = new byte[PAGE_SIZE];
-			size = 0;
+			this(null);
+		}
+		
+		public Page(byte[] c) {
+			content = c;
 		}
 	};
-	private static class FileInfo {
-		private Page[] pages = null;
+	
+	private class FileInfo {
+		//private String m_name;
+		private long m_size;
+		private Page[] m_pages;
+		private int m_use_count;
 		
-		public long getSize() {
-			long ret = 0;
-			for (int i = 0; i != pages.length; ++i)
-				ret += pages[i].size;
-			return ret;
+		private long getSizeKey() {
+			return StringUtilities.stringHashToLong(getObjName() + ";size");
+		}
+		
+		private long getPageKey(int n) {
+			return StringUtilities.stringHashToLong(getObjName() + ";page" + Integer.toString(n));
+		}
+		
+		public FileInfo() {
+			long key = getSizeKey();
+			PersistentObject persInfo = PersistentStore.getPersistentObject(key);
+			Long psize = (Long)persInfo.getContents();
+			if (psize == null)
+				psize = new Long(0);
+			
+			m_size = psize.longValue();
+			int n = (int)(m_size/PAGE_SIZE) + 1;
+			m_pages = new Page[n];
+			for (int i = 0; i != n; ++i)
+				m_pages[i] = new Page();
+			
+			m_use_count = 0;
 		}
 		
 		public byte[] getPage(int n) {
-			Page page = pages[n];
+			Page page = m_pages[n];
 			if (page.content == null) {
-				
+				long key = getPageKey(n);
+				PersistentObject persPage = PersistentStore.getPersistentObject(key);
+				byte[] content = (byte[])persPage.getContents();
+				if (content == null)
+					content = new byte[PAGE_SIZE];
+				page.content = content;
 			}
-			return new byte[0];
+			return page.content;
+		}
+		
+		public long getSize() {
+			return m_size;
+		}
+		
+		public void setSize(long newSize) {
+			int n = (int)(newSize/PAGE_SIZE + 1);
+			if (n != m_pages.length) {
+				Page[] newPages = new Page[n];
+				System.arraycopy(m_pages, 0, newPages, 0, n >= m_pages.length ? m_pages.length : n);
+				for (int i = m_pages.length; i != n; ++i)
+					newPages[i] = new Page();
+				m_pages = newPages;
+			}
+			m_size = newSize;
+		}
+		
+		public void sync() {
+			synchronized (PersistentStore.getSynchObject()) {
+				for(int i = 0; i != m_pages.length; ++i) {
+					Page page = m_pages[i];
+					if (page.content != null) {
+						long key = getPageKey(i);
+						PersistentObject persPage = PersistentStore.getPersistentObject(key);
+						persPage.setContents(page.content);
+						persPage.commit();
+					}
+				}
+				
+				long key = getSizeKey();
+				PersistentObject persInfo = PersistentStore.getPersistentObject(key);
+				persInfo.setContents(new Long(m_size));
+				persInfo.commit();
+			}
+		}
+		
+		public void addRef() {
+			++m_use_count;
+		}
+		
+		public void release() {
+			if (--m_use_count == 0) {
+				sync();
+			}
 		}
 	};
 	
 	private FileInfo m_info = null;
 	
-	private FileInfo getInfo() {
-		if (m_info == null) {
-			synchronized (m_shared) {
-				FileInfo info = (FileInfo)m_shared.get(m_name);
-				if (info == null) {
-					info = new FileInfo();
-					m_shared.put(m_name, info);
-				}
-				m_info = info;
-			}
-		}
-		return m_info;
-	}
-	
-	private long getSize() throws IOException {
-		return getInfo().getSize();
-	}
-	
-	private Page[] getContent() throws IOException {
-		FileInfo info = getInfo();
-		if (info.pages == null) {
-			Page[] pages = (Page[])m_persObj.getContents();
-			if (pages == null) {
-				pages = new Page[0];
-				m_persObj.setContents(pages);
-			}
-			info.pages = pages;
-		}
-		return info.pages;
-	}
-	
-	private void setContent(Page[] pages) {
-		FileInfo info = getInfo();
-		if (info.pages != pages)
-			info.pages = pages;
-	}
-
 	public void open(String name, int mode) throws FileNotFoundException {
 		m_name = name;
 		m_mode = mode;
 		
-		m_key = StringUtilities.stringHashToLong(kprefix + "." + Integer.toString(version) + ":" + name);
-		m_persObj = PersistentStore.getPersistentObject(m_key);
+		synchronized (m_shared) {
+			FileInfo info = (FileInfo)m_shared.get(m_name);
+			if (info == null) {
+				info = new FileInfo();
+				m_shared.put(m_name, info);
+			}
+			info.addRef();
+			m_info = info;
+		}
 		
 		m_nSeekPos = 0;
 		
@@ -127,10 +168,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 	public void close() throws IOException {
 		LOG.TRACE("Close file: " + m_name);
 		
-		if (m_mode == RandomAccessFile.WRITE || m_mode == RandomAccessFile.READ_WRITE)
-			sync();
-		
-		m_persObj = null;
+		m_info.release();
 		m_info = null;
 		
 		m_nSeekPos = 0;
@@ -143,38 +181,28 @@ public class PersistRAFileImpl implements RAFileImpl {
 	public long seekPos() throws IOException {
 		return m_nSeekPos;
 	}
+	
+	private int getPageNumber(long pos) {
+		int n = (int)(pos/PAGE_SIZE);
+		return n;
+	}
 
 	public void setSize(long newSize) throws IOException {
 		if (newSize < 0)
 			throw new IllegalArgumentException();
 		
-		FileInfo info = getInfo();
-		synchronized (info) {
-			long size = info.getSize();
+		synchronized (m_info) {
+			long size = m_info.getSize();
 			if (size == newSize)
 				return;
 			
-			long n = newSize/PAGE_SIZE;
-			if (newSize%PAGE_SIZE != 0)
-				++n;
-			Page[] newPages = new Page[(int)n];
-			Page[] pages = getContent();
-			if (n < pages.length)
-				n = pages.length;
-			System.arraycopy(pages, 0, newPages, 0, (int)n);
-			for (int i = 0; i != newPages.length; ++i) {
-				if (newSize <= 0)
-					throw new RuntimeException("Internal error in PersistRAFileImpl.setSize");
-				newPages[i].size = newSize > PAGE_SIZE ? PAGE_SIZE : newSize;
-				newSize -= PAGE_SIZE;
-			}
-			setContent(newPages);
+			m_info.setSize(newSize);
 		}
 	}
 	
 	public long size() throws IOException {
-		synchronized (getInfo()) {
-			return getSize();
+		synchronized (m_info) {
+			return m_info.getSize();
 		}
 	}
 
@@ -182,75 +210,95 @@ public class PersistRAFileImpl implements RAFileImpl {
 		if (m_mode != RandomAccessFile.WRITE && m_mode != RandomAccessFile.READ_WRITE)
 			throw new IOException("File is not open in write mode");
 		
-		FileInfo info = getInfo();
-		synchronized (info) {
-			Page[] content = getContent();
-			if (m_persObj.getContents() != content) {
-				m_persObj.setContents(content);
-				m_persObj.commit();
-			}
+		synchronized (m_info) {
+			m_info.sync();
 		}
 	}
 	
 	public int read() throws IOException {
-		FileInfo info = getInfo();
-		synchronized (info) {
-			if (m_nSeekPos >= info.getSize())
+		synchronized (m_info) {
+			if (m_nSeekPos >= m_info.getSize())
 				return -1;
 			
-			long n = m_nSeekPos/PAGE_SIZE;
-			byte[] content = info.getPage(n);
-			
-			/*
-			byte[] content = getContent();
-			int pos = (int)m_nSeekPos;
+			int n = (int)(m_nSeekPos/PAGE_SIZE);
+			byte[] content = m_info.getPage(n);
+			int pos = (int)(m_nSeekPos % PAGE_SIZE);
 			++m_nSeekPos;
 			return content[pos];
-			*/
 		}
 	}
 
 	public int read(byte[] b, int off, int len) throws IOException {
-		synchronized (getInfo()) {
-			long size = getSize();
+		if (b == null)
+			throw new NullPointerException();
+		if (off < 0 || len < 0 || off + len > b.length)
+			throw new IndexOutOfBoundsException();
+		if (len == 0)
+			return 0;
+		
+		synchronized (m_info) {
+			long size = m_info.getSize();
 			if (m_nSeekPos >= size)
 				return -1;
 			
-			long n = len;
-			if (n > b.length - off)
-				n = b.length - off;
-			if (n > size - m_nSeekPos)
-				n = size - m_nSeekPos;
-			System.arraycopy(getContent(), (int)m_nSeekPos, b, off, (int)n);
+			if (m_nSeekPos + len > size)
+				len = (int)(size - m_nSeekPos);
+			
+			int startPage = getPageNumber(m_nSeekPos);
+			int endPage = getPageNumber(m_nSeekPos + len);
+			
+			int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
+			
+			byte[] content = m_info.getPage(startPage);
+			System.arraycopy(content, (int)(m_nSeekPos%PAGE_SIZE), b, off, n);
+			for (int i = startPage + 1; i <= endPage; ++i) {
+				content = m_info.getPage(i);
+				int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
+				System.arraycopy(content, 0, b, n, howmuch);
+				n += howmuch;
+			}
 			m_nSeekPos += n;
-			return (int)n;
+			return n;
 		}
 	}
 
 	public void write(int b) throws IOException {
-		synchronized (getInfo()) {
-			if (m_nSeekPos >= getSize())
-				setSize(m_nSeekPos + 1);
+		synchronized (m_info) {
+			if (m_nSeekPos >= m_info.getSize())
+				m_info.setSize(m_nSeekPos + 1);
 			
-			byte[] content = getContent();
-			content[(int)m_nSeekPos] = (byte)b;
-			setContent(content);
+			int n = getPageNumber(m_nSeekPos);
+			byte[] content = m_info.getPage(n);
+			content[(int)(m_nSeekPos%PAGE_SIZE)] = (byte)b;
 			++m_nSeekPos;
 		}
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
-		synchronized (getInfo()) {
-			int n = b.length - off;
-			if (len < n)
-				n = len;
+		if (b == null)
+			throw new NullPointerException();
+		if (off < 0 || len < 0 || off + len > b.length)
+			throw new IndexOutOfBoundsException();
+		if (len == 0)
+			return;
+		
+		synchronized (m_info) {
+			if (m_nSeekPos + len >= m_info.getSize())
+				m_info.setSize(m_nSeekPos + len);
 			
-			if (m_nSeekPos + n >= getSize())
-				setSize(m_nSeekPos + n);
+			int startPage = getPageNumber(m_nSeekPos);
+			int endPage = getPageNumber(m_nSeekPos + len);
 			
-			byte[] content = getContent();
-			System.arraycopy(b, off, content, (int)m_nSeekPos, n);
-			setContent(content);
+			int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
+			
+			byte[] content = m_info.getPage(startPage);
+			System.arraycopy(b, off, content, (int)(m_nSeekPos%PAGE_SIZE), n);
+			for (int i = startPage + 1; i <= endPage; ++i) {
+				content = m_info.getPage(i);
+				int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
+				System.arraycopy(b, off + n, content, 0, howmuch);
+				n += howmuch;
+			}
 			m_nSeekPos += n;
 		}
 	}
