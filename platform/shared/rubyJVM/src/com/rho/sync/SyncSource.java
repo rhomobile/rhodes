@@ -212,7 +212,7 @@ class SyncSource
 	    		strUpdateType = strTemp;
 	    	}
 	    	
-	    	makePushBody1( res );
+	    	makePushBody( res );
 	    }
 	    
 	    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
@@ -266,7 +266,7 @@ class SyncSource
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
-	void makePushBody1( IDBResult res )throws DBException
+	void makePushBody( IDBResult res )throws DBException
 	{
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
 
@@ -276,7 +276,7 @@ class SyncSource
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
 
-        if ( value.length() > 0 )
+        //if ( value.length() > 0 )
         {
             if ( attribType.equals("blob.file") )
             {
@@ -285,7 +285,8 @@ class SyncSource
                 strSrcBody += oBlobPath.getBaseName();
                 strSrcBody += "&attrvals[][attrib_type]=blob";
 
-                m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
+                if ( value.length() > 0 )
+                	m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
                 return;
             }else
                 strSrcBody += "&attrvals[][value]=" + value;
@@ -297,7 +298,7 @@ class SyncSource
         m_strPushBody += strSrcBody;
 	}
 	
-	String makePushBody( String szUpdateType)throws DBException
+	/*String makePushBody( String szUpdateType)throws DBException
 	{
 		String strBody = "";
 	    //boolean bFirst = true;
@@ -311,7 +312,7 @@ class SyncSource
 	            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 	
 	        String value = res.getStringByIdx(2);
-	        String attribType = res.getStringByIdx(3);
+	        String attribType = res.getStringByIdx(3);*/
 	
 	        /*if ( bFirst )
 	        {
@@ -322,8 +323,8 @@ class SyncSource
 	            attribType = "blob.file";
 	            bFirst = false;
 	        }*/
-	
-	        if ( value.length() > 0 )
+/*	
+	        //if ( value.length() > 0 )
 	        {
 	            if ( attribType.equals("blob.file") )
 	            {
@@ -332,7 +333,8 @@ class SyncSource
 	                strSrcBody += oBlobPath.getBaseName();
 	                strSrcBody += "&attrvals[][attrib_type]=blob";
 	
-	                m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
+	                if ( value.length() > 0 )
+	                	m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
 	                continue;
 	            }else
 	                strSrcBody += "&attrvals[][value]=" + value;
@@ -345,7 +347,7 @@ class SyncSource
 	    }
 	    
 	    return strBody;
-	}
+	}*/
 
 	void getAndremoveAsk()throws DBException
 	{
