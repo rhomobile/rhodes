@@ -262,6 +262,7 @@ module Rhom
                   condition_str = nil
                   limit = nil
                   offset = nil
+                  order_dir=""
                   if args[1]
                     if args[1][:conditions]
                       condition_hash = args[1][:conditions] if args[1][:conditions].is_a?(Hash)
@@ -279,6 +280,7 @@ module Rhom
                       offset = args[1][:offset].to_s
                     end
                     select_arr = args[1][:select] if args[1][:select]
+                    order_dir = args[1][:orderdir] if args[1][:orderdir]
                   end
                   
 		          start = Time.new
@@ -311,7 +313,7 @@ module Rhom
                     sql << " FROM object_values ov where update_type not in ('delete','update')\n"
                     sql << "AND " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
                     sql << "group by object\n"
-                    sql << "order by \"#{args[1][:order]}\"" if args[1] and args[1][:order]
+                    sql << "order by \"#{args[1][:order]}\" " + order_dir if args[1] and args[1][:order]
                     sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                     sql << ") WHERE " + condition_str if condition_str
                     sql << " LIMIT " + limit + " OFFSET " + offset if limit and offset
