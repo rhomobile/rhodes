@@ -214,7 +214,8 @@ public class SyncThread extends RhoThread
 	        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
 	            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
 
-			if ( nWait >= 0 )
+			if ( nWait >= 0 && m_oSyncEngine.getState() != SyncEngine.esExit && 
+				 isNoCommands() )
 			{
 				LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
 		        wait(nWait);
@@ -233,12 +234,23 @@ public class SyncThread extends RhoThread
 		}
 	}
 	
+	boolean isNoCommands()
+	{
+		boolean bEmpty = false;
+    	synchronized(m_mxStackCommands)
+    	{		
+    		bEmpty = m_stackCommands.isEmpty();
+    	}
+
+    	return bEmpty;
+	}
+	
 	void processCommands()throws Exception
 	{
-		if ( m_stackCommands.isEmpty() )
+		if ( isNoCommands() )
 			addSyncCommand(new SyncCommand(scNone));
-		
-		while(!m_stackCommands.isEmpty())
+    	
+		while(!isNoCommands())
 		{
 			SyncCommand oSyncCmd = null;
 	    	synchronized(m_mxStackCommands)

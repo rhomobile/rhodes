@@ -99,6 +99,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     
 	void doSyncAllSources()
 	{
+		LOG.INFO("Sync all sources started.");
 	    setState(esSyncAllSources);
 
 	    try
@@ -276,6 +277,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	String requestClientIDByNet()throws Exception
 	{
+		LOG.INFO("Request clientID by Net.");
+		
 	    String serverUrl = RhoConf.getInstance().getString("syncserver");
 	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
