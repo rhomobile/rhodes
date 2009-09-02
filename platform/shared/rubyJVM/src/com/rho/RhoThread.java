@@ -14,6 +14,8 @@ public class RhoThread extends Thread
     	m_isInWaitState = false;
     }
 
+    public Object getSyncObject(){ return m_syncObj; }
+    
     public void start(int ePriority)
     {
     	super.start();
@@ -66,11 +68,9 @@ public class RhoThread extends Thread
     
     public void stopWait()
     {
-    	if ( m_isInWaitState )
-    	{
-			synchronized (m_syncObj) {
-				m_syncObj.notify();
-			}
+		synchronized (m_syncObj) {
+	    	if ( m_isInWaitState )
+	    		m_syncObj.notify();
     	}    	
     }
 };

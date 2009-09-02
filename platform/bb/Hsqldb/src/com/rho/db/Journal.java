@@ -163,8 +163,8 @@ public class Journal
 		if ( nReaded <= 0 )
 			return;
 		
-		if ( nReaded != nLen )
-			throw new IOException("Cannot read '" + nLen + "' bytes from data file: only '" + nReaded +"' is available");
+//		if ( nReaded != nLen )
+//			throw new IOException("Cannot read '" + nLen + "' bytes from data file: only '" + nReaded +"' is available");
 
 		m_journalFile.writeLong(nPos);
 		m_journalFile.writeLong(nReaded);
