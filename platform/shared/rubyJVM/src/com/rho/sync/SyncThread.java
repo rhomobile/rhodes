@@ -117,7 +117,7 @@ public class SyncThread extends RhoThread
     SyncEngine  m_oSyncEngine;
     RhoClassFactory m_ptrFactory;
 	int           m_nPollInterval;
-	Mutex         m_mxStackCommands = new Mutex();
+	Object        m_mxStackCommands;// = new Mutex();
 	LinkedList	  m_stackCommands = new LinkedList();	         
 	
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
@@ -150,8 +150,10 @@ public class SyncThread extends RhoThread
 		m_ptrFactory = factory;
 	
 	    m_oSyncEngine.setFactory(factory);
-	
+	    m_mxStackCommands = getSyncObject();
+	    	
 	    ClientRegister.Create(factory);
+	    	    
 	    start(epLow);
 	}
 
@@ -161,6 +163,7 @@ public class SyncThread extends RhoThread
 
     void addSyncCommand(SyncCommand oSyncCmd)
     { 
+    	LOG.INFO( "addSyncCommand: " + oSyncCmd.m_nCmdCode );
     	synchronized(m_mxStackCommands)
     	{
     		boolean bExist = false;
@@ -214,12 +217,15 @@ public class SyncThread extends RhoThread
 	        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
 	            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
 
-			if ( nWait >= 0 && m_oSyncEngine.getState() != SyncEngine.esExit && 
-				 isNoCommands() )
-			{
-				LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
-		        wait(nWait);
-			}
+	        synchronized(m_mxStackCommands)
+	        {
+				if ( nWait >= 0 && m_oSyncEngine.getState() != SyncEngine.esExit && 
+					 isNoCommands() )
+				{
+					LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
+			        wait(nWait);
+				}
+	        }
 	        nLastSyncInterval = 0;
 			
 	        if ( m_oSyncEngine.getState() != SyncEngine.esExit )

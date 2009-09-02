@@ -311,7 +311,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	void syncAllSources()throws Exception
 	{
-	    for( int i = getStartSource(); i < m_sources.size() && getState() != esExit; i++ )
+	    for( int i = getStartSource(); i < m_sources.size() && isContinueSync(); i++ )
 	    {
 	    	SyncSource src = null;
 	    	try{
@@ -319,14 +319,18 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        if ( isSessionExist() && getState() != esStop )
 		            src.sync();
 		
-		        fireNotification(src, true, src.m_nErrCode, "" );
 	    	}catch(Exception exc)
 	    	{
 		    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
 		    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 		    	
-	    		fireNotification(src, true, src.m_nErrCode, "" ); 
+		    	setState(esStop);
 	    		throw exc;
+	    	}finally{
+    			fireNotification(src, true, src.m_nErrCode, "" );
+    			
+	    		if ( getState() == esStop )
+	    			fireAllNotifications(true, src.m_nErrCode, "" );
 	    	}
 	    }
 	}
@@ -494,6 +498,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 		}
 	}
 
+	void fireAllNotifications( boolean bFinish, int nErrCode, String strMessage )
+	{
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	    	doFireNotification( (SyncSource)m_sources.elementAt(i), bFinish, nErrCode, strMessage );
+	    }
+	}
+	
 	void fireNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
 	{
 		if ( getState() == esExit )
@@ -510,6 +522,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 			}
 		}
 		
+		doFireNotification(src, bFinish, nErrCode, strMessage );
+	}
+	
+	void doFireNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
+	{
 		if ( src == null )
 			return; //TODO: implement all sources callback
 		
