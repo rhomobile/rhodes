@@ -107,7 +107,8 @@ void CSyncThread::run()
                 nWait = nWait2;
         }
 
-		if ( nWait >= 0 )
+        if ( nWait >= 0 && m_oSyncEngine.getState() != CSyncEngine::esExit && 
+		     isNoCommands() )
 		{
 		    LOG(INFO) + "Sync engine blocked for " + nWait + " seconds...";
             wait(nWait);
@@ -121,12 +122,23 @@ void CSyncThread::run()
     RhoRubyThreadStop();
 }
 
+boolean CSyncThread::isNoCommands()
+{
+	boolean bEmpty = false;
+	{		
+    	CMutexLock lockNotify(m_mxStackCommands);
+		bEmpty = m_stackCommands.isEmpty();
+	}
+
+	return bEmpty;
+}
+
 void CSyncThread::processCommands()//throws Exception
 {
-	if ( m_stackCommands.isEmpty() )
-		addSyncCommand(new CSyncCommand(scNone));
-	
-	while(!m_stackCommands.isEmpty())
+    if ( isNoCommands() )
+        addSyncCommand(new CSyncCommand(scNone));
+
+	while(!isNoCommands())
 	{
 		common::CAutoPtr<CSyncCommand> pSyncCmd = null;
     	{

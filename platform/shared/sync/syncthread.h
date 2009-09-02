@@ -111,6 +111,7 @@ private:
 
     void processCommands();
     void processCommand(CSyncCommand& oSyncCmd);
+    boolean isNoCommands();
 };
 
 }
