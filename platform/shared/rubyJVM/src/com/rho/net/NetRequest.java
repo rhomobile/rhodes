@@ -97,8 +97,13 @@ public class NetRequest
 					oSession.logout();
 				
 				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+				{
 					buffer = readFully(is);
-
+					
+					if ( code == IHttpConnection.HTTP_MOVED_TEMPORARILY ||
+						 code == IHttpConnection.HTTP_MOVED_PERMANENTLY )
+						LOG.INFO("Response body: " + buffer.toString() );
+				}
 			}else
 			{
 				long len = m_connection.getLength();
