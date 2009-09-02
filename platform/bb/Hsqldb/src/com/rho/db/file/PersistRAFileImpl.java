@@ -25,11 +25,14 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final String version = "2.0";
+	private static final String version = "debug.2.4";
 	
-	private static final int PAGE_SIZE = 256;
+	private static final int PAGE_SIZE = 4096;
 	
 	private static Hashtable m_shared = new Hashtable();
+	
+	private static int m_all_sync_times = 0;
+	private int m_sync_times = 0;
 	
 	// Only for debug purposes
 	private static int id = 0;
@@ -45,6 +48,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 	
 	private class Page {
 		public byte[] content;
+		public boolean dirty;
 		
 		public Page() {
 			this(null);
@@ -52,6 +56,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		public Page(byte[] c) {
 			content = c;
+			dirty = false;
 		}
 	};
 	
@@ -59,6 +64,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 		//private String m_name;
 		private long m_size;
 		private Page[] m_pages;
+		private boolean m_dirty;
 		private int m_use_count;
 		
 		private long getSizeKey() {
@@ -70,6 +76,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public FileInfo() {
+			m_dirty = false;
 			long key = getSizeKey();
 			PersistentObject persInfo = PersistentStore.getPersistentObject(key);
 			Long psize = (Long)persInfo.getContents();
@@ -83,6 +90,11 @@ public class PersistRAFileImpl implements RAFileImpl {
 				m_pages[i] = new Page();
 			
 			m_use_count = 0;
+		}
+		
+		public void setPageDirty(int idx) {
+			m_pages[idx].dirty = true;
+			m_dirty = true;
 		}
 		
 		public byte[] getPage(int n) {
@@ -115,14 +127,25 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public void sync() {
+			if (m_mode != RandomAccessFile.WRITE && m_mode != RandomAccessFile.READ_WRITE)
+				return;
+			
+			if (!m_dirty)
+				return;
+			
+			LOG.TRACE("Sync called for " + m_name + ": " + ++m_sync_times + " (" + ++m_all_sync_times +
+					" all), size: " + m_size + ", pages: " + m_pages.length);
+			
 			synchronized (PersistentStore.getSynchObject()) {
 				for(int i = 0; i != m_pages.length; ++i) {
 					Page page = m_pages[i];
-					if (page.content != null) {
+					if (page.content != null && page.dirty) {
+						//LOG.TRACE("Sync " + m_name + ": page " + i);
 						long key = getPageKey(i);
 						PersistentObject persPage = PersistentStore.getPersistentObject(key);
 						persPage.setContents(page.content);
 						persPage.commit();
+						page.dirty = false;
 					}
 				}
 				
@@ -130,7 +153,10 @@ public class PersistRAFileImpl implements RAFileImpl {
 				PersistentObject persInfo = PersistentStore.getPersistentObject(key);
 				persInfo.setContents(new Long(m_size));
 				persInfo.commit();
+				m_dirty = false;
 			}
+			
+			LOG.TRACE("Sync done for " + m_name);
 		}
 		
 		public void addRef() {
@@ -138,9 +164,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public void release() {
-			if (--m_use_count == 0) {
+			if (--m_use_count == 0)
 				sync();
-			}
 		}
 	};
 	
@@ -271,6 +296,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 			byte[] content = m_info.getPage(n);
 			content[(int)(m_nSeekPos%PAGE_SIZE)] = (byte)b;
 			++m_nSeekPos;
+			
+			m_info.setPageDirty(n);
 		}
 	}
 
@@ -293,10 +320,14 @@ public class PersistRAFileImpl implements RAFileImpl {
 			
 			byte[] content = m_info.getPage(startPage);
 			System.arraycopy(b, off, content, (int)(m_nSeekPos%PAGE_SIZE), n);
+			m_info.setPageDirty(startPage);
+			
 			for (int i = startPage + 1; i <= endPage; ++i) {
-				content = m_info.getPage(i);
 				int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
+				content = m_info.getPage(i);
 				System.arraycopy(b, off + n, content, 0, howmuch);
+				m_info.setPageDirty(i);
+				
 				n += howmuch;
 			}
 			m_nSeekPos += n;
