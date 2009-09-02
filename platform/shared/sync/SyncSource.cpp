@@ -142,7 +142,7 @@ void CSyncSource::syncClientChanges()
     		strUpdateType = strTemp;
     	}
     	
-    	makePushBody1( res );
+    	makePushBody( res );
     }
     
     if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
@@ -189,7 +189,7 @@ boolean CSyncSource::sendClientChanges(String strUpdateType)//throws Exception
  * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
  * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
  */
-void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
+void CSyncSource::makePushBody( rho::db::CDBResult& res )//throws DBException
 {
     String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
 
@@ -199,7 +199,7 @@ void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
     String value = res.getStringByIdx(2);
     String attribType = res.getStringByIdx(3);
 
-    if ( value.length() > 0 )
+    //if ( value.length() > 0 )
     {
         if ( attribType == "blob.file" )
         {
@@ -208,7 +208,8 @@ void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
             strSrcBody += oBlobPath.getBaseName();
             strSrcBody += "&attrvals[][attrib_type]=blob";
 
-            m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
+            if ( value.length() > 0 )
+                m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
             return;
         }else
             strSrcBody += "&attrvals[][value]=" + value;
@@ -219,7 +220,7 @@ void CSyncSource::makePushBody1( rho::db::CDBResult& res )//throws DBException
 
     m_strPushBody += strSrcBody;
 }
-
+/*
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     //boolean bFirst = true;
@@ -235,14 +236,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
 
-        /*if ( bFirst )
-        {
-            value = "d:\\work\\blobtest.png";
-            attribType = "blob.file";
-            bFirst = false;
-        }*/
-
-        if ( value.length() > 0 )
+        //if ( value.length() > 0 )
         {
             if ( attribType == "blob.file" )
             {
@@ -253,8 +247,8 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 //#ifdef __APPLE__
 //				value = String(RhoGetRootPath()) + "apps" + value;
 //#endif
-				
-                m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
+				if ( value.length() > 0 )
+                    m_arSyncBlobs.addElement(new CSyncBlob(strSrcBody,value));
                 continue;
             }else
                 strSrcBody += "&attrvals[][value]=" + value;
@@ -265,7 +259,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 
         strBody += strSrcBody;
     }
-}
+}*/
 
 void CSyncSource::getAndremoveAsk()
 {

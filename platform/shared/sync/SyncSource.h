@@ -89,8 +89,8 @@ public:
 
     void syncClientChanges();
     void syncServerChanges();
-    void makePushBody(String& strBody, const char* szUpdateType);
-    void makePushBody1( rho::db::CDBResult& res );//throws DBException
+    //void makePushBody(String& strBody, const char* szUpdateType);
+    void makePushBody( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();
     void setAskParams(const String& ask){ m_strAskParams = ask;}
     String getAskParams()const{ return m_strAskParams;}
