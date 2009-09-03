@@ -27,8 +27,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	//private static final String version = "2.0";
-	private static final String version = "debug.2.11";
+	private static final String version = "2.1";
+	//private static final String version = "debug.2.11";
 	
 	private static final int PAGE_SIZE = 4096;
 	
