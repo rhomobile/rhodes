@@ -543,16 +543,18 @@ module Rhom
                           ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>update_type})
                           # add to syncengine queue
                           ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
-                          # update viewable ('query') list
-                          ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>'query'})
-                          result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>'query'})
                           
-                          ::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
+                          # update viewable ('query') list
+                          #::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>'query'})
+                          #result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>'query'})
+                          ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>self.get_inst_source_id, "update_type"=>'query'})
+                          
+                          #::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
                         end
                       end
                     end
                     
-                    ::Rhom::RhomAttribManager.save(self.get_inst_source_id)
+                    #::Rhom::RhomAttribManager.save(self.get_inst_source_id)
                     ::Rhom::RhomDbAdapter.commit
 
                 rescue Exception => e
