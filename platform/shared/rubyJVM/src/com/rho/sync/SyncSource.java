@@ -624,9 +624,9 @@ class SyncSource
 		    }else if ( nDbOp == 1 ) //delete
 		    {
 		    	long id = oJsonEntry.getLong("i");
+		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 		
-		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 		        m_nDeleted++;
 		    }else{
 		        LOG.ERROR("Unknown DB operation: " + nDbOp );
@@ -665,9 +665,9 @@ class SyncSource
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
 	    	long id = oJsonEntry.getLong("id");
+	        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 	        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 	
-	        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
 	        m_nDeleted++;
 	    }else{
 	        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );

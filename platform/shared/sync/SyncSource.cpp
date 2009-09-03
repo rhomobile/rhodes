@@ -535,9 +535,9 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exce
         }else if ( nDbOp == 1 ) //delete
         {
             uint64 id = oJsonEntry.getUInt64("i");
+            RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
             getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
-            RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
             m_nDeleted++;
         }else{
             LOG(ERROR) + "Unknown DB operation: " + nDbOp;
@@ -575,9 +575,9 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonObject)
     }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
     {
         uint64 id = oJsonEntry.getUInt64("id");
+        RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
         getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
-        RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
         m_nDeleted++;
     }else{
         LOG(ERROR) + "Unknown DB operation: " + (szDbOp ? szDbOp : "");
