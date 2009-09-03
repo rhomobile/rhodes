@@ -27,10 +27,11 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final String version = "2.1";
-	//private static final String version = "debug.2.11";
+	private static final String version = "2.2";
+	//private static final String version = "debug.2.13";
 	
 	private static final int PAGE_SIZE = 4096;
+	private static final int MAX_CLEAR_PAGES_CACHED = 1;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
@@ -56,6 +57,16 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 	};
 	
+	private static class FileInfoWrapper implements Persistable {
+		public String name;
+		public Long size;
+		
+		public FileInfoWrapper(String n, long s) {
+			name = n;
+			size = new Long(s);
+		}
+	};
+	
 	private class Page {
 		public byte[] content;
 		public boolean dirty;
@@ -73,13 +84,12 @@ public class PersistRAFileImpl implements RAFileImpl {
 	private class FileInfo {
 		//private String m_name;
 		private long m_size;
-		//private Page[] m_pages;
 		private Vector m_pages;
 		private int m_dirty;
 		private int m_use_count;
 		
-		private long getSizeKey() {
-			return StringUtilities.stringHashToLong(getObjName() + ";size");
+		private long getInfoKey() {
+			return StringUtilities.stringHashToLong(getObjName() + ";info");
 		}
 		
 		private long getPageKey(int n) {
@@ -88,17 +98,12 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		public FileInfo() {
 			m_dirty = 0;
-			long key = getSizeKey();
+			long key = getInfoKey();
 			PersistentObject persInfo = PersistentStore.getPersistentObject(key);
-			Long psize = (Long)persInfo.getContents();
-			if (psize == null)
-				psize = new Long(0);
+			FileInfoWrapper wrapper = (FileInfoWrapper)persInfo.getContents();
+			m_size = wrapper == null ? 0 : wrapper.size.longValue();
 			
-			m_size = psize.longValue();
 			int n = (int)(m_size/PAGE_SIZE) + 1;
-			//m_pages = new Page[n];
-			//for (int i = 0; i != n; ++i)
-			//	m_pages[i] = new Page();
 			m_pages = new Vector(n);
 			for (int i = 0; i != n; ++i)
 				m_pages.addElement(new Page());
@@ -107,17 +112,27 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public void setPageDirty(int idx) {
-			//Page page = m_pages[idx];
 			Page page = (Page)m_pages.elementAt(idx);
 			if (!page.dirty)
 				++m_dirty;
 			page.dirty = true;
 		}
 		
+		private void unloadClearPages(int needToClear) {
+			for (int i = m_pages.size() - 1; needToClear > 0 && i >= 0; --i) {
+				Page page = (Page)m_pages.elementAt(i);
+				if (page.dirty)
+					continue;
+				page.content = null;
+				--needToClear;
+			}
+		}
+		
 		public byte[] getPage(int n) {
-			//Page page = m_pages[n];
 			Page page = (Page)m_pages.elementAt(n);
 			if (page.content == null) {
+				int clearPages = m_pages.size() - m_dirty;
+				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED + 1);
 				long key = getPageKey(n);
 				PersistentObject persPage = PersistentStore.getPersistentObject(key);
 				ByteArrayWrapper wrapper = (ByteArrayWrapper)persPage.getContents();
@@ -132,13 +147,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		public void setSize(long newSize) {
 			int n = (int)(newSize/PAGE_SIZE + 1);
-			//if (n != m_pages.length) {
 			if (n != m_pages.size()) {
-				//Page[] newPages = new Page[n];
-				//System.arraycopy(m_pages, 0, newPages, 0, n >= m_pages.length ? m_pages.length : n);
-				//for (int i = m_pages.length; i != n; ++i)
-				//	newPages[i] = new Page();
-				//m_pages = newPages;
 				int prevSize = m_pages.size();
 				m_pages.setSize(n);
 				for (int i = prevSize; i != n; ++i)
@@ -158,9 +167,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 					" all), size: " + m_size + ", dirty pages: " + m_dirty);
 			
 			synchronized (PersistentStore.getSynchObject()) {
-				//for(int i = m_pages.length - 1; m_dirty > 0 && i >= 0; --i) {
 				for (int i = m_pages.size() - 1; m_dirty > 0 && i >= 0; --i) {
-					//Page page = m_pages[i];
 					Page page = (Page)m_pages.elementAt(i);
 					if (page.content != null && page.dirty) {
 						//LOG.TRACE("Sync " + m_name + ": page " + i);
@@ -173,9 +180,12 @@ public class PersistRAFileImpl implements RAFileImpl {
 					}
 				}
 				
-				long key = getSizeKey();
+				int clearPages = m_pages.size() - m_dirty;
+				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED);
+				
+				long key = getInfoKey();
 				PersistentObject persInfo = PersistentStore.getPersistentObject(key);
-				persInfo.setContents(new Long(m_size));
+				persInfo.setContents(new FileInfoWrapper(m_name, m_size));
 				persInfo.commit();
 			}
 			
