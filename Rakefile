@@ -138,11 +138,13 @@ namespace "build" do
       create_manifest
       
       cp   compileERB, $srcdir
+      puts "Running default.rb"
       puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/default.rb` 
 
       rm "#{$srcdir}/default.rb"
 
       cp   compileRB, $srcdir
+      puts "Running compileRB"
       puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/compileRB.rb` 
 
       chdir $srcdir
