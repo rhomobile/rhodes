@@ -1,6 +1,15 @@
 namespace "config" do
   task :wm => ["config:common"] do
-    #TODO: Implement
+    $rubypath = "rhodes/rhodes-build/res/RhoRuby.exe" #path to RubyMac
+    wmpath = $config["build"]["wmpath"]
+    $bbver = $config["env"]["bbver"]
+    $builddir = wmpath + "/build"
+    $bindir = wmpath + "/bin"
+    $srcdir =  wmpath + "/bin/RhoBundle"
+    $targetdir = wmpath + "/target/wm6p"
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
+    $tmpdir =  $bindir +"/tmp"
+    $vcbuild = "vcbuild"
   end
 end
 
@@ -8,15 +17,65 @@ namespace "build" do
   namespace "wm" do
     desc "Build wm rhobundle"
     task :rhobundle => ["config:wm"] do
-      currentdir = pwd
-      chdir 'platform/wm/build'
-      puts `ant.bat RhoBundle -Dapps.dir="#{$config["env"]["app"]}"`
-      unless $? == 0
-        puts "Error building wm"
-        exit 1
-      end
-
-      chdir currentdir
+      Rake::Task["build:bundle:noxruby"].execute
     end
+
+    task :rhodes => ["config:wm", "build:rhobundle"] do
+      chdir $config["build"]["wmpath"]
+
+      args = ['/M4', 'rhodes.sln', '"Release|Windows Mobile 6 Professional SDK (ARMV4I)"']
+      puts Jake.run($vcbuild,args)
+      unless $? == 0
+        puts "Error building"
+        exit 1
+      end   
+    end
+  end
+end
+
+namespace "package" do
+  namespace "wm" do
+    task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
+      
+      chdir $builddir
+      
+      args = ['build_inf.js', 'rhodes.inf', 'wm6']
+      puts Jake.run('cscript',args)
+      unless $? == 0
+        puts "Error running build_inf"
+        exit 1
+      end        
+      
+      args = ['rhodes.inf']
+      puts Jake.run($config["env"]["paths"]["cabwiz"] + "/сabwiz.exe",args)
+      unless $? == 0
+        puts "Error running cabwiz"
+        exit 1
+      end        
+      
+      args = ['cleanup.js']
+      puts Jake.run('cscript',args)
+      unless $? == 0
+        puts "Error running cleanup.js"
+        exit 1
+      end    
+
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      mv "rhodes.inf", $bindir
+      mv "rhodes.cab", $targetdir
+
+      rm_f "cleanup.js"
+
+    end
+  end
+end
+
+namespace "clean" do
+  namespace "wm" do
+    task :rhodes do
+      rm_rf $bindir + "/Windows Mobile 6 Professional SDK (ARMV4I)"
+    end
+
   end
 end
