@@ -26,17 +26,17 @@ module Rho
         elsif code == ERR_REMOTESERVER
             return "Server returned an error."
         elsif code ==  ERR_RUNTIME
-            return "Internal error."
+            return "Application has encountered an error and must close."
         elsif code ==  ERR_UNEXPECTEDSERVERRESPONSE
-            return "Unexpected server response."
+            return "Sync server returned an unexpected response."
         elsif code ==  ERR_DIFFDOMAINSINSYNCSRC
-            return "All sync sources should be from one domain."
+            return "All sync sources should be from one domain.Re-install the application."
         elsif code ==  ERR_NOSERVERRESPONSE
             return "Could not connect to sync server."
         elsif code ==  ERR_CLIENTISNOTLOGGEDIN
             return "Client is not logged in. No sync will be performed."
         elsif code ==  ERR_CUSTOMSYNCSERVER
-            return "Sync server returned application error."
+            return "Could not connect to data server."
         elsif code ==  ERR_NONE
             return ""
         end
