@@ -5,9 +5,11 @@ import j2me.lang.AssertMe;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
+import net.rim.device.api.util.Persistable;
 import net.rim.device.api.util.StringUtilities;
 
 import com.rho.RhoEmptyLogger;
@@ -25,9 +27,11 @@ public class PersistRAFileImpl implements RAFileImpl {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final String version = "debug.2.4";
+	private static final String version = "2.2";
+	//private static final String version = "debug.2.13";
 	
 	private static final int PAGE_SIZE = 4096;
+	private static final int MAX_CLEAR_PAGES_CACHED = 1;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
@@ -46,6 +50,23 @@ public class PersistRAFileImpl implements RAFileImpl {
 		return kprefix + "." + version + ":" + m_name + ";pagesize=" + PAGE_SIZE;
 	}
 	
+	private static class ByteArrayWrapper implements Persistable {
+		public byte[] content;
+		public ByteArrayWrapper(byte[] c) {
+			content = c;
+		}
+	};
+	
+	private static class FileInfoWrapper implements Persistable {
+		public String name;
+		public Long size;
+		
+		public FileInfoWrapper(String n, long s) {
+			name = n;
+			size = new Long(s);
+		}
+	};
+	
 	private class Page {
 		public byte[] content;
 		public boolean dirty;
@@ -63,12 +84,12 @@ public class PersistRAFileImpl implements RAFileImpl {
 	private class FileInfo {
 		//private String m_name;
 		private long m_size;
-		private Page[] m_pages;
-		private boolean m_dirty;
+		private Vector m_pages;
+		private int m_dirty;
 		private int m_use_count;
 		
-		private long getSizeKey() {
-			return StringUtilities.stringHashToLong(getObjName() + ";size");
+		private long getInfoKey() {
+			return StringUtilities.stringHashToLong(getObjName() + ";info");
 		}
 		
 		private long getPageKey(int n) {
@@ -76,36 +97,46 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public FileInfo() {
-			m_dirty = false;
-			long key = getSizeKey();
+			m_dirty = 0;
+			long key = getInfoKey();
 			PersistentObject persInfo = PersistentStore.getPersistentObject(key);
-			Long psize = (Long)persInfo.getContents();
-			if (psize == null)
-				psize = new Long(0);
+			FileInfoWrapper wrapper = (FileInfoWrapper)persInfo.getContents();
+			m_size = wrapper == null ? 0 : wrapper.size.longValue();
 			
-			m_size = psize.longValue();
 			int n = (int)(m_size/PAGE_SIZE) + 1;
-			m_pages = new Page[n];
+			m_pages = new Vector(n);
 			for (int i = 0; i != n; ++i)
-				m_pages[i] = new Page();
+				m_pages.addElement(new Page());
 			
 			m_use_count = 0;
 		}
 		
 		public void setPageDirty(int idx) {
-			m_pages[idx].dirty = true;
-			m_dirty = true;
+			Page page = (Page)m_pages.elementAt(idx);
+			if (!page.dirty)
+				++m_dirty;
+			page.dirty = true;
+		}
+		
+		private void unloadClearPages(int needToClear) {
+			for (int i = m_pages.size() - 1; needToClear > 0 && i >= 0; --i) {
+				Page page = (Page)m_pages.elementAt(i);
+				if (page.dirty)
+					continue;
+				page.content = null;
+				--needToClear;
+			}
 		}
 		
 		public byte[] getPage(int n) {
-			Page page = m_pages[n];
+			Page page = (Page)m_pages.elementAt(n);
 			if (page.content == null) {
+				int clearPages = m_pages.size() - m_dirty;
+				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED + 1);
 				long key = getPageKey(n);
 				PersistentObject persPage = PersistentStore.getPersistentObject(key);
-				byte[] content = (byte[])persPage.getContents();
-				if (content == null)
-					content = new byte[PAGE_SIZE];
-				page.content = content;
+				ByteArrayWrapper wrapper = (ByteArrayWrapper)persPage.getContents();
+				page.content = wrapper == null ? new byte[PAGE_SIZE] : wrapper.content;
 			}
 			return page.content;
 		}
@@ -116,12 +147,11 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		public void setSize(long newSize) {
 			int n = (int)(newSize/PAGE_SIZE + 1);
-			if (n != m_pages.length) {
-				Page[] newPages = new Page[n];
-				System.arraycopy(m_pages, 0, newPages, 0, n >= m_pages.length ? m_pages.length : n);
-				for (int i = m_pages.length; i != n; ++i)
-					newPages[i] = new Page();
-				m_pages = newPages;
+			if (n != m_pages.size()) {
+				int prevSize = m_pages.size();
+				m_pages.setSize(n);
+				for (int i = prevSize; i != n; ++i)
+					m_pages.setElementAt(new Page(), i);
 			}
 			m_size = newSize;
 		}
@@ -130,30 +160,33 @@ public class PersistRAFileImpl implements RAFileImpl {
 			if (m_mode != RandomAccessFile.WRITE && m_mode != RandomAccessFile.READ_WRITE)
 				return;
 			
-			if (!m_dirty)
+			if (m_dirty == 0)
 				return;
 			
 			LOG.TRACE("Sync called for " + m_name + ": " + ++m_sync_times + " (" + ++m_all_sync_times +
-					" all), size: " + m_size + ", pages: " + m_pages.length);
+					" all), size: " + m_size + ", dirty pages: " + m_dirty);
 			
 			synchronized (PersistentStore.getSynchObject()) {
-				for(int i = 0; i != m_pages.length; ++i) {
-					Page page = m_pages[i];
+				for (int i = m_pages.size() - 1; m_dirty > 0 && i >= 0; --i) {
+					Page page = (Page)m_pages.elementAt(i);
 					if (page.content != null && page.dirty) {
 						//LOG.TRACE("Sync " + m_name + ": page " + i);
 						long key = getPageKey(i);
 						PersistentObject persPage = PersistentStore.getPersistentObject(key);
-						persPage.setContents(page.content);
+						persPage.setContents(new ByteArrayWrapper(page.content));
 						persPage.commit();
 						page.dirty = false;
+						--m_dirty;
 					}
 				}
 				
-				long key = getSizeKey();
+				int clearPages = m_pages.size() - m_dirty;
+				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED);
+				
+				long key = getInfoKey();
 				PersistentObject persInfo = PersistentStore.getPersistentObject(key);
-				persInfo.setContents(new Long(m_size));
+				persInfo.setContents(new FileInfoWrapper(m_name, m_size));
 				persInfo.commit();
-				m_dirty = false;
 			}
 			
 			LOG.TRACE("Sync done for " + m_name);
