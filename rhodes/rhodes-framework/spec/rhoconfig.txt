@@ -19,3 +19,4 @@ KeepTrackOfLastVisitedPage = 0
 LastVisitedPage = ''
 
 arbitrary_option = 'rhodes rocks!'
+sync_poll_interval=0

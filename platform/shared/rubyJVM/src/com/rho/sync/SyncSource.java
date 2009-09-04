@@ -185,125 +185,75 @@ class SyncSource
 
 	void syncClientChanges()throws Exception
 	{
-		LOG.INFO("Sync client changes source ID :" + getID() );
-		
-	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "+
-				 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() );
-	    
-	    String strUpdateType = "";
-    	m_arSyncBlobs.removeAllElements();
-    	m_strPushBody = "";
-    	
-	    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+	    String[] arUpdateTypes = {"create", "update", "delete"};
+	    for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	    {
-	    	String strTemp  = res.getStringByIdx(4);
-	    	if ( !strUpdateType.equals(strTemp) )
-	    	{
-	    		if ( strUpdateType.length() > 0 )
-	    		{
-	    			if ( !sendClientChanges(strUpdateType) )
-	    			{
-	    				getSync().setState(SyncEngine.esStop);
-	                	continue;
-	    			}	
-	    		}
-	    		
-	    		m_strPushBody = "";
-	    		strUpdateType = strTemp;
-	    	}
-	    	
-	    	makePushBody( res );
+	        String strUrl = getUrl() + "/" + arUpdateTypes[i];
+	        strUrl += "objects";
+	        String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+
+	        m_arSyncBlobs.removeAllElements();
+	        String strBody = makePushBody(arUpdateTypes[i]);
+	        if ( strBody.length() > 0 )
+	        {
+			    LOG.INFO( "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length() );
+			    LOG.TRACE("Push body: " + strBody);		
+	 
+	            NetResponse resp = getNet().pushData(strUrl+strQuery,strBody, getSync());
+	            if ( !resp.isOK() )
+	            {
+	                getSync().setState(SyncEngine.esStop);
+	                continue;
+	            }
+	        }
+	 
+	        if ( m_arSyncBlobs.size()>0 )
+	        {
+			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
+
+	            if ( i == 0 ) //create
+	            {
+	                IDBResult res = getDB().executeSQL("SELECT object, attrib " +
+						     "FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
+	                    getID(), arUpdateTypes[i], "blob.file" );
+	                for( ; !res.isEnd(); res.next() )
+	                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+	                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	            }
+
+	            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
+	                getID(), arUpdateTypes[i], "blob.file" );
+	            syncClientBlobs(strUrl+strQuery);
+	        }else if ( strBody.length() > 0 )
+	        {
+	            if ( i == 0 ) //create
+	            {
+	                IDBResult res = getDB().executeSQL("SELECT object, attrib "+
+						     "FROM changed_values where source_id=? and update_type =?", getID(), arUpdateTypes[i] );
+	                for( ; !res.isEnd(); res.next() )
+	                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+	                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	            }
+
+	            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+	        }
 	    }
-	    
-	    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
-	    	sendClientChanges(strUpdateType);
-	}
-
-	boolean sendClientChanges(String strUpdateType)throws Exception
-	{
-	    String strUrl = getUrl() + "/" + strUpdateType;
-	    strUrl += "objects";
-	    String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
-	
-	    if ( m_strPushBody.length() > 0 )
-	    {
-		    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length());
-		    LOG.TRACE( "Push body: " + m_strPushBody );		
-	
-		    try{
-		    	NetResponse resp = getNet().pushData(strUrl+strQuery,m_strPushBody, getSync() );
-		        if ( !resp.isOK() )
-		        {
-		        	m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-		        	//m_strError = resp.getCharData();
-		        	
-		            return false;
-		        }
-		    }catch(Exception exc)
-		    {
-		    	m_nErrCode = RhoRuby.getNetErrorCode(exc);
-		    	throw exc;
-		    }
-	    }
-	
-	    if ( m_arSyncBlobs.size() > 0  )
-	    {
-		    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
-	
-	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
-	        syncClientBlobs(strUrl+strQuery);
-	    }else if ( m_strPushBody.length() > 0 )
-	        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
-	    
-	    return true;
 	}
 	
-/*
- * Construct the body of the request by filtering 
- * the attr_filter string. The body format should
- * look like the following:
- * create: attrvals[][attrib]=<name|industry>&attrvals[][object]=<locallygeneratedid>&attrvals[][value]=<some value>
- * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
- * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
- */
-	void makePushBody( IDBResult res )throws DBException
-	{
-        String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
-
-        if ( res.getStringByIdx(1).length() > 0 ) 
-            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
-
-        String value = res.getStringByIdx(2);
-        String attribType = res.getStringByIdx(3);
-
-        //if ( value.length() > 0 )
-        {
-            if ( attribType.equals("blob.file") )
-            {
-                FilePath oBlobPath = new FilePath(value);
-                strSrcBody += "&attrvals[][value]=";
-                strSrcBody += oBlobPath.getBaseName();
-                strSrcBody += "&attrvals[][attrib_type]=blob";
-
-                if ( value.length() > 0 )
-                	m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
-                return;
-            }else
-                strSrcBody += "&attrvals[][value]=" + value;
-        }
-
-        if ( m_strPushBody.length() > 0 )
-        	m_strPushBody += "&";
-
-        m_strPushBody += strSrcBody;
-	}
+	/*
+	 * Construct the body of the request by filtering 
+	 * the attr_filter string. The body format should
+	 * look like the following:
+	 * create: attrvals[][attrib]=<name|industry>&attrvals[][object]=<locallygeneratedid>&attrvals[][value]=<some value>
+	 * update: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>&attrvals[][value]=<some new value>
+	 * delete: attrvals[][attrib]=<name|industry>&attrvals[][object]=<remoteid>
+	 */
 	
-	/*String makePushBody( String szUpdateType)throws DBException
+	String makePushBody( String szUpdateType)throws DBException
 	{
 		String strBody = "";
-	    //boolean bFirst = true;
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
-						 "FROM object_values where source_id=? and update_type =?", getID(), szUpdateType );
+						 "FROM changed_values where source_id=? and update_type =?", getID(), szUpdateType );
 	    for( ; !res.isEnd(); res.next() )
 	    {
 	        String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
@@ -312,18 +262,9 @@ class SyncSource
 	            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 	
 	        String value = res.getStringByIdx(2);
-	        String attribType = res.getStringByIdx(3);*/
+	        String attribType = res.getStringByIdx(3);
 	
-	        /*if ( bFirst )
-	        {
-	        	try{
-	            	value = DBAdapter.makeBlobFolderName() + "blobtest.png";
-	        	}catch(Exception e){}
-	        	
-	            attribType = "blob.file";
-	            bFirst = false;
-	        }*/
-/*	
+	
 	        //if ( value.length() > 0 )
 	        {
 	            if ( attribType.equals("blob.file") )
@@ -347,22 +288,28 @@ class SyncSource
 	    }
 	    
 	    return strBody;
-	}*/
+	}
 
 	void getAndremoveAsk()throws DBException
 	{
 	    String askParams = "";
 	    {
-	        IDBResult res = getDB().executeSQL("SELECT value from object_values where source_id=? and update_type=?", 
-	            getID(), "ask" );
-        	askParams = res.isEnd() ? "" : res.getStringByIdx(0);
+	        IDBResult res = getDB().executeSQL("SELECT object, attrib, value "+
+				     "FROM changed_values WHERE source_id=? and update_type =?", getID(), "ask" );
+	        if ( !res.isEnd() )
+	        {
+	            askParams = res.getStringByIdx(2);
+
+	            getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+	                res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	        }
 	    }
-	
-	    getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), "ask" );
-	
+
+	    getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "ask" );
+
 	    setAskParams(askParams);
 	}
-
+	
 	void syncServerChanges()throws Exception
 	{
 		LOG.INFO("Sync server changes source ID :" + getID() );
@@ -610,14 +557,14 @@ class SyncSource
 		    		return false;
 		    	
 		    	String strAttrib = oJsonEntry.getString("a");
-		    	String strUpdateType = "query";
-		    	if( oJsonEntry.hasName("u") )
-		    		strUpdateType = oJsonEntry.getString("u");
+		    	//String strUpdateType = "query";
+		    	//if( oJsonEntry.hasName("u") )
+		    	//	strUpdateType = oJsonEntry.getString("u");
 		    	
 		        getDB().executeSQL("INSERT INTO object_values " +
-		            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+		            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
 		            new Long(value.m_nID), strAttrib, getID(), strObject,
-		            value.m_strValue, strUpdateType, value.m_strAttrType );
+		            value.m_strValue, value.m_strAttrType );
 		        
 		        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
 		        m_nInserted++;
@@ -656,9 +603,9 @@ class SyncSource
 	    	
 	    	String strAttrib = oJsonEntry.getString("attrib");
 	        getDB().executeSQL("INSERT INTO object_values " +
-	            "(id, attrib, source_id, object, value, update_type,attrib_type) VALUES(?,?,?,?,?,?,?)", 
+	            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
 	            new Long(value.m_nID), strAttrib, getID(), oJsonEntry.getString("object"),
-	            value.m_strValue, oJsonEntry.getString("update_type"), value.m_strAttrType );
+	            value.m_strValue, value.m_strAttrType );
 	        
 	        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
 	        m_nInserted++;
@@ -682,7 +629,8 @@ class SyncSource
 			//Delete non-confirmed records
 	    	
 	        setToken( token ); //For m_bTokenFromDB = false;
-	        getDB().executeSQL("DELETE FROM object_values where source_id=? and token=?", getID(), token );
+	        //getDB().executeSQL("DELETE FROM object_values where source_id=? and token=?", getID(), token );
+	        //TODO: add special table for id,token
 		}else
 	    {
 	        setToken( token );
@@ -691,3 +639,112 @@ class SyncSource
 	
 	}
 }
+
+/*
+void syncClientChanges()throws Exception
+{
+	LOG.INFO("Sync client changes source ID :" + getID() );
+	
+    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, update_type "+
+			 "FROM object_values where source_id=? and (update_type = 'update' or update_type = 'create' or update_type = 'delete') order by update_type", getID() );
+    
+    String strUpdateType = "";
+	m_arSyncBlobs.removeAllElements();
+	m_strPushBody = "";
+	
+    for( ; !res.isEnd()&& getSync().isContinueSync(); res.next() )
+    {
+    	String strTemp  = res.getStringByIdx(4);
+    	if ( !strUpdateType.equals(strTemp) )
+    	{
+    		if ( strUpdateType.length() > 0 )
+    		{
+    			if ( !sendClientChanges(strUpdateType) )
+    			{
+    				getSync().setState(SyncEngine.esStop);
+                	continue;
+    			}	
+    		}
+    		
+    		m_strPushBody = "";
+    		strUpdateType = strTemp;
+    	}
+    	
+    	makePushBody( res );
+    }
+    
+    if ( getSync().isContinueSync() && strUpdateType.length() > 0 )
+    	sendClientChanges(strUpdateType);
+}
+
+boolean sendClientChanges(String strUpdateType)throws Exception
+{
+    String strUrl = getUrl() + "/" + strUpdateType;
+    strUrl += "objects";
+    String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID();
+
+    if ( m_strPushBody.length() > 0 )
+    {
+	    LOG.INFO("Push client changes to server. Source id: " + getID() + "Size :" + m_strPushBody.length());
+	    LOG.TRACE( "Push body: " + m_strPushBody );		
+
+	    try{
+	    	NetResponse resp = getNet().pushData(strUrl+strQuery,m_strPushBody, getSync() );
+	        if ( !resp.isOK() )
+	        {
+	        	m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+	        	//m_strError = resp.getCharData();
+	        	
+	            return false;
+	        }
+	    }catch(Exception exc)
+	    {
+	    	m_nErrCode = RhoRuby.getNetErrorCode(exc);
+	    	throw exc;
+	    }
+    }
+
+    if ( m_arSyncBlobs.size() > 0  )
+    {
+	    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
+
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", getID(), strUpdateType, "blob.file" );
+        syncClientBlobs(strUrl+strQuery);
+    }else if ( m_strPushBody.length() > 0 )
+        getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and update_type=?", getID(), strUpdateType );
+    
+    return true;
+}
+*/	
+/*	void makePushBody( IDBResult res )throws DBException
+{
+    String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
+
+    if ( res.getStringByIdx(1).length() > 0 ) 
+        strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+    String value = res.getStringByIdx(2);
+    String attribType = res.getStringByIdx(3);
+
+    //if ( value.length() > 0 )
+    {
+        if ( attribType.equals("blob.file") )
+        {
+            FilePath oBlobPath = new FilePath(value);
+            strSrcBody += "&attrvals[][value]=";
+            strSrcBody += oBlobPath.getBaseName();
+            strSrcBody += "&attrvals[][attrib_type]=blob";
+
+            if ( value.length() > 0 )
+            	m_arSyncBlobs.addElement(new SyncBlob(strSrcBody,value));
+            return;
+        }else
+            strSrcBody += "&attrvals[][value]=" + value;
+    }
+
+    if ( m_strPushBody.length() > 0 )
+    	m_strPushBody += "&";
+
+    m_strPushBody += strSrcBody;
+}
+*/

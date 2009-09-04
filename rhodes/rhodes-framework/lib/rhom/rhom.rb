@@ -53,6 +53,7 @@ module Rhom
             ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
         end
         
+        ::Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
 #        if defined? RHO_DBME
             ::Rhom::RhomAttribManager.reset_all
             ::Rhom::RhomDbAdapter.destroy_table('object_values')
