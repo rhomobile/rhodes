@@ -342,7 +342,7 @@ module Rhom
                   searchParams = ""
                   if args[:search_params]
                     args[:search_params].each do |key,value|
-                      searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode
+                      searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
                     end  
                   end
                     
