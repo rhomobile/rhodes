@@ -154,11 +154,27 @@ public class NetworkAccess implements INetworkAccess {
 				LOG.INFO(url + URLsuffix);
 				http = (HttpConnection) Connector.open(url + URLsuffix);
 			} catch (IOException ioe) {
-				LOG.ERROR("Connector.open exception", ioe );
-				if (http != null)
-					http.close();
-				http = null;
-				throw ioe;
+				
+				if ( URLsuffix.length() > 0 )
+				{
+					try{
+						LOG.INFO(url);
+						http = (HttpConnection) Connector.open(url);
+					} catch (IOException ioe2) {
+						LOG.ERROR("Connector.open exception", ioe2 );
+						if (http != null)
+							http.close();
+						http = null;
+						throw ioe;
+					}
+				}else
+				{				
+					LOG.ERROR("Connector.open exception", ioe );
+					if (http != null)
+						http.close();
+					http = null;
+					throw ioe;
+				}
 			}
 		}
 		
