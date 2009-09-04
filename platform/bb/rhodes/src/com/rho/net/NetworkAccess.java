@@ -69,7 +69,8 @@ public class NetworkAccess implements INetworkAccess {
 				ServiceRecord[] srs = sb.getRecords();
 				// search for BES transport
 				for (int i = 0; i < srs.length; i++) {
-					LOG.INFO("SB: " + srs[i].toString() + ";UID: " + srs[i].getUid() +
+					LOG.INFO("SB: " + srs[i].getName() + ";UID: " + srs[i].getUid() +
+							";CID: " + srs[i].getCid() +
 							";APN: " + srs[i].getAPN() + ";Descr: " + srs[i].getDataSourceId() +
 							";Valid: " + (srs[i].isValid() ? "true" : "false") + 
 							";Disabled: "+ (srs[i].isDisabled()? "true" : "false") );
