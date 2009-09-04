@@ -1,5 +1,0 @@
-env:
-  paths:
-      android_sdk: C:/android-sdk-windows-1.5_r2
-      eclipse_home: C:/dev/eclipse
-      javac_home: C:/Program Files/Java/jdk1.6.0_10/bin
