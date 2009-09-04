@@ -161,13 +161,19 @@ public class DBAdapter extends RubyBasic {
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
 		" id INTEGER default NULL,"+
-		" token varchar(30) default NULL,"+
 		" source_id int default NULL,"+
 		" attrib varchar(255) default NULL,"+
 		" object varchar(255) default NULL,"+
 		" value varchar default NULL,"+
-		" update_type varchar(255) default NULL,"+
 		" attrib_type varchar(255) default NULL);"+
+		"CREATE TABLE changed_values ("+
+		" id INTEGER default NULL,"+
+		" source_id int default NULL,"+
+		" attrib varchar(255) default NULL,"+
+		" object varchar(255) default NULL,"+
+		" value varchar default NULL,"+
+		" attrib_type varchar(255) default NULL," +
+		" update_type varchar(255) default NULL );"+
 		"CREATE TABLE sources ("+
 		//"id INTEGER PRIMARY KEY,"+
 		"source_id int PRIMARY KEY,"+
@@ -184,12 +190,55 @@ public class DBAdapter extends RubyBasic {
 		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
 		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
 		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
-		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
+		"CREATE INDEX by_src_id ON object_values (source_id);"+
+		"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"+
 		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
 		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
 		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
 		//"CREATE INDEX by_type ON object_values (attrib_type)";
     }
+
+    /*private String getSqlScript(){
+    	//TODO: read script from jar
+		return "CREATE TABLE client_info ("+
+		"client_id VARCHAR(255) PRIMARY KEY,"+
+		"token VARCHAR(255) default NULL,"+
+		"token_sent int default 0,"+
+		"reset int default 0,"+
+		"port VARCHAR(10) default NULL,"+
+		"last_sync_success VARCHAR(100) default NULL);"+
+		"CREATE TABLE object_values ("+
+		" id INTEGER PRIMARY KEY,"+
+		" source_id int default NULL,"+
+		" attrib varchar(255) default NULL,"+
+		" object varchar(255) default NULL,"+
+		" value varchar default NULL,"+
+		" attrib_type varchar(32) default NULL);"+
+		"CREATE TABLE changed_values ("+
+		" id INTEGER PRIMARY KEY,"+
+		" update_type varchar(255) default NULL);"+
+		"CREATE TABLE sources ("+
+		//"id INTEGER PRIMARY KEY,"+
+		"source_id int PRIMARY KEY,"+
+		"name varchar(255) default NULL,"+
+		"token varchar(32) default NULL,"+
+		"source_url VARCHAR(255) default NULL,"+
+		"session VARCHAR(255) default NULL,"+
+		"last_updated int default 0,"+
+		"last_inserted_size int default 0,"+
+		"last_deleted_size int default 0,"+
+		"last_sync_duration int default 0,"+
+		"last_sync_success int default 0," +
+		"source_attribs varchar default NULL);"+
+		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
+		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
+		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
+		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
+		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
+		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
+		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
+		//"CREATE INDEX by_type ON object_values (attrib_type)";
+    }*/
     
     public void startTransaction()throws DBException
     {

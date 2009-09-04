@@ -63,7 +63,7 @@ public:
     String m_strParams;
     String m_strAction;
 private:
-    String m_strPushBody;
+    //String m_strPushBody;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
     String m_strAskParams;
 
@@ -89,8 +89,8 @@ public:
 
     void syncClientChanges();
     void syncServerChanges();
-    //void makePushBody(String& strBody, const char* szUpdateType);
-    void makePushBody( rho::db::CDBResult& res );//throws DBException
+    void makePushBody(String& strBody, const char* szUpdateType);
+    //void makePushBody( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();
     void setAskParams(const String& ask){ m_strAskParams = ask;}
     String getAskParams()const{ return m_strAskParams;}

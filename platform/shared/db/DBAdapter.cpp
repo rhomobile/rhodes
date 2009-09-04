@@ -72,7 +72,7 @@ void CDBAdapter::open (String strDbPath, String strVer)
     if ( !bExist )
         createSchema();
 
-    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 2, SQLITE_ANY, 0,
 	    SyncBlob_DeleteCallback, 0, 0 );
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 }
@@ -210,13 +210,19 @@ static const char* g_szDbSchema =
     " last_sync_success VARCHAR(100) default NULL);"
     "CREATE TABLE object_values ("
     " id INTEGER PRIMARY KEY,"
-    " token INTEGER default NULL,"
     " source_id int default NULL,"
     " attrib varchar(255) default NULL,"
     " object varchar(255) default NULL,"
     " value text default NULL,"
-    " update_type varchar(255) default NULL,"
     " attrib_type varchar(255) default NULL);"
+    "CREATE TABLE changed_values ("
+    " id INTEGER PRIMARY KEY,"
+    " source_id int default NULL,"
+    " attrib varchar(255) default NULL,"
+    " object varchar(255) default NULL,"
+    " value text default NULL,"
+    " attrib_type varchar(255) default NULL,"
+    " update_type varchar(255) default NULL);"
     "CREATE TABLE sources ("
     " id INTEGER PRIMARY KEY,"
     " token INTEGER default NULL,"
@@ -230,14 +236,15 @@ static const char* g_szDbSchema =
     " last_sync_duration int default 0,"
     " last_sync_success int default 0,"
     " source_attribs varchar default NULL);"
-    "CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"
-    "CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"
-    "CREATE INDEX by_src_utype on object_values (source_id,update_type);"
-    "CREATE INDEX by_type ON object_values (attrib_type);"
-	"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id, update_type);"
+    //"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"
+    //"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"
+    //"CREATE INDEX by_src_utype on object_values (source_id,update_type);"
+    //"CREATE INDEX by_type ON object_values (attrib_type);"
+    "CREATE INDEX by_src_id on object_values (source_id);"
+	"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"
     "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW "
         "BEGIN "
-            "SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type,OLD.update_type);"
+            "SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type);"
         "END;"
     ";";
 

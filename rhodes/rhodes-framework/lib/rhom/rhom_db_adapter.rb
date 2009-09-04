@@ -124,8 +124,17 @@ module Rhom
     
       # generates value clause based on hash
       def vals_str(values)
-        vals = string_from_key_vals(values, ",")
+        vals = string_from_key_vals_set(values, ",")
         vals[0..vals.length - 2]
+      end
+
+      def string_from_key_vals_set(values, delim)
+        vals = ""
+        values.each do |key,value|
+          op = '= '
+          vals << " \"#{key}\" #{op} #{get_value_for_sql_stmt(value)} #{delim}"
+        end
+        vals
       end
       
       # generates key/value list
@@ -240,6 +249,8 @@ module Rhom
         vals = values.nil? ? nil : vals_str(values)
         if table and condition and vals
           query = "update #{table} set #{vals} where #{where_str(condition)}"
+        elsif table and vals
+          query = "update #{table} set #{vals}"          
         end
         execute_sql query
       end

@@ -269,7 +269,7 @@ describe "Rhom::RhomObject" do
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
     
-    records = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'update')
+    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 1
   end
   
@@ -293,7 +293,7 @@ describe "Rhom::RhomObject" do
   it "should respond to ask" do
     question = 'Rhodes'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -303,7 +303,7 @@ describe "Rhom::RhomObject" do
   it "should respond to ask with last question only" do
     question = 'Rhodes'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -312,7 +312,7 @@ describe "Rhom::RhomObject" do
     question = 'Ruby on Rails'
     question_encoded = 'Ruby%20on%20Rails'
     Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
+    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
     res.length.should == 1
     
     res[0]['attrib'].should == 'question'
@@ -323,7 +323,7 @@ describe "Rhom::RhomObject" do
     question = 'where am i?'
     question_encoded = 'where%20am%20i%3F'
     Account.ask(question)
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'update_type' => 'ask')
+    @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
     @res.length.should == 1
     
     @res[0]['attrib'].should == 'question'
@@ -337,14 +337,14 @@ describe "Rhom::RhomObject" do
    
     @question = Question.find(:first)
     @question.update_attributes({"question"=>"i am here"})
-    
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' => 'query', 'source_id' => 400})
+
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'source_id' => 400})
     @res.length.should == 1
     @res[0]['attrib'].should == 'question'
     @res[0]['value'].should == 'i am here'
     
     ['create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 400})
+      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => 400})
       @res.length.should == 0
     end
   end
@@ -358,7 +358,7 @@ describe "Rhom::RhomObject" do
     @question.destroy
     
     ['query','create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'update_type' =>u_type, 'source_id' => 400})
+      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => 400})
       @res.length.should == 0
     end
   end
@@ -458,14 +458,14 @@ describe "Rhom::RhomObject" do
     @accts[0].vars.length.should == 3
   end
   
-  it "should perform find with select and merged conditions" do
+    it "should perform find with select and merged conditions" do
     @accts = Account.find(:all, :conditions => {'name' => 'Mobio India'}, :select => ['industry'])
-    @accts.length.should == 1
-    @accts[0].name.should == "Mobio India"
-    @accts[0].industry.should == "Technology"
-    @accts[0].shipping_address_street.should be_nil
-    @accts[0].vars.length.should == 3
-  end
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[0].shipping_address_street.should be_nil
+    @accts[0].vars.length.should == 3
+    end
   
   it "should support find with conditions => nil" do
     @accts = Account.find(:all, :conditions => {'description' => nil})
@@ -509,8 +509,10 @@ describe "Rhom::RhomObject" do
 
     after(:each) do
       Rhom::RhomDbAdapter.start_transaction
+      Rhom::RhomAttribManager.reset_all
       Rhom::RhomDbAdapter.delete_all_from_table('client_info')
       Rhom::RhomDbAdapter.delete_all_from_table('object_values')
+      Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
       Rhom::RhomDbAdapter.commit
     end
     

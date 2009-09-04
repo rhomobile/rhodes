@@ -176,6 +176,12 @@ public class HsqlDBResult implements IDBResult
     {
     	return m_current.data;
     }
+
+	public boolean isNullByIdx(int nCol)
+	{
+		Object val = getCurValue(nCol);
+		return val == null; 
+	}
     
 	public String getStringByIdx(int nCol)
 	{
