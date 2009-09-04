@@ -20,7 +20,7 @@ namespace "build" do
       Rake::Task["build:bundle:noxruby"].execute
     end
 
-    task :rhodes => ["config:wm", "build:rhobundle"] do
+    task :rhodes => ["config:wm", "build:wm:rhobundle"] do
       chdir $config["build"]["wmpath"]
 
       args = ['/M4', 'rhodes.sln', '"Release|Windows Mobile 6 Professional SDK (ARMV4I)"']
@@ -28,7 +28,8 @@ namespace "build" do
       unless $? == 0
         puts "Error building"
         exit 1
-      end   
+      end
+      chdir $startdir
     end
   end
 end
@@ -47,7 +48,7 @@ namespace "package" do
       end        
       
       args = ['rhodes.inf']
-      puts Jake.run($config["env"]["paths"]["cabwiz"] + "/сabwiz.exe",args)
+      puts Jake.run($config["env"]["paths"]["cabwiz"] + "/cabwiz.exe",args)
       unless $? == 0
         puts "Error running cabwiz"
         exit 1
@@ -60,12 +61,16 @@ namespace "package" do
         exit 1
       end    
 
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      mv "rhodes.inf", $bindir
-      mv "rhodes.cab", $targetdir
+      bindir = $startdir + "/" + $bindir
+      targetdir = $startdir + "/" + $targetdir
+      mkdir_p bindir if not File.exists? bindir
+      mkdir_p targetdir if not File.exists? targetdir
+      mv "rhodes.inf", bindir
+      mv "rhodes.cab", targetdir
 
       rm_f "cleanup.js"
+
+      chdir $startdir
 
     end
   end
