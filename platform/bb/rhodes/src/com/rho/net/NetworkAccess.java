@@ -165,7 +165,7 @@ public class NetworkAccess implements INetworkAccess {
 						if (http != null)
 							http.close();
 						http = null;
-						throw ioe;
+						throw ioe2;
 					}
 				}else
 				{				
