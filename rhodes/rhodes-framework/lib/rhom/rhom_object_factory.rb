@@ -239,6 +239,101 @@ module Rhom
                 def get_source_id
                   Rho::RhoConfig.sources[self.name.to_s]['source_id'].to_s
                 end
+
+                def find_bycondhash(args)                
+                    puts 'find_bycondhash start'
+                    condition_hash = args[1][:conditions]
+
+                    select_arr = nil
+                    limit = nil
+                    offset = nil
+                    order_dir=""
+                    ret_list = []
+                    
+                    if args[1][:per_page] and args[1][:offset]
+                      limit = args[1][:per_page].to_s
+                      offset = args[1][:offset].to_s
+                    end
+                    select_arr = args[1][:select] if args[1][:select]
+                    order_dir = args[1][:orderdir] if args[1][:orderdir]
+
+                    if select_arr
+                      attribs = select_arr
+                      #attribs = attribs | condition_hash.keys if condition_hash
+                    else
+                      attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
+                    end
+                    
+                    nulls_cond = {}
+                    condition_hash.each do |key,value|
+                        if !value
+                            nulls_cond[key] = value
+                            condition_hash.delete(key)
+                        end
+                    end
+
+                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                    sql = ""
+                    condition_hash.each do |key,value|
+                        sql << "\nINTERSECT\n" if sql.length > 0 
+                        sql << "SELECT object FROM object_values WHERE \n"
+                        sql << "value=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                        sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                        sql << " AND source_id=" + srcid_value 
+                    end
+                    
+                    puts "non-null select start"
+                    listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                    puts "non-null select end"
+                    
+                    listObjs.each do |obj|
+
+                        bSkip = false
+                        obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
+                        nulls_cond.each do |key,value|
+                            sql = ""
+                            sql << "SELECT value FROM object_values WHERE \n"
+                            sql << "object=" + obj_value
+                            sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                            sql << " AND source_id=" + srcid_value
+
+                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql)                             
+                            if attrVal && attrVal.length>0 && attrVal[0]['value']
+                                bSkip = true
+                                break
+                            end    
+                        end
+                        
+                        next if bSkip
+
+                        sql = ""                        
+                        attribs.each do |attr|
+                            sql << "\nUNION ALL\n" if sql.length > 0
+                            sql << "SELECT attrib,value FROM object_values WHERE \n"
+                            sql << "object=" + obj_value
+                            sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
+                            sql << " AND source_id=" + srcid_value 
+                        end
+                        
+                        listAttrs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                        
+                        new_obj = self.new
+                        # always return object field with surrounding '{}'
+                        new_obj.vars.merge!({'object'=>"{#{obj['object']}}"})
+                        listAttrs.each do |attrValHash|
+                          attrName = attrValHash['attrib']
+                          attrVal = attrValHash['value']
+                          new_obj.vars.merge!( { "#{attrName}"=>"#{attrVal}" } )
+                        end
+
+                        ret_list << new_obj
+                        break if args.first == :first
+                  end
+                  
+                  puts 'find_bycondhash start end'
+                  args.first == :first ? ret_list[0] : ret_list
+
+                end
                 
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
@@ -255,6 +350,10 @@ module Rhom
                     where_cond = {"object"=>strip_braces(args.first.to_s),"source_id"=>get_source_id}
                   end
 
+                  #if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
+                  #    return find_bycondhash(args)
+                  #end
+                  
                   # do we have conditions?
                   # if so, add them to the query
                   condition_hash = nil
@@ -283,7 +382,6 @@ module Rhom
                     order_dir = args[1][:orderdir] if args[1][:orderdir]
                   end
                   
-		          start = Time.new
                   # return horizontal resultset from database
                   # for example, an object that has attributes name,industry:
                   # |               object                 |       name         |  industry   |
@@ -296,8 +394,6 @@ module Rhom
                     attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
                   end
                     
-                  puts "get_attribs took #{Time.new - start} sec"
-                  start = Time.new
                   if attribs and attribs.length > 0
                     sql = ""
                     sql << "SELECT * FROM (\n" if condition_hash or condition_str
@@ -318,11 +414,10 @@ module Rhom
                     sql << ") WHERE " + condition_str if condition_str
                     sql << " LIMIT " + limit + " OFFSET " + offset if limit and offset
 
-                    puts "sql prepare took #{Time.new - start} sec"
-                    start = Time.new
+                    puts "Database query start"
                     list = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                    puts "Database query took #{Time.new - start} sec, #{list.length} rows"
-                    start = Time.new
+                    puts "Database query end"
+                    
                     list.each do |rowhash|
                       # always return object field with surrounding '{}'
                       rowhash['object'] = "{#{rowhash['object']}}"
@@ -331,7 +426,7 @@ module Rhom
                       ret_list << new_obj
                     end
                     
-                    puts "Processing rhom objects took #{Time.new - start} sec, #{ret_list.length} objects"
+                    puts "Processing rhom objects end, #{ret_list.length} objects"
                     
                   end
                   
