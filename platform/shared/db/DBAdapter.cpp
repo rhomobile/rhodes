@@ -242,6 +242,7 @@ static const char* g_szDbSchema =
     //"CREATE INDEX by_type ON object_values (attrib_type);"
     "CREATE INDEX by_src_id on object_values (source_id);"
 	"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"
+    "CREATE INDEX by_src_value ON object_values (value, attrib, source_id);"
     "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW "
         "BEGIN "
             "SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type);"
