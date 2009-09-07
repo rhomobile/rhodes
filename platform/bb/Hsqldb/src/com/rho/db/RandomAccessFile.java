@@ -10,9 +10,9 @@ import javax.microedition.io.file.FileConnection;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.file.Jsr75FileImpl;
-import com.rho.file.PersistFileImpl;
-import com.rho.file.IFile;
+import com.rho.file.Jsr75RAFileImpl;
+import com.rho.file.PersistRAFileImpl;
+import com.rho.file.IRAFile;
 
 import j2me.nio.channels.*;
 
@@ -25,7 +25,7 @@ public class RandomAccessFile
 	
 	public static final String USE_PERSISTENT = "use_persistent_storage";
 	
-	private IFile m_impl = null;
+	private IRAFile m_impl = null;
 	
     private boolean        m_bWriteAccess;
     
@@ -57,11 +57,11 @@ public class RandomAccessFile
     	
         if (RhoConf.getInstance().getBool(USE_PERSISTENT)) {
         	LOG.TRACE("Use persistent storage implementation");
-        	m_impl = new PersistFileImpl();
+        	m_impl = new PersistRAFileImpl();
         }
         else {
         	LOG.TRACE("Use Jsr75 implementation");
-        	m_impl = new Jsr75FileImpl();
+        	m_impl = new Jsr75RAFileImpl();
         }
         m_impl.open(name, imode);
     }

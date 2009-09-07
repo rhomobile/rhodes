@@ -12,10 +12,10 @@ import javax.microedition.io.file.FileConnection;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-public class Jsr75FileImpl implements IFile {
+public class Jsr75RAFileImpl implements IRAFile {
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("Jsr75FileImpl");
+		new RhoLogger("Jsr75RAFileImpl");
 	
 	private FileConnection m_file;
 	private InputStream    m_in;
@@ -250,7 +250,7 @@ public class Jsr75FileImpl implements IFile {
 		close();
 	}
 
-	public boolean exist() {
+	public boolean exists() {
 		return m_file.exists();
 	}
 	
