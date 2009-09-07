@@ -1,54 +1,57 @@
-package com.rho.db.file;
+package com.rho.file;
 
 import j2me.io.FileNotFoundException;
-import j2me.lang.AssertMe;
 
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import javax.microedition.io.Connector;
+import javax.microedition.io.file.ConnectionClosedException;
 
 import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
 import net.rim.device.api.util.Persistable;
 import net.rim.device.api.util.StringUtilities;
 
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
-import com.rho.db.RandomAccessFile;
+//import com.rho.RhoEmptyLogger;
+//import com.rho.RhoLogger;
 
-public class PersistRAFileImpl implements RAFileImpl {
+public class PersistFileImpl implements IFile {
 	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("PersistRAFileImpl");
+	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	//	new RhoLogger("PersistFileImpl");
+	
+	/*
+	private static void log(String message) {
+		//LOG.INFO(message);
+		//LOG.TRACE(message);
+	}
+	*/
 	
 	// WARNING!!! Be very carefull when modify this line! There was a case when
 	// entire Hsqldb module has preverification error in case if this line was exactly as:
 	//private static final String kprefix = PersistRAFileImpl.class.getName() + ":";
 	// It is impossible to explain why it happened but need to be remembered
-	private static final String kprefix = PersistRAFileImpl.class.getName();
+	private static final String kprefix = PersistFileImpl.class.getName();
 	
-	private static final String version = "2.2";
-	//private static final String version = "debug.2.13";
+	private static final String version = "2.3";
+	//private static final String version = "debug.2.48";
 	
 	private static final int PAGE_SIZE = 4096;
 	private static final int MAX_CLEAR_PAGES_CACHED = 1;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
-	private static int m_all_sync_times = 0;
-	private int m_sync_times = 0;
+	//private static int m_all_sync_times = 0;
+	//private int m_sync_times = 0;
 	
 	// Only for debug purposes
-	private static int id = 0;
-	private final int m_id = ++id;
-	private String m_name;
+	//private static int id = 0;
+	//private int m_id;
 	private int m_mode;
 	
 	private long m_nSeekPos;
-	
-	private String getObjName() {
-		return kprefix + "." + version + ":" + m_name + ";pagesize=" + PAGE_SIZE;
-	}
 	
 	private static class ByteArrayWrapper implements Persistable {
 		public byte[] content;
@@ -67,7 +70,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 	};
 	
-	private class Page {
+	private static class Page {
 		public byte[] content;
 		public boolean dirty;
 		
@@ -81,41 +84,53 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 	};
 	
-	private class FileInfo {
-		//private String m_name;
+	private static class FileInfo {
+		public int use_count = 0;
+		
+		private String objName;
+		
+		private String m_name;
 		private long m_size;
+		private boolean m_exists;
 		private Vector m_pages;
 		private int m_dirty;
-		private int m_use_count;
 		
 		private long getInfoKey() {
-			return StringUtilities.stringHashToLong(getObjName() + ";info");
+			String infoName = objName + ";info";
+			return StringUtilities.stringHashToLong(infoName);
 		}
 		
 		private long getPageKey(int n) {
-			return StringUtilities.stringHashToLong(getObjName() + ";page" + Integer.toString(n));
+			String pageName = objName + ";page=" + n;
+			return StringUtilities.stringHashToLong(pageName);
 		}
 		
-		public FileInfo() {
-			m_dirty = 0;
+		public FileInfo(String name) {
+			objName = kprefix + "." + version + ":" + name + ";pagesize=" + PAGE_SIZE;
+			
 			long key = getInfoKey();
 			PersistentObject persInfo = PersistentStore.getPersistentObject(key);
 			FileInfoWrapper wrapper = (FileInfoWrapper)persInfo.getContents();
-			m_size = wrapper == null ? 0 : wrapper.size.longValue();
+			if (wrapper != null && !wrapper.name.equals(name))
+				throw new RuntimeException("File name location mechanism internal error");
+			
+			m_name = name;
+			m_exists = wrapper != null;
+			m_size = m_exists ? wrapper.size.longValue() : 0;
+			m_dirty = 0;
 			
 			int n = (int)(m_size/PAGE_SIZE) + 1;
 			m_pages = new Vector(n);
 			for (int i = 0; i != n; ++i)
 				m_pages.addElement(new Page());
-			
-			m_use_count = 0;
 		}
 		
-		public void setPageDirty(int idx) {
-			Page page = (Page)m_pages.elementAt(idx);
-			if (!page.dirty)
-				++m_dirty;
-			page.dirty = true;
+		public String getName() {
+			return m_name;
+		}
+		
+		public boolean exists() {
+			return m_exists;
 		}
 		
 		private void unloadClearPages(int needToClear) {
@@ -126,6 +141,13 @@ public class PersistRAFileImpl implements RAFileImpl {
 				page.content = null;
 				--needToClear;
 			}
+		}
+		
+		public void setPageDirty(int idx) {
+			Page page = (Page)m_pages.elementAt(idx);
+			if (!page.dirty)
+				++m_dirty;
+			page.dirty = true;
 		}
 		
 		public byte[] getPage(int n) {
@@ -147,8 +169,10 @@ public class PersistRAFileImpl implements RAFileImpl {
 		
 		public void setSize(long newSize) {
 			int n = (int)(newSize/PAGE_SIZE + 1);
-			if (n != m_pages.size()) {
-				int prevSize = m_pages.size();
+			int prevSize = m_pages.size();
+			if (n != prevSize) {
+				if (n < prevSize)
+					deletePages(n, prevSize - 1);
 				m_pages.setSize(n);
 				for (int i = prevSize; i != n; ++i)
 					m_pages.setElementAt(new Page(), i);
@@ -157,20 +181,12 @@ public class PersistRAFileImpl implements RAFileImpl {
 		}
 		
 		public void sync() {
-			if (m_mode != RandomAccessFile.WRITE && m_mode != RandomAccessFile.READ_WRITE)
-				return;
-			
-			if (m_dirty == 0)
-				return;
-			
-			LOG.TRACE("Sync called for " + m_name + ": " + ++m_sync_times + " (" + ++m_all_sync_times +
-					" all), size: " + m_size + ", dirty pages: " + m_dirty);
+			//log("--- File '" + m_name + "' sync, size: " + m_size + ", dirty pages: " + m_dirty + "...");
 			
 			synchronized (PersistentStore.getSynchObject()) {
 				for (int i = m_pages.size() - 1; m_dirty > 0 && i >= 0; --i) {
 					Page page = (Page)m_pages.elementAt(i);
 					if (page.content != null && page.dirty) {
-						//LOG.TRACE("Sync " + m_name + ": page " + i);
 						long key = getPageKey(i);
 						PersistentObject persPage = PersistentStore.getPersistentObject(key);
 						persPage.setContents(new ByteArrayWrapper(page.content));
@@ -189,46 +205,106 @@ public class PersistRAFileImpl implements RAFileImpl {
 				persInfo.commit();
 			}
 			
-			LOG.TRACE("Sync done for " + m_name);
+			//log("+++ File '" + m_name + "' sync done");
 		}
 		
-		public void addRef() {
-			++m_use_count;
+		private void deletePages(int start, int end) {
+			for (int i = start; i <= end; ++i) {
+				long key = getPageKey(i);
+				PersistentStore.destroyPersistentObject(key);
+				
+				m_pages.removeElementAt(start);
+			}
 		}
 		
-		public void release() {
-			if (--m_use_count == 0)
-				sync();
+		public void delete() {
+			synchronized (PersistentStore.getSynchObject()) {
+				deletePages(0, m_pages.size() - 1);
+				
+				long key = getInfoKey();
+				PersistentStore.destroyPersistentObject(key);
+				m_size = 0;
+				
+				m_dirty = 0;
+				m_exists = false;
+			}
 		}
 	};
 	
 	private FileInfo m_info = null;
 	
+	public PersistFileImpl() {
+		//synchronized (m_shared) {
+		//	m_id = ++id;
+		//}
+	}
+	
+	public void open(String name) throws FileNotFoundException {
+		open(name, Connector.READ);
+	}
+	
 	public void open(String name, int mode) throws FileNotFoundException {
-		m_name = name;
 		m_mode = mode;
 		
+		//log("--- File '" + name + "': open in mode " + mode + "...");
+		FileInfo info;
 		synchronized (m_shared) {
-			FileInfo info = (FileInfo)m_shared.get(m_name);
+			info = (FileInfo)m_shared.get(name);
 			if (info == null) {
-				info = new FileInfo();
-				m_shared.put(m_name, info);
+				info = new FileInfo(name);
+				m_shared.put(name, info);
 			}
-			info.addRef();
+			if (info.use_count < 0)
+				throw new RuntimeException("Internal error");
+			
+			if (!info.exists()) {
+				if (isWritable())
+					info.m_exists = true;
+				else {
+					//log("+++ File '" + name + "': not found");
+					throw new FileNotFoundException();
+				}
+			}
+			
+			++info.use_count;
 			m_info = info;
 		}
 		
 		m_nSeekPos = 0;
 		
-		LOG.TRACE("Open file: " + m_name);
+		//log("+++ File '" + name + "' opened: id " + m_id +
+		//		(m_info.exists() ? ", size " + m_info.getSize() : ", not exists") +
+		//		" (use_count: " + m_info.use_count + ")");
+	}
+	
+	private void checkUseCount() {
+		if (m_info.use_count <= 0)
+			throw new RuntimeException("Internal error");
+	}
+	
+	//private boolean isReadable() {
+	//	return m_mode == Connector.READ || m_mode == Connector.READ_WRITE;
+	//}
+	
+	private boolean isWritable() {
+		return m_mode == Connector.WRITE || m_mode == Connector.READ_WRITE;
 	}
 	
 	public void close() throws IOException {
-		LOG.TRACE("Close file: " + m_name);
+		if (m_info == null)
+			return;
 		
-		m_info.release();
+		synchronized (m_info) {
+			checkUseCount();
+			//String name = m_info.getName();
+			//log("--- File '" + name + "' close (use_count: " + m_info.use_count + ")...");
+			
+			if (--m_info.use_count == 0 && isWritable() && m_info.exists())
+				m_info.sync();
+			
+			//log("+++ File '" + name + "' closed");
+		}
 		m_info = null;
-		
 		m_nSeekPos = 0;
 	}
 	
@@ -250,6 +326,7 @@ public class PersistRAFileImpl implements RAFileImpl {
 			throw new IllegalArgumentException();
 		
 		synchronized (m_info) {
+			checkUseCount();
 			long size = m_info.getSize();
 			if (size == newSize)
 				return;
@@ -265,16 +342,20 @@ public class PersistRAFileImpl implements RAFileImpl {
 	}
 
 	public void sync() throws IOException {
-		if (m_mode != RandomAccessFile.WRITE && m_mode != RandomAccessFile.READ_WRITE)
+		if (!isWritable())
 			throw new IOException("File is not open in write mode");
 		
 		synchronized (m_info) {
-			m_info.sync();
+			checkUseCount();
+			if (m_info.exists())
+				m_info.sync();
 		}
 	}
 	
 	public int read() throws IOException {
 		synchronized (m_info) {
+			checkUseCount();
+			
 			if (m_nSeekPos >= m_info.getSize())
 				return -1;
 			
@@ -295,6 +376,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 			return 0;
 		
 		synchronized (m_info) {
+			checkUseCount();
+			
 			long size = m_info.getSize();
 			if (m_nSeekPos >= size)
 				return -1;
@@ -322,6 +405,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 
 	public void write(int b) throws IOException {
 		synchronized (m_info) {
+			checkUseCount();
+			
 			if (m_nSeekPos >= m_info.getSize())
 				m_info.setSize(m_nSeekPos + 1);
 			
@@ -343,6 +428,8 @@ public class PersistRAFileImpl implements RAFileImpl {
 			return;
 		
 		synchronized (m_info) {
+			checkUseCount();
+			
 			if (m_nSeekPos + len >= m_info.getSize())
 				m_info.setSize(m_nSeekPos + len);
 			
@@ -364,6 +451,98 @@ public class PersistRAFileImpl implements RAFileImpl {
 				n += howmuch;
 			}
 			m_nSeekPos += n;
+		}
+	}
+
+	public void delete() throws IOException {
+		if (m_info == null)
+			return;
+		
+		synchronized (m_info) {
+			checkUseCount();
+			
+			//String name = m_info.getName();
+			//log("--- File '" + name + "' delete...");
+			m_info.delete();
+			--m_info.use_count;
+			//log("+++ File '" + name + "' deleted");
+		}
+		
+		m_info = null;
+		m_nSeekPos = 0;
+	}
+
+	public boolean exist() {
+		synchronized (m_info) {
+			checkUseCount();
+			return m_info.exists();
+		}
+	}
+	
+	public void rename(String nname) throws IOException {
+		// This function's body MUST be enclosed by common lock
+		// to avoid dead-lock race conditions. Such dead-lock could happen,
+		// for example, when one thread call rename A to B and other
+		// thread call rename B to A at the same time.
+		synchronized (m_shared) {
+			synchronized (m_info) {
+				checkUseCount();
+				
+				if (!m_info.exists())
+					throw new ConnectionClosedException();
+			
+				String name = m_info.getName();
+				
+				String lastElementOld = name;
+				int lastSlash = name.lastIndexOf('/');
+				if (lastSlash >= 0)
+					lastElementOld = name.substring(lastSlash + 1);
+				
+				String lastElementNew = nname;
+				lastSlash = nname.lastIndexOf('/');
+				if (lastSlash >= 0)
+					lastElementNew = nname.substring(lastSlash + 1);
+				
+				if (lastElementOld == lastElementNew)
+					return;
+		
+				String newName = name.substring(0, name.length() - lastElementOld.length()) + lastElementNew;
+				
+				//log("--- File '" + name + "' rename to '" + newName + "'...");
+				
+				FileInfo newInfo = (FileInfo)m_shared.get(newName);
+				if (newInfo == null) {
+					newInfo = new FileInfo(newName);
+					m_shared.put(newName, newInfo);
+				}
+				
+				synchronized (newInfo) {
+					if (newInfo.exists())
+						throw new IOException("Destination file already exists");
+					
+					long size = m_info.getSize();
+					newInfo.setSize(size);
+					
+					int n = (int)(size/PAGE_SIZE + 1);
+					for (int i = 0; size > 0 && i < n; ++i) {
+						byte[] content = m_info.getPage(i);
+						byte[] newContent = newInfo.getPage(i);
+						System.arraycopy(content, 0, newContent, 0, (int)(size%PAGE_SIZE));
+						newInfo.setPageDirty(i);
+						size -= PAGE_SIZE;
+					}
+					
+					newInfo.m_exists = true;
+					newInfo.sync();
+				}
+				
+				m_info.delete();
+				--m_info.use_count;
+				m_info = null;
+				m_nSeekPos = 0;
+				
+				//log("+++ File '" + name + "' renamed to '" + newName + "'");
+			}
 		}
 	}
 

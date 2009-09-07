@@ -1,10 +1,11 @@
-package com.rho.db.file;
+package com.rho.file;
 
 import java.io.IOException;
 
 import j2me.io.FileNotFoundException;
 
-public interface RAFileImpl {
+public interface IFile {
+	public void open(String name) throws FileNotFoundException;
 	public void open(String name, int mode) throws FileNotFoundException;
 	public void close() throws IOException;
 	
@@ -21,4 +22,8 @@ public interface RAFileImpl {
 	public int read(byte[] b, int off, int len) throws IOException;
 	
 	public void sync() throws IOException;
+	
+	public boolean exist();
+	public void delete() throws IOException;
+	public void rename(String newName) throws IOException;
 }

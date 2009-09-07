@@ -1,4 +1,4 @@
-package com.rho.db.file;
+package com.rho.file;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,10 +12,10 @@ import javax.microedition.io.file.FileConnection;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-public class Jsr75RAFileImpl implements RAFileImpl {
+public class Jsr75FileImpl implements IFile {
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("Jsr75RAFileImpl");
+		new RhoLogger("Jsr75FileImpl");
 	
 	private FileConnection m_file;
 	private InputStream    m_in;
@@ -27,6 +27,10 @@ public class Jsr75RAFileImpl implements RAFileImpl {
     
     private static final int ZERO_BUF_SIZE = 4096;
 	
+    public void open(String name) throws FileNotFoundException {
+    	open(name, Connector.READ);
+    }
+    
 	public void open(String name, int mode) throws FileNotFoundException {
 		try {
 			m_file = (FileConnection)Connector.open(name, mode);
@@ -236,5 +240,22 @@ public class Jsr75RAFileImpl implements RAFileImpl {
             m_file.truncate(newSize);
         
         m_fileSize = newSize;
+	}
+
+	public void delete() throws IOException {
+		if ( m_file != null && m_file.exists() ) {
+			m_file.close();
+			m_file.delete();
+		}
+		close();
+	}
+
+	public boolean exist() {
+		return m_file.exists();
+	}
+	
+	public void rename(String newName) throws IOException {
+		if (m_file.exists())
+			m_file.rename(newName);
 	}
 }

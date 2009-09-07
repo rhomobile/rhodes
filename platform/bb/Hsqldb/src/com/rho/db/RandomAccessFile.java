@@ -10,9 +10,9 @@ import javax.microedition.io.file.FileConnection;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.db.file.Jsr75RAFileImpl;
-import com.rho.db.file.PersistRAFileImpl;
-import com.rho.db.file.RAFileImpl;
+import com.rho.file.Jsr75FileImpl;
+import com.rho.file.PersistFileImpl;
+import com.rho.file.IFile;
 
 import j2me.nio.channels.*;
 
@@ -23,13 +23,9 @@ public class RandomAccessFile
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RAFile");
 	
-	public static final int READ = Connector.READ;
-	public static final int WRITE = Connector.WRITE;
-	public static final int READ_WRITE = Connector.READ_WRITE;
-	
 	public static final String USE_PERSISTENT = "use_persistent_storage";
 	
-	private RAFileImpl m_impl = null;
+	private IFile m_impl = null;
 	
     private boolean        m_bWriteAccess;
     
@@ -45,9 +41,9 @@ public class RandomAccessFile
     	String name = (file != null ? file.getPath() : null);
     	int imode = -1;
     	if (mode.equals("r"))
-    	    imode = READ;
+    	    imode = Connector.READ;
     	else if (mode.startsWith("rw")) {
-    	    imode = READ_WRITE;
+    	    imode = Connector.READ_WRITE;
     	    m_bWriteAccess = true;
     	}
     	
@@ -61,11 +57,11 @@ public class RandomAccessFile
     	
         if (RhoConf.getInstance().getBool(USE_PERSISTENT)) {
         	LOG.TRACE("Use persistent storage implementation");
-        	m_impl = new PersistRAFileImpl();
+        	m_impl = new PersistFileImpl();
         }
         else {
         	LOG.TRACE("Use Jsr75 implementation");
-        	m_impl = new Jsr75RAFileImpl();
+        	m_impl = new Jsr75FileImpl();
         }
         m_impl.open(name, imode);
     }
