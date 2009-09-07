@@ -34,7 +34,6 @@ void CSyncEngine::doSyncAllSources()
     }
     else
     {
-    	LOG(INFO) + "Client is not logged in. No sync will be performed.";
         fireNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
     			"Sync failed. Details: Client is not logged in. No sync will be performed." );
     }
@@ -213,13 +212,15 @@ int CSyncEngine::getStartSource()
 
 void CSyncEngine::syncAllSources()
 {
-    for( int i = getStartSource(); i < (int)m_sources.size() && getState() != esExit; i++ )
+    for( int i = getStartSource(); i < (int)m_sources.size() && isContinueSync(); i++ )
     {
         CSyncSource& src = *m_sources.elementAt(i);
         if ( isSessionExist() && getState() != esStop )
             src.sync();
 
         fireNotification(&src, true, src.m_nErrCode, "");
+		if ( getState() == esStop )
+			fireAllNotifications(true, src.m_nErrCode, "" );
     }
 }
 
@@ -397,6 +398,14 @@ void CSyncEngine::reportStatus(String status, int error, String strDetails) {
 	LOG(INFO) + "Status: "+status;
 }
 
+void CSyncEngine::fireAllNotifications( boolean bFinish, int nErrCode, String strMessage )
+{
+    for( int i = 0; i < m_sources.size(); i++ )
+    {
+    	doFireNotification( m_sources.elementAt(i), bFinish, nErrCode, strMessage );
+    }
+}
+
 void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
 {
 	if ( getState() == esExit )
@@ -412,7 +421,12 @@ void CSyncEngine::fireNotification( CSyncSource* psrc, boolean bFinish, int nErr
             reportStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
         }
 	}
-	
+
+	doFireNotification(psrc, bFinish, nErrCode, strMessage );
+}
+
+void CSyncEngine::doFireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
+{
 	if ( psrc == null )
 		return; //TODO: implement all sources callback
 

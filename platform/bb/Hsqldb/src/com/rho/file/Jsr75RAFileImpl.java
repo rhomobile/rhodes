@@ -244,7 +244,7 @@ public class Jsr75RAFileImpl implements IRAFile {
 
 	public void delete() throws IOException {
 		if ( m_file != null && m_file.exists() ) {
-			m_file.close();
+			//m_file.close();
 			m_file.delete();
 		}
 		close();

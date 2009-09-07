@@ -110,6 +110,8 @@ private:
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
     void reportStatus(String status, int error, String strDetails);
+    void fireAllNotifications( boolean bFinish, int nErrCode, String strMessage );
+    void doFireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
     friend class CSyncSource;
 };
 
