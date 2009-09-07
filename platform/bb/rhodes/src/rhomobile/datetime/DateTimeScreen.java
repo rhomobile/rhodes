@@ -136,6 +136,8 @@ public class DateTimeScreen extends MainScreen {
 			headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 			
 			String body = "status=cancel";
+    		if (_opaque != null)
+    			body += "&opaque=" + _opaque;
 			LOG.INFO("Callback with result: " + body);
 			
 			_dateTimeScreen.setFieldsEditable(false);
