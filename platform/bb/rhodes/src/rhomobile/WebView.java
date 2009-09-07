@@ -1,5 +1,7 @@
 package rhomobile;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
@@ -12,6 +14,8 @@ import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 
 public class WebView extends RubyBasic {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("WebView");
 
 	public WebView(RubyClass arg0) {
 		super(arg0);
@@ -45,6 +49,7 @@ public class WebView extends RubyBasic {
 			String value = values.get(i).toString();
 			RhodesApplication.getInstance().addMenuItem(label, value);
 		}
+		LOG.INFO("set_menu_items end");
 		return RubyConstant.QTRUE;
 	}
 		

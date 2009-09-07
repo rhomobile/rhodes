@@ -177,8 +177,9 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public int getResponseCode() throws IOException {
-		LOG.TRACE("getResponseCode" + responseCode);
 		processRequest();
+		LOG.TRACE("getResponseCode" + responseCode);
+		
 		return responseCode;
 	}
 
@@ -374,6 +375,12 @@ public class RhoConnection implements IHttpConnection {
 
 	void respondOK(){
 		responseCode = HTTP_OK;
+		responseMsg = "Success";
+		contentLength = 0;
+	}
+
+	void respondNotModified(){
+		responseCode = HTTP_NOTMODIFIED;
 		responseMsg = "Success";
 		contentLength = 0;
 	}

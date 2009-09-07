@@ -27,6 +27,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\db\IDBCallback.java
 ..\..\shared\rubyJVM\src\com\rho\db\IDBResult.java
 ..\..\shared\rubyJVM\src\com\rho\db\IDBStorage.java
+..\..\shared\rubyJVM\src\com\rho\IFileAccess.java
 ..\..\shared\rubyJVM\src\com\rho\FilePath.java
 ..\..\shared\rubyJVM\src\com\rho\IFile.java
 ..\..\shared\rubyJVM\src\com\rho\IRhoLogSink.java
@@ -428,7 +429,6 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\org\json\me\JSONObject.java
 ..\..\shared\rubyJVM\src\org\json\me\JSONString.java
 ..\..\shared\rubyJVM\src\org\json\me\JSONTokener.java
-src\com\rho\IFileAccess.java
 ]
 HaveAlxImports=0
 HaveDefs=0

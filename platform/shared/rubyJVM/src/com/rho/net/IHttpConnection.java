@@ -22,7 +22,7 @@ public interface IHttpConnection {
 	public static int HTTP_NOT_FOUND = 404;
 	public static int HTTP_UNAUTHORIZED = 401;
 	public static int HTTP_INTERNAL_ERROR = 500;
-	
+	public static int HTTP_NOTMODIFIED = 304;
 
 	public abstract String getHost();
 

@@ -163,7 +163,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        fireNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
 	        } else {
 	        	src = new SyncSource(this);
-		    	src.m_strError = "Unknown sync source.";
+		    	//src.m_strError = "Unknown sync source.";
 		    	src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 	        	
 	    	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
