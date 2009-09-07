@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import j2me.io.FileNotFoundException;
 
-public interface IFile {
+public interface IRAFile {
 	public void open(String name) throws FileNotFoundException;
 	public void open(String name, int mode) throws FileNotFoundException;
 	public void close() throws IOException;
@@ -23,7 +23,7 @@ public interface IFile {
 	
 	public void sync() throws IOException;
 	
-	public boolean exist();
+	public boolean exists();
 	public void delete() throws IOException;
 	public void rename(String newName) throws IOException;
 }

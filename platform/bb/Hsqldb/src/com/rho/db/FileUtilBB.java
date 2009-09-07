@@ -12,10 +12,11 @@ import javax.microedition.io.Connector;
 
 import org.hsqldb.lib.FileAccess;
 
+import com.rho.IFileAccess;
 import com.rho.RhoConf;
-import com.rho.file.IFile;
-import com.rho.file.Jsr75FileImpl;
-import com.rho.file.PersistFileImpl;
+import com.rho.file.IRAFile;
+import com.rho.file.Jsr75RAFileImpl;
+import com.rho.file.PersistRAFileImpl;
 
 /**
  * A collection of static file management methods.<p>
@@ -27,11 +28,11 @@ public class FileUtilBB implements FileAccess {
 	
     private static FileUtilBB fileUtil = new FileUtilBB();
     
-    private static IFile impl;
+    private static IRAFile impl;
     
-    FileUtilBB() {
+    public FileUtilBB() {
     	impl = RhoConf.getInstance().getBool(USE_PERSISTENT) ?
-    			(IFile)new PersistFileImpl() : (IFile)new Jsr75FileImpl();
+    			(IRAFile)new PersistRAFileImpl() : (IRAFile)new Jsr75RAFileImpl();
     }
 
     public static FileUtilBB getDefaultInstance() {
@@ -124,7 +125,7 @@ public class FileUtilBB implements FileAccess {
     /**
      * Delete the named file
      */
-    public void delete(String filename) 
+    public void delete(String filename)
     {
     	try {
     		impl.open(filename, Connector.READ_WRITE);
@@ -167,7 +168,7 @@ public class FileUtilBB implements FileAccess {
     {
     	try{
     		impl.open(filename);
-    		return impl.exist();
+    		return impl.exists();
     	}
     	catch (FileNotFoundException exc) {
     		return false;

@@ -38,33 +38,38 @@ public class RhoClassFactory
         
     }
     
+    public static IFileAccess createFileAccess() throws Exception
+    {
+    	LOG.INFO_OUT("createFileAccess");
+    	
+    	Class wrapperClass;
+    	try {
+    		wrapperClass = Class.forName("com.rho.file.FileAccessBB");
+    	}
+    	catch (ClassNotFoundException exc) {
+    		try {
+    			wrapperClass = Class.forName("com.rhomobile.rhodes.FileAccess");
+    		}
+    		catch (ClassNotFoundException e) {
+    			LOG.ERROR_OUT("createFileAccess - Class not found", e);
+    			
+    			throw e;
+    		}
+    	}
+    	
+    	try {
+    		return (IFileAccess)wrapperClass.newInstance();
+    	}
+    	catch (Exception e) {
+    		LOG.ERROR_OUT("createFileAccess - newInstance failed", e);
+    		
+    		throw e;
+    	}
+    }
+    
     public static IDBStorage createDBStorage() throws Exception
     {
     	return RhoClassFactory.createRhoRubyHelper().createDBStorage();
-    	/*
-    	LOG.INFO("createDBStorage");    	
-        Class wrapperClass;
-        try {
-            wrapperClass = Class.forName("com.rho.db.HsqlDBStorage");
-        } catch (ClassNotFoundException exc) {  
-        	try {
-                wrapperClass = Class.forName("com.rhomobile.rhodes.db.DBStorage"); //android
-            } catch (ClassNotFoundException e) {
-	        	LOG.ERROR("createDBStorage- Class not found",e);    	
-            	
-                throw e;
-            }
-        }
-        
-        try{
-        	return (IDBStorage)wrapperClass.newInstance();
-        }catch(Exception e)
-        {
-        	LOG.ERROR("createDBStorage - newInstance failed",e);    	
-        	
-        	throw e;
-        }
-        */
     }
 
     public static IRhoRubyHelper createRhoRubyHelper() throws Exception

@@ -17,7 +17,7 @@ import net.rim.device.api.util.StringUtilities;
 //import com.rho.RhoEmptyLogger;
 //import com.rho.RhoLogger;
 
-public class PersistFileImpl implements IFile {
+public class PersistRAFileImpl implements IRAFile {
 	
 	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 	//	new RhoLogger("PersistFileImpl");
@@ -33,9 +33,9 @@ public class PersistFileImpl implements IFile {
 	// entire Hsqldb module has preverification error in case if this line was exactly as:
 	//private static final String kprefix = PersistRAFileImpl.class.getName() + ":";
 	// It is impossible to explain why it happened but need to be remembered
-	private static final String kprefix = PersistFileImpl.class.getName();
+	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final String version = "2.3";
+	private static final String version = "2.4";
 	//private static final String version = "debug.2.48";
 	
 	private static final int PAGE_SIZE = 4096;
@@ -233,7 +233,7 @@ public class PersistFileImpl implements IFile {
 	
 	private FileInfo m_info = null;
 	
-	public PersistFileImpl() {
+	public PersistRAFileImpl() {
 		//synchronized (m_shared) {
 		//	m_id = ++id;
 		//}
@@ -472,7 +472,7 @@ public class PersistFileImpl implements IFile {
 		m_nSeekPos = 0;
 	}
 
-	public boolean exist() {
+	public boolean exists() {
 		synchronized (m_info) {
 			checkUseCount();
 			return m_info.exists();

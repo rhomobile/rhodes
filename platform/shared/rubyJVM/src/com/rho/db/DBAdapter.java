@@ -382,7 +382,7 @@ public class DBAdapter extends RubyBasic {
 			String dbName = getNameNoExt(m_strDBPath);
 			String dbNewName  = dbName + "new";
 			
-			SimpleFile fs = RhoClassFactory.createFile();
+			IFileAccess fs = RhoClassFactory.createFileAccess();
 			
 		    fs.delete(dbNewName + ".data");
 		    fs.delete(dbNewName + ".script");
