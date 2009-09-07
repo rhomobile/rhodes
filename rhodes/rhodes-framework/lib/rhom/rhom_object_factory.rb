@@ -301,7 +301,6 @@ module Rhom
                     listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
                     puts "non-null select end : #{listObjs.length}"
                     
-                    start = Time.new
                     nIndex = -1
                     nCount = 0;
                     listObjs.each do |obj|
@@ -374,7 +373,7 @@ module Rhom
                     ret_list.slice!(offset,limit)
                   end
 
-                  puts "find_bycondhash end: #{ret_list.length} objects; Time : #{(Time.new - start)}"
+                  puts "find_bycondhash end: #{ret_list.length} objects"
                   
                   return nCount if args.first == :count
                   
