@@ -242,24 +242,34 @@ module Rhom
 
                 def find_bycondhash(args)                
                     puts 'find_bycondhash start'
-                    condition_hash = args[1][:conditions]
-
+                    
+                    condition_hash = {}
                     select_arr = nil
                     limit = nil
-                    offset = nil
+                    offset = 0
                     order_dir=""
                     ret_list = []
                     
-                    if args[1][:per_page] and args[1][:offset]
-                      limit = args[1][:per_page].to_s
-                      offset = args[1][:offset].to_s
+                    if args[1]
+                        condition_hash = args[1][:conditions] if args[1][:conditions]
+                        
+                        if args[1][:per_page] and args[1][:offset]
+                          limit = args[1][:per_page].to_i
+                          offset = args[1][:offset].to_i
+                        end
+                        select_arr = args[1][:select] if args[1][:select]
+                        order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
+                        order_attr = args[1][:order]
+                        
+                        if args.first == :first
+                            limit = 1                    
+                            offset = 0 unless offset
+                        end
                     end
-                    select_arr = args[1][:select] if args[1][:select]
-                    order_dir = args[1][:orderdir] if args[1][:orderdir]
-
+                    
                     if select_arr
                       attribs = select_arr
-                      #attribs = attribs | condition_hash.keys if condition_hash
+                      attribs = attribs | order_attr if order_attr
                     else
                       attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
                     end
@@ -274,20 +284,30 @@ module Rhom
 
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     sql = ""
-                    condition_hash.each do |key,value|
-                        sql << "\nINTERSECT\n" if sql.length > 0 
-                        sql << "SELECT object FROM object_values WHERE \n"
-                        sql << "value=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
-                        sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
-                        sql << " AND source_id=" + srcid_value 
+                    if condition_hash.length > 0
+                        condition_hash.each do |key,value|
+                            sql << "\nINTERSECT\n" if sql.length > 0 
+                            sql << "SELECT object FROM object_values WHERE \n"
+                            sql << "value=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                            sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                            sql << " AND source_id=" + srcid_value 
+                        end
+                    else
+                        sql << "SELECT distinct object FROM object_values WHERE \n"
+                        sql << "source_id=" + srcid_value 
                     end
-                    
+                                        
                     puts "non-null select start"
                     listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                    puts "non-null select end"
+                    puts "non-null select end : #{listObjs.length}"
                     
+                    start = Time.new
+                    nIndex = -1
+                    nCount = 0;
                     listObjs.each do |obj|
-
+                        nIndex += 1
+                        next if !order_attr && offset && nIndex < offset
+                        
                         bSkip = false
                         obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
                         nulls_cond.each do |key,value|
@@ -297,7 +317,8 @@ module Rhom
                             sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
                             sql << " AND source_id=" + srcid_value
 
-                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql)                             
+                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                            #puts 'attrVal: ' + attrVal.inspect  if attrVal
                             if attrVal && attrVal.length>0 && attrVal[0]['value']
                                 bSkip = true
                                 break
@@ -305,7 +326,10 @@ module Rhom
                         end
                         
                         next if bSkip
-
+                        
+                        nCount += 1
+                        next if args.first == :count
+                        
                         sql = ""                        
                         attribs.each do |attr|
                             sql << "\nUNION ALL\n" if sql.length > 0
@@ -315,24 +339,50 @@ module Rhom
                             sql << " AND source_id=" + srcid_value 
                         end
                         
-                        listAttrs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                        listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql) : []
                         
                         new_obj = self.new
                         # always return object field with surrounding '{}'
                         new_obj.vars.merge!({'object'=>"{#{obj['object']}}"})
+                        nonExistAttrs = attribs.dup
                         listAttrs.each do |attrValHash|
                           attrName = attrValHash['attrib']
                           attrVal = attrValHash['value']
                           new_obj.vars.merge!( { "#{attrName}"=>"#{attrVal}" } )
+                          
+                          nonExistAttrs.delete(attrName)
                         end
-
+                        nonExistAttrs.each do |attrName|
+                          new_obj.vars.merge!( { "#{attrName}"=>nil } )
+                        end
+                        
                         ret_list << new_obj
-                        break if args.first == :first
+                        break if !order_attr && limit && ret_list.length >= limit
                   end
                   
-                  puts 'find_bycondhash start end'
-                  args.first == :first ? ret_list[0] : ret_list
+                  if order_attr 
+                    ret_list.sort! { |x,y| 
+                       vx = x.vars[order_attr]
+                       vy = y.vars[order_attr]
+                       res = vx && vy ? vx <=> vy : 0
+                       res *= -1 if order_dir && order_dir == 'DESC'
+                       res
+                    }
+                  end
+                  
+                  if order_attr && limit
+                    ret_list.slice!(offset,limit)
+                  end
 
+                  puts "find_bycondhash end: #{ret_list.length} objects; Time : #{(Time.new - start)}"
+                  
+                  return nCount if args.first == :count
+                  
+                  if args.first == :first
+                    return ret_list.length > 0 ? ret_list[0] : nil
+                  end 
+
+                  ret_list
                 end
                 
                 # retrieve a single record if object id provided, otherwise return
@@ -344,15 +394,21 @@ module Rhom
                   conditions = {}
                   where_cond = nil
                   # first find all query objects
-                  if args.first == :all || args.first == :first
+                  if args.first == :all || args.first == :first || args.first == :count
+                  
+                    #!args[1] || !args[1][:conditions] || 
+                    if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
+                        return find_bycondhash(args)
+                    end
+                  
                     where_cond = {"source_id"=>get_source_id}
                   elsif args.first.is_a?(String)
                     where_cond = {"object"=>strip_braces(args.first.to_s),"source_id"=>get_source_id}
                   end
 
-                  #if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
-                  #    return find_bycondhash(args)
-                  #end
+                  if args.first == :count && !args[1]
+                      return count()
+                  end
                   
                   # do we have conditions?
                   # if so, add them to the query
@@ -374,12 +430,12 @@ module Rhom
                         }.join(' ').to_s 
                       end
                     end
-                    if args[1][:per_page] and args[1][:offset]
+                    if args[1][:per_page] #and args[1][:offset]
                       limit = args[1][:per_page].to_s
-                      offset = args[1][:offset].to_s
+                      offset = args[1][:offset] ? args[1][:offset].to_s : '0'
                     end
                     select_arr = args[1][:select] if args[1][:select]
-                    order_dir = args[1][:orderdir] if args[1][:orderdir]
+                    order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
                   end
                   
                   # return horizontal resultset from database
@@ -418,19 +474,26 @@ module Rhom
                     list = ::Rhom::RhomDbAdapter.execute_sql(sql)
                     puts "Database query end"
                     
-                    list.each do |rowhash|
-                      # always return object field with surrounding '{}'
-                      rowhash['object'] = "{#{rowhash['object']}}"
-                      new_obj = self.new
-                      new_obj.vars.merge!(rowhash)
-                      ret_list << new_obj
+                    if args.first != :count
+                        list.each do |rowhash|
+                          # always return object field with surrounding '{}'
+                          rowhash['object'] = "{#{rowhash['object']}}"
+                          new_obj = self.new
+                          new_obj.vars.merge!(rowhash)
+                          ret_list << new_obj
+                        end
+                        
+                        puts "Processing rhom objects end, #{ret_list.length} objects"
                     end
-                    
-                    puts "Processing rhom objects end, #{ret_list.length} objects"
-                    
+                                        
                   end
                   
-                  args.first == :first || args.first.is_a?(String) ? ret_list[0] : ret_list
+                  return list.length if args.first == :count
+                  if args.first == :first || args.first.is_a?(String) 
+                    return ret_list.length > 0 ? ret_list[0] : nil
+                  end 
+                  
+                  ret_list
                 end
               
                 def search(args)
