@@ -869,7 +869,8 @@ class Select {
         boolean notempty = !(queryCondition != null
                              && queryCondition.isFixedConditional()
                              &&!queryCondition.testCondition(session));
-
+        //int nCounter = 0;
+        //int arrLoaded[] = new int[1000];
         while (notempty && level >= 0) {
 
             // perform a join
@@ -897,6 +898,8 @@ class Select {
                 first[level] = found;
             }
 
+//            arrLoaded[nCounter++] = session.getDatabase().logger.getCache().getCachedObjectCount();
+            
             if (!found &&!outerfound) {
                 level--;
 
@@ -949,6 +952,9 @@ class Select {
                     if (gResult.size() >= limitcount) {
                         break;
                     }
+                    
+                    if ( t != null && t.filterIndex != null && t.isMultiFindFirst && t.filterIndex.isUnique() )
+                    	break;
                 } catch (HsqlInternalException e) {
                     continue;
                 }

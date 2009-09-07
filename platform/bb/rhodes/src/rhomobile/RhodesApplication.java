@@ -619,7 +619,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        // TODO: This is really a hack, we should replicate the "Get Link" functionality
 			// Also, for some reason the menu size becomes 0 when there is 1 item left (page view)
 	    	for(int i=0; i < menu.getSize(); i++) {
-	    		System.out.println("Getting menu item: " + i);
+	    		//System.out.println("Getting menu item: " + i);
 	    	    MenuItem item = menu.getItem(i);
 	    	    String label = item.toString();
 	    	    // Save the get link menuitem
