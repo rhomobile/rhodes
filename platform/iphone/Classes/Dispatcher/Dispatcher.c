@@ -23,6 +23,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Dispatcher"
 
+extern void _rho_map_location(char* query);
+
 char *trim(char *str)
 {
 	char *ibuf = str, *obuf = str;
@@ -192,6 +194,14 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 				} else {
 					return HTTPRedirect(context, "/app/");
 				}
+			} else if (route->_model && !strcmp(route->_model,"map")) {
+				char* query = "";
+				if (context->_request->_query) {
+					RAWLOG_INFO1("Map %s", context->_request->_query);
+					query = context->_request->_query;
+				}
+				_rho_map_location(query);
+				return HTTPSendReply(context,"");
 			}
 		}
 	} else if (route->_application && !strcmp(route->_application,"shared")) {
