@@ -756,15 +756,12 @@ module Rhom
                       # then we procede with update
                       if old_val != new_val
                         unless ::Rhom::RhomObject.method_name_reserved?(attrib)
+                          
                           # only one update at a time
                           ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>update_type})
                           # add to syncengine queue
                           ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           
-                          # update viewable ('query') list
-                          #::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "update_type"=>'query'})
-                          #result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>'query'})
-
                           result = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', {"object"=>obj, "attrib"=>attrib, "source_id"=>self.get_inst_source_id}) 
                           if result && result.length > 0 
                             result = ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>self.get_inst_source_id})
@@ -772,6 +769,9 @@ module Rhom
                             result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
                             ::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
                           end    
+                          
+                          # update in-memory object
+                          self.vars[attrib] = new_val
                         end
                       end
                     end

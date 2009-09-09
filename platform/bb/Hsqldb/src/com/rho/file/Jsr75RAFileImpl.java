@@ -9,6 +9,7 @@ import j2me.io.FileNotFoundException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
+import com.rho.IRAFile;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
@@ -34,18 +35,22 @@ public class Jsr75RAFileImpl implements IRAFile {
 	public void open(String name, int mode) throws FileNotFoundException {
 		try {
 			m_file = (FileConnection)Connector.open(name, mode);
-    		LOG.TRACE("Open file: " + name);
-            if (!m_file.exists() && mode == Connector.READ_WRITE ) {
-            	LOG.TRACE("Create file: " + name);
-            	m_file.create();  // create the file if it doesn't exist
-            }
-    		
-            m_fileSize = m_file.fileSize();
-            m_nSeekPos = 0;
+			LOG.TRACE("Open file: " + name);
+			if (!m_file.exists()) {
+				if (mode == Connector.READ_WRITE || mode == Connector.WRITE) {
+					LOG.TRACE("Create file: " + name);
+					m_file.create();  // create the file if it doesn't exist
+				}
+				else
+					throw new FileNotFoundException("File '" + name + "' not exists");
+	        }
+			
+	        m_fileSize = m_file.fileSize();
+	        m_nSeekPos = 0;
 		}
-		catch (IOException exc) {
-			LOG.ERROR("Open '" + name +"'failed.", exc);
-    		throw new FileNotFoundException(exc.getMessage());
+		catch (Exception exc) {
+			//LOG.ERROR("Open '" + name + "' failed");
+			throw new FileNotFoundException(exc.getMessage());
 		}
 	}
 	

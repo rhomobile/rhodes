@@ -40,31 +40,12 @@ public class RhoClassFactory
     
     public static IFileAccess createFileAccess() throws Exception
     {
-    	LOG.INFO_OUT("createFileAccess");
-    	
-    	Class wrapperClass;
-    	try {
-    		wrapperClass = Class.forName("com.rho.file.FileAccessBB");
-    	}
-    	catch (ClassNotFoundException exc) {
-    		try {
-    			wrapperClass = Class.forName("com.rhomobile.rhodes.FileAccess");
-    		}
-    		catch (ClassNotFoundException e) {
-    			LOG.ERROR_OUT("createFileAccess - Class not found", e);
-    			
-    			throw e;
-    		}
-    	}
-    	
-    	try {
-    		return (IFileAccess)wrapperClass.newInstance();
-    	}
-    	catch (Exception e) {
-    		LOG.ERROR_OUT("createFileAccess - newInstance failed", e);
-    		
-    		throw e;
-    	}
+    	return RhoClassFactory.createRhoRubyHelper().createFileAccess();
+    }
+    
+    public static IRAFile createRAFile() throws Exception
+    {
+    	return RhoClassFactory.createRhoRubyHelper().createRAFile();
     }
     
     public static IDBStorage createDBStorage() throws Exception
