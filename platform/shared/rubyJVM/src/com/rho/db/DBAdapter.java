@@ -287,8 +287,8 @@ public class DBAdapter extends RubyBasic {
 			if ( len > 0 )
 				strFullVer = new String(buf,0,len);
     	}
-    	catch (FileNotFoundException e) {
-    		LOG.TRACE("readDBVersion: FileNotFoundException");
+    	catch (Exception e) {
+    		LOG.TRACE("readDBVersion: Exception: " + e.getMessage());
     	}
     	
 		if ( strFullVer.length() == 0 )
@@ -304,7 +304,7 @@ public class DBAdapter extends RubyBasic {
 	void writeDBVersion(DBVersion ver)throws Exception
 	{
 		IRAFile file = RhoClassFactory.createRAFile();
-		file.open(m_strDBVerPath, Connector.WRITE);
+		file.open(m_strDBVerPath, Connector.READ_WRITE);
         String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
         byte[] buf = strFullVer.getBytes();
         file.write(buf, 0, buf.length);
@@ -394,9 +394,21 @@ public class DBAdapter extends RubyBasic {
 			
 			IFileAccess fs = RhoClassFactory.createFileAccess();
 			
-		    fs.delete(dbNewName + ".data");
-		    fs.delete(dbNewName + ".script");
-		    fs.delete(dbNewName + ".journal");
+			String dbNameData = dbName + ".data";
+		    String dbNewNameData = dbNewName + ".data";
+		    String dbNameScript = dbName + ".script";
+		    String dbNewNameScript = dbNewName + ".script";
+		    String dbNameJournal = dbName + ".journal";
+		    String dbNewNameJournal = dbNewName + ".journal";
+		    
+			//LOG.TRACE("DBAdapter: " + dbNewNameDate + ": " + (fs.exists(dbNewNameData) ? "" : "not ") + "exists");
+		    fs.delete(dbNewNameData);
+		    //LOG.TRACE("DBAdapter: " + dbNewNameScript + ": " + (fs.exists(dbNewNameScript) ? "" : "not ") + "exists");
+		    fs.delete(dbNewNameScript);
+		    //LOG.TRACE("DBAdapter: " + dbNewNameJournal + ": " + (fs.exists(dbNewNameJournal) ? "" : "not ") + "exists");
+		    fs.delete(dbNewNameJournal);
+		    
+		    LOG.TRACE("1. Size of " + dbNameData + ": " + fs.size(dbNameData));
 		    
 		    db = RhoClassFactory.createDBStorage();	    
 			db.open( dbNewName, getSqlScript() );
@@ -430,9 +442,13 @@ public class DBAdapter extends RubyBasic {
 		    m_dbStorage = null;
 		    m_bIsOpen = false;
 		    
-		    fs.delete(dbName + ".journal");
-		    fs.renameOverwrite(dbNewName + ".data", dbName+".data");
-		    fs.renameOverwrite(dbNewName + ".script", dbName+".script");
+		    LOG.TRACE("2. Size of " + dbNewNameData + ": " + fs.size(dbNewNameData));
+		    
+		    fs.delete(dbNameJournal);
+		    fs.renameOverwrite(dbNewNameData, dbNameData);
+		    fs.renameOverwrite(dbNewNameScript, dbNameScript);
+		    
+		    LOG.TRACE("3. Size of " + dbNameData + ": " + fs.size(dbNameData));
 		    
 		    m_dbStorage = RhoClassFactory.createDBStorage();
 			m_dbStorage.open(m_strDBPath, getSqlScript() );
