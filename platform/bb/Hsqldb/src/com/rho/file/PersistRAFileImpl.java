@@ -9,25 +9,28 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.ConnectionClosedException;
 
+import com.rho.IRAFile;
+
 import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
+import net.rim.device.api.util.Arrays;
 import net.rim.device.api.util.Persistable;
 import net.rim.device.api.util.StringUtilities;
 
-//import com.rho.RhoEmptyLogger;
-//import com.rho.RhoLogger;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 
 public class PersistRAFileImpl implements IRAFile {
 	
-	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-	//	new RhoLogger("PersistFileImpl");
+	private static final boolean debug = false;
 	
-	/*
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("PersistFileImpl");
+	
 	private static void log(String message) {
 		//LOG.INFO(message);
-		//LOG.TRACE(message);
+		LOG.TRACE(message);
 	}
-	*/
 	
 	// WARNING!!! Be very carefull when modify this line! There was a case when
 	// entire Hsqldb module has preverification error in case if this line was exactly as:
@@ -35,8 +38,8 @@ public class PersistRAFileImpl implements IRAFile {
 	// It is impossible to explain why it happened but need to be remembered
 	private static final String kprefix = PersistRAFileImpl.class.getName();
 	
-	private static final String version = "2.4";
-	//private static final String version = "debug.2.48";
+	//private static final String version = "2.5";
+	private static final String version = "debug.2.56";
 	
 	private static final int PAGE_SIZE = 4096;
 	private static final int MAX_CLEAR_PAGES_CACHED = 1;
@@ -47,15 +50,19 @@ public class PersistRAFileImpl implements IRAFile {
 	//private int m_sync_times = 0;
 	
 	// Only for debug purposes
-	//private static int id = 0;
-	//private int m_id;
+	private static int id = 0;
+	private int m_id;
 	private int m_mode;
 	
 	private long m_nSeekPos;
 	
-	private static class ByteArrayWrapper implements Persistable {
+	private static class PageWrapper implements Persistable {
+		public String name;
+		public int index;
 		public byte[] content;
-		public ByteArrayWrapper(byte[] c) {
+		public PageWrapper(String n, int i, byte[] c) {
+			name = n;
+			index = i;
 			content = c;
 		}
 	};
@@ -157,7 +164,11 @@ public class PersistRAFileImpl implements IRAFile {
 				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED + 1);
 				long key = getPageKey(n);
 				PersistentObject persPage = PersistentStore.getPersistentObject(key);
-				ByteArrayWrapper wrapper = (ByteArrayWrapper)persPage.getContents();
+				PageWrapper wrapper = (PageWrapper)persPage.getContents();
+				if (wrapper != null) {
+					if (wrapper.index != n || !wrapper.name.equals(m_name))
+						throw new RuntimeException("Page location mechanism internal error");
+				}
 				page.content = wrapper == null ? new byte[PAGE_SIZE] : wrapper.content;
 			}
 			return page.content;
@@ -181,7 +192,8 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 		
 		public void sync() {
-			//log("--- File '" + m_name + "' sync, size: " + m_size + ", dirty pages: " + m_dirty + "...");
+			if (debug)
+				log("--- File '" + m_name + "' sync, size: " + m_size + ", dirty pages: " + m_dirty + "...");
 			
 			synchronized (PersistentStore.getSynchObject()) {
 				for (int i = m_pages.size() - 1; m_dirty > 0 && i >= 0; --i) {
@@ -189,7 +201,7 @@ public class PersistRAFileImpl implements IRAFile {
 					if (page.content != null && page.dirty) {
 						long key = getPageKey(i);
 						PersistentObject persPage = PersistentStore.getPersistentObject(key);
-						persPage.setContents(new ByteArrayWrapper(page.content));
+						persPage.setContents(new PageWrapper(m_name, i, page.content));
 						persPage.commit();
 						page.dirty = false;
 						--m_dirty;
@@ -205,7 +217,8 @@ public class PersistRAFileImpl implements IRAFile {
 				persInfo.commit();
 			}
 			
-			//log("+++ File '" + m_name + "' sync done");
+			if (debug)
+				log("+++ File '" + m_name + "' sync done");
 		}
 		
 		private void deletePages(int start, int end) {
@@ -234,9 +247,9 @@ public class PersistRAFileImpl implements IRAFile {
 	private FileInfo m_info = null;
 	
 	public PersistRAFileImpl() {
-		//synchronized (m_shared) {
-		//	m_id = ++id;
-		//}
+		synchronized (m_shared) {
+			m_id = ++id;
+		}
 	}
 	
 	public void open(String name) throws FileNotFoundException {
@@ -246,7 +259,8 @@ public class PersistRAFileImpl implements IRAFile {
 	public void open(String name, int mode) throws FileNotFoundException {
 		m_mode = mode;
 		
-		//log("--- File '" + name + "': open in mode " + mode + "...");
+		if (debug)
+			log("--- File '" + name + "': open in mode " + mode + "...");
 		FileInfo info;
 		synchronized (m_shared) {
 			info = (FileInfo)m_shared.get(name);
@@ -272,9 +286,10 @@ public class PersistRAFileImpl implements IRAFile {
 		
 		m_nSeekPos = 0;
 		
-		//log("+++ File '" + name + "' opened: id " + m_id +
-		//		(m_info.exists() ? ", size " + m_info.getSize() : ", not exists") +
-		//		" (use_count: " + m_info.use_count + ")");
+		if (debug)
+			log("+++ File '" + name + "' opened: id " + m_id +
+					(m_info.exists() ? ", size " + m_info.getSize() : ", not exists") +
+					" (use_count: " + m_info.use_count + ")");
 	}
 	
 	private void checkUseCount() {
@@ -296,13 +311,15 @@ public class PersistRAFileImpl implements IRAFile {
 		
 		synchronized (m_info) {
 			checkUseCount();
-			//String name = m_info.getName();
-			//log("--- File '" + name + "' close (use_count: " + m_info.use_count + ")...");
+			String name = m_info.getName();
+			if (debug)
+				log("--- File '" + name + "' close (use_count: " + m_info.use_count + ")...");
 			
 			if (--m_info.use_count == 0 && isWritable() && m_info.exists())
 				m_info.sync();
 			
-			//log("+++ File '" + name + "' closed");
+			if (debug)
+				log("+++ File '" + name + "' closed");
 		}
 		m_info = null;
 		m_nSeekPos = 0;
@@ -461,11 +478,13 @@ public class PersistRAFileImpl implements IRAFile {
 		synchronized (m_info) {
 			checkUseCount();
 			
-			//String name = m_info.getName();
-			//log("--- File '" + name + "' delete...");
+			String name = m_info.getName();
+			if (debug)
+				log("--- File '" + name + "' delete...");
 			m_info.delete();
 			--m_info.use_count;
-			//log("+++ File '" + name + "' deleted");
+			if (debug)
+				log("+++ File '" + name + "' deleted");
 		}
 		
 		m_info = null;
@@ -508,7 +527,8 @@ public class PersistRAFileImpl implements IRAFile {
 		
 				String newName = name.substring(0, name.length() - lastElementOld.length()) + lastElementNew;
 				
-				//log("--- File '" + name + "' rename to '" + newName + "'...");
+				if (debug)
+					log("--- File '" + name + "' rename to '" + newName + "'...");
 				
 				FileInfo newInfo = (FileInfo)m_shared.get(newName);
 				if (newInfo == null) {
@@ -527,22 +547,49 @@ public class PersistRAFileImpl implements IRAFile {
 					for (int i = 0; size > 0 && i < n; ++i) {
 						byte[] content = m_info.getPage(i);
 						byte[] newContent = newInfo.getPage(i);
-						System.arraycopy(content, 0, newContent, 0, (int)(size%PAGE_SIZE));
+						System.arraycopy(content, 0, newContent, 0,
+								(int)(size > PAGE_SIZE ? PAGE_SIZE : size % PAGE_SIZE));
 						newInfo.setPageDirty(i);
 						size -= PAGE_SIZE;
 					}
 					
 					newInfo.m_exists = true;
 					newInfo.sync();
+					
+					if (debug) {
+						long oldSize = m_info.getSize();
+						long newSize = newInfo.getSize();
+						log("File '" + name + "': size: " + oldSize);
+						log("File '" + newName + "': size: " + newSize);
+						log("Sizes are " + (oldSize == newSize ? "" : "not ") + "equals");
+						if (oldSize != newSize)
+							throw new IOException("Internal rename error");
+						for (int i = 0; i < n; ++i) {
+							byte[] oldPage = m_info.getPage(i);
+							byte[] newPage = newInfo.getPage(i);
+							if (oldPage.length != newPage.length || newPage.length > PAGE_SIZE)
+								throw new IOException("Internal rename error");
+							boolean equals = Arrays.equals(oldPage, 0, newPage, 0,
+									(int)(i == n - 1 ? newSize % PAGE_SIZE : PAGE_SIZE));
+							log("Page " + i + ": " + (equals ? "" : "not ") + "equals");
+							if (!equals)
+								throw new IOException("Internal rename error");
+						}
+						log("Newinfo dirty pages: " + newInfo.m_dirty);
+						if (newInfo.m_dirty != 0)
+							throw new IOException("Internal rename error");
+					}
 				}
 				
 				m_info.delete();
 				--m_info.use_count;
-				m_info = null;
-				m_nSeekPos = 0;
 				
-				//log("+++ File '" + name + "' renamed to '" + newName + "'");
+				if (debug)
+					log("+++ File '" + name + "' renamed to '" + newName + "'");
 			}
+			
+			m_info = null;
+			m_nSeekPos = 0;
 		}
 	}
 

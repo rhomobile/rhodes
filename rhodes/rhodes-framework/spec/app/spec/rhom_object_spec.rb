@@ -185,6 +185,8 @@ describe "Rhom::RhomObject" do
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
     @account = Account.find(:all).first
     @account.update_attributes(new_attributes)
+    @account.name.should == "Mobio US"
+    @account.industry.should == "Electronics"
     
     @new_acct = Account.find(:all).first
     
