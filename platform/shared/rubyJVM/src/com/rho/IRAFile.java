@@ -1,4 +1,4 @@
-package com.rho.file;
+package com.rho;
 
 import java.io.IOException;
 

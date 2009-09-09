@@ -16,12 +16,17 @@ import rhomobile.datetime.DateTimePicker;
 
 import com.rho.db.HsqlDBStorage;
 import com.rho.db.IDBStorage;
+import com.rho.file.FileAccessBB;
+import com.rho.file.Jsr75RAFileImpl;
+import com.rho.file.PersistRAFileImpl;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
+	public static final String USE_PERSISTENT = "use_persistent_storage";
+	
 	public static final int COVERAGE_BIS_B = 4;
 	  
 	public void initRubyExtensions(){
@@ -67,6 +72,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public boolean isSimulator(){
 		return DeviceInfo.isSimulator();
+		//return false;
     }
 
 	public String getModuleName()
@@ -141,5 +147,16 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public IDBStorage createDBStorage() {
 		return new HsqlDBStorage();
+	}
+
+	public IFileAccess createFileAccess() {
+		return new FileAccessBB();
+	}
+
+	public IRAFile createRAFile() {
+		if (RhoConf.getInstance().getBool(USE_PERSISTENT))
+			return new PersistRAFileImpl();
+		else
+			return new Jsr75RAFileImpl();
 	}
 }
