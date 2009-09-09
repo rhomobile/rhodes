@@ -1,5 +1,9 @@
 package com.rho.db;
 
+import j2me.io.FileNotFoundException;
+
+import javax.microedition.io.Connector;
+
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
@@ -273,15 +277,20 @@ public class DBAdapter extends RubyBasic {
     
     DBVersion readDBVersion()throws Exception
 	{
-        SimpleFile file = RhoClassFactory.createFile();
-        file.open(m_strDBVerPath, true, true);
-        byte buf[] = new byte[20];
-		int len = file.read(0, buf);
-		file.close();
-		String strFullVer = "";
-		if ( len > 0 )
-			strFullVer = new String(buf,0,len);
-		
+    	String strFullVer = "";
+    	try {
+	    	IRAFile file = RhoClassFactory.createRAFile();
+	    	file.open(m_strDBVerPath);
+	        byte buf[] = new byte[20];
+	        int len = file.read(buf, 0, buf.length);
+			file.close();
+			if ( len > 0 )
+				strFullVer = new String(buf,0,len);
+    	}
+    	catch (FileNotFoundException e) {
+    		LOG.TRACE("readDBVersion: FileNotFoundException");
+    	}
+    	
 		if ( strFullVer.length() == 0 )
 			return new DBVersion();
 		
@@ -294,10 +303,11 @@ public class DBAdapter extends RubyBasic {
 	
 	void writeDBVersion(DBVersion ver)throws Exception
 	{
-        SimpleFile file = RhoClassFactory.createFile();
-        file.open(m_strDBVerPath, false, false);
+		IRAFile file = RhoClassFactory.createRAFile();
+		file.open(m_strDBVerPath, Connector.WRITE);
         String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
-        file.write(0, strFullVer.getBytes() );
+        byte[] buf = strFullVer.getBytes();
+        file.write(buf, 0, buf.length);
         file.close();
 	}
     

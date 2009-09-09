@@ -9,6 +9,8 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.ConnectionClosedException;
 
+import com.rho.IRAFile;
+
 import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
 import net.rim.device.api.util.Persistable;
