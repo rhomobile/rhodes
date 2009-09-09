@@ -33,6 +33,7 @@
 	SEL onVibrate;
 	SEL onPlayFile;
 	SEL onSysCall;
+	SEL onMapLocation;
 }
 
 // callbacks
@@ -52,6 +53,7 @@
 @property (assign) SEL onVibrate;
 @property (assign) SEL onPlayFile;
 @property (assign) SEL onSysCall;
+@property (assign) SEL onMapLocation;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
