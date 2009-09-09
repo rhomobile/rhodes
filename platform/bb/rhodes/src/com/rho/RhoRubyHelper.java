@@ -25,6 +25,9 @@ import com.xruby.runtime.lang.RubyRuntime;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
+	// WARNING!!! Be very carefull when modify these lines! There was a case when
+	// entire application has verification error in case if this line is not at start
+	// of class. It is impossible to explain why it happened but need to be remembered
 	public static final String USE_PERSISTENT = "use_persistent_storage";
 	
 	public static final int COVERAGE_BIS_B = 4;
