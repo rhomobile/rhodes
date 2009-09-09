@@ -247,6 +247,11 @@
 	[params release];
 }
 
+- (void)onMapLocation:(NSString*)query {
+	NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
+	[[UIApplication sharedApplication] openURL:url];
+}
+
 #ifdef __IPHONE_3_0
 - (void)processDoSync:(NSDictionary *)userInfo
 {
@@ -338,6 +343,7 @@
 	serverHost->onVibrate = @selector(onVibrate:);
 	serverHost->onPlayFile = @selector(onPlayFile:);
 	serverHost->onSysCall = @selector(onSysCall:);
+	serverHost->onMapLocation = @selector(onMapLocation:);
     [serverHost start];
 	
 	// Create View
