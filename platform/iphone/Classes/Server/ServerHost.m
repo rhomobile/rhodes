@@ -178,6 +178,12 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+- (void)mapLocation:(NSString*) query {
+	if(actionTarget && [actionTarget respondsToSelector:onMapLocation]) {
+		[actionTarget performSelectorOnMainThread:onMapLocation withObject:query waitUntilDone:NO];
+	}
+}
+
 - (void)sysCall:(PARAMS_WRAPPER*)params {
 }
 
@@ -395,6 +401,10 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 									initialTime:initial_time 
 										 format:format
 										   data:[NSString stringWithCString:data]];
+}
+
+void _rho_map_location(char* query) {
+	[[ServerHost sharedInstance] mapLocation:[NSString stringWithCString:query]];
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {
