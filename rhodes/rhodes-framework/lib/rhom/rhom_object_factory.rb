@@ -249,6 +249,7 @@ module Rhom
                     offset = 0
                     order_dir=""
                     ret_list = []
+                    op = 'AND'
                     
                     if args[1]
                         condition_hash = args[1][:conditions] if args[1][:conditions]
@@ -265,6 +266,8 @@ module Rhom
                             limit = 1                    
                             offset = 0 unless offset
                         end
+                        
+                        op = args[1][:op].upcase if args[1][:op]
                     end
                     
                     if select_arr
@@ -275,22 +278,41 @@ module Rhom
                     end
                     
                     nulls_cond = {}
-                    condition_hash.each do |key,value|
-                        if !value
-                            nulls_cond[key] = value
-                            condition_hash.delete(key)
+                    if op == 'AND'
+                        condition_hash.each do |key,value|
+                            if !value
+                                nulls_cond[key] = value
+                                condition_hash.delete(key)
+                            end
                         end
                     end
-
+                    
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     sql = ""
                     if condition_hash.length > 0
                         condition_hash.each do |key,value|
-                            sql << "\nINTERSECT\n" if sql.length > 0 
-                            sql << "SELECT object FROM object_values WHERE \n"
-                            sql << "value=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
-                            sql << " AND attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                            if op == 'AND'
+                                sql << "\nINTERSECT\n" if sql.length > 0 
+                                sql << "SELECT object FROM object_values WHERE \n"
+                            else
+                                sql << "\nUNION ALL\n" if sql.length > 0 
+                                sql << "SELECT object,attrib,value FROM object_values WHERE \n"
+                            end
+                            
+                            val_op = '='
+                            val_func = ''
+                            attrib_name = ''
+                            if key.is_a?(Hash)
+                                val_op = key[:op] if key[:op] 
+                                val_func = key[:func] if key[:func] 
+                                attrib_name = key[:name] if key[:name] 
+                            else
+                                attrib_name = key
+                            end
+                            
+                            sql << "attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attrib_name)
                             sql << " AND source_id=" + srcid_value 
+                            sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' ' + val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
                         end
                     else
                         sql << "SELECT distinct object FROM object_values WHERE \n"
@@ -303,7 +325,11 @@ module Rhom
                     
                     nIndex = -1
                     nCount = 0;
+                    objMap = {} if op == 'OR'
                     listObjs.each do |obj|
+                        oldObj = objMap[ obj['object'] ] if objMap
+                        next if oldObj
+                        
                         nIndex += 1
                         next if !order_attr && offset && nIndex < offset
                         
@@ -330,7 +356,10 @@ module Rhom
                         next if args.first == :count
                         
                         sql = ""                        
-                        attribs.each do |attr|
+                        nonExistAttrs = attribs.dup
+                        nonExistAttrs.delete(obj['attrib']) if obj['attrib']
+                        
+                        nonExistAttrs.each do |attr|
                             sql << "\nUNION ALL\n" if sql.length > 0
                             sql << "SELECT attrib,value FROM object_values WHERE \n"
                             sql << "object=" + obj_value
@@ -343,7 +372,12 @@ module Rhom
                         new_obj = self.new
                         # always return object field with surrounding '{}'
                         new_obj.vars.merge!({'object'=>"{#{obj['object']}}"})
-                        nonExistAttrs = attribs.dup
+                        objMap[ obj['object'] ] = new_obj if objMap
+                        
+                        if obj['attrib']
+                            new_obj.vars.merge!( {"#{obj['attrib']}"=>"#{obj['value']}" })
+                        end
+                        
                         listAttrs.each do |attrValHash|
                           attrName = attrValHash['attrib']
                           attrVal = attrValHash['value']
@@ -351,6 +385,7 @@ module Rhom
                           
                           nonExistAttrs.delete(attrName)
                         end
+                        
                         nonExistAttrs.each do |attrName|
                           new_obj.vars.merge!( { "#{attrName}"=>nil } )
                         end
