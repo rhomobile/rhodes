@@ -386,6 +386,19 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
+
+  it "should find with advanced conditions" do
+    query = '%IND%'    
+    @accts = Account.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+        :op => 'OR', :select => ['name','industry'])
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
   
   it "should find first with conditions" do
     @mobio_ind_acct = Account.find(:first, :conditions => {'name' => 'Mobio India'})

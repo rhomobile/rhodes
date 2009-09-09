@@ -128,8 +128,8 @@ public class Journal
 			bSuccess = true;
 		}catch(IOException exc)
 		{
-			LOG.ERROR("Rollback failed.", exc);
-			throw exc;
+			LOG.ERROR("Rollback failed.Journal is empty or corrupted", exc);
+			//throw exc;
 		}finally{
 			if ( df != null )
 			{
