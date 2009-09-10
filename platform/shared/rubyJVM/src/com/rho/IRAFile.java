@@ -6,7 +6,7 @@ import j2me.io.FileNotFoundException;
 
 public interface IRAFile {
 	public void open(String name) throws FileNotFoundException;
-	public void open(String name, int mode) throws FileNotFoundException;
+	public void open(String name, String mode) throws FileNotFoundException;
 	public void close() throws IOException;
 	
 	public long size() throws IOException;

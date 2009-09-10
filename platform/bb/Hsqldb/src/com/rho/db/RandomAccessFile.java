@@ -55,7 +55,7 @@ public class RandomAccessFile
 		} catch (Exception e) {
 			throw new FileNotFoundException(e.getMessage());
 		}
-        m_impl.open(name, imode);
+        m_impl.open(name, mode);
     }
     
     public long length() throws IOException
