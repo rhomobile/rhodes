@@ -14,6 +14,7 @@ namespace net {
 }
 namespace json {
     class CJSONEntry;
+    class CJSONArrayIterator;
 }
 
 namespace sync {
@@ -105,7 +106,9 @@ public:
 
     void processServerData(const char* szData);
     boolean processSyncObject(json::CJSONEntry& oJsonEntry);
-    boolean processSyncObject_ver1(json::CJSONEntry oJsonObject);//throws Exception
+    boolean processSyncObject_ver1(json::CJSONEntry oJsonObject, int nSrcID);//throws Exception
+    void processServerData_Ver0(json::CJSONArrayIterator& oJsonArr);
+    void processServerData_Ver1(json::CJSONArrayIterator& oJsonArr);
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);

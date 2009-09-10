@@ -122,6 +122,18 @@ CSyncSource* CSyncEngine::findSourceByUrl(const String& strSrcUrl)
     return null;
 }
 
+CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
+{
+    for( int i = 0; i < (int)m_sources.size(); i++ )
+    {
+        CSyncSource& src = *m_sources.elementAt(i);
+        if ( src.getName().compare(strSrcName)==0 )
+            return &src;
+    }
+    
+    return null;
+}
+
 void CSyncEngine::loadAllSources()
 {
     m_sources.clear();
