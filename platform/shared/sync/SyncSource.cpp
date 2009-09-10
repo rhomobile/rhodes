@@ -278,11 +278,15 @@ void CSyncSource::syncServerChanges()
         processServerData(resp.getCharData());
 /*		String strData =
 		"[{count: 124},{total_count: 5425},{token: 123},{version: 1},"
+        "{s:\"SugarEmployee\",ol:["
 		"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:["
 		"{i:26478681,d:1},"
-		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0}]}]";
+		"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0},"
+        "{a:\"second_name\",i:55555,v:\"Burgess\"}"
+        "]}"
+        "]}]";
 		//u:\"query\",
-		processServerData(strData.c_str());*/
+		processServerData(strData.c_str()); */
 
         if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
             break;
@@ -335,34 +339,83 @@ void CSyncSource::processServerData(const char* szData)
     {
         //TODO: support DBExceptions
         getDB().startTransaction();
-        for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
-        {
-            if ( getDB().isUnlockDB() )
-            {
-			    LOG(INFO) + "Commit transaction because of UI request.";
-                RhoRuby_RhomAttribManager_save(getID());
-                getDB().endTransaction();
-                getDB().startTransaction();
-            }
 
-	        CJSONEntry oJsonObject = oJsonArr.getCurItem();
-	        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
-	        	processSyncObject_ver1(oJsonObject);
-	        
-	        if( !bRes)
-            {
-	            getSync().stopSync();
-	            break;
-            }
+        if ( nVersion == 0 )
+            processServerData_Ver0(oJsonArr);
+        else
+            processServerData_Ver1(oJsonArr);
 
-            m_bGetAtLeastOnePage = true;
-        }
-        RhoRuby_RhomAttribManager_save(getID());
         getDB().endTransaction();
     }
 
     if ( getServerObjectsCount() < getTotalCount() )
         m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "");
+}
+
+void CSyncSource::processServerData_Ver0(CJSONArrayIterator& oJsonArr)
+{
+    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+    {
+        if ( getDB().isUnlockDB() )
+        {
+		    LOG(INFO) + "Commit transaction because of UI request.";
+            RhoRuby_RhomAttribManager_save(getID());
+            getDB().endTransaction();
+            getDB().startTransaction();
+        }
+
+        CJSONEntry oJsonObject = oJsonArr.getCurItem();
+        if( !processSyncObject(oJsonObject))
+        {
+            getSync().stopSync();
+            break;
+        }
+
+        m_bGetAtLeastOnePage = true;
+    }
+    RhoRuby_RhomAttribManager_save(getID());
+}
+
+void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
+{
+    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+    {
+        CJSONEntry oJsonSource = oJsonArr.getCurItem();
+        String strSrcName = oJsonSource.getString("s");
+        int nSrcID = getID();
+        if ( strSrcName.compare(getName()) != 0 )
+        {
+            CSyncSource* pSrc = getSync().findSourceByName(strSrcName);
+            if ( pSrc == null )
+            {
+                LOG(ERROR) + "Sync server send data for unknown source name:" + strSrcName;
+                continue;
+            }
+            nSrcID = pSrc->getID();
+        }
+
+        CJSONArrayIterator oJsonObjList(oJsonSource, "ol");
+        for( ; !oJsonObjList.isEnd() && getSync().isContinueSync(); oJsonObjList.next() )
+        {
+            if ( getDB().isUnlockDB() )
+            {
+		        LOG(INFO) + "Commit transaction because of UI request.";
+                RhoRuby_RhomAttribManager_save(nSrcID);
+                getDB().endTransaction();
+                getDB().startTransaction();
+            }
+
+            CJSONEntry oJsonObject = oJsonObjList.getCurItem();
+            if( !processSyncObject_ver1(oJsonObject,nSrcID))
+            {
+                getSync().stopSync();
+                break;
+            }
+
+            m_bGetAtLeastOnePage = true;
+        }
+        RhoRuby_RhomAttribManager_save(nSrcID);
+    }
 }
 
 CValue::CValue(json::CJSONEntry& oJsonEntry)//throws JSONException
@@ -463,7 +516,7 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
     return true;
 }
 
-boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exception
+boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)//throws Exception
 {
 	const char* strObject = oJsonObject.getString("o");
 	CJSONArrayIterator oJsonArr(oJsonObject, "av");
@@ -488,16 +541,16 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject)//throws Exce
 
             getDB().executeSQL("INSERT INTO object_values \
                 (id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-                value.m_nID, strAttrib, getID(), strObject,
+                value.m_nID, strAttrib, nSrcID, strObject,
                 value.m_strValue, value.m_strAttrType );
             //TODO: add record to special table for id,token
 
-            RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
+            RhoRuby_RhomAttribManager_add_attrib(nSrcID,strAttrib.c_str());
             m_nInserted++;
         }else if ( nDbOp == 1 ) //delete
         {
             uint64 id = oJsonEntry.getUInt64("i");
-            RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
+            RhoRuby_RhomAttribManager_delete_attribs(nSrcID,id);
             getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
             m_nDeleted++;

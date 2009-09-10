@@ -106,6 +106,7 @@ private:
 
     CSyncSource* findSourceByID(int nSrcId);
     CSyncSource* findSourceByUrl(const String& strSrcUrl);
+    CSyncSource* findSourceByName(const String& strSrcName);
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
