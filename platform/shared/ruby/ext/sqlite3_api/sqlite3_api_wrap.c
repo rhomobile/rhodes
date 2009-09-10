@@ -144,8 +144,8 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 	int nRes = 0;
     char * szErrMsg = 0;
 	
-	if ((argc < 1) || (argc > 1))
-		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
+	if ((argc < 1) || (argc > 2))
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc);
 	
 	Data_Get_Struct(self, sqlite3 *, ppDB);
 	db = (sqlite3 *)rho_db_get_handle();
@@ -157,6 +157,36 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
         szErrMsg = sqlite3_errmsg(db);
 
         rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
+    }
+
+    if ( argc > 1 )
+    {
+        int i = 0;
+        VALUE args = argv[1];
+        if ( RARRAY_LEN(args) > 0 && TYPE(RARRAY_PTR(args)[0]) == T_ARRAY )
+            args = RARRAY_PTR(args)[0];
+
+        for( ; i < RARRAY_LEN(args); i++ )
+        {
+            VALUE arg = RARRAY_PTR(args)[i];
+            if (NIL_P(arg))
+            {
+                sqlite3_bind_null(statement, i+1);
+                continue;
+            }
+
+            switch( TYPE(arg) )
+            {
+            case T_STRING:
+                sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), -1, SQLITE_TRANSIENT);
+                break;
+            case T_FIXNUM:
+            case T_FLOAT:
+            case T_BIGNUM:
+                sqlite3_bind_int64(statement, i+1, NUM2ULONG(arg));
+                break;
+            }
+        }
     }
 
 	while(sqlite3_step(statement) == SQLITE_ROW) {

@@ -485,7 +485,7 @@ public class DBAdapter extends RubyBasic {
     	Unlock();
     	throw new DBException("Not implemented");
     }
-    
+/*    
     public RubyValue rb_execute(RubyValue v) 
     {
     	RubyArray res = new RubyArray(); 
@@ -508,8 +508,45 @@ public class DBAdapter extends RubyBasic {
 		}
     	
         return res;
+    }*/
+
+    public RubyValue rb_execute(RubyValue v, RubyValue arg) 
+    {
+    	RubyArray res = new RubyArray(); 
+    	try{
+    		Object[] values = null;
+    		if ( arg != null )
+    		{
+	    		RubyArray args1 = arg.toAry();
+	    		RubyArray args = args1;
+	    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
+	    			args = (RubyArray)args.get(0);
+	    		
+	    		values = new Object[args.size()];
+	    		for ( int i = 0; i < args.size(); i++ )
+	    			values[i] = args.get(i).toStr();
+    		}
+    		
+    		IDBResult rows = executeSQL(v.toStr(), values);
+    		RubyString[] colNames = getColNames(rows);
+    		
+    		for( ; !rows.isEnd(); rows.next() )
+    		{
+    			RubyHash row = ObjectFactory.createHash();
+    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+    			
+    			res.add( row );
+    		}
+		}catch(Exception e)
+		{
+    		LOG.ERROR("execute failed.", e);
+			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		}
+    	
+        return res;
     }
-	
+    
     //@RubyAllocMethod
     private static RubyValue alloc(RubyValue receiver) {
     	return getInstance();
@@ -593,10 +630,12 @@ public class DBAdapter extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_close();}
 		});
-		klass.defineMethod( "execute", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_execute(arg);}
+		klass.defineMethod( "execute", new RubyVarArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_execute(args.get(0), 
+						(args.size() > 1 ? args.get(1):null));}
 		});
+		
 		klass.defineMethod( "start_transaction", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_start_transaction();}
