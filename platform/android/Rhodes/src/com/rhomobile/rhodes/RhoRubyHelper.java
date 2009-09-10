@@ -3,6 +3,8 @@ package com.rhomobile.rhodes;
 import android.content.Context;
 import android.telephony.*; 
 
+import com.rho.IFileAccess;
+import com.rho.IRAFile;
 import com.rho.IRhoRubyHelper;
 import com.rho.db.IDBStorage;
 import com.rhomobile.rhodes.camera.Camera;
@@ -107,6 +109,14 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public IDBStorage createDBStorage() {
 		return new DBStorage();
+	}
+
+	public IFileAccess createFileAccess() {
+		return new FileAccess();
+	}
+
+	public IRAFile createRAFile() {
+		return new RAFile();
 	}
 
 }

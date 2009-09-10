@@ -16,7 +16,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>shared</name>
+			<name>src</name>
 			<type>2</type>
 			<locationURI>RHO_SHARED/rubyJVM/src</locationURI>
 		</link>

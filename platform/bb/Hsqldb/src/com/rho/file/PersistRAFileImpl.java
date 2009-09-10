@@ -253,14 +253,16 @@ public class PersistRAFileImpl implements IRAFile {
 	}
 	
 	public void open(String name) throws FileNotFoundException {
-		open(name, Connector.READ);
+		open(name, "r");
 	}
 	
-	public void open(String name, int mode) throws FileNotFoundException {
-		m_mode = mode;
+	public void open(String name, String mode) throws FileNotFoundException {
+		m_mode = Connector.READ;
+		if (mode.startsWith("rw") || mode.startsWith("w"))
+			m_mode = Connector.READ_WRITE;
 		
 		if (debug)
-			log("--- File '" + name + "': open in mode " + mode + "...");
+			log("--- File '" + name + "': open in mode '" + mode + "'s...");
 		FileInfo info;
 		synchronized (m_shared) {
 			info = (FileInfo)m_shared.get(name);

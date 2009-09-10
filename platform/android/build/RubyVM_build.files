@@ -6,6 +6,8 @@ platform/shared/rubyJVM/src/com/rho/db/IDBResult.java
 platform/shared/rubyJVM/src/com/rho/db/IDBStorage.java
 platform/shared/rubyJVM/src/com/rho/FilePath.java
 platform/shared/rubyJVM/src/com/rho/IFile.java
+platform/shared/rubyJVM/src/com/rho/IFileAccess.java
+platform/shared/rubyJVM/src/com/rho/IRAFile.java
 platform/shared/rubyJVM/src/com/rho/IRhoLogSink.java
 platform/shared/rubyJVM/src/com/rho/IRhoRubyHelper.java
 platform/shared/rubyJVM/src/com/rho/location/GeoLocation.java
