@@ -71,6 +71,7 @@ namespace "build" do
       rjava = Jake.get_absolute $androidpath + "/Rhodes/gen/com/rhomobile/rhodes"
       androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
 
+      mkdir_p $tmpdir
       cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
       cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
       set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
