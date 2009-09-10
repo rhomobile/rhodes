@@ -4,8 +4,6 @@ import j2me.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import javax.microedition.io.Connector;
-
 import org.hsqldb.lib.FileAccess;
 
 import com.rho.RhoClassFactory;
@@ -45,7 +43,7 @@ public class FileUtilBB implements FileAccess {
    		InitImpl();
    		synchronized (impl) {
 	   		try {
-	    		impl.open(filename, Connector.READ);
+	    		impl.open(filename);
 	    		return impl.size();
 	    	}
 	    	catch(Exception exc) {
@@ -130,7 +128,7 @@ public class FileUtilBB implements FileAccess {
     	InitImpl();
     	synchronized (impl) {
 	    	try {
-	    		impl.open(filename, Connector.READ_WRITE);
+	    		impl.open(filename, "rw");
 	    		impl.delete();
 	    	}catch(Exception exc){
 	    		System.out.println("FileUtilBB:delete '" + filename + "' Exception: " + exc.getMessage());
@@ -236,7 +234,7 @@ public class FileUtilBB implements FileAccess {
 	        		name = newname.substring(nSlash+1);
 	        	
 	        	InitImpl();
-	        	impl.open(oldname, Connector.READ_WRITE);
+	        	impl.open(oldname, "rw");
 	        	impl.rename(name);
 	    	}catch(IOException exc){
 	    		System.out.println("FileUtilBB:renameOverwrite from '" + oldname + "' to '" + newname + "' Exception: " + exc.getMessage());

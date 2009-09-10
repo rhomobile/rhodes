@@ -2,8 +2,6 @@ package com.rho.db;
 
 import j2me.io.FileNotFoundException;
 
-import javax.microedition.io.Connector;
-
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
@@ -304,7 +302,7 @@ public class DBAdapter extends RubyBasic {
 	void writeDBVersion(DBVersion ver)throws Exception
 	{
 		IRAFile file = RhoClassFactory.createRAFile();
-		file.open(m_strDBVerPath, Connector.READ_WRITE);
+		file.open(m_strDBVerPath, "rw");
         String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
         byte[] buf = strFullVer.getBytes();
         file.write(buf, 0, buf.length);

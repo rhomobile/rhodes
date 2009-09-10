@@ -29,15 +29,18 @@ public class Jsr75RAFileImpl implements IRAFile {
     private static final int ZERO_BUF_SIZE = 4096;
 	
     public void open(String name) throws FileNotFoundException {
-    	open(name, Connector.READ);
+    	open(name, "r");
     }
     
-	public void open(String name, int mode) throws FileNotFoundException {
+	public void open(String name, String mode) throws FileNotFoundException {
 		try {
-			m_file = (FileConnection)Connector.open(name, mode);
+			int imode = Connector.READ;
+			if (mode.startsWith("rw") || mode.startsWith("w"))
+				imode = Connector.READ_WRITE;
+			m_file = (FileConnection)Connector.open(name, imode);
 			LOG.TRACE("Open file: " + name);
 			if (!m_file.exists()) {
-				if (mode == Connector.READ_WRITE || mode == Connector.WRITE) {
+				if (mode.startsWith("rw") || mode.startsWith("w")) {
 					LOG.TRACE("Create file: " + name);
 					m_file.create();  // create the file if it doesn't exist
 				}
