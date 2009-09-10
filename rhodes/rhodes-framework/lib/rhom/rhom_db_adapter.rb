@@ -75,7 +75,7 @@ module Rhom
       # execute a sql statement
       # optionally, disable the factory processing 
       # which returns the result array directly
-      def execute_sql(sql=nil)
+      def execute_sql(sql, *args)
         result = []
         if sql
           #puts "RhomDbAdapter: Executing query - #{sql}"
@@ -84,7 +84,7 @@ module Rhom
           # This prevents concurrency issues.
           begin
             SyncEngine.lock_sync_mutex unless @@inside_transaction
-            result = @@database.execute sql
+            result = @@database.execute( sql, args )
             SyncEngine.unlock_sync_mutex unless @@inside_transaction
           rescue Exception => e
             #puts "exception when running query: #{e}"
@@ -99,7 +99,7 @@ module Rhom
         #puts "result is: #{result.inspect}"
         result
       end
-    
+
       # generates where clause based on hash
       def where_str(condition,select_arr=nil)
         where_str = ""
