@@ -473,7 +473,9 @@ class SyncSource
 	        JSONEntry oJsonSource = oJsonArr.getCurItem();
 	        String strSrcName = oJsonSource.getString("s");
 	        Integer nSrcID = getID();
-	        if ( strSrcName.compareTo(getName()) != 0 )
+	        if ( strSrcName.compareTo("RhoDeleteSource") == 0 )
+	            nSrcID = new Integer(-1);
+	        else if ( strSrcName.compareTo(getName()) != 0 )
 	        {
 	            SyncSource pSrc = getSync().findSourceByName(strSrcName);
 	            if ( pSrc == null )
@@ -608,8 +610,8 @@ class SyncSource
 	        if ( oJsonEntry.isEmpty() )
 	        	continue;
 	        
-		    int nDbOp = oJsonEntry.getInt("d");
-		    if ( nDbOp == 0 ) //insert
+		    //int nDbOp = oJsonEntry.getInt("d");
+		    if ( nSrcID.intValue() >= 0 ) //insert
 		    {
 		    	CValue value = new CValue(oJsonEntry,1);
 		    	if ( !downloadBlob(value) )
@@ -627,16 +629,20 @@ class SyncSource
 		        
 		        RhoRuby.RhomAttribManager_add_attrib(nSrcID,strAttrib);
 		        m_nInserted++;
-		    }else if ( nDbOp == 1 ) //delete
+		    }else// if ( nDbOp == 1 ) //delete
 		    {
 		    	long id = oJsonEntry.getLong("i");
-		        RhoRuby.RhomAttribManager_delete_attribs(nSrcID,id);
-		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
-		
+	            IDBResult res = getDB().executeSQL("SELECT source_id FROM object_values where id=?", id );
+	            if ( !res.isEnd() )
+	            {
+			        RhoRuby.RhomAttribManager_delete_attribs( res.getIntByIdx(0),id);
+			        getDB().executeSQL("DELETE FROM object_values where id=?", id );
+	            }
+	            
 		        m_nDeleted++;
-		    }else{
-		        LOG.ERROR("Unknown DB operation: " + nDbOp );
-		    }
+		    }//else{
+		     //   LOG.ERROR("Unknown DB operation: " + nDbOp );
+		    //}
 		}
 		
 		return true;
@@ -671,7 +677,7 @@ class SyncSource
 	    }else if ( szDbOp != null && szDbOp.equals("delete") )
 	    {
 	    	long id = oJsonEntry.getLong("id");
-	        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
+	        RhoRuby.RhomAttribManager_delete_attribs(getID().longValue(),id);
 	        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 	
 	        m_nDeleted++;

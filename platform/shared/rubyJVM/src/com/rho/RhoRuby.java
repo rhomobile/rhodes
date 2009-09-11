@@ -17,6 +17,8 @@ public class RhoRuby {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoRuby");
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
@@ -197,7 +199,10 @@ public class RhoRuby {
 		
 		addHashToHash( rh, "headers", headers );
 		
-		return callFramework(rh);
+		PROF.CREATE_COUNTER("rho_concat");
+		RubyValue res = callFramework(rh); 
+		PROF.DESTROY_COUNTER("rho_concat");
+		return res; 
 	}
 	
 	static RubyValue callFramework(RubyValue hashReq) {
@@ -232,9 +237,9 @@ public class RhoRuby {
 				ObjectFactory.createString(strAttribute), null);
 	}
 	
-	public static void RhomAttribManager_delete_attribs( Integer nSrcID, long objID)
+	public static void RhomAttribManager_delete_attribs( long nSrcID, long objID)
 	{
-		m_RhomAttribManager_delete_attribs.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
+		m_RhomAttribManager_delete_attribs.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID), 
 				ObjectFactory.createInteger(objID), null);
 	}
 
