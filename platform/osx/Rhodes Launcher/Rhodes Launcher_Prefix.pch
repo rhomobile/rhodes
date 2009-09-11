@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Rhodes Launcher' target in the 'Rhodes Launcher' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
