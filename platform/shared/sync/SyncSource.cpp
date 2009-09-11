@@ -383,7 +383,9 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
         CJSONEntry oJsonSource = oJsonArr.getCurItem();
         String strSrcName = oJsonSource.getString("s");
         int nSrcID = getID();
-        if ( strSrcName.compare(getName()) != 0 )
+        if ( strSrcName.compare("RhoDeleteSource") == 0 )
+            nSrcID = -1;
+        else if ( strSrcName.compare(getName()) != 0 )
         {
             CSyncSource* pSrc = getSync().findSourceByName(strSrcName);
             if ( pSrc == null )
@@ -527,8 +529,8 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
         if ( oJsonEntry.isEmpty() )
         	continue;
 
-        int nDbOp = oJsonEntry.getInt("d");
-        if ( nDbOp == 0 ) //insert
+        //int nDbOp = oJsonEntry.getInt("d");
+        if ( nSrcID >= 0 ) //insert
         {
     	    CValue value(oJsonEntry,1);
     	    if ( !downloadBlob(value) )
@@ -547,16 +549,20 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
 
             RhoRuby_RhomAttribManager_add_attrib(nSrcID,strAttrib.c_str());
             m_nInserted++;
-        }else if ( nDbOp == 1 ) //delete
+        }else// if ( nDbOp == 1 ) //delete
         {
             uint64 id = oJsonEntry.getUInt64("i");
-            RhoRuby_RhomAttribManager_delete_attribs(nSrcID,id);
-            getDB().executeSQL("DELETE FROM object_values where id=?", id );
+            DBResult( res , getDB().executeSQL("SELECT source_id FROM object_values where id=?", id ));
+            if ( !res.isEnd() )
+            {
+                RhoRuby_RhomAttribManager_delete_attribs(res.getIntByIdx(0),id);
+                getDB().executeSQL("DELETE FROM object_values where id=?", id );
+            }
 
             m_nDeleted++;
-        }else{
-            LOG(ERROR) + "Unknown DB operation: " + nDbOp;
-        }
+        }//else{
+         //   LOG(ERROR) + "Unknown DB operation: " + nDbOp;
+        //}
 	}
 	
 	return true;
