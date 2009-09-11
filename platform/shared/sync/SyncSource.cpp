@@ -248,7 +248,7 @@ void CSyncSource::syncServerChanges()
             strUrl += '/' + m_strAction;
 
         String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
-                "&p_size=" + getSync().SYNC_PAGE_SIZE();
+                "&p_size=" + getSync().SYNC_PAGE_SIZE() + "&version=1";
         if ( m_strParams.length() > 0 )
             strQuery += m_strParams;
 
@@ -310,6 +310,13 @@ void CSyncSource::processServerData(const char* szData)
         setCurPageCount(oJsonArr.getCurItem().getInt("count"));
         oJsonArr.next();
     }
+    int nVersion = 0;
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
+    {
+        nVersion = oJsonArr.getCurItem().getInt("version");
+        oJsonArr.next();
+    }
+
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("total_count") )
     {
         setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
@@ -324,13 +331,6 @@ void CSyncSource::processServerData(const char* szData)
         oJsonArr.next();
     }else if ( getCurPageCount() == 0 )
         processToken(0);
-
-    int nVersion = 0;
-    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
-    {
-        nVersion = oJsonArr.getCurItem().getInt("version");
-        oJsonArr.next();
-    }
 
 	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
          + ". Version: " + nVersion;

@@ -214,6 +214,18 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    
 	    return null;
 	}
+
+	SyncSource findSourceByName(String strSrcName)
+	{
+	    for( int i = 0; i < m_sources.size(); i++ )
+	    {
+	        SyncSource src = (SyncSource)m_sources.elementAt(i);
+	        if ( src.getName().equals(strSrcName) )
+	            return src;
+	    }
+	    
+	    return null;
+	}
 	
 	void loadAllSources()throws DBException
 	{
