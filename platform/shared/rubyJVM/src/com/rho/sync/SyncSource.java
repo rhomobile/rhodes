@@ -322,7 +322,7 @@ class SyncSource
 	            strUrl += '/' + m_strAction;
 	        
 			String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
-	                "&p_size=" + SyncEngine.SYNC_PAGE_SIZE();
+	                "&p_size=" + SyncEngine.SYNC_PAGE_SIZE() + "&version=1";
 	        if ( m_strParams.length() > 0 )
 	            strQuery += m_strParams;
 	
@@ -358,14 +358,19 @@ class SyncSource
 		    }
 	
 	        processServerData(resp.getCharData());
-/*			String strData =
+	        
+	        /*String strData =
 			"[{count: 124},{total_count: 5425},{token: 123},{version: 1}," +
+	        "{s:\"AeropriseRequest\",ol:[" +
 			"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:[" +
 			"{i:26478681,d:1}," +
-			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",d:0}]}]";
+			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0}," +
+	        "{a:\"second_name\",i:55555,v:\"Burgess\"}" +
+	        "]}" +
+	        "]}]";
 			//u:\"query\",
-			processServerData(strData);*/
-			
+	        processServerData(strData);*/
+	        
 	        if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
 	            break;
 	    }
@@ -389,6 +394,13 @@ class SyncSource
 	        setCurPageCount(oJsonArr.getCurItem().getInt("count"));
 	        oJsonArr.next();
 	    }
+	    int nVersion = 0;
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
+	    {
+	        nVersion = oJsonArr.getCurItem().getInt("version");
+	        oJsonArr.next();
+	    }
+	    
 	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("total_count") )
 	    {
 	        setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
@@ -405,13 +417,6 @@ class SyncSource
 	    }else if ( getCurPageCount() == 0 )
 	        processToken("0");
 
-	    int nVersion = 0;
-	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
-	    {
-	        nVersion = oJsonArr.getCurItem().getInt("version");
-	        oJsonArr.next();
-	    }
-	    
 		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
 				+ ". Version: " + nVersion );
 		
@@ -419,31 +424,13 @@ class SyncSource
 		{
 		    //TODO: support DBExceptions
 		    getDB().startTransaction();
+
 		    try{
-			    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
-			    {
-			        if ( getDB().isUnlockDB() )
-			        {
-						LOG.INFO( "Commit transaction because of UI request." );
-						RhoRuby.RhomAttribManager_save(getID());
-			            getDB().endTransaction();
-			            getDB().startTransaction();
-			        }
-			
-			        JSONEntry oJsonObject = oJsonArr.getCurItem();
-			        boolean bRes = nVersion == 0 ? processSyncObject(oJsonObject) :
-			        	processSyncObject_ver1(oJsonObject);
-			        
-			        if( !bRes)
-		            {
-			            getSync().stopSync();
-			            break;
-		            }
-			        
-			        m_bGetAtLeastOnePage = true;
-			    }
+		        if ( nVersion == 0 )
+		            processServerData_Ver0(oJsonArr);
+		        else
+		            processServerData_Ver1(oJsonArr);
 		    }finally{
-		    	RhoRuby.RhomAttribManager_save(getID());
 				getDB().endTransaction();
 			}
 		}
@@ -452,6 +439,78 @@ class SyncSource
 	    	m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "");
 	}
 
+	void processServerData_Ver0(JSONArrayIterator oJsonArr)throws Exception
+	{
+	    try{
+		    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+		    {
+		        if ( getDB().isUnlockDB() )
+		        {
+					LOG.INFO( "Commit transaction because of UI request." );
+					RhoRuby.RhomAttribManager_save(getID());
+		            getDB().endTransaction();
+		            getDB().startTransaction();
+		        }
+		
+		        JSONEntry oJsonObject = oJsonArr.getCurItem();
+		        if( !processSyncObject(oJsonObject))
+	            {
+		            getSync().stopSync();
+		            break;
+	            }
+		        
+		        m_bGetAtLeastOnePage = true;
+		    }
+	    }finally{
+	    	RhoRuby.RhomAttribManager_save(getID());
+		}
+	}
+
+	void processServerData_Ver1(JSONArrayIterator oJsonArr)throws Exception
+	{
+	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+	    {
+	        JSONEntry oJsonSource = oJsonArr.getCurItem();
+	        String strSrcName = oJsonSource.getString("s");
+	        Integer nSrcID = getID();
+	        if ( strSrcName.compareTo(getName()) != 0 )
+	        {
+	            SyncSource pSrc = getSync().findSourceByName(strSrcName);
+	            if ( pSrc == null )
+	            {
+	                LOG.ERROR("Sync server send data for unknown source name:" + strSrcName);
+	                continue;
+	            }
+	            nSrcID = pSrc.getID();
+	        }
+
+	        JSONArrayIterator oJsonObjList = new JSONArrayIterator(oJsonSource, "ol");
+	        try{
+		        for( ; !oJsonObjList.isEnd() && getSync().isContinueSync(); oJsonObjList.next() )
+		        {
+			        if ( getDB().isUnlockDB() )
+			        {
+						LOG.INFO( "Commit transaction because of UI request." );
+						RhoRuby.RhomAttribManager_save(getID());
+			            getDB().endTransaction();
+			            getDB().startTransaction();
+			        }
+			
+			        JSONEntry oJsonObject = oJsonObjList.getCurItem();
+			        if( !processSyncObject_ver1(oJsonObject,nSrcID))
+		            {
+			            getSync().stopSync();
+			            break;
+		            }
+			        
+			        m_bGetAtLeastOnePage = true;
+		        }
+		    }finally{
+		    	RhoRuby.RhomAttribManager_save(getID());
+			}
+	    }
+	}
+	
 	class CValue
 	{
 	    String m_strValue;
@@ -538,7 +597,7 @@ class SyncSource
         return true;
 	}
 	
-	boolean processSyncObject_ver1(JSONEntry oJsonObject)throws Exception
+	boolean processSyncObject_ver1(JSONEntry oJsonObject, Integer nSrcID)throws Exception
 	{
 		String strObject = oJsonObject.getString("o");
 		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
@@ -563,15 +622,15 @@ class SyncSource
 		    	
 		        getDB().executeSQL("INSERT INTO object_values " +
 		            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-		            new Long(value.m_nID), strAttrib, getID(), strObject,
+		            new Long(value.m_nID), strAttrib, nSrcID, strObject,
 		            value.m_strValue, value.m_strAttrType );
 		        
-		        RhoRuby.RhomAttribManager_add_attrib(getID(),strAttrib);
+		        RhoRuby.RhomAttribManager_add_attrib(nSrcID,strAttrib);
 		        m_nInserted++;
 		    }else if ( nDbOp == 1 ) //delete
 		    {
 		    	long id = oJsonEntry.getLong("i");
-		        RhoRuby.RhomAttribManager_delete_attribs(getID(),id);
+		        RhoRuby.RhomAttribManager_delete_attribs(nSrcID,id);
 		        getDB().executeSQL("DELETE FROM object_values where id=?", id );
 		
 		        m_nDeleted++;
