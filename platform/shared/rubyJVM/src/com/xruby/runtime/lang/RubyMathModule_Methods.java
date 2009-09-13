@@ -29,6 +29,10 @@ klass.defineModuleMethod( "sqrt", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.sqrt(receiver, arg);}
 });
+klass.defineModuleMethod( "cbrt", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.cbrt(receiver, arg);}
+});
 klass.defineModuleMethod( "sinh", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.sinh(receiver, arg);}
@@ -45,6 +49,11 @@ klass.defineModuleMethod( "log10", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.log10(receiver, arg);}
 });
+klass.defineModuleMethod( "log2", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.log2(receiver, arg);}
+});
+
 klass.defineModuleMethod( "tanh", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.tanh(receiver, arg);}
@@ -53,6 +62,15 @@ klass.defineModuleMethod( "exp", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.exp(receiver, arg);}
 });
+klass.defineModuleMethod( "frexp", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.frexp(receiver, arg);}
+});
+klass.defineModuleMethod( "ldexp", new RubyTwoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
+		return RubyMathModule.ldexp(receiver, arg0, arg1);}
+});
+
 klass.defineModuleMethod( "atan2", new RubyTwoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block ){
 		return RubyMathModule.atan2(receiver, arg0, arg1);}
@@ -77,4 +95,22 @@ klass.defineModuleMethod( "acos", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyMathModule.acos(receiver, arg);}
 });
+
+klass.defineModuleMethod( "erf", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.erf(receiver, arg);}
+});
+klass.defineModuleMethod( "erfc", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.erfc(receiver, arg);}
+});
+klass.defineModuleMethod( "gamma", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.gamma(receiver, arg);}
+});
+klass.defineModuleMethod( "lgamma", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyMathModule.lgamma(receiver, arg);}
+});
+
 }}
