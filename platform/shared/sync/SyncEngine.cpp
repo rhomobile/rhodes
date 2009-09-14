@@ -296,6 +296,12 @@ void CSyncEngine::login(String name, String password, String callback)
         return;
     }
 
+    if ( resp.isUnathorized() )
+    {
+        callLoginCallback(callback, RhoRuby.ERR_UNATHORIZED, resp.getCharData());
+    	return;
+    }
+
     if ( !resp.isOK() )
     {
         callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());

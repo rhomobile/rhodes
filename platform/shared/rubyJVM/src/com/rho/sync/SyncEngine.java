@@ -406,6 +406,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    strBody += ClientRegister.getInstance().getRegisterBody(this);
 			    
 			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
+			    
+			    if ( resp.isUnathorized() )
+			    {
+			        callLoginCallback(callback, RhoRuby.ERR_UNATHORIZED, resp.getCharData());
+			    	return;
+			    }
+			    
 			    if ( !resp.isOK() )
 			    {
 			    	callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());

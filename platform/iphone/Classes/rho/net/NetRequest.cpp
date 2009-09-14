@@ -55,6 +55,10 @@ public:
 	{
 		return m_nRespCode == 200;
 	}
+    virtual boolean isUnathorized()
+    {
+        return m_nRespCode == 401;
+    }
 
     virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 };
