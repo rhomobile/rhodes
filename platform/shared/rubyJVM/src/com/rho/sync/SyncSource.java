@@ -20,7 +20,9 @@ package com.rho.sync;
 
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
+import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoProfiler;
 import com.rho.net.*;
 import com.rho.db.*;
 import java.util.Vector;
@@ -35,6 +37,9 @@ class SyncSource
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
+	
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 
 	static class SyncBlob
 	{
@@ -130,7 +135,7 @@ class SyncSource
     	m_syncEngine.fireNotification(this, false, RhoRuby.ERR_NONE, "Synchronizing " + getName() + "...");
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
-		
+	    
 	    try{
 	        if ( m_strParams.length() == 0 )
 	        {
@@ -148,6 +153,14 @@ class SyncSource
 								 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
 		                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 		                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
+		    
+		    String profName = "File operations: " + getName();
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_SYNC, profName);
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_READ, profName);
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_WRITE, profName);
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_SET_SIZE, profName);
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_DELETE, profName);
+		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_RENAME, profName);
 	    }
 	}
 

@@ -214,4 +214,12 @@ public class RandomAccessFile
     	}
     	return input.toString();
     }
+    
+    public void listenForSync(String name) throws IOException {
+    	m_impl.listenForSync(name);
+    }
+    
+    public void stopListenForSync(String name) throws IOException {
+    	m_impl.stopListenForSync(name);
+    }
 }

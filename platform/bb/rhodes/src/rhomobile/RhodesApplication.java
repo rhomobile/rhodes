@@ -53,7 +53,9 @@ import com.rho.Mutex;
 import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
+import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoProfiler;
 import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.SimpleFile;
@@ -82,6 +84,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
+	
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 
 	/*boolean m_bSDCardAdded = false;
 	public void rootChanged(int arg0, String arg1)
@@ -469,6 +474,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
 		
 		m_bActivated = true;
+		
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_READ);
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_WRITE);
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_SYNC);
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_SET_SIZE);
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_DELETE);
+		PROF.CREATE_COUNTER(RhoProfiler.FILE_RENAME);
+		
 		doStartupWork();
 		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
@@ -483,6 +496,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
+    	
+    	PROF.DESTROY_COUNTER(RhoProfiler.FILE_READ);
+		PROF.DESTROY_COUNTER(RhoProfiler.FILE_WRITE);
+		PROF.DESTROY_COUNTER(RhoProfiler.FILE_SYNC);
+		PROF.DESTROY_COUNTER(RhoProfiler.FILE_SET_SIZE);
+		PROF.DESTROY_COUNTER(RhoProfiler.FILE_DELETE);
+		PROF.DESTROY_COUNTER(RhoProfiler.FILE_RENAME);
+		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 		RingtoneManager.stop();
