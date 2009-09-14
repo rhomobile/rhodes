@@ -228,6 +228,9 @@ char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, cons
 					errorCode == NSURLErrorUserAuthenticationRequired ||
 					errorCode == NSURLErrorBadServerResponse ) 
 				{
+					if ( pnRespCode )
+						*pnRespCode = 401;
+					
 					rho_net_impl_deleteAllCookies();
 				}
 			} else 
@@ -309,6 +312,8 @@ char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* 
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
 				{
+					if ( pnRespCode )
+						*pnRespCode = 401;
 					rho_net_impl_deleteAllCookies();
 				}
 			} else 
@@ -371,6 +376,8 @@ char* rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
 				{
+					if ( pnRespCode )
+						*pnRespCode = 401;
 					rho_net_impl_deleteAllCookies();
 				}
 			} else 
@@ -512,6 +519,8 @@ char* rho_net_impl_pushMultipartData(const char* url, const char* data, size_t d
 				if (errorCode == NSURLErrorUserCancelledAuthentication || 
 					errorCode == NSURLErrorUserAuthenticationRequired) 
 				{
+					if ( pnRespCode )
+						*pnRespCode = 401;
 					rho_net_impl_deleteAllCookies();
 				}
 
