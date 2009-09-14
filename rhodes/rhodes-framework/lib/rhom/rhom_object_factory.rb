@@ -96,7 +96,7 @@ module Rhom
     def RhomAttribManager.delete_attribs(srcid_a,cond)
         @@mxMap.lock
         begin
-            puts 'RhomAttribManager.delete_attribs: ' + srcid_a.to_s + '; ' + cond.to_s
+            #puts 'RhomAttribManager.delete_attribs: ' + srcid_a.to_s + '; ' + cond.to_s
             
             srcid = srcid_a.to_i
             return unless @@attribs_map[srcid]
@@ -107,7 +107,7 @@ module Rhom
                 isSave = false
             end
 
-            puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s            
+           #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s            
             
             if !cond
                 @@attribs_map[srcid] = {}
@@ -125,7 +125,7 @@ module Rhom
                 end
             end
 
-            puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s
+            #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s
             _save(srcid) if isSave
         ensure    
             @@mxMap.unlock
