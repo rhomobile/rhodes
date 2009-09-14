@@ -31,4 +31,9 @@ public class NetResponse {
 		return m_nRespCode == IHttpConnection.HTTP_OK;
 	}
 
+	public boolean isUnathorized()
+	{
+		return m_nRespCode == IHttpConnection.HTTP_UNAUTHORIZED;
+	}
+	
 }

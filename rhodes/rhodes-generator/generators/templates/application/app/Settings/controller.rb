@@ -21,9 +21,11 @@ class SettingsController < Rho::RhoController
       WebView.navigate Rho::RhoConfig.start_path
       SyncEngine.dosync
     else
-      if errCode == Rho::RhoError::ERR_REMOTESERVER
-        @msg = "You entered an invalid login/password, please try again."
-      else  
+      if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER
+        @msg = @params['error_message']
+      end
+        
+      if !@msg || @msg.length == 0   
         @msg = Rho::RhoError.new(errCode).message
       end
       
