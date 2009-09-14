@@ -11,12 +11,17 @@ import javax.microedition.io.file.FileConnection;
 
 import com.rho.IRAFile;
 import com.rho.RhoEmptyLogger;
+import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoProfiler;
 
 public class Jsr75RAFileImpl implements IRAFile {
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Jsr75RAFileImpl");
+	
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 	
 	private FileConnection m_file;
 	private InputStream    m_in;
@@ -131,6 +136,7 @@ public class Jsr75RAFileImpl implements IRAFile {
     }
 
 	public void write(int b) throws IOException {
+		PROF.START(RhoProfiler.FILE_WRITE);
 		int nTry = 0;
         while (nTry <= 1){
 	        try {
@@ -147,9 +153,11 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        	}
 	        }
         }
+        PROF.STOP(RhoProfiler.FILE_WRITE);
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
+		PROF.START(RhoProfiler.FILE_WRITE);
 		int nTry = 0;
         while (nTry <= 1){
 	        try {
@@ -166,6 +174,7 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        	}
 	        }
         }
+        PROF.STOP(RhoProfiler.FILE_WRITE);
 	}
 	
 	private boolean prepareRead()throws IOException{
@@ -187,42 +196,57 @@ public class Jsr75RAFileImpl implements IRAFile {
     }
 	
 	public int read() throws IOException {
-		if ( !prepareRead() )
-        	return -1;
-        
-        int res = m_in.read();
-        if ( res >= 0 ){
-	        m_inPos += 1;
-	        m_nSeekPos = m_inPos;
-        }
-        
-        return res;
+		PROF.START(RhoProfiler.FILE_READ);
+		try {
+			if ( !prepareRead() )
+	        	return -1;
+	        
+	        int res = m_in.read();
+	        if ( res >= 0 ){
+		        m_inPos += 1;
+		        m_nSeekPos = m_inPos;
+	        }
+	        
+	        return res;
+		}
+		finally {
+			PROF.STOP(RhoProfiler.FILE_READ);
+		}
 	}
 	
 	public int read(byte b[], int off, int len) throws IOException {
-		if ( !prepareRead() )
-        	return -1;
-        
-        int offData = off;
-        while (len > 0) { 
-            int rc = m_in.read(b, off, len);
-            if (rc > 0) 
-            { 
-                m_inPos += rc;
-                offData += rc;
-                len -= rc;
-            } else { 
-                break;
-            }
-        }
-        
-        m_nSeekPos = m_inPos;
-        return offData;
+		
+		PROF.START(RhoProfiler.FILE_READ);
+		try {
+			if ( !prepareRead() )
+	        	return -1;
+	        
+	        int offData = off;
+	        while (len > 0) { 
+	            int rc = m_in.read(b, off, len);
+	            if (rc > 0) 
+	            { 
+	                m_inPos += rc;
+	                offData += rc;
+	                len -= rc;
+	            } else { 
+	                break;
+	            }
+	        }
+	        
+	        m_nSeekPos = m_inPos;
+	        return offData;
+		}
+		finally {
+			PROF.STOP(RhoProfiler.FILE_READ);
+		}
 	}
 	
 	public void sync() throws IOException {
+		PROF.START(RhoProfiler.FILE_SYNC);
 		if (m_out != null) 
         	m_out.flush();
+		PROF.STOP(RhoProfiler.FILE_SYNC);
 	}
 	
 	public void setSize(long newSize) throws IOException {
@@ -251,11 +275,13 @@ public class Jsr75RAFileImpl implements IRAFile {
 	}
 
 	public void delete() throws IOException {
+		PROF.START(RhoProfiler.FILE_DELETE);
 		if ( m_file != null && m_file.exists() ) {
 			//m_file.close();
 			m_file.delete();
 		}
 		close();
+		PROF.STOP(RhoProfiler.FILE_DELETE);
 	}
 
 	public boolean exists() {
@@ -263,7 +289,17 @@ public class Jsr75RAFileImpl implements IRAFile {
 	}
 	
 	public void rename(String newName) throws IOException {
+		PROF.START(RhoProfiler.FILE_RENAME);
 		if (m_file.exists())
 			m_file.rename(newName);
+		PROF.STOP(RhoProfiler.FILE_RENAME);
+	}
+
+	public void listenForSync(String name) throws IOException {
+		// TODO: implement
+	}
+
+	public void stopListenForSync(String name) throws IOException {
+		// TODO: implement
 	}
 }

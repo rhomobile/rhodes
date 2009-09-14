@@ -6,6 +6,13 @@ public class RhoProfiler {
 
 	public static boolean RHO_STRIP_PROFILER = true;
 	
+	public static final String FILE_READ = "FileRead";
+	public static final String FILE_WRITE = "FileWrite";
+	public static final String FILE_SYNC = "FileSync";
+	public static final String FILE_SET_SIZE = "FileSetSize";
+	public static final String FILE_DELETE = "FileDelete";
+	public static final String FILE_RENAME = "FileRename";
+	
 	private static final RhoLogger LOG = new RhoLogger("PROFILER");
 	
     private static class CCounter

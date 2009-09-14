@@ -74,8 +74,8 @@ public class RhoRubyHelper implements IRhoRubyHelper {
     }
 
 	public boolean isSimulator(){
-		return DeviceInfo.isSimulator();
-		//return false;
+		//return DeviceInfo.isSimulator();
+		return false;
     }
 
 	public String getModuleName()

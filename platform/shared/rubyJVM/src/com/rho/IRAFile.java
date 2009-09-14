@@ -23,6 +23,9 @@ public interface IRAFile {
 	
 	public void sync() throws IOException;
 	
+	public void listenForSync(String name) throws IOException;
+	public void stopListenForSync(String name) throws IOException;
+	
 	public boolean exists();
 	public void delete() throws IOException;
 	public void rename(String newName) throws IOException;

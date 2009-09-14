@@ -34,6 +34,9 @@ package org.hsqldb.persist;
 import java.io.EOFException;
 import j2me.io.FileNotFoundException;
 import java.io.IOException;
+
+import com.rho.RhoEmptyProfiler;
+import com.rho.RhoProfiler;
 import com.rho.db.RandomAccessFile;
 //import java.lang.reflect.Constructor;
 
@@ -61,6 +64,9 @@ class ScaledRAFile implements ScaledRAInterface {
     static final int  DATA_FILE_NIO  = 1;
     static final int  DATA_FILE_JAR  = 2;
     static final long MAX_NIO_LENGTH = (1L << 28);
+    
+    private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 
     //
     final SimpleLog                appLog;
@@ -454,6 +460,7 @@ class ScaledRAFile implements ScaledRAInterface {
 
     public void write(byte[] b, int off, int len) throws IOException {
 
+    	//PROF.START("ScaledRAFile1");
         try {
         	createFiles();
         	
@@ -480,10 +487,14 @@ class ScaledRAFile implements ScaledRAInterface {
 
             throw e;
         }
+        //finally {
+        //	PROF.STOP("ScaledRAFile1");
+        //}
     }
 
     public void writeInt(int i) throws IOException {
 
+    	//PROF.START("ScaledRAFile2");
         try {
         	createFiles();
         	
@@ -511,10 +522,14 @@ class ScaledRAFile implements ScaledRAInterface {
 
             throw e;
         }
+        //finally {
+        //	PROF.STOP("ScaledRAFile2");
+        //}
     }
 
     public void writeLong(long i) throws IOException {
 
+    	//PROF.START("ScaledRAFile3");
         try {
         	createFiles();
         	
@@ -542,6 +557,9 @@ class ScaledRAFile implements ScaledRAInterface {
 
             throw e;
         }
+        //finally {
+        //	PROF.STOP("ScaledRAFile3");
+        //}
     }
 
     public void close() throws IOException {
