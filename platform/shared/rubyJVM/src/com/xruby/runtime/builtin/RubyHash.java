@@ -87,6 +87,10 @@ public class RubyHash extends RubyBasic {
 
     private static RubyID defaultID = RubyID.intern("default");
 
+    public RubyValue getRaw(RubyValue k) {
+        return (RubyValue)map_.get(k);
+    }
+    
     public RubyValue get(RubyValue k) {
         RubyValue v = (RubyValue)map_.get(k);
         if (null != v) {

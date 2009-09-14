@@ -53,7 +53,8 @@ module Rhom
           
     end
 
-    def RhomAttribManager._add_attrib(srcid,attr)
+    def RhomAttribManager._add_attrib(srcid,attr_a)
+        attr = attr_a.to_s
         unless ::Rhom::RhomObject.method_name_reserved?(attr)
             if @@attribs_map[srcid][attr]
                 @@attribs_map[srcid][attr] += 1
@@ -207,10 +208,11 @@ module Rhom
           
               def initialize(obj=nil)
                 @vars = {}
-                self.vars['object'] = "#{((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i}"
+                self.rhom_init(@vars)
+                self.vars[:object] = "#{((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i}"
                 if obj
                   obj.each do |key,value|
-                    self.vars[key] = value
+                    self.vars[key.to_sym()] = value
                   end
                 end
               end
@@ -220,9 +222,9 @@ module Rhom
                   varname = name.to_s.gsub(/\=/,"")
                   setting = (name.to_s =~ /=/)
                   if setting
-                    @vars[varname] = args[0]  
+                    @vars[varname.to_sym()] = args[0]  
                   else
-                    @vars[varname]
+                    @vars[varname.to_sym()]
                   end
                 end
               end
@@ -361,7 +363,7 @@ module Rhom
                         next if !order_attr && offset && nIndex < offset && !strLimit
                         
                         bSkip = false
-                        obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
+                        #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
                         nulls_cond.each do |key,value|
                             sql = ""
                             sql << "SELECT value FROM object_values WHERE \n"
@@ -404,22 +406,22 @@ module Rhom
                         
                         new_obj = self.new
                         # always return object field with surrounding '{}'
-                        new_obj.vars.merge!({'object'=>"{#{obj['object']}}"})
+                        new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
                         
                         if obj['attrib']
-                            new_obj.vars.merge!( {"#{obj['attrib']}"=>"#{obj['value']}" })
+                            new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
                         end
                         
                         listAttrs.each do |attrValHash|
                           attrName = attrValHash['attrib']
                           attrVal = attrValHash['value']
-                          new_obj.vars.merge!( { "#{attrName}"=>"#{attrVal}" } )
+                          new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
                           
                           nonExistAttrs.delete(attrName)
                         end
                         
                         nonExistAttrs.each do |attrName|
-                          new_obj.vars.merge!( { "#{attrName}"=>nil } )
+                          new_obj.vars.merge!( { attrName.to_sym()=>nil } )
                         end
                         
                         ret_list << new_obj
@@ -428,8 +430,8 @@ module Rhom
                   
                   if order_attr 
                     ret_list.sort! { |x,y| 
-                       vx = x.vars[order_attr]
-                       vy = y.vars[order_attr]
+                       vx = x.vars[order_attr.to_sym()]
+                       vy = y.vars[order_attr.to_sym()]
                        res = vx && vy ? vx <=> vy : 0
                        res *= -1 if order_dir && order_dir == 'DESC'
                        res
@@ -543,9 +545,14 @@ module Rhom
                     if args.first != :count
                         list.each do |rowhash|
                           # always return object field with surrounding '{}'
-                          rowhash['object'] = "{#{rowhash['object']}}"
+                          rowhash[:object] = "{#{rowhash['object']}}"
                           new_obj = self.new
-                          new_obj.vars.merge!(rowhash)
+                          #new_obj.vars.merge!(rowhash)
+                          
+                          rowhash.each do |attrName, attrVal|
+                            new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
+                          end
+                            
                           ret_list << new_obj
                         end
                         
@@ -741,8 +748,9 @@ module Rhom
                 begin
                     ::Rhom::RhomDbAdapter.start_transaction
                 
-                    self.vars.each do |key,value|
+                    self.vars.each do |key_a,value|
                       val = self.inst_strip_braces(value)
+                      key = key_a.to_s
                       # add rows excluding object, source_id and update_type
                       unless ::Rhom::RhomObject.method_name_reserved?(key)
                         fields = {"source_id"=>self.get_inst_source_id,
@@ -803,7 +811,7 @@ module Rhom
                           end    
                           
                           # update in-memory object
-                          self.vars[attrib] = new_val
+                          self.vars[attrib.to_sym()] = new_val
                         end
                       end
                     end

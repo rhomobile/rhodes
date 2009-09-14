@@ -224,7 +224,7 @@ class SyncSource
 	        {
 			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
 
-	            if ( i == 0 ) //create
+	            if ( i <= 1 ) //create, update
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT object, attrib " +
 						     "FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
@@ -239,7 +239,7 @@ class SyncSource
 	            syncClientBlobs(strUrl+strQuery);
 	        }else if ( strBody.length() > 0 )
 	        {
-	            if ( i == 0 ) //create
+	        	if ( i <= 1 ) //create, update
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT object, attrib "+
 						     "FROM changed_values where source_id=? and update_type =?", getID(), arUpdateTypes[i] );

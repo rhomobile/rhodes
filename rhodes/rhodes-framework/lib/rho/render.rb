@@ -31,7 +31,7 @@ module Rho
 		options[:action] = :index if options[:action].nil?
 
 		@content = eval_compiled_file(@request[:modelpath]+options[:action].to_s+'_erb.iseq', binding )
-
+        puts 'render content: ' + @content.length.to_s
 		if xhr? and options[:use_layout_on_ajax] != true
 			options[:layout] = false
 		elsif options[:layout].nil? or options[:layout] == true
@@ -40,8 +40,8 @@ module Rho
 
 		if options[:layout] != false
 			layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + "_erb.iseq"
-			puts 'Layout file: ' + layoutfile
 			@content = eval_compiled_file(layoutfile, binding ) if File.exist?(layoutfile)
+			puts 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
 		end
 
 		@content

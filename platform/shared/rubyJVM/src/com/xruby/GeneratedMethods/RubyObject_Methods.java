@@ -29,5 +29,9 @@ klass.defineMethod( "instance_variables", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyObject)receiver).instance_variables();}
 });
+klass.defineMethod( "rhom_init", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyObject)receiver).rhom_init( arg);}
+});
 
 }}
