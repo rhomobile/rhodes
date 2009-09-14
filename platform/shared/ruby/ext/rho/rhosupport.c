@@ -314,13 +314,22 @@ VALUE RhoPreparePath(VALUE path){
 static void Init_RhoLog();
 static void Init_RhoBlobs();
 
+static VALUE
+rb_obj_rhom_init(VALUE obj, VALUE iv)
+{
+    //TODO: if render will slow implement this function to fasten rhom member access(see BB)
+    return Qnil;
+}
+
 void Init_RhoSupport()
 {
 	rb_define_global_function("require", rb_require_compiled, 1);
 	rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
 	rb_define_global_function("load", rb_require_compiled, 1);
-	
+
+    rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);	
+
 	Init_RhoLog();
 	Init_RhoBlobs();
 }
