@@ -19,6 +19,7 @@
 #import "NativeBar.h"
 #import "BarItem.h"
 #import "RhoDelegate.h"
+#import "WebViewController.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -303,6 +304,21 @@
 }
 #endif
 
+- (void) showLoadingPage {
+	NSString *loadingPage;
+	
+	NSString *filePath = @"app/loading.html";
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	if ([fileManager fileExistsAtPath:filePath]) {
+		NSData *data = [fileManager contentsAtPath:filePath];
+		loadingPage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	}
+	else
+		loadingPage = @"<html><title>Loading</title><body><h1>Loading...</h1></body></html>";
+	
+	[webViewController loadHTMLString:loadingPage];
+}
+
 - (void) doStartUp {
 	//
 	appStarted = false;
@@ -315,6 +331,7 @@
 	
 	webViewController->actionTarget = self;
 	webViewController->onShowLog = @selector(onShowLog);
+	[self showLoadingPage];
 	
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];

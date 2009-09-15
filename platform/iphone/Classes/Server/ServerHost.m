@@ -263,7 +263,6 @@ extern const char* RhoGetRootPath();
 	// Startup the sync engine thread
 	//start_sync_engine(database);
 	
-	
 	// Start server thread	
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
