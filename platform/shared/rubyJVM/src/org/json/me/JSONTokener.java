@@ -213,10 +213,10 @@ public class JSONTokener {
         for (;;) {
             c = next();
             switch (c) {
-            case 0:
-            case '\n':
-            case '\r':
-                throw syntaxError("Unterminated string");
+            //case 0:
+            //case '\n':
+            //case '\r':
+            //    throw syntaxError("Unterminated string");
             case '\\':
                 c = next();
                 switch (c) {

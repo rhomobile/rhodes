@@ -418,7 +418,7 @@ void CSyncEngine::reportStatus(String status, int error, String strDetails) {
 
 void CSyncEngine::fireAllNotifications( boolean bFinish, int nErrCode, String strMessage )
 {
-    for( int i = 0; i < m_sources.size(); i++ )
+    for( int i = 0; i < (int)m_sources.size(); i++ )
     {
     	doFireNotification( m_sources.elementAt(i), bFinish, nErrCode, strMessage );
     }
@@ -462,7 +462,9 @@ void CSyncEngine::doFireNotification( CSyncSource* psrc, boolean bFinish, int nE
 		strBody = "";
         strBody = "total_count=" + convertToStringA(src.getTotalCount());
         strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
-        
+        strBody += "&source_id=" + convertToStringA(src.getID());
+        strBody += "&source_name=" + src.getName();
+
         strBody += "&status=";
 
         if ( bFinish )
