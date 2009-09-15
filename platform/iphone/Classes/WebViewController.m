@@ -35,8 +35,6 @@ char* get_current_location() {
 
 @implementation WebViewController
 
-NSString *loadingText = @"Loading...";
-
 @synthesize viewHomeUrl, viewOptionsUrl;
 @synthesize actionTarget, onShowLog, toolbar;
 
@@ -60,6 +58,11 @@ NSString *loadingText = @"Loading...";
 		[toolbar setItems:items animated: YES];
 		[item release];
 	}
+}
+
+-(void)loadHTMLString:(NSString*)data {
+	RAWLOG_INFO("Loading specified HTML string");
+	[webView loadHTMLString:data baseURL: [NSURL URLWithString:@""]];
 }
 
 -(void)navigate:(NSString*)url {
@@ -147,7 +150,6 @@ NSString *loadingText = @"Loading...";
 	
 	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	set_current_location((CFStringRef)location);
-	
 }
 
 - (void)runSync

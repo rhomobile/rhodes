@@ -29,6 +29,8 @@
 @property (assign) SEL  onShowLog;
 
 
+-(void)loadHTMLString:(NSString*)data;
+
 -(void)navigate:(NSString*)url;
 -(void)navigateRedirect:(NSString*)url;
 
