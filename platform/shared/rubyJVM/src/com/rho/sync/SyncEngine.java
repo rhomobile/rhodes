@@ -562,6 +562,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 			        strUrl = sn.m_strUrl;
 			        strBody += "total_count=" + src.getTotalCount();
 			        strBody += "&processed_count=" + src.getCurPageCount();
+			        strBody += "&source_id=" + src.getID();
+			        strBody += "&source_name=" + src.getName();
 			        
 			        strBody += "&status=";
 			        if ( bFinish )

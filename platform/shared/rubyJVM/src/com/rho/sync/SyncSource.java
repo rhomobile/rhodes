@@ -373,11 +373,10 @@ class SyncSource
 	        processServerData(resp.getCharData());
 	        
 	        /*String strData =
-			"[{count: 124},{total_count: 5425},{token: 123},{version: 1}," +
+			"[{count: 124},{version: 1},{total_count: 5425},{token: 123}," +
 	        "{s:\"AeropriseRequest\",ol:[" +
 			"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:[" +
-			"{i:26478681,d:1}," +
-			"{a:\"first_name\",i:47354289,v:\"Lars\",t:\"blob\",u:\"query\",d:0}," +
+			"{a:\"first_name\",i:47354289,v:\"Lars. \n\n Burgess\", t:\"blob\"}," +
 	        "{a:\"second_name\",i:55555,v:\"Burgess\"}" +
 	        "]}" +
 	        "]}]";
