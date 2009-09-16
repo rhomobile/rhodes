@@ -63,6 +63,13 @@ Init_native_thread(void)
 		 th->native_thread_data.interrupt_event);
 }
 
+void
+Init_native_thread2(rb_thread_t *th)
+{
+    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
+    native_mutex_initialize(&th->interrupt_lock);
+}
+
 static void
 w32_error(void)
 {
