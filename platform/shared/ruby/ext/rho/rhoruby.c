@@ -301,7 +301,7 @@ VALUE callServeIndex(char* index_name) {
 
 static int s_gcWasDisabled;
 //extern void native_sleep(rb_thread_t *th, struct timeval *tv);
-
+extern void sleep_for_polling(rb_thread_t *th);
 static void start_ruby_call()
 {
     rb_thread_t *th = GET_THREAD();
