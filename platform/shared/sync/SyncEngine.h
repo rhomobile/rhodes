@@ -44,7 +44,7 @@ public:
 #ifdef OS_SYMBIAN
     static String SYNC_PAGE_SIZE() { return "200"; }
 #else
-    static String SYNC_PAGE_SIZE() { return "1000"; }
+    static String SYNC_PAGE_SIZE() { return "2000"; }
 #endif
 
 private:
