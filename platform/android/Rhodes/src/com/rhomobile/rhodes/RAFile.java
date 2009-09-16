@@ -91,4 +91,12 @@ public class RAFile implements IRAFile {
 		if (!file.renameTo(new File(newName)))
 			throw new RuntimeException("Can not rename file");
 	}
+
+	public void listenForSync(String name) throws IOException {
+		// TODO: implement
+	}
+
+	public void stopListenForSync(String name) throws IOException {
+		// TODO: implement
+	}
 }
