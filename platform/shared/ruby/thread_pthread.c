@@ -174,6 +174,13 @@ Init_native_thread(void)
     posix_signal(SIGVTALRM, null_func);
 }
 
+void
+Init_native_thread2(rb_thread_t *th)
+{
+    native_cond_initialize(&th->native_thread_data.sleep_cond);
+    native_mutex_initialize(&th->interrupt_lock);
+}
+
 static void
 native_thread_destroy(rb_thread_t *th)
 {
