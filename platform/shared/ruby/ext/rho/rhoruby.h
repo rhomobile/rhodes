@@ -46,6 +46,7 @@ VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name);
 void RhoRuby_RhomAttribManager_save(int nSrcID);
 void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID);
+void RhoRuby_RhomAttribManager_delete_attrib(int nSrcID,const char* szAttrib);
 void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib);
 
 void RhoRubyStop();
