@@ -147,9 +147,19 @@ void CSyncSource::syncClientChanges()
                 DBResult( res , getDB().executeSQL("SELECT object, attrib "
 					     "FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
                     getID(), arUpdateTypes[i], "blob.file" ) );
-                for( ; !res.isEnd(); res.next() )
-                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+                if ( !res.isEnd() )
+                {
+                    getDB().startTransaction();
+
+                    for( ; !res.isEnd(); res.next() )
+                    {
+                        getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+                            res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+                        RhoRuby_RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1).c_str());
+                    }
+                    RhoRuby_RhomAttribManager_save(getID());
+                    getDB().endTransaction();
+                }
             }
 
             getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
@@ -161,9 +171,18 @@ void CSyncSource::syncClientChanges()
             {
                 DBResult( res , getDB().executeSQL("SELECT object, attrib "
 					     "FROM changed_values where source_id=? and update_type =?", getID(), arUpdateTypes[i] ) );
-                for( ; !res.isEnd(); res.next() )
-                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+                if ( !res.isEnd() )
+                {
+                    getDB().startTransaction();
+                    for( ; !res.isEnd(); res.next() )
+                    {
+                        getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+                            res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+                        RhoRuby_RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1).c_str());
+                    }
+                    RhoRuby_RhomAttribManager_save(getID());
+                    getDB().endTransaction();
+                }
             }
 
             getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
@@ -276,8 +295,9 @@ void CSyncSource::syncServerChanges()
         }
 
         processServerData(resp.getCharData());
-		/*String strData =
-		"[{count: 124},{version: 1},{total_count: 5425},{token: 123},"
+		//String strData =
+        //"[{count:10},{version:1},{total_count: 5425},{token: 123},{s:\"RhoDeleteSource\",ol:[{o:\"rho_del_obj\",av:[{i:55550425},{i:75665819},{i:338165272},{i:402396629},{i:521753981},{i:664143530},{i:678116186},{i:831092394},{i:956041217},{i:970452458}]}]}]";
+		/*"[{count: 124},{version: 1},{total_count: 5425},{token: 123},"
         "{s:\"AeropriseRequest\",ol:["
 		"{o:\"2ed2e0c7-8c4c-99c6-1b37-498d250bb8e7\",av:["
 		"{a:\"first_name\",i:47354289,v:\"Lars. \n\n Burgess\", t:\"blob\"},"
@@ -285,8 +305,8 @@ void CSyncSource::syncServerChanges()
         "]}"
         "]}]";
 
-		//u:\"query\",
-		processServerData(strData.c_str()); */
+		//u:\"query\",  */
+		//processServerData(strData.c_str());
 
         if ( getAskParams().length() > 0 || getCurPageCount() == 0 )
             break;
