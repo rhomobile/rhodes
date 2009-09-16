@@ -51,6 +51,7 @@ static VALUE classRhomAttribManager;
 static ID midRhomAttribManager_save;
 static ID midRhomAttribManager_delete_attribs;
 static ID midRhomAttribManager_add_attrib;
+static ID midRhomAttribManager_delete_attrib;
 
 static char* rb_type_to_s(VALUE obj);
 extern int ruby_thread_set_native(rb_thread_t *th);
@@ -164,6 +165,7 @@ void RhoRubyStart()
 	CONST_ID(midRhomAttribManager_save, "save");
 	CONST_ID(midRhomAttribManager_delete_attribs, "delete_attribs");
 	CONST_ID(midRhomAttribManager_add_attrib, "add_attrib");
+	CONST_ID(midRhomAttribManager_delete_attrib, "delete_attrib");
 
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
@@ -335,6 +337,13 @@ void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID)
 {
     start_ruby_call();
     rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
+    end_ruby_call();
+}
+
+void RhoRuby_RhomAttribManager_delete_attrib(int nSrcID,const char* szAttrib)
+{
+    start_ruby_call();
+    rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attrib, 2, INT2FIX(nSrcID), rb_str_new2(szAttrib) );
     end_ruby_call();
 }
 
