@@ -200,9 +200,7 @@ public class RhoRuby {
 		
 		addHashToHash( rh, "headers", headers );
 		
-		PROF.CREATE_COUNTER("rho_concat");
 		RubyValue res = callFramework(rh); 
-		PROF.DESTROY_COUNTER("rho_concat");
 		return res; 
 	}
 	

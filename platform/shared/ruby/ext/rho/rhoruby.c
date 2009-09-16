@@ -54,7 +54,9 @@ static ID midRhomAttribManager_add_attrib;
 
 static char* rb_type_to_s(VALUE obj);
 extern int ruby_thread_set_native(rb_thread_t *th);
-extern int native_mutex_lock(rb_thread_lock_t *);
+//extern int native_mutex_lock(rb_thread_lock_t *);
+extern void native_mutex_initialize(rb_thread_lock_t *);
+extern void native_mutex_destroy(rb_thread_lock_t *);
 
 rb_thread_t * __getCurrentThread()
 {
@@ -79,14 +81,18 @@ void RhoRubyThreadStart()
 
     rb_gc_register_mark_object(self);
 
+    native_mutex_initialize(&th->interrupt_lock);
+
 //	RhoRuby_RhomAttribManager_add_attrib(0, "test");
     //native_mutex_lock(&th->vm->global_vm_lock);
 }
 
 void RhoRubyThreadStop()
 {
-    //rb_thread_t *th = GET_THREAD();
+    rb_thread_t *th = GET_THREAD();
     //native_mutex_unlock(&th->vm->global_vm_lock);
+
+    native_mutex_destroy(&th->interrupt_lock);
 }
 
 void RhoRubyStart()
@@ -292,19 +298,39 @@ VALUE callServeIndex(char* index_name) {
 	return callres;
 }
 
+static s_gcWasDisabled;
+static void start_ruby_call()
+{
+    while( rb_during_gc() )
+        Sleep(100);
+
+    s_gcWasDisabled = rb_gc_disable();
+}
+static void end_ruby_call()
+{
+    if ( !s_gcWasDisabled )
+        rb_gc_enable();
+}
+
 void RhoRuby_RhomAttribManager_save(int nSrcID)
 {
+    start_ruby_call();
     rb_funcall(classRhomAttribManager, midRhomAttribManager_save, 1, INT2FIX(nSrcID));
+    end_ruby_call();
 }
 
 void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID)
 {
+    start_ruby_call();
     rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
+    end_ruby_call();
 }
 
 void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib)
 {
+    start_ruby_call();
     rb_funcall(classRhomAttribManager, midRhomAttribManager_add_attrib, 2, INT2FIX(nSrcID), rb_str_new2(szAttrib) );
+    end_ruby_call();
 }
 
 static char*

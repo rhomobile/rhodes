@@ -36,6 +36,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 	
     static class SyncNotification
     {
@@ -47,7 +49,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
-    static String SYNC_PAGE_SIZE() { return "1000"; }
+    static String SYNC_PAGE_SIZE() { return "2000"; }
 	
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
@@ -111,8 +113,18 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    m_strSession = loadSession();
 		    if ( isSessionExist()  ) {
 		    	m_clientID = loadClientID();
+
+			    PROF.CREATE_COUNTER("Net");	    
+			    PROF.CREATE_COUNTER("Parse");
+			    PROF.CREATE_COUNTER("DB");
+			    PROF.START("Sync");
 		    	
 			    syncAllSources();
+
+			    PROF.DESTROY_COUNTER("Net");	    
+			    PROF.DESTROY_COUNTER("Parse");
+			    PROF.DESTROY_COUNTER("DB");
+			    PROF.STOP("Sync");
 			    
 			    if ( getState() != esStop )
 			    	fireNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");

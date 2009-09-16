@@ -136,7 +136,7 @@ public class Jsr75RAFileImpl implements IRAFile {
     }
 
 	public void write(int b) throws IOException {
-		PROF.START(RhoProfiler.FILE_WRITE);
+		//PROF.START(RhoProfiler.FILE_WRITE);
 		int nTry = 0;
         while (nTry <= 1){
 	        try {
@@ -153,11 +153,11 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        	}
 	        }
         }
-        PROF.STOP(RhoProfiler.FILE_WRITE);
+        //PROF.STOP(RhoProfiler.FILE_WRITE);
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
-		PROF.START(RhoProfiler.FILE_WRITE);
+		//PROF.START(RhoProfiler.FILE_WRITE);
 		int nTry = 0;
         while (nTry <= 1){
 	        try {
@@ -174,7 +174,7 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        	}
 	        }
         }
-        PROF.STOP(RhoProfiler.FILE_WRITE);
+        //PROF.STOP(RhoProfiler.FILE_WRITE);
 	}
 	
 	private boolean prepareRead()throws IOException{
@@ -196,7 +196,7 @@ public class Jsr75RAFileImpl implements IRAFile {
     }
 	
 	public int read() throws IOException {
-		PROF.START(RhoProfiler.FILE_READ);
+		//PROF.START(RhoProfiler.FILE_READ);
 		try {
 			if ( !prepareRead() )
 	        	return -1;
@@ -210,13 +210,13 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        return res;
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_READ);
+			//PROF.STOP(RhoProfiler.FILE_READ);
 		}
 	}
 	
 	public int read(byte b[], int off, int len) throws IOException {
 		
-		PROF.START(RhoProfiler.FILE_READ);
+		//PROF.START(RhoProfiler.FILE_READ);
 		try {
 			if ( !prepareRead() )
 	        	return -1;
@@ -238,15 +238,15 @@ public class Jsr75RAFileImpl implements IRAFile {
 	        return offData;
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_READ);
+			//PROF.STOP(RhoProfiler.FILE_READ);
 		}
 	}
 	
 	public void sync() throws IOException {
-		PROF.START(RhoProfiler.FILE_SYNC);
+		//PROF.START(RhoProfiler.FILE_SYNC);
 		if (m_out != null) 
         	m_out.flush();
-		PROF.STOP(RhoProfiler.FILE_SYNC);
+		//PROF.STOP(RhoProfiler.FILE_SYNC);
 	}
 	
 	public void setSize(long newSize) throws IOException {
@@ -275,13 +275,13 @@ public class Jsr75RAFileImpl implements IRAFile {
 	}
 
 	public void delete() throws IOException {
-		PROF.START(RhoProfiler.FILE_DELETE);
+		//PROF.START(RhoProfiler.FILE_DELETE);
 		if ( m_file != null && m_file.exists() ) {
 			//m_file.close();
 			m_file.delete();
 		}
 		close();
-		PROF.STOP(RhoProfiler.FILE_DELETE);
+		//PROF.STOP(RhoProfiler.FILE_DELETE);
 	}
 
 	public boolean exists() {
@@ -289,10 +289,10 @@ public class Jsr75RAFileImpl implements IRAFile {
 	}
 	
 	public void rename(String newName) throws IOException {
-		PROF.START(RhoProfiler.FILE_RENAME);
+		//PROF.START(RhoProfiler.FILE_RENAME);
 		if (m_file.exists())
 			m_file.rename(newName);
-		PROF.STOP(RhoProfiler.FILE_RENAME);
+		//PROF.STOP(RhoProfiler.FILE_RENAME);
 	}
 
 	public void listenForSync(String name) throws IOException {

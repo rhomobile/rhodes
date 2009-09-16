@@ -155,12 +155,12 @@ class SyncSource
 		                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
 		    
 		    String profName = "File operations: " + getName();
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_SYNC, profName);
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_READ, profName);
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_WRITE, profName);
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_SET_SIZE, profName);
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_DELETE, profName);
-		    PROF.FLUSH_COUNTER(RhoProfiler.FILE_RENAME, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_SYNC, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_READ, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_WRITE, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_SET_SIZE, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_DELETE, profName);
+		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_RENAME, profName);
 	    }
 	}
 
@@ -355,7 +355,10 @@ class SyncSource
 			
 			NetResponse resp = null;
 			try{
+			    PROF.START("Net");	    
 				resp = getNet().pullData(strUrl+strQuery, "", getSync());
+				PROF.STOP("Net");
+				
 		        if ( !resp.isOK() )
 		        {
 		            getSync().stopSync();
@@ -390,7 +393,9 @@ class SyncSource
 
 	void processServerData(String szData)throws Exception
 	{
+		PROF.START("Parse");		
 	    JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
+	    PROF.STOP("Parse");
 	    
 	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("error") )
 	    {
@@ -435,6 +440,7 @@ class SyncSource
 		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 		{
 		    //TODO: support DBExceptions
+			PROF.START("DB");
 		    getDB().startTransaction();
 
 		    try{
@@ -445,6 +451,8 @@ class SyncSource
 		    }finally{
 				getDB().endTransaction();
 			}
+		    
+		    PROF.STOP("DB");		    
 		}
 		
 	    if ( getServerObjectsCount() < getTotalCount() )

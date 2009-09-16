@@ -191,7 +191,7 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 		
 		public void setSize(long newSize) {
-			PROF.START(RhoProfiler.FILE_SET_SIZE);
+			//PROF.START(RhoProfiler.FILE_SET_SIZE);
 			
 			try {
 				int n = (int)(newSize/PAGE_SIZE + 1);
@@ -206,13 +206,13 @@ public class PersistRAFileImpl implements IRAFile {
 				m_size = newSize;
 			}
 			finally {
-				PROF.STOP(RhoProfiler.FILE_SET_SIZE);
+				//PROF.STOP(RhoProfiler.FILE_SET_SIZE);
 			}
 		}
 		
 		public void sync() {
 			//int dirty = m_dirty;
-			PROF.START(RhoProfiler.FILE_SYNC);
+			//PROF.START(RhoProfiler.FILE_SYNC);
 			
 			try {
 				if (debug)
@@ -252,7 +252,7 @@ public class PersistRAFileImpl implements IRAFile {
 					log("+++ File '" + m_name + "' sync done");
 			}
 			finally {
-				PROF.STOP(RhoProfiler.FILE_SYNC);
+				//PROF.STOP(RhoProfiler.FILE_SYNC);
 			}
 		}
 		
@@ -422,7 +422,7 @@ public class PersistRAFileImpl implements IRAFile {
 	}
 	
 	public int read() throws IOException {
-		PROF.START(RhoProfiler.FILE_READ);
+		//PROF.START(RhoProfiler.FILE_READ);
 		
 		try {
 			synchronized (m_info) {
@@ -440,7 +440,7 @@ public class PersistRAFileImpl implements IRAFile {
 			}
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_READ);
+			//PROF.STOP(RhoProfiler.FILE_READ);
 		}
 	}
 
@@ -452,7 +452,7 @@ public class PersistRAFileImpl implements IRAFile {
 		if (len == 0)
 			return 0;
 
-		PROF.START(RhoProfiler.FILE_READ);
+		//PROF.START(RhoProfiler.FILE_READ);
 		
 		try {
 			synchronized (m_info) {
@@ -484,12 +484,12 @@ public class PersistRAFileImpl implements IRAFile {
 			}
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_READ);
+			//PROF.STOP(RhoProfiler.FILE_READ);
 		}
 	}
 
 	public void write(int b) throws IOException {
-		PROF.START(RhoProfiler.FILE_WRITE);
+		//PROF.START(RhoProfiler.FILE_WRITE);
 		
 		try {
 			synchronized (m_info) {
@@ -507,7 +507,7 @@ public class PersistRAFileImpl implements IRAFile {
 			}
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_WRITE);
+			//PROF.STOP(RhoProfiler.FILE_WRITE);
 		}
 	}
 
@@ -519,7 +519,7 @@ public class PersistRAFileImpl implements IRAFile {
 		if (len == 0)
 			return;
 
-		PROF.START(RhoProfiler.FILE_WRITE);
+		//PROF.START(RhoProfiler.FILE_WRITE);
 		
 		try {
 			synchronized (m_info) {
@@ -549,7 +549,7 @@ public class PersistRAFileImpl implements IRAFile {
 			}
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_WRITE);
+			//PROF.STOP(RhoProfiler.FILE_WRITE);
 		}
 	}
 
@@ -557,7 +557,7 @@ public class PersistRAFileImpl implements IRAFile {
 		if (m_info == null)
 			return;
 
-		PROF.START(RhoProfiler.FILE_DELETE);
+		//PROF.START(RhoProfiler.FILE_DELETE);
 		try {
 			synchronized (m_info) {
 				checkUseCount();
@@ -575,7 +575,7 @@ public class PersistRAFileImpl implements IRAFile {
 			m_nSeekPos = 0;
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_DELETE);
+			//PROF.STOP(RhoProfiler.FILE_DELETE);
 		}
 	}
 
@@ -587,7 +587,7 @@ public class PersistRAFileImpl implements IRAFile {
 	}
 	
 	public void rename(String nname) throws IOException {
-		PROF.START(RhoProfiler.FILE_RENAME);
+		//PROF.START(RhoProfiler.FILE_RENAME);
 		
 		try {
 			// This function's body MUST be enclosed by common lock
@@ -682,7 +682,7 @@ public class PersistRAFileImpl implements IRAFile {
 			}
 		}
 		finally {
-			PROF.STOP(RhoProfiler.FILE_RENAME);
+			//PROF.STOP(RhoProfiler.FILE_RENAME);
 		}
 	}
 

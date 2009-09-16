@@ -475,12 +475,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		
 		m_bActivated = true;
 		
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_READ);
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_WRITE);
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_SYNC);
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_SET_SIZE);
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_DELETE);
-		PROF.CREATE_COUNTER(RhoProfiler.FILE_RENAME);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_READ);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_WRITE);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_SYNC);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_SET_SIZE);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_DELETE);
+		//PROF.CREATE_COUNTER(RhoProfiler.FILE_RENAME);
 		
 		doStartupWork();
 		
@@ -497,12 +497,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
     	
-    	PROF.DESTROY_COUNTER(RhoProfiler.FILE_READ);
-		PROF.DESTROY_COUNTER(RhoProfiler.FILE_WRITE);
-		PROF.DESTROY_COUNTER(RhoProfiler.FILE_SYNC);
-		PROF.DESTROY_COUNTER(RhoProfiler.FILE_SET_SIZE);
-		PROF.DESTROY_COUNTER(RhoProfiler.FILE_DELETE);
-		PROF.DESTROY_COUNTER(RhoProfiler.FILE_RENAME);
+    	//PROF.DESTROY_COUNTER(RhoProfiler.FILE_READ);
+		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_WRITE);
+		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_SYNC);
+		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_SET_SIZE);
+		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_DELETE);
+		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_RENAME);
 		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
