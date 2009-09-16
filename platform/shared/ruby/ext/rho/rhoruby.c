@@ -83,6 +83,7 @@ void RhoRubyThreadStart()
 
     native_mutex_initialize(&th->interrupt_lock);
 
+    st_insert(th->vm->living_threads, 0, (st_data_t) th->thread_id);
 //	RhoRuby_RhomAttribManager_add_attrib(0, "test");
     //native_mutex_lock(&th->vm->global_vm_lock);
 }
@@ -302,7 +303,7 @@ static s_gcWasDisabled;
 static void start_ruby_call()
 {
     while( rb_during_gc() )
-        Sleep(100);
+        rb_thread_polling();
 
     s_gcWasDisabled = rb_gc_disable();
 }
