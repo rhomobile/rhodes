@@ -46,7 +46,7 @@ public class Utilities {
 				// referring page was transferred with a secure
 				// protocol.
 				String referer = requestHeaders.getPropertyValue("referer");
-				boolean sendReferrer = true;
+				boolean sendReferrer = false;
 				if (referer != null
 						&& StringUtilities.startsWithIgnoreCase(referer,
 								"https:")
