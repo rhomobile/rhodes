@@ -184,7 +184,7 @@ static VALUE find_file(VALUE fname)
     }else{
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
-        VALUE dir;
+        //VALUE dir;
         fname = checkRhoBundleInPath(fname);
 
         //TODO: support document relative require in case of multiple apps
@@ -411,7 +411,7 @@ int rhoRubyFPrintf(FILE *file, const char *format, ...){
 static VALUE rb_RhoLogClass;
 static void Init_RhoLog(){
 
-    VALUE appLog, appErrLog;
+    VALUE appLog; //, appErrLog;
 
     rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
     rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
@@ -432,8 +432,8 @@ static void Init_RhoLog2()
     stdioPath = rb_funcall(rb_cIO, rb_intern("read"), 1, path);
     if ( stdioPath != 0 && stdioPath != Qnil && RSTRING_LEN(stdioPath)>0 )
     {
-      char* szPath = RSTRING_PTR(stdioPath);
-      int len = RSTRING_LEN(stdioPath);
+      //char* szPath = RSTRING_PTR(stdioPath);
+      //int len = RSTRING_LEN(stdioPath);
 #if defined(WIN32)
 	  freopen( RSTRING_PTR(stdioPath), "w", stdout );
 #endif

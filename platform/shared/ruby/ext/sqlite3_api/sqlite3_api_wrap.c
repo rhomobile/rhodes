@@ -18,7 +18,7 @@ extern void* rho_db_get_handle();
 
 static VALUE db_allocate(VALUE klass)
 {
-	sqlite3 **db = malloc(sizeof(sqlite3 **));
+	//sqlite3 **db = malloc(sizeof(sqlite3 **));
 	return Data_Wrap_Struct(klass, 0, 0, 0);
 }
 
@@ -42,7 +42,7 @@ static VALUE db_init(int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE db_close(int argc, VALUE *argv, VALUE self){
-	sqlite3 * db = NULL;
+	//sqlite3 * db = NULL;
 	sqlite3 **ppDB = NULL;		
 	int rc = 0;
 	
@@ -57,7 +57,7 @@ static VALUE db_close(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE db_start_transaction(int argc, VALUE *argv, VALUE self){
-	sqlite3 * db = NULL;
+	//sqlite3 * db = NULL;
 	sqlite3 **ppDB = NULL;		
 	int rc = 0;
 	
@@ -72,7 +72,7 @@ static VALUE db_start_transaction(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE db_commit(int argc, VALUE *argv, VALUE self){
-	sqlite3 * db = NULL;
+	//sqlite3 * db = NULL;
 	sqlite3 **ppDB = NULL;		
 	int rc = 0;
 	
@@ -87,7 +87,7 @@ static VALUE db_commit(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE db_rollback(int argc, VALUE *argv, VALUE self){
-	sqlite3 * db = NULL;
+	//sqlite3 * db = NULL;
 	sqlite3 **ppDB = NULL;		
 	int rc = 0;
 	
@@ -117,7 +117,7 @@ static VALUE* getColNames(sqlite3_stmt* statement, int nCount)
 
 static VALUE db_destroy_table(int argc, VALUE *argv, VALUE self)
 {
-	sqlite3 * db = NULL;
+	//sqlite3 * db = NULL;
 	sqlite3 **ppDB = NULL;		
     const char* szTableName = NULL;
     int rc = 0;
@@ -154,7 +154,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     RAWTRACE1("db_execute: %s", sql);
 	if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
     {
-        szErrMsg = sqlite3_errmsg(db);
+        szErrMsg = (char *)sqlite3_errmsg(db);
 
         rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
     }
