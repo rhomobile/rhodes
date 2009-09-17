@@ -30,8 +30,8 @@ public class PersistRAFileImpl implements IRAFile {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("PersistFileImpl");
 
-	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
-		new RhoProfiler();
+	//private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+	//	new RhoProfiler();
 	
 	private static void log(String message) {
 		LOG.INFO(message);
@@ -48,7 +48,7 @@ public class PersistRAFileImpl implements IRAFile {
 	//private static final String version = "debug.2.68";
 	
 	private static final int PAGE_SIZE = 4096;
-	private static final int MAX_CLEAR_PAGES_CACHED = 1;
+	private static final int MAX_CLEAR_PAGES_CACHED = 2;
 	
 	private static Hashtable m_shared = new Hashtable();
 	
@@ -105,7 +105,8 @@ public class PersistRAFileImpl implements IRAFile {
 		private String m_name;
 		private long m_size;
 		private boolean m_exists;
-		private Vector m_pages;
+		private Page[] m_pages;
+		private int m_loaded;
 		private int m_dirty;
 		
 		private int m_syncOut;
@@ -133,12 +134,13 @@ public class PersistRAFileImpl implements IRAFile {
 			m_name = name;
 			m_exists = wrapper != null;
 			m_size = m_exists ? wrapper.size.longValue() : 0;
+			m_loaded = 0;
 			m_dirty = 0;
 			
 			int n = (int)(m_size/PAGE_SIZE) + 1;
-			m_pages = new Vector(n);
+			m_pages = new Page[n];
 			for (int i = 0; i != n; ++i)
-				m_pages.addElement(new Page());
+				m_pages[i] = new Page();
 			
 			m_syncOut = 0;
 			m_listenForSync = new Hashtable();
@@ -153,27 +155,29 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 		
 		private void unloadClearPages(int needToClear) {
-			for (int i = m_pages.size() - 1; needToClear > 0 && i >= 0; --i) {
-				Page page = (Page)m_pages.elementAt(i);
+			for (int i = m_pages.length - 1; needToClear > 0 && m_loaded > 0 && i >= 0; --i) {
+				Page page = m_pages[i];
 				if (page.dirty)
 					continue;
 				page.content = null;
+				--m_loaded;
 				--needToClear;
 			}
 		}
 		
 		public void setPageDirty(int idx) {
-			Page page = (Page)m_pages.elementAt(idx);
+			Page page = m_pages[idx];
 			if (!page.dirty)
 				++m_dirty;
 			page.dirty = true;
 		}
 		
 		public byte[] getPage(int n) {
-			Page page = (Page)m_pages.elementAt(n);
+			Page page = m_pages[n];
 			if (page.content == null) {
-				int clearPages = m_pages.size() - m_dirty;
-				unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED + 1);
+				int clearPages = m_loaded - m_dirty - (MAX_CLEAR_PAGES_CACHED - 1);
+				if (clearPages > 0)
+					unloadClearPages(clearPages);
 				long key = getPageKey(n);
 				PersistentObject persPage = PersistentStore.getPersistentObject(key);
 				PageWrapper wrapper = (PageWrapper)persPage.getContents();
@@ -182,6 +186,7 @@ public class PersistRAFileImpl implements IRAFile {
 						throw new RuntimeException("Page location mechanism internal error");
 				}
 				page.content = wrapper == null ? new byte[PAGE_SIZE] : wrapper.content;
+				++m_loaded;
 			}
 			return page.content;
 		}
@@ -191,83 +196,87 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 		
 		public void setSize(long newSize) {
-			//PROF.START(RhoProfiler.FILE_SET_SIZE);
-			
-			try {
-				int n = (int)(newSize/PAGE_SIZE + 1);
-				int prevSize = m_pages.size();
-				if (n != prevSize) {
-					if (n < prevSize)
-						deletePages(n, prevSize - 1);
-					m_pages.setSize(n);
-					for (int i = prevSize; i != n; ++i)
-						m_pages.setElementAt(new Page(), i);
-				}
-				m_size = newSize;
+			int n = (int)(newSize/PAGE_SIZE + 1);
+			int prevSize = m_pages.length;
+			if (n != prevSize) {
+				if (n < prevSize)
+					deletePages(n, prevSize - 1);
+				Page[] newPages = new Page[n];
+				System.arraycopy(m_pages, 0, newPages, 0, n < prevSize ? n : prevSize);
+				for (int i = prevSize; i < n; ++i)
+					newPages[i] = new Page();
+				m_pages = newPages;
 			}
-			finally {
-				//PROF.STOP(RhoProfiler.FILE_SET_SIZE);
-			}
+			m_size = newSize;
 		}
 		
 		public void sync() {
-			//int dirty = m_dirty;
-			//PROF.START(RhoProfiler.FILE_SYNC);
+			if (debug)
+				log("--- File '" + m_name + "' sync, size: " + m_size + ", dirty pages: " + m_dirty + "...");
 			
-			try {
-				if (debug)
-					log("--- File '" + m_name + "' sync, size: " + m_size + ", dirty pages: " + m_dirty + "...");
-				
-				synchronized (PersistentStore.getSynchObject()) {
-					Enumeration e = m_listenForSync.elements();
-					while (e.hasMoreElements()) {
-						FileInfo info = (FileInfo)e.nextElement();
-						info.sync();
-					}
-					
-					for (int i = m_pages.size() - 1; m_dirty > 0 && i >= 0; --i) {
-						Page page = (Page)m_pages.elementAt(i);
-						if (page.content != null && page.dirty) {
-							long key = getPageKey(i);
-							PersistentObject persPage = PersistentStore.getPersistentObject(key);
-							persPage.setContents(new PageWrapper(m_name, i, page.content));
-							persPage.commit();
-							page.dirty = false;
-							--m_dirty;
-						}
-					}
-					
-					int clearPages = m_pages.size() - m_dirty;
-					unloadClearPages(clearPages - MAX_CLEAR_PAGES_CACHED);
-					
-					long key = getInfoKey();
-					PersistentObject persInfo = PersistentStore.getPersistentObject(key);
-					persInfo.setContents(new FileInfoWrapper(m_name, m_size));
-					persInfo.commit();
+			synchronized (PersistentStore.getSynchObject()) {
+				Enumeration e = m_listenForSync.elements();
+				while (e.hasMoreElements()) {
+					FileInfo info = (FileInfo)e.nextElement();
+					info.sync();
 				}
 				
-				//log("This is result for file '" + m_name + "', size - " + m_size + ", dirty pages: " + dirty);
+				for (int i = m_pages.length - 1; m_dirty > 0 && i >= 0; --i) {
+					Page page = m_pages[i];
+					if (page.content != null && page.dirty) {
+						long key = getPageKey(i);
+						PersistentObject persPage = PersistentStore.getPersistentObject(key);
+						persPage.setContents(new PageWrapper(m_name, i, page.content));
+						persPage.commit();
+						page.dirty = false;
+						--m_dirty;
+					}
+				}
 				
-				if (debug)
-					log("+++ File '" + m_name + "' sync done");
+				int clearPages = m_loaded - m_dirty - MAX_CLEAR_PAGES_CACHED;
+				if (clearPages > 0)
+					unloadClearPages(clearPages);
+				
+				long key = getInfoKey();
+				PersistentObject persInfo = PersistentStore.getPersistentObject(key);
+				persInfo.setContents(new FileInfoWrapper(m_name, m_size));
+				persInfo.commit();
 			}
-			finally {
-				//PROF.STOP(RhoProfiler.FILE_SYNC);
-			}
+			
+			//log("This is result for file '" + m_name + "', size - " + m_size + ", dirty pages: " + dirty);
+			
+			if (debug)
+				log("+++ File '" + m_name + "' sync done");
 		}
 		
 		private void deletePages(int start, int end) {
-			for (int i = start; i <= end; ++i) {
-				long key = getPageKey(i);
-				PersistentStore.destroyPersistentObject(key);
-				
-				m_pages.removeElementAt(start);
+			//if (start > end)
+			//	throw new IllegalArgumentException();
+			//if (start < 0 || end >= m_pages.length)
+			//	throw new IndexOutOfBoundsException();
+			int rm = end - start + 1;
+			//if (rm > m_pages.length)
+			//	throw new IndexOutOfBoundsException();
+			
+			synchronized (PersistentStore.getSynchObject()) {
+				for (int i = start; i <= end; ++i) {
+					long key = getPageKey(i);
+					PersistentStore.destroyPersistentObject(key);
+				}
 			}
+			
+			Page[] newPages = new Page[m_pages.length - rm]; 
+			System.arraycopy(m_pages, 0, newPages, 0, start);
+			System.arraycopy(m_pages, end + 1, newPages, start, newPages.length - start);
+			m_pages = newPages;
+			m_loaded -= rm;
+			if (m_loaded < 0)
+				m_loaded = 0;
 		}
 		
 		public void delete() {
 			synchronized (PersistentStore.getSynchObject()) {
-				deletePages(0, m_pages.size() - 1);
+				deletePages(0, m_pages.length - 1);
 				
 				long key = getInfoKey();
 				PersistentStore.destroyPersistentObject(key);
@@ -422,25 +431,18 @@ public class PersistRAFileImpl implements IRAFile {
 	}
 	
 	public int read() throws IOException {
-		//PROF.START(RhoProfiler.FILE_READ);
-		
-		try {
-			synchronized (m_info) {
-				checkUseCount();
-				
-				if (m_nSeekPos >= m_info.getSize())
-					return -1;
-				
-				int n = (int)(m_nSeekPos/PAGE_SIZE);
-				byte[] content = m_info.getPage(n);
-				int pos = (int)(m_nSeekPos % PAGE_SIZE);
-				++m_nSeekPos;
-				
-				return content[pos];
-			}
-		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_READ);
+		synchronized (m_info) {
+			checkUseCount();
+			
+			if (m_nSeekPos >= m_info.getSize())
+				return -1;
+			
+			int n = (int)(m_nSeekPos/PAGE_SIZE);
+			byte[] content = m_info.getPage(n);
+			int pos = (int)(m_nSeekPos % PAGE_SIZE);
+			++m_nSeekPos;
+			
+			return content[pos];
 		}
 	}
 
@@ -452,62 +454,48 @@ public class PersistRAFileImpl implements IRAFile {
 		if (len == 0)
 			return 0;
 
-		//PROF.START(RhoProfiler.FILE_READ);
-		
-		try {
-			synchronized (m_info) {
-				checkUseCount();
-				
-				long size = m_info.getSize();
-				if (m_nSeekPos >= size)
-					return -1;
-				
-				if (m_nSeekPos + len > size)
-					len = (int)(size - m_nSeekPos);
-				
-				int startPage = getPageNumber(m_nSeekPos);
-				int endPage = getPageNumber(m_nSeekPos + len);
-				
-				int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
-				
-				byte[] content = m_info.getPage(startPage);
-				System.arraycopy(content, (int)(m_nSeekPos%PAGE_SIZE), b, off, n);
-				for (int i = startPage + 1; i <= endPage; ++i) {
-					content = m_info.getPage(i);
-					int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
-					System.arraycopy(content, 0, b, n, howmuch);
-					n += howmuch;
-				}
-				m_nSeekPos += n;
-				
-				return n;
+		synchronized (m_info) {
+			checkUseCount();
+			
+			long size = m_info.getSize();
+			if (m_nSeekPos >= size)
+				return -1;
+			
+			if (m_nSeekPos + len > size)
+				len = (int)(size - m_nSeekPos);
+			
+			int startPage = getPageNumber(m_nSeekPos);
+			int endPage = getPageNumber(m_nSeekPos + len);
+			
+			int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
+			
+			byte[] content = m_info.getPage(startPage);
+			System.arraycopy(content, (int)(m_nSeekPos%PAGE_SIZE), b, off, n);
+			for (int i = startPage + 1; i <= endPage; ++i) {
+				content = m_info.getPage(i);
+				int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
+				System.arraycopy(content, 0, b, n, howmuch);
+				n += howmuch;
 			}
-		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_READ);
+			m_nSeekPos += n;
+			
+			return n;
 		}
 	}
 
 	public void write(int b) throws IOException {
-		//PROF.START(RhoProfiler.FILE_WRITE);
-		
-		try {
-			synchronized (m_info) {
-				checkUseCount();
-				
-				if (m_nSeekPos >= m_info.getSize())
-					m_info.setSize(m_nSeekPos + 1);
-				
-				int n = getPageNumber(m_nSeekPos);
-				byte[] content = m_info.getPage(n);
-				content[(int)(m_nSeekPos%PAGE_SIZE)] = (byte)b;
-				++m_nSeekPos;
-				
-				m_info.setPageDirty(n);
-			}
-		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_WRITE);
+		synchronized (m_info) {
+			checkUseCount();
+			
+			if (m_nSeekPos >= m_info.getSize())
+				m_info.setSize(m_nSeekPos + 1);
+			
+			int n = getPageNumber(m_nSeekPos);
+			byte[] content = m_info.getPage(n);
+			content[(int)(m_nSeekPos%PAGE_SIZE)] = (byte)b;
+			++m_nSeekPos;
+			
+			m_info.setPageDirty(n);
 		}
 	}
 
@@ -519,37 +507,30 @@ public class PersistRAFileImpl implements IRAFile {
 		if (len == 0)
 			return;
 
-		//PROF.START(RhoProfiler.FILE_WRITE);
-		
-		try {
-			synchronized (m_info) {
-				checkUseCount();
+		synchronized (m_info) {
+			checkUseCount();
+			
+			if (m_nSeekPos + len >= m_info.getSize())
+				m_info.setSize(m_nSeekPos + len);
+			
+			int startPage = getPageNumber(m_nSeekPos);
+			int endPage = getPageNumber(m_nSeekPos + len);
+			
+			int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
+			
+			byte[] content = m_info.getPage(startPage);
+			System.arraycopy(b, off, content, (int)(m_nSeekPos%PAGE_SIZE), n);
+			m_info.setPageDirty(startPage);
+			
+			for (int i = startPage + 1; i <= endPage; ++i) {
+				int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
+				content = m_info.getPage(i);
+				System.arraycopy(b, off + n, content, 0, howmuch);
+				m_info.setPageDirty(i);
 				
-				if (m_nSeekPos + len >= m_info.getSize())
-					m_info.setSize(m_nSeekPos + len);
-				
-				int startPage = getPageNumber(m_nSeekPos);
-				int endPage = getPageNumber(m_nSeekPos + len);
-				
-				int n = startPage == endPage ? len : PAGE_SIZE - (int)m_nSeekPos%PAGE_SIZE;
-				
-				byte[] content = m_info.getPage(startPage);
-				System.arraycopy(b, off, content, (int)(m_nSeekPos%PAGE_SIZE), n);
-				m_info.setPageDirty(startPage);
-				
-				for (int i = startPage + 1; i <= endPage; ++i) {
-					int howmuch = i == endPage ? (int)((m_nSeekPos + len)%PAGE_SIZE) : PAGE_SIZE;
-					content = m_info.getPage(i);
-					System.arraycopy(b, off + n, content, 0, howmuch);
-					m_info.setPageDirty(i);
-					
-					n += howmuch;
-				}
-				m_nSeekPos += n;
+				n += howmuch;
 			}
-		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_WRITE);
+			m_nSeekPos += n;
 		}
 	}
 
@@ -557,26 +538,20 @@ public class PersistRAFileImpl implements IRAFile {
 		if (m_info == null)
 			return;
 
-		//PROF.START(RhoProfiler.FILE_DELETE);
-		try {
-			synchronized (m_info) {
-				checkUseCount();
-				
-				String name = m_info.getName();
-				if (debug)
-					log("--- File '" + name + "' delete...");
-				m_info.delete();
-				--m_info.use_count;
-				if (debug)
-					log("+++ File '" + name + "' deleted");
-			}
+		synchronized (m_info) {
+			checkUseCount();
 			
-			m_info = null;
-			m_nSeekPos = 0;
+			String name = m_info.getName();
+			if (debug)
+				log("--- File '" + name + "' delete...");
+			m_info.delete();
+			--m_info.use_count;
+			if (debug)
+				log("+++ File '" + name + "' deleted");
 		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_DELETE);
-		}
+		
+		m_info = null;
+		m_nSeekPos = 0;
 	}
 
 	public boolean exists() {
@@ -587,102 +562,95 @@ public class PersistRAFileImpl implements IRAFile {
 	}
 	
 	public void rename(String nname) throws IOException {
-		//PROF.START(RhoProfiler.FILE_RENAME);
-		
-		try {
-			// This function's body MUST be enclosed by common lock
-			// to avoid dead-lock race conditions. Such dead-lock could happen,
-			// for example, when one thread call rename A to B and other
-			// thread call rename B to A at the same time.
-			synchronized (m_shared) {
-				synchronized (m_info) {
-					checkUseCount();
-					
-					if (!m_info.exists())
-						throw new ConnectionClosedException();
+		// This function's body MUST be enclosed by common lock
+		// to avoid dead-lock race conditions. Such dead-lock could happen,
+		// for example, when one thread call rename A to B and other
+		// thread call rename B to A at the same time.
+		synchronized (m_shared) {
+			synchronized (m_info) {
+				checkUseCount();
 				
-					String name = m_info.getName();
-					
-					String lastElementOld = name;
-					int lastSlash = name.lastIndexOf('/');
-					if (lastSlash >= 0)
-						lastElementOld = name.substring(lastSlash + 1);
-					
-					String lastElementNew = nname;
-					lastSlash = nname.lastIndexOf('/');
-					if (lastSlash >= 0)
-						lastElementNew = nname.substring(lastSlash + 1);
-					
-					if (lastElementOld == lastElementNew)
-						return;
+				if (!m_info.exists())
+					throw new ConnectionClosedException();
 			
-					String newName = name.substring(0, name.length() - lastElementOld.length()) + lastElementNew;
+				String name = m_info.getName();
+				
+				String lastElementOld = name;
+				int lastSlash = name.lastIndexOf('/');
+				if (lastSlash >= 0)
+					lastElementOld = name.substring(lastSlash + 1);
+				
+				String lastElementNew = nname;
+				lastSlash = nname.lastIndexOf('/');
+				if (lastSlash >= 0)
+					lastElementNew = nname.substring(lastSlash + 1);
+				
+				if (lastElementOld == lastElementNew)
+					return;
+		
+				String newName = name.substring(0, name.length() - lastElementOld.length()) + lastElementNew;
+				
+				if (debug)
+					log("--- File '" + name + "' rename to '" + newName + "'...");
+				
+				FileInfo newInfo = getFileInfo(newName);
+				
+				synchronized (newInfo) {
+					if (newInfo.exists())
+						throw new IOException("Destination file already exists");
 					
-					if (debug)
-						log("--- File '" + name + "' rename to '" + newName + "'...");
+					long size = m_info.getSize();
+					newInfo.setSize(size);
 					
-					FileInfo newInfo = getFileInfo(newName);
-					
-					synchronized (newInfo) {
-						if (newInfo.exists())
-							throw new IOException("Destination file already exists");
-						
-						long size = m_info.getSize();
-						newInfo.setSize(size);
-						
-						int n = (int)(size/PAGE_SIZE + 1);
-						for (int i = 0; size > 0 && i < n; ++i) {
-							byte[] content = m_info.getPage(i);
-							byte[] newContent = newInfo.getPage(i);
-							System.arraycopy(content, 0, newContent, 0,
-									(int)(size > PAGE_SIZE ? PAGE_SIZE : size % PAGE_SIZE));
-							newInfo.setPageDirty(i);
-							size -= PAGE_SIZE;
-						}
-						
-						newInfo.m_exists = true;
-						newInfo.sync();
-						
-						/*
-						if (debug) {
-							long oldSize = m_info.getSize();
-							long newSize = newInfo.getSize();
-							log("File '" + name + "': size: " + oldSize);
-							log("File '" + newName + "': size: " + newSize);
-							log("Sizes are " + (oldSize == newSize ? "" : "not ") + "equals");
-							if (oldSize != newSize)
-								throw new IOException("Internal rename error");
-							for (int i = 0; i < n; ++i) {
-								byte[] oldPage = m_info.getPage(i);
-								byte[] newPage = newInfo.getPage(i);
-								if (oldPage.length != newPage.length || newPage.length > PAGE_SIZE)
-									throw new IOException("Internal rename error");
-								boolean equals = Arrays.equals(oldPage, 0, newPage, 0,
-										(int)(i == n - 1 ? newSize % PAGE_SIZE : PAGE_SIZE));
-								log("Page " + i + ": " + (equals ? "" : "not ") + "equals");
-								if (!equals)
-									throw new IOException("Internal rename error");
-							}
-							log("Newinfo dirty pages: " + newInfo.m_dirty);
-							if (newInfo.m_dirty != 0)
-								throw new IOException("Internal rename error");
-						}
-						*/
+					int n = (int)(size/PAGE_SIZE + 1);
+					for (int i = 0; size > 0 && i < n; ++i) {
+						byte[] content = m_info.getPage(i);
+						byte[] newContent = newInfo.getPage(i);
+						System.arraycopy(content, 0, newContent, 0,
+								(int)(size > PAGE_SIZE ? PAGE_SIZE : size % PAGE_SIZE));
+						newInfo.setPageDirty(i);
+						size -= PAGE_SIZE;
 					}
 					
-					m_info.delete();
-					--m_info.use_count;
+					newInfo.m_exists = true;
+					newInfo.sync();
 					
-					if (debug)
-						log("+++ File '" + name + "' renamed to '" + newName + "'");
+					/*
+					if (debug) {
+						long oldSize = m_info.getSize();
+						long newSize = newInfo.getSize();
+						log("File '" + name + "': size: " + oldSize);
+						log("File '" + newName + "': size: " + newSize);
+						log("Sizes are " + (oldSize == newSize ? "" : "not ") + "equals");
+						if (oldSize != newSize)
+							throw new IOException("Internal rename error");
+						for (int i = 0; i < n; ++i) {
+							byte[] oldPage = m_info.getPage(i);
+							byte[] newPage = newInfo.getPage(i);
+							if (oldPage.length != newPage.length || newPage.length > PAGE_SIZE)
+								throw new IOException("Internal rename error");
+							boolean equals = Arrays.equals(oldPage, 0, newPage, 0,
+									(int)(i == n - 1 ? newSize % PAGE_SIZE : PAGE_SIZE));
+							log("Page " + i + ": " + (equals ? "" : "not ") + "equals");
+							if (!equals)
+								throw new IOException("Internal rename error");
+						}
+						log("Newinfo dirty pages: " + newInfo.m_dirty);
+						if (newInfo.m_dirty != 0)
+							throw new IOException("Internal rename error");
+					}
+					*/
 				}
 				
-				m_info = null;
-				m_nSeekPos = 0;
+				m_info.delete();
+				--m_info.use_count;
+				
+				if (debug)
+					log("+++ File '" + name + "' renamed to '" + newName + "'");
 			}
-		}
-		finally {
-			//PROF.STOP(RhoProfiler.FILE_RENAME);
+			
+			m_info = null;
+			m_nSeekPos = 0;
 		}
 	}
 
