@@ -461,7 +461,7 @@ class SyncSource
 		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 		{
 		    //TODO: support DBExceptions
-			PROF.START("DB");
+			PROF.START("Data");
 		    getDB().startTransaction();
 
 		    try{
@@ -470,10 +470,13 @@ class SyncSource
 		        else
 		            processServerData_Ver1(oJsonArr);
 		    }finally{
+			    PROF.STOP("Data");		    
+		    	
+		    	PROF.START("DB");
 				getDB().endTransaction();
+			    PROF.STOP("DB");		    
 			}
 		    
-		    PROF.STOP("DB");		    
 		}
 		
 	    if ( getServerObjectsCount() < getTotalCount() )
