@@ -28,7 +28,7 @@ public class RhoRuby {
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
-	static RubyMethod m_RhomAttribManager_delete_attribs, m_RhomAttribManager_add_attrib, m_RhomAttribManager_save; 
+	static RubyMethod m_RhomAttribManager_delete_attribs, m_RhomAttribManager_add_attrib, m_RhomAttribManager_save, m_RhomAttribManager_delete_attrib; 
 	static RubyClass m_classRhomAttribManager;
 	static RubyClass m_classRhoError;
 	static RubyMethod m_RhoError_err_message;
@@ -116,7 +116,7 @@ public class RhoRuby {
         		m_RhomAttribManager_delete_attribs = m_classRhomAttribManager.findMethod( RubyID.intern("delete_attribs") );
         		m_RhomAttribManager_add_attrib = m_classRhomAttribManager.findMethod( RubyID.intern("add_attrib") );
         		m_RhomAttribManager_save = m_classRhomAttribManager.findMethod( RubyID.intern("save") );
-        		
+        		m_RhomAttribManager_delete_attrib = m_classRhomAttribManager.findMethod( RubyID.intern("delete_attrib") );
         	}
         	
         /*}catch(ClassNotFoundException exc){
@@ -242,6 +242,12 @@ public class RhoRuby {
 				ObjectFactory.createInteger(objID), null);
 	}
 
+	public static void RhomAttribManager_delete_attrib( Integer nSrcID, String strAttribute)
+	{
+		m_RhomAttribManager_delete_attrib.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
+				ObjectFactory.createString(strAttribute), null);
+	}
+	
 	public static void RhomAttribManager_save(Integer nSrcID)
 	{
 		m_RhomAttribManager_save.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), null);

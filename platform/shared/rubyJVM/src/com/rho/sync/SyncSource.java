@@ -229,9 +229,20 @@ class SyncSource
 	                IDBResult res = getDB().executeSQL("SELECT object, attrib " +
 						     "FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
 	                    getID(), arUpdateTypes[i], "blob.file" );
-	                for( ; !res.isEnd(); res.next() )
-	                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-	                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	                if ( !res.isEnd() )
+	                {
+	                    getDB().startTransaction();
+
+		                for( ; !res.isEnd(); res.next() )
+		                {
+		                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+		                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	                        RhoRuby.RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1));
+		                }
+		                    
+	                    RhoRuby.RhomAttribManager_save(getID());
+	                    getDB().endTransaction();
+	                }
 	            }
 
 	            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
@@ -243,9 +254,19 @@ class SyncSource
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT object, attrib "+
 						     "FROM changed_values where source_id=? and update_type =?", getID(), arUpdateTypes[i] );
-	                for( ; !res.isEnd(); res.next() )
-	                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-	                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	                if ( !res.isEnd() )
+	                {
+	                    getDB().startTransaction();
+
+		                for( ; !res.isEnd(); res.next() )
+		                {
+		                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
+		                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
+	                        RhoRuby.RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1));
+		                }
+	                    RhoRuby.RhomAttribManager_save(getID());
+	                    getDB().endTransaction();
+	                }
 	            }
 
 	            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );

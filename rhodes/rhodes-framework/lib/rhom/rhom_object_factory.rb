@@ -93,6 +93,15 @@ module Rhom
         end     
     end
 
+    def RhomAttribManager.delete_attrib(srcid,attr)
+        if @@attribs_map[srcid][attr]
+            @@attribs_map[srcid][attr] -= 1
+            if @@attribs_map[srcid][attr] == 0
+                @@attribs_map[srcid].delete attr    
+            end
+        end
+    end
+    
     def RhomAttribManager.delete_attribs(srcid_a,cond)
         @@mxMap.lock
         begin
@@ -115,13 +124,7 @@ module Rhom
                 attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib',cond)
                 attribs.each do |attrib|
                     attr = attrib['attrib']
-                    
-                    if @@attribs_map[srcid][attr]
-                        @@attribs_map[srcid][attr] -= 1
-                        if @@attribs_map[srcid][attr] == 0
-                            @@attribs_map[srcid].delete attr    
-                        end
-                    end
+                    delete_attrib(srcid,attr)
                 end
             end
 
