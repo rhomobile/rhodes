@@ -331,6 +331,10 @@
 	
 	webViewController->actionTarget = self;
 	webViewController->onShowLog = @selector(onShowLog);
+	
+	//TabBar delegate
+	tabBarDelegate = [[TabBarDelegate alloc] init];
+
 	[self showLoadingPage];
 	
 	//Camera delegate
@@ -338,9 +342,6 @@
 	
 	//DateTime delegate
 	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
-	
-	//TabBar delegate
-	tabBarDelegate = [[TabBarDelegate alloc] init];
 	
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
