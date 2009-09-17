@@ -117,6 +117,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.CREATE_COUNTER("Net");	    
 			    PROF.CREATE_COUNTER("Parse");
 			    PROF.CREATE_COUNTER("DB");
+			    PROF.CREATE_COUNTER("Data");
 			    PROF.START("Sync");
 		    	
 			    syncAllSources();
@@ -124,6 +125,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.DESTROY_COUNTER("Net");	    
 			    PROF.DESTROY_COUNTER("Parse");
 			    PROF.DESTROY_COUNTER("DB");
+			    PROF.DESTROY_COUNTER("Data");
 			    PROF.STOP("Sync");
 			    
 			    if ( getState() != esStop )
