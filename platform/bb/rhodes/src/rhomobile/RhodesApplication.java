@@ -62,6 +62,7 @@ import com.rho.SimpleFile;
 import com.rho.Version;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
+import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
@@ -1156,18 +1157,24 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         // if referrer is null we must return the connection
-        //if (referrer == null) {
+        if (referrer == null) {
             HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
             return connection;
 
-        //} else {
+        } else {
 
-            // if referrer is provided we can set up the connection on a separate thread
-        //    SecondaryResourceFetchThread.enqueue(resource, referrer);
+    		URI uri = new URI(url);
+    		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ){
+                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+                return connection;
+   			}else
+   			{
+	            // if referrer is provided we can set up the connection on a separate thread
+	            SecondaryResourceFetchThread.enqueue(resource, referrer);
+   			}
+        }
 
-        //}
-
-        //return null;
+        return null;
     }
 
     /**

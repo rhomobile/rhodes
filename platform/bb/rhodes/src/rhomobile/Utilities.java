@@ -28,7 +28,7 @@ public class Utilities {
 
 		try {
 			URI uri = new URI(url);
-			if ( "localhost".equals(uri.getHost())) {
+			if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ){
 				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
