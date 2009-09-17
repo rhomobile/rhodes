@@ -447,8 +447,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    
 		    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
 		
-		    if ( ClientRegister.getInstance() != null )
-		    	ClientRegister.getInstance().stopWait();
+		    //if ( ClientRegister.getInstance() != null )
+		    //	ClientRegister.getInstance().stopWait();
 		    
 	    	callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 		    
