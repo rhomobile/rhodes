@@ -52,8 +52,6 @@ fail:
 extern "C"
 #endif
 void Init_GeoLocation(void) {
-  size_t i;
-  
   mGeoLocation = rb_define_module("GeoLocation");
   
   rb_define_module_function(mGeoLocation, "latitude", wrap_geo_latitude, -1);
