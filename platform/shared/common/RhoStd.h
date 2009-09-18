@@ -101,6 +101,11 @@ public:
     {
         return (*this)[key];
     }
+
+    boolean containsKey(const TKEY& key)
+    {
+        return find(key) != end();
+    }
 };
 
 template<class TKEY, class TVALUE>

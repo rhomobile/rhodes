@@ -147,6 +147,7 @@ int rho_db_commitUITransaction();
 int rho_db_rollbackUITransaction();
 int rho_db_destroy_table(const char* szTableName);
 void* rho_db_get_handle();
+unsigned long rho_sync_get_attrs(int nSrcID);
 
 #ifdef __cplusplus
 };

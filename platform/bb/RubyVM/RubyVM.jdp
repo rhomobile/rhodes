@@ -23,6 +23,7 @@ ExcludeFromBuildAll=0
 [Files
 ..\..\shared\rubyJVM\src\com\rho\DateTimeTokenizer.java
 ..\..\shared\rubyJVM\src\com\rho\db\DBAdapter.java
+..\..\shared\rubyJVM\src\com\rho\db\DBAttrManager.java
 ..\..\shared\rubyJVM\src\com\rho\db\DBException.java
 ..\..\shared\rubyJVM\src\com\rho\db\IDBCallback.java
 ..\..\shared\rubyJVM\src\com\rho\db\IDBResult.java
