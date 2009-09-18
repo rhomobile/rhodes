@@ -155,9 +155,7 @@ void CSyncSource::syncClientChanges()
                     {
                         getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
                             res.getStringByIdx(0), res.getStringByIdx(1), getID() );
-                        RhoRuby_RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1).c_str());
                     }
-                    RhoRuby_RhomAttribManager_save(getID());
                     getDB().endTransaction();
                 }
             }
@@ -178,9 +176,7 @@ void CSyncSource::syncClientChanges()
                     {
                         getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
                             res.getStringByIdx(0), res.getStringByIdx(1), getID() );
-                        RhoRuby_RhomAttribManager_delete_attrib(getID(),res.getStringByIdx(1).c_str());
                     }
-                    RhoRuby_RhomAttribManager_save(getID());
                     getDB().endTransaction();
                 }
             }
@@ -379,7 +375,6 @@ void CSyncSource::processServerData_Ver0(CJSONArrayIterator& oJsonArr)
         if ( getDB().isUnlockDB() )
         {
 		    LOG(INFO) + "Commit transaction because of UI request.";
-            RhoRuby_RhomAttribManager_save(getID());
             getDB().endTransaction();
             getDB().startTransaction();
         }
@@ -393,7 +388,6 @@ void CSyncSource::processServerData_Ver0(CJSONArrayIterator& oJsonArr)
 
         m_bGetAtLeastOnePage = true;
     }
-    RhoRuby_RhomAttribManager_save(getID());
 }
 
 void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
@@ -422,7 +416,6 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
             if ( getDB().isUnlockDB() )
             {
 		        LOG(INFO) + "Commit transaction because of UI request.";
-                RhoRuby_RhomAttribManager_save(nSrcID);
                 getDB().endTransaction();
                 getDB().startTransaction();
             }
@@ -436,7 +429,6 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
 
             m_bGetAtLeastOnePage = true;
         }
-        RhoRuby_RhomAttribManager_save(nSrcID);
     }
 }
 
@@ -567,7 +559,6 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                 value.m_strValue, value.m_strAttrType );
             //TODO: add record to special table for id,token
 
-            RhoRuby_RhomAttribManager_add_attrib(nSrcID,strAttrib.c_str());
             m_nInserted++;
         }else// if ( nDbOp == 1 ) //delete
         {
@@ -575,7 +566,6 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             DBResult( res , getDB().executeSQL("SELECT source_id FROM object_values where id=?", id ));
             if ( !res.isEnd() )
             {
-                RhoRuby_RhomAttribManager_delete_attribs(res.getIntByIdx(0),id);
                 getDB().executeSQL("DELETE FROM object_values where id=?", id );
             }
 
@@ -611,12 +601,10 @@ boolean CSyncSource::processSyncObject(CJSONEntry& oJsonObject)
             value.m_nID, strAttrib, getID(), oJsonEntry.getString("object"),
             value.m_strValue, value.m_strAttrType );
         //TODO: add record to special table for id,token
-        RhoRuby_RhomAttribManager_add_attrib(getID(),strAttrib.c_str());
         m_nInserted++;
     }else if ( szDbOp && strcmp(szDbOp,"delete")==0 )
     {
         uint64 id = oJsonEntry.getUInt64("id");
-        RhoRuby_RhomAttribManager_delete_attribs(getID(),id);
         getDB().executeSQL("DELETE FROM object_values where id=?", id );
 
         m_nDeleted++;

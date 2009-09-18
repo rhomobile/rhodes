@@ -28,6 +28,8 @@
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
+	extern VALUE rho_sync_get_attrs(int source_id);
+	#define get_src_attrs rho_sync_get_attrs
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -51,3 +53,4 @@ extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
 extern void set_pollinterval(int interval);
 extern void set_syncserver(char* syncserver);
+extern VALUE get_src_attrs(int source_id);

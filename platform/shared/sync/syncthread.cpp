@@ -325,6 +325,11 @@ void* rho_db_get_handle()
     return CSyncThread::getDBAdapter().getDbHandle();
 }
 
+unsigned long rho_sync_get_attrs(int nSrcID)
+{
+    return (VALUE)CSyncThread::getDBAdapter().getAttrMgr().getAttrsBySrc(nSrcID);
+}
+
 void rho_sync_lock()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
