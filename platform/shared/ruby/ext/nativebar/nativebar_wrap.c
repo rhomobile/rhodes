@@ -1675,7 +1675,7 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
             val2 = tmp;
           } else if (!strcmp(key_str, "icon")) {
             val3 = tmp;
-          } else if (!strcmp(key_str, "refresh")) {
+          } else if (!strcmp(key_str, "reload")) {
             val4 = tmp;
           }
         }
