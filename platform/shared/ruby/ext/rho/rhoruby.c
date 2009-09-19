@@ -48,19 +48,19 @@ static ID framework_mid;
 static ID framework_mid2;
 
 static char* rb_type_to_s(VALUE obj);
-extern int ruby_thread_set_native(rb_thread_t *th);
+//extern int ruby_thread_set_native(rb_thread_t *th);
 //extern int native_mutex_lock(rb_thread_lock_t *);
-extern void Init_native_thread2(rb_thread_t *th);
+//extern void Init_native_thread2(rb_thread_t *th);
 
-rb_thread_t * __getCurrentThread()
+/*rb_thread_t * __getCurrentThread()
 {
     rb_thread_t * res = ruby_thread_from_native();
     if ( res )
         return res;
 	
     return ruby_current_thread;
-}
-
+}*/
+/*
 void RhoRubyThreadStart()
 {
     rb_thread_t *th;
@@ -80,8 +80,8 @@ void RhoRubyThreadStart()
     //st_insert(th->vm->living_threads, 0, (st_data_t) th->thread_id);
 //	RhoRuby_RhomAttribManager_add_attrib(0, "test");
     //native_mutex_lock(&th->vm->global_vm_lock);
-}
-
+} */
+/*
 void RhoRubyThreadStop()
 {
     //rb_thread_t *th = GET_THREAD();
@@ -89,7 +89,7 @@ void RhoRubyThreadStop()
     //native_mutex_unlock(&th->vm->global_vm_lock);
 
     //native_mutex_destroy(&th->interrupt_lock);
-}
+} */
 
 void RhoRubyStart()
 {
@@ -304,7 +304,7 @@ VALUE callServeIndex(char* index_name) {
 	return callres;
 }
 
-static int s_gcWasDisabled;
+/*static int s_gcWasDisabled;
 //extern void native_sleep(rb_thread_t *th, struct timeval *tv);
 extern void sleep_for_polling(rb_thread_t *th);
 static void start_ruby_call()
@@ -313,11 +313,6 @@ static void start_ruby_call()
 
     while( rb_during_gc() )
     {
-        /*struct timeval time;
-        time.tv_sec = 0;
-        time.tv_usec = 100 * 1000;	// 0.1 sec
-
-        native_sleep(th,&time);*/
         sleep_for_polling(th);
     }
 
@@ -327,7 +322,7 @@ static void end_ruby_call()
 {
     if ( !s_gcWasDisabled )
         rb_gc_enable();
-}
+}*/
 
 static char*
 rb_type_to_s(VALUE obj)
