@@ -53,8 +53,7 @@
 		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*4];
 		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+1];
 		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+2];
-		NSString* ref = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3];
-		item.refresh = [ref isEqualToString:@"true"] ? YES : NO;
+		item.refresh = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
 			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
