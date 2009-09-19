@@ -104,7 +104,7 @@ public:
 
     boolean containsKey(const TKEY& key)
     {
-        return find(key) != end();
+        return find(key) != std::map<TKEY,TVALUE>::end();
     }
 };
 
