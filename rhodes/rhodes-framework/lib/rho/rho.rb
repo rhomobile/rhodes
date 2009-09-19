@@ -96,7 +96,7 @@ module Rho
           attribs = Rhom::RhomDbAdapter::select_from_table('sources','source_attribs', 'source_id'=>src_id)
 
           if attribs && attribs.size > 0 
-            Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
+            #Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
           else
             Rhom::RhomDbAdapter::insert_into_table('sources',
                                                   {"source_id"=>src_id,"source_url"=>url,"name"=>name})

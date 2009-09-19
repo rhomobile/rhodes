@@ -1,4 +1,5 @@
 #include "DBAdapter.h"
+#include "sync/SyncThread.h"
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
@@ -21,7 +22,7 @@ static int onDBBusy(void* data,int nTry)
 void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
     char* type = NULL;
-    if ( nArgs < 2 )
+    if ( nArgs < 4 )
         return;
 
     type = (char*)sqlite3_value_text(*(ppArgs+1));
@@ -32,6 +33,16 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         strFilePath += (char*)sqlite3_value_text(*(ppArgs));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
+
+    sync::CSyncThread::getDBAdapter().getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
+}
+
+void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
+{
+    if ( nArgs < 2 )
+        return;
+
+    sync::CSyncThread::getDBAdapter().getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
 }
 
 /*static*/ String CDBAdapter::makeBlobFolderName()
@@ -72,9 +83,14 @@ void CDBAdapter::open (String strDbPath, String strVer)
     if ( !bExist )
         createSchema();
 
-    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 2, SQLITE_ANY, 0,
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 4, SQLITE_ANY, 0,
 	    SyncBlob_DeleteCallback, 0, 0 );
+    sqlite3_create_function( m_dbHandle, "rhoOnInsertObjectRecord", 2, SQLITE_ANY, 0,
+	    SyncBlob_InsertCallback, 0, 0 );
+
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
+
+    getAttrMgr().load(*this);
 }
 
 sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
@@ -145,6 +161,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
 
 void CDBAdapter::destroy_table(String strTable)
 {
+    getAttrMgr().reset(*this);
     CFilePath oFilePath(m_strDbPath);
 	String dbNewName  = oFilePath.changeBaseName("resetdbtemp.sqlite");
 
@@ -245,7 +262,12 @@ static const char* g_szDbSchema =
     "CREATE INDEX by_src_value ON object_values (attrib, source_id, value);"
     "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW "
         "BEGIN "
-            "SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type);"
+            "SELECT rhoOnDeleteObjectRecord(OLD.value, OLD.attrib_type, OLD.source_id, OLD.attrib );"
+        "END;"
+    ";"
+    "CREATE TRIGGER rhoinsertTrigger AFTER INSERT ON object_values FOR EACH ROW "
+        "BEGIN "
+            "SELECT rhoOnInsertObjectRecord( NEW.source_id, NEW.attrib );"
         "END;"
     ";";
 
@@ -344,8 +366,10 @@ void CDBAdapter::endTransaction()
 {
     char *zErr = 0;
     int rc = 0;
+
 	if (m_dbHandle)
     {
+        getAttrMgr().save(*this);
 		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }
