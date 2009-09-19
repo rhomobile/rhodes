@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DBResult.h"
+#include "DBAttrManager.h"
 #include "logging/RhoLog.h"
 
 namespace rho{
@@ -15,6 +16,7 @@ class CDBAdapter
     common::CMutex m_mxTransDB;
 	boolean m_bInsideTransaction;
     boolean m_bUnlockDB;
+    CDBAttrManager m_attrMgr;
 
 public:
     DEFINE_LOGCLASS;
@@ -25,6 +27,7 @@ public:
     void open (String strDbPath, String strVer);
     void close();
     sqlite3* getDbHandle(){ return m_dbHandle; }
+    CDBAttrManager& getAttrMgr(){ return m_attrMgr; }
 
     boolean isUnlockDB()const{ return m_bUnlockDB; }
     void setUnlockDB(boolean b){ m_bUnlockDB = b; }

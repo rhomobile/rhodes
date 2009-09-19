@@ -20,6 +20,8 @@ module Rho
       		"Sync" => :sync, "Options" => :options, "Log" => :log, :separator => nil, "Close" => :close }
   	  end
   	  if @tabs
+  	    # normalize the list
+  	    @tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
   	    puts "Initializing application with tabs: #{@tabs.inspect}" 
   	    NativeBar.create(TABBAR_TYPE, @tabs)
 	    elsif @@toolbar

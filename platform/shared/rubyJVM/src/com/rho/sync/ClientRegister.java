@@ -51,7 +51,8 @@ public class ClientRegister extends RhoThread
 		m_strDevicePin = m_sysInfo.getDeviceId();
 		m_NetRequest = RhoClassFactory.createNetRequest();
 		
-		start(epLow);
+		//send client register request in login
+		//start(epLow);
 	}
 	
 	public static ClientRegister getInstance(){ return m_pInstance; }

@@ -91,7 +91,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     SyncEngine(DBAdapter db){
     	m_dbAdapter = db;
-		m_dbAdapter.setDbCallback(new DBCallback());
 
 		m_NetRequest = null;
     	m_syncState = esNone; 
@@ -117,6 +116,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.CREATE_COUNTER("Net");	    
 			    PROF.CREATE_COUNTER("Parse");
 			    PROF.CREATE_COUNTER("DB");
+			    PROF.CREATE_COUNTER("Data");
 			    PROF.START("Sync");
 		    	
 			    syncAllSources();
@@ -124,6 +124,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.DESTROY_COUNTER("Net");	    
 			    PROF.DESTROY_COUNTER("Parse");
 			    PROF.DESTROY_COUNTER("DB");
+			    PROF.DESTROY_COUNTER("Data");
 			    PROF.STOP("Sync");
 			    
 			    if ( getState() != esStop )
@@ -447,8 +448,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    
 		    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
 		
-		    if ( ClientRegister.getInstance() != null )
-		    	ClientRegister.getInstance().stopWait();
+		    //if ( ClientRegister.getInstance() != null )
+		    //	ClientRegister.getInstance().stopWait();
 		    
 	    	callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 		    
@@ -623,55 +624,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		URI uri = new URI(strUrl);
 		return uri.getHost();
-	}
-
-	public static class DBCallback implements IDBCallback{
-
-		public void OnDeleteAll() {
-			OnDeleteAllFromTable("object_values");
-		}
-		
-		public void OnDeleteAllFromTable(String tableName) {
-			if ( !tableName.equals("object_values") )
-				return;
-
-			try{
-				String fName = DBAdapter.makeBlobFolderName();
-				RhoClassFactory.createFile().delete(fName);
-				DBAdapter.makeBlobFolderName(); //Create folder back
-			}catch(Exception exc){
-				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
-			}
-		}
-
-		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
-		{
-			if ( !tableName.equalsIgnoreCase("object_values") )
-				return;
-			
-			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
-			{
-				if ( !rows2Delete.getString("attrib_type").equals("blob.file") )
-					continue;
-
-				String url = rows2Delete.getString("value");
-				if ( url == null || url.length() == 0 )
-					continue;
-				
-				try{
-				    SimpleFile oFile = RhoClassFactory.createFile();
-				    
-			        String strFilePath = oFile.getDirPath("");
-			        strFilePath += url;
-				    
-				    oFile.delete(strFilePath);
-				}catch(Exception exc){
-					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
-				}
-				
-			}
-		}
-		
 	}
 	
 }
