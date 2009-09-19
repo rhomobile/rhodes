@@ -1188,6 +1188,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\db\DBAttrManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\db\DBAttrManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\db\DBResult.cpp"
 				>
 			</File>

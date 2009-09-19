@@ -91,8 +91,6 @@ void CSyncThread::run()
 {
 	LOG(INFO) + "Starting sync engine main routine...";
 
-    RhoRubyThreadStart();
-
 	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
@@ -118,8 +116,6 @@ void CSyncThread::run()
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
     		processCommands();
 	}
-
-    RhoRubyThreadStop();
 }
 
 boolean CSyncThread::isNoCommands()
@@ -323,6 +319,11 @@ int rho_db_destroy_table(const char* szTableName)
 void* rho_db_get_handle()
 {
     return CSyncThread::getDBAdapter().getDbHandle();
+}
+
+unsigned long rho_sync_get_attrs(int nSrcID)
+{
+    return (VALUE)CSyncThread::getDBAdapter().getAttrMgr().getAttrsBySrc(nSrcID);
 }
 
 void rho_sync_lock()

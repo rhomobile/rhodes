@@ -623,6 +623,21 @@ public class SyncThread extends RhoThread
 						return RubyConstant.QNIL;
 					}
 			});
+		
+		klass.getSingletonClass().defineMethod("get_src_attrs",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							int nSrcID = arg1.toInt();
+							return getDBAdapter().getAttrMgr().getAttrsBySrc(nSrcID);
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_src_attrs failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
+		
 	}
 
 }

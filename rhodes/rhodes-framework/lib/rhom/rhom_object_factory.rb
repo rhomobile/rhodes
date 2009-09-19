@@ -23,170 +23,170 @@ require 'rho'
 require 'rho/rhosupport'
 
 module Rhom
-  class RhomAttribManager
-    @@attribs_map = Hash.new
-    @@mxMap = Mutex.new
-        
-    def RhomAttribManager.reset_all
-        @@mxMap.lock
-        begin
-            @@attribs_map = Hash.new
-            ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>""})
-            
-        ensure    
-            @@mxMap.unlock
-        end     
-    end
-    
-    def RhomAttribManager.get_attribs(srcid_a)
-        @@mxMap.lock
-        begin
-          #puts '@@attribs_map' + @@attribs_map.to_s
-          srcid = srcid_a.to_i          
-          attribs = @@attribs_map[srcid]
-          return attribs.keys if attribs
+  #class RhomAttribManager
+  #  @@attribs_map = Hash.new
+  #  @@mxMap = Mutex.new
+  #      
+  #  def RhomAttribManager.reset_all
+  #      @@mxMap.lock
+  #      begin
+  #          @@attribs_map = Hash.new
+  #          ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>""})
+  #          
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #  end
+  #  
+  #  def RhomAttribManager.get_attribs(srcid_a)
+  #      @@mxMap.lock
+  #      begin
+  #        #puts '@@attribs_map' + @@attribs_map.to_s
+  #        srcid = srcid_a.to_i          
+  #        attribs = @@attribs_map[srcid]
+  #        return attribs.keys if attribs
           
-          []
-        ensure    
-            @@mxMap.unlock
-        end     
-          
-    end
-
-    def RhomAttribManager._add_attrib(srcid,attr_a)
-        attr = attr_a.to_s
-        unless ::Rhom::RhomObject.method_name_reserved?(attr)
-            if @@attribs_map[srcid][attr]
-                @@attribs_map[srcid][attr] += 1
-            else
-                @@attribs_map[srcid][attr] = 1
-            end
-        end    
-    end
-
-    def RhomAttribManager.add_attrib(srcid_a,attr)
-        @@mxMap.lock
-        begin
-            #puts 'RhomAttribManager.add_attrib: ' + srcid_a.to_s + "; " + attr.to_s
+  #        []
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #        
+  #  end
+  #
+  #  def RhomAttribManager._add_attrib(srcid,attr_a)
+  #      attr = attr_a.to_s
+  #      unless ::Rhom::RhomObject.method_name_reserved?(attr)
+  #          if @@attribs_map[srcid][attr]
+  #              @@attribs_map[srcid][attr] += 1
+  #          else
+  #              @@attribs_map[srcid][attr] = 1
+  #          end
+  #      end    
+  #  end
+  #
+  #  def RhomAttribManager.add_attrib(srcid_a,attr)
+  #      @@mxMap.lock
+  #      begin
+  #          #puts 'RhomAttribManager.add_attrib: ' + srcid_a.to_s + "; " + attr.to_s
         
-            srcid = srcid_a.to_i
-            @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
-            _add_attrib(srcid,attr)
-        ensure    
-            @@mxMap.unlock
-        end     
-    end
-
-    def RhomAttribManager.add_attribs(srcid_a,attr_arr)
-        @@mxMap.lock
-        begin
-            srcid = srcid_a.to_i
-            @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
-
-            attr_arr.each do |attr|
-                _add_attrib(srcid,attr)
-            end
+  #          srcid = srcid_a.to_i
+  #          @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
+  #          _add_attrib(srcid,attr)
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #  end
+  #
+  #  def RhomAttribManager.add_attribs(srcid_a,attr_arr)
+  #      @@mxMap.lock
+  #      begin
+  #          srcid = srcid_a.to_i
+  #          @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
+  #
+  #          attr_arr.each do |attr|
+  #              _add_attrib(srcid,attr)
+  #          end
+  #          
+  #          _save(srcid)    
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #  end
+  #
+  #  def RhomAttribManager.delete_attrib(srcid,attr)
+  #      if @@attribs_map[srcid][attr]
+  #          @@attribs_map[srcid][attr] -= 1
+  #          if @@attribs_map[srcid][attr] == 0
+  #              @@attribs_map[srcid].delete attr    
+  #          end
+  #      end
+  #  end
+  #  
+  #  def RhomAttribManager.delete_attribs(srcid_a,cond)
+  #      @@mxMap.lock
+  #      begin
+  #          #puts 'RhomAttribManager.delete_attribs: ' + srcid_a.to_s + '; ' + cond.to_s
+  #          
+  #          srcid = srcid_a.to_i
+  #          return unless @@attribs_map[srcid]
+  #          
+  #          isSave = true
+  #          if cond && !cond.is_a?(Hash)
+  #              cond = {'id' => cond}
+  #              isSave = false
+  #          end
+  #
+  #         #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s            
+  #          
+  #          if !cond
+  #              @@attribs_map[srcid] = {}
+  #          else
+  #              attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib',cond)
+  #              attribs.each do |attrib|
+  #                  attr = attrib['attrib']
+  #                  delete_attrib(srcid,attr)
+  #              end
+  #          end
+  #
+  #          #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s
+  #          _save(srcid) if isSave
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #  end
+  #
+  #  def RhomAttribManager._save(srcid)
+  #      #puts 'RhomAttribManager._save: ' + srcid.to_s
+  #      attribs = @@attribs_map[srcid]
+  #      return unless attribs
+  #      
+  #      strAttribs = ""
+  #      attribs.each do |attr,counter|
+  #          strAttribs += ',' if strAttribs.length > 0
+  #          strAttribs += attr + ',' + counter.to_s
+  #      end
+  #      
+  #      #puts 'RhomAttribManager._save : ' + srcid.to_s + '; ' + strAttribs
+  #      ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>strAttribs},
+  #                                         {"source_id"=>srcid})
+  #  end
+  #
+  #  def RhomAttribManager.save(srcid_a)
+  #      @@mxMap.lock
+  #      begin
+  #          #puts 'RhomAttribManager.save: ' + srcid_a.to_s
+  #          srcid = srcid_a.to_i
+  #          _save(srcid)
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #  end
+  #  
+  #  def RhomAttribManager.load(srcid_a,strAttribs)
+  #      @@mxMap.lock
+  #      begin
+  #          return unless strAttribs
+  #          
+  #          puts 'RhomAttribManager.load: ' + srcid_a.to_s + "; " + strAttribs
             
-            _save(srcid)    
-        ensure    
-            @@mxMap.unlock
-        end     
-    end
-
-    def RhomAttribManager.delete_attrib(srcid,attr)
-        if @@attribs_map[srcid][attr]
-            @@attribs_map[srcid][attr] -= 1
-            if @@attribs_map[srcid][attr] == 0
-                @@attribs_map[srcid].delete attr    
-            end
-        end
-    end
-    
-    def RhomAttribManager.delete_attribs(srcid_a,cond)
-        @@mxMap.lock
-        begin
-            #puts 'RhomAttribManager.delete_attribs: ' + srcid_a.to_s + '; ' + cond.to_s
-            
-            srcid = srcid_a.to_i
-            return unless @@attribs_map[srcid]
-            
-            isSave = true
-            if cond && !cond.is_a?(Hash)
-                cond = {'id' => cond}
-                isSave = false
-            end
-
-           #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s            
-            
-            if !cond
-                @@attribs_map[srcid] = {}
-            else
-                attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib',cond)
-                attribs.each do |attrib|
-                    attr = attrib['attrib']
-                    delete_attrib(srcid,attr)
-                end
-            end
-
-            #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s
-            _save(srcid) if isSave
-        ensure    
-            @@mxMap.unlock
-        end     
-    end
-
-    def RhomAttribManager._save(srcid)
-        #puts 'RhomAttribManager._save: ' + srcid.to_s
-        attribs = @@attribs_map[srcid]
-        return unless attribs
-        
-        strAttribs = ""
-        attribs.each do |attr,counter|
-            strAttribs += ',' if strAttribs.length > 0
-            strAttribs += attr + ',' + counter.to_s
-        end
-        
-        #puts 'RhomAttribManager._save : ' + srcid.to_s + '; ' + strAttribs
-        ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>strAttribs},
-                                           {"source_id"=>srcid})
-    end
-
-    def RhomAttribManager.save(srcid_a)
-        @@mxMap.lock
-        begin
-            #puts 'RhomAttribManager.save: ' + srcid_a.to_s
-            srcid = srcid_a.to_i
-            _save(srcid)
-        ensure    
-            @@mxMap.unlock
-        end     
-    end
-    
-    def RhomAttribManager.load(srcid_a,strAttribs)
-        @@mxMap.lock
-        begin
-            return unless strAttribs
-            
-            puts 'RhomAttribManager.load: ' + srcid_a.to_s + "; " + strAttribs
-            
-            srcid = srcid_a.to_i
-            arr = strAttribs.split(',')
-            attribs = {}
-            i = 0
-            while i < arr.size
-                attribs[arr[i]] = arr[i+1].to_i
-                i += 2
-            end
-
-            puts 'RhomAttribManager.load: ' + attribs.to_s
-            @@attribs_map[srcid] = attribs
-        ensure    
-            @@mxMap.unlock
-        end     
-        
-    end
-    
-  end
+  #          srcid = srcid_a.to_i
+  #          arr = strAttribs.split(',')
+  #          attribs = {}
+  #          i = 0
+  #          while i < arr.size
+  #              attribs[arr[i]] = arr[i+1].to_i
+  #              i += 2
+  #          end
+  #
+  #          puts 'RhomAttribManager.load: ' + attribs.to_s
+  #          @@attribs_map[srcid] = attribs
+  #      ensure    
+  #          @@mxMap.unlock
+  #      end     
+  #      
+  #  end
+  #  
+  #end
   
   class RhomObjectFactory
     
@@ -299,7 +299,8 @@ module Rhom
                       attribs = select_arr
                       attribs = attribs | order_attr if order_attr
                     else
-                      attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
+                      #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
+                      attribs = SyncEngine.get_src_attrs(get_source_id.to_i)
                     end
                     
                     nulls_cond = {}
@@ -518,7 +519,8 @@ module Rhom
                     attribs = select_arr
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
-                    attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
+                    #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
+                    attribs = SyncEngine.get_src_attrs(get_source_id.to_i)
                   end
                     
                   if attribs and attribs.length > 0
@@ -623,7 +625,7 @@ module Rhom
                             ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id, "update_type"=>'ask'})
                             ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>result[0]['object'], "attrib"=>'question', "source_id"=>get_source_id} )
                           else
-                            ::Rhom::RhomAttribManager.add_attribs(get_source_id,['question'])  
+                            #::Rhom::RhomAttribManager.add_attribs(get_source_id,['question'])  
                           end
                           
                           ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'} )
@@ -655,14 +657,14 @@ module Rhom
                         # find all relevant objects, then delete them
                         del_objects = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
                         del_objects.each do |obj|                                                       
-                          ::Rhom::RhomAttribManager.delete_attribs(get_source_id,{'object'=>obj['object']})
+                          #::Rhom::RhomAttribManager.delete_attribs(get_source_id,{'object'=>obj['object']})
                           ::Rhom::RhomDbAdapter.delete_from_table('object_values', {'object'=>obj['object']})
                           ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {'object'=>obj['object']})
                           #TODO: add delete update_type : get_update_type_by_source is instance method, cannot use it
                           #::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>get_source_id, 'object'=>obj['object'], "update_type"=>update_type})
                         end
                       else
-                        ::Rhom::RhomAttribManager.delete_attribs(get_source_id,nil)
+                        #::Rhom::RhomAttribManager.delete_attribs(get_source_id,nil)
                         ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id})
                         ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id})
                         #TODO: add delete all update_type
@@ -722,7 +724,7 @@ module Rhom
                       ::Rhom::RhomDbAdapter.start_transaction
                 
                       # first delete the record from viewable list
-                      ::Rhom::RhomAttribManager.delete_attribs(self.get_inst_source_id,{"object"=>obj})
+                      #::Rhom::RhomAttribManager.delete_attribs(self.get_inst_source_id,{"object"=>obj})
                       
                       result = ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>obj})
                       ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj})
@@ -768,7 +770,7 @@ module Rhom
                         result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
                       end
                     end
-                    ::Rhom::RhomAttribManager.add_attribs(self.get_inst_source_id,self.vars.keys)
+                    #::Rhom::RhomAttribManager.add_attribs(self.get_inst_source_id,self.vars.keys)
                     ::Rhom::RhomDbAdapter.commit
 
                 rescue Exception => e
@@ -810,7 +812,7 @@ module Rhom
                             result = ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>self.get_inst_source_id})
                           else
                             result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
-                            ::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
+                            #::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
                           end    
                           
                           # update in-memory object
@@ -819,7 +821,7 @@ module Rhom
                       end
                     end
                     
-                    ::Rhom::RhomAttribManager.save(self.get_inst_source_id)
+                    #::Rhom::RhomAttribManager.save(self.get_inst_source_id)
                     ::Rhom::RhomDbAdapter.commit
 
                 rescue Exception => e

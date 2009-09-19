@@ -861,7 +861,7 @@ sleep_wait_for_interrupt(rb_thread_t *th, double sleepsec)
     sleep_timeval(th, double2timeval(sleepsec));
 }
 
-void
+static void
 sleep_for_polling(rb_thread_t *th)
 {
     struct timeval time;

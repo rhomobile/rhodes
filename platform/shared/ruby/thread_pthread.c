@@ -146,7 +146,7 @@ null_func(int i)
     /* null */
 }
 
-rb_thread_t *
+static rb_thread_t *
 ruby_thread_from_native(void)
 {
 	if ( !ruby_native_thread_key )
@@ -155,7 +155,7 @@ ruby_thread_from_native(void)
     return pthread_getspecific(ruby_native_thread_key);
 }
 
-int
+static int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return pthread_setspecific(ruby_native_thread_key, th) == 0;
@@ -172,13 +172,6 @@ Init_native_thread(void)
     ruby_thread_set_native(th);
     native_mutex_initialize(&signal_thread_list_lock);
     posix_signal(SIGVTALRM, null_func);
-}
-
-void
-Init_native_thread2(rb_thread_t *th)
-{
-    native_cond_initialize(&th->native_thread_data.sleep_cond);
-    native_mutex_initialize(&th->interrupt_lock);
 }
 
 static void
