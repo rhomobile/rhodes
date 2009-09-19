@@ -5,6 +5,7 @@ import j2me.io.FileNotFoundException;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
+import com.rho.sync.SyncThread;
 
 public class DBAdapter extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -12,11 +13,11 @@ public class DBAdapter extends RubyBasic {
 
 	private static DBAdapter m_Instance;
 	
-	private IDBCallback m_dbCallback;
 	private IDBStorage m_dbStorage;
 	private boolean m_bIsOpen = false;
 	private String  m_strDBPath;
 	private String  m_strDBVerPath;
+	private DBAttrManager m_attrMgr = new DBAttrManager();
 	
     Mutex m_mxDB = new Mutex();
     boolean m_bUnlockDB = false;
@@ -38,10 +39,9 @@ public class DBAdapter extends RubyBasic {
 		return m_Instance;
 	}
 	
-	public void setDbCallback(IDBCallback callback){
-		m_dbCallback = callback;
-		
-		m_dbStorage.setDbCallback(callback);
+	public DBAttrManager getAttrMgr()
+	{ 
+		return m_attrMgr; 
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
@@ -251,6 +251,7 @@ public class DBAdapter extends RubyBasic {
     
     public void commit()throws DBException
     {
+    	getAttrMgr().save(this);
     	m_dbStorage.commit();
     	Unlock();
     }
@@ -353,6 +354,10 @@ public class DBAdapter extends RubyBasic {
 		
 		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
 		m_bIsOpen = true;
+		
+		getAttrMgr().load(this);
+		
+		m_dbStorage.setDbCallback(new DBCallback(this));
     }
     
 	private String createInsertStatement(IDBResult res, String tableName)
@@ -385,6 +390,8 @@ public class DBAdapter extends RubyBasic {
 		
 		IDBStorage db = null;
 		try{
+		    getAttrMgr().reset(this);
+			
 			String strTable = v.toStr();
 			
 			String dbName = getNameNoExt(m_strDBPath);
@@ -451,6 +458,11 @@ public class DBAdapter extends RubyBasic {
 		    m_dbStorage = RhoClassFactory.createDBStorage();
 			m_dbStorage.open(m_strDBPath, getSqlScript() );
 			m_bIsOpen = true;
+			
+			getAttrMgr().load(this);
+			
+			m_dbStorage.setDbCallback(new DBCallback(this));
+			
 		}catch(Exception e)
 		{
     		LOG.ERROR("execute failed.", e);
@@ -606,7 +618,6 @@ public class DBAdapter extends RubyBasic {
 		    	m_dbStorage = null;
     		}
     		
-	    	m_dbCallback = null;
     	}catch( Exception e ){
     		LOG.ERROR("close failed.", e);
     		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -654,4 +665,70 @@ public class DBAdapter extends RubyBasic {
 		});
 		
 	}
+	
+	public static class DBCallback implements IDBCallback
+	{
+		private DBAdapter m_db;
+		DBCallback(DBAdapter db){ m_db = db; }
+		/*public void OnDeleteAll() {
+			OnDeleteAllFromTable("object_values");
+		}
+		
+		public void OnDeleteAllFromTable(String tableName) {
+			if ( !tableName.equals("object_values") )
+				return;
+
+			try{
+				String fName = DBAdapter.makeBlobFolderName();
+				RhoClassFactory.createFile().delete(fName);
+				DBAdapter.makeBlobFolderName(); //Create folder back
+			}catch(Exception exc){
+				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
+			}
+		}*/
+
+		public void OnInsertIntoTable(String tableName, IDBResult rows2Insert)
+		{
+			if ( !tableName.equalsIgnoreCase("object_values") )
+				return;
+
+			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
+			{
+				m_db.getAttrMgr().add(rows2Insert.getIntByIdx(1), rows2Insert.getStringByIdx(2));
+			}
+			
+		}
+		
+		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
+		{
+			if ( !tableName.equalsIgnoreCase("object_values") )
+				return;
+			
+			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
+			{
+				m_db.getAttrMgr().remove(rows2Delete.getIntByIdx(1), rows2Delete.getStringByIdx(2));
+				
+				if ( !rows2Delete.getStringByIdx(5).equals("blob.file") )
+					continue;
+
+				String url = rows2Delete.getStringByIdx(4);
+				if ( url == null || url.length() == 0 )
+					continue;
+				
+				try{
+				    SimpleFile oFile = RhoClassFactory.createFile();
+				    
+			        String strFilePath = oFile.getDirPath("");
+			        strFilePath += url;
+				    
+				    oFile.delete(strFilePath);
+				}catch(Exception exc){
+					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
+				}
+				
+			}
+		}
+		
+	}
+	
 }

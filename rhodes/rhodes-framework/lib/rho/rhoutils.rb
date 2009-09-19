@@ -27,13 +27,13 @@ module Rho
           
           if filename == 'object_values'
             srcids[srcid] = 1
-            Rhom::RhomAttribManager.add_attrib(srcid,attrib)
+            #Rhom::RhomAttribManager.add_attrib(srcid,attrib)
           end  
         end
 
-        srcids.each do |id,value|
-            Rhom::RhomAttribManager.save(id)
-        end
+        #srcids.each do |id,value|
+        #    Rhom::RhomAttribManager.save(id)
+        #end
             
         Rhom::RhomDbAdapter.commit
         columns = []

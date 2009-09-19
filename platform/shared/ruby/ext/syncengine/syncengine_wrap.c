@@ -1572,6 +1572,8 @@ static VALUE mSyncEngine;
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
+	extern VALUE rho_sync_get_attrs(int source_id);
+	#define get_src_attrs rho_sync_get_attrs
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -2048,6 +2050,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_src_attrs(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  VALUE result;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "get_src_attrs" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (VALUE)get_src_attrs(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2323,5 +2349,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "clear_notification", _wrap_clear_notification, -1);
   rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_set_pollinterval, -1);
   rb_define_module_function(mSyncEngine, "set_syncserver", _wrap_set_syncserver, -1);
+  rb_define_module_function(mSyncEngine, "get_src_attrs", _wrap_get_src_attrs, -1);
 }
 

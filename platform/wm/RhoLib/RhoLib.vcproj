@@ -841,6 +841,14 @@
 				RelativePath="..\..\shared\common\StringConverter.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\common\Tokenizer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\Tokenizer.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="logging"
