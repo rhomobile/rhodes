@@ -110,7 +110,7 @@ implements org.hsqldb.rowio.RowInputInterface {
         //String s      = StringConverter.readUTF(buf, pos, length);
         String s = new String(buf, pos, length, "UTF-8");
 
-        s   = ValuePool.getString(s);
+        //s   = ValuePool.getString(s);
         pos += length;
 
         return s;
