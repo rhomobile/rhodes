@@ -21,7 +21,7 @@
 }
 
 - (void)loadTabBarItemFirstPage:(BarItem*)item {
-	if (item.loaded == NO || item.refresh == YES) {
+	if (item.loaded == NO || item.reload == YES) {
 		NSString* escapedUrl = [item.location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
 		escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 		NSString* startLocation = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
@@ -53,7 +53,7 @@
 		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*4];
 		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+1];
 		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+2];
-		item.refresh = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
+		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
 			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
