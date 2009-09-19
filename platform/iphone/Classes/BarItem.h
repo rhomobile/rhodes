@@ -11,13 +11,13 @@
 
 @interface BarItem : NSObject {
 @private
-	BOOL loaded,refresh;
+	BOOL loaded,reload;
 	NSString* label,*location,*icon;
 	UIViewController* viewController;
 }
 
 @property(nonatomic,assign) BOOL loaded;
-@property(nonatomic,assign) BOOL refresh;
+@property(nonatomic,assign) BOOL reload;
 @property(nonatomic,retain) NSString* label;
 @property(nonatomic,retain) NSString* location;
 @property(nonatomic,retain) NSString* icon;
