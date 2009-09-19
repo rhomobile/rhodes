@@ -11,11 +11,12 @@
 
 @implementation BarItem
 
-@synthesize loaded, label, location, icon, viewController;
+@synthesize loaded, refresh, label, location, icon, viewController;
 
 - (id) init { 
 	if ( self = [super init] ) { 
 		self.loaded = NO; 
+		self.refresh = NO;
 	} 
 	return self; 
 } 
