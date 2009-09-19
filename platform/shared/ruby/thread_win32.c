@@ -32,13 +32,13 @@ static void native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex);
 static void native_cond_initialize(rb_thread_cond_t *cond);
 void native_cond_destroy(rb_thread_cond_t *cond);
 
-rb_thread_t *
+static rb_thread_t *
 ruby_thread_from_native(void)
 {
     return TlsGetValue(ruby_native_thread_key);
 }
 
-int
+static int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return TlsSetValue(ruby_native_thread_key, th);
@@ -61,13 +61,6 @@ Init_native_thread(void)
     thread_debug("initial thread (th: %p, thid: %p, event: %p)\n",
 		 th, GET_THREAD()->thread_id,
 		 th->native_thread_data.interrupt_event);
-}
-
-void
-Init_native_thread2(rb_thread_t *th)
-{
-    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
-    native_mutex_initialize(&th->interrupt_lock);
 }
 
 static void

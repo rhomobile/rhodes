@@ -91,8 +91,6 @@ void CSyncThread::run()
 {
 	LOG(INFO) + "Starting sync engine main routine...";
 
-    RhoRubyThreadStart();
-
 	int nLastSyncInterval = getLastSyncInterval();
 	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
 	{
@@ -118,8 +116,6 @@ void CSyncThread::run()
         if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
     		processCommands();
 	}
-
-    RhoRubyThreadStop();
 }
 
 boolean CSyncThread::isNoCommands()
