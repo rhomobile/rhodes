@@ -70,6 +70,7 @@ import java.io.IOException;
 
 import org.hsqldb.lib.IntLookup;
 //import org.hsqldb.lib.java.JavaSystem;
+import org.hsqldb.rowio.RowInputBinary;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputInterface;
 
@@ -163,7 +164,7 @@ public class CachedRow extends Row {
      * @throws HsqlException
      */
     public CachedRow(Table t,
-                     RowInputInterface in) throws IOException, HsqlException {
+                     RowInputBinary in) throws IOException, HsqlException {
 
         tTable      = t;
         iPos        = in.getPos();

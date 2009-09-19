@@ -60,6 +60,7 @@ import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.SimpleFile;
 import com.rho.Version;
+import com.rho.db.DBAdapter;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.sync.SyncThread;
@@ -475,13 +476,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		
 		m_bActivated = true;
 		
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_READ);
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_WRITE);
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_SYNC);
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_SET_SIZE);
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_DELETE);
-		//PROF.CREATE_COUNTER(RhoProfiler.FILE_RENAME);
-		
 		doStartupWork();
 		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
@@ -497,13 +491,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
     	
-    	//PROF.DESTROY_COUNTER(RhoProfiler.FILE_READ);
-		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_WRITE);
-		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_SYNC);
-		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_SET_SIZE);
-		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_DELETE);
-		//PROF.DESTROY_COUNTER(RhoProfiler.FILE_RENAME);
-		
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 		RingtoneManager.stop();
@@ -855,7 +842,24 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
+	    	//PROF.createSqlCounters();
+	    	
 	        RhoRuby.RhoRubyStart("");
+	        
+	        /*
+	        DBAdapter db = DBAdapter.getInstance();
+	        String sql = "select * from object_values";
+	        
+	        //PROF.flushSqlCounters("First run");
+	        
+	        for (int i = 0; i < 3; ++i) {
+	        	LOG.INFO("Doing select: " + i);
+	        	db.executeSQL(sql);
+	        	LOG.INFO("Done");
+	        	//PROF.flushSqlCounters("SQL operation: " + i);
+	        }
+	        */
+	        
 	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
 	        if (sync != null) {
 	        	sync.setStatusListener(this);
