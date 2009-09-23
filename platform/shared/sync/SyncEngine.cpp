@@ -142,6 +142,9 @@ void CSyncEngine::loadAllSources()
     for ( ; !res.isEnd(); res.next() )
     { 
         String strDbUrl = res.getStringByIdx(1);
+		if ( strDbUrl.length() == 0 )
+			continue;
+		
 		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getString("syncserver") + strDbUrl);
         String strName = res.getStringByIdx(3);
         if ( strUrl.length() > 0 )
