@@ -33,6 +33,7 @@ public:
     void setUnlockDB(boolean b){ m_bUnlockDB = b; }
     void Lock(){ m_mxDB.Lock(); }
     void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+    boolean isInsideTransaction(){ return m_bInsideTransaction; }
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
