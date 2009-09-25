@@ -541,6 +541,7 @@ class SyncSource
 	            {
 	                LOG.ERROR("Sync server send data for unknown source name:" + strSrcName);
 	                getSync().stopSync();
+	                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
 	                break;
 	            }
 	            nSrcID = pSrc.getID();

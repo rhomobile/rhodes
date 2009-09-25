@@ -430,6 +430,7 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
             {
                 LOG(ERROR) + "Sync server send data for unknown source name:" + strSrcName;
                 getSync().stopSync();
+                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
                 break;
             }
             nSrcID = pSrc->getID();
