@@ -54,13 +54,17 @@ public class SyncEngine implements NetRequest.IRhoSession
     Mutex m_mxLoadClientID = new Mutex();
     String m_strSession = "";
     SyncNotify m_oSyncNotify = new SyncNotify(this);
+    boolean m_bStopByUser = false;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel(); } }
+    void stopSyncByUser(){ m_bStopByUser = true; stopSync(); }
     void exitSync(){ setState(esExit); m_NetRequest.cancel(); }
+    boolean isStoppedByUser(){ return m_bStopByUser; }
+    
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
     public String getSession(){ return m_strSession; }
@@ -84,7 +88,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		LOG.INFO("Sync all sources started.");
 	    setState(esSyncAllSources);
-
+	    m_bStopByUser = false;
+	    
 	    try
 	    {
 		    loadAllSources();
@@ -130,6 +135,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	LOG.INFO( "Started synchronization of the data source #" + nSrcId );
 		
 	    setState(esSyncSource);
+	    m_bStopByUser = false;
         SyncSource src = null;
 
 	    try
