@@ -12,11 +12,15 @@ module Rho
 	end
 
     def self.renderfile(filename)
+        res = ""
       	if File.extname(filename) == '.iseq'
-	    	render_index(filename)
+	    	res = render_index(filename)
 	  	else
-        	IO.read(filename)
+        	res = IO.read(filename)
 		end
+		RhoController.start_objectnotify()
+		
+		res
 	end
 
 	def self.render_index(filename)
@@ -44,8 +48,37 @@ module Rho
 			puts 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
 		end
 
+        RhoController.start_objectnotify()
+        
 		@content
     end
 
+    @@m_arObjectNotify = []
+    @@m_arSrcIDNotify = []
+    def add_objectnotify(arg)
+        return unless arg
+        
+        if arg.is_a? (Array)
+            arg.each do |item|
+                @@m_arObjectNotify.push(strip_braces(item.object))
+                @@m_arSrcIDNotify.push(item.source_id)
+            end
+        else
+            @@m_arObjectNotify.push(strip_braces(arg.object))
+            @@m_arSrcIDNotify.push(arg.source_id)
+        end
+        
+    end
+
+    def self.start_objectnotify()
+        SyncEngine::clean_objectnotify()
+    
+        return unless @@m_arObjectNotify && @@m_arObjectNotify.length > 0 
+        
+        0.upto(@@m_arObjectNotify.length()-1) do |i|
+            SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
+        end
+    end
+    
   end # RhoController
 end # Rho

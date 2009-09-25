@@ -2,6 +2,7 @@
 
 #include "common/RhoStd.h"
 #include "common/InputStream.h"
+#include "common/AutoPointer.h"
 
 namespace rho {
 namespace net {

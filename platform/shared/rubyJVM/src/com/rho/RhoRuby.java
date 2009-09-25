@@ -41,6 +41,7 @@ public class RhoRuby {
 	public static final int ERR_CLIENTISNOTLOGGEDIN = 7;
 	public static final int ERR_CUSTOMSYNCSERVER = 8;
 	public static final int ERR_UNATHORIZED = 9;
+	public static final int ERR_CANCELBYUSER = 10;
 	
 	public static int getNetErrorCode(Exception exc)
 	{

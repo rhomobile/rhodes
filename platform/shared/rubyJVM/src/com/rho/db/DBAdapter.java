@@ -20,6 +20,7 @@ public class DBAdapter extends RubyBasic {
 	private DBAttrManager m_attrMgr = new DBAttrManager();
 	
     Mutex m_mxDB = new Mutex();
+    boolean m_bInsideTransaction=false;
     boolean m_bUnlockDB = false;
 	
 	DBAdapter(RubyClass c) {
@@ -86,6 +87,12 @@ public class DBAdapter extends RubyBasic {
 		Object[] values = {arg1,arg2,arg3};
 		return executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5};
+		return executeSQL(strStatement,values);
+	}
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
 		
@@ -103,6 +110,7 @@ public class DBAdapter extends RubyBasic {
 	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
 	public void Lock(){ m_mxDB.Lock(); }
 	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+    public boolean isInsideTransaction(){ return m_bInsideTransaction; }
 	
 	public static IDBResult createResult(){
 		return getInstance().m_dbStorage.createResult();
@@ -246,6 +254,7 @@ public class DBAdapter extends RubyBasic {
     public void startTransaction()throws DBException
     {
     	Lock();
+    	m_bInsideTransaction=true;    	
     	m_dbStorage.startTransaction();
     }
     
@@ -253,6 +262,7 @@ public class DBAdapter extends RubyBasic {
     {
     	getAttrMgr().save(this);
     	m_dbStorage.commit();
+    	m_bInsideTransaction=false;
     	Unlock();
     }
     public void endTransaction()throws DBException

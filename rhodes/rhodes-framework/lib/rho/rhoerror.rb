@@ -10,6 +10,7 @@ module Rho
     ERR_CLIENTISNOTLOGGEDIN = 7
     ERR_CUSTOMSYNCSERVER = 8
     ERR_UNATHORIZED = 9
+    ERR_CANCELBYUSER = 10
     
     attr_reader :code
     
@@ -40,6 +41,8 @@ module Rho
             return "Could not connect to data server."
         elsif code ==  ERR_UNATHORIZED
             return "You entered an invalid login/password, please try again."
+        elsif code ==  ERR_CANCELBYUSER
+            return "Operation was cancelled by user."
         elsif code ==  ERR_NONE
             return ""
         end

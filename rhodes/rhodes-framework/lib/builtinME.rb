@@ -644,6 +644,43 @@ class String
         return self
     end
 	
+    def sum(n=16)
+        sum = 0
+        each_byte {|x| sum += x}
+        if n != 0
+            return sum & ((1 << n) - 1)
+        else
+            return sum
+        end
+    end
+	
+    def index(x, *start)
+        begin_index = 0
+        if start.size > 0
+            begin_index = start[0]
+            begin_index = self.length + begin_index if begin_index < 0
+        end
+        if String === x
+            begin_index.upto(self.length) do |i|
+                if self[i, x.length] == x
+                    return i
+                end
+            end
+        elsif Fixnum === x
+            begin_index.upto(self.length) do |i|
+                if self[i] == x
+                    return i
+                end
+            end
+        else #regex
+            x = (x =~ (self[begin_index, self.length-begin_index]))
+            if x
+                return x + begin_index
+            end
+            return nil
+        end
+    end
+	
     def empty?
         length == 0
     end

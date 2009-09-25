@@ -1160,6 +1160,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\sync\SyncNotify.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\sync\SyncNotify.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\sync\SyncSource.cpp"
 				>
 			</File>

@@ -6,6 +6,7 @@
 #include "net/INetRequest.h"
 
 #include "SyncSource.h"
+#include "SyncNotify.h"
 #include "db/DBAdapter.h"
 #include "logging/RhoLog.h"
 
@@ -21,6 +22,7 @@ static const int ERR_NOSERVERRESPONSE = 6;
 static const int ERR_CLIENTISNOTLOGGEDIN = 7;
 static const int ERR_CUSTOMSYNCSERVER = 8;
 static const int ERR_UNATHORIZED = 9;
+static const int ERR_CANCELBYUSER = 10;
 };
 extern const _CRhoRuby& RhoRuby;
 
@@ -29,16 +31,12 @@ namespace sync {
 class CSyncEngine
 {
     DEFINE_LOGCLASS;
-    struct CSyncNotification
-    {
-        String m_strUrl, m_strParams;
-        CSyncNotification(String strUrl, String strParams) : m_strUrl(strUrl), m_strParams(strParams){}
-    };
-
 public:
     enum ESyncState{ esNone, esSyncAllSources, esSyncSource, esStop, esExit };
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
+    static int SYNC_VERSION() { return 1; }
+
     static String SYNC_ASK_ACTION() { return "/ask"; }
 //    static int MAX_SYNC_TRY_COUNT() { return 2; }
 #ifdef OS_SYMBIAN
@@ -53,13 +51,12 @@ private:
     common::CAutoPtr<net::INetRequest> m_NetRequest;
     ESyncState m_syncState;
     String     m_clientID;
-    HashtablePtr<int,CSyncNotification*> m_mapNotifications;
-    common::CMutex m_mxNotifications;
     common::CMutex m_mxLoadClientID;
     String m_strSession;
+    CSyncNotify m_oSyncNotify;
 
 public:
-    CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone){}
+    CSyncEngine(db::CDBAdapter& db);
     ~CSyncEngine(void){}
 
     void setFactory(common::IRhoClassFactory* factory){ 
@@ -72,8 +69,6 @@ public:
     boolean isLoggedIn();
     String loadSession();
     void logout();
-    void setNotification(int source_id, String strUrl, String strParams );
-    void clearNotification(int source_id);
 	void setSyncServer(char* syncserver);
 
     void setState(ESyncState eState){ m_syncState = eState; }
@@ -98,22 +93,19 @@ public:
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
 
-    void fireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage );
-
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
-
-private:
+    CSyncNotify& getNotify(){ return m_oSyncNotify; }
     net::INetRequest& getNet(){ return *m_NetRequest; }
 
+    CSyncSource* findSourceByName(const String& strSrcName);
+
+private:
+ 
     CSyncSource* findSourceByID(int nSrcId);
     CSyncSource* findSourceByUrl(const String& strSrcUrl);
-    CSyncSource* findSourceByName(const String& strSrcName);
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
-    void reportStatus(String status, int error, String strDetails);
-    void fireAllNotifications( boolean bFinish, int nErrCode, String strMessage );
-    void doFireNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
     friend class CSyncSource;
 };
 

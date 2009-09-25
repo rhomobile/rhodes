@@ -295,8 +295,8 @@ CNetRequestImpl::~CNetRequestImpl()
 
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/ )
 {
-    if ( pNetResp->getRespCode() == 500 || pNetResp->getRespCode() == 422 )
-        return;
+    //if ( pNetResp->getRespCode() == 500 || pNetResp->getRespCode() == 422 )
+    //    return;
 
     DWORD dwBufSize = 4096;
     char* pBuf = (char*)malloc(dwBufSize);
@@ -322,6 +322,9 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
         pNetResp->setValid(true);
 
     }while(bRead && dwBytesRead > 0);
+
+    if ( !pNetResp->isOK() )
+        LOG(TRACE) + "Server response: " + pNetResp->getCharData();
 
     free(pBuf);
 }

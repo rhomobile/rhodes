@@ -53,7 +53,7 @@ CSyncThread::~CSyncThread(void)
 void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
 { 
 	{
-        CMutexLock lockNotify(m_mxStackCommands);
+        synchronized(m_mxStackCommands);
 
 		boolean bExist = false;
 		for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
@@ -121,8 +121,8 @@ void CSyncThread::run()
 boolean CSyncThread::isNoCommands()
 {
 	boolean bEmpty = false;
-	{		
-    	CMutexLock lockNotify(m_mxStackCommands);
+	synchronized(m_mxStackCommands)
+    {		
 		bEmpty = m_stackCommands.isEmpty();
 	}
 
@@ -138,7 +138,7 @@ void CSyncThread::processCommands()//throws Exception
 	{
 		common::CAutoPtr<CSyncCommand> pSyncCmd = null;
     	{
-        	CMutexLock lockNotify(m_mxStackCommands);
+        	synchronized(m_mxStackCommands);
     		pSyncCmd = (CSyncCommand*)m_stackCommands.removeFirst();
     	}
 		
@@ -211,7 +211,7 @@ void rho_sync_stop()
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
 		CSyncThread::getSyncEngine().stopSync();
-//      while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
+//		while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
         while( CSyncThread::getDBAdapter().isInsideTransaction() )
 			CSyncThread::getInstance()->sleep(100);
 	}
@@ -265,12 +265,12 @@ void rho_sync_logout()
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)
 {
-    return CSyncThread::getSyncEngine().setNotification(source_id, url, params ? params : "");
+    return CSyncThread::getSyncEngine().getNotify().setSyncNotification(source_id, url, params ? params : "");
 }
 
 void rho_sync_clear_notification(int source_id)
 {
-    return CSyncThread::getSyncEngine().clearNotification(source_id);
+    return CSyncThread::getSyncEngine().getNotify().clearSyncNotification(source_id);
 }
 
 int rho_sync_openDB(const char* szDBPath)
@@ -338,6 +338,26 @@ void rho_sync_unlock()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
     db.Unlock();
+}
+
+void rho_sync_setobjectnotify_url(const char* szUrl)
+{
+    CSyncNotify::setObjectNotifyUrl(szUrl);
+}
+
+void rho_sync_addobjectnotify(int nSrcID, const char* szObject)
+{
+    CSyncThread::getSyncEngine().getNotify().addObjectNotify(nSrcID, szObject);
+}
+
+void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject)
+{
+    CSyncThread::getSyncEngine().getNotify().addObjectNotify(szSrcName, szObject);
+}
+
+void rho_sync_cleanobjectnotify()
+{
+    CSyncThread::getSyncEngine().getNotify().cleanObjectNotifications();
 }
 
 }

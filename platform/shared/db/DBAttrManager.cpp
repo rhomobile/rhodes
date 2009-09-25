@@ -10,128 +10,135 @@ using namespace rho::common;
 
 void CDBAttrManager::add( int nSrcID, const char* szAttr )
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
-    Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    synchronized(m_mxSrcAttrs)
     {
-        Hashtable<String,int>& mapAttr = *pmapAttr;
-        int nCount = 0;
-        if ( mapAttr.containsKey(szAttr) )
-            nCount = mapAttr.get(szAttr);
+        Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
+        if ( pmapAttr != null )
+        {
+            Hashtable<String,int>& mapAttr = *pmapAttr;
+            int nCount = 0;
+            if ( mapAttr.containsKey(szAttr) )
+                nCount = mapAttr.get(szAttr);
 
-        mapAttr.put(szAttr, nCount+1);
-    }else
-    {
-        pmapAttr = new Hashtable<String,int>();
-        pmapAttr->put(szAttr, 1);
-        m_mapSrcAttrs.put(nSrcID,pmapAttr);
+            mapAttr.put(szAttr, nCount+1);
+        }else
+        {
+            pmapAttr = new Hashtable<String,int>();
+            pmapAttr->put(szAttr, 1);
+            m_mapSrcAttrs.put(nSrcID,pmapAttr);
+        }
     }
 }
 
 void CDBAttrManager::remove( int nSrcID, const char* szAttr )
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
-    Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    synchronized(m_mxSrcAttrs)
     {
-        Hashtable<String,int>& mapAttr = *pmapAttr;
-        if ( mapAttr.containsKey(szAttr) )
+        Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
+        if ( pmapAttr != null )
         {
-            int nCount = mapAttr.get(szAttr);
-            nCount--;
-            if ( nCount <= 0 )
-                mapAttr.remove(szAttr);
-            else
-                mapAttr.put(szAttr, nCount);
+            Hashtable<String,int>& mapAttr = *pmapAttr;
+            if ( mapAttr.containsKey(szAttr) )
+            {
+                int nCount = mapAttr.get(szAttr);
+                nCount--;
+                if ( nCount <= 0 )
+                    mapAttr.remove(szAttr);
+                else
+                    mapAttr.put(szAttr, nCount);
+            }
         }
     }
 }
 
 void CDBAttrManager::save(CDBAdapter& db)
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
-
-    for (HashtablePtr< int, Hashtable<String,int>* >::iterator it = m_mapSrcAttrs.begin();  it != m_mapSrcAttrs.end(); ++it )
+    synchronized(m_mxSrcAttrs)
     {
-        int nSrcID = it->first;
-        Hashtable<String,int>& mapAttr = *(it->second);
-        String strAttribs = "";
-        for ( Hashtable<String,int>::iterator itAttr = mapAttr.begin();  itAttr != mapAttr.end(); ++itAttr )
+        for (HashtablePtr< int, Hashtable<String,int>* >::iterator it = m_mapSrcAttrs.begin();  it != m_mapSrcAttrs.end(); ++it )
         {
-            if ( strAttribs.length() > 0 )
-                strAttribs += ',';
+            int nSrcID = it->first;
+            Hashtable<String,int>& mapAttr = *(it->second);
+            String strAttribs = "";
+            for ( Hashtable<String,int>::iterator itAttr = mapAttr.begin();  itAttr != mapAttr.end(); ++itAttr )
+            {
+                if ( strAttribs.length() > 0 )
+                    strAttribs += ',';
 
-            strAttribs += itAttr->first + ',' + convertToStringA(itAttr->second);
+                strAttribs += itAttr->first + ',' + convertToStringA(itAttr->second);
+            }
+
+            db.executeSQL("UPDATE sources SET source_attribs=? where source_id=?", strAttribs, nSrcID );
         }
-
-        db.executeSQL("UPDATE sources SET source_attribs=? where source_id=?", strAttribs, nSrcID );
     }
 }
 
 void CDBAttrManager::load(CDBAdapter& db)
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
+    synchronized(m_mxSrcAttrs)
+    {
+        DBResult( res, db.executeSQL("SELECT source_id,source_attribs from sources") );
+        for ( ; !res.isEnd(); res.next() )
+        { 
+            int nSrcID = res.getIntByIdx(0);
+            String strAttribs = res.getStringByIdx(1);
+            if ( strAttribs.length() == 0 )
+                continue;
 
-    DBResult( res, db.executeSQL("SELECT source_id,source_attribs from sources") );
-    for ( ; !res.isEnd(); res.next() )
-    { 
-        int nSrcID = res.getIntByIdx(0);
-        String strAttribs = res.getStringByIdx(1);
-        if ( strAttribs.length() == 0 )
-            continue;
+            CTokenizer oTokenizer( strAttribs, "," );
 
-        CTokenizer oTokenizer( strAttribs, "," );
-
-        Hashtable<String,int>* pmapAttr = new Hashtable<String,int>();
-        String strAttr = "";
-		while (oTokenizer.hasMoreTokens()) 
-        {
-			String tok = oTokenizer.nextToken();
-			if (tok.length() == 0)
-				continue;
-            
-            if ( strAttr.length() > 0 )
+            Hashtable<String,int>* pmapAttr = new Hashtable<String,int>();
+            String strAttr = "";
+		    while (oTokenizer.hasMoreTokens()) 
             {
-                int nCounter = 0;
-                convertFromStringA(tok.c_str(),nCounter);
-                pmapAttr->put(strAttr, nCounter);
-                strAttr = "";
-            }else
-                strAttr = tok;
+			    String tok = oTokenizer.nextToken();
+			    if (tok.length() == 0)
+				    continue;
+                
+                if ( strAttr.length() > 0 )
+                {
+                    int nCounter = 0;
+                    convertFromStringA(tok.c_str(),nCounter);
+                    pmapAttr->put(strAttr, nCounter);
+                    strAttr = "";
+                }else
+                    strAttr = tok;
+            }
+
+            m_mapSrcAttrs.put(nSrcID,pmapAttr);
         }
-
-        m_mapSrcAttrs.put(nSrcID,pmapAttr);
     }
-
 }
 
 void CDBAttrManager::reset(CDBAdapter& db)
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
-
-    m_mapSrcAttrs.clear();
-    db.executeSQL("UPDATE sources SET source_attribs=?", "" );
+    synchronized(m_mxSrcAttrs)
+    {
+        m_mapSrcAttrs.clear();
+        db.executeSQL("UPDATE sources SET source_attribs=?", "" );
+    }
 }
 
 unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
 {
-    CMutexLock lockNotify(m_mxSrcAttrs);
-
-    VALUE arRes = rho_ruby_create_array();
-
-    Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    synchronized(m_mxSrcAttrs)
     {
-        Hashtable<String,int>& mapAttr = *pmapAttr;
+        VALUE arRes = rho_ruby_create_array();
 
-        for ( Hashtable<String,int>::iterator itAttr = mapAttr.begin();  itAttr != mapAttr.end(); ++itAttr )
+        Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
+        if ( pmapAttr != null )
         {
-            VALUE valStr = rho_ruby_create_string(itAttr->first.c_str());
-            rho_ruby_add_to_array(arRes,valStr);
-        }
-    }
+            Hashtable<String,int>& mapAttr = *pmapAttr;
 
-    return arRes;
+            for ( Hashtable<String,int>::iterator itAttr = mapAttr.begin();  itAttr != mapAttr.end(); ++itAttr )
+            {
+                VALUE valStr = rho_ruby_create_string(itAttr->first.c_str());
+                rho_ruby_add_to_array(arRes,valStr);
+            }
+        }
+
+        return arRes;
+    }
 }
 
 }

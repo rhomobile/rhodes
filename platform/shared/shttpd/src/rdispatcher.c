@@ -289,6 +289,7 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 	return ret;
 }
 
+extern void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
   
@@ -303,6 +304,7 @@ void* rho_dispatch(struct conn *c, const char* path) {
   if ((route = _alloc_route(c->uri)) != NULL) {
     if (_parse_route(route)) {
       struct stat	st;
+
       //is this an actual file or folder
       if (_shttpd_stat(path, &st) != 0)
         return route;      
@@ -484,12 +486,24 @@ void rho_serve(struct shttpd_arg *arg) {
         #endif      
 
         //shttpd_printf(arg, "%s", callFramework(req));
-        _free_route(arg->user_data);
-        arg->user_data = NULL;
-        free(state);
+//        _free_route(arg->user_data);
+//        arg->user_data = NULL;
+//        free(state);
         //arg->flags |= SHTTPD_END_OF_OUTPUT;
 
         rho_create_write_state(arg,callFramework(req));
+        {
+            RouteRef route = arg->user_data;
+            if ( _isid(route->_id) )
+            {
+              rho_sync_addobjectnotify_bysrcname(route->_model, route->_id);
+            }
+        }
+
+        _free_route(arg->user_data);
+        arg->user_data = NULL;
+        free(state);
+
         rho_write_data(arg);
 	}
 }

@@ -35,5 +35,9 @@ module Rho
       return ''
     end
     
+    def strip_braces(str=nil)
+      str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
+    end
+
   end # RhoController
 end # Rho

@@ -97,9 +97,12 @@ public:
         erase(key);
     }
 
-    TVALUE& get(const TKEY& key)
+    TVALUE get(const TKEY& key)
     {
-        return (*this)[key];
+        if ( containsKey(key) )
+            return (*this)[key];
+
+        return std::map<TKEY,TVALUE>::mapped_type();
     }
 
     boolean containsKey(const TKEY& key)

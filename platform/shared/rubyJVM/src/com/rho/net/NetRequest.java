@@ -96,13 +96,15 @@ public class NetRequest
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 					oSession.logout();
 				
-				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 				{
 					buffer = readFully(is);
 					
 					if ( code == IHttpConnection.HTTP_MOVED_TEMPORARILY ||
 						 code == IHttpConnection.HTTP_MOVED_PERMANENTLY )
 						LOG.INFO("Response body: " + buffer.toString() );
+					else
+						LOG.TRACE("Response body: " + buffer.toString() );
 				}
 			}else
 			{

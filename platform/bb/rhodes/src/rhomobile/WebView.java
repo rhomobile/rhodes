@@ -74,6 +74,11 @@ public class WebView extends RubyBasic {
 				return WebView.set_menu_items(arg0);
 			}
 		});
+		klass.getSingletonClass().defineMethod("execute_js", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return RubyConstant.QNIL;
+			}
+		});
 	}
 	
 }
