@@ -320,8 +320,8 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 	        	    strBody += "ok";
 	            else
 	            {
-//                    if ( !getSync().isContinueSync() )
-//                        nErrCode = RhoRuby.ERR_CANCELBYUSER;
+                    if ( getSync().isStoppedByUser() )
+                        nErrCode = RhoRuby.ERR_CANCELBYUSER;
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);

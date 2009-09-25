@@ -210,7 +210,7 @@ void rho_sync_stop()
 {
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
-		CSyncThread::getSyncEngine().stopSync();
+		CSyncThread::getSyncEngine().stopSyncByUser();
 //		while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
         while( CSyncThread::getDBAdapter().isInsideTransaction() )
 			CSyncThread::getInstance()->sleep(100);

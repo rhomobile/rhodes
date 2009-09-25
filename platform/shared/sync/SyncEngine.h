@@ -54,7 +54,7 @@ private:
     common::CMutex m_mxLoadClientID;
     String m_strSession;
     CSyncNotify m_oSyncNotify;
-
+    boolean m_bStopByUser;
 public:
     CSyncEngine(db::CDBAdapter& db);
     ~CSyncEngine(void){}
@@ -76,7 +76,9 @@ public:
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest->cancel();} }
+    void stopSyncByUser(){ m_bStopByUser = true; stopSync(); }
     void exitSync(){ setState(esExit); m_NetRequest->cancel(); }
+    boolean isStoppedByUser(){ return m_bStopByUser; }
 //private:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}

@@ -16,12 +16,15 @@ using namespace rho::net;
 using namespace rho::common;
 using namespace rho::json;
 
-CSyncEngine::CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this){}
+CSyncEngine::CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
+{
+    m_bStopByUser = false;
+}
 
 void CSyncEngine::doSyncAllSources()
 {
     setState(esSyncAllSources);
-
+    m_bStopByUser = false;
     loadAllSources();
 
     m_strSession = loadSession();
@@ -50,7 +53,7 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
     	LOG(INFO)+ "Started synchronization of the data source #" + nSrcId;
 
     setState(esSyncSource);
-
+    m_bStopByUser = false;
     loadAllSources();
 
     CSyncSource* pSrc = null;
