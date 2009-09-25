@@ -275,6 +275,7 @@ module Rhom
                     order_dir=""
                     ret_list = []
                     op = 'AND'
+                    nSrcID = get_source_id.to_i
                     
                     if args[1]
                         condition_hash = args[1][:conditions] if args[1][:conditions]
@@ -300,7 +301,7 @@ module Rhom
                       attribs = attribs | order_attr if order_attr
                     else
                       #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
-                      attribs = SyncEngine.get_src_attrs(get_source_id.to_i)
+                      attribs = SyncEngine.get_src_attrs(nSrcID)
                     end
                     
                     nulls_cond = {}
@@ -411,6 +412,7 @@ module Rhom
                         new_obj = self.new
                         # always return object field with surrounding '{}'
                         new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
+                        new_obj.vars.merge!({:source_id=>nSrcID})
                         
                         if obj['attrib']
                             new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
@@ -490,6 +492,7 @@ module Rhom
                   limit = nil
                   offset = nil
                   order_dir=""
+                  nSrcID = get_source_id.to_i
                   if args[1]
                     if args[1][:conditions]
                       condition_hash = args[1][:conditions] if args[1][:conditions].is_a?(Hash)
@@ -520,13 +523,13 @@ module Rhom
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
                     #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
-                    attribs = SyncEngine.get_src_attrs(get_source_id.to_i)
+                    attribs = SyncEngine.get_src_attrs(nSrcID)
                   end
                     
                   if attribs and attribs.length > 0
                     sql = ""
                     sql << "SELECT * FROM (\n" if condition_hash or condition_str
-                    sql << "SELECT object,\n"
+                    sql << "SELECT object, \n"
                     #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                     attribs.each do |attrib|
                       unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
@@ -551,6 +554,7 @@ module Rhom
                         list.each do |rowhash|
                           # always return object field with surrounding '{}'
                           rowhash[:object] = "{#{rowhash['object']}}"
+                          rowhash[:source_id] = nSrcID
                           new_obj = self.new
                           #new_obj.vars.merge!(rowhash)
                           

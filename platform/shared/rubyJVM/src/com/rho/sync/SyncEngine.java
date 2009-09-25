@@ -39,15 +39,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
 	
-    static class SyncNotification
-    {
-        String m_strUrl, m_strParams;
-        SyncNotification(String strUrl, String strParams){ m_strUrl = strUrl; m_strParams = strParams; }
-    };
-
     public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esStop = 3, esExit = 4;
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
+    int SYNC_VERSION() { return 1; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
     static String SYNC_PAGE_SIZE() { return "2000"; }
 	
@@ -56,25 +51,9 @@ public class SyncEngine implements NetRequest.IRhoSession
     NetRequest m_NetRequest;
     int         m_syncState;
     String     m_clientID = "";
-    Hashtable/*<int,SyncNotification>*/ m_mapNotifications = new Hashtable();
-    Mutex m_mxNotifications = new Mutex();
     Mutex m_mxLoadClientID = new Mutex();
     String m_strSession = "";
-
-    ISyncStatusListener m_statusListener = null;
-    
-    public void setStatusListener(ISyncStatusListener listener) { m_statusListener = listener; }
-    private void reportStatus(String status, int error, String strDetails) {
-    	if (m_statusListener != null) {
-    		if ( strDetails.length() == 0 )
-    			strDetails = RhoRuby.getErrorText(error);
-    		status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
-    		
-        	LOG.INFO("Status: "+status);
-    		
-    		m_statusListener.reportStatus( status, error);
-    	}
-    }
+    SyncNotify m_oSyncNotify = new SyncNotify(this);
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -87,6 +66,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     public String getSession(){ return m_strSession; }
     boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
     DBAdapter getDB(){ return m_dbAdapter; }
+    SyncNotify getNotify(){ return m_oSyncNotify; }
     NetRequest getNet() { return m_NetRequest;}
     
     SyncEngine(DBAdapter db){
@@ -128,9 +108,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.STOP("Sync");
 			    
 			    if ( getState() != esStop )
-			    	fireNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
+			    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 		    } else {
-		    	fireNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
+		    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
 		    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
 		    }
 		    
@@ -175,7 +155,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 			    }
 		
-		        fireNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
+			    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
 	        } else {
 	        	src = new SyncSource(this);
 		    	//src.m_strError = "Unknown sync source.";
@@ -195,9 +175,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
 	    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 	    	
-    		fireNotification(src, true, src.m_nErrCode, "" ); 
+	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
 	    }
         
+	    getNotify().cleanCreateObjectErrors();
 	    setState(esNone);
 	    
 	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
@@ -354,10 +335,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	setState(esStop);
 	    		throw exc;
 	    	}finally{
-    			fireNotification(src, true, src.m_nErrCode, "" );
-    			
-	    		if ( getState() == esStop )
-	    			fireAllNotifications(true, src.m_nErrCode, "" );
+	    		getNotify().onSyncSourceEnd( i, m_sources );
 	    	}
 	    }
 	}
@@ -495,129 +473,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        getNet().deleteCookie(src.getUrl());
 	    }
 	
-	}
-
-	void setNotification(int source_id, String strUrl, String strParams )throws Exception
-	{
-		LOG.INFO( "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
-	    String strFullUrl = getNet().resolveUrl(strUrl);
-		
-		if ( source_id == -1 )
-		{
-			synchronized(m_mxNotifications){
-				m_mapNotifications.clear();
-				
-				if ( strFullUrl.length() > 0 )
-				{
-					loadAllSources();
-					
-				    for( int i = 0; i < m_sources.size(); i++ )
-				    {
-				    	SyncSource src = (SyncSource)m_sources.elementAt(i); 
-				    	m_mapNotifications.put( src.getID(),new SyncNotification( strFullUrl, strParams ) );
-				    }
-				}
-			}
-			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
-		}else
-		{
-		    clearNotification(source_id);
-		    if ( strFullUrl.length() > 0 )
-		    {
-		        synchronized(m_mxNotifications){
-		        	m_mapNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams ) );
-		        }
-				LOG.INFO( " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
-		    }
-		}
-	}
-
-	void fireAllNotifications( boolean bFinish, int nErrCode, String strMessage )
-	{
-	    for( int i = 0; i < m_sources.size(); i++ )
-	    {
-	    	doFireNotification( (SyncSource)m_sources.elementAt(i), bFinish, nErrCode, strMessage );
-	    }
-	}
-	
-	void fireNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
-	{
-		if ( getState() == esExit )
-			return;
-		
-		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
-		{
-			if ( !( src != null && src.m_strParams.length()>0) )
-			{
-				if ( src != null && (strMessage==null || strMessage.length() == 0) )
-					strMessage = "Sync failed for " + src.getName() + ".";
-				
-				reportStatus(strMessage,nErrCode,src!= null?src.m_strError:"");
-			}
-		}
-		
-		doFireNotification(src, bFinish, nErrCode, strMessage );
-	}
-	
-	void doFireNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
-	{
-		if ( src == null )
-			return; //TODO: implement all sources callback
-		
-		try{
-		    String strBody = "", strUrl;
-		    {
-		    	synchronized(m_mxNotifications){
-			        SyncNotification sn = (SyncNotification)m_mapNotifications.get(src.getID());
-			        if ( sn == null )
-			            return;
-			
-			        strUrl = sn.m_strUrl;
-			        strBody += "total_count=" + src.getTotalCount();
-			        strBody += "&processed_count=" + src.getCurPageCount();
-			        strBody += "&source_id=" + src.getID();
-			        strBody += "&source_name=" + src.getName();
-			        
-			        strBody += "&status=";
-			        if ( bFinish )
-			        {
-				        if ( nErrCode == RhoRuby.ERR_NONE )
-				        	strBody += "ok";
-				        else
-				        {
-				        	strBody += "error";				        	
-						    strBody += "&error_code=" + nErrCode;
-					        strBody += "&error_message=" + URI.urlEncode(src.m_strError);
-				        }
-			        }
-			        else
-			        	strBody += "in_progress";
-			        
-			        if ( sn.m_strParams.length() > 0 )
-			            strBody += "&" + sn.m_strParams;
-		        }
-		    }
-			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
-			
-		    NetResponse resp = getNet().pushData( strUrl, strBody, this );
-		    if ( !resp.isOK() )
-		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
-		
-		    if ( bFinish )
-		    	clearNotification(src.getID().intValue());
-		}catch(Exception exc)
-		{
-			LOG.ERROR("Fire notification failed.", exc);
-		}
-	}
-
-	void clearNotification(int source_id) 
-	{
-		LOG.INFO( "Clear notification. Source ID: " + source_id );
-		
-		synchronized(m_mxNotifications){
-			m_mapNotifications.remove(new Integer(source_id));
-		}
 	}
 
 	static String getServerFromUrl( String strUrl )

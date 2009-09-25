@@ -41,6 +41,7 @@ platform\shared\rubyJVM\src\com\rho\sync\ClientRegister.java
 platform\shared\rubyJVM\src\com\rho\sync\ISyncStatusListener.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncSource.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncThread.java
+platform\shared\rubyJVM\src\com\rho\sync\SyncNotify.java
 platform\shared\rubyJVM\src\com\rho\TestProfiler.java
 platform\shared\rubyJVM\src\com\rho\TestRhoLog.java
 platform\shared\rubyJVM\src\com\rho\TimeInterval.java

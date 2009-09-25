@@ -16,6 +16,7 @@ import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RhoSupport;
 import com.rho.net.URI;
+import com.rho.sync.SyncThread;
 import com.rho.*;
 import com.rho.location.GeoLocation;
 
@@ -667,6 +668,10 @@ public class RhoConnection implements IHttpConnection {
 		
 		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
 		processResponse(res);
+		
+		if ( actionid.length() > 2 && 
+			 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
+			SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
 		
 		LOG.INFO("dispatch end");
 		return true;

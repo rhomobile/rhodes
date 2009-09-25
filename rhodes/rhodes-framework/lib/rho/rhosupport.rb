@@ -1,3 +1,5 @@
+require 'indifferent_access'
+
 module Rho
   module RhoSupport
 
