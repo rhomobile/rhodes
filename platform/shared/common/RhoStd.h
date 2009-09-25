@@ -102,7 +102,7 @@ public:
         if ( containsKey(key) )
             return (*this)[key];
 
-        return std::map<TKEY,TVALUE>::mapped_type();
+        return TVALUE();
     }
 
     boolean containsKey(const TKEY& key)
