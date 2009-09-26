@@ -153,12 +153,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     //}
 
+    boolean isExternalUrl(String strUrl)
+    {
+    	return strUrl.startsWith("http://") || strUrl.startsWith("https://");    
+    }
+    
     String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
 			return "";
 
 		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) ){
+		if ( !url.startsWith(_httpRoot) && !isExternalUrl(url) ){
     		if ( url.charAt(0) == '/' )
     			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
     		else
@@ -240,7 +245,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     void addToHistory(String strUrl, String refferer )
     {
-        if ( !strUrl.startsWith(_httpRoot) )
+        if ( !strUrl.startsWith(_httpRoot) && !isExternalUrl(strUrl) )
         	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
     	
     	int nPos = -1;
@@ -981,11 +986,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 	browserContent.finishLoading();
                 else
                 {
-                	synchronized (Application.getEventLock())
-	                //synchronized (getAppEventLock())
-	                {
-	                	browserContent.finishLoading();
-	                }
+                	String strHost = connection.getHost();
+            		if ( "localhost".equals(strHost) || "127.0.0.1".equals(strHost) )
+            		{
+	                	synchronized (Application.getEventLock())
+		                //synchronized (getAppEventLock())
+		                {
+		                	browserContent.finishLoading();
+		                }
+            		}else
+            			browserContent.finishLoading();
                 }
             }
 
@@ -1010,8 +1020,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                 UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;
                 String absoluteUrl = urlRequestedEvent.getURL();
-                if ( !absoluteUrl.startsWith(_httpRoot) )
-                	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
+                //if ( !absoluteUrl.startsWith(_httpRoot) )
+                //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                 if ( urlRequestedEvent.getPostData() == null ||
                 	 urlRequestedEvent.getPostData().length == 0 )
@@ -1028,7 +1038,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             } case Event.EVENT_BROWSER_CONTENT_CHANGED: {
 
                 // browser field title might have changed update title
-                BrowserContentChangedEvent browserContentChangedEvent = (BrowserContentChangedEvent) event;
+                /*BrowserContentChangedEvent browserContentChangedEvent = (BrowserContentChangedEvent) event;
 
                 if (browserContentChangedEvent.getSource() instanceof BrowserContent) {
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource();
@@ -1040,7 +1050,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                         	_mainScreen.setTitle(newTitle);
                         }
                     }
-                }
+                }*/
 
                 break;
 
@@ -1072,8 +1082,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
-                            if ( !absoluteUrl.startsWith(_httpRoot) )
-                            	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
+                            //if ( !absoluteUrl.startsWith(_httpRoot) )
+                            //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                         	addToHistory(absoluteUrl,referrer);
                             Object eventSource = e.getSource();
