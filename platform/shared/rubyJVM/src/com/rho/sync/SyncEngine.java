@@ -42,7 +42,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esStop = 3, esExit = 4;
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
-    int SYNC_VERSION() { return 1; }
+    int SYNC_VERSION() { return 2; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
     static String SYNC_PAGE_SIZE() { return "2000"; }
 	

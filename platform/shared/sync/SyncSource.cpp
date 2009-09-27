@@ -164,8 +164,8 @@ void CSyncSource::syncClientChanges()
                 }
             }
 
-            if ( getSync().SYNC_VERSION() >= 2 && i == 1 )// update
-                getDB().executeSQL("UPDATE changed_values SET update_type='update_sent' WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
+            if ( getSync().SYNC_VERSION() >= 2 && i <= 1 )// update
+                getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
                     getID(), arUpdateTypes[i], "blob.file" );
             else
                 getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?)", 
@@ -190,8 +190,8 @@ void CSyncSource::syncClientChanges()
                 }
             }
 
-            if ( getSync().SYNC_VERSION() >= 2 && i == 1 )// update
-                getDB().executeSQL("UPDATE changed_values SET update_type='update_sent' WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
+            if ( getSync().SYNC_VERSION() >= 2 && i <= 1 )// update
+                getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
             else
                 getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), arUpdateTypes[i] );
         }
@@ -209,7 +209,7 @@ void CSyncSource::syncClientChanges()
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
-					 "FROM changed_values where source_id=? and update_type =?", getID(), szUpdateType ) );
+					 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType ) );
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
@@ -366,7 +366,10 @@ void CSyncSource::processServerData(const char* szData)
         processToken(oJsonArr.getCurItem().getUInt64("token"));
         oJsonArr.next();
     }else if ( getCurPageCount() == 0 )
+    {
+        getDB().executeSQL("DELETE FROM changed_values where source_id=?", getID() );
         processToken(0);
+    }
 
 	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
          + ". Version: " + nVersion;
@@ -588,7 +591,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             boolean bUpdated = false;
             if ( strOldObject != null )
             {
-                DBResult( res , getDB().executeSQL("SELECT object FROM object_values where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID ));
+                DBResult( res , getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID ));
                 if ( !res.isEnd() )
                 {
                     getDB().executeSQL("UPDATE object_values SET id=?, object=? where object=? and attrib=? and source_id=?", value.m_nID, strObject, strOldObject, strAttrib, nSrcID );
@@ -608,9 +611,13 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                     if ( res.getStringByIdx(0).compare(value.m_strValue) != 0 || res.getStringByIdx(1).compare(value.m_strAttrType) != 0 )
                         bModified = true;
 
-                    getDB().executeSQL("UPDATE object_values SET id=?, value=?, attrib_type=? where object=? and attrib=? and source_id=?", 
-                        value.m_nID, value.m_strValue, value.m_strAttrType, strObject, strAttrib, nSrcID );
-                    getDB().executeSQL("DELETE FROM changed_values where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
+//                    getDB().executeSQL("UPDATE object_values SET id=?, value=?, attrib_type=? where object=? and attrib=? and source_id=?", 
+//                        value.m_nID, value.m_strValue, value.m_strAttrType, strObject, strAttrib, nSrcID );
+                    getDB().executeSQL("INSERT INTO object_values \
+                        (id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
+                        value.m_nID, strAttrib, nSrcID, strObject,
+                        value.m_strValue, value.m_strAttrType );
+
 
                     if ( bModified )
                         getNotify().onObjectChanged(nSrcID,strObject, CSyncNotify::enUpdate);

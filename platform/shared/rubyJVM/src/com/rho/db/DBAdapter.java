@@ -183,7 +183,8 @@ public class DBAdapter extends RubyBasic {
 		" object varchar(255) default NULL,"+
 		" value varchar default NULL,"+
 		" attrib_type varchar(255) default NULL," +
-		" update_type varchar(255) default NULL );"+
+		" update_type varchar(255) default NULL, " +
+		" sent int default 0 );"+
 		"CREATE TABLE sources ("+
 		//"id INTEGER PRIMARY KEY,"+
 		"source_id int PRIMARY KEY,"+
@@ -504,8 +505,10 @@ public class DBAdapter extends RubyBasic {
     
     public void rollback()throws DBException
     {
+    	m_dbStorage.rollback();
+    	m_bInsideTransaction=false;
+    	
     	Unlock();
-    	throw new DBException("Not implemented");
     }
 /*    
     public RubyValue rb_execute(RubyValue v) 

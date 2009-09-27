@@ -163,6 +163,12 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 			
 	}
 
+	public void rollback()throws DBException
+	{
+		if ( m_dbSess!= null )
+			m_dbSess.rollback();
+	}
+	
 	public String[] getAllTableNames()throws DBException
 	{
 		org.hsqldb.lib.HsqlArrayList arTables = m_dbSess.getDatabase().schemaManager.getAllTables();

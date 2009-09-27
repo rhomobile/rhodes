@@ -33,6 +33,12 @@ public class DBStorage implements IDBStorage {
 		    rhoDB.endTransaction();
 	}
 
+    synchronized public void rollback() throws DBException
+    {
+        if (rhoDB != null && rhoDB.isOpen())
+            ;//TODO: implement rollback
+    }
+
 	synchronized public IDBResult createResult() {
 		return new SqliteDBResult();
 	}
