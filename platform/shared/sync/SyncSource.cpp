@@ -106,7 +106,7 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
-            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            m_nErrCode = resp.isResponseRecieved() ? RhoRuby.ERR_REMOTESERVER : RhoRuby.ERR_NETWORK;
             //m_strError = resp.getCharData();
             return;
         }
@@ -296,9 +296,7 @@ void CSyncSource::syncServerChanges()
         if ( !resp.isOK() )
         {
             getSync().stopSync();
-            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-            //m_strError = resp.getCharData();
-
+            m_nErrCode = resp.isResponseRecieved() ? RhoRuby.ERR_REMOTESERVER : RhoRuby.ERR_NETWORK;
             continue;
         }
 
@@ -541,7 +539,7 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
     NetResponse(resp, getNet().pullFile(url, fName));
     if ( !resp.isOK() )
     {
-        m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+        m_nErrCode = resp.isResponseRecieved() ? RhoRuby.ERR_REMOTESERVER : RhoRuby.ERR_NETWORK;
         //m_strError = resp.getCharData();
 
         return false;
