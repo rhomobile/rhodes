@@ -47,7 +47,7 @@
 	}
 	
 	// Setup each tabbar item with elements in specific order:
-	// label, action, icon
+	// label, action, icon, reload
 	for(int i=0; i < barSize; i++) {
 		BarItem* item = [[BarItem alloc] init];
 		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*4];
@@ -58,7 +58,6 @@
 			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
 			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:item.icon];	
-			NSLog(@"PATH: %@", imagePath);
 			subController.title = item.label;
 			subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
 			subController.view = wView;
@@ -76,7 +75,11 @@
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-	[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
+	if(self.tabBarController.selectedIndex > barItems.count) {
+		[NSException raise:@"Exception" format:@"Rhodes currently only supports up to 5 tabs.  Please change your tabs array and try again."];
+	} else {
+		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
+	}
 }
 
 @end
