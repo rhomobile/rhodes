@@ -2,7 +2,6 @@ package rhomobile;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.db.DBAdapter;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
