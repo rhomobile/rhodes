@@ -30,6 +30,10 @@
 	}
 }
 
+- (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url {
+	[item.viewController navigateRedirect:url];
+}
+
 - (void)createTabBar:(UIWindow*)window {
 	self.mainWindow = window;
 	// Load the tab bar (just one of them)
@@ -55,12 +59,14 @@
 		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+2];
 		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
-			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
+			WebViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
 			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:item.icon];	
 			subController.title = item.label;
 			subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
+			//TODO: Figure out why view and webView need to point to the same object!
 			subController.view = wView;
+			subController.webView = wView;
 			item.viewController = subController;
 			[barItems addObject:item];
 			[tabs addObject:subController];
