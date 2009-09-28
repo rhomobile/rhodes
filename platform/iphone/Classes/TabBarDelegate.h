@@ -27,5 +27,6 @@
 
 - (void)createTabBar:(UIWindow*)window;
 - (void)loadTabBarItemFirstPage:(BarItem*)item;
+- (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url;
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
 @end
