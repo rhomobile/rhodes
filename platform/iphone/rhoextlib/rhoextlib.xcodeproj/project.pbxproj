@@ -186,7 +186,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
 			};
