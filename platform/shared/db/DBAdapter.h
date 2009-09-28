@@ -9,7 +9,7 @@ namespace db{
 
 class CDBAdapter
 {
-    String   m_strDbPath, m_strDbVer;
+    String   m_strDbPath, m_strDbVer, m_strDbVerPath;
     sqlite3* m_dbHandle;
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
     common::CMutex m_mxDB;
@@ -17,6 +17,19 @@ class CDBAdapter
 	boolean m_bInsideTransaction;
     boolean m_bUnlockDB;
     CDBAttrManager m_attrMgr;
+
+    struct CDBVersion
+    {
+    	String m_strRhoVer;
+    	String m_strAppVer;
+    	
+        CDBVersion(){}
+    	CDBVersion( String strRhoVer, String strAppVer )
+    	{
+    		m_strRhoVer = strRhoVer;
+    		m_strAppVer = strAppVer;
+    	}
+    };
 
 public:
     DEFINE_LOGCLASS;
@@ -171,7 +184,9 @@ public:
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
 
-    void checkVersion(String& strVer);
+    void checkDBVersion(String& strVer);
+    CDBVersion readDBVersion();//throws Exception
+    void       writeDBVersion(const CDBVersion& ver);//throws Exception
     void createSchema();
     boolean checkDbError(int rc);
     sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
