@@ -39,6 +39,7 @@ public:
     static bool         isFileExist( const char* szFilePath );
     static void         deleteFile( const char* szFilePath );
     static void         renameFile( const char* szOldFilePath, const char* szNewFilePath );
+    static void         deleteFilesInFolder(const char* szFolderPath);
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);

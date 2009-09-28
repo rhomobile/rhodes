@@ -172,6 +172,36 @@ void CRhoFile::deleteFile( const char* szFilePath ){
 #endif
 }
 
+void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
+{
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    StringW wFolderName;
+    common::convertToStringW(szFolderPath,wFolderName);
+    StringW wFolderMask = wFolderName + L"/*";
+
+    WIN32_FIND_DATAW FindFileData;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+
+    hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
+    if (hFind == INVALID_HANDLE_VALUE) 
+        return;
+
+    while (FindNextFileW(hFind, &FindFileData) != 0) 
+    {
+        if ( FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY )
+            continue;
+
+        StringW wFileName = wFolderName + L"/" + FindFileData.cFileName;
+        DeleteFileW(wFileName.c_str());
+    }
+
+    FindClose(hFind);
+
+#else
+    //TODO: deleteFilesInFolder
+#endif
+}
+
 /*static*/ void CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
 {
 #if defined(OS_WINDOWS) || defined(OS_WINCE)

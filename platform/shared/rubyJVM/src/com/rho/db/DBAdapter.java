@@ -461,6 +461,11 @@ public class DBAdapter extends RubyBasic {
 		    LOG.TRACE("2. Size of " + dbNewNameData + ": " + fs.size(dbNewNameData));
 		    
 		    fs.delete(dbNameJournal);
+		    
+			String fName = makeBlobFolderName();
+			RhoClassFactory.createFile().delete(fName);
+			DBAdapter.makeBlobFolderName(); //Create folder back
+		    
 		    fs.renameOverwrite(dbNewNameData, dbNameData);
 		    fs.renameOverwrite(dbNewNameScript, dbNameScript);
 		    

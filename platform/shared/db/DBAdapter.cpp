@@ -3,6 +3,7 @@
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoConf.h"
 
 extern "C" const char* RhoGetRootPath();
 extern "C" const char* RhoGetRelativeBlobsPath();
@@ -71,9 +72,10 @@ void CDBAdapter::open (String strDbPath, String strVer)
     close();
 
     m_strDbPath = strDbPath;
+    m_strDbVerPath = strDbPath+".version";
     m_strDbVer = strVer;
 
-    checkVersion(strVer);
+    checkDBVersion(strVer);
 
     boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
@@ -91,6 +93,66 @@ void CDBAdapter::open (String strDbPath, String strVer)
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
     getAttrMgr().load(*this);
+}
+
+void CDBAdapter::checkDBVersion(String& strRhoDBVer)
+{
+	String strAppDBVer = RHOCONF().getString("app_db_version");
+	
+	CDBVersion dbVer = readDBVersion();
+
+	boolean bReset = false;
+	
+	if ( strRhoDBVer.length() > 0 )
+	{
+		if ( dbVer.m_strRhoVer.compare(strRhoDBVer) != 0 )
+			bReset = true;
+	}
+	if ( strAppDBVer.length() > 0 )
+	{
+		if ( dbVer.m_strAppVer.compare(strAppDBVer) != 0 )
+			bReset = true;
+	}
+	
+	if ( bReset )
+	{
+        CRhoFile::deleteFile(m_strDbPath.c_str());
+        CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
+
+        String strBlobFolderName = makeBlobFolderName();
+        CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+	}
+}
+
+CDBAdapter::CDBVersion CDBAdapter::readDBVersion()//throws Exception
+{
+    String strFullVer;
+    CRhoFile oFile;
+    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenReadOnly) )
+        return CDBVersion();
+
+    oFile.readString(strFullVer);
+	
+	if ( strFullVer.length() == 0 )
+		return CDBVersion();
+	
+	int nSep = strFullVer.find(';');
+	if ( nSep == -1 )
+		return CDBVersion(strFullVer, "");
+	
+	return CDBVersion(strFullVer.substr(0,nSep), strFullVer.substr(nSep+1) );
+}
+
+void CDBAdapter::writeDBVersion(const CDBVersion& ver)//throws Exception
+{
+    String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
+    CRhoFile oFile;
+    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenForWrite) )
+        return;
+
+    oFile.write(strFullVer.c_str(), strFullVer.length() );
 }
 
 sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
@@ -207,14 +269,13 @@ void CDBAdapter::destroy_table(String strTable)
 
     String dbOldName = m_strDbPath;
     close();
+
+    String strBlobFolderName = makeBlobFolderName();
+    CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
     open( dbOldName, m_strDbVer );
-}
-
-void CDBAdapter::checkVersion(String& strVer)
-{
-    //TODO: checkVersion
 }
 
 static const char* g_szDbSchema = 

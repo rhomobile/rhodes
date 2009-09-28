@@ -276,7 +276,7 @@ void rho_sync_clear_notification(int source_id)
 int rho_sync_openDB(const char* szDBPath)
 {
     rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
-    rho::String strVer = "";//TODO: get version from rhodes 
+    rho::String strVer = RhoRuby_getRhoDBVersion(); 
     db.open(szDBPath,strVer);
     return 0;
 }

@@ -93,7 +93,7 @@ void RhoRubyThreadStop()
 
 void RhoRubyStart()
 {
-    VALUE moduleRhom;
+    //VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -153,13 +153,20 @@ void RhoRubyStart()
 	CONST_ID(framework_mid, "serve");
 	CONST_ID(framework_mid2, "serve_index");
 
-    moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
+    //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
 #endif    
 		
 	}	
+}
+
+char* RhoRuby_getRhoDBVersion()
+{
+    VALUE moduleRhodes = rb_const_get(rb_cObject, rb_intern("Rhodes"));
+    VALUE valVer = rb_const_get(moduleRhodes, rb_intern("DBVERSION"));
+    return RSTRING_PTR(valVer);
 }
 
 #if defined(WIN32)
