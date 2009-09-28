@@ -116,6 +116,8 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 	
 	if ( bReset )
 	{
+        LOG(INFO) + "Reset database bacause version is changed.";
+
         CRhoFile::deleteFile(m_strDbPath.c_str());
         CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
 
