@@ -619,7 +619,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             if ( !bUpdated )
             {
                 DBResult( res , getDB().executeSQL("SELECT value, attrib_type "
-					     "FROM changed_values where object=? and attrib=? and source_id=? LIMIT 1 OFFSET 0 and sent=2", strObject, strAttrib, nSrcID ) );
+					     "FROM changed_values where object=? and attrib=? and source_id=? and sent=2 LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID ) );
                 if ( !res.isEnd() )
                 {
                     boolean bModified = false;
