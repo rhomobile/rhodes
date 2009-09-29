@@ -1,3 +1,5 @@
+#ifdef __IPHONE_3_0
+
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "MapAnnotation.h"
@@ -27,3 +29,6 @@
 -(BOOL)geocode:(MapAnnotation *)annotation;
 -(CLLocation*)stringCooridinatesToCLLocation;
 @end
+
+
+#endif

@@ -60,7 +60,6 @@
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 		F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
 		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
-		F5FD095B10618E0600B7B8ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5FD095A10618E0600B7B8ED /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -231,7 +230,6 @@
 		F5F06667102CB134006CFD39 /* ParamsWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParamsWrapper.m; sourceTree = "<group>"; };
 		F5FD0942106151C200B7B8ED /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewController.h; path = MapView/MapViewController.h; sourceTree = "<group>"; };
 		F5FD0943106151C200B7B8ED /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewController.m; path = MapView/MapViewController.m; sourceTree = "<group>"; };
-		F5FD095A10618E0600B7B8ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,7 +247,6 @@
 				F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */,
 				F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */,
 				46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */,
-				F5FD095B10618E0600B7B8ED /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,7 +351,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F5FD095A10618E0600B7B8ED /* MapKit.framework */,
 				46B007061033776600D0C2F4 /* CoreGraphics.framework */,
 				F516695F0FFD78770079F023 /* AVFoundation.framework */,
 				F51668DF0FFD5F740079F023 /* AudioToolbox.framework */,
@@ -809,7 +805,29 @@
 					"-lrholib",
 					"-lrhoextlib",
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
+					"-framework",
+					MapKit,
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",

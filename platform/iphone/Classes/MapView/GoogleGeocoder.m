@@ -1,3 +1,5 @@
+#ifdef __IPHONE_3_0
+
 #import "GoogleGeocoder.h"
 
 @implementation GoogleGeocoder
@@ -120,3 +122,5 @@
 	
 
 @end
+
+#endif
