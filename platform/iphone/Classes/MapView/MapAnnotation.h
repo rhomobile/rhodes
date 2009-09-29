@@ -4,6 +4,7 @@
 //  Created by Vlad on 9/22/09.
 //  Copyright 2009 rhomobile, inc. All rights reserved.
 //
+#ifdef __IPHONE_3_0
 
 #import <MapKit/MapKit.h>
 #import <MapKit/MKAnnotation.h>
@@ -30,3 +31,5 @@
 - (NSString*)url;
 
 @end
+
+#endif

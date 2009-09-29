@@ -5,6 +5,8 @@
 //  Copyright 2009 rhomobile, inc. All rights reserved.
 //
 
+#ifdef __IPHONE_3_0
+
 #import "MapAnnotation.h"
 
 @implementation MapAnnotation
@@ -85,3 +87,5 @@
 }
 
 @end
+
+#endif
