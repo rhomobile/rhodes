@@ -34,6 +34,7 @@
 	SEL onPlayFile;
 	SEL onSysCall;
 	SEL onMapLocation;
+	SEL onCreateMap;
 }
 
 // callbacks
@@ -54,6 +55,7 @@
 @property (assign) SEL onPlayFile;
 @property (assign) SEL onSysCall;
 @property (assign) SEL onMapLocation;
+@property (assign) SEL onCreateMap;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...

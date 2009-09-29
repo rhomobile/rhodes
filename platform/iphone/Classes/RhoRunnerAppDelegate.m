@@ -19,6 +19,9 @@
 #import "NativeBar.h"
 #import "BarItem.h"
 #import "RhoDelegate.h"
+#ifdef __IPHONE_3_0
+#import "MapViewController.h"
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRunnerAppDelegate"
@@ -82,6 +85,17 @@
 - (void)onSetViewHomeUrl:(NSString *)url {
 	[webViewController setViewHomeUrl:url];
 }
+
+#ifdef __IPHONE_3_0
+-(void) onCreateMap:(NSMutableArray*)items {
+	MapViewController* map = [[MapViewController alloc] init];
+	[map setParams:[items objectAtIndex:0]];
+	[map setAnnotations:[items objectAtIndex:1]];
+	map.actionTarget = self;
+	map.onNavigate = @selector(onNavigateTo:);
+	[window addSubview:map.view];
+}
+#endif
 
 -(BOOL)startCameraPickerFromViewController:(UIViewController*)controller 
 							 usingDelegate:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
@@ -344,6 +358,7 @@
 	serverHost->onPlayFile = @selector(onPlayFile:);
 	serverHost->onSysCall = @selector(onSysCall:);
 	serverHost->onMapLocation = @selector(onMapLocation:);
+	serverHost->onCreateMap = @selector(onCreateMap:);
     [serverHost start];
 	
 	// Create View

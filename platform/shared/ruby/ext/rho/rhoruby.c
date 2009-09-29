@@ -36,6 +36,7 @@ extern void Init_Camera(void);
 extern void Init_stringio(void);
 extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
+extern void Init_MapView(void); 
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -126,7 +127,8 @@ void RhoRubyStart()
 	Init_DateTimePicker();
 	Init_NativeBar();
 	Init_RhoSupport();
-
+	Init_MapView();
+		
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
