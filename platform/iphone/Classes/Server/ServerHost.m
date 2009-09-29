@@ -26,6 +26,7 @@
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
+#import "MapViewController.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -74,7 +75,7 @@ static ServerHost* sharedSH = nil;
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
 @synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
-@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall;
+@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -181,6 +182,12 @@ static ServerHost* sharedSH = nil;
 - (void)mapLocation:(NSString*) query {
 	if(actionTarget && [actionTarget respondsToSelector:onMapLocation]) {
 		[actionTarget performSelectorOnMainThread:onMapLocation withObject:query waitUntilDone:NO];
+	}
+}
+
+- (void)createMap:(NSMutableArray*)items {
+	if(actionTarget && [actionTarget respondsToSelector:onCreateMap]) {
+		[actionTarget performSelectorOnMainThread:onCreateMap withObject:items waitUntilDone:NO];
 	}
 }
 
@@ -405,6 +412,17 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 
 void _rho_map_location(char* query) {
 	[[ServerHost sharedInstance] mapLocation:[NSString stringWithCString:query]];
+}
+
+void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
+#ifdef __IPHONE_3_0	
+	NSMutableArray *settings = parse_settings(nparams, params);
+	NSMutableArray *annotations = parse_annotations(nannotations,annotation);
+	NSMutableArray *items = [NSMutableArray arrayWithCapacity:2];
+	[items addObject:settings];
+	[items addObject:annotations];
+	[[ServerHost sharedInstance] createMap:items];
+#endif	
 }
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {
