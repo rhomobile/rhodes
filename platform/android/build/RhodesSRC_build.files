@@ -11,6 +11,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/db/DBStorage.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/RhoDB.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/RWLock.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/db/SqliteDBResult.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/FileAccess.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
@@ -36,6 +37,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/RhoPhonebook.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Platform.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RAFile.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ResourceFetchThread.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java

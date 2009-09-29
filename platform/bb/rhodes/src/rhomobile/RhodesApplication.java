@@ -53,13 +53,17 @@ import com.rho.Mutex;
 import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
+import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoProfiler;
 import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.SimpleFile;
 import com.rho.Version;
+import com.rho.db.DBAdapter;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
+import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
@@ -82,6 +86,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
+	
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 
 	/*boolean m_bSDCardAdded = false;
 	public void rootChanged(int arg0, String arg1)
@@ -146,12 +153,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     //}
 
+    boolean isExternalUrl(String strUrl)
+    {
+    	return strUrl.startsWith("http://") || strUrl.startsWith("https://");    
+    }
+    
     String canonicalizeURL( String url ){
 		if ( url == null || url.length() == 0 )
 			return "";
 
 		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) ){
+		if ( !url.startsWith(_httpRoot) && !isExternalUrl(url) ){
     		if ( url.charAt(0) == '/' )
     			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
     		else
@@ -233,7 +245,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     void addToHistory(String strUrl, String refferer )
     {
-        if ( !strUrl.startsWith(_httpRoot) )
+        if ( !strUrl.startsWith(_httpRoot) && !isExternalUrl(strUrl) )
         	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
     	
     	int nPos = -1;
@@ -469,6 +481,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
 		
 		m_bActivated = true;
+		
 		doStartupWork();
 		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
@@ -483,6 +496,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
+    	
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 		RingtoneManager.stop();
@@ -834,7 +848,24 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
+	    	//PROF.createSqlCounters();
+	    	
 	        RhoRuby.RhoRubyStart("");
+	        
+	        /*
+	        DBAdapter db = DBAdapter.getInstance();
+	        String sql = "select * from object_values";
+	        
+	        //PROF.flushSqlCounters("First run");
+	        
+	        for (int i = 0; i < 3; ++i) {
+	        	LOG.INFO("Doing select: " + i);
+	        	db.executeSQL(sql);
+	        	LOG.INFO("Done");
+	        	//PROF.flushSqlCounters("SQL operation: " + i);
+	        }
+	        */
+	        
 	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
 	        if (sync != null) {
 	        	sync.setStatusListener(this);
@@ -955,11 +986,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 	browserContent.finishLoading();
                 else
                 {
-                	synchronized (Application.getEventLock())
-	                //synchronized (getAppEventLock())
-	                {
-	                	browserContent.finishLoading();
-	                }
+                	String strHost = connection.getHost();
+            		if ( "localhost".equals(strHost) || "127.0.0.1".equals(strHost) )
+            		{
+	                	synchronized (Application.getEventLock())
+		                //synchronized (getAppEventLock())
+		                {
+		                	browserContent.finishLoading();
+		                }
+            		}else
+            			browserContent.finishLoading();
                 }
             }
 
@@ -984,8 +1020,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                 UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;
                 String absoluteUrl = urlRequestedEvent.getURL();
-                if ( !absoluteUrl.startsWith(_httpRoot) )
-                	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
+                //if ( !absoluteUrl.startsWith(_httpRoot) )
+                //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                 if ( urlRequestedEvent.getPostData() == null ||
                 	 urlRequestedEvent.getPostData().length == 0 )
@@ -1002,7 +1038,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             } case Event.EVENT_BROWSER_CONTENT_CHANGED: {
 
                 // browser field title might have changed update title
-                BrowserContentChangedEvent browserContentChangedEvent = (BrowserContentChangedEvent) event;
+                /*BrowserContentChangedEvent browserContentChangedEvent = (BrowserContentChangedEvent) event;
 
                 if (browserContentChangedEvent.getSource() instanceof BrowserContent) {
                     BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource();
@@ -1014,7 +1050,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                         	_mainScreen.setTitle(newTitle);
                         }
                     }
-                }
+                }*/
 
                 break;
 
@@ -1046,8 +1082,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
-                            if ( !absoluteUrl.startsWith(_httpRoot) )
-                            	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
+                            //if ( !absoluteUrl.startsWith(_httpRoot) )
+                            //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                         	addToHistory(absoluteUrl,referrer);
                             Object eventSource = e.getSource();
@@ -1135,18 +1171,24 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         // if referrer is null we must return the connection
-        //if (referrer == null) {
+        if (referrer == null) {
             HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
             return connection;
 
-        //} else {
+        } else {
 
-            // if referrer is provided we can set up the connection on a separate thread
-        //    SecondaryResourceFetchThread.enqueue(resource, referrer);
+    		URI uri = new URI(url);
+    		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ){
+                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+                return connection;
+   			}else
+   			{
+	            // if referrer is provided we can set up the connection on a separate thread
+	            SecondaryResourceFetchThread.enqueue(resource, referrer);
+   			}
+        }
 
-        //}
-
-        //return null;
+        return null;
     }
 
     /**

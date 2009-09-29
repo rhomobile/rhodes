@@ -81,6 +81,10 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         taint_ = orig.taint_;
         super.doClone(orig);
     }
+    public RubyValue rhom_processProperty(RubyID mid)
+    {
+    	return null;
+    }
     //RHO_COMMENT: clone
 /*
     public RubyValue clone() {

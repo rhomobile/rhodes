@@ -574,17 +574,17 @@ public final class MathLib {
      
      /**
      * The ratio of the circumference of a circle to its diameter.
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static final double PI = 3.1415926535897932384626433832795;
 
      /**
      * Half the ratio of the circumference of a circle to its diameter.
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static final double HALF_PI = 1.5707963267948966192313216916398;
 
      /**
      * Twice the ratio of the circumference of a circle to its diameter.
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static final double TWO_PI = 6.283185307179586476925286766559;
      
      /**
@@ -614,7 +614,7 @@ public final class MathLib {
      
      /**
      * Not-A-Number.
-     * @JVM-1.1+@
+     * @JVM-1.1+@ */
      public static final double NaN = 0.0 / 0.0;
 
      /**
@@ -651,7 +651,7 @@ public final class MathLib {
      * 
      * @param x the value.
      * @return <code>java.lang.Math.sqrt(x)</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@ */
      public static double sqrt(double x) {
      return Math.sqrt(x); // CLDC 1.1
      }
@@ -739,14 +739,13 @@ public final class MathLib {
      *
      * @param x the value whose arc sine is to be returned.
      * @return the arc sine in radians for the specified value.
-     * @JVM-1.1+@
+     * @JVM-1.1+@ */
      public static double asin(double x) {
-     if (x < -1.0 || x > 1.0) return MathLib.NaN;
-     if (x == -1.0) return - HALF_PI;
-     if (x == 1.0) return HALF_PI;
-     return MathLib.atan(x / MathLib.sqrt(1.0 - x * x));
+	     if (x < -1.0 || x > 1.0) return MathLib.NaN;
+	     if (x == -1.0) return - HALF_PI;
+	     if (x == 1.0) return HALF_PI;
+	     return MathLib.atan(x / MathLib.sqrt(1.0 - x * x));
      }
-     /**/
 
     /**
      * Returns the arc cosine of the specified value,
@@ -754,7 +753,7 @@ public final class MathLib {
      *
      * @param x the value whose arc cosine is to be returned.
      * @return the arc cosine in radians for the specified value.
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double acos(double x) {
      return HALF_PI - MathLib.asin(x);
      }
@@ -768,7 +767,7 @@ public final class MathLib {
      * @return the arc tangent in radians for the specified value.
      * @see <a href="http://mathworld.wolfram.com/InverseTangent.html">
      *      Inverse Tangent -- from MathWorld</a> 
-     * @JVM-1.1+@
+     * @JVM-1.1+@ */
      public static double atan(double x) {
      return MathLib._atan(x);
      }
@@ -781,7 +780,7 @@ public final class MathLib {
      * @param y the y value.
      * @param x the x value.
      * @return the angle theta in radians.
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double atan2(double y, double x) {
      final double epsilon = 1E-128;
      if (MathLib.abs(x) > epsilon) {
@@ -804,7 +803,7 @@ public final class MathLib {
      * 
      * @param x the value for which the hyperbolic sine is calculated.
      * @return <code>(exp(x) - exp(-x)) / 2</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double sinh(double x) {
      return (MathLib.exp(x) - MathLib.exp(-x)) * 0.5;
      }
@@ -815,7 +814,7 @@ public final class MathLib {
      * 
      * @param x the value for which the hyperbolic cosine is calculated.
      * @return <code>(exp(x) + exp(-x)) / 2</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double cosh(double x) {
      return (MathLib.exp(x) + MathLib.exp(-x)) * 0.5;
      }
@@ -826,7 +825,7 @@ public final class MathLib {
      * 
      * @param x the value for which the hyperbolic tangent is calculated.
      * @return <code>(exp(2 * x) - 1) / (exp(2 * x) + 1)</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double tanh(double x) {
      return (MathLib.exp(2 * x) - 1) / (MathLib.exp(2 * x) + 1);
      }
@@ -839,7 +838,7 @@ public final class MathLib {
      * @return <code><i>e</i><sup>x</sup></code>
      * @see <a href="http://mathworld.wolfram.com/ExponentialFunction.html">
      *      Exponential Function -- from MathWorld</a> 
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double exp(double x) {
      return MathLib._ieee754_exp(x);
      }
@@ -851,7 +850,7 @@ public final class MathLib {
      *
      * @param x the value greater than <code>0.0</code>.
      * @return the value y such as <code><i>e</i><sup>y</sup> == x</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double log(double x) {
      return MathLib._ieee754_log(x);
      }
@@ -862,7 +861,7 @@ public final class MathLib {
      *
      * @param x the value greater than <code>0.0</code>.
      * @return the value y such as <code>10<sup>y</sup> == x</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double log10(double x) {
      return log(x) * INV_LOG10;
      }
@@ -876,13 +875,13 @@ public final class MathLib {
      * @param x the base.
      * @param y the exponent.
      * @return <code>x<sup>y</sup></code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@*/
      public static double pow(double x, double y) {
      /**/
     /* @JVM-1.4+@ // Use java.lang.Math value. 
      if (true) return Math.pow(x, y);
      /**/
-    /* @JVM-1.1+@ // Else (J2ME) use close approximation (+/- LSB)
+    /* @JVM-1.1+@ // Else (J2ME) use close approximation (+/- LSB)*/
      if ((x < 0) && (y == (int)y)) return 
      (((int)y) & 1) == 0 ? pow(-x, y) : -pow(-x, y);
      return MathLib.exp(y * MathLib.log(x));
@@ -960,7 +959,7 @@ public final class MathLib {
      *
      * @param d the <code>double</code> value.
      * @return <code>d</code> or <code>-d</code>
-     * @JVM-1.1+@
+     * @JVM-1.1+@ */
      public static double abs(double d) {
      return (d < 0) ? -d : d;
      }
@@ -1090,7 +1089,7 @@ public final class MathLib {
      * constants. The decimal values may be used, provided that the 
      * compiler will convert from decimal to binary accurately enough 
      * to produce the hexadecimal values shown.
-     @JVM-1.1+@
+     @JVM-1.1+@ */
      static final double atanhi[] = {
      4.63647609000806093515e-01, // atan(0.5)hi 0x3FDDAC67, 0x0561BB4F
      7.85398163397448278999e-01, // atan(1.0)hi 0x3FE921FB, 0x54442D18 
@@ -1231,7 +1230,7 @@ public final class MathLib {
      * constants. The decimal values may be used, provided that the 
      * compiler will convert from decimal to binary accurately enough 
      * to produce the hexadecimal values shown.
-     @JVM-1.1+@
+     @JVM-1.1+@*/
      static final double
      ln2_hi  =  6.93147180369123816490e-01,	// 3fe62e42 fee00000
      ln2_lo  =  1.90821492927058770002e-10,	// 3dea39ef 35793c76
@@ -1374,7 +1373,7 @@ public final class MathLib {
      * constants. The decimal values may be used, provided that the 
      * compiler will convert from decimal to binary accurately enough
      * to produce the hexadecimal values shown.
-     @JVM-1.1+@
+     @JVM-1.1+@*/
      static final double
      halF[]	= {0.5,-0.5,},
      twom1000= 9.33263618503218878990e-302,     // 2**-1000=0x01700000,0

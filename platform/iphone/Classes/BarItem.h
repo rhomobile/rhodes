@@ -7,19 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "WebViewController.h"
 
 
 @interface BarItem : NSObject {
 @private
-	BOOL loaded;
+	BOOL loaded,reload;
 	NSString* label,*location,*icon;
-	UIViewController* viewController;
+	WebViewController* viewController;
 }
 
 @property(nonatomic,assign) BOOL loaded;
+@property(nonatomic,assign) BOOL reload;
 @property(nonatomic,retain) NSString* label;
 @property(nonatomic,retain) NSString* location;
 @property(nonatomic,retain) NSString* icon;
-@property(nonatomic,retain) UIViewController* viewController;
+@property(nonatomic,retain) WebViewController* viewController;
 
 @end

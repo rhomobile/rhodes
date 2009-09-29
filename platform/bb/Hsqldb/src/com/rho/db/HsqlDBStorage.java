@@ -6,7 +6,7 @@ import com.rho.db.IDBStorage;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
 
-public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
+public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 
 	private Session m_dbSess;
 	private FileUtilBB m_fs;
@@ -49,7 +49,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 			props.setProperty(HsqlDatabaseProperties.hsqldb_default_table_type, "cached");
 	
 			m_dbSess = DatabaseManager.newSession(DatabaseURL.S_FILE, strDbName, "SA", "", props);
-			m_dbSess.setDeleteCallback(this);
+			m_dbSess.setDBCallback(this);
 			
 			if ( !m_fs.exists(strDbName + ".data") )
 			{
@@ -73,7 +73,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
         }
     }
 */ 
-	
+	//IDBCallback
 	public void onDeleteRow(Table table, Row row) {
 		if ( m_dbCallback == null )
 			return;
@@ -82,11 +82,20 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 		m_dbCallback.OnDeleteFromTable(table.getName().name, m_rowResult );
 	}
 
+	public void onInsertRow(Table table, Row row) {
+		if ( m_dbCallback == null )
+			return;
+		
+		m_rowResult.init(table, row);
+		m_dbCallback.OnInsertIntoTable(table.getName().name, m_rowResult );
+	}
+	//IDBCallback
+	
 	public void setDbCallback(IDBCallback callback)
 	{
 		m_dbCallback = callback;
 		if ( m_dbSess != null )
-			m_dbSess.setDeleteCallback(this);
+			m_dbSess.setDBCallback(this);
 		
 //		m_dbSess.sqlExecuteDirectNoPreChecks(
 //			"CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW QUEUE 0 CALL \"com.rho.HsqlDBStorage.HsqlDeleteTrigger\"");
@@ -154,6 +163,12 @@ public class HsqlDBStorage implements IDBStorage, Session.IDeleteCallback{
 			
 	}
 
+	public void rollback()throws DBException
+	{
+		if ( m_dbSess!= null )
+			m_dbSess.rollback();
+	}
+	
 	public String[] getAllTableNames()throws DBException
 	{
 		org.hsqldb.lib.HsqlArrayList arTables = m_dbSess.getDatabase().schemaManager.getAllTables();

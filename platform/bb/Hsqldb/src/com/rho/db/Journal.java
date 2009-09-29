@@ -39,6 +39,7 @@ public class Journal
 	
 	public void close()throws IOException{
 		if ( m_journalFile != null ){
+			m_journalFile.stopListenForSync(m_dataName);
 			m_journalFile.close();
 			m_journalFile = null;
 		}
@@ -65,6 +66,7 @@ public class Journal
 
 		if ( m_journalFile == null ){
 			m_journalFile = new RandomAccessFile(m_journalName,"rw");
+			m_journalFile.listenForSync(m_dataName);
 			m_journalFile.writeLong(m_dataFile.length());
 			m_journalFile.write(BLOCK_CONFIRM);
 			m_journalFile.sync();
@@ -128,8 +130,8 @@ public class Journal
 			bSuccess = true;
 		}catch(IOException exc)
 		{
-			LOG.ERROR("Rollback failed.", exc);
-			throw exc;
+			LOG.ERROR("Rollback failed.Journal is empty or corrupted", exc);
+			//throw exc;
 		}finally{
 			if ( df != null )
 			{

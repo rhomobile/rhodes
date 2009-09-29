@@ -18,6 +18,7 @@
 #import "DateTime.h"
 #import "NativeBar.h"
 #import "BarItem.h"
+#import "WebViewUrl.h"
 #import "RhoDelegate.h"
 #ifdef __IPHONE_3_0
 #import "MapViewController.h"
@@ -74,11 +75,17 @@
 	[webViewController refresh];
 }
 
-- (void)onNavigateTo:(NSString *)url {
-	[webViewController navigateRedirect:url];
+- (void)onNavigateTo:(WebViewUrl*) wvUrl {
+	if (self.nativeBar.barType == TABBAR_TYPE) {
+		BarItem* bItem = (BarItem*)[tabBarDelegate.barItems objectAtIndex:wvUrl.webViewIndex];
+		WebViewController* wvController = (WebViewController*)[bItem viewController];
+		[wvController navigateRedirect:wvUrl.url];
+	} else {
+		[webViewController navigateRedirect:wvUrl.url];
+	}
 }
 
-- (void)onExecuteJs:(NSString *)js {
+- (void)onExecuteJs:(JSString *)js {
 	[webViewController executeJs:js];
 }
 
@@ -317,8 +324,22 @@
 }
 #endif
 
+- (void) showLoadingPage {
+	NSString *loadingPage;
+	
+	NSString *filePath = @"app/loading.html";
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	if ([fileManager fileExistsAtPath:filePath]) {
+		NSData *data = [fileManager contentsAtPath:filePath];
+		loadingPage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	}
+	else
+		loadingPage = @"<html><title>Loading</title><body><h1>Loading...</h1></body></html>";
+	
+	[webViewController loadHTMLString:loadingPage];
+}
+
 - (void) doStartUp {
-	//
 	appStarted = false;
 	// Log View
 	logViewController = [[LogViewController alloc] init];
@@ -330,14 +351,16 @@
 	webViewController->actionTarget = self;
 	webViewController->onShowLog = @selector(onShowLog);
 	
+	//TabBar delegate
+	tabBarDelegate = [[TabBarDelegate alloc] init];
+
+	[self showLoadingPage];
+	
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];
 	
 	//DateTime delegate
 	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
-	
-	//TabBar delegate
-	tabBarDelegate = [[TabBarDelegate alloc] init];
 	
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
@@ -362,6 +385,7 @@
     [serverHost start];
 	
 	// Create View
+	webViewController.toolbar.hidden = YES;
 	[window addSubview:webViewController.view];
     [window makeKeyAndVisible];
 	
@@ -380,8 +404,6 @@
 #endif
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-	// Hide the toolbar initially, we will re-draw it if there are no tabs
-	webViewController.toolbar.hidden = YES;
 	[self doStartUp];
 }
 

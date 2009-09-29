@@ -10,13 +10,14 @@ import j2me.util.Iterator;
 import j2me.util.Map;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.ObjectFactory;
-
+import com.xruby.runtime.builtin.RubyHash;
 //import com.xruby.runtime.lang.annotation.RubyAllocMethod;
 //import com.xruby.runtime.lang.annotation.RubyLevelClass;
 
 //@RubyLevelClass(name="Object", superclass="", modules="Kernel")
 public class RubyObject extends RubyBasic {
 	protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
+	protected RubyHash m_rhomProps;
 	
 	public RubyObject(RubyClass c) {
 		super(c);
@@ -127,5 +128,18 @@ public class RubyObject extends RubyBasic {
     	
     	return ar;
     }
+
+    //@RubyLevelMethod(name="rhom_init")
+    public RubyValue rhom_init(RubyValue arg1){
+    	m_rhomProps = (RubyHash)arg1;
+    	return RubyConstant.QNIL;
+    }
     
+    public RubyValue rhom_processProperty(RubyID mid)
+    {
+    	if ( m_rhomProps == null )
+    		return null;
+    	
+    	return m_rhomProps.getRaw(mid.toSymbol());
+    }
 }

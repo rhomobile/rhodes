@@ -4,7 +4,7 @@ platform\bb\Hsqldb\src\com\rho\db\HsqlDBRowResult.java
 platform\bb\Hsqldb\src\com\rho\db\HsqlDBStorage.java
 platform\bb\Hsqldb\src\com\rho\db\Journal.java
 platform\bb\Hsqldb\src\com\rho\db\RandomAccessFile.java
-platform\bb\Hsqldb\src\com\rho\file\IRAFile.java
+platform\bb\Hsqldb\src\com\rho\file\FileAccessBB.java
 platform\bb\Hsqldb\src\com\rho\file\Jsr75RAFileImpl.java
 platform\bb\Hsqldb\src\com\rho\file\PersistRAFileImpl.java
 platform\bb\Hsqldb\src\j2me\io\BufferedOutputStream.java

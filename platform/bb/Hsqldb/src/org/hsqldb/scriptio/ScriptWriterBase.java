@@ -112,7 +112,7 @@ public abstract class ScriptWriterBase implements Runnable {
     /** the last schema for last sessionId */
     Session                      currentSession;
     public static final String[] LIST_SCRIPT_FORMATS      = new String[] {
-        Token.T_TEXT, Token.T_BINARY, null, Token.T_COMPRESSED
+        //Token.T_TEXT, Token.T_BINARY, null, Token.T_COMPRESSED
     };
     public static final int      SCRIPT_TEXT_170          = 0;
     public static final int      SCRIPT_BINARY_172        = 1;

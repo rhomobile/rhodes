@@ -12,6 +12,7 @@ import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.RubyVarArgMethod;
 
 public class WebView extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -59,9 +60,9 @@ public class WebView extends RubyBasic {
 				return WebView.refresh();
 			}
 		});		
-		klass.getSingletonClass().defineMethod("navigate", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return WebView.navigate(arg0);
+		klass.getSingletonClass().defineMethod("navigate", new RubyVarArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+				return WebView.navigate(args.get(0));
 			}
 		});
 		klass.getSingletonClass().defineMethod("current_location", new RubyNoArgMethod() {
@@ -72,6 +73,11 @@ public class WebView extends RubyBasic {
 		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				return WebView.set_menu_items(arg0);
+			}
+		});
+		klass.getSingletonClass().defineMethod("execute_js", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return RubyConstant.QNIL;
 			}
 		});
 	}

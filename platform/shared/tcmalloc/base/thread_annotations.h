@@ -133,11 +133,26 @@
 #define LOCK_RETURNED(x)                // no-op
 #define LOCKABLE                        // no-op
 #define SCOPED_LOCKABLE                 // no-op
+
+#ifdef EXCLUSIVE_LOCK_FUNCTION
+#undef EXCLUSIVE_LOCK_FUNCTION
+#endif
 #define EXCLUSIVE_LOCK_FUNCTION(x)    // no-op
+
 #define SHARED_LOCK_FUNCTION(x)       // no-op
+
+#ifdef EXCLUSIVE_TRYLOCK_FUNCTION
+#undef EXCLUSIVE_TRYLOCK_FUNCTION
+#endif
 #define EXCLUSIVE_TRYLOCK_FUNCTION(x) // no-op
+
 #define SHARED_TRYLOCK_FUNCTION(x)    // no-op
+
+#ifdef UNLOCK_FUNCTION
+#undef UNLOCK_FUNCTION
+#endif
 #define UNLOCK_FUNCTION(x)            // no-op
+
 #define NO_THREAD_SAFETY_ANALYSIS       // no-op
 
 #endif // defined(__GNUC__) && defined(__SUPPORT_TS_ANNOTATION__)

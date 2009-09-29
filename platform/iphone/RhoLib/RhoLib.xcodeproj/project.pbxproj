@@ -33,6 +33,8 @@
 		5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */; };
 		5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7162800F8B7E330096B6AA /* RhoLogSink.h */; };
 		5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */; };
+		5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405901064AF1600163569 /* Tokenizer.cpp */; };
+		5C7405931064AF1600163569 /* Tokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405911064AF1600163569 /* Tokenizer.h */; };
 		5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817490FBC4FCE002597A5 /* AutoPointer.h */; };
 		5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174A0FBC4FCE002597A5 /* InputStream.h */; };
 		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
@@ -66,6 +68,8 @@
 		5C71627F0F8B7E330096B6AA /* RhoLogSink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoLogSink.cpp; path = ../../shared/logging/RhoLogSink.cpp; sourceTree = SOURCE_ROOT; };
 		5C7162800F8B7E330096B6AA /* RhoLogSink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoLogSink.h; path = ../../shared/logging/RhoLogSink.h; sourceTree = SOURCE_ROOT; };
 		5C7162810F8B7E330096B6AA /* RhoPlainLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPlainLog.cpp; path = ../../shared/logging/RhoPlainLog.cpp; sourceTree = SOURCE_ROOT; };
+		5C7405901064AF1600163569 /* Tokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tokenizer.cpp; path = ../../shared/common/Tokenizer.cpp; sourceTree = SOURCE_ROOT; };
+		5C7405911064AF1600163569 /* Tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenizer.h; path = ../../shared/common/Tokenizer.h; sourceTree = SOURCE_ROOT; };
 		5C9817490FBC4FCE002597A5 /* AutoPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoPointer.h; path = ../../shared/common/AutoPointer.h; sourceTree = SOURCE_ROOT; };
 		5C98174A0FBC4FCE002597A5 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStream.h; path = ../../shared/common/InputStream.h; sourceTree = SOURCE_ROOT; };
 		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
@@ -124,6 +128,8 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C7405901064AF1600163569 /* Tokenizer.cpp */,
+				5C7405911064AF1600163569 /* Tokenizer.h */,
 				5CE294111009D8D9009A75F6 /* isysteminfo.h */,
 				5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */,
 				5C5335510FC2977600F268F0 /* RhoThread.cpp */,
@@ -199,6 +205,7 @@
 				5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */,
 				5C5335550FC2977600F268F0 /* RhoThread.h in Headers */,
 				5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */,
+				5C7405931064AF1600163569 /* Tokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +259,7 @@
 				5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */,
 				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
 				5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */,
+				5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,7 +309,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.0;
 			};
 			name = Debug;
 		};

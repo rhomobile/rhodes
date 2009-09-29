@@ -71,7 +71,7 @@ describe "Rhom::RhomObject" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
   
-    @account.vars.size.should == 37
+    @account.vars.size.should == 38
   end
   
   it "should get count of objects" do
@@ -185,6 +185,8 @@ describe "Rhom::RhomObject" do
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
     @account = Account.find(:all).first
     @account.update_attributes(new_attributes)
+    @account.name.should == "Mobio US"
+    @account.industry.should == "Electronics"
     
     @new_acct = Account.find(:all).first
     
@@ -386,6 +388,19 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
+
+  it "should find with advanced conditions" do
+    query = '%IND%'    
+    @accts = Account.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+        :op => 'OR', :select => ['name','industry'])
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
   
   it "should find first with conditions" do
     @mobio_ind_acct = Account.find(:first, :conditions => {'name' => 'Mobio India'})
@@ -454,7 +469,7 @@ describe "Rhom::RhomObject" do
     
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should be_nil
-    @accts[0].vars.length.should == 2
+    @accts[0].vars.length.should == 3
   end
   
   it "should include only selected columns" do
@@ -463,7 +478,7 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
     @accts[0].shipping_address_street.should be_nil
-    @accts[0].vars.length.should == 3
+    @accts[0].vars.length.should == 4
   end
   
   it "should include selected columns and conditions" do
@@ -472,7 +487,7 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
     @accts[0].shipping_address_street.should be_nil
-    @accts[0].vars.length.should == 3
+    @accts[0].vars.length.should == 4
   end
   
     #it "should perform find with select and merged conditions" do
@@ -526,7 +541,7 @@ describe "Rhom::RhomObject" do
 
     after(:each) do
       Rhom::RhomDbAdapter.start_transaction
-      Rhom::RhomAttribManager.reset_all
+      #Rhom::RhomAttribManager.reset_all
       Rhom::RhomDbAdapter.delete_all_from_table('client_info')
       Rhom::RhomDbAdapter.delete_all_from_table('object_values')
       Rhom::RhomDbAdapter.delete_all_from_table('changed_values')

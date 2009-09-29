@@ -21,13 +21,17 @@
 }
 
 - (void)loadTabBarItemFirstPage:(BarItem*)item {
-	if (item.loaded == NO) {
+	if (item.loaded == NO || item.reload == YES) {
 		NSString* escapedUrl = [item.location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
 		escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 		NSString* startLocation = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
 		[(UIWebView*)[item.viewController view] loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:startLocation]]];
 		item.loaded = YES;
 	}
+}
+
+- (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url {
+	[item.viewController navigateRedirect:url];
 }
 
 - (void)createTabBar:(UIWindow*)window {
@@ -39,7 +43,7 @@
 	}
 	
 	tabBarController.moreNavigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-	int barSize = [tabBar.barItemDataArray count] / 3;
+	int barSize = [tabBar.barItemDataArray count] / 4;
 	NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:barSize];
 	
 	if(!self.barItems) {
@@ -47,20 +51,22 @@
 	}
 	
 	// Setup each tabbar item with elements in specific order:
-	// label, action, icon
+	// label, action, icon, reload
 	for(int i=0; i < barSize; i++) {
 		BarItem* item = [[BarItem alloc] init];
-		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*3];
-		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*3)+1];
-		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*3)+2];
+		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*4];
+		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+1];
+		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+2];
+		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
-			UIViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
+			WebViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
 			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:item.icon];	
-			NSLog(@"PATH: %@", imagePath);
 			subController.title = item.label;
 			subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
+			//TODO: Figure out why view and webView need to point to the same object!
 			subController.view = wView;
+			subController.webView = wView;
 			item.viewController = subController;
 			[barItems addObject:item];
 			[tabs addObject:subController];
@@ -75,7 +81,11 @@
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-	[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
+	if(self.tabBarController.selectedIndex > barItems.count) {
+		[NSException raise:@"Exception" format:@"Rhodes currently only supports up to 5 tabs.  Please change your tabs array and try again."];
+	} else {
+		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
+	}
 }
 
 @end

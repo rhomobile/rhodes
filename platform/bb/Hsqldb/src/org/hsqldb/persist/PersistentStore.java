@@ -33,6 +33,7 @@ package org.hsqldb.persist;
 
 import java.io.IOException;
 
+import org.hsqldb.rowio.RowInputBinary;
 import org.hsqldb.rowio.RowInputInterface;
 
 /**
@@ -61,7 +62,7 @@ public interface PersistentStore {
     /** add object previously removed from persistnce */
     void restore(CachedObject object) throws IOException;
 
-    CachedObject get(RowInputInterface in) throws IOException;
+    CachedObject get(RowInputBinary in) throws IOException;
 
     CachedObject getNewInstance(int size) throws IOException;
 

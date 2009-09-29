@@ -213,7 +213,7 @@ extern "C" void perform_webview_refresh() {
 	webview_refresh();
 }
 
-extern "C" void webview_navigate(char* url) {
+extern "C" void webview_navigate(char* url, int index) {
 	_AtlModule.DoViewNavigate(url);
 }
 

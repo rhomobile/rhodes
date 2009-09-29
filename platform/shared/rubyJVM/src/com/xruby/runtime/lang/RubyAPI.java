@@ -251,6 +251,10 @@ public class RubyAPI {
     public static RubyValue callPublicNoArgMethod(RubyValue receiver, RubyBlock block, RubyID mid) 
     {
     	try{
+    		RubyValue res = receiver.rhom_processProperty(mid);
+    		if ( res != null )
+    			return res;
+    		
 	        RubyMethod m = receiver.findPublicMethod(mid);
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, block);

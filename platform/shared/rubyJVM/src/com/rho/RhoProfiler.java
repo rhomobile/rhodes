@@ -4,7 +4,23 @@ import java.util.Calendar;
 
 public class RhoProfiler {
 
-	public static boolean RHO_STRIP_PROFILER = true;
+	public static boolean RHO_STRIP_PROFILER = false;
+	
+	public static final String FILE_READ = "FileRead";
+	public static final String FILE_WRITE = "FileWrite";
+	public static final String FILE_SYNC = "FileSync";
+	public static final String FILE_SET_SIZE = "FileSetSize";
+	public static final String FILE_DELETE = "FileDelete";
+	public static final String FILE_RENAME = "FileRename";
+	
+	//public static final String SQL_SELECT = "SqlSelect";
+	//public static final String SQL_FIND_NODE = "SqlFindNode";
+	//public static final String SQL_GET_OBJECT_FROM_CACHE = "SqlGetObjectFromCache";
+	//public static final String SQL_READ_OBJECT = "SqlReadObject";
+	//public static final String SQL_GET_OBJECT_FROM_STORE = "SqlGetObjectFromStore";
+	//public static final String SQL_PUT_OBJECT_TO_CACHE = "SqlPutObjectToCache";
+	//public static final String SQL_READ_DATA = "SqlReadData";
+	//public static final String SQL_READ_STRING = "SqlReadString";
 	
 	private static final RhoLogger LOG = new RhoLogger("PROFILER");
 	
@@ -130,4 +146,39 @@ public class RhoProfiler {
 	    	(msg !=null&&msg.length()>0 ? msg : "" ) +
 	        " (" + intervalToString(oInterval) + ") : STOP" );
 	}	
+	
+	/*
+	public void createSqlCounters() {
+		CREATE_COUNTER(SQL_SELECT);
+		CREATE_COUNTER(SQL_FIND_NODE);
+		CREATE_COUNTER(SQL_GET_OBJECT_FROM_CACHE);
+		CREATE_COUNTER(SQL_READ_OBJECT);
+		CREATE_COUNTER(SQL_GET_OBJECT_FROM_STORE);
+		CREATE_COUNTER(SQL_PUT_OBJECT_TO_CACHE);
+		CREATE_COUNTER(SQL_READ_DATA);
+		//CREATE_COUNTER(SQL_READ_STRING);
+	}
+	
+	public void destroySqlCounters() {
+		DESTROY_COUNTER(SQL_SELECT);
+		DESTROY_COUNTER(SQL_FIND_NODE);
+		DESTROY_COUNTER(SQL_GET_OBJECT_FROM_CACHE);
+		DESTROY_COUNTER(SQL_READ_OBJECT);
+		DESTROY_COUNTER(SQL_GET_OBJECT_FROM_STORE);
+		DESTROY_COUNTER(SQL_PUT_OBJECT_TO_CACHE);
+		DESTROY_COUNTER(SQL_READ_DATA);
+		//DESTROY_COUNTER(SQL_READ_STRING);
+	}
+	
+	public void flushSqlCounters(String msg) {
+		FLUSH_COUNTER(SQL_SELECT, msg);
+		FLUSH_COUNTER(SQL_FIND_NODE, msg);
+		FLUSH_COUNTER(SQL_GET_OBJECT_FROM_CACHE, msg);
+		FLUSH_COUNTER(SQL_READ_OBJECT, msg);
+		FLUSH_COUNTER(SQL_GET_OBJECT_FROM_STORE, msg);
+		FLUSH_COUNTER(SQL_PUT_OBJECT_TO_CACHE, msg);
+		FLUSH_COUNTER(SQL_READ_DATA, msg);
+		//FLUSH_COUNTER(SQL_READ_STRING, msg);
+	}
+	*/
 }

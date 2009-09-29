@@ -24,21 +24,21 @@ static volatile DWORD ruby_native_thread_key = TLS_OUT_OF_INDEXES;
 static int native_mutex_lock(rb_thread_lock_t *);
 static int native_mutex_unlock(rb_thread_lock_t *);
 static int native_mutex_trylock(rb_thread_lock_t *);
-static void native_mutex_initialize(rb_thread_lock_t *);
+void native_mutex_initialize(rb_thread_lock_t *);
 
 static void native_cond_signal(rb_thread_cond_t *cond);
 static void native_cond_broadcast(rb_thread_cond_t *cond);
 static void native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex);
 static void native_cond_initialize(rb_thread_cond_t *cond);
-static void native_cond_destroy(rb_thread_cond_t *cond);
+void native_cond_destroy(rb_thread_cond_t *cond);
 
-rb_thread_t *
+static rb_thread_t *
 ruby_thread_from_native(void)
 {
     return TlsGetValue(ruby_native_thread_key);
 }
 
-int
+static int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return TlsSetValue(ruby_native_thread_key, th);
@@ -310,7 +310,7 @@ native_mutex_trylock(rb_thread_lock_t *lock)
 #endif
 }
 
-static void
+void
 native_mutex_initialize(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
@@ -324,7 +324,7 @@ native_mutex_initialize(rb_thread_lock_t *lock)
 #endif
 }
 
-static void
+void
 native_mutex_destroy(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX

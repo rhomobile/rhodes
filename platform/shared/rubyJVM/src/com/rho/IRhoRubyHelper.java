@@ -10,6 +10,8 @@ public interface IRhoRubyHelper {
 	public abstract String getPlatform();
 	
 	public abstract IDBStorage createDBStorage();
+	public abstract IFileAccess createFileAccess();
+	public abstract IRAFile createRAFile();
 	
 	public void loadBackTrace(RubyArray backtrace);
 	public String getDeviceId();

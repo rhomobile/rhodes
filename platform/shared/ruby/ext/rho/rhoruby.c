@@ -48,24 +48,20 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 
-static VALUE classRhomAttribManager;
-static ID midRhomAttribManager_save;
-static ID midRhomAttribManager_delete_attribs;
-static ID midRhomAttribManager_add_attrib;
-
 static char* rb_type_to_s(VALUE obj);
-extern int ruby_thread_set_native(rb_thread_t *th);
-extern int native_mutex_lock(rb_thread_lock_t *);
+//extern int ruby_thread_set_native(rb_thread_t *th);
+//extern int native_mutex_lock(rb_thread_lock_t *);
+//extern void Init_native_thread2(rb_thread_t *th);
 
-rb_thread_t * __getCurrentThread()
+/*rb_thread_t * __getCurrentThread()
 {
     rb_thread_t * res = ruby_thread_from_native();
     if ( res )
         return res;
 	
     return ruby_current_thread;
-}
-
+}*/
+/*
 void RhoRubyThreadStart()
 {
     rb_thread_t *th;
@@ -80,19 +76,25 @@ void RhoRubyThreadStart()
 
     rb_gc_register_mark_object(self);
 
+    Init_native_thread2(th);
+
+    //st_insert(th->vm->living_threads, 0, (st_data_t) th->thread_id);
 //	RhoRuby_RhomAttribManager_add_attrib(0, "test");
     //native_mutex_lock(&th->vm->global_vm_lock);
-}
-
+} */
+/*
 void RhoRubyThreadStop()
 {
     //rb_thread_t *th = GET_THREAD();
+    //st_delete(th->vm->living_threads, &(th->self), 0);
     //native_mutex_unlock(&th->vm->global_vm_lock);
-}
+
+    //native_mutex_destroy(&th->interrupt_lock);
+} */
 
 void RhoRubyStart()
 {
-    VALUE moduleRhom;
+    //VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -153,18 +155,20 @@ void RhoRubyStart()
 	CONST_ID(framework_mid, "serve");
 	CONST_ID(framework_mid2, "serve_index");
 
-    moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
-    classRhomAttribManager = rb_const_get(moduleRhom, rb_intern("RhomAttribManager"));
-
-	CONST_ID(midRhomAttribManager_save, "save");
-	CONST_ID(midRhomAttribManager_delete_attribs, "delete_attribs");
-	CONST_ID(midRhomAttribManager_add_attrib, "add_attrib");
+    //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
 #ifdef ENABLE_RUBY_VM_STAT
 	g_collect_stat = 0; 
 #endif    
 		
 	}	
+}
+
+char* RhoRuby_getRhoDBVersion()
+{
+    VALUE moduleRhodes = rb_const_get(rb_cObject, rb_intern("Rhodes"));
+    VALUE valVer = rb_const_get(moduleRhodes, rb_intern("DBVERSION"));
+    return RSTRING_PTR(valVer);
 }
 
 #if defined(WIN32)
@@ -221,6 +225,21 @@ char* makeControllerCall(char* classname, char* methodname);
 
 VALUE getnil() {
 	return Qnil;
+}
+
+VALUE rho_ruby_create_array()
+{
+    return rb_ary_new();
+}
+
+VALUE rho_ruby_create_string(const char* szVal)
+{
+    return rb_str_new2(szVal);
+}
+
+void rho_ruby_add_to_array(VALUE ar, VALUE val)
+{
+    rb_ary_push(ar,val);
 }
 
 VALUE createHash() {
@@ -294,20 +313,25 @@ VALUE callServeIndex(char* index_name) {
 	return callres;
 }
 
-void RhoRuby_RhomAttribManager_save(int nSrcID)
+/*static int s_gcWasDisabled;
+//extern void native_sleep(rb_thread_t *th, struct timeval *tv);
+extern void sleep_for_polling(rb_thread_t *th);
+static void start_ruby_call()
 {
-    rb_funcall(classRhomAttribManager, midRhomAttribManager_save, 1, INT2FIX(nSrcID));
-}
+    rb_thread_t *th = GET_THREAD();
 
-void RhoRuby_RhomAttribManager_delete_attribs(int nSrcID,uint64__ objID)
-{
-    rb_funcall(classRhomAttribManager, midRhomAttribManager_delete_attribs, 2, INT2FIX(nSrcID), ULL2NUM(objID) );
-}
+    while( rb_during_gc() )
+    {
+        sleep_for_polling(th);
+    }
 
-void RhoRuby_RhomAttribManager_add_attrib(int nSrcID,const char* szAttrib)
-{
-    rb_funcall(classRhomAttribManager, midRhomAttribManager_add_attrib, 2, INT2FIX(nSrcID), rb_str_new2(szAttrib) );
+    s_gcWasDisabled = rb_gc_disable();
 }
+static void end_ruby_call()
+{
+    if ( !s_gcWasDisabled )
+        rb_gc_enable();
+}*/
 
 static char*
 rb_type_to_s(VALUE obj)

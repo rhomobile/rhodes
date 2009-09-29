@@ -43,6 +43,11 @@ public:
 		return m_nRespCode == 200;
 	}
 
+    boolean isUnathorized()
+    {
+        return m_nRespCode == 401;
+    }
+
 };
 
 class CNetRequest;

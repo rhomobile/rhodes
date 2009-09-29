@@ -128,8 +128,11 @@ class SecondaryResourceFetchThread extends Thread {
                 resource.setHttpConnection(connection);
                 
                 // signal to the browser field that resource is ready
-                if (_browserField != null) {            
-                    _browserField.resourceReady(resource);
+                if (_browserField != null) {
+                	//synchronized (RhodesApplication.getEventLock())
+                	{
+                		_browserField.resourceReady(resource);
+                	}
                 }
             }
             

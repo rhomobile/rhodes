@@ -102,11 +102,22 @@ module Rho
       id = params[:id].nil? ? nil : params[:id].to_s
       query = query_to_s(params[:query])
       fragment = params[:fragment].nil? ? '' : '#' + params[:fragment]
-      
-      amurl = '/' + application.to_s + '/' + model.to_s
+   
+      amurl = ''
+      amurl << '/' << application.to_s << '/' << model.to_s
 
-      return amurl + query + fragment if action.nil? or action == 'create' or action == 'index'
-      return amurl +'/'+ (id.nil? ? action : id + '/' + action) + query + fragment
+      if action.nil? or action == 'create' or action == 'index'  
+        amurl << query << fragment 
+      else
+        amurl << '/' << (id.nil? ? action : id + '/' + action) << query << fragment          
+      end
+        
+      amurl
+      
+      #amurl = '/' + application.to_s + '/' + model.to_s
+
+      #return amurl + query + fragment if action.nil? or action == 'create' or action == 'index'
+      #return amurl +'/'+ (id.nil? ? action : id + '/' + action) + query + fragment
     end
 
   private

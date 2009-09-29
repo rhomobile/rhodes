@@ -24,12 +24,21 @@ module Rhom
       @last_deleted_size = args['last_deleted_size'].to_i
       @last_sync_duration = args['last_sync_duration'].to_i
       @last_sync_success = args['last_sync_success'].to_i == 1 ? true : false
-      @distinct_objects = 0#::Rhom::RhomDbAdapter::select_from_table(
-                           #                                  'object_values',
-                           #                                  'object',
-                           #                                  {"source_id"=>@source_id},
-                           #                                  {"distinct"=>true}).length
+      #VERY SLOW OPERATION!
+      #@distinct_objects = ::Rhom::RhomDbAdapter::select_from_table(
+      #                                                      'object_values',
+      #                                                       'object',
+      #                                                       {"source_id"=>@source_id},
+      #                                                       {"distinct"=>true}).length
     end
+    
+    def distinct_objects
+        ::Rhom::RhomDbAdapter::select_from_table(
+            'object_values',
+            'object',
+            {"source_id"=>@source_id},
+            {"distinct"=>true}).length
+    end    
     
     class << self
       include ::Rhom::RhomObject

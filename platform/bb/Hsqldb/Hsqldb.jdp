@@ -29,7 +29,6 @@ src\com\rho\db\HsqlDBStorage.java
 src\com\rho\db\Journal.java
 src\com\rho\db\RandomAccessFile.java
 src\com\rho\file\FileAccessBB.java
-src\com\rho\file\IRAFile.java
 src\com\rho\file\Jsr75RAFileImpl.java
 src\com\rho\file\PersistRAFileImpl.java
 src\j2me\io\BufferedOutputStream.java

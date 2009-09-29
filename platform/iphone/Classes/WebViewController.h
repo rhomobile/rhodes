@@ -26,8 +26,11 @@
 
 @property (assign) id   actionTarget;
 @property (assign) UIToolbar* toolbar;
+@property (assign) UIWebView* webView;
 @property (assign) SEL  onShowLog;
 
+
+-(void)loadHTMLString:(NSString*)data;
 
 -(void)navigate:(NSString*)url;
 -(void)navigateRedirect:(NSString*)url;
@@ -43,6 +46,8 @@
 -(IBAction)goOptions;
 
 -(IBAction)refresh;
+
+-(void)executeJs:(JSString *)js;
 
 -(void)active;
 

@@ -23,6 +23,7 @@
 #include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
 #include "JSString.h"
+#import "WebViewUrl.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
@@ -97,9 +98,9 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-- (void)navigateTo:(NSString*) url {
+- (void)navigateTo:(WebViewUrl*) wvUrl {
 	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
-		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:url waitUntilDone:NO];
+		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:wvUrl waitUntilDone:NO];
 	}
 }
 
@@ -270,7 +271,6 @@ extern const char* RhoGetRootPath();
 	// Startup the sync engine thread
 	//start_sync_engine(database);
 	
-	
 	// Start server thread	
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
@@ -347,8 +347,11 @@ void webview_refresh() {
 	[[ServerHost sharedInstance] refreshView];
 }
 
-void webview_navigate(char* url) {
-	[[ServerHost sharedInstance] navigateTo:[NSString stringWithCString:url]];
+void webview_navigate(char* url, int index) {
+	WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
+	webViewUrl.url = [NSString stringWithUTF8String:url];
+	webViewUrl.webViewIndex = index;
+	[[ServerHost sharedInstance] navigateTo:webViewUrl];
 }
 
 char* webview_execute_js(char* js) {

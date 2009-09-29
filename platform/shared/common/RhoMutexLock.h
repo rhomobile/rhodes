@@ -60,6 +60,8 @@ private:
     void operator=(const CMutexLock&);
 };
 
+#define synchronized(mutex) CMutexLock __lock(mutex);
+
 class CLocalMutexLock {
 public:
     explicit CLocalMutexLock() : m_Mutex() { m_Mutex.Lock(); }

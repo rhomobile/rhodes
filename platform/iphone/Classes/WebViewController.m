@@ -35,10 +35,8 @@ char* get_current_location() {
 
 @implementation WebViewController
 
-NSString *loadingText = @"Loading...";
-
 @synthesize viewHomeUrl, viewOptionsUrl;
-@synthesize actionTarget, onShowLog, toolbar;
+@synthesize actionTarget, onShowLog, toolbar, webView;
 
 -(void)viewDidLoad {
 	[super viewDidLoad];
@@ -62,6 +60,11 @@ NSString *loadingText = @"Loading...";
 	}
 }
 
+-(void)loadHTMLString:(NSString*)data {
+	RAWLOG_INFO("Loading specified HTML string");
+	[webView loadHTMLString:data baseURL: [NSURL URLWithString:@""]];
+}
+
 -(void)navigate:(NSString*)url {
     RAWLOG_INFO("Navigating to the specifyed URL");
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
@@ -69,15 +72,14 @@ NSString *loadingText = @"Loading...";
 
 -(void)executeJs:(JSString*)js {
 	RAWLOG_INFO1("Executing JS: %s", [js.inputJs UTF8String] );
-    //NSLog(@"Executing JS: %@\n", js.inputJs);
 	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
 }
 
 -(void)navigateRedirect:(NSString*)url {
 	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
 	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
-	NSString* redirctor = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
-	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirctor]]];
+	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 }
 
 -(IBAction)goBack {
@@ -90,14 +92,12 @@ NSString *loadingText = @"Loading...";
 
 -(IBAction)goHome {
 	if (viewHomeUrl != NULL) {
-		//[self navigate:viewHomeUrl];
 		[self navigateRedirect:viewHomeUrl];
 	}
 }
 
 -(IBAction)goOptions {
 	if (viewOptionsUrl != NULL) {
-		//[self navigate:viewOptionsUrl];
 		[self navigateRedirect:viewOptionsUrl];
 	}
 }
@@ -147,7 +147,6 @@ NSString *loadingText = @"Loading...";
 	
 	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	set_current_location((CFStringRef)location);
-	
 }
 
 - (void)runSync
