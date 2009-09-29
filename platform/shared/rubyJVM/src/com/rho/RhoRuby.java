@@ -17,6 +17,8 @@ public class RhoRuby {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoRuby");
+	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+		new RhoProfiler();
 	
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
@@ -26,8 +28,6 @@ public class RhoRuby {
 	
 	static RubyValue receiver;
 	static RubyProgram mainObj;
-	static RubyMethod m_RhomAttribManager_delete_attribs, m_RhomAttribManager_add_attrib, m_RhomAttribManager_save; 
-	static RubyClass m_classRhomAttribManager;
 	static RubyClass m_classRhoError;
 	static RubyMethod m_RhoError_err_message;
 	
@@ -40,6 +40,8 @@ public class RhoRuby {
 	public static final int ERR_NOSERVERRESPONSE = 6;
 	public static final int ERR_CLIENTISNOTLOGGEDIN = 7;
 	public static final int ERR_CUSTOMSYNCSERVER = 8;
+	public static final int ERR_UNATHORIZED = 9;
+	public static final int ERR_CANCELBYUSER = 10;
 	
 	public static int getNetErrorCode(Exception exc)
 	{
@@ -109,11 +111,6 @@ public class RhoRuby {
         		DBAdapter.getInstance().commit();
         		
         		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");
-        		m_classRhomAttribManager = (RubyClass)modRhom.getConstant("RhomAttribManager");
-        		m_RhomAttribManager_delete_attribs = m_classRhomAttribManager.findMethod( RubyID.intern("delete_attribs") );
-        		m_RhomAttribManager_add_attrib = m_classRhomAttribManager.findMethod( RubyID.intern("add_attrib") );
-        		m_RhomAttribManager_save = m_classRhomAttribManager.findMethod( RubyID.intern("save") );
-        		
         	}
         	
         /*}catch(ClassNotFoundException exc){
@@ -197,7 +194,8 @@ public class RhoRuby {
 		
 		addHashToHash( rh, "headers", headers );
 		
-		return callFramework(rh);
+		RubyValue res = callFramework(rh); 
+		return res; 
 	}
 	
 	static RubyValue callFramework(RubyValue hashReq) {
@@ -210,6 +208,19 @@ public class RhoRuby {
 		return ObjectFactory.createHash();
 	}
 
+	public static RubyArray create_array() {
+		return new RubyArray();
+	}
+
+	public static RubyString create_string(String str) {
+		return ObjectFactory.createString(str);
+	}
+	
+	public static void add_to_array(RubyValue ar, RubyValue val)
+	{
+		((RubyArray)ar).add(val);
+	}
+	
 	public static RubyValue addTimeToHash(RubyHash hash, String key, long val) {
 		return hash.add( ObjectFactory.createString(key), ObjectFactory.createTime(val) );
 	}
@@ -224,23 +235,6 @@ public class RhoRuby {
 
 	public static RubyValue addHashToHash(RubyHash hash, String key, RubyValue val) {
 		return hash.add( ObjectFactory.createString(key), val);	
-	}
-	
-	public static void RhomAttribManager_add_attrib( Integer nSrcID, String strAttribute)
-	{
-		m_RhomAttribManager_add_attrib.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
-				ObjectFactory.createString(strAttribute), null);
-	}
-	
-	public static void RhomAttribManager_delete_attribs( Integer nSrcID, long objID)
-	{
-		m_RhomAttribManager_delete_attribs.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), 
-				ObjectFactory.createInteger(objID), null);
-	}
-
-	public static void RhomAttribManager_save(Integer nSrcID)
-	{
-		m_RhomAttribManager_save.invoke( m_classRhomAttribManager, ObjectFactory.createInteger(nSrcID.longValue()), null);
 	}
 	
 }

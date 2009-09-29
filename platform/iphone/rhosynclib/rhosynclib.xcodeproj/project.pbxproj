@@ -27,6 +27,10 @@
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
 		5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */; };
 		5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335AB0FC2F3AB00F268F0 /* syncthread.h */; };
+		5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405881064AA4900163569 /* DBAttrManager.cpp */; };
+		5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405891064AA4900163569 /* DBAttrManager.h */; };
+		5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405F0106CF7F400163569 /* SyncNotify.cpp */; };
+		5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405F1106CF7F400163569 /* SyncNotify.h */; };
 		5C9817230FBC4F20002597A5 /* JSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817210FBC4F20002597A5 /* JSONIterator.cpp */; };
 		5C9817240FBC4F20002597A5 /* JSONIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817220FBC4F20002597A5 /* JSONIterator.h */; };
 		5C98172A0FBC4F41002597A5 /* SyncEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817260FBC4F41002597A5 /* SyncEngine.cpp */; };
@@ -65,6 +69,10 @@
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
 		5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = ../../shared/sync/syncthread.cpp; sourceTree = SOURCE_ROOT; };
 		5C5335AB0FC2F3AB00F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = ../../shared/sync/syncthread.h; sourceTree = SOURCE_ROOT; };
+		5C7405881064AA4900163569 /* DBAttrManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBAttrManager.cpp; path = ../../shared/db/DBAttrManager.cpp; sourceTree = SOURCE_ROOT; };
+		5C7405891064AA4900163569 /* DBAttrManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAttrManager.h; path = ../../shared/db/DBAttrManager.h; sourceTree = SOURCE_ROOT; };
+		5C7405F0106CF7F400163569 /* SyncNotify.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncNotify.cpp; path = ../../shared/sync/SyncNotify.cpp; sourceTree = SOURCE_ROOT; };
+		5C7405F1106CF7F400163569 /* SyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncNotify.h; path = ../../shared/sync/SyncNotify.h; sourceTree = SOURCE_ROOT; };
 		5C9817210FBC4F20002597A5 /* JSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONIterator.cpp; sourceTree = "<group>"; };
 		5C9817220FBC4F20002597A5 /* JSONIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONIterator.h; sourceTree = "<group>"; };
 		5C9817260FBC4F41002597A5 /* SyncEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncEngine.cpp; path = ../../shared/sync/SyncEngine.cpp; sourceTree = SOURCE_ROOT; };
@@ -153,6 +161,8 @@
 		5C9817250FBC4F27002597A5 /* sync */ = {
 			isa = PBXGroup;
 			children = (
+				5C7405F0106CF7F400163569 /* SyncNotify.cpp */,
+				5C7405F1106CF7F400163569 /* SyncNotify.h */,
 				5CE294091009D8B7009A75F6 /* ClientRegister.cpp */,
 				5CE2940A1009D8B7009A75F6 /* ClientRegister.h */,
 				5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */,
@@ -168,6 +178,8 @@
 		5C98172E0FBC4F53002597A5 /* db */ = {
 			isa = PBXGroup;
 			children = (
+				5C7405881064AA4900163569 /* DBAttrManager.cpp */,
+				5C7405891064AA4900163569 /* DBAttrManager.h */,
 				5C98172F0FBC4F70002597A5 /* DBAdapter.cpp */,
 				5C9817300FBC4F70002597A5 /* DBAdapter.h */,
 				5C9817310FBC4F70002597A5 /* DBResult.cpp */,
@@ -208,6 +220,8 @@
 				5C9817360FBC4F70002597A5 /* DBResult.h in Headers */,
 				5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */,
 				5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */,
+				5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */,
+				5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +281,8 @@
 				5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */,
 				5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */,
 				5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */,
+				5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */,
+				5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,7 +328,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.0;
 				SYMROOT = ../build;
 			};
 			name = Debug;

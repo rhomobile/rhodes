@@ -1,4 +1,4 @@
-package com.rho.file;
+package com.rho;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import j2me.io.FileNotFoundException;
 
 public interface IRAFile {
 	public void open(String name) throws FileNotFoundException;
-	public void open(String name, int mode) throws FileNotFoundException;
+	public void open(String name, String mode) throws FileNotFoundException;
 	public void close() throws IOException;
 	
 	public long size() throws IOException;
@@ -22,6 +22,9 @@ public interface IRAFile {
 	public int read(byte[] b, int off, int len) throws IOException;
 	
 	public void sync() throws IOException;
+	
+	public void listenForSync(String name) throws IOException;
+	public void stopListenForSync(String name) throws IOException;
 	
 	public boolean exists();
 	public void delete() throws IOException;

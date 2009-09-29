@@ -1,0 +1,114 @@
+body {
+    margin: 0;
+    font-family: Helvetica, Arial;
+    background: #ffffff;
+    color: #000000;
+    overflow-x: hidden;
+}
+/* generate greyish header */
+.toolbar {
+    border-bottom: 1px solid #2d3642;
+    border-top: 1px solid #6d84a2;
+    padding: 10px;
+	background: url(/RhoSugarCRM/images/toolbar_new.png) #000000 repeat-x;
+    width: auto;
+}
+.toolbar > h1 {
+    width: auto;
+    font-size: 120%;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    color: #ffffff;
+}
+.button {
+    position: absolute;
+    overflow: hidden;
+    top: 8px;
+    right: 6px;
+    margin: 3px;
+    border-width: 0 5px;
+    padding: 3px;
+    width: auto;
+    height: auto;
+    line-height: 30px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: #555555;
+}
+ul {
+	margin: 0 0 0 5px;
+	padding: 0;
+}
+li {
+   list-style-type :none;	
+}
+a:link, a:visited, a:unvisited, a:hover {
+	color:#000000;
+	text-decoration: none;
+	font-weight:bold;
+	font-family: Helvetica,Arial;
+}
+a {
+	color:#000000;
+	text-decoration: none;
+	font-weight:bold;
+	font-family: Helvetica,Arial;
+}
+li > a {
+	text-decoration: underline;
+}
+img {border-width: 0;}
+table > tr {
+	line-height: normal;
+}
+fieldset {margin:5px;}
+fieldset > div > label {margin: 0 3px;vertical-align:middle}
+/* BB and WM do not like table-layout:fixed, but iPhone does */
+table.grid {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px;
+  border: 2px solid #999999;
+  background: #ffffff;
+  font-size: 80%;
+}
+table.grid td {
+	border-bottom: 1px solid #BBBBBB;
+	padding:10px;
+	margin:0;
+}
+table.grid tr:last-of-type td {
+	border-bottom: none;
+}
+/* BB and WM want a width of 25% vs. 33% for iPhone */
+.gridleft {
+	text-align: right;
+	width: 25%;
+	color: #4183C4;
+}
+.gridright {
+	text-align: left;
+	font-weight:bold;
+}
+.menu_icon {
+    border:none;
+    vertical-align: middle;
+    padding-right: 4px;
+    max-height: 50%;
+}
+/* keep menu bar list items tightly packed */
+/*
+table.iconbar > tr {
+	max-height: 20px;
+	line-height: 20px;
+	height: 20px;
+}
+*/
+

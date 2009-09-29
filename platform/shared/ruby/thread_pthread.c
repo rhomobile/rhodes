@@ -20,8 +20,8 @@
 static void native_mutex_lock(pthread_mutex_t *lock);
 static void native_mutex_unlock(pthread_mutex_t *lock);
 static int native_mutex_trylock(pthread_mutex_t *lock);
-static void native_mutex_initialize(pthread_mutex_t *lock);
-static void native_mutex_destroy(pthread_mutex_t *lock);
+void native_mutex_initialize(pthread_mutex_t *lock);
+void native_mutex_destroy(pthread_mutex_t *lock);
 
 static void native_cond_signal(pthread_cond_t *cond);
 static void native_cond_broadcast(pthread_cond_t *cond);
@@ -62,7 +62,7 @@ native_mutex_trylock(pthread_mutex_t *lock)
     return 0;
 }
 
-static void
+void
 native_mutex_initialize(pthread_mutex_t *lock)
 {
     int r = pthread_mutex_init(lock, 0);
@@ -71,7 +71,7 @@ native_mutex_initialize(pthread_mutex_t *lock)
     }
 }
 
-static void
+void
 native_mutex_destroy(pthread_mutex_t *lock)
 {
     int r = pthread_mutex_destroy(lock);
@@ -146,7 +146,7 @@ null_func(int i)
     /* null */
 }
 
-rb_thread_t *
+static rb_thread_t *
 ruby_thread_from_native(void)
 {
 	if ( !ruby_native_thread_key )
@@ -155,7 +155,7 @@ ruby_thread_from_native(void)
     return pthread_getspecific(ruby_native_thread_key);
 }
 
-int
+static int
 ruby_thread_set_native(rb_thread_t *th)
 {
     return pthread_setspecific(ruby_native_thread_key, th) == 0;

@@ -1636,13 +1636,13 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
     char **ret_val;
     if (input_arr) {
       len = RARRAY_LEN(input_arr);
-      ret_val = (char **)malloc(3*len*sizeof(char*));
+      ret_val = (char **)malloc(4*len*sizeof(char*));
       for(i=0; i<len; i++) {
-        char *val1, *val2, *val3;
+        char *val1, *val2, *val3, *val4;
         VALUE hash = rb_ary_entry(argv[1],i);
         VALUE keys_arr = rb_funcall(hash, rb_intern("keys"), 0, NULL);
         int keys_len = RARRAY_LEN(keys_arr);
-        val1 = val2 = val3 = NULL;
+        val1 = val2 = val3 = val4 = NULL;
         for(j=0; j<keys_len; j++) {
           VALUE val;
           char *tmp;
@@ -1657,10 +1657,17 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
             val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
             tmp = StringValuePtr(val);
             break;
+          case T_TRUE:
+            val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
+            tmp = StringValuePtr(val);
+            break;
+          case T_FALSE:
+            val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
+            tmp = StringValuePtr(val);
+            break;
           default:
             tmp = NULL;
             break;
-            
           }
           if (!strcmp(key_str,"label")) {
             val1 = tmp;
@@ -1668,11 +1675,14 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
             val2 = tmp;
           } else if (!strcmp(key_str, "icon")) {
             val3 = tmp;
-          } 
+          } else if (!strcmp(key_str, "reload")) {
+            val4 = tmp;
+          }
         }
         ret_val[arr_len++] = val1;
         ret_val[arr_len++] = val2;
         ret_val[arr_len++] = val3;
+        ret_val[arr_len++] = val4;
       }
     }
     arg2 = arr_len;

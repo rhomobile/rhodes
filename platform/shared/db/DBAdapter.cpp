@@ -1,7 +1,9 @@
 #include "DBAdapter.h"
+#include "sync/SyncThread.h"
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoConf.h"
 
 extern "C" const char* RhoGetRootPath();
 extern "C" const char* RhoGetRelativeBlobsPath();
@@ -21,7 +23,7 @@ static int onDBBusy(void* data,int nTry)
 void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
     char* type = NULL;
-    if ( nArgs < 2 )
+    if ( nArgs < 4 )
         return;
 
     type = (char*)sqlite3_value_text(*(ppArgs+1));
@@ -32,6 +34,16 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         strFilePath += (char*)sqlite3_value_text(*(ppArgs));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
+
+    sync::CSyncThread::getDBAdapter().getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
+}
+
+void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
+{
+    if ( nArgs < 2 )
+        return;
+
+    sync::CSyncThread::getDBAdapter().getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
 }
 
 /*static*/ String CDBAdapter::makeBlobFolderName()
@@ -60,9 +72,10 @@ void CDBAdapter::open (String strDbPath, String strVer)
     close();
 
     m_strDbPath = strDbPath;
+    m_strDbVerPath = strDbPath+".version";
     m_strDbVer = strVer;
 
-    checkVersion(strVer);
+    checkDBVersion(strVer);
 
     boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
@@ -72,9 +85,76 @@ void CDBAdapter::open (String strDbPath, String strVer)
     if ( !bExist )
         createSchema();
 
-    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 2, SQLITE_ANY, 0,
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 4, SQLITE_ANY, 0,
 	    SyncBlob_DeleteCallback, 0, 0 );
+    sqlite3_create_function( m_dbHandle, "rhoOnInsertObjectRecord", 2, SQLITE_ANY, 0,
+	    SyncBlob_InsertCallback, 0, 0 );
+
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
+
+    getAttrMgr().load(*this);
+}
+
+void CDBAdapter::checkDBVersion(String& strRhoDBVer)
+{
+	String strAppDBVer = RHOCONF().getString("app_db_version");
+	
+	CDBVersion dbVer = readDBVersion();
+
+	boolean bReset = false;
+	
+	if ( strRhoDBVer.length() > 0 )
+	{
+		if ( dbVer.m_strRhoVer.compare(strRhoDBVer) != 0 )
+			bReset = true;
+	}
+	if ( strAppDBVer.length() > 0 )
+	{
+		if ( dbVer.m_strAppVer.compare(strAppDBVer) != 0 )
+			bReset = true;
+	}
+	
+	if ( bReset )
+	{
+        LOG(INFO) + "Reset database bacause version is changed.";
+
+        CRhoFile::deleteFile(m_strDbPath.c_str());
+        CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
+
+        String strBlobFolderName = makeBlobFolderName();
+        CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+	}
+}
+
+CDBAdapter::CDBVersion CDBAdapter::readDBVersion()//throws Exception
+{
+    String strFullVer;
+    CRhoFile oFile;
+    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenReadOnly) )
+        return CDBVersion();
+
+    oFile.readString(strFullVer);
+	
+	if ( strFullVer.length() == 0 )
+		return CDBVersion();
+	
+	int nSep = strFullVer.find(';');
+	if ( nSep == -1 )
+		return CDBVersion(strFullVer, "");
+	
+	return CDBVersion(strFullVer.substr(0,nSep), strFullVer.substr(nSep+1) );
+}
+
+void CDBAdapter::writeDBVersion(const CDBVersion& ver)//throws Exception
+{
+    String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
+    CRhoFile oFile;
+    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenForWrite) )
+        return;
+
+    oFile.write(strFullVer.c_str(), strFullVer.length() );
 }
 
 sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
@@ -145,6 +225,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
 
 void CDBAdapter::destroy_table(String strTable)
 {
+    getAttrMgr().reset(*this);
     CFilePath oFilePath(m_strDbPath);
 	String dbNewName  = oFilePath.changeBaseName("resetdbtemp.sqlite");
 
@@ -190,14 +271,13 @@ void CDBAdapter::destroy_table(String strTable)
 
     String dbOldName = m_strDbPath;
     close();
+
+    String strBlobFolderName = makeBlobFolderName();
+    CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
     open( dbOldName, m_strDbVer );
-}
-
-void CDBAdapter::checkVersion(String& strVer)
-{
-    //TODO: checkVersion
 }
 
 static const char* g_szDbSchema = 
@@ -222,7 +302,8 @@ static const char* g_szDbSchema =
     " object varchar(255) default NULL,"
     " value text default NULL,"
     " attrib_type varchar(255) default NULL,"
-    " update_type varchar(255) default NULL);"
+    " update_type varchar(255) default NULL,"
+    " sent int default 0 );"
     "CREATE TABLE sources ("
     " id INTEGER PRIMARY KEY,"
     " token INTEGER default NULL,"
@@ -242,10 +323,15 @@ static const char* g_szDbSchema =
     //"CREATE INDEX by_type ON object_values (attrib_type);"
     "CREATE INDEX by_src_id on object_values (source_id);"
 	"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"
-    "CREATE INDEX by_src_value ON object_values (value, attrib, source_id);"
+    "CREATE INDEX by_src_value ON object_values (attrib, source_id, value);"
     "CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW "
         "BEGIN "
-            "SELECT rhoOnDeleteObjectRecord(OLD.value,OLD.attrib_type);"
+            "SELECT rhoOnDeleteObjectRecord(OLD.value, OLD.attrib_type, OLD.source_id, OLD.attrib );"
+        "END;"
+    ";"
+    "CREATE TRIGGER rhoinsertTrigger AFTER INSERT ON object_values FOR EACH ROW "
+        "BEGIN "
+            "SELECT rhoOnInsertObjectRecord( NEW.source_id, NEW.attrib );"
         "END;"
     ";";
 
@@ -344,8 +430,10 @@ void CDBAdapter::endTransaction()
 {
     char *zErr = 0;
     int rc = 0;
+
 	if (m_dbHandle)
     {
+        getAttrMgr().save(*this);
 		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }

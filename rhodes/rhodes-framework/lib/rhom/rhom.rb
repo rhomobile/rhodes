@@ -55,7 +55,7 @@ module Rhom
         
         ::Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
 #        if defined? RHO_DBME
-            ::Rhom::RhomAttribManager.reset_all
+            #::Rhom::RhomAttribManager.reset_all
             ::Rhom::RhomDbAdapter.destroy_table('object_values')
             #::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
 #        else

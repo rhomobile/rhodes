@@ -138,6 +138,9 @@ void rho_sync_set_notification(int source_id, const char *url, char* params);
 void rho_sync_clear_notification(int source_id);
 void rho_sync_set_pollinterval(int nInterval);
 void rho_sync_set_syncserver(char* syncserver);
+void rho_sync_setobjectnotify_url(const char* szUrl);
+void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
+void rho_sync_cleanobjectnotify();
 
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath);
@@ -147,6 +150,7 @@ int rho_db_commitUITransaction();
 int rho_db_rollbackUITransaction();
 int rho_db_destroy_table(const char* szTableName);
 void* rho_db_get_handle();
+unsigned long rho_sync_get_attrs(int nSrcID);
 
 #ifdef __cplusplus
 };

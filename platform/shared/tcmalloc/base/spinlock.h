@@ -51,8 +51,20 @@
 // One day, we may use __attribute__ stuff on gcc to annotate these functions
 #define LOCKABLE
 #define SCOPED_LOCKABLE
+
+#ifdef EXCLUSIVE_LOCK_FUNCTION
+#undef EXCLUSIVE_LOCK_FUNCTION
+#endif
 #define EXCLUSIVE_LOCK_FUNCTION(...)
+
+#ifdef EXCLUSIVE_TRYLOCK_FUNCTION
+#undef EXCLUSIVE_TRYLOCK_FUNCTION
+#endif
 #define EXCLUSIVE_TRYLOCK_FUNCTION(...)
+
+#ifdef UNLOCK_FUNCTION
+#undef UNLOCK_FUNCTION
+#endif
 #define UNLOCK_FUNCTION(...)
 
 

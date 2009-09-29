@@ -12,6 +12,7 @@ public interface IDBStorage {
 	
 	public abstract void startTransaction()throws DBException;
 	public abstract void commit()throws DBException;
+	public abstract void rollback()throws DBException;
 	
 	public abstract void setDbCallback(IDBCallback callback);
 	

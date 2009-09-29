@@ -40,6 +40,7 @@ import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyNoOrOneArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyOneOrTwoArgMethod;
+import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RubyVarArgMethod;
@@ -303,7 +304,7 @@ public class SyncThread extends RhoThread
 	public boolean setStatusListener(ISyncStatusListener listener) {
 		m_statusListener = listener;
 		if (m_oSyncEngine != null) {
-			m_oSyncEngine.setStatusListener(listener);
+			m_oSyncEngine.getNotify().setSyncStatusListener(listener);
 			return true;
 		}
 		return false;
@@ -349,9 +350,10 @@ public class SyncThread extends RhoThread
 	{
 		if ( getSyncEngine().isSyncing() )
 		{
-			getSyncEngine().stopSync();
+			getSyncEngine().stopSyncByUser();
 			int nWait = 0;
-			while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
+			//while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
+			while( nWait < 30000 && getSyncEngine().getDB().isInsideTransaction() )
 				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
 				
 			if (getSyncEngine().getState() != SyncEngine.esNone)
@@ -364,6 +366,11 @@ public class SyncThread extends RhoThread
 				Create(ptrFactory);
 			}
 		}
+	}
+	
+	public void addobjectnotify_bysrcname(String strSrcName, String strObject)
+	{
+		getSyncEngine().getNotify().addObjectNotify(strSrcName, strObject);
 	}
 	
 	public static void initMethods(RubyClass klass) {
@@ -565,7 +572,7 @@ public class SyncThread extends RhoThread
 						int source_id = args.get(0).toInt();
 						String url = args.get(1).toStr();
 						String params = args.get(2).toStr();
-						getSyncEngine().setNotification(source_id, url, params);
+						getSyncEngine().getNotify().setSyncNotification(source_id, url, params);
 					}catch(Exception e)
 					{
 						LOG.ERROR("set_notification failed", e);
@@ -579,7 +586,7 @@ public class SyncThread extends RhoThread
 				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 					try{
 						int source_id = arg1.toInt();
-						getSyncEngine().clearNotification(source_id);
+						getSyncEngine().getNotify().clearSyncNotification(source_id);
 					}catch(Exception e)
 					{
 						LOG.ERROR("clear_notification failed", e);
@@ -623,6 +630,69 @@ public class SyncThread extends RhoThread
 						return RubyConstant.QNIL;
 					}
 			});
+		
+		klass.getSingletonClass().defineMethod("get_src_attrs",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							int nSrcID = arg1.toInt();
+							return getDBAdapter().getAttrMgr().getAttrsBySrc(nSrcID);
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_src_attrs failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
+
+		klass.getSingletonClass().defineMethod("set_objectnotify_url",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							String url = arg1.toStr();
+							SyncNotify.setObjectNotifyUrl(url);
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_objectnotify_url failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
+
+		klass.getSingletonClass().defineMethod("add_objectnotify",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+						try{
+							Integer nSrcID = new Integer(arg1.toInt());
+							String strObject = arg2.toStr();
+							
+							getSyncEngine().getNotify().addObjectNotify(nSrcID, strObject);
+						}catch(Exception e)
+						{
+							LOG.ERROR("add_objectnotify failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
+		klass.getSingletonClass().defineMethod("clean_objectnotify",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						try{
+							getSyncEngine().getNotify().cleanObjectNotifications();
+						}catch(Exception e)
+						{
+							LOG.ERROR("clean_objectnotify failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
+		
 	}
 
 }

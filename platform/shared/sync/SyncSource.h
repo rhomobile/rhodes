@@ -14,6 +14,7 @@ namespace net {
 }
 namespace json {
     class CJSONEntry;
+    class CJSONArrayIterator;
 }
 
 namespace sync {
@@ -43,6 +44,7 @@ public:
 };
 
 class CSyncEngine;
+class CSyncNotify;
 class CSyncSource
 {
     DEFINE_LOGCLASS;
@@ -90,7 +92,6 @@ public:
     void syncClientChanges();
     void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
-    //void makePushBody( rho::db::CDBResult& res );//throws DBException
     void getAndremoveAsk();
     void setAskParams(const String& ask){ m_strAskParams = ask;}
     String getAskParams()const{ return m_strAskParams;}
@@ -105,16 +106,18 @@ public:
 
     void processServerData(const char* szData);
     boolean processSyncObject(json::CJSONEntry& oJsonEntry);
-    boolean processSyncObject_ver1(json::CJSONEntry oJsonObject);//throws Exception
+    boolean processSyncObject_ver1(json::CJSONEntry oJsonObject, int nSrcID);//throws Exception
+    void processServerData_Ver0(json::CJSONArrayIterator& oJsonArr);
+    void processServerData_Ver1(json::CJSONArrayIterator& oJsonArr);
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);
-    boolean sendClientChanges(String strUpdateType);//throws Exception
 
     String makeFileName(const CValue& value);//throws Exception
     boolean downloadBlob(CValue& value);//throws Exception
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
+    CSyncNotify& getNotify();
     db::CDBAdapter& getDB();
     net::INetRequest& getNet();
 

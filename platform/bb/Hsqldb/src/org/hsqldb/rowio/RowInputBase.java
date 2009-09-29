@@ -163,20 +163,24 @@ public abstract class RowInputBase extends HsqlByteArrayInputStream {
                 case Types.VARCHAR :
                 case Types.VARCHAR_IGNORECASE :
                 case Types.LONGVARCHAR :
-                    o = readChar(type);
+                	//o = readChar(type);
+                    o = readString();
                     break;
 
                 case Types.TINYINT :
                 case Types.SMALLINT :
-                    o = readSmallint();
+                    //o = readSmallint();
+                	o = new Integer(readShort());
                     break;
 
                 case Types.INTEGER :
-                    o = readInteger();
+                    //o = readInteger();
+                	o = new Integer(readInt());
                     break;
 
                 case Types.BIGINT :
-                    o = readBigint();
+                    //o = readBigint();
+                	o = new Long(readLong());
                     break;
 
                 //fredt although REAL is now Double, it is read / written in

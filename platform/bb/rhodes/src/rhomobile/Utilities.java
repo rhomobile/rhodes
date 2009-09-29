@@ -28,7 +28,7 @@ public class Utilities {
 
 		try {
 			URI uri = new URI(url);
-			if ( "localhost".equals(uri.getHost())) {
+			if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ){
 				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
@@ -46,7 +46,7 @@ public class Utilities {
 				// referring page was transferred with a secure
 				// protocol.
 				String referer = requestHeaders.getPropertyValue("referer");
-				boolean sendReferrer = true;
+				boolean sendReferrer = false;
 				if (referer != null
 						&& StringUtilities.startsWithIgnoreCase(referer,
 								"https:")

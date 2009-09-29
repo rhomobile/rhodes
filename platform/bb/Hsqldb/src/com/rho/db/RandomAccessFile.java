@@ -5,14 +5,11 @@ import java.io.*;
 import j2me.io.FileNotFoundException;
 
 import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 
-import com.rho.RhoConf;
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoLogger;
-import com.rho.file.Jsr75RAFileImpl;
-import com.rho.file.PersistRAFileImpl;
-import com.rho.file.IRAFile;
+import com.rho.RhoClassFactory;
+//import com.rho.RhoEmptyLogger;
+//import com.rho.RhoLogger;
+import com.rho.IRAFile;
 
 import j2me.nio.channels.*;
 
@@ -20,10 +17,8 @@ import j2me.io.File;
 
 public class RandomAccessFile  
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("RAFile");
-	
-	public static final String USE_PERSISTENT = "use_persistent_storage";
+	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	//	new RhoLogger("RAFile");
 	
 	private IRAFile m_impl = null;
 	
@@ -55,15 +50,12 @@ public class RandomAccessFile
             throw new NullPointerException();
         }
     	
-        if (RhoConf.getInstance().getBool(USE_PERSISTENT)) {
-        	LOG.TRACE("Use persistent storage implementation");
-        	m_impl = new PersistRAFileImpl();
-        }
-        else {
-        	LOG.TRACE("Use Jsr75 implementation");
-        	m_impl = new Jsr75RAFileImpl();
-        }
-        m_impl.open(name, imode);
+        try {
+			m_impl = RhoClassFactory.createRAFile();
+		} catch (Exception e) {
+			throw new FileNotFoundException(e.getMessage());
+		}
+        m_impl.open(name, mode);
     }
     
     public long length() throws IOException
@@ -221,5 +213,13 @@ public class RandomAccessFile
     	    return null;
     	}
     	return input.toString();
+    }
+    
+    public void listenForSync(String name) throws IOException {
+    	m_impl.listenForSync(name);
+    }
+    
+    public void stopListenForSync(String name) throws IOException {
+    	m_impl.stopListenForSync(name);
     }
 }

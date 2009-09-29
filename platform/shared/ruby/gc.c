@@ -1998,6 +1998,7 @@ void rb_gc_mark_encodings(void);
 static int
 garbage_collect(rb_objspace_t *objspace)
 {
+    int i = 0;
     struct gc_list *list;
     rb_thread_t *th = GET_THREAD();
     INIT_GC_PROF_PARAMS;
@@ -2019,6 +2020,12 @@ garbage_collect(rb_objspace_t *objspace)
     }
     during_gc++;
     objspace->count++;
+
+    /*for ( i = 0; i < 100000; i++ )
+    {
+        char* mem = malloc(1000);
+        free(mem);
+    }*/
 
     GC_PROF_TIMER_START;
     GC_PROF_MARK_TIMER_START;

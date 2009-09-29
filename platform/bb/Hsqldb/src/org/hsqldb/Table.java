@@ -79,6 +79,7 @@ import org.hsqldb.lib.StringUtil;
 import org.hsqldb.persist.CachedObject;
 import org.hsqldb.persist.DataFileCache;
 import org.hsqldb.persist.PersistentStore;
+import org.hsqldb.rowio.RowInputBinary;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.store.ValuePool;
 
@@ -3478,7 +3479,7 @@ public class Table extends BaseTable {
             cache.restore(row);
         }
 
-        public CachedObject get(RowInputInterface in) {
+        public CachedObject get(RowInputBinary in) {
 
             try {
                 if (Table.this.isText) {

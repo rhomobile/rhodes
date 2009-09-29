@@ -55,6 +55,10 @@ public:
 	{
 		return m_nRespCode == 200;
 	}
+    virtual boolean isUnathorized()
+    {
+        return m_nRespCode == 401;
+    }
 
     virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 };
@@ -102,8 +106,8 @@ static const char* szMultipartPrefix =
 static const char* szMultipartPostfix = 
 "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
-static const char* szMultipartContType = 
-"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
+//static const char* szMultipartContType = 
+//"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
 	
 INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
 {

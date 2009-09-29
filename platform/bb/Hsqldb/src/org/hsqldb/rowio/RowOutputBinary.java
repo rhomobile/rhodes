@@ -31,6 +31,8 @@
 
 package org.hsqldb.rowio;
 
+import java.io.UnsupportedEncodingException;
+
 import j2me.math.BigDecimal;
 import j2me.math.BigInteger;
 import j2me.math.Number;
@@ -125,13 +127,18 @@ public class RowOutputBinary extends RowOutputBase {
     public void writeType(int type) {
         writeShort(type);
     }
-
+    
     public void writeString(String s) {
 
         int temp = count;
 
         writeInt(0);
-        StringConverter.writeUTF(s, this);
+        //StringConverter.writeUTF(s, this);
+        try {
+			this.write(s.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e.getMessage());
+		}
         writeIntData(count - temp - 4, temp);
     }
 

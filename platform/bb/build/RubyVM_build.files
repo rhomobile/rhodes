@@ -1,10 +1,12 @@
 platform\shared\rubyJVM\src\com\rho\DateTimeTokenizer.java
+platform\shared\rubyJVM\src\com\rho\db\DBAttrManager.java
 platform\shared\rubyJVM\src\com\rho\db\DBAdapter.java
 platform\shared\rubyJVM\src\com\rho\db\DBException.java
 platform\shared\rubyJVM\src\com\rho\db\IDBCallback.java
 platform\shared\rubyJVM\src\com\rho\db\IDBResult.java
 platform\shared\rubyJVM\src\com\rho\db\IDBStorage.java
 platform\shared\rubyJVM\src\com\rho\IFileAccess.java
+platform\shared\rubyJVM\src\com\rho\IRAFile.java
 platform\shared\rubyJVM\src\com\rho\FilePath.java
 platform\shared\rubyJVM\src\com\rho\IFile.java
 platform\shared\rubyJVM\src\com\rho\IRhoLogSink.java
@@ -39,6 +41,7 @@ platform\shared\rubyJVM\src\com\rho\sync\ClientRegister.java
 platform\shared\rubyJVM\src\com\rho\sync\ISyncStatusListener.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncSource.java
 platform\shared\rubyJVM\src\com\rho\sync\SyncThread.java
+platform\shared\rubyJVM\src\com\rho\sync\SyncNotify.java
 platform\shared\rubyJVM\src\com\rho\TestProfiler.java
 platform\shared\rubyJVM\src\com\rho\TestRhoLog.java
 platform\shared\rubyJVM\src\com\rho\TimeInterval.java

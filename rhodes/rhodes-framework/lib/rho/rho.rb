@@ -96,7 +96,7 @@ module Rho
           attribs = Rhom::RhomDbAdapter::select_from_table('sources','source_attribs', 'source_id'=>src_id)
 
           if attribs && attribs.size > 0 
-            Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
+            #Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
           else
             Rhom::RhomDbAdapter::insert_into_table('sources',
                                                   {"source_id"=>src_id,"source_url"=>url,"name"=>name})
@@ -177,7 +177,7 @@ module Rho
     CRLF = "\x0d\x0a"
     
     def send_response(res)
-      res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
+      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].length : 0
       data = "HTTP/1.1 #{res['status'].to_s} #{res['message']}" + CRLF
       res['headers'].each{|key, value|
         tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
@@ -190,7 +190,7 @@ module Rho
       data << "Expires: 0" << CRLF
 
       data << CRLF
-      if ( !res['request-body'].nil? )
+      if ( !res['request-body'].nil? && res['request-body'].is_a?(String))
         data << res['request-body']
       end
         
@@ -199,12 +199,12 @@ module Rho
 
     def send_response_hash(res)
       resp = Hash.new
-      res['headers']['Content-Length'] = res['request-body'].nil? ? 0 : res['request-body'].length
+      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].length : 0
       res['headers'].each{|key, value|
           tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
           resp[tmp] = value
       }
-      resp['request-body'] = res['request-body']
+      resp['request-body'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'] : ""
       resp['status'] = res['status']        
       resp['message'] = res['message']
       

@@ -140,12 +140,20 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running default.rb"
       puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/default.rb` 
+      unless $? == 0
+        puts "Error interpreting erb code"
+        exit 1
+      end
 
       rm "#{$srcdir}/default.rb"
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
       puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/compileRB.rb` 
+      unless $? == 0
+        puts "Error interpreting ruby code"
+        exit 1
+      end
 
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }

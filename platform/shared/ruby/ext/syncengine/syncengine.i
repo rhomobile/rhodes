@@ -28,6 +28,16 @@
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
+	extern VALUE rho_sync_get_attrs(int source_id);
+	#define get_src_attrs rho_sync_get_attrs
+	
+    extern void  rho_sync_setobjectnotify_url(const char* szUrl);
+    #define set_objectnotify_url rho_sync_setobjectnotify_url
+    extern void  rho_sync_addobjectnotify(int nSrcID, const char* szObject);
+    #define add_objectnotify rho_sync_addobjectnotify
+    extern void  rho_sync_cleanobjectnotify();
+    #define clean_objectnotify rho_sync_cleanobjectnotify
+	
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -51,3 +61,7 @@ extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
 extern void set_pollinterval(int interval);
 extern void set_syncserver(char* syncserver);
+extern VALUE get_src_attrs(int source_id);
+extern void  set_objectnotify_url(const char* szUrl);
+extern void  add_objectnotify(int nSrcID, const char* szObject);
+extern void  clean_objectnotify();

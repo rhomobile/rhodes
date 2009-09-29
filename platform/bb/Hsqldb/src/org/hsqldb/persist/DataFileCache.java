@@ -100,7 +100,7 @@ public class DataFileCache {
     protected boolean hasRowInfo       = false;
 
     // reusable input / output streams
-    protected RowInputInterface  rowIn;
+    protected RowInputBinary  rowIn;
     protected RowOutputInterface rowOut;
 
     //
@@ -613,7 +613,7 @@ public class DataFileCache {
             CachedObject object = cache.get(i);
 
             if (object == null) {
-                RowInputInterface rowInput = readObject(i);
+                RowInputBinary rowInput = readObject(i);
 
                 if (rowInput == null) {
                     return null;
@@ -658,7 +658,7 @@ public class DataFileCache {
         return dataFile.readInt();
     }
 
-    protected synchronized RowInputInterface readObject(int pos)
+    protected synchronized RowInputBinary readObject(int pos)
     throws IOException {
 
         dataFile.seek((long) pos * cacheFileScale);

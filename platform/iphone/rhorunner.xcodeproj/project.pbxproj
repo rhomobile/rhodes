@@ -26,6 +26,7 @@
 		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
 		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
 		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
+		468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 468276EF10713FD600ADBCD4 /* WebViewUrl.m */; };
 		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
 		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
 		46AF5163103F150D006E02E1 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
@@ -165,6 +166,8 @@
 		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
 		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
 		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
+		468276EE10713FD600ADBCD4 /* WebViewUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewUrl.h; path = Server/WebViewUrl.h; sourceTree = "<group>"; };
+		468276EF10713FD600ADBCD4 /* WebViewUrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewUrl.m; path = Server/WebViewUrl.m; sourceTree = "<group>"; };
 		4684391010445A810019C7F0 /* BarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarItem.h; sourceTree = "<group>"; };
 		4684391110445A810019C7F0 /* BarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarItem.m; sourceTree = "<group>"; };
 		468E57401035DBC100A2293C /* TabBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarDelegate.h; sourceTree = "<group>"; };
@@ -267,6 +270,8 @@
 				05377CEB0E74D6C0003B8BD1 /* Server.h */,
 				05377CEA0E74D6C0003B8BD1 /* Server.c */,
 				05CF72930E7F2EAC00D41986 /* defs.h */,
+				468276EE10713FD600ADBCD4 /* WebViewUrl.h */,
+				468276EF10713FD600ADBCD4 /* WebViewUrl.m */,
 			);
 			name = Server;
 			sourceTree = "<group>";
@@ -746,6 +751,7 @@
 				F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */,
 				F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */,
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
+				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -786,7 +792,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -814,7 +820,7 @@
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -825,7 +831,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
@@ -852,7 +858,7 @@
 					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -897,7 +903,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
@@ -924,7 +930,7 @@
 					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -968,7 +974,7 @@
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphonesimulator3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";

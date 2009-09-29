@@ -1,0 +1,39 @@
+fieldset select {margin-top:5px;}
+.clearer {clear:both;}
+ul.info {
+	margin-left:0px;padding-left:0;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+}
+ul.info li {
+	font-weight:bold;
+	margin-left:10px;
+	padding-left:0;
+}
+li.overview div {
+	font-size:85%;
+	font-weight:normal;
+	color:#4183C4;
+}
+.tallrow {
+	position: relative;
+	height:84px;
+	border-bottom: 1px solid #999999;
+  -webkit-border-radius: 0;
+}
+textarea {
+  font-size: 16px;
+  font-weight: normal;
+}
+label {font-size: 80%;}
+.tallrow label { float:left; line-height: 42px;font-weight: bold; margin-left:14px;}
+.tallrow select { float:right; clear:left; font-size: 120%; height: 30px;}
+.tallrow input:not(input[type|=radio]):not(input[type|=checkbox]) {
+	width:auto;
+	margin: 0;
+	padding: 6px;
+}
+.separator {color:#999999}
+.deletebutton {color:#990000}
+
