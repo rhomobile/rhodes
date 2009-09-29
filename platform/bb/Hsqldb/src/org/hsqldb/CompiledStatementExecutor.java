@@ -102,6 +102,9 @@ final class CompiledStatementExecutor {
             cs.materializeSubQueries(session);
 
             result = executeImpl(cs);
+        } catch (Exception e) {
+        	LOG.ERROR("execute statement failed.", e);
+            result = new Result(e, cs.sql);
         } catch (Throwable t) {
         	LOG.ERROR("execute statement failed.", t);
             result = new Result(t, cs.sql);
