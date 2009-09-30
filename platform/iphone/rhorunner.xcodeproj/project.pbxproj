@@ -20,6 +20,7 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
 		461B5A880F82D89700B08CB9 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = 461B5A870F82D89700B08CB9 /* gears.png */; };
+		463577BF107272A400BEC653 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 463577BE107272A400BEC653 /* JSString.m */; };
 		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
 		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
 		466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 466B0FCB0F3CFA9400A52314 /* home_btn.png */; };
@@ -35,11 +36,12 @@
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		46E9DE330FC3577B00726D6B /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 46E9DE320FC3577B00726D6B /* JSString.m */; };
 		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
+		F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
 		F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F516695F0FFD78770079F023 /* AVFoundation.framework */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
@@ -57,6 +59,7 @@
 		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
 		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 		F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
+		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +159,8 @@
 		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
 		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
 		461B5A870F82D89700B08CB9 /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = SOURCE_ROOT; };
+		463577BD107272A400BEC653 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = Classes/JSString.h; sourceTree = SOURCE_ROOT; };
+		463577BE107272A400BEC653 /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = Classes/JSString.m; sourceTree = SOURCE_ROOT; };
 		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		466B0FCB0F3CFA9400A52314 /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
@@ -177,8 +182,6 @@
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
-		46E9DE310FC3577B00726D6B /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../JSString.h; sourceTree = "<group>"; };
-		46E9DE320FC3577B00726D6B /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = ../JSString.m; sourceTree = "<group>"; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
 		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
@@ -190,6 +193,10 @@
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
+		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
+		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
+		F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GoogleGeocoder.m; path = Classes/MapView/GoogleGeocoder.m; sourceTree = SOURCE_ROOT; };
 		F51668DF0FFD5F740079F023 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		F516695F0FFD78770079F023 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
@@ -221,6 +228,8 @@
 		F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = rhoextlib/rhoextlib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F5F06666102CB134006CFD39 /* ParamsWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParamsWrapper.h; sourceTree = "<group>"; };
 		F5F06667102CB134006CFD39 /* ParamsWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParamsWrapper.m; sourceTree = "<group>"; };
+		F5FD0942106151C200B7B8ED /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewController.h; path = MapView/MapViewController.h; sourceTree = "<group>"; };
+		F5FD0943106151C200B7B8ED /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewController.m; path = MapView/MapViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,8 +256,8 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
-				46E9DE310FC3577B00726D6B /* JSString.h */,
-				46E9DE320FC3577B00726D6B /* JSString.m */,
+				463577BD107272A400BEC653 /* JSString.h */,
+				463577BE107272A400BEC653 /* JSString.m */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
 				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
@@ -267,6 +276,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F5425BCD1060539A000CCA8C /* MapView */,
 				468E573F1035DBA600A2293C /* NativeBar */,
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
 				5C5332610FBD6AC700F268F0 /* rho */,
@@ -435,6 +445,19 @@
 				5C7162970F8B7EEC0096B6AA /* librholib.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F5425BCD1060539A000CCA8C /* MapView */ = {
+			isa = PBXGroup;
+			children = (
+				F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */,
+				F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */,
+				F5FD0942106151C200B7B8ED /* MapViewController.h */,
+				F5FD0943106151C200B7B8ED /* MapViewController.m */,
+				F5128ADB1069752F002F00E5 /* MapAnnotation.h */,
+				F5128ADC1069752F002F00E5 /* MapAnnotation.m */,
+			);
+			name = MapView;
 			sourceTree = "<group>";
 		};
 		F547F3D10F9CEB05007C2CD2 /* Log */ = {
@@ -713,7 +736,6 @@
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
-				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
 				F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */,
 				46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */,
 				46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */,
@@ -721,7 +743,11 @@
 				468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */,
 				46AF5163103F150D006E02E1 /* NativeBar.m in Sources */,
 				4684391210445A810019C7F0 /* BarItem.m in Sources */,
+				F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */,
+				F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */,
+				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
 				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
+				463577BF107272A400BEC653 /* JSString.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -779,7 +805,29 @@
 					"-lrholib",
 					"-lrhoextlib",
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
+					"-framework",
+					MapKit,
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
@@ -791,7 +839,7 @@
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
