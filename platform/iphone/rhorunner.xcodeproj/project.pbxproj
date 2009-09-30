@@ -20,6 +20,7 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
 		461B5A880F82D89700B08CB9 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = 461B5A870F82D89700B08CB9 /* gears.png */; };
+		463577BF107272A400BEC653 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 463577BE107272A400BEC653 /* JSString.m */; };
 		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
 		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
 		466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 466B0FCB0F3CFA9400A52314 /* home_btn.png */; };
@@ -35,7 +36,6 @@
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		46E9DE330FC3577B00726D6B /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 46E9DE320FC3577B00726D6B /* JSString.m */; };
 		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
@@ -156,6 +156,8 @@
 		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
 		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
 		461B5A870F82D89700B08CB9 /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = SOURCE_ROOT; };
+		463577BD107272A400BEC653 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = Classes/JSString.h; sourceTree = SOURCE_ROOT; };
+		463577BE107272A400BEC653 /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = Classes/JSString.m; sourceTree = SOURCE_ROOT; };
 		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		466B0FCB0F3CFA9400A52314 /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
@@ -177,8 +179,6 @@
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
-		46E9DE310FC3577B00726D6B /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../JSString.h; sourceTree = "<group>"; };
-		46E9DE320FC3577B00726D6B /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = ../JSString.m; sourceTree = "<group>"; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
 		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
@@ -247,8 +247,8 @@
 		05377CEE0E74D6CB003B8BD1 /* Server */ = {
 			isa = PBXGroup;
 			children = (
-				46E9DE310FC3577B00726D6B /* JSString.h */,
-				46E9DE320FC3577B00726D6B /* JSString.m */,
+				463577BD107272A400BEC653 /* JSString.h */,
+				463577BE107272A400BEC653 /* JSString.m */,
 				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
 				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
 				05CF70E90E78B14D00D41986 /* ServerHost.h */,
@@ -713,7 +713,6 @@
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
-				46E9DE330FC3577B00726D6B /* JSString.m in Sources */,
 				F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */,
 				46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */,
 				46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */,
@@ -722,6 +721,7 @@
 				46AF5163103F150D006E02E1 /* NativeBar.m in Sources */,
 				4684391210445A810019C7F0 /* BarItem.m in Sources */,
 				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
+				463577BF107272A400BEC653 /* JSString.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

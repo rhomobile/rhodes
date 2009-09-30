@@ -174,8 +174,14 @@
 		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
 	} else if(nativeBar.barType == TOOLBAR_TYPE) {
 		webViewController.toolbar.hidden = NO;
+		[window sendSubviewToBack:webViewController.webView];
+		[window bringSubviewToFront:webViewController.toolbar];
+		[webViewController.webView sizeToFit];
 	} else if(nativeBar.barType == NOBAR_TYPE) {
 		webViewController.toolbar.hidden = YES;
+		[window sendSubviewToBack:webViewController.toolbar];
+		[window bringSubviewToFront:webViewController.webView];
+		[webViewController.webView sizeToFit];
 	}
 }
 
