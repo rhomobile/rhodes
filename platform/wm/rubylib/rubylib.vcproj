@@ -1612,6 +1612,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="mapview"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\mapview\mapview_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

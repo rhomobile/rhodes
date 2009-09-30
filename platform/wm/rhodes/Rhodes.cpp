@@ -246,6 +246,10 @@ extern "C" void create_nativebar(int bar_type, int nparams, char** params) {
 	//TODO: Implement me!
 }
 
+extern "C" void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
+    //TODO: mapview_create
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};

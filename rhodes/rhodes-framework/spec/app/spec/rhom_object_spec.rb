@@ -111,6 +111,15 @@ describe "Rhom::RhomObject" do
     acct.name.should == 'foobarfour'
     acct.industry.should == 'solar'
   end
+
+  it "should update attribs while save" do
+    acct = Account.find(:first)
+    obj_id = acct.object
+    acct.name = 'soccer'
+    acct.save
+    acct2 = Account.find(obj_id)
+    acct2.name.should == 'soccer'
+  end
   
   it "should create records with no attribs in database" do
     ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
