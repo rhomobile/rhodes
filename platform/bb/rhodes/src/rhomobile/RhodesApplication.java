@@ -525,6 +525,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	}
 	
 	public void createStatusPopup() {
+		_lastStatusMessage = null;
 		invokeLater( new Runnable() {
 			public void run() {
 				if (_syncStatusPopup == null) {
