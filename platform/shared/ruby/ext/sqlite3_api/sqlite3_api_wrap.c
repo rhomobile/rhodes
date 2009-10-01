@@ -189,7 +189,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
         }
     }
 
-	while(sqlite3_step(statement) == SQLITE_ROW) {
+	while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
 		int nCount = sqlite3_data_count(statement);
 		int nCol = 0;
 		VALUE hashRec = rb_hash_new();
@@ -225,6 +225,13 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 		rb_ary_push(arRes, hashRec);
 	}
 	
+    if ( nRes != SQLITE_OK && nRes != SQLITE_ROW && nRes != SQLITE_DONE )
+    {
+        szErrMsg = (char*)sqlite3_errmsg(db);
+
+        rb_raise(rb_eArgError, "could not execute statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
+    }
+
 	sqlite3_finalize(statement);
 	
     if ( colNames )
