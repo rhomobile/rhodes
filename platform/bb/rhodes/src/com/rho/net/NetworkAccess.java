@@ -42,10 +42,6 @@ public class NetworkAccess implements INetworkAccess {
 		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
 			strDeviceside = "";
 
-		String strConnUID = com.rho.RhoConf.getInstance().getString("bb_connection_uid");
-		if ( strConnUID.length() > 0 )
-			strConnUID = ";ConnectionUID=" + strConnUID;
-		
 		if (DeviceInfo.isSimulator()) {
 			URLsuffix = ";deviceside=true";
 			networkConfigured = true;
@@ -103,11 +99,17 @@ public class NetworkAccess implements INetworkAccess {
 			}
 		}
 		
-		if (networkConfigured == false) {
-			URLsuffix = strDeviceside+strConnUID;//";deviceside=true";
+		String strConfPostfix = com.rho.RhoConf.getInstance().getString("bb_connection_postfix");
+		if ( strConfPostfix != null && strConfPostfix.length() > 0 )
+		{
+			URLsuffix = strConfPostfix;
+			networkConfigured = true;
+		}else if (networkConfigured == false) {
+			URLsuffix = strDeviceside;//";deviceside=true";
 			networkConfigured = true;
 		}
-		
+
+		LOG.INFO("Postfix: " + URLsuffix);
 	}
 
 	public boolean doLocalRequest(String strUrl, String strBody)
