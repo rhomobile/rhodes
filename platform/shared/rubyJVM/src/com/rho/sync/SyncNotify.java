@@ -5,6 +5,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoRuby;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import com.rho.*;
 import com.rho.db.*;
@@ -114,46 +115,51 @@ public class SyncNotify {
                 return;
 
             strUrl = getNet().resolveUrl(m_strObjectNotifyUrl);
-/*
-            for (HashtablePtr<int, Hashtable<String,int>* >::iterator it = m_hashSrcIDAndObject.begin();  it != m_hashSrcIDAndObject.end(); ++it )
-            {
-                int nSrcID = it->first;
-                Hashtable<String,int>& hashObject = *(it->second);
-                for ( Hashtable<String,int>::iterator itObject = hashObject.begin();  itObject != hashObject.end(); ++itObject )
-                {
-                    int nNotifyType = itObject->second;
-                    if (nNotifyType == enNone)
+
+        	Enumeration valsNotify = m_hashSrcIDAndObject.elements();
+        	Enumeration keysNotify = m_hashSrcIDAndObject.keys();
+    		while (valsNotify.hasMoreElements()) 
+    		{
+    			Integer nSrcID = (Integer)keysNotify.nextElement();
+    			Hashtable hashObject = (Hashtable)valsNotify.nextElement();
+
+            	Enumeration valsObject = hashObject.elements();
+            	Enumeration keysObject = hashObject.keys();
+        		while (valsObject.hasMoreElements()) 
+        		{
+        			int nNotifyType = ((Integer)valsObject.nextElement()).intValue();
+        			String strObject = (String)keysObject.nextElement();
+        			
+                    if (nNotifyType == enNone.intValue())
                         continue;
 
-                    if ( nNotifyType == enDelete )
+                    if ( nNotifyType == enDelete.intValue() )
                     {
-                        DBResult( res , getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", itObject->first ));
+                        IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", strObject );
                         if ( !res.isEnd() )
-                            nNotifyType = enUpdate;    
+                            nNotifyType = enUpdate.intValue();    
                     }
 
                     if ( strBody.length() > 0 )
                         strBody += '&';
 
-                    switch(nNotifyType)
+                    if (nNotifyType == enDelete.intValue() ) 
                     {
-                    case enDelete:
-                        strBody += "deleted[][object]=" + itObject->first;
-                        strBody += "&deleted[][source_id]=" + convertToStringA(nSrcID);
-                        break;
-                    case enUpdate:
-                        strBody += "updated[][object]=" + itObject->first;
-                        strBody += "&updated[][source_id]=" + convertToStringA(nSrcID);
-                        break;
-                    case enCreate:
-                        strBody += "created[][object]=" + itObject->first;
-                        strBody += "&created[][source_id]=" + convertToStringA(nSrcID);
-                        break;
+                        strBody += "deleted[][object]=" + strObject;
+                        strBody += "&deleted[][source_id]=" + nSrcID;
+                    }else if ( nNotifyType == enUpdate.intValue() )
+                    {
+                        strBody += "updated[][object]=" + strObject;
+                        strBody += "&updated[][source_id]=" + nSrcID;
+                    }else if ( nNotifyType == enCreate.intValue() )
+                    {
+                        strBody += "created[][object]=" + strObject;
+                        strBody += "&created[][source_id]=" + nSrcID;
                     }
 
-                    hashObject.put(itObject->first, enNone);
+                    hashObject.put(strObject, enNone);
                 }
-            }*/
+            }
 
             if ( strBody.length() == 0 )
                 return;
@@ -205,11 +211,15 @@ public class SyncNotify {
             if ( hashErrors == null )
                 return "";
 
-/*            for ( Hashtable<String,String>::iterator itError = hashErrors.begin();  itError != hashErrors.end(); ++itError )
-            {
-                strBody += "&create_error[][object]=" + itError->first;
-                strBody += "&create_error[][error_message]=" + itError->second;
-            }*/
+        	Enumeration valsErrors = m_hashSrcIDAndObject.elements();
+        	Enumeration keysErrors = m_hashSrcIDAndObject.keys();
+    		while (valsErrors.hasMoreElements()) 
+    		{
+    			String strObject = (String)keysErrors.nextElement();
+    			String strError = (String)valsErrors.nextElement();
+                strBody += "&create_error[][object]=" + strObject;
+                strBody += "&create_error[][error_message]=" + strError;
+            }
 
             hashErrors.clear();
         }
