@@ -182,15 +182,15 @@
 
 - (void)onCreateNativeBar:(NativeBar*)bar {
 	self.nativeBar = bar;
-	if (nativeBar.barType == TABBAR_TYPE) {
+	if (self.nativeBar.barType == TABBAR_TYPE) {
 		tabBarDelegate.tabBar = self.nativeBar;
 		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
-	} else if(nativeBar.barType == TOOLBAR_TYPE) {
+	} else if(self.nativeBar.barType == TOOLBAR_TYPE) {
 		webViewController.toolbar.hidden = NO;
 		[window sendSubviewToBack:webViewController.webView];
 		[window bringSubviewToFront:webViewController.toolbar];
 		[webViewController.webView sizeToFit];
-	} else if(nativeBar.barType == NOBAR_TYPE) {
+	} else if(self.nativeBar.barType == NOBAR_TYPE) {
 		webViewController.toolbar.hidden = YES;
 		[window sendSubviewToBack:webViewController.toolbar];
 		[window bringSubviewToFront:webViewController.webView];
@@ -277,6 +277,16 @@
 - (void)onMapLocation:(NSString*)query {
 	NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
 	[[UIApplication sharedApplication] openURL:url];
+}
+
+- (void)onActiveTab:(NSValue*)val {
+	//TODO: This is a bit weird, but saves us creating another wrapper class
+	int* res = val.pointerValue;
+	if (tabBarDelegate && tabBarDelegate.tabBar) {
+		*res = tabBarDelegate.activeTab;
+	} else {
+		*res = 0;
+	}
 }
 
 #ifdef __IPHONE_3_0
@@ -388,6 +398,7 @@
 	serverHost->onSysCall = @selector(onSysCall:);
 	serverHost->onMapLocation = @selector(onMapLocation:);
 	serverHost->onCreateMap = @selector(onCreateMap:);
+	serverHost->onActiveTab = @selector(onActiveTab:);
     [serverHost start];
 	
 	// Create View

@@ -12,7 +12,7 @@
 
 @implementation TabBarDelegate
 
-@synthesize tabBarController, mainWindow, tabBar, barItems;
+@synthesize tabBarController, mainWindow, tabBar, barItems, activeTab;
 
 - (void)dealloc {
 	[tabBarController release];
@@ -86,6 +86,7 @@
 	} else {
 		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
 	}
+	self.activeTab = self.tabBarController.selectedIndex;
 }
 
 @end

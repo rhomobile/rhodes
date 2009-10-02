@@ -35,6 +35,7 @@
 	SEL onSysCall;
 	SEL onMapLocation;
 	SEL onCreateMap;
+	SEL onActiveTab;
 }
 
 // callbacks
@@ -56,6 +57,7 @@
 @property (assign) SEL onSysCall;
 @property (assign) SEL onMapLocation;
 @property (assign) SEL onCreateMap;
+@property (assign) SEL onActiveTab;
 
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
