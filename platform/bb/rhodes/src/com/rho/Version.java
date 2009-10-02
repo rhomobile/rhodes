@@ -30,6 +30,7 @@ public class Version {
     public static class SoftVersion{
 		public int nMajor = 0;
 		public int nMinor = 0;
+		public int nMinor2 = 0;
     };
     
     private static SoftVersion m_softVer;
@@ -50,7 +51,13 @@ public class Version {
 			
 			int nDot2 = strVer.indexOf('.',nDot+1);
 			if ( nDot2 >= 0 )
+			{
 				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1,nDot2) );
+				
+				int nDot3 = strVer.indexOf('.',nDot2+1);
+				if ( nDot3 >= 0 )
+					m_softVer.nMinor2 = Integer.parseInt( strVer.substring(nDot2+1,nDot3) );
+			}
 			else
 				m_softVer.nMinor = Integer.parseInt( strVer.substring(nDot+1) );
 		}else
