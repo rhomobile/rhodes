@@ -23,7 +23,12 @@ class <%= class_name %>Controller < Rho::RhoController
   # GET /<%= class_name %>/{1}/edit
   def edit
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
-    render :action => :edit
+    
+    if @<%= name.downcase %> && !@<%= name.downcase %>.can_modify
+        render :action => :cannot_edit
+    else    
+        render :action => :edit
+    end    
   end
 
   # POST /<%= class_name %>/create
