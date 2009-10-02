@@ -213,6 +213,8 @@ module Rhom
                 @vars = {}
                 self.rhom_init(@vars)
                 self.vars[:object] = "#{((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i}"
+                self.vars[:source_id] = self.get_inst_source_id.to_i
+                
                 if obj
                   obj.each do |key,value|
                     self.vars[key.to_sym()] = value
@@ -412,7 +414,7 @@ module Rhom
                         new_obj = self.new
                         # always return object field with surrounding '{}'
                         new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
-                        new_obj.vars.merge!({:source_id=>nSrcID})
+                        #new_obj.vars.merge!({:source_id=>nSrcID})
                         
                         if obj['attrib']
                             new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
@@ -554,7 +556,7 @@ module Rhom
                         list.each do |rowhash|
                           # always return object field with surrounding '{}'
                           rowhash[:object] = "{#{rowhash['object']}}"
-                          rowhash[:source_id] = nSrcID
+                          #rowhash[:source_id] = nSrcID
                           new_obj = self.new
                           #new_obj.vars.merge!(rowhash)
                           
