@@ -1555,6 +1555,8 @@ extern char* execute_js(char* js);
 #define execute_js webview_execute_js
 extern void set_menu_items(VALUE argv);
 #define set_menu_items webview_set_menu_items
+extern int active_tab();
+#define active_tab webview_active_tab
 
 
 SWIGINTERN swig_type_info*
@@ -1698,6 +1700,16 @@ SWIG_FromCharPtr(const char *cptr)
   return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
+
+  #define SWIG_From_long   LONG2NUM 
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_int  (int value)
+{    
+  return SWIG_From_long  (value);
+}
+
 SWIGINTERN VALUE
 _wrap_refresh(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
@@ -1800,6 +1812,22 @@ _wrap_set_menu_items(int argc, VALUE *argv, VALUE self) {
   arg1 = argv[0];
   set_menu_items(arg1);
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_active_tab(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)active_tab();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2072,5 +2100,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "current_location", _wrap_current_location, -1);
   rb_define_module_function(mWebView, "execute_js", _wrap_execute_js, -1);
   rb_define_module_function(mWebView, "set_menu_items", _wrap_set_menu_items, -1);
+  rb_define_module_function(mWebView, "active_tab", _wrap_active_tab, -1);
 }
 

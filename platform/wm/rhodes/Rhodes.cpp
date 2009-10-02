@@ -226,6 +226,10 @@ extern "C" void webview_set_menu_items(VALUE argv) {
 //TODO: Implement me!
 }
 
+extern "C" int webview_active_tab() {
+	return 0;
+}
+
 extern "C" char* get_current_location() {
 	return _AtlModule.GetCurrentLocation();
 }
