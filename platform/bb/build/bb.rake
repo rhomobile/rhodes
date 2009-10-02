@@ -106,6 +106,9 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
 
+    $outfilebase = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+    $outfilebase.gsub!(/ /,"_")
+    
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       Jake.get_absolute($preverified+"/RubyVM.jar")
     $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
@@ -329,8 +332,8 @@ namespace "package" do
     task :rhodes => ["build:bb:rhodes"] do
       appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
 
-      if not FileUtils.uptodate?($targetdir + '/rhodesApp.cod',$preverified + "/rhodes.jar")
-        Jake.rapc("rhodesApp",
+      if not FileUtils.uptodate?($targetdir + '/' + $outfilebase + '.cod',$preverified + "/rhodes.jar")
+        Jake.rapc($outfilebase,
           $targetdir,
           $rhodesimplib,
           '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
@@ -346,7 +349,7 @@ namespace "package" do
           exit 1
         end
         $stdout.flush
-        cp $builddir + "/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir + "/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+        cp $builddir + "/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"  if not FileUtils.uptodate?( $targetdir + "/"+$outfilebase+".alx", $builddir + "/rhodesApp.alx")
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -380,14 +383,14 @@ namespace "package" do
         end
       end
 
-      Jake.jar($bindir + "/rhodesApp.jar",$builddir + "/manifest.mf",$tmpdir,true)
+      Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir,true)
 
       appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
 
-      Jake.rapc("rhodesApp",
+      Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
-        '"' + Jake.get_absolute( $bindir + "/rhodesApp.jar") +'"',
+        '"' + Jake.get_absolute( $bindir + "/" + $outfilebase + ".jar") +'"',
         appname,
         $config["env"]["vendor"],
         $config["env"]["version"],
@@ -400,7 +403,7 @@ namespace "package" do
         exit 1
       end
       $stdout.flush
-      cp $builddir +"/rhodesApp.alx", $targetdir if not FileUtils.uptodate?( $targetdir+"/rhodesApp.alx", $builddir + "/rhodesApp.alx")
+      cp $builddir +"/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx" if not FileUtils.uptodate?( $targetdir+"/"+$outfilebase+".alx", $builddir + "/rhodesApp.alx")
 
 
     end
@@ -430,11 +433,11 @@ namespace "device" do
       mkdir_p $targetdir + "/web"
 
       cp $targetdir + "/RhoBundle.jad", $targetdir + "/web"
-      cp $targetdir + "/rhodesApp.jad", $targetdir + "/web"
+      cp $targetdir + "/"+$outfilebase+".jad", $targetdir + "/web"
       cp $targetdir + "/RubyVM.jad", $targetdir + "/web"
 
       Jake.unjar($targetdir + "/RhoBundle.cod", $targetdir + "/web")
-      Jake.unjar($targetdir + "/rhodesApp.cod", $targetdir + "/web")
+      Jake.unjar($targetdir + "/"+$outfilebase+".cod", $targetdir + "/web")
       Jake.unjar($targetdir + "/RubyVM.cod", $targetdir + "/web")
 
     end
@@ -468,9 +471,9 @@ namespace "device" do
       rm_rf $targetdir + "/web"
       mkdir_p $targetdir + "/web"
 
-      cp $targetdir + "/rhodesApp.jad", $targetdir + "/web"
+      cp $targetdir + "/"+$outfilebase+".jad", $targetdir + "/web"
 
-      Jake.unjar($targetdir + "/rhodesApp.cod", $targetdir + "/web")
+      Jake.unjar($targetdir + "/"+$outfilebase+".cod", $targetdir + "/web")
 
     end
 
