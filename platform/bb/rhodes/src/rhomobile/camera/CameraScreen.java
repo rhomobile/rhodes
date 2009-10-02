@@ -36,6 +36,7 @@ import com.rho.RhoClassFactory;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.Version;
 
 public class CameraScreen extends MainScreen {
 
@@ -251,11 +252,21 @@ public class CameraScreen extends MainScreen {
     	LOG.TRACE("initializeCamera");
     	Player player = null;
     	try {
-    		// First of all, attempting to capture picture using MM API
-    		
-            //Create a player for the Blackberry's camera.
-            player = Manager.createPlayer( "capture://video" ); 
-            LOG.TRACE("Recording using MM API");
+	        Version.SoftVersion ver = Version.getSoftVersion();
+	        if ( ver.nMajor == 4 && ver.nMinor == 6 && ver.nMinor2 == 1)
+	        {
+	        	//http://rim.lithium.com/rim/board/message?board.id=java_dev&view=by_date_ascending&message.id=21891
+	        	//takeSnapShot does not work on BlackBerry handheld software version 4.6.1:  
+	        	//The only work around is to invoke the camera application and listen for an image 
+	        	//being saved (would occur when the user takes a picture).  
+	        }else
+	        {
+	    		// First of all, attempting to capture picture using MM API
+	    		
+	            //Create a player for the Blackberry's camera.
+	            player = Manager.createPlayer( "capture://video" ); 
+	            LOG.TRACE("Recording using MM API");
+	        }
     	}
     	catch(Exception e) {
     		// Try to capture picture using BB Camera application
