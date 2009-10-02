@@ -80,11 +80,11 @@ public class WebView extends RubyBasic {
 				return RubyConstant.QNIL;
 			}
 		});
-		// klass.getSingletonClass().defineMethod("webview_active_tab", new RubyNoArgMethod() {
-		// 	protected RubyValue run(RubyValue receiver, RubyBlock block) {
-		// 		return 0;
-		// 	}
-		// });
+		klass.getSingletonClass().defineMethod("active_tab", new RubyNoArgMethod() {
+		 	protected RubyValue run(RubyValue receiver, RubyBlock block) {
+		 		return ObjectFactory.createInteger(0);
+		 	}
+		});
 	}
 	
 }
