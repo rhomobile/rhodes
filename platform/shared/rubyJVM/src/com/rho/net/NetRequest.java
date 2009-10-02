@@ -76,7 +76,7 @@ public class NetRequest
 				m_connection.setRequestProperty("Cookie", strSession );
 			
 			m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			m_connection.setRequestProperty("Accept", "*/*");
+			m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded");
 			
 			if ( strBody != null && strBody.length() > 0 )
 			{
