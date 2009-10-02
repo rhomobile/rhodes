@@ -192,6 +192,16 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+- (int)activeTab {
+	int retval = 0;
+	if(actionTarget && [actionTarget respondsToSelector:onActiveTab]) {
+		NSValue* result = [NSValue valueWithPointer: &retval];
+		if (!result) return 0;
+		[actionTarget performSelectorOnMainThread:onActiveTab withObject:result waitUntilDone:YES];
+	}
+	return retval;
+}
+
 - (void)sysCall:(PARAMS_WRAPPER*)params {
 }
 
@@ -444,4 +454,8 @@ void create_nativebar(int bar_type, int nparams, char** params) {
 		}
 	}
 	[[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
+}
+
+int webview_active_tab() {
+	return [[ServerHost sharedInstance] activeTab];
 }

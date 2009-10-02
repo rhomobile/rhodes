@@ -18,12 +18,14 @@
 	NativeBar* tabBar;
 	UIWindow* mainWindow;
 	NSMutableArray* barItems;
+	int activeTab;
 }
 
 @property(nonatomic, assign) NativeBar* tabBar;
 @property(nonatomic, retain) UITabBarController* tabBarController;
 @property(nonatomic, retain) UIWindow* mainWindow;
 @property(nonatomic, retain) NSMutableArray* barItems;
+@property(assign) int activeTab;
 
 - (void)createTabBar:(UIWindow*)window;
 - (void)loadTabBarItemFirstPage:(BarItem*)item;
