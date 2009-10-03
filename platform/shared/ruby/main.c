@@ -39,6 +39,7 @@ main(int argc, char **argv)
     ruby_sysinit(&argc, &argv);
 
     RhoRubyStart();
+    RhoRubyInitApp();
     RhoRubyStop();
 }
 

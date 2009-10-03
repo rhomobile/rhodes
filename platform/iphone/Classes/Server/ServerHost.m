@@ -240,6 +240,7 @@ static ServerHost* sharedSH = nil;
 		
 		RAWLOG_INFO("Create Sync");
 		rho_sync_create();
+		RhoRubyInitApp();
 		
         [[NSRunLoop currentRunLoop] run];
         RAWLOG_INFO("Invalidating local server");

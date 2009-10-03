@@ -685,6 +685,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				contextMenu.addItem(item);
 			}
 		
+			//setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
+			
 			this.makeContextMenu(contextMenu);
 			menu.add(contextMenu);
 		}
@@ -879,6 +881,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        
 	        PrimaryResourceFetchThread.Create();
 	        
+	        RhoRuby.RhoRubyInitApp();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
