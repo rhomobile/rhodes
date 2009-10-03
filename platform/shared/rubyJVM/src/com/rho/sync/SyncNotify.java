@@ -274,7 +274,7 @@ public class SyncNotify {
 			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
 		}else
 		{
-		    clearSyncNotification(source_id);
+		    //clearSyncNotification(source_id);
 		    if ( strFullUrl.length() > 0 )
 		    {
 		        synchronized(m_mxSyncNotifications){
@@ -366,14 +366,15 @@ public class SyncNotify {
 			            strBody += "&" + sn.m_strParams;
 		        }
 		    }
+		    if ( bFinish )
+		    	clearSyncNotification(src.getID().intValue());
+		    
 			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
 			
 		    NetResponse resp = getNet().pushData( strUrl, strBody, getSync() );
 		    if ( !resp.isOK() )
 		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
 		
-		    if ( bFinish )
-		    	clearSyncNotification(src.getID().intValue());
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Fire notification failed.", exc);

@@ -22,6 +22,10 @@ module Rho
       
       # Initialize application and sources
       init_sources
+      #get_app(APPNAME)
+    end
+
+    def init_app
       get_app(APPNAME)
     end
     

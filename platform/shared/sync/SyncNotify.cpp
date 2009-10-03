@@ -239,7 +239,7 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
         }
 	}else
 	{
-        clearSyncNotification(source_id);
+        //clearSyncNotification(source_id);
         if ( strFullUrl.length() > 0 )
         {
             synchronized(m_mxSyncNotifications)
@@ -338,14 +338,14 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
                 strBody += "&" + sn.m_strParams;
         }
     }
+    if ( bFinish )
+        clearSyncNotification(src.getID());
+
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
     NetResponse(resp,getNet().pushData( strUrl, strBody ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
-    if ( bFinish )
-        clearSyncNotification(src.getID());
 }
 
 void CSyncNotify::clearSyncNotification(int source_id) 
