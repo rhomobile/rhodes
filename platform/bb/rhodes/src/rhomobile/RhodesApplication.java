@@ -685,6 +685,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				contextMenu.addItem(item);
 			}
 		
+			//setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
+			
 			this.makeContextMenu(contextMenu);
 			menu.add(contextMenu);
 		}
@@ -879,6 +881,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        
 	        PrimaryResourceFetchThread.Create();
 	        
+	        RhoRuby.RhoRubyInitApp();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
@@ -987,8 +990,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 	browserContent.finishLoading();
                 else
                 {
-                	String strHost = connection.getHost();
-            		if ( "localhost".equals(strHost) || "127.0.0.1".equals(strHost) )
+                	if ( URI.isLocalHost(connection.getURL()) )
             		{
 	                	synchronized (Application.getEventLock())
 		                //synchronized (getAppEventLock())
@@ -1173,14 +1175,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         // if referrer is null we must return the connection
         if (referrer == null) {
-            HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
             return connection;
 
-        } else {
-
-    		URI uri = new URI(url);
-    		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ){
-                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+        } else 
+        {
+    		if ( URI.isLocalHost(url) )
+    		{
+                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
                 return connection;
    			}else
    			{

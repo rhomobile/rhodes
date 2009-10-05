@@ -28,8 +28,9 @@ typedef unsigned long long uint64__;
 #endif
 	
 void RhoRubyStart();
-void RhoRubyThreadStart();
-void RhoRubyThreadStop();
+void RhoRubyInitApp();
+//void RhoRubyThreadStart();
+//void RhoRubyThreadStop();
 
 VALUE getnil();	
 VALUE createHash();

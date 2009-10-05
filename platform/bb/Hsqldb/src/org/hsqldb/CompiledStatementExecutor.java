@@ -102,6 +102,12 @@ final class CompiledStatementExecutor {
             cs.materializeSubQueries(session);
 
             result = executeImpl(cs);
+        } catch (HsqlException e) {
+        	if ( e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX )
+        		LOG.INFO("execute statement failed: " + e.toString() );
+        	else
+        		LOG.ERROR("execute statement failed.", e);
+            result = new Result(e, cs.sql);
         } catch (Exception e) {
         	LOG.ERROR("execute statement failed.", e);
             result = new Result(e, cs.sql);

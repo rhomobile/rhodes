@@ -76,7 +76,7 @@ public class NetRequest
 				m_connection.setRequestProperty("Cookie", strSession );
 			
 			m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
+			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
 			if ( strBody != null && strBody.length() > 0 )
 			{
@@ -141,8 +141,7 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		URI uri = new URI(strUrl);
-		if ( "localhost".equals(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) )
+		if ( URI.isLocalHost(strUrl) )
 		{
 			boolean bRes = RhoClassFactory.getNetworkAccess().doLocalRequest(strUrl, strBody);
 			return new NetResponse("", bRes ? IHttpConnection.HTTP_OK : IHttpConnection.HTTP_INTERNAL_ERROR);

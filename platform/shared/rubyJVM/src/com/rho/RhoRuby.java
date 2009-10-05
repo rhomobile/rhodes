@@ -23,6 +23,7 @@ public class RhoRuby {
 	public static final RubyID serveID = RubyID.intern("serve_hash");
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
+	public static final RubyID initApp = RubyID.intern("init_app");
 //	public static final RubyID getStartPath = RubyID.intern("get_start_path");
 //	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
@@ -118,6 +119,10 @@ public class RhoRuby {
         }catch(Throwable exc){
         	LOG.ERROR("Cannot create ServeME object", exc);
         }
+	}
+	
+	public static void RhoRubyInitApp(){
+		RubyAPI.callPublicNoArgMethod(receiver, null, initApp);
 	}
 	
 	public static void RhoRubyStop(){
