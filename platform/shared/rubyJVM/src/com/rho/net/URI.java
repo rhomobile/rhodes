@@ -150,6 +150,8 @@ package com.rho.net;
       fgLookupTable['{'] |= MARK_CHARACTERS;
       fgLookupTable['}'] |= MARK_CHARACTERS;
       
+      fgLookupTable['|'] |= MARK_CHARACTERS;
+      
       // Add Scheme Characters
 //      fgLookupTable['+'] |= SCHEME_CHARACTERS;
 //      fgLookupTable['-'] |= SCHEME_CHARACTERS;
@@ -2223,6 +2225,13 @@ package com.rho.net;
 	  }
 	  return sb.toString();
   }
+  
+  public static boolean isLocalHost(String strUrl)
+  {
+	  return strUrl.startsWith("http://localhost") ||
+	  	strUrl.startsWith("http://127.0.0.1");
+  }
+  
   /*
   public String getEscapedURL(){
 	  String fullPath = m_scheme + "://" + m_host + ":" + m_port + m_path;
