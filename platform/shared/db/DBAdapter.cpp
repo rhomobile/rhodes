@@ -60,7 +60,10 @@ boolean CDBAdapter::checkDbError(int rc)
     const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
     int nErrCode = sqlite3_errcode(m_dbHandle);
 
-    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
+    if ( nErrCode == SQLITE_CONSTRAINT )
+        LOG(INFO)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
+    else
+        LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
 
     return false;
 }
