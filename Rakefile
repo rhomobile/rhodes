@@ -60,7 +60,7 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/public', File.join($srcdir,'apps')
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
-  copy_assets($assetfolder) if File.exists? $assetfolder
+  copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
 end
 
 def create_manifest
