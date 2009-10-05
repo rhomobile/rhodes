@@ -23,6 +23,15 @@ namespace "config" do
   end
 end
 
+def copy_assets(asset)
+  
+  dest = File.join($srcdir,'apps/public')
+  
+  cp_r asset + "/.", dest, :remove_destination => true 
+  
+end
+
+
 def common_bundle_start(startdir, dest)
   app = $config["env"]["app"]
   rhodeslib = "rhodes/rhodes-framework/lib"
@@ -50,6 +59,8 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/app',File.join($srcdir,'apps')
   cp_r app + '/public', File.join($srcdir,'apps')
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+
+  copy_assets($assetfolder) if File.exists? $assetfolder
 end
 
 def create_manifest
