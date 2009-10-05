@@ -47,7 +47,10 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 			
 			HsqlProperties props = new HsqlProperties();
 			props.setProperty(HsqlDatabaseProperties.hsqldb_default_table_type, "cached");
-	
+
+			if ( !m_fs.exists(strDbName + ".script") && m_fs.exists(strDbName + ".script.new") )
+				m_fs.renameElement(strDbName + ".script.new", strDbName + ".script");
+				
 			m_dbSess = DatabaseManager.newSession(DatabaseURL.S_FILE, strDbName, "SA", "", props);
 			m_dbSess.setDBCallback(this);
 			

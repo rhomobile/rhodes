@@ -123,6 +123,7 @@ HRESULT CHttpServer::Execute(DWORD_PTR dwParam, HANDLE hObject)
     }
 
     rho_sync_create();
+    RhoRubyInitApp();
     //rho_clientregister_create("PIN_1");
 
 //    if (logged_in()){
