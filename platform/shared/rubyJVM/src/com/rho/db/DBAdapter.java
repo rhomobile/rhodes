@@ -554,7 +554,13 @@ public class DBAdapter extends RubyBasic {
 	    		
 	    		values = new Object[args.size()];
 	    		for ( int i = 0; i < args.size(); i++ )
-	    			values[i] = args.get(i).toStr();
+	    		{
+	    			RubyValue val = args.get(i);
+	    			if ( val instanceof RubyFixnum )
+	    				values[i] = new Long( ((RubyFixnum)val).toLong() );
+	    			else
+	    				values[i] = val.toString();
+	    		}
     		}
     		
     		IDBResult rows = executeSQL(v.toStr(), values);
