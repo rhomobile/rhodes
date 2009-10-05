@@ -35,7 +35,7 @@ public:
     enum ESyncState{ esNone, esSyncAllSources, esSyncSource, esStop, esExit };
 
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
-    static int SYNC_VERSION() { return 1; }
+    static int SYNC_VERSION() { return 2; }
 
     static String SYNC_ASK_ACTION() { return "/ask"; }
 //    static int MAX_SYNC_TRY_COUNT() { return 2; }
