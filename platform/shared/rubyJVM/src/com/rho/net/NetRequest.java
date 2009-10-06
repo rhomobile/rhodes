@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import javolution.io.UTF8StreamReader;
 
 import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.SimpleFile;
@@ -17,7 +18,7 @@ public class NetRequest
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
 	
-	static final int  MAX_NETREQUEST_RETRY  = 1;
+	static final int  MAX_NETREQUEST_RETRY  = 3;
 	boolean m_bCancel = false;
 	
 	public static interface IRhoSession
@@ -499,7 +500,10 @@ public class NetRequest
 	
 	private final StringBuffer readFully(InputStream in) throws Exception 
 	{
-		boolean bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();
+		boolean bReadByBytes = false;
+		if ( RhoConf.getInstance().getInt("bb_netreadbybytes") > 0 )
+			bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();
+		
 		StringBuffer buffer = new StringBuffer();
 		UTF8StreamReader reader = new UTF8StreamReader(4096,bReadByBytes);
 		reader.setInput(in);
