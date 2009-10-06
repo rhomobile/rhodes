@@ -522,10 +522,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		//LOG.INFO("Sync status: " + status);
 		//if (_syncStatusPopup == null && error != 0) {
 		//	createStatusPopup();
-		//} else 
-		if (_syncStatusPopup != null) { 
-			_syncStatusPopup.showStatus(status);
-		}
+		//} else
+		invokeLater( new Runnable() {
+			public void run() {
+				if (_syncStatusPopup != null) { 
+					_syncStatusPopup.showStatus(_lastStatusMessage);
+				}
+			}
+		});	
+				
 	}
 	
 	public void createStatusPopup() {
@@ -556,9 +561,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    
 	    public void showStatus(String status) {
 	    	if (status == null) return;
-            synchronized (Application.getEventLock()) {	
+            //synchronized (Application.getEventLock()) {	
 	    		_labelStatus.setText(status);
-            }
+           // }
 	    }
 	    
 	    protected boolean keyDown( int keycode, int status ) {
