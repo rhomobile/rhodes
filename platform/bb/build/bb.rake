@@ -106,6 +106,8 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
 
+    $assetfolder = $config["env"]["app"] + "/public-" + "bb-" + $bbver
+
     $outfilebase = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
     $outfilebase.gsub!(/ /,"_")
     

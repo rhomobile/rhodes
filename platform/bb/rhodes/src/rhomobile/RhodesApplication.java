@@ -364,7 +364,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             				//retrieve the file
             				Class clazz = Class.forName("rhomobile.RhodesApplication");
             				file = RhoClassFactory.createFile();
-            				InputStream is = file.getResourceAsStream(clazz.getClass(), "/apps" + file_name);
+            				String strClassName = file_name;
+            				if ( !strClassName.startsWith("/apps") )
+            					strClassName = "/apps" + file_name;
+            				
+            				InputStream is = file.getResourceAsStream(clazz.getClass(), strClassName);
             				//create an instance of the player from the InputStream
             				Player player = javax.microedition.media.Manager.createPlayer(is,type);
             				player.realize();
@@ -518,10 +522,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		//LOG.INFO("Sync status: " + status);
 		//if (_syncStatusPopup == null && error != 0) {
 		//	createStatusPopup();
-		//} else 
-		if (_syncStatusPopup != null) { 
-			_syncStatusPopup.showStatus(status);
-		}
+		//} else
+		invokeLater( new Runnable() {
+			public void run() {
+				if (_syncStatusPopup != null) { 
+					_syncStatusPopup.showStatus(_lastStatusMessage);
+				}
+			}
+		});	
+				
 	}
 	
 	public void createStatusPopup() {
@@ -552,9 +561,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    
 	    public void showStatus(String status) {
 	    	if (status == null) return;
-            synchronized (Application.getEventLock()) {	
+            //synchronized (Application.getEventLock()) {	
 	    		_labelStatus.setText(status);
-            }
+           // }
 	    }
 	    
 	    protected boolean keyDown( int keycode, int status ) {

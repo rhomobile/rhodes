@@ -62,7 +62,7 @@ class SyncSource
     String m_token;
     boolean m_bTokenFromDB; 
     
-    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
+    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
     boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoRuby.ERR_NONE;
     String m_strError = "";
@@ -138,27 +138,34 @@ class SyncSource
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 	    
 	    try{
+	    	PROF.START("Pull");
 	        if ( isEmptyToken() )
 	            processToken("1");
 	    	
 	        if ( m_strParams.length() == 0 )
 	        {
-			    syncClientChanges();
-			    getAndremoveAsk();
+                IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID());
+                if ( !res.isEnd() )
+                {
+                	syncClientChanges();
+                	getAndremoveAsk();
+                }
 	        }
+	        PROF.STOP("Pull");
+	        
 		    syncServerChanges();
 	    }catch(Exception exc)
 	    {
 	    	getSync().stopSync();
 	    	throw exc;
 	    }finally{
-		    TimeInterval endTime = TimeInterval.getCurrentTime();
+		   TimeInterval endTime = TimeInterval.getCurrentTime();
 		    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
 								 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
 		                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 		                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
 		    
-		    String profName = "File operations: " + getName();
+		    //String profName = "File operations: " + getName();
 		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_SYNC, profName);
 		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_READ, profName);
 		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_WRITE, profName);
@@ -349,9 +356,9 @@ class SyncSource
 	            getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
 	                res.getStringByIdx(0), res.getStringByIdx(1), getID() );
 	        }
+	        
+		    getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "ask" );
 	    }
-
-	    getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "ask" );
 
 	    setAskParams(askParams);
 	}
@@ -441,6 +448,7 @@ class SyncSource
 	    JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
 	    PROF.STOP("Parse");
 	    
+	    PROF.START("Data1");
 	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("error") )
 	    {
 	        m_strError = oJsonArr.getCurItem().getString("error");
@@ -484,6 +492,7 @@ class SyncSource
 		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
 				+ ". Version: " + nVersion );
 		
+		PROF.STOP("Data1");
 		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 		{
 		    //TODO: support DBExceptions
@@ -511,8 +520,10 @@ class SyncSource
 		    
 		}
 		
+		PROF.START("Data1");
 		if ( getCurPageCount() > 0 )
 	    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+		PROF.STOP("Data1");
 	}
 
 	void processServerData_Ver0(JSONArrayIterator oJsonArr)throws Exception
@@ -560,13 +571,18 @@ class SyncSource
 	        }
 
 	        JSONArrayIterator oJsonObjList = new JSONArrayIterator(oJsonSource, "ol");
+	        m_nAttribCounter = 0;
 	        for( ; !oJsonObjList.isEnd() && getSync().isContinueSync(); oJsonObjList.next() )
 	        {
-		        if ( getDB().isUnlockDB() )
+		        if ( getDB().isUnlockDB() )//|| m_nAttribCounter >= 200 )
 		        {
-					LOG.INFO( "Commit transaction because of UI request." );
+		        	if ( getDB().isUnlockDB() )
+		        		LOG.INFO( "Commit transaction because of UI request." );
+		        	
 		            getDB().endTransaction();
 		            getDB().startTransaction();
+		            
+		            m_nAttribCounter = 0;
 		        }
 		
 		        JSONEntry oJsonObject = oJsonObjList.getCurItem();
@@ -681,7 +697,7 @@ class SyncSource
 		String strOldObject = oJsonObject.getString("oo");
 		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
 		
-	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
+	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); m_nAttribCounter++, oJsonArr.next() )
 		{
 			JSONEntry oJsonEntry = oJsonArr.getCurItem();
 	        if ( oJsonEntry.isEmpty() )

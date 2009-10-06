@@ -76,7 +76,7 @@ static ServerHost* sharedSH = nil;
 
 @synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
 @synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
-@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap;
+@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
