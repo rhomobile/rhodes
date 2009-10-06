@@ -76,8 +76,12 @@ void CSyncSource::sync()
 
     if ( m_strParams.length() == 0 )
     {
-        syncClientChanges();
-        getAndremoveAsk();
+        DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID()) );
+        if ( !res.isEnd() )
+        {
+            syncClientChanges();
+            getAndremoveAsk();
+        }
     }
     syncServerChanges();
 
