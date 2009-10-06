@@ -816,6 +816,17 @@
 					"-lrholib",
 					"-lrhoextlib",
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
@@ -826,6 +837,17 @@
 					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
