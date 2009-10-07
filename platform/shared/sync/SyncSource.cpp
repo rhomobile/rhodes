@@ -147,6 +147,7 @@ void CSyncSource::syncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
+                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
                 continue;
             }
         }
@@ -220,6 +221,13 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
     getDB().startTransaction();
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType ) );
+
+    if ( res.isEnd() )
+    {
+        getDB().endTransaction();
+        return;
+    }
+
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
