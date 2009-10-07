@@ -322,8 +322,10 @@ public class SyncThread extends RhoThread
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
+			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(m_statusListener);
 			m_statusListener.createStatusPopup();
-		}
+		}else
+			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(null);
 		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll));
 	}

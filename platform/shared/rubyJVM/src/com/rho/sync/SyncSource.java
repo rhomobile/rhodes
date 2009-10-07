@@ -227,6 +227,7 @@ class SyncSource
 	            if ( !resp.isOK() )
 	            {
 	                getSync().setState(SyncEngine.esStop);
+	                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
 	                continue;
 	            }
 	        }
@@ -304,6 +305,12 @@ class SyncSource
 		
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
 						 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType );
+	    if ( res.isEnd() )
+	    {
+	    	getDB().endTransaction();
+	    	return strBody;
+	    }
+	    
 	    for( ; !res.isEnd(); res.next() )
 	    {
 	        String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
