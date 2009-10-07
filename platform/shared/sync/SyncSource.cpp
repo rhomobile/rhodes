@@ -76,8 +76,12 @@ void CSyncSource::sync()
 
     if ( m_strParams.length() == 0 )
     {
-        DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID()) );
-        if ( !res.isEnd() )
+        boolean bSyncClient = false;
+        {
+            DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID()) );
+            bSyncClient = !res.isEnd();
+        }
+        if ( bSyncClient )
         {
             syncClientChanges();
             getAndremoveAsk();
@@ -218,7 +222,7 @@ void CSyncSource::syncClientChanges()
  */
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
-    getDB().startTransaction();
+    getDB().Lock();
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
 					 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType ) );
 
@@ -261,7 +265,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
     }
 
     getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), szUpdateType );
-    getDB().endTransaction();
+    getDB().Unlock();
 }
 
 void CSyncSource::getAndremoveAsk()

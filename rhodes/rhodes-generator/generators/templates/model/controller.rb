@@ -34,21 +34,30 @@ class <%= class_name %>Controller < Rho::RhoController
   # POST /<%= class_name %>/create
   def create
     @<%= name.downcase %> = <%= class_name %>.new(@params['<%= name.downcase %>'])
-    @<%= name.downcase %>.save
-    redirect :action => :index
+    if !@<%= name.downcase %>.save
+        render :action => :cannot_edit
+    else
+        redirect :action => :index
+    end    
   end
 
   # POST /<%= class_name %>/{1}/update
   def update
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
-    @<%= name.downcase %>.update_attributes(@params['<%= name.downcase %>'])
-    redirect :action => :index
+    if !@<%= name.downcase %>.update_attributes(@params['<%= name.downcase %>'])
+        render :action => :cannot_edit
+    else
+        redirect :action => :index
+    end    
   end
 
   # POST /<%= class_name %>/{1}/delete
   def delete
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
-    @<%= name.downcase %>.destroy
-    redirect :action => :index
+    if !@<%= name.downcase %>.destroy
+        render :action => :cannot_edit
+    else
+        redirect :action => :index
+    end    
   end
 end
