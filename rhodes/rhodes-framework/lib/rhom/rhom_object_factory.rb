@@ -728,7 +728,6 @@ module Rhom
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
               def destroy
-                result = nil
                 obj = self.inst_strip_braces(self.object)
                 update_type=self.get_update_type_by_source('delete')
                 
@@ -736,6 +735,11 @@ module Rhom
                     begin
                       ::Rhom::RhomDbAdapter.start_transaction
                 
+                      if !can_modify
+                        ::Rhom::RhomDbAdapter.rollback  
+                        return false
+                      end
+                      
                       # first delete the record from viewable list
                       #::Rhom::RhomAttribManager.delete_attribs(self.get_inst_source_id,{"object"=>obj})
                       
@@ -761,12 +765,11 @@ module Rhom
                     end    
                       
                 end
-                result
+                true
               end
 		
               # saves the current object to the database as a create type
               def save
-                result = nil
                 # iterate over each instance variable and insert create row to table
 				obj = self.inst_strip_braces(self.object)
 				nSrcID = self.get_inst_source_id
@@ -797,8 +800,13 @@ module Rhom
                             oldValue = resValue[0]['value']
                             if oldValue != val
                             
-                                resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0}) 
+                                resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type,sent', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID}) 
                                 if resUpdateType && resUpdateType.length > 0 
+                                    if resUpdateType[0]['sent'] > 0
+                                      ::Rhom::RhomDbAdapter.rollback
+                                      return false
+                                    end
+                                
                                     fields['update_type'] = resUpdateType[0]['update_type'] 
                                     ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
                                 end
@@ -825,13 +833,12 @@ module Rhom
                     ::Rhom::RhomDbAdapter.rollback    
                 end    
                 
-                result
+                true
               end
           
               # updates the current record in the viewable list and adds
               # a sync operation to update
               def update_attributes(attrs)
-                result = nil
                 obj = self.inst_strip_braces(self.object)
                 update_type=self.get_update_type_by_source('update')
                 nSrcID = self.get_inst_source_id
@@ -851,8 +858,13 @@ module Rhom
                       # then we procede with update
                       if old_val != new_val
                           # only one update at a time
-                          resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0}) 
+                          resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type,sent', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
                           if resUpdateType && resUpdateType.length > 0 
+                              if resUpdateType[0]['sent'] > 0
+                                ::Rhom::RhomDbAdapter.rollback
+                                return false
+                              end
+                              
                               update_type = resUpdateType[0]['update_type'] 
                               ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
                           end
@@ -882,7 +894,7 @@ module Rhom
                     ::Rhom::RhomDbAdapter.rollback    
                 end    
                     
-                result
+                true
               end
 	
               def get_inst_source_id

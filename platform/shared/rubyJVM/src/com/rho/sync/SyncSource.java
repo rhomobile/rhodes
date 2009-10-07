@@ -144,8 +144,14 @@ class SyncSource
 	    	
 	        if ( m_strParams.length() == 0 )
 	        {
-                IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID());
-                if ( !res.isEnd() )
+	        	//IDBResult res1 = getDB().executeSQL("SELECT * FROM changed_values WHERE source_id=?", getID());
+	        	boolean bSyncClient = false;
+	        	{
+	        		IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID());
+	        		bSyncClient = !res.isEnd();
+	        	}
+                	
+                if ( bSyncClient )	
                 {
                 	syncClientChanges();
                 	getAndremoveAsk();
@@ -301,7 +307,7 @@ class SyncSource
 	String makePushBody( String szUpdateType)throws DBException
 	{
 		String strBody = "";
-        getDB().startTransaction();
+        getDB().Lock();
 		
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
 						 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType );
@@ -345,7 +351,7 @@ class SyncSource
 	    }
 	    
 	    getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), szUpdateType );	    
-	    getDB().endTransaction();
+	    getDB().Unlock();
 	    
 	    return strBody;
 	}
