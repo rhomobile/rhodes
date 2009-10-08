@@ -208,7 +208,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 					break;
                 case SQLITE_INTEGER:
                 {
-                    sqlite3_int64 nVal = sqlite3_column_int64(statement, nCol);
+                    sqlite_int64 nVal = sqlite3_column_int64(statement, nCol);
                     colValue = LL2NUM(nVal);
                     break;
                 }
