@@ -142,24 +142,37 @@ class SyncSource
 	        if ( isEmptyToken() )
 	            processToken("1");
 	    	
+	        boolean bSyncedServer = false;
 	        if ( m_strParams.length() == 0 )
 	        {
-	        	//IDBResult res1 = getDB().executeSQL("SELECT * FROM changed_values WHERE source_id=?", getID());
-	        	boolean bSyncClient = false;
-	        	{
-	        		IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID());
-	        		bSyncClient = !res.isEnd();
-	        	}
-                	
-                if ( bSyncClient )	
-                {
-                	syncClientChanges();
-                	getAndremoveAsk();
-                }
+	            if ( isPendingClientChanges() )
+	            {
+	                syncServerChanges();
+	                bSyncedServer = true;
+	            }
+
+	            if ( bSyncedServer && isPendingClientChanges() )
+	                getSync().setState(SyncEngine.esStop);
+	            else
+	            {
+	                boolean bSyncClient = false;
+	                {
+	                    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+	                    bSyncClient = !res.isEnd();
+	                }
+	                if ( bSyncClient )
+	                {
+	                    syncClientChanges();
+	                    getAndremoveAsk();
+	                    bSyncedServer = false;
+	                }
+	            }
 	        }
 	        PROF.STOP("Pull");
+
+	        if ( !bSyncedServer )
+	        	syncServerChanges();
 	        
-		    syncServerChanges();
 	    }catch(Exception exc)
 	    {
 	    	getSync().stopSync();
@@ -181,6 +194,12 @@ class SyncSource
 	    }
 	}
 
+	boolean isPendingClientChanges()throws DBException
+	{
+	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent>1  LIMIT 1 OFFSET 0", getID());
+	    return !res.isEnd();
+	}
+	
 	void syncClientBlobs(String strBaseQuery)throws Exception
 	{
 	    String strQuery;
@@ -310,10 +329,10 @@ class SyncSource
         getDB().Lock();
 		
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, main_id "+
-						 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType );
+						 "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY sent DESC", getID(), szUpdateType );
 	    if ( res.isEnd() )
 	    {
-	    	getDB().endTransaction();
+	    	getDB().Unlock();
 	    	return strBody;
 	    }
 	    

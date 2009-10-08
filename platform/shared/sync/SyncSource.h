@@ -90,6 +90,7 @@ public:
     CSyncSource(CSyncEngine& syncEngine );
 
     void syncClientChanges();
+    boolean isPendingClientChanges();
     void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
     void getAndremoveAsk();

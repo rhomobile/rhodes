@@ -236,7 +236,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources order by source_id");
+	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY source_id");
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
