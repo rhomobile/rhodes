@@ -74,25 +74,46 @@ void CSyncSource::sync()
     if ( isEmptyToken() )
         processToken(1);
 
+    boolean bSyncedServer = false;
     if ( m_strParams.length() == 0 )
     {
-        boolean bSyncClient = false;
+        if ( isPendingClientChanges() )
         {
-            DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID()) );
-            bSyncClient = !res.isEnd();
+            syncServerChanges();
+            bSyncedServer = true;
         }
-        if ( bSyncClient )
+
+        if ( bSyncedServer && isPendingClientChanges() )
+            getSync().setState(CSyncEngine::esStop);
+        else
         {
-            syncClientChanges();
-            getAndremoveAsk();
+            boolean bSyncClient = false;
+            {
+                DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID()) );
+                bSyncClient = !res.isEnd();
+            }
+            if ( bSyncClient )
+            {
+                syncClientChanges();
+                getAndremoveAsk();
+                bSyncedServer = false;
+            }
         }
     }
-    syncServerChanges();
+
+    if ( !bSyncedServer )
+        syncServerChanges();
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
                          endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+}
+
+boolean CSyncSource::isPendingClientChanges()
+{
+    DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent>1  LIMIT 1 OFFSET 0", getID()) );
+    return !res.isEnd();
 }
 
 void CSyncSource::syncClientBlobs(const String& strBaseQuery)
@@ -224,11 +245,11 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
     getDB().Lock();
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type, main_id "
-					 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType ) );
+					 "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY sent DESC", getID(), szUpdateType ) );
 
     if ( res.isEnd() )
     {
-        getDB().endTransaction();
+        getDB().Unlock();
         return;
     }
 

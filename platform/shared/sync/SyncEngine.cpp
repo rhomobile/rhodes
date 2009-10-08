@@ -143,7 +143,7 @@ void CSyncEngine::loadAllSources()
 {
     m_sources.clear();
 
-    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token,name from sources order by source_id") );
+    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY source_id") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strDbUrl = res.getStringByIdx(1);
