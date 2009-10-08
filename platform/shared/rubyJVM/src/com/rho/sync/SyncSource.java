@@ -309,7 +309,7 @@ class SyncSource
 		String strBody = "";
         getDB().Lock();
 		
-	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
+	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type, main_id "+
 						 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType );
 	    if ( res.isEnd() )
 	    {
@@ -323,7 +323,11 @@ class SyncSource
 	
 	        if ( res.getStringByIdx(1).length() > 0 ) 
 	            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
-	
+
+	        //long main_id = res.getLongByIdx(4);
+	        //if ( main_id != 0 )
+	        //    strSrcBody += "&attrvals[][id]=" + main_id;
+	        
 	        String value = res.getStringByIdx(2);
 	        String attribType = res.getStringByIdx(3);
 	
@@ -498,7 +502,7 @@ class SyncSource
 	        oJsonArr.next();
 	    }else if ( getCurPageCount() == 0 )
 	    {
-	    	getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent=3", getID() );
+	    	getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent>=3", getID() );
 	        processToken("0");
 	    }
 	    
@@ -731,11 +735,11 @@ class SyncSource
 	            boolean bUpdated = false;
 	            if ( strOldObject != null )
 	            {
-	                IDBResult res = getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=? and sent=2 LIMIT 1 OFFSET 0", strOldObject, strAttrib, nSrcID );
+	                IDBResult res = getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strOldObject, strAttrib, nSrcID );
 	                if ( !res.isEnd() )
 	                {
 	                    getDB().executeSQL("UPDATE object_values SET id=?, object=? where object=? and attrib=? and source_id=?", value.m_nID, strObject, strOldObject, strAttrib, nSrcID );
-	                    getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID );
+	                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID );
 	                    
 	                    getNotify().onObjectChanged(nSrcID,strOldObject, SyncNotify.enCreate);
 
@@ -746,7 +750,7 @@ class SyncSource
 	            if ( !bUpdated )
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT value, attrib_type " +
-						     "FROM changed_values where object=? and attrib=? and source_id=? and sent=2 LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID );
+						     "FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID );
 	                if ( !res.isEnd() )
 	                {
 	                    boolean bModified = false;
@@ -767,7 +771,7 @@ class SyncSource
 	    			            value.m_nID, strAttrib, nSrcID, strObject,
 	    			            value.m_strValue, value.m_strAttrType );
 
-	                    getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
+	                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
 	    		        
 	                    if ( bModified )
 	                        getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
@@ -790,6 +794,7 @@ class SyncSource
 	                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
 	                String strDelObject = res.getStringByIdx(1);
 	                getDB().executeSQL("DELETE FROM object_values where id=?", id );
+	                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=? and source_id=?", new Long(id), nSrcID );
 	                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
 	            }
 		    	
