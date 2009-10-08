@@ -209,10 +209,14 @@ module Rhom
               # the rhom object
               attr_accessor :vars
           
+              def generate_id
+                ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i
+              end
+              
               def initialize(obj=nil)
                 @vars = {}
                 self.rhom_init(@vars)
-                self.vars[:object] = "#{((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i}"
+                self.vars[:object] = "#{generate_id()}"
                 self.vars[:source_id] = self.get_inst_source_id.to_i
                 
                 if obj
@@ -780,7 +784,7 @@ module Rhom
                     result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM object_values WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
                     bUpdate = result && result.length > 0 
     				update_type = bUpdate ? self.get_update_type_by_source('update') : self.get_update_type_by_source('create')
-                
+                    nTmpAdd = 1
                     self.vars.each do |key_a,value|
                         key = key_a.to_s
                         next if ::Rhom::RhomObject.method_name_reserved?(key)
@@ -819,8 +823,13 @@ module Rhom
                                 result = ::Rhom::RhomDbAdapter.update_into_table('object_values', fields, {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID})
                             end    
                         else
+                            tmp_id = generate_id()+nTmpAdd
+                            nTmpAdd = nTmpAdd + 1
+                            fields['main_id'] = tmp_id
                             ::Rhom::RhomDbAdapter.insert_into_table('changed_values', fields)
                             fields.delete("update_type")
+                            fields.delete("main_id")
+                            fields['id'] = tmp_id
                             result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
                         end
                         
@@ -844,7 +853,7 @@ module Rhom
                 nSrcID = self.get_inst_source_id
                 begin
                     ::Rhom::RhomDbAdapter.start_transaction
-                
+                    nTmpAdd = 1
                     attrs.each do |attrib,val|
                       attrib = attrib.to_s.gsub(/@/,"")
                       next if ::Rhom::RhomObject.method_name_reserved?(attrib)
@@ -869,16 +878,17 @@ module Rhom
                               ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
                           end
                           
-                          #::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "sent"=>0})
                           # add to syncengine queue
-                          ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           
                           result = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
                           if result && result.length > 0 
                             result = ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID})
+                            ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           else
-                            result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
-                            #::Rhom::RhomAttribManager.add_attrib(self.get_inst_source_id,attrib)
+                            tmp_id = generate_id()+nTmpAdd
+                            nTmpAdd = nTmpAdd + 1
+                            result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"id"=>tmp_id,"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
+                            ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"main_id"=>tmp_id, "source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           end    
                           
                           # update in-memory object

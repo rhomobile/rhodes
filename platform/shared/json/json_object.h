@@ -12,6 +12,8 @@
 #ifndef _json_object_h_
 #define _json_object_h_
 
+#include "common/RhoPort.h"
+
 #define JSON_OBJECT_DEF_HASH_ENTIRES 16
 
 #undef FALSE
@@ -247,7 +249,7 @@ extern boolean json_object_get_boolean(struct json_object *obj);
  * @param i the integer
  * @returns a json_object of type json_type_int
  */
-extern struct json_object* json_object_new_int(int i);
+extern struct json_object* json_object_new_int(int64 i);
 
 /** Get the int value of a json_object
  *
@@ -258,7 +260,7 @@ extern struct json_object* json_object_new_int(int i);
  * @param obj the json_object instance
  * @returns an int
  */
-extern int json_object_get_int(struct json_object *obj);
+extern int64 json_object_get_int(struct json_object *obj);
 
 
 /* double type methods */

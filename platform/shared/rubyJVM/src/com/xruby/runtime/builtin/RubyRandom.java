@@ -113,7 +113,7 @@ public class RubyRandom {
 			max = -max;
 		}
 	    val = random.nextInt((int)max);
-	    if (val >= Integer.MIN_VALUE && val <= Integer.MAX_VALUE) {
+	    if (val >= Long.MIN_VALUE && val <= Long.MAX_VALUE) {
 	    	return new RubyFixnum((int)val);
 	    } else {
 	    	return RubyBignum.bignorm(val);

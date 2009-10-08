@@ -109,6 +109,7 @@ CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%f" );
 
 CONVERT_TYPE_A( uint64, "%llu" );
+CONVERT_TYPE_A( int64, "%lli" );
 
 }
 }
