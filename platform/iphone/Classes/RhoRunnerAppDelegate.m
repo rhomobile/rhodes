@@ -342,8 +342,8 @@
 
 - (void) showLoadingPage {
 	NSString *loadingPage;
-	
-	NSString *filePath = @"app/loading.html";
+
+	NSString *filePath = [NSString stringWithFormat:@"%s/app/loading.html", GetApplicationsRootPath()];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData *data = [fileManager contentsAtPath:filePath];
