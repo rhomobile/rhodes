@@ -63,7 +63,7 @@ class SyncSource
     boolean m_bTokenFromDB; 
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
-    boolean m_bGetAtLeastOnePage = false;
+    boolean m_bGetAtLeastOnePage = false, m_bCreateObjectsPass = false;
     int m_nErrCode = RhoRuby.ERR_NONE;
     String m_strError = "";
     String m_strParams = "";
@@ -97,6 +97,8 @@ class SyncSource
     void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
     int  getCurPageCount(){return m_nCurPageCount;}
     int  getTotalCount(){return m_nTotalCount;}
+    void setCreateObjectsPass(boolean bPass){m_bCreateObjectsPass = bPass;}
+    boolean isCreateObjectsPass(){ return m_bCreateObjectsPass; }
     
     SyncEngine getSync(){ return m_syncEngine; }
     SyncNotify getNotify(){ return getSync().getNotify(); }
@@ -196,7 +198,7 @@ class SyncSource
 
 	boolean isPendingClientChanges()throws DBException
 	{
-	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent>1  LIMIT 1 OFFSET 0", getID());
+	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
 	    return !res.isEnd();
 	}
 	
@@ -343,9 +345,9 @@ class SyncSource
 	        if ( res.getStringByIdx(1).length() > 0 ) 
 	            strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 
-	        //long main_id = res.getLongByIdx(4);
-	        //if ( main_id != 0 )
-	        //    strSrcBody += "&attrvals[][id]=" + main_id;
+	        long main_id = res.getLongByIdx(4);
+	        if ( main_id != 0 )
+	            strSrcBody += "&attrvals[][id]=" + main_id;
 	        
 	        String value = res.getStringByIdx(2);
 	        String attribType = res.getStringByIdx(3);
@@ -539,7 +541,15 @@ class SyncSource
 		        if ( nVersion == 0 )
 		            processServerData_Ver0(oJsonArr);
 		        else
-		            processServerData_Ver1(oJsonArr);
+	            {
+	                int nSavedPos = oJsonArr.getCurPos();
+	                setCreateObjectsPass(true);
+	                processServerData_Ver1(oJsonArr);
+
+	                setCreateObjectsPass(false);
+	                oJsonArr.reset(nSavedPos);
+	                processServerData_Ver1(oJsonArr);
+	            }
 		        
 			    PROF.STOP("Data");		    
 		    	
@@ -721,16 +731,18 @@ class SyncSource
 	
 	boolean processSyncObject_ver1(JSONEntry oJsonObject, Integer nSrcID)throws Exception
 	{
+		String strOldObject = oJsonObject.getString("oo");
+	    if ( isCreateObjectsPass() != (strOldObject != null) )
+	        return true;
+		
 	    if ( oJsonObject.hasName("e") )
 	    {
-	    	String strOldObject = oJsonObject.getString("oo");
 	    	String strError = oJsonObject.getString("e");
 	        getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
 	        return true;
 	    }
 		
 		String strObject = oJsonObject.getString("o");
-		String strOldObject = oJsonObject.getString("oo");
 		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
 		
 	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); m_nAttribCounter++, oJsonArr.next() )
@@ -813,7 +825,7 @@ class SyncSource
 	                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
 	                String strDelObject = res.getStringByIdx(1);
 	                getDB().executeSQL("DELETE FROM object_values where id=?", id );
-	                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=? and source_id=?", new Long(id), nSrcID );
+	                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", new Long(id) );
 	                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
 	            }
 		    	

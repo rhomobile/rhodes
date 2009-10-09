@@ -58,7 +58,7 @@ class CSyncSource
     boolean m_bTokenFromDB;
 
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
-    boolean m_bGetAtLeastOnePage;
+    boolean m_bGetAtLeastOnePage, m_bCreateObjectsPass;
 public:
     int m_nErrCode;
     String m_strError;
@@ -91,6 +91,7 @@ public:
 
     void syncClientChanges();
     boolean isPendingClientChanges();
+
     void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
     void getAndremoveAsk();
@@ -110,6 +111,9 @@ public:
     boolean processSyncObject_ver1(json::CJSONEntry oJsonObject, int nSrcID);//throws Exception
     void processServerData_Ver0(json::CJSONArrayIterator& oJsonArr);
     void processServerData_Ver1(json::CJSONArrayIterator& oJsonArr);
+
+    void setCreateObjectsPass(boolean bPass){m_bCreateObjectsPass = bPass;}
+    boolean isCreateObjectsPass(){ return m_bCreateObjectsPass; }
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);

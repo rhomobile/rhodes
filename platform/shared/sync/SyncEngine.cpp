@@ -32,9 +32,6 @@ void CSyncEngine::doSyncAllSources()
     {
         m_clientID = loadClientID();
         syncAllSources();
-
-	    if ( getState() != esStop )
-            getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
     }
     else
     {
@@ -233,6 +230,7 @@ int CSyncEngine::getStartSource()
 
 void CSyncEngine::syncAllSources()
 {
+    boolean bError = false;
     for( int i = getStartSource(); i < (int)m_sources.size() && isContinueSync(); i++ )
     {
         CSyncSource& src = *m_sources.elementAt(i);
@@ -240,7 +238,11 @@ void CSyncEngine::syncAllSources()
             src.sync();
 
         getNotify().onSyncSourceEnd(i, m_sources);
+        bError = src.m_nErrCode != RhoRuby.ERR_NONE;
     }
+
+    if ( !bError)
+    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 }
 
 void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMessage)

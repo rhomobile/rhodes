@@ -31,6 +31,13 @@ class JSONArrayIterator
 	    m_nCurItem++;
 	}
 
+    void    reset(int nPos)
+    {
+    	m_nCurItem = nPos;
+    }
+    
+    int     getCurPos(){ return m_nCurItem; }
+	
 	JSONEntry getCurItem()throws JSONException
 	{
 	    return new JSONEntry( isEnd() ? null : (JSONObject) m_array.get(m_nCurItem) );

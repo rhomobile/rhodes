@@ -116,8 +116,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.DESTROY_COUNTER("Pull");
 			    PROF.STOP("Sync");
 			    
-			    if ( getState() != esStop )
-			    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 		    } else {
 		    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
 		    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
@@ -329,6 +327,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	void syncAllSources()throws Exception
 	{
+		boolean bError = false;
 	    for( int i = getStartSource(); i < m_sources.size() && isContinueSync(); i++ )
 	    {
 	    	SyncSource src = null;
@@ -346,8 +345,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    		throw exc;
 	    	}finally{
 	    		getNotify().onSyncSourceEnd( i, m_sources );
+	    		bError = src.m_nErrCode != RhoRuby.ERR_NONE;
 	    	}
 	    }
+	    
+	    if ( !bError)
+	    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 	}
 	
 	void callLoginCallback(String callback, int nErrCode, String strMessage)
