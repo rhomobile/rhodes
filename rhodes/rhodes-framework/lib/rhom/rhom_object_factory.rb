@@ -784,7 +784,7 @@ module Rhom
                         key = key_a.to_s
                         next if ::Rhom::RhomObject.method_name_reserved?(key)
 
-                        val = value.is_a?(String) ? self.inst_strip_braces(value) : value
+                        val = self.inst_strip_braces(value.to_s)
                         
                         # add rows excluding object, source_id and update_type
                         fields = {"source_id"=>nSrcID,
@@ -848,7 +848,7 @@ module Rhom
                       old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
                       
                       # Don't save objects with braces to database
-                      new_val = val.is_a?(String) ? self.inst_strip_braces(val) : val
+                      new_val = self.inst_strip_braces(val.to_s)
                       
                       # if the object's value doesn't match the database record
                       # then we procede with update

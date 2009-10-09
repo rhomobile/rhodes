@@ -27,6 +27,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -40,6 +41,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -57,6 +59,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -112,7 +115,7 @@ void CSyncSource::sync()
 
 boolean CSyncSource::isPendingClientChanges()
 {
-    DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent>1  LIMIT 1 OFFSET 0", getID()) );
+    DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID()) );
     return !res.isEnd();
 }
 
@@ -260,9 +263,9 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
         if ( res.getStringByIdx(1).length() > 0 ) 
             strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
 
-        //uint64 main_id = res.getUInt64ByIdx(4);
-        //if ( main_id != 0 )
-        //    strSrcBody += "&attrvals[][id]=" + convertToStringA(main_id);
+        uint64 main_id = res.getUInt64ByIdx(4);
+        if ( main_id != 0 )
+            strSrcBody += "&attrvals[][id]=" + convertToStringA(main_id);
 
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
@@ -435,7 +438,15 @@ void CSyncSource::processServerData(const char* szData)
         if ( nVersion == 0 )
             processServerData_Ver0(oJsonArr);
         else
+        {
+            int nSavedPos = oJsonArr.getCurPos();
+            setCreateObjectsPass(true);
             processServerData_Ver1(oJsonArr);
+
+            setCreateObjectsPass(false);
+            oJsonArr.reset(nSavedPos);
+            processServerData_Ver1(oJsonArr);
+        }
 
         getDB().endTransaction();
 
@@ -615,16 +626,18 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 
 boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)//throws Exception
 {
+    const char* strOldObject = oJsonObject.getString("oo");
+    if ( isCreateObjectsPass() != (strOldObject != null) )
+        return true;
+
     if ( oJsonObject.hasName("e") )
     {
-        const char* strOldObject = oJsonObject.getString("oo");
         const char* strError = oJsonObject.getString("e");
         getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
         return true;
     }
 
 	const char* strObject = oJsonObject.getString("o");
-    const char* strOldObject = oJsonObject.getString("oo");
 	CJSONArrayIterator oJsonArr(oJsonObject, "av");
 	
     for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
@@ -697,7 +710,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                 int nDelSrcID = res.getIntByIdx(0);
                 String strDelObject = res.getStringByIdx(1);
                 getDB().executeSQL("DELETE FROM object_values where id=?", id );
-                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=? and source_id=?", id, nSrcID );
+                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", id );
 
                 getNotify().onObjectChanged(nDelSrcID, strDelObject, CSyncNotify::enDelete);
             }

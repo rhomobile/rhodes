@@ -59,6 +59,11 @@ void  CJSONArrayIterator::next()
     m_nCurItem++;
 }
 
+void CJSONArrayIterator::reset(int nPos)
+{
+    m_nCurItem = nPos;
+}
+
 CJSONEntry CJSONArrayIterator::getCurItem()
 {
     return CJSONEntry( isEnd() ? 0 :
