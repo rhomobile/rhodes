@@ -49,4 +49,6 @@ private:
 }
 }
 
+extern "C" void delete_files_in_folder(const char *szFolderPath);
+
 #endif //_RHOFILE_H_
