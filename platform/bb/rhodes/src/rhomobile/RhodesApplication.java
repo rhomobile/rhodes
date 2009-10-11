@@ -29,13 +29,7 @@ import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.system.SystemListener;
 //import javax.microedition.io.file.FileSystemListener;
 import net.rim.device.api.system.TrackwheelListener;
-import net.rim.device.api.ui.ContextMenu;
-import net.rim.device.api.ui.Field;
-import net.rim.device.api.ui.FieldChangeListener;
-import net.rim.device.api.ui.Graphics;
-import net.rim.device.api.ui.Keypad;
-import net.rim.device.api.ui.MenuItem;
-import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.*;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
@@ -280,7 +274,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	saveCurrentLocation(strUrl);
     }
 
-    void openLink(){
+    boolean openLink(){
     	LOG.INFO("openLink");
     	Menu menu = _mainScreen.getMenu(0);
         int size = menu.getSize();
@@ -291,12 +285,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
             {
               item.run();
+              return true;
             }
         }
 //    	MenuItem item = _mainScreen.getSavedGetLinkItem();
 //    	if ( item != null ) {
 //    		item.run();
 //    	}
+        
+        return false;
     }
 
     public void showPopup(final String message) {
@@ -590,7 +587,25 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
     class CMainScreen extends MainScreen{
     	
-    	private Vector menuItems = new Vector();
+    	protected boolean navigationClick(int status, int time) {
+			//LOG.INFO("navigationClick: " + status);
+			return super.navigationClick(status, time);
+		}
+/*
+		protected boolean touchEvent(TouchEvent message) {
+			int nEvent = message.getEvent();
+			//LOG.INFO("touchEvent: " + message.getEvent() );
+			
+			if ( nEvent == TouchEvent.UNCLICK )
+			{
+				openLink();
+				return true;
+			}
+			
+			return super.touchEvent(message);
+		}*/
+
+		private Vector menuItems = new Vector();
 
 		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
 			public void run() {
