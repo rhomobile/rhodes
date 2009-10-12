@@ -242,7 +242,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        if ( strDbUrl.length() == 0 )
 	        	continue;
 	        
-	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getString("syncserver") + strDbUrl);
+	        if ( strDbUrl.charAt(0) == '/' || strDbUrl.charAt(0) == '\\' )
+	        	strDbUrl = strDbUrl.substring(1);
+	        
+	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getPath("syncserver") + strDbUrl);
+	        if ( strUrl.charAt(strUrl.length()-1) == '/' || strUrl.charAt(strUrl.length()-1) == '\\' )
+	        	strUrl = strUrl.substring(0, strUrl.length()-1);	        
+	        
 	        String name = res.getStringByIdx(3);
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getUInt64ByIdx(2), this) );
@@ -283,7 +289,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
-	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + strClientID;
 	    
@@ -295,7 +301,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		LOG.INFO("Request clientID by Net.");
 		
-	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
 	    
@@ -405,7 +411,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			
 		    try{
 				
-			    String serverUrl = RhoConf.getInstance().getString("syncserver");
+			    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
 			    strBody += ClientRegister.getInstance().getRegisterBody(this);
 			    

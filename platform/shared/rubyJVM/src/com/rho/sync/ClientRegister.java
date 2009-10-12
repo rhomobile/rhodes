@@ -122,7 +122,7 @@ public class ClientRegister extends RhoThread
     	if ( strBody.length() == 0)
     		return true; //already register
     	
-		String serverUrl = RhoConf.getInstance().getString("syncserver");
+		String serverUrl = RhoConf.getInstance().getPath("syncserver");
 		if (serverUrl != null && serverUrl.length()>0) 
 		{
 			NetResponse resp = getNet().pushData(serverUrl+"clientregister", strBody, oSync);

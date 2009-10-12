@@ -90,7 +90,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
     }
 
 	int port = RHOCONF().getInt("push_port");
-	String serverUrl = RHOCONF().getString("syncserver");
+	String serverUrl = RHOCONF().getPath("syncserver");
 	if (serverUrl.length()>0) 
     {
 	    String strBody = "client_id=" + client_id +
