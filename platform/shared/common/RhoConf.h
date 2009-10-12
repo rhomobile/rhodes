@@ -18,6 +18,7 @@ class RhoSettings{
 
 public:
     String getString(const char* szName);
+    String getPath(const char* szName);
     int    getInt(const char* szName);
     bool   getBool(const char* szName);
     void   setString(const char* szName, const String& str);

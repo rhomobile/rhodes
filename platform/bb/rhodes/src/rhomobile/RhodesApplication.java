@@ -274,20 +274,27 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	saveCurrentLocation(strUrl);
     }
 
+    private boolean m_bOpenLink = false;
     boolean openLink(){
     	LOG.INFO("openLink");
-    	Menu menu = _mainScreen.getMenu(0);
-        int size = menu.getSize();
-        for(int i=0; i<size; i++)
-        {
-            MenuItem item = menu.getItem(i);
-            String label = item.toString();
-            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
-            {
-              item.run();
-              return true;
-            }
-        }
+    	try{
+    		m_bOpenLink = true;
+	    	Menu menu = _mainScreen.getMenu(0);
+	        int size = menu.getSize();
+	        for(int i=0; i<size; i++)
+	        {
+	            MenuItem item = menu.getItem(i);
+	            String label = item.toString();
+	            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+	            {
+	              item.run();
+	              return true;
+	            }
+	        }
+    	}finally
+	    {
+    		m_bOpenLink = false;
+	    }
 //    	MenuItem item = _mainScreen.getSavedGetLinkItem();
 //    	if ( item != null ) {
 //    		item.run();
@@ -654,7 +661,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		private MenuItem savedGetLinkItem = null;
 
-		protected void makeMenu(Menu menu, int instance) {
+		protected void makeMenu(Menu menu, int instance) 
+		{
+			if (m_bOpenLink)
+			{
+				super.makeMenu(menu, instance);
+				return;
+			}
+			
+			menu.deleteAll();
+/*			
 	        // TODO: This is really a hack, we should replicate the "Get Link" functionality
 			// Also, for some reason the menu size becomes 0 when there is 1 item left (page view)
 	    	for(int i=0; i < menu.getSize(); i++) {
@@ -682,7 +698,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		// item with index 0 cause exception - menu is actually empty!
 	    	}
 	    	if (pgview != null && pgview.getId() == 853)
-	    		menu.deleteItem(0);
+	    		menu.deleteItem(0);*/
 	    	
 			// Don't draw menu if menuItems is null
 			if (menuItems == null)

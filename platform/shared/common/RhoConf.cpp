@@ -111,6 +111,17 @@ String RhoSettings::getString(const char* szName){
     return String();
 }
 
+String RhoSettings::getPath(const char* szName){
+    String strPath = getString(szName);
+    if ( strPath.length() == 0 )
+        return strPath;
+
+    if ( strPath.at(strPath.length()-1) != '/' && strPath.at(strPath.length()-1) != '\\' )
+        strPath += '/';
+
+    return strPath;
+}
+
 int RhoSettings::getInt(const char* szName){
 	std::map<String,String>::iterator it = m_mapValues.find(szName);
 	if ( it != m_mapValues.end() )
