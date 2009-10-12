@@ -147,7 +147,13 @@ void CSyncEngine::loadAllSources()
         if ( strDbUrl.length() == 0 )
             continue;
 
-		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getString("syncserver") + strDbUrl);
+        if ( strDbUrl.at(0) == '/' || strDbUrl.at(0) == '\\' )
+            strDbUrl.erase(strDbUrl.begin());
+
+		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getPath("syncserver") + strDbUrl);
+        if ( strUrl.at(strUrl.length()-1) == '/' || strUrl.at(strUrl.length()-1) == '\\' )
+            strUrl.erase(strUrl.end()-1);
+
         String strName = res.getStringByIdx(3);
         if ( strUrl.length() > 0 )
             m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strUrl, strName, res.getUInt64ByIdx(2), *this) );
@@ -188,7 +194,7 @@ String CSyncEngine::loadClientID()
 
 boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
-    String serverUrl = RHOCONF().getString("syncserver");
+    String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + strClientID;
     
@@ -198,7 +204,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
 
 String CSyncEngine::requestClientIDByNet()
 {
-    String serverUrl = RHOCONF().getString("syncserver");
+    String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
 
@@ -294,7 +300,7 @@ void CSyncEngine::login(String name, String password, String callback)
     	return;
 	}
 
-    String serverUrl = RHOCONF().getString("syncserver");
+    String serverUrl = RHOCONF().getPath("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody ) );
