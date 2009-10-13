@@ -36,6 +36,7 @@ private:
     HashtablePtr<int, Hashtable<String,int>* > m_hashSrcIDAndObject;
     HashtablePtr<int, Hashtable<String,String>* > m_hashCreateObjectErrors;
     String m_strSingleObjectSrcName, m_strSingleObjectID;
+    Hashtable<int,int> m_hashSrcObjectCount;
 
     static common::CMutex m_mxObjectNotify;
 
@@ -66,6 +67,10 @@ public:
 
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
+
+    void cleanLastSyncObjectCount();
+    void incLastSyncObjectCount(int nSrcID);
+    int getLastSyncObjectCount(int nSrcID);
 
 private:
     String makeCreateObjectErrorBody(int nSrcID);

@@ -309,6 +309,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 		    strBody = "";
             strBody = "total_count=" + convertToStringA(src.getTotalCount());
             strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
+            strBody += "&cumulative_count=" + convertToStringA(src.getServerObjectsCount());
             strBody += "&source_id=" + convertToStringA(src.getID());
             strBody += "&source_name=" + src.getName();
 
@@ -356,6 +357,34 @@ void CSyncNotify::clearSyncNotification(int source_id)
     {
         m_mapSyncNotifications.remove(source_id);
     }
+}
+
+void CSyncNotify::cleanLastSyncObjectCount()
+{
+    synchronized(m_mxSyncNotifications)
+    {
+        m_hashSrcObjectCount.clear();
+    }
+}
+
+void CSyncNotify::incLastSyncObjectCount(int nSrcID)
+{
+    synchronized(m_mxSyncNotifications)
+    {
+        int nCount = m_hashSrcObjectCount.get(nSrcID)+1;
+        m_hashSrcObjectCount.put(nSrcID,nCount);
+    }
+}
+
+int CSyncNotify::getLastSyncObjectCount(int nSrcID)
+{
+    int nCount = 0;
+    synchronized(m_mxSyncNotifications)
+    {
+        nCount = m_hashSrcObjectCount.get(nSrcID);
+    }
+
+    return nCount;
 }
 
 }

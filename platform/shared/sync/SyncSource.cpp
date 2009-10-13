@@ -427,7 +427,7 @@ void CSyncSource::processServerData(const char* szData)
         processToken(0);
     }
 
-	LOG(INFO) + "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+	LOG(INFO) + "Got " + getCurPageCount() + "(Cumulative " +  getServerObjectsCount() + ") records of " + getTotalCount() + " from server. Source ID: " + getID()
          + ". Version: " + nVersion;
 	
     if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
@@ -517,6 +517,9 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
                 getSync().stopSync();
                 break;
             }
+
+            if ( !isCreateObjectsPass() && nSrcID >=0 )
+                getNotify().incLastSyncObjectCount(nSrcID);
 
             m_bGetAtLeastOnePage = true;
         }
