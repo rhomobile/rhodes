@@ -43,7 +43,7 @@ class SettingsController < Rho::RhoController
         render :action => :login, :query => {:msg => @msg}
       end
     else
-      @msg = "You entered an invalid login/password, please try again." unless @msg.length    
+      @msg = "You entered an invalid login/password, please try again." unless unless @msg && @msg.length > 0    
       render :action => :login, :query => {:msg => @msg}
     end
   end

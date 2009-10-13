@@ -102,6 +102,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.CREATE_COUNTER("Parse");
 			    PROF.CREATE_COUNTER("DB");
 			    PROF.CREATE_COUNTER("Data");
+			    PROF.CREATE_COUNTER("Data1");
+			    PROF.CREATE_COUNTER("Pull");
 			    PROF.START("Sync");
 		    	
 			    syncAllSources();
@@ -110,10 +112,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.DESTROY_COUNTER("Parse");
 			    PROF.DESTROY_COUNTER("DB");
 			    PROF.DESTROY_COUNTER("Data");
+			    PROF.DESTROY_COUNTER("Data1");
+			    PROF.DESTROY_COUNTER("Pull");
 			    PROF.STOP("Sync");
 			    
-			    if ( getState() != esStop )
-			    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 		    } else {
 		    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
 		    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
@@ -232,7 +234,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources order by source_id");
+	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY source_id");
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
@@ -240,7 +242,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        if ( strDbUrl.length() == 0 )
 	        	continue;
 	        
-	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getString("syncserver") + strDbUrl);
+	        if ( strDbUrl.charAt(0) == '/' || strDbUrl.charAt(0) == '\\' )
+	        	strDbUrl = strDbUrl.substring(1);
+	        
+	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getPath("syncserver") + strDbUrl);
+	        if ( strUrl.charAt(strUrl.length()-1) == '/' || strUrl.charAt(strUrl.length()-1) == '\\' )
+	        	strUrl = strUrl.substring(0, strUrl.length()-1);	        
+	        
 	        String name = res.getStringByIdx(3);
 	        if ( strUrl.length() > 0 )
 	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getUInt64ByIdx(2), this) );
@@ -281,7 +289,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
-	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + strClientID;
 	    
@@ -293,7 +301,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		LOG.INFO("Request clientID by Net.");
 		
-	    String serverUrl = RhoConf.getInstance().getString("syncserver");
+	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
 	    
@@ -325,6 +333,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	void syncAllSources()throws Exception
 	{
+		boolean bError = false;
 	    for( int i = getStartSource(); i < m_sources.size() && isContinueSync(); i++ )
 	    {
 	    	SyncSource src = null;
@@ -342,8 +351,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    		throw exc;
 	    	}finally{
 	    		getNotify().onSyncSourceEnd( i, m_sources );
+	    		bError = src.m_nErrCode != RhoRuby.ERR_NONE;
 	    	}
 	    }
+	    
+	    if ( !bError)
+	    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
 	}
 	
 	void callLoginCallback(String callback, int nErrCode, String strMessage)
@@ -398,7 +411,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			
 		    try{
 				
-			    String serverUrl = RhoConf.getInstance().getString("syncserver");
+			    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
 			    strBody += ClientRegister.getInstance().getRegisterBody(this);
 			    

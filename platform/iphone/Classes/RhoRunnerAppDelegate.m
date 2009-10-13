@@ -42,6 +42,15 @@
 	return location;
 }
 
+- (void)loadStartPath:(NSString*)location {
+	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
+		[webViewController navigateRedirect:location];
+	} else {
+		// Load tab #0 on app load
+		[tabBarDelegate loadTabBarItemFirstPage:(BarItem*)[tabBarDelegate.barItems objectAtIndex:0]];
+	}	
+}
+
 - (void)onServerStarted:(NSString*)data {
 	RAWLOG_INFO("Server Started notification is recived");
 	NSString* location = NULL;
@@ -61,14 +70,8 @@
 		location = [self normalizeUrl:(NSString*)data];
 	}
 	
-	// only navigate main webViewController if there is no tabbar
-	if (self.nativeBar.barType == TOOLBAR_TYPE || self.nativeBar.barType == NOBAR_TYPE) {
-		[webViewController navigateRedirect:location];
-	} else {
-		// Load tab #0 on app load
-		[tabBarDelegate loadTabBarItemFirstPage:(BarItem*)[tabBarDelegate.barItems objectAtIndex:0]];
-	}
 	appStarted = true;
+	[self loadStartPath:location];
 }
 
 - (void)onRefreshView {
@@ -181,6 +184,8 @@
 }
 
 - (void)onCreateNativeBar:(NativeBar*)bar {
+	// retain the nativebar so it doesn't get deleted
+	[bar retain];
 	self.nativeBar = bar;
 	if (self.nativeBar.barType == TABBAR_TYPE) {
 		tabBarDelegate.tabBar = self.nativeBar;
@@ -342,8 +347,8 @@
 
 - (void) showLoadingPage {
 	NSString *loadingPage;
-	
-	NSString *filePath = @"app/loading.html";
+
+	NSString *filePath = [NSString stringWithFormat:@"%s/app/loading.html", GetApplicationsRootPath()];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData *data = [fileManager contentsAtPath:filePath];

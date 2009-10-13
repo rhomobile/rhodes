@@ -198,7 +198,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     FindClose(hFind);
 
 #else
-    //TODO: deleteFilesInFolder
+    delete_files_in_folder(szFolderPath);
 #endif
 }
 

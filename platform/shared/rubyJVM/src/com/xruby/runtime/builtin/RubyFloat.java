@@ -215,7 +215,7 @@ public class RubyFloat extends RubyNumeric {
 	}
 
 	private RubyInteger createRubyInteger(double value) {
-		if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
+		if (value <= Long.MAX_VALUE && value >= Long.MIN_VALUE) {
 			return ObjectFactory.createFixnum((long) value);
 		}
 		return ObjectFactory.createBignum(HugeDigit.valueOf(value).toBigInteger());

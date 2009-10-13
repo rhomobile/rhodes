@@ -63,6 +63,22 @@ public class NetworkAccess implements INetworkAccess {
 				}
 				
 				ServiceRecord[] srs = sb.getRecords();
+				// search for BIS-B transport
+				if (URLsuffix == null) {
+					for (int i = 0; i < srs.length; i++) {
+						if (srs[i].isDisabled() || !srs[i].isValid())
+							continue;
+						if (srs[i].getCid().equals("IPPP")
+								&& srs[i].getName().equals("IPPP for BIBS")) {
+							LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
+							
+							URLsuffix = ";deviceside=false;ConnectionType=mds-public";
+							networkConfigured = true;
+							break;
+						}
+					}
+				}
+				
 				// search for BES transport
 				for (int i = 0; i < srs.length; i++) {
 					LOG.INFO("SB: " + srs[i].getName() + ";UID: " + srs[i].getUid() +
@@ -81,21 +97,7 @@ public class NetworkAccess implements INetworkAccess {
 						break;
 					}
 				}
-				// search for BIS-B transport
-				if (URLsuffix == null) {
-					for (int i = 0; i < srs.length; i++) {
-						if (srs[i].isDisabled() || !srs[i].isValid())
-							continue;
-						if (srs[i].getCid().equals("IPPP")
-								&& srs[i].getName().equals("IPPP for BIBS")) {
-							LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
-							
-							URLsuffix = ";deviceside=false;ConnectionType=mds-public";
-							networkConfigured = true;
-							break;
-						}
-					}
-				}
+				
 			}
 		}
 		

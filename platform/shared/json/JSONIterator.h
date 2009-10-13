@@ -43,6 +43,8 @@ public:
 
     boolean isEnd();
     void    next();
+    void    reset(int nPos);
+    int     getCurPos(){ return m_nCurItem; }
 
     CJSONEntry getCurItem();
 };

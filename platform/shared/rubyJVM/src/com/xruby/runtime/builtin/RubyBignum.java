@@ -17,8 +17,8 @@ import com.xruby.runtime.lang.*;
 
 ////@RubyLevelClass(name="Bignum", superclass="Integer")
 public class RubyBignum extends RubyInteger {
-    private static final HugeInt FIXNUM_MAX = HugeInt.valueOf(Integer.MAX_VALUE);
-    private static final HugeInt FIXNUM_MIN = HugeInt.valueOf(Integer.MIN_VALUE);
+    private static final HugeInt FIXNUM_MAX = HugeInt.valueOf(Long.MAX_VALUE);
+    private static final HugeInt FIXNUM_MIN = HugeInt.valueOf(Long.MIN_VALUE);
     private HugeInt value_;
     private RubyClass klass;
 
@@ -451,7 +451,7 @@ public class RubyBignum extends RubyInteger {
     }
 
     public static RubyInteger bignorm(long value) {
-        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)
+        if (value > Long.MAX_VALUE || value < Long.MIN_VALUE)
             return ObjectFactory.createBignum(HugeInt.valueOf(value));
         return ObjectFactory.createFixnum(value);
     }

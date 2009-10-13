@@ -170,7 +170,7 @@ public class DBAdapter extends RubyBasic {
 		"port VARCHAR(10) default NULL,"+
 		"last_sync_success VARCHAR(100) default NULL);"+
 		"CREATE TABLE object_values ("+
-		" id INTEGER default NULL,"+
+		" id INTEGER PRIMARY KEY,"+
 		" source_id int default NULL,"+
 		" attrib varchar(255) default NULL,"+
 		" object varchar(255) default NULL,"+
@@ -184,7 +184,8 @@ public class DBAdapter extends RubyBasic {
 		" value varchar default NULL,"+
 		" attrib_type varchar(255) default NULL," +
 		" update_type varchar(255) default NULL, " +
-		" sent int default 0 );"+
+		" sent int default 0," +
+		" main_id INTEGER default 0 );"+
 		"CREATE TABLE sources ("+
 		//"id INTEGER PRIMARY KEY,"+
 		"source_id int PRIMARY KEY,"+
@@ -203,8 +204,8 @@ public class DBAdapter extends RubyBasic {
 		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
 		"CREATE INDEX by_src_id ON object_values (source_id);"+
 		"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"+
-		"CREATE INDEX by_src_value ON object_values (attrib, source_id, value);"+
-		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
+		"CREATE INDEX by_src_value ON object_values (attrib, source_id, value);";//+
+		//"CREATE INDEX by_id ON object_values (id);"; //for delete operation
 		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
 		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
 		//"CREATE INDEX by_type ON object_values (attrib_type)";
