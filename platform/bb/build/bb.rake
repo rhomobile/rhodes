@@ -1,4 +1,17 @@
 #
+
+def freplace( fname, pattern, str )
+  f = File.open( fname )
+  strings = f.read
+  f.close
+
+  strings.gsub!( pattern, str )
+
+  f = File.new( fname, "w" )
+  f.print strings
+  f.close
+end
+
 def startmds
   mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
   args = []
@@ -221,12 +234,23 @@ namespace "build" do
 
       if not FileUtils.uptodate?($preverified + "/rhodes.jar",sources)
 
-        vsrcdir = $builddir + "/../rhodes/platform/" + $bbver
-        if !File.exist?( vsrcdir ) || !File.directory?( vsrcdir )
-          vsrcdir = $builddir + "/../rhodes/platform/common"
+        vsrclist = $builddir + "/../bin/vsrc_build.files"
+
+        vsrcdir = $tmpdir + "/vsrc"
+        mkdir_p vsrcdir
+        cp_r $builddir + "/../rhodes/platform/common/.", vsrcdir
+        if File.exist?( $builddir + "/../rhodes/platform/" + $bbver )
+          cp_r $builddir + "/../rhodes/platform/" + $bbver + "/.", vsrcdir, :remove_destination => true
         end
 
-        vsrclist = $builddir + "/../bin/vsrc_build.files"
+        # Modify sources to get different class names due to BB limitation -
+        # there can not be two or more applications installed which contains the same
+        # class names which implements Persistable interface. See details here -
+        # http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=11152
+        mkdir_p vsrcdir + "/com/rho/file"
+        cp_r $builddir + "/../hsqldb/src/com/rho/file/PersistRAFileImpl.java", vsrcdir + "/com/rho/file"
+        freplace( vsrcdir + "/com/rho/file/PersistRAFileImpl.java", /FileInfoWrapper/, $outfilebase + "_FileInfoWrapper" )
+        freplace( vsrcdir + "/com/rho/file/PersistRAFileImpl.java", /PageWrapper/, $outfilebase + "_PageWrapper" )
 
         fvsrc = File.new( vsrclist, "w" )
         Dir.glob( vsrcdir + "/**/*.java" ).each do |line|
@@ -258,6 +282,8 @@ namespace "build" do
           exit 1
         end
         $stdout.flush
+
+        rm_rf vsrcdir
 
         cp_r $builddir + "/../rhodes/resources", $tmpdir + "/resources"
         cp $config["env"]["app"] + "/icon/icon.png", $tmpdir +"/resources"
@@ -351,7 +377,10 @@ namespace "package" do
           exit 1
         end
         $stdout.flush
-        cp $builddir + "/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"  if not FileUtils.uptodate?( $targetdir + "/"+$outfilebase+".alx", $builddir + "/rhodesApp.alx")
+        if not FileUtils.uptodate?( $targetdir + "/" + $outfilebase + ".alx", $builddir + "/rhodesApp.alx" )
+          cp $builddir + "/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"
+          freplace( $targetdir + "/" + $outfilebase + ".alx", /rhodesApp/, appname )
+        end
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -405,9 +434,10 @@ namespace "package" do
         exit 1
       end
       $stdout.flush
-      cp $builddir +"/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx" if not FileUtils.uptodate?( $targetdir+"/"+$outfilebase+".alx", $builddir + "/rhodesApp.alx")
-
-
+      if not FileUtils.uptodate?( $targetdir + "/" + $outfilebase + ".alx", $builddir + "/rhodesApp.alx" )
+        cp $builddir +"/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"
+        freplace( $targetdir + "/" + $outfilebase + ".alx", /rhodesApp/, appname )
+      end
     end
 
     desc "Package all dev (each part in separate package)"
