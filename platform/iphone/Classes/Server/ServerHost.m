@@ -235,12 +235,13 @@ static ServerHost* sharedSH = nil;
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
 		RAWLOG_INFO("HTTP Server started and ready");
-		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:homeUrl waitUntilDone:NO];
 		
 		RAWLOG_INFO("Create Sync");
 		rho_sync_create();
 		RhoRubyInitApp();
+		
+		[self performSelectorOnMainThread:@selector(serverStarted:) 
+							   withObject:homeUrl waitUntilDone:NO];
 		
         [[NSRunLoop currentRunLoop] run];
         RAWLOG_INFO("Invalidating local server");

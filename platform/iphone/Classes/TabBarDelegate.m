@@ -17,6 +17,7 @@
 - (void)dealloc {
 	[tabBarController release];
 	[barItems release];
+	[tabBar release];
 	[super dealloc];
 }
 
