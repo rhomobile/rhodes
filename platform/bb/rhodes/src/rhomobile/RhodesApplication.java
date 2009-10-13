@@ -49,6 +49,7 @@ import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoMainScreen;
 import com.rho.RhoProfiler;
 import com.rho.RhoRuby;
 import com.rho.RhoThread;
@@ -592,26 +593,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
 	}
 	
-    class CMainScreen extends MainScreen{
+    class CMainScreen extends RhoMainScreen{
     	
     	protected boolean navigationClick(int status, int time) {
 			//LOG.INFO("navigationClick: " + status);
 			return super.navigationClick(status, time);
 		}
-/*
-		protected boolean touchEvent(TouchEvent message) {
-			int nEvent = message.getEvent();
-			//LOG.INFO("touchEvent: " + message.getEvent() );
-			
-			if ( nEvent == TouchEvent.UNCLICK )
-			{
-				openLink();
-				return true;
-			}
-			
-			return super.touchEvent(message);
-		}*/
 
+    	protected void onTouchUnclick() {
+			openLink();
+    	}
+    	
 		private Vector menuItems = new Vector();
 
 		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
