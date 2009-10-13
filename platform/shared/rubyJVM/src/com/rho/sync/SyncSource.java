@@ -527,7 +527,7 @@ class SyncSource
 	        processToken("0");
 	    }
 	    
-		LOG.INFO( "Got " + getCurPageCount() + " records of " + getTotalCount() + " from server. Source ID: " + getID()
+		LOG.INFO( "Got " + getCurPageCount() + "(Processed: " +  getServerObjectsCount() + ") records of " + getTotalCount() + " from server. Source ID: " + getID()
 				+ ". Version: " + nVersion );
 		
 		PROF.STOP("Data1");
@@ -637,6 +637,9 @@ class SyncSource
 		            getSync().stopSync();
 		            break;
 	            }
+		        
+		        if ( !isCreateObjectsPass() && nSrcID.intValue() >=0 )
+		        	getNotify().incLastSyncObjectCount(nSrcID);
 		        
 		        m_bGetAtLeastOnePage = true;
 	        }
