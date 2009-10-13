@@ -40,6 +40,8 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
+		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
 		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
 		F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
@@ -193,6 +195,9 @@
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
+		BDE35AB7107F977D009941C7 /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
+		BDE35AB8107F977D009941C7 /* RhoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFile.h; path = ../shared/common/RhoFile.h; sourceTree = SOURCE_ROOT; };
 		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
 		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
 		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
@@ -430,11 +435,14 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				BDE35AB7107F977D009941C7 /* RhoFile.cpp */,
+				BDE35AB8107F977D009941C7 /* RhoFile.h */,
 				5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */,
 				5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */,
 				5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */,
 				5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */,
 				5C53354B0FC2974D00F268F0 /* RhoThreadImpl.h */,
+				BDE35A79107F900A009941C7 /* RhoFileImpl.m */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -748,6 +756,8 @@
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
 				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
 				463577BF107272A400BEC653 /* JSString.m in Sources */,
+				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
+				BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -788,7 +798,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -860,7 +870,7 @@
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -922,7 +932,51 @@
 					"-lrholib",
 					"-lrhoextlib",
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
+					"-framework",
+					MapKit,
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
@@ -943,7 +997,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
@@ -952,15 +1007,48 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
+					"-framework",
+					MapKit,
+					"-framework",
+					CFNetwork,
+					"-lrhorubylib",
+					"-lrhosynclib",
+					"-ltcmalloc",
+					"-lrholib",
+					"-lrhoextlib",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
+					"-framework",
+					MapKit,
 					"-framework",
 					CFNetwork,
 					"-lrhorubylib",
@@ -970,7 +1058,8 @@
 					"-lrhoextlib",
 				);
 				PRODUCT_NAME = rhorunner;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				USER_HEADER_SEARCH_PATHS = "../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};

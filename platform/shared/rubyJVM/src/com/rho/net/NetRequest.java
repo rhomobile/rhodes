@@ -73,6 +73,7 @@ public class NetRequest
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
 			
 			String strSession = oSession.getSession();
+			LOG.INFO("Cookie : " + (strSession != null ? strSession : "") );
 			if ( strSession != null && strSession.length() > 0 )
 				m_connection.setRequestProperty("Cookie", strSession );
 			
@@ -165,6 +166,7 @@ public class NetRequest
     		{
     			ParsedCookie cookie = makeCookie(m_connection);
     			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+    			LOG.INFO("pullCookies: " + resp.getCharData() );
     		}
 		}finally
 		{
@@ -425,7 +427,40 @@ public class NetRequest
 			if (tok.length() == 0) {
 				continue;
 			}
-			int i = tok.indexOf('=');
+			
+			int i = 0;
+			if ( (i=tok.indexOf("auth_token=")) >= 0 )
+			{
+				String val = tok.substring(i+11);
+				val.trim();
+				if ( val.length() > 0 )
+				{
+					cookie.strAuth = "auth_token=" + val;
+					bAuth = true;
+				}
+			}else if ( (i=tok.indexOf("path=")) >= 0 )
+			{
+				String val = tok.substring(i+6);
+				val.trim();
+				if ( val.length() > 0 )
+				{
+					if (bAuth)
+						cookie.strAuth += ";path=" + val;
+					else if (bSession)
+						cookie.strSession += ";path=" + val;
+				}
+			}else if ( (i=tok.indexOf("rhosync_session=")) >= 0 )
+			{
+				String val = tok.substring(i+16);
+				val.trim();
+				if ( val.length() > 0 )
+				{
+					cookie.strSession = "rhosync_session=" + val;
+					bSession = true;
+				}
+			}
+			
+/*			int i = tok.indexOf('=');
 			String s1;
 			String s2;
 			if (i > 0) {
@@ -450,7 +485,7 @@ public class NetRequest
 					&& s2.length() > 0) {
 				cookie.strSession = s1 + "=" + s2;
 				bSession = true;
-			}
+			}*/
 
 		}
 	}
@@ -466,6 +501,15 @@ public class NetRequest
 		return null;
 	}
 
+	/*public static void TEST()
+	{
+		ParsedCookie cookie = new ParsedCookie();
+		//parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly", cookie);
+		parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT", cookie);
+		parseCookie("rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly", cookie);
+		
+	}*/
+	
 	private static ParsedCookie makeCookie(IHttpConnection connection)
 			throws IOException {
 		ParsedCookie cookie = new ParsedCookie();

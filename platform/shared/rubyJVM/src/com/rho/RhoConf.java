@@ -127,6 +127,18 @@ public class RhoConf {
         return "";
     }
 
+    public String getPath(String szName)
+    {
+        String strPath = getString(szName);
+        if ( strPath.length() == 0 )
+            return strPath;
+
+        if ( strPath.charAt(strPath.length()-1) != '/' && strPath.charAt(strPath.length()-1) != '\\' )
+            strPath += '/';
+
+        return strPath;
+    }
+    
     public int getInt(String szName){
     	String value = (String)m_mapValues.get(szName);
     	if ( value != null && value.length() > 0 )
@@ -238,7 +250,7 @@ public class RhoConf {
 			LOG.ERROR("send_log:loadClientID failed", exc);
 		}
 		
-		String strQuery = RhoConf.getInstance().getString("syncserver") + "client_log?" +
+		String strQuery = RhoConf.getInstance().getPath("syncserver") + "client_log?" +
 		"client_id=" + strClientID + "&device_pin=" + strDevicePin;
 		nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), null );
    }

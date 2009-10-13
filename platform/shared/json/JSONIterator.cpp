@@ -59,6 +59,11 @@ void  CJSONArrayIterator::next()
     m_nCurItem++;
 }
 
+void CJSONArrayIterator::reset(int nPos)
+{
+    m_nCurItem = nPos;
+}
+
 CJSONEntry CJSONArrayIterator::getCurItem()
 {
     return CJSONEntry( isEnd() ? 0 :
@@ -107,7 +112,7 @@ int CJSONEntry::getInt(const char* name)
     int nRes = 0;
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
-        nRes = json_object_get_int(obj);
+        nRes = static_cast<int>(json_object_get_int(obj));
 
     return nRes;
 }
@@ -117,10 +122,21 @@ uint64 CJSONEntry::getUInt64(const char* name)
     uint64 nRes = 0;
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
-        nRes = rho_atoi64(json_object_get_string(obj));
+        nRes = (uint64)json_object_get_int(obj);
 
     return nRes;
 }
+
+/*
+uint64 CJSONEntry::getUInt64(const char* name)
+{
+    uint64 nRes = 0;
+    struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
+    if ( obj != 0 )
+        nRes = rho_atoi64(json_object_get_string(obj));
+
+    return nRes;
+}*/
 
 CJSONEntry CJSONEntry::getEntry(const char* name)
 {

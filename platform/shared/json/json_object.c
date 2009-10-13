@@ -171,7 +171,7 @@ static struct json_object* json_object_new(enum json_type o_type)
   this->o_type = o_type;
   this->_ref_count = 1;
   this->_delete = &json_object_generic_delete;
-#ifdef REFCOUNT_DEBUG                +
+#ifdef REFCOUNT_DEBUG
   lh_table_insert(json_object_table, this, this);
   MC_DEBUG2("json_object_new_%s: %p\n", json_type_name[this->o_type], this);
 #endif /* REFCOUNT_DEBUG */
@@ -324,10 +324,10 @@ boolean json_object_get_boolean(struct json_object *this)
 static int json_object_int_to_json_string(struct json_object* this,
 					  struct printbuf *pb)
 {
-  return sprintbuf(pb, "%d", this->o.c_int);
+  return sprintbuf(pb, "%lli", this->o.c_int);
 }
 
-struct json_object* json_object_new_int(int i)
+struct json_object* json_object_new_int(int64 i)
 {
   struct json_object *this = json_object_new(json_type_int);
   if(!this) return NULL;
@@ -336,20 +336,20 @@ struct json_object* json_object_new_int(int i)
   return this;
 }
 
-int json_object_get_int(struct json_object *this)
+int64 json_object_get_int(struct json_object *this)
 {
-  int cint;
+  int64 cint;
 
   if(!this) return 0;
   switch(this->o_type) {
   case json_type_int:
     return this->o.c_int;
   case json_type_double:
-    return (int)this->o.c_double;
+    return (int64)this->o.c_double;
   case json_type_boolean:
     return this->o.c_boolean;
   case json_type_string:
-    if(sscanf(this->o.c_string, "%d", &cint) == 1) return cint;
+    if(sscanf(this->o.c_string, "%lli", &cint) == 1) return cint;
   default:
     return 0;
   }
@@ -382,7 +382,7 @@ double json_object_get_double(struct json_object *this)
   case json_type_double:
     return this->o.c_double;
   case json_type_int:
-    return this->o.c_int;
+    return (double)this->o.c_int;
   case json_type_boolean:
     return this->o.c_boolean;
   case json_type_string:

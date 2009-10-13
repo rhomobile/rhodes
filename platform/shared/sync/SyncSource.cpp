@@ -27,6 +27,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -40,6 +41,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -57,6 +59,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_bCreateObjectsPass = false;
 
     m_nErrCode = RhoRuby.ERR_NONE;
 }
@@ -74,21 +77,46 @@ void CSyncSource::sync()
     if ( isEmptyToken() )
         processToken(1);
 
+    boolean bSyncedServer = false;
     if ( m_strParams.length() == 0 )
     {
-        DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent=0 LIMIT 1 OFFSET 0", getID()) );
-        if ( !res.isEnd() )
+        if ( isPendingClientChanges() )
         {
-            syncClientChanges();
-            getAndremoveAsk();
+            syncServerChanges();
+            bSyncedServer = true;
+        }
+
+        if ( bSyncedServer && isPendingClientChanges() )
+            getSync().setState(CSyncEngine::esStop);
+        else
+        {
+            boolean bSyncClient = false;
+            {
+                DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID()) );
+                bSyncClient = !res.isEnd();
+            }
+            if ( bSyncClient )
+            {
+                syncClientChanges();
+                getAndremoveAsk();
+                bSyncedServer = false;
+            }
         }
     }
-    syncServerChanges();
+
+    if ( !bSyncedServer )
+        syncServerChanges();
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
                          endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+}
+
+boolean CSyncSource::isPendingClientChanges()
+{
+    DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID()) );
+    return !res.isEnd();
 }
 
 void CSyncSource::syncClientBlobs(const String& strBaseQuery)
@@ -147,6 +175,7 @@ void CSyncSource::syncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
+                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
                 continue;
             }
         }
@@ -217,15 +246,26 @@ void CSyncSource::syncClientChanges()
  */
 void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
 {
-    getDB().startTransaction();
-    DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
-					 "FROM changed_values where source_id=? and update_type =? and sent=0", getID(), szUpdateType ) );
+    getDB().Lock();
+    DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type, main_id "
+					 "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY sent DESC", getID(), szUpdateType ) );
+
+    if ( res.isEnd() )
+    {
+        getDB().Unlock();
+        return;
+    }
+
     for( ; !res.isEnd(); res.next() )
     {
         String strSrcBody = "attrvals[][attrib]=" + res.getStringByIdx(0);
 
         if ( res.getStringByIdx(1).length() > 0 ) 
             strSrcBody += "&attrvals[][object]=" + res.getStringByIdx(1);
+
+        uint64 main_id = res.getUInt64ByIdx(4);
+        if ( main_id != 0 )
+            strSrcBody += "&attrvals[][id]=" + convertToStringA(main_id);
 
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
@@ -253,7 +293,7 @@ void CSyncSource::makePushBody(String& strBody, const char* szUpdateType)
     }
 
     getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), szUpdateType );
-    getDB().endTransaction();
+    getDB().Unlock();
 }
 
 void CSyncSource::getAndremoveAsk()
@@ -383,7 +423,7 @@ void CSyncSource::processServerData(const char* szData)
         oJsonArr.next();
     }else if ( getCurPageCount() == 0 )
     {
-        getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent=3", getID() );
+        getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent>=3", getID() );
         processToken(0);
     }
 
@@ -398,7 +438,15 @@ void CSyncSource::processServerData(const char* szData)
         if ( nVersion == 0 )
             processServerData_Ver0(oJsonArr);
         else
+        {
+            int nSavedPos = oJsonArr.getCurPos();
+            setCreateObjectsPass(true);
             processServerData_Ver1(oJsonArr);
+
+            setCreateObjectsPass(false);
+            oJsonArr.reset(nSavedPos);
+            processServerData_Ver1(oJsonArr);
+        }
 
         getDB().endTransaction();
 
@@ -578,16 +626,18 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 
 boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)//throws Exception
 {
+    const char* strOldObject = oJsonObject.getString("oo");
+    if ( isCreateObjectsPass() != (strOldObject != null) )
+        return true;
+
     if ( oJsonObject.hasName("e") )
     {
-        const char* strOldObject = oJsonObject.getString("oo");
         const char* strError = oJsonObject.getString("e");
         getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
         return true;
     }
 
 	const char* strObject = oJsonObject.getString("o");
-    const char* strOldObject = oJsonObject.getString("oo");
 	CJSONArrayIterator oJsonArr(oJsonObject, "av");
 	
     for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
@@ -610,11 +660,11 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             boolean bUpdated = false;
             if ( strOldObject != null )
             {
-                DBResult( res , getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=? and sent=2 LIMIT 1 OFFSET 0", strOldObject, strAttrib, nSrcID ));
+                DBResult( res , getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strOldObject, strAttrib, nSrcID ));
                 if ( !res.isEnd() )
                 {
                     getDB().executeSQL("UPDATE object_values SET id=?, object=? where object=? and attrib=? and source_id=?", value.m_nID, strObject, strOldObject, strAttrib, nSrcID );
-                    getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID );
+                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID );
 
                     getNotify().onObjectChanged(nSrcID,strOldObject, CSyncNotify::enCreate);
 
@@ -625,7 +675,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             if ( !bUpdated )
             {
                 DBResult( res , getDB().executeSQL("SELECT value, attrib_type "
-					     "FROM changed_values where object=? and attrib=? and source_id=? and sent=2 LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID ) );
+					     "FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID ) );
                 if ( !res.isEnd() )
                 {
                     boolean bModified = false;
@@ -638,7 +688,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                         (id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
                         value.m_nID, strAttrib, nSrcID, strObject,
                         value.m_strValue, value.m_strAttrType );
-                    getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
+                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
 
                     if ( bModified )
                         getNotify().onObjectChanged(nSrcID,strObject, CSyncNotify::enUpdate);
@@ -660,6 +710,8 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                 int nDelSrcID = res.getIntByIdx(0);
                 String strDelObject = res.getStringByIdx(1);
                 getDB().executeSQL("DELETE FROM object_values where id=?", id );
+                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", id );
+
                 getNotify().onObjectChanged(nDelSrcID, strDelObject, CSyncNotify::enDelete);
             }
 
