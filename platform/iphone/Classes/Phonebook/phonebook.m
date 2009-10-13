@@ -12,6 +12,7 @@
 #include "phonebook.h"
 
 static int _getProperty(char* property);
+static CFStringRef getAddressPartValue(ABRecordRef record, const char* property) ;
 
 void* openPhonebook() {
 	
@@ -116,14 +117,83 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	snprintf(buf, sizeof(buf), "{%d}", recordId);
 	addStrToHash(hash, RUBY_PB_ID, buf, strlen(buf));
 	
+	_addPropertyToHash(hash, RUBY_PB_PREFIX, 
+					   ABRecordCopyValue(ref, kABPersonPrefixProperty));
+
 	_addPropertyToHash(hash, RUBY_PB_FIRST_NAME, 
-		ABRecordCopyValue(ref, kABPersonFirstNameProperty));
+					   ABRecordCopyValue(ref, kABPersonFirstNameProperty));
+
+	_addPropertyToHash(hash, RUBY_PB_MIDDLE_NAME, 
+					   ABRecordCopyValue(ref, kABPersonMiddleNameProperty));
 
 	_addPropertyToHash(hash, RUBY_PB_LAST_NAME, 
 					   ABRecordCopyValue(ref, kABPersonLastNameProperty));
 	
+	_addPropertyToHash(hash, RUBY_PB_SUFFIX, 
+					   ABRecordCopyValue(ref, kABPersonSuffixProperty));
+	
+	_addPropertyToHash(hash, RUBY_PB_NICKNAME, 
+					   ABRecordCopyValue(ref, kABPersonNicknameProperty));
+	
 	_addPropertyToHash(hash, RUBY_PB_COMPANY_NAME, 
 					   ABRecordCopyValue(ref, kABPersonOrganizationProperty));
+	
+	_addPropertyToHash(hash, RUBY_PB_JOB_TITLE, 
+					   ABRecordCopyValue(ref, kABPersonJobTitleProperty));
+
+	NSDate* birthdate = (NSDate *)ABRecordCopyValue(ref, kABPersonBirthdayProperty);
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	[df setDateFormat:@"yyyy-MM-dd"];
+	NSString* bd = [df stringFromDate:birthdate];
+	[bd retain];
+	_addPropertyToHash(hash, RUBY_PB_BIRTHDAY, (CFStringRef)bd);
+	[birthdate release];
+	[df release];
+	
+	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_1,
+					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_1));
+	
+	_addPropertyToHash(hash, RUBY_PB_CITY_1,
+					   getAddressPartValue(ref,RUBY_PB_CITY_1));
+
+	_addPropertyToHash(hash, RUBY_PB_STATE_1,
+					   getAddressPartValue(ref,RUBY_PB_STATE_1));
+
+	_addPropertyToHash(hash, RUBY_PB_ZIP_1,
+					   getAddressPartValue(ref,RUBY_PB_ZIP_1));
+
+	_addPropertyToHash(hash, RUBY_PB_COUNTRY_1,
+					   getAddressPartValue(ref,RUBY_PB_COUNTRY_1));
+
+	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_2,
+					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_2));
+	
+	_addPropertyToHash(hash, RUBY_PB_CITY_2,
+					   getAddressPartValue(ref,RUBY_PB_CITY_2));
+	
+	_addPropertyToHash(hash, RUBY_PB_STATE_2,
+					   getAddressPartValue(ref,RUBY_PB_STATE_2));
+	
+	_addPropertyToHash(hash, RUBY_PB_ZIP_2,
+					   getAddressPartValue(ref,RUBY_PB_ZIP_2));
+	
+	_addPropertyToHash(hash, RUBY_PB_COUNTRY_2,
+					   getAddressPartValue(ref,RUBY_PB_COUNTRY_2));
+	
+	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_3,
+					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_3));
+	
+	_addPropertyToHash(hash, RUBY_PB_CITY_3,
+					   getAddressPartValue(ref,RUBY_PB_CITY_3));
+	
+	_addPropertyToHash(hash, RUBY_PB_STATE_3,
+					   getAddressPartValue(ref,RUBY_PB_STATE_3));
+	
+	_addPropertyToHash(hash, RUBY_PB_ZIP_3,
+					   getAddressPartValue(ref,RUBY_PB_ZIP_3));
+	
+	_addPropertyToHash(hash, RUBY_PB_COUNTRY_3,
+					   getAddressPartValue(ref,RUBY_PB_COUNTRY_3));
 	
 	_addPhonesToHash(hash,ref);
 	
@@ -250,30 +320,175 @@ static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, C
 		mv = ABMultiValueCreateMutable(kABMultiStringPropertyType); 
 		ABMultiValueAddValueAndLabel(mv,v,label,nil);
 	} else {
+		ABMutableMultiValueRef lmv  = ABMultiValueCreateMutableCopy(mv);
 		boolean_t replaced = FALSE;
-		int num_phones = ABMultiValueGetCount(mv);
+		int num_phones = ABMultiValueGetCount(lmv);
 		for (int n = 0; n < num_phones; n++) {
-			replaced = _replaceProperty(mv,label,v,n);
+			replaced = _replaceProperty(lmv,label,v,n);
 			if (replaced) break;
 		}
 		if (!replaced) {
-			ABMultiValueAddValueAndLabel(mv,v,label,nil);
+			ABMultiValueAddValueAndLabel(lmv,v,label,nil);
 		}
+		CFRelease(mv);
+		mv = lmv;
 	}
 	ABRecordSetValue(record, propId, mv, nil);
 	CFRelease(mv);
 	CFRelease(v);	
 }
 
+bool getAddressLabelAndKey(const char* property, CFStringRef* label, CFStringRef* key) {
+	if (strcmp(property,RUBY_PB_STREET_ADDRESS_1)==0) {
+		*label = kABWorkLabel;
+		*key = kABPersonAddressStreetKey;
+	} else if (strcmp(property,RUBY_PB_CITY_1)==0) {
+		*label = kABWorkLabel;
+		*key = kABPersonAddressCityKey;
+	} else if (strcmp(property,RUBY_PB_STATE_1)==0) {
+		*label = kABWorkLabel;
+		*key = kABPersonAddressStateKey;
+	} else if (strcmp(property,RUBY_PB_ZIP_1)==0) {
+		*label = kABWorkLabel;
+		*key = kABPersonAddressZIPKey;
+	} else if (strcmp(property,RUBY_PB_COUNTRY_1)==0) {
+		*label = kABWorkLabel;
+		*key = kABPersonAddressCountryKey;
+	} else if (strcmp(property,RUBY_PB_STREET_ADDRESS_2)==0) {
+		*label = kABHomeLabel;
+		*key = kABPersonAddressStreetKey;
+	} else if (strcmp(property,RUBY_PB_CITY_2)==0) {
+		*label = kABHomeLabel;
+		*key = kABPersonAddressCityKey;
+	} else if (strcmp(property,RUBY_PB_STATE_2)==0) {
+		*label = kABHomeLabel;
+		*key = kABPersonAddressStateKey;
+	} else if (strcmp(property,RUBY_PB_ZIP_2)==0) {
+		*label = kABHomeLabel;
+		*key = kABPersonAddressZIPKey;
+	} else if (strcmp(property,RUBY_PB_COUNTRY_2)==0) {
+		*label = kABHomeLabel;
+		*key = kABPersonAddressCountryKey;
+	} else if (strcmp(property,RUBY_PB_STREET_ADDRESS_3)==0) {
+		*label = kABOtherLabel;
+		*key = kABPersonAddressStreetKey;
+	} else if (strcmp(property,RUBY_PB_CITY_3)==0) {
+		*label = kABOtherLabel;
+		*key = kABPersonAddressCityKey;
+	} else if (strcmp(property,RUBY_PB_STATE_3)==0) {
+		*label = kABOtherLabel;
+		*key = kABPersonAddressStateKey;
+	} else if (strcmp(property,RUBY_PB_ZIP_3)==0) {
+		*label = kABOtherLabel;
+		*key = kABPersonAddressZIPKey;
+	} else if (strcmp(property,RUBY_PB_COUNTRY_3)==0) {
+		*label = kABOtherLabel;
+		*key = kABPersonAddressCountryKey;
+	} else {
+		return false;
+	}
+	return true;
+}
+
+CFStringRef getAddressPartValue(ABRecordRef record, const char* property) {
+	CFStringRef  label;
+	CFStringRef  key;
+	CFStringRef  v = nil;
+	
+	if ( getAddressLabelAndKey(property, &label, &key) ) {
+		ABMutableMultiValueRef mv = ABRecordCopyValue(record,kABPersonAddressProperty);
+		if (mv) {
+			int addresses = ABMultiValueGetCount(mv);
+			for (int n = 0; n < addresses; n++) {
+				CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,n);
+				if (CFStringCompare(lbl,label,0)==kCFCompareEqualTo) {
+					NSMutableDictionary *addressDictionary = 
+						(NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,n);
+					if (addressDictionary) {
+						v = (CFStringRef)[addressDictionary objectForKey:(NSString*)key];
+						//[addressDictionary release];
+						CFRelease(lbl);
+						break;
+					}
+				}
+				CFRelease(lbl);
+			}
+			CFRelease(mv);
+		}
+	}
+	return v;
+}
+
+bool setAddressValue(void* record, const char* property, const char* value) {
+	CFStringRef  label;
+	CFStringRef  key;
+	
+	if ( !getAddressLabelAndKey(property, &label, &key) ) {
+		return false;
+	}
+		
+	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+	ABMutableMultiValueRef mv = ABRecordCopyValue(record,kABPersonAddressProperty);
+	if (!mv) {
+		mv = ABMultiValueCreateMutable(kABMultiDictionaryPropertyType);
+	} else {
+		ABMutableMultiValueRef lmv  = ABMultiValueCreateMutableCopy(mv);
+		CFRelease(mv);
+		mv = lmv;		
+	}
+
+	int addresses = ABMultiValueGetCount(mv);
+	int index = -1;
+	for (int n = 0; n < addresses; n++) {
+		CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,n);
+		if (CFStringCompare(lbl,label,0)==kCFCompareEqualTo) {
+			index = n;
+			break;
+		}
+	}
+	
+	NSMutableDictionary *addressDictionary;
+	
+	if (index>=0) {
+		addressDictionary = (NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,index);
+	} else {
+		addressDictionary = [[NSMutableDictionary alloc] init];
+	}
+
+	[addressDictionary setObject:(NSString *)v forKey:(NSString *)key];
+
+	if (index>=0) {
+		ABMultiValueReplaceValueAtIndex(mv, addressDictionary, index);
+	} else {
+		ABMultiValueAddValueAndLabel(mv, addressDictionary, label, NULL);
+	}
+
+	ABRecordSetValue(record, kABPersonAddressProperty, mv, nil);
+	
+	//[addressDictionary release];
+	CFRelease(mv);
+	CFRelease(v);
+	return true;
+}
+
 int setRecordValue(void* record, char* property, char* value) {
-	if (record) {
+	if (record && (value!=NULL) && strlen(value)) {
 		int prop = _getProperty(property);
 		if (prop >= 0) {
 			CFStringRef v = CFStringCreateWithCString(NULL, value, 
-												  CFStringGetSystemEncoding());
-			ABRecordSetValue(record, prop, v, nil);
+													  CFStringGetSystemEncoding());
+			if (prop == kABPersonBirthdayProperty) {
+				NSDateFormatter *df = [[NSDateFormatter alloc] init];
+				[df setDateFormat:@"yyyy-MM-dd"];
+				NSDate *birthdate = [df dateFromString: (NSString*)v];
+				ABRecordSetValue(record, prop, birthdate, nil);
+				[birthdate release];
+				[df release];
+			} else {
+				ABRecordSetValue(record, prop, v, nil);
+			}
 			CFRelease(v);
-		} else {
+		} else if ( !setAddressValue(record,property,value) ) {
 			CFStringRef label = _getPhoneLabel(property);
 			if (label) {
 				_updateMultiValueProperty(record,kABPersonPhoneProperty,label,value);
@@ -317,14 +532,20 @@ int deleteRecord(void* pb, void* record) {
 
 //==================================================================================
 
-enum {pbUnknown=0,pbFirstName,pbLastName,pbCompanyName};
+enum {pbUnknown=0,pbPrefix,pbFirstName,pbMiddleName,pbLastName,pbSuffix,pbNickname,pbCompanyName,pbJobTitle,pbBirthday};
 static const struct {
 	const char* _name;
 	const int  _value;
 } pbp[] = {
+{ RUBY_PB_PREFIX, pbPrefix },
 { RUBY_PB_FIRST_NAME, pbFirstName },
+{ RUBY_PB_MIDDLE_NAME, pbMiddleName }, 
 { RUBY_PB_LAST_NAME, pbLastName },
+{ RUBY_PB_SUFFIX, pbSuffix },
+{ RUBY_PB_NICKNAME, pbNickname },
 { RUBY_PB_COMPANY_NAME, pbCompanyName },
+{ RUBY_PB_JOB_TITLE, pbJobTitle },
+{ RUBY_PB_BIRTHDAY, pbBirthday },
 { NULL, 0 }
 };
 
@@ -337,12 +558,24 @@ static int _getProperty(char* property) {
 		}
 	}
 	switch(prop) {
+		case pbPrefix:
+			return kABPersonPrefixProperty;
 		case pbFirstName:
 			return kABPersonFirstNameProperty;
+		case pbMiddleName:
+			return kABPersonMiddleNameProperty;
 		case pbLastName:
 			return kABPersonLastNameProperty;
+		case pbSuffix:	
+			return kABPersonSuffixProperty;
+		case pbNickname:
+			return kABPersonNicknameProperty;
 		case pbCompanyName:
 			return kABPersonOrganizationProperty;
+		case pbJobTitle:	
+			return kABPersonJobTitleProperty;
+		case pbBirthday:
+			return kABPersonBirthdayProperty;
 	}
 	return -1;
 }
