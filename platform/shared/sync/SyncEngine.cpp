@@ -31,6 +31,7 @@ void CSyncEngine::doSyncAllSources()
     if ( isSessionExist()  )
     {
         m_clientID = loadClientID();
+        getNotify().cleanLastSyncObjectCount();
         syncAllSources();
     }
     else
@@ -70,7 +71,10 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
 	    if ( isSessionExist()  ) {
 	    	m_clientID = loadClientID();
 	        if ( getState() != esStop )
+            {
+                getNotify().cleanLastSyncObjectCount();
 	            src.sync();
+            }
 	    } else {
 	    	src.m_strError = "Client is not logged in. No sync will be performed.";
             src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;

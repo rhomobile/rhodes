@@ -37,6 +37,9 @@
     #define add_objectnotify rho_sync_addobjectnotify
     extern void  rho_sync_cleanobjectnotify();
     #define clean_objectnotify rho_sync_cleanobjectnotify
+
+    extern int  rho_sync_get_lastsync_objectcount(int nSrcID);
+    #define get_lastsync_objectcount rho_sync_get_lastsync_objectcount
 	
 	#if !defined(bool)
 	#define bool int
@@ -65,3 +68,4 @@ extern VALUE get_src_attrs(int source_id);
 extern void  set_objectnotify_url(const char* szUrl);
 extern void  add_objectnotify(int nSrcID, const char* szObject);
 extern void  clean_objectnotify();
+extern int   get_lastsync_objectcount(int nSrcID);

@@ -360,4 +360,9 @@ void rho_sync_cleanobjectnotify()
     CSyncThread::getSyncEngine().getNotify().cleanObjectNotifications();
 }
 
+int rho_sync_get_lastsync_objectcount(int nSrcID)
+{
+    return CSyncThread::getSyncEngine().getNotify().getLastSyncObjectCount(nSrcID);
+}
+
 }
