@@ -96,6 +96,8 @@ extern void mapview_create(int nparams, char** params, int nannotations, char** 
 							case T_STRING:
 								tmp = StringValuePtr(data);
 								break;
+							case T_FLOAT:	
+							case T_RATIONAL:	
 							case T_SYMBOL:
 								val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
 								tmp = StringValuePtr(val);
