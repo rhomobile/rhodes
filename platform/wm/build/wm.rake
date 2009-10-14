@@ -1,5 +1,6 @@
 namespace "config" do
   task :wm => ["config:common"] do
+    $config["platform"] = "wm"
     $rubypath = "rhodes/rhodes-build/res/RhoRuby.exe" #path to RubyMac
     wmpath = $config["build"]["wmpath"]
     $bbver = $config["env"]["bbver"]

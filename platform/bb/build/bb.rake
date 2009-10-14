@@ -105,6 +105,8 @@ end
 
 namespace "config" do
   task :bb => ["config:common"] do
+    $config["platform"] = "bb"
+
     bbpath = $config["build"]["bbpath"]
     $bbver = $config["env"]["bbver"]
     $builddir = bbpath + "/build"

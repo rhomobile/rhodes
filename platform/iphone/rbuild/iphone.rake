@@ -40,6 +40,7 @@ end
 
 namespace "config" do
   task :iphone => ["config:common"] do
+    $config["platform"] = "iphone"
     $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
     $bbver = $config["env"]["bbver"]
