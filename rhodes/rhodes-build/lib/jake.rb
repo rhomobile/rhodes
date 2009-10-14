@@ -68,20 +68,16 @@ class Jake
         end
       end
     elsif conf.is_a?(Hash)
-      confarray = conf.collect do |k,x|
-  	    
+      newhash = Hash.new
+
+      conf.each do |k,x|
         if x.is_a?(Hash) or x.is_a?(Array)
-          x = config_parse(x)
-          [ k.to_s, x ]
-        else 
-          if x.to_s =~ /%(.*?)%/
-            x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
-          end
-          [ k.to_s, x.to_s ]
+          newhash[k.to_s] = config_parse(x)
+        else
+          newhash[k.to_s] = x.to_s
         end
       end
-
-      conf = Hash[*confarray.flatten]
+      conf = newhash
 
       conf
     end

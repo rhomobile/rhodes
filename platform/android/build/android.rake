@@ -8,6 +8,8 @@ end
 
 namespace "config" do
   task :android => ["config:common"] do
+    $config["platform"] = "android"
+
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
     $androidplatform = "android-1.1"
