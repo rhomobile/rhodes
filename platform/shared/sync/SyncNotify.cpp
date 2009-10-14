@@ -254,12 +254,12 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
-	/*if (m_statusListener != null) {
-		if ( strDetails.length() == 0 )
-			strDetails = RhoRuby.getErrorText(error);
+	//if (m_statusListener != null) {
+		//if ( strDetails.length() == 0 )
+		//	strDetails = RhoRuby.getErrorText(error);
         status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
-		m_statusListener.reportStatus( status, error);
-	}*/
+	//	m_statusListener.reportStatus( status, error);
+	//}
 	LOG(INFO) + "Status: "+status;
 }
 
