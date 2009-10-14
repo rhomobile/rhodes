@@ -456,8 +456,8 @@ int  rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRes
 void rho_net_impl_cancel(void* pConnData)
 {
 	NSURLConnection* pConn = (NSURLConnection*)pConnData;
-	if ( pConn != NULL )
-		[pConn cancel];
+	//if ( pConn != NULL )
+	//	[pConn cancel];
 }
 /*
  * Pushes changes from list to rhosync server
