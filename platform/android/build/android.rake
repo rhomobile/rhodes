@@ -12,7 +12,8 @@ namespace "config" do
 
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
-    $androidplatform = "android-1.1"
+    $androidplatform = "android-1.5"
+    $avdname = "rhoAndroid15"
     $androidpath = $config["build"]["androidpath"]
     $bindir = $androidpath + "/bin"
     $builddir = $androidpath + "/build"
@@ -319,9 +320,9 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidbin} create avd --name rhoAndroid11 --target 1 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name #{$avdname} --target 1 --sdcard 32M --skin HVGA")
 
-    Thread.new { system("#{$emulator} -avd rhoAndroid11") }
+    Thread.new { system("#{$emulator} -avd #{$avdname}") }
 
     sleep 10
 
