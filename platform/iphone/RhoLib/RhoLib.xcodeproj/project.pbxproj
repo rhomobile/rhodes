@@ -38,6 +38,9 @@
 		5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817490FBC4FCE002597A5 /* AutoPointer.h */; };
 		5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174A0FBC4FCE002597A5 /* InputStream.h */; };
 		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
+		5CBD46291087399700107D0D /* inetrequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46261087399700107D0D /* inetrequest.h */; };
+		5CBD462A1087399700107D0D /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBD46271087399700107D0D /* URI.cpp */; };
+		5CBD462B1087399700107D0D /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46281087399700107D0D /* URI.h */; };
 		5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE294111009D8D9009A75F6 /* isysteminfo.h */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +76,9 @@
 		5C9817490FBC4FCE002597A5 /* AutoPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoPointer.h; path = ../../shared/common/AutoPointer.h; sourceTree = SOURCE_ROOT; };
 		5C98174A0FBC4FCE002597A5 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStream.h; path = ../../shared/common/InputStream.h; sourceTree = SOURCE_ROOT; };
 		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
+		5CBD46261087399700107D0D /* inetrequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inetrequest.h; path = ../../shared/net/inetrequest.h; sourceTree = SOURCE_ROOT; };
+		5CBD46271087399700107D0D /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../shared/net/URI.cpp; sourceTree = SOURCE_ROOT; };
+		5CBD46281087399700107D0D /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../shared/net/URI.h; sourceTree = SOURCE_ROOT; };
 		5CE294111009D8D9009A75F6 /* isysteminfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = isysteminfo.h; path = ../../shared/common/isysteminfo.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -101,6 +107,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5CBD46251087397B00107D0D /* net */,
 				5C6B45280F9468C5003CB43A /* statistic */,
 				5C7162600F8B7DEE0096B6AA /* common */,
 				5C7162630F8B7DF40096B6AA /* logging */,
@@ -169,6 +176,16 @@
 			name = logging;
 			sourceTree = "<group>";
 		};
+		5CBD46251087397B00107D0D /* net */ = {
+			isa = PBXGroup;
+			children = (
+				5CBD46261087399700107D0D /* inetrequest.h */,
+				5CBD46271087399700107D0D /* URI.cpp */,
+				5CBD46281087399700107D0D /* URI.h */,
+			);
+			name = net;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,6 +223,8 @@
 				5C5335550FC2977600F268F0 /* RhoThread.h in Headers */,
 				5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */,
 				5C7405931064AF1600163569 /* Tokenizer.h in Headers */,
+				5CBD46291087399700107D0D /* inetrequest.h in Headers */,
+				5CBD462B1087399700107D0D /* URI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +279,7 @@
 				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
 				5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */,
 				5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */,
+				5CBD462A1087399700107D0D /* URI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
