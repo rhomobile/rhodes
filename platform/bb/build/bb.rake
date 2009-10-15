@@ -558,7 +558,7 @@ namespace "run" do
   end
   
   desc "Builds everything, loads and starts sim"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:dev"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
