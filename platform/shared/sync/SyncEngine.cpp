@@ -5,6 +5,7 @@
 #include "common/RhoConf.h"
 #include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
+#include "net/URI.h"
 
 namespace rho {
 const _CRhoRuby& RhoRuby = _CRhoRuby();
@@ -262,7 +263,9 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
 {
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);
-    strBody += "&error_message=" + strMessage;  //TODO: URI.urlEncode
+    strBody += "&error_message=";
+    URI::urlEncode(strMessage, strBody);
+
     String strUrl = getNet().resolveUrl(callback);
     
 	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
