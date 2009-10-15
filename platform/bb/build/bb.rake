@@ -65,7 +65,8 @@ def stopsim
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
-  Jake.run(command,args, jde + "/simulator")
+  #Jake.run(command,args, jde + "/simulator")
+  Thread.new { Jake.run(command,args, nil, true,true) }  
 end
 
 def manualsign
