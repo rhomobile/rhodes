@@ -695,6 +695,23 @@ public class SyncThread extends RhoThread
 					}
 			});
 		
+		klass.getSingletonClass().defineMethod("get_lastsync_objectcount",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							Integer nSrcID = new Integer(arg1.toInt());
+							int nCount = getSyncEngine().getNotify().getLastSyncObjectCount(nSrcID);
+							
+							return ObjectFactory.createInteger(nCount);
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_lastsync_objectcount failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
+		
+		
 	}
 
 }

@@ -1581,6 +1581,9 @@ static VALUE mSyncEngine;
     #define add_objectnotify rho_sync_addobjectnotify
     extern void  rho_sync_cleanobjectnotify();
     #define clean_objectnotify rho_sync_cleanobjectnotify
+
+    extern int  rho_sync_get_lastsync_objectcount(int nSrcID);
+    #define get_lastsync_objectcount rho_sync_get_lastsync_objectcount
 	
 	#if !defined(bool)
 	#define bool int
@@ -2150,6 +2153,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_lastsync_objectcount(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int result;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "get_lastsync_objectcount" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (int)get_lastsync_objectcount(arg1);
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2429,5 +2456,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_objectnotify_url", _wrap_set_objectnotify_url, -1);
   rb_define_module_function(mSyncEngine, "add_objectnotify", _wrap_add_objectnotify, -1);
   rb_define_module_function(mSyncEngine, "clean_objectnotify", _wrap_clean_objectnotify, -1);
+  rb_define_module_function(mSyncEngine, "get_lastsync_objectcount", _wrap_get_lastsync_objectcount, -1);
 }
 

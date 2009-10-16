@@ -97,6 +97,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    m_strSession = loadSession();
 		    if ( isSessionExist()  ) {
 		    	m_clientID = loadClientID();
+			    getNotify().cleanLastSyncObjectCount();
 
 			    PROF.CREATE_COUNTER("Net");	    
 			    PROF.CREATE_COUNTER("Parse");
@@ -117,8 +118,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.STOP("Sync");
 			    
 		    } else {
-		    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
-		    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
+		    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+		    	src.m_strError = "Client is not logged in. No sync will be performed.";
+		    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+		    	
+		    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
 		    }
 		    
 	    }catch(Exception exc)
@@ -157,7 +161,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    if ( isSessionExist()  ) {
 			    	m_clientID = loadClientID();
 			        if ( getState() != esStop )
+			        {
+			        	getNotify().cleanLastSyncObjectCount();
 			            src.sync();
+			        }
 			    } else {
 			    	src.m_strError = "Client is not logged in. No sync will be performed.";
 			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;

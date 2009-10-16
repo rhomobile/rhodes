@@ -93,12 +93,18 @@ namespace "build" do
 
       common_bundle_start(startdir,dest)
 
-      chdir File.join($srcdir,'apps/public')
-      rm_rf 'js/iui'
-      Dir.glob("js/jquery*").each {|f| rm_rf f}
-      Dir.glob("js/prototype*").each {|f| rm f}
+      if not $config["excludedirs"].nil?
+        if $config["excludedirs"].has_key?($config["platform"])
+          chdir File.join($srcdir, 'apps')
+
+          excl = $config["excludedirs"][$config["platform"]]
+          excl.each do |mask|
+            Dir.glob(mask).each {|f| rm_rf f}
+          end
+        end
+      end
       chdir startdir
-      
+
       #create manifest
       create_manifest
       
