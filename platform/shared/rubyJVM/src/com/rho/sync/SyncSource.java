@@ -482,6 +482,7 @@ class SyncSource
 
 	void processServerData(String szData)throws Exception
 	{
+		LOG.TRACE("Server data: " + szData);
 		PROF.START("Parse");		
 	    JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
 	    PROF.STOP("Parse");
