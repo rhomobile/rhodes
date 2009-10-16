@@ -339,6 +339,8 @@ static void Init_RhoBlobs()
   VALUE path = __rhoGetCurrentDir();
   rb_funcall(path, rb_intern("concat"), 1, rb_str_new2(RhoGetRelativeBlobsPath()));
 
+  RAWLOG_INFO1("Init_RhoBlobs: %s", RSTRING_PTR(path) );
+
   if ( rb_funcall(rb_cDir, rb_intern("exist?"), 1, path)==Qfalse )
     rb_funcall(rb_cDir, rb_intern("mkdir"), 1, path);
 

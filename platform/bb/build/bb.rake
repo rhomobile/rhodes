@@ -65,7 +65,8 @@ def stopsim
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
-  Jake.run(command,args, jde + "/simulator")
+  #Jake.run(command,args, jde + "/simulator")
+  Thread.new { Jake.run(command,args, nil, true,true) }  
 end
 
 def manualsign
@@ -105,6 +106,8 @@ end
 
 namespace "config" do
   task :bb => ["config:common"] do
+    $config["platform"] = "bb"
+
     bbpath = $config["build"]["bbpath"]
     $bbver = $config["env"]["bbver"]
     $builddir = bbpath + "/build"
@@ -555,7 +558,7 @@ namespace "run" do
   end
   
   desc "Builds everything, loads and starts sim"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:dev"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
