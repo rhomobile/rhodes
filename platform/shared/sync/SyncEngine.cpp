@@ -5,6 +5,7 @@
 #include "common/RhoConf.h"
 #include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
+#include "net/URI.h"
 
 namespace rho {
 const _CRhoRuby& RhoRuby = _CRhoRuby();
@@ -31,12 +32,16 @@ void CSyncEngine::doSyncAllSources()
     if ( isSessionExist()  )
     {
         m_clientID = loadClientID();
+        getNotify().cleanLastSyncObjectCount();
         syncAllSources();
     }
     else
     {
-        getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, 
-    			"Sync failed. Details: Client is not logged in. No sync will be performed." );
+        CSyncSource& src = *m_sources.elementAt(getStartSource());
+    	src.m_strError = "Client is not logged in. No sync will be performed.";
+        src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+
+        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
     }
 
     setState(esNone);
@@ -70,7 +75,10 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
 	    if ( isSessionExist()  ) {
 	    	m_clientID = loadClientID();
 	        if ( getState() != esStop )
+            {
+                getNotify().cleanLastSyncObjectCount();
 	            src.sync();
+            }
 	    } else {
 	    	src.m_strError = "Client is not logged in. No sync will be performed.";
             src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
@@ -255,7 +263,9 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
 {
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);
-    strBody += "&error_message=" + strMessage;  //TODO: URI.urlEncode
+    strBody += "&error_message=";
+    URI::urlEncode(strMessage, strBody);
+
     String strUrl = getNet().resolveUrl(callback);
     
 	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;

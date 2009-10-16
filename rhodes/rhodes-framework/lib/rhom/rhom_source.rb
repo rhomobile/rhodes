@@ -39,6 +39,10 @@ module Rhom
             {"source_id"=>@source_id},
             {"distinct"=>true}).length
     end    
+
+    def get_lastsync_objectcount
+        SyncEngine.get_lastsync_objectcount(@source_id.to_i)
+    end    
     
     class << self
       include ::Rhom::RhomObject

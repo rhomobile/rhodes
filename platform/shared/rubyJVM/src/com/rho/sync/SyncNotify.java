@@ -30,7 +30,8 @@ public class SyncNotify {
     Hashtable/*<int, Hashtable<String,int>* >*/ m_hashSrcIDAndObject = new Hashtable();
     Hashtable/*<int, Hashtable<String,String>* >*/ m_hashCreateObjectErrors = new Hashtable();
     String m_strSingleObjectSrcName = "", m_strSingleObjectID ="";
-
+    Hashtable/*<int,int>*/ m_hashSrcObjectCount = new Hashtable();
+    
     static Mutex m_mxObjectNotify = new Mutex();
 
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
@@ -341,6 +342,7 @@ public class SyncNotify {
 			        strUrl = sn.m_strUrl;
 			        strBody += "total_count=" + src.getTotalCount();
 			        strBody += "&processed_count=" + src.getCurPageCount();
+			        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
 			        strBody += "&source_id=" + src.getID();
 			        strBody += "&source_name=" + src.getName();
 			        
@@ -389,5 +391,40 @@ public class SyncNotify {
 			m_mapSyncNotifications.remove(new Integer(source_id));
 		}
 	}
-    
+
+	void cleanLastSyncObjectCount()
+	{
+	    synchronized(m_mxSyncNotifications)
+	    {
+	        m_hashSrcObjectCount.clear();
+	    }
+	}
+
+	void incLastSyncObjectCount(Integer nSrcID)
+	{
+	    synchronized(m_mxSyncNotifications)
+	    {
+	        Integer nCount = ((Integer)m_hashSrcObjectCount.get(nSrcID));
+	        if ( nCount == null )
+	        	nCount = new Integer(0);
+	        
+	        nCount = new Integer(nCount.intValue()+1);
+	        
+	        m_hashSrcObjectCount.put(nSrcID,nCount);
+	    }
+	}
+
+	int getLastSyncObjectCount(Integer nSrcID)
+	{
+	    int nCount = 0;
+	    synchronized(m_mxSyncNotifications)
+	    {
+	        Integer nCountVal = (Integer)m_hashSrcObjectCount.get(nSrcID);
+	        if ( nCountVal != null )
+	        	nCount = nCountVal.intValue();
+	    }
+
+	    return nCount;
+	}
+	
 }
