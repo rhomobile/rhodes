@@ -57,12 +57,26 @@ static void _getAllPeople(LocalPhonebook* phonebook) {
 	}
 }
 
+
+
 static void _addPropertyToHash(VALUE hash, const char* key, CFStringRef property) {
 	if (property) {
 		char buf[256];
 		snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(property, CFStringGetSystemEncoding()));
 		addStrToHash(hash, key, buf, strlen(buf));
 		CFRelease(property);
+	}
+}
+
+static void _addDatePropertyToHash(VALUE hash, const char* key, NSDate* date) {
+	if (date) {
+		NSDateFormatter *df = [[NSDateFormatter alloc] init];
+		[df setDateFormat:@"yyyy-MM-dd"];
+		NSString* dt = [df stringFromDate:date];
+		[dt retain];
+		_addPropertyToHash(hash, key, (CFStringRef)dt);
+		[date release];
+		[df release];
 	}
 }
 
@@ -77,11 +91,26 @@ static void _addPhonesToHash(VALUE hash,ABRecordRef ref) {
 					ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABHomeLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_HOME_NUMBER,
-								ABMultiValueCopyValueAtIndex(phones,n));
+								ABMultiValueCopyValueAtIndex(phones,n));				
 			} else if(CFStringCompare(label,kABPersonPhoneMobileLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_MOBILE_NUMBER,
-								ABMultiValueCopyValueAtIndex(phones,n));
-			} 
+								   ABMultiValueCopyValueAtIndex(phones,n));
+			} else if(CFStringCompare(label,kABPersonPhoneMainLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_MAIN_MUMBER,
+								   ABMultiValueCopyValueAtIndex(phones,n));				
+			} else if(CFStringCompare(label,kABPersonPhonePagerLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_PAGER_NUMBER,
+								   ABMultiValueCopyValueAtIndex(phones,n));				
+			} else if(CFStringCompare(label,kABPersonPhoneHomeFAXLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_HOME_FAX,
+								   ABMultiValueCopyValueAtIndex(phones,n));
+			} else if(CFStringCompare(label,kABPersonPhoneWorkFAXLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_WORK_FAX,
+								   ABMultiValueCopyValueAtIndex(phones,n));
+			} else if(CFStringCompare(label,(CFStringRef)@"assistant_number",0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_ASSISTANT_NUMBER,
+								   ABMultiValueCopyValueAtIndex(phones,n));
+			}  
 			CFRelease(label);
 		}
 		CFRelease(phones);
@@ -97,10 +126,73 @@ static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
 			if(CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_EMAIL_ADDRESS,
 								   ABMultiValueCopyValueAtIndex(emails,n));
+			} else if(CFStringCompare(label,kABHomeLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_HOME_EMAIL_ADDRESS,
+								   ABMultiValueCopyValueAtIndex(emails,n));
+			} else if(CFStringCompare(label,kABOtherLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_OTHER_EMAIL_ADDRESS,
+								   ABMultiValueCopyValueAtIndex(emails,n));
 			}
 			CFRelease(label);
 		}
 		CFRelease(emails);
+	}	
+}
+
+static void _addUrlToHash(VALUE hash,ABRecordRef ref) {
+	ABMultiValueRef urls = ABRecordCopyValue(ref,kABPersonURLProperty);
+	if (urls) {
+		int num_urls = ABMultiValueGetCount(urls);
+		for (int n = 0; n < num_urls; n++) {
+			CFStringRef label = ABMultiValueCopyLabelAtIndex(urls,n);
+			if(CFStringCompare(label,kABPersonHomePageLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_HOME_PAGE,
+								   ABMultiValueCopyValueAtIndex(urls,n));
+			} 
+			CFRelease(label);
+		}
+		CFRelease(urls);
+	}	
+}
+
+static void _addRelatedNamesToHash(VALUE hash,ABRecordRef ref) {
+	ABMultiValueRef names = ABRecordCopyValue(ref,kABPersonRelatedNamesProperty);
+	if (names) {
+		int num_names = ABMultiValueGetCount(names);
+		for (int n = 0; n < num_names; n++) {
+			CFStringRef label = ABMultiValueCopyLabelAtIndex(names,n);
+			if(CFStringCompare(label,kABPersonSpouseLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_SPOUSE_NAME,
+								   ABMultiValueCopyValueAtIndex(names,n));
+			} else if(CFStringCompare(label,kABPersonAssistantLabel,0)==kCFCompareEqualTo) {
+				_addPropertyToHash(hash,RUBY_PB_ASSISTANT_NAME,
+								   ABMultiValueCopyValueAtIndex(names,n));
+			} 
+			CFRelease(label);
+		}
+		CFRelease(names);
+	}	
+}
+
+static void _addDatesToHash(VALUE hash,ABRecordRef ref) {
+	ABMultiValueRef dates = ABRecordCopyValue(ref,kABPersonDateProperty);
+	if (dates) {
+		int num_dates = ABMultiValueGetCount(dates);
+		for (int n = 0; n < num_dates; n++) {
+			CFStringRef label = ABMultiValueCopyLabelAtIndex(dates,n);
+			if(CFStringCompare(label,kABPersonAnniversaryLabel,0)==kCFCompareEqualTo) {
+				_addDatePropertyToHash(hash,RUBY_PB_ANNIVERSARY,
+								   (NSDate*)ABMultiValueCopyValueAtIndex(dates,n));
+			} else if(CFStringCompare(label,(CFStringRef)@"created",0)==kCFCompareEqualTo) {
+				_addDatePropertyToHash(hash,RUBY_PB_CREATED,
+								   (NSDate*)ABMultiValueCopyValueAtIndex(dates,n));
+			} else if(CFStringCompare(label,(CFStringRef)@"updated",0)==kCFCompareEqualTo) {
+				_addDatePropertyToHash(hash,RUBY_PB_UPDATED,
+								   (NSDate*)ABMultiValueCopyValueAtIndex(dates,n));
+			} 
+			CFRelease(label);
+		}
+		CFRelease(dates);
 	}	
 }
 
@@ -134,6 +226,9 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	
 	_addPropertyToHash(hash, RUBY_PB_NICKNAME, 
 					   ABRecordCopyValue(ref, kABPersonNicknameProperty));
+
+	_addPropertyToHash(hash, RUBY_PB_NOTE, 
+					   ABRecordCopyValue(ref, kABPersonNoteProperty));
 	
 	_addPropertyToHash(hash, RUBY_PB_COMPANY_NAME, 
 					   ABRecordCopyValue(ref, kABPersonOrganizationProperty));
@@ -198,6 +293,12 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	_addPhonesToHash(hash,ref);
 	
 	_addEmailToHash(hash,ref);
+	
+	_addUrlToHash(hash,ref);
+	
+	_addRelatedNamesToHash(hash, ref);
+	
+	_addDatesToHash(hash, ref);
 	
 	return hash;
 }
@@ -290,8 +391,18 @@ static CFStringRef _getPhoneLabel(const char* property) {
 		return kABWorkLabel;
 	} else if (strcmp(RUBY_PB_HOME_NUMBER, property)==0) {
 		return kABHomeLabel;
-	} if (strcmp(RUBY_PB_MOBILE_NUMBER, property)==0) {
+	} else if (strcmp(RUBY_PB_MOBILE_NUMBER, property)==0) {
 		return kABPersonPhoneMobileLabel;
+	} else if (strcmp(RUBY_PB_MAIN_MUMBER, property)==0) {
+		return kABPersonPhoneMainLabel;
+	} else if (strcmp(RUBY_PB_PAGER_NUMBER, property)==0) {
+		return kABPersonPhonePagerLabel;
+	} else if (strcmp(RUBY_PB_HOME_FAX, property)==0) {
+		return kABPersonPhoneHomeFAXLabel;
+	} else if (strcmp(RUBY_PB_WORK_FAX, property)==0) {
+		return kABPersonPhoneWorkFAXLabel;
+	} else if (strcmp(RUBY_PB_ASSISTANT_NUMBER, property)==0) {
+		return (CFStringRef)@"assistant_number";
 	}	
 	return NULL;
 }
@@ -299,9 +410,41 @@ static CFStringRef _getPhoneLabel(const char* property) {
 static CFStringRef _getEmailLabel(const char* property) {
 	if (strcmp(RUBY_PB_EMAIL_ADDRESS,property)==0) {
 		return kABWorkLabel;
+	} else if (strcmp(RUBY_PB_HOME_EMAIL_ADDRESS,property)==0) {
+		return kABHomeLabel;
+	} else if (strcmp(RUBY_PB_OTHER_EMAIL_ADDRESS,property)==0) {
+		return kABOtherLabel;
 	} 
 	return NULL;
 }
+
+static CFStringRef _getUrlLabel(const char* property) {
+	if (strcmp(RUBY_PB_HOME_PAGE,property)==0) {
+		return kABPersonHomePageLabel;
+	} 
+	return NULL;
+}
+
+static CFStringRef _getRelatedNamesLabel(const char* property) {
+	if (strcmp(RUBY_PB_SPOUSE_NAME,property)==0) {
+		return kABPersonSpouseLabel;
+	} else if (strcmp(RUBY_PB_ASSISTANT_NAME,property)==0) {
+		return kABPersonAssistantLabel;
+	} 
+	return NULL;
+}
+
+static CFStringRef _getDatesLabel(const char* property) {
+	if (strcmp(RUBY_PB_ANNIVERSARY,property)==0) {
+		return kABPersonAnniversaryLabel;
+	} else if (strcmp(RUBY_PB_CREATED,property)==0) {
+		return (CFStringRef)@"created";
+	} else if (strcmp(RUBY_PB_UPDATED,property)==0) {
+		return (CFStringRef)@"updated";
+	} 
+	return NULL;
+}
+
 
 static boolean_t _replaceProperty(ABMutableMultiValueRef mv, CFStringRef label, CFStringRef value, int index) {
 	CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,index);
@@ -313,8 +456,8 @@ static boolean_t _replaceProperty(ABMutableMultiValueRef mv, CFStringRef label, 
 	return found;
 }
 
-static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, const char* value) {
-	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+static void __updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, CFTypeRef v) {
+	if (!v) return;
 	ABMutableMultiValueRef mv = ABRecordCopyValue(record,propId);
 	if (!mv) {
 		mv = ABMultiValueCreateMutable(kABMultiStringPropertyType); 
@@ -336,6 +479,11 @@ static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, C
 	ABRecordSetValue(record, propId, mv, nil);
 	CFRelease(mv);
 	CFRelease(v);	
+}
+
+static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, const char* value) {
+	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+	__updateMultiValueProperty(record, propId, label, v);
 }
 
 bool getAddressLabelAndKey(const char* property, CFStringRef* label, CFStringRef* key) {
@@ -471,6 +619,15 @@ bool setAddressValue(void* record, const char* property, const char* value) {
 	return true;
 }
 
+NSDate* string2date(CFStringRef v) {
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	[df setDateFormat:@"yyyy-MM-dd"];
+	NSDate *date = [df dateFromString: (NSString*)v];
+	[date retain];
+	[df release];
+	return date;
+}
+
 int setRecordValue(void* record, char* property, char* value) {
 	if (record && (value!=NULL) && strlen(value)) {
 		int prop = _getProperty(property);
@@ -478,12 +635,9 @@ int setRecordValue(void* record, char* property, char* value) {
 			CFStringRef v = CFStringCreateWithCString(NULL, value, 
 													  CFStringGetSystemEncoding());
 			if (prop == kABPersonBirthdayProperty) {
-				NSDateFormatter *df = [[NSDateFormatter alloc] init];
-				[df setDateFormat:@"yyyy-MM-dd"];
-				NSDate *birthdate = [df dateFromString: (NSString*)v];
+				NSDate *birthdate = string2date(v);
 				ABRecordSetValue(record, prop, birthdate, nil);
 				[birthdate release];
-				[df release];
 			} else {
 				ABRecordSetValue(record, prop, v, nil);
 			}
@@ -496,6 +650,24 @@ int setRecordValue(void* record, char* property, char* value) {
 				label = _getEmailLabel(property);
 				if (label) {
 					_updateMultiValueProperty(record,kABPersonEmailProperty,label,value);
+				} else {
+					label = _getUrlLabel(property);
+					if (label) {
+						_updateMultiValueProperty(record,kABPersonURLProperty,label,value);
+					} else {
+						label = _getRelatedNamesLabel(property);
+						if (label) {
+							_updateMultiValueProperty(record,kABPersonRelatedNamesProperty,label,value);
+						} else {
+							label = _getDatesLabel(property);
+							if (label) {
+								CFStringRef v = CFStringCreateWithCString(NULL, value, 
+																		  CFStringGetSystemEncoding());
+								NSDate *date = string2date(v);
+								__updateMultiValueProperty(record,kABPersonDateProperty,label,date);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -532,7 +704,7 @@ int deleteRecord(void* pb, void* record) {
 
 //==================================================================================
 
-enum {pbUnknown=0,pbPrefix,pbFirstName,pbMiddleName,pbLastName,pbSuffix,pbNickname,pbCompanyName,pbJobTitle,pbBirthday};
+enum {pbUnknown=0,pbPrefix,pbFirstName,pbMiddleName,pbLastName,pbSuffix,pbNickname,pbNote,pbCompanyName,pbJobTitle,pbBirthday};
 static const struct {
 	const char* _name;
 	const int  _value;
@@ -543,6 +715,7 @@ static const struct {
 { RUBY_PB_LAST_NAME, pbLastName },
 { RUBY_PB_SUFFIX, pbSuffix },
 { RUBY_PB_NICKNAME, pbNickname },
+{ RUBY_PB_NOTE, pbNote },
 { RUBY_PB_COMPANY_NAME, pbCompanyName },
 { RUBY_PB_JOB_TITLE, pbJobTitle },
 { RUBY_PB_BIRTHDAY, pbBirthday },
@@ -570,6 +743,8 @@ static int _getProperty(char* property) {
 			return kABPersonSuffixProperty;
 		case pbNickname:
 			return kABPersonNicknameProperty;
+		case pbNote:
+			return kABPersonNoteProperty;
 		case pbCompanyName:
 			return kABPersonOrganizationProperty;
 		case pbJobTitle:	
