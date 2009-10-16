@@ -821,18 +821,29 @@ class SyncSource
 		        m_nInserted++;
 		    }else// if ( nDbOp == 1 ) //delete
 		    {
-		    	long id = oJsonEntry.getLong("i");
-		    	
-	            IDBResult res = getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id );
-	            if ( !res.isEnd() )
+		    	boolean bDoNotDelete = false;
+	            if ( strOldObject != null )
 	            {
-	                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
-	                String strDelObject = res.getStringByIdx(1);
-	                getDB().executeSQL("DELETE FROM object_values where id=?", id );
-	                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", new Long(id) );
-	                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
+	                IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() );
+	                if ( !res.isEnd() )
+	                	bDoNotDelete = true;
 	            }
-		    	
+	            
+	            if ( !bDoNotDelete )
+	            {
+			    	long id = oJsonEntry.getLong("i");
+			    	
+		            IDBResult res = getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id );
+		            if ( !res.isEnd() )
+		            {
+		                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
+		                String strDelObject = res.getStringByIdx(1);
+		                getDB().executeSQL("DELETE FROM object_values where id=?", id );
+		                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", new Long(id) );
+		                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
+		            }
+	            }
+	            
 		        m_nDeleted++;
 		    }//else{
 		     //   LOG.ERROR("Unknown DB operation: " + nDbOp );
