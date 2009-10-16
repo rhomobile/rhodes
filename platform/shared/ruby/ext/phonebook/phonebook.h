@@ -16,10 +16,23 @@ extern "C" {
 #define RUBY_PB_LAST_NAME "last_name"
 #define RUBY_PB_SUFFIX "suffix"
 #define RUBY_PB_NICKNAME "nickname"
-#define RUBY_PB_MOBILE_NUMBER "mobile_number"
-#define RUBY_PB_HOME_NUMBER "home_number"
-#define RUBY_PB_BUSINESS_NUMBER "business_number"
+	
+#define RUBY_PB_NOTE "person_note"
+	
+#define RUBY_PB_BUSINESS_NUMBER "business_number" 
+#define RUBY_PB_HOME_NUMBER "home_number"         
+#define RUBY_PB_MOBILE_NUMBER "mobile_number"     
+
+#define RUBY_PB_MAIN_MUMBER "main_number"         
+#define RUBY_PB_PAGER_NUMBER "pager_number"       	
+#define RUBY_PB_HOME_FAX "home_fax"               
+#define RUBY_PB_WORK_FAX "work_fax"
+#define RUBY_PB_ASSISTANT_NUMBER "assistant_number"
+	
 #define RUBY_PB_EMAIL_ADDRESS "email_address"
+#define RUBY_PB_HOME_EMAIL_ADDRESS "home_email_address"
+#define RUBY_PB_OTHER_EMAIL_ADDRESS "other_email_address"
+
 #define RUBY_PB_COMPANY_NAME "company_name"
 #define RUBY_PB_JOB_TITLE "job_title"
 #define RUBY_PB_BIRTHDAY "birthday"
@@ -41,6 +54,15 @@ extern "C" {
 #define RUBY_PB_STATE_3 "state_3"
 #define RUBY_PB_ZIP_3 "zip_3"
 #define RUBY_PB_COUNTRY_3 "country_3"
+	
+#define RUBY_PB_HOME_PAGE "home_page"
+
+#define RUBY_PB_SPOUSE_NAME "spouse_name"
+#define RUBY_PB_ASSISTANT_NAME "assistant_name"
+	
+#define RUBY_PB_ANNIVERSARY "anniversary"
+#define RUBY_PB_CREATED "created"
+#define RUBY_PB_UPDATED "updated"	
 	
 #ifdef __cplusplus
 }
