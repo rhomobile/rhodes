@@ -1,5 +1,6 @@
 #include "SyncNotify.h"
 #include "SyncEngine.h"
+#include "net/URI.h"
 
 namespace rho {
 namespace sync {
@@ -254,12 +255,12 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
-	/*if (m_statusListener != null) {
-		if ( strDetails.length() == 0 )
-			strDetails = RhoRuby.getErrorText(error);
+	//if (m_statusListener != null) {
+		//if ( strDetails.length() == 0 )
+		//	strDetails = RhoRuby.getErrorText(error);
         status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
-		m_statusListener.reportStatus( status, error);
-	}*/
+	//	m_statusListener.reportStatus( status, error);
+	//}
 	LOG(INFO) + "Status: "+status;
 }
 
@@ -326,8 +327,8 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
-		            strBody += "&error_message=" + src.m_strError; //TODO: URI.urlEncode
-		        	    //URI.urlEncode(strErrMessage != null? strErrMessage : "");
+		            strBody += "&error_message=";
+                    URI::urlEncode(src.m_strError,strBody);
 	            }
 
                 strBody += makeCreateObjectErrorBody(src.getID());

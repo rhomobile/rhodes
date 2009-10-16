@@ -32,4 +32,9 @@ build:
   bb:
   bbsignpwd: "somepasswordhere"
 
+excludedirs:
+  bb:
+    - public/js/iui
+    - public/js/jquery*
+    - public/js/prototype*
 

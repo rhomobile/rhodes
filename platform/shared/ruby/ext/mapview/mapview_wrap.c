@@ -1714,6 +1714,8 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
               case T_STRING:
                 tmp = StringValuePtr(data);
                 break;
+                case T_FLOAT:	
+                case T_RATIONAL:	
               case T_SYMBOL:
                 val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
                 tmp = StringValuePtr(val);

@@ -902,6 +902,22 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="net"
+			>
+			<File
+				RelativePath="..\..\shared\net\inetrequest.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\URI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\URI.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
