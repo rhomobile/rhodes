@@ -39,6 +39,12 @@ public class WebView extends RubyBasic {
 		return RubyConstant.QTRUE;
 	}
 	
+	public static RubyValue execute_js(RubyValue arg0) {
+		String js = arg0.toString();
+		RhodesInstance.getInstance().executeJs(js);
+		return RubyConstant.QNIL;
+	}
+	
 	
 	public static RubyValue current_location() {
 		String url = RhodesInstance.getInstance().getCurrentUrl();
@@ -64,6 +70,11 @@ public class WebView extends RubyBasic {
 		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				return WebView.set_menu_items(arg0);
+			}
+		});
+		klass.getSingletonClass().defineMethod("execute_js", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				return WebView.execute_js(arg0);
 			}
 		});
 		
