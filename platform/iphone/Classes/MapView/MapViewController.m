@@ -12,8 +12,7 @@
 
 @implementation MapViewController
 
-@synthesize actionTarget,onNavigate;
-
+@synthesize actionTarget,onNavigate,gapikey;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
@@ -75,12 +74,16 @@
 			} else {
 				showsUserLocation = FALSE;
 			}
+		} else if ([element isEqualToString:@"api_key"]) {
+			gapikey = [[enumerator nextObject] copy]; 
+		} else {
+			[enumerator nextObject];
 		}
     }
 }
 
 - (void)setAnnotations:(NSMutableArray*)annotations {
-	ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations];
+	ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations apikey:gapikey];
 	ggeoCoder.actionTarget = self;
 	ggeoCoder.onDidFindAddress = @selector(didFindAddress:);
 }
@@ -211,7 +214,7 @@ calloutAccessoryControlTapped:(UIControl *)control {
 @end
 
 NSMutableArray* parse_annotations(int nannotations, char** annotation) {
-	if (nannotations<=0) return nil;
+	if (nannotations<=0) return [NSMutableArray arrayWithCapacity:0];
 	NSMutableArray *annotations = [NSMutableArray arrayWithCapacity:1];
 	CLLocationCoordinate2D current_coordinate;
 	NSString* tmp;
@@ -233,7 +236,7 @@ NSMutableArray* parse_annotations(int nannotations, char** annotation) {
 }
 
 NSMutableArray* parse_settings(int nparams, char** params) {
-	if (nparams <= 0) return nil;
+	if (nparams <= 0) return [NSMutableArray arrayWithCapacity:0];
 	NSMutableArray *settings = [NSMutableArray arrayWithCapacity:nparams];
 	BOOL array_flag = FALSE;
 	for(int i = 0; i < nparams; i++) {

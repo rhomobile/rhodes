@@ -1628,6 +1628,7 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
     int i, j, len = 0;
     char **ret_val, **settings;
     ret_val = settings = NULL;
+    arg1 = arg3 = 0;
     if (input_arr) {
       VALUE main_keys_arr = rb_funcall(argv[0], rb_intern("keys"), 0, NULL);
       int mk,main_keys_len = RARRAY_LEN(main_keys_arr);		
@@ -1736,7 +1737,7 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
                 subtitle = tmp;
               } else if (!strcmp(key_str, "url")) {
                 url = tmp;
-              } 
+              }  
             }
             ret_val[arr_len++] = lat;
             ret_val[arr_len++] = lon;

@@ -10,6 +10,7 @@ extern void mapview_create(int nparams, char** params, int nannotations, char** 
 	int i, j, len = 0;
 	char **ret_val, **settings;
 	ret_val = settings = NULL;
+	$1 = $3 = 0;
 	if (input_arr) {
 		VALUE main_keys_arr = rb_funcall($input, rb_intern("keys"), 0, NULL);
 		int mk,main_keys_len = RARRAY_LEN(main_keys_arr);		
@@ -118,7 +119,7 @@ extern void mapview_create(int nparams, char** params, int nannotations, char** 
 							subtitle = tmp;
 						} else if (!strcmp(key_str, "url")) {
 							url = tmp;
-						} 
+						}  
 					}
 					ret_val[arr_len++] = lat;
 					ret_val[arr_len++] = lon;

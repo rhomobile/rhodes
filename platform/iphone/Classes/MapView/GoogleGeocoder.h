@@ -10,6 +10,7 @@
 	NSMutableArray *annotations;
 	MapAnnotation* currentAnnotation;
 	NSString *theElement;
+	NSString *gapikey;
 @public
 	id  actionTarget;
 	SEL onDidFindAddress;
@@ -21,10 +22,11 @@
 @property (assign) SEL onDidFindAddress;
 @property (nonatomic,retain) NSString *theElement;
 @property (nonatomic,retain) NSMutableArray *annotations;
+@property (copy) NSString* gapikey;
 
 //
 -(void)start;
--(id)initWithAnnotations:(NSMutableArray*)annotations;
+-(id)initWithAnnotations:(NSMutableArray*)annotations apikey:(NSString*)key;
 
 -(BOOL)geocode:(MapAnnotation *)annotation;
 -(CLLocation*)stringCooridinatesToCLLocation;

@@ -4,7 +4,7 @@
 
 @implementation GoogleGeocoder
 
-@synthesize actionTarget,onDidFindAddress,theElement,annotations;
+@synthesize actionTarget,onDidFindAddress,theElement,annotations,gapikey;
 
 -(void)doGeocoding:(id)items {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -32,12 +32,15 @@
 }
 
 -(void)start {
-	[NSThread detachNewThreadSelector:@selector(doGeocoding:) toTarget:self withObject:annotations];
+	if (annotations) {
+		[NSThread detachNewThreadSelector:@selector(doGeocoding:) toTarget:self withObject:annotations];
+	}
 }
 
--(id)initWithAnnotations:(NSMutableArray*)_annotations {
+-(id)initWithAnnotations:(NSMutableArray*)_annotations apikey:(NSString*)key{
 	self = [super init];
 	annotations = _annotations;
+	gapikey = [key copy];
     return self;
 }
 
@@ -52,8 +55,12 @@
 	[url replaceOccurrencesOfString:@"ö" withString:@"oe" options:1 range:(NSRange){0,[url length]}];
 	[url replaceOccurrencesOfString:@"ü" withString:@"ue" options:1 range:(NSRange){0,[url length]}];
 	[url replaceOccurrencesOfString:@"ß" withString:@"ss" options:1 range:(NSRange){0,[url length]}];
-	[url replaceOccurrencesOfString:@" " withString:@"+" options:1 range:(NSRange){0,[url length]}];	
-	//NSURL *theURL = [[NSURL alloc] initWithString:url];
+	[url replaceOccurrencesOfString:@" " withString:@"+" options:1 range:(NSRange){0,[url length]}];
+	if (gapikey) {
+		[url appendString:@"&key="];
+		[url appendString:gapikey];
+	}
+	NSLog(@"Geocoding url = %@\n", url);
 	NSURLRequest *request=[NSURLRequest requestWithURL:[NSURL URLWithString:url]							  
 										cachePolicy:NSURLRequestUseProtocolCachePolicy
 										timeoutInterval:60.0];	
