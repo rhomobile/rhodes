@@ -424,6 +424,9 @@ public class Platform extends Activity {
         thread.start();                       
     }
 
+    public void executeJs(String js) {
+    	this.webView.loadUrl("javascript:" + js);
+    }
 	
 	public String getStartPage() {
 		return startPage;
