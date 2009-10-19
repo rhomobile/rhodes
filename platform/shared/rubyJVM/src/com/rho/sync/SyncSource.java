@@ -745,7 +745,8 @@ class SyncSource
 	        getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
 	        return true;
 	    }
-		
+
+	    int nDoNotDelete = -1;
 		String strObject = oJsonObject.getString("o");
 		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
 		
@@ -821,21 +822,20 @@ class SyncSource
 		        m_nInserted++;
 		    }else// if ( nDbOp == 1 ) //delete
 		    {
-		    	boolean bDoNotDelete = false;
-	            if ( strOldObject != null )
+	            if ( strOldObject != null && nDoNotDelete < 0 )
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() );
-	                if ( !res.isEnd() )
-	                	bDoNotDelete = true;
+	                nDoNotDelete = !res.isEnd() ? 1 : 0;
 	            }
-	            
-	            if ( !bDoNotDelete )
+		    	
+	            if ( nDoNotDelete != 1 )
 	            {
 			    	long id = oJsonEntry.getLong("i");
 			    	
 		            IDBResult res = getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id );
 		            if ( !res.isEnd() )
 		            {
+		            	LOG.TRACE("Delete: " + id);
 		                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
 		                String strDelObject = res.getStringByIdx(1);
 		                getDB().executeSQL("DELETE FROM object_values where id=?", id );

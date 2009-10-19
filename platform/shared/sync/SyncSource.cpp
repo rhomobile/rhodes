@@ -640,9 +640,10 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
         return true;
     }
 
+    int nDoNotDelete = -1;
 	const char* strObject = oJsonObject.getString("o");
 	CJSONArrayIterator oJsonArr(oJsonObject, "av");
-	
+
     for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
 	{
 		CJSONEntry oJsonEntry = oJsonArr.getCurItem();
@@ -706,16 +707,25 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
             m_nInserted++;
         }else// if ( nDbOp == 1 ) //delete
         {
-            uint64 id = oJsonEntry.getUInt64("i");
-            DBResult( res , getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id ));
-            if ( !res.isEnd() )
+            if ( strOldObject != null && nDoNotDelete < 0 )
             {
-                int nDelSrcID = res.getIntByIdx(0);
-                String strDelObject = res.getStringByIdx(1);
-                getDB().executeSQL("DELETE FROM object_values where id=?", id );
-                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", id );
+                DBResult( res,getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() ) );
+                nDoNotDelete = !res.isEnd() ? 1 : 0;
+            }
 
-                getNotify().onObjectChanged(nDelSrcID, strDelObject, CSyncNotify::enDelete);
+            if ( nDoNotDelete != 1 )
+            {
+                uint64 id = oJsonEntry.getUInt64("i");
+                DBResult( res , getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id ));
+                if ( !res.isEnd() )
+                {
+                    int nDelSrcID = res.getIntByIdx(0);
+                    String strDelObject = res.getStringByIdx(1);
+                    getDB().executeSQL("DELETE FROM object_values where id=?", id );
+                    getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", id );
+
+                    getNotify().onObjectChanged(nDelSrcID, strDelObject, CSyncNotify::enDelete);
+                }
             }
 
             m_nDeleted++;
