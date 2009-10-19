@@ -346,18 +346,13 @@
 #endif
 
 - (void) showLoadingPage {
-	NSString *loadingPage;
-
-	NSString *filePath = [NSString stringWithFormat:@"%s/app/loading.html", GetApplicationsRootPath()];
+	NSString *filePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"apps/app/loading.html"];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData *data = [fileManager contentsAtPath:filePath];
-		loadingPage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+		NSString *loadingPage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+		[webViewController loadHTMLString:loadingPage];
 	}
-	else
-		loadingPage = @"<html><title>Loading</title><body><h1>Loading...</h1></body></html>";
-	
-	[webViewController loadHTMLString:loadingPage];
 }
 
 - (void) doStartUp {
