@@ -597,7 +597,7 @@ module Rhom
                     
                   set_notification(args[:callback], args[:callback_param]) if args[:callback]
                   SyncEngine.dosearch_source(get_source_id.to_i(), args[:from] ? args[:from] : 'search',
-                    searchParams)
+                    searchParams, args[:sync_changes] ? args[:sync_changes] : false )
                 end
                 
                 # Alias for find
