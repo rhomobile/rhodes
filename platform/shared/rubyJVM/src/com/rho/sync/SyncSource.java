@@ -41,6 +41,8 @@ class SyncSource
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
 
+	public static final int edpNone = 0, edpCreateObjects = 1, edpDeleteObjects = 2;
+	
 	static class SyncBlob
 	{
 	   String m_strBody;
@@ -63,11 +65,13 @@ class SyncSource
     boolean m_bTokenFromDB; 
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
-    boolean m_bGetAtLeastOnePage = false, m_bCreateObjectsPass = false;
+    boolean m_bGetAtLeastOnePage = false;
+    int m_eSyncServerDataPass = edpNone;
     int m_nErrCode = RhoRuby.ERR_NONE;
     String m_strError = "";
     String m_strParams = "";
     String m_strAction = "";
+    boolean m_bSearchSyncChanges = false;
     
 	String m_strPushBody = "";
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
@@ -97,8 +101,9 @@ class SyncSource
     void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
     int  getCurPageCount(){return m_nCurPageCount;}
     int  getTotalCount(){return m_nTotalCount;}
-    void setCreateObjectsPass(boolean bPass){m_bCreateObjectsPass = bPass;}
-    boolean isCreateObjectsPass(){ return m_bCreateObjectsPass; }
+    void setSyncServerDataPass(int ePass){m_eSyncServerDataPass = ePass;}
+    boolean isCreateObjectsPass(){ return m_eSyncServerDataPass == edpCreateObjects; }
+    boolean isDeleteObjectsPass(){ return m_eSyncServerDataPass == edpDeleteObjects; }
     
     SyncEngine getSync(){ return m_syncEngine; }
     SyncNotify getNotify(){ return getSync().getNotify(); }
@@ -145,7 +150,7 @@ class SyncSource
 	            processToken("1");
 	    	
 	        boolean bSyncedServer = false;
-	        if ( m_strParams.length() == 0 )
+	        if ( m_strParams.length() == 0 || m_bSearchSyncChanges )
 	        {
 	            if ( isPendingClientChanges() )
 	            {
@@ -543,13 +548,17 @@ class SyncSource
 		            processServerData_Ver0(oJsonArr);
 		        else
 	            {
-	                int nSavedPos = oJsonArr.getCurPos();
-	                setCreateObjectsPass(true);
-	                processServerData_Ver1(oJsonArr);
+		            int nSavedPos = oJsonArr.getCurPos();
+		            setSyncServerDataPass(edpCreateObjects);
+		            processServerData_Ver1(oJsonArr);
 
-	                setCreateObjectsPass(false);
-	                oJsonArr.reset(nSavedPos);
-	                processServerData_Ver1(oJsonArr);
+		            setSyncServerDataPass(edpDeleteObjects);
+		            oJsonArr.reset(nSavedPos);
+		            processServerData_Ver1(oJsonArr);
+
+		            setSyncServerDataPass(edpNone);
+		            oJsonArr.reset(nSavedPos);
+		            processServerData_Ver1(oJsonArr);
 	            }
 		        
 			    PROF.STOP("Data");		    
@@ -738,7 +747,9 @@ class SyncSource
 		String strOldObject = oJsonObject.getString("oo");
 	    if ( isCreateObjectsPass() != (strOldObject != null) )
 	        return true;
-		
+	    if ( isDeleteObjectsPass() != (nSrcID.intValue() < 0) )
+	    	return true;
+	    
 	    if ( oJsonObject.hasName("e") )
 	    {
 	    	String strError = oJsonObject.getString("e");
