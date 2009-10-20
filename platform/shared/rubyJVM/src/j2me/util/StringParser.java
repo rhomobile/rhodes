@@ -109,8 +109,11 @@ class StringParser implements Enumeration {
         delimsChanged = false;
         newPosition = -1;
 
-        if (currentPosition >= maxPosition)
+        if (currentPosition > maxPosition)
             throw new NoSuchElementException();
+        if (currentPosition == maxPosition)
+        	return "";
+        
         int start = currentPosition;
         currentPosition = parseTokens(currentPosition);
         return str.substring(start, currentPosition);
@@ -139,8 +142,8 @@ class StringParser implements Enumeration {
         int currpos = currentPosition;
         while (currpos < maxPosition) {
             currpos = skipDelimiters(currpos);
-            if (currpos >= maxPosition)
-                break;
+            //if (currpos >= maxPosition)
+            //    break;
             currpos = parseTokens(currpos);
             count++;
         }
