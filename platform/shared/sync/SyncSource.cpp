@@ -27,9 +27,10 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
-    m_bCreateObjectsPass = false;
+    m_eSyncServerDataPass = edpNone;
 
     m_nErrCode = RhoRuby.ERR_NONE;
+    m_bSearchSyncChanges = false;
 }
 
 CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -41,9 +42,10 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
-    m_bCreateObjectsPass = false;
+    m_eSyncServerDataPass = edpNone;
 
     m_nErrCode = RhoRuby.ERR_NONE;
+    m_bSearchSyncChanges = false;
 }
 
 CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -59,9 +61,10 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
-    m_bCreateObjectsPass = false;
+    m_eSyncServerDataPass = edpNone;
 
     m_nErrCode = RhoRuby.ERR_NONE;
+    m_bSearchSyncChanges = false;
 }
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
@@ -78,7 +81,7 @@ void CSyncSource::sync()
         processToken(1);
 
     boolean bSyncedServer = false;
-    if ( m_strParams.length() == 0 )
+    if ( m_strParams.length() == 0 || m_bSearchSyncChanges )
     {
         if ( isPendingClientChanges() )
         {
@@ -440,12 +443,17 @@ void CSyncSource::processServerData(const char* szData)
         else
         {
             int nSavedPos = oJsonArr.getCurPos();
-            setCreateObjectsPass(true);
+            setSyncServerDataPass(edpCreateObjects);
             processServerData_Ver1(oJsonArr);
 
-            setCreateObjectsPass(false);
+            setSyncServerDataPass(edpDeleteObjects);
             oJsonArr.reset(nSavedPos);
             processServerData_Ver1(oJsonArr);
+
+            setSyncServerDataPass(edpNone);
+            oJsonArr.reset(nSavedPos);
+            processServerData_Ver1(oJsonArr);
+
         }
 
         getDB().endTransaction();
@@ -631,6 +639,8 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
 {
     const char* strOldObject = oJsonObject.getString("oo");
     if ( isCreateObjectsPass() != (strOldObject != null) )
+        return true;
+    if ( isDeleteObjectsPass() != (nSrcID < 0) )
         return true;
 
     if ( oJsonObject.hasName("e") )

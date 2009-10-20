@@ -49,6 +49,8 @@ class CSyncSource
 {
     DEFINE_LOGCLASS;
 
+    enum ESyncServerDataPass{ edpNone, edpCreateObjects, edpDeleteObjects };
+
     CSyncEngine& m_syncEngine;
 
     int    m_nID;
@@ -58,12 +60,14 @@ class CSyncSource
     boolean m_bTokenFromDB;
 
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
-    boolean m_bGetAtLeastOnePage, m_bCreateObjectsPass;
+    boolean m_bGetAtLeastOnePage;
+    ESyncServerDataPass m_eSyncServerDataPass;
 public:
     int m_nErrCode;
     String m_strError;
     String m_strParams;
     String m_strAction;
+    boolean m_bSearchSyncChanges;
 private:
     //String m_strPushBody;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
@@ -112,8 +116,9 @@ public:
     void processServerData_Ver0(json::CJSONArrayIterator& oJsonArr);
     void processServerData_Ver1(json::CJSONArrayIterator& oJsonArr);
 
-    void setCreateObjectsPass(boolean bPass){m_bCreateObjectsPass = bPass;}
-    boolean isCreateObjectsPass(){ return m_bCreateObjectsPass; }
+    void setSyncServerDataPass(ESyncServerDataPass ePass){m_eSyncServerDataPass = ePass;}
+    boolean isCreateObjectsPass(){ return m_eSyncServerDataPass == edpCreateObjects; }
+    boolean isDeleteObjectsPass(){ return m_eSyncServerDataPass == edpDeleteObjects; }
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
     void syncClientBlobs(const String& strBaseQuery);
