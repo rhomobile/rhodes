@@ -47,7 +47,7 @@ void CSyncEngine::doSyncAllSources()
     setState(esNone);
 }
 
-void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction)
+void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges)
 {
     if ( strSrcUrl.length()>0 )
         LOG(INFO) +"Started synchronization of the data source url: " + strSrcUrl;
@@ -70,7 +70,8 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
 
     	src.m_strParams = strParams;
     	src.m_strAction = strAction;
-    	
+    	src.m_bSearchSyncChanges = bSearchSyncChanges;
+
 	    m_strSession = loadSession();
 	    if ( isSessionExist()  ) {
 	    	m_clientID = loadClientID();
