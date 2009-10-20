@@ -1,9 +1,0 @@
-$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
-require 'lib/rhodes.rb'
-require 'rubygems'
-require 'hoe'
-
-Hoe.spec 'rhodes-framework' do |s|
-  s.developer 'Rhomobile Dev', 'dev@rhomobile.com'
-  s.version = Rhodes::VERSION
-end
