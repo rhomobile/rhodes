@@ -48,6 +48,7 @@ module Rhogen
     end
 
     template :buildyml do |template|
+      @sdk_path = File.expand_path(File.join(File.dirname(__FILE__),'..','..'))
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end

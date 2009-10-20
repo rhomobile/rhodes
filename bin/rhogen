@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'rhodes'
 require 'templater'
-require File.join(File.dirname(__FILE__), '..', 'generators', 'rhogen')
+require File.join(File.dirname(__FILE__), '..', 'res', 'generators', 'rhogen')
 
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
