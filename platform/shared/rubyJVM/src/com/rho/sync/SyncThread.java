@@ -108,10 +108,12 @@ public class SyncThread extends RhoThread
     static class SyncSearchCommand extends SyncCommand
     {
 	    String m_strFrom;
-        public SyncSearchCommand(String from, String params, int source_id)
+	    boolean   m_bSyncChanges;
+        public SyncSearchCommand(String from, String params, int source_id, boolean sync_changes)
 	    {
         	super(scSearchOne,params,source_id);
 		    m_strFrom = from;
+		    m_bSyncChanges = sync_changes;
 	    }
     };
    	
@@ -283,11 +285,11 @@ public class SyncThread extends RhoThread
 	    case scChangePollInterval:
 	        break;
 	    case scSyncOne:
-	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","" );
+	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","", false );
 	        break;
 	    case scSearchOne:
 	        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
-	            ((SyncSearchCommand)oSyncCmd).m_strFrom);
+	            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges);
 	        break;
 	        
 	    case scLogin:
@@ -428,7 +430,7 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("dosearch_source",
 			new RubyVarArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-					if ( args.size() != 3 )
+					if ( args.size() != 4 )
 						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
 								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
 					
@@ -437,9 +439,11 @@ public class SyncThread extends RhoThread
 						String from = args.get(1).toStr();
 						String params = args.get(2).toStr();
 						
+						String str = args.get(3).asString();
+						boolean bSearchSyncChanges = args.get(3).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
 						stopSync();
 						
-						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id) );
+						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id,bSearchSyncChanges) );
 					}catch(Exception e)
 					{
 						LOG.ERROR("SyncEngine.login", e);
