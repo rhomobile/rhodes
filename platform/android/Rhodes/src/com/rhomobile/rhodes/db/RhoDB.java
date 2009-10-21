@@ -149,6 +149,16 @@ public class RhoDB extends SQLiteOpenHelper {
 			db.endTransaction();
 		}
 	}
+	
+	public void rollbackTransaction() {
+		if (db == null)
+			throw new SQLException(
+					"Database must be opened before rollback transaction");
+		
+		if (db.inTransaction()) {
+			db.endTransaction();
+		}
+	}
 
 	public IDBResult executeSQL(String strStatement, Object[] values)
 			throws DBException {

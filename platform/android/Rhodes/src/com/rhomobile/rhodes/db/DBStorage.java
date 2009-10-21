@@ -36,7 +36,7 @@ public class DBStorage implements IDBStorage {
     synchronized public void rollback() throws DBException
     {
         if (rhoDB != null && rhoDB.isOpen())
-            ;//TODO: implement rollback
+            rhoDB.rollbackTransaction();
     }
 
 	synchronized public IDBResult createResult() {
