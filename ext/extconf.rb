@@ -3,6 +3,7 @@ include FileUtils
 
 mv File.dirname(__FILE__) +"/../rakefile.rb", File.dirname(__FILE__) +"/../Rakefile"
 
+cp File.dirname(__FILE__) +"/../rhobuild.yml.example", File.dirname(__FILE__) +"/../rhobuild.yml"
 
 #This is the hack, we make all the things to make it look like an extension has compiled
 

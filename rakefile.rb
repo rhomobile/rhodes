@@ -25,9 +25,12 @@ namespace "config" do
     end
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
+
       $app_path = $config["env"]["app"]
       $app_config = YAML::load_file($app_path + "/build.yml")
+
     end
+
   end
 end
 
@@ -38,6 +41,7 @@ def copy_assets(asset)
   cp_r asset + "/.", dest, :remove_destination => true 
   
 end
+
 
 
 def common_bundle_start(startdir, dest)
@@ -94,7 +98,7 @@ namespace "build" do
   namespace "bundle" do
     task :xruby do
       #needs $config, $srcdir, $excludelib, $bindir
-      app = $config["env"]["app"]
+      app = $app_path
       startdir = pwd
       dest = startdir + "/" + $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
@@ -151,7 +155,7 @@ namespace "build" do
     end
 
     task :noxruby do
-      app = $config["env"]["app"]
+      app = $app_path
       rhodeslib = "lib/framework"
       compileERB = "lib/build/compileERB/default.rb"
       compileRB = "lib/build/compileRB/compileRB.rb"
@@ -490,7 +494,7 @@ namespace "buildall" do
       $config["env"]["paths"].each do |k,v|
         if k.to_s =~ /^4/
           puts "BUILDING VERSION: #{k}"
-          $config["env"]["bbver"] = k
+          $app_config["bbver"] = k
           Jake.reconfig($config)
  
           #reset all tasks used for building
@@ -518,3 +522,24 @@ namespace "buildall" do
   end
 end
 
+task :gem do
+  puts "Removing old gem"
+  rm_rf Dir.glob("*.gem")
+  puts "Copying Rakefile"
+  cp "Rakefile", "rakefile.rb"
+  
+  puts "Building manifest"
+  out = ""
+  Dir.glob("**/*") {|fname| out << fname + "\n" if File.file? fname}
+  File.open("Manifest.txt",'w') {|f| f.write(out)}
+
+  puts "Loading gemspec"
+  spec = Gem::Specification.load('rhodes.gemspec')
+
+  puts "Building gem"
+  gemfile = Gem::Builder.new(spec).build
+end
+
+task :tasks do
+  Rake::Task.tasks.each {|t| puts t.to_s}
+end
