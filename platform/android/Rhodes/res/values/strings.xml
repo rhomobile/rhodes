@@ -22,6 +22,11 @@
 	 'value' text default NULL,
 	 'update_type' varchar(255) default NULL,
 	 'attrib_type' varchar(255) default NULL);
+	DROP TABLE IF EXISTS [object_attribs_to_load];
+	CREATE TABLE 'object_attribs_to_load' (
+	 'id' INTEGER PRIMARY KEY NOT NULL,
+	 'source_id' INTEGER NOT NULL,
+	 'name' varchar(255) default NULL);
     </string>
 	<string name="deleteTrigger">
 	CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values
@@ -30,6 +35,13 @@
 	INSERT INTO object_values_to_delete VALUES (OLD.id, OLD.value,OLD.attrib_type,OLD.update_type);
 	END;
 	</string>    
+	<string name="insertTrigger">
+	CREATE TRIGGER rhoinsertTrigger BEFORE INSERT ON object_values
+	FOR EACH ROW
+	BEGIN
+	INSERT INTO object_attribs_to_load VALUES (NEW.id, NEW.source_id, NEW.attrib);
+	END;
+	</string>
 <string name="ok">   Ok   </string>
 <string name="cancel">Cancel</string>
 </resources>
