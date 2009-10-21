@@ -25,9 +25,12 @@ namespace "config" do
     end
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
+
       $app_path = $config["env"]["app"]
       $app_config = YAML::load_file($app_path + "/build.yml")
+
     end
+
   end
 end
 
@@ -38,6 +41,7 @@ def copy_assets(asset)
   cp_r asset + "/.", dest, :remove_destination => true 
   
 end
+
 
 
 def common_bundle_start(startdir, dest)
@@ -518,3 +522,22 @@ namespace "buildall" do
   end
 end
 
+task :gem do
+  puts "Removing old gem"
+  rm_rf Dir.glob("*.gem")
+
+  puts "Building manifest"
+  out = ""
+  Dir.glob("**/*") {|fname| out << fname + "\n" if File.file? fname}
+  File.open("Manifest.txt",'w') {|f| f.write(out)}
+
+  puts "Loading gemspec"
+  spec = Gem::Specification.load('rhodes.gemspec')
+
+  puts "Building gem"
+  gemfile = Gem::Builder.new(spec).build
+end
+
+task :tasks do
+  Rake::Task.tasks.each {|t| puts t.to_s}
+end
