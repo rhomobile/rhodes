@@ -43,7 +43,6 @@ namespace "config" do
     $config["platform"] = "iphone"
     $rubypath = "rhodes/rhodes-build/res/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
-    $bbver = $config["env"]["bbver"]
     $builddir = iphonepath + "/rbuild"
     $bindir = iphonepath + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
@@ -56,7 +55,7 @@ namespace "config" do
     $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
-    $applog = File.join($homedir,$config["env"]["applog"])
+    $applog = File.join($homedir,$app_config["applog"])
 
 
   end
@@ -80,8 +79,8 @@ namespace "build" do
     desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
-      set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
-      cp $config["env"]["app"] + "/icon/icon.png", $config["build"]["iphonepath"] 
+      set_app_name($app_config["name"]) unless $app_config["name"].nil?
+      cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
 
       set_signing_identity($config["env"]["iphone"]["codesignidentity"],$config["env"]["iphone"]["entitlements"].to_s) if $config["env"]["iphone"]["codesignidentity"].to_s != ""
 

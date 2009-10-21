@@ -98,7 +98,7 @@ namespace "build" do
   namespace "bundle" do
     task :xruby do
       #needs $config, $srcdir, $excludelib, $bindir
-      app = $config["env"]["app"]
+      app = $app_path
       startdir = pwd
       dest = startdir + "/" + $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
@@ -155,7 +155,7 @@ namespace "build" do
     end
 
     task :noxruby do
-      app = $config["env"]["app"]
+      app = $app_path
       rhodeslib = "lib/framework"
       compileERB = "lib/build/compileERB/default.rb"
       compileRB = "lib/build/compileRB/compileRB.rb"
@@ -494,7 +494,7 @@ namespace "buildall" do
       $config["env"]["paths"].each do |k,v|
         if k.to_s =~ /^4/
           puts "BUILDING VERSION: #{k}"
-          $config["env"]["bbver"] = k
+          $app_config["bbver"] = k
           Jake.reconfig($config)
  
           #reset all tasks used for building

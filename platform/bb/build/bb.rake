@@ -13,7 +13,7 @@ def freplace( fname, pattern, str )
 end
 
 def startmds
-  mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+  mdshome =  $config["env"]["paths"][$app_config["bbver"]]["mds"]
   args = []
   args << "/c"
   args << "run.bat"
@@ -22,7 +22,7 @@ def startmds
 end 
 
 def stopmds
-  mdshome =  $config["env"]["paths"][$config["env"]["bbver"]]["mds"]
+  mdshome =  $config["env"]["paths"][$app_config["bbver"]]["mds"]
   args = []
   args << "/c"
   args << "shutdown.bat"
@@ -31,7 +31,7 @@ def stopmds
 end 
 
 def startsim
-  bbver = $config["env"]["bbver"]
+  bbver = $app_config["bbver"]
   sim = $config["env"]["paths"][bbver]["sim"]
   jde = $config["env"]["paths"][bbver]["jde"]
     
@@ -51,15 +51,15 @@ def startsim
     args << "/fs-sdcard=true"
   end
         
-  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($config["env"]["applog"]) +'"'
+  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"]) +'"'
 
   Thread.new { Jake.run(command,args,jde + "/simulator",true) }
   $stdout.flush
 end
 
 def stopsim
-  sim = $config["env"]["paths"][$config["env"]["bbver"]]["sim"]
-  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+  sim = $config["env"]["paths"][$app_config["bbver"]]["sim"]
+  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
     
   command =  '"' + jde + "/simulator/fledgecontroller.exe\""
   args = []
@@ -71,7 +71,7 @@ end
 
 def manualsign
   java = $config["env"]["paths"]["java"] + "/java.exe"
-  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
 
   args = []
   args << "-jar"
@@ -86,7 +86,7 @@ end
 
 def autosign
   java = $config["env"]["paths"]["java"] + "/java.exe"
-  jde = $config["env"]["paths"][$config["env"]["bbver"]]["jde"]
+  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
 
   args = []
   args << "-jar"
@@ -109,7 +109,7 @@ namespace "config" do
     $config["platform"] = "bb"
 
     bbpath = $config["build"]["bbpath"]
-    $bbver = $config["env"]["bbver"]
+    $bbver = $app_config["bbver"]
     $builddir = bbpath + "/build"
     $bindir = bbpath + "/bin"
     $rhobundledir =  bbpath + "/RhoBundle"
@@ -122,9 +122,9 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
 
-    $assetfolder = $config["env"]["app"] + "/public-" + "bb-" + $bbver
+    $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
-    $outfilebase = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+    $outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
     $outfilebase.gsub!(/ /,"_")
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
@@ -323,8 +323,8 @@ namespace "package" do
         $rhobundleimplib ,
         '"' + Jake.get_absolute($preverified + "/RhoBundle.jar") + '"',
         "RhoBundle",
-        $config["env"]["vendor"],
-        $config["env"]["version"]
+        $app_config["vendor"],
+        $app_config["version"]
       )
       unless $? == 0
         puts "Error in RAPC"
@@ -344,8 +344,8 @@ namespace "package" do
           jdehome + "/lib/net_rim_api.jar",
           '"' + Jake.get_absolute($preverified + "/RubyVM.jar") +'"',
           "RubyVM",
-          $config["env"]["vendor"],
-          $config["env"]["version"]
+          $app_config["vendor"],
+          $app_config["version"]
         )
         unless $? == 0
           puts "Error in RAPC"
@@ -361,7 +361,7 @@ namespace "package" do
 
     desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
-      appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+      appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
 
       if not FileUtils.uptodate?($targetdir + '/' + $outfilebase + '.cod',$preverified + "/rhodes.jar")
         Jake.rapc($outfilebase,
@@ -369,8 +369,8 @@ namespace "package" do
           $rhodesimplib,
           '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
           appname,
-          $config["env"]["vendor"],
-          $config["env"]["version"],
+          $app_config["vendor"],
+          $app_config["version"],
           "resources/icon.png",
           false,
           true
@@ -419,15 +419,15 @@ namespace "package" do
 
       Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir,true)
 
-      appname = $config["env"]["appname"].nil? ? "rhodesApp" : $config["env"]["appname"]
+      appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
 
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
         '"' + Jake.get_absolute( $bindir + "/" + $outfilebase + ".jar") +'"',
         appname,
-        $config["env"]["vendor"],
-        $config["env"]["version"],
+        $app_config["vendor"],
+        $app_config["version"],
         "resources/icon.png",
         false,
         true
