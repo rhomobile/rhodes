@@ -719,7 +719,9 @@ public class DBAdapter extends RubyBasic {
 
 			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
 			{
-				m_db.getAttrMgr().add(rows2Insert.getIntByIdx(1), rows2Insert.getStringByIdx(2));
+				int nSrcID = rows2Insert.getIntByIdx(1);
+				String name = rows2Insert.getStringByIdx(2);
+				m_db.getAttrMgr().add(nSrcID, name);
 			}
 			
 		}
