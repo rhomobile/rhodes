@@ -525,7 +525,9 @@ end
 task :gem do
   puts "Removing old gem"
   rm_rf Dir.glob("*.gem")
-
+  puts "Copying Rakefile"
+  cp "Rakefile", "rakefile.rb"
+  
   puts "Building manifest"
   out = ""
   Dir.glob("**/*") {|fname| out << fname + "\n" if File.file? fname}
