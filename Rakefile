@@ -156,7 +156,7 @@ namespace "build" do
 
     task :noxruby do
       app = $app_path
-      rhodeslib = "lib/framework"
+      rhodeslib = File.dirname(__FILE__) + "/lib/framework"
       compileERB = "lib/build/compileERB/default.rb"
       compileRB = "lib/build/compileRB/compileRB.rb"
       startdir = pwd
@@ -168,7 +168,8 @@ namespace "build" do
       
       cp   compileERB, $srcdir
       puts "Running default.rb"
-      puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/default.rb` 
+
+      puts `#{$rubypath} -I#{rhodeslib} #{$srcdir}/default.rb` 
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -178,7 +179,7 @@ namespace "build" do
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
-      puts `#{$rubypath} -R#{rhodeslib} #{$srcdir}/compileRB.rb` 
+      puts `#{$rubypath} -I#{rhodeslib} #{$srcdir}/compileRB.rb` 
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
@@ -190,7 +191,7 @@ namespace "build" do
   
       chdir startdir
 
-      cp_r "res/build-toos/db", $srcdir 
+      cp_r "res/build-tools/db", $srcdir 
     end
   end
 end
