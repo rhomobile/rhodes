@@ -1,10 +1,5 @@
 env:
   app: C:/rhodes-app
-  appname: Rhodes
-  version: 1.2.0
-  vendor: rhomobile
-  bbver: 4.6
-  applog: rholog.txt
   paths:
     java: C:/Program Files/Java/jdk1.6.0_11/bin
     android: C:/android-sdk-windows-1.5_r2
