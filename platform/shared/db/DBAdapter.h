@@ -37,7 +37,7 @@ public:
     CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUnlockDB(false), m_bInsideTransaction(false){}
     ~CDBAdapter(void){}
 
-    void open (String strDbPath, String strVer);
+    void open (String strDbPath, String strVer, boolean bTemp);
     void close();
     sqlite3* getDbHandle(){ return m_dbHandle; }
     CDBAttrManager& getAttrMgr(){ return m_attrMgr; }

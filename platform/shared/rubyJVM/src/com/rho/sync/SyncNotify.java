@@ -328,7 +328,7 @@ public class SyncNotify {
 	
 	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
 	{
-		if ( src == null )
+		if ( src == null || getSync().isStoppedByUser() )
 			return; //TODO: implement all sources callback
 		
 		try{

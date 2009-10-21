@@ -68,17 +68,20 @@ boolean CDBAdapter::checkDbError(int rc)
     return false;
 }
 
-void CDBAdapter::open (String strDbPath, String strVer)
+void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 {
     if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 )
         return;
     close();
 
     m_strDbPath = strDbPath;
-    m_strDbVerPath = strDbPath+".version";
-    m_strDbVer = strVer;
+    if ( !bTemp )
+    {
+        m_strDbVerPath = strDbPath+".version";
+        m_strDbVer = strVer;
 
-    checkDBVersion(strVer);
+        checkDBVersion(strVer);
+    }
 
     boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
@@ -234,9 +237,10 @@ void CDBAdapter::destroy_table(String strTable)
 
     CRhoFile::deleteFile(dbNewName.c_str());
     CRhoFile::deleteFile((dbNewName+"-journal").c_str());
+    CRhoFile::deleteFile((dbNewName+".version").c_str());
 
     CDBAdapter db;
-    db.open( dbNewName, m_strDbVer );
+    db.open( dbNewName, m_strDbVer, true );
 
     //Copy all tables
 
@@ -280,7 +284,7 @@ void CDBAdapter::destroy_table(String strTable)
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
-    open( dbOldName, m_strDbVer );
+    open( dbOldName, m_strDbVer, false );
 }
 
 static const char* g_szDbSchema = 

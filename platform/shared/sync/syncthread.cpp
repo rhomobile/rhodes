@@ -277,7 +277,7 @@ int rho_sync_openDB(const char* szDBPath)
 {
     rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
     rho::String strVer = RhoRuby_getRhoDBVersion(); 
-    db.open(szDBPath,strVer);
+    db.open(szDBPath,strVer, false);
     return 0;
 }
 

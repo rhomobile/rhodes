@@ -293,7 +293,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
 
 void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
 {
-	if ( psrc == null )
+	if ( psrc == null || getSync().isStoppedByUser() )
 		return; //TODO: implement all sources callback
 
     CSyncSource& src = *psrc;
