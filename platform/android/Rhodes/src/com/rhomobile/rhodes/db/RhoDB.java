@@ -82,6 +82,10 @@ public class RhoDB extends SQLiteOpenHelper {
 			SQLiteStatement stTrigger = db.compileStatement(ctx
 					.getString(AndroidR.string.deleteTrigger));
 			stTrigger.execute();
+			
+			stTrigger = db.compileStatement(ctx.
+					getString(AndroidR.string.insertTrigger));
+			stTrigger.execute();
 
 			db.setVersion(dbVersion);
 

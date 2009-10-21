@@ -53,11 +53,30 @@ public class DBStorage implements IDBStorage {
 		if (rhoDB != null && rhoDB.isOpen()) {
 			IDBResult result = rhoDB.executeSQL(strStatement, values);
 			
+			onInsertRecords(strStatement);
 			onDeleteRecords(strStatement);
 			
 			return result;
 		}
 		return null;
+	}
+	
+	void onInsertRecords(String strStatement) {
+		IDBResult rows2Insert = null;
+		try {
+			if (this.callback == null)
+				return;
+			
+			if (!strStatement.toLowerCase().startsWith("insert "))
+				return;
+			
+			rows2Insert = executeSQL("SELECT id,source_id,name FROM object_attribs_to_load", null);
+			this.callback.OnInsertIntoTable("object_values", rows2Insert);
+			executeSQL("DELETE FROM object_attribs_to_load", null);
+		}
+		catch (Exception e) {
+			LOG.ERROR(e.getMessage());
+		}
 	}
 	
 	void onDeleteRecords(String strStatement){
