@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout android:id="@+id/datetime" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_gravity="center_horizontal" android:orientation="vertical">
-<DatePicker android:layout_height="wrap_content" android:id="@+id/datePicker" android:layout_gravity="top|center_horizontal" android:layout_width="wrap_content"></DatePicker>
-<TimePicker android:layout_height="wrap_content" android:id="@+id/timePicker" android:layout_gravity="center_vertical|center_horizontal" android:layout_width="wrap_content"></TimePicker>
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_weight="1" android:layout_gravity="center_vertical|center_horizontal" android:layout_height="wrap_content" android:layout_width="wrap_content">
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:id="@+id/okButton" android:text="@string/ok" android:clickable="true"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="@string/cancel" android:id="@+id/cancelButton" android:clickable="true"></Button>
-</LinearLayout>
-</LinearLayout>

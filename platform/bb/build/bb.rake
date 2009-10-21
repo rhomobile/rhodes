@@ -289,7 +289,7 @@ namespace "build" do
         rm_rf vsrcdir
 
         cp_r $builddir + "/../rhodes/resources", $tmpdir + "/resources"
-        cp $config["env"]["app"] + "/icon/icon.png", $tmpdir +"/resources"
+        cp $app_path + "/icon/icon.png", $tmpdir +"/resources"
         
         Jake.jar($bindir + "/rhodes.jar", $builddir + "/manifest.mf", $tmpdir,true)
         $stdout.flush

@@ -1,6 +1,0 @@
-require 'rubygems'
-require 'hoe'
-
-Hoe.spec 'rhodes-build' do
-  developer 'Rhomobile Dev', 'dev@rhomobile.com'
-end

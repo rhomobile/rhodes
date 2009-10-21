@@ -1,0 +1,6 @@
+sdk: "<%=@sdk_path%>"
+name: Rhodes
+version: 1.2.2
+vendor: rhomobile
+bbver: 4.6
+applog: rholog.txt
