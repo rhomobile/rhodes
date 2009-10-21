@@ -76,13 +76,13 @@ namespace "build" do
 
       mkdir_p $tmpdir
       cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
-      cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
-      set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
+      cp $app_path + "/icon/icon.png", resource + "/drawable"
+      set_app_name($app_config["name"]) unless $app_config["name"].nil?
 
       args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
       puts Jake.run($aapt,args)
 
-      set_app_name("Rhodes") unless $config["env"]["appname"].nil?
+      set_app_name("Rhodes") unless $app_config["name"].nil?
       mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
 
       unless $? == 0
@@ -221,13 +221,13 @@ namespace "package" do
     puts "Packaging Assets and Jars"
 
     cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
-    cp $config["env"]["app"] + "/icon/icon.png", resource + "/drawable"
-    set_app_name($config["env"]["appname"]) unless $config["env"]["appname"].nil?
+    cp $app_path + "/icon/icon.png", resource + "/drawable"
+    set_app_name($app_config["name"]) unless $app_config["name"].nil?
 
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
     returnval = $?
 
-    set_app_name("Rhodes") unless $config["env"]["appname"].nil?
+    set_app_name("Rhodes") unless $app_config["name"].nil?
     mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
 
     unless returnval == 0
