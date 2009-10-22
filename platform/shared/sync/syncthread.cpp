@@ -366,4 +366,9 @@ int rho_sync_get_lastsync_objectcount(int nSrcID)
     return CSyncThread::getSyncEngine().getNotify().getLastSyncObjectCount(nSrcID);
 }
 
+int rho_sync_get_pagesize()
+{
+    return CSyncThread::getSyncEngine().SYNC_PAGE_SIZE_INT();
+}
+
 }

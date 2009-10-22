@@ -464,7 +464,7 @@ void CSyncSource::processServerData(const char* szData)
         getNotify().fireObjectsNotification();
     }
 
-    if ( getCurPageCount() > 0 && getProgressStep() == -1 )
+    if ( getCurPageCount() > 0 )
         getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 }
 

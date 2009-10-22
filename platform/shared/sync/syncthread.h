@@ -146,6 +146,7 @@ void rho_sync_set_syncserver(char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
 void rho_sync_cleanobjectnotify();
+int rho_sync_get_pagesize();
 
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath);
