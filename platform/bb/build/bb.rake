@@ -527,7 +527,7 @@ namespace "clean" do
 
 #    desc "Clean packaged files"
     task :packaged => "config:bb" do
-      rm_rf $targetdir
+      rm_rf $targetdir +"/../"
     end
 
 #    desc "Clean temp dir"
@@ -538,6 +538,7 @@ namespace "clean" do
 #    desc "Clean all"
     task :all => [:preverified,:packaged,:tempdir] do
       rm_rf $bindir
+      rm_rf $rhobundledir
     end
 
   end
