@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'rhodes'
 require 'templater'
 require File.join(File.dirname(__FILE__), '..', 'res', 'generators', 'rhogen')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'rhodes')
 
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
