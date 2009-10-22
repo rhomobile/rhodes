@@ -37,6 +37,7 @@ class Jake
   end
 
   def self.get_absolute(path)
+    return File.expand_path(path) if File.exists?(path)
     currentdir = pwd
     
     path = currentdir + "/" + path
