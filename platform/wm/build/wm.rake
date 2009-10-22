@@ -15,7 +15,7 @@ end
 
 namespace "build" do
   namespace "wm" do
-    desc "Build wm rhobundle"
+#    desc "Build wm rhobundle"
     task :rhobundle => ["config:wm"] do
       Rake::Task["build:bundle:noxruby"].execute
     end
@@ -34,8 +34,9 @@ namespace "build" do
   end
 end
 
-namespace "package" do
+namespace "device" do
   namespace "wm" do
+    desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
       
       chdir $builddir
@@ -77,10 +78,12 @@ namespace "package" do
 end
 
 namespace "clean" do
+  desc "Clean wm"
+  task :wm => "clean:wm:all"
   namespace "wm" do
     task :rhodes do
       rm_rf $bindir + "/Windows Mobile 6 Professional SDK (ARMV4I)"
     end
-
+    task :all => "clean:wm:rhodes"
   end
 end
