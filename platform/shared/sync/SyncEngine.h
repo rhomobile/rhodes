@@ -43,6 +43,8 @@ public:
     static String SYNC_PAGE_SIZE() { return "200"; }
 #else
     static String SYNC_PAGE_SIZE() { return "2000"; }
+    static int SYNC_PAGE_SIZE_INT() { return 2000; }
+
 #endif
 
 private:

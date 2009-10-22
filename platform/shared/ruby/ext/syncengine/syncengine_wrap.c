@@ -1584,6 +1584,9 @@ static VALUE mSyncEngine;
 
     extern int  rho_sync_get_lastsync_objectcount(int nSrcID);
     #define get_lastsync_objectcount rho_sync_get_lastsync_objectcount
+
+    extern int  rho_sync_get_pagesize();
+    #define get_pagesize rho_sync_get_pagesize
 	
 	#if !defined(bool)
 	#define bool int
@@ -2193,6 +2196,22 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_pagesize(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)get_pagesize();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2473,5 +2492,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "add_objectnotify", _wrap_add_objectnotify, -1);
   rb_define_module_function(mSyncEngine, "clean_objectnotify", _wrap_clean_objectnotify, -1);
   rb_define_module_function(mSyncEngine, "get_lastsync_objectcount", _wrap_get_lastsync_objectcount, -1);
+  rb_define_module_function(mSyncEngine, "get_pagesize", _wrap_get_pagesize, -1);
 }
 

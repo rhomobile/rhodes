@@ -40,6 +40,9 @@
 
     extern int  rho_sync_get_lastsync_objectcount(int nSrcID);
     #define get_lastsync_objectcount rho_sync_get_lastsync_objectcount
+
+    extern int  rho_sync_get_pagesize();
+    #define get_pagesize rho_sync_get_pagesize
 	
 	#if !defined(bool)
 	#define bool int
@@ -69,3 +72,4 @@ extern void  set_objectnotify_url(const char* szUrl);
 extern void  add_objectnotify(int nSrcID, const char* szObject);
 extern void  clean_objectnotify();
 extern int   get_lastsync_objectcount(int nSrcID);
+extern int   get_pagesize();
