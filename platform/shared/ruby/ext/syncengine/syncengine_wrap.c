@@ -1550,7 +1550,7 @@ static VALUE mSyncEngine;
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
-	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes);
+	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -1805,6 +1805,7 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   bool arg4 ;
+  int arg5 ;
   int val1 ;
   int ecode1 = 0 ;
   int res2 ;
@@ -1815,9 +1816,11 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
   int alloc3 = 0 ;
   bool val4 ;
   int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   
-  if ((argc < 4) || (argc > 4)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -1839,7 +1842,12 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "dosearch_source" "', argument " "4"" of type '" "bool""'");
   } 
   arg4 = (bool)(val4);
-  dosearch_source(arg1,(char const *)arg2,(char const *)arg3,arg4);
+  ecode5 = SWIG_AsVal_int(argv[4], &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "dosearch_source" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = (int)(val5);
+  dosearch_source(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;

@@ -68,6 +68,7 @@ public:
     String m_strParams;
     String m_strAction;
     boolean m_bSearchSyncChanges;
+    int     m_nProgressStep;
 private:
     //String m_strPushBody;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
@@ -109,6 +110,7 @@ public:
     void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
     int  getCurPageCount(){return m_nCurPageCount;}
     int  getTotalCount(){return m_nTotalCount;}
+    int  getProgressStep(){ return m_nProgressStep; }
 
     void processServerData(const char* szData);
     boolean processSyncObject(json::CJSONEntry& oJsonEntry);

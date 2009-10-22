@@ -304,7 +304,11 @@ module Rhom
                     
                     if select_arr
                       attribs = select_arr
-                      attribs = attribs | order_attr if order_attr
+                      if order_attr 
+                        order_attr_arr = []
+                        order_attr_arr.push(order_attr)
+                        attribs = attribs | order_attr_arr
+                      end  
                     else
                       #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
                       attribs = SyncEngine.get_src_attrs(nSrcID)
@@ -597,7 +601,7 @@ module Rhom
                     
                   set_notification(args[:callback], args[:callback_param]) if args[:callback]
                   SyncEngine.dosearch_source(get_source_id.to_i(), args[:from] ? args[:from] : 'search',
-                    searchParams, args[:sync_changes] ? args[:sync_changes] : false )
+                    searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1 )
                 end
                 
                 # Alias for find
