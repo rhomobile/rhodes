@@ -14,9 +14,9 @@ namespace "config" do
     $androidsdkpath = $config["env"]["paths"]["android"]
     $androidplatform = "android-1.5"
     $avdname = "rhoAndroid15"
-    $androidpath = $config["build"]["androidpath"]
+    $androidpath = $app_path
     $bindir = $androidpath + "/bin"
-    $builddir = $androidpath + "/build"
+    $builddir = $config["build"]["androidpath"] + "/build"
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $androidpath + "/target"
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
@@ -68,10 +68,10 @@ namespace "build" do
  #   desc "Generate R.java file"
     task :rjava => "config:android" do
 
-      manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
-      resource = Jake.get_absolute $androidpath + "/Rhodes/res"
-      assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
-      rjava = Jake.get_absolute $androidpath + "/Rhodes/gen/com/rhomobile/rhodes"
+      manifest = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/AndroidManifest.xml"
+      resource = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/res"
+      assets = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/assets"
+      rjava = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/gen/com/rhomobile/rhodes"
       androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
 
       mkdir_p $tmpdir
@@ -201,22 +201,22 @@ namespace "package" do
     puts "Running dx utility"
     args = []
     args << "--dex"
-    outfile = Jake.get_absolute("#{$bindir}/classes.dex")
+    outfile = "#{$bindir}/classes.dex"
     args << "--output=#{outfile}"
-    args << Jake.get_absolute("#{$bindir}/Rhodes.jar")
-    args << Jake.get_absolute("#{$bindir}/RubyVM.jar")
-    args << Jake.get_absolute("#{$bindir}/RhoBundle.jar")
+    args << "#{$bindir}/Rhodes.jar"
+    args << "#{$bindir}/RubyVM.jar"
+    args << "#{$bindir}/RhoBundle.jar"
     puts Jake.run($dx,args)
     unless $? == 0
       puts "Error running DX utility"
       exit 1
     end
 
-    manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
-    resource = Jake.get_absolute $androidpath + "/Rhodes/res"
-    assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
+    manifest = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/AndroidManifest.xml"
+    resource = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/res"
+    assets = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/assets"
     androidjar = "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar"
-    resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
+    resourcepkg =  $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
 
@@ -242,9 +242,9 @@ namespace "device" do
   namespace "android" do
     desc "Build debug self signed for device"
     task :debug => "package:android" do
-      dexfile = Jake.get_absolute $bindir + "/classes.dex"
-      apkfile = Jake.get_absolute $targetdir + "/Rhodes-debug.apk"
-      resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
+      dexfile =  $bindir + "/classes.dex"
+      apkfile =  $targetdir + "/Rhodes-debug.apk"
+      resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
