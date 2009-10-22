@@ -69,7 +69,7 @@ public:
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
 
     void cleanLastSyncObjectCount();
-    void incLastSyncObjectCount(int nSrcID);
+    int incLastSyncObjectCount(int nSrcID);
     int getLastSyncObjectCount(int nSrcID);
 
 private:

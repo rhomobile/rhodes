@@ -160,11 +160,12 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
     case scChangePollInterval:
         break;
     case scSyncOne:
-        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","",false );
+        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","",false, -1 );
         break;
     case scSearchOne:
         m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
-            ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges );
+            ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
+            ((CSyncSearchCommand&)oSyncCmd).m_nProgressStep);
         break;
     case scLogin:
     	{
@@ -217,10 +218,10 @@ void rho_sync_stop()
 	}
 }
 
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes)
+void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id,sync_changes) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id,sync_changes,nProgressStep) );
 }	
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcID)

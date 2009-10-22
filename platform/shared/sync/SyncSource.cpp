@@ -31,6 +31,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
+    m_nProgressStep = -1;
 }
 
 CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -46,6 +47,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
+    m_nProgressStep = -1;
 }
 
 CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -65,6 +67,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
+    m_nProgressStep = -1;
 }
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
@@ -461,7 +464,7 @@ void CSyncSource::processServerData(const char* szData)
         getNotify().fireObjectsNotification();
     }
 
-    if ( getCurPageCount() > 0 )
+    if ( getCurPageCount() > 0 && getProgressStep() == -1 )
         getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 }
 
@@ -526,8 +529,13 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
                 break;
             }
 
-            if ( !isCreateObjectsPass() && nSrcID >=0 )
-                getNotify().incLastSyncObjectCount(nSrcID);
+            if ( !isCreateObjectsPass() && !isDeleteObjectsPass() && nSrcID >=0 )
+            {
+                int nSyncObjectCount  = getNotify().incLastSyncObjectCount(nSrcID);
+
+                if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+                    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+            }
 
             m_bGetAtLeastOnePage = true;
         }

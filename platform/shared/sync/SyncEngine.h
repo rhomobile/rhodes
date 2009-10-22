@@ -64,7 +64,7 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges);
+    void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
