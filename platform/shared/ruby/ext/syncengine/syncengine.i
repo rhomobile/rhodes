@@ -6,7 +6,7 @@
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
-	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes);
+	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -40,6 +40,9 @@
 
     extern int  rho_sync_get_lastsync_objectcount(int nSrcID);
     #define get_lastsync_objectcount rho_sync_get_lastsync_objectcount
+
+    extern int  rho_sync_get_pagesize();
+    #define get_pagesize rho_sync_get_pagesize
 	
 	#if !defined(bool)
 	#define bool int
@@ -53,7 +56,7 @@
 }
 extern void dosync(bool show_status_popup);
 extern void dosync_source(int source_id, bool show_status_popup);
-extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes);
+extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
 extern void login(const char *login, const char *password, const char* callback);
@@ -69,3 +72,4 @@ extern void  set_objectnotify_url(const char* szUrl);
 extern void  add_objectnotify(int nSrcID, const char* szObject);
 extern void  clean_objectnotify();
 extern int   get_lastsync_objectcount(int nSrcID);
+extern int   get_pagesize();
