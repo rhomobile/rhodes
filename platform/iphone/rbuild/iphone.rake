@@ -55,7 +55,7 @@ namespace "config" do
     $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
-    $applog = File.join($homedir,$app_config["applog"])
+    $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
 
   end
