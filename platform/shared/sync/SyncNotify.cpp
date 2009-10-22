@@ -310,6 +310,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 		    strBody = "";
             strBody = "total_count=" + convertToStringA(src.getTotalCount());
             strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
+            strBody += "&processed_objects_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
             strBody += "&cumulative_count=" + convertToStringA(src.getServerObjectsCount());
             strBody += "&source_id=" + convertToStringA(src.getID());
             strBody += "&source_name=" + src.getName();
@@ -348,6 +349,15 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
     NetResponse(resp,getNet().pushData( strUrl, strBody ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+    else
+    {
+        const char* szData = resp.getCharData();
+        if ( szData && strcmp(szData,"stop") == 0)
+        {
+            clearSyncNotification(src.getID());
+        }
+    }
+
 }
 
 void CSyncNotify::clearSyncNotification(int source_id) 
@@ -368,13 +378,16 @@ void CSyncNotify::cleanLastSyncObjectCount()
     }
 }
 
-void CSyncNotify::incLastSyncObjectCount(int nSrcID)
+int CSyncNotify::incLastSyncObjectCount(int nSrcID)
 {
+    int nCount = 0;
     synchronized(m_mxSyncNotifications)
     {
-        int nCount = m_hashSrcObjectCount.get(nSrcID)+1;
+        nCount = m_hashSrcObjectCount.get(nSrcID)+1;
         m_hashSrcObjectCount.put(nSrcID,nCount);
     }
+
+    return nCount;
 }
 
 int CSyncNotify::getLastSyncObjectCount(int nSrcID)

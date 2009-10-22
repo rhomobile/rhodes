@@ -76,11 +76,14 @@ public:
     {
     public:
 	    String m_strFrom;
-        boolean   m_bSyncChanges;
-        CSyncSearchCommand(String from, String params, int source_id, boolean sync_changes) : CSyncCommand(CSyncThread::scSearchOne,params,source_id)
+        boolean m_bSyncChanges;
+        int     m_nProgressStep;
+
+        CSyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,source_id)
 	    {
 		    m_strFrom = from;
             m_bSyncChanges = sync_changes;
+            m_nProgressStep = nProgressStep;
 	    }
     };
 
@@ -129,7 +132,7 @@ void rho_sync_destroy();
 
 void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_sync_doSyncSource(int nSrcID,int show_status_popup);
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes);
+void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();
@@ -143,6 +146,7 @@ void rho_sync_set_syncserver(char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
 void rho_sync_cleanobjectnotify();
+int rho_sync_get_pagesize();
 
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath);

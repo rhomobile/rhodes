@@ -43,6 +43,8 @@ public:
     static String SYNC_PAGE_SIZE() { return "200"; }
 #else
     static String SYNC_PAGE_SIZE() { return "2000"; }
+    static int SYNC_PAGE_SIZE_INT() { return 2000; }
+
 #endif
 
 private:
@@ -64,7 +66,7 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges);
+    void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
