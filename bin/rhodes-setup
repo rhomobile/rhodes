@@ -43,9 +43,9 @@ elsif File.exists? "/Program Files/Java"
 end
 
 java = java.gsub(/\\/,"/")
-java = "" unless File.exists? java  + "/lib/tools.jar"
+java = "" unless File.exists? java  + "/lib/dt.jar"
 
-java = prompt_for("JDK Path", java, true, "/lib/tools.jar")
+java = prompt_for("JDK Path", java, true, "/lib/dt.jar")
 
 java = java + "/bin"
 
