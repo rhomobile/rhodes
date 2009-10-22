@@ -415,3 +415,17 @@ end
 task :tasks do
   Rake::Task.tasks.each {|t| puts t.to_s}
 end
+
+task :switch_app => "config:common" do
+  rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
+  if File.exists? rhobuildyml
+    config = YAML::load_file(rhobuildyml)
+  else
+    puts "Cant find rhobuild.yml"
+    exit 1
+  end
+  config["env"]["app"] = $app_path.gsub(/\\/,"/")
+  File.open(  rhobuildyml, 'w' ) do |out|
+    YAML.dump( config, out )
+  end
+end
