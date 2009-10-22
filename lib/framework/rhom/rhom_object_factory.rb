@@ -328,120 +328,125 @@ module Rhom
                     strLimit = nil
                     strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
 
-                    puts "non-null select start"
-                    listObjs = []
-                    if op == 'OR' && condition_hash.length > 1
-                        mapObjs = {}
-                        bStop = false 
-                        condition_hash.each do |key,value|
-                            sql = ""
-                            sql << "SELECT object,attrib,value FROM object_values WHERE \n"
-                            sql << makeCondWhere(key,value,srcid_value)
-                            
-                            resObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                            resObjs.each do |rec|
-                                next if mapObjs[ rec['object'] ] 
+                    ::Rhom::RhomDbAdapter.start_transaction
+                    begin
+                        puts "non-null select start"
+                        listObjs = []
+                        if op == 'OR' && condition_hash.length > 1
+                            mapObjs = {}
+                            bStop = false 
+                            condition_hash.each do |key,value|
+                                sql = ""
+                                sql << "SELECT object,attrib,value FROM object_values WHERE \n"
+                                sql << makeCondWhere(key,value,srcid_value)
                                 
-                                mapObjs[ rec['object'] ] = 1
-                                listObjs << rec
+                                resObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                                resObjs.each do |rec|
+                                    next if mapObjs[ rec['object'] ] 
+                                    
+                                    mapObjs[ rec['object'] ] = 1
+                                    listObjs << rec
+                                    
+                                    bStop = limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
+                                    break if bStop
+                                end
                                 
-                                bStop = limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
                                 break if bStop
                             end
                             
-                            break if bStop
-                        end
-                        
-                    else
-                        sql = ""
-                        if condition_hash.length > 0
-                            condition_hash.each do |key,value|
-                                sql << "\nINTERSECT\n" if sql.length > 0 
-                                sql << "SELECT object FROM object_values WHERE \n"
-                                sql << makeCondWhere(key,value,srcid_value)
+                        else
+                            sql = ""
+                            if condition_hash.length > 0
+                                condition_hash.each do |key,value|
+                                    sql << "\nINTERSECT\n" if sql.length > 0 
+                                    sql << "SELECT object FROM object_values WHERE \n"
+                                    sql << makeCondWhere(key,value,srcid_value)
+                                    sql << strLimit if strLimit
+                                end
+                            else
+                                sql << "SELECT distinct object FROM object_values WHERE \n"
+                                sql << "source_id=" + srcid_value 
                                 sql << strLimit if strLimit
                             end
-                        else
-                            sql << "SELECT distinct object FROM object_values WHERE \n"
-                            sql << "source_id=" + srcid_value 
-                            sql << strLimit if strLimit
+                                                
+                            listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
                         end
-                                            
-                        listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                    end
-                    puts "non-null select end : #{listObjs.length}"
-                    
-                    nIndex = -1
-                    nCount = 0;
-                    listObjs.each do |obj|
-                        nIndex += 1
-                        next if !order_attr && offset && nIndex < offset && !strLimit
+                        puts "non-null select end : #{listObjs.length}"
                         
-                        bSkip = false
-                        #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
-                        nulls_cond.each do |key,value|
-                            sql = ""
-                            sql << "SELECT value FROM object_values WHERE \n"
-                            sql << "object=?" # + obj_value
-                            sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
-                            sql << " AND source_id=?" # + srcid_value
-
-                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql, 
-                                obj['object'], key, get_source_id)
-                            #puts 'attrVal: ' + attrVal.inspect  if attrVal
-                            if attrVal && attrVal.length>0 && attrVal[0]['value']
-                                bSkip = true
-                                break
-                            end    
-                        end
-                        
-                        next if bSkip
-                        
-                        nCount += 1
-                        next if args.first == :count
-                        
-                        sql = ""                        
-                        nonExistAttrs = attribs.dup
-                        nonExistAttrs.delete(obj['attrib']) if obj['attrib']
-                        
-                        values = []
-                        nonExistAttrs.each do |attr|
-                            sql << "\nUNION ALL\n" if sql.length > 0
-                            sql << "SELECT attrib,value FROM object_values WHERE \n"
-                            sql << "object=?" #+ obj_value
-                            sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
-                            sql << " AND source_id=?" #+ srcid_value 
+                        nIndex = -1
+                        nCount = 0;
+                        listObjs.each do |obj|
+                            nIndex += 1
+                            next if !order_attr && offset && nIndex < offset && !strLimit
                             
-                            values << obj['object']
-                            values << attr
-                            values << get_source_id
-                        end
-                        
-                        listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql,values) : []
-                        
-                        new_obj = self.new
-                        # always return object field with surrounding '{}'
-                        new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
-                        #new_obj.vars.merge!({:source_id=>nSrcID})
-                        
-                        if obj['attrib']
-                            new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
-                        end
-                        
-                        listAttrs.each do |attrValHash|
-                          attrName = attrValHash['attrib']
-                          attrVal = attrValHash['value']
-                          new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
-                          
-                          nonExistAttrs.delete(attrName)
-                        end
-                        
-                        nonExistAttrs.each do |attrName|
-                          new_obj.vars.merge!( { attrName.to_sym()=>nil } )
-                        end
-                        
-                        ret_list << new_obj
-                        break if !order_attr && limit && ret_list.length >= limit
+                            bSkip = false
+                            #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
+                            nulls_cond.each do |key,value|
+                                sql = ""
+                                sql << "SELECT value FROM object_values WHERE \n"
+                                sql << "object=?" # + obj_value
+                                sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                                sql << " AND source_id=?" # + srcid_value
+
+                                attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql, 
+                                    obj['object'], key, get_source_id)
+                                #puts 'attrVal: ' + attrVal.inspect  if attrVal
+                                if attrVal && attrVal.length>0 && attrVal[0]['value']
+                                    bSkip = true
+                                    break
+                                end    
+                            end
+                            
+                            next if bSkip
+                            
+                            nCount += 1
+                            next if args.first == :count
+                            
+                            sql = ""                        
+                            nonExistAttrs = attribs.dup
+                            nonExistAttrs.delete(obj['attrib']) if obj['attrib']
+                            
+                            values = []
+                            nonExistAttrs.each do |attr|
+                                sql << "\nUNION ALL\n" if sql.length > 0
+                                sql << "SELECT attrib,value FROM object_values WHERE \n"
+                                sql << "object=?" #+ obj_value
+                                sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
+                                sql << " AND source_id=?" #+ srcid_value 
+                                
+                                values << obj['object']
+                                values << attr
+                                values << get_source_id
+                            end
+                            
+                            listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql,values) : []
+                            
+                            new_obj = self.new
+                            # always return object field with surrounding '{}'
+                            new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
+                            #new_obj.vars.merge!({:source_id=>nSrcID})
+                            
+                            if obj['attrib']
+                                new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
+                            end
+                            
+                            listAttrs.each do |attrValHash|
+                              attrName = attrValHash['attrib']
+                              attrVal = attrValHash['value']
+                              new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
+                              
+                              nonExistAttrs.delete(attrName)
+                            end
+                            
+                            nonExistAttrs.each do |attrName|
+                              new_obj.vars.merge!( { attrName.to_sym()=>nil } )
+                            end
+                            
+                            ret_list << new_obj
+                            break if !order_attr && limit && ret_list.length >= limit
+                      end
+                  ensure
+                    ::Rhom::RhomDbAdapter.commit
                   end
                   
                   if order_attr 
@@ -455,7 +460,7 @@ module Rhom
                   end
                   
                   if order_attr && limit
-                    ret_list.slice!(offset,limit)
+                    ret_list = ret_list.slice(offset,limit)
                   end
 
                   puts "find_bycondhash end: #{ret_list.length} objects"
