@@ -135,7 +135,7 @@ end
 
 namespace "build" do
   namespace "bb" do
-    desc "Build rhoBundle"
+#    desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
       java = $config["env"]["paths"]["java"] + "/java.exe"
@@ -165,7 +165,7 @@ namespace "build" do
       
     end
 
-    desc "Build RubyVM"
+#    desc "Build RubyVM"
     task :rubyvm => ["config:bb"] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
@@ -223,7 +223,7 @@ namespace "build" do
       mkdir_p $tmpdir
     end
 
-    desc "Build rhodes"
+#    desc "Build rhodes"
     task :rhodes => [ :rubyvm, :rhobundle ] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jde =  $config["env"]["paths"][$bbver]["jde"]
@@ -316,7 +316,7 @@ end
 
 namespace "package" do
   namespace "bb" do
-    desc "Package rhoBundle"
+#    desc "Package rhoBundle"
     task :rhobundle => ["build:bb:rhobundle"] do
       Jake.rapc("RhoBundle",
         $targetdir,
@@ -334,7 +334,7 @@ namespace "package" do
 
     end
 
-    desc "Package rubyVM"
+#    desc "Package rubyVM"
     task :rubyvm => "build:bb:rubyvm" do
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
@@ -359,7 +359,7 @@ namespace "package" do
 
     end
 
-    desc "Package rhodesApp"
+#    desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
       appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
 
@@ -391,7 +391,7 @@ namespace "package" do
           
     end
 
-    desc "Package all production (all parts in one package)"
+#    desc "Package all production (all parts in one package)"
     task :production => ["build:bb:rhodes"] do
       jdehome = $config["env"]["paths"][$bbver]["jde"]
       rm_rf $tmpdir
@@ -443,7 +443,7 @@ namespace "package" do
       end
     end
 
-    desc "Package all dev (each part in separate package)"
+#    desc "Package all dev (each part in separate package)"
     task :dev => [ :rubyvm,:rhobundle,:rhodes] do
     end
   end
@@ -454,8 +454,8 @@ end
 
 namespace "device" do
   namespace "bb" do
-    desc "Build and package dev for device"
-    task :dev => "package:bb:dev" do
+    desc "Build debug for device"
+    task :debug => "package:bb:dev" do
 
       #make into functions
       if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
@@ -477,7 +477,7 @@ namespace "device" do
 
     end
 
-    desc "Build and package dev rhobundle for device"
+#    desc "Build and package dev rhobundle for device"
     task :rhobundle => "package:bb:rhobundle" do
 
       if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
@@ -494,7 +494,7 @@ namespace "device" do
 
     end
 
-    desc "Build and package for production"
+    desc "Build production for device"
     task :production => "package:bb:production" do
 
       if $config["build"]["bbsignpwd"] and $config["build"]["bbsignpwd"] != ""
@@ -516,26 +516,28 @@ namespace "device" do
 end
 
 namespace "clean" do
+  desc "Clean bb"
+  task :bb => "clean:bb:all"
   namespace "bb" do
-    desc "Clean preverified jars"
+#    desc "Clean preverified jars"
     task :preverified => "config:bb" do
       rm_rf $preverified if File.exists? $preverified
       mkdir_p $preverified
     end
 
-    desc "Clean packaged files"
+#    desc "Clean packaged files"
     task :packaged => "config:bb" do
       rm_rf $targetdir
       mkdir_p $targetdir
     end
 
-    desc "Clean temp dir"
+#    desc "Clean temp dir"
     task :tempdir => "config:bb" do
       rm_rf $tmpdir
       mkdir_p $tmpdir
     end
 
-    desc "Clean all"
+#    desc "Clean all"
     task :all => [:preverified,:packaged,:tempdir] do
       rm_rf $bindir
     end
@@ -550,14 +552,14 @@ namespace "run" do
         stopmds
       end
 
-      desc "Starts mds and sim"
+#      desc "Starts mds and sim"
       task :startmdsandsim => ["config:bb"] do
         startmds
         startsim
       end
   end
   
-  desc "Builds everything, loads and starts sim"
+  desc "Builds everything, loads and starts bb sim and mds"
   task :bb => ["run:bb:stopmdsandsim", "package:bb:dev"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
@@ -634,23 +636,4 @@ namespace "config" do
     puts "Config appears valid"
   end
 
-end
-
-namespace "prebuild" do
-  desc "Prebuild binaries for blackberry gems"
-  task :bb => ["build:bb:rubyvm", "build:bb:rhodes"] do
-    if File.exists? $preverified + "/RubyVM.jar" and File.exists? $preverified + "/rhodes.jar"
-      prebuilt = "rhodes/rhodes-build/res/prebuilt/bb"
-
-      rm_rf prebuilt if File.exists? prebuilt
-      mkdir_p prebuilt
-
-      cp $preverified + "/RubyVM.jar", prebuilt
-      cp $preverified + "/rhodes.jar", prebuilt
-
-      cp $builddir + "/MANIFEST.MF", prebuilt
-      cp $builddir + "/rhodesApp.alx", prebuilt
-      
-    end
-  end
 end

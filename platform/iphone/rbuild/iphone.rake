@@ -63,7 +63,7 @@ end
 
 namespace "build" do
   namespace "iphone" do
-    desc "Build iphone rhobundle"
+#    desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
       chdir 'platform/iphone'
       rm_rf 'bin'
@@ -76,7 +76,7 @@ namespace "build" do
 
     end
     
-    desc "Build rhodes"
+#    desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
@@ -100,7 +100,7 @@ namespace "build" do
 end
 
 namespace "run" do
-  desc "Builds and launches app in simulator"
+  desc "Builds everything, launches iphone simulator"
   task :iphone => ["config:iphone", "build:iphone:rhodes"] do
     
      unless $config["env"]["iphone"]["sdk"] =~ /^iphonesimulator/
@@ -138,8 +138,10 @@ namespace "run" do
 end
 
 namespace "clean" do
+  desc "Clean iphone"
+  task :iphone => ["clean:iphone:all"]
   namespace "iphone" do
-    desc "Clean rhodes binaries"
+#    desc "Clean rhodes binaries"
     task :rhodes => ["config:iphone"] do 
       chdir $config["build"]["iphonepath"]
     
@@ -158,9 +160,11 @@ namespace "clean" do
     
     end
     
-    desc "Clean rhobundle"
+#    desc "Clean rhobundle"
     task :rhobundle => ["config:iphone"] do
       rm_rf $bindir
     end
+
+    task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle"]
   end
 end
