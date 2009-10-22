@@ -65,7 +65,7 @@ end
 
 namespace "build" do
   namespace "android" do
-    desc "Generate R.java file"
+ #   desc "Generate R.java file"
     task :rjava => "config:android" do
 
       manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
@@ -91,7 +91,7 @@ namespace "build" do
       end
 
     end
-    desc "Build RhoBundle for android"
+#    desc "Build RhoBundle for android"
     task :rhobundle => "config:android" do
       Rake::Task["build:bundle:xruby"].execute
 
@@ -101,7 +101,7 @@ namespace "build" do
       Rake::Task["build:android:rjava"].execute
     end
 
-    desc "Build RubyVM for android"
+#    desc "Build RubyVM for android"
     task :rubyvm => "config:android" do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
       cp_r "platform/shared/rubyJVM", $bindir
@@ -137,7 +137,7 @@ namespace "build" do
       cp_r $bindir + "/RubyVM.jar", $libs
 
     end
-    desc "Build Rhodes for android"
+ #   desc "Build Rhodes for android"
     task :rhodes => [:rubyvm, :rhobundle] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
@@ -191,7 +191,7 @@ namespace "build" do
       end
     end
 
-    desc "build all"
+    #desc "build all"
     task :all => [:rubyvm, :rhobundle, :rhodes]
   end
 end
@@ -240,7 +240,7 @@ end
 
 namespace "device" do
   namespace "android" do
-    desc "build self signed for debug"
+    desc "Build debug self signed for device"
     task :debug => "package:android" do
       dexfile = Jake.get_absolute $bindir + "/classes.dex"
       apkfile = Jake.get_absolute $targetdir + "/Rhodes-debug.apk"
@@ -254,7 +254,7 @@ namespace "device" do
       end
 
     end
-    desc "build signed for production"
+    desc "Build production signed for device"
     task :production => "package:android" do
       dexfile = Jake.get_absolute $bindir + "/classes.dex"
       apkfile = Jake.get_absolute $targetdir + "/Rhodes.apk"
@@ -346,6 +346,8 @@ namespace "run" do
 end
 
 namespace "clean" do
+  desc "Clean Android"
+  task :android => "clean:android:all"
   namespace "android" do
     task :assets => "config:android" do
       Dir.glob($androidpath + "/Rhodes/assets/apps/**/*") do |f|
@@ -357,34 +359,8 @@ namespace "clean" do
       rm_rf $bindir
       rm_rf $srcdir
     end
-    desc "clean android"
+#    desc "clean android"
     task :all => [:assets,:files]
   end
 end
 
-namespace "prebuild" do
-  desc "Build binaries for anroid to be inserted into gem"
-  task :android => "build:android:all" do
-    prebuilt = "rhodes/rhodes-build/res/prebuilt/android"
-
-    if File.exists? $bindir + "/RubyVM.jar" and File.exists? $bindir + "/Rhodes.jar"
-      rm_rf prebuilt if File.exists? prebuilt
-      mkdir_p prebuilt 
-
-      cp $androidpath + "/Rhodes/assets/apps/loading.html", prebuilt
-      cp $androidpath + "/Rhodes/AndroidManifest.xml", prebuilt
-
-      cp_r $androidpath + "/Rhodes/res", prebuilt
-
-      mkdir_p prebuilt + "/src/com/rhomobile/rhodes"
-
-      cp_r $androidpath + "/Rhodes/src/com/rhomobile/rhodes/AndroidR.java", prebuilt + "/src/com/rhomobile/rhodes"
-    
-      mkdir_p prebuilt + "/classes"
-
-      Jake.unjar($bindir + "/RubyVM.jar", prebuilt + "/classes")
-      Jake.unjar($bindir + "/Rhodes.jar", prebuilt + "/classes")
-      rm_rf prebuilt + "/classes/META-INF"
-    end
-  end
-end
