@@ -30,7 +30,7 @@ namespace "config" do
       $app_config = YAML::load_file($app_path + "/build.yml")
 
     end
-
+    Jake.set_bbver($app_config["bbver"].to_s)
   end
 end
 
@@ -100,7 +100,7 @@ namespace "build" do
       #needs $config, $srcdir, $excludelib, $bindir
       app = $app_path
       startdir = pwd
-      dest = startdir + "/" + $srcdir
+      dest =  $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
 
       common_bundle_start(startdir,dest)

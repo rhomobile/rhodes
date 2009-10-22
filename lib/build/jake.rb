@@ -29,9 +29,11 @@ class Jake
     @@config = self.config_parse(@@config)
     @@config
   end
-
+  def self.set_bbver(bbver)
+    @@bbver = bbver
+  end
   def self.reconfig(config)
-    @@confg = config
+    @@config = config
   end
 
   def self.get_absolute(path)
@@ -203,7 +205,7 @@ class Jake
     #cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
 #   cmd = "java.exe"
     
-    jdehome = @@config["env"]["paths"][@@config["env"]["bbver"]]["jde"]
+    jdehome = @@config["env"]["paths"][@@bbver]["jde"]
     javabin = @@config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
     

@@ -13,7 +13,7 @@ def freplace( fname, pattern, str )
 end
 
 def startmds
-  mdshome =  $config["env"]["paths"][$app_config["bbver"]]["mds"]
+  mdshome =  $config["env"]["paths"][$bbver]["mds"]
   args = []
   args << "/c"
   args << "run.bat"
@@ -22,7 +22,7 @@ def startmds
 end 
 
 def stopmds
-  mdshome =  $config["env"]["paths"][$app_config["bbver"]]["mds"]
+  mdshome =  $config["env"]["paths"][$bbver]["mds"]
   args = []
   args << "/c"
   args << "shutdown.bat"
@@ -31,9 +31,8 @@ def stopmds
 end 
 
 def startsim
-  bbver = $app_config["bbver"]
-  sim = $config["env"]["paths"][bbver]["sim"]
-  jde = $config["env"]["paths"][bbver]["jde"]
+  sim = $config["env"]["paths"][$bbver]["sim"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
     
   command =  '"' + jde + "/simulator/fledge.exe\""
   args = []
@@ -47,7 +46,7 @@ def startsim
   args << "/pin=0x2100000A"
   args << "/no-compact-filesystem"
     
-  if bbver !~ /^4\.[012](\..*)?$/
+  if $bbver !~ /^4\.[012](\..*)?$/
     args << "/fs-sdcard=true"
   end
         
@@ -58,8 +57,8 @@ def startsim
 end
 
 def stopsim
-  sim = $config["env"]["paths"][$app_config["bbver"]]["sim"]
-  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
+  sim = $config["env"]["paths"][$bbver]["sim"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
     
   command =  '"' + jde + "/simulator/fledgecontroller.exe\""
   args = []
@@ -71,7 +70,7 @@ end
 
 def manualsign
   java = $config["env"]["paths"]["java"] + "/java.exe"
-  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
   args << "-jar"
@@ -86,7 +85,7 @@ end
 
 def autosign
   java = $config["env"]["paths"]["java"] + "/java.exe"
-  jde = $config["env"]["paths"][$app_config["bbver"]]["jde"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
   args << "-jar"
@@ -109,8 +108,9 @@ namespace "config" do
     $config["platform"] = "bb"
 
     bbpath = $config["build"]["bbpath"]
-    $bbver = $app_config["bbver"]
-    $builddir = bbpath + "/build"
+    bbpath = $app_path
+    $bbver = $app_config["bbver"].to_s
+    $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = bbpath + "/bin"
     $rhobundledir =  bbpath + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
@@ -128,8 +128,8 @@ namespace "config" do
     $outfilebase.gsub!(/ /,"_")
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
-      Jake.get_absolute($preverified+"/RubyVM.jar")
-    $rhodesimplib = $rhobundleimplib + ";"+ Jake.get_absolute($preverified+"/RhoBundle.jar")
+      $preverified+"/RubyVM.jar"
+    $rhodesimplib = $rhobundleimplib + ";"+ $preverified+"/RhoBundle.jar"
   end
 end
 
@@ -161,6 +161,7 @@ namespace "build" do
       end
       $stdout.flush
 
+      mkdir_p $rhobundledir unless File.exists? $rhobundledir
       cp $preverified + "/RhoBundle.jar", $rhobundledir + "/RhoBundle.jar"
       
     end
@@ -321,7 +322,7 @@ namespace "package" do
       Jake.rapc("RhoBundle",
         $targetdir,
         $rhobundleimplib ,
-        '"' + Jake.get_absolute($preverified + "/RhoBundle.jar") + '"',
+        '"' + $preverified + "/RhoBundle.jar" + '"',
         "RhoBundle",
         $app_config["vendor"],
         $app_config["version"]
@@ -342,7 +343,7 @@ namespace "package" do
         Jake.rapc("RubyVM",
           $targetdir,
           jdehome + "/lib/net_rim_api.jar",
-          '"' + Jake.get_absolute($preverified + "/RubyVM.jar") +'"',
+          '"' + $preverified + "/RubyVM.jar" +'"',
           "RubyVM",
           $app_config["vendor"],
           $app_config["version"]
@@ -367,7 +368,7 @@ namespace "package" do
         Jake.rapc($outfilebase,
           $targetdir,
           $rhodesimplib,
-          '"' + Jake.get_absolute( $preverified + "/rhodes.jar") +'"',
+          '"' +  $preverified + "/rhodes.jar" +'"',
           appname,
           $app_config["vendor"],
           $app_config["version"],
@@ -424,7 +425,7 @@ namespace "package" do
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
-        '"' + Jake.get_absolute( $bindir + "/" + $outfilebase + ".jar") +'"',
+        '"' +  $bindir + "/" + $outfilebase + ".jar" +'"',
         appname,
         $app_config["vendor"],
         $app_config["version"],
@@ -522,19 +523,16 @@ namespace "clean" do
 #    desc "Clean preverified jars"
     task :preverified => "config:bb" do
       rm_rf $preverified if File.exists? $preverified
-      mkdir_p $preverified
     end
 
 #    desc "Clean packaged files"
     task :packaged => "config:bb" do
       rm_rf $targetdir
-      mkdir_p $targetdir
     end
 
 #    desc "Clean temp dir"
     task :tempdir => "config:bb" do
       rm_rf $tmpdir
-      mkdir_p $tmpdir
     end
 
 #    desc "Clean all"
@@ -564,7 +562,7 @@ namespace "run" do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
-    cp_r Jake.get_absolute(File.join($targetdir,"/.")), jde + "/simulator"
+    cp_r File.join($targetdir,"/."), jde + "/simulator"
     
     startmds
     startsim
