@@ -95,7 +95,7 @@ namespace "build" do
     task :rhobundle => "config:android" do
       Rake::Task["build:bundle:xruby"].execute
 
-      cp_r $srcdir + "/apps", $androidpath + "/Rhodes/assets"
+      cp_r $srcdir + "/apps", Jake.get_absolute($config["build"]["androidpath"]) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
 
       Rake::Task["build:android:rjava"].execute
