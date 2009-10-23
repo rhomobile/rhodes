@@ -48,9 +48,10 @@ public class DBStorage implements IDBStorage {
 		andFile.delete(strPath);
 	}
 
-	synchronized public IDBResult executeSQL(String strStatement, Object[] values)
+    synchronized public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
 			throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
+            //TODO: support bReportNonUnique
 			IDBResult result = rhoDB.executeSQL(strStatement, values);
 			
 			onInsertRecords(strStatement);
