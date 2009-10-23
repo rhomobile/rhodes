@@ -714,7 +714,33 @@ public class SyncThread extends RhoThread
 						}
 					}
 			});
+		klass.getSingletonClass().defineMethod("get_pagesize",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						try{
+							return ObjectFactory.createInteger(getSyncEngine().getSyncPageSize());
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_pagesize failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
 		
+		klass.getSingletonClass().defineMethod("set_pagesize",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							getSyncEngine().setSyncPageSize(arg1.toInt());
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_pagesize failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
 		
 	}
 
