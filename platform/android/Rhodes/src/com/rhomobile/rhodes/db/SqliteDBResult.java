@@ -22,6 +22,12 @@ public class SqliteDBResult implements IDBResult {
 		//lock.getWriteLock();
 	}
 
+    public boolean isNonUnique()
+    {
+        //TODO: isNonUnique
+        return false;
+    }
+
 	public void assign(Cursor cursor) {
 		this.cursor = cursor;
 		localDataCopy = null;

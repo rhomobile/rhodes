@@ -118,22 +118,15 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		return new HsqlDBResult();
 	}
 
-	public IDBResult executeSQL(String strStatement, Object[] values)
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
 			throws DBException {
 		
 		try {
 			if ( m_dbSess == null )
 				throw new RuntimeException("executeSQL: m_dbSess == null");
 			
-			/*if ( strStatement.startsWith("destroy ") )
-			{
-				destroy_table(strStatement.substring(8));
-				return new HsqlDBResult();
-			}*/
-			
 			CompiledStatement st = m_dbSess.compiledStatementManager.compile(m_dbSess, strStatement);
-			Result res = m_dbSess.sqlExecuteCompiledNoPreChecksSafe(st, values);
-			
+			Result res = m_dbSess.sqlExecuteCompiledNoPreChecksSafe(st, values, bReportNonUnique);
 			if ( m_dbSess.isAutoCommit() )
 				m_dbSess.commit();
 			
