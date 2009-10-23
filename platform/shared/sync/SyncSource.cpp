@@ -446,16 +446,16 @@ void CSyncSource::processServerData(const char* szData)
         else
         {
             int nSavedPos = oJsonArr.getCurPos();
-            setSyncServerDataPass(edpCreateObjects);
+            setSyncServerDataPass(edpNone);
             processServerData_Ver1(oJsonArr);
 
             setSyncServerDataPass(edpDeleteObjects);
             oJsonArr.reset(nSavedPos);
             processServerData_Ver1(oJsonArr);
 
-            setSyncServerDataPass(edpNone);
-            oJsonArr.reset(nSavedPos);
-            processServerData_Ver1(oJsonArr);
+            //setSyncServerDataPass(edpNone);
+            //oJsonArr.reset(nSavedPos);
+            //processServerData_Ver1(oJsonArr);
 
         }
 
@@ -646,8 +646,8 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)//throws Exception
 {
     const char* strOldObject = oJsonObject.getString("oo");
-    if ( isCreateObjectsPass() != (strOldObject != null) )
-        return true;
+    //if ( isCreateObjectsPass() != (strOldObject != null) )
+    //    return true;
     if ( isDeleteObjectsPass() != (nSrcID < 0) )
         return true;
 
@@ -706,30 +706,47 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
 
 //                    getDB().executeSQL("UPDATE object_values SET id=?, value=?, attrib_type=? where object=? and attrib=? and source_id=?", 
 //                        value.m_nID, value.m_strValue, value.m_strAttrType, strObject, strAttrib, nSrcID );
-                    getDB().executeSQL("INSERT INTO object_values \
+                    DBResult(resInsert, getDB().executeSQLReportNonUnique("INSERT INTO object_values \
                         (id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
                         value.m_nID, strAttrib, nSrcID, strObject,
-                        value.m_strValue, value.m_strAttrType );
+                        value.m_strValue, value.m_strAttrType ) );
+                    if ( resInsert.isNonUnique() )
+                        getDB().executeSQLReportNonUnique("UPDATE object_values \
+                            SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+                            value.m_nID, value.m_strValue, value.m_strAttrType,
+                            strObject, strAttrib, nSrcID );
+
                     getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
 
                     if ( bModified )
                         getNotify().onObjectChanged(nSrcID,strObject, CSyncNotify::enUpdate);
                 }
                 else
-                    getDB().executeSQL("INSERT INTO object_values \
+                {
+                    DBResult(resInsert, getDB().executeSQLReportNonUnique("INSERT INTO object_values \
                         (id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
                         value.m_nID, strAttrib, nSrcID, strObject,
-                        value.m_strValue, value.m_strAttrType );
+                        value.m_strValue, value.m_strAttrType ) );
+                    if ( resInsert.isNonUnique() )
+                    {
+                        getDB().executeSQLReportNonUnique("UPDATE object_values \
+                            SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+                            value.m_nID, value.m_strValue, value.m_strAttrType,
+                            strObject, strAttrib, nSrcID );
+
+                        getNotify().onObjectChanged(nSrcID,strObject, CSyncNotify::enUpdate);
+                    }
+                }
             }
 
             m_nInserted++;
         }else// if ( nDbOp == 1 ) //delete
         {
-            if ( strOldObject != null && nDoNotDelete < 0 )
+            /*if ( strOldObject != null && nDoNotDelete < 0 )
             {
                 DBResult( res,getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() ) );
                 nDoNotDelete = !res.isEnd() ? 1 : 0;
-            }
+            }*/
 
             if ( nDoNotDelete != 1 )
             {

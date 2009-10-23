@@ -12,14 +12,21 @@ class CDBResult
 {
     sqlite3_stmt* m_dbStatement;
     common::CMutexLock m_lockDB;
+    boolean m_bReportNonUnique;
+    int     m_nErrorCode;
 public:
-    CDBResult(sqlite3_stmt* st,common::CMutex& mx) : m_lockDB(mx), m_dbStatement(st){}
-    CDBResult(common::CMutex& mx) : m_lockDB(mx), m_dbStatement(null){}
+    CDBResult(sqlite3_stmt* st,common::CMutex& mx) : m_lockDB(mx), m_dbStatement(st){m_bReportNonUnique=false;m_nErrorCode=0;}
+    CDBResult(common::CMutex& mx) : m_lockDB(mx), m_dbStatement(null){m_bReportNonUnique=false;m_nErrorCode=0;}
 
     ~CDBResult(void);
 
     void setStatement(sqlite3_stmt* st);
     sqlite3_stmt* getStatement(){ return m_dbStatement; }
+    boolean getReportNonUnique(){ return m_bReportNonUnique; }
+    void setReportNonUnique(boolean bSet){ m_bReportNonUnique = bSet; }
+    boolean isNonUnique(){ return m_nErrorCode==SQLITE_CONSTRAINT; }
+    int     getErrorCode(){ return m_nErrorCode; }
+    void    setErrorCode(int nError){ m_nErrorCode=nError; }
 
     virtual bool isEnd(){ return m_dbStatement == null; }
     void next()
