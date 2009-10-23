@@ -371,4 +371,9 @@ int rho_sync_get_pagesize()
     return CSyncThread::getSyncEngine().SYNC_PAGE_SIZE_INT();
 }
 
+void rho_sync_set_pagesize(int nPageSize)
+{
+    return CSyncThread::getSyncEngine().setSyncPageSize(nPageSize);
+}
+
 }
