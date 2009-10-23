@@ -99,7 +99,7 @@ public:
     CSyncSource* findSourceByName(const String& strSrcName);
 
     String SYNC_PAGE_SIZE();
-    int SYNC_PAGE_SIZE_INT() { return m_nSyncPageSize; }
+    int getSyncPageSize() { return m_nSyncPageSize; }
     void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
 private:
  

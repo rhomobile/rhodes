@@ -44,7 +44,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
     int SYNC_VERSION() { return 2; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
-    static String SYNC_PAGE_SIZE() { return "2000"; }
 	
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
@@ -55,6 +54,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     String m_strSession = "";
     SyncNotify m_oSyncNotify = new SyncNotify(this);
     boolean m_bStopByUser = false;
+    int m_nSyncPageSize = 2000;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -80,6 +80,10 @@ public class SyncEngine implements NetRequest.IRhoSession
     	m_syncState = esNone; 
     }
 
+    String SYNC_PAGE_SIZE(){ return Integer.toString(m_nSyncPageSize); }
+    int getSyncPageSize() { return m_nSyncPageSize; }
+    void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
+    
     void setFactory(RhoClassFactory factory)throws Exception{ 
 		m_NetRequest = RhoClassFactory.createNetRequest();
     }
