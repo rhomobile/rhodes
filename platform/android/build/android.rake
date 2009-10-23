@@ -334,7 +334,7 @@ namespace "run" do
     puts "Loading package into emulator"
     theoutput = `#{$adb} install -r "#{apkfile}"`
     count = 0
-    while (theoutput.to_s.match(/Error Type/) or theoutput.to_s.match(/Fail/))  and count < 15 do
+    while (not theoutput.to_s.match(/Success/))  and count < 15 do
       puts "Failed to load (possibly because emulator not done launching)- retrying"
       $stdout.flush
       sleep 5
