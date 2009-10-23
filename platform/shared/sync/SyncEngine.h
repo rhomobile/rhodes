@@ -39,13 +39,6 @@ public:
 
     static String SYNC_ASK_ACTION() { return "/ask"; }
 //    static int MAX_SYNC_TRY_COUNT() { return 2; }
-#ifdef OS_SYMBIAN
-    static String SYNC_PAGE_SIZE() { return "200"; }
-#else
-    static String SYNC_PAGE_SIZE() { return "2000"; }
-    static int SYNC_PAGE_SIZE_INT() { return 2000; }
-
-#endif
 
 private:
     VectorPtr<CSyncSource*> m_sources;
@@ -57,6 +50,8 @@ private:
     String m_strSession;
     CSyncNotify m_oSyncNotify;
     boolean m_bStopByUser;
+    int m_nSyncPageSize;
+
 public:
     CSyncEngine(db::CDBAdapter& db);
     ~CSyncEngine(void){}
@@ -103,6 +98,9 @@ public:
 
     CSyncSource* findSourceByName(const String& strSrcName);
 
+    String SYNC_PAGE_SIZE();
+    int getSyncPageSize() { return m_nSyncPageSize; }
+    void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
 private:
  
     CSyncSource* findSourceByID(int nSrcId);

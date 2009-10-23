@@ -418,7 +418,7 @@ class SyncSource
 	            strUrl += '/' + m_strAction;
 	        
 			String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
-	                "&p_size=" + SyncEngine.SYNC_PAGE_SIZE() + "&version=" + getSync().SYNC_VERSION();
+	                "&p_size=" + getSync().SYNC_PAGE_SIZE() + "&version=" + getSync().SYNC_VERSION();
 	        if ( m_strParams.length() > 0 )
 	            strQuery += m_strParams;
 	
