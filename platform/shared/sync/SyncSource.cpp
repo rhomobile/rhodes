@@ -711,7 +711,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                         value.m_nID, strAttrib, nSrcID, strObject,
                         value.m_strValue, value.m_strAttrType ) );
                     if ( resInsert.isNonUnique() )
-                        getDB().executeSQLReportNonUnique("UPDATE object_values \
+                        getDB().executeSQL("UPDATE object_values \
                             SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
                             value.m_nID, value.m_strValue, value.m_strAttrType,
                             strObject, strAttrib, nSrcID );
@@ -729,7 +729,7 @@ boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)/
                         value.m_strValue, value.m_strAttrType ) );
                     if ( resInsert.isNonUnique() )
                     {
-                        getDB().executeSQLReportNonUnique("UPDATE object_values \
+                        getDB().executeSQL("UPDATE object_values \
                             SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
                             value.m_nID, value.m_strValue, value.m_strAttrType,
                             strObject, strAttrib, nSrcID );

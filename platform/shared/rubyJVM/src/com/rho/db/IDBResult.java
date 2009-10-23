@@ -34,4 +34,7 @@ public interface IDBResult {
 	public abstract String getString(String colname);
 	
 	public abstract Object[] getCurData();
+	
+    public abstract boolean isNonUnique();
+
 }

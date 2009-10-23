@@ -549,16 +549,16 @@ class SyncSource
 		        else
 	            {
 		            int nSavedPos = oJsonArr.getCurPos();
-		            setSyncServerDataPass(edpCreateObjects);
+		            setSyncServerDataPass(edpNone);
 		            processServerData_Ver1(oJsonArr);
 
 		            setSyncServerDataPass(edpDeleteObjects);
 		            oJsonArr.reset(nSavedPos);
 		            processServerData_Ver1(oJsonArr);
 
-		            setSyncServerDataPass(edpNone);
-		            oJsonArr.reset(nSavedPos);
-		            processServerData_Ver1(oJsonArr);
+		            //setSyncServerDataPass(edpNone);
+		            //oJsonArr.reset(nSavedPos);
+		            //processServerData_Ver1(oJsonArr);
 	            }
 		        
 			    PROF.STOP("Data");		    
@@ -745,8 +745,8 @@ class SyncSource
 	boolean processSyncObject_ver1(JSONEntry oJsonObject, Integer nSrcID)throws Exception
 	{
 		String strOldObject = oJsonObject.getString("oo");
-	    if ( isCreateObjectsPass() != (strOldObject != null) )
-	        return true;
+	    //if ( isCreateObjectsPass() != (strOldObject != null) )
+	    //    return true;
 	    if ( isDeleteObjectsPass() != (nSrcID.intValue() < 0) )
 	    	return true;
 	    
@@ -813,10 +813,15 @@ class SyncSource
 
 //	                    getDB().executeSQL("UPDATE object_values SET id=?, value=?, attrib_type=? where object=? and attrib=? and source_id=?", 
 //	                        value.m_nID, value.m_strValue, value.m_strAttrType, strObject, strAttrib, nSrcID );
-	    		        getDB().executeSQL("INSERT INTO object_values " +
+	    		        IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values " +
 	    			            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
 	    			            value.m_nID, strAttrib, nSrcID, strObject,
 	    			            value.m_strValue, value.m_strAttrType );
+	                    if ( resInsert.isNonUnique() )
+	                        getDB().executeSQL("UPDATE object_values "+
+	                            "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+	                            value.m_nID, value.m_strValue, value.m_strAttrType,
+	                            strObject, strAttrib, nSrcID );
 
 	                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
 	    		        
@@ -824,20 +829,32 @@ class SyncSource
 	                        getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
 	                }
 	                else
-	    		        getDB().executeSQL("INSERT INTO object_values " +
+	                {
+	                	IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values " +
 	    			            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
 	    			            value.m_nID, strAttrib, nSrcID, strObject,
 	    			            value.m_strValue, value.m_strAttrType );
+	                    if ( resInsert.isNonUnique() )
+	                    {
+	                        getDB().executeSQL("UPDATE object_values "+
+	                            "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+	                            value.m_nID, value.m_strValue, value.m_strAttrType,
+	                            strObject, strAttrib, nSrcID );
+
+	                        getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
+	                    }
+	    		        
+	                }
 	            }
 		    	
 		        m_nInserted++;
 		    }else// if ( nDbOp == 1 ) //delete
 		    {
-	            if ( strOldObject != null && nDoNotDelete < 0 )
+	            /*if ( strOldObject != null && nDoNotDelete < 0 )
 	            {
 	                IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() );
 	                nDoNotDelete = !res.isEnd() ? 1 : 0;
-	            }
+	            }*/
 		    	
 	            if ( nDoNotDelete != 1 )
 	            {
