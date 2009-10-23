@@ -20,7 +20,10 @@ using namespace rho::json;
 CSyncEngine::CSyncEngine(db::CDBAdapter& db): m_dbAdapter(db), m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
 {
     m_bStopByUser = false;
+    m_nSyncPageSize = 2000;
 }
+
+String CSyncEngine::SYNC_PAGE_SIZE() { return convertToStringA(m_nSyncPageSize); }
 
 void CSyncEngine::doSyncAllSources()
 {

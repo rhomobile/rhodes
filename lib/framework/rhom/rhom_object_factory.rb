@@ -806,7 +806,16 @@ module Rhom
                         resValue = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'value,id', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID}) 
                         if resValue && resValue.length > 0 
                             oldValue = resValue[0]['value']
-                            if oldValue != val
+                            
+                            isModified = oldValue != val
+                            if isModified && val && oldValue.nil? && val.to_s().length == 0
+                              isModified = false
+                            end  
+                            if isModified && oldValue && val.nil? && oldValue.to_s().length == 0
+                              isModified = false
+                            end
+                            
+                            if isModified
                             
                                 resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
                                 if resUpdateType && resUpdateType.length > 0 
@@ -859,9 +868,17 @@ module Rhom
                       # Don't save objects with braces to database
                       new_val = self.inst_strip_braces(val.to_s)
                       
+                      isModified = old_val != new_val
+                      if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
+                        isModified = false
+                      end  
+                      if isModified && old_val && new_val.nil? && old_val.to_s().length == 0
+                        isModified = false
+                      end
+                      
                       # if the object's value doesn't match the database record
                       # then we procede with update
-                      if old_val != new_val
+                      if isModified
                           # only one update at a time
                           resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
                           if resUpdateType && resUpdateType.length > 0 
