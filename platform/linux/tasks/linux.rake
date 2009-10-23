@@ -18,7 +18,46 @@ namespace "build" do
       mkdir_p $srcdir unless File.exists? $srcdir
 
       Rake::Task["build:bundle:noxruby"].execute
-      
+
+      current = pwd
+      chdir $srcdir
+      puts `zip rhobundle.zip -r *`
+      chdir current
     end
   end
+end
+
+namespace "desktop" do
+  task :win32, [:simpath] => "build:linux:rhobundle" do |t,args|
+    chdir $srcdir
+    rm_f File.join($srcdir,"rhodes-simulator.zip")
+    mkdir "tmp"
+    cp_r "#{args.simpath}/rho", "tmp/"
+    cp_r "#{$srcdir}/apps", "tmp/rho/"
+    cp_r "#{$srcdir}/lib", "tmp/rho/"
+    cp_r "#{args.simpath}/rhodes.exe", "tmp/"
+    chdir "tmp"
+    puts `zip ../rhodes-simulator.zip -r *`
+    chdir $srcdir
+    rm_rf "tmp"
+  end
+
+  task :osx, [:simpath] => "build:linux:rhobundle" do |t,args|
+    chdir $srcdir
+    rm_f File.join($srcdir,"rhodes-simulator.zip")
+    mkdir "tmp"
+    cp_r "#{args.simpath}", "tmp/"
+    rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/apps"
+    rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/lib"
+    rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/db"
+
+    cp_r "#{$srcdir}/apps", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
+    cp_r "#{$srcdir}/lib", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
+    cp_r "#{$srcdir}/db", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
+    chdir "tmp"
+    puts `zip ../rhodes-simulator.zip -r *`
+    chdir $srcdir
+    rm_rf "tmp"
+  end
+
 end
