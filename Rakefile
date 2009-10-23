@@ -9,7 +9,7 @@ load 'platform/bb/build/bb.rake'
 load 'platform/android/build/android.rake'
 load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
-
+load 'platform/linux/tasks/linux.rake'
 
 namespace "config" do
   task :common do
@@ -160,7 +160,7 @@ namespace "build" do
       compileERB = "lib/build/compileERB/default.rb"
       compileRB = "lib/build/compileRB/compileRB.rb"
       startdir = pwd
-      dest = startdir + "/" + $srcdir + "/lib"      
+      dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
 

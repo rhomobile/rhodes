@@ -44,7 +44,7 @@ namespace "config" do
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
     $builddir = iphonepath + "/rbuild"
-    $bindir = iphonepath + "/bin"
+    $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = iphonepath + "/target" 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
