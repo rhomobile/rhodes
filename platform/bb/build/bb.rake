@@ -166,6 +166,10 @@ namespace "build" do
       
     end
 
+    task :devrhobundle => :rhobundle do
+      cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
+    end
+    
 #    desc "Build RubyVM"
     task :rubyvm => ["config:bb"] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"

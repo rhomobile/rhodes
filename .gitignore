@@ -23,6 +23,8 @@ platform/iphone/*/rholog.txt
 platform/win32/**/*.pch
 platform/wm/**/*.pch
 
+spec/bin/*
+
 platform/bb/.metadata/*
 platform/bb/bin/*
 platform/bb/**/bin/*

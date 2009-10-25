@@ -60,11 +60,24 @@ boolean CDBAdapter::checkDbError(int rc)
     const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
     int nErrCode = sqlite3_errcode(m_dbHandle);
 
-    if ( nErrCode == SQLITE_CONSTRAINT )
-        LOG(INFO)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
-    else
-        LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
+    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
 
+    return false;
+}
+
+boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
+{
+    if ( rc == SQLITE_OK || rc == SQLITE_ROW || rc == SQLITE_DONE )
+        return true;
+
+    const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
+    int nErrCode = sqlite3_errcode(m_dbHandle);
+
+    res.setErrorCode(nErrCode);
+    if ( nErrCode == SQLITE_CONSTRAINT && res.getReportNonUnique() )
+        return true;
+
+    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
     return false;
 }
 
@@ -383,7 +396,7 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 	}
 	
     int rc = sqlite3_prepare_v2(m_dbHandle, szSt, -1, &st, NULL);
-    if ( !checkDbError(rc) )
+    if ( !checkDbErrorEx(rc,*res) )
     {
         //TODO: raise exception
         return res;
@@ -412,7 +425,7 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
         res->setStatement(null);
         if ( rc != SQLITE_OK && rc != SQLITE_ROW && rc != SQLITE_DONE )
         {
-            checkDbError(rc);
+            checkDbErrorEx(rc, *res);
             //TODO: raise exception
             return res;
         }

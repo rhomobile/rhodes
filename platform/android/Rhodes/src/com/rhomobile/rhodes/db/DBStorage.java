@@ -48,9 +48,10 @@ public class DBStorage implements IDBStorage {
 		andFile.delete(strPath);
 	}
 
-	synchronized public IDBResult executeSQL(String strStatement, Object[] values)
+    synchronized public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
 			throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
+            //TODO: support bReportNonUnique
 			IDBResult result = rhoDB.executeSQL(strStatement, values);
 			
 			onInsertRecords(strStatement);
@@ -70,9 +71,9 @@ public class DBStorage implements IDBStorage {
 			if (!strStatement.toLowerCase().startsWith("insert "))
 				return;
 			
-			rows2Insert = executeSQL("SELECT id,source_id,name FROM object_attribs_to_load", null);
+			rows2Insert = executeSQL("SELECT id,source_id,name FROM object_attribs_to_load", null,false);
 			this.callback.OnInsertIntoTable("object_values", rows2Insert);
-			executeSQL("DELETE FROM object_attribs_to_load", null);
+			executeSQL("DELETE FROM object_attribs_to_load", null,false);
 		}
 		catch (Exception e) {
 			LOG.ERROR(e.getMessage());
@@ -89,7 +90,7 @@ public class DBStorage implements IDBStorage {
 			if ( this.callback == null )
 				return;
 			
-			rows2Delete = executeSQL("SELECT attrib_type, update_type, value FROM object_values_to_delete", null);
+			rows2Delete = executeSQL("SELECT attrib_type, update_type, value FROM object_values_to_delete", null,false);
 			
 			this.callback.OnDeleteFromTable("object_values", rows2Delete);
 		}

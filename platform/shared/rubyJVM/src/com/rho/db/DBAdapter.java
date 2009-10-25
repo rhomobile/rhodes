@@ -48,60 +48,50 @@ public class DBAdapter extends RubyBasic {
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
 		
-		return m_dbStorage.executeSQL(strStatement,values);
+		return m_dbStorage.executeSQL(strStatement,values,false);
 	}
 	public IDBResult executeSQL(String strStatement)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		return executeSQL(strStatement,null);
 	}
 	public IDBResult executeSQL(String strStatement, Object arg1)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = {arg1};
 		return executeSQL(strStatement,values);
 	}
 	public IDBResult executeSQL(String strStatement, int arg1)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = { new Integer(arg1)};
 		return executeSQL(strStatement,values);
 	}
 	public IDBResult executeSQL(String strStatement, long arg1)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = { new Long(arg1)};
 		return executeSQL(strStatement,values);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = {arg1,arg2};
 		return executeSQL(strStatement,values);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = {arg1,arg2,arg3};
 		return executeSQL(strStatement,values);
 	}
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = {arg1,arg2,arg3,arg4,arg5};
 		return executeSQL(strStatement,values);
 	}
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
-		
 		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
 		return executeSQL(strStatement,values);
 	}
-	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
-		LOG.TRACE("executeSQL: " + strStatement);
+	
+	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
+		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
+		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
+		return m_dbStorage.executeSQL(strStatement,values, true);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
 		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6,arg7};
 		return executeSQL(strStatement,values);
 	}
@@ -448,7 +438,7 @@ public class DBAdapter extends RubyBasic {
 			    	if ( strInsert.length() == 0 )
 			    		strInsert = createInsertStatement(res, tableName);
 			    	
-			    	db.executeSQL(strInsert, res.getCurData() );
+			    	db.executeSQL(strInsert, res.getCurData(), false );
 			    }
 			}
 			
