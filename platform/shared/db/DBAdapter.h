@@ -144,6 +144,24 @@ public:
         return executeStatement(res);
     }
 
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6 )
+    {
+        DBResultPtr res = prepareStatement(szSt);
+        if ( res->getStatement() == null )
+            return res;
+
+        bind(res->getStatement(), 1, p1);
+        bind(res->getStatement(), 2, p2);
+        bind(res->getStatement(), 3, p3);
+        bind(res->getStatement(), 4, p4);
+        bind(res->getStatement(), 5, p5);
+        bind(res->getStatement(), 6, p6);
+
+        res->setReportNonUnique(true);
+        return executeStatement(res);
+    }
+
     template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7 )
     {
@@ -189,6 +207,7 @@ public:
     void       writeDBVersion(const CDBVersion& ver);//throws Exception
     void createSchema();
     boolean checkDbError(int rc);
+    boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
     sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
 
     virtual DBResultPtr prepareStatement( const char* szSt );

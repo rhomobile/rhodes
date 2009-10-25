@@ -1097,13 +1097,13 @@ public class Session implements SessionInterface {
 
     Result sqlExecuteCompiledNoPreChecks(CompiledStatement cs,
                                          Object[] pvals) {
-        return compiledStatementExecutor.execute(cs, pvals);
+        return compiledStatementExecutor.execute(cs, pvals, false);
     }
 
     public Result sqlExecuteCompiledNoPreChecksSafe(CompiledStatement cs,
-            Object[] pvals) {
+            Object[] pvals, boolean bReportNonUnique) {
     	synchronized (database) {
-    		return compiledStatementExecutor.execute(cs, pvals);
+    		return compiledStatementExecutor.execute(cs, pvals, bReportNonUnique);
     	}
 	}
     

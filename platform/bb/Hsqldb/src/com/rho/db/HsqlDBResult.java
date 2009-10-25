@@ -2,7 +2,9 @@ package com.rho.db;
 
 import org.hsqldb.Record;
 import org.hsqldb.Result;
+import org.hsqldb.Trace;
 import org.hsqldb.Types;
+import org.hsqldb.HsqlException;
 
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
@@ -25,6 +27,17 @@ public class HsqlDBResult implements IDBResult
 	public int getCount(){ 
 		return m_result != null ? m_result.getSize() : 0; 
 	}*/
+
+	public boolean isNonUnique() {
+		if ( m_result != null && m_result.getException() != null &&
+			 m_result.getException() instanceof HsqlException )
+		{
+			HsqlException e = (HsqlException)m_result.getException();
+			return e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX;
+		}
+		
+		return false;
+	}
 	
 	public int getColCount(){ 
 		return m_result != null ? m_result.getColumnCount() : 0; 

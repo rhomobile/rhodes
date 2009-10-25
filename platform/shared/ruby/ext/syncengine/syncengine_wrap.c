@@ -1587,6 +1587,9 @@ static VALUE mSyncEngine;
 
     extern int  rho_sync_get_pagesize();
     #define get_pagesize rho_sync_get_pagesize
+
+    extern void  rho_sync_set_pagesize(int pagesize);
+    #define set_pagesize rho_sync_set_pagesize
 	
 	#if !defined(bool)
 	#define bool int
@@ -2212,6 +2215,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_pagesize(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_pagesize" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  set_pagesize(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2493,5 +2517,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "clean_objectnotify", _wrap_clean_objectnotify, -1);
   rb_define_module_function(mSyncEngine, "get_lastsync_objectcount", _wrap_get_lastsync_objectcount, -1);
   rb_define_module_function(mSyncEngine, "get_pagesize", _wrap_get_pagesize, -1);
+  rb_define_module_function(mSyncEngine, "set_pagesize", _wrap_set_pagesize, -1);
 }
 
