@@ -122,11 +122,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.STOP("Sync");
 			    
 		    } else {
-		    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-		    	src.m_strError = "Client is not logged in. No sync will be performed.";
-		    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
-		    	
-		    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
+		    	if ( m_sources.size() > 0 )
+		        {		    	
+			    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+			    	src.m_strError = "Client is not logged in. No sync will be performed.";
+			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+			    	
+			    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
+		        }else
+		        	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "");
 		    }
 		    
 	    }catch(Exception exc)
