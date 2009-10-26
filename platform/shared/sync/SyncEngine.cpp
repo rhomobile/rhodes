@@ -40,11 +40,15 @@ void CSyncEngine::doSyncAllSources()
     }
     else
     {
-        CSyncSource& src = *m_sources.elementAt(getStartSource());
-    	src.m_strError = "Client is not logged in. No sync will be performed.";
-        src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+        if ( m_sources.size() > 0 )
+        {
+            CSyncSource& src = *m_sources.elementAt(getStartSource());
+    	    src.m_strError = "Client is not logged in. No sync will be performed.";
+            src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 
-        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
+            getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
+        }else
+            getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "Client is not logged in. No sync will be performed.");
     }
 
     setState(esNone);

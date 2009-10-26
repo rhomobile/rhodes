@@ -191,6 +191,9 @@ public class NetworkAccess implements INetworkAccess {
 					http = null;
 					throw ioe;
 				}
+			}catch(Exception exc)
+			{
+				throw new IOException("Could not open network connection.");
 			}
 		}
 		
