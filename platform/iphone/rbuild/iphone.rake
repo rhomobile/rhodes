@@ -135,6 +135,8 @@ namespace "run" do
      f << "(version 1)\n(debug deny)\n(allow default)\n"
      f.close
      
+     puts `chmod -R 777 #{$simapp}/#{$guid}*`
+     
      system("open \"#{$sim}/iPhone Simulator.app\"")
   end
 end
