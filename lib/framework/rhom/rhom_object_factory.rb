@@ -111,7 +111,7 @@ module Rhom
                     sql
                 end
                 
-                def find_bycondhash(args)                
+                def find_bycondhash(args, &block)                
                     puts 'find_bycondhash start'
                     
                     condition_hash = {}
@@ -126,9 +126,9 @@ module Rhom
                     if args[1]
                         condition_hash = args[1][:conditions] if args[1][:conditions]
                         
-                        if args[1][:per_page] and args[1][:offset]
+                        if args[1][:per_page] #and args[1][:offset]
                           limit = args[1][:per_page].to_i
-                          offset = args[1][:offset].to_i
+                          offset = args[1][:offset] ? args[1][:offset].to_i : 0
                         end
                         select_arr = args[1][:select] if args[1][:select]
                         order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
@@ -165,8 +165,10 @@ module Rhom
                     
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     strLimit = nil
-                    strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
-
+                    if !order_attr 
+                        strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
+                    end
+                    
                     ::Rhom::RhomDbAdapter.start_transaction
                     begin
                         puts "non-null select start"
@@ -186,7 +188,7 @@ module Rhom
                                     mapObjs[ rec['object'] ] = 1
                                     listObjs << rec
                                     
-                                    bStop = limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
+                                    bStop = !order_attr && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
                                     break if bStop
                                 end
                                 
@@ -288,11 +290,11 @@ module Rhom
                     ::Rhom::RhomDbAdapter.commit
                   end
                   
-                  if order_attr 
+                  if order_attr
                     ret_list.sort! { |x,y| 
                        vx = x.vars[order_attr.to_sym()]
                        vy = y.vars[order_attr.to_sym()]
-                       res = vx && vy ? vx <=> vy : 0
+                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
                        res *= -1 if order_dir && order_dir == 'DESC'
                        res
                     }
@@ -315,7 +317,7 @@ module Rhom
                 
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
-                def find(*args)
+                def find(*args, &block)
                   raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0
                   puts "Inside find: args - #{args.inspect}"
                   ret_list = []
@@ -326,7 +328,7 @@ module Rhom
                   
                     #!args[1] || !args[1][:conditions] || 
                     if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
-                        return find_bycondhash(args)
+                        return find_bycondhash(args,&block)
                     end
                   
                     where_cond = {"source_id"=>get_source_id}
@@ -360,11 +362,22 @@ module Rhom
                       end
                     end
                     if args[1][:per_page] #and args[1][:offset]
-                      limit = args[1][:per_page].to_s
-                      offset = args[1][:offset] ? args[1][:offset].to_s : '0'
+                      limit = args[1][:per_page].to_i
+                      offset = args[1][:offset] ? args[1][:offset].to_i : 0
                     end
+                    if args.first == :first
+                        limit = 1                    
+                        offset = 0 unless offset
+                    end
+                    
                     select_arr = args[1][:select] if args[1][:select]
                     order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
+                    order_attr = args[1][:order]
+                  end
+                  
+                  strLimit = nil
+                  if !(block_given? && order_attr)
+                      strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset
                   end
                   
                   # return horizontal resultset from database
@@ -394,10 +407,10 @@ module Rhom
                     sql << " FROM object_values ov \n"
                     sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
                     sql << "group by object\n"
-                    sql << "order by \"#{args[1][:order]}\" " + order_dir if args[1] and args[1][:order]
+                    sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                     sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                     sql << ") WHERE " + condition_str if condition_str
-                    sql << " LIMIT " + limit + " OFFSET " + offset if limit and offset
+                    sql << strLimit if strLimit
 
                     puts "Database query start"
                     list = ::Rhom::RhomDbAdapter.execute_sql(sql)
@@ -421,6 +434,20 @@ module Rhom
                         puts "Processing rhom objects end, #{ret_list.length} objects"
                     end
                                         
+                  end
+                 
+                  if block_given? && order_attr
+                    ret_list.sort! { |x,y| 
+                       vx = x.vars[order_attr.to_sym()]
+                       vy = y.vars[order_attr.to_sym()]
+                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+                       res *= -1 if order_dir && order_dir == 'DESC'
+                       res
+                    }
+                  end
+                  
+                  if order_attr && limit
+                    ret_list = ret_list.slice(offset,limit)
                   end
                   
                   return list.length if args.first == :count
