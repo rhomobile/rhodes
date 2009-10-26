@@ -15,6 +15,12 @@ unless $app_config["env"].nil? #if env is here then it is an old app
   new_config["vendor"] = $app_config["env"]["vendor"]
   new_config["bbver"] = $app_config["env"]["bbver"]
   new_config["applog"] = $app_config["env"]["applog"]
+  new_config["iphone"] = Hash.new
+  new_config["iphone"]["configuration"] = "Debug"
+  new_config["iphone"]["sdk"] = "iphonesimulator3.0"
+  new_config["iphone"]["codesignidentity"] = ""
+  new_config["iphone"]["entitlements"] = ""
+
 
   $app_config = new_config
   File.open(  'build.yml', 'w' ) do |out|
