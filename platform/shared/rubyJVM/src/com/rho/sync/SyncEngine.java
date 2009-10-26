@@ -137,7 +137,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    setState(esNone);
 	}
 
-	void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges)
+	void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges,
+			int nProgressStep)
 	{
 	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
 	    	LOG.INFO( "Started synchronization of the data source url: " + strSrcUrl );
@@ -161,6 +162,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        	src.m_strParams = strParams;
 	        	src.m_strAction = strAction;
 	        	src.m_bSearchSyncChanges = bSearchSyncChanges;
+	        	src.m_nProgressStep = nProgressStep;
 	        	
 			    m_strSession = loadSession();
 			    if ( isSessionExist()  ) {

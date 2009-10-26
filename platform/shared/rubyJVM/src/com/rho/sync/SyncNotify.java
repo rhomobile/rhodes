@@ -342,6 +342,7 @@ public class SyncNotify {
 			        strUrl = sn.m_strUrl;
 			        strBody += "total_count=" + src.getTotalCount();
 			        strBody += "&processed_count=" + src.getCurPageCount();
+			        strBody += "&processed_objects_count=" + getLastSyncObjectCount(src.getID());
 			        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
 			        strBody += "&source_id=" + src.getID();
 			        strBody += "&source_name=" + src.getName();
@@ -376,6 +377,14 @@ public class SyncNotify {
 		    NetResponse resp = getNet().pushData( strUrl, strBody, getSync() );
 		    if ( !resp.isOK() )
 		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+		    else
+		    {
+		        String szData = resp.getCharData();
+		        if ( szData != null && szData.equals("stop") )
+		        {
+		            clearSyncNotification(src.getID().intValue());
+		        }
+		    }
 		
 		}catch(Exception exc)
 		{
@@ -400,11 +409,12 @@ public class SyncNotify {
 	    }
 	}
 
-	void incLastSyncObjectCount(Integer nSrcID)
+	int incLastSyncObjectCount(Integer nSrcID)
 	{
+		Integer nCount = null;
 	    synchronized(m_mxSyncNotifications)
 	    {
-	        Integer nCount = ((Integer)m_hashSrcObjectCount.get(nSrcID));
+	        nCount = ((Integer)m_hashSrcObjectCount.get(nSrcID));
 	        if ( nCount == null )
 	        	nCount = new Integer(0);
 	        
@@ -412,6 +422,8 @@ public class SyncNotify {
 	        
 	        m_hashSrcObjectCount.put(nSrcID,nCount);
 	    }
+	    
+	    return nCount != null ? nCount.intValue() : 0;
 	}
 
 	int getLastSyncObjectCount(Integer nSrcID)

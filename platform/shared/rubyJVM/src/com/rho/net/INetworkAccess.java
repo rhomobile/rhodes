@@ -9,5 +9,4 @@ public interface INetworkAccess {
 	public abstract void close();
 	
 	public abstract String getHomeUrl();
-	public boolean doLocalRequest(String strUrl, String strBody);
 }
