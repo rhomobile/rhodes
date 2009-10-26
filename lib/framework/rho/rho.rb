@@ -60,7 +60,9 @@ module Rho
     def self.process_rhoconfig
       begin
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
-          parts = line.chop.split('=')
+          # Skip empty or commented out lines
+          next if line =~ /^\s*(#|$)/
+          parts = line.chomp.split('=')
           key = parts[0]
           value = nil
           if key and defined? RHO_ME
@@ -74,6 +76,7 @@ module Rho
           if key and value
             val = value.strip.gsub(/\'|\"/,'')
             val = val == 'nil' ? nil : val
+            puts "rhoconfig: #{key} => #{val}"
             Rho::RhoConfig.add_config(key.strip,val)
           end  
         end
