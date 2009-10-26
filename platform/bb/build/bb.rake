@@ -242,9 +242,10 @@ namespace "build" do
 
       if not FileUtils.uptodate?($preverified + "/rhodes.jar",sources)
 
-        vsrclist = $builddir + "/../bin/vsrc_build.files"
+        vsrclist = $tmpdir + "/vsrc_build.files"
 
-        mkdir_p $builddir + "/../bin" unless File.exists? $builddir + "/../bin"
+#        vsrclist = $builddir + "/../bin/vsrc_build.files"
+#        mkdir_p $builddir + "/../bin" unless File.exists? $builddir + "/../bin"
 
         vsrcdir = $tmpdir + "/vsrc"
         mkdir_p vsrcdir
