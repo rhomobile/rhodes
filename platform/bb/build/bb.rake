@@ -244,6 +244,8 @@ namespace "build" do
 
         vsrclist = $builddir + "/../bin/vsrc_build.files"
 
+        mkdir_p $builddir + "/../bin" unless File.exists? $builddir + "/../bin"
+
         vsrcdir = $tmpdir + "/vsrc"
         mkdir_p vsrcdir
         cp_r $builddir + "/../rhodes/platform/common/.", vsrcdir
