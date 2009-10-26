@@ -13,8 +13,12 @@ def set_app_name_android(newname)
   File.open(fname,"w") { |f| f.write(buf) }
 
   fname = Jake.get_absolute $androidpath + "/Rhodes/src/com/rhomobile/rhodes/AndroidR.java"
-  buf = File.new(fname,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"import com.rhomobile.#{lowname}.R;")
+  buf = File.new(fname,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
   File.open(fname,"w") { |f| f.write(buf) }
+end
+
+def generate_rjava
+  Rake::Task["build:android:rjava"].execute
 end
 
 namespace "config" do
@@ -88,16 +92,19 @@ namespace "build" do
       androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
 
       mkdir_p $tmpdir
-      cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
-      cp $app_path + "/icon/icon.png", resource + "/drawable"
-      set_app_name_android($appname)
+      iconbakname = $tmpdir + "/icon.png.bak"
+      iconappname = $app_path + "/icon/icon.png"
+      cp resource + "/drawable/icon.png",iconbakname
+      cp iconappname, resource + "/drawable" if File.exists?(iconappname)
 
       args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
       puts Jake.run($aapt,args)
 
-      mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
+      exitstatus = $?
 
-      unless $? == 0
+      mv iconbakname,resource + "/drawable/icon.png" if File.exists?(iconbakname)
+
+      unless exitstatus == 0
         puts "Error in AAPT"
         exit 1
       end
@@ -109,8 +116,6 @@ namespace "build" do
 
       cp_r $srcdir + "/apps", Jake.get_absolute($config["build"]["androidpath"]) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
-
-      Rake::Task["build:android:rjava"].execute
     end
 
 #    desc "Build RubyVM for android"
@@ -156,6 +161,9 @@ namespace "build" do
       rm_rf $tmpdir + "/Rhodes"
       mkdir_p $tmpdir + "/Rhodes"
 
+      set_app_name_android($appname)
+      generate_rjava
+
       args = []
       args << "-g"
       args << "-d"
@@ -170,6 +178,8 @@ namespace "build" do
       args << "@#{$builddir}/RhodesGEN_build.files"
       puts Jake.run(javac,args)
       unless $? == 0
+        set_app_name_android("Rhodes")
+        generate_rjava
         puts "Error compiling java code"
         exit 1
       end
@@ -188,12 +198,14 @@ namespace "build" do
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
       unless $? == 0
+        set_app_name_android("Rhodes")
+        generate_rjava
         puts "Error compiling java code"
         exit 1
       end
 
-
-
+      set_app_name_android("Rhodes")
+      generate_rjava
 
       args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
       puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/Rhodes/")
@@ -232,14 +244,17 @@ namespace "package" do
 
     puts "Packaging Assets and Jars"
 
-    cp resource + "/drawable/icon.png",$tmpdir + "/icon.png.bak"
-    cp $app_path + "/icon/icon.png", resource + "/drawable"
+    iconbakname = $tmpdir + "/icon.png.bak"
+    iconappname = $app_path + "/icon/icon.png"
+    cp resource + "/drawable/icon.png",iconbakname
+    cp iconappname, resource + "/drawable" if File.exists?(iconappname)
     set_app_name_android($appname)
 
     puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
     returnval = $?
 
-    mv $tmpdir + "/icon.png.bak",resource + "/drawable/icon.png"
+    set_app_name_android("Rhodes")
+    mv iconbakname,resource + "/drawable/icon.png" if File.exists?(iconbakname)
 
     unless returnval == 0
       puts "Error running AAPT"
