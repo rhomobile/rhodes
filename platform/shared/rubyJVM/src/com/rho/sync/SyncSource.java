@@ -72,6 +72,7 @@ class SyncSource
     String m_strParams = "";
     String m_strAction = "";
     boolean m_bSearchSyncChanges = false;
+    int     m_nProgressStep = -1;
     
 	String m_strPushBody = "";
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
@@ -101,6 +102,8 @@ class SyncSource
     void setTotalCount(int nTotalCount){m_nTotalCount = nTotalCount;}
     int  getCurPageCount(){return m_nCurPageCount;}
     int  getTotalCount(){return m_nTotalCount;}
+    int  getProgressStep(){ return m_nProgressStep; }
+
     void setSyncServerDataPass(int ePass){m_eSyncServerDataPass = ePass;}
     //boolean isCreateObjectsPass(){ return m_eSyncServerDataPass == edpCreateObjects; }
     boolean isDeleteObjectsPass(){ return m_eSyncServerDataPass == edpDeleteObjects; }
@@ -649,7 +652,12 @@ class SyncSource
 	            }
 		        
 		        if ( !isDeleteObjectsPass() && nSrcID.intValue() >=0 )
-		        	getNotify().incLastSyncObjectCount(nSrcID);
+		        {
+	                int nSyncObjectCount  = getNotify().incLastSyncObjectCount(nSrcID);
+
+	                if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+	                    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+		        }
 		        
 		        m_bGetAtLeastOnePage = true;
 	        }
