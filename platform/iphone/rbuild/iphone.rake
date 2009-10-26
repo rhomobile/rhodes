@@ -183,3 +183,11 @@ namespace "clean" do
     task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle"]
   end
 end
+
+namespace "device" do
+  namespace "iphone" do
+    desc "Builds and signs iphone for production"
+    task :production => ["config:iphone", "build:iphone:rhodes"]
+  end
+
+end
