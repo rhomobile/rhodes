@@ -16,6 +16,7 @@ chmod_R 0777, File.dirname(__FILE__) + "/.."
       f.write '#!/bin/sh'
       f.chmod f.stat.mode | 0111
     end
-    File.open('rhodes_postinstallhack' + '.so', 'w') {}
-    File.open('rhodes_postinstallhack' + '.dll', 'w') {}
-    File.open('nmake.bat', 'w') { |f| }
+    File.open('rhodes_postinstallhack' + '.so', 'w') { |f| f.chmod 0777}
+    File.open('rhodes_postinstallhack' + '.dll', 'w') { |f| f.chmod 0777}
+    File.open('nmake.bat', 'w') { |f| f.write "ECHO \"Done\""
+		f.chmod 0777}
