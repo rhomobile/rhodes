@@ -3,16 +3,17 @@ def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
 
-  fname = Jake.get_absolute $androidpath + "/Rhodes/res/values/strings.xml"
+  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "res", "values", "strings.xml")
   buf = File.new(fname,"r").read.gsub(/"app_name">.*<\/string>/,"\"app_name\">#{newname}</string>")
   File.open(fname,"w") { |f| f.write(buf) }
 
-  lowname = newname.downcase
-  fname = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
+  lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
+
+  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "AndroidManifest.xml")
   buf = File.new(fname,"r").read.gsub(/package=".*"/,"package=\"com.rhomobile.#{lowname}\"")
   File.open(fname,"w") { |f| f.write(buf) }
 
-  fname = Jake.get_absolute $androidpath + "/Rhodes/src/com/rhomobile/rhodes/AndroidR.java"
+  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java")
   buf = File.new(fname,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
   File.open(fname,"w") { |f| f.write(buf) }
 end
@@ -29,39 +30,37 @@ namespace "config" do
     $androidsdkpath = $config["env"]["paths"]["android"]
     $androidplatform = "android-1.5"
     $avdname = "rhoAndroid15"
-    $androidpath = File.join( "platform", "android" )
-    $bindir = $app_path + "/bin"
-    $builddir = $config["build"]["androidpath"] + "/build"
-    $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = $app_path + "/target"
+    $androidpath = Jake.get_absolute $config["build"]["androidpath"]
+    $bindir = File.join($app_path, "bin")
+    $builddir = File.join($androidpath, "build")
+    $srcdir = File.join($bindir, "RhoBundle")
+    $targetdir = File.join($app_path, "target")
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
-    $tmpdir =  $bindir +"/tmp"
-    $resourcedir = $tmpdir + "/resource"
+    $tmpdir = File.join($bindir, "tmp")
+    $resourcedir = File.join($tmpdir, "resource")
     $excludeapps = "public/js/iui/**,**/jquery*"
-    $libs = $androidpath + "/Rhodes/libs"
+    $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx.bat" )
-      $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt.exe" )
-      $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder.bat" )
-      $androidbin = File.join( $androidsdkpath, "tools", "android.bat" )
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
-      $adb = File.join( $androidsdkpath, "tools", "adb.exe" )
+      $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
     else
       #XXX make these absolute
-      $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" )
-      $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" )
-      $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" )
-      $androidbin = File.join( $androidsdkpath, "tools", "android" )
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
-      $adb = File.join( $androidsdkpath, "tools", "adb" )
+      $bat_ext = ""
       $exe_ext = ""
       $path_separator = ":"
     end
+
+    $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
+    $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
+    $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" + $bat_ext )
+    $androidbin = File.join( $androidsdkpath, "tools", "android" + $bat_ext )
+    $adb = File.join( $androidsdkpath, "tools", "adb" + $exe_ext )
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
@@ -85,11 +84,11 @@ namespace "build" do
  #   desc "Generate R.java file"
     task :rjava => "config:android" do
 
-      manifest = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/AndroidManifest.xml"
-      resource = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/res"
-      assets = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/assets"
-      rjava = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/gen/com/rhomobile/rhodes"
-      androidjar = $androidsdkpath + "/platforms/" + $androidplatform + "/android.jar"
+      manifest = File.join($androidpath, "Rhodes", "AndroidManifest.xml")
+      resource = Jake.get_absolute File.join($androidpath, "Rhodes", "res")
+      assets = Jake.get_absolute File.join($androidpath, "Rhodes", "assets")
+      rjava = Jake.get_absolute File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes")
+      androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
 
       mkdir_p $tmpdir
       iconbakname = $tmpdir + "/icon.png.bak"
@@ -114,7 +113,7 @@ namespace "build" do
     task :rhobundle => "config:android" do
       Rake::Task["build:bundle:xruby"].execute
 
-      cp_r $srcdir + "/apps", Jake.get_absolute($config["build"]["androidpath"]) + "/Rhodes/assets"
+      cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
     end
 
@@ -236,9 +235,9 @@ namespace "package" do
       exit 1
     end
 
-    manifest = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/AndroidManifest.xml"
-    resource = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/res"
-    assets = Jake.get_absolute $config["build"]["androidpath"] + "/Rhodes/assets"
+    manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
+    resource = Jake.get_absolute $androidpath + "/Rhodes/res"
+    assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
     androidjar = "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar"
     resourcepkg =  $bindir + "/rhodes.ap_"
 
