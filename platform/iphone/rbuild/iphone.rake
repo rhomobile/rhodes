@@ -39,7 +39,7 @@ end
 
 
 namespace "config" do
-  task :iphone => ["config:common"] do
+  task :iphone => ["config:common", "switch_app"] do
     $config["platform"] = "iphone"
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
@@ -57,7 +57,9 @@ namespace "config" do
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
-
+    unless File.exists? $homedir + "/.profile"
+      File.open($homedir + "/.profile") {|f| f << "#" }
+    end
   end
 end
 
