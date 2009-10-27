@@ -23,170 +23,6 @@ require 'rho'
 require 'rho/rhosupport'
 
 module Rhom
-  #class RhomAttribManager
-  #  @@attribs_map = Hash.new
-  #  @@mxMap = Mutex.new
-  #      
-  #  def RhomAttribManager.reset_all
-  #      @@mxMap.lock
-  #      begin
-  #          @@attribs_map = Hash.new
-  #          ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>""})
-  #          
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #  end
-  #  
-  #  def RhomAttribManager.get_attribs(srcid_a)
-  #      @@mxMap.lock
-  #      begin
-  #        #puts '@@attribs_map' + @@attribs_map.to_s
-  #        srcid = srcid_a.to_i          
-  #        attribs = @@attribs_map[srcid]
-  #        return attribs.keys if attribs
-          
-  #        []
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #        
-  #  end
-  #
-  #  def RhomAttribManager._add_attrib(srcid,attr_a)
-  #      attr = attr_a.to_s
-  #      unless ::Rhom::RhomObject.method_name_reserved?(attr)
-  #          if @@attribs_map[srcid][attr]
-  #              @@attribs_map[srcid][attr] += 1
-  #          else
-  #              @@attribs_map[srcid][attr] = 1
-  #          end
-  #      end    
-  #  end
-  #
-  #  def RhomAttribManager.add_attrib(srcid_a,attr)
-  #      @@mxMap.lock
-  #      begin
-  #          #puts 'RhomAttribManager.add_attrib: ' + srcid_a.to_s + "; " + attr.to_s
-        
-  #          srcid = srcid_a.to_i
-  #          @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
-  #          _add_attrib(srcid,attr)
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #  end
-  #
-  #  def RhomAttribManager.add_attribs(srcid_a,attr_arr)
-  #      @@mxMap.lock
-  #      begin
-  #          srcid = srcid_a.to_i
-  #          @@attribs_map[srcid] = {} unless @@attribs_map[srcid]
-  #
-  #          attr_arr.each do |attr|
-  #              _add_attrib(srcid,attr)
-  #          end
-  #          
-  #          _save(srcid)    
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #  end
-  #
-  #  def RhomAttribManager.delete_attrib(srcid,attr)
-  #      if @@attribs_map[srcid][attr]
-  #          @@attribs_map[srcid][attr] -= 1
-  #          if @@attribs_map[srcid][attr] == 0
-  #              @@attribs_map[srcid].delete attr    
-  #          end
-  #      end
-  #  end
-  #  
-  #  def RhomAttribManager.delete_attribs(srcid_a,cond)
-  #      @@mxMap.lock
-  #      begin
-  #          #puts 'RhomAttribManager.delete_attribs: ' + srcid_a.to_s + '; ' + cond.to_s
-  #          
-  #          srcid = srcid_a.to_i
-  #          return unless @@attribs_map[srcid]
-  #          
-  #          isSave = true
-  #          if cond && !cond.is_a?(Hash)
-  #              cond = {'id' => cond}
-  #              isSave = false
-  #          end
-  #
-  #         #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s            
-  #          
-  #          if !cond
-  #              @@attribs_map[srcid] = {}
-  #          else
-  #              attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib',cond)
-  #              attribs.each do |attrib|
-  #                  attr = attrib['attrib']
-  #                  delete_attrib(srcid,attr)
-  #              end
-  #          end
-  #
-  #          #puts 'RhomAttribManager.delete_attribs: ' + @@attribs_map[srcid].to_s
-  #          _save(srcid) if isSave
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #  end
-  #
-  #  def RhomAttribManager._save(srcid)
-  #      #puts 'RhomAttribManager._save: ' + srcid.to_s
-  #      attribs = @@attribs_map[srcid]
-  #      return unless attribs
-  #      
-  #      strAttribs = ""
-  #      attribs.each do |attr,counter|
-  #          strAttribs += ',' if strAttribs.length > 0
-  #          strAttribs += attr + ',' + counter.to_s
-  #      end
-  #      
-  #      #puts 'RhomAttribManager._save : ' + srcid.to_s + '; ' + strAttribs
-  #      ::Rhom::RhomDbAdapter::update_into_table('sources', {"source_attribs"=>strAttribs},
-  #                                         {"source_id"=>srcid})
-  #  end
-  #
-  #  def RhomAttribManager.save(srcid_a)
-  #      @@mxMap.lock
-  #      begin
-  #          #puts 'RhomAttribManager.save: ' + srcid_a.to_s
-  #          srcid = srcid_a.to_i
-  #          _save(srcid)
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #  end
-  #  
-  #  def RhomAttribManager.load(srcid_a,strAttribs)
-  #      @@mxMap.lock
-  #      begin
-  #          return unless strAttribs
-  #          
-  #          puts 'RhomAttribManager.load: ' + srcid_a.to_s + "; " + strAttribs
-            
-  #          srcid = srcid_a.to_i
-  #          arr = strAttribs.split(',')
-  #          attribs = {}
-  #          i = 0
-  #          while i < arr.size
-  #              attribs[arr[i]] = arr[i+1].to_i
-  #              i += 2
-  #          end
-  #
-  #          puts 'RhomAttribManager.load: ' + attribs.to_s
-  #          @@attribs_map[srcid] = attribs
-  #      ensure    
-  #          @@mxMap.unlock
-  #      end     
-  #      
-  #  end
-  #  
-  #end
   
   class RhomObjectFactory
     
@@ -225,7 +61,7 @@ module Rhom
                 
                 if obj
                   obj.each do |key,value|
-                    self.vars[key.to_sym()] = value
+                    self.vars[key.to_sym()] = value if key && key.length > 0
                   end
                 end
               end
@@ -275,7 +111,7 @@ module Rhom
                     sql
                 end
                 
-                def find_bycondhash(args)                
+                def find_bycondhash(args, &block)                
                     puts 'find_bycondhash start'
                     
                     condition_hash = {}
@@ -290,20 +126,20 @@ module Rhom
                     if args[1]
                         condition_hash = args[1][:conditions] if args[1][:conditions]
                         
-                        if args[1][:per_page] and args[1][:offset]
+                        if args[1][:per_page] #and args[1][:offset]
                           limit = args[1][:per_page].to_i
-                          offset = args[1][:offset].to_i
+                          offset = args[1][:offset] ? args[1][:offset].to_i : 0
                         end
                         select_arr = args[1][:select] if args[1][:select]
                         order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
                         order_attr = args[1][:order]
                         
-                        if args.first == :first
-                            limit = 1                    
-                            offset = 0 unless offset
-                        end
-                        
                         op = args[1][:op].upcase if args[1][:op]
+                    end
+                    
+                    if args.first == :first
+                        limit = 1                    
+                        offset = 0 unless offset
                     end
                     
                     if select_arr
@@ -314,7 +150,6 @@ module Rhom
                         attribs = attribs | order_attr_arr
                       end  
                     else
-                      #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
                       attribs = SyncEngine.get_src_attrs(nSrcID)
                     end
                     
@@ -330,8 +165,10 @@ module Rhom
                     
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     strLimit = nil
-                    strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
-
+                    if !order_attr 
+                        strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
+                    end
+                    
                     ::Rhom::RhomDbAdapter.start_transaction
                     begin
                         puts "non-null select start"
@@ -351,7 +188,7 @@ module Rhom
                                     mapObjs[ rec['object'] ] = 1
                                     listObjs << rec
                                     
-                                    bStop = limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
+                                    bStop = !order_attr && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
                                     break if bStop
                                 end
                                 
@@ -453,11 +290,11 @@ module Rhom
                     ::Rhom::RhomDbAdapter.commit
                   end
                   
-                  if order_attr 
+                  if order_attr
                     ret_list.sort! { |x,y| 
                        vx = x.vars[order_attr.to_sym()]
                        vy = y.vars[order_attr.to_sym()]
-                       res = vx && vy ? vx <=> vy : 0
+                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
                        res *= -1 if order_dir && order_dir == 'DESC'
                        res
                     }
@@ -480,23 +317,28 @@ module Rhom
                 
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
-                def find(*args)
+                def find(*args, &block)
                   raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0
                   puts "Inside find: args - #{args.inspect}"
                   ret_list = []
                   conditions = {}
                   where_cond = nil
+                  limit = nil
+                  offset = nil
+                  
                   # first find all query objects
                   if args.first == :all || args.first == :first || args.first == :count
                   
                     #!args[1] || !args[1][:conditions] || 
                     if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
-                        return find_bycondhash(args)
+                        return find_bycondhash(args,&block)
                     end
                   
                     where_cond = {"source_id"=>get_source_id}
                   elsif args.first.is_a?(String)
                     where_cond = {"object"=>strip_braces(args.first.to_s),"source_id"=>get_source_id}
+                    limit = 1                    
+                    offset = 0
                   end
 
                   if args.first == :count && !args[1]
@@ -508,8 +350,6 @@ module Rhom
                   condition_hash = nil
                   select_arr = nil
                   condition_str = nil
-                  limit = nil
-                  offset = nil
                   order_dir=""
                   nSrcID = get_source_id.to_i
                   if args[1]
@@ -525,11 +365,23 @@ module Rhom
                       end
                     end
                     if args[1][:per_page] #and args[1][:offset]
-                      limit = args[1][:per_page].to_s
-                      offset = args[1][:offset] ? args[1][:offset].to_s : '0'
+                      limit = args[1][:per_page].to_i
+                      offset = args[1][:offset] ? args[1][:offset].to_i : 0
                     end
+                    
                     select_arr = args[1][:select] if args[1][:select]
                     order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
+                    order_attr = args[1][:order]
+                  end
+                  
+                  if args.first == :first
+                    limit = 1                    
+                    offset = 0 unless offset
+                  end
+                  
+                  strLimit = nil
+                  if !(block_given? && order_attr)
+                      strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset
                   end
                   
                   # return horizontal resultset from database
@@ -541,7 +393,6 @@ module Rhom
                     attribs = select_arr
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
-                    #attribs = ::Rhom::RhomAttribManager.get_attribs(get_source_id)
                     attribs = SyncEngine.get_src_attrs(nSrcID)
                   end
                     
@@ -560,10 +411,10 @@ module Rhom
                     sql << " FROM object_values ov \n"
                     sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
                     sql << "group by object\n"
-                    sql << "order by \"#{args[1][:order]}\" " + order_dir if args[1] and args[1][:order]
+                    sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                     sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                     sql << ") WHERE " + condition_str if condition_str
-                    sql << " LIMIT " + limit + " OFFSET " + offset if limit and offset
+                    sql << strLimit if strLimit
 
                     puts "Database query start"
                     list = ::Rhom::RhomDbAdapter.execute_sql(sql)
@@ -587,6 +438,20 @@ module Rhom
                         puts "Processing rhom objects end, #{ret_list.length} objects"
                     end
                                         
+                  end
+                 
+                  if block_given? && order_attr
+                    ret_list.sort! { |x,y| 
+                       vx = x.vars[order_attr.to_sym()]
+                       vy = y.vars[order_attr.to_sym()]
+                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+                       res *= -1 if order_dir && order_dir == 'DESC'
+                       res
+                    }
+                  end
+                  
+                  if order_attr && limit
+                    ret_list = ret_list.slice(offset,limit)
                   end
                   
                   return list.length if args.first == :count
@@ -647,16 +512,11 @@ module Rhom
                           if result && result.length > 0 
                             ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id, "update_type"=>'ask', "sent"=>0 })
                             ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>result[0]['object'], "attrib"=>'question', "source_id"=>get_source_id} )
-                          else
-                            #::Rhom::RhomAttribManager.add_attribs(get_source_id,['question'])  
                           end
                           
                           ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'} )
                           ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question)} )
                           
-                          #::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id, "update_type"=>'ask'})
-                          #::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'})
-
                           ::Rhom::RhomDbAdapter.commit
                           
                       rescue Exception => e
@@ -670,7 +530,6 @@ module Rhom
                 
                 # deletes all records matching conditions (optionally nil)
                 def delete_all(conditions=nil)
-                  #update_type= get_update_type_by_source('delete')
                 
                   begin
                       ::Rhom::RhomDbAdapter.start_transaction
@@ -680,14 +539,10 @@ module Rhom
                         # find all relevant objects, then delete them
                         del_objects = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
                         del_objects.each do |obj|                                                       
-                          #::Rhom::RhomAttribManager.delete_attribs(get_source_id,{'object'=>obj['object']})
                           ::Rhom::RhomDbAdapter.delete_from_table('object_values', {'object'=>obj['object']})
                           ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {'object'=>obj['object']})
-                          #TODO: add delete update_type : get_update_type_by_source is instance method, cannot use it
-                          #::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>get_source_id, 'object'=>obj['object'], "update_type"=>update_type})
                         end
                       else
-                        #::Rhom::RhomAttribManager.delete_attribs(get_source_id,nil)
                         ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id})
                         ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id})
                         #TODO: add delete all update_type
@@ -703,24 +558,6 @@ module Rhom
                     
                 private
                 
-                # returns attributes for the source
-                #@@attribs_map = Hash.new
-                #def get_attribs
-                 # srcid = get_source_id
-                  #attribs = @@attribs_map[srcid]
-                  #if attribs
-                  #  return attribs
-                  #end
-                  
-                  #attribs = ::Rhom::RhomDbAdapter.select_from_table('object_values','attrib', {"source_id"=>srcid}, {"distinct"=>true})
-                  #attribs.collect! do |attrib|
-                  #  attrib['attrib']
-                  #end
-                  
-                  #@@attribs_map[srcid] = attribs
-                  #attribs
-                #end
-                
                 # get hash of conditions in sql form
                 def get_conditions_hash(conditions=nil)
                   if conditions
@@ -734,13 +571,6 @@ module Rhom
                   end
                 end
               end #class methods
-	
-	         # def can_modify
-             #   obj = self.inst_strip_braces(self.object)
-             #   nSrcID = self.get_inst_source_id
-             #   result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE object=? AND source_id=? AND sent!=? LIMIT 1 OFFSET 0",obj,nSrcID,0)
-	         #   !result || result.length == 0
-	         # end
 	            
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
@@ -753,8 +583,6 @@ module Rhom
                       ::Rhom::RhomDbAdapter.start_transaction
                 
                       # first delete the record from viewable list
-                      #::Rhom::RhomAttribManager.delete_attribs(self.get_inst_source_id,{"object"=>obj})
-                      
                       result = ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>obj})
                       
                       resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
@@ -841,7 +669,6 @@ module Rhom
                         end
                         
                     end
-                    #::Rhom::RhomAttribManager.add_attribs(self.get_inst_source_id,self.vars.keys)
                     ::Rhom::RhomDbAdapter.commit
 
                 rescue Exception => e
@@ -904,7 +731,6 @@ module Rhom
                       end
                     end
                     
-                    #::Rhom::RhomAttribManager.save(self.get_inst_source_id)
                     ::Rhom::RhomDbAdapter.commit
 
                 rescue Exception => e

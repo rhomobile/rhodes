@@ -4,3 +4,8 @@ version: 1.2.2
 vendor: rhomobile
 bbver: 4.6
 applog: rholog.txt
+iphone:
+  configuration: Debug
+  sdk: iphonesimulator3.0
+  codesignidentity:
+  entitlements: 

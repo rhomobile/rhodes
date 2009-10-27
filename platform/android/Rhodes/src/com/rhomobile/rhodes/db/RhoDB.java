@@ -6,8 +6,10 @@ import com.rho.db.DBException;
 import com.rho.db.IDBResult;
 import com.rhomobile.rhodes.AndroidR;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
@@ -159,11 +161,13 @@ public class RhoDB extends SQLiteOpenHelper {
 			db.endTransaction();
 		}
 	}
+	
+	public IDBResult executeSQL(String strStatement, Object[] values) throws DBException {
+		return executeSQL(strStatement, values, false);
+	}
 
-	public IDBResult executeSQL(String strStatement, Object[] values)
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
 			throws DBException {
-
-		SqliteDBResult result = new SqliteDBResult();
 
 		if (db == null)
 			throw new DBException(new SQLException(
@@ -178,9 +182,27 @@ public class RhoDB extends SQLiteOpenHelper {
 			}
 		}
 
-		result.copy(db.rawQuery(strStatement, params));
-
-		return result;
+		Cursor cursor = null;
+		try {
+			cursor = db.rawQuery(strStatement, params);
+			SqliteDBResult result = new SqliteDBResult();
+			result.copy(cursor);
+			return result;
+		}
+		catch (SQLiteConstraintException e) {
+			if (bReportNonUnique)
+				return new SqliteDBResult(true);
+			Log.e(LOG_TAG, "SQL error", e);
+			return null;
+		}
+		catch (Exception e) {
+			Log.e(LOG_TAG, "SQL error", e);
+			return null;
+		}
+		finally {
+			if (cursor != null)
+				cursor.close();
+		}
 	}
 
 	public void bindParams(String[] params, int i, Object value) {
