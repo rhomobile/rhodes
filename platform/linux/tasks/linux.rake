@@ -21,7 +21,7 @@ namespace "build" do
 
       current = pwd
       chdir $srcdir
-      puts `zip rhobundle.zip -r *`
+      puts `zip rhobundle.zip -r apps lib`
       chdir current
     end
   end
