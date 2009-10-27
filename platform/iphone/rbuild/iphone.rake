@@ -39,7 +39,7 @@ end
 
 
 namespace "config" do
-  task :iphone => ["config:common"] do
+  task :iphone => ["config:common", "switch_app"] do
     $config["platform"] = "iphone"
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
@@ -57,7 +57,21 @@ namespace "config" do
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
+    if $app_config["iphone"].nil?
+      $signidentity = $config["env"]["iphone"]["codesignidentity"]
+      $entitlements = $config["env"]["iphone"]["entitlements"]
+      $configuration = $config["env"]["iphone"]["configuration"]
+      $sdk = $config["env"]["iphone"]["sdk"]
+    else
+      $signidentity = $app_config["iphone"]["codesignidentity"]
+      $entitlements = $app_config["iphone"]["entitlements"]
+      $configuration = $app_config["iphone"]["configuration"]
+      $sdk = $app_config["iphone"]["sdk"]
+    end
 
+    unless File.exists? $homedir + "/.profile"
+      File.open($homedir + "/.profile") {|f| f << "#" }
+    end
   end
 end
 
@@ -82,10 +96,10 @@ namespace "build" do
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
       cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
 
-      set_signing_identity($config["env"]["iphone"]["codesignidentity"],$config["env"]["iphone"]["entitlements"].to_s) if $config["env"]["iphone"]["codesignidentity"].to_s != ""
+      set_signing_identity($signidentity,$entitlements.to_s) if $signidentity.to_s != ""
 
       chdir $config["build"]["iphonepath"]
-      args = ['build', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
+      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
 
       puts Jake.run("xcodebuild",args)
       unless $? == 0
@@ -103,13 +117,13 @@ namespace "run" do
   desc "Builds everything, launches iphone simulator"
   task :iphone => ["config:iphone", "build:iphone:rhodes"] do
     
-     unless $config["env"]["iphone"]["sdk"] =~ /^iphonesimulator/
-       puts "SDK must be one of the iphonesimulator sdks"
+     unless $sdk =~ /^iphonesimulator/
+       puts "SDK must be one of the iphonesimulator sdks to run in the iphone simulator"
        exit 1       
      end
      `killall "iPhone Simulator"`
      
-     rhorunner = $config["build"]["iphonepath"] + "/build/#{$config["env"]["iphone"]["configuration"]}-iphonesimulator/rhorunner.app"
+     rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
 
      Find.find($simapp) do |path| 
        if File.basename(path) == "rhorunner.app"
@@ -133,6 +147,7 @@ namespace "run" do
      f << "(version 1)\n(debug deny)\n(allow default)\n"
      f.close
      
+     
      system("open \"#{$sim}/iPhone Simulator.app\"")
   end
 end
@@ -145,7 +160,7 @@ namespace "clean" do
     task :rhodes => ["config:iphone"] do 
       chdir $config["build"]["iphonepath"]
     
-      args = ['clean', '-target', 'rhorunner', '-configuration', $config["env"]["iphone"]["configuration"], '-sdk', $config["env"]["iphone"]["sdk"]]
+      args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
       puts Jake.run("xcodebuild",args)
       unless $? == 0
         puts "Error cleaning"
@@ -167,4 +182,12 @@ namespace "clean" do
 
     task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle"]
   end
+end
+
+namespace "device" do
+  namespace "iphone" do
+    desc "Builds and signs iphone for production"
+    task :production => ["config:iphone", "build:iphone:rhodes"]
+  end
+
 end

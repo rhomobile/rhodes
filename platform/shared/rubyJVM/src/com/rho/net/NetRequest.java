@@ -143,13 +143,7 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		if ( URI.isLocalHost(strUrl) )
-		{
-			boolean bRes = RhoClassFactory.getNetworkAccess().doLocalRequest(strUrl, strBody);
-			return new NetResponse("", bRes ? IHttpConnection.HTTP_OK : IHttpConnection.HTTP_INTERNAL_ERROR);
-		}
-		
-		return doRequestTry(strUrl, strBody, oSession, true);
+		return doRequest(strUrl, strBody, oSession, true);
     }
 	
 	static class ParsedCookie {

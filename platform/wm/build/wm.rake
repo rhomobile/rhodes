@@ -3,10 +3,11 @@ namespace "config" do
     $config["platform"] = "wm"
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     wmpath = $config["build"]["wmpath"]
-    $builddir = wmpath + "/build"
+    wmpath = $app_path
+    $builddir = $config["build"]["wmpath"] + "/build"
     $bindir = wmpath + "/bin"
-    $srcdir =  wmpath + "/bin/RhoBundle"
-    $targetdir = wmpath + "/target/wm6p"
+    $srcdir =  Jake.get_absolute($config["build"]["wmpath"] + "/bin/RhoBundle")
+    $targetdir = $bindir + "/target/wm6p"
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = "vcbuild"
@@ -30,6 +31,17 @@ namespace "build" do
         exit 1
       end
       chdir $startdir
+    end
+  end
+  
+  namespace "win32" do
+    task :devrhobundle => ["wm:rhobundle"] do
+        win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+        rm_rf win32rhopath + 'lib'      
+        rm_rf win32rhopath + 'apps'
+        
+        cp_r $srcdir + '/lib', win32rhopath
+        cp_r $srcdir + '/apps', win32rhopath      
     end
   end
 end
@@ -62,12 +74,10 @@ namespace "device" do
         exit 1
       end    
 
-      bindir = $startdir + "/" + $bindir
-      targetdir = $startdir + "/" + $targetdir
-      mkdir_p bindir if not File.exists? bindir
-      mkdir_p targetdir if not File.exists? targetdir
-      mv "rhodes.inf", bindir
-      mv "rhodes.cab", targetdir
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      mv "rhodes.inf", $targetdir
+      mv "rhodes.cab", $targetdir
 
       rm_f "cleanup.js"
 

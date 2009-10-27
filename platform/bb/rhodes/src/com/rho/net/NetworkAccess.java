@@ -6,6 +6,7 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 import rhomobile.RhodesApplication;
+import rhomobile.Utilities;
 
 import net.rim.device.api.servicebook.ServiceBook;
 import net.rim.device.api.servicebook.ServiceRecord;
@@ -16,6 +17,8 @@ import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.bb.BBHttpConnection;
+import com.rho.net.bb.NativeBBHttpConnection;
+
 import net.rim.device.api.io.http.HttpHeaders;
 
 public class NetworkAccess implements INetworkAccess {
@@ -114,15 +117,18 @@ public class NetworkAccess implements INetworkAccess {
 		LOG.INFO("Postfix: " + URLsuffix);
 	}
 
-	public boolean doLocalRequest(String strUrl, String strBody)
+	/*public IHttpConnection doLocalRequest(String strUrl, String strBody)
 	{
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		RhodesApplication.getInstance().postUrl(strUrl, strBody, headers);
 		
-		return true;
-	}
+		HttpConnection http = Utilities.makeConnection(strUrl, headers, strBody.getBytes());
+		
+//		RhodesApplication.getInstance().postUrl(strUrl, strBody, headers);
+		
+		return new BBHttpConnection(http);
+	}*/
 	
 	public boolean isWifiActive()
 	{
@@ -133,6 +139,12 @@ public class NetworkAccess implements INetworkAccess {
 	{
 		HttpConnection http = null;
 
+		if ( URI.isLocalHost(url) )
+		{
+			URI uri = new URI(url);
+			return new RhoConnection(uri);
+		}
+		
 		int fragment = url.indexOf('#');
 		if (-1 != fragment) {
 			url = url.substring(0, fragment);
@@ -179,6 +191,9 @@ public class NetworkAccess implements INetworkAccess {
 					http = null;
 					throw ioe;
 				}
+			}catch(Exception exc)
+			{
+				throw new IOException("Could not open network connection.");
 			}
 		}
 		

@@ -1,11 +1,8 @@
 package com.rho.db;
 
-import j2me.io.FileNotFoundException;
-
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
-import com.rho.sync.SyncThread;
 
 public class DBAdapter extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -723,9 +720,12 @@ public class DBAdapter extends RubyBasic {
 			
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
-				m_db.getAttrMgr().remove(rows2Delete.getIntByIdx(1), rows2Delete.getStringByIdx(2));
+				int nSrcID = rows2Delete.getIntByIdx(1);
+				String attrib = rows2Delete.getStringByIdx(2);
+				m_db.getAttrMgr().remove(nSrcID, attrib);
 				
-				if ( !rows2Delete.getStringByIdx(5).equals("blob.file") )
+				String attrib_type = rows2Delete.getStringByIdx(5);
+				if ( !attrib_type.equals("blob.file") )
 					continue;
 
 				String url = rows2Delete.getStringByIdx(4);

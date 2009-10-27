@@ -12,12 +12,6 @@ env:
       jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0 
       mds: C:/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS
       sim: 8100
-  iphone:
-    configuration: Debug
-    sdk: iphonesimulator3.0
-    codesignidentity: 
-    entitlements:
-
 build:
   bbpath: platform/bb
   wmpath: platform/wm
@@ -26,7 +20,6 @@ build:
   symbianpath: platform/symbian
   bb:
   bbsignpwd: "somepasswordhere"
-
 excludedirs:
   bb:
     - public/js/iui

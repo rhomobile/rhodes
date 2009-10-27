@@ -109,11 +109,13 @@ public class SyncThread extends RhoThread
     {
 	    String m_strFrom;
 	    boolean   m_bSyncChanges;
-        public SyncSearchCommand(String from, String params, int source_id, boolean sync_changes)
+	    int     m_nProgressStep;
+        public SyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep)
 	    {
         	super(scSearchOne,params,source_id);
 		    m_strFrom = from;
 		    m_bSyncChanges = sync_changes;
+		    m_nProgressStep = nProgressStep;
 	    }
     };
    	
@@ -285,11 +287,12 @@ public class SyncThread extends RhoThread
 	    case scChangePollInterval:
 	        break;
 	    case scSyncOne:
-	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","", false );
+	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","", false, -1 );
 	        break;
 	    case scSearchOne:
 	        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
-	            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges);
+	            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges,
+	            ((SyncSearchCommand)oSyncCmd).m_nProgressStep);
 	        break;
 	        
 	    case scLogin:
@@ -430,9 +433,9 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("dosearch_source",
 			new RubyVarArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-					if ( args.size() != 4 )
+					if ( args.size() != 5 )
 						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
+								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 5 + " )");			
 					
 					try{
 						int source_id = args.get(0).toInt();
@@ -440,10 +443,11 @@ public class SyncThread extends RhoThread
 						String params = args.get(2).toStr();
 						
 						String str = args.get(3).asString();
+						int nProgressStep = args.get(4).toInt();
 						boolean bSearchSyncChanges = args.get(3).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
 						stopSync();
 						
-						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id,bSearchSyncChanges) );
+						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id,bSearchSyncChanges, nProgressStep) );
 					}catch(Exception e)
 					{
 						LOG.ERROR("SyncEngine.login", e);
