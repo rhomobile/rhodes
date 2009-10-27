@@ -281,10 +281,10 @@ namespace "device" do
     end
     desc "Build production signed for device"
     task :production => "package:android" do
-      dexfile = Jake.get_absolute $bindir + "/classes.dex"
-      apkfile = Jake.get_absolute $targetdir + "/" + $appname + ".apk"
-      signedapkfile = Jake.get_absolute $targetdir + "/" + $appname + "_signed.apk"
-      resourcepkg = Jake.get_absolute $bindir + "/rhodes.ap_"
+      dexfile =  $bindir + "/classes.dex"
+      apkfile =  $targetdir + "/" + $appname + ".apk"
+      signedapkfile =  $targetdir + "/" + $appname + "_signed.apk"
+      resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
       puts `#{$apkbuilder} "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
