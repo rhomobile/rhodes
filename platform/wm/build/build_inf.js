@@ -3,7 +3,7 @@ var fso,output_file;
 //TBD need to move sources and settings to a separate config files
 
 var sources = new Object();
-sources['db'] = ["db","..\\..\\..\\rhodes\\rhodes-build\\res\\prebuilt\\common\\db"];
+sources['db'] = ["db","..\\..\\..\\res\\build-tools\\db"];
 //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
 sources['lib']= ["lib","..\\bin\\RhoBundle\\lib"];
 sources['apps']= ["apps","..\\bin\\RhoBundle\\apps"];
