@@ -17,15 +17,19 @@ public class SqliteDBResult implements IDBResult {
 	private boolean useLocalCursor = false;
 	private List< List<String> > localDataCopy = new ArrayList< List<String> >();
 	private List<String> cashedColumnsNames =  new ArrayList< String > ();
+	private boolean nonUnique = false;
 	
 	public SqliteDBResult() {
 		//lock.getWriteLock();
 	}
+	
+	public SqliteDBResult(boolean bNonUnique) {
+		nonUnique = bNonUnique;
+	}
 
     public boolean isNonUnique()
     {
-        //TODO: isNonUnique
-        return false;
+        return nonUnique;
     }
 
 	public void assign(Cursor cursor) {

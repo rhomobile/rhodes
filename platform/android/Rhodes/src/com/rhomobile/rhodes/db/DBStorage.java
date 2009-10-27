@@ -51,8 +51,7 @@ public class DBStorage implements IDBStorage {
     synchronized public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
 			throws DBException {
 		if (rhoDB != null && rhoDB.isOpen()) {
-            //TODO: support bReportNonUnique
-			IDBResult result = rhoDB.executeSQL(strStatement, values);
+            IDBResult result = executeSQLNoCallbacks(strStatement, values, bReportNonUnique);
 			
 			onInsertRecords(strStatement);
 			onDeleteRecords(strStatement);
@@ -61,6 +60,12 @@ public class DBStorage implements IDBStorage {
 		}
 		return null;
 	}
+    
+    synchronized private IDBResult executeSQLNoCallbacks(String strStatement, Object[] values,
+    		boolean bReportNonUnique) throws DBException
+    {
+    	return rhoDB.executeSQL(strStatement, values, bReportNonUnique);
+    }
 	
 	void onInsertRecords(String strStatement) {
 		IDBResult rows2Insert = null;
@@ -71,9 +76,9 @@ public class DBStorage implements IDBStorage {
 			if (!strStatement.toLowerCase().startsWith("insert "))
 				return;
 			
-			rows2Insert = executeSQL("SELECT id,source_id,name FROM object_attribs_to_load", null,false);
+			rows2Insert = executeSQLNoCallbacks("SELECT * FROM object_attribs_to_load", null, false);
 			this.callback.OnInsertIntoTable("object_values", rows2Insert);
-			executeSQL("DELETE FROM object_attribs_to_load", null,false);
+			executeSQLNoCallbacks("DELETE FROM object_attribs_to_load", null, false);
 		}
 		catch (Exception e) {
 			LOG.ERROR(e.getMessage());
@@ -84,15 +89,15 @@ public class DBStorage implements IDBStorage {
 		IDBResult rows2Delete = null;
 		try
 		{
-			if ( strStatement.toLowerCase().indexOf(" delete ") == -1 )
+			if (this.callback == null)
+				return;
+			
+			if (!strStatement.toLowerCase().startsWith("delete "))
 				return;
 		
-			if ( this.callback == null )
-				return;
-			
-			rows2Delete = executeSQL("SELECT attrib_type, update_type, value FROM object_values_to_delete", null,false);
-			
+			rows2Delete = executeSQLNoCallbacks("SELECT * FROM object_values_to_delete", null,false);
 			this.callback.OnDeleteFromTable("object_values", rows2Delete);
+			executeSQLNoCallbacks("DELETE FROM object_values_to_delete", null, false);
 		}
 		catch( Exception e ){
 			LOG.ERROR(e.getMessage());
