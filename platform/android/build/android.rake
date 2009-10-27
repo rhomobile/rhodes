@@ -34,7 +34,7 @@ namespace "config" do
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
     $srcdir = File.join($bindir, "RhoBundle")
-    $targetdir = File.join($app_path, "target")
+    $targetdir = File.join($bindir, "target")
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
