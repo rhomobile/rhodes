@@ -78,7 +78,7 @@ jde46 = prompt_for("BlackBerry JDE 4.6", jde46, false)
 
 jde46mds = ""
 jde46mds = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS") if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
-jde46mds = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS") if File.exists? "C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
+jde46mds = File.expand_path("C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS") if File.exists? "C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
 
 jde46mds = prompt_for("BlackBerry JDE 4.6 MDS", jde46mds, false)
 
