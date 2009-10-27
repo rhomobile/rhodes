@@ -19,8 +19,10 @@
 	Drop Table If Exists [object_values_to_delete];
 	CREATE TABLE 'object_values_to_delete' (
 	 'id' INTEGER PRIMARY KEY NOT NULL,
-	 'value' text default NULL,
-	 'update_type' varchar(255) default NULL,
+	 'source_id' INTEGER default NULL,
+	 'attrib' varchar(255) default NULL,
+	 'object' varchar(255) default NULL,
+	 'value' varchar(255) default NULL,
 	 'attrib_type' varchar(255) default NULL);
 	DROP TABLE IF EXISTS [object_attribs_to_load];
 	CREATE TABLE 'object_attribs_to_load' (
@@ -32,7 +34,7 @@
 	CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values
 	FOR EACH ROW
 	BEGIN
-	INSERT INTO object_values_to_delete VALUES (OLD.id, OLD.value,OLD.attrib_type,OLD.update_type);
+	INSERT INTO object_values_to_delete VALUES (OLD.id, OLD.source_id, OLD.attrib, OLD.object, OLD.value, OLD.attrib_type);
 	END;
 	</string>    
 	<string name="insertTrigger">
