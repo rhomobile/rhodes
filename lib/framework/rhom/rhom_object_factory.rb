@@ -61,7 +61,7 @@ module Rhom
                 
                 if obj
                   obj.each do |key,value|
-                    self.vars[key.to_sym()] = value
+                    self.vars[key.to_sym()] = value if key && key.length > 0
                   end
                 end
               end
@@ -134,12 +134,12 @@ module Rhom
                         order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
                         order_attr = args[1][:order]
                         
-                        if args.first == :first
-                            limit = 1                    
-                            offset = 0 unless offset
-                        end
-                        
                         op = args[1][:op].upcase if args[1][:op]
+                    end
+                    
+                    if args.first == :first
+                        limit = 1                    
+                        offset = 0 unless offset
                     end
                     
                     if select_arr
@@ -323,6 +323,9 @@ module Rhom
                   ret_list = []
                   conditions = {}
                   where_cond = nil
+                  limit = nil
+                  offset = nil
+                  
                   # first find all query objects
                   if args.first == :all || args.first == :first || args.first == :count
                   
@@ -334,6 +337,8 @@ module Rhom
                     where_cond = {"source_id"=>get_source_id}
                   elsif args.first.is_a?(String)
                     where_cond = {"object"=>strip_braces(args.first.to_s),"source_id"=>get_source_id}
+                    limit = 1                    
+                    offset = 0
                   end
 
                   if args.first == :count && !args[1]
@@ -345,8 +350,6 @@ module Rhom
                   condition_hash = nil
                   select_arr = nil
                   condition_str = nil
-                  limit = nil
-                  offset = nil
                   order_dir=""
                   nSrcID = get_source_id.to_i
                   if args[1]
@@ -365,14 +368,15 @@ module Rhom
                       limit = args[1][:per_page].to_i
                       offset = args[1][:offset] ? args[1][:offset].to_i : 0
                     end
-                    if args.first == :first
-                        limit = 1                    
-                        offset = 0 unless offset
-                    end
                     
                     select_arr = args[1][:select] if args[1][:select]
                     order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
                     order_attr = args[1][:order]
+                  end
+                  
+                  if args.first == :first
+                    limit = 1                    
+                    offset = 0 unless offset
                   end
                   
                   strLimit = nil
