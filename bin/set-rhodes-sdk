@@ -4,14 +4,15 @@ require 'fileutils'
 include FileUtils
 puts File.dirname(__FILE__)
 
-$app_config = YAML::load_file("build.yml")
+if File.exists? "build.yml"
+  $app_config = YAML::load_file("build.yml")
 
-unless $app_config["sdk"].nil?
-  new_config["sdk"] = File.expand_path(File.dirname(__FILE__) + "/../")
+  unless $app_config["sdk"].nil?
+    new_config["sdk"] = File.expand_path(File.dirname(__FILE__) + "/../")
 
-  $app_config = new_config
-  File.open(  'build.yml', 'w' ) do |out|
-    YAML.dump( $app_config, out )
+    $app_config = new_config
+    File.open(  'build.yml', 'w' ) do |out|
+      YAML.dump( $app_config, out )
+    end
   end
 end
-
