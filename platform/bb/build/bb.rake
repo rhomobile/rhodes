@@ -125,7 +125,7 @@ namespace "config" do
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
     $outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-    $outfilebase.gsub!(/ /,"_")
+    $outfilebase.gsub!(/[^A-Za-z_0-9]/, '_')
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       $preverified+"/RubyVM.jar"
@@ -242,6 +242,7 @@ namespace "build" do
 
       if not FileUtils.uptodate?($preverified + "/rhodes.jar",sources)
 
+        $tmpdir.gsub!(/\\/, '/')
         vsrclist = $tmpdir + "/vsrc_build.files"
 
 #        vsrclist = $builddir + "/../bin/vsrc_build.files"
