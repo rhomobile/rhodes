@@ -6,6 +6,8 @@ import java.net.URL;
 
 import com.rho.net.IHttpConnection;
 import com.rho.net.INetworkAccess;
+import com.rho.net.RhoConnection;
+import com.rho.net.URI;
 import com.rhomobile.rhodes.http.HttpHeader;
 
 public class NetworkAccessImpl implements INetworkAccess {
@@ -21,6 +23,7 @@ public class NetworkAccessImpl implements INetworkAccess {
 		return RhodesInstance.getInstance().getHomeUrl();
 	}
 	
+	/*
 	public boolean doLocalRequest(String strUrl, String strBody)
 	{
 		HttpHeader headers = new HttpHeader();
@@ -30,12 +33,18 @@ public class NetworkAccessImpl implements INetworkAccess {
 		
 		return true;
 	}
+	*/
 	
 	public IHttpConnection connect(String server) throws IOException {
 		
 		int fragment = server.indexOf('#');
 		if (-1 != fragment) {
 			server = server.substring(0, fragment);
+		}
+		
+		if (URI.isLocalHost(server)) {
+			URI uri = new URI(server);
+			return new RhoConnection(uri);
 		}
 		
 		URL url = new URL(server);
