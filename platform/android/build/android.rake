@@ -345,7 +345,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidbin} create avd --name #{$avdname} --target 1 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name #{$avdname} --target 2 --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd #{$avdname}") }
 
