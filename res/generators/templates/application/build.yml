@@ -1,5 +1,5 @@
 sdk: "<%=@sdk_path%>"
-name: Rhodes
+name: <%=@app_name%>
 version: 1.2.2
 vendor: rhomobile
 bbver: 4.6
