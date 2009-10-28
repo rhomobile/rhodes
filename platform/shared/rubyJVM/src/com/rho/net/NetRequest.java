@@ -78,6 +78,7 @@ public class NetRequest
 				m_connection.setRequestProperty("Cookie", strSession );
 			
 			m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
 			if ( strBody != null && strBody.length() > 0 )

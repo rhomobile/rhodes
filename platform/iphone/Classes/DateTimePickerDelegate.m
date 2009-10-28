@@ -102,6 +102,10 @@
 				break;
 		}
 		
+		if (self.dateTime.initialTime) {
+			self.pickerView.date = [NSDate dateWithTimeIntervalSince1970:self.dateTime.initialTime];
+		}
+		
 		// Add toolbar to view
 		CGRect mainViewBounds = self.pickerView.bounds;
 		[self createPickerBar:mainViewBounds];
