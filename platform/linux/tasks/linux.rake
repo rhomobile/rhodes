@@ -49,7 +49,6 @@ namespace "desktop" do
     cp_r "#{args.simpath}", "tmp/"
     rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/apps"
     rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/lib"
-    rm_rf "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/db"
 
     cp_r "#{$srcdir}/apps", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
     cp_r "#{$srcdir}/lib", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
