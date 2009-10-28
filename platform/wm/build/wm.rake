@@ -4,10 +4,10 @@ namespace "config" do
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     wmpath = $config["build"]["wmpath"]
     wmpath = $app_path
-    $builddir = wmpath + "/build"
+    $builddir = $config["build"]["wmpath"] + "/build"
     $bindir = wmpath + "/bin"
-    $srcdir =  wmpath + "/bin/RhoBundle"
-    $targetdir = wmpath + "/target/wm6p"
+    $srcdir =  Jake.get_absolute($config["build"]["wmpath"] + "/bin/RhoBundle")
+    $targetdir = $bindir + "/target/wm6p"
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = "vcbuild"
@@ -74,12 +74,10 @@ namespace "device" do
         exit 1
       end    
 
-      bindir = $startdir + "/" + $bindir
-      targetdir = $startdir + "/" + $targetdir
-      mkdir_p bindir if not File.exists? bindir
-      mkdir_p targetdir if not File.exists? targetdir
-      mv "rhodes.inf", bindir
-      mv "rhodes.cab", targetdir
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      mv "rhodes.inf", $targetdir
+      mv "rhodes.cab", $targetdir
 
       rm_f "cleanup.js"
 

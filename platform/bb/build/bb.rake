@@ -107,18 +107,16 @@ namespace "config" do
   task :bb => ["config:common"] do
     $config["platform"] = "bb"
 
-    bbpath = $config["build"]["bbpath"]
-    bbpath = $app_path
     $bbver = $app_config["bbver"].to_s
     $builddir = $config["build"]["bbpath"] + "/build"
-    $bindir = bbpath + "/bin"
-    $rhobundledir =  bbpath + "/RhoBundle"
+    $bindir = $app_path + "/bin"
+    $rhobundledir =  $app_path + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
-    $preverified = bbpath + "/preverified"
-    $targetdir = bbpath + "/target/" + $bbver
-    $rubyVMdir = bbpath + "/RubyVM"
+    $preverified = $app_path + "/preverified"
+    $targetdir = $bindir + "/target/" + $bbver
+    $rubyVMdir = $app_path + "/RubyVM"
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
-    $compileERB = bbpath + "/build/compileERB.rb"
+    $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
 
@@ -512,12 +510,14 @@ namespace "device" do
         manualsign
       end
 
-      rm_rf $targetdir + "/web"
-      mkdir_p $targetdir + "/web"
+      rm_rf $targetdir + "/ota-web"
+      mkdir_p $targetdir + "/ota-web"
 
-      cp $targetdir + "/"+$outfilebase+".jad", $targetdir + "/web"
+      cp $targetdir + "/"+$outfilebase+".jad", $targetdir + "/ota-web"
 
-      Jake.unjar($targetdir + "/"+$outfilebase+".cod", $targetdir + "/web")
+      Jake.unjar($targetdir + "/"+$outfilebase+".cod", $targetdir + "/ota-web")
+      
+      rm_rf Dir.glob($targetdir + "/*.debug")
 
     end
 
