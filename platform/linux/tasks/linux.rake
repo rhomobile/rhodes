@@ -53,6 +53,9 @@ namespace "desktop" do
     cp_r "#{$srcdir}/apps", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
     cp_r "#{$srcdir}/lib", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
 
+    rm "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/icon.png"
+    cp "#{$app_path}/icon/icon.png", "tmp/Rhodes Launcher.app/Contents/Resources/rhorunner.app/"
+     
     chdir "tmp"
     puts `zip ../rhodes-simulator.zip -r *`
     chdir $srcdir
