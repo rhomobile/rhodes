@@ -34,7 +34,7 @@ namespace "config" do
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
     $srcdir = File.join($bindir, "RhoBundle")
-    $targetdir = File.join($app_path, "target")
+    $targetdir = File.join($bindir, "target")
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
@@ -345,7 +345,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidbin} create avd --name #{$avdname} --target 1 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name #{$avdname} --target 2 --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd #{$avdname}") }
 

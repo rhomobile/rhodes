@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'fileutils'
+include FileUtils
+puts File.dirname(__FILE__)
+
+if File.exists? "build.yml"
+  $app_config = YAML::load_file("build.yml")
+
+  unless $app_config["sdk"].nil?
+    $app_config["sdk"] = File.expand_path(File.dirname(__FILE__) + "/../")
+
+    File.open(  'build.yml', 'w' ) do |out|
+      YAML.dump( $app_config, out )
+    end
+  end
+end

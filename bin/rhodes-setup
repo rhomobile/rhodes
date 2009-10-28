@@ -64,28 +64,33 @@ android = prompt_for("Android 1.5 SDK path", android, false, "/platforms/android
 #now cabwiz
 cabwiz = ""
 cabwiz = "/Program Files/Windows Mobile 6 SDK/Tools/CabWiz" if File.exists? "/Program Files/Windows Mobile 6 SDK/Tools/CabWiz"
+cabwiz = "C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz" if File.exists? "C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz"
 
 cabwiz = prompt_for("Windows Mobile 6 SDK CabWiz", cabwiz, false)
 
 #now blackberry
 
 jde46 = ""
-jde46 = "/Program Files/Research In Motion/BlackBerry JDE 4.6.0" if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.6.0"
+jde46 = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.6.0") if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.6.0"
+jde46 = File.expand_path("C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0") if File.exists? "C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0"
 
 jde46 = prompt_for("BlackBerry JDE 4.6", jde46, false)
 
 jde46mds = ""
-jde46mds = "/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS" if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
+jde46mds = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS") if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
+jde46mds = File.expand_path("C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS") if File.exists? "C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS"
 
 jde46mds = prompt_for("BlackBerry JDE 4.6 MDS", jde46mds, false)
 
 jde42 = ""
-jde42 = "/Program Files/Research In Motion/BlackBerry JDE 4.2.0" if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.2.0"
+jde42 = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.2.0") if File.exists? "/Program Files/Research In Motion/BlackBerry JDE 4.2.0"
+jde42 = File.expand_path("/Program Files/Research In Motion/BlackBerry JDE 4.2.0") if File.exists? "C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0"
 
 jde42 = prompt_for("BlackBerry JDE 4.2", jde42, false)
 
 jde42mds = ""
-jde42mds = "/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS" if File.exists? "/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS"
+jde42mds = File.expand_path("/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS") if File.exists? "/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS"
+jde42mds = File.expand_path("C:/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS") if File.exists? "C:/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS"
 
 jde42mds = prompt_for("BlackBerry JDE 4.2 MDS", jde42mds, false)
 
