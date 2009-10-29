@@ -41,7 +41,7 @@ class SyncSource
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
 
-	public static final int edpNone = 0, /*edpCreateObjects = 1,*/ edpDeleteObjects = 2;
+	public static final int edpNone = 0, edpDeleteObjects = 2;
 	
 	static class SyncBlob
 	{
@@ -105,7 +105,6 @@ class SyncSource
     int  getProgressStep(){ return m_nProgressStep; }
 
     void setSyncServerDataPass(int ePass){m_eSyncServerDataPass = ePass;}
-    //boolean isCreateObjectsPass(){ return m_eSyncServerDataPass == edpCreateObjects; }
     boolean isDeleteObjectsPass(){ return m_eSyncServerDataPass == edpDeleteObjects; }
     
     SyncEngine getSync(){ return m_syncEngine; }
@@ -152,10 +151,10 @@ class SyncSource
 	        if ( isEmptyToken() )
 	            processToken("1");
 	    	
-	        //boolean bSyncedServer = false;
+	        boolean bSyncedServer = false;
 	        if ( m_strParams.length() == 0 || m_bSearchSyncChanges )
 	        {
-	            /*if ( isPendingClientChanges() )
+	            if ( isPendingClientChanges() )
 	            {
 	                syncServerChanges();
 	                bSyncedServer = true;
@@ -164,7 +163,7 @@ class SyncSource
 	            if ( bSyncedServer && isPendingClientChanges() )
 	                getSync().setState(SyncEngine.esStop);
 	            else
-	            {*/
+	            {
 	                boolean bSyncClient = false;
 	                {
 	                    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
@@ -174,13 +173,13 @@ class SyncSource
 	                {
 	                    syncClientChanges();
 	                    getAndremoveAsk();
-	                    //bSyncedServer = false;
+	                    bSyncedServer = false;
 	                }
-	            //}
+	            }
 	        }
 	        PROF.STOP("Pull");
 
-	        //if ( !bSyncedServer )
+	        if ( !bSyncedServer )
 	        	syncServerChanges();
 	        
 	    }catch(Exception exc)
@@ -193,22 +192,14 @@ class SyncSource
 								 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
 		                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 		                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
-		    
-		    //String profName = "File operations: " + getName();
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_SYNC, profName);
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_READ, profName);
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_WRITE, profName);
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_SET_SIZE, profName);
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_DELETE, profName);
-		    //PROF.FLUSH_COUNTER(RhoProfiler.FILE_RENAME, profName);
 	    }
 	}
 
-	/*boolean isPendingClientChanges()throws DBException
+	boolean isPendingClientChanges()throws DBException
 	{
 	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
 	    return !res.isEnd();
-	}*/
+	}
 	
 	void syncClientBlobs(String strBaseQuery)throws Exception
 	{
@@ -270,55 +261,23 @@ class SyncSource
 	        if ( m_arSyncBlobs.size()>0 )
 	        {
 			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
-/*
-	            if ( getSync().SYNC_VERSION() < 2 && i <= 1 ) //create, update
-	            {
-	                IDBResult res = getDB().executeSQL("SELECT object, attrib " +
-						     "FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?) and sent=1", 
-	                    getID(), arUpdateTypes[i], "blob.file" );
-	                if ( !res.isEnd() )
-	                {
-	                    getDB().startTransaction();
-
-		                for( ; !res.isEnd(); res.next() )
-		                {
-		                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-		                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
-		                }
-		                    
-	                    getDB().endTransaction();
-	                }
-	            }
-
-	            if ( getSync().SYNC_VERSION() >= 2 && i <= 1 )// update
+	            //oo conflicts
+	            if ( i < 1 ) //create
 	                getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?) and sent=1", 
 	                    getID(), arUpdateTypes[i], "blob.file" );
-	            else*/
+	            else
+	            //
 	            	getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?) and sent=1", 
 	            		getID(), arUpdateTypes[i], "blob.file" );
 	            
 	            syncClientBlobs(strUrl+strQuery);
 	        }else if ( strBody.length() > 0 )
 	        {
-	        	/*if ( getSync().SYNC_VERSION() < 2 && i <= 1 ) //create, update
-	            {
-	                IDBResult res = getDB().executeSQL("SELECT object, attrib "+
-						     "FROM changed_values where source_id=? and update_type =? and sent=1", getID(), arUpdateTypes[i] );
-	                if ( !res.isEnd() )
-	                {
-	                    getDB().startTransaction();
-
-		                for( ; !res.isEnd(); res.next() )
-		                {
-		                    getDB().executeSQL("DELETE FROM object_values WHERE object=? and attrib=? and source_id=?", 
-		                        res.getStringByIdx(0), res.getStringByIdx(1), getID() );
-		                }
-	                    getDB().endTransaction();
-	                }
-	            }
-	            if ( getSync().SYNC_VERSION() >= 2 && i <= 1 )// update
+	            //oo conflicts
+	            if ( i < 1 ) //create
 	                getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
-	            else*/
+	            else
+	            //
 	            	getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
 	        }
 	    }
@@ -432,9 +391,7 @@ class SyncSource
 	            strQuery += "&question=" + getAskParams();
 	        }
 	
-	        /*if ( isEmptyToken() )
-	            processToken("1");
-	        else*/ if ( !m_bTokenFromDB && isTokenMoreThanOne() )
+	        if ( !m_bTokenFromDB && isTokenMoreThanOne() )
 	            strQuery += "&ack_token=" + getToken();
 	
 			LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );
@@ -500,7 +457,6 @@ class SyncSource
 	    {
 	        m_strError = oJsonArr.getCurItem().getString("error");
 	        m_nErrCode = RhoRuby.ERR_CUSTOMSYNCSERVER;
-	        //processToken("0");
 	        getSync().stopSync();
 	        return;
 	    }
@@ -532,7 +488,9 @@ class SyncSource
 	        oJsonArr.next();
 	    }else if ( getCurPageCount() == 0 )
 	    {
-	    	//getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent>=3", getID() );
+	    	//oo conflicts
+	    	getDB().executeSQL("DELETE FROM changed_values where source_id=? and sent>=3", getID() );
+	    	//
 	        processToken("0");
 	    }
 	    
@@ -542,27 +500,17 @@ class SyncSource
 		PROF.STOP("Data1");
 		if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 		{
-		    //TODO: support DBExceptions
 			PROF.START("Data");
 		    getDB().startTransaction();
 
 		    try{
-		        /*if ( nVersion == 0 )
-		            processServerData_Ver0(oJsonArr);
-		        else
-	            {*/
-		            int nSavedPos = oJsonArr.getCurPos();
-		            setSyncServerDataPass(edpNone);
-		            processServerData_Ver1(oJsonArr);
+	            int nSavedPos = oJsonArr.getCurPos();
+	            setSyncServerDataPass(edpNone);
+	            processServerData_Ver1(oJsonArr);
 
-		            setSyncServerDataPass(edpDeleteObjects);
-		            oJsonArr.reset(nSavedPos);
-		            processServerData_Ver1(oJsonArr);
-
-		            //setSyncServerDataPass(edpNone);
-		            //oJsonArr.reset(nSavedPos);
-		            //processServerData_Ver1(oJsonArr);
-	            //}
+	            setSyncServerDataPass(edpDeleteObjects);
+	            oJsonArr.reset(nSavedPos);
+	            processServerData_Ver1(oJsonArr);
 		        
 			    PROF.STOP("Data");		    
 		    	
@@ -584,29 +532,103 @@ class SyncSource
 	    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 		PROF.STOP("Data1");
 	}
-/*
-	void processServerData_Ver0(JSONArrayIterator oJsonArr)throws Exception
-	{
-	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
-	    {
-	        if ( getDB().isUnlockDB() )
-	        {
-				LOG.INFO( "Commit transaction because of UI request." );
-	            getDB().endTransaction();
-	            getDB().startTransaction();
-	        }
-	
-	        JSONEntry oJsonObject = oJsonArr.getCurItem();
-	        if( !processSyncObject(oJsonObject))
-            {
-	            getSync().stopSync();
-	            break;
-            }
-	        
-	        m_bGetAtLeastOnePage = true;
-	    }
-	}*/
 
+	boolean processSyncObject_ver1(JSONEntry oJsonObject, Integer nSrcID)throws Exception
+	{
+		String strOldObject = oJsonObject.getString("oo");
+	    if ( isDeleteObjectsPass() != (nSrcID.intValue() < 0) )
+	    	return true;
+	    
+	    if ( oJsonObject.hasName("e") )
+	    {
+	    	String strError = oJsonObject.getString("e");
+	        getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
+	        return true;
+	    }
+
+		String strObject = oJsonObject.getString("o");
+		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
+	    //oo conflicts
+	    boolean bUpdatedOO = false;
+	    //
+	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); m_nAttribCounter++, oJsonArr.next() )
+		{
+			JSONEntry oJsonEntry = oJsonArr.getCurItem();
+	        if ( oJsonEntry.isEmpty() )
+	        	continue;
+	        
+		    if ( nSrcID.intValue() >= 0 ) //insert
+		    {
+		    	CValue value = new CValue(oJsonEntry,1);
+		    	if ( !downloadBlob(value) )
+		    		return false;
+		    	
+		    	String strAttrib = oJsonEntry.getString("a");
+	            //oo conflicts
+	            if ( strOldObject != null )
+	            {
+	                if ( !bUpdatedOO )
+	                {
+	                    getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
+	                    getDB().executeSQL("UPDATE changed_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
+
+	                    getNotify().onObjectChanged(nSrcID,strOldObject, SyncNotify.enCreate);
+
+	                    bUpdatedOO = true;
+	                }
+
+	                getDB().executeSQL("UPDATE changed_values SET main_id=? where object=? and attrib=? and source_id=? and sent<=1", value.m_nID, strObject, strAttrib, nSrcID );
+	                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, nSrcID );
+
+	                getDB().executeSQL("UPDATE object_values SET id=? WHERE object=? and attrib=? and source_id=?", 
+	                    value.m_nID, strObject, strAttrib, nSrcID );
+	            }else//
+	            {
+	                IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values "+
+	                    "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
+	                    value.m_nID, strAttrib, nSrcID, strObject,
+	                    value.m_strValue, value.m_strAttrType );
+	                if ( resInsert.isNonUnique() )
+	                {
+	                    getDB().executeSQL("UPDATE object_values "+
+	                        "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+	                        value.m_nID, value.m_strValue, value.m_strAttrType,
+	                        strObject, strAttrib, nSrcID );
+
+	                    // oo conflicts
+	                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, nSrcID );
+	                    getDB().executeSQL("UPDATE changed_values SET main_id=? where object=? and attrib=? and source_id=? and sent<=1", value.m_nID, strObject, strAttrib, nSrcID );
+	                    //
+	                }
+
+	                getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
+	            }
+		    	
+		        m_nInserted++;
+		    }else
+		    {
+		    	long id = oJsonEntry.getLong("i");
+		    	
+	            IDBResult res = getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id );
+	            if ( !res.isEnd() )
+	            {
+	            	LOG.TRACE("Delete: " + id);
+	                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
+	                String strDelObject = res.getStringByIdx(1);
+	                getDB().executeSQL("DELETE FROM object_values where id=?", id );
+	                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
+	            }
+                // oo conflicts
+                getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", id );
+                //
+	            
+		        m_nDeleted++;
+		    }
+		}
+		
+		return true;
+	}
+	
 	void processServerData_Ver1(JSONArrayIterator oJsonArr)throws Exception
 	{
 	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); oJsonArr.next() )
@@ -750,181 +772,6 @@ class SyncSource
         return true;
 	}
 	
-	boolean processSyncObject_ver1(JSONEntry oJsonObject, Integer nSrcID)throws Exception
-	{
-		String strOldObject = oJsonObject.getString("oo");
-	    //if ( isCreateObjectsPass() != (strOldObject != null) )
-	    //    return true;
-	    if ( isDeleteObjectsPass() != (nSrcID.intValue() < 0) )
-	    	return true;
-	    
-	    if ( oJsonObject.hasName("e") )
-	    {
-	    	String strError = oJsonObject.getString("e");
-	        getNotify().addCreateObjectError(nSrcID,strOldObject,strError);
-	        return true;
-	    }
-
-	    int nDoNotDelete = -1;
-		String strObject = oJsonObject.getString("o");
-		JSONArrayIterator oJsonArr = new JSONArrayIterator(oJsonObject, "av");
-		
-	    for( ; !oJsonArr.isEnd() && getSync().isContinueSync(); m_nAttribCounter++, oJsonArr.next() )
-		{
-			JSONEntry oJsonEntry = oJsonArr.getCurItem();
-	        if ( oJsonEntry.isEmpty() )
-	        	continue;
-	        
-		    //int nDbOp = oJsonEntry.getInt("d");
-		    if ( nSrcID.intValue() >= 0 ) //insert
-		    {
-		    	CValue value = new CValue(oJsonEntry,1);
-		    	if ( !downloadBlob(value) )
-		    		return false;
-		    	
-		    	String strAttrib = oJsonEntry.getString("a");
-		    	//String strUpdateType = "query";
-		    	//if( oJsonEntry.hasName("u") )
-		    	//	strUpdateType = oJsonEntry.getString("u");
-		    	
-	            //boolean bUpdated = false;
-	            if ( strOldObject != null )
-	            {
-	                /*IDBResult res = getDB().executeSQL("SELECT object FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strOldObject, strAttrib, nSrcID );
-	                if ( !res.isEnd() )
-	                {*/
-	                    getDB().executeSQL("UPDATE object_values SET id=?, object=? where object=? and attrib=? and source_id=?", value.m_nID, strObject, strOldObject, strAttrib, nSrcID );
-	                    //getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strOldObject, strAttrib, nSrcID );
-	                    
-	                    getNotify().onObjectChanged(nSrcID,strOldObject, SyncNotify.enCreate);
-
-	                    /*bUpdated = true;
-	                }*/
-	            }else
-
-	            //if ( !bUpdated )
-	            {
-	                /*IDBResult res = getDB().executeSQL("SELECT value, attrib_type " +
-						     "FROM changed_values where object=? and attrib=? and source_id=? and (sent=2 OR sent=3) LIMIT 1 OFFSET 0", strObject, strAttrib, nSrcID );
-	                if ( !res.isEnd() )
-	                {
-	                    boolean bModified = false;
-	                    String strValue = value.m_strValue;
-	                    String strAttrType = value.m_strAttrType;
-	                    if ( strValue == null )
-	                    	strValue = "";
-	                    if ( strAttrType == null )
-	                    	strAttrType = "";
-	                    
-	                    if ( res.getStringByIdx(0).compareTo(strValue) != 0 || res.getStringByIdx(1).compareTo(strAttrType) != 0 )
-	                        bModified = true;*/
-
-	    		        IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values " +
-	    			            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-	    			            value.m_nID, strAttrib, nSrcID, strObject,
-	    			            value.m_strValue, value.m_strAttrType );
-	                    if ( resInsert.isNonUnique() )
-	                        getDB().executeSQL("UPDATE object_values "+
-	                            "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
-	                            value.m_nID, value.m_strValue, value.m_strAttrType,
-	                            strObject, strAttrib, nSrcID );
-
-	                    //getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=?", strObject, strAttrib, nSrcID );
-	    		        
-	                    //if ( bModified )
-	                        getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
-	                /*}
-	                else
-	                {
-	                	IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values " +
-	    			            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-	    			            value.m_nID, strAttrib, nSrcID, strObject,
-	    			            value.m_strValue, value.m_strAttrType );
-	                    if ( resInsert.isNonUnique() )
-	                    {
-	                        getDB().executeSQL("UPDATE object_values "+
-	                            "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
-	                            value.m_nID, value.m_strValue, value.m_strAttrType,
-	                            strObject, strAttrib, nSrcID );
-
-	                        getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
-	                    }
-	    		        
-	                }*/
-	            }
-		    	
-		        m_nInserted++;
-		    }else// if ( nDbOp == 1 ) //delete
-		    {
-	            /*if ( strOldObject != null && nDoNotDelete < 0 )
-	            {
-	                IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? and source_id=? LIMIT 1 OFFSET 0", strOldObject, getID() );
-	                nDoNotDelete = !res.isEnd() ? 1 : 0;
-	            }*/
-		    	
-	            if ( nDoNotDelete != 1 )
-	            {
-			    	long id = oJsonEntry.getLong("i");
-			    	
-		            IDBResult res = getDB().executeSQL("SELECT source_id, object FROM object_values where id=?", id );
-		            if ( !res.isEnd() )
-		            {
-		            	LOG.TRACE("Delete: " + id);
-		                Integer nDelSrcID = new Integer(res.getIntByIdx(0));
-		                String strDelObject = res.getStringByIdx(1);
-		                getDB().executeSQL("DELETE FROM object_values where id=?", id );
-		                //getDB().executeSQL("UPDATE changed_values SET sent=3 where main_id=?", new Long(id) );
-		                getNotify().onObjectChanged(nDelSrcID, strDelObject, SyncNotify.enDelete);
-		            }
-	            }
-	            
-		        m_nDeleted++;
-		    }//else{
-		     //   LOG.ERROR("Unknown DB operation: " + nDbOp );
-		    //}
-		}
-		
-		return true;
-	}
-/*
-	boolean processSyncObject(JSONEntry oJsonObject)throws Exception
-	{
-    	JSONEntry oJsonEntry = oJsonObject.getEntry("object_value");
-        
-        if ( oJsonEntry.isEmpty() )
-        	return true;
-        
-	    String szDbOp = oJsonEntry.getString("db_operation");
-	    if ( szDbOp != null && szDbOp.equals("insert") )
-	    {
-	    	CValue value = new CValue(oJsonEntry);
-	    	//
-	    	//value.m_strAttrType = "blob.url";
-	    	//value.m_strValue = "http://img.gazeta.ru/files3/661/3219661/ld.jpg";
-	    	//
-	    	if ( !downloadBlob(value) )
-	    		return false;
-	    	
-	    	String strAttrib = oJsonEntry.getString("attrib");
-	        getDB().executeSQL("INSERT INTO object_values " +
-	            "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-	            value.m_nID, strAttrib, getID(), oJsonEntry.getString("object"),
-	            value.m_strValue, value.m_strAttrType );
-	        
-	        m_nInserted++;
-	    }else if ( szDbOp != null && szDbOp.equals("delete") )
-	    {
-	    	long id = oJsonEntry.getLong("id");
-	        getDB().executeSQL("DELETE FROM object_values where id=?", id );
-	
-	        m_nDeleted++;
-	    }else{
-	        LOG.ERROR("Unknown DB operation: " + (szDbOp != null ? szDbOp : "") );
-	    }
-	    
-	    return true;
-	}*/
-
 	void processToken(String token)throws DBException
 	{
 	    if ( this.isTokenMoreThanOne() && getToken().equals(token) ){

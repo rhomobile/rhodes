@@ -49,7 +49,7 @@ class CSyncSource
 {
     DEFINE_LOGCLASS;
 
-    enum ESyncServerDataPass{ edpNone, /*edpCreateObjects,*/ edpDeleteObjects };
+    enum ESyncServerDataPass{ edpNone, edpDeleteObjects };
 
     CSyncEngine& m_syncEngine;
 
@@ -70,7 +70,6 @@ public:
     boolean m_bSearchSyncChanges;
     int     m_nProgressStep;
 private:
-    //String m_strPushBody;
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
     String m_strAskParams;
 
@@ -95,7 +94,7 @@ public:
     CSyncSource(CSyncEngine& syncEngine );
 
     void syncClientChanges();
-    //boolean isPendingClientChanges();
+    boolean isPendingClientChanges();
 
     void syncServerChanges();
     void makePushBody(String& strBody, const char* szUpdateType);
@@ -113,13 +112,10 @@ public:
     int  getProgressStep(){ return m_nProgressStep; }
 
     void processServerData(const char* szData);
-    //boolean processSyncObject(json::CJSONEntry& oJsonEntry);
     boolean processSyncObject_ver1(json::CJSONEntry oJsonObject, int nSrcID);//throws Exception
-    //void processServerData_Ver0(json::CJSONArrayIterator& oJsonArr);
     void processServerData_Ver1(json::CJSONArrayIterator& oJsonArr);
 
     void setSyncServerDataPass(ESyncServerDataPass ePass){m_eSyncServerDataPass = ePass;}
-    //boolean isCreateObjectsPass(){ return m_eSyncServerDataPass == edpCreateObjects; }
     boolean isDeleteObjectsPass(){ return m_eSyncServerDataPass == edpDeleteObjects; }
 
     VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }

@@ -72,6 +72,11 @@ public class DBAdapter extends RubyBasic {
 		Object[] values = {arg1,arg2,arg3};
 		return executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4)throws DBException{
+		Object[] values = {arg1,arg2,arg3,arg4};
+		return executeSQL(strStatement,values);
+	}
+	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
 		Object[] values = {arg1,arg2,arg3,arg4,arg5};
 		return executeSQL(strStatement,values);
