@@ -571,6 +571,14 @@ module Rhom
                   end
                 end
               end #class methods
+	          
+	          # if app server does not support oo in inserts. 
+	          # app client should check this method before update or delete
+	          # overwise all modifications of unconfirmed created item will be lost
+	          def can_modify
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE sent>1 LIMIT 1 OFFSET 0")
+                return !(result && result.length > 0) 
+	          end
 	            
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
@@ -590,7 +598,7 @@ module Rhom
                         update_type = nil                              
                       end
                       
-                      ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj})
+                      ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "sent"=>0})
                       
                       if update_type
                         # now add delete operation
