@@ -79,7 +79,7 @@ public:
         COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
-		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
+//		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
 #if defined(OS_WINDOWS)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
@@ -110,7 +110,7 @@ private:
 	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+//	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 #if defined(OS_WINDOWS)
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

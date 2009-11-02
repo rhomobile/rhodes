@@ -224,7 +224,7 @@ _rho_resolve_index(char* url,char* path,const char *index_names) {
 	return url;
 }
 */
-
+/*
 static char* 
 _rho_resolve_index(char* url,char* path,const char *index_names) {
 	char filename[FILENAME_MAX];
@@ -247,8 +247,8 @@ _rho_resolve_index(char* url,char* path,const char *index_names) {
 	} 
 
 	return url;				
-}
-
+}*/
+/*
 char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 	char path[URI_MAX];
 	struct stat	st;
@@ -287,7 +287,7 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 	free(tmp_url);
 	
 	return ret;
-}
+}*/
 
 extern void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 void* rho_dispatch(struct conn *c, const char* path) {

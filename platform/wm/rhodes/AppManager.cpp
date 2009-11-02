@@ -5,7 +5,7 @@
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 #include "rho/net/NetRequest.h"
 
-#include "HttpServer.h"
+#include "common/RhodesApp.h"
 
 #include "unzip.h"
 #include "ext/rho/rhoruby.h"
@@ -78,7 +78,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 			
 				if ( hz ) {
 					//Stop HTTP Server
-					CHttpServer::Instance()->FreezeThread();
+					RHODESAPP().exitApp();
 
 					// Set base for unziping
 					SetUnzipBaseDir(hz, rootw);

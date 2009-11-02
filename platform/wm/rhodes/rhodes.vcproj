@@ -811,10 +811,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\HttpServer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\LogOptionsDlg.cpp"
 				>
 			</File>
@@ -831,15 +827,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ports_mngt.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Rhodes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ServerHost.cpp"
 				>
 			</File>
 			<File
@@ -925,10 +913,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\HttpServer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\LogOptionsDlg.h"
 				>
 			</File>
@@ -949,15 +933,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ports_mngt.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ServerHost.h"
 				>
 			</File>
 			<File
