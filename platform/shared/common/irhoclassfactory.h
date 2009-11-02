@@ -18,5 +18,7 @@ struct IRhoClassFactory
     virtual ISystemInfo* createSystemInfo() = 0;
 };
 
+IRhoClassFactory* createClassFactory();
+
 }
 }

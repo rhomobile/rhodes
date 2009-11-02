@@ -770,6 +770,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\IRhoBrowser.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\irhoclassfactory.h"
 				>
 			</File>
@@ -791,6 +795,14 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\common\RhoDefs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhodesApp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhodesApp.h"
 				>
 			</File>
 			<File

@@ -12,7 +12,7 @@
 #endif
 #include "resource.h"
 #include "MainWindow.h"
-#include "HttpServer.h"
+#include "common/RhodesApp.h"
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
 #if defined(_WIN32_WCE)
@@ -22,13 +22,13 @@
 #include "sync/SyncThread.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-char* canonicalizeURL(const char* path);
-const char* strip_local_domain(const char* url);
+//char* canonicalizeURL(const char* path);
+//const char* strip_local_domain(const char* url);
 
 extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" char* wce_wctomb(const wchar_t* w);
 
-extern "C" void pause_sync( int nPause );
+//extern "C" void pause_sync( int nPause );
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
@@ -296,11 +296,12 @@ void CMainWindow::SetRhobundleReloadMenu() {
 
 LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    //TODO: show menu on navigate to start page
 	SetRhobundleReloadMenu();
-	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetStartPage(), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(RHODESAPP().getStartUrlW().c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
-
+#if 0
 LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SetRhobundleReloadMenu();
@@ -328,6 +329,7 @@ LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	
 	return 0;
 }
+#endif //0
 
 LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -390,15 +392,15 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	m_spIWebBrowser2->Navigate(CHttpServer::Instance()->GetOptionsPage(), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(RHODESAPP().getOptionsUrlW().c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 
 LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	if ( CHttpServer::Instance()->GetRhobundleReloadUrl() ) {
-		CAppManager::ReloadRhoBundle(m_hWnd,CHttpServer::Instance()->GetRhobundleReloadUrl(), NULL);
+	if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+		CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
 	} else {
 		MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
 	}
@@ -437,7 +439,7 @@ LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
 
-	char* callback = canonicalizeURL(callback_url);
+    rho::String callback = RHODESAPP().canonicalizeRhoUrl(callback_url);
 
 	char* imageuri = NULL, *message;
 	if (status==S_OK) {
@@ -460,9 +462,8 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
     oNetReq.pushData( callback, message );
 
 	free(message);
-	if (imageuri) free(imageuri);
-	free(callback);
-
+	if (imageuri) 
+        free(imageuri);
 }
 
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -601,7 +602,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
 	
-	BOOL store_current_url = RHOCONF().getBool("KeepTrackOfLastVisitedPage") && !m_bLoading;
+	BOOL store_current_url = !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -620,11 +621,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 
 	m_current_url = wce_wctomb(url);
 	
-	if( store_current_url ) {
-		const char* _page = strip_local_domain(m_current_url);
-		RHOCONF().setString("LastVisitedPage",_page);		
-		RHOCONF().saveToFile();
-	}
+	if( store_current_url ) 
+        RHODESAPP().keepLastVisitedUrl(m_current_url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
