@@ -100,7 +100,12 @@ module Rho
       model = params[:controller] || params[:model] || @request['model'] 
       action = params[:action].nil? ? nil : params[:action].to_s
       id = params[:id].nil? ? nil : params[:id].to_s
-      query = query_to_s(params[:query])
+      if params[:query_s]
+        query = params[:query_s]
+      else
+        query = query_to_s(params[:query])
+      end
+        
       fragment = params[:fragment].nil? ? '' : '#' + params[:fragment]
    
       amurl = ''
