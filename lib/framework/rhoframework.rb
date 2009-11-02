@@ -25,9 +25,12 @@ begin
     
     require 'rhom/rhom'
     require 'rhom'
-    
+
     require 'rho/rhoapplication'
-    
+
+    require 'rho/rhocontroller'    
+    require 'rho/render'
+
     require 'rho/rho'
     require 'rho'
 	

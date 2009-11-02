@@ -160,7 +160,7 @@ module Rho
         res['request-body'] = RhoController::renderfile(index_name)
         return send_response_hash(res)
       rescue Exception => e
-        return send_error(e.message, 500, true)
+        return send_error(e, 500, true)
       end
     end
     

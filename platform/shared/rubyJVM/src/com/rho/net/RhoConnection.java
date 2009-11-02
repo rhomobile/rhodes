@@ -392,7 +392,13 @@ public class RhoConnection implements IHttpConnection {
 		if ( strError != null && strError.length() != 0 )
 			responseMsg += ".Error: " + strError;
 		
-		contentLength = 0;
+		String strBody = "Page not found: " + uri.getPath(); 
+		
+		contentLength = strBody.length();
+		responseData = new ByteArrayInputStream(strBody.getBytes());
+		
+		resHeaders.addProperty("Content-Type", "text/html" );
+		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 	}
 	
 	String getContentType(){

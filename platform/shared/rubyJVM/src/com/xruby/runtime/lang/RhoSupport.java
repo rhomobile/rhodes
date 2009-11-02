@@ -180,6 +180,8 @@ public class RhoSupport {
         String name = RhoSupport.createMainClassName(required_file);
         try {
         	
+        	LOG.TRACE("require_compiled: " + required_file);
+        	
         	Class c = null;
             try {
             	c = Class.forName(name);
