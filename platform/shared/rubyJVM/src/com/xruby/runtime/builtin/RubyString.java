@@ -306,10 +306,16 @@ public class RubyString extends RubyBasic {
 
     private Collection/*<String>*/ split(RubyString s, String delimiter) {
         StringParser t = new StringParser(s.toString(), delimiter);
-        int total = t.countTokens();
-        Collection/*<String>*/ r = new ArrayList/*<String>*/(total);
-        for (int i = 0; i < total; ++i) {
-            r.add(t.nextToken());
+//        int total = t.countTokens();
+        //Collection/*<String>*/ r = new ArrayList/*<String>*/(total);
+//        for (int i = 0; i < total; ++i) {
+//            r.add(t.nextToken());
+//        }
+        
+        Collection/*<String>*/ r = new ArrayList/*<String>*/(0);
+        while ( t.hasMoreElements() )
+        {
+        	r.add(t.nextElement());
         }
         return r;
     }
@@ -1027,7 +1033,8 @@ public class RubyString extends RubyBasic {
 //        for (String str : splitResult) {
         for (Iterator iter = splitResult.iterator(); iter.hasNext();) {
         	String str = (String)iter.next();
-            if (0 != i || !str.equals("")) {
+            //if (0 != i || !str.equals("")) 
+            {
                 //To conform ruby's behavior, discard the first empty element
                 a.add(ObjectFactory.createString(str));
             }

@@ -4,7 +4,48 @@ import java.util.*;
 import j2me.lang.*;
 
 public
-class StringParser implements Enumeration {
+class StringParser implements Enumeration 
+{
+	String m_strToSplit, m_strDelim;
+	int m_nCurPos = 0;
+	boolean m_bFinish = false;
+	public StringParser(String strToSplit, String strDelim)
+	{
+		m_strToSplit = strToSplit;
+		m_strDelim = strDelim;
+	}
+	
+	public boolean hasMoreElements() 
+	{
+		return !m_bFinish;
+	}
+
+	public Object nextElement() 
+	{
+		if ( m_nCurPos >= m_strToSplit.length() )
+		{
+			m_bFinish = true;
+			return "";
+		}
+		
+		int nStart = m_nCurPos; 
+		m_nCurPos = m_strToSplit.indexOf(m_strDelim, nStart);
+		String strRes;
+		
+		if ( m_nCurPos >= 0 )
+		{
+			strRes = m_strToSplit.substring(nStart, m_nCurPos);
+			m_nCurPos += m_strDelim.length();
+		}
+		else
+		{
+			strRes = m_strToSplit.substring(nStart);
+			m_bFinish = true;
+		}
+		
+		return strRes;
+	}
+	/*
     private int currentPosition;
     private int newPosition;
     private int maxPosition;
@@ -105,7 +146,7 @@ class StringParser implements Enumeration {
         currentPosition = (newPosition >= 0 && !delimsChanged) ?  
             newPosition : skipDelimiters(currentPosition);
 
-        /* Reset these anyway */
+        /// Reset these anyway
         delimsChanged = false;
         newPosition = -1;
 
@@ -122,7 +163,7 @@ class StringParser implements Enumeration {
     public String nextToken(String delim) {
         delimiters = delim;
 
-        /* delimiter string specified, so set the appropriate flag. */
+        // delimiter string specified, so set the appropriate flag.
         delimsChanged = true;
 
         makePoint();
@@ -178,6 +219,6 @@ class StringParser implements Enumeration {
                 delimiterCodePoints[i] = c;
             }
         }
-    }
+    }*/
     
 }
