@@ -104,7 +104,8 @@ module Rho
       fragment = params[:fragment].nil? ? '' : '#' + params[:fragment]
    
       amurl = ''
-      amurl << '/' << application.to_s << '/' << model.to_s
+      amurl << '/' << application.to_s << '/' if application
+      amurl << model.to_s
 
       if action.nil? or action == 'create' or action == 'index'  
         amurl << query << fragment 

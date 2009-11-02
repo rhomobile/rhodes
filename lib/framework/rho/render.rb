@@ -1,4 +1,5 @@
 require 'rho/rhoapplication'
+require 'rho/rhocontroller'
 
 module Rho
   class RhoController
@@ -23,11 +24,18 @@ module Rho
 		res
 	end
 
-	def self.render_index(filename)
+	def inst_render_index(filename)
+        @request, @response = {}
+        @params = {}
+	
 		layout = File.dirname(filename) + "/layout_erb.iseq"
 		@content = eval_compiled_file(filename, binding)
 		@content = eval_compiled_file(layout, binding) if File.exist?(layout)
 	    @content
+	end
+
+	def self.render_index(filename)
+	    (RhoController.new).inst_render_index(filename)
 	end
 
     def render(options = nil)
