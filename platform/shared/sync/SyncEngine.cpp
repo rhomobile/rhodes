@@ -215,7 +215,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + strClientID;
     
-    NetResponse( resp, getNet().pullData(strUrl+strQuery) );
+    NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
     return resp.isOK();
 }
 
@@ -225,7 +225,7 @@ String CSyncEngine::requestClientIDByNet()
     String strUrl = serverUrl + "clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
 
-    NetResponse(resp,getNet().pullData(strUrl+strQuery));
+    NetResponse(resp,getNet().pullData(strUrl+strQuery, this));
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
@@ -279,7 +279,7 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
     
 	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
 
-    NetResponse( resp, getNet().pushData( strUrl, strBody ) );
+    NetResponse( resp, getNet().pushData( strUrl, strBody, this ) );
     if ( !resp.isOK() )
         LOG(ERROR) + "Call Login callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 	//}catch(Exception exc)
@@ -322,7 +322,7 @@ void CSyncEngine::login(String name, String password, String callback)
     String serverUrl = RHOCONF().getPath("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
 
-    NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody ) );
+    NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody, this ) );
     
     if ( !resp.isResponseRecieved())
     {
@@ -341,8 +341,16 @@ void CSyncEngine::login(String name, String password, String callback)
         callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
     	return;
     }
-    
-    getDB().executeSQL( "UPDATE sources SET session=?", "exists" );
+
+    String strSession = resp.getCharData();
+    if ( strSession.length() == 0 )
+    {
+    	LOG(ERROR) + "Return empty session.";
+    	callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+        return;
+    }
+
+    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
 
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->stopWait();

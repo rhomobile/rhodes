@@ -131,7 +131,7 @@ void CSyncNotify::fireObjectsNotification()
             return;
     }
 
-    NetResponse( resp, getNet().pushData( strUrl, strBody ));
+    NetResponse( resp, getNet().pushData( strUrl, strBody, null ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
@@ -346,7 +346,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
-    NetResponse(resp,getNet().pushData( strUrl, strBody ));
+    NetResponse(resp,getNet().pushData( strUrl, strBody, null ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else

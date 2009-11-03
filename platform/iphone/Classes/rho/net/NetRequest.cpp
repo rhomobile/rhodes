@@ -20,25 +20,25 @@ IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
 class CNetResponseImpl : public INetResponse
 {
-	char* pData;
+	char* m_pData;
 	int   m_nRespCode;
 	
 public:
-	CNetResponseImpl(char* data, int nRespCode) : pData(data), m_nRespCode(nRespCode){}
+	CNetResponseImpl(char* data, int nRespCode) : m_pData(data), m_nRespCode(nRespCode){}
 	~CNetResponseImpl()
 	{
-		if (pData)
-			free(pData);
+		if (m_pData)
+			free(m_pData);
 	}
 			
 	virtual const char* getCharData()
 	{
-		return pData ? pData : "";
+		return m_pData ? m_pData : "";
 	}
 			
 	virtual unsigned int getDataSize()
 	{
-		return pData ? strlen(pData) : 0;
+		return m_pData ? strlen(m_pData) : 0;
 	}
 	
 	void setRespCode(int nRespCode) 
@@ -61,6 +61,17 @@ public:
     }
 
     virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
+
+    void setCharData(const char* pData)
+    {
+		if (m_pData)
+        {
+			free(m_pData);
+            m_pData = 0;
+        }
+        m_pData = strdup(pData);
+    }
+
 };
 
 extern "C" void saveConnData(void* pThis, void* pData)
@@ -84,19 +95,23 @@ INetResponse* CNetRequest::doRequestTry(const char* method, const String& strUrl
 	return new CNetResponseImpl(response, nRespCode);
 }
 	
-INetResponse* CNetRequest::pullData(const String& strUrl )
+INetResponse* CNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
 	return doRequestTry("GET", strUrl, String(), rho_net_impl_request );
 }
 	
-INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
 	return doRequestTry("POST", strUrl, strBody, rho_net_impl_request );
 }
 
-INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-	return doRequestTry("POST", strUrl, strBody, rho_net_impl_requestCookies );
+    INetResponse* resp = doRequestTry("POST", strUrl, strBody, rho_net_impl_requestCookies );
+    if ( resp && resp->isOK() )
+        ((CNetResponseImpl*)resp)->setCharData("exists");
+
+	return resp;
 }
 	
 static const char* szMultipartPrefix = 
@@ -109,7 +124,7 @@ static const char* szMultipartPostfix =
 //static const char* szMultipartContType = 
 //"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
 	
-INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
@@ -145,7 +160,7 @@ extern "C"	int writeToFile(void* pThis, void* pData, int nSize)
 	return oFile.write(pData, nSize);
 }
 	
-INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 

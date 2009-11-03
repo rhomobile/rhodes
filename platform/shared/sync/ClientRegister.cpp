@@ -98,7 +98,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
             "&device_port=" + convertToStringA(port > 0 ? port : DEFAULT_PUSH_PORT) +
 		    "&device_type=" + m_sysInfo->getPlatform();
 
-        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody ));
+        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody, null ));
 		if( resp.isOK() )
         {
 //				try {
