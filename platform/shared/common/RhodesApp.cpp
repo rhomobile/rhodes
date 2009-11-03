@@ -2,12 +2,13 @@
 #include "common/RhoMutexLock.h"
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
-#include "ext/rho/rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
 #endif 
 #include "shttpd/src/shttpd.h"
+#include "shttpd/src/std_includes.h"
 
 extern "C" {
 void rho_sync_create();
@@ -42,9 +43,11 @@ CRhodesApp::CRhodesApp(const String& strRootPath, IRhoBrowser* pRhoBrowser) : CR
     m_strRhoRootPath = strRootPath;
     m_ptrRhoBrowser = pRhoBrowser;
     m_bExit = false;
-
+	
+#if defined (OS_WINDOWS) || defined(OS_WINCE)
     rho_logconf_Init(getRhoRootPath().c_str());
-
+#endif
+	
     m_shttpdCtx = 0;
 
 #ifdef OS_WINCE
@@ -65,7 +68,7 @@ void CRhodesApp::run()
     initHttpServer();
     RhoRubyStart();
 
-    m_ptrRhoBrowser->navigateUrl(getFirstStartUrl());
+    //m_ptrRhoBrowser->navigateUrl(getFirstStartUrl());
 
     rho_sync_create();
     RhoRubyInitApp();
@@ -139,10 +142,10 @@ const char* CRhodesApp::getFreeListeningPort()
     LOG(INFO) + "Trying to get free listening port.";
 	
     //get free port
-    SOCKET sockfd = -1;
+    int sockfd = -1;
     struct sockaddr_in serv_addr = {0};
-    struct hostent *server = {0};
-    int result = -1;
+    //struct hostent *server = {0};
+    //int result = -1;
 
     if ( noerrors )
     {
@@ -155,7 +158,7 @@ const char* CRhodesApp::getFreeListeningPort()
 		
 	    if ( noerrors )
 	    {
-		    server = gethostbyname( "localhost" );
+		    //server = gethostbyname( "localhost" );
 
 		    memset((void *) &serv_addr, 0, sizeof(serv_addr));
 		    serv_addr.sin_family = AF_INET;
@@ -170,7 +173,7 @@ const char* CRhodesApp::getFreeListeningPort()
 		    else
 		    {
 			    char buf[10] = {0};
-			    int length = sizeof( serv_addr );
+			    socklen_t length = sizeof( serv_addr );
 
 			    getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
 				
@@ -193,14 +196,18 @@ const char* CRhodesApp::getFreeListeningPort()
 const String& CRhodesApp::getRhoRootPath()
 {
     if ( m_strRhoRootPath.length() == 0 )
+	{
+#if defined (OS_WINDOWS) || defined(OS_WINCE)		
         m_strRhoRootPath = getSystemRootPath() + "rho/";
-
+#endif		
+	}
+	
     return m_strRhoRootPath;
 }
 
+#if defined (OS_WINDOWS) || defined(OS_WINCE)
 String CRhodesApp::getSystemRootPath()
 {
-#if defined (OS_WINDOWS) || defined(OS_WINCE)
   char rootpath[MAX_PATH];
   int len;
   if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
@@ -213,14 +220,13 @@ String CRhodesApp::getSystemRootPath()
   }
 
   return rootpath;
-#endif
-
 }
+#endif
 
 void CRhodesApp::initAppUrls() 
 {
     m_strHomeUrl = "http://localhost:";
-    m_strHomeUrl += getFreeListeningPort();
+    m_strHomeUrl += "8080";//getFreeListeningPort();
 
     m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
     convertToStringW(m_strStartUrl.c_str(), m_strStartUrlW);
@@ -325,4 +331,15 @@ char* HTTPResolveUrl(char* szUrl)
     free(szUrl);
     return strdup(strRes.c_str());
 }
+	
+void rho_rhodesapp_create(const char* szRootPath)
+{
+	rho::common::CRhodesApp::Create(szRootPath,0);
+}
+	
+void rho_rhodesapp_destroy()
+{
+	rho::common::CRhodesApp::Destroy();
+}
+	
 }

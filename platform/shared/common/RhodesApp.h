@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
 #include "common/IRhoBrowser.h"
@@ -58,3 +60,16 @@ public:
 }
 
 inline rho::common::CRhodesApp& RHODESAPP(){ return *rho::common::CRhodesApp::getInstance(); }
+
+#endif //__cplusplus
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+	
+void rho_rhodesapp_create(const char* szRootPath);
+void rho_rhodesapp_destroy();
+	
+#ifdef __cplusplus
+};
+#endif //__cplusplus
