@@ -20,11 +20,11 @@ public:
     CNetRequest(void) : m_pConnData(0){}
     virtual ~CNetRequest(void){}
 
-    virtual INetResponse* pullData(const String& strUrl );
-    virtual INetResponse* pushData(const String& strUrl, const String& strBody);
-    virtual INetResponse* pushFile(const String& strUrl, const String& strFileName);
-    virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath);
-    virtual INetResponse* pullCookies(const String& strUrl, const String& strBody);
+    virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
+    virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
+    virtual INetResponse* pushFile(const String& strUrl, const String& strFileName, IRhoSession* oSession);
+    virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession);
+    virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
     //if strUrl.length() == 0 delete all cookies if possible
     virtual void deleteCookie(const String& strUrl);
 

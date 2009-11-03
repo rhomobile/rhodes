@@ -11,19 +11,23 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
-INetResponse* CNetRequest::pullData(const String& strUrl )
+INetResponse* CNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
-    return doRequest("GET",strUrl,String());
+    return doRequest("GET",strUrl,String(),oSession);
 }
 
-INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    return doRequest("POST",strUrl,strBody);
+    return doRequest("POST",strUrl,strBody,oSession);
 }
 
-INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody)
+INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    return doRequest("POST",strUrl,strBody);
+    INetResponse* resp = doRequest("POST",strUrl,strBody,oSession);
+    if ( resp && resp->isOK() )
+        ((CNetResponseImpl*)resp)->getRawData() = "exists";
+
+    return resp;
 }
 
 //if strUrl.length() == 0 delete all cookies if possible
@@ -48,7 +52,7 @@ void CNetRequest::cancel()
         m_pCurNetRequestImpl->close();
 }
 
-INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
@@ -74,7 +78,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
     return pResp;
 }
 
-INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath)
+INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
@@ -100,7 +104,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
     return pResp;
 }
 
-INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody )
+INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession )
 {
     int nTry = 0;
     m_bCancel = false;

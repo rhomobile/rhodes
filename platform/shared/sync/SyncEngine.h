@@ -28,7 +28,7 @@ extern const _CRhoRuby& RhoRuby;
 
 namespace sync {
 
-class CSyncEngine
+class CSyncEngine : public net::IRhoSession
 {
     DEFINE_LOGCLASS;
 public:
@@ -79,7 +79,7 @@ public:
 //private:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
-    String getSession(){ return m_strSession; }
+    const String& getSession(){ return m_strSession; }
     boolean isSessionExist(){ return m_strSession.length() > 0; }
 
     //CSyncEngine(): m_dbAdapter(db::CDBAdapter()), m_NetRequest(0), m_isLoggedIn(true){}
