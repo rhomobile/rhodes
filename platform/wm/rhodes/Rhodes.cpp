@@ -65,6 +65,7 @@ public :
 		m_nRestarting = 1;
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
+        m_strRootPath = getRhoRootPath();
 		while (lpszToken != NULL)
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
@@ -134,6 +135,7 @@ public :
             return S_FALSE;
         }
 
+        rho_logconf_Init(m_strRootPath.c_str());
         rho::common::CRhodesApp::Create(m_strRootPath, new CRhoBrowserImpl(m_appWindow.m_hWnd) );
 
        // m_pServerHost = new CServerHost();
@@ -197,6 +199,24 @@ public :
         //delete m_pServerHost;
         //m_pServerHost = NULL;
         rho::common::CRhodesApp::Destroy();
+    }
+
+    rho::String getRhoRootPath()
+    {
+        char rootpath[MAX_PATH];
+        int len;
+        if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
+            strcpy(rootpath,".");
+        else
+        {
+            while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
+              len--;
+            rootpath[len+1]=0;
+        }
+
+        rho::String strRes = rootpath;
+        strRes += "rho/";
+        return strRes; 
     }
 
 private:
