@@ -19,6 +19,7 @@
 #endif
 
 #ifdef OS_MACOSX
+#define RHO_NET_NEW_IMPL
 #include <TargetConditionals.h>
 #endif //OS_MACOSX
 
