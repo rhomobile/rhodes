@@ -55,7 +55,8 @@ import android.os.Process;
 public class Platform extends Activity {
 
 	private static final String LOG_TAG = "Rhodes";
-	private static String HOME_URL = "http://127.0.0.1:8080";
+	//private static String HOME_URL = "http://127.0.0.1:8080";
+	private static String HOME_URL;
 
 	public static final int HTTP_SERVER_STARTED = 1;
 
@@ -75,6 +76,8 @@ public class Platform extends Activity {
 		return HOME_URL;
 	}
 	
+	public native String getHomeUrlNative();
+	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));
@@ -89,6 +92,11 @@ public class Platform extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Load native implementation of rhodes
+		System.loadLibrary("rhodes");
+		
+		HOME_URL = getHomeUrlNative();
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
