@@ -534,9 +534,8 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 std::wstring& loadLoadingHtml(std::wstring& str) {
 	FILE *file;
 	wchar_t	buf[1024];
-	std::string fname = RhoGetRootPath();
 
-	fname.append("apps\\loading.html");
+    rho::String fname = RHODESAPP().getLoadingPagePath(); 
 	file = fopen(fname.c_str(), "r");
 
 	if(file==NULL) {

@@ -40,6 +40,9 @@ public:
     const String& getRhobundleReloadUrl();
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
+    String getLoadingPagePath();
+    const String& getStartUrl(){return m_strStartUrl;}
+    const String& getOptionsUrl(){return m_strOptionsUrl;}
 
 private:
 	virtual void run();
@@ -50,12 +53,10 @@ private:
 
     const char* getFreeListeningPort();
     const String& getRhoRootPath();
-    String getSystemRootPath();
     const char* getRelativeBlobsPath(); 
     const wchar_t* getRelativeBlobsPathW();
-    String getLoadingPagePath();
-    const String& getStartUrl();
 
+    void callAppActiveCallback();
 };
 
 }
@@ -71,10 +72,13 @@ extern "C" {
 	
 void rho_rhodesapp_create(const char* szRootPath);
 void rho_rhodesapp_destroy();
+const char* rho_rhodesapp_getstarturl();
+const char* rho_rhodesapp_getoptionsurl();
 
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
+
 
 #ifdef __cplusplus
 };

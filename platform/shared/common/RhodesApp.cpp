@@ -2,6 +2,7 @@
 #include "common/RhoMutexLock.h"
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
+#include "net/INetRequest.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include <math.h>
 
@@ -74,6 +75,7 @@ void CRhodesApp::run()
 
     rho_sync_create();
     RhoRubyInitApp();
+    callAppActiveCallback();
 
     while(!m_bExit)
     {
@@ -118,6 +120,32 @@ void CRhodesApp::exitApp()
 
         stop(2000);
     }
+}
+
+class CRhoCallbackCall :  public common::CRhoThread
+{
+    String m_strCallback;
+    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
+public:
+    CRhoCallbackCall(const String& strCallback, common::IRhoClassFactory* factory) : CRhoThread(factory), m_ptrFactory(factory), m_strCallback(strCallback)
+    { start(epNormal); }
+
+private:
+	virtual void run()
+    {
+        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        NetResponse( resp, pNetRequest->pushData( m_strCallback, "", null ));
+        delete this;
+    }
+};
+
+void CRhodesApp::callAppActiveCallback()
+{
+    String strCallback = RHOCONF().getString("app_did_become_active_callback");
+    if ( strCallback.length() == 0 )
+        return;
+
+    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );
 }
 
 static void callback_geolocation(struct shttpd_arg *arg) 
@@ -303,11 +331,6 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 	return m_strRhobundleReloadUrl;
 }
 
-const String& CRhodesApp::getStartUrl()
-{
-    return m_strStartUrl;
-}
-
 const StringW& CRhodesApp::getStartUrlW()
 {
     return m_strStartUrlW;
@@ -417,5 +440,15 @@ void rho_rhodesapp_destroy()
 {
 	rho::common::CRhodesApp::Destroy();
 }
-	
+
+const char* rho_rhodesapp_getstarturl()
+{
+    return RHODESAPP().getStartUrl().c_str();
+}
+
+const char* rho_rhodesapp_getoptionsurl()
+{
+    return RHODESAPP().getOptionsUrl().c_str();
+}
+
 }
