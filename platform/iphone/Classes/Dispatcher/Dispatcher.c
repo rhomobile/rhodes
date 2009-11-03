@@ -23,7 +23,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Dispatcher"
 
-extern void _rho_map_location(char* query);
+extern void rho_map_location(char* query);
 
 char *trim(char *str)
 {
@@ -200,7 +200,7 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 					RAWLOG_INFO1("Map %s", context->_request->_query);
 					query = context->_request->_query;
 				}
-				_rho_map_location(query);
+				rho_map_location(query);
 				return HTTPSendReply(context,"");
 			}
 		}

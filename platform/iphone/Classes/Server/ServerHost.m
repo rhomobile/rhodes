@@ -425,7 +425,7 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 										   data:[NSString stringWithCString:data]];
 }
 
-void _rho_map_location(char* query) {
+void rho_map_location(char* query) {
 	[[ServerHost sharedInstance] mapLocation:[NSString stringWithCString:query]];
 }
 

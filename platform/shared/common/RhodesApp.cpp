@@ -3,6 +3,7 @@
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include <math.h>
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -13,6 +14,12 @@
 extern "C" {
 void rho_sync_create();
 void rho_sync_destroy();
+void rho_sync_doSyncAllSources(int show_status_popup);
+double geo_latitude();
+double geo_longitude();
+void rho_map_location(char* query);
+void rho_appmanager_load( void* httpContext, const char* szQuery);
+void webview_navigate(char* url, int index);
 }
 
 namespace rho {
@@ -21,12 +28,12 @@ namespace common{
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 CRhodesApp* CRhodesApp::m_pInstance = 0;
 
-/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, IRhoBrowser* pRhoBrowser)
+/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath)
 {
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CRhodesApp(strRootPath,pRhoBrowser);
+    m_pInstance = new CRhodesApp(strRootPath);
     return m_pInstance;
 }
 
@@ -38,10 +45,9 @@ CRhodesApp* CRhodesApp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesApp::CRhodesApp(const String& strRootPath, IRhoBrowser* pRhoBrowser) : CRhoThread(createClassFactory())
+CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactory())
 {
     m_strRhoRootPath = strRootPath;
-    m_ptrRhoBrowser = pRhoBrowser;
     m_bExit = false;
 	
     m_shttpdCtx = 0;
@@ -64,8 +70,7 @@ void CRhodesApp::run()
     initHttpServer();
     RhoRubyStart();
 
-    if ( m_ptrRhoBrowser )
-        m_ptrRhoBrowser->navigateUrl(getFirstStartUrl());
+    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
     rho_sync_create();
     RhoRubyInitApp();
@@ -115,6 +120,57 @@ void CRhodesApp::exitApp()
     }
 }
 
+static void callback_geolocation(struct shttpd_arg *arg) 
+{
+	double latitude = geo_latitude();
+	double longitude = geo_longitude();
+
+    char location[256];
+	sprintf(location,"%.4f° %s, %.4f° %s;%f;%f",
+		fabs(latitude),latitude < 0 ? "South" : "North",
+		fabs(longitude),longitude < 0 ? "West" : "East",
+		latitude,longitude);
+
+    LOGC(INFO,CRhodesApp::getLogCategory())+ "Location: " + location;
+    rho_http_sendresponse(arg, location);
+}
+
+static void callback_syncdb(struct shttpd_arg *arg) 
+{
+    rho_sync_doSyncAllSources(1);
+    rho_http_sendresponse(arg, "");
+}
+
+static void callback_redirect_to(struct shttpd_arg *arg) 
+{
+    String strQuery = shttpd_get_env(arg,"QUERY_STRING");
+    int nUrl = strQuery.find_first_of("url=");
+    String strUrl;
+    if ( nUrl != String::npos )
+        strUrl = strQuery.substr(nUrl+4);
+
+    if ( strUrl.length() == 0 )
+        strUrl = "/app/";
+
+    rho_http_redirect(arg,strUrl.c_str());
+}
+
+static void callback_map(struct shttpd_arg *arg) 
+{
+    rho_map_location( const_cast<char*>(shttpd_get_env(arg,"QUERY_STRING")) );
+    rho_http_sendresponse(arg, "");
+}
+
+static void callback_shared(struct shttpd_arg *arg) 
+{
+    rho_http_senderror(arg, 404, "Not Found");
+}
+
+static void callback_AppManager_load(struct shttpd_arg *arg) 
+{
+    rho_appmanager_load( arg, shttpd_get_env(arg,"QUERY_STRING") );
+}
+
 void CRhodesApp::initHttpServer()
 {
   LOG(INFO) + "Init http server";
@@ -125,9 +181,13 @@ void CRhodesApp::initHttpServer()
   shttpd_set_option(m_shttpdCtx, "root", strAppRootPath.c_str());
   shttpd_set_option(m_shttpdCtx, "ports", getFreeListeningPort());
 
-//#if defined(OS_WINCE)
-//  shttpd_register_uri(m_shttpdCtx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
-//#endif
+  //shttpd_register_uri(m_shttpdCtx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
+  shttpd_register_uri(m_shttpdCtx, "/system/geolocation", callback_geolocation, this);
+  shttpd_register_uri(m_shttpdCtx, "/system/syncdb", callback_syncdb, this);
+  shttpd_register_uri(m_shttpdCtx, "/system/redirect_to", callback_redirect_to, this);
+  shttpd_register_uri(m_shttpdCtx, "/system/map", callback_map, this);
+  shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
+  shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
 }
 
 const char* CRhodesApp::getFreeListeningPort()
@@ -260,7 +320,7 @@ const StringW& CRhodesApp::getOptionsUrlW()
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
-    m_ptrRhoBrowser->navigateUrl(canonicalizeRhoUrl(strUrl));
+    webview_navigate(const_cast<char*>(strUrl.c_str()), 0);
 }
 
 String CRhodesApp::canonicalizeRhoUrl(const String& strUrl) 
@@ -307,10 +367,50 @@ char* HTTPResolveUrl(char* szUrl)
     free(szUrl);
     return strdup(strRes.c_str());
 }
-	
+
+void rho_http_redirect( void* httpContext, const char* szUrl)
+{
+    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
+    
+	shttpd_printf(arg, "%s", "HTTP/1.1 301 Moved Permanently\r\n");
+    shttpd_printf(arg, "Location: %s\r\n", szUrl );
+	shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
+	shttpd_printf(arg, "%s", "Connection: close\r\n");
+	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+	shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
+
+	arg->flags |= SHTTPD_END_OF_OUTPUT;
+}
+
+void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
+{
+    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
+
+	shttpd_printf(arg, "%s", "HTTP/1.1 %d %s\r\n", nError, szMsg);
+	arg->flags |= SHTTPD_END_OF_OUTPUT;
+}
+
+void rho_http_sendresponse(void* httpContext, const char* szBody)
+{
+    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
+
+	shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
+	shttpd_printf(arg, "Content-Length: %lu\r\n", strlen(szBody) );
+	shttpd_printf(arg, "%s", "Connection: close\r\n");
+	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+	shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
+	shttpd_printf(arg, "%s", szBody );
+
+	arg->flags |= SHTTPD_END_OF_OUTPUT;
+}
+
 void rho_rhodesapp_create(const char* szRootPath)
 {
-	rho::common::CRhodesApp::Create(szRootPath,0);
+	rho::common::CRhodesApp::Create(szRootPath);
 }
 	
 void rho_rhodesapp_destroy()
