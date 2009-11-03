@@ -770,10 +770,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\common\IRhoBrowser.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\shared\common\irhoclassfactory.h"
 				>
 			</File>
