@@ -4,6 +4,12 @@ typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
 
 #ifdef __cplusplus
 
+#include "RhoDefs.h"
+
+#ifdef RHO_NET_NEW_IMPL
+#include "curl/curl.h"
+#endif // NEW_NET_IMPL
+
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
 
@@ -17,8 +23,8 @@ class CNetRequest : public INetRequest
 public:
 	void* m_pConnData;
 	
-    CNetRequest(void) : m_pConnData(0){}
-    virtual ~CNetRequest(void){}
+    CNetRequest();
+    virtual ~CNetRequest();
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
@@ -32,10 +38,28 @@ public:
 
     virtual void cancel();
 private:
+#ifdef RHO_NET_NEW_IMPL
+	char* request(const char *method, const String& strUrl, const String& strBody,
+				  int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+	char* requestCookies(const char *method, const String& strUrl, const String& strBody,
+						 int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+	
+	typedef char* (CNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
+					const String& strBody, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+	
+	char* pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave);
+	char* pushMultipartData(const String& strUrl, const char* data, size_t data_size, int* pnRespCode, FSAVECONNDATA fSave);
+#else	
 	typedef char* (*Frho_net_impl_request)(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
+#endif // RHO_NET_NEW_IMPL
 	
-	INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody, Frho_net_impl_request func );
-	
+	INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody, Frho_net_impl_request func, IRhoSession* oSession );
+
+#ifdef RHO_NET_NEW_IMPL
+	CURL *curl;
+	char *errbuf[CURL_ERROR_SIZE];
+	String cookies;
+#endif // RHO_NET_NEW_IMPL
 };
 
 }
