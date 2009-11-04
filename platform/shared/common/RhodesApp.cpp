@@ -408,10 +408,12 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     shttpd_printf(arg, "Location: %s\r\n", szUrl );
 	shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
 	shttpd_printf(arg, "%s", "Connection: close\r\n");
-	//shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-	//shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-	//shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-	
+#ifndef OS_MACOSX
+	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+#endif
+
 	shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
 
 	arg->flags |= SHTTPD_END_OF_OUTPUT;
@@ -433,10 +435,11 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
 	shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
 	shttpd_printf(arg, "Content-Length: %lu\r\n", nBodySize );
 	shttpd_printf(arg, "%s", "Connection: close\r\n");
-	//shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-	//shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-	//shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-	
+#ifndef OS_MACOSX
+	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+#else
 	const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
 	char date[64], lm[64];
 	time_t	_current_time = time(0);
@@ -446,7 +449,8 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
 	shttpd_printf(arg, "Date: %s\r\n", date);
 	shttpd_printf(arg, "Last-Modified: %s\r\n", lm);
 	shttpd_printf(arg, "Etag: \"%lx.%lx\"\r\n", (unsigned long) _current_time, nBodySize);
-	
+#endif
+
 	shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
 	shttpd_printf(arg, "%s", szBody );
 
