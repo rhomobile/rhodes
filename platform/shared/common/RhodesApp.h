@@ -44,8 +44,9 @@ public:
     const String& getStartUrl(){return m_strStartUrl;}
     const String& getOptionsUrl(){return m_strOptionsUrl;}
 
-private:
 	virtual void run();
+
+private:
 
     void initHttpServer();
     void initAppUrls();
@@ -72,6 +73,7 @@ extern "C" {
 	
 void rho_rhodesapp_create(const char* szRootPath);
 void rho_rhodesapp_destroy();
+void rho_rhodesapp_run();	
 const char* rho_rhodesapp_getstarturl();
 const char* rho_rhodesapp_getoptionsurl();
 
