@@ -295,7 +295,7 @@ VALUE callFramework(VALUE hashReq) {
 		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
-    RAWTRACE(RSTRING(callres));
+    RAWTRACE(RSTRING_PTR(callres));
 
     rb_gc_register_mark_object(callres);
 	//TBD: need to cleanup memory
@@ -313,7 +313,7 @@ VALUE callServeIndex(char* index_name) {
 		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
-    RAWTRACE(RSTRING(callres));
+    RAWTRACE(RSTRING_PTR(callres));
 
     rb_gc_register_mark_object(callres);
 
