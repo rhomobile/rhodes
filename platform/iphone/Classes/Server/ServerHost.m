@@ -12,14 +12,14 @@
 #include <unistd.h>
 
 #include "defs.h"
-//#include "Server.h"
-//#include "HttpContext.h"
+#include "Server.h"
+#include "HttpContext.h"
 #include "ServerHost.h"
 //#include "Dispatcher.h"
 #include "AppManagerI.h"
-//#include "common/RhoConf.h"
+#include "common/RhoConf.h"
 #include "logging/RhoLogConf.h"
-//#include "sync/syncthread.h"
+#include "sync/syncthread.h"
 #include "common/RhodesApp.h"
 #include "JSString.h"
 #import "WebViewUrl.h"
@@ -45,10 +45,10 @@ extern void geo_init();
 #pragma mark -
 #pragma mark Static Function Declarations
 
-//static void AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info);
+static void AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info);
 
 
-/* static */ /*void
+/* static */ void
 AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info) {
     
 	if (sock == ((CFSocketNativeHandle)(-1))) {
@@ -67,7 +67,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 		if ((http != NULL) && !HttpContextOpen(http))
 			HttpContextRelease(http);
 	}
-}*/
+}
 
 #pragma mark -
 
@@ -75,10 +75,10 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, /*onStartFailure, onStartSuccess,*/ onRefreshView, onNavigateTo, onExecuteJs; 
+@synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
 @synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
 @synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab;
-/*
+
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
 		[actionTarget performSelector:onStartSuccess withObject:data];
@@ -86,7 +86,7 @@ static ServerHost* sharedSH = nil;
 	// Do sync w/ remote DB 
 	//wake_up_sync_engine();	
 }
-
+/*
 - (void)serverFailed:(void*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartFailure]) {
 		[actionTarget performSelector:onStartFailure];
@@ -219,15 +219,11 @@ static ServerHost* sharedSH = nil;
 	runLoop = CFRunLoopGetCurrent();
 	m_geoThread = [NSThread currentThread];
 	geo_init();
-
-	//geo_latitude();
 	
-	//geo_latitude();
-    ///rho_rhodesapp_create(RhoGetRootPath());
-	/*RAWLOG_INFO("Initializing ruby");
+	RAWLOG_INFO("Initializing ruby");
 	RhoRubyStart();
 
-	char* _url = rho_conf_getString("start_path");
+	/*char* _url = rho_conf_getString("start_path");
 	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
 	rho_conf_freeString(_url);
 	_url = rho_conf_getString("options_path");
@@ -238,8 +234,8 @@ static ServerHost* sharedSH = nil;
 	RAWLOG_INFO1("Options page: %s", [optionsUrl UTF8String]);
 	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
 	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
-	
-    runLoop = CFRunLoopGetCurrent();
+	*/
+    //runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
@@ -250,12 +246,12 @@ static ServerHost* sharedSH = nil;
 		RhoRubyInitApp();
 		
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:homeUrl waitUntilDone:NO];
-	*/	
+							   withObject:NULL waitUntilDone:NO];
+		
         [[NSRunLoop currentRunLoop] run];
 	
 	
-     /*   RAWLOG_INFO("Invalidating local server");
+	    RAWLOG_INFO("Invalidating local server");
         ServerInvalidate(server);
     } else {
         RAWLOG_INFO("Failed to start HTTP Server");
@@ -270,9 +266,7 @@ static ServerHost* sharedSH = nil;
 	RhoRubyStop();
 	
     RAWLOG_INFO("Server host thread routine is completed");
-    */
-		RAWLOG_INFO("End ServerHost thread");
-	  [pool release];
+	[pool release];
 }
 /*
 - (int)initializeDatabaseConn {
@@ -387,7 +381,9 @@ void webview_refresh() {
 
 void webview_navigate(char* url, int index) {
 	WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
-	webViewUrl.url = [NSString stringWithUTF8String:url];
+	char* szNormUrl = rho_http_normalizeurl(url);
+	webViewUrl.url = [NSString stringWithUTF8String:szNormUrl];
+	rho_http_free(szNormUrl);
 	webViewUrl.webViewIndex = index;
 	[[ServerHost sharedInstance] navigateTo:webViewUrl];
 }
