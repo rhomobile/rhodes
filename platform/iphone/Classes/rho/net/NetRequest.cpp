@@ -1,10 +1,10 @@
 #include "NetRequest.h"
 #include "common/AutoPointer.h"
 #include "common/RhoFile.h"
+#include "common/RhodesApp.h"
 
 extern "C" {
 	
-char* HTTPResolveUrl(char* url);
 char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
 char* rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
 //int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis);
@@ -190,10 +190,7 @@ void CNetRequest::deleteCookie(const String& strUrl)
 
 String CNetRequest::resolveUrl(const String& strUrl)
 {
-    char* url = HTTPResolveUrl( strdup(strUrl.c_str()) );
-    String res = url;
-    free(url);
-    return res;
+    return RHODESAPP().canonicalizeRhoUrl(strUrl);
 }
 
 void CNetRequest::cancel()

@@ -4,8 +4,7 @@
 #include "common/AutoPointer.h"
 #include "common/RhoFile.h"
 #include "NetRequestImpl.h"
-
-extern "C" char* HTTPResolveUrl(char* url);
+#include "common/RhodesApp.h"
 
 namespace rho {
 namespace net {
@@ -39,10 +38,7 @@ void CNetRequest::deleteCookie(const String& strUrl)
 
 String CNetRequest::resolveUrl(const String& strUrl)
 {
-    char* url = HTTPResolveUrl( strdup(strUrl.c_str()) );
-    String res = url;
-    free(url);
-    return res;
+    return RHODESAPP().canonicalizeRhoUrl(strUrl);
 }
 
 void CNetRequest::cancel()
