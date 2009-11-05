@@ -27,6 +27,10 @@ namespace "config" do
       #load the apps path and config
 
       $app_path = $config["env"]["app"]
+      unless File.exists? $app_path
+        puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
+        exit 1
+      end
       $app_config = YAML::load_file($app_path + "/build.yml")
 
     end
