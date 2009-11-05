@@ -48,7 +48,7 @@ VALUE callServeIndex(char* index_name);
 
 void RhoRubyStop();
 
-const char* RhoGetRootPath();
+//const char* RhoGetRootPath();
 
 VALUE rho_ruby_create_array();
 VALUE rho_ruby_create_string(const char* szVal);
