@@ -115,7 +115,7 @@ namespace "config" do
     $preverified = $app_path + "/preverified"
     $targetdir = $bindir + "/target/" + $bbver
     $rubyVMdir = $app_path + "/RubyVM"
-    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
+    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/date.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
     $excludeapps = "public/js/iui/**,**/jquery*"
@@ -123,7 +123,7 @@ namespace "config" do
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
     $outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-    $outfilebase.gsub!(/[^A-Za-z_0-9]/, '_')
+    $outfilebase = $outfilebase.gsub(/[^A-Za-z_0-9]/, '_')
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       $preverified+"/RubyVM.jar"
@@ -150,8 +150,8 @@ namespace "build" do
       args << "-classpath"
       args << '"' + jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar\""
       args << "-d"
-      args << $preverified
-      args << $bindir + "/RhoBundle.jar"
+      args << '"' + $preverified + '"'
+      args << '"' + $bindir + "/RhoBundle.jar\""
       puts Jake.run(jdehome + "/bin/preverify.exe",args)
       unless $? == 0
         puts "Error preverifying"
@@ -192,7 +192,7 @@ namespace "build" do
         args << "-target"
         args << "1.3"
         args << "-nowarn"
-        args << "@#{$builddir}/RubyVM_build.files"
+        args << "\"@#{$builddir}/RubyVM_build.files\""
         puts Jake.run(javac,args)
         unless $? == 0
           puts "Error compiling java code"
@@ -204,7 +204,7 @@ namespace "build" do
         args << "-classpath"
         args << '"' + jdehome + "/lib/net_rim_api.jar\""
         args << "-d"
-        args << $tmpdir + "/RubyVM.preverify"
+        args << '"' + $tmpdir + "/RubyVM.preverify\""
         args << '"' + $tmpdir + "/RubyVM\""
         puts Jake.run(jdehome + "/bin/preverify.exe",args)
         unless $? == 0
@@ -281,10 +281,10 @@ namespace "build" do
         args << "-target"
         args << "1.3"
         args << "-nowarn"
-        args << "@#{vsrclist}"
+        args << "\"@#{vsrclist}\""
         #args << "@RubyVM_build.files"
-        args << "@#{$builddir}/hsqldb_build.files"
-        args << "@#{$builddir}/rhodes_build.files"
+        args << "\"@#{$builddir}/hsqldb_build.files\""
+        args << "\"@#{$builddir}/rhodes_build.files\""
         puts "\texecuting javac"
         puts Jake.run(javac,args)
         unless $? == 0
@@ -567,7 +567,7 @@ namespace "run" do
   end
   
   desc "Builds everything, loads and starts bb sim and mds"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:dev"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
