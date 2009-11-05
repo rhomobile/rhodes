@@ -62,9 +62,14 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 
 	//rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
-    start(epLow);
+    //start(epNormal);
 }
 
+void CRhodesApp::startApp()
+{
+	start(epNormal);
+}
+	
 void CRhodesApp::run()
 {
 	LOG(INFO) + "Starting RhodesApp main routine...";
@@ -322,6 +327,12 @@ String CRhodesApp::getFirstStartUrl()
     return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
 }
 
+void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
+{
+    m_strCurrentUrlW = strUrlW;
+    keepLastVisitedUrl(convertToStringA(strUrlW));
+}
+
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
 	LOG(INFO) + "Current URL: " + strUrl;
@@ -418,11 +429,13 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     shttpd_printf(arg, "Location: %s\r\n", szUrl );
 	shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
 	shttpd_printf(arg, "%s", "Connection: close\r\n");
-#ifndef OS_MACOSX
+//#ifndef OS_MACOSX
 	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: must-revalidate\r\n" );
 	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-store\r\n" );	
 	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-#endif
+//#endif
 
 	shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
 
@@ -470,6 +483,11 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
 void rho_rhodesapp_create(const char* szRootPath)
 {
 	rho::common::CRhodesApp::Create(szRootPath);
+}
+
+void rho_rhodesapp_start()
+{
+	RHODESAPP().startApp();
 }
 	
 void rho_rhodesapp_destroy()

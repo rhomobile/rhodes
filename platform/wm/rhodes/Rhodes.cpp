@@ -125,6 +125,7 @@ public :
 
         rho_logconf_Init(m_strRootPath.c_str());
         rho::common::CRhodesApp::Create(m_strRootPath );
+        RHODESAPP().startApp();
 
        // m_pServerHost = new CServerHost();
         // Starting local server
@@ -158,9 +159,9 @@ public :
         ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
     }
 
-	char* GetCurrentLocation() {
-		return m_appWindow.GetCurrentLocation();
-	}
+	//char* GetCurrentLocation() {
+	//	return m_appWindow.GetCurrentLocation();
+	//}
 
 	HWND GetManWindow() {
 		return m_appWindow.m_hWnd;
@@ -251,12 +252,12 @@ extern "C" int webview_active_tab() {
 	return 0;
 }
 
-extern "C" char* get_current_location() {
-	return _AtlModule.GetCurrentLocation();
-}
+//extern "C" char* get_current_location() {
+//	return _AtlModule.GetCurrentLocation();
+//}
 
 extern "C" char* webview_current_location() {
-	return get_current_location();
+    return const_cast<char*>(RHODESAPP().getCurrentUrl().c_str());
 }
 
 extern "C" VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
