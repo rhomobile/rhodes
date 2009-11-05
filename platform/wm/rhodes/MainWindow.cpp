@@ -48,17 +48,17 @@ CMainWindow::CMainWindow()
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 #endif
-	m_current_url = NULL;
-    m_szStartPage = NULL;
+//	m_current_url = NULL;
+//    m_szStartPage = NULL;
 }
 
 CMainWindow::~CMainWindow()
 {
-    if ( m_current_url )
-	    free(m_current_url);
+//    if ( m_current_url )
+//	    free(m_current_url);
 
-    if ( m_szStartPage )
-        free(m_szStartPage);
+//    if ( m_szStartPage )
+//        free(m_szStartPage);
 }
 
 void CMainWindow::Navigate2(BSTR URL) {
@@ -264,7 +264,8 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
+//    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
+    if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
         m_spIWebBrowser2->GoBack();
 
     return 0;
@@ -362,9 +363,9 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {
 //    m_spIWebBrowser2->Refresh();
 
-	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
-	Navigate2(wcurl);
-	free(wcurl);
+//	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
+    Navigate2(const_cast<wchar_t*>(RHODESAPP().getCurrentUrlW().c_str()));
+//	free(wcurl);
     return 0;
 }
 
@@ -609,19 +610,20 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		ShowLoadingPage(pDisp, pvtURL);
 #endif //_WIN32_WCE
 		m_bLoading = false; //show loading page only once
-    }else{
-        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
-            m_szStartPage = wce_wctomb(url);
+    }else
+    {
+//        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
+//            m_szStartPage = wce_wctomb(url);
     }
 
-	if (m_current_url) {
+	/*if (m_current_url) {
 		free(m_current_url);
 	}
 
-	m_current_url = wce_wctomb(url);
+	m_current_url = wce_wctomb(url);*/
 	
 	if( store_current_url ) 
-        RHODESAPP().keepLastVisitedUrl(m_current_url);
+        RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 

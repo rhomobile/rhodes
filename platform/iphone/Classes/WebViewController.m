@@ -67,7 +67,7 @@ char* get_current_location() {
 }
 
 -(void)navigate:(NSString*)url {
-    RAWLOG_INFO("Navigating to the specifyed URL");
+    //RAWLOG_INFO1("Navigating to the specifyed URL: %s",  [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
 }
 
@@ -81,7 +81,7 @@ char* get_current_location() {
 	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
-	 */
+	*/ 
 	[self navigate: url];
 }
 
@@ -95,7 +95,7 @@ char* get_current_location() {
 
 -(IBAction)goHome {
 	const char* url = rho_rhodesapp_getstarturl();
-	[self navigate:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
+	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
 	//if (viewHomeUrl != NULL) {
 	//	[self navigateRedirect:viewHomeUrl];
 	//}
@@ -103,7 +103,7 @@ char* get_current_location() {
 
 -(IBAction)goOptions {
 	const char* url = rho_rhodesapp_getoptionsurl();
-	[self navigate:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
+	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
 	
 	//if (viewOptionsUrl != NULL) {
 	//	[self navigateRedirect:viewOptionsUrl];
@@ -111,9 +111,9 @@ char* get_current_location() {
 }
 
 -(IBAction)refresh {
-	//[webView reload];
-	const char* url = rho_rhodesapp_getcurrenturl();
-	[self navigate:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
+	[webView reload];
+	//const char* url = rho_rhodesapp_getcurrenturl();
+	//[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
 }
 
 -(void)setActivityInfo:(NSString *)labelText {

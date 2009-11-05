@@ -29,7 +29,7 @@
 	TabBarDelegate* tabBarDelegate;
 	NativeBar* nativeBar;
 	AVAudioPlayer *player;
-	//bool appStarted;
+	bool appStarted;
 }
 
 @property (nonatomic, retain) UIWindow *window;

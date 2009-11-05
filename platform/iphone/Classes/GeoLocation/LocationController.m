@@ -126,7 +126,7 @@ static char location_message[256];
 		return 0;
 	}
 	return 1;
-}
+}*/
 
 - (char*) getLocation {
 	if (![self update]) {
@@ -143,7 +143,7 @@ static char location_message[256];
 			fabs(longitude),signbit(longitude) ? "West" : "East",
 			latitude,longitude);
 	return location_message;
-}*/
+}
 
 - (void) stop {
 	[_locationManager stopUpdatingLocation];
