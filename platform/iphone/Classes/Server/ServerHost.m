@@ -299,7 +299,7 @@ static ServerHost* sharedSH = nil;
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
 	rho_rhodesapp_create(rho_native_rhopath());	
-	rho_rhodesapp_start();	
+	//rho_rhodesapp_start();	
 }
 
 void* rho_nativethread_start()
