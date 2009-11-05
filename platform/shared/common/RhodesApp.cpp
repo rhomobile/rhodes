@@ -330,6 +330,10 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
             strUrl = strUrl.substr(m_strHomeUrl.length());
 
+        int nFragment = strUrl.find('#');
+        if ( nFragment != String::npos )
+            strUrl = strUrl.substr(0, nFragment);
+
 	    RHOCONF().setString("LastVisitedPage",strUrl);		
 	    RHOCONF().saveToFile();
     }
@@ -480,6 +484,11 @@ const char* rho_rhodesapp_getstarturl()
 const char* rho_rhodesapp_getoptionsurl()
 {
     return RHODESAPP().getOptionsUrl().c_str();
+}
+
+void rho_rhodesapp_keeplastvisitedurl(const char* szUrl)
+{
+    return RHODESAPP().keepLastVisitedUrl(szUrl);
 }
 
 }

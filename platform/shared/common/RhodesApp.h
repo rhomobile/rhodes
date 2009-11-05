@@ -76,6 +76,7 @@ void rho_rhodesapp_destroy();
 void rho_rhodesapp_run();	
 const char* rho_rhodesapp_getstarturl();
 const char* rho_rhodesapp_getoptionsurl();
+void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
 
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
