@@ -399,13 +399,6 @@ const wchar_t* CRhodesApp::getRelativeBlobsPathW()
 
 extern "C" {
 
-char* HTTPResolveUrl(char* szUrl) 
-{
-    rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);
-    free(szUrl);
-    return strdup(strRes.c_str());
-}
-
 char* rho_http_normalizeurl(const char* szUrl) 
 {
 	rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);

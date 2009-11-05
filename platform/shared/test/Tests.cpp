@@ -100,8 +100,3 @@ extern "C" char *getenv(const char *env)
 	return 0;
 }
 #endif
-
-extern "C" char* HTTPResolveUrl(char* url)
-{
-    return url;
-}
