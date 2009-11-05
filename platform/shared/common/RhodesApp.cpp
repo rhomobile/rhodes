@@ -327,6 +327,12 @@ String CRhodesApp::getFirstStartUrl()
     return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
 }
 
+void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
+{
+    m_strCurrentUrlW = strUrlW;
+    keepLastVisitedUrl(convertToStringA(strUrlW));
+}
+
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
 	LOG(INFO) + "Current URL: " + strUrl;
