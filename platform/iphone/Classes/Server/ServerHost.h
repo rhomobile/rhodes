@@ -20,7 +20,7 @@
 	NSThread* m_geoThread;
 	id  actionTarget;
 	SEL onStartSuccess;
-	SEL onStartFailure;
+	//SEL onStartFailure;
 	SEL onRefreshView;
 	SEL onNavigateTo;
 	SEL onExecuteJs;
@@ -41,7 +41,7 @@
 
 // callbacks
 @property (assign) id  actionTarget;
-//@property (assign) SEL onStartSuccess;
+@property (assign) SEL onStartSuccess;
 //@property (assign) SEL onStartFailure;
 @property (assign) SEL onRefreshView;
 @property (assign) SEL onNavigateTo;
