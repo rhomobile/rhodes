@@ -58,7 +58,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
         const char* zipData = resp.getCharData();
 		if ( zipData && dwDataSize > 0 )
 		{
-			LPWSTR rootw = wce_mbtowc(RhoGetRootPath());
+			LPWSTR rootw = wce_mbtowc(rho_native_rhopath());
 
 			bool ret = false;
 			if (wcslen(rootw)<MAX_PATH) {
@@ -78,7 +78,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 			
 				if ( hz ) {
 					//Stop HTTP Server
-					RHODESAPP().exitApp();
+					RHODESAPP().stopApp();
 
 					// Set base for unziping
 					SetUnzipBaseDir(hz, rootw);

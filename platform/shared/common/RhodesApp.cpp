@@ -62,13 +62,9 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 
 	//rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
+    start(epLow);
 }
 
-void CRhodesApp::startApp()	
-{
-	start(epLow);
-}
-	
 void CRhodesApp::run()
 {
 	LOG(INFO) + "Starting RhodesApp main routine...";
@@ -488,11 +484,6 @@ void rho_rhodesapp_destroy()
 	rho::common::CRhodesApp::Destroy();
 }
 
-void rho_rhodesapp_start()
-{
-	RHODESAPP().startApp();
-}
-	
 const char* rho_rhodesapp_getstarturl()
 {
     return RHODESAPP().getStartUrl().c_str();
