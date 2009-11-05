@@ -145,8 +145,6 @@ void set_curl_options(CURL *curl, const char *method, const String& strUrl, cons
 	curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
 	
-	//curl_easy_setopt(curl, CURLOPT_WRITEHEADER, &headers);
-	//curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
 }
@@ -308,9 +306,8 @@ char* CNetRequest::pushMultipartData(const String& strUrl, const String& strFile
 		set_curl_options(curl, "POST", strUrl, session, result);
 		curl_slist *hdrs = NULL;
 		// Disable "Expect: 100-continue"
-		hdrs = curl_slist_append(hdrs, "Expect:");
-		//hdrs = curl_slist_append(hrds, "Content-Type: multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5");
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+		//hdrs = curl_slist_append(hdrs, "Expect:");
+		//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
 		
 		curl_httppost *post = NULL, *last = NULL;
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
@@ -322,7 +319,7 @@ char* CNetRequest::pushMultipartData(const String& strUrl, const String& strFile
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 		curl_easy_perform(curl);
 		
-		curl_slist_free_all(hdrs);
+		//curl_slist_free_all(hdrs);
 		curl_formfree(post);
 		
 		rho_net_impl_network_indicator(0);
@@ -408,13 +405,15 @@ INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBo
 	
 	return resp;
 }
-	
+
+#if !defined(RHO_NET_NEW_IMPL)
 static const char* szMultipartPrefix = 
 "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
 "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
 "Content-Type: application/octet-stream\r\n\r\n";
 static const char* szMultipartPostfix = 
 "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
+#endif // !defined(RHO_NET_NEW_IMPL)
 
 //static const char* szMultipartContType = 
 //"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
