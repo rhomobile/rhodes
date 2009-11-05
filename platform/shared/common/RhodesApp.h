@@ -24,7 +24,7 @@ private:
     struct shttpd_ctx * m_shttpdCtx;
     String m_strRhoRootPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl;
-    StringW m_strStartUrlW, m_strOptionsUrlW;
+    StringW m_strStartUrlW, m_strOptionsUrlW, m_strCurrentUrlW;
 
 public:
     ~CRhodesApp(void);
@@ -40,11 +40,14 @@ public:
     const StringW& getOptionsUrlW();
     const String& getRhobundleReloadUrl();
     void  keepLastVisitedUrl(String strUrl);
+    void  keepLastVisitedUrlW(StringW strUrlW);
+
     void navigateToUrl( const String& strUrl);
     String getLoadingPagePath();
     const String& getStartUrl(){return m_strStartUrl;}
     const String& getOptionsUrl(){return m_strOptionsUrl;}
     const String& getCurrentUrl(){ return m_strCurrentUrl; }
+    const StringW& getCurrentUrlW(){ return m_strCurrentUrlW; }
 	
 private:
 	virtual void run();
