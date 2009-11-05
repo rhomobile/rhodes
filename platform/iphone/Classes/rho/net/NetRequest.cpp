@@ -131,16 +131,13 @@ size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 	return nBytes;
 }
 
-void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& strBody, const String& session, String& result)
+void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& session, String& result)
 {
 	curl_easy_reset(curl);
 	if (strcasecmp(method, "GET") == 0)
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-	else if (strcasecmp(method, "POST") == 0) {
+	else if (strcasecmp(method, "POST") == 0)
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
-	}
 	curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());
 	if (!session.empty())
 		curl_easy_setopt(curl, CURLOPT_COOKIE, session.c_str());
@@ -152,9 +149,15 @@ void set_curl_options(CURL *curl, const char *method, const String& strUrl, cons
 	//curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
-	
 }
 
+void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& strBody, const String& session, String& result)
+{
+	set_curl_options(curl, method, strUrl, session, result);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
+}
+	
 char* CNetRequest::request(const char *method, const String& strUrl, const String& strBody,
 						   int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession)
 {
@@ -278,7 +281,7 @@ char* CNetRequest::requestCookies(const char *method, const String& strUrl, cons
 	return respData;
 }
 
-char* CNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave)
+char* CNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave, IRhoSession *oSession)
 {
 	// TODO:
 	rho_net_impl_network_indicator(1);
@@ -286,12 +289,68 @@ char* CNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void
 	return NULL;
 }
 
-char* CNetRequest::pushMultipartData(const String& strUrl, const char* data, size_t data_size, int* pnRespCode, FSAVECONNDATA fSave)
+char* CNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession *oSession)
 {
-	// TODO:
-	rho_net_impl_network_indicator(1);
-	rho_net_impl_network_indicator(0);
-	return NULL;
+	if (pnRespCode)
+		*pnRespCode = -1;
+	
+	String session;
+	if (oSession)
+		session = oSession->getSession();
+	
+	char *respData = NULL;
+	if (!session.empty()) {
+		RAWLOG_INFO2("Push file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
+
+		rho_net_impl_network_indicator(1);
+
+		String result;
+		set_curl_options(curl, "POST", strUrl, session, result);
+		curl_slist *hdrs = NULL;
+		// Disable "Expect: 100-continue"
+		hdrs = curl_slist_append(hdrs, "Expect:");
+		//hdrs = curl_slist_append(hrds, "Content-Type: multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5");
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+		
+		curl_httppost *post = NULL, *last = NULL;
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+		curl_formadd(&post, &last,
+					 CURLFORM_COPYNAME, "blob",
+					 CURLFORM_FILE, strFilePath.c_str(),
+					 CURLFORM_CONTENTTYPE, "application/octet-stream",
+					 CURLFORM_END);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+		curl_easy_perform(curl);
+		
+		curl_slist_free_all(hdrs);
+		curl_formfree(post);
+		
+		rho_net_impl_network_indicator(0);
+		
+		long statusCode = 0;
+		if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
+			statusCode = 500;
+		if (pnRespCode)
+			*pnRespCode = (int)statusCode;
+		
+		if (statusCode != 500 && statusCode != 422)
+			respData = str_assign((char*)result.c_str());
+		
+		if (statusCode != 200) {
+			RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
+						  (int)statusCode, respData ? respData : "<null>");
+			if (statusCode == 401)
+				if (oSession)
+					oSession->logout();
+		}
+		else {
+			RAWTRACE("RESPONSE-----");
+			RAWTRACE(respData);
+			RAWTRACE("END RESPONSE-----");
+		}
+	}
+	
+	return respData;
 }
 
 #endif // RHO_NET_NEW_IMPL
@@ -369,6 +428,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         return new CNetResponseImpl(0,-1);
     }
 
+#if !defined(RHO_NET_NEW_IMPL)
 	//TODO: call rho_net_impl_pushFile
 	int nFileSize = oFile.size();
 	int nDataLen = nFileSize+strlen(szMultipartPrefix)+strlen(szMultipartPostfix);
@@ -376,6 +436,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
 	memcpy(data, szMultipartPrefix, strlen(szMultipartPrefix) );
 	oFile.readData(data,strlen(szMultipartPrefix),nFileSize);
 	memcpy(data+nFileSize+strlen(szMultipartPrefix), szMultipartPostfix, strlen(szMultipartPostfix) );
+#endif // !defined(RHO_NET_NEW_IMPL)
 	
 	int nRespCode = -1;
 	int nTry = 0;
@@ -384,7 +445,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
 	
 	do{
 #ifdef RHO_NET_NEW_IMPL
-		response = pushMultipartData(strUrl, data, nDataLen, &nRespCode, saveConnData);
+		response = pushMultipartData(strUrl, strFilePath, &nRespCode, saveConnData, oSession);
 #else
 		response = rho_net_impl_pushMultipartData(strUrl.c_str(), data, nDataLen, &nRespCode, saveConnData, this );
 #endif // RHO_NET_NEW_IMPL
@@ -415,7 +476,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
 	char* response = 0;
 	do{
 #ifdef RHO_NET_NEW_IMPL
-		response = pullMultipartData(strUrl, &nRespCode, &oFile, saveConnData);
+		response = pullMultipartData(strUrl, &nRespCode, &oFile, saveConnData, oSession);
 #else
 		response = rho_net_impl_pullFile(strUrl.c_str(), &nRespCode, writeToFile, &oFile, saveConnData, this );
 #endif // RHO_NET_NEW_IMPL
