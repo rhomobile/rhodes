@@ -47,8 +47,8 @@ private:
 	typedef char* (CNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
 					const String& strBody, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
 	
-	char* pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave);
-	char* pushMultipartData(const String& strUrl, const char* data, size_t data_size, int* pnRespCode, FSAVECONNDATA fSave);
+	char* pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave, IRhoSession *oSession);
+	char* pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession *oSession);
 #else	
 	typedef char* (*Frho_net_impl_request)(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
 #endif // RHO_NET_NEW_IMPL
