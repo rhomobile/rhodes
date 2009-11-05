@@ -23,7 +23,7 @@ private:
     String m_strListeningPorts;
     struct shttpd_ctx * m_shttpdCtx;
     String m_strRhoRootPath;
-    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;
+    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl;
     StringW m_strStartUrlW, m_strOptionsUrlW;
 
 public:
@@ -32,7 +32,8 @@ public:
     static CRhodesApp* Create(const String& strRootPath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return m_pInstance; }
-    void exitApp();
+	void startApp();
+    void stopApp();
 
     String canonicalizeRhoUrl(const String& strUrl) ;
     const StringW& getStartUrlW();
@@ -43,10 +44,10 @@ public:
     String getLoadingPagePath();
     const String& getStartUrl(){return m_strStartUrl;}
     const String& getOptionsUrl(){return m_strOptionsUrl;}
-
-	virtual void run();
-
+    const String& getCurrentUrl(){ return m_strCurrentUrl; }
+	
 private:
+	virtual void run();
 
     void initHttpServer();
     void initAppUrls();
@@ -72,17 +73,24 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_rhodesapp_create(const char* szRootPath);
+void rho_rhodesapp_start();	
+	
 void rho_rhodesapp_destroy();
-void rho_rhodesapp_run();	
+const char* rho_native_rhopath();
+	
 const char* rho_rhodesapp_getstarturl();
 const char* rho_rhodesapp_getoptionsurl();
 void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
-
+const char* rho_rhodesapp_getcurrenturl();
+const char* rho_rhodesapp_getloadingpagepath();
+	
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
 
-
+char* rho_http_normalizeurl(const char* szUrl);
+void rho_http_free(void* data);
+	
 #ifdef __cplusplus
 };
 #endif //__cplusplus

@@ -60,12 +60,15 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     int result = WSAStartup(MAKEWORD(1,1),&WsaData);
 #endif
 
+	//rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
-//#ifndef OS_MACOSX
-    start(epLow);
-//#endif	
 }
 
+void CRhodesApp::startApp()	
+{
+	start(epLow);
+}
+	
 void CRhodesApp::run()
 {
 	LOG(INFO) + "Starting RhodesApp main routine...";
@@ -105,7 +108,7 @@ void CRhodesApp::run()
 
 CRhodesApp::~CRhodesApp(void)
 {
-    exitApp();
+    stopApp();
 
 #ifdef OS_WINCE
     WSACleanup();
@@ -113,7 +116,7 @@ CRhodesApp::~CRhodesApp(void)
 
 }
 
-void CRhodesApp::exitApp()
+void CRhodesApp::stopApp()
 {
     if (!m_bExit)
     {
@@ -325,6 +328,9 @@ String CRhodesApp::getFirstStartUrl()
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
+	LOG(INFO) + "Current URL: " + strUrl;
+	
+	m_strCurrentUrl = strUrl;
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
@@ -404,6 +410,17 @@ char* HTTPResolveUrl(char* szUrl)
     return strdup(strRes.c_str());
 }
 
+char* rho_http_normalizeurl(const char* szUrl) 
+{
+	rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);
+	return strdup(strRes.c_str());
+}
+
+void rho_http_free(void* data)
+{
+	free(data);
+}
+	
 void rho_http_redirect( void* httpContext, const char* szUrl)
 {
     struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
@@ -471,10 +488,10 @@ void rho_rhodesapp_destroy()
 	rho::common::CRhodesApp::Destroy();
 }
 
-void rho_rhodesapp_run()
-	{
-		RHODESAPP().run();
-	}
+void rho_rhodesapp_start()
+{
+	RHODESAPP().startApp();
+}
 	
 const char* rho_rhodesapp_getstarturl()
 {
@@ -488,7 +505,17 @@ const char* rho_rhodesapp_getoptionsurl()
 
 void rho_rhodesapp_keeplastvisitedurl(const char* szUrl)
 {
-    return RHODESAPP().keepLastVisitedUrl(szUrl);
+    RHODESAPP().keepLastVisitedUrl(szUrl);
 }
 
+const char* rho_rhodesapp_getcurrenturl()
+{
+	return RHODESAPP().getCurrentUrl().c_str();
+}
+
+const char* rho_rhodesapp_getloadingpagepath()
+{
+	return RHODESAPP().getLoadingPagePath().c_str();
+}
+	
 }

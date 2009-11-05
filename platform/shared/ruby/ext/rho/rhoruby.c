@@ -42,6 +42,7 @@ extern void Init_MapView(void);
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
+extern const char* rho_native_rhopath();
 //extern void RhoSetCurAppPath(char* path);
 
 static VALUE  framework;
@@ -115,7 +116,7 @@ void RhoRubyStart()
 #endif
 	//rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
-	ruby_init_loadpath(RhoGetRootPath());
+	ruby_init_loadpath(rho_native_rhopath());
 	Init_strscan();
 	Init_sqlite3_api();
 	Init_GeoLocation();
@@ -189,7 +190,7 @@ void __setRootPath(const char* path) {
 	_root_loaded = 1;
 }
 #endif
-const char* RhoGetRootPath() {
+const char* rho_native_rhopath() {
   int len;
   if (_root_loaded) {
     return _rootpath;

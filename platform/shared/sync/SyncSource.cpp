@@ -7,7 +7,7 @@
 #include "json/JSONIterator.h"
 #include "ruby/ext/rho/rhoruby.h"
 
-extern "C" const char* RhoGetRootPath();
+extern "C" const char* rho_native_rhopath();
 
 namespace rho {
 namespace sync {
@@ -132,7 +132,7 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
     {
         CSyncBlob& blob = *m_arSyncBlobs.elementAt(i);
 
-        String strFilePath = RhoGetRootPath();
+        String strFilePath = rho_native_rhopath();
         strFilePath += "apps" + blob.getFilePath() ;
 
         strQuery = strBaseQuery + "&" + blob.getBody();
@@ -659,7 +659,7 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 
     value.m_strAttrType = "blob.file";
 
-    String strAppsPath = RhoGetRootPath();
+    String strAppsPath = rho_native_rhopath();
     strAppsPath += "apps";
     value.m_strValue = fName.substr(strAppsPath.length());
     
