@@ -32,7 +32,6 @@ public:
     static CRhodesApp* Create(const String& strRootPath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return m_pInstance; }
-	void startApp();
     void stopApp();
 
     String canonicalizeRhoUrl(const String& strUrl) ;
@@ -73,7 +72,6 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_rhodesapp_create(const char* szRootPath);
-void rho_rhodesapp_start();	
 	
 void rho_rhodesapp_destroy();
 const char* rho_native_rhopath();
