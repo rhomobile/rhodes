@@ -144,6 +144,8 @@ namespace "build" do
       Rake::Task["build:bundle:xruby"].execute
 
       rm_rf $srcdir
+      rm_rf $preverified + "/RhoBundle.jar" if File.exists? $preverified + "/RhoBundle.jar"
+      rm_rf $rhobundledir + "/RhoBundle.jar" if File.exists? $rhobundledir + "/RhoBundle.jar"
 
       #XXX make preverify function in Jake
       args = []
