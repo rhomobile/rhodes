@@ -167,7 +167,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
         else
             strBody = "status=error&message=" + strError;
     }else
-        strBody = "status=ok&image_uri=" + strImagePath;
+        strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
 
     common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
     common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
