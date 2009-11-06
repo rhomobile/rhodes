@@ -14,15 +14,15 @@
 	IBOutlet UILabel* activityInfo;
 	IBOutlet UIWebView *webView;
 	IBOutlet UIActivityIndicatorView *activity;
-	NSString *viewHomeUrl,*viewOptionsUrl;
+	//NSString *viewHomeUrl,*viewOptionsUrl;
 	
 @public
 	id   actionTarget;
 	SEL  onShowLog;
 }
 
-@property (assign) NSString *viewHomeUrl;
-@property (assign) NSString *viewOptionsUrl;
+//@property (assign) NSString *viewHomeUrl;
+//@property (assign) NSString *viewOptionsUrl;
 
 @property (assign) id   actionTarget;
 @property (assign) UIToolbar* toolbar;
@@ -53,6 +53,6 @@
 
 -(void)inactive;
 
--(void)runSync;
+//-(void)runSync;
 
 @end

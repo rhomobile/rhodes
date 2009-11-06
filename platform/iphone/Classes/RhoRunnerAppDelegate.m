@@ -10,10 +10,12 @@
 #import "defs.h"
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
-#import "AppManager.h"
-#import "common/RhoConf.h"
+//#import "AppManager.h"
+//#import "common/RhoConf.h"
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
+#include "sync/syncthread.h"
+#include "common/RhodesApp.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
@@ -34,14 +36,20 @@
 @synthesize player; 
 @synthesize nativeBar;
 
-- (NSString*)normalizeUrl:(NSString*)url {
-	if([url hasPrefix:@"http://"]) {
+- (NSString*)normalizeUrl:(NSString*)url 
+{
+/*	if([url hasPrefix:@"http://"]) {
 		return url;
 	}
 	NSString* location = [@"http://localhost:8080" stringByAppendingString:[@"/" stringByAppendingPathComponent:url]];
-	return location;
+	return location;*/
+	char* szNormUrl = rho_http_normalizeurl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	NSString* strRes = [NSString stringWithCString:szNormUrl encoding:[NSString defaultCStringEncoding]];
+	rho_http_free(szNormUrl);
+	
+	return strRes;
 }
-
+/*
 - (void)loadStartPath:(NSString*)location {
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
@@ -72,7 +80,7 @@
 	
 	appStarted = true;
 	[self loadStartPath:location];
-}
+}*/
 
 - (void)onRefreshView {
 	[webViewController refresh];
@@ -91,10 +99,10 @@
 - (void)onExecuteJs:(JSString *)js {
 	[webViewController executeJs:js];
 }
-
+/*
 - (void)onSetViewHomeUrl:(NSString *)url {
 	[webViewController setViewHomeUrl:url];
-}
+}*/
 
 #ifdef __IPHONE_3_0
 -(void) onCreateMap:(NSMutableArray*)items {
@@ -202,10 +210,10 @@
 		[webViewController.webView sizeToFit];
 	}
 }
-
+/*
 - (void)onSetViewOptionsUrl:(NSString *)url {
 	[webViewController setViewOptionsUrl:url];
-}
+}*/
 
 - (void)onShowLog {
 	if (logViewController!=NULL) {
@@ -310,13 +318,13 @@
 				sync_all = true;
 			} else {
 				//do sync of individual source
-				[serverHost  doSyncFor:[url stringByTrimmingCharactersInSet:
-										[NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]]];
+				NSString* srcUrl = [url stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]]
+				rho_sync_doSyncSourceByUrl([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
 		
 		if (sync_all) {
-			[serverHost doSync];
+			rho_sync_doSyncAllSources(TRUE);
 		}
 	}
 }
@@ -345,8 +353,10 @@
 }
 #endif
 
-- (void) showLoadingPage {
+- (void) showLoadingPage 
+{
 	NSString *filePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"apps/app/loading.html"];
+//	NSString *filePath = [NSString stringWithCString:rho_rhodesapp_getloadingpagepath() encoding:[NSString defaultCStringEncoding]];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData *data = [fileManager contentsAtPath:filePath];
@@ -356,7 +366,7 @@
 }
 
 - (void) doStartUp {
-	appStarted = false;
+	//appStarted = false;
 	// Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
@@ -369,7 +379,7 @@
 	
 	//TabBar delegate
 	tabBarDelegate = [[TabBarDelegate alloc] init];
-
+	
 	[self showLoadingPage];
 	
 	//Camera delegate
@@ -382,16 +392,16 @@
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];
 	serverHost->actionTarget = self;
-	serverHost->onStartSuccess = @selector(onServerStarted:);
+	//serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
 	serverHost->onNavigateTo = @selector(onNavigateTo:);
 	serverHost->onExecuteJs = @selector(onExecuteJs:);
-	serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
+	//serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
 	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
 	serverHost->onCreateNativeBar = @selector(onCreateNativeBar:);
-	serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
+	//serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
 	serverHost->onPlayFile = @selector(onPlayFile:);
@@ -453,7 +463,7 @@
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	if (appStarted) {
+/*	if (appStarted) {
 		RhoDelegate* callback = [[RhoDelegate alloc] init];
 		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
 		if (callbackUrl && strlen(callbackUrl) > 0) {
@@ -462,14 +472,15 @@
 			[callback doCallback:@""];
 		}
 		[callback release];
-	}
+	}*/
 }
 
 
-- (void) saveLastUsedTime {
-	int now = [[NSDate date] timeIntervalSince1970];
+- (void) saveLastUsedTime 
+{
+/*	int now = [[NSDate date] timeIntervalSince1970];
 	rho_conf_setInt("last_time_used",now);
-	rho_conf_save();
+	rho_conf_save();*/
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

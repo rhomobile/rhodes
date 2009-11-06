@@ -16,7 +16,7 @@
 
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
-extern const char* RhoGetRootPath();
+extern const char* rho_native_rhopath();
 extern const char* RhoGetRelativeBlobsPath();
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
@@ -25,7 +25,7 @@ VALUE rb_iseq_eval(VALUE iseqval);
 
 VALUE __rhoGetCurrentDir(void)
 {
-    return rb_str_new2(RhoGetRootPath());
+    return rb_str_new2(rho_native_rhopath());
 }
 
 VALUE
@@ -178,7 +178,7 @@ static VALUE find_file(VALUE fname)
     VALUE res;
     int nOK = 0;
 
-    if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
+    if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,".iseq",5);
     }else{
