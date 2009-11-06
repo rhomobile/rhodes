@@ -10,14 +10,13 @@
 #include "missing/file.h"
 #endif
 
+#include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
-extern const char* rho_native_rhopath();
-extern const char* RhoGetRelativeBlobsPath();
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
 VALUE RhoPreparePath(VALUE path);
@@ -336,8 +335,7 @@ void Init_RhoSupport()
 
 static void Init_RhoBlobs()
 {
-  VALUE path = __rhoGetCurrentDir();
-  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2(RhoGetRelativeBlobsPath()));
+  VALUE path = rb_str_new2(rho_rhodesapp_getblobsdirpath());
 
   RAWLOG_INFO1("Init_RhoBlobs: %s", RSTRING_PTR(path) );
 

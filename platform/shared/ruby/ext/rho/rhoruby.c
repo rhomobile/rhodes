@@ -212,16 +212,6 @@ const char* rho_native_rhopath() {
 
 #endif// WIN32
 
-const char* RhoGetRelativeBlobsPath() 
-{
-    return "apps/public/db-files";
-}
-
-const wchar_t* RhoGetRelativeBlobsPathW() 
-{
-    return L"apps/public/db-files";
-}
-
 void RhoRubyStop()
 {
 	//TBD: clenup framework, etc.
