@@ -7,6 +7,7 @@
 #include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
 #include "Camera.h"
+#include "common/RhodesApp.h"
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
@@ -27,7 +28,6 @@ static bool copy_file(LPTSTR from, LPTSTR to);
 static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
 static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt );
 static void create_folder(LPTSTR Path);
-extern "C" const wchar_t* RhoGetRelativeBlobsPathW();
 
 Camera::Camera(void) {
 }
@@ -39,8 +39,8 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
     HRESULT         hResult;
     SHCAMERACAPTURE shcc;
 
-    wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-    wsprintf(pszFilename,L"%s%s",root, RhoGetRelativeBlobsPathW() );
+    wchar_t* root  = wce_mbtowc(rho_rhodesapp_getblobsdirpath());
+    wsprintf(pszFilename,L"%s",root );
     free(root);
 
 	create_folder(pszFilename);
@@ -96,8 +96,8 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 		HRESULT hResult = S_OK;
 
 		TCHAR rhoroot[MAX_PATH];
-		wchar_t* root  = wce_mbtowc(RhoGetRootPath());
-		wsprintf(rhoroot,L"%s%s",root,RhoGetRelativeBlobsPathW());
+		wchar_t* root  = wce_mbtowc(rho_rhodesapp_getblobsdirpath());
+		wsprintf(rhoroot,L"%s",root);
 		free(root);
 
 		create_folder(rhoroot);
@@ -207,16 +207,16 @@ void create_folder(LPTSTR Path)
 #endif //_WIN32_WCE
 
 void take_picture(char* callback_url) {
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_TAKEPICTURE,0,(LPARAM)strdup(callback_url));
-#endif
+//#endif
 }
 
 void choose_picture(char* callback_url) {
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_SELECTPICTURE,0,(LPARAM)strdup(callback_url));
-#endif
+//#endif
 }
 

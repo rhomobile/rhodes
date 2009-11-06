@@ -42,6 +42,7 @@ extern void Init_MapView(void);
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
+extern const char* rho_native_rhopath();
 //extern void RhoSetCurAppPath(char* path);
 
 static VALUE  framework;
@@ -115,7 +116,7 @@ void RhoRubyStart()
 #endif
 	//rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
-	ruby_init_loadpath(RhoGetRootPath());
+	ruby_init_loadpath(rho_native_rhopath());
 	Init_strscan();
 	Init_sqlite3_api();
 	Init_GeoLocation();
@@ -175,50 +176,6 @@ char* RhoRuby_getRhoDBVersion()
     VALUE moduleRhodes = rb_const_get(rb_cObject, rb_intern("Rhodes"));
     VALUE valVer = rb_const_get(moduleRhodes, rb_intern("DBVERSION"));
     return RSTRING_PTR(valVer);
-}
-
-#if defined(WIN32)
-#if defined(_WIN32_WCE)
-extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
-#endif
-static int _root_loaded = 0;
-static char _rootpath[MAX_PATH];
-#if !defined(_WIN32_WCE)
-void __setRootPath(const char* path) {
-	strcpy(_rootpath,path);
-	_root_loaded = 1;
-}
-#endif
-const char* RhoGetRootPath() {
-  int len;
-  if (_root_loaded) {
-    return _rootpath;
-  }
-  if( (len = GetModuleFileNameA(NULL,_rootpath,MAX_PATH)) == 0 )
-  {
-    strcpy(_rootpath,".");
-  }
-  else
-  {
-    while( !(_rootpath[len] == '\\'  || _rootpath[len] == '/') )
-      len--;
-    _rootpath[len]=0;
-    sprintf(_rootpath,"%s\\rho\\",_rootpath);
-  }
-  _root_loaded = 1;
-  return _rootpath;
-}
-
-#endif// WIN32
-
-const char* RhoGetRelativeBlobsPath() 
-{
-    return "apps/public/db-files";
-}
-
-const wchar_t* RhoGetRelativeBlobsPathW() 
-{
-    return L"apps/public/db-files";
 }
 
 void RhoRubyStop()
@@ -294,6 +251,7 @@ VALUE callFramework(VALUE hashReq) {
 		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
+    RAWTRACE(RSTRING_PTR(callres));
 
     rb_gc_register_mark_object(callres);
 	//TBD: need to cleanup memory
@@ -311,6 +269,8 @@ VALUE callServeIndex(char* index_name) {
 		RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
 		return rb_str_new2("Error");//TBD: Supply html description of the error
 	}
+    RAWTRACE(RSTRING_PTR(callres));
+
     rb_gc_register_mark_object(callres);
 
 	//TBD: need to cleanup memory

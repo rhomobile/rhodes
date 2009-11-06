@@ -4,9 +4,7 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
-
-extern "C" const char* RhoGetRootPath();
-extern "C" const char* RhoGetRelativeBlobsPath();
+#include "common/RhodesApp.h"
 
 namespace rho{
 namespace db{
@@ -29,8 +27,7 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     type = (char*)sqlite3_value_text(*(ppArgs+1));
     if ( type && strcmp(type,"blob.file") == 0 )
     {
-        String strFilePath = RhoGetRootPath();
-        strFilePath += "apps";
+        String strFilePath = RHODESAPP().getRhoRootPath()+ "apps";
         strFilePath += (char*)sqlite3_value_text(*(ppArgs));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
@@ -44,12 +41,6 @@ void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         return;
 
     sync::CSyncThread::getDBAdapter().getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
-}
-
-/*static*/ String CDBAdapter::makeBlobFolderName()
-{
-    String strBlobPath = RhoGetRootPath();
-    return strBlobPath + RhoGetRelativeBlobsPath();
 }
 
 boolean CDBAdapter::checkDbError(int rc)
@@ -140,8 +131,7 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
         CRhoFile::deleteFile(m_strDbPath.c_str());
         CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
 
-        String strBlobFolderName = makeBlobFolderName();
-        CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+        CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
 
         writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
 	}
@@ -292,8 +282,7 @@ void CDBAdapter::destroy_table(String strTable)
     String dbOldName = m_strDbPath;
     close();
 
-    String strBlobFolderName = makeBlobFolderName();
-    CRhoFile::deleteFilesInFolder(strBlobFolderName.c_str());
+    CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());

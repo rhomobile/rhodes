@@ -10,14 +10,13 @@
 #include "missing/file.h"
 #endif
 
+#include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
-extern const char* RhoGetRootPath();
-extern const char* RhoGetRelativeBlobsPath();
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
 VALUE RhoPreparePath(VALUE path);
@@ -25,7 +24,7 @@ VALUE rb_iseq_eval(VALUE iseqval);
 
 VALUE __rhoGetCurrentDir(void)
 {
-    return rb_str_new2(RhoGetRootPath());
+    return rb_str_new2(rho_native_rhopath());
 }
 
 VALUE
@@ -178,7 +177,7 @@ static VALUE find_file(VALUE fname)
     VALUE res;
     int nOK = 0;
 
-    if ( strncmp(RSTRING_PTR(fname), RhoGetRootPath(), strlen(RhoGetRootPath())) == 0 ){
+    if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,".iseq",5);
     }else{
@@ -336,8 +335,7 @@ void Init_RhoSupport()
 
 static void Init_RhoBlobs()
 {
-  VALUE path = __rhoGetCurrentDir();
-  rb_funcall(path, rb_intern("concat"), 1, rb_str_new2(RhoGetRelativeBlobsPath()));
+  VALUE path = rb_str_new2(rho_rhodesapp_getblobsdirpath());
 
   RAWLOG_INFO1("Init_RhoBlobs: %s", RSTRING_PTR(path) );
 

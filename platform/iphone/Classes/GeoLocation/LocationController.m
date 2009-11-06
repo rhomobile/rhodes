@@ -12,6 +12,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "LocationController.h"
 #import "logging/RhoLog.h"
+#import "../Server/ServerHost.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
 
@@ -32,16 +33,7 @@ static char location_message[256];
 @implementation LocationController
 
 @synthesize _locationManager;
-
-- (id) init {
-	self = [super init];
-	if (self != nil) {
-		self._locationManager = [[[CLLocationManager alloc] init] autorelease];
-		self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-		self._locationManager.delegate = self; // Tells the location manager to send updates to this object
-	}
-	return self;
-}
+@synthesize onUpdateLocation; 
 
 - (bool)update{
 	if (!_locationManager.locationServicesEnabled) {
@@ -62,10 +54,46 @@ static char location_message[256];
 	} else {
 		CFRunLoopTimerSetNextFireDate(_timer, CFAbsoluteTimeGetCurrent() + kTimeOutInSeconds);
 	}
+	
 	[_locationManager startUpdatingLocation];
 	return true;
 }
 
+- (void)doUpdateLocation {
+	[self update];
+	
+	_location = _locationManager.location;
+	if (_location==NULL) 
+	{
+		_dLatitude = 0;
+		_dLongitude = 0;
+		_iKnownPosition = 0;
+		return;
+	}
+	
+    _dLatitude = _location.coordinate.latitude;
+    _dLongitude = _location.coordinate.longitude;
+	_iKnownPosition = 1;	
+}
+
+- (id) init {
+	self = [super init];
+	if (self != nil) {
+		self._locationManager = [[[CLLocationManager alloc] init] autorelease];
+		self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+		self._locationManager.delegate = self; // Tells the location manager to send updates to this object
+		
+		self.onUpdateLocation = @selector(doUpdateLocation);	
+		_dLatitude = 0;
+		_dLongitude = 0;
+		_iKnownPosition = 0;
+		
+    	RAWLOG_INFO("init");		
+	}
+	
+	return self;
+}
+/*
 - (double) getLatitude{
 	if (![self update]) {
 		return 0.0f;
@@ -98,7 +126,7 @@ static char location_message[256];
 		return 0;
 	}
 	return 1;
-}
+}*/
 
 - (char*) getLocation {
 	if (![self update]) {
@@ -118,13 +146,15 @@ static char location_message[256];
 }
 
 - (void) stop {
+	[_locationManager stopUpdatingLocation];
+	
     // Get rid of the timer, if it still exists
     if (_timer != NULL) {
         CFRunLoopTimerInvalidate(_timer);
         CFRelease(_timer);
         _timer = NULL;
     }
-	[_locationManager stopUpdatingLocation];
+	
 }
 
 // Called when the location is updated
@@ -186,20 +216,34 @@ static char location_message[256];
 /* static */ void
 _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 	RAWLOG_INFO("Stopping location controller on timeout");
-	//[[LocationController sharedInstance] stop];
+	[[LocationController sharedInstance] stop];
 }
 
-	double geo_latitude() {
-		
-		return [[LocationController sharedInstance] getLatitude];
-	}
+double geo_latitude() {
+//	return [[LocationController sharedInstance] getLatitude];
+	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
+	  onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
+	return [LocationController sharedInstance]->_dLatitude;
+}
+
+void geo_init()
+{
+	[LocationController sharedInstance];
+	//[[LocationController sharedInstance] getLatitude];
+}
+
+double geo_longitude() {
 	
-	double geo_longitude() {
-		
-		return [[LocationController sharedInstance] getLongitude];
-	}
+	//return [[LocationController sharedInstance] getLongitude];
+	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
+		 onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
+	return [LocationController sharedInstance]->_dLongitude;
+}
 	
-	int geo_known_position() {
-		return [[LocationController sharedInstance] isKnownLocation];
-	}
+int geo_known_position() {
+	//return [[LocationController sharedInstance] isKnownLocation];
+	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
+		 onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
+	return [LocationController sharedInstance]->_iKnownPosition;
+}
 
