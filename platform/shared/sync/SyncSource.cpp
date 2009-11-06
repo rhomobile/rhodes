@@ -4,10 +4,9 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
+#include "common/RhodesApp.h"
 #include "json/JSONIterator.h"
 #include "ruby/ext/rho/rhoruby.h"
-
-extern "C" const char* rho_native_rhopath();
 
 namespace rho {
 namespace sync {
@@ -132,8 +131,7 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
     {
         CSyncBlob& blob = *m_arSyncBlobs.elementAt(i);
 
-        String strFilePath = rho_native_rhopath();
-        strFilePath += "apps" + blob.getFilePath() ;
+        String strFilePath = RHODESAPP().getRhoRootPath() + "apps" + blob.getFilePath() ;
 
         strQuery = strBaseQuery + "&" + blob.getBody();
         NetResponse( resp, getNet().pushFile(strQuery, strFilePath, &getSync()) );
@@ -586,8 +584,6 @@ CValue::CValue(json::CJSONEntry& oJsonEntry, int nVer)//throws JSONException
 
 String CSyncSource::makeFileName(const CValue& value)//throws Exception
 {
-    String fName = CDBAdapter::makeBlobFolderName();
-	
 	String strExt = ".bin";
 
     const char* url = value.m_strValue.c_str();
@@ -626,9 +622,9 @@ String CSyncSource::makeFileName(const CValue& value)//throws Exception
     if ( szExt[0] )
         strExt = szExt;
 
-	fName += "/id_" + convertToStringA(value.m_nID) + strExt;
+	String fName = RHODESAPP().getBlobsDirPath() + "/id_" + convertToStringA(value.m_nID) + strExt;
 	
-	return fName;
+	return  fName;
 }
 
 boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
@@ -659,8 +655,7 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 
     value.m_strAttrType = "blob.file";
 
-    String strAppsPath = rho_native_rhopath();
-    strAppsPath += "apps";
+    String strAppsPath = RHODESAPP().getRhoRootPath() + "apps";
     value.m_strValue = fName.substr(strAppsPath.length());
     
     return true;

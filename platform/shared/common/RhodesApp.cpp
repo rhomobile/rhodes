@@ -295,11 +295,6 @@ const char* CRhodesApp::getFreeListeningPort()
 #endif
 }
 
-const String& CRhodesApp::getRhoRootPath()
-{
-    return m_strRhoRootPath;
-}
-
 void CRhodesApp::initAppUrls() 
 {
     m_strHomeUrl = "http://localhost:";
@@ -312,6 +307,9 @@ void CRhodesApp::initAppUrls()
     convertToStringW( m_strOptionsUrl.c_str(), m_strOptionsUrlW );
 
     m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
+
+    m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
+    m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
 }
 
 String CRhodesApp::getFirstStartUrl()
@@ -387,22 +385,6 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
     strRes += strUrl;
 	
 	return strRes;
-}
-
-String CRhodesApp::getLoadingPagePath() 
-{
-    String strRes = "file://" + getRhoRootPath() + "apps/loading.html"; 
-    return strRes;
-}
-
-const char* CRhodesApp::getRelativeBlobsPath() 
-{
-    return "apps/public/db-files";
-}
-
-const wchar_t* CRhodesApp::getRelativeBlobsPathW() 
-{
-    return L"apps/public/db-files";
 }
 
 }
@@ -519,5 +501,10 @@ const char* rho_rhodesapp_getloadingpagepath()
 {
 	return RHODESAPP().getLoadingPagePath().c_str();
 }
-	
+
+const char* rho_rhodesapp_getblobsdirpath()
+{
+	return RHODESAPP().getBlobsDirPath().c_str();
+}
+
 }
