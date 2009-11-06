@@ -153,8 +153,10 @@ void set_curl_options(CURL *curl, const char *method, const String& strUrl, cons
 void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& strBody, const String& session, String& result)
 {
 	set_curl_options(curl, method, strUrl, session, result);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
+	if (strcasecmp(method, "POST") == 0) {
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
+	}
 }
 	
 char* CNetRequest::request(const char *method, const String& strUrl, const String& strBody,
