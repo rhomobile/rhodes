@@ -53,6 +53,7 @@ public:
     const String& getRhoRootPath(){return m_strRhoRootPath;}
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
+    void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 
 private:
 	virtual void run();
@@ -99,6 +100,7 @@ void rho_http_free(void* data);
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
     const char* strError, int bCancel );
+void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 
 #ifdef __cplusplus
 };
