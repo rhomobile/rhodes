@@ -198,7 +198,6 @@ public:
     void rollback();
     void destroy_table(String strTable);
 
-    static String makeBlobFolderName();
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
 
