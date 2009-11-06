@@ -11,7 +11,7 @@
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 //#import "AppManager.h"
-//#import "common/RhoConf.h"
+#import "common/RhoConf.h"
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
@@ -49,7 +49,7 @@
 	
 	return strRes;
 }
-/*
+
 - (void)loadStartPath:(NSString*)location {
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
@@ -61,8 +61,8 @@
 
 - (void)onServerStarted:(NSString*)data {
 	RAWLOG_INFO("Server Started notification is recived");
-	NSString* location = NULL;
-	
+	NSString* location = [NSString stringWithCString:rho_rhodesapp_getstarturl() encoding:[NSString defaultCStringEncoding]];
+	/*
 	//try to restore previous location
 	if ( rho_conf_getBool("KeepTrackOfLastVisitedPage") ) {
 		char* lastVisitedPage = rho_conf_getString("LastVisitedPage");
@@ -76,11 +76,11 @@
 	//if there is no previous location navigate to the default start page 
 	if (!location) {
 		location = [self normalizeUrl:(NSString*)data];
-	}
+	}*/
 	
 	appStarted = true;
 	[self loadStartPath:location];
-}*/
+}
 
 - (void)onRefreshView {
 	[webViewController refresh];
@@ -318,7 +318,7 @@
 				sync_all = true;
 			} else {
 				//do sync of individual source
-				NSString* srcUrl = [url stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]]
+				NSString* srcUrl = [url stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]];
 				rho_sync_doSyncSourceByUrl([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
@@ -366,7 +366,7 @@
 }
 
 - (void) doStartUp {
-	//appStarted = false;
+	appStarted = false;
 	// Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
@@ -392,7 +392,7 @@
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];
 	serverHost->actionTarget = self;
-	//serverHost->onStartSuccess = @selector(onServerStarted:);
+	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
 	serverHost->onNavigateTo = @selector(onNavigateTo:);
 	serverHost->onExecuteJs = @selector(onExecuteJs:);
@@ -463,7 +463,7 @@
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-/*	if (appStarted) {
+	if (appStarted) {
 		RhoDelegate* callback = [[RhoDelegate alloc] init];
 		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
 		if (callbackUrl && strlen(callbackUrl) > 0) {
@@ -472,7 +472,7 @@
 			[callback doCallback:@""];
 		}
 		[callback release];
-	}*/
+	}
 }
 
 

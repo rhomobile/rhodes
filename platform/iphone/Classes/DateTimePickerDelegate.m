@@ -7,7 +7,7 @@
 //
 
 #import "DateTimePickerDelegate.h"
-
+#import "common/RhodesApp.h"
 
 @implementation DateTimePickerDelegate
 
@@ -172,19 +172,26 @@
 
 - (IBAction)cancelAction:(id)sender
 {	
-	NSString *message = @"status=cancel";
-	[self doCallback:message];
+	//NSString *message = @"status=cancel";
+	//[self doCallback:message];
+	rho_rhodesapp_callDateTimeCallback(
+		[postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],
+		0, [self.dateTime.data cStringUsingEncoding:[NSString defaultCStringEncoding]], 1 );	
 	[self animateDown];
 }
 
 - (IBAction)dateAction:(id)sender
 {	
 	long ldate = [self.pickerView.date timeIntervalSince1970];
-	NSMutableString *message = [[NSMutableString alloc] initWithFormat:@"status=ok&result=%@", [NSNumber numberWithLong:ldate]];
-	if (self.dateTime.data) {
-		[message appendFormat:@"&opaque=%@", self.dateTime.data];
-	}
-	[self doCallback:message];
+	//NSMutableString *message = [[NSMutableString alloc] initWithFormat:@"status=ok&result=%@", [NSNumber numberWithLong:ldate]];
+	//if (self.dateTime.data) {
+	//	[message appendFormat:@"&opaque=%@", self.dateTime.data];
+	//}
+	//[self doCallback:message];
+	rho_rhodesapp_callDateTimeCallback(
+		[postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],
+		ldate, [self.dateTime.data cStringUsingEncoding:[NSString defaultCStringEncoding]], 0 );
+	
 	[self animateDown];
 }
 

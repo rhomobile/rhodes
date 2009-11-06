@@ -62,9 +62,14 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 
 	//rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
-    start(epLow);
+    //start(epNormal);
 }
 
+void CRhodesApp::startApp()
+{
+	start(epNormal);
+}
+	
 void CRhodesApp::run()
 {
 	LOG(INFO) + "Starting RhodesApp main routine...";
@@ -148,6 +153,45 @@ void CRhodesApp::callAppActiveCallback()
         return;
 
     new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );
+}
+
+void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
+    const String& strError, boolean bCancel ) 
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    if ( bCancel || strError.length() > 0 )
+    {
+        if ( bCancel )
+            strBody = "status=cancel&message=User canceled operation.";
+        else
+            strBody = "status=error&message=" + strError;
+    }else
+        strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
+
+    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
+    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
+    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
+}
+
+void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    if ( bCancel )
+        strBody = "status=cancel&message=User canceled operation.";
+    else
+        strBody = "status=ok&result=" + convertToStringA(lDateTime);
+
+    if ( szData && *szData )
+    {
+        strBody += "&opaque=";
+        strBody += szData;
+    }
+
+    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
+    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
+    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
 }
 
 static void callback_geolocation(struct shttpd_arg *arg) 
@@ -290,11 +334,6 @@ const char* CRhodesApp::getFreeListeningPort()
 #endif
 }
 
-const String& CRhodesApp::getRhoRootPath()
-{
-    return m_strRhoRootPath;
-}
-
 void CRhodesApp::initAppUrls() 
 {
     m_strHomeUrl = "http://localhost:";
@@ -307,6 +346,9 @@ void CRhodesApp::initAppUrls()
     convertToStringW( m_strOptionsUrl.c_str(), m_strOptionsUrlW );
 
     m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
+
+    m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
+    m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
 }
 
 String CRhodesApp::getFirstStartUrl()
@@ -320,6 +362,12 @@ String CRhodesApp::getFirstStartUrl()
     }
 
     return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
+}
+
+void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
+{
+    m_strCurrentUrlW = strUrlW;
+    keepLastVisitedUrl(convertToStringA(strUrlW));
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -378,22 +426,6 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
 	return strRes;
 }
 
-String CRhodesApp::getLoadingPagePath() 
-{
-    String strRes = "file://" + getRhoRootPath() + "apps/loading.html"; 
-    return strRes;
-}
-
-const char* CRhodesApp::getRelativeBlobsPath() 
-{
-    return "apps/public/db-files";
-}
-
-const wchar_t* CRhodesApp::getRelativeBlobsPathW() 
-{
-    return L"apps/public/db-files";
-}
-
 }
 }
 
@@ -418,11 +450,13 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     shttpd_printf(arg, "Location: %s\r\n", szUrl );
 	shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
 	shttpd_printf(arg, "%s", "Connection: close\r\n");
-#ifndef OS_MACOSX
+//#ifndef OS_MACOSX
 	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: must-revalidate\r\n" );
 	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+	shttpd_printf(arg, "%s", "Cache-Control: no-store\r\n" );	
 	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-#endif
+//#endif
 
 	shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
 
@@ -471,6 +505,11 @@ void rho_rhodesapp_create(const char* szRootPath)
 {
 	rho::common::CRhodesApp::Create(szRootPath);
 }
+
+void rho_rhodesapp_start()
+{
+	RHODESAPP().startApp();
+}
 	
 void rho_rhodesapp_destroy()
 {
@@ -501,5 +540,21 @@ const char* rho_rhodesapp_getloadingpagepath()
 {
 	return RHODESAPP().getLoadingPagePath().c_str();
 }
-	
+
+const char* rho_rhodesapp_getblobsdirpath()
+{
+	return RHODESAPP().getBlobsDirPath().c_str();
+}
+
+void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
+    const char* strError, int bCancel )
+{
+    return RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
+}
+
+void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
+{
+    return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+}
+
 }

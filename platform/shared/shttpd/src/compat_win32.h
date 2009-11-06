@@ -27,7 +27,7 @@
 #else /* _WIN32_WCE */
 
 /* Windows CE-specific definitions */
-#define NO_CGI	/* WinCE has no pipes */
+//#define NO_CGI	/* WinCE has no pipes */
 #define NO_GUI	/* temporarily until it is fixed */
 #pragma comment(lib,"ws2")
 /* WinCE has both Unicode and ANSI versions of GetProcAddress */
