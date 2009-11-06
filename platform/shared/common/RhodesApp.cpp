@@ -163,11 +163,31 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
     if ( bCancel || strError.length() > 0 )
     {
         if ( bCancel )
-            strBody = "status=cancel&message=User canceled operation";
+            strBody = "status=cancel&message=User canceled operation.";
         else
             strBody = "status=error&message=" + strError;
     }else
         strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
+
+    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
+    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
+    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
+}
+
+void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    if ( bCancel )
+        strBody = "status=cancel&message=User canceled operation.";
+    else
+        strBody = "status=ok&result=" + convertToStringA(lDateTime);
+
+    if ( szData && *szData )
+    {
+        strBody += "&opaque=";
+        strBody += szData;
+    }
 
     common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
     common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
@@ -530,6 +550,11 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
     const char* strError, int bCancel )
 {
     return RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
+}
+
+void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
+{
+    return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
 }
 
 }
