@@ -37,7 +37,7 @@ public:
 	void Navigate2(BSTR URL);
     void Navigate(BSTR URL);
 	
-	char* GetCurrentLocation() { return m_current_url; }
+	//char* GetCurrentLocation() { return m_current_url; }
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
@@ -171,12 +171,12 @@ private:
 
 	bool m_bLoading;
 	bool m_bRhobundleReloadEnabled;
-	char* m_current_url;
-    char* m_szStartPage;
+	//char* m_current_url;
+    //char* m_szStartPage;
 
 	void SetRhobundleReloadMenu();
 
-private:
-	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
+//private:
+//	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
 

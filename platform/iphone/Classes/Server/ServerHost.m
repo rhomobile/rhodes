@@ -11,29 +11,30 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "ruby/ext/rho/rhoruby.h"
-
 #include "defs.h"
 #include "Server.h"
 #include "HttpContext.h"
 #include "ServerHost.h"
-#include "Dispatcher.h"
+//#include "Dispatcher.h"
 #include "AppManagerI.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLogConf.h"
 #include "sync/syncthread.h"
+#include "common/RhodesApp.h"
 #include "JSString.h"
 #import "WebViewUrl.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
 #import "MapViewController.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "ServerHost"
 
-extern char* get_current_location();
+//extern char* get_current_location();
+extern void geo_init();
 
 #pragma mark -
 #pragma mark Constant Definitions
@@ -74,8 +75,8 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, onStartFailure, onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize onSetViewHomeUrl, onSetViewOptionsUrl, onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
+@synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
+@synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
 @synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab;
 
 - (void)serverStarted:(NSString*)data {
@@ -85,12 +86,12 @@ static ServerHost* sharedSH = nil;
 	// Do sync w/ remote DB 
 	//wake_up_sync_engine();	
 }
-
+/*
 - (void)serverFailed:(void*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartFailure]) {
 		[actionTarget performSelector:onStartFailure];
 	}
-}
+}*/
 
 - (void)refreshView {
 	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
@@ -114,12 +115,12 @@ static ServerHost* sharedSH = nil;
 	[self performSelectorOnMainThread:@selector(refreshView)
 						   withObject:NULL waitUntilDone:NO]; 
 }
-
+/*
 - (void)setViewHomeUrl:(NSString*)url {
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
 		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
 	}	
-}
+}*/
 
 - (void)takePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onTakePicture]) {
@@ -155,12 +156,12 @@ static ServerHost* sharedSH = nil;
 		[nativeBar release];
 	}
 }
-
+/*
 - (void)setViewOptionsUrl:(NSString*)url {
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewOptionsUrl]) {
 		[actionTarget performSelector:onSetViewOptionsUrl withObject:url];
 	}	
-}
+}*/
 
 - (void)showPopup:(NSString*) message {
 	if(actionTarget && [actionTarget respondsToSelector:onShowPopup]) {
@@ -214,23 +215,14 @@ static ServerHost* sharedSH = nil;
 
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
+	
+	runLoop = CFRunLoopGetCurrent();
+	m_geoThread = [NSThread currentThread];
+	geo_init();
+	
 	RAWLOG_INFO("Initializing ruby");
 	RhoRubyStart();
-
-	char* _url = rho_conf_getString("start_path");
-	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	rho_conf_freeString(_url);
-	_url = rho_conf_getString("options_path");
-	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	rho_conf_freeString(_url);
 	
-	RAWLOG_INFO1("Start page: %s", [homeUrl UTF8String]);
-	RAWLOG_INFO1("Options page: %s", [optionsUrl UTF8String]);
-	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
-	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
-	
-    runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
@@ -241,10 +233,12 @@ static ServerHost* sharedSH = nil;
 		RhoRubyInitApp();
 		
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:homeUrl waitUntilDone:NO];
+							   withObject:NULL waitUntilDone:NO];
 		
         [[NSRunLoop currentRunLoop] run];
-        RAWLOG_INFO("Invalidating local server");
+	
+	
+	    RAWLOG_INFO("Invalidating local server");
         ServerInvalidate(server);
     } else {
         RAWLOG_INFO("Failed to start HTTP Server");
@@ -259,8 +253,22 @@ static ServerHost* sharedSH = nil;
 	RhoRubyStop();
 	
     RAWLOG_INFO("Server host thread routine is completed");
-    [pool release];
+	[pool release];
 }
+
+//To use with shttpd
+/*- (void)ServerHostThreadRoutine:(id)anObject {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	runLoop = CFRunLoopGetCurrent();
+	m_geoThread = [NSThread currentThread];
+	geo_init();
+	[[NSRunLoop currentRunLoop] run];
+	
+    RAWLOG_INFO("Server host thread routine is completed");
+	[pool release];
+}*/
+
 /*
 - (int)initializeDatabaseConn {
     NSString *appRoot = [AppManager getApplicationsRootPath];
@@ -268,13 +276,12 @@ static ServerHost* sharedSH = nil;
 	return sqlite3_open([path UTF8String], &database);
 }*/
 
-extern const char* RhoGetRootPath();
+//extern const char* RhoGetRootPath();
 
 -(void) start {
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
-	rho_logconf_Init(RhoGetRootPath());
 	[appManager configure];
 	//Init log and settings
 	
@@ -286,15 +293,29 @@ extern const char* RhoGetRootPath();
 	// Start server thread	
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
+	rho_rhodesapp_create(rho_native_rhopath());	
+	//rho_rhodesapp_start();	
+}
+
+void* rho_nativethread_start()
+{
+	return [[NSAutoreleasePool alloc] init];
+}
+
+void rho_nativethread_end(void* pData)
+{
+    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
+    [pool release];	
 }
 
 -(void) stop {
-    CFRunLoopStop(runLoop);
+	rho_rhodesapp_destroy();
+	CFRunLoopStop(runLoop);
 	// Stop the sync engine
 	//stop_sync_engine();
 	//shutdown_database();
 }
-
+/*
 //Sync all sources
 - (void) doSync {
 	rho_sync_doSyncAllSources(TRUE);
@@ -302,13 +323,13 @@ extern const char* RhoGetRootPath();
 
 - (void) doSyncFor:(NSString*)url {
 	rho_sync_doSyncSourceByUrl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-}
+}*/
 
 - (void)dealloc 
 {
     [appManager release];
-	[homeUrl release];
-	[optionsUrl release];
+	//[homeUrl release];
+	//[optionsUrl release];
 	[super dealloc];
 }
 
@@ -361,7 +382,9 @@ void webview_refresh() {
 
 void webview_navigate(char* url, int index) {
 	WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
-	webViewUrl.url = [NSString stringWithUTF8String:url];
+	char* szNormUrl = rho_http_normalizeurl(url);
+	webViewUrl.url = [NSString stringWithUTF8String:szNormUrl];
+	rho_http_free(szNormUrl);
 	webViewUrl.webViewIndex = index;
 	[[ServerHost sharedInstance] navigateTo:webViewUrl];
 }
@@ -381,7 +404,7 @@ void perform_webview_refresh() {
 }
 
 char* webview_current_location() {
-	return get_current_location();
+	return (char*)rho_rhodesapp_getcurrenturl();
 }
 
 void webview_set_menu_items(VALUE argv) {
@@ -425,7 +448,7 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 										   data:[NSString stringWithCString:data]];
 }
 
-void _rho_map_location(char* query) {
+void rho_map_location(char* query) {
 	[[ServerHost sharedInstance] mapLocation:[NSString stringWithCString:query]];
 }
 

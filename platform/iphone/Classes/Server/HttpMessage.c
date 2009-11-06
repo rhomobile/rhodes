@@ -825,7 +825,7 @@ _HTTPResolveIndex(char* url,char* path) {
 	}
 	return url;
 }
-
+/*
 static char* localhost = "http://localhost:8080";
 
 char* HTTPResolveUrl(char* url) {
@@ -858,7 +858,7 @@ char* HTTPResolveUrl(char* url) {
 	free(tmp_url);
 	
 	return ret;
-}
+}*/
 
 int 
 HTTPProcessMessage(HttpContextRef context) {

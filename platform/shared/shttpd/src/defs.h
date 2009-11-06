@@ -19,7 +19,6 @@
 #include "llist.h"
 #include "io.h"
 #include "md5.h"
-#include "config.h"
 #include "shttpd.h"
 
 #include "common/RhoDefs.h"

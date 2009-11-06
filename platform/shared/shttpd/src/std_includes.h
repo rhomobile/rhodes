@@ -12,6 +12,7 @@
 #define	STD_HEADERS_INCLUDED
 
 #include "tcmalloc/rhomem.h"
+#include "config.h"
 
 #ifdef __SYMBIAN32__
 #undef _WIN32

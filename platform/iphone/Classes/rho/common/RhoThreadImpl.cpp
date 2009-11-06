@@ -1,6 +1,11 @@
 #include "RhoThreadImpl.h"
 #include <sys/time.h>
 
+extern "C"{
+void* rho_nativethread_start();
+void rho_nativethread_end(void*);	
+}
+
 namespace rho{
 namespace common{
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
@@ -12,7 +17,9 @@ CRhoThreadImpl::CRhoThreadImpl()
 void* runProc(void* pv)
 {
 	IRhoRunnable* p = static_cast<IRhoRunnable*>(pv);
+	void* pData = rho_nativethread_start();
 	p->run();
+	rho_nativethread_end(pData);	
 	return 0;	
 }
 	
