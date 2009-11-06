@@ -178,40 +178,6 @@ char* RhoRuby_getRhoDBVersion()
     return RSTRING_PTR(valVer);
 }
 
-#if defined(WIN32)
-#if defined(_WIN32_WCE)
-extern DWORD GetModuleFileNameA(HMODULE hModule,LPSTR lpFileName,DWORD size);
-#endif
-static int _root_loaded = 0;
-static char _rootpath[MAX_PATH];
-#if !defined(_WIN32_WCE)
-void __setRootPath(const char* path) {
-	strcpy(_rootpath,path);
-	_root_loaded = 1;
-}
-#endif
-const char* rho_native_rhopath() {
-  int len;
-  if (_root_loaded) {
-    return _rootpath;
-  }
-  if( (len = GetModuleFileNameA(NULL,_rootpath,MAX_PATH)) == 0 )
-  {
-    strcpy(_rootpath,".");
-  }
-  else
-  {
-    while( !(_rootpath[len] == '\\'  || _rootpath[len] == '/') )
-      len--;
-    _rootpath[len]=0;
-    sprintf(_rootpath,"%s\\rho\\",_rootpath);
-  }
-  _root_loaded = 1;
-  return _rootpath;
-}
-
-#endif// WIN32
-
 void RhoRubyStop()
 {
 	//TBD: clenup framework, etc.

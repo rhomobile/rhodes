@@ -207,16 +207,16 @@ void create_folder(LPTSTR Path)
 #endif //_WIN32_WCE
 
 void take_picture(char* callback_url) {
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_TAKEPICTURE,0,(LPARAM)strdup(callback_url));
-#endif
+//#endif
 }
 
 void choose_picture(char* callback_url) {
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd,WM_SELECTPICTURE,0,(LPARAM)strdup(callback_url));
-#endif
+//#endif
 }
 
