@@ -53,7 +53,7 @@ public :
 		m_nRestarting = 1;
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
-        m_strRootPath = getRhoRootPath();
+        getRhoRootPath();
 		while (lpszToken != NULL)
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
@@ -185,22 +185,26 @@ public :
         rho::common::CRhodesApp::Destroy();
     }
 
-    rho::String getRhoRootPath()
+    const rho::String& getRhoRootPath()
     {
-        char rootpath[MAX_PATH];
-        int len;
-        if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
-            strcpy(rootpath,".");
-        else
+        if ( m_strRootPath.length() == 0 )
         {
-            while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
-              len--;
-            rootpath[len+1]=0;
+            char rootpath[MAX_PATH];
+            int len;
+            if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
+                strcpy(rootpath,".");
+            else
+            {
+                while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
+                  len--;
+                rootpath[len+1]=0;
+            }
+
+            m_strRootPath = rootpath;
+            m_strRootPath += "rho/";
         }
 
-        rho::String strRes = rootpath;
-        strRes += "rho/";
-        return strRes; 
+        return m_strRootPath; 
     }
 
 private:
@@ -222,6 +226,11 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
 
 extern "C" HWND getMainWnd() {
 	return _AtlModule.GetManWindow();
+}
+
+const char* rho_native_rhopath() 
+{
+    return _AtlModule.getRhoRootPath().c_str();
 }
 
 //Hook for ruby call to refresh web view

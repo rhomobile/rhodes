@@ -447,7 +447,7 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 		imageuri = wce_wctomb(image_name);
 		int len = 256+strlen(imageuri);
 		message = (char*) malloc(len);
-		sprintf(message,"status=ok&image_uri=%%2Fpublic%%2Fdb-files%%2F%s",imageuri);
+		sprintf(message,"status=ok&image_uri=%s",imageuri);
 	} else {
 		char* status_message = (status==S_FALSE?"User canceled operation":"Error");
 		int len = 256+strlen(status_message);
@@ -486,13 +486,19 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 	return 0;
 }
 
-LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+{
+	TCHAR image_uri[MAX_PATH];
+    HRESULT status = S_OK;
 #if defined (_WIN32_WCE)
 	Camera camera;
-	TCHAR image_uri[MAX_PATH];
-	HRESULT status = camera.selectPicture(this->m_hWnd,image_uri);
-	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+	status = camera.selectPicture(this->m_hWnd,image_uri);
+#else
+    wsprintf( image_uri, L"%s", L"/public/db-files/dashboard.PNG");
 #endif
+
+	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+
 	return 0;
 }
 
