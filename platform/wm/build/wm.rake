@@ -25,6 +25,7 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       args = ['/M4', 'rhodes.sln', '"Release|Windows Mobile 6 Professional SDK (ARMV4I)"']
+      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
       unless $? == 0
         puts "Error building"
@@ -53,7 +54,9 @@ namespace "device" do
       
       chdir $builddir
       
-      args = ['build_inf.js', 'rhodes.inf', 'wm6']
+      cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+
+      args = ['build_inf.js', 'rhodes.inf', 'wm6', $app_config["name"], $app_config["vendor"]]
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
