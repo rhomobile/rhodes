@@ -524,7 +524,11 @@ stat_atimespec(struct stat *st)
 #elif defined(HAVE_STRUCT_STAT_ST_ATIMESPEC)
     ts.tv_nsec = st->st_atimespec.tv_nsec;
 #elif defined(HAVE_STRUCT_STAT_ST_ATIMENSEC)
+#  if defined(ANDROID)
+	ts.tv_nsec = st->st_atime_nsec;
+#  else
     ts.tv_nsec = st->st_atimensec;
+#  endif
 #else
     ts.tv_nsec = 0;
 #endif

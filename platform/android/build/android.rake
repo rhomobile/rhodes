@@ -28,8 +28,7 @@ namespace "config" do
 
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
-    $androidplatform = "android-1.5"
-    $avdname = "rhoAndroid15"
+	$androidndkpath = $config["env"]["paths"]["android-ndk"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
@@ -42,6 +41,21 @@ namespace "config" do
     $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
+
+	$androidapi = Hash.new
+	$androidapi[2] = "1.1"
+	$androidapi[3] = "1.5"
+	$androidapi[4] = "1.6"
+	$androidapi[5] = "2.0"
+
+	ANDROID_API_LEVEL = 3
+	$androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
+	$avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
+
+	$ndktools = $androidndkpath + "/build/prebuilt/linux-x86/arm-eabi-4.2.1"
+	$ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
+    $gccbin = $ndktools + "/bin/arm-eabi-gcc"
+    $arbin = $ndktools + "/bin/arm-eabi-ar"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
@@ -116,6 +130,141 @@ namespace "build" do
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
     end
+
+	task :libsqlite => "config:android" do
+      objdir = $bindir + "/sqlite"
+	  libname = $bindir + "/libsqlite.a"
+
+	  rm_rf objdir
+	  rm_rf libname
+	  mkdir_p objdir
+
+	  srcdir = $androidpath + "/../shared/sqlite"
+
+	  args = []
+	  args << "--sysroot"
+	  args << $ndksysroot
+	  args << "-fPIC"
+	  args << "-mandroid"
+	  args << "-DANDROID"
+	  args << "-I#{srcdir}"
+	  args << "-c"
+	  args << srcdir + "/sqlite3.c"
+	  args << "-o"
+	  args << objdir + "/sqlite3.o"
+	  puts Jake.run($gccbin, args)
+	  unless $? == 0
+		  puts "Error compiling sqlite"
+		  exit 1
+	  end
+
+	  args = []
+	  args << "cr"
+	  args << libname
+	  args << objdir + "/sqlite3.o"
+	  puts Jake.run($arbin, args)
+	  unless $? == 0
+		  puts "Error creating libsqlite.a"
+		  exit 1
+	  end
+	  
+	end
+
+    task :libruby => "config:android" do
+      objdir = $bindir + "/rubylib"
+	  libname = $bindir + "/libruby.a"
+      rm_rf objdir
+	  rm_rf libname
+      mkdir_p objdir
+
+	  srcdir = $androidpath + "/../shared/ruby"
+
+	  objects = []
+	  File.read($androidpath + "/build/libruby_build.files").each do |f|
+        f.chomp!
+        objname = File.basename(f).gsub(/\.c$/, ".o")
+
+        args = []
+		args << "--sysroot"
+		args << $ndksysroot
+		args << "-fPIC"
+		args << "-mandroid"
+		args << "-DANDROID"
+		args << "-I#{srcdir}/include"
+		args << "-I#{srcdir}/linux"
+		args << "-I#{srcdir}/generated"
+		args << "-I#{srcdir}"
+		args << "-I#{srcdir}/.."
+		args << "-I#{srcdir}/../sqlite"
+		args << "-c"
+		args << f
+		args << "-o"
+		args << objdir + "/" + objname
+        puts Jake.run($gccbin, args)
+		unless $? == 0
+			puts "Error compiling ruby"
+			exit 1
+		end
+
+		objects << objdir + "/" + objname
+      end
+	  
+	  args = []
+	  args << "cr"
+	  args << libname
+	  args += objects
+	  puts Jake.run($arbin, args)
+	  unless $? == 0
+		  puts "Error creating libruby.a"
+		  exit 1
+	  end
+    end
+
+	task :libshttpd => "config:android" do
+      objdir = $bindir + "/shttpd"
+	  libname = $bindir + "/libshttpd.a"
+	  rm_rf objdir
+	  rm_rf libname
+	  mkdir_p objdir
+
+	  srcdir = $androidpath + "/../shared/shttpd/src"
+
+	  objects = []
+	  File.read($androidpath + "/build/libshttpd_build.files").each do |f|
+		  f.chomp!
+		  objname = File.basename(f).gsub(/\.c$/, ".o")
+
+		  args = []
+		  args << "--sysroot"
+		  args << $ndksysroot
+		  args << "-fPIC"
+		  args << "-mandroid"
+		  args << "-DANDROID"
+		  args << "-I#{srcdir}"
+		  args << "-I#{srcdir}/../.."
+		  args << "-c"
+		  args << f
+		  args << "-o"
+		  args << objdir + "/" + objname
+		  puts Jake.run($gccbin, args)
+		  unless $? == 0
+			  puts "Error compiling shttpd"
+			  exit 1
+		  end
+
+		  objects << objdir + "/" + objname
+	  end
+
+	  args = []
+	  args << "cr"
+	  args << libname
+	  args += objects
+	  puts Jake.run($arbin, args)
+	  unless $? == 0
+		  puts "Error creating libshttpd.a"
+		  exit 1
+	  end
+	end
 
 #    desc "Build RubyVM for android"
     task :rubyvm => "config:android" do

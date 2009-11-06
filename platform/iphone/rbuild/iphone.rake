@@ -69,7 +69,7 @@ namespace "config" do
       $sdk = $app_config["iphone"]["sdk"]
     end
 
-    unless File.exists? $homedir + "/.profile"
+    if File.exists? $homedir + "/.profile"
       File.open($homedir + "/.profile") {|f| f << "#" }
     end
   end

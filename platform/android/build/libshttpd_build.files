@@ -1,0 +1,11 @@
+platform/shared/shttpd/src/auth.c
+platform/shared/shttpd/src/compat_unix.c
+platform/shared/shttpd/src/io_dir.c
+platform/shared/shttpd/src/io_emb.c
+platform/shared/shttpd/src/io_file.c
+platform/shared/shttpd/src/io_socket.c
+platform/shared/shttpd/src/log.c
+platform/shared/shttpd/src/md5.c
+platform/shared/shttpd/src/rdispatcher.c
+platform/shared/shttpd/src/shttpd.c
+platform/shared/shttpd/src/string.c
