@@ -155,6 +155,25 @@ void CRhodesApp::callAppActiveCallback()
     new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );
 }
 
+void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
+    const String& strError, boolean bCancel ) 
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    if ( bCancel || strError.length() > 0 )
+    {
+        if ( bCancel )
+            strBody = "status=cancel&message=User canceled operation";
+        else
+            strBody = "status=error&message=" + strError;
+    }else
+        strBody = "status=ok&image_uri=" + strImagePath;
+
+    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
+    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
+    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
+}
+
 static void callback_geolocation(struct shttpd_arg *arg) 
 {
 	if (!geo_known_position())

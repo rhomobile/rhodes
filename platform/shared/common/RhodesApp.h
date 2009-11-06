@@ -52,6 +52,8 @@ public:
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getRhoRootPath(){return m_strRhoRootPath;}
 
+    void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
+
 private:
 	virtual void run();
 
