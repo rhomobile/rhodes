@@ -3,7 +3,6 @@
 	<name>Rhodes</name>
 	<comment></comment>
 	<projects>
-		<project>RhoBundle</project>
 		<project>RubyJVM</project>
 	</projects>
 	<buildSpec>
