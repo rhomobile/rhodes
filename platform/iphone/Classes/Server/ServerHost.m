@@ -222,20 +222,7 @@ static ServerHost* sharedSH = nil;
 	
 	RAWLOG_INFO("Initializing ruby");
 	RhoRubyStart();
-
-	/*char* _url = rho_conf_getString("start_path");
-	homeUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	rho_conf_freeString(_url);
-	_url = rho_conf_getString("options_path");
-	optionsUrl = [NSString stringWithCString:_url encoding:NSUTF8StringEncoding];
-	rho_conf_freeString(_url);
 	
-	RAWLOG_INFO1("Start page: %s", [homeUrl UTF8String]);
-	RAWLOG_INFO1("Options page: %s", [optionsUrl UTF8String]);
-	[[ServerHost sharedInstance] setViewHomeUrl:homeUrl];
-	[[ServerHost sharedInstance] setViewOptionsUrl:optionsUrl];
-	*/
-    //runLoop = CFRunLoopGetCurrent();
     ServerContext c = {NULL, NULL, NULL, NULL};
     ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
 	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
@@ -268,6 +255,20 @@ static ServerHost* sharedSH = nil;
     RAWLOG_INFO("Server host thread routine is completed");
 	[pool release];
 }
+
+//To use with shttpd
+/*- (void)ServerHostThreadRoutine:(id)anObject {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	runLoop = CFRunLoopGetCurrent();
+	m_geoThread = [NSThread currentThread];
+	geo_init();
+	[[NSRunLoop currentRunLoop] run];
+	
+    RAWLOG_INFO("Server host thread routine is completed");
+	[pool release];
+}*/
+
 /*
 - (int)initializeDatabaseConn {
     NSString *appRoot = [AppManager getApplicationsRootPath];
