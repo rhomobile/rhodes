@@ -176,7 +176,7 @@ private:
 
 	void SetRhobundleReloadMenu();
 
-private:
-	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
+//private:
+//	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
 

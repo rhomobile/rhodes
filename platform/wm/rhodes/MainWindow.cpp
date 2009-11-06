@@ -13,6 +13,7 @@
 #include "resource.h"
 #include "MainWindow.h"
 #include "common/RhodesApp.h"
+#include "common/StringConverter.h"
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
 #if defined(_WIN32_WCE)
@@ -437,7 +438,7 @@ LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	return 0;
 }
 #endif
-
+/*
 void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
 
     rho::String callback = RHODESAPP().canonicalizeRhoUrl(callback_url);
@@ -465,14 +466,16 @@ void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, c
 	free(message);
 	if (imageuri) 
         free(imageuri);
-}
+}*/
 
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 #if defined (_WIN32_WCE)
 	Camera camera;
 	TCHAR image_uri[MAX_PATH];
 	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
-	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+
+    RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
+        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 #endif
 	return 0;
 }
@@ -497,7 +500,8 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
     wsprintf( image_uri, L"%s", L"/public/db-files/dashboard.PNG");
 #endif
 
-	SendCameraCallbackRequest(status, image_uri, (char*)lParam);
+    RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
+        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
 	return 0;
 }
