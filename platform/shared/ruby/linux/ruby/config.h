@@ -9,6 +9,7 @@
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
 #define HAVE_STDLIB_H 1
+#define HAVE_STDIO_H 1
 #define HAVE_STRING_H 1
 #define HAVE_MEMORY_H 1
 #define HAVE_STRINGS_H 1
@@ -72,7 +73,13 @@
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
+
+#if defined(ANDROID)
+#define HAVE_SYS_SYSCALL_H 1
+#else
 #define HAVE_SYSCALL_H 1
+#endif
+
 #define HAVE_PWD_H 1
 #define HAVE_GRP_H 1
 #define HAVE_A_OUT_H 1
@@ -83,12 +90,21 @@
 #define HAVE_FLOAT_H 1
 #define HAVE_PTHREAD_H 1
 #define HAVE_UCONTEXT_H 1
+
+#if !defined(ANDROID)
 #define HAVE_LANGINFO_H 1
+#endif
+
 #define HAVE_LOCALE_H 1
 #define HAVE_SYS_SENDFILE_H 1
 #define HAVE_TIME_H 1
 #define HAVE_SYS_SOCKET_H 1
 #define SIZEOF_RLIM_T 8
+
+#if defined(ANDROID)
+typedef unsigned long long rlim_t;
+#endif
+
 #define SIZEOF_SIZE_T 4
 #define SIZEOF_PTRDIFF_T 4
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
@@ -97,9 +113,15 @@
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
+
+#if !defined(ANDROID)
 #define HAVE_STRUCT_STAT_ST_ATIM 1
 #define HAVE_STRUCT_STAT_ST_MTIM 1
 #define HAVE_STRUCT_STAT_ST_CTIM 1
+#else
+#define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
+#endif
+
 #define HAVE_STRUCT_TIMESPEC 1
 #define HAVE_RB_FD_INIT 1
 #define HAVE_INT8_T 1
@@ -233,10 +255,18 @@
 #define HAVE_LIBPTHREAD 1
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
+
+#if !defined(ANDROID)
 #define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
+#endif
+
 #define HAVE_GETCONTEXT 1
 #define HAVE_SETCONTEXT 1
+
+#if !defined(ANDROID)
 #define HAVE_BACKTRACE 1
+#endif
+
 #define USE_ELF 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
@@ -249,3 +279,9 @@
 #define RUBY_ARCHLIB "/lib"
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
+
+#if defined(ANDROID)
+#include <sys/select.h>
+#include <asm/page.h>
+typedef long int fd_mask;
+#endif
