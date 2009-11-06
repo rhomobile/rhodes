@@ -526,4 +526,10 @@ const char* rho_rhodesapp_getblobsdirpath()
 	return RHODESAPP().getBlobsDirPath().c_str();
 }
 
+void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
+    const char* strError, int bCancel )
+{
+    return RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
+}
+
 }

@@ -96,7 +96,10 @@ void rho_http_sendresponse(void* httpContext, const char* szBody);
 
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
-	
+
+void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
+    const char* strError, int bCancel );
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
