@@ -46,18 +46,6 @@ HREGNOTIFY g_hNotify = NULL;
 
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
 
-class CRhoBrowserImpl: public rho::common::IRhoBrowser
-{
-    HWND m_hwndApp;
-public:
-    CRhoBrowserImpl(HWND hwndApp) : m_hwndApp(hwndApp){}
-
-    virtual void navigateUrl(const rho::String& szUrl)
-    {
-    	::PostMessage( m_hwndApp, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(szUrl.c_str()) );
-    }
-};
-
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 public :
@@ -65,6 +53,7 @@ public :
 		m_nRestarting = 1;
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
+        m_strRootPath = getRhoRootPath();
 		while (lpszToken != NULL)
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
@@ -134,7 +123,8 @@ public :
             return S_FALSE;
         }
 
-        rho::common::CRhodesApp::Create(m_strRootPath, new CRhoBrowserImpl(m_appWindow.m_hWnd) );
+        rho_logconf_Init(m_strRootPath.c_str());
+        rho::common::CRhodesApp::Create(m_strRootPath );
 
        // m_pServerHost = new CServerHost();
         // Starting local server
@@ -161,17 +151,12 @@ public :
 	void DoViewRefresh() {
 		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
 	}
-    /*
-	void DoViewNavigate(char* url) {
-		char* canonical_url = canonicalizeURL(url);
-		if (canonical_url) {
-			::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_NAVIGATE,(LPARAM)wce_mbtowc(canonical_url));
-			free(canonical_url);
-		}
-		//LPTSTR wcurl = wce_mbtowc(url);
-		//m_appWindow.Navigate2(wcurl);
-		//free(wcurl);
-	}*/
+    
+	void DoViewNavigate(char* url) 
+    {
+        rho::String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+        ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
+    }
 
 	char* GetCurrentLocation() {
 		return m_appWindow.GetCurrentLocation();
@@ -197,6 +182,24 @@ public :
         //delete m_pServerHost;
         //m_pServerHost = NULL;
         rho::common::CRhodesApp::Destroy();
+    }
+
+    rho::String getRhoRootPath()
+    {
+        char rootpath[MAX_PATH];
+        int len;
+        if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
+            strcpy(rootpath,".");
+        else
+        {
+            while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
+              len--;
+            rootpath[len+1]=0;
+        }
+
+        rho::String strRes = rootpath;
+        strRes += "rho/";
+        return strRes; 
     }
 
 private:
@@ -232,9 +235,7 @@ extern "C" void perform_webview_refresh() {
 }
 
 extern "C" void webview_navigate(char* url, int index) {
-	//_AtlModule.DoViewNavigate(url);
-
-    RHODESAPP().navigateToUrl(url);
+	_AtlModule.DoViewNavigate(url);
 }
 
 extern "C" char* webview_execute_js(char* js) {
@@ -272,6 +273,14 @@ extern "C" void create_nativebar(int bar_type, int nparams, char** params) {
 
 extern "C" void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
     //TODO: mapview_create
+}
+
+extern "C" void rho_map_location(char* query)
+{
+}
+
+extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
+{
 }
 
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)

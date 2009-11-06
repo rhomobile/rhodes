@@ -17,10 +17,11 @@
 #import "Dispatcher.h"
 #import "AppLoader.h"
 #import "common/RhoConf.h"
+#import "common/RhodesApp.h"
 #import "logging/RhoLogConf.h"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
-const char* RhoGetRootPath();
+//const char* RhoGetRootPath();
 
 @implementation AppManager
 
@@ -117,8 +118,9 @@ const char* RhoGetRootPath();
 //#else
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 //#endif	
+	rho_logconf_Init(rho_native_rhopath());
+	
 	if (replaceFiles) {
-		rho_logconf_Init(RhoGetRootPath());
 //#ifndef TARGET_IPHONE_SIMULATOR	
 		rho_conf_setString("currentVersion", version);
 		rho_conf_save();
@@ -128,7 +130,8 @@ const char* RhoGetRootPath();
 
 @end
 
-const char* RhoGetRootPath() {
+const char* rho_native_rhopath() 
+{
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
 	if (!loaded){
@@ -204,6 +207,29 @@ int _LoadApp(HttpContextRef context) {
 	
 	HttpSendErrorToTheServer(context, 400, "Application name to load and install is not specifyed");
 	return -1;
+}
+
+void rho_appmanager_load( void* httpContext, const char* szQuery)
+{
+	if ( !szQuery || !*szQuery )
+	{
+		rho_http_senderror(httpContext, 400, "Application name to load and install is not specifyed");
+		return;
+	}
+	
+	AppLoader* appLoader = [[AppLoader alloc] init];
+	bool ret = [appLoader loadApplication:[NSString stringWithCString:szQuery]];
+	[appLoader release];
+	if (!ret) {
+		rho_http_senderror(httpContext, 500, "Error loading application");
+		return;
+	}
+	
+	char location[strlen(szQuery)+2];
+	HttpSnprintf(location, sizeof(location), "/%s", szQuery);
+	rho_http_redirect(httpContext, location);
+	
+	return;
 }
 
 

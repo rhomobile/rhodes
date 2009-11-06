@@ -8,4 +8,4 @@
  */
 	
 const char* GetApplicationsRootPath();
-int ExecuteAppManager(HttpContextRef context, RouteRef route);
+//int ExecuteAppManager(HttpContextRef context, RouteRef route);

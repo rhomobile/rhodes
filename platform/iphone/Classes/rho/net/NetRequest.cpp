@@ -1,6 +1,7 @@
 #include "NetRequest.h"
 #include "common/AutoPointer.h"
 #include "common/RhoFile.h"
+#include "common/RhodesApp.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
@@ -496,10 +497,7 @@ void CNetRequest::deleteCookie(const String& strUrl)
 
 String CNetRequest::resolveUrl(const String& strUrl)
 {
-    char* url = HTTPResolveUrl( strdup(strUrl.c_str()) );
-    String res = url;
-    free(url);
-    return res;
+    return RHODESAPP().canonicalizeRhoUrl(strUrl);
 }
 
 void CNetRequest::cancel()

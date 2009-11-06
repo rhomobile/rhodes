@@ -1286,9 +1286,10 @@ void shutdown_poll(struct shttpd_ctx *ctx)
 {
 	struct llhead	*lp;
 	struct listener	*l;
-
+#ifdef _WIN32
     if( g_hWaitEvent )
         SetEvent(g_hWaitEvent);
+#endif// _WIN32
 
 	LL_FOREACH(&ctx->listeners, lp) {
 		l = LL_ENTRY(lp, struct listener, link);
