@@ -497,7 +497,7 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
 #else
-    wsprintf( image_uri, L"%s", L"/public/db-files/dashboard.PNG");
+    wsprintf( image_uri, L"%s", L"dashboard.PNG");
 #endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
