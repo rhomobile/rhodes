@@ -186,7 +186,7 @@
 
 - (void)onChooseDateTime:(DateTime*)dateTime {
 	dateTimePickerDelegate.dateTime = dateTime;
-	[dateTimePickerDelegate setPostUrl:url];//[self normalizeUrl:dateTime.url]];
+	[dateTimePickerDelegate setPostUrl:dateTime.url];//[self normalizeUrl:dateTime.url]];
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
 }
