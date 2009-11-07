@@ -557,4 +557,9 @@ void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTi
     return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
 }
 
+void rho_rhodesapp_callAppActiveCallback()
+{
+    return RHODESAPP().callAppActiveCallback();
+}
+
 }
