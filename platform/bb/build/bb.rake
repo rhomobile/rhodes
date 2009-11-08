@@ -102,6 +102,13 @@ def autosign
 
 end
 
+def create_rhodes_alx_file
+    rbText = ERB.new( IO.read($builddir + "/rhodesAppAlx.erb") ).result
+	fAlx = File.new($targetdir + "/" + $outfilebase + ".alx", "w")
+    fAlx.write(rbText)
+    fAlx.close()
+end
+
 
 namespace "config" do
   task :bb => ["config:common"] do
@@ -122,8 +129,11 @@ namespace "config" do
 
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
-    $outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-    $outfilebase = $outfilebase.gsub(/[^A-Za-z_0-9]/, '_')
+    $appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
+    #$outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
+    
+    $outfilebase = $appname.gsub(/[^A-Za-z_0-9]/, '_')
+    #$appname = $outfilebase
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       $preverified+"/RubyVM.jar"
@@ -133,6 +143,10 @@ end
 
 namespace "build" do
   namespace "bb" do
+    task :alx => ["config:bb"] do
+        create_rhodes_alx_file
+    end
+      
 #    desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
@@ -370,14 +384,12 @@ namespace "package" do
 
 #    desc "Package rhodesApp"
     task :rhodes => ["build:bb:rhodes"] do
-      appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-
       if not FileUtils.uptodate?($targetdir + '/' + $outfilebase + '.cod',$preverified + "/rhodes.jar")
         Jake.rapc($outfilebase,
           $targetdir,
           $rhodesimplib,
           '"' +  $preverified + "/rhodes.jar" +'"',
-          appname,
+          $appname,
           $app_config["vendor"],
           $app_config["version"],
           "resources/icon.png",
@@ -389,10 +401,8 @@ namespace "package" do
           exit 1
         end
         $stdout.flush
-        if not FileUtils.uptodate?( $targetdir + "/" + $outfilebase + ".alx", $builddir + "/rhodesApp.alx" )
-          cp $builddir + "/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"
-          freplace( $targetdir + "/" + $outfilebase + ".alx", /rhodesApp/, appname )
-        end
+        
+        create_rhodes_alx_file
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -428,13 +438,11 @@ namespace "package" do
 
       Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir,true)
 
-      appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
         '"' +  $bindir + "/" + $outfilebase + ".jar" +'"',
-        appname,
+        $appname,
         $app_config["vendor"],
         $app_config["version"],
         "resources/icon.png",
@@ -446,14 +454,16 @@ namespace "package" do
         exit 1
       end
       $stdout.flush
-      if not FileUtils.uptodate?( $targetdir + "/" + $outfilebase + ".alx", $builddir + "/rhodesApp.alx" )
-        cp $builddir +"/rhodesApp.alx", $targetdir + "/" + $outfilebase + ".alx"
-        freplace( $targetdir + "/" + $outfilebase + ".alx", /rhodesApp/, appname )
-      end
+      
+      create_rhodes_alx_file
     end
 
+    task :set_dev_build do
+        $dev_build = true
+    end
+    
 #    desc "Package all dev (each part in separate package)"
-    task :dev => [ :rubyvm,:rhobundle,:rhodes] do
+    task :dev => [ :set_dev_build, :rubyvm,:rhobundle,:rhodes] do
     end
   end
 end
@@ -569,7 +579,7 @@ namespace "run" do
   end
   
   desc "Builds everything, loads and starts bb sim and mds"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:dev"] do
     #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
