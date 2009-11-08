@@ -25,4 +25,11 @@ excludedirs:
     - public/js/iui
     - public/js/jquery*
     - public/js/prototype*
+    - public/css/iphone*
+    - public/iwebkit
+    - **/*.db
+    - **/.*.swo
+    - **/.*.swn
+    - **/jquery*.js
+    - **/.DS_Store
 
