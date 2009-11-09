@@ -23,7 +23,7 @@ private:
     String m_strListeningPorts;
     struct shttpd_ctx * m_shttpdCtx;
     String m_strRhoRootPath, m_strLoadingPagePath, m_strBlobsDirPath;
-    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl;
+    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl, m_strFirstStartUrl;
     StringW m_strStartUrlW, m_strOptionsUrlW;
 
 public:
@@ -45,6 +45,7 @@ public:
     const String& getStartUrl(){return m_strStartUrl;}
     const String& getOptionsUrl(){return m_strOptionsUrl;}
     const String& getCurrentUrl(){ return m_strCurrentUrl; }
+    const String& getFirstStartUrl(){ return m_strFirstStartUrl; }
 
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
@@ -59,7 +60,6 @@ private:
 
     void initHttpServer();
     void initAppUrls();
-    String getFirstStartUrl();
 
     const char* getFreeListeningPort();
 
@@ -82,6 +82,8 @@ void rho_rhodesapp_destroy();
 const char* rho_native_rhopath();
 	
 const char* rho_rhodesapp_getstarturl();
+const char* rho_rhodesapp_getfirststarturl();
+
 const char* rho_rhodesapp_getoptionsurl();
 void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
 const char* rho_rhodesapp_getcurrenturl();
