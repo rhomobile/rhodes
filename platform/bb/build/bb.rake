@@ -184,6 +184,9 @@ namespace "build" do
 
     task :devrhobundle => :rhobundle do
       cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
+      
+      sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes/apps/rhoconfig.txt"
+      cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
     end
     
 #    desc "Build RubyVM"
