@@ -52,12 +52,6 @@ namespace "config" do
     $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
     $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
 
-    $ndktools = $androidndkpath + "/build/prebuilt/linux-x86/arm-eabi-4.2.1"
-    $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
-    $gccbin = $ndktools + "/bin/arm-eabi-gcc"
-    $gppbin = $ndktools + "/bin/arm-eabi-g++"
-    $arbin = $ndktools + "/bin/arm-eabi-ar"
-
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
@@ -85,6 +79,13 @@ namespace "config" do
     $keystore = $keystoredir + "/keystore"
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
+
+    $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-4.2.1"
+    $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
+
+    $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
+    $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
+    $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
