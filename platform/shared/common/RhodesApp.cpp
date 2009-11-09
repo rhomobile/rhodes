@@ -77,11 +77,11 @@ void CRhodesApp::run()
     initHttpServer();
     RhoRubyStart();
 
-    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
-
     rho_sync_create();
     RhoRubyInitApp();
     callAppActiveCallback();
+
+    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
     while(!m_bExit)
     {
@@ -364,17 +364,12 @@ String CRhodesApp::getFirstStartUrl()
     return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
 }
 
-void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
-{
-    m_strCurrentUrlW = strUrlW;
-    keepLastVisitedUrl(convertToStringA(strUrlW));
-}
-
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
 	LOG(INFO) + "Current URL: " + strUrl;
 	
 	m_strCurrentUrl = strUrl;
+
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )

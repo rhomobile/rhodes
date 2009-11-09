@@ -365,7 +365,11 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 //    m_spIWebBrowser2->Refresh();
 
 //	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
-    Navigate2(const_cast<wchar_t*>(RHODESAPP().getCurrentUrlW().c_str()));
+
+    rho::StringW strCurrentUrlW;
+    rho::common::convertToStringW(RHODESAPP().getCurrentUrl().c_str(), strCurrentUrlW);
+    Navigate2(const_cast<wchar_t*>(strCurrentUrlW.c_str()));
+
 //	free(wcurl);
     return 0;
 }
@@ -612,7 +616,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
 	
-	BOOL store_current_url = !m_bLoading;
+	//BOOL store_current_url = !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -632,8 +636,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 
 	m_current_url = wce_wctomb(url);*/
 	
-	if( store_current_url ) 
-        RHODESAPP().keepLastVisitedUrlW(url);
+	//if( store_current_url ) 
+    //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
