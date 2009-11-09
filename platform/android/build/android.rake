@@ -55,6 +55,7 @@ namespace "config" do
 	$ndktools = $androidndkpath + "/build/prebuilt/linux-x86/arm-eabi-4.2.1"
 	$ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
     $gccbin = $ndktools + "/bin/arm-eabi-gcc"
+	$gppbin = $ndktools + "/bin/arm-eabi-g++"
     $arbin = $ndktools + "/bin/arm-eabi-ar"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
@@ -62,12 +63,14 @@ namespace "config" do
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
+	  $ndkhost = "windows"
     else
       #XXX make these absolute
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
       $bat_ext = ""
       $exe_ext = ""
       $path_separator = ":"
+	  $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
     end
 
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
@@ -147,6 +150,7 @@ namespace "build" do
 	  args << "-fPIC"
 	  args << "-mandroid"
 	  args << "-DANDROID"
+	  args << "-DOS_ANDROID"
 	  args << "-I#{srcdir}"
 	  args << "-c"
 	  args << srcdir + "/sqlite3.c"
@@ -159,7 +163,7 @@ namespace "build" do
 	  end
 
 	  args = []
-	  args << "cr"
+	  args << "crs"
 	  args << libname
 	  args << objdir + "/sqlite3.o"
 	  puts Jake.run($arbin, args)
@@ -190,6 +194,7 @@ namespace "build" do
 		args << "-fPIC"
 		args << "-mandroid"
 		args << "-DANDROID"
+		args << "-DOS_ANDROID"
 		args << "-I#{srcdir}/include"
 		args << "-I#{srcdir}/linux"
 		args << "-I#{srcdir}/generated"
@@ -210,7 +215,7 @@ namespace "build" do
       end
 	  
 	  args = []
-	  args << "cr"
+	  args << "crs"
 	  args << libname
 	  args += objects
 	  puts Jake.run($arbin, args)
@@ -240,6 +245,7 @@ namespace "build" do
 		  args << "-fPIC"
 		  args << "-mandroid"
 		  args << "-DANDROID"
+		  args << "-DOS_ANDROID"
 		  args << "-I#{srcdir}"
 		  args << "-I#{srcdir}/../.."
 		  args << "-c"
@@ -256,7 +262,7 @@ namespace "build" do
 	  end
 
 	  args = []
-	  args << "cr"
+	  args << "crs"
 	  args << libname
 	  args += objects
 	  puts Jake.run($arbin, args)
@@ -264,6 +270,79 @@ namespace "build" do
 		  puts "Error creating libshttpd.a"
 		  exit 1
 	  end
+	end
+
+	task :libstlport => "config:android" do
+      args = []
+	  args << "-C"
+	  args << $androidpath + "/stlport/build/lib"
+	  args << "-f"
+	  args << "android.mak"
+	  args << "NDK_DIR=#{$androidndkpath}"
+	  args << "NDK_HOST=#{$ndkhost}"
+	  args << "release-static"
+	  puts Jake.run("make", args)
+	  unless $? == 0
+		  puts "Error compiling stlport"
+		  exit 1
+	  end
+	  cp_r $androidpath + "/stlport/build/lib/obj/arm-linux-gcc/so/libstlport.a", $bindir
+	end
+
+	task :librhodes => "config:android" do
+      objdir = $bindir + "/librhodes"
+	  libname = $bindir + "/librhodes.a"
+	  rm_rf objdir
+	  rm_rf libname
+	  mkdir_p objdir
+
+	  srcdir = $androidpath + "/../shared"
+
+	  objects = []
+	  File.read($androidpath + "/build/librhodes_build.files").each do |f|
+		  f.chomp!
+		  objname = File.basename(f).gsub(/\.cpp$/, ".o")
+
+		  args = []
+		  args << "--sysroot"
+		  args << $ndksysroot
+		  args << "-fPIC"
+		  args << "-mandroid"
+		  args << "-DANDROID"
+		  args << "-DOS_ANDROID"
+		  args << "-D__NEW__"
+		  args << "-D__SGI_STL_INTERNAL_PAIR_H"
+		  args << "-I#{$androidpath}/stlport/stlport"
+		  args << "-I#{srcdir}"
+		  #args << "-I#{srcdir}/common"
+		  #args << "-I#{srcdir}/logging"
+		  #args << "-I#{srcdir}/net"
+		  #args << "-I#{srcdir}/statistic"
+		  args << "-c"
+		  args << f
+		  args << "-o"
+		  args << objdir + "/" + objname
+		  puts Jake.run($gppbin, args)
+		  unless $? == 0
+			  puts "Error compiling librhodes"
+			  exit 1
+		  end
+
+		  objects << objdir + "/" + objname
+	  end
+
+	  args = []
+	  args << "crs"
+	  args << libname
+	  args += objects
+	  puts Jake.run($arbin, args)
+	  unless $? == 0
+		  puts "Error creating librhodes.a"
+		  exit 1
+	  end
+	end
+
+	task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :librhodes] do
 	end
 
 #    desc "Build RubyVM for android"

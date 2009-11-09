@@ -148,7 +148,7 @@ static int max_file_descriptor = NOFILE;
 #define argf_of(obj) (*(struct argf *)DATA_PTR(obj))
 #define ARGF argf_of(argf)
 
-#if defined(ANDROID)
+#if defined(OS_ANDROID)
 #  define STDIO_READ_DATA_PENDING(fp) (!feof(fp))
 #else
 #ifdef _STDIO_USES_IOSTREAM  /* GNU libc */

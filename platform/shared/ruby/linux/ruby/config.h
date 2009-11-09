@@ -74,7 +74,7 @@
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
 
-#if defined(ANDROID)
+#if defined(OS_ANDROID)
 #define HAVE_SYS_SYSCALL_H 1
 #else
 #define HAVE_SYSCALL_H 1
@@ -91,7 +91,7 @@
 #define HAVE_PTHREAD_H 1
 #define HAVE_UCONTEXT_H 1
 
-#if !defined(ANDROID)
+#if !defined(OS_ANDROID)
 #define HAVE_LANGINFO_H 1
 #endif
 
@@ -101,7 +101,7 @@
 #define HAVE_SYS_SOCKET_H 1
 #define SIZEOF_RLIM_T 8
 
-#if defined(ANDROID)
+#if defined(OS_ANDROID)
 typedef unsigned long long rlim_t;
 #endif
 
@@ -114,7 +114,7 @@ typedef unsigned long long rlim_t;
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
 
-#if !defined(ANDROID)
+#if !defined(OS_ANDROID)
 #define HAVE_STRUCT_STAT_ST_ATIM 1
 #define HAVE_STRUCT_STAT_ST_MTIM 1
 #define HAVE_STRUCT_STAT_ST_CTIM 1
@@ -256,14 +256,14 @@ typedef unsigned long long rlim_t;
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
 
-#if !defined(ANDROID)
+#if !defined(OS_ANDROID)
 #define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
 #endif
 
 #define HAVE_GETCONTEXT 1
 #define HAVE_SETCONTEXT 1
 
-#if !defined(ANDROID)
+#if !defined(OS_ANDROID)
 #define HAVE_BACKTRACE 1
 #endif
 
@@ -280,7 +280,7 @@ typedef unsigned long long rlim_t;
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
 
-#if defined(ANDROID)
+#if defined(OS_ANDROID)
 #include <sys/select.h>
 #include <asm/page.h>
 typedef long int fd_mask;
