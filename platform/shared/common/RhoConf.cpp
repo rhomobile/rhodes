@@ -31,7 +31,10 @@ void RhoSettings::loadFromFile(){
     }
 }
 
-void RhoSettings::loadFromString(const char* szSettings){
+void RhoSettings::loadFromString(const char* szSettings)
+{
+    m_mapValues.clear();
+
     if ( !szSettings && !*szSettings )
         return;
 
