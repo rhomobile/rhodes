@@ -433,9 +433,9 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("dosearch_source",
 			new RubyVarArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-					if ( args.size() != 5 )
+					if ( args.size() != 7 )
 						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 5 + " )");			
+								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 7 + " )");			
 					
 					try{
 						int source_id = args.get(0).toInt();
@@ -444,8 +444,14 @@ public class SyncThread extends RhoThread
 						
 						String str = args.get(3).asString();
 						int nProgressStep = args.get(4).toInt();
+						String callback = args.get(5) != RubyConstant.QNIL ? args.get(5).toStr() : "";
+						String callback_params = args.get(6) != RubyConstant.QNIL ? args.get(6).toStr() : "";
+						
 						boolean bSearchSyncChanges = args.get(3).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
 						stopSync();
+
+						if ( callback != null && callback.length() > 0 )
+							getSyncEngine().getNotify().setSearchNotification(source_id, callback, callback_params);
 						
 						getInstance().addSyncCommand(new SyncSearchCommand(from,params,source_id,bSearchSyncChanges, nProgressStep) );
 					}catch(Exception e)

@@ -19,7 +19,10 @@ public class SyncNotify {
     static class SyncNotification
     {
         String m_strUrl, m_strParams;
-        SyncNotification(String strUrl, String strParams){ m_strUrl = strUrl; m_strParams = strParams; }
+        boolean m_bRemoveAfterFire;
+        
+        SyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire)
+        { m_strUrl = strUrl; m_strParams = strParams; m_bRemoveAfterFire = bRemoveAfterFire; }
     };
 	
 	public static final Integer enNone = new Integer(0), enDelete=new Integer(1), enUpdate=new Integer(2), enCreate=new Integer(3);
@@ -35,6 +38,8 @@ public class SyncNotify {
     static Mutex m_mxObjectNotify = new Mutex();
 
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
+    Hashtable/*<int,SyncNotification>*/ m_mapSearchNotifications = new Hashtable();
+    
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
     
@@ -269,7 +274,7 @@ public class SyncNotify {
 				{
 	                IDBResult res = getDB().executeSQL("SELECT source_id from sources order by source_id");
 	                for ( ; !res.isEnd(); res.next() )
-			    	    m_mapSyncNotifications.put( new Integer(res.getIntByIdx(0)), new SyncNotification( strFullUrl, strParams ) );
+			    	    m_mapSyncNotifications.put( new Integer(res.getIntByIdx(0)), new SyncNotification( strFullUrl, strParams, false ) );
 				}
 			}
 			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
@@ -279,13 +284,27 @@ public class SyncNotify {
 		    if ( strFullUrl.length() > 0 )
 		    {
 		        synchronized(m_mxSyncNotifications){
-		        	m_mapSyncNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams ) );
+		        	m_mapSyncNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams, true ) );
 		        }
 				LOG.INFO( " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
 		    }
 		}
 	}
 
+	void setSearchNotification(int source_id, String strUrl, String strParams )throws Exception
+	{
+		LOG.INFO( "Set search notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
+	    String strFullUrl = getNet().resolveUrl(strUrl);
+		
+	    if ( strFullUrl.length() > 0 )
+	    {
+	        synchronized(m_mxSyncNotifications){
+	        	m_mapSearchNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams, true ) );
+	        }
+			LOG.INFO( " Done Set search notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
+	    }
+	}
+	
     public void setSyncStatusListener(ISyncStatusListener listener) { m_syncStatusListener = listener; }
     private void reportSyncStatus(String status, int error, String strDetails) {
     	if (m_syncStatusListener != null) {
@@ -333,9 +352,10 @@ public class SyncNotify {
 		
 		try{
 		    String strBody = "", strUrl;
+		    boolean bRemoveAfterFire = bFinish;
 		    {
 		    	synchronized(m_mxSyncNotifications){
-			        SyncNotification sn = (SyncNotification)m_mapSyncNotifications.get(src.getID());
+			        SyncNotification sn = (SyncNotification)(src.isSearch() ? m_mapSearchNotifications.get(src.getID()) : m_mapSyncNotifications.get(src.getID()));
 			        if ( sn == null )
 			            return;
 			
@@ -367,9 +387,11 @@ public class SyncNotify {
 			        
 			        if ( sn.m_strParams.length() > 0 )
 			            strBody += "&" + sn.m_strParams;
+			        
+			        bRemoveAfterFire = bRemoveAfterFire && sn.m_bRemoveAfterFire;
 		        }
 		    }
-		    if ( bFinish )
+		    if ( bRemoveAfterFire )
 		    	clearSyncNotification(src.getID().intValue());
 		    
 			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
@@ -397,7 +419,10 @@ public class SyncNotify {
 		LOG.INFO( "Clear notification. Source ID: " + source_id );
 		
 		synchronized(m_mxSyncNotifications){
-			m_mapSyncNotifications.remove(new Integer(source_id));
+			if ( source_id == -1 )//Clear all
+				m_mapSyncNotifications.clear();
+			else			
+				m_mapSyncNotifications.remove(new Integer(source_id));
 		}
 	}
 
