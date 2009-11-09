@@ -735,10 +735,16 @@ namespace "clean" do
     task :libstlport => "config:android" do
       rm_rf $androidpath + "/../shared/stlport/build/lib/obj"
     end
+    task :libdb => "config:android" do
+      # TODO
+    end
+    task :libsync => "config:android" do
+      # TODO
+    end
     task :librhodes => "config:android" do
       # TODO
     end
-    task :libs => [:librhodes, :libstlport, :libshttpd, :libruby, :libsqlite]
+    task :libs => [:librhodes, :libsync, :libdb, :libstlport, :libshttpd, :libruby, :libsqlite]
 #    desc "clean android"
     task :all => [:assets,:files]
   end
