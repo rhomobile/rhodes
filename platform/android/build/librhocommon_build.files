@@ -1,5 +1,4 @@
 platform/shared/common/RhoConf.cpp
-platform/shared/common/RhodesApp.cpp
 platform/shared/common/RhoFile.cpp
 platform/shared/common/RhoThread.cpp
 platform/shared/common/Tokenizer.cpp
