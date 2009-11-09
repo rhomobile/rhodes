@@ -403,7 +403,7 @@ module Rhom
                     #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                     attribs.each do |attrib|
                       unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
-                        sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \"#{attrib}\",\n"
+                        sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
                       end
                     end 
                     sql.chomp!
@@ -473,9 +473,10 @@ module Rhom
                   searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
                   searchParams += '&max_results=' + Rho::RhoSupport.url_encode(args[:max_results]) if args[:max_results]
                     
-                  set_notification(args[:callback], args[:callback_param]) if args[:callback]
+                  #set_notification(args[:callback], args[:callback_param]) if args[:callback]
                   SyncEngine.dosearch_source(get_source_id.to_i(), args[:from] ? args[:from] : 'search',
-                    searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1 )
+                    searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
+                    args[:callback], args[:callback_param] )
                 end
                 
                 # Alias for find
