@@ -55,8 +55,7 @@ import android.os.Process;
 public class Platform extends Activity {
 
 	private static final String LOG_TAG = "Rhodes";
-	//private static String HOME_URL = "http://127.0.0.1:8080";
-	private static String HOME_URL;
+	private static String HOME_URL = "http://127.0.0.1:8080";
 
 	public static final int HTTP_SERVER_STARTED = 1;
 
@@ -75,9 +74,7 @@ public class Platform extends Activity {
 	public String getHomeUrl() {
 		return HOME_URL;
 	}
-	
-	public native String getHomeUrlNative();
-	
+		
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));
@@ -87,6 +84,8 @@ public class Platform extends Activity {
 		//stopServices();
 		Process.killProcess(Process.myPid());
 	}
+	
+	public native void startRhodesApp();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -96,8 +95,6 @@ public class Platform extends Activity {
 		// Load native implementation of rhodes
 		System.loadLibrary("rhodes");
 		
-		HOME_URL = getHomeUrlNative();
-
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -154,15 +151,6 @@ public class Platform extends Activity {
 			}
 
 		});
-
-		RhodesInstance.setInstance(this);
-		
-        try{
-		    RhoLogger.InitRhoLog();
-		}catch(Exception exc)
-        {
-            //TODO: we should stop if InitRhoLog failed
-        }
 		
 		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
@@ -184,6 +172,22 @@ public class Platform extends Activity {
 		}
 		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
 		
+		Log.i(LOG_TAG, "Loading...");
+		webView.loadUrl("file:///android_asset/apps/loading.html");
+
+		startRhodesApp();
+		
+		/*
+		RhodesInstance.setInstance(this);
+		
+        try{
+		    RhoLogger.InitRhoLog();
+		}catch(Exception exc)
+        {
+            //TODO: we should stop if InitRhoLog failed
+        }
+        */
+		
 		/*
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
@@ -192,9 +196,7 @@ public class Platform extends Activity {
 		}
 		*/
 		
-		Log.i(LOG_TAG, "Loading...");
-		webView.loadUrl("file:///android_asset/apps/loading.html");
-
+		/*
 		HttpServer.DEFAULT_PORT = HttpServer.findFreePort(); 
 		
 		HOME_URL = "http://127.0.0.1:" + HttpServer.DEFAULT_PORT.toString();
@@ -202,6 +204,7 @@ public class Platform extends Activity {
 
 		// start http server
 		startService(new Intent(this, RhoHttpService.class));
+		*/
 	}
 	
 	void saveCurrentLocation(String url) {
