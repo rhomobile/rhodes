@@ -1,0 +1,65 @@
+/*
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Copyright (c) 1996,1997
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Copyright (c) 1999
+ * Boris Fomitchev
+ *
+ * This material is provided "as is", with absolutely no warranty expressed
+ * or implied. Any use is at your own risk.
+ *
+ * Permission to use or copy this software for any purpose is hereby granted
+ * without fee, provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ */
+
+#ifndef _STLP_UTILITY
+#define _STLP_UTILITY
+
+#ifndef _STLP_OUTERMOST_HEADER_ID
+#  define _STLP_OUTERMOST_HEADER_ID 0x75
+#  include <stl/_prolog.h>
+#endif
+
+#ifdef _STLP_PRAGMA_ONCE
+#  pragma once
+#endif
+
+#ifndef __TYPE_TRAITS_H
+#  include <stl/type_traits.h>
+#endif
+
+#if !defined (_STLP_DEBUG_H) && (defined  (_STLP_DEBUG) || defined (_STLP_ASSERTIONS))
+#  include <stl/debug/_debug.h>
+#endif
+
+#ifndef _STLP_INTERNAL_PAIR_H
+#  include <stl/_pair.h>
+#endif
+
+#if defined (_STLP_IMPORT_VENDOR_STD)
+#   include _STLP_NATIVE_HEADER(utility)
+#else
+#  if defined (_STLP_MSVC) && !defined (_STLP_INTERNAL_ITERATOR_H)
+#    include <stl/_iterator.h>
+#  endif
+#endif
+
+#if (_STLP_OUTERMOST_HEADER_ID == 0x75)
+#  include <stl/_epilog.h>
+#  undef _STLP_OUTERMOST_HEADER_ID
+#endif
+
+#endif /* _STLP_UTILITY */
+
+// Local Variables:
+// mode:C++
+// End:
+

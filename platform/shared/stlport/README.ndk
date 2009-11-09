@@ -1,0 +1,45 @@
+URL: http://sourceforge.net/projects/stlport
+Version: 5.1.4
+License: notice
+License File: LICENSE
+
+Description:
+This is STLport version 5.1.4, retrieved on Jan 17th 2008. See
+http://www.stlport.org
+This has been further modified by Gears svn revision 3384.
+Further modifications from that to support iostreams.
+
+Local Modifications:
+
+build/lib/android.mak:
+	Added Makefile to build STLport using the Android NDK.
+
+stlport/stl/_limits.h:
+	Add OS_ANDROID to list of platforms where numeric_limits<long long>
+	works without workaround.
+
+stlport/stl/config/_android.h:
+	Turn off RTTI support, use __node_alloc as we're building an
+	out-of-line library which includes it. Allow EXTERN_RANGE_ERRORS.
+	Adjust the paths for native headers. Define operator new.
+
+stlport/stl/config/_gcc.h:
+	Remove patch to stop dragging in exception support.
+
+src/c_locale.h:
+	Include stl/_mbstate_t.h on all platforms as this should have
+	been dragged in - on OS_ANDROID some other header is not being
+	implicitly used and pulling it in itself.
+
+src/num_put_float.cpp:
+	Define USE_SPRINTF_INSTEAD for OS_ANDROID as many of the
+	floating point to string conversion functions are missing.
+
+src/ctype.cpp:
+	OS_ANDROID also doesn't understand alpha & (lower | upper)
+
+src/_stdio_file.h:
+	Added OS_ANDROID accessor for the underlying file descriptor in FILE.
+
+src/num_get_float.cpp:
+	Define uint32/uint64 on OS_ANDROID.
