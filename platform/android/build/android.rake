@@ -26,6 +26,12 @@ namespace "config" do
   task :android => ["config:common"] do
     $config["platform"] = "android"
 
+    # Here is place were android platform MUST be specified.
+    # For complete list of android API levels and its mapping to
+    # market names (such as "Android-1.5" etc) see output of
+    # command "android list targets"
+    ANDROID_API_LEVEL = 3
+
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
     $androidndkpath = $config["env"]["paths"]["android-ndk"]
@@ -48,7 +54,12 @@ namespace "config" do
     $androidapi[4] = "1.6"
     $androidapi[5] = "2.0"
 
-    ANDROID_API_LEVEL = 3
+    $androidtargets = Hash.new
+    $androidtargets[2] = 1
+    $androidtargets[3] = 2
+    $androidtargets[4] = 3
+    $androidtargets[5] = 4
+
     $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
     $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
 
@@ -686,7 +697,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidbin} create avd --name #{$avdname} --target 2 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd #{$avdname}") }
 
