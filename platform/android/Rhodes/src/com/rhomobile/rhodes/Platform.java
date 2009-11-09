@@ -178,7 +178,6 @@ public class Platform extends Activity {
 
 		startRhodesApp();
 		
-		/*
 		RhodesInstance.setInstance(this);
 		
         try{
@@ -187,7 +186,6 @@ public class Platform extends Activity {
         {
             //TODO: we should stop if InitRhoLog failed
         }
-        */
 		
 		/*
 		try {
@@ -197,7 +195,6 @@ public class Platform extends Activity {
 		}
 		*/
 		
-		/*
 		HttpServer.DEFAULT_PORT = HttpServer.findFreePort(); 
 		
 		HOME_URL = "http://127.0.0.1:" + HttpServer.DEFAULT_PORT.toString();
@@ -205,7 +202,6 @@ public class Platform extends Activity {
 
 		// start http server
 		startService(new Intent(this, RhoHttpService.class));
-		*/
 	}
 	
 	void saveCurrentLocation(String url) {
