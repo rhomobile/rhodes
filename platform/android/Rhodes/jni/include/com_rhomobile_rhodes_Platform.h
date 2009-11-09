@@ -13,10 +13,10 @@ extern "C" {
 #define com_rhomobile_rhodes_Platform_MAX_PROGRESS 10000L
 /*
  * Class:     com_rhomobile_rhodes_Platform
- * Method:    getHomeUrlNative
- * Signature: ()Ljava/lang/String;
+ * Method:    startRhodesApp
+ * Signature: ()V
  */
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Platform_getHomeUrlNative
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Platform_startRhodesApp
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

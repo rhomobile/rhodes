@@ -72,7 +72,8 @@
 #define _STLP_NATIVE_CPP_RUNTIME_HEADER(header) <../../usr/include/header>
 
 #ifdef __cplusplus
-#include <stddef.h>
+//#include <stddef.h>
+#include _STLP_NATIVE_C_HEADER(sys/types.h)
 inline void* operator new(size_t, void* p) { return p; }
 inline void* operator new[](size_t, void* p) { return p; }
 #endif

@@ -18,6 +18,20 @@
 #else
 #endif
 
+#ifdef __cplusplus
+#define RHO_GLOBAL extern "C"
+#define RHO_LOCAL
+#else
+#define RHO_GLOBAL extern
+#define RHO_LOCAL
+#endif
+
+#define RHO_ABORT(x) \
+  do { \
+    assert(!(x)); \
+    abort(); \
+  } while( __LINE__ != -1 )
+
 #ifdef OS_MACOSX
 #include <TargetConditionals.h>
 #endif //OS_MACOSX

@@ -27,11 +27,11 @@ typedef unsigned __int64 uint64;
 #    include <sys/socket.h>
 #    include <netinet/in.h>
 #    include <unistd.h>
+#  else
 #    include <wchar.h>
 #  endif // OS_ANDROID
 #include <stdlib.h>
 #include <pthread.h>
-#include <wchar.h>
 
 #undef ASSERT
 #define ASSERT RHO_ASSERT
@@ -47,10 +47,12 @@ typedef unsigned long long uint64;
 #endif 
 
 #if defined( OS_WINCE ) || defined(OS_WINDOWS) 
-#define	vsnprintf	_vsnprintf
-#define	vswnprintf	_vsnwprintf
+#  define	vsnprintf	_vsnprintf
+#  define	vswnprintf	_vsnwprintf
+#elif defined( OS_ANDROID )
+RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 #else
-#define	vswnprintf vswprintf
+#  define	vswnprintf vswprintf
 #endif //OS_WINCE
 
 //#include "tcmalloc/rhomem.h"
