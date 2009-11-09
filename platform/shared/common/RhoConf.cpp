@@ -163,6 +163,7 @@ void rho_conf_Init(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+    RHOCONF().loadFromFile();
 }
 
 bool rho_conf_getBool(const char* szName) {
