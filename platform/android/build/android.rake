@@ -402,9 +402,9 @@ namespace "build" do
       end
     end
 
-    task :libdb => "config:android" do
-      objdir = $bindir + "/libdb"
-      libname = $bindir + "/libdb.a"
+    task :librhodb => "config:android" do
+      objdir = $bindir + "/librhodb"
+      libname = $bindir + "/librhodb.a"
       rm_rf objdir
       rm_rf libname
       mkdir_p objdir
@@ -412,7 +412,7 @@ namespace "build" do
       srcdir = $androidpath + "/../shared/db"
 
       objects = []
-      File.read($androidpath + "/build/libdb_build.files").each do |f|
+      File.read($androidpath + "/build/librhodb_build.files").each do |f|
         f.chomp!
         objname = File.basename(f).gsub(/\.cpp$/, ".o")
 
@@ -439,7 +439,7 @@ namespace "build" do
         args << objdir + "/" + objname
         puts Jake.run($gppbin, args)
         unless $? == 0
-          puts "Error compiling libdb"
+          puts "Error compiling librhodb"
           exit 1
         end
 
@@ -452,7 +452,7 @@ namespace "build" do
       args += objects
       puts Jake.run($arbin, args)
       unless $? == 0
-        puts "Error creating libdb.a"
+        puts "Error creating librhodb.a"
         exit 1
       end
     end
@@ -512,7 +512,7 @@ namespace "build" do
       end
     end
 
-    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :libdb, :librhodes, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :librhodb, :librhodes, :librhosync, :librholog]
 
     task :jnirhodes => :libs do
       
@@ -798,7 +798,7 @@ namespace "clean" do
     task :libstlport => "config:android" do
       rm_rf $androidpath + "/../shared/stlport/build/lib/obj"
     end
-    task :libdb => "config:android" do
+    task :librhodb => "config:android" do
       # TODO
     end
     task :librhosync => "config:android" do
@@ -810,7 +810,7 @@ namespace "clean" do
     task :librhodes => "config:android" do
       # TODO
     end
-    task :libs => [:librhodes, :librhosync, :libdb, :libstlport, :libshttpd, :libruby, :libsqlite]
+    task :libs => [:librhodes, :librhosync, :librhodb, :libstlport, :libshttpd, :libruby, :libsqlite]
 #    desc "clean android"
     task :all => [:assets,:files]
   end

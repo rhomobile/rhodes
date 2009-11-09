@@ -1,15 +1,27 @@
 #include <assert.h>
 #include <stdlib.h>
+
+#include <ruby.h>
+
 #include <common/RhoDefs.h>
-#include <sync/SyncThread.h>
-#include <sync/ClientRegister.h>
+#include <common/IRhoClassFactory.h>
+//#include <sync/SyncThread.h>
+//#include <sync/ClientRegister.h>
 
+namespace rho
+{
+namespace common
+{
 
-RHO_GLOBAL void webview_navigate(char* url, int index)
+IRhoClassFactory* createClassFactory()
 {
 	// TODO:
 	RHO_ABORT("Not implemented");
+	return 0;
 }
+
+} // namespace common
+} // namespace rho
 
 RHO_GLOBAL void rho_map_location(char* query)
 {
@@ -23,61 +35,21 @@ RHO_GLOBAL void rho_appmanager_load( void* httpContext, const char* szQuery)
 	RHO_ABORT("Not implemented");
 }
 
-RHO_GLOBAL double geo_latitude()
+RHO_GLOBAL int rho_net_has_network()
 {
 	// TODO:
-	RHO_ABORT("Not implemented");
-}
-
-RHO_GLOBAL double geo_longitude()
-{
-	// TODO:
-	RHO_ABORT("Not implemented");
-}
-
-RHO_GLOBAL int geo_known_position()
-{
-	// TODO:
-	RHO_ABORT("Not implemented");
-}
-
-namespace rho{
-namespace common{
-	IRhoClassFactory* createClassFactory()
-	{
-		// TODO:
-		RHO_ABORT("Not implemented");
-		return 0;
-	}
-}
-}
-
-RHO_GLOBAL void rho_sync_create()
-{
-	// TODO:
-	RHO_ABORT("Not implemented");
-}
-
-RHO_GLOBAL void rho_sync_destroy()
-{
-	// TODO:
-	RHO_ABORT("Not implemented");
-}
-
-// RHO_GLOBAL void rho_clientregister_create(const char* szDevicePin)
-// {
-// 	// TODO:
-// 	RHO_ABORT("Not implemented");
-// }
-
-RHO_GLOBAL void rho_sync_doSyncAllSources(int show_status_popup)
-{
-	// TODO:
-	RHO_ABORT("Not implemented");
+	return 1;
 }
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
 	// TODO:
 	RHO_ABORT("Not implemented");
+}
+
+RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values)
+{
+	// TODO:
+	RHO_ABORT("Not implemented");
+	return 0;
 }

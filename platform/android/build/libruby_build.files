@@ -55,6 +55,7 @@ platform/shared/ruby/missing/dup2.c
 platform/shared/ruby/missing/erf.c
 platform/shared/ruby/missing/hypot.c
 platform/shared/ruby/missing/lgamma_r.c
+platform/shared/ruby/missing/stdlib.c
 platform/shared/ruby/missing/strlcat.c
 platform/shared/ruby/missing/strlcpy.c
 platform/shared/ruby/missing/tgamma.c
@@ -83,7 +84,6 @@ platform/shared/ruby/strftime.c
 platform/shared/ruby/string.c
 platform/shared/ruby/struct.c
 platform/shared/ruby/thread.c
-platform/shared/ruby/thread_pthread.c
 platform/shared/ruby/time.c
 platform/shared/ruby/transcode.c
 platform/shared/ruby/util.c
