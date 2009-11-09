@@ -5,21 +5,32 @@
 
 const char* rho_native_rhopath()
 {
-  // TODO:
-  return "/sdcard/rhomobile/Rhodes";
+    // TODO:
+    return "/sdcard/rhomobile/Rhodes";
 }
 
 void startRhodesApp()
 {
-  std::string strRootPath = rho_native_rhopath();
-  rho_logconf_Init(strRootPath.c_str());
-  rho::common::CRhodesApp::Create(strRootPath );
-  RHODESAPP().startApp();
+    const char* szRootPath = rho_native_rhopath();
+    rho_logconf_Init(szRootPath);
+    rho_rhodesapp_create(szRootPath);
+    rho_rhodesapp_start();
+}
+
+void stopRhodesApp()
+{
+    rho_rhodesapp_destroy();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Platform_startRhodesApp
-  (JNIEnv *, jobject)
+    (JNIEnv *, jobject)
 {
-  startRhodesApp();
+    startRhodesApp();
+}
+
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Platform_stopRhodesApp
+    (JNIEnv *, jobject)
+{
+    stopRhodesApp();
 }
 

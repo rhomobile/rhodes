@@ -19,6 +19,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Platform_startRhodesApp
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_rhomobile_rhodes_Platform
+ * Method:    stopRhodesApp
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Platform_stopRhodesApp
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
