@@ -22,11 +22,56 @@ def generate_rjava
   Rake::Task["build:android:rjava"].execute
 end
 
+def cc_deps(filename)
+  # TODO: implement dependencies
+  []
+end
+
+def cc_compile(filename, objdir, additional = nil)
+  filename.chomp!
+  objname = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".o")
+
+  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename)
+
+  mkdir_p objdir unless File.directory? objdir
+
+  if filename =~ /\.[cC]$/
+    ccbin = $gccbin
+  elsif filename =~ /.[cC]([cC]|[xXpP][xXpP])$/
+    ccbin = $gppbin
+  end
+
+  args = []
+  args << "--sysroot"
+  args << $ndksysroot
+  args << "-fPIC"
+  args << "-mandroid"
+  args << "-DANDROID"
+  args << "-DOS_ANDROID"
+  args += additional if additional.is_a? Array and not additional.empty?
+  args << "-c"
+  args << filename
+  args << "-o"
+  args << objname
+  puts Jake.run(ccbin, args)
+  return $? == 0 ? true : false
+end
+
+def cc_link(libname, objects)
+  return true if FileUtils.uptodate? libname, objects
+  args = []
+  args << "crs"
+  args << libname
+  args += objects
+  puts Jake.run($arbin, args)
+  return $? == 0 ? true : false
+end
+
 namespace "config" do
   task :android => ["config:common"] do
     $config["platform"] = "android"
 
-    # Here is place were android platform MUST be specified.
+    # Here is place were android platform should be specified.
     # For complete list of android API levels and its mapping to
     # market names (such as "Android-1.5" etc) see output of
     # command "android list targets"
@@ -38,6 +83,7 @@ namespace "config" do
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
+    $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, "target")
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
@@ -48,17 +94,8 @@ namespace "config" do
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
 
-    $androidapi = Hash.new
-    $androidapi[2] = "1.1"
-    $androidapi[3] = "1.5"
-    $androidapi[4] = "1.6"
-    $androidapi[5] = "2.0"
-
-    $androidtargets = Hash.new
-    $androidtargets[2] = 1
-    $androidtargets[3] = 2
-    $androidtargets[4] = 3
-    $androidtargets[5] = 4
+    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0"}
+    $androidtargets = {2 => 1, 3 => 2, 4 => 3, 5 => 4}
 
     $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
     $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
@@ -97,6 +134,17 @@ namespace "config" do
     $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
     $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
     $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
+
+    $stlport_includes = File.join $shareddir, "stlport", "stlport"
+
+    native_libs = ["sqlite", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+
+    $objdir = {}
+    $libname = {}
+    native_libs.each do |x|
+      $objdir[x] = $bindir + "/libs/lib" + x
+      $libname[x] = $bindir + "/libs/lib" + x + ".a"
+    end
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
@@ -146,203 +194,67 @@ namespace "build" do
     end
 
     task :libsqlite => "config:android" do
-      objdir = $bindir + "/sqlite"
-      libname = $bindir + "/libsqlite.a"
+      srcdir = File.join $shareddir, "sqlite"
+      objdir = $objdir["sqlite"]
+      libname = $libname["sqlite"]
 
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/sqlite"
-
-      args = []
-      args << "--sysroot"
-      args << $ndksysroot
-      args << "-fPIC"
-      args << "-mandroid"
-      args << "-DANDROID"
-      args << "-DOS_ANDROID"
-      args << "-I#{srcdir}"
-      args << "-c"
-      args << srcdir + "/sqlite3.c"
-      args << "-o"
-      args << objdir + "/sqlite3.o"
-      puts Jake.run($gccbin, args)
-      unless $? == 0
-        puts "Error compiling sqlite"
-        exit 1
-      end
-
-      args = []
-      args << "crs"
-      args << libname
-      args << objdir + "/sqlite3.o"
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating libsqlite.a"
-        exit 1
-      end
-
+      cc_compile File.join(srcdir, "sqlite3.c"), objdir, ["-I#{srcdir}"] or exit 1
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libruby => "config:android" do
-      objdir = $bindir + "/rubylib"
-      libname = $bindir + "/libruby.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/ruby"
-
-      objects = []
-      File.read($androidpath + "/build/libruby_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.c$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-I#{srcdir}/include"
-        args << "-I#{srcdir}/linux"
-        args << "-I#{srcdir}/generated"
-        args << "-I#{srcdir}"
-        args << "-I#{srcdir}/.."
-        args << "-I#{srcdir}/../sqlite"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gccbin, args)
-        unless $? == 0
-          puts "Error compiling ruby"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = File.join $shareddir, "ruby"
+      objdir = $objdir["ruby"]
+      libname = $libname["ruby"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating libruby.a"
-        exit 1
+      args << "-I#{srcdir}/include"
+      args << "-I#{srcdir}/linux"
+      args << "-I#{srcdir}/generated"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join $builddir, "libruby_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libjson => "config:android" do
-      objdir = $bindir + "/libjson"
-      libname = $bindir + "/libjson.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/json"
+      srcdir = File.join $shareddir, "json"
+      objdir = $objdir["json"]
+      libname = $libname["json"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
 
       objects = []
-      File.read($androidpath + "/build/libjson_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.c$/, ".o").gsub(/\.cpp$/, ".o")
-
-        if f =~ /\.c$/
-          ccbin = $gccbin
-        elsif f =~/\.cpp$/
-          ccbin = $gppbin
-        end
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-I#{srcdir}"
-        args << "-I#{srcdir}/.."
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run(ccbin, args)
-        unless $? == 0
-          puts "Error compiling ruby"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
+      File.read(File.join $builddir, "libjson_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
-
-      args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating libjson.a"
-        exit 1
-      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libshttpd => "config:android" do
-      objdir = $bindir + "/shttpd"
-      libname = $bindir + "/libshttpd.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/shttpd/src"
-
-      objects = []
-      File.read($androidpath + "/build/libshttpd_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.c$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-I#{srcdir}"
-        args << "-I#{srcdir}/../.."
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gccbin, args)
-        unless $? == 0
-          puts "Error compiling shttpd"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = File.join $shareddir, "shttpd", "src"
+      objdir = $objdir["shttpd"]
+      libname = $libname["shttpd"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating libshttpd.a"
-        exit 1
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/../.."
+
+      File.read(File.join $builddir, "libshttpd_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libstlport => "config:android" do
       args = []
       args << "-C"
-      args << $androidpath + "/../shared/stlport/build/lib"
+      args << $shareddir + "/stlport/build/lib"
       args << "-f"
       args << "android.mak"
       args << "NDK_DIR=#{$androidndkpath}"
@@ -350,275 +262,89 @@ namespace "build" do
       args << "release-static"
       puts Jake.run("make", args)
       unless $? == 0
-        puts "Error compiling stlport"
         exit 1
       end
-      cp_r $androidpath + "/../shared/stlport/build/lib/obj/arm-linux-gcc/so/libstlport.a", $bindir
+      cp_r $shareddir + "/stlport/build/lib/obj/arm-linux-gcc/so/libstlport.a", $bindir + "/libs"
     end
 
     task :librholog => "config:android" do
-      objdir = $bindir + "/librholog"
-      libname = $bindir + "/librholog.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/logging"
-
-      objects = []
-      File.read($androidpath + "/build/librholog_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.cpp$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-I#{srcdir}/.."
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gppbin, args)
-        unless $? == 0
-          puts "Error compiling librholog"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = File.join $shareddir, "logging"
+      objdir = $objdir["rholog"]
+      libname = $libname["rholog"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating librholog.a"
-        exit 1
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}/.."
+
+      File.read(File.join $builddir, "librholog_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhomain => "config:android" do
-      objdir = $bindir + "/librhomain"
-      libname = $bindir + "/librhomain.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared"
-
-      objects = []
-      File.read($androidpath + "/build/librhomain_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.cpp$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-I#{srcdir}"
-        #args << "-I#{srcdir}/common"
-        #args << "-I#{srcdir}/logging"
-        #args << "-I#{srcdir}/net"
-        #args << "-I#{srcdir}/statistic"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gppbin, args)
-        unless $? == 0
-          puts "Error compiling librhomain"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = $shareddir
+      objdir = $objdir["rhomain"]
+      libname = $libname["rhomain"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating librhomain.a"
-        exit 1
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+
+      File.read(File.join $builddir, "librhomain_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhocommon => "config:android" do
-      objdir = $bindir + "/librhocommon"
-      libname = $bindir + "/librhocommon.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared"
+      srcdir = $shareddir
+      objdir = $objdir["rhocommon"]
+      libname = $libname["rhocommon"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
 
       objects = []
-      File.read($androidpath + "/build/librhocommon_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.cpp$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-I#{srcdir}"
-        #args << "-I#{srcdir}/common"
-        #args << "-I#{srcdir}/logging"
-        #args << "-I#{srcdir}/net"
-        #args << "-I#{srcdir}/statistic"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gppbin, args)
-        unless $? == 0
-          puts "Error compiling librhocommon"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
+      File.read(File.join $builddir, "librhocommon_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
-
-      args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating librhocommon.a"
-        exit 1
-      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhodb => "config:android" do
-      objdir = $bindir + "/librhodb"
-      libname = $bindir + "/librhodb.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/db"
-
-      objects = []
-      File.read($androidpath + "/build/librhodb_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.cpp$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-I#{srcdir}"
-        args << "-I#{srcdir}/.."
-        args << "-I#{srcdir}/../sqlite"
-        #args << "-I#{srcdir}/common"
-        #args << "-I#{srcdir}/logging"
-        #args << "-I#{srcdir}/net"
-        #args << "-I#{srcdir}/statistic"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gppbin, args)
-        unless $? == 0
-          puts "Error compiling librhodb"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = File.join $shareddir, "db"
+      objdir = $objdir["rhodb"]
+      libname = $libname["rhodb"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating librhodb.a"
-        exit 1
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join $builddir, "librhodb_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhosync => "config:android" do
-      objdir = $bindir + "/librhosync"
-      libname = $bindir + "/librhosync.a"
-      rm_rf objdir
-      rm_rf libname
-      mkdir_p objdir
-
-      srcdir = $androidpath + "/../shared/sync"
-
-      objects = []
-      File.read($androidpath + "/build/librhosync_build.files").each do |f|
-        f.chomp!
-        objname = File.basename(f).gsub(/\.cpp$/, ".o")
-
-        args = []
-        args << "--sysroot"
-        args << $ndksysroot
-        args << "-fPIC"
-        args << "-mandroid"
-        args << "-DANDROID"
-        args << "-DOS_ANDROID"
-        args << "-D__NEW__"
-        args << "-D__SGI_STL_INTERNAL_PAIR_H"
-        args << "-I#{$androidpath}/../shared/stlport/stlport"
-        args << "-I#{srcdir}"
-        args << "-I#{srcdir}/.."
-        args << "-I#{srcdir}/../sqlite"
-        #args << "-I#{srcdir}/common"
-        #args << "-I#{srcdir}/logging"
-        #args << "-I#{srcdir}/net"
-        #args << "-I#{srcdir}/statistic"
-        args << "-c"
-        args << f
-        args << "-o"
-        args << objdir + "/" + objname
-        puts Jake.run($gppbin, args)
-        unless $? == 0
-          puts "Error compiling librhosync"
-          exit 1
-        end
-
-        objects << objdir + "/" + objname
-      end
-
+      srcdir = File.join $shareddir, "sync"
+      objdir = $objdir["rhosync"]
+      libname = $libname["rhosync"]
       args = []
-      args << "crs"
-      args << libname
-      args += objects
-      puts Jake.run($arbin, args)
-      unless $? == 0
-        puts "Error creating librhosync.a"
-        exit 1
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join $builddir, "librhosync_build.files").each do |f|
+        cc_compile f, objdir, args or exit 1
       end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
@@ -896,38 +622,38 @@ namespace "clean" do
       rm_rf $libs
     end
     task :libshttpd => "config:android" do
-      # TODO
+      rm_rf [$objdir["shttpd"], $libname["shttpd"]]
     end
     task :libjson => "config:android" do
-      # TODO
+      rm_rf [$objdir["json"], $libname["json"]]
     end
     task :libruby => "config:android" do
-      # TODO
+      rm_rf [$objdir["ruby"], $libname["ruby"]]
     end
     task :libsqlite => "config:android" do
-      # TODO
+      rm_rf [$objdir["sqlite"], $libname["sqlite"]]
     end
     task :libstlport => "config:android" do
-      rm_rf $androidpath + "/../shared/stlport/build/lib/obj"
+      rm_rf $shareddir + "/stlport/build/lib/obj"
     end
     task :librhodb => "config:android" do
-      # TODO
+      rm_rf [$objdir["rhodb"], $libname["rhodb"]]
     end
     task :librhosync => "config:android" do
-      # TODO
+      rm_rf [$objdir["rhosync"], $libname["rhosync"]]
     end
     task :librholog => "config:android" do
-      # TODO
+      rm_rf [$objdir["rholog"], $libname["rholog"]]
     end
     task :librhocommon => "config:android" do
-      # TODO
+      rm_rf [$objdir["rhocommon"], $libname["rhocommon"]]
     end
     task :librhomain => "config:android" do
-      # TODO
+      rm_rf [$objdir["rhomain"], $libname["rhomain"]]
     end
     task :libs => [:librhocommon, :librhomain, :librhosync, :librhodb, :libstlport, :libshttpd, :libjson, :libruby, :libsqlite]
 #    desc "clean android"
-    task :all => [:assets,:files]
+    task :all => [:assets,:libs,:files]
   end
 end
 
