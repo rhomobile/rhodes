@@ -236,6 +236,62 @@ namespace "build" do
       end
     end
 
+    task :libjson => "config:android" do
+      objdir = $bindir + "/libjson"
+      libname = $bindir + "/libjson.a"
+      rm_rf objdir
+      rm_rf libname
+      mkdir_p objdir
+
+      srcdir = $androidpath + "/../shared/json"
+
+      objects = []
+      File.read($androidpath + "/build/libjson_build.files").each do |f|
+        f.chomp!
+        objname = File.basename(f).gsub(/\.c$/, ".o").gsub(/\.cpp$/, ".o")
+
+        if f =~ /\.c$/
+          ccbin = $gccbin
+        elsif f =~/\.cpp$/
+          ccbin = $gppbin
+        end
+
+        args = []
+        args << "--sysroot"
+        args << $ndksysroot
+        args << "-fPIC"
+        args << "-mandroid"
+        args << "-DANDROID"
+        args << "-DOS_ANDROID"
+        args << "-I#{srcdir}"
+        args << "-I#{srcdir}/.."
+        args << "-D__NEW__"
+        args << "-D__SGI_STL_INTERNAL_PAIR_H"
+        args << "-I#{$androidpath}/../shared/stlport/stlport"
+        args << "-c"
+        args << f
+        args << "-o"
+        args << objdir + "/" + objname
+        puts Jake.run(ccbin, args)
+        unless $? == 0
+          puts "Error compiling ruby"
+          exit 1
+        end
+
+        objects << objdir + "/" + objname
+      end
+
+      args = []
+      args << "crs"
+      args << libname
+      args += objects
+      puts Jake.run($arbin, args)
+      unless $? == 0
+        puts "Error creating libjson.a"
+        exit 1
+      end
+    end
+
     task :libshttpd => "config:android" do
       objdir = $bindir + "/shttpd"
       libname = $bindir + "/libshttpd.a"
@@ -349,9 +405,9 @@ namespace "build" do
       end
     end
 
-    task :librhodes => "config:android" do
-      objdir = $bindir + "/librhodes"
-      libname = $bindir + "/librhodes.a"
+    task :librhomain => "config:android" do
+      objdir = $bindir + "/librhomain"
+      libname = $bindir + "/librhomain.a"
       rm_rf objdir
       rm_rf libname
       mkdir_p objdir
@@ -359,7 +415,7 @@ namespace "build" do
       srcdir = $androidpath + "/../shared"
 
       objects = []
-      File.read($androidpath + "/build/librhodes_build.files").each do |f|
+      File.read($androidpath + "/build/librhomain_build.files").each do |f|
         f.chomp!
         objname = File.basename(f).gsub(/\.cpp$/, ".o")
 
@@ -384,7 +440,7 @@ namespace "build" do
         args << objdir + "/" + objname
         puts Jake.run($gppbin, args)
         unless $? == 0
-          puts "Error compiling librhodes"
+          puts "Error compiling librhomain"
           exit 1
         end
 
@@ -397,7 +453,60 @@ namespace "build" do
       args += objects
       puts Jake.run($arbin, args)
       unless $? == 0
-        puts "Error creating librhodes.a"
+        puts "Error creating librhomain.a"
+        exit 1
+      end
+    end
+
+    task :librhocommon => "config:android" do
+      objdir = $bindir + "/librhocommon"
+      libname = $bindir + "/librhocommon.a"
+      rm_rf objdir
+      rm_rf libname
+      mkdir_p objdir
+
+      srcdir = $androidpath + "/../shared"
+
+      objects = []
+      File.read($androidpath + "/build/librhocommon_build.files").each do |f|
+        f.chomp!
+        objname = File.basename(f).gsub(/\.cpp$/, ".o")
+
+        args = []
+        args << "--sysroot"
+        args << $ndksysroot
+        args << "-fPIC"
+        args << "-mandroid"
+        args << "-DANDROID"
+        args << "-DOS_ANDROID"
+        args << "-D__NEW__"
+        args << "-D__SGI_STL_INTERNAL_PAIR_H"
+        args << "-I#{$androidpath}/../shared/stlport/stlport"
+        args << "-I#{srcdir}"
+        #args << "-I#{srcdir}/common"
+        #args << "-I#{srcdir}/logging"
+        #args << "-I#{srcdir}/net"
+        #args << "-I#{srcdir}/statistic"
+        args << "-c"
+        args << f
+        args << "-o"
+        args << objdir + "/" + objname
+        puts Jake.run($gppbin, args)
+        unless $? == 0
+          puts "Error compiling librhocommon"
+          exit 1
+        end
+
+        objects << objdir + "/" + objname
+      end
+
+      args = []
+      args << "crs"
+      args << libname
+      args += objects
+      puts Jake.run($arbin, args)
+      unless $? == 0
+        puts "Error creating librhocommon.a"
         exit 1
       end
     end
@@ -512,7 +621,7 @@ namespace "build" do
       end
     end
 
-    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :librhodb, :librhodes, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :jnirhodes => :libs do
       
@@ -789,6 +898,9 @@ namespace "clean" do
     task :libshttpd => "config:android" do
       # TODO
     end
+    task :libjson => "config:android" do
+      # TODO
+    end
     task :libruby => "config:android" do
       # TODO
     end
@@ -807,10 +919,13 @@ namespace "clean" do
     task :librholog => "config:android" do
       # TODO
     end
-    task :librhodes => "config:android" do
+    task :librhocommon => "config:android" do
       # TODO
     end
-    task :libs => [:librhodes, :librhosync, :librhodb, :libstlport, :libshttpd, :libruby, :libsqlite]
+    task :librhomain => "config:android" do
+      # TODO
+    end
+    task :libs => [:librhocommon, :librhomain, :librhosync, :librhodb, :libstlport, :libshttpd, :libjson, :libruby, :libsqlite]
 #    desc "clean android"
     task :all => [:assets,:files]
   end

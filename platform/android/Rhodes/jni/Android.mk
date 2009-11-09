@@ -30,7 +30,7 @@ LOCAL_CFLAGS    += -I$(STLPORT_BASE)/stlport \
                    -DANDROID -DOS_ANDROID
 LOCAL_LDLIBS    += -L$(STLPORT_BASE)/build/lib/obj/arm-linux-gcc/so \
                    -L$(RHO_BIN_PATH) \
-                   -lshttpd -lruby -lrhosync -lrhodes -lrhodb -lrholog -lstlport -lsqlite -ldl
+                   -lrhomain -lshttpd -lruby -lrhosync -lrhodb -lrhocommon -lrholog -ljson -lstlport -lsqlite -ldl
 LOCAL_ARM_MODE  := arm
 
 include $(BUILD_SHARED_LIBRARY)
