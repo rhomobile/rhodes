@@ -156,19 +156,19 @@ function fill_copyfiles_sections(es,f) {
 	}
 }
 
-function pinf(platform,es) {
+function pinf(platform,es,name,vendor) {
 
 	p("[Version]");
 	p("Signature=\"$Windows NT$\"");
-	p("Provider=\"rhomobile\"");
+	p("Provider=\""+vendor+"\"");
 	p("CESignature=\"$Windows CE$\"");
 	p("");
 	p("[CEStrings]");
-	p("AppName=\"rhodes\"");
+	p("AppName=\""+name+"\"");
 	p("InstallDir=%CE1%\\%AppName%");
 	p("");
 	p("[Strings]");
-	p("Manufacturer=\"rhomobile\"");
+	p("Manufacturer=\""+vendor+"\"");
 	p("");
 	p("[CEDevice]");
 	p(settings[platform][1]);
@@ -199,7 +199,7 @@ function pinf(platform,es) {
 	fill_copyfiles_sections(es,f);
 	p("");
 	p("[Shortcuts]");
-	p("Rhodes,0,\"rhodes.exe\",%CE11%");
+	p(name+",0,\"rhodes.exe\",%CE11%");
 	p("");
 	p("[RegKeys]");
 	p("");
@@ -211,7 +211,7 @@ function main() {
 	output_file = fso.CreateTextFile(args(0));
 
 	var es = expand_sources();
-	pinf(args(1),es);
+	pinf(args(1),es,args(2),args(3));
 
 	output_file.Close();
 }
