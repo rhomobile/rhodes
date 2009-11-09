@@ -28,7 +28,7 @@ namespace "config" do
 
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
-  $androidndkpath = $config["env"]["paths"]["android-ndk"]
+    $androidndkpath = $config["env"]["paths"]["android-ndk"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
@@ -42,20 +42,20 @@ namespace "config" do
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
 
-  $androidapi = Hash.new
-  $androidapi[2] = "1.1"
-  $androidapi[3] = "1.5"
-  $androidapi[4] = "1.6"
-  $androidapi[5] = "2.0"
+    $androidapi = Hash.new
+    $androidapi[2] = "1.1"
+    $androidapi[3] = "1.5"
+    $androidapi[4] = "1.6"
+    $androidapi[5] = "2.0"
 
-  ANDROID_API_LEVEL = 3
-  $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
-  $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
+    ANDROID_API_LEVEL = 3
+    $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
+    $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
 
-  $ndktools = $androidndkpath + "/build/prebuilt/linux-x86/arm-eabi-4.2.1"
-  $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
+    $ndktools = $androidndkpath + "/build/prebuilt/linux-x86/arm-eabi-4.2.1"
+    $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
     $gccbin = $ndktools + "/bin/arm-eabi-gcc"
-  $gppbin = $ndktools + "/bin/arm-eabi-g++"
+    $gppbin = $ndktools + "/bin/arm-eabi-g++"
     $arbin = $ndktools + "/bin/arm-eabi-ar"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
@@ -63,14 +63,14 @@ namespace "config" do
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
-    $ndkhost = "windows"
+      $ndkhost = "windows"
     else
       #XXX make these absolute
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
       $bat_ext = ""
       $exe_ext = ""
       $path_separator = ":"
-    $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
+      $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
     end
 
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
@@ -90,7 +90,6 @@ namespace "config" do
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
     mkdir_p $libs if not File.exists? $libs
-
 
   end
 end
@@ -452,7 +451,10 @@ namespace "build" do
       end
     end
 
-    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :libdb, :librhodes, :libsync] do
+    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :libdb, :librhodes, :libsync]
+
+    task :jnirhodes => :libs do
+      
     end
 
 #    desc "Build RubyVM for android"
