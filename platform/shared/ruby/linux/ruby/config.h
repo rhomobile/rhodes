@@ -73,13 +73,6 @@
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
-
-#if defined(OS_ANDROID)
-#define HAVE_SYS_SYSCALL_H 1
-#else
-#define HAVE_SYSCALL_H 1
-#endif
-
 #define HAVE_PWD_H 1
 #define HAVE_GRP_H 1
 #define HAVE_A_OUT_H 1
@@ -90,21 +83,11 @@
 #define HAVE_FLOAT_H 1
 #define HAVE_PTHREAD_H 1
 #define HAVE_UCONTEXT_H 1
-
-#if !defined(OS_ANDROID)
-#define HAVE_LANGINFO_H 1
-#endif
-
 #define HAVE_LOCALE_H 1
 #define HAVE_SYS_SENDFILE_H 1
 #define HAVE_TIME_H 1
 #define HAVE_SYS_SOCKET_H 1
 #define SIZEOF_RLIM_T 8
-
-#if defined(OS_ANDROID)
-typedef unsigned long long rlim_t;
-#endif
-
 #define SIZEOF_SIZE_T 4
 #define SIZEOF_PTRDIFF_T 4
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
@@ -113,15 +96,6 @@ typedef unsigned long long rlim_t;
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
-
-#if !defined(OS_ANDROID)
-#define HAVE_STRUCT_STAT_ST_ATIM 1
-#define HAVE_STRUCT_STAT_ST_MTIM 1
-#define HAVE_STRUCT_STAT_ST_CTIM 1
-#else
-#define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
-#endif
-
 #define HAVE_STRUCT_TIMESPEC 1
 #define HAVE_RB_FD_INIT 1
 #define HAVE_INT8_T 1
@@ -135,7 +109,6 @@ typedef unsigned long long rlim_t;
 #define HAVE_INTPTR_T 1
 #define HAVE_UINTPTR_T 1
 #define HAVE_SSIZE_T 1
-#define STACK_END_ADDRESS __libc_stack_end
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
@@ -166,12 +139,10 @@ typedef unsigned long long rlim_t;
 #define HAVE_CHROOT 1
 #define HAVE_FSYNC 1
 #define HAVE_GETCWD 1
-#define HAVE_EACCESS 1
 #define HAVE_TRUNCATE 1
 #define HAVE_FTRUNCATE 1
 #define HAVE_TIMES 1
 #define HAVE_UTIMES 1
-#define HAVE_UTIMENSAT 1
 #define HAVE_FCNTL 1
 #define HAVE_LOCKF 1
 #define HAVE_LSTAT 1
@@ -199,7 +170,6 @@ typedef unsigned long long rlim_t;
 #define HAVE_GETRLIMIT 1
 #define HAVE_SETRLIMIT 1
 #define HAVE_SYSCONF 1
-#define HAVE_GROUP_MEMBER 1
 #define HAVE_DLOPEN 1
 #define HAVE_SIGPROCMASK 1
 #define HAVE_SIGACTION 1
@@ -208,13 +178,10 @@ typedef unsigned long long rlim_t;
 #define HAVE_VSNPRINTF 1
 #define HAVE_SNPRINTF 1
 #define HAVE_SETSID 1
-#define HAVE_TELLDIR 1
-#define HAVE_SEEKDIR 1
 #define HAVE_FCHMOD 1
 #define HAVE_COSH 1
 #define HAVE_SINH 1
 #define HAVE_TANH 1
-#define HAVE_LOG2 1
 #define HAVE_ROUND 1
 #define HAVE_SETUID 1
 #define HAVE_SETGID 1
@@ -222,7 +189,6 @@ typedef unsigned long long rlim_t;
 #define HAVE_SETENV 1
 #define HAVE_UNSETENV 1
 #define HAVE_MKTIME 1
-#define HAVE_TIMEGM 1
 #define HAVE_GMTIME_R 1
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_GETTIMEOFDAY 1
@@ -255,18 +221,8 @@ typedef unsigned long long rlim_t;
 #define HAVE_LIBPTHREAD 1
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
-
-#if !defined(OS_ANDROID)
-#define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
-#endif
-
 #define HAVE_GETCONTEXT 1
 #define HAVE_SETCONTEXT 1
-
-#if !defined(OS_ANDROID)
-#define HAVE_BACKTRACE 1
-#endif
-
 #define USE_ELF 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
@@ -281,7 +237,34 @@ typedef unsigned long long rlim_t;
 #define RUBY_VENDOR_ARCHLIB "/lib"
 
 #if defined(OS_ANDROID)
-#include <sys/select.h>
-#include <asm/page.h>
+#  define HAVE_SYS_SYSCALL_H 1
+#  define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
+
+#  include <sys/select.h>
+#  include <asm/page.h>
+
 typedef long int fd_mask;
-#endif
+typedef unsigned long long rlim_t;
+
+#  ifndef howmany
+#    define howmany(x, y)  (((x) + ((y) - 1)) / (y))
+#  endif
+
+#else // OS_ANDROID
+#  define HAVE_SYSCALL_H 1
+#  define HAVE_LANGINFO_H 1
+#  define HAVE_STRUCT_STAT_ST_ATIM 1
+#  define HAVE_STRUCT_STAT_ST_MTIM 1
+#  define HAVE_STRUCT_STAT_ST_CTIM 1
+#  define STACK_END_ADDRESS __libc_stack_end
+#  define HAVE_EACCESS 1
+#  define HAVE_UTIMENSAT 1
+#  define HAVE_GROUP_MEMBER 1
+#  define HAVE_TELLDIR 1
+#  define HAVE_SEEKDIR 1
+#  define HAVE_TIMEGM 1
+#  define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
+#  define HAVE_BACKTRACE 1
+#  define HAVE_LOG2 1
+#endif // OS_ANDROID
+

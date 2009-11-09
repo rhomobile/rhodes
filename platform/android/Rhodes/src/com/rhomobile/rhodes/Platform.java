@@ -86,6 +86,7 @@ public class Platform extends Activity {
 	}
 	
 	public native void startRhodesApp();
+	public native void stopRhodesApp();
 
 	/** Called when the activity is first created. */
 	@Override
