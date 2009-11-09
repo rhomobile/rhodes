@@ -81,6 +81,7 @@ public:
     int getID()const { return m_nID; }
     String getName() { return m_strName; }
     int getServerObjectsCount()const{ return m_nInserted+m_nDeleted; }
+    boolean isSearch()const{ return m_strParams.length() > 0;}
 
     uint64 getToken()const{ return m_token; }
     void setToken(uint64 token){ m_token = token; m_bTokenFromDB = false; }

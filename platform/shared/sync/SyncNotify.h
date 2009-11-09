@@ -22,7 +22,9 @@ class CSyncNotify
     struct CSyncNotification
     {
         String m_strUrl, m_strParams;
-        CSyncNotification(String strUrl, String strParams) : m_strUrl(strUrl), m_strParams(strParams){}
+        boolean m_bRemoveAfterFire;
+        CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire) : 
+            m_strUrl(strUrl), m_strParams(strParams), m_bRemoveAfterFire(bRemoveAfterFire){}
     };
 
 public:
@@ -41,6 +43,7 @@ private:
     static common::CMutex m_mxObjectNotify;
 
     HashtablePtr<int,CSyncNotification*> m_mapSyncNotifications;
+    HashtablePtr<int,CSyncNotification*> m_mapSearchNotifications;
     common::CMutex m_mxSyncNotifications;
 
     net::INetRequest& getNet();
@@ -63,6 +66,8 @@ public:
 
     //Sync notifications
     void setSyncNotification(int source_id, String strUrl, String strParams );
+    void setSearchNotification(int source_id, String strUrl, String strParams );
+
     void clearSyncNotification(int source_id);
 
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
