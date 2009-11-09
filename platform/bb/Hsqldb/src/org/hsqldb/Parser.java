@@ -427,7 +427,7 @@ class Parser {
             token = tokenizer.getString();
 
             if (tokenizer.wasThis(Token.T_AS)) {
-                e.setAlias(tokenizer.getSimpleName(),
+                e.setAlias(tokenizer.getString(),//SimpleName(),
                            tokenizer.wasQuotedIdentifier());
 
                 token = tokenizer.getString();

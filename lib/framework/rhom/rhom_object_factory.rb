@@ -403,7 +403,7 @@ module Rhom
                     #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                     attribs.each do |attrib|
                       unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
-                        sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \"#{attrib}\",\n"
+                        sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
                       end
                     end 
                     sql.chomp!
