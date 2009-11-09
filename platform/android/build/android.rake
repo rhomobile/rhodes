@@ -342,7 +342,117 @@ namespace "build" do
       end
     end
 
-    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :librhodes] do
+    task :libdb => "config:android" do
+      objdir = $bindir + "/libdb"
+      libname = $bindir + "/libdb.a"
+      rm_rf objdir
+      rm_rf libname
+      mkdir_p objdir
+
+      srcdir = $androidpath + "/../shared/db"
+
+      objects = []
+      File.read($androidpath + "/build/libdb_build.files").each do |f|
+        f.chomp!
+        objname = File.basename(f).gsub(/\.cpp$/, ".o")
+
+        args = []
+        args << "--sysroot"
+        args << $ndksysroot
+        args << "-fPIC"
+        args << "-mandroid"
+        args << "-DANDROID"
+        args << "-DOS_ANDROID"
+        args << "-D__NEW__"
+        args << "-D__SGI_STL_INTERNAL_PAIR_H"
+        args << "-I#{$androidpath}/../shared/stlport/stlport"
+        args << "-I#{srcdir}"
+        args << "-I#{srcdir}/.."
+        args << "-I#{srcdir}/../sqlite"
+        #args << "-I#{srcdir}/common"
+        #args << "-I#{srcdir}/logging"
+        #args << "-I#{srcdir}/net"
+        #args << "-I#{srcdir}/statistic"
+        args << "-c"
+        args << f
+        args << "-o"
+        args << objdir + "/" + objname
+        puts Jake.run($gppbin, args)
+        unless $? == 0
+          puts "Error compiling libdb"
+          exit 1
+        end
+
+        objects << objdir + "/" + objname
+      end
+
+      args = []
+      args << "crs"
+      args << libname
+      args += objects
+      puts Jake.run($arbin, args)
+      unless $? == 0
+        puts "Error creating libdb.a"
+        exit 1
+      end
+    end
+
+    task :libsync => "config:android" do
+      objdir = $bindir + "/libsync"
+      libname = $bindir + "/libsync.a"
+      rm_rf objdir
+      rm_rf libname
+      mkdir_p objdir
+
+      srcdir = $androidpath + "/../shared/sync"
+
+      objects = []
+      File.read($androidpath + "/build/libsync_build.files").each do |f|
+        f.chomp!
+        objname = File.basename(f).gsub(/\.cpp$/, ".o")
+
+        args = []
+        args << "--sysroot"
+        args << $ndksysroot
+        args << "-fPIC"
+        args << "-mandroid"
+        args << "-DANDROID"
+        args << "-DOS_ANDROID"
+        args << "-D__NEW__"
+        args << "-D__SGI_STL_INTERNAL_PAIR_H"
+        args << "-I#{$androidpath}/../shared/stlport/stlport"
+        args << "-I#{srcdir}"
+        args << "-I#{srcdir}/.."
+        args << "-I#{srcdir}/../sqlite"
+        #args << "-I#{srcdir}/common"
+        #args << "-I#{srcdir}/logging"
+        #args << "-I#{srcdir}/net"
+        #args << "-I#{srcdir}/statistic"
+        args << "-c"
+        args << f
+        args << "-o"
+        args << objdir + "/" + objname
+        puts Jake.run($gppbin, args)
+        unless $? == 0
+          puts "Error compiling libsync"
+          exit 1
+        end
+
+        objects << objdir + "/" + objname
+      end
+
+      args = []
+      args << "crs"
+      args << libname
+      args += objects
+      puts Jake.run($arbin, args)
+      unless $? == 0
+        puts "Error creating libsync.a"
+        exit 1
+      end
+    end
+
+    task :libs => [:libsqlite, :libruby, :libshttpd, :libstlport, :libdb, :librhodes, :libsync] do
     end
 
 #    desc "Build RubyVM for android"
