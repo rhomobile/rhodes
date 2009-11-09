@@ -275,7 +275,7 @@ namespace "build" do
 	task :libstlport => "config:android" do
       args = []
 	  args << "-C"
-	  args << $androidpath + "/stlport/build/lib"
+	  args << $androidpath + "/../shared/stlport/build/lib"
 	  args << "-f"
 	  args << "android.mak"
 	  args << "NDK_DIR=#{$androidndkpath}"
