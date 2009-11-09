@@ -19,6 +19,16 @@ typedef unsigned __int64 uint64;
 #define strcasecmp _stricmp
 #define snprintf _snprintf
 #else
+#  if defined(OS_ANDROID)
+// Needed for va_list on Android
+#    include <stdarg.h>
+#    include <sys/select.h>
+#    include <sys/types.h>
+#    include <sys/socket.h>
+#    include <netinet/in.h>
+#    include <unistd.h>
+#    include <wchar.h>
+#  endif // OS_ANDROID
 #include <stdlib.h>
 #include <pthread.h>
 #include <wchar.h>
@@ -41,7 +51,6 @@ typedef unsigned long long uint64;
 #define	vswnprintf	_vsnwprintf
 #else
 #define	vswnprintf vswprintf
-
 #endif //OS_WINCE
 
 //#include "tcmalloc/rhomem.h"

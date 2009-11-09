@@ -49,7 +49,9 @@ typedef int LogSeverity;
 
 #endif
 
+#if !defined(OS_ANDROID)
 #include "tcmalloc/rhomem.h"
+#endif
 
 #endif //_RHODEFS_H_
 

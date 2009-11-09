@@ -322,7 +322,11 @@ const char* CRhodesApp::getFreeListeningPort()
 			    m_strListeningPorts = buf;
 		    }
 		    //Clean up
+#if defined(OS_ANDROID)
+			close(sockfd);
+#else
 		    closesocket(sockfd);
+#endif
 	    }
 
     }
