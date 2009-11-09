@@ -7,13 +7,13 @@
 			
 		</description>
 		<version >
-			0.10
+			<%= $app_config["version"] %>
 		</version>
 		<vendor >
-			RhoMobile
+			<%= $app_config["vendor"] %>
 		</vendor>
 		<copyright >
-			Copyright (c) 2008 RhoMobile
+			Copyright (c) <%= Time.now.year %> <%= $app_config["vendor"] %>
 		</copyright>
 		<fileset Java="1.35">
 			<directory >

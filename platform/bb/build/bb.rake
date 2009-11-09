@@ -102,9 +102,9 @@ def autosign
 
 end
 
-def create_rhodes_alx_file
-    rbText = ERB.new( IO.read($builddir + "/rhodesAppAlx.erb") ).result
-	fAlx = File.new($targetdir + "/" + $outfilebase + ".alx", "w")
+def create_alx_file(src,trg)
+    rbText = ERB.new( IO.read($builddir + "/" + src + "Alx.erb") ).result
+	fAlx = File.new($targetdir + "/" + trg + ".alx", "w")
     fAlx.write(rbText)
     fAlx.close()
 end
@@ -130,21 +130,23 @@ namespace "config" do
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
     $appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-    #$outfilebase = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
-    
     $outfilebase = $appname.gsub(/[^A-Za-z_0-9]/, '_')
-    #$appname = $outfilebase
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       $preverified+"/RubyVM.jar"
     $rhodesimplib = $rhobundleimplib + ";"+ $preverified+"/RhoBundle.jar"
+    
+    mkdir_p $bindir unless File.exists? $bindir
+    mkdir_p $tmpdir unless File.exists? $tmpdir
+    
   end
 end
 
 namespace "build" do
   namespace "bb" do
     task :alx => ["config:bb"] do
-        create_rhodes_alx_file
+        create_alx_file('rhodesApp', $outfilebase)
+        create_alx_file('RhoBundle', 'RhoBundle')
     end
       
 #    desc "Build rhoBundle"
@@ -353,8 +355,8 @@ namespace "package" do
         puts "Error in RAPC"
         exit 1
       end
-      cp $builddir + "/RhoBundle.alx", $targetdir if not FileUtils.uptodate?($targetdir + "/RhoBundle.alx", $builddir + "/RhoBundle.alx")
-
+      
+      create_alx_file('RhoBundle', 'RhoBundle')
     end
 
 #    desc "Package rubyVM"
@@ -402,7 +404,7 @@ namespace "package" do
         end
         $stdout.flush
         
-        create_rhodes_alx_file
+        create_alx_file('rhodesApp', $outfilebase)
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -455,7 +457,7 @@ namespace "package" do
       end
       $stdout.flush
       
-      create_rhodes_alx_file
+      create_alx_file('rhodesApp', $outfilebase)
     end
 
     task :set_dev_build do
