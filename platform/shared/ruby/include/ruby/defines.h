@@ -196,9 +196,9 @@ void xfree(void*);
 #include <net/socket.h> /* intern.h needs fd_set definition */
 #endif
 
-#ifdef RUBY_EXPORT
+//#ifdef RUBY_EXPORT
 #undef RUBY_EXTERN
-#endif
+//#endif
 
 #ifndef RUBY_EXTERN
 #define RUBY_EXTERN extern
