@@ -231,6 +231,7 @@ static ServerHost* sharedSH = nil;
 		RAWLOG_INFO("Create Sync");
 		rho_sync_create();
 		RhoRubyInitApp();
+		rho_ruby_activateApp();
 		
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
 							   withObject:NULL waitUntilDone:NO];
