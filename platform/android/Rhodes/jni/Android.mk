@@ -26,6 +26,7 @@ LOCAL_CFLAGS    += -I$(STLPORT_BASE)/stlport \
                    -I$(LOCAL_PATH)/include \
                    -I$(RHO_SHARED_PATH) \
                    -I$(RHO_SHARED_PATH)/sqlite \
+                   -I$(RHO_SHARED_PATH)/curl/include \
                    -I$(RHO_SHARED_PATH)/ruby/include \
                    -I$(RHO_SHARED_PATH)/ruby/linux \
                    -D__NEW__ \
