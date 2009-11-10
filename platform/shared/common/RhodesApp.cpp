@@ -77,11 +77,11 @@ void CRhodesApp::run()
     initHttpServer();
     RhoRubyStart();
 
-    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
-
     rho_sync_create();
     RhoRubyInitApp();
     callAppActiveCallback();
+
+    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
     while(!m_bExit)
     {
@@ -349,25 +349,14 @@ void CRhodesApp::initAppUrls()
 
     m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
-}
 
-String CRhodesApp::getFirstStartUrl()
-{
-    rho::String strLastPage;
+    m_strFirstStartUrl = m_strStartUrl;
 	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
     {
-	    strLastPage = RHOCONF().getString("LastVisitedPage");
+	    rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
 	    if (strLastPage.length() > 0)
-            strLastPage = canonicalizeRhoUrl(strLastPage);
+            m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
     }
-
-    return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
-}
-
-void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
-{
-    m_strCurrentUrlW = strUrlW;
-    keepLastVisitedUrl(convertToStringA(strUrlW));
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -375,6 +364,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 	LOG(INFO) + "Current URL: " + strUrl;
 	
 	m_strCurrentUrl = strUrl;
+
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
@@ -514,6 +504,11 @@ void rho_rhodesapp_start()
 void rho_rhodesapp_destroy()
 {
 	rho::common::CRhodesApp::Destroy();
+}
+
+const char* rho_rhodesapp_getfirststarturl()
+{
+    return RHODESAPP().getFirstStartUrl().c_str();
 }
 
 const char* rho_rhodesapp_getstarturl()

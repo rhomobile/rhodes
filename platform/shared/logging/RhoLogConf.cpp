@@ -150,8 +150,6 @@ extern "C" {
 
 void rho_logconf_Init(const char* szRootPath){
 
-    rho_conf_Init(szRootPath);
-
 	rho::common::CFilePath oLogPath( szRootPath );
 	
     //Set defaults
@@ -172,7 +170,8 @@ void rho_logconf_Init(const char* szRootPath){
     LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
 
-    RHOCONF().loadFromFile();
+    rho_conf_Init(szRootPath);
+
     LOGCONF().loadFromConf(RHOCONF());
 }
 
