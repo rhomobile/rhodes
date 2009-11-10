@@ -150,8 +150,8 @@ extern "C" {
 
 void rho_logconf_Init(const char* szRootPath){
 
-	rho::common::CFilePath oLogPath( szRootPath );
-	
+   rho::common::CFilePath oLogPath( szRootPath );
+
     //Set defaults
 #ifdef RHO_DEBUG
     LOGCONF().setMinSeverity( L_INFO );
@@ -163,9 +163,9 @@ void rho_logconf_Init(const char* szRootPath){
     LOGCONF().setLogToOutput(false);
     LOGCONF().setEnabledCategories("");
 #endif//!RHO_DEBUG
-	
-    LOGCONF().setLogPrefix(true);		
-	
+
+    LOGCONF().setLogPrefix(true);
+
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);

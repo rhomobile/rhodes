@@ -35,7 +35,7 @@ public:
     static CRhodesApp* Create(const String& strRootPath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return m_pInstance; }
-	void startApp();
+    void startApp();
     void stopApp();
 
     String canonicalizeRhoUrl(const String& strUrl) ;
@@ -62,7 +62,7 @@ public:
     void addViewMenuItem( const String& strLabel, const String& strLink );
 
 private:
-	virtual void run();
+    virtual void run();
 
     void initHttpServer();
     void initAppUrls();

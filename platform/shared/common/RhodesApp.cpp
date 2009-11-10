@@ -51,7 +51,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 {
     m_strRhoRootPath = strRootPath;
     m_bExit = false;
-	
+
     m_shttpdCtx = 0;
 
 #ifdef OS_WINCE
@@ -60,7 +60,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     int result = WSAStartup(MAKEWORD(1,1),&WsaData);
 #endif
 
-	//rho_logconf_Init(m_strRhoRootPath.c_str());	
+    //rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
     //start(epNormal);
 }
