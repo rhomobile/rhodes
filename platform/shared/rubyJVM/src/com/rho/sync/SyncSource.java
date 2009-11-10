@@ -83,7 +83,8 @@ class SyncSource
     Integer getID() { return m_nID; }
     String getName() { return m_strName; }
     int getServerObjectsCount(){ return m_nInserted+m_nDeleted; }
-
+    boolean isSearch(){ return m_strParams.length() > 0;}
+    
     String getToken(){ return m_token; }
     void setToken(String token){ m_token = token; m_bTokenFromDB = false; }
     boolean isEmptyToken()

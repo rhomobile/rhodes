@@ -51,7 +51,8 @@ void CSyncEngine::doSyncAllSources()
             getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "Client is not logged in. No sync will be performed.");
     }
 
-    setState(esNone);
+    if ( getState() != esExit )
+        setState(esNone);
 }
 
 void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
@@ -109,7 +110,9 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
     }
 
     getNotify().cleanCreateObjectErrors();
-    setState(esNone);
+
+    if ( getState() != esExit )
+        setState(esNone);
 
     if ( strSrcUrl.length()>0 )
         LOG(ERROR) + "End synchronization of the data source url: " + strSrcUrl;

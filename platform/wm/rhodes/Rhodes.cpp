@@ -253,8 +253,9 @@ extern "C" char* webview_execute_js(char* js) {
     return "";
 }
 
-extern "C" void webview_set_menu_items(VALUE argv) {
-//TODO: Implement me!
+extern "C" void webview_set_menu_items(VALUE valMenu) 
+{
+    RHODESAPP().setViewMenu(valMenu);
 }
 
 extern "C" int webview_active_tab() {
@@ -348,4 +349,35 @@ char* parseToken( const char* start, int len ) {
 
 	return value;
 }
+
+// char -> wchar_t 
+wchar_t* wce_mbtowc(const char* a)
+{
+	int length;
+	wchar_t *wbuf;
+
+	length = MultiByteToWideChar(CP_ACP, 0, 
+		a, -1, NULL, 0);
+	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
+	MultiByteToWideChar(CP_ACP, 0,
+		a, -1, wbuf, length);
+
+	return wbuf;
+}
+
+// wchar_t -> char
+char* wce_wctomb(const wchar_t* w)
+{
+	DWORD charlength;
+	char* pChar;
+
+	charlength = WideCharToMultiByte(CP_ACP, 0, w,
+					-1, NULL, 0, NULL, NULL);
+	pChar = (char*)malloc(charlength+1);
+	WideCharToMultiByte(CP_ACP, 0, w,
+		-1, pChar, charlength, NULL, NULL);
+
+	return pChar;
+}
+
 #endif

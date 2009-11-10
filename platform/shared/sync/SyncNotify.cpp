@@ -234,7 +234,7 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
 		    {
                 DBResult( res, getDB().executeSQL("SELECT source_id from sources order by source_id") );
                 for ( ; !res.isEnd(); res.next() )
-		    	    m_mapSyncNotifications.put( res.getIntByIdx(0),new CSyncNotification( strFullUrl, strParams ) );
+		    	    m_mapSyncNotifications.put( res.getIntByIdx(0),new CSyncNotification( strFullUrl, strParams, false ) );
 		    }
 		    LOG(INFO) + " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams;
         }
@@ -245,10 +245,26 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
         {
             synchronized(m_mxSyncNotifications)
             {
-                m_mapSyncNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams ) );
+                m_mapSyncNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams, true ) );
 
 		        LOG(INFO) + " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
             }
+        }
+    }
+}
+
+void CSyncNotify::setSearchNotification(int source_id, String strUrl, String strParams )
+{
+	LOG(INFO) + "Set search notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams;
+    String strFullUrl = getNet().resolveUrl(strUrl);
+
+    if ( strFullUrl.length() > 0 )
+    {
+        synchronized(m_mxSyncNotifications)
+        {
+            m_mapSearchNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams, true ) );
+
+	        LOG(INFO) + " Done Set search notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
         }
     }
 }
@@ -298,10 +314,11 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
     CSyncSource& src = *psrc;
     String strBody, strUrl;
+    boolean bRemoveAfterFire = bFinish;
     {
         synchronized(m_mxSyncNotifications)
         {
-            CSyncNotification* pSN = m_mapSyncNotifications.get(src.getID());
+            CSyncNotification* pSN = src.isSearch() ? m_mapSearchNotifications.get(src.getID()) : m_mapSyncNotifications.get(src.getID());
             if ( pSN == 0 )
                 return;
             CSyncNotification& sn = *pSN;
@@ -339,10 +356,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
             if ( sn.m_strParams.length() > 0 )
                 strBody += "&" + sn.m_strParams;
+
+            bRemoveAfterFire = bRemoveAfterFire && sn.m_bRemoveAfterFire;
         }
     }
-    if ( bFinish )
-        clearSyncNotification(src.getID());
+    if ( bRemoveAfterFire )
+        clearNotification(src);
 
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
@@ -354,10 +373,23 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
         const char* szData = resp.getCharData();
         if ( szData && strcmp(szData,"stop") == 0)
         {
-            clearSyncNotification(src.getID());
+            clearNotification(src);
         }
     }
 
+}
+
+void CSyncNotify::clearNotification(CSyncSource& src)
+{
+	LOG(INFO) + "Clear notification. Source ID: " + src.getID();
+
+    synchronized(m_mxSyncNotifications)
+    {
+        if ( src.isSearch() )
+            m_mapSearchNotifications.remove(src.getID());
+        else
+            m_mapSyncNotifications.remove(src.getID());
+    }
 }
 
 void CSyncNotify::clearSyncNotification(int source_id) 
@@ -366,7 +398,10 @@ void CSyncNotify::clearSyncNotification(int source_id)
 	
     synchronized(m_mxSyncNotifications)
     {
-        m_mapSyncNotifications.remove(source_id);
+        if ( source_id == -1 )//Clear all
+            m_mapSyncNotifications.clear();
+        else
+            m_mapSyncNotifications.remove(source_id);
     }
 }
 

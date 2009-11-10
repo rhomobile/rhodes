@@ -36,6 +36,17 @@ public class DBAdapter extends RubyBasic {
 		
 		return m_Instance;
 	}
+
+	public void close()
+	{ 
+		try{
+			m_dbStorage.close();
+			m_dbStorage = null;
+		}catch(Exception exc)
+		{
+    		LOG.ERROR("DB close failed.", exc);
+		}
+	}
 	
 	public DBAttrManager getAttrMgr()
 	{ 
@@ -630,10 +641,12 @@ public class DBAdapter extends RubyBasic {
     
     private RubyValue rb_close() {
     	try{
-    		if ( m_dbStorage != null ){
+    		
+    		//do not close sync db, close it at exit
+    		/*if ( m_dbStorage != null ){
 		    	m_dbStorage.close();
 		    	m_dbStorage = null;
-    		}
+    		}*/
     		
     	}catch( Exception e ){
     		LOG.ERROR("close failed.", e);

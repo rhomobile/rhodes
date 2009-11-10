@@ -39,6 +39,11 @@ char* get_current_location() {
 //@synthesize viewHomeUrl, viewOptionsUrl;
 @synthesize actionTarget, onShowLog, toolbar, webView;
 
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+}
+
 -(void)viewDidLoad {
 	[super viewDidLoad];
 
@@ -85,8 +90,13 @@ char* get_current_location() {
 	[self navigate: url];
 }
 
--(IBAction)goBack {
-	[webView goBack];
+-(IBAction)goBack 
+{
+    const char* szBackUrl = rho_rhodesapp_getappbackurl();
+    if ( szBackUrl && *szBackUrl )
+        [self navigateRedirect:[NSString stringWithCString:szBackUrl encoding:[NSString defaultCStringEncoding]]];    
+    else
+	    [webView goBack];
 }
 
 -(IBAction)goForward {
@@ -155,8 +165,8 @@ char* get_current_location() {
 		forwardBtn.enabled = NO;
 	}
 	
-	NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-	rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+	//NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+	//rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
 }
 /*
 - (void)runSync

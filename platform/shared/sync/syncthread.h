@@ -132,7 +132,7 @@ void rho_sync_destroy();
 
 void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_sync_doSyncSource(int nSrcID,int show_status_popup);
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep);
+void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 void rho_sync_lock();
 void rho_sync_unlock();

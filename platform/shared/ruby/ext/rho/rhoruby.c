@@ -49,6 +49,7 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 static ID initApp_mid;
+static ID activateApp_mid;
 
 static char* rb_type_to_s(VALUE obj);
 //extern int ruby_thread_set_native(rb_thread_t *th);
@@ -157,6 +158,7 @@ void RhoRubyStart()
 	CONST_ID(framework_mid, "serve");
 	CONST_ID(framework_mid2, "serve_index");
 	CONST_ID(initApp_mid, "init_app");
+	CONST_ID(activateApp_mid, "activate_app");
 
     //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
@@ -169,6 +171,11 @@ void RhoRubyStart()
 void RhoRubyInitApp()
 {
     rb_funcall(framework, initApp_mid, 0);
+}
+
+void rho_ruby_activateApp()
+{
+    rb_funcall(framework, activateApp_mid, 0);
 }
 
 char* RhoRuby_getRhoDBVersion()
@@ -188,6 +195,43 @@ char* makeControllerCall(char* classname, char* methodname);
 
 VALUE getnil() {
 	return Qnil;
+}
+
+//typedef void rho_eachstr_func(const char*, const char*, void*);
+struct CHashEnumData
+{
+    void* data;
+    rho_eachstr_func *func;
+};
+
+static int
+hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+{
+    const char* szValue = "";
+    const char* szKey = "";
+
+    if ( value != 0 && value != Qnil )
+    {
+        VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
+        szValue = RSTRING_PTR(strVal);
+    }
+    if ( key != 0 && key != Qnil )
+    {
+        VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
+        szKey = RSTRING_PTR(strKey);
+    }
+
+    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    return ST_CONTINUE;
+}
+
+void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
+{
+    struct CHashEnumData enumData;
+    enumData.data = data;
+    enumData.func = func;
+
+    rb_hash_foreach(hash, hash_each, &enumData);
 }
 
 VALUE rho_ruby_create_array()

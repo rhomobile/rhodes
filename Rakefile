@@ -77,6 +77,20 @@ def common_bundle_start(startdir, dest)
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
+
+  chdir File.join($srcdir,'apps')
+
+  Dir.glob("**/*.#{$config['platform']}.*").each do |file|
+    oldfile = file.gsub(Regexp.new(Regexp.escape('.') + $config['platform'] + Regexp.escape('.')),'.')
+    rm oldfile
+    mv file,oldfile
+  end
+  
+  Dir.glob("**/*.wm.*").each { |f| rm f }
+  Dir.glob("**/*.iphone.*").each { |f| rm f }
+  Dir.glob("**/*.bb.*").each { |f| rm f }
+  Dir.glob("**/*.android.*").each { |f| rm f }
+
 end
 
 def create_manifest
@@ -139,7 +153,8 @@ namespace "build" do
 
 
       chdir $bindir
-      puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      output = `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      output.each_line { |x| puts ">>> " + x  }
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
@@ -167,7 +182,8 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
-
+      chdir startdir
+      
       create_manifest
       
       cp   compileERB, $srcdir

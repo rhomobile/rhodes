@@ -26,8 +26,8 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 //char* canonicalizeURL(const char* path);
 //const char* strip_local_domain(const char* url);
 
-extern "C" wchar_t* wce_mbtowc(const char* a);
-extern "C" char* wce_wctomb(const wchar_t* w);
+//extern "C" wchar_t* wce_mbtowc(const char* a);
+//extern "C" char* wce_wctomb(const wchar_t* w);
 
 //extern "C" void pause_sync( int nPause );
 
@@ -40,6 +40,7 @@ extern HREGNOTIFY g_hNotify;
 #endif
 
 extern "C" int g_rho_net_has_network;
+using namespace rho::common;
 
 CMainWindow::CMainWindow()
 {
@@ -137,7 +138,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // set initial properties for the control
     //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
     m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
-
+    //m_spIWebBrowser2->put_Offline(VARIANT_TRUE);
 #if defined(_WIN32_WCE)
     // Create a menubar
     // (mbi was initialized above)
@@ -266,7 +267,11 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 //    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
-    if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
+    rho::String strAppUrl = RHODESAPP().getAppBackUrl();
+
+    if ( strAppUrl.length() > 0 )
+    	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(convertToStringW(strAppUrl).c_str()), NULL, NULL, NULL, NULL);
+    else if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
         m_spIWebBrowser2->GoBack();
 
     return 0;
@@ -300,7 +305,8 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
     //TODO: show menu on navigate to start page
 	SetRhobundleReloadMenu();
-	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(RHODESAPP().getStartUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate( 
+        const_cast<wchar_t*>(convertToStringW(RHODESAPP().getStartUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 #if 0
@@ -365,7 +371,11 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 //    m_spIWebBrowser2->Refresh();
 
 //	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
-    Navigate2(const_cast<wchar_t*>(RHODESAPP().getCurrentUrlW().c_str()));
+
+    rho::StringW strCurrentUrlW;
+    rho::common::convertToStringW(RHODESAPP().getCurrentUrl().c_str(), strCurrentUrlW);
+    Navigate2(const_cast<wchar_t*>(strCurrentUrlW.c_str()));
+
 //	free(wcurl);
     return 0;
 }
@@ -394,7 +404,7 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(RHODESAPP().getOptionsUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(convertToStringW(RHODESAPP().getOptionsUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 
@@ -612,7 +622,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
 	
-	BOOL store_current_url = !m_bLoading;
+	//BOOL store_current_url = !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -632,8 +642,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 
 	m_current_url = wce_wctomb(url);*/
 	
-	if( store_current_url ) 
-        RHODESAPP().keepLastVisitedUrlW(url);
+	//if( store_current_url ) 
+    //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
@@ -729,36 +739,3 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     // ::TranslateAccelerator() function here, instead of simply returning FALSE.
     return FALSE;
 }
-
-#if defined(OS_WINDOWS)
-/* char -> wchar_t */
-wchar_t* wce_mbtowc(const char* a)
-{
-	int length;
-	wchar_t *wbuf;
-
-	length = MultiByteToWideChar(CP_ACP, 0, 
-		a, -1, NULL, 0);
-	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
-	MultiByteToWideChar(CP_ACP, 0,
-		a, -1, wbuf, length);
-
-	return wbuf;
-}
-
-/* wchar_t -> char */
-char* wce_wctomb(const wchar_t* w)
-{
-	DWORD charlength;
-	char* pChar;
-
-	charlength = WideCharToMultiByte(CP_ACP, 0, w,
-					-1, NULL, 0, NULL, NULL);
-	pChar = (char*)malloc(charlength+1);
-	WideCharToMultiByte(CP_ACP, 0, w,
-		-1, pChar, charlength, NULL, NULL);
-
-	return pChar;
-}
-
-#endif //OS_WINDOWS
