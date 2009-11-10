@@ -69,6 +69,7 @@ public:
     void setSearchNotification(int source_id, String strUrl, String strParams );
 
     void clearSyncNotification(int source_id);
+    void clearNotification(CSyncSource& src);
 
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
