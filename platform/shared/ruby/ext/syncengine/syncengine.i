@@ -6,7 +6,7 @@
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
-	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep);
+	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -59,7 +59,7 @@
 }
 extern void dosync(bool show_status_popup);
 extern void dosync_source(int source_id, bool show_status_popup);
-extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep);
+extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
 extern void login(const char *login, const char *password, const char* callback);

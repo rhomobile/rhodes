@@ -290,17 +290,18 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 }*/
 
 extern void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
+//extern void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
+
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
   
   if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg") )
     return NULL;
 
-#ifdef __SYMBIAN32__
+/*#ifdef __SYMBIAN32__
   if ( strstr(_shttpd_known_http_methods[c->method].ptr, "GET" ) )
 	  webview_set_current_location(c->uri);
-#endif
-  
+#endif*/
   if ((route = _alloc_route(c->uri)) != NULL) {
     if (_parse_route(route)) {
       struct stat	st;

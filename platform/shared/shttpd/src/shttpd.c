@@ -546,6 +546,7 @@ get_path_info(struct conn *c, char *path, struct stat *stp)
 	return (-1);
 }
 
+extern void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
 static void
 decide_what_to_do(struct conn *c)
 {
@@ -602,6 +603,10 @@ decide_what_to_do(struct conn *c)
 #endif /* NO_AUTH */
     if ((route = rho_dispatch(c,path)) != NULL) {
         union variant callback;
+
+        if ( strstr(_shttpd_known_http_methods[c->method].ptr, "GET" ) )
+          rho_rhodesapp_keeplastvisitedurl(c->uri);
+
         callback.v_func = (void (*)(void))rho_serve;
 		    _shttpd_setup_embedded_stream(c, callback, route);
     } else if (c->method == METHOD_PUT) {
@@ -684,8 +689,13 @@ decide_what_to_do(struct conn *c)
 			_shttpd_do_ssi(c);
 		}
 #endif /* NO_CGI */
-    } else if ( isindex(c,path) ) {
+    } else if ( isindex(c,path) ) 
+    {
         union variant callback;
+
+        if ( strstr(_shttpd_known_http_methods[c->method].ptr, "GET" ) )
+            rho_rhodesapp_keeplastvisitedurl(c->uri);
+
         callback.v_func = (void (*)(void))rho_serve_index;
 	    _shttpd_setup_embedded_stream(c, callback, _shttpd_strdup(path));
     } 

@@ -101,6 +101,8 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 //#if TARGET_IPHONE_SIMULATOR	
 //	bool replaceFiles = YES;
 //#else
+	rho_conf_Init(rho_native_rhopath());
+	
 	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	char* currentVersion = rho_conf_getString("currentVersion");

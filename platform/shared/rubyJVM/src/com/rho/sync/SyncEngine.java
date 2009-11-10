@@ -138,7 +138,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	LOG.ERROR("Sync failed.", exc);
 	    }
 	    
-	    setState(esNone);
+	    if ( getState() != esExit )
+	    	setState(esNone);
 	}
 
 	void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges,
@@ -205,7 +206,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
         
 	    getNotify().cleanCreateObjectErrors();
-	    setState(esNone);
+	    if ( getState() != esExit )
+	    	setState(esNone);
 	    
 	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
 	    	LOG.INFO( "End synchronization of the data source url: " + strSrcUrl );

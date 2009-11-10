@@ -31,6 +31,9 @@ module Rho
 	    end
     end
     
+    def on_activate_app
+    end
+    
     def set_menu(menu=nil)
       disp_menu = menu ? menu : @default_menu
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"

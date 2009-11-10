@@ -55,7 +55,7 @@ import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.SimpleFile;
 import com.rho.Version;
-import com.rho.db.DBAdapter;
+//import com.rho.db.DBAdapter;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.net.URI;
@@ -492,6 +492,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		m_bActivated = true;
 		
 		doStartupWork();
+		
+		//add activate command
+    	//PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(true);
+        //thread.start();                       
+		RhoRuby.rho_ruby_activateApp();
 		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
@@ -1297,6 +1302,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         private String _url;
         private boolean m_bInternalRequest = false;
+        private boolean m_bActivateApp = false;
         
         public void setInternalRequest(boolean b)
         {
@@ -1326,6 +1332,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             	_callback = callback;
         }
 
+        public PrimaryResourceFetchThread(boolean bActivateApp) {
+        	m_bActivateApp = bActivateApp; 
+        }
+        
         static void Create()
         {
         	if ( m_oFetchThread != null )
@@ -1349,6 +1359,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
         void processCommand()
         {
+        	if ( m_bActivateApp )
+        	{
+        		RhoRuby.rho_ruby_activateApp();
+        		return;
+        	}
+        	
     		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
     		
     		if ( m_bInternalRequest )
