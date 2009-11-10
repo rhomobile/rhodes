@@ -32,11 +32,11 @@ db::CDBAdapter  CSyncThread::m_oDBAdapter;
 
 CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBAdapter)
 {
-	m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
-	if( RHOCONF().isExist("sync_poll_interval") )
-    	m_nPollInterval = RHOCONF().getInt("sync_poll_interval");
+    m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
+    if( RHOCONF().isExist("sync_poll_interval") )
+        m_nPollInterval = RHOCONF().getInt("sync_poll_interval");
 
-	m_ptrFactory = factory;
+    m_ptrFactory = factory;
 
     m_oSyncEngine.setFactory(factory);
 

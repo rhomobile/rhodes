@@ -11,15 +11,15 @@ const char* rho_native_rhopath()
 
 void startRhodesApp()
 {
-    //const char* szRootPath = rho_native_rhopath();
-    //rho_logconf_Init(szRootPath);
-    //rho_rhodesapp_create(szRootPath);
-    //rho_rhodesapp_start();
+    const char* szRootPath = rho_native_rhopath();
+    rho_logconf_Init(szRootPath);
+    rho_rhodesapp_create(szRootPath);
+    rho_rhodesapp_start();
 }
 
 void stopRhodesApp()
 {
-    //rho_rhodesapp_destroy();
+    rho_rhodesapp_destroy();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
@@ -56,21 +56,24 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    const char *s = "";
+    //const char *s = RHODESAPP().getOptionsUrl().c_str();
+    return env->NewStringUTF(s);
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    const char *s = "";
+    //const char *s = RHODESAPP().getStartUrl().c_str();
+    return env->NewStringUTF(s);
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    const char *s = "";
+    //const char *s = RHODESAPP().getCurrentUrl().c_str();
+    return env->NewStringUTF(s);
 }
 

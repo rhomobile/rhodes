@@ -5,8 +5,6 @@
 
 #include <common/RhoDefs.h>
 #include <common/IRhoClassFactory.h>
-//#include <sync/SyncThread.h>
-//#include <sync/ClientRegister.h>
 
 namespace rho
 {

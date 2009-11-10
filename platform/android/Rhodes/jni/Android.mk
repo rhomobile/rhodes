@@ -19,7 +19,8 @@ LOCAL_SRC_FILES := src/rhodes.cpp \
                    src/datetimepicker.cpp \
                    src/nativebar.cpp \
                    src/phonebook.cpp \
-                   src/syncengine.cpp
+                   src/syncengine.cpp \
+                   src/RhoClassFactory.cpp
 
 LOCAL_CFLAGS    += -I$(STLPORT_BASE)/stlport \
                    -I$(LOCAL_PATH)/include \
@@ -33,8 +34,8 @@ LOCAL_CFLAGS    += -I$(STLPORT_BASE)/stlport \
 
 LOCAL_LDLIBS    += -L$(STLPORT_BASE)/build/lib/obj/arm-linux-gcc/so \
                    -L$(RHO_BIN_PATH)/libs \
-                   -lrhomain -lshttpd -lruby -lrhosync -lrhodb -lrhocommon \
-                   -lrholog -ljson -lstlport -lsqlite -ldl
+                   -lrhomain -lshttpd -lruby -lrhosync -lrhodb \
+                   -lrholog -lrhocommon -ljson -lstlport -lsqlite -ldl
 
 LOCAL_ARM_MODE  := arm
 

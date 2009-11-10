@@ -375,7 +375,7 @@ namespace "build" do
     task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
  #   desc "Build Rhodes for android"
-    task :rhodes => [:rhobundle] do
+    task :rhodes => [:rhobundle, :libs] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
       rm_rf $tmpdir + "/Rhodes"
