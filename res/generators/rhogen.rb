@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'templater'
 require 'activesupport'
+require File.dirname(__FILE__) + '/../../lib/rhodes'
 
 module Rhogen
   extend Templater::Manifold
