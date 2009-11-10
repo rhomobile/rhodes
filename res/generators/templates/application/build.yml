@@ -1,4 +1,5 @@
 sdk: "<%=@sdk_path%>"
+sdkversion: <%=Rhodes::VERSION%>
 name: <%=@app_name%>
 version: 1.2.2
 vendor: rhomobile
