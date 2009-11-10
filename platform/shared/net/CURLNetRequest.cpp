@@ -1,39 +1,26 @@
-#include "NetRequest.h"
-#include "common/AutoPointer.h"
-#include "common/RhoFile.h"
-#include "common/RhodesApp.h"
+#include <net/CURLNetRequest.h>
+#include <logging/RhoLog.h>
+#include <common/RhoFile.h>
+#include <common/RhodesApp.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 
-extern "C" {
+extern "C" void rho_net_impl_network_indicator(int active);
 
-char* HTTPResolveUrl(char* url);
-#ifdef RHO_NET_NEW_IMPL
-void rho_net_impl_network_indicator(int active);
-#else
-char* rho_net_impl_request(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
-char* rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
-//int   rho_net_impl_pushFile(const char* szUrl, const char* szFilePath, int* pbRespRecieved, FSAVECONNDATA fSave, void* pThis);
-char*  rho_net_impl_pullFile(const char* szUrl, int* pnRespCode, int (*writeFunc)(void* pThis, void* pData, int nSize), void* pThisFile, FSAVECONNDATA fSave, void* pThis);
-char*  rho_net_impl_pushMultipartData(const char* url, const char* data, size_t data_size, int* pnRespCode, FSAVECONNDATA fSave, void* pThis);	
-void rho_net_impl_deleteAllCookies();
-void rho_net_impl_cancel(void* pConnData);
-#endif // RHO_NET_NEW_IMPL
-}
+namespace rho
+{
+namespace net
+{
 
-namespace rho {
-namespace net {
-IMPLEMENT_LOGCLASS(CNetRequest,"Net");
-
-class CNetResponseImpl : public INetResponse
+class CURLNetResponseImpl : public INetResponse
 {
     char* m_pData;
     int   m_nRespCode;
 
 public:
-    CNetResponseImpl(char* data, int nRespCode) : m_pData(data), m_nRespCode(nRespCode){}
-    ~CNetResponseImpl()
+    CURLNetResponseImpl(char* data, int nRespCode) : m_pData(data), m_nRespCode(nRespCode){}
+    ~CURLNetResponseImpl()
     {
       if (m_pData)
         free(m_pData);
@@ -79,38 +66,26 @@ public:
         }
         m_pData = strdup(pData);
     }
-
 };
 
-extern "C" void saveConnData(void* pThis, void* pData)
+CURLNetRequest::CURLNetRequest()
 {
-    CNetRequest* pNetRequest = (CNetRequest*)pThis;
-    pNetRequest->m_pConnData = pData;
+    curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &errbuf);
 }
 
-CNetRequest::CNetRequest()
+CURLNetRequest::~CURLNetRequest()
 {
-#ifdef RHO_NET_NEW_IMPL
-    curl = ::curl_easy_init();
-    ::curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &errbuf);
-#endif // RHO_NET_NEW_IMPL
+    curl_easy_cleanup(curl);
 }
 
-CNetRequest::~CNetRequest()
-{
-#ifdef RHO_NET_NEW_IMPL
-    ::curl_easy_cleanup(curl);
-#endif // RHO_NET_NEW_IMPL
-}
-
-#ifdef RHO_NET_NEW_IMPL
-bool isLocalHost(const String& strUrl)
+static bool isLocalHost(const String& strUrl)
 {
     return strUrl.find_first_of("http://localhost") == 0 ||
         strUrl.find_first_of("http://127.0.0.1") == 0;
 }
 
-size_t curlBodyCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlBodyCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     String *pStr = (String *)opaque;
     size_t nBytes = size*nmemb;
@@ -119,7 +94,7 @@ size_t curlBodyCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
     return nBytes;
 }
 
-size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     Vector<String> *headers = (Vector<String>*)opaque;
     size_t nBytes = size*nmemb;
@@ -129,7 +104,8 @@ size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
     return nBytes;
 }
 
-void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& session, String& result)
+static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
+                             const String& session, String& result)
 {
     curl_easy_reset(curl);
     if (strcasecmp(method, "GET") == 0)
@@ -147,7 +123,8 @@ void set_curl_options(CURL *curl, const char *method, const String& strUrl, cons
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
 }
 
-void set_curl_options(CURL *curl, const char *method, const String& strUrl, const String& strBody, const String& session, String& result)
+static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
+                             const String& strBody, const String& session, String& result)
 {
     set_curl_options(curl, method, strUrl, session, result);
     if (strcasecmp(method, "POST") == 0) {
@@ -156,8 +133,8 @@ void set_curl_options(CURL *curl, const char *method, const String& strUrl, cons
     }
 }
 
-char* CNetRequest::request(const char *method, const String& strUrl, const String& strBody,
-                           int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession)
+char* CURLNetRequest::request(const char *method, const String& strUrl, const String& strBody,
+                           int *pnRespCode, IRhoSession* oSession)
 {
     if (pnRespCode)
         *pnRespCode = -1;
@@ -203,8 +180,8 @@ char* CNetRequest::request(const char *method, const String& strUrl, const Strin
     return respData;
 }
 
-char* CNetRequest::requestCookies(const char *method, const String& strUrl, const String& strBody,
-                                  int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession)
+char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, const String& strBody,
+                                  int *pnRespCode, IRhoSession* oSession)
 {
     if (pnRespCode)
         *pnRespCode = -1;
@@ -279,7 +256,7 @@ char* CNetRequest::requestCookies(const char *method, const String& strUrl, cons
     return respData;
 }
 
-char* CNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, FSAVECONNDATA fSave, IRhoSession *oSession)
+char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, IRhoSession *oSession)
 {
     // TODO:
     rho_net_impl_network_indicator(1);
@@ -287,7 +264,7 @@ char* CNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void
     return NULL;
 }
 
-char* CNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession *oSession)
+char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession)
 {
     if (pnRespCode)
         *pnRespCode = -1;
@@ -350,9 +327,7 @@ char* CNetRequest::pushMultipartData(const String& strUrl, const String& strFile
     return respData;
 }
 
-#endif // RHO_NET_NEW_IMPL
-
-INetResponse* CNetRequest::doRequestTry(const char* method, const String& strUrl, const String& strBody,
+INetResponse* CURLNetRequest::doRequestTry(const char* method, const String& strUrl, const String& strBody,
                                         Frho_net_impl_request func, IRhoSession* oSession )
 {
     int nRespCode = -1;
@@ -361,81 +336,40 @@ INetResponse* CNetRequest::doRequestTry(const char* method, const String& strUrl
     char* response = 0;
 
     do{
-#ifdef RHO_NET_NEW_IMPL
-        response = (this->*func)(method, strUrl, strBody, &nRespCode, saveConnData, oSession);
-#else
-        response = (*func)(method, strUrl.c_str(), strBody.c_str(), &nRespCode, saveConnData, this );
-#endif // RHO_NET_NEW_IMPL
+        response = (this->*func)(method, strUrl, strBody, &nRespCode, oSession);
         nTry++;
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
-    return new CNetResponseImpl(response, nRespCode);
+    return new CURLNetResponseImpl(response, nRespCode);
 }
 
-INetResponse* CNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
+INetResponse* CURLNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
-#ifdef RHO_NET_NEW_IMPL
-    Frho_net_impl_request func = &CNetRequest::request;
-#else
-    Frho_net_impl_request func = &rho_net_impl_request;
-#endif // RHO_NET_NEW_IMPL
-    return doRequestTry("GET", strUrl, String(), func, oSession );
+    return doRequestTry("GET", strUrl, String(), &CURLNetRequest::request, oSession );
 }
 
-INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
+INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-#ifdef RHO_NET_NEW_IMPL
-    Frho_net_impl_request func = &CNetRequest::request;
-#else
-    Frho_net_impl_request func = &rho_net_impl_request;
-#endif // RHO_NET_NEW_IMPL
-    return doRequestTry("POST", strUrl, strBody, func, oSession );
+    return doRequestTry("POST", strUrl, strBody, &CURLNetRequest::request, oSession );
 }
 
-INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
+INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-#ifdef RHO_NET_NEW_IMPL
-    Frho_net_impl_request func = &CNetRequest::requestCookies;
-#else
-    Frho_net_impl_request func = &rho_net_impl_requestCookies;
-#endif // RHO_NET_NEW_IMPL
-    INetResponse* resp = doRequestTry("POST", strUrl, strBody, func, oSession );
+    INetResponse* resp = doRequestTry("POST", strUrl, strBody, &CURLNetRequest::requestCookies, oSession );
     if ( resp && resp->isOK() )
-        ((CNetResponseImpl*)resp)->setCharData(cookies.c_str());
+        ((CURLNetResponseImpl*)resp)->setCharData(cookies.c_str());
 
     return resp;
 }
 
-#if !defined(RHO_NET_NEW_IMPL)
-static const char* szMultipartPrefix = 
-"------------A6174410D6AD474183FDE48F5662FCC5\r\n"
-"Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
-"Content-Type: application/octet-stream\r\n\r\n";
-static const char* szMultipartPostfix = 
-"\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
-#endif // !defined(RHO_NET_NEW_IMPL)
-
-//static const char* szMultipartContType = 
-//"multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
-
-INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
+INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
     {
         LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return new CNetResponseImpl(0,-1);
+        return new CURLNetResponseImpl(0,-1);
     }
-
-#if !defined(RHO_NET_NEW_IMPL)
-    //TODO: call rho_net_impl_pushFile
-    int nFileSize = oFile.size();
-    int nDataLen = nFileSize+strlen(szMultipartPrefix)+strlen(szMultipartPostfix);
-    char* data = (char*)malloc(nDataLen);
-    memcpy(data, szMultipartPrefix, strlen(szMultipartPrefix) );
-    oFile.readData(data,strlen(szMultipartPrefix),nFileSize);
-    memcpy(data+nFileSize+strlen(szMultipartPrefix), szMultipartPostfix, strlen(szMultipartPostfix) );
-#endif // !defined(RHO_NET_NEW_IMPL)
 
     int nRespCode = -1;
     int nTry = 0;
@@ -443,30 +377,20 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
     char* response = 0;
 
     do{
-#ifdef RHO_NET_NEW_IMPL
-        response = pushMultipartData(strUrl, strFilePath, &nRespCode, saveConnData, oSession);
-#else
-        response = rho_net_impl_pushMultipartData(strUrl.c_str(), data, nDataLen, &nRespCode, saveConnData, this );
-#endif // RHO_NET_NEW_IMPL
+        response = pushMultipartData(strUrl, strFilePath, &nRespCode, oSession);
         nTry++;
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
-    return new CNetResponseImpl(response, nRespCode);
+    return new CURLNetResponseImpl(response, nRespCode);
 }
 
-extern "C"	int writeToFile(void* pThis, void* pData, int nSize)
-{
-    common::CRhoFile& oFile = *((common::CRhoFile*)pThis);
-    return oFile.write(pData, nSize);
-}
-
-INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
+INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
     {
         LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
-        return new CNetResponseImpl(0,-1);
+        return new CURLNetResponseImpl(0,-1);
     }
 
     int nRespCode = -1;
@@ -474,41 +398,30 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
     m_bCancel = false;
     char* response = 0;
     do{
-#ifdef RHO_NET_NEW_IMPL
-        response = pullMultipartData(strUrl, &nRespCode, &oFile, saveConnData, oSession);
-#else
-        response = rho_net_impl_pullFile(strUrl.c_str(), &nRespCode, writeToFile, &oFile, saveConnData, this );
-#endif // RHO_NET_NEW_IMPL
+        response = pullMultipartData(strUrl, &nRespCode, &oFile, oSession);
         nTry++;
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
-    return new CNetResponseImpl(response,nRespCode);
+    return new CURLNetResponseImpl(response,nRespCode);
 }
 
-//if strUrl.length() == 0 delete all cookies if possible
-void CNetRequest::deleteCookie(const String& strUrl)
+void CURLNetRequest::deleteCookie(const String& strUrl)
 {
-#if !defined(RHO_NET_NEW_IMPL)
-    if ( strUrl.length() == 0 )
-        rho_net_impl_deleteAllCookies();
-#endif // RHO_NET_NEW_IMPL
+    // Not implemented
 }
 
-String CNetRequest::resolveUrl(const String& strUrl)
+String CURLNetRequest::resolveUrl(const String& strUrl)
 {
     return RHODESAPP().canonicalizeRhoUrl(strUrl);
 }
 
-void CNetRequest::cancel()
+void CURLNetRequest::cancel()
 {
     m_bCancel = true;
-#ifdef RHO_NET_NEW_IMPL
-    curl_easy_pause(curl, CURLPAUSE_ALL);
-#else
-    if ( m_pConnData != null )
-        rho_net_impl_cancel(m_pConnData);
-#endif // RHO_NET_NEW_IMPL
+    // TODO
+    //curl_easy_pause(curl, CURLPAUSE_ALL);
 }
 
-}
-}
+} // namespace net
+} // namespace rho
+

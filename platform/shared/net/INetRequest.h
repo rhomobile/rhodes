@@ -14,8 +14,8 @@ struct INetResponse
     virtual ~INetResponse(void){;}
     virtual const char* getCharData() = 0;
     virtual unsigned int getDataSize() = 0;
-	virtual int getRespCode() = 0;
-	virtual boolean isOK() = 0;
+    virtual int getRespCode() = 0;
+    virtual boolean isOK() = 0;
     virtual boolean isResponseRecieved() = 0;
     virtual boolean isUnathorized() = 0;
 };
