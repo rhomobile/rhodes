@@ -148,11 +148,13 @@ private:
 
 void CRhodesApp::callAppActiveCallback()
 {
-    String strCallback = RHOCONF().getString("app_did_become_active_callback");
+    /*String strCallback = RHOCONF().getString("app_did_become_active_callback");
     if ( strCallback.length() == 0 )
         return;
 
-    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );
+    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );*/
+
+    rho_ruby_activateApp();
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
@@ -339,24 +341,8 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl = "http://localhost:";
     m_strHomeUrl += getFreeListeningPort();
 
-    m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
-    convertToStringW(m_strStartUrl.c_str(), m_strStartUrlW);
-
-    m_strOptionsUrl = canonicalizeRhoUrl( RHOCONF().getString("options_path") );
-    convertToStringW( m_strOptionsUrl.c_str(), m_strOptionsUrlW );
-
-    m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
-
     m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
-
-    m_strFirstStartUrl = m_strStartUrl;
-	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
-    {
-	    rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
-	    if (strLastPage.length() > 0)
-            m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
-    }
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -379,19 +365,40 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
     }
 }
 
+const String& CRhodesApp::getStartUrl()
+{
+    m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
+    return m_strStartUrl;
+}
+
+const String& CRhodesApp::getOptionsUrl()
+{
+    m_strOptionsUrl = canonicalizeRhoUrl( RHOCONF().getString("options_path") );
+    return m_strOptionsUrl;
+}
+
+const String& CRhodesApp::getCurrentUrl()
+{ 
+    return m_strCurrentUrl; 
+}
+
+const String& CRhodesApp::getFirstStartUrl()
+{ 
+    m_strFirstStartUrl = getStartUrl();
+	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
+    {
+	    rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
+	    if (strLastPage.length() > 0)
+            m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
+    }
+
+    return m_strFirstStartUrl; 
+}
+
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {
+    m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
 	return m_strRhobundleReloadUrl;
-}
-
-const StringW& CRhodesApp::getStartUrlW()
-{
-    return m_strStartUrlW;
-}
-
-const StringW& CRhodesApp::getOptionsUrlW()
-{
-    return m_strOptionsUrlW;
 }
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
