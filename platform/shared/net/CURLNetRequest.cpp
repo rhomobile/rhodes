@@ -13,6 +13,8 @@ namespace rho
 namespace net
 {
 
+IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
+
 class CURLNetResponseImpl : public INetResponse
 {
     char* m_pData;

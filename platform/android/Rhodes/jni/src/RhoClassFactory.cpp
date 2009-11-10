@@ -1,7 +1,7 @@
 #include <net/CURLNetRequest.h>
+#include <common/PosixThreadImpl.h>
 
 #include "RhoClassFactory.h"
-#include "RhoThreadImpl.h"
 #include "SystemInfoImpl.h"
 
 namespace rho
@@ -16,8 +16,7 @@ net::INetRequest *CRhoClassFactory::createNetRequest()
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
 {
-    //return new CRhoThreadImpl();
-    return 0;
+    return new CPosixThreadImpl();
 }
 
 ISystemInfo *CRhoClassFactory::createSystemInfo()

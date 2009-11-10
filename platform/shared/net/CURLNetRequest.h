@@ -3,6 +3,7 @@
 
 #include <curl/curl.h>
 #include <net/INetRequest.h>
+#include <logging/RhoLog.h>
 
 namespace rho
 {
@@ -11,6 +12,7 @@ namespace net
 
 class CURLNetRequest : public INetRequest
 {
+    DEFINE_LOGCLASS;
 public:
     CURLNetRequest();
     ~CURLNetRequest();
