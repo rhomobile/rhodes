@@ -346,13 +346,13 @@ namespace "build" do
     end
 
     task :librhocommon => "config:android" do
-      srcdir = $shareddir
       objdir = $objdir["rhocommon"]
       libname = $libname["rhocommon"]
       args = []
       args << "-D__NEW__"
       args << "-I#{$stlport_includes}"
-      args << "-I#{srcdir}"
+      args << "-I#{$shareddir}"
+      args << "-I#{$shareddir}/curl/include"
 
       objects = []
       File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
