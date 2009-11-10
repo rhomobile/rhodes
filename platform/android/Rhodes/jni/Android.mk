@@ -8,7 +8,8 @@ RHO_BIN_PATH    := $(shell grep -P '^\s*app:' $(LOCAL_PATH)/../../../../rhobuild
 
 LOCAL_MODULE    := rhodes
 
-LOCAL_SRC_FILES := src/platform.cpp \
+LOCAL_SRC_FILES := src/rhodes.cpp \
+                   src/logconf.cpp \
                    src/callbacks.cpp \
                    src/webview.cpp \
                    src/geolocation.cpp \
