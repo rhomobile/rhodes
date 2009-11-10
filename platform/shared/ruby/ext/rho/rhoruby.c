@@ -197,6 +197,43 @@ VALUE getnil() {
 	return Qnil;
 }
 
+typedef void rho_eachstr_func(const char*, const char*, void*);
+struct CHashEnumData
+{
+    void* data;
+    rho_eachstr_func *func;
+};
+
+static int
+hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+{
+    const char* szValue = "";
+    const char* szKey = "";
+
+    if ( value != 0 && value != Qnil )
+    {
+        VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
+        szValue = RSTRING_PTR(strVal);
+    }
+    if ( key != 0 && key != Qnil )
+    {
+        VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
+        szKey = RSTRING_PTR(strKey);
+    }
+
+    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    return ST_CONTINUE;
+}
+
+void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
+{
+    struct CHashEnumData enumData;
+    enumData.data = data;
+    enumData.func = func;
+
+    rb_hash_foreach(hash, hash_each, &enumData);
+}
+
 VALUE rho_ruby_create_array()
 {
     return rb_ary_new();
