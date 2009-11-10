@@ -6,7 +6,9 @@ else
 TARGET_NAME :=
 endif
 
-PRE_OUTPUT_DIR         := obj/$(TARGET_NAME)$(COMPILER_NAME)
+ifeq ($(PRE_OUTPUT_DIR),)
+  PRE_OUTPUT_DIR         := obj/$(TARGET_NAME)$(COMPILER_NAME)
+endif
 OUTPUT_DIR             := $(PRE_OUTPUT_DIR)/so$(EXTRA_DIRS)
 OUTPUT_DIR_DBG         := $(PRE_OUTPUT_DIR)/so_g$(EXTRA_DIRS)
 OUTPUT_DIR_STLDBG      := $(PRE_OUTPUT_DIR)/so_stlg$(EXTRA_DIRS)

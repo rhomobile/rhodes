@@ -67,6 +67,12 @@ def cc_link(libname, objects)
   return $? == 0 ? true : false
 end
 
+def cc_clean(name)
+  [$objdir[name], $libname[name]].each do |x|
+    rm_rf x if File.exists? x
+  end
+end
+
 namespace "config" do
   task :android => ["config:common"] do
     $config["platform"] = "android"
@@ -137,11 +143,11 @@ namespace "config" do
 
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
-    native_libs = ["sqlite", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs = ["sqlite", "stlport", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
     $objdir = {}
     $libname = {}
-    native_libs.each do |x|
+    $native_libs.each do |x|
       $objdir[x] = $bindir + "/libs/lib" + x
       $libname[x] = $bindir + "/libs/lib" + x + ".a"
     end
@@ -214,7 +220,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      File.read(File.join $builddir, "libruby_build.files").each do |f|
+      File.read(File.join($builddir, "libruby_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -231,7 +237,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
 
       objects = []
-      File.read(File.join $builddir, "libjson_build.files").each do |f|
+      File.read(File.join($builddir, "libjson_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -245,13 +251,15 @@ namespace "build" do
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/../.."
 
-      File.read(File.join $builddir, "libshttpd_build.files").each do |f|
+      File.read(File.join($builddir, "libshttpd_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libstlport => "config:android" do
+      objdir = $objdir["stlport"]
+      libname = $libname["stlport"]
       args = []
       args << "-C"
       args << $shareddir + "/stlport/build/lib"
@@ -259,12 +267,13 @@ namespace "build" do
       args << "android.mak"
       args << "NDK_DIR=#{$androidndkpath}"
       args << "NDK_HOST=#{$ndkhost}"
+      args << "PRE_OUTPUT_DIR=#{objdir}"
       args << "release-static"
       puts Jake.run("make", args)
       unless $? == 0
         exit 1
       end
-      cp_r $shareddir + "/stlport/build/lib/obj/arm-linux-gcc/so/libstlport.a", $bindir + "/libs"
+      cp_r File.join(objdir, "so", "libstlport.a"), libname
     end
 
     task :librholog => "config:android" do
@@ -276,7 +285,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}/.."
 
-      File.read(File.join $builddir, "librholog_build.files").each do |f|
+      File.read(File.join($builddir, "librholog_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -291,7 +300,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}"
 
-      File.read(File.join $builddir, "librhomain_build.files").each do |f|
+      File.read(File.join($builddir, "librhomain_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -307,7 +316,7 @@ namespace "build" do
       args << "-I#{srcdir}"
 
       objects = []
-      File.read(File.join $builddir, "librhocommon_build.files").each do |f|
+      File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -324,7 +333,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      File.read(File.join $builddir, "librhodb_build.files").each do |f|
+      File.read(File.join($builddir, "librhodb_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -341,7 +350,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      File.read(File.join $builddir, "librhosync_build.files").each do |f|
+      File.read(File.join($builddir, "librhosync_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -621,37 +630,11 @@ namespace "clean" do
       rm_rf $srcdir
       rm_rf $libs
     end
-    task :libshttpd => "config:android" do
-      rm_rf [$objdir["shttpd"], $libname["shttpd"]]
+    task :libs => "config:android" do
+      $native_libs.each do |l|
+        cc_clean l
+      end
     end
-    task :libjson => "config:android" do
-      rm_rf [$objdir["json"], $libname["json"]]
-    end
-    task :libruby => "config:android" do
-      rm_rf [$objdir["ruby"], $libname["ruby"]]
-    end
-    task :libsqlite => "config:android" do
-      rm_rf [$objdir["sqlite"], $libname["sqlite"]]
-    end
-    task :libstlport => "config:android" do
-      rm_rf $shareddir + "/stlport/build/lib/obj"
-    end
-    task :librhodb => "config:android" do
-      rm_rf [$objdir["rhodb"], $libname["rhodb"]]
-    end
-    task :librhosync => "config:android" do
-      rm_rf [$objdir["rhosync"], $libname["rhosync"]]
-    end
-    task :librholog => "config:android" do
-      rm_rf [$objdir["rholog"], $libname["rholog"]]
-    end
-    task :librhocommon => "config:android" do
-      rm_rf [$objdir["rhocommon"], $libname["rhocommon"]]
-    end
-    task :librhomain => "config:android" do
-      rm_rf [$objdir["rhomain"], $libname["rhomain"]]
-    end
-    task :libs => [:librhocommon, :librhomain, :librhosync, :librhodb, :libstlport, :libshttpd, :libjson, :libruby, :libsqlite]
 #    desc "clean android"
     task :all => [:assets,:libs,:files]
   end
