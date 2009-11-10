@@ -182,7 +182,8 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
-
+      chdir startdir
+      
       create_manifest
       
       cp   compileERB, $srcdir
