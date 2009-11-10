@@ -1,11 +1,5 @@
 package com.rhomobile.rhodes.camera;
 
-import java.io.IOException;
-
-import com.rho.net.IHttpConnection;
-import com.rhomobile.rhodes.AndroidHttpConnection;
-import com.rhomobile.rhodes.http.HttpHeader;
-
 public class CameraRunnable implements Runnable {
 	private String loadUrl;
 	private String loadImgUrl;
@@ -21,6 +15,7 @@ public class CameraRunnable implements Runnable {
 	}
 
 	public void run() {
+		/*
 		IHttpConnection connection = null;
 
 		HttpHeader headers = new HttpHeader();
@@ -48,7 +43,7 @@ public class CameraRunnable implements Runnable {
 					e.printStackTrace();
 				}
 		}
-
+		*/
 	}
 
 };
