@@ -436,7 +436,7 @@ void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink 
     }
 }
 
-extern "C" static void
+extern "C" void
 menu_iter(const char* szLabel, const char* szLink, void* pThis)
 {
     ((CRhodesApp*)pThis)->addViewMenuItem(szLabel, szLink );
