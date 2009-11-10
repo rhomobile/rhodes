@@ -47,6 +47,9 @@ template<>  inline String convertToStringA<StringW>( const StringW& strValue ){
 }
 
 inline void convertToStringW( const char* szValue, StringW& res ){ 
+#ifdef OS_ANDROID
+	res = szValue;
+#else
     int nSize = mbstowcs( NULL, szValue, 0 );
     if ( nSize >= 0 ){
         res.resize(nSize);
@@ -55,6 +58,7 @@ inline void convertToStringW( const char* szValue, StringW& res ){
             res[nRes] = 0;
         }
     }
+#endif
 }
 
 inline StringW convertToStringW( const String& str )

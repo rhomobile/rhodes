@@ -105,9 +105,9 @@ class Jake
       chdir wd  
     end
     
-    puts "PWD:" + pwd
-    puts "CMD:" + command
-    puts "ARGS:" + argstr
+    puts "PWD: " + pwd
+    puts "CMD: " + command
+    puts "ARGS: " + argstr
     
     command = command + " " + argstr
     if hideerrors
