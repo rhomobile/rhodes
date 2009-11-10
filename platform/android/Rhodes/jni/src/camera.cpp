@@ -5,13 +5,11 @@
 
 RHO_GLOBAL void take_picture(char* callback_url)
 {
-	// TODO:
-	RHO_ABORT("Not implemented");
+    // TODO:
 }
 
 RHO_GLOBAL void choose_picture(char* callback_url)
 {
-	// TODO:
-	RHO_ABORT("Not implemented");
+    // TODO:
 }
 

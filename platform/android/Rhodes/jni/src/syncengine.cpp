@@ -5,7 +5,6 @@
 
 RHO_GLOBAL void rho_sync_create()
 {
-	// TODO:
-	RHO_ABORT("Not implemented");
+    // TODO:
 }
 
