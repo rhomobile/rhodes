@@ -199,7 +199,7 @@ function pinf(platform,es,name,vendor) {
 	fill_copyfiles_sections(es,f);
 	p("");
 	p("[Shortcuts]");
-	p(name+",0,\"rhodes.exe\",%CE11%");
+	p("\""+name+"\",0,\"rhodes.exe\",%CE11%");
 	p("");
 	p("[RegKeys]");
 	p("");
