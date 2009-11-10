@@ -144,7 +144,7 @@ namespace "config" do
 
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
-    $native_libs = ["sqlite", "stlport", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs = ["sqlite", "curl", "stlport", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
     $objdir = {}
     $libname = {}
@@ -221,6 +221,28 @@ namespace "build" do
       libname = $libname["sqlite"]
 
       cc_compile File.join(srcdir, "sqlite3.c"), objdir, ["-I#{srcdir}"] or exit 1
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libcurl => "config:android" do
+      #export PATH=/opt/android/android-ndk-1.6_r1/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
+      #export CC=arm-eabi-gcc
+      #export CPP=arm-eabi-cpp
+      #export CFLAGS="--sysroot /opt/android/android-ndk-1.6_r1/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #export CPPFLAGS="--sysroot /opt/android/android-ndk-1.6_r1/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
+
+      srcdir = File.join $shareddir, "curl", "lib"
+      objdir = $objdir["curl"]
+      libname = $libname["curl"]
+      args = []
+      args << "-DHAVE_CONFIG_H"
+      args << "-I#{srcdir}/../include"
+      args << "-I#{srcdir}"
+
+      File.read(File.join($builddir, "libcurl_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -372,7 +394,7 @@ namespace "build" do
       cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
  #   desc "Build Rhodes for android"
     task :rhodes => [:rhobundle, :libs] do
