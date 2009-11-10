@@ -80,6 +80,7 @@ void CRhodesApp::run()
     rho_sync_create();
     RhoRubyInitApp();
     callAppActiveCallback();
+    rho_ruby_activateApp();
 
     navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
@@ -153,8 +154,6 @@ void CRhodesApp::callAppActiveCallback()
         return;
 
     new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );*/
-
-    rho_ruby_activateApp();
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
