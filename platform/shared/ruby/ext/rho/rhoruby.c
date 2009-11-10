@@ -197,7 +197,7 @@ VALUE getnil() {
 	return Qnil;
 }
 
-typedef void rho_eachstr_func(const char*, const char*, void*);
+//typedef void rho_eachstr_func(const char*, const char*, void*);
 struct CHashEnumData
 {
     void* data;
