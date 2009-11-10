@@ -1,0 +1,8 @@
+core*
+d_obj
+obj
+eh_test
+*.exp
+*.lib
+*.pdb
+*.idb

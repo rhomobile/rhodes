@@ -22,17 +22,74 @@ def generate_rjava
   Rake::Task["build:android:rjava"].execute
 end
 
+def cc_deps(filename)
+  # TODO: implement dependencies
+  []
+end
+
+def cc_compile(filename, objdir, additional = nil)
+  filename.chomp!
+  objname = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".o")
+
+  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename)
+
+  mkdir_p objdir unless File.directory? objdir
+
+  if filename =~ /\.[cC]$/
+    ccbin = $gccbin
+  elsif filename =~ /.[cC]([cC]|[xXpP][xXpP])$/
+    ccbin = $gppbin
+  end
+
+  args = []
+  args << "--sysroot"
+  args << $ndksysroot
+  args << "-fPIC"
+  args << "-mandroid"
+  args << "-DANDROID"
+  args << "-DOS_ANDROID"
+  args += additional if additional.is_a? Array and not additional.empty?
+  args << "-c"
+  args << filename
+  args << "-o"
+  args << objname
+  puts Jake.run(ccbin, args)
+  return $? == 0 ? true : false
+end
+
+def cc_link(libname, objects)
+  return true if FileUtils.uptodate? libname, objects
+  args = []
+  args << "crs"
+  args << libname
+  args += objects
+  puts Jake.run($arbin, args)
+  return $? == 0 ? true : false
+end
+
+def cc_clean(name)
+  [$objdir[name], $libname[name]].each do |x|
+    rm_rf x if File.exists? x
+  end
+end
+
 namespace "config" do
   task :android => ["config:common"] do
     $config["platform"] = "android"
 
+    # Here is place were android platform should be specified.
+    # For complete list of android API levels and its mapping to
+    # market names (such as "Android-1.5" etc) see output of
+    # command "android list targets"
+    ANDROID_API_LEVEL = 3
+
     $java = $config["env"]["paths"]["java"]
     $androidsdkpath = $config["env"]["paths"]["android"]
-    $androidplatform = "android-1.5"
-    $avdname = "rhoAndroid15"
+    $androidndkpath = $config["env"]["paths"]["android-ndk"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
+    $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, "target")
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
@@ -43,17 +100,25 @@ namespace "config" do
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
 
+    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0"}
+    $androidtargets = {2 => 1, 3 => 2, 4 => 3, 5 => 4}
+
+    $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
+    $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
+
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
+      $ndkhost = "windows"
     else
       #XXX make these absolute
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
       $bat_ext = ""
       $exe_ext = ""
       $path_separator = ":"
+      $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
     end
 
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
@@ -69,11 +134,28 @@ namespace "config" do
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
 
+    $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-4.2.1"
+    $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
+
+    $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
+    $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
+    $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
+
+    $stlport_includes = File.join $shareddir, "stlport", "stlport"
+
+    $native_libs = ["sqlite", "stlport", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+
+    $objdir = {}
+    $libname = {}
+    $native_libs.each do |x|
+      $objdir[x] = $bindir + "/libs/lib" + x
+      $libname[x] = $bindir + "/libs/lib" + x + ".a"
+    end
+
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
     mkdir_p $libs if not File.exists? $libs
-
 
   end
 end
@@ -115,6 +197,169 @@ namespace "build" do
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
+    end
+
+    task :libsqlite => "config:android" do
+      srcdir = File.join $shareddir, "sqlite"
+      objdir = $objdir["sqlite"]
+      libname = $libname["sqlite"]
+
+      cc_compile File.join(srcdir, "sqlite3.c"), objdir, ["-I#{srcdir}"] or exit 1
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libruby => "config:android" do
+      srcdir = File.join $shareddir, "ruby"
+      objdir = $objdir["ruby"]
+      libname = $libname["ruby"]
+      args = []
+      args << "-I#{srcdir}/include"
+      args << "-I#{srcdir}/linux"
+      args << "-I#{srcdir}/generated"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join($builddir, "libruby_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libjson => "config:android" do
+      srcdir = File.join $shareddir, "json"
+      objdir = $objdir["json"]
+      libname = $libname["json"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+
+      objects = []
+      File.read(File.join($builddir, "libjson_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libshttpd => "config:android" do
+      srcdir = File.join $shareddir, "shttpd", "src"
+      objdir = $objdir["shttpd"]
+      libname = $libname["shttpd"]
+      args = []
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/../.."
+
+      File.read(File.join($builddir, "libshttpd_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libstlport => "config:android" do
+      objdir = $objdir["stlport"]
+      libname = $libname["stlport"]
+      args = []
+      args << "-C"
+      args << $shareddir + "/stlport/build/lib"
+      args << "-f"
+      args << "android.mak"
+      args << "NDK_DIR=#{$androidndkpath}"
+      args << "NDK_HOST=#{$ndkhost}"
+      args << "PRE_OUTPUT_DIR=#{objdir}"
+      args << "release-static"
+      puts Jake.run("make", args)
+      unless $? == 0
+        exit 1
+      end
+      cp_r File.join(objdir, "so", "libstlport.a"), libname
+    end
+
+    task :librholog => "config:android" do
+      srcdir = File.join $shareddir, "logging"
+      objdir = $objdir["rholog"]
+      libname = $libname["rholog"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}/.."
+
+      File.read(File.join($builddir, "librholog_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :librhomain => "config:android" do
+      srcdir = $shareddir
+      objdir = $objdir["rhomain"]
+      libname = $libname["rhomain"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+
+      File.read(File.join($builddir, "librhomain_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :librhocommon => "config:android" do
+      srcdir = $shareddir
+      objdir = $objdir["rhocommon"]
+      libname = $libname["rhocommon"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+
+      objects = []
+      File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :librhodb => "config:android" do
+      srcdir = File.join $shareddir, "db"
+      objdir = $objdir["rhodb"]
+      libname = $libname["rhodb"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join($builddir, "librhodb_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :librhosync => "config:android" do
+      srcdir = File.join $shareddir, "sync"
+      objdir = $objdir["rhosync"]
+      libname = $libname["rhosync"]
+      args = []
+      args << "-D__NEW__"
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}"
+      args << "-I#{srcdir}/.."
+      args << "-I#{srcdir}/../sqlite"
+
+      File.read(File.join($builddir, "librhosync_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+      end
+      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+    end
+
+    task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+
+    task :jnirhodes => :libs do
+      
     end
 
 #    desc "Build RubyVM for android"
@@ -345,7 +590,7 @@ namespace "run" do
     puts `#{$adb} start-server`
     sleep 5
 
-    system("#{$androidbin} create avd --name #{$avdname} --target 2 --sdcard 32M --skin HVGA")
+    system("#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA")
 
     Thread.new { system("#{$emulator} -avd #{$avdname}") }
 
@@ -385,8 +630,13 @@ namespace "clean" do
       rm_rf $srcdir
       rm_rf $libs
     end
+    task :libs => "config:android" do
+      $native_libs.each do |l|
+        cc_clean l
+      end
+    end
 #    desc "clean android"
-    task :all => [:assets,:files]
+    task :all => [:assets,:libs,:files]
   end
 end
 

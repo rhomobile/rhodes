@@ -74,7 +74,7 @@ public class Platform extends Activity {
 	public String getHomeUrl() {
 		return HOME_URL;
 	}
-	
+		
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));
@@ -84,12 +84,18 @@ public class Platform extends Activity {
 		//stopServices();
 		Process.killProcess(Process.myPid());
 	}
+	
+	public native void startRhodesApp();
+	public native void stopRhodesApp();
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		// Load native implementation of rhodes
+		System.loadLibrary("rhodes");
+		
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -146,15 +152,6 @@ public class Platform extends Activity {
 			}
 
 		});
-
-		RhodesInstance.setInstance(this);
-		
-        try{
-		    RhoLogger.InitRhoLog();
-		}catch(Exception exc)
-        {
-            //TODO: we should stop if InitRhoLog failed
-        }
 		
 		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
@@ -176,6 +173,20 @@ public class Platform extends Activity {
 		}
 		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
 		
+		Log.i(LOG_TAG, "Loading...");
+		webView.loadUrl("file:///android_asset/apps/loading.html");
+
+		startRhodesApp();
+		
+		RhodesInstance.setInstance(this);
+		
+        try{
+		    RhoLogger.InitRhoLog();
+		}catch(Exception exc)
+        {
+            //TODO: we should stop if InitRhoLog failed
+        }
+		
 		/*
 		try {
 			networkStateTracker = new NetworkStateTracker(RhodesInstance.getInstance());
@@ -184,9 +195,6 @@ public class Platform extends Activity {
 		}
 		*/
 		
-		Log.i(LOG_TAG, "Loading...");
-		webView.loadUrl("file:///android_asset/apps/loading.html");
-
 		HttpServer.DEFAULT_PORT = HttpServer.findFreePort(); 
 		
 		HOME_URL = "http://127.0.0.1:" + HttpServer.DEFAULT_PORT.toString();

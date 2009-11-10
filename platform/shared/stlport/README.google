@@ -1,0 +1,97 @@
+URL: http://sourceforge.net/projects/stlport
+Version: 5.1.4
+License: notice
+License File: LICENSE
+
+Description:
+This is STLport version 5.1.4, retrieved on Jan 17th 2008. See
+http://www.stlport.org
+
+Local Modifications:
+
+Fixed some compiler warnings.
+
+Added support for Android.
+
+Added #define options to allow using a subset of iostreams without
+requiring STLport to be built as a library.
+
+Changed the following files:
+
+_alloc.h:
+	Option to use simple node allocator so we don't need
+	out-of-line functions built.
+
+_cstdlib.h:
+	#if out the C library functions not present on Android.
+
+_cwchar.h:
+	#if out wide character types not defined by Android headers.
+
+_iostream.c:
+	Fix warning about ambiguous expression order.
+
+_num_put.c:
+	Fix warning about ambiguous expression order.
+
+_range_errors.c:
+	Tweak #ifs to more precisely specify when not to use
+	externally defined range error functions so we don't
+	need out-of-lines compiled separately.
+
+c_locale.h:
+	Don't #include broken Android wchar.h. Used the BSD _Locale_*
+	definitions as Android uses a BSD derived ctype.h.
+
+char_traits.h:
+	Define streamoff type for Android.
+
+_android.h:
+	Android platform configuration defines.
+
+_gcc.h:
+	Option to prevent uncaught_exception and unexpected_exception
+	being out-of-lined.
+
+_system.h:
+	Added Android platform.
+
+cstring:
+	#if out missing C library functions on Android.
+
+Added support for Symbian, based on Marco Jez's port:
+ http://marcoplusplus.blogspot.com/
+ 
+This patch will be in the official STLPort from release 5.1.5 on.
+
+Detailed changes:
+
+num_get_float.cpp:
+  modified the #define for unsigned int64 so that it handles the Symbian case.
+  
+_system.h:
+  added defines to include the correct config files for Symbian.
+
+features.h:
+  added a define guard around _STLP_WIN32 to avoid setting it when cross 
+  compiling.
+
+stl_gcce.h:
+  config file for gcce and armcc, taken as-is from the Symbian port.
+
+stl_winscw.h:
+  config file for winscw, taken as-is from the Symbian port.
+
+stl_symbian.h:
+  Symbian platform configuration defines. Added some defines to avoid building
+  the library (the last define is new, see below):
+  _STLP_USE_NO_EXTERN_RANGE_ERRORS
+  _STLP_USE_SIMPLE_NODE_ALLOC
+  _STLP_DONT_THROW_RANGE_ERRORS
+  _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
+  _STLP_USE_NEWALLOC
+  _STLP_INLINE_EXCEPTION_CLASS
+  
+_exception.h:
+  used the new STLP_INLINE_EXCEPTION_CLASS define to avoid having missing
+  symbols if we don't compile as a library.
