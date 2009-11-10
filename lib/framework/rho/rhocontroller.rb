@@ -17,8 +17,9 @@ module Rho
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       res = send req['action'].nil? ? default_action : req['action']
-      application.set_menu(@menu)
+      application.set_menu(@menu, @back_action)
   	  @menu = nil
+  	  @back_action = nil;
   	  res
     end
 

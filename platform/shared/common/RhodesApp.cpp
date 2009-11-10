@@ -422,6 +422,37 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
 	return strRes;
 }
 
+void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink )
+{
+    if ( strLabel.length() == 0 )
+        return;
+
+    synchronized(m_mxViewMenuItems)
+    {
+        m_hashViewMenuItems.put(strLabel, strLink);
+
+        if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
+            m_strAppBackUrl = canonicalizeRhoUrl(strLink);
+    }
+}
+
+extern "C" static void
+menu_iter(const char* szLabel, const char* szLink, void* pThis)
+{
+    ((CRhodesApp*)pThis)->addViewMenuItem(szLabel, szLink );
+}
+
+void CRhodesApp::setViewMenu(unsigned long valMenu)
+{
+    synchronized(m_mxViewMenuItems)
+    {
+        m_hashViewMenuItems.clear();
+        m_strAppBackUrl="";
+    }
+
+    rho_ruby_enum_strhash(valMenu, menu_iter, this);
+}
+
 }
 }
 
