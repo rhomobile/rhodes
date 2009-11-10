@@ -28,6 +28,10 @@ module Rho
     def init_app
       get_app(APPNAME)
     end
+
+    def activate_app
+      get_app(APPNAME).on_activate_app
+    end
     
     # make sure we close the database file
     def self.finalize

@@ -31,8 +31,12 @@ module Rho
 	    end
     end
     
-    def set_menu(menu=nil)
-      disp_menu = menu ? menu : @default_menu
+    def on_activate_app
+    end
+    
+    def set_menu(menu=nil,back_action=nil)
+      disp_menu = menu ? menu.dup : @default_menu.dup
+      disp_menu['Back'] = back_action if back_action
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
 	  end

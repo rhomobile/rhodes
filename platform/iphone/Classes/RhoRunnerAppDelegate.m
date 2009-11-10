@@ -11,7 +11,7 @@
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 //#import "AppManager.h"
-#import "common/RhoConf.h"
+//#import "common/RhoConf.h"
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
@@ -35,20 +35,20 @@
 @synthesize webViewController;
 @synthesize player; 
 @synthesize nativeBar;
-
+/*
 - (NSString*)normalizeUrl:(NSString*)url 
 {
-/*	if([url hasPrefix:@"http://"]) {
-		return url;
-	}
-	NSString* location = [@"http://localhost:8080" stringByAppendingString:[@"/" stringByAppendingPathComponent:url]];
-	return location;*/
+//	if([url hasPrefix:@"http://"]) {
+//		return url;
+//	}
+//	NSString* location = [@"http://localhost:8080" stringByAppendingString:[@"/" stringByAppendingPathComponent:url]];
+//	return location;
 	char* szNormUrl = rho_http_normalizeurl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	NSString* strRes = [NSString stringWithCString:szNormUrl encoding:[NSString defaultCStringEncoding]];
 	rho_http_free(szNormUrl);
 	
 	return strRes;
-}
+}*/
 
 - (void)loadStartPath:(NSString*)location {
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
@@ -61,7 +61,7 @@
 
 - (void)onServerStarted:(NSString*)data {
 	RAWLOG_INFO("Server Started notification is recived");
-	NSString* location = [NSString stringWithCString:rho_rhodesapp_getstarturl() encoding:[NSString defaultCStringEncoding]];
+	NSString* location = [NSString stringWithCString:rho_rhodesapp_getfirststarturl() encoding:[NSString defaultCStringEncoding]];
 	/*
 	//try to restore previous location
 	if ( rho_conf_getBool("KeepTrackOfLastVisitedPage") ) {
@@ -171,14 +171,14 @@
 } 
 
 - (void)onTakePicture:(NSString*) url {
-	[pickImageDelegate setPostUrl:[self normalizeUrl:url]];
+	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
 - (void)onChoosePicture:(NSString*) url {
-	[pickImageDelegate setPostUrl:[self normalizeUrl:url]];
+	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
@@ -186,7 +186,7 @@
 
 - (void)onChooseDateTime:(DateTime*)dateTime {
 	dateTimePickerDelegate.dateTime = dateTime;
-	[dateTimePickerDelegate setPostUrl:[self normalizeUrl:dateTime.url]];
+	[dateTimePickerDelegate setPostUrl:dateTime.url];//[self normalizeUrl:dateTime.url]];
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
 }
@@ -464,14 +464,15 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	if (appStarted) {
-		RhoDelegate* callback = [[RhoDelegate alloc] init];
+	    rho_rhodesapp_callAppActiveCallback();
+/*		RhoDelegate* callback = [[RhoDelegate alloc] init];
 		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
 		if (callbackUrl && strlen(callbackUrl) > 0) {
 			callback.postUrl = [self normalizeUrl:[NSString stringWithCString:callbackUrl
 								  encoding:[NSString defaultCStringEncoding]]];
 			[callback doCallback:@""];
 		}
-		[callback release];
+		[callback release];*/
 	}
 }
 

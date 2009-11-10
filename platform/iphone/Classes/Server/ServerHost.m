@@ -231,6 +231,7 @@ static ServerHost* sharedSH = nil;
 		RAWLOG_INFO("Create Sync");
 		rho_sync_create();
 		RhoRubyInitApp();
+		rho_ruby_activateApp();
 		
 		[self performSelectorOnMainThread:@selector(serverStarted:) 
 							   withObject:NULL waitUntilDone:NO];
@@ -407,8 +408,9 @@ char* webview_current_location() {
 	return (char*)rho_rhodesapp_getcurrenturl();
 }
 
-void webview_set_menu_items(VALUE argv) {
+void webview_set_menu_items(VALUE valMenu) {
 	//TODO: webview_set_menu_items
+	rho_rhodesapp_setViewMenu(valMenu);
 }
 
 void alert_show_popup(char* message) {

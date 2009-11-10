@@ -24,6 +24,8 @@ public class RhoRuby {
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
 	public static final RubyID initApp = RubyID.intern("init_app");
+	public static final RubyID activateApp = RubyID.intern("activate_app");
+	
 //	public static final RubyID getStartPath = RubyID.intern("get_start_path");
 //	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
 	
@@ -123,6 +125,10 @@ public class RhoRuby {
 	
 	public static void RhoRubyInitApp(){
 		RubyAPI.callPublicNoArgMethod(receiver, null, initApp);
+	}
+
+	public static void rho_ruby_activateApp(){
+		RubyAPI.callPublicNoArgMethod(receiver, null, activateApp);
 	}
 	
 	public static void RhoRubyStop(){

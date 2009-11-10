@@ -55,7 +55,7 @@ import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.SimpleFile;
 import com.rho.Version;
-import com.rho.db.DBAdapter;
+//import com.rho.db.DBAdapter;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.net.URI;
@@ -185,8 +185,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	_mainScreen.addCustomMenuItem(label, value);
     }
     
+	private String m_strAppBackUrl ="";
+	
     void resetMenuItems() {
     	_mainScreen.setMenuItems(new Vector());
+    	m_strAppBackUrl = "";
     }
 
     public void postUrl(String url, String body, HttpHeaders headers) {
@@ -226,15 +229,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
    
     void back(){
-    	if ( _history.size() <= 1 )
-    		return;
-
-    	int nPos = _history.size()-2;
-    	String url = (String)_history.elementAt(nPos);
-    	_history.removeElementAt(nPos+1);
-
-    	saveCurrentLocation(url);
+    	String url = m_strAppBackUrl;
+    	if ( url.length() == 0)
+    	{
+	    	if ( _history.size() <= 1 )
+	    		return;
+	
+	    	int nPos = _history.size()-2;
+	    	url = (String)_history.elementAt(nPos);
+	    	_history.removeElementAt(nPos+1);
+    	}else
+    		addToHistory(url,null);
     	
+    	saveCurrentLocation(url);
     	navigateUrl(url);
     }
 
@@ -493,6 +500,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		
 		doStartupWork();
 		
+		//add activate command
+    	//PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(true);
+        //thread.start();                       
+		RhoRuby.rho_ruby_activateApp();
+		
     	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
 
@@ -745,6 +757,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_NONE)) {
     	    	menuItems = null;
     	    } else {
+    	    	if ( label.equalsIgnoreCase("back") )
+    	    		m_strAppBackUrl = value;
+    	    	
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
 				    	String val = getPathForMenuItem(value);
@@ -1297,6 +1312,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
         private String _url;
         private boolean m_bInternalRequest = false;
+        private boolean m_bActivateApp = false;
         
         public void setInternalRequest(boolean b)
         {
@@ -1326,6 +1342,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             	_callback = callback;
         }
 
+        public PrimaryResourceFetchThread(boolean bActivateApp) {
+        	m_bActivateApp = bActivateApp; 
+        }
+        
         static void Create()
         {
         	if ( m_oFetchThread != null )
@@ -1349,6 +1369,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
         void processCommand()
         {
+        	if ( m_bActivateApp )
+        	{
+        		RhoRuby.rho_ruby_activateApp();
+        		return;
+        	}
+        	
     		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
     		
     		if ( m_bInternalRequest )

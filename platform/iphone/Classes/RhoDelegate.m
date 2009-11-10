@@ -11,7 +11,7 @@
 @implementation RhoDelegate
 
 @synthesize postUrl;
-
+/*
 - (void)doCallback:(NSString*)message {
 	// Create post body
 	NSData* postBody = [message dataUsingEncoding:NSUTF8StringEncoding];
@@ -38,6 +38,6 @@
 	[NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
 	
     [pool release];
-}
+}*/
 
 @end
