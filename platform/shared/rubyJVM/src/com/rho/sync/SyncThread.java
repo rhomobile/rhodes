@@ -140,6 +140,8 @@ public class SyncThread extends RhoThread
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 	    LOG.INFO( "Sync engine thread shutdown" );
 		
+	    getDBAdapter().close();
+	    
 	    m_pInstance = null;
 	}
 

@@ -40,6 +40,7 @@ extern HREGNOTIFY g_hNotify;
 #endif
 
 extern "C" int g_rho_net_has_network;
+using namespace rho::common;
 
 CMainWindow::CMainWindow()
 {
@@ -300,7 +301,8 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
     //TODO: show menu on navigate to start page
 	SetRhobundleReloadMenu();
-	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(RHODESAPP().getStartUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate( 
+        const_cast<wchar_t*>(convertToStringW(RHODESAPP().getStartUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 #if 0
@@ -398,7 +400,7 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(RHODESAPP().getOptionsUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(convertToStringW(RHODESAPP().getOptionsUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 
