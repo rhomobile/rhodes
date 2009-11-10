@@ -49,6 +49,7 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 static ID initApp_mid;
+static ID activateApp_mid;
 
 static char* rb_type_to_s(VALUE obj);
 //extern int ruby_thread_set_native(rb_thread_t *th);
@@ -157,6 +158,7 @@ void RhoRubyStart()
 	CONST_ID(framework_mid, "serve");
 	CONST_ID(framework_mid2, "serve_index");
 	CONST_ID(initApp_mid, "init_app");
+	CONST_ID(activateApp_mid, "activate_app");
 
     //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
@@ -169,6 +171,11 @@ void RhoRubyStart()
 void RhoRubyInitApp()
 {
     rb_funcall(framework, initApp_mid, 0);
+}
+
+void rho_ruby_activateApp()
+{
+    rb_funcall(framework, activateApp_mid, 0);
 }
 
 char* RhoRuby_getRhoDBVersion()

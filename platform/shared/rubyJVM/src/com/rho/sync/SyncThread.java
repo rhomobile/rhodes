@@ -140,6 +140,8 @@ public class SyncThread extends RhoThread
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 	    LOG.INFO( "Sync engine thread shutdown" );
 		
+	    getDBAdapter().close();
+	    
 	    m_pInstance = null;
 	}
 
@@ -363,7 +365,8 @@ public class SyncThread extends RhoThread
 			while( nWait < 30000 && getSyncEngine().getDB().isInsideTransaction() )
 				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
 				
-			if (getSyncEngine().getState() != SyncEngine.esNone)
+			//if (getSyncEngine().getState() != SyncEngine.esNone)
+			if ( getSyncEngine().getDB().isInsideTransaction() )	
 			{
 				getSyncEngine().exitSync();
 				getInstance().stop(0);

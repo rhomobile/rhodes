@@ -61,6 +61,13 @@ inline void convertToStringW( const char* szValue, StringW& res ){
 #endif
 }
 
+inline StringW convertToStringW( const String& str )
+{ 
+    StringW res;
+    convertToStringW(str.c_str(), res);
+    return res;
+}
+
 /*template<>  inline void convertFromStringA<StringW>( const char* szValue, StringW& value ){ value = StringW(szValue); }
 template<>  inline String convertToStringA<StringW>( const StringW& value ){ return String(value); }
 

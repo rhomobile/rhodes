@@ -51,7 +51,8 @@ static VALUE db_close(int argc, VALUE *argv, VALUE self){
 	
 	Data_Get_Struct(self, sqlite3 *, ppDB);
 	
-	rc = rho_sync_closeDB();//sqlite3_close(db);
+    //do not close sync db, close it at exit
+	rc = 0;//rho_sync_closeDB();//sqlite3_close(db);
 	
 	return INT2NUM(rc);
 }

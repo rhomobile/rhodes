@@ -40,6 +40,7 @@ extern HREGNOTIFY g_hNotify;
 #endif
 
 extern "C" int g_rho_net_has_network;
+using namespace rho::common;
 
 CMainWindow::CMainWindow()
 {
@@ -300,7 +301,8 @@ LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
     //TODO: show menu on navigate to start page
 	SetRhobundleReloadMenu();
-	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(RHODESAPP().getStartUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate( 
+        const_cast<wchar_t*>(convertToStringW(RHODESAPP().getStartUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 #if 0
@@ -365,7 +367,11 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 //    m_spIWebBrowser2->Refresh();
 
 //	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
-    Navigate2(const_cast<wchar_t*>(RHODESAPP().getCurrentUrlW().c_str()));
+
+    rho::StringW strCurrentUrlW;
+    rho::common::convertToStringW(RHODESAPP().getCurrentUrl().c_str(), strCurrentUrlW);
+    Navigate2(const_cast<wchar_t*>(strCurrentUrlW.c_str()));
+
 //	free(wcurl);
     return 0;
 }
@@ -394,7 +400,7 @@ LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(RHODESAPP().getOptionsUrlW().c_str()), NULL, NULL, NULL, NULL);
+	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(convertToStringW(RHODESAPP().getOptionsUrl()).c_str()), NULL, NULL, NULL, NULL);
 	return 0;
 }
 
@@ -612,7 +618,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
 	
-	BOOL store_current_url = !m_bLoading;
+	//BOOL store_current_url = !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -632,8 +638,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 
 	m_current_url = wce_wctomb(url);*/
 	
-	if( store_current_url ) 
-        RHODESAPP().keepLastVisitedUrlW(url);
+	//if( store_current_url ) 
+    //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
