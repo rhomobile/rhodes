@@ -1550,7 +1550,7 @@ static VALUE mSyncEngine;
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
-	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep);
+	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
@@ -1812,6 +1812,8 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
   char *arg3 = (char *) 0 ;
   bool arg4 ;
   int arg5 ;
+  char *arg6 = (char *) 0 ;
+  char *arg7 = (char *) 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int res2 ;
@@ -1824,9 +1826,15 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
   int ecode4 = 0 ;
   int val5 ;
   int ecode5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
   
-  if ((argc < 5) || (argc > 5)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  if ((argc < 7) || (argc > 7)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 7)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
@@ -1853,13 +1861,27 @@ _wrap_dosearch_source(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "dosearch_source" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = (int)(val5);
-  dosearch_source(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
+  res6 = SWIG_AsCharPtrAndSize(argv[5], &buf6, NULL, &alloc6);
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "dosearch_source" "', argument " "6"" of type '" "char const *""'");
+  }
+  arg6 = (char *)(buf6);
+  res7 = SWIG_AsCharPtrAndSize(argv[6], &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "dosearch_source" "', argument " "7"" of type '" "char const *""'");
+  }
+  arg7 = (char *)(buf7);
+  dosearch_source(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5,(char const *)arg6,(char const *)arg7);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
   return Qnil;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
   return Qnil;
 }
 

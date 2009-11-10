@@ -31,6 +31,7 @@ void RhoRubyStart();
 void RhoRubyInitApp();
 //void RhoRubyThreadStart();
 //void RhoRubyThreadStop();
+void rho_ruby_activateApp();
 
 VALUE getnil();	
 VALUE createHash();

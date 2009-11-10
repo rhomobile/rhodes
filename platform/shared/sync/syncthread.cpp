@@ -47,6 +47,9 @@ CSyncThread::~CSyncThread(void)
 {
     m_oSyncEngine.exitSync();
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+
+    getDBAdapter().close();
+
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
@@ -218,9 +221,13 @@ void rho_sync_stop()
 	}
 }
 
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep)
+void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+    const char* callback, const char* callback_params)
 {
     rho_sync_stop();
+    if ( callback && *callback )
+        CSyncThread::getSyncEngine().getNotify().setSearchNotification(source_id, callback, callback_params ? callback_params : "");
+
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id,sync_changes,nProgressStep) );
 }	
 

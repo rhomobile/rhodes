@@ -45,7 +45,11 @@ public class HsqlDBResult implements IDBResult
 	
 	public String getColName(int nCol){
 		Result.ResultMetaData md = m_result.metaData;
-		return md.colNames[nCol].toLowerCase();
+		if ( md.tableNames[nCol] != null && md.tableNames[nCol].length() > 0 )
+			return md.colNames[nCol].toLowerCase();
+
+		//AS alias
+		return md.colNames[nCol];
 	}
 	
 	public Result getResult(){

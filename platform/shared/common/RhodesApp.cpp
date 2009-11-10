@@ -77,11 +77,12 @@ void CRhodesApp::run()
     initHttpServer();
     RhoRubyStart();
 
-    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
-
     rho_sync_create();
     RhoRubyInitApp();
     callAppActiveCallback();
+    rho_ruby_activateApp();
+
+    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
     while(!m_bExit)
     {
@@ -148,11 +149,11 @@ private:
 
 void CRhodesApp::callAppActiveCallback()
 {
-    String strCallback = RHOCONF().getString("app_did_become_active_callback");
+    /*String strCallback = RHOCONF().getString("app_did_become_active_callback");
     if ( strCallback.length() == 0 )
         return;
 
-    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );
+    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );*/
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
@@ -339,35 +340,8 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl = "http://localhost:";
     m_strHomeUrl += getFreeListeningPort();
 
-    m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
-    convertToStringW(m_strStartUrl.c_str(), m_strStartUrlW);
-
-    m_strOptionsUrl = canonicalizeRhoUrl( RHOCONF().getString("options_path") );
-    convertToStringW( m_strOptionsUrl.c_str(), m_strOptionsUrlW );
-
-    m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
-
     m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
-}
-
-String CRhodesApp::getFirstStartUrl()
-{
-    rho::String strLastPage;
-	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
-    {
-	    strLastPage = RHOCONF().getString("LastVisitedPage");
-	    if (strLastPage.length() > 0)
-            strLastPage = canonicalizeRhoUrl(strLastPage);
-    }
-
-    return strLastPage.length() > 0 ? strLastPage : m_strStartUrl;
-}
-
-void CRhodesApp::keepLastVisitedUrlW(StringW strUrlW)
-{
-    m_strCurrentUrlW = strUrlW;
-    keepLastVisitedUrl(convertToStringA(strUrlW));
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -375,6 +349,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 	LOG(INFO) + "Current URL: " + strUrl;
 	
 	m_strCurrentUrl = strUrl;
+
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
@@ -389,19 +364,40 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
     }
 }
 
+const String& CRhodesApp::getStartUrl()
+{
+    m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
+    return m_strStartUrl;
+}
+
+const String& CRhodesApp::getOptionsUrl()
+{
+    m_strOptionsUrl = canonicalizeRhoUrl( RHOCONF().getString("options_path") );
+    return m_strOptionsUrl;
+}
+
+const String& CRhodesApp::getCurrentUrl()
+{ 
+    return m_strCurrentUrl; 
+}
+
+const String& CRhodesApp::getFirstStartUrl()
+{ 
+    m_strFirstStartUrl = getStartUrl();
+	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
+    {
+	    rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
+	    if (strLastPage.length() > 0)
+            m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
+    }
+
+    return m_strFirstStartUrl; 
+}
+
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {
+    m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
 	return m_strRhobundleReloadUrl;
-}
-
-const StringW& CRhodesApp::getStartUrlW()
-{
-    return m_strStartUrlW;
-}
-
-const StringW& CRhodesApp::getOptionsUrlW()
-{
-    return m_strOptionsUrlW;
 }
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
@@ -516,6 +512,11 @@ void rho_rhodesapp_destroy()
 	rho::common::CRhodesApp::Destroy();
 }
 
+const char* rho_rhodesapp_getfirststarturl()
+{
+    return RHODESAPP().getFirstStartUrl().c_str();
+}
+
 const char* rho_rhodesapp_getstarturl()
 {
     return RHODESAPP().getStartUrl().c_str();
@@ -555,6 +556,11 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+}
+
+void rho_rhodesapp_callAppActiveCallback()
+{
+    return RHODESAPP().callAppActiveCallback();
 }
 
 }
