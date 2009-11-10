@@ -1,5 +1,6 @@
+#include <net/CURLNetRequest.h>
+
 #include "RhoClassFactory.h"
-#include "NetRequest.h"
 #include "RhoThreadImpl.h"
 #include "SystemInfoImpl.h"
 
@@ -10,8 +11,7 @@ namespace common
 
 net::INetRequest *CRhoClassFactory::createNetRequest()
 {
-    //return new net::CNetRequest();
-    return 0;
+    return new net::CURLNetRequest();
 }
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
