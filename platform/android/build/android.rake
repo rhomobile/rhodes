@@ -225,11 +225,12 @@ namespace "build" do
     end
 
     task :libcurl => "config:android" do
-      #export PATH=/opt/android/android-ndk-1.6_r1/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
+      # Steps to get curl_config.h from fresh libcurl sources:
+      #export PATH=<ndkroot>/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
       #export CC=arm-eabi-gcc
       #export CPP=arm-eabi-cpp
-      #export CFLAGS="--sysroot /opt/android/android-ndk-1.6_r1/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
-      #export CPPFLAGS="--sysroot /opt/android/android-ndk-1.6_r1/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #export CFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #export CPPFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
       srcdir = File.join $shareddir, "curl", "lib"
