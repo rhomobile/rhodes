@@ -207,10 +207,12 @@ namespace "build" do
       args << "cf"
       args << "../RhoBundle.jar"
       args << "."
-      puts Jake.run($jarbin, args, $bindir + "/RhoBundle")
+      puts Jake.run($jarbin, args, $srcdir)
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
+
+      rm_rf $srcdir
     end
 
     task :libsqlite => "config:android" do
@@ -372,42 +374,6 @@ namespace "build" do
 
     task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
-#    desc "Build RubyVM for android"
-    task :rubyvm => "config:android" do
-      javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
-      cp_r "platform/shared/rubyJVM", $bindir
-
-      rm_rf $tmpdir + "/RubyVM"
-      mkdir_p $tmpdir + "/RubyVM"
-      
-      args = []
-      args << "-g"
-      args << "-d"
-      args << '"' +$tmpdir + '/RubyVM"'
-      args << "-source"
-      args << "1.6"
-      args << "-target"
-      args << "1.6"
-      args << "-nowarn"
-      args << "-encoding"
-      args << "latin1"
-      args << "@#{$builddir}/RubyVM_build.files"
-      puts Jake.run(javac,args)
-      unless $? == 0
-        puts "Error compiling java code"
-        exit 1
-      end
-
-      args = ["cf","../../RubyVM.jar", "#{$all_files_mask}"]
-      puts Jake.run($jarbin, args, "#{$tmpdir}/RubyVM/")
-      unless $? == 0
-        puts "Error running jar"
-        exit 1
-      end
-
-      cp_r $bindir + "/RubyVM.jar", $libs
-
-    end
  #   desc "Build Rhodes for android"
     task :rhodes => [:rhobundle] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
@@ -448,7 +414,7 @@ namespace "build" do
       args << "1.6"
       args << "-nowarn"
       args << "-classpath"
-      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RubyVM.jar" + $path_separator + "#{$libs}/RhoBundle.jar"
+      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RhoBundle.jar"
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
       unless $? == 0
@@ -482,7 +448,6 @@ namespace "package" do
     outfile = "#{$bindir}/classes.dex"
     args << "--output=#{outfile}"
     args << "#{$bindir}/Rhodes.jar"
-    args << "#{$bindir}/RubyVM.jar"
     args << "#{$bindir}/RhoBundle.jar"
     puts Jake.run($dx,args)
     unless $? == 0
