@@ -19,6 +19,7 @@
 //#include "geolocation.h"
 //#include "SyncEngine.h"
 #include "sync/syncthread.h"
+#include "common/RhodesApp.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Dispatcher"
@@ -215,7 +216,9 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 
 int ServeIndex(HttpContextRef context, char* index_name) {
 	RAWLOG_INFO("Calling ruby framework to serve index");
-	
+	if ( CFDataGetLength(context->_rcvdBytes) == 0)
+		rho_rhodesapp_keeplastvisitedurl(index_name);
+
 	VALUE val = callServeIndex(index_name);
 	char* res = getStringFromValue(val);
 	if (res) {
@@ -242,6 +245,9 @@ int Dispatch(HttpContextRef context) {
 	char* url = strdup(context->_request->_uri);
 	
 	if( _GetRoute(url, &route) ) {
+		if ( CFDataGetLength(context->_rcvdBytes) == 0)
+			rho_rhodesapp_keeplastvisitedurl(context->_request->_uri);
+		
 		ret = _ExecuteApp(context, &route);
 	}
 	

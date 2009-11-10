@@ -61,7 +61,7 @@
 
 - (void)onServerStarted:(NSString*)data {
 	RAWLOG_INFO("Server Started notification is recived");
-	NSString* location = [NSString stringWithCString:rho_rhodesapp_getstarturl() encoding:[NSString defaultCStringEncoding]];
+	NSString* location = [NSString stringWithCString:rho_rhodesapp_getfirststarturl() encoding:[NSString defaultCStringEncoding]];
 	/*
 	//try to restore previous location
 	if ( rho_conf_getBool("KeepTrackOfLastVisitedPage") ) {
