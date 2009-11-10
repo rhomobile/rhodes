@@ -17,8 +17,6 @@
         <activity android:name="com.rhomobile.rhodes.camera.FileList"></activity>
         <activity android:name="com.rhomobile.rhodes.camera.ImageCapture" android:screenOrientation="landscape"></activity>
         <activity android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen"></activity>
-        <service android:name="com.rhomobile.rhodes.RhoHttpService" />
-        <service android:name="com.rhomobile.rhodes.RhoSyncService" />
     </application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.CAMERA"></uses-permission>

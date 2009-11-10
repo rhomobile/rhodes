@@ -129,6 +129,7 @@ namespace "config" do
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
+    $jarbin = File.join( $java, "jar" + $exe_ext )
     $keystoredir = ENV['HOME'] + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
     $storepass = "81719ef3a881469d96debda3112854eb"
@@ -193,7 +194,20 @@ namespace "build" do
     end
 #    desc "Build RhoBundle for android"
     task :rhobundle => "config:android" do
-      Rake::Task["build:bundle:xruby"].execute
+      #Rake::Task["build:bundle:xruby"].execute
+
+      # Temporarily just unpack archive.
+      # TODO: implement compiling of iseq for android
+      args = []
+      args << "xvf"
+      args << "#{$androidpath}/../../../rhobundle-system-api-samples.tar"
+      puts Jake.run("tar", args, $bindir)
+
+      args = []
+      args << "cf"
+      args << "../RhoBundle.jar"
+      args << "."
+      puts Jake.run($jarbin, args, $bindir + "/RhoBundle")
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
@@ -358,10 +372,6 @@ namespace "build" do
 
     task :libs => [:libsqlite, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
-    task :jnirhodes => :libs do
-      
-    end
-
 #    desc "Build RubyVM for android"
     task :rubyvm => "config:android" do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
@@ -389,7 +399,7 @@ namespace "build" do
       end
 
       args = ["cf","../../RubyVM.jar", "#{$all_files_mask}"]
-      puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/RubyVM/")
+      puts Jake.run($jarbin, args, "#{$tmpdir}/RubyVM/")
       unless $? == 0
         puts "Error running jar"
         exit 1
@@ -399,7 +409,7 @@ namespace "build" do
 
     end
  #   desc "Build Rhodes for android"
-    task :rhodes => [:rubyvm, :rhobundle] do
+    task :rhodes => [:rhobundle] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
       rm_rf $tmpdir + "/Rhodes"
@@ -452,7 +462,7 @@ namespace "build" do
       generate_rjava
 
       args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
-      puts Jake.run($config["env"]["paths"]["java"] + "/jar" + $exe_ext, args, "#{$tmpdir}/Rhodes/")
+      puts Jake.run($jarbin, args, "#{$tmpdir}/Rhodes/")
       unless $? == 0
         puts "Error running jar"
         exit 1
@@ -460,7 +470,7 @@ namespace "build" do
     end
 
     #desc "build all"
-    task :all => [:rubyvm, :rhobundle, :rhodes]
+    task :all => [:rhobundle, :rhodes]
   end
 end
 
