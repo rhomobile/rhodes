@@ -392,7 +392,7 @@ public class SyncNotify {
 		        }
 		    }
 		    if ( bRemoveAfterFire )
-		    	clearSyncNotification(src.getID().intValue());
+		    	clearNotification(src);
 		    
 			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
 			
@@ -404,7 +404,7 @@ public class SyncNotify {
 		        String szData = resp.getCharData();
 		        if ( szData != null && szData.equals("stop") )
 		        {
-		            clearSyncNotification(src.getID().intValue());
+		            clearNotification(src);
 		        }
 		    }
 		
@@ -414,6 +414,19 @@ public class SyncNotify {
 		}
 	}
 
+	void clearNotification(SyncSource src)
+	{
+		LOG.INFO( "Clear notification. Source ID: " + src.getID());
+
+	    synchronized(m_mxSyncNotifications)
+	    {
+	        if ( src.isSearch() )
+	            m_mapSearchNotifications.remove(src.getID());
+	        else
+	            m_mapSyncNotifications.remove(src.getID());
+	    }
+	}
+	
 	void clearSyncNotification(int source_id) 
 	{
 		LOG.INFO( "Clear notification. Source ID: " + source_id );

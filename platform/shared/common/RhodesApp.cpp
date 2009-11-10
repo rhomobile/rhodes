@@ -426,6 +426,37 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
 	return strRes;
 }
 
+void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink )
+{
+    if ( strLabel.length() == 0 )
+        return;
+
+    synchronized(m_mxViewMenuItems)
+    {
+        m_hashViewMenuItems.put(strLabel, strLink);
+
+        if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
+            m_strAppBackUrl = canonicalizeRhoUrl(strLink);
+    }
+}
+
+extern "C" static void
+menu_iter(const char* szLabel, const char* szLink, void* pThis)
+{
+    ((CRhodesApp*)pThis)->addViewMenuItem(szLabel, szLink );
+}
+
+void CRhodesApp::setViewMenu(unsigned long valMenu)
+{
+    synchronized(m_mxViewMenuItems)
+    {
+        m_hashViewMenuItems.clear();
+        m_strAppBackUrl="";
+    }
+
+    rho_ruby_enum_strhash(valMenu, menu_iter, this);
+}
+
 }
 }
 
@@ -554,17 +585,27 @@ const char* rho_rhodesapp_getblobsdirpath()
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
     const char* strError, int bCancel )
 {
-    return RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
+    RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
 }
 
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
-    return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+    RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
 }
 
 void rho_rhodesapp_callAppActiveCallback()
 {
-    return RHODESAPP().callAppActiveCallback();
+    RHODESAPP().callAppActiveCallback();
+}
+
+void rho_rhodesapp_setViewMenu(unsigned long valMenu)
+{
+    RHODESAPP().setViewMenu(valMenu);
+}
+
+const char* rho_rhodesapp_getappbackurl()
+{
+    return RHODESAPP().getAppBackUrl().c_str();
 }
 
 }

@@ -361,7 +361,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
         }
     }
     if ( bRemoveAfterFire )
-        clearSyncNotification(src.getID());
+        clearNotification(src);
 
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
@@ -373,10 +373,23 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
         const char* szData = resp.getCharData();
         if ( szData && strcmp(szData,"stop") == 0)
         {
-            clearSyncNotification(src.getID());
+            clearNotification(src);
         }
     }
 
+}
+
+void CSyncNotify::clearNotification(CSyncSource& src)
+{
+	LOG(INFO) + "Clear notification. Source ID: " + src.getID();
+
+    synchronized(m_mxSyncNotifications)
+    {
+        if ( src.isSearch() )
+            m_mapSearchNotifications.remove(src.getID());
+        else
+            m_mapSyncNotifications.remove(src.getID());
+    }
 }
 
 void CSyncNotify::clearSyncNotification(int source_id) 

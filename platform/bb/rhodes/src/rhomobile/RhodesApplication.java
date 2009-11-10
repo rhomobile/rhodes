@@ -185,8 +185,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	_mainScreen.addCustomMenuItem(label, value);
     }
     
+	private String m_strAppBackUrl ="";
+	
     void resetMenuItems() {
     	_mainScreen.setMenuItems(new Vector());
+    	m_strAppBackUrl = "";
     }
 
     public void postUrl(String url, String body, HttpHeaders headers) {
@@ -226,15 +229,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
    
     void back(){
-    	if ( _history.size() <= 1 )
-    		return;
-
-    	int nPos = _history.size()-2;
-    	String url = (String)_history.elementAt(nPos);
-    	_history.removeElementAt(nPos+1);
-
-    	saveCurrentLocation(url);
+    	String url = m_strAppBackUrl;
+    	if ( url.length() == 0)
+    	{
+	    	if ( _history.size() <= 1 )
+	    		return;
+	
+	    	int nPos = _history.size()-2;
+	    	url = (String)_history.elementAt(nPos);
+	    	_history.removeElementAt(nPos+1);
+    	}else
+    		addToHistory(url,null);
     	
+    	saveCurrentLocation(url);
     	navigateUrl(url);
     }
 
@@ -750,6 +757,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_NONE)) {
     	    	menuItems = null;
     	    } else {
+    	    	if ( label.equalsIgnoreCase("back") )
+    	    		m_strAppBackUrl = value;
+    	    	
 				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
 					public void run() {
 				    	String val = getPathForMenuItem(value);
