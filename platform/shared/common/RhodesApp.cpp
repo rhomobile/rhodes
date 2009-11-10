@@ -581,17 +581,27 @@ const char* rho_rhodesapp_getblobsdirpath()
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
     const char* strError, int bCancel )
 {
-    return RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
+    RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
 }
 
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
-    return RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+    RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
 }
 
 void rho_rhodesapp_callAppActiveCallback()
 {
-    return RHODESAPP().callAppActiveCallback();
+    RHODESAPP().callAppActiveCallback();
+}
+
+void rho_rhodesapp_setViewMenu(unsigned long valMenu)
+{
+    RHODESAPP().setViewMenu(valMenu);
+}
+
+const char* rho_rhodesapp_getappbackurl()
+{
+    return RHODESAPP().getAppBackUrl().c_str();
 }
 
 }

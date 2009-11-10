@@ -109,6 +109,9 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 void rho_rhodesapp_callAppActiveCallback();
 
+void rho_rhodesapp_setViewMenu(unsigned long valMenu);
+const char* rho_rhodesapp_getappbackurl();
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

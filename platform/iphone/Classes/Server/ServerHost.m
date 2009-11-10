@@ -408,8 +408,9 @@ char* webview_current_location() {
 	return (char*)rho_rhodesapp_getcurrenturl();
 }
 
-void webview_set_menu_items(VALUE argv) {
+void webview_set_menu_items(VALUE valMenu) {
 	//TODO: webview_set_menu_items
+	rho_rhodesapp_setViewMenu(valMenu);
 }
 
 void alert_show_popup(char* message) {
