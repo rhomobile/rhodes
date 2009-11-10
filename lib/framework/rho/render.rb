@@ -57,6 +57,7 @@ module Rho
 		end
 
         RhoController.start_objectnotify()
+        @back_action = options[:back] if options[:back]
         
 		@content
     end

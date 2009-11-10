@@ -138,7 +138,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // set initial properties for the control
     //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
     m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
-
+    //m_spIWebBrowser2->put_Offline(VARIANT_TRUE);
 #if defined(_WIN32_WCE)
     // Create a menubar
     // (mbi was initialized above)
@@ -267,7 +267,11 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 //    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
-    if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
+    rho::String strAppUrl = RHODESAPP().getAppBackUrl();
+
+    if ( strAppUrl.length() > 0 )
+    	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(convertToStringW(strAppUrl).c_str()), NULL, NULL, NULL, NULL);
+    else if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
         m_spIWebBrowser2->GoBack();
 
     return 0;

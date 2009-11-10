@@ -253,8 +253,9 @@ extern "C" char* webview_execute_js(char* js) {
     return "";
 }
 
-extern "C" void webview_set_menu_items(VALUE argv) {
-//TODO: Implement me!
+extern "C" void webview_set_menu_items(VALUE valMenu) 
+{
+    RHODESAPP().setViewMenu(valMenu);
 }
 
 extern "C" int webview_active_tab() {

@@ -57,6 +57,9 @@ void rho_ruby_add_to_array(VALUE ar, VALUE val);
 
 char* RhoRuby_getRhoDBVersion();
 
+typedef void rho_eachstr_func(const char*, const char*, void*);
+void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func *, void* data);
+
 #if defined(__cplusplus)
 }
 #endif

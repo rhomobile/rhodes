@@ -90,8 +90,13 @@ char* get_current_location() {
 	[self navigate: url];
 }
 
--(IBAction)goBack {
-	[webView goBack];
+-(IBAction)goBack 
+{
+    const char* szBackUrl = rho_rhodesapp_getappbackurl();
+    if ( szBackUrl && *szBackUrl )
+        [self navigateRedirect:[NSString stringWithCString:szBackUrl encoding:[NSString defaultCStringEncoding]]];    
+    else
+	    [webView goBack];
 }
 
 -(IBAction)goForward {
