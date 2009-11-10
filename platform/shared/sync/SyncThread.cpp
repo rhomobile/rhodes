@@ -47,6 +47,9 @@ CSyncThread::~CSyncThread(void)
 {
     m_oSyncEngine.exitSync();
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+
+    getDBAdapter().close();
+
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
