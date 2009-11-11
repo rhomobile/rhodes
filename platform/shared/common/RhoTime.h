@@ -29,13 +29,34 @@ class CLocalTime : public CBaseTime{
 public:
     CLocalTime(){ setToCurTime(); }
 
-    String toString(){ 
-        char timeBuf[22];
+    String toString(boolean ms = false){ 
+        char timeBuf[40];
+        int nSize = 0;
+        if ( ms )
+        {
+#if !defined( OS_WINDOWS ) && !defined(OS_WINCE)
+            struct timeval tv;
+            struct timezone tz;
+            struct tm* locTime;
+            gettimeofday( &tv, &tz );
+            locTime = localtime(&tv.tv_sec);
 
-        struct tm* locTime = localtime(&m_nativeTime);
+            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                    locTime->tm_hour, locTime->tm_min, locTime->tm_sec, tv.tv_usec );
+#else
+            SYSTEMTIME st; 
+            GetSystemTime( &st ); 
 
-        int nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
-            locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
+            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", st.wMonth, st.wDay, st.wYear,
+                st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
+#endif
+        }else
+        {
+            struct tm* locTime = localtime(&m_nativeTime);
+            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                    locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
+        }
+
         timeBuf[nSize] = 0;
         return String(timeBuf); 
     }
