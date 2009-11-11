@@ -22,33 +22,44 @@ IRhoClassFactory* createClassFactory()
 RHO_GLOBAL void rho_map_location(char* query)
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
 }
 
 RHO_GLOBAL void rho_appmanager_load( void* httpContext, const char* szQuery)
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
 }
 
 RHO_GLOBAL int rho_net_has_network()
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
     return 1;
 }
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
-    // TODO:
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    JNIEnv *env = jnienv();
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(szFolderPath));
 }
 
 RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values)
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
     return 0;
 }
 
 RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 {
     // TODO
+    RHO_NOT_IMPLEMENTED;
 }
 
 RHO_GLOBAL void *rho_nativethread_start()

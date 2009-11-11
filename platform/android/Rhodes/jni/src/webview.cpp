@@ -3,57 +3,74 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
-const char *javaWebViewClass = "com/rhomobile/rhodes/WebView";
-
 RHO_GLOBAL void webview_navigate(char* url, int index)
 {
-    RAWLOG_INFO1("webview_navigate: %s", url);
-    jclass cls = getJNIClass(javaWebViewClass);
-    if (cls == NULL) return;
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "navigate", "(Ljava/lang/String;)V");
-    if (mid == NULL) return;
-    RAWLOG_INFO("webview_navigate: call java callback");
-    jnienv()->CallStaticVoidMethod(cls, mid, jnienv()->NewStringUTF(url));
+    if (!mid) return;
+
+    JNIEnv *env = jnienv();
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
 }
 
 RHO_GLOBAL void webview_refresh()
 {
-    jclass cls = getJNIClass(javaWebViewClass);
-    if (cls == NULL) return;
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "refresh", "()V");
-    if (mid == NULL) return;
+    if (!mid) return;
     jnienv()->CallStaticVoidMethod(cls, mid);
 }
 
 RHO_GLOBAL char* webview_current_location()
 {
+    RHO_LOG_CALLBACK;
     static rho::String curLoc;
 
-    jclass cls = getJNIClass(javaWebViewClass);
-    if (cls == NULL) return NULL;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return NULL;
     jmethodID mid = getJNIClassStaticMethod(cls, "currentLocation", "()Ljava/lang/String;");
-    if (mid == NULL) return NULL;
-    jstring str = (jstring)jnienv()->CallStaticObjectMethod(cls, mid);
-    const char *s = jnienv()->GetStringUTFChars(str, JNI_FALSE);
+    if (!mid) return NULL;
+
+    JNIEnv *env = jnienv();
+    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid);
+    const char *s = env->GetStringUTFChars(str, JNI_FALSE);
     curLoc = s;
-    jnienv()->ReleaseStringUTFChars(str, s);
+    env->ReleaseStringUTFChars(str, s);
     return (char*)curLoc.c_str();
 }
 
 RHO_GLOBAL void webview_set_menu_items(VALUE argv)
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
 }
 
 RHO_GLOBAL int webview_active_tab()
 {
     // TODO:
+    RHO_NOT_IMPLEMENTED;
     return 0;
 }
 
 RHO_GLOBAL char* webview_execute_js(char* js)
 {
-    // TODO:
-    return NULL;
+    RHO_LOG_CALLBACK;
+    static rho::String result;
+
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassStaticMethod(cls, "executeJs", "(Ljava/lang/String;)Ljava/lang/String;");
+    if (!mid) return NULL;
+
+    JNIEnv *env = jnienv();
+    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(js));
+    const char *s = env->GetStringUTFChars(str, JNI_FALSE);
+    result = s;
+    env->ReleaseStringUTFChars(str, s);
+    return (char*)result.c_str();
 }
 
