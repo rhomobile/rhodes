@@ -129,6 +129,7 @@ namespace "config" do
     $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" + $bat_ext )
     $androidbin = File.join( $androidsdkpath, "tools", "android" + $bat_ext )
     $adb = File.join( $androidsdkpath, "tools", "adb" + $exe_ext )
+    $zipalign = File.join( $androidsdkpath, "tools", "zipalign" + $exe_ext )
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
@@ -524,6 +525,7 @@ end
 
 namespace "device" do
   namespace "android" do
+
     desc "Build debug self signed for device"
     task :debug => "package:android" do
       dexfile =  $bindir + "/classes.dex"
@@ -536,8 +538,8 @@ namespace "device" do
         puts "Error building APK file"
         exit 1
       end
-
     end
+
     desc "Build production signed for device"
     task :production => "package:android" do
       dexfile =  $bindir + "/classes.dex"
@@ -593,6 +595,18 @@ namespace "device" do
         puts "Error running jarsigner"
         exit 1
       end
+
+      # puts "Align APK file"
+      # args = []
+      # args << "-c"
+      # args << "-v"
+      # args << "4"
+      # args << '"' + apkfile + '"'
+      # puts Jake.run($zipalign, args)
+      # unless $? == 0
+      #   puts "Error running zipalign"
+      #   exit 1
+      # end
     end
   end
 end
