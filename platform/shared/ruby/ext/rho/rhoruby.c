@@ -132,9 +132,7 @@ void RhoRubyStart()
     Init_DateTimePicker();
     Init_NativeBar();
     Init_RhoSupport();
-    RAWLOG_INFO("Init_MapView...");
     Init_MapView();
-    RAWLOG_INFO("Init_MapView done");
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
@@ -143,7 +141,6 @@ void RhoRubyStart()
     gettimeofday (&start, NULL);
 #endif
 
-    RAWLOG_INFO("require_compiled: rhoframework");
     require_compiled(rb_str_new2("rhoframework"), &framework );
 
 #ifdef ENABLE_RUBY_VM_STAT
@@ -173,9 +170,7 @@ void RhoRubyStart()
 }
 void RhoRubyInitApp()
 {
-    RAWLOG_INFO("Call ruby init_app...");
     rb_funcall(framework, initApp_mid, 0);
-    RAWLOG_INFO("Call ruby init_app done");
 }
 
 void rho_ruby_activateApp()

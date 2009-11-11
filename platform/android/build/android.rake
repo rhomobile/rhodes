@@ -49,6 +49,9 @@ def cc_compile(filename, objdir, additional = nil)
   args << "-DANDROID"
   args << "-DOS_ANDROID"
   args += additional if additional.is_a? Array and not additional.empty?
+  args << "-g"
+  args << "-O0"
+  args << "-D_DEBUG"
   args << "-c"
   args << filename
   args << "-o"

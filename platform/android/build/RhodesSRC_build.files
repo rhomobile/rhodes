@@ -20,3 +20,4 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ui/AboutDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ui/LogOptionsDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ui/LogViewDialog.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java

@@ -153,7 +153,6 @@ void rho_logconf_Init(const char* szRootPath){
     rho::common::CFilePath oLogPath( szRootPath );
 
     //Set defaults
-#define RHO_DEBUG
 #ifdef RHO_DEBUG
     LOGCONF().setMinSeverity( L_TRACE );
     LOGCONF().setLogToOutput(true);
