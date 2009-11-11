@@ -71,7 +71,8 @@ namespace "config" do
     end
 
     unless File.exists? $homedir + "/.profile"
-      File.open($homedir + "/.profile") {|f| f << "#" }
+      File.open($homedir + "/.profile","w") {|f| f << "#" }
+      chmod 0744, $homedir + "/.profile"
     end
   end
 end
