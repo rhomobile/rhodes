@@ -14,4 +14,7 @@ public class WebView {
 		return RhodesInstance.getInstance().webview_currentLocation();
 	}
 	
+	public static String executeJs(String js) {
+		return RhodesInstance.getInstance().webview_executeJs(js);
+	}
 }

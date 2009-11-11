@@ -88,15 +88,15 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     pthread_key_create(&g_thrkey, NULL);
     store_thr_jnienv(env);
 
-    std::vector<std::string> classes;
-    classes.push_back("com/rhomobile/rhodes/Rhodes");
-    classes.push_back("com/rhomobile/rhodes/WebView");
+    const char *classes[] = {
+        RHODES_JAVA_CLASS_RHODES,
+        RHODES_JAVA_CLASS_WEB_VIEW
+    };
 
     //FILE *fp = fopen("/sdcard/rholog.txt", "ab");
-    for(std::vector<std::string>::const_iterator it = classes.begin(), lim = classes.end();
-        it != lim; ++it)
+    for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
     {
-        jclass cls = env->FindClass(it->c_str());
+        jclass cls = env->FindClass(classes[i]);
         //fprintf(fp, "Find class %s...\n", it->c_str());
         if (!cls)
         {
@@ -104,7 +104,7 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
             continue;
         }
         //fprintf(fp, "Class found: %p\n", cls);
-        g_classes[*it] = (jclass)env->NewGlobalRef(cls);
+        g_classes[classes[i]] = (jclass)env->NewGlobalRef(cls);
         env->DeleteLocalRef(cls);
     }
     //fclose(fp);
@@ -126,12 +126,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
         g_appName = s;
         env->ReleaseStringUTFChars(str, s);
     }
+    RHO_LOG_JNI_CALL;
     return env->NewStringUTF(rho_native_rhopath());
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
+    RHO_LOG_JNI_CALL;
     const char* szRootPath = rho_native_rhopath();
     rho_logconf_Init(szRootPath);
     rho_rhodesapp_create(szRootPath);
@@ -141,6 +143,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
   (JNIEnv *, jobject)
 {
+    RHO_LOG_JNI_CALL;
     rho_rhodesapp_destroy();
 }
 
@@ -148,12 +151,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_saveCurrentLocation
   (JNIEnv *, jobject, jstring)
 {
     // TODO
+    RHO_NOT_IMPLEMENTED;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_restoreLocation
   (JNIEnv *, jobject)
 {
     // TODO
+    RHO_NOT_IMPLEMENTED;
     return false;
 }
 
@@ -161,11 +166,13 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
   (JNIEnv *, jobject, jboolean)
 {
     // TODO
+    RHO_NOT_IMPLEMENTED;
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
+    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getOptionsUrl().c_str();
     return env->NewStringUTF(s);
 }
@@ -173,6 +180,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
+    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getStartUrl().c_str();
     return env->NewStringUTF(s);
 }
@@ -180,6 +188,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
+    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getCurrentUrl().c_str();
     return env->NewStringUTF(s);
 }

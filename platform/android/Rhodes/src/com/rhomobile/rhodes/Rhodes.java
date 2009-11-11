@@ -388,6 +388,26 @@ public class Rhodes extends Activity {
 	public String webview_currentLocation() {
 		return this.webView.getUrl();
 	}
+
+	public String webview_executeJs(String js) {
+		this.webView.loadUrl("javascript:" + js);
+		return "";
+	}
+	
+	public static void deleteFilesInFolder(String folder) {
+		String[] children = new File(folder).list();
+		for (int i = 0; i != children.length; ++i)
+			delete(new File(folder, children[i]));
+	}
+	
+	public static void delete(File f) {
+		if (f.isDirectory()) {
+			String[] children = f.list();
+			for (int i = 0; i != children.length; ++i)
+				delete(new File(f, children[i]));
+		}
+		f.delete();
+	}
 	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
