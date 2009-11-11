@@ -70,6 +70,17 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/find.rb").each {|f| rm f}
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
+  unless $app_config["constants"].nil?
+    File.open("rhobuild.rb","w") do |file|
+      file << "module RhoBuild\n"
+      $app_config["constants"].each do |key,value|
+        value.gsub!(/"/,"\\\"")
+        file << "  #{key.upcase} = \"#{value}\"\n"
+      end
+      file << "end\n"
+    end
+  end
+
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps')
