@@ -124,6 +124,7 @@ public :
         }
 
         rho_logconf_Init(m_strRootPath.c_str());
+        LOG(INFO) + "Rhodes started";
         rho::common::CRhodesApp::Create(m_strRootPath );
         RHODESAPP().startApp();
 
