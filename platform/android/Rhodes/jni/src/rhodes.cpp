@@ -5,34 +5,42 @@
 
 #include <sys/stat.h>
 
-JNIEnv *gEnv = NULL;
-jobject rhodesObj = NULL;
+static rho::String g_appName;
+static rho::String g_rootPath;
 
 const char* rho_native_rhopath()
 {
-    //return "/sdcard/rhomobile/Rhodes/";
+    if (g_rootPath.empty() && !g_appName.empty())
+        g_rootPath = rho::String("/sdcard/rhomobile/") + g_appName + "/";
+    return g_rootPath.c_str();
+}
 
-    static rho::String strPath;
-    if (strPath.empty())
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
+  (JNIEnv *env, jobject obj)
+{
+    if (g_appName.empty())
     {
-        jclass cls = gEnv->GetObjectClass(rhodesObj);
-        jmethodID mid = gEnv->GetMethodID(cls, "getRootPath", "()Ljava/lang/String;");
+        //g_appName = "Rhodes";
+        jclass cls = env->GetObjectClass(obj);
+        jmethodID mid = env->GetMethodID(cls, "getAppName", "()Ljava/lang/String;");
         if (mid == NULL)
+        {
+            // Method not found
+            jclass exc = env->FindClass("java/lang/RuntimeException");
+            env->ThrowNew(exc, "Can not find method getAppName in com.rhomobile.rhodes.Rhodes (JNI)");
             return NULL;
-        jstring str = (jstring)gEnv->CallObjectMethod(rhodesObj, mid);
-        const char *s = gEnv->GetStringUTFChars(str, JNI_FALSE);
-        strPath = s;
-        gEnv->ReleaseStringUTFChars(str, s);
+        }
+        jstring str = (jstring)env->CallObjectMethod(obj, mid);
+        const char *s = env->GetStringUTFChars(str, JNI_FALSE);
+        g_appName = s;
+        env->ReleaseStringUTFChars(str, s);
     }
-    return strPath.c_str();
+    return env->NewStringUTF(rho_native_rhopath());
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
-    gEnv = env;
-    rhodesObj = obj;
-
     const char* szRootPath = rho_native_rhopath();
     rho_logconf_Init(szRootPath);
     rho_rhodesapp_create(szRootPath);
