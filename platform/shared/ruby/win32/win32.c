@@ -3831,8 +3831,11 @@ filetime_to_clock(FILETIME *ft)
     return (long) qw;
 }
 
-int
-rb_w32_times(struct tms *tmbuf)
+#ifdef RUBY_EXPORT
+int rb_w32_times(struct tms *tmbuf)
+#else
+int times(struct tms *tmbuf)
+#endif
 {
     FILETIME create, exit, kernel, user;
 
@@ -4059,9 +4062,12 @@ rb_w32_getpid(void)
     return pid;
 }
 
+#ifdef RUBY_EXPORT
+rb_pid_t rb_w32_getppid(void)
+#else
+rb_pid_t getppid(void)
+#endif
 
-rb_pid_t
-rb_w32_getppid(void)
 {
     static long (WINAPI *pNtQueryInformationProcess)(HANDLE, int, void *, ULONG, ULONG *) = NULL;
     rb_pid_t ppid = 0;
@@ -4285,8 +4291,11 @@ rb_w32_fclose(FILE *fp)
     return 0;
 }
 
-int
-rb_w32_pipe(int fds[2])
+#ifdef RUBY_EXPORT
+int rb_w32_pipe(int fds[2])
+#else
+int pipe(int fds[2])
+#endif
 {
     static DWORD serial = 0;
     char name[] = "\\\\.\\pipe\\ruby0000000000000000-0000000000000000";
