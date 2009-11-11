@@ -20,6 +20,13 @@
  */
 package com.rhomobile.rhodes;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
@@ -27,6 +34,7 @@ import com.rhomobile.rhodes.ui.LogViewDialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -55,6 +63,11 @@ public class Rhodes extends Activity {
 	private boolean isStarted = false;
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
+	
+	public static String getRootPath() {
+		// TODO:
+		return "/sdcard/rhomobile/Rhodes/";
+	}
 
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
@@ -71,6 +84,38 @@ public class Rhodes extends Activity {
     private RhoLogConf m_rhoLogConf = new RhoLogConf();
     public RhoLogConf getLogConf() {
     	return m_rhoLogConf;
+    }
+    
+    private void copyFromBundle(AssetManager amgr, String source, File target) throws IOException
+    {
+    	String[] children = amgr.list(source);
+    	if (children.length > 0) {
+    		if (!target.exists())
+    			target.mkdirs();
+    		
+    		for(int i = 0; i != children.length; ++i)
+    			copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]));
+    	}
+    	else {
+    		InputStream in = null;
+    		OutputStream out = null;
+    		try {
+    			in = amgr.open(source);
+    			out = new FileOutputStream(target);
+	    		
+	    		byte[] buf = new byte[1024];
+	    		int len;
+	    		while((len = in.read(buf)) > 0)
+	    			out.write(buf, 0, len);
+	    		
+    		}
+    		finally {
+    			if (in != null)
+    				in.close();
+    			if (out != null)
+    				out.close();
+    		}
+    	}
     }
 
 	/** Called when the activity is first created. */
@@ -138,6 +183,9 @@ public class Rhodes extends Activity {
 
 		});
 		
+		Log.i(LOG_TAG, "Loading...");
+		webView.loadUrl("file:///android_asset/apps/loading.html");
+		
 		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
 		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
@@ -158,8 +206,21 @@ public class Rhodes extends Activity {
 		}
 		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
 		
-		Log.i(LOG_TAG, "Loading...");
-		webView.loadUrl("file:///android_asset/apps/loading.html");
+		try {
+			Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
+			String rootPath = getRootPath();
+			AssetManager amgr = getResources().getAssets();
+			copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
+			copyFromBundle(amgr, "db", new File(rootPath, "db"));
+			copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
+			File dbfiles = new File(rootPath + "apps/public/db-files");
+			if (!dbfiles.exists())
+				dbfiles.mkdirs();
+			Log.d(this.getClass().getSimpleName(), "All files copied");
+		} catch (IOException e) {
+			Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+			return;
+		}
 		
 		RhodesInstance.setInstance(this);
 
