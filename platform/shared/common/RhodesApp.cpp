@@ -330,7 +330,9 @@ const char* CRhodesApp::getFreeListeningPort()
 
     if ( !noerrors )
 	    m_strListeningPorts = "8080";
-	
+
+    LOG(INFO) + "Free listening port: " + m_strListeningPorts;
+
     return m_strListeningPorts.c_str();
 #endif
 }
