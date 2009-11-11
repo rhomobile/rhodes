@@ -36,6 +36,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -64,10 +65,14 @@ public class Rhodes extends Activity {
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
-	public static String getRootPath() {
-		// TODO:
-		return "/sdcard/rhomobile/Rhodes/";
+	public String getAppName() {
+		Resources appR = getResources();
+		CharSequence app_name = appR.getText(
+				appR.getIdentifier("app_name", "string", getPackageName()));
+		return app_name.toString();
 	}
+	
+	public native String getRootPath();
 
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
@@ -122,9 +127,6 @@ public class Rhodes extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// Load native implementation of rhodes
-		System.loadLibrary("rhodes");
 		
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -383,5 +385,10 @@ public class Rhodes extends Activity {
 	public void stopSelf() {
 		//stopServices();
 		Process.killProcess(Process.myPid());
+	}
+	
+	static {
+		// Load native implementation of rhodes
+		System.loadLibrary("rhodes");
 	}
 }
