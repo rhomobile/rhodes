@@ -170,6 +170,7 @@ namespace "build" do
       manifest = File.join($androidpath, "Rhodes", "AndroidManifest.xml")
       resource = Jake.get_absolute File.join($androidpath, "Rhodes", "res")
       assets = Jake.get_absolute File.join($androidpath, "Rhodes", "assets")
+      nativelibs = Jake.get_absolute File.join($androidpath, "Rhodes", "libs")
       rjava = Jake.get_absolute File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes")
       androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
 
@@ -203,16 +204,16 @@ namespace "build" do
       args << "#{$androidpath}/../../../rhobundle-system-api-samples.tar"
       puts Jake.run("tar", args, $bindir)
 
-      args = []
-      args << "cf"
-      args << "../RhoBundle.jar"
-      args << "."
-      puts Jake.run($jarbin, args, $srcdir)
+      #args = []
+      #args << "cf"
+      #args << "../RhoBundle.jar"
+      #args << "."
+      #puts Jake.run($jarbin, args, $srcdir)
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      cp_r $bindir + "/RhoBundle.jar", $libs
+      #cp_r $bindir + "/RhoBundle.jar", $libs
 
       rm_rf $srcdir
     end
@@ -439,7 +440,8 @@ namespace "build" do
       args << "1.6"
       args << "-nowarn"
       args << "-classpath"
-      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RhoBundle.jar"
+      #args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RhoBundle.jar"
+      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes"
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
       unless $? == 0
@@ -473,7 +475,7 @@ namespace "package" do
     outfile = "#{$bindir}/classes.dex"
     args << "--output=#{outfile}"
     args << "#{$bindir}/Rhodes.jar"
-    args << "#{$bindir}/RhoBundle.jar"
+    #args << "#{$bindir}/RhoBundle.jar"
     puts Jake.run($dx,args)
     unless $? == 0
       puts "Error running DX utility"
@@ -494,7 +496,8 @@ namespace "package" do
     cp iconappname, resource + "/drawable" if File.exists?(iconappname)
     set_app_name_android($appname)
 
-    puts `#{$aapt} package -f -M "#{manifest}" -S "#{resource}" -A "#{assets}" -I "#{androidjar}" -F "#{resourcepkg}"`
+    args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", androidjar, "-F", resourcepkg]
+    puts Jake.run($aapt, args)
     returnval = $?
 
     set_app_name_android("Rhodes")
@@ -504,7 +507,15 @@ namespace "package" do
       puts "Error running AAPT"
       exit 1
     end
-    
+
+    rm_rf $bindir + "/lib"
+    cp_r $androidpath + "/Rhodes/libs", $bindir + "/lib"
+    args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
+    puts Jake.run($aapt, args, $bindir)
+    unless $? == 0
+      puts "Error running AAPT"
+      exit 1
+    end
   end
 end
 
