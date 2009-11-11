@@ -92,7 +92,7 @@ void RhoSettings::loadProperty( const char* start, int len ){
 void RhoSettings::setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen ){
     String name(szName,nNameLen);
     String value(szValue,nValueLen);
-	printf("name: %s, value: %s\n", name.c_str(), value.c_str());
+	//printf("name: %s, value: %s\n", name.c_str(), value.c_str());
     m_mapValues[name] = value;
 }
 
