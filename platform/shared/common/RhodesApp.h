@@ -5,6 +5,9 @@
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhodesApp"
+
 struct shttpd_ctx;
 
 namespace rho {

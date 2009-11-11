@@ -392,7 +392,7 @@ const String& CRhodesApp::getCurrentUrl()
 }
 
 const String& CRhodesApp::getFirstStartUrl()
-{ 
+{
     m_strFirstStartUrl = getStartUrl();
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
     {
@@ -401,7 +401,7 @@ const String& CRhodesApp::getFirstStartUrl()
             m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
     }
 
-    return m_strFirstStartUrl; 
+    return m_strFirstStartUrl;
 }
 
 const String& CRhodesApp::getRhobundleReloadUrl() 
