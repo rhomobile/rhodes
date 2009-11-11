@@ -52,7 +52,7 @@ void LogSettings::saveToFile(){
     RHOCONF().setBool("LogToFile", isLogToFile() );
 #if !defined(OS_MACOSX)	
     RHOCONF().setString("LogFilePath", getLogFilePath() );
-#endif	
+#endif
     RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
     RHOCONF().setString("LogCategories", getEnabledCategories() );
     RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
@@ -105,8 +105,8 @@ void LogSettings::sinkLogMessage( String& strMsg ){
     if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
 
-	if (m_pLogViewSink)
-		m_pLogViewSink->writeLogMessage(strMsg);
+    if (m_pLogViewSink)
+        m_pLogViewSink->writeLogMessage(strMsg);
 
     //Should be at the end
     if ( isLogToOutput() )
@@ -150,11 +150,12 @@ extern "C" {
 
 void rho_logconf_Init(const char* szRootPath){
 
-   rho::common::CFilePath oLogPath( szRootPath );
+    rho::common::CFilePath oLogPath( szRootPath );
 
     //Set defaults
+#define RHO_DEBUG
 #ifdef RHO_DEBUG
-    LOGCONF().setMinSeverity( L_INFO );
+    LOGCONF().setMinSeverity( L_TRACE );
     LOGCONF().setLogToOutput(true);
     LOGCONF().setEnabledCategories("*");
     LOGCONF().setDisabledCategories("");
@@ -166,8 +167,9 @@ void rho_logconf_Init(const char* szRootPath){
 
     LOGCONF().setLogPrefix(true);
 
+    rho::String logPath = oLogPath.makeFullPath("RhoLog.txt");
     LOGCONF().setLogToFile(true);
-    LOGCONF().setLogFilePath( oLogPath.makeFullPath("RhoLog.txt").c_str() );
+    LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
 
     rho_conf_Init(szRootPath);

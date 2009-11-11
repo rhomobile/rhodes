@@ -1,67 +1,73 @@
 #include <com_rhomobile_rhodes_RhoLogConf.h>
+#include <logging/RhoLogConf.h>
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    return env->NewStringUTF(LOGCONF().getEnabledCategories().c_str());
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
-  (JNIEnv *, jobject, jstring)
+  (JNIEnv *env, jobject, jstring value)
 {
-    // TODO
+    const char *str = env->GetStringUTFChars(value, JNI_FALSE);
+    if (str == NULL)
+        return;
+    LOGCONF().setEnabledCategories(str);
+    env->ReleaseStringUTFChars(value, str);
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    return env->NewStringUTF(LOGCONF().getDisabledCategories().c_str());
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
-  (JNIEnv *, jobject, jstring)
+  (JNIEnv *env, jobject, jstring value)
 {
-    // TODO
+    const char *str = env->GetStringUTFChars(value, JNI_FALSE);
+    if (str == NULL)
+        return;
+    LOGCONF().setDisabledCategories(str);
+    env->ReleaseStringUTFChars(value, str);
 }
 
 JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
   (JNIEnv *, jobject)
 {
-    // TODO
-    return 0;
+    return LOGCONF().getMinSeverity();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
-  (JNIEnv *, jobject, jint)
+  (JNIEnv *, jobject, jint severity)
 {
-    // TODO
+    LOGCONF().setMinSeverity(severity);
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
   (JNIEnv *, jobject)
 {
-    // TODO
+    LOGCONF().saveToFile();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
   (JNIEnv *, jobject)
 {
-    // TODO
+    LOGCONF().clearLog();
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
   (JNIEnv *env, jobject)
 {
-    // TODO
-    return env->NewStringUTF("");
+    rho::String logText;
+    LOGCONF().getLogText(logText);
+    return env->NewStringUTF(logText.c_str());
 }
 
 JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
   (JNIEnv *, jobject)
 {
-    // TODO
-    return 0;
+    return LOGCONF().getLogTextPos();
 }
 

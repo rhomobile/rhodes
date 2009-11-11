@@ -8,33 +8,24 @@
 const char* rho_native_rhopath()
 {
     // TODO:
-    return "/sdcard/rhomobile/Rhodes";
-}
-
-void startRhodesApp()
-{
-    const char* szRootPath = rho_native_rhopath();
-    mkdir(szRootPath, S_IRWXU);
-    rho_logconf_Init(szRootPath);
-    rho_rhodesapp_create(szRootPath);
-    //rho_rhodesapp_start();
-}
-
-void stopRhodesApp()
-{
-    //rho_rhodesapp_destroy();
+    return "/sdcard/rhomobile/Rhodes/";
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *, jobject)
 {
-    startRhodesApp();
+    const char* szRootPath = rho_native_rhopath();
+    mkdir(szRootPath, S_IRWXU);
+
+    rho_logconf_Init(szRootPath);
+    rho_rhodesapp_create(szRootPath);
+    rho_rhodesapp_start();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
   (JNIEnv *, jobject)
 {
-    stopRhodesApp();
+    rho_rhodesapp_destroy();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_saveCurrentLocation
