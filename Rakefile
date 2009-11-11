@@ -1,5 +1,14 @@
 require 'find'
 require 'erb'
+require 'rake/rdoctask'
+
+#Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
+module Rake
+  class Task
+    attr_accessor :comment
+  end
+end
+
 
 chdir File.dirname(__FILE__)
 
@@ -10,6 +19,8 @@ load 'platform/android/build/android.rake'
 load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
+
+
 
 namespace "config" do
   task :common do
@@ -69,6 +80,17 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/erb.rb").each {|f| rm f}
   Dir.glob("**/find.rb").each {|f| rm f}
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
+
+  unless $app_config["constants"].nil?
+    File.open("rhobuild.rb","w") do |file|
+      file << "module RhoBuild\n"
+      $app_config["constants"].each do |key,value|
+        value.gsub!(/"/,"\\\"")
+        file << "  #{key.upcase} = \"#{value}\"\n"
+      end
+      file << "end\n"
+    end
+  end
 
   chdir startdir
   #throw "ME"
@@ -449,3 +471,11 @@ task :switch_app => "config:common" do
     YAML.dump( config, out )
   end
 end
+
+
+Rake::RDocTask.new do |rd|
+    rd.main = "README.textile"
+    rd.rdoc_files.include("README.textile", "lib/framework/**/*.rb")
+end
+Rake::Task["rdoc"].comment=nil
+Rake::Task["rerdoc"].comment=nil

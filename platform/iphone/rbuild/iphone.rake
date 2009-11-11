@@ -70,8 +70,9 @@ namespace "config" do
       $sdk = $app_config["iphone"]["sdk"]
     end
 
-    if File.exists? $homedir + "/.profile"
-      File.open($homedir + "/.profile") {|f| f << "#" }
+    unless File.exists? $homedir + "/.profile"
+      File.open($homedir + "/.profile","w") {|f| f << "#" }
+      chmod 0744, $homedir + "/.profile"
     end
   end
 end
