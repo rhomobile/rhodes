@@ -1,11 +1,10 @@
-#include <assert.h>
-#include <stdlib.h>
-
-#include <ruby.h>
-
-#include <common/RhoDefs.h>
+#include "JNIRhodes.h"
 
 #include "RhoClassFactory.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Callbacks"
+
 
 namespace rho
 {
@@ -54,11 +53,13 @@ RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 
 RHO_GLOBAL void *rho_nativethread_start()
 {
-    // Nothing
+    JNIEnv *env;
+    jvm()->AttachCurrentThread(&env, NULL);
+    store_thr_jnienv(env);
     return NULL;
 }
 
 RHO_GLOBAL void rho_nativethread_end(void *)
 {
-    // Nothing
+    jvm()->DetachCurrentThread();
 }

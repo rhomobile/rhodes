@@ -2,15 +2,15 @@ package com.rhomobile.rhodes;
 
 public class WebView {
 
-	public void navigate(String url) {
+	public static void navigate(String url) {
 		RhodesInstance.getInstance().webview_navigate(url);
 	}
 	
-	public void refresh() {
+	public static void refresh() {
 		RhodesInstance.getInstance().webview_refresh();
 	}
 	
-	public String currentLocation() {
+	public static String currentLocation() {
 		return RhodesInstance.getInstance().webview_currentLocation();
 	}
 	
