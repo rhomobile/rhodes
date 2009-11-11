@@ -57,6 +57,7 @@ namespace "config" do
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
+
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
       $entitlements = $config["env"]["iphone"]["entitlements"]
@@ -142,6 +143,10 @@ namespace "run" do
      puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
 
      puts `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
+     rholog = $simapp + "/" + $guid + "/Documents/RhoLog.txt"
+     apprholog = $app_path + "/rholog.txt"
+     rm_f apprholog
+     puts `ln -f -s "#{rholog}" "#{apprholog}"`
      
      f = File.new("#{$simapp}/#{$guid}.sb","w")
      f << "(version 1)\n(debug deny)\n(allow default)\n"

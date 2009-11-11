@@ -82,20 +82,6 @@
 			remoteGlobalIDString = D2AAC045055464E500DB518D;
 			remoteInfo = tcmalloc;
 		};
-		5C4385D110A0424B003D2F4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C4385CD10A0424B003D2F4A /* shttpd.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = shttpd;
-		};
-		5C4385E710A04262003D2F4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C4385CD10A0424B003D2F4A /* shttpd.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = shttpd;
-		};
 		5C7162960F8B7EEC0096B6AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */;
@@ -202,8 +188,6 @@
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
-		5C43854E10A04232003D2F4A /* libshttpd.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libshttpd.a; path = "../../../../build/Debug-iphonesimulator/libshttpd.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C4385CD10A0424B003D2F4A /* shttpd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = shttpd.xcodeproj; path = shttpd/shttpd.xcodeproj; sourceTree = "<group>"; };
 		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
 		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
@@ -213,7 +197,6 @@
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
-		5CEE917210A043C200D1AC58 /* libshttpd.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libshttpd.a; path = "../../../../build/Debug-iphonesimulator/libshttpd.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDCFA777109A2F530009A4A6 /* libcurl-release.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcurl-release.a"; path = "libcurl/lib/libcurl-release.a"; sourceTree = "<group>"; };
@@ -333,8 +316,6 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* rhorunner.app */,
-				5C43854E10A04232003D2F4A /* libshttpd.a */,
-				5CEE917210A043C200D1AC58 /* libshttpd.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -343,7 +324,6 @@
 			isa = PBXGroup;
 			children = (
 				BDCFA77C109A2F610009A4A6 /* include */,
-				5C4385CD10A0424B003D2F4A /* shttpd.xcodeproj */,
 				F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */,
 				466B0FC90F3CFA8000A52314 /* Icons */,
 				5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */,
@@ -440,14 +420,6 @@
 			isa = PBXGroup;
 			children = (
 				5C12568C0F7CEA9200C87274 /* libtcmalloc.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5C4385CE10A0424B003D2F4A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5C4385D210A0424B003D2F4A /* libshttpd.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -622,7 +594,6 @@
 				5C1256A90F7CEC8100C87274 /* PBXTargetDependency */,
 				5C7162C90F8B817F0096B6AA /* PBXTargetDependency */,
 				F5F0652F102B9CA0006CFD39 /* PBXTargetDependency */,
-				5C4385E810A04262003D2F4A /* PBXTargetDependency */,
 			);
 			name = rhorunner;
 			productName = rhorunner;
@@ -657,10 +628,6 @@
 					ProjectRef = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
 				},
 				{
-					ProductGroup = 5C4385CE10A0424B003D2F4A /* Products */;
-					ProjectRef = 5C4385CD10A0424B003D2F4A /* shttpd.xcodeproj */;
-				},
-				{
 					ProductGroup = 5C1256880F7CEA9200C87274 /* Products */;
 					ProjectRef = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
 				},
@@ -678,13 +645,6 @@
 			fileType = archive.ar;
 			path = libtcmalloc.a;
 			remoteRef = 5C12568B0F7CEA9200C87274 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C4385D210A0424B003D2F4A /* libshttpd.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libshttpd.a;
-			remoteRef = 5C4385D110A0424B003D2F4A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		5C7162970F8B7EEC0096B6AA /* librholib.a */ = {
@@ -821,11 +781,6 @@
 			name = tcmalloc;
 			targetProxy = 5C1256A80F7CEC8100C87274 /* PBXContainerItemProxy */;
 		};
-		5C4385E810A04262003D2F4A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = shttpd;
-			targetProxy = 5C4385E710A04262003D2F4A /* PBXContainerItemProxy */;
-		};
 		5C7162C90F8B817F0096B6AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhoLib;
@@ -877,7 +832,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
 					"-framework",
@@ -889,7 +843,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
 					"-framework",
@@ -901,7 +854,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
@@ -911,7 +863,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
 					"-framework",
@@ -923,7 +874,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
@@ -935,7 +885,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
@@ -973,7 +922,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
@@ -983,7 +931,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
@@ -1010,7 +957,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
 					"-framework",
@@ -1022,7 +968,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
 					"-framework",
@@ -1034,7 +979,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
@@ -1044,7 +988,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
 					"-framework",
@@ -1056,7 +999,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
@@ -1068,7 +1010,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1102,7 +1043,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
 					"-framework",
@@ -1114,7 +1054,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
 					"-framework",
@@ -1126,7 +1065,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
 					"-framework",
@@ -1138,7 +1076,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
@@ -1150,7 +1087,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
@@ -1183,7 +1119,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
@@ -1195,7 +1130,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
@@ -1223,7 +1157,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
@@ -1233,7 +1166,6 @@
 					"-ltcmalloc",
 					"-lrholib",
 					"-lrhoextlib",
-					"-lshttpd",
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

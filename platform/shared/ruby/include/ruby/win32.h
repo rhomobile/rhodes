@@ -420,6 +420,7 @@ extern char *rb_w32_strerror(int);
 #define F_SETFL 1
 #define O_NONBLOCK 1
 
+#ifdef RUBY_EXPORT
 #undef FD_SET
 #define FD_SET(f, s)		rb_w32_fdset(f, s)
 
@@ -429,7 +430,7 @@ extern char *rb_w32_strerror(int);
 #undef FD_ISSET
 #define FD_ISSET(f, s)		rb_w32_fdisset(f, s)
 
-#ifdef RUBY_EXPORT
+
 #undef accept
 #define accept(s, a, l)		rb_w32_accept(s, a, l)
 
