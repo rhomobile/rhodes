@@ -330,7 +330,9 @@ const char* CRhodesApp::getFreeListeningPort()
 
     if ( !noerrors )
 	    m_strListeningPorts = "8080";
-	
+
+    LOG(INFO) + "Free listening port: " + m_strListeningPorts;
+
     return m_strListeningPorts.c_str();
 #endif
 }
@@ -348,7 +350,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
 	LOG(INFO) + "Current URL: " + strUrl;
 	
-	m_strCurrentUrl = strUrl;
+	m_strCurrentUrl = canonicalizeRhoUrl(strUrl);
 
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
