@@ -19,6 +19,9 @@
 #import "common/RhoConf.h"
 #import "common/RhodesApp.h"
 #import "logging/RhoLogConf.h"
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhodesApp"
 
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
 //const char* RhoGetRootPath();
@@ -121,7 +124,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
 //#endif	
 	rho_logconf_Init(rho_native_rhopath());
-	
+	RAWLOG_INFO("Rhodes started");
 	if (replaceFiles) {
 //#ifndef TARGET_IPHONE_SIMULATOR	
 		rho_conf_setString("currentVersion", version);

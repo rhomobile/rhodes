@@ -1,4 +1,4 @@
-require 'time'
+#require 'time'
 require 'rho/render'
 require 'rho/rhoapplication'
 require 'rhom'
@@ -167,6 +167,22 @@ module Rho
         return send_error(e, 500, true)
       end
     end
+
+
+    def make_httpdate(t)
+      _RFC2822_DAY_NAME = [
+        'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      ]
+      _RFC2822_MONTH_NAME = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ]
+    
+        sprintf('%s, %02d %s %d %02d:%02d:%02d GMT',
+          _RFC2822_DAY_NAME[t.wday],
+          t.day, _RFC2822_MONTH_NAME[t.mon-1], t.year,
+          t.hour, t.min, t.sec)
+    end
     
     def init_response(status=200,message="OK",body="")
       res = Hash.new
@@ -174,7 +190,7 @@ module Rho
       res['message'] = message
       res['headers'] = 
         {
-        'Date' => Time.now.httpdate,
+        'Date' => make_httpdate(Time.now),#.httpdate,
         'Content-Type' => 'text/html',
         'Content-Length' => 0,
         'Connection' => 'close' 

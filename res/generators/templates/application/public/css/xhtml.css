@@ -10,7 +10,7 @@ body {
     border-bottom: 1px solid #2d3642;
     border-top: 1px solid #6d84a2;
     padding: 10px;
-	background: url(/RhoSugarCRM/images/toolbar_new.png) #000000 repeat-x;
+	background: url(/public/images/toolbar.png) #000000 repeat-x;
     width: auto;
 }
 .toolbar > h1 {

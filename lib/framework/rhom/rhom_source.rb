@@ -1,4 +1,4 @@
-require 'time'
+#require 'time'
 require 'rhom/rhom_object'
 
 module Rhom

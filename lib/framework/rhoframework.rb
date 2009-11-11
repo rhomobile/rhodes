@@ -1,7 +1,7 @@
 begin
     require 'rational'
-    require 'date/format'
-    require 'time'
+    #require 'date/format'
+    #require 'time'
 
    # require 'sqlite3/constants'
    # require 'sqlite3/errors'
