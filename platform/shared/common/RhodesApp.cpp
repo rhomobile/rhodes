@@ -350,7 +350,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
 	LOG(INFO) + "Current URL: " + strUrl;
 	
-	m_strCurrentUrl = strUrl;
+	m_strCurrentUrl = canonicalizeRhoUrl(strUrl);
 
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
