@@ -210,6 +210,8 @@ namespace "build" do
       puts Jake.run($jarbin, args, $srcdir)
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $bindir + "/RhoBundle.jar", $libs
 
       rm_rf $srcdir

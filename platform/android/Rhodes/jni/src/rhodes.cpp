@@ -5,18 +5,35 @@
 
 #include <sys/stat.h>
 
+JNIEnv *gEnv = NULL;
+jobject rhodesObj = NULL;
+
 const char* rho_native_rhopath()
 {
-    // TODO:
-    return "/sdcard/rhomobile/Rhodes/";
+    //return "/sdcard/rhomobile/Rhodes/";
+
+    static rho::String strPath;
+    if (strPath.empty())
+    {
+        jclass cls = gEnv->GetObjectClass(rhodesObj);
+        jmethodID mid = gEnv->GetMethodID(cls, "getRootPath", "()Ljava/lang/String;");
+        if (mid == NULL)
+            return NULL;
+        jstring str = (jstring)gEnv->CallObjectMethod(rhodesObj, mid);
+        const char *s = gEnv->GetStringUTFChars(str, JNI_FALSE);
+        strPath = s;
+        gEnv->ReleaseStringUTFChars(str, s);
+    }
+    return strPath.c_str();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
-  (JNIEnv *, jobject)
+  (JNIEnv *env, jobject obj)
 {
-    const char* szRootPath = rho_native_rhopath();
-    mkdir(szRootPath, S_IRWXU);
+    gEnv = env;
+    rhodesObj = obj;
 
+    const char* szRootPath = rho_native_rhopath();
     rho_logconf_Init(szRootPath);
     rho_rhodesapp_create(szRootPath);
     rho_rhodesapp_start();

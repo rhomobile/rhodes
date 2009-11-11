@@ -67,21 +67,25 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 
 void CRhodesApp::startApp()
 {
-	start(epNormal);
+    start(epNormal);
 }
-	
+
 void CRhodesApp::run()
 {
-	LOG(INFO) + "Starting RhodesApp main routine...";
-
+    LOG(INFO) + "Starting RhodesApp main routine...";
     initHttpServer();
     RhoRubyStart();
 
+    LOG(INFO) + "Starting sync engine...";
     rho_sync_create();
+    LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
+    LOG(INFO) + "Call app active callback";
     callAppActiveCallback();
+    LOG(INFO) + "activate app";
     rho_ruby_activateApp();
 
+    LOG(INFO) + "navigate to first start url";
     navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
     while(!m_bExit)
@@ -139,7 +143,7 @@ public:
     { start(epNormal); }
 
 private:
-	virtual void run()
+    virtual void run()
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
         NetResponse( resp, pNetRequest->pushData( m_strCallback, "", null ));
@@ -197,20 +201,20 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
 
 static void callback_geolocation(struct shttpd_arg *arg) 
 {
-	if (!geo_known_position())
-	{
-		rho_http_sendresponse(arg, "Reading;Reading;Reading");
-		return;
-	}
-	
-	double latitude = geo_latitude();
-	double longitude = geo_longitude();
+    if (!geo_known_position())
+    {
+        rho_http_sendresponse(arg, "Reading;Reading;Reading");
+        return;
+    }
+    
+    double latitude = geo_latitude();
+    double longitude = geo_longitude();
 
     char location[256];
-	sprintf(location,"%.4f\xb0 %s, %.4f\xb0 %s;%f;%f",
-		fabs(latitude),latitude < 0 ? "South" : "North",
-		fabs(longitude),longitude < 0 ? "West" : "East",
-		latitude,longitude);
+    sprintf(location,"%.4f\xb0 %s, %.4f\xb0 %s;%f;%f",
+        fabs(latitude),latitude < 0 ? "South" : "North",
+        fabs(longitude),longitude < 0 ? "West" : "East",
+        latitude,longitude);
 
     LOGC(INFO,CRhodesApp::getLogCategory())+ "Location: " + location;
     rho_http_sendresponse(arg, location);
@@ -281,7 +285,7 @@ const char* CRhodesApp::getFreeListeningPort()
 
     int noerrors = 1;
     LOG(INFO) + "Trying to get free listening port.";
-	
+    
     //get free port
     int sockfd = -1;
     struct sockaddr_in serv_addr = {0};
@@ -290,51 +294,51 @@ const char* CRhodesApp::getFreeListeningPort()
 
     if ( noerrors )
     {
-	    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	    if ( sockfd < 0 )
-	    {
-		    LOG(WARNING) + ("Unable to open socket");
-		    noerrors = 0;
-	    }
-		
-	    if ( noerrors )
-	    {
-		    //server = gethostbyname( "localhost" );
+        sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if ( sockfd < 0 )
+        {
+            LOG(WARNING) + ("Unable to open socket");
+            noerrors = 0;
+        }
+        
+        if ( noerrors )
+        {
+            //server = gethostbyname( "localhost" );
 
-		    memset((void *) &serv_addr, 0, sizeof(serv_addr));
-		    serv_addr.sin_family = AF_INET;
-		    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-		    serv_addr.sin_port = htons(0);
+            memset((void *) &serv_addr, 0, sizeof(serv_addr));
+            serv_addr.sin_family = AF_INET;
+            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+            serv_addr.sin_port = htons(0);
 
-		    if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-		    {
-			    LOG(WARNING) + "Unable to bind";
-			    noerrors = 0;
-		    }
-		    else
-		    {
-			    char buf[10] = {0};
-			    /*socklen_t*/int length = sizeof( serv_addr );
+            if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
+            {
+                LOG(WARNING) + "Unable to bind";
+                noerrors = 0;
+            }
+            else
+            {
+                char buf[10] = {0};
+                /*socklen_t*/int length = sizeof( serv_addr );
 
-			    getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
-				
-			    sprintf(buf,"%d",ntohs(serv_addr.sin_port));
-				
-			    m_strListeningPorts = buf;
-		    }
-		    //Clean up
+                getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
+                
+                sprintf(buf,"%d",ntohs(serv_addr.sin_port));
+                
+                m_strListeningPorts = buf;
+            }
+            //Clean up
 #if defined(OS_ANDROID)
-			close(sockfd);
+            close(sockfd);
 #else
-		    closesocket(sockfd);
+            closesocket(sockfd);
 #endif
-	    }
+        }
 
     }
 
     if ( !noerrors )
-	    m_strListeningPorts = "8080";
-	
+        m_strListeningPorts = "8080";
+    
     return m_strListeningPorts.c_str();
 #endif
 }
@@ -350,9 +354,9 @@ void CRhodesApp::initAppUrls()
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
-	LOG(INFO) + "Current URL: " + strUrl;
-	
-	m_strCurrentUrl = strUrl;
+    LOG(INFO) + "Current URL: " + strUrl;
+    
+    m_strCurrentUrl = strUrl;
 
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
@@ -363,8 +367,8 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         if ( nFragment != String::npos )
             strUrl = strUrl.substr(0, nFragment);
 
-	    RHOCONF().setString("LastVisitedPage",strUrl);		
-	    RHOCONF().saveToFile();
+        RHOCONF().setString("LastVisitedPage",strUrl);		
+        RHOCONF().saveToFile();
     }
 }
 
@@ -388,10 +392,10 @@ const String& CRhodesApp::getCurrentUrl()
 const String& CRhodesApp::getFirstStartUrl()
 { 
     m_strFirstStartUrl = getStartUrl();
-	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
+    if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
     {
-	    rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
-	    if (strLastPage.length() > 0)
+        rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
+        if (strLastPage.length() > 0)
             m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
     }
 
@@ -401,7 +405,7 @@ const String& CRhodesApp::getFirstStartUrl()
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {
     m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
-	return m_strRhobundleReloadUrl;
+    return m_strRhobundleReloadUrl;
 }
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
@@ -411,19 +415,19 @@ void CRhodesApp::navigateToUrl( const String& strUrl)
 
 String CRhodesApp::canonicalizeRhoUrl(const String& strUrl) 
 {
-	if (strUrl.length() == 0 )
+    if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
-	if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 )
-		return strUrl;
+    if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 )
+        return strUrl;
 
     String strRes = m_strHomeUrl;
     if ( strUrl.at(0) != '/' && strUrl.at(0) != '\\' )
         strRes += '/';
 
     strRes += strUrl;
-	
-	return strRes;
+    
+    return strRes;
 }
 
 void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink )
@@ -464,87 +468,87 @@ extern "C" {
 
 char* rho_http_normalizeurl(const char* szUrl) 
 {
-	rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);
-	return strdup(strRes.c_str());
+    rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);
+    return strdup(strRes.c_str());
 }
 
 void rho_http_free(void* data)
 {
-	free(data);
+    free(data);
 }
-	
+    
 void rho_http_redirect( void* httpContext, const char* szUrl)
 {
     struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
     
-	shttpd_printf(arg, "%s", "HTTP/1.1 301 Moved Permanently\r\n");
+    shttpd_printf(arg, "%s", "HTTP/1.1 301 Moved Permanently\r\n");
     shttpd_printf(arg, "Location: %s\r\n", szUrl );
-	shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
-	shttpd_printf(arg, "%s", "Connection: close\r\n");
+    shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
+    shttpd_printf(arg, "%s", "Connection: close\r\n");
 //#ifndef OS_MACOSX
-	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Cache-Control: must-revalidate\r\n" );
-	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Cache-Control: no-store\r\n" );	
-	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+    shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+    shttpd_printf(arg, "%s", "Cache-Control: must-revalidate\r\n" );
+    shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+    shttpd_printf(arg, "%s", "Cache-Control: no-store\r\n" );	
+    shttpd_printf(arg, "%s", "Expires: 0\r\n" );
 //#endif
 
-	shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
+    shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
 
-	arg->flags |= SHTTPD_END_OF_OUTPUT;
+    arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
 
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
 {
     struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
 
-	shttpd_printf(arg, "%s", "HTTP/1.1 %d %s\r\n", nError, szMsg);
-	arg->flags |= SHTTPD_END_OF_OUTPUT;
+    shttpd_printf(arg, "%s", "HTTP/1.1 %d %s\r\n", nError, szMsg);
+    arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
 
 void rho_http_sendresponse(void* httpContext, const char* szBody)
 {
     struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
-	unsigned long nBodySize = strlen(szBody);
-	
-	shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
-	shttpd_printf(arg, "Content-Length: %lu\r\n", nBodySize );
-	shttpd_printf(arg, "%s", "Connection: close\r\n");
+    unsigned long nBodySize = strlen(szBody);
+    
+    shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
+    shttpd_printf(arg, "Content-Length: %lu\r\n", nBodySize );
+    shttpd_printf(arg, "%s", "Connection: close\r\n");
 #ifndef OS_MACOSX
-	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
+    shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
+    shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
+    shttpd_printf(arg, "%s", "Expires: 0\r\n" );
 #else
-	const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
-	char date[64], lm[64];
-	time_t	_current_time = time(0);
-	strftime(date, sizeof(date), fmt, localtime(&_current_time));
-	strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
-	
-	shttpd_printf(arg, "Date: %s\r\n", date);
-	shttpd_printf(arg, "Last-Modified: %s\r\n", lm);
-	shttpd_printf(arg, "Etag: \"%lx.%lx\"\r\n", (unsigned long) _current_time, nBodySize);
+    const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
+    char date[64], lm[64];
+    time_t	_current_time = time(0);
+    strftime(date, sizeof(date), fmt, localtime(&_current_time));
+    strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
+    
+    shttpd_printf(arg, "Date: %s\r\n", date);
+    shttpd_printf(arg, "Last-Modified: %s\r\n", lm);
+    shttpd_printf(arg, "Etag: \"%lx.%lx\"\r\n", (unsigned long) _current_time, nBodySize);
 #endif
 
-	shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
-	shttpd_printf(arg, "%s", szBody );
+    shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
+    shttpd_printf(arg, "%s", szBody );
 
-	arg->flags |= SHTTPD_END_OF_OUTPUT;
+    arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
 
 void rho_rhodesapp_create(const char* szRootPath)
 {
-	rho::common::CRhodesApp::Create(szRootPath);
+    rho::common::CRhodesApp::Create(szRootPath);
 }
 
 void rho_rhodesapp_start()
 {
-	RHODESAPP().startApp();
+    RHODESAPP().startApp();
 }
-	
+    
 void rho_rhodesapp_destroy()
 {
-	rho::common::CRhodesApp::Destroy();
+    rho::common::CRhodesApp::Destroy();
 }
 
 const char* rho_rhodesapp_getfirststarturl()
@@ -569,17 +573,17 @@ void rho_rhodesapp_keeplastvisitedurl(const char* szUrl)
 
 const char* rho_rhodesapp_getcurrenturl()
 {
-	return RHODESAPP().getCurrentUrl().c_str();
+    return RHODESAPP().getCurrentUrl().c_str();
 }
 
 const char* rho_rhodesapp_getloadingpagepath()
 {
-	return RHODESAPP().getLoadingPagePath().c_str();
+    return RHODESAPP().getLoadingPagePath().c_str();
 }
 
 const char* rho_rhodesapp_getblobsdirpath()
 {
-	return RHODESAPP().getBlobsDirPath().c_str();
+    return RHODESAPP().getBlobsDirPath().c_str();
 }
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
