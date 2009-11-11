@@ -342,6 +342,7 @@ static void Init_RhoBlobs()
   if ( rb_funcall(rb_cDir, rb_intern("exist?"), 1, path)==Qfalse )
     rb_funcall(rb_cDir, rb_intern("mkdir"), 1, path);
 
+  RAWLOG_INFO("Init_RhoBlobs: done");
 }
 
 static VALUE
