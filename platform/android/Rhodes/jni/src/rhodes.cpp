@@ -8,6 +8,40 @@
 static rho::String g_appName;
 static rho::String g_rootPath;
 
+static JNIEnv *g_env;
+JNIEnv *jnienv()
+{
+    return g_env;
+}
+
+jclass getJNIClass(const char *name)
+{
+    jclass cls = jnienv()->FindClass(name);
+    if (cls == NULL)
+    {
+        jclass exc = jnienv()->FindClass("java/lang/RuntimeException");
+        rho::String descr = "Can not find class ";
+        descr += name;
+        jnienv()->ThrowNew(exc, descr.c_str());
+    }
+    return cls;
+}
+
+jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature)
+{
+    jmethodID mid = jnienv()->GetMethodID(cls, name, signature);
+    if (mid == NULL)
+    {
+        jclass exc = jnienv()->FindClass("java/lang/RuntimeException");
+        rho::String descr = "Can not find method ";
+        descr += name;
+        descr += " of type ";
+        descr += signature;
+        jnienv()->ThrowNew(exc, descr.c_str());
+    }
+    return mid;
+}
+
 const char* rho_native_rhopath()
 {
     if (g_rootPath.empty() && !g_appName.empty())
@@ -20,16 +54,12 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
 {
     if (g_appName.empty())
     {
-        //g_appName = "Rhodes";
+        g_env = env;
+
         jclass cls = env->GetObjectClass(obj);
-        jmethodID mid = env->GetMethodID(cls, "getAppName", "()Ljava/lang/String;");
+        jmethodID mid = getJNIClassMethod(cls, "getAppName", "()Ljava/lang/String;");
         if (mid == NULL)
-        {
-            // Method not found
-            jclass exc = env->FindClass("java/lang/RuntimeException");
-            env->ThrowNew(exc, "Can not find method getAppName in com.rhomobile.rhodes.Rhodes (JNI)");
             return NULL;
-        }
         jstring str = (jstring)env->CallObjectMethod(obj, mid);
         const char *s = env->GetStringUTFChars(str, JNI_FALSE);
         g_appName = s;

@@ -226,9 +226,12 @@
 #define USE_ELF 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
+
+#define LOAD_RELATIVE 1
+
 #define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/lib"
-#define RUBY_SITE_LIB2 "/lib"
+#define RUBY_SITE_LIB "/apps"
+#define RUBY_SITE_LIB2 "/apps/app"
 #define RUBY_VENDOR_LIB "/lib"
 #define RUBY_VENDOR_LIB2 "/lib"
 #define RUBY_PLATFORM "i686-linux"

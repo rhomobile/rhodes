@@ -377,6 +377,18 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
+	public void webview_navigate(String url) {
+		this.webView.loadUrl(url);
+	}
+	
+	public void webview_refresh() {
+		this.webView.reload();
+	}
+	
+	public String webview_currentLocation() {
+		return this.webView.getUrl();
+	}
+	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));

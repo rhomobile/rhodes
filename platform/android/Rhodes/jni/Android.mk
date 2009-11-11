@@ -33,7 +33,9 @@ LOCAL_CFLAGS += \
 	-I$(RHO_SHARED_PATH)/ruby/linux \
 	-D__NEW__ \
 	-D__SGI_STL_INTERNAL_PAIR_H \
-	-DANDROID -DOS_ANDROID
+	-DANDROID -DOS_ANDROID \
+	-D_DEBUG \
+	-g -O0
 
 LOCAL_LDLIBS += \
 	-L$(STLPORT_BASE)/build/lib/obj/arm-linux-gcc/so \

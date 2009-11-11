@@ -177,23 +177,29 @@ static VALUE find_file(VALUE fname)
     VALUE res;
     int nOK = 0;
 
+    //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
+
     if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,".iseq",5);
+        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
     }else{
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
         //VALUE dir;
         fname = checkRhoBundleInPath(fname);
+        //RAWLOG_INFO1("find_file: fname after checkRhoBundleInPath: %s", RSTRING_PTR(fname));
 
         //TODO: support document relative require in case of multiple apps
         if (RARRAY_LEN(load_path)>1){
             for( ; i < RARRAY_LEN(load_path); i++ ){
                 VALUE dir = RARRAY_PTR(load_path)[i];
+                //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
                 res = rb_str_dup(dir);
                 rb_str_cat(res,"/",1);
                 rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
                 rb_str_cat(res,".iseq",5);
+                //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
                 if( eaccess(RSTRING_PTR(res), R_OK) == 0 ){
                     nOK = 1;
@@ -219,6 +225,7 @@ static VALUE find_file(VALUE fname)
         } */
     }
 
+    //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
     res = RhoPreparePath(res);
     if ( !nOK )
         nOK = 1;//eaccess(RSTRING_PTR(res), R_OK) == 0 ? 1 : 0;
@@ -253,20 +260,21 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     char* szName = 0;
 //    FilePathValue(fname);
 
-	szName = RSTRING_PTR(fname);
-    RAWTRACE1("require_compiled: %s", szName);
+    szName = RSTRING_PTR(fname);
+    RAWLOG_INFO1("require_compiled: %s", szName);
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
     if ( strcmp("strscan",szName)==0 || strcmp("enumerator",szName)==0 )
         return Qtrue;
 
+    //RAWLOG_INFO1("find_file: %s", RSTRING_PTR(fname));
     path = find_file(fname);
 
     if ( path != 0 )
     {
         VALUE seq;
-		
+
         if ( isAlreadyLoaded(path) == Qtrue )
             return Qtrue;
 
@@ -280,6 +288,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         return Qtrue;
     }
 
+    RAWLOG_ERROR1("require_compiled: error: can not find %s", szName);
     return Qnil;
 }
 
