@@ -1548,7 +1548,7 @@ static VALUE mSyncEngine;
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
 	#define dosync_source rho_sync_doSyncSource
-	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
+	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
 	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	#define dosync rho_sync_doSyncAllSources
@@ -1773,10 +1773,8 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
+  VALUE arg1 = (VALUE) 0 ;
   bool arg2 ;
-  int val1 ;
-  int ecode1 = 0 ;
   bool val2 ;
   int ecode2 = 0 ;
   
@@ -1786,11 +1784,7 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  ecode1 = SWIG_AsVal_int(argv[0], &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "dosync_source" "', argument " "1"" of type '" "int""'");
-  } 
-  arg1 = (int)(val1);
+  arg1 = argv[0];
   if (argc > 1) {
     ecode2 = SWIG_AsVal_bool(argv[1], &val2);
     if (!SWIG_IsOK(ecode2)) {

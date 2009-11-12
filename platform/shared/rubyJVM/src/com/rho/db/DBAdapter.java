@@ -191,10 +191,11 @@ public class DBAdapter extends RubyBasic {
 		" main_id INTEGER default 0 );"+
 		"CREATE TABLE sources ("+
 		//"id INTEGER PRIMARY KEY,"+
-		"source_id int PRIMARY KEY,"+
+        "source_url VARCHAR(255) PRIMARY KEY," +
+		"source_id int,"+
 		"name varchar(255) default NULL,"+
 		"token varchar(30) default NULL,"+
-		"source_url VARCHAR(255) default NULL,"+
+        "priority INTEGER," +
 		"session VARCHAR(255) default NULL,"+
 		"last_updated int default 0,"+
 		"last_inserted_size int default 0,"+

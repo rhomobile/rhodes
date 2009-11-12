@@ -277,6 +277,23 @@ int getStringLenFromValue(VALUE val){
     return RSTRING_LEN(val);
 }
 
+struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
+{
+    struct CRhoRubyStringOrInt oRes;
+    oRes.m_szStr = "";
+    oRes.m_nInt = 0;
+
+    if (TYPE(val) == T_FIXNUM || TYPE(val) == T_BIGNUM)
+        oRes.m_nInt = rb_num2ll(val); 
+    else
+    {
+        VALUE strVal = rb_funcall(val, rb_intern("to_s"), 0);
+        oRes.m_szStr = RSTRING_PTR(strVal);
+    }
+
+    return oRes;
+}
+
 void  releaseValue(VALUE val){
     VALUE ary = GET_THREAD()->vm->mark_object_ary;
     int i = RARRAY_LEN(ary)-1;
