@@ -1,3 +1,3 @@
 require 'rho'
 
-Rho::RhoConfig::add_source("Question", {"url"=>"", "source_id"=>400, "type"=>'ask'})
+Rho::RhoConfig::add_source("Question", {"url"=>"", "priority"=>400, "type"=>'ask'})

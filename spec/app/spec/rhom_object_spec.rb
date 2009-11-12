@@ -28,8 +28,8 @@ describe "Rhom::RhomObject" do
   end
   
   it "should set source_id attributes" do
-    Account.get_source_id.should == "1"
-    Case.get_source_id.should == "2"
+    Account.get_source_id.should == "2"
+    Case.get_source_id.should == "1"
   end
   
   it "should dynamically assign values" do
@@ -357,13 +357,13 @@ describe "Rhom::RhomObject" do
     @question = Question.find(:first)
     @question.update_attributes({"question"=>"i am here"})
 
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'source_id' => 400})
+    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'source_id' => @question.get_source_id.to_i()})
     @res.length.should == 1
     @res[0]['attrib'].should == 'question'
     @res[0]['value'].should == 'i am here'
     
     ['create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => 400})
+      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => @question.get_source_id.to_i()})
       @res.length.should == 0
     end
   end

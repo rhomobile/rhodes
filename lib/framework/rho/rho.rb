@@ -98,7 +98,7 @@ module Rho
         #  result << h unless result.include?(h); result
         #}
         uniq_sources = Rho::RhoConfig::sources.values
-        #puts 'uniq_sources: ' + uniq_sources.inspect
+        puts 'init_sources: ' + uniq_sources.inspect
 
         result = ::Rhom::RhomDbAdapter.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
         #puts 'result: ' + result.inspect
@@ -110,17 +110,17 @@ module Rho
           url = source['url']
           name = source['name']
           priority = source['priority']
-          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id', 'source_url'=>url)
+          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
-                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority},{"source_url"=>url})
+                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority},{"name"=>name})
             end
-            Rho::RhoConfig::sources[url]['source_id'] = attribs[0]['source_id'].to_i
+            Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
           else
             Rhom::RhomDbAdapter::insert_into_table('sources',
                 {"source_id"=>start_id,"source_url"=>url,"name"=>name, "priority"=>priority})
-            Rho::RhoConfig::sources[url]['source_id'] = start_id
+            Rho::RhoConfig::sources[name]['source_id'] = start_id
             
             start_id += 1
           end
@@ -324,16 +324,12 @@ module Rho
       end
       
       def add_source(modelname, new_source=nil)
-        src_url = new_source['url'] if new_source
-        src_url = modelname unless src_url
-        return if !src_url || @@sources[src_url]
+        return if !modelname || modelname.length() == 0 || @@sources[modelname]
         
-        @@sources[src_url] = new_source ? new_source : {}
-        @@sources[src_url]['name'] ||= modelname
-        @@sources[src_url]['url'] ||= src_url
-        #@@sources[src_url]['source_id'] = generate_id()
-        @@sources[src_url]['priority'] ||= 1000
-        
+        @@sources[modelname] = new_source ? new_source : {}
+        @@sources[modelname]['name'] ||= modelname
+        @@sources[modelname]['priority'] ||= 1000
+
 #        if new_source
 #          unless @@sources[modelname]
 #            @@sources[modelname] = new_source
