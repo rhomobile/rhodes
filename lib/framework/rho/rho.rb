@@ -94,23 +94,35 @@ module Rho
       if defined? Rho::RhoConfig::sources
         
         # quick and dirty way to get unique array of hashes
-        uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
-          result << h unless result.include?(h); result
-        }
+        #uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
+        #  result << h unless result.include?(h); result
+        #}
+        uniq_sources = Rho::RhoConfig::sources.values
+        #puts 'uniq_sources: ' + uniq_sources.inspect
+
+        result = ::Rhom::RhomDbAdapter.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
+        #puts 'result: ' + result.inspect
+        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
         
         # generate unique source list in database for sync
         uniq_sources.each do |source|
           
-          src_id = source['source_id']
           url = source['url']
           name = source['name']
-          attribs = Rhom::RhomDbAdapter::select_from_table('sources','source_attribs', 'source_id'=>src_id)
+          priority = source['priority']
+          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id', 'source_url'=>url)
 
           if attribs && attribs.size > 0 
-            #Rhom::RhomAttribManager.load(src_id,attribs[0]['source_attribs'])
+            if attribs[0]['priority'].to_i != priority.to_i
+                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority},{"source_url"=>url})
+            end
+            Rho::RhoConfig::sources[url]['source_id'] = attribs[0]['source_id'].to_i
           else
             Rhom::RhomDbAdapter::insert_into_table('sources',
-                                                  {"source_id"=>src_id,"source_url"=>url,"name"=>name})
+                {"source_id"=>start_id,"source_url"=>url,"name"=>name, "priority"=>priority})
+            Rho::RhoConfig::sources[url]['source_id'] = start_id
+            
+            start_id += 1
           end
         end
       end
@@ -312,13 +324,33 @@ module Rho
       end
       
       def add_source(modelname, new_source=nil)
-        if new_source
-          unless @@sources[new_source]
-            @@sources[modelname] = new_source
-            @@sources[modelname]['name'] ||= modelname
-          end
-        end
+        src_url = new_source['url'] if new_source
+        src_url = modelname unless src_url
+        return if !src_url || @@sources[src_url]
+        
+        @@sources[src_url] = new_source ? new_source : {}
+        @@sources[src_url]['name'] ||= modelname
+        @@sources[src_url]['url'] ||= src_url
+        #@@sources[src_url]['source_id'] = generate_id()
+        @@sources[src_url]['priority'] ||= 1000
+        
+#        if new_source
+#          unless @@sources[modelname]
+#            @@sources[modelname] = new_source
+#            @@sources[modelname]['name'] ||= modelname
+#            @@sources[modelname]['source_id'] = generate_id()
+#          end
+#        end
       end
+      
+      @@g_base_temp_id = nil
+      def generate_id
+        @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i unless @@g_base_temp_id
+        
+        @@g_base_temp_id = @@g_base_temp_id + 1
+        @@g_base_temp_id
+      end
+      
     end
   end # RhoConfig
 end # Rho

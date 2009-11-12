@@ -55,26 +55,18 @@ void CSyncEngine::doSyncAllSources()
         setState(esNone);
 }
 
-void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
+void CSyncEngine::doSyncSource(const CSourceID& oSrcID, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
 {
-    if ( strSrcUrl.length()>0 )
-        LOG(INFO) +"Started synchronization of the data source url: " + strSrcUrl;
-    else
-    	LOG(INFO)+ "Started synchronization of the data source #" + nSrcId;
-
     setState(esSyncSource);
     m_bStopByUser = false;
     loadAllSources();
 
-    CSyncSource* pSrc = null;
-    if ( strSrcUrl.length()>0 )
-    	pSrc = findSourceByUrl(strSrcUrl);
-    else
-        pSrc = findSourceByID(nSrcId);
-
+    CSyncSource* pSrc = findSource(oSrcID);
     if ( pSrc != null )
     {
         CSyncSource& src = *pSrc;
+
+        LOG(INFO) +"Started synchronization of the data source: " + src.getName();
 
     	src.m_strParams = strParams;
     	src.m_strAction = strAction;
@@ -97,10 +89,7 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
         getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
     }else
     {
-        if ( strSrcUrl.length()>0 )
-            LOG(ERROR) + "Sync one source : Unknown Source Url: " + strSrcUrl;
-        else
-            LOG(ERROR) + "Sync one source : Unknown Source ID: " + nSrcId;
+        LOG(ERROR) + "Sync one source : Unknown Source " + oSrcID.toString();
 
         CSyncSource src(*this);
     	//src.m_strError = "Unknown sync source.";
@@ -113,31 +102,14 @@ void CSyncEngine::doSyncSource(int nSrcId, String strSrcUrl, String strParams, S
 
     if ( getState() != esExit )
         setState(esNone);
-
-    if ( strSrcUrl.length()>0 )
-        LOG(ERROR) + "End synchronization of the data source url: " + strSrcUrl;
-    else
-        LOG(ERROR) + "End synchronization of the data source #" + nSrcId;
 }
 
-CSyncSource* CSyncEngine::findSourceByID(int nSrcId)
+CSyncSource* CSyncEngine::findSource(const CSourceID& oSrcID)
 {
     for( int i = 0; i < (int)m_sources.size(); i++ )
     {
         CSyncSource& src = *m_sources.elementAt(i);
-        if ( src.getID() == nSrcId )
-            return &src;
-    }
-    
-    return null;
-}
-
-CSyncSource* CSyncEngine::findSourceByUrl(const String& strSrcUrl)
-{
-    for( int i = 0; i < (int)m_sources.size(); i++ )
-    {
-        CSyncSource& src = *m_sources.elementAt(i);
-        if ( src.getUrl() == strSrcUrl )
+        if ( oSrcID.isEqual(src) )
             return &src;
     }
     
@@ -146,21 +118,16 @@ CSyncSource* CSyncEngine::findSourceByUrl(const String& strSrcUrl)
 
 CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
 {
-    for( int i = 0; i < (int)m_sources.size(); i++ )
-    {
-        CSyncSource& src = *m_sources.elementAt(i);
-        if ( src.getName().compare(strSrcName)==0 )
-            return &src;
-    }
-    
-    return null;
+    CSourceID oSrcID;
+    oSrcID.m_strName = strSrcName;
+    return findSource(oSrcID);
 }
 
 void CSyncEngine::loadAllSources()
 {
     m_sources.clear();
 
-    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY source_id") );
+    DBResult( res, getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY priority") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strDbUrl = res.getStringByIdx(1);
@@ -445,5 +412,24 @@ static String getServerFromUrl( const String& strUrl )
     return String(pStartSrv, nSrvLen);
 }
 
+String CSyncEngine::CSourceID::toString()const
+{
+    if ( m_strName.length() > 0 )
+        return "name : " + m_strName;
+    else if ( m_strUrl.length() > 0 )
+        return "url : " + m_strUrl;
+
+    return "# : " + convertToStringA(m_nID);
+}
+
+boolean CSyncEngine::CSourceID::isEqual(CSyncSource& src)const
+{
+    if ( m_strName.length() > 0 )
+        return src.getName().compare(m_strName)==0;
+    else if ( m_strUrl.length() > 0 )
+        return src.getUrl().compare(m_strUrl)==0;
+
+    return m_nID == src.getID();
+}
 }
 }

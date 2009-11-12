@@ -40,6 +40,16 @@ public:
     static String SYNC_ASK_ACTION() { return "/ask"; }
 //    static int MAX_SYNC_TRY_COUNT() { return 2; }
 
+    struct CSourceID
+    {
+        String m_strName;
+        String m_strUrl;
+        int m_nID;
+
+        String toString()const;
+        boolean isEqual(CSyncSource& src)const;
+    };
+
 private:
     VectorPtr<CSyncSource*> m_sources;
     db::CDBAdapter& m_dbAdapter;
@@ -61,7 +71,7 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
+    void doSyncSource(const CSourceID& oSrcID, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
@@ -103,8 +113,7 @@ public:
     void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
 private:
  
-    CSyncSource* findSourceByID(int nSrcId);
-    CSyncSource* findSourceByUrl(const String& strSrcUrl);
+    CSyncSource* findSource(const CSourceID& oSrcID);
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();

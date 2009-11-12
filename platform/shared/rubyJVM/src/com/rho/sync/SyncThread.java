@@ -30,20 +30,8 @@ import com.rho.RhoThread;
 import com.rho.TimeInterval;
 import com.rho.db.DBAdapter;
 import com.rho.db.IDBResult;
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.lang.RubyBlock;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyNoOrOneArgMethod;
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyOneOrTwoArgMethod;
-import com.xruby.runtime.lang.RubyTwoArgMethod;
-import com.xruby.runtime.lang.RubyRuntime;
-import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.RubyVarArgMethod;
+import com.xruby.runtime.builtin.*;
+import com.xruby.runtime.lang.*;
 
 public class SyncThread extends RhoThread
 {
@@ -55,7 +43,7 @@ public class SyncThread extends RhoThread
 	
 	static SyncThread m_pInstance;
 
-   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scChangePollInterval=4, scExit=5, scLogin = 6, scSearchOne=7; 
+   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6, scLogin = 7, scSearchOne=8; 
     
    	static private class SyncCommand
    	{
@@ -288,13 +276,33 @@ public class SyncThread extends RhoThread
 	        break;
 	    case scChangePollInterval:
 	        break;
-	    case scSyncOne:
-	    	m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","", false, -1 );
+	    case scSyncOneByUrl:
+	        {
+	            SyncEngine.SourceID oSrcID = new SyncEngine.SourceID();
+	            oSrcID.m_strUrl = oSyncCmd.m_strCmdParam;
+	
+	            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
+	        }
 	        break;
+        case scSyncOne:
+	        {
+	            SyncEngine.SourceID oSrcID = new SyncEngine.SourceID();
+	            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
+	            oSrcID.m_strName = oSyncCmd.m_strCmdParam;
+	
+	            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
+	        }
+	        break;
+	        
 	    case scSearchOne:
-	        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
-	            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges,
-	            ((SyncSearchCommand)oSyncCmd).m_nProgressStep);
+		    {
+	            SyncEngine.SourceID oSrcID = new SyncEngine.SourceID();
+	            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
+		    	
+		        m_oSyncEngine.doSyncSource(oSrcID, oSyncCmd.m_strCmdParam, 
+		            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges,
+		            ((SyncSearchCommand)oSyncCmd).m_nProgressStep);
+		    }
 	        break;
 	        
 	    case scLogin:
@@ -337,22 +345,22 @@ public class SyncThread extends RhoThread
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll));
 	}
 
-	public static void doSyncSource(int nSrcID, boolean bShowStatus)
+	public static void doSyncSource(int nSrcID, String strName, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup();
 		}
 		
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, nSrcID) );
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID) );
 	}
-
-	public static void doSyncSource(String strSrcUrl, boolean bShowStatus)
+	
+	public static void doSyncSourceByUrl(String strSrcUrl, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup();
 		}
 		
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcUrl) );
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOneByUrl, strSrcUrl) );
 	}
 	
 	public static void stopSync()throws Exception
@@ -412,7 +420,14 @@ public class SyncThread extends RhoThread
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 				try {
-					doSyncSource(arg.toInt(), true);
+					int nSrcID = 0;
+					String strName = "";
+					if ( arg instanceof RubyFixnum )
+						nSrcID = arg.toInt();
+					else
+						strName = arg.toStr();
+					
+					doSyncSource( nSrcID, strName, true);
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -424,7 +439,15 @@ public class SyncThread extends RhoThread
 				try {
 					String str = arg1.asString();
 					boolean show = arg1.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
-					doSyncSource(arg0.toInt(), show);
+					
+					int nSrcID = 0;
+					String strName = "";
+					if ( arg0 instanceof RubyFixnum )
+						nSrcID = arg0.toInt();
+					else
+						strName = arg0.toStr();
+					
+					doSyncSource(nSrcID, strName, show);
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

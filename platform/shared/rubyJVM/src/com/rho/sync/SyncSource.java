@@ -247,7 +247,7 @@ class SyncSource
 	        String strBody = makePushBody(arUpdateTypes[i]);
 	        if ( strBody.length() > 0 )
 	        {
-			    LOG.INFO( "Push client changes to server. Source id: " + getID() + "Size :" + strBody.length() );
+			    LOG.INFO( "Push client changes to server. Source: " + getName() + "Size :" + strBody.length() );
 			    LOG.TRACE("Push body: " + strBody);		
 	 
 	            NetResponse resp = getNet().pushData(strUrl+strQuery,strBody, getSync());
@@ -261,7 +261,7 @@ class SyncSource
 	 
 	        if ( m_arSyncBlobs.size()>0 )
 	        {
-			    LOG.INFO( "Push blobs to server. Source id: " + getID() + "Count :" + m_arSyncBlobs.size() );
+			    LOG.INFO( "Push blobs to server. Source: " + getName() + "Count :" + m_arSyncBlobs.size() );
 	            //oo conflicts
 	            if ( i < 1 ) //create
 	                getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and (attrib_type IS NULL or attrib_type!=?) and sent=1", 
@@ -495,7 +495,7 @@ class SyncSource
 	        processToken("0");
 	    }
 	    
-		LOG.INFO( "Got " + getCurPageCount() + "(Processed: " +  getServerObjectsCount() + ") records of " + getTotalCount() + " from server. Source ID: " + getID()
+		LOG.INFO( "Got " + getCurPageCount() + "(Processed: " +  getServerObjectsCount() + ") records of " + getTotalCount() + " from server. Source: " + getName()
 				+ ". Version: " + nVersion );
 		
 		PROF.STOP("Data1");

@@ -381,7 +381,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
 void CSyncNotify::clearNotification(CSyncSource& src)
 {
-	LOG(INFO) + "Clear notification. Source ID: " + src.getID();
+	LOG(INFO) + "Clear notification. Source : " + src.getName();
 
     synchronized(m_mxSyncNotifications)
     {

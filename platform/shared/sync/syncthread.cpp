@@ -162,13 +162,32 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
         break;
     case scChangePollInterval:
         break;
+    case scSyncOneByUrl:
+        {
+            CSyncEngine::CSourceID oSrcID;
+            oSrcID.m_strUrl = oSyncCmd.m_strCmdParam;
+
+            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
+        }
+        break;
     case scSyncOne:
-        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam,"","",false, -1 );
+        {
+            CSyncEngine::CSourceID oSrcID;
+            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
+            oSrcID.m_strName = oSyncCmd.m_strCmdParam;
+
+            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
+        }
         break;
     case scSearchOne:
-        m_oSyncEngine.doSyncSource(oSyncCmd.m_nCmdParam,"",oSyncCmd.m_strCmdParam, 
-            ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
-            ((CSyncSearchCommand&)oSyncCmd).m_nProgressStep);
+        {
+            CSyncEngine::CSourceID oSrcID;
+            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
+
+            m_oSyncEngine.doSyncSource(oSrcID,oSyncCmd.m_strCmdParam, 
+                ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
+                ((CSyncSearchCommand&)oSyncCmd).m_nProgressStep);
+        }
         break;
     case scLogin:
     	{
@@ -205,9 +224,10 @@ void rho_sync_doSyncAllSources(int show_status_popup)
     //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
-void rho_sync_doSyncSource(int nSrcID,int show_status_popup)
+void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, nSrcID) );
+    CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt ) );
 }	
 
 void rho_sync_stop()
@@ -231,9 +251,9 @@ void rho_sync_doSearchSource(int source_id, const char *from, const char *params
     CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id,sync_changes,nProgressStep) );
 }	
 
-void rho_sync_doSyncSourceByUrl(const char* szSrcID)
+void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcID) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOneByUrl, szSrcUrl) );
 }	
 
 void rho_sync_set_pollinterval(int nInterval)

@@ -228,7 +228,7 @@ public class PushListeningThread extends Thread {
             			if(op.length <= 1 || "all".equalsIgnoreCase(op[1])) {
             				SyncThread.doSyncAllSources(false);
             			} else if ((op[1] != null) && (op[1].length()>0)){
-            				SyncThread.doSyncSource(op[1].trim(),false);
+            				SyncThread.doSyncSourceByUrl(op[1].trim(),false);
             			}
             		} else if (ops[loop].startsWith("show_popup")) {
             			op = splitOnce(ops[loop],"=");

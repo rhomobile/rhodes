@@ -45,6 +45,32 @@ public class SyncEngine implements NetRequest.IRhoSession
     int SYNC_VERSION() { return 2; }
     static String SYNC_ASK_ACTION() { return "/ask"; }
 	
+    static class SourceID
+    {
+        String m_strName = "";
+        String m_strUrl = "";
+        int m_nID;
+
+        public String toString()
+        {
+            if ( m_strName.length() > 0 )
+                return "name : " + m_strName;
+            else if ( m_strUrl.length() > 0 )
+                return "url : " + m_strUrl;
+
+            return "# : " + m_nID;
+        }
+        boolean isEqual(SyncSource src)
+        {
+            if ( m_strName.length() > 0 )
+                return src.getName().equals(m_strName);
+            else if ( m_strUrl.length() > 0 )
+                return src.getUrl().equals(m_strUrl);
+
+            return m_nID == src.getID().intValue();
+        }
+    };
+    
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     DBAdapter   m_dbAdapter;
     NetRequest m_NetRequest;
@@ -142,14 +168,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	setState(esNone);
 	}
 
-	void doSyncSource(int nSrcId, String strSrcUrl, String strParams, String strAction, boolean bSearchSyncChanges,
+	void doSyncSource(SourceID oSrcID, String strParams, String strAction, boolean bSearchSyncChanges,
 			int nProgressStep)
 	{
-	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
-	    	LOG.INFO( "Started synchronization of the data source url: " + strSrcUrl );
-	    else
-	    	LOG.INFO( "Started synchronization of the data source #" + nSrcId );
-		
 	    setState(esSyncSource);
 	    m_bStopByUser = false;
         SyncSource src = null;
@@ -157,13 +178,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    try
 	    {
 		    loadAllSources();
-		    if ( strSrcUrl != null && strSrcUrl.length()>0 )
-		    	src = findSourceByUrl(strSrcUrl);
-		    else
-		    	src = findSourceByID(nSrcId);
+		    src = findSource(oSrcID);
 		    
 	        if ( src != null )
 	        {
+	            LOG.INFO("Started synchronization of the data source: " + src.getName() );
+	        	
 	        	src.m_strParams = strParams;
 	        	src.m_strAction = strAction;
 	        	src.m_bSearchSyncChanges = bSearchSyncChanges;
@@ -188,18 +208,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	//src.m_strError = "Unknown sync source.";
 		    	src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 	        	
-	    	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
-	    	    	throw new RuntimeException("Sync one source : Unknown Source Url: " + strSrcUrl );
-	    	    else
-	    	    	throw new RuntimeException("Sync one source : Unknown Source ID: " + nSrcId );
+    	    	throw new RuntimeException("Sync one source : Unknown Source " + oSrcID.toString() );
 	        }
 	    } catch(Exception exc) {
-	    	if ( strSrcUrl != null && strSrcUrl.length()>0 )	    	
-	    		LOG.ERROR("Sync source: " + strSrcUrl + " failed.", exc);
-	    	else
-	    		LOG.ERROR("Sync source: " + nSrcId + " failed.", exc);
+    		LOG.ERROR("Sync source " + oSrcID.toString() + " failed.", exc);
 	    	
-	    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
+	    	if ( src != null && src.m_nErrCode == RhoRuby.ERR_NONE )
 	    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 	    	
 	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
@@ -208,53 +222,31 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    getNotify().cleanCreateObjectErrors();
 	    if ( getState() != esExit )
 	    	setState(esNone);
-	    
-	    if ( strSrcUrl != null && strSrcUrl.length()>0 )
-	    	LOG.INFO( "End synchronization of the data source url: " + strSrcUrl );
-	    else
-	    	LOG.INFO( "End synchronization of the data source #" + nSrcId );
 	}
 
-	SyncSource findSourceByID(int nSrcId)
+	SyncSource findSource(SourceID oSrcID)
 	{
-	    for( int i = 0; i < m_sources.size(); i++ )
+	    for( int i = 0; i < (int)m_sources.size(); i++ )
 	    {
 	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( src.getID().intValue() == nSrcId )
+	        if ( oSrcID.isEqual(src) )
 	            return src;
 	    }
 	    
 	    return null;
 	}
 	
-	SyncSource findSourceByUrl(String strSrcUrl)
-	{
-	    for( int i = 0; i < m_sources.size(); i++ )
-	    {
-	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( src.getUrl().equals(strSrcUrl) )
-	            return src;
-	    }
-	    
-	    return null;
-	}
-
 	SyncSource findSourceByName(String strSrcName)
 	{
-	    for( int i = 0; i < m_sources.size(); i++ )
-	    {
-	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        if ( src.getName().equals(strSrcName) )
-	            return src;
-	    }
-	    
-	    return null;
+	    SourceID oSrcID = new SourceID();
+	    oSrcID.m_strName = strSrcName;
+	    return findSource(oSrcID);
 	}
 	
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY source_id");
+	    IDBResult res = getDB().executeSQL("SELECT source_id,source_url,token,name from sources ORDER BY priority");
 	
 	    for ( ; !res.isEnd(); res.next() )
 	    { 

@@ -4,7 +4,7 @@
 /* Put header files here or function declarations like below */
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
 	#define dosync_source rho_sync_doSyncSource
-	extern void rho_sync_doSyncSource(int source_id,int show_status_popup);
+	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
 	#define dosearch_source rho_sync_doSearchSource
 	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	#define dosync rho_sync_doSyncAllSources
@@ -58,7 +58,7 @@
  $1 = 1;
 }
 extern void dosync(bool show_status_popup);
-extern void dosync_source(int source_id, bool show_status_popup);
+extern void dosync_source(VALUE source_id, bool show_status_popup);
 extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();

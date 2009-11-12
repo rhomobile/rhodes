@@ -416,7 +416,7 @@ public class SyncNotify {
 
 	void clearNotification(SyncSource src)
 	{
-		LOG.INFO( "Clear notification. Source ID: " + src.getID());
+		LOG.INFO( "Clear notification. Source : " + src.getName());
 
 	    synchronized(m_mxSyncNotifications)
 	    {
