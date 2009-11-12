@@ -115,6 +115,7 @@ namespace "config" do
       $exe_ext = ".exe"
       $path_separator = ";"
       $ndkhost = "windows"
+      $rubypath = "res/build-tools/RhoRuby.exe"
     else
       #XXX make these absolute
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
@@ -122,6 +123,8 @@ namespace "config" do
       $exe_ext = ""
       $path_separator = ":"
       $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
+      # TODO: add ruby executable for Linux
+      $rubypath = "res/build-tools/RubyMac"
     end
 
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
@@ -203,23 +206,18 @@ namespace "build" do
 
       # Temporarily just unpack archive.
       # TODO: implement compiling of iseq for android
-      args = []
-      args << "xvf"
-      args << "#{$androidpath}/../../../rhobundle-system-api-samples.tar"
-      puts Jake.run("tar", args, $bindir)
-
       #args = []
-      #args << "cf"
-      #args << "../RhoBundle.jar"
-      #args << "."
-      #puts Jake.run($jarbin, args, $srcdir)
+      #args << "xvf"
+      #args << "#{$androidpath}/../../../rhobundle-system-api-samples.tar"
+      #puts Jake.run("tar", args, $bindir)
 
-      cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      #cp_r $bindir + "/RhoBundle.jar", $libs
+      #cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      #cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      #cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
 
-      rm_rf $srcdir
+      #rm_rf $srcdir
+      
+      Rake::Task["build:bundle:noxruby"].execute
     end
 
     task :libsqlite => "config:android" do
@@ -648,7 +646,7 @@ namespace "clean" do
   task :android => "clean:android:all"
   namespace "android" do
     task :assets => "config:android" do
-      Dir.glob($androidpath + "/Rhodes/assets/apps/**/*") do |f|
+      Dir.glob($androidpath + "/Rhodes/assets/**/*") do |f|
         rm_rf f unless f =~ /\/loading.html$/
       end
     end
