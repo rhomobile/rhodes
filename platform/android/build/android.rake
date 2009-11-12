@@ -49,25 +49,58 @@ def cc_compile(filename, objdir, additional = nil)
   args << "-DANDROID"
   args << "-DOS_ANDROID"
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-g"
-  args << "-O0"
-  args << "-D_DEBUG"
+  if $build_release
+    args << "-O2"
+    args << "-DNDEBUG"
+  else
+    args << "-g"
+    args << "-O0"
+    args << "-D_DEBUG"
+  end
   args << "-c"
   args << filename
   args << "-o"
   args << objname
   puts Jake.run(ccbin, args)
-  return $? == 0 ? true : false
+  return $? == 0
 end
 
-def cc_link(libname, objects)
+def cc_ar(libname, objects)
   return true if FileUtils.uptodate? libname, objects
   args = []
   args << "crs"
   args << libname
   args += objects
   puts Jake.run($arbin, args)
-  return $? == 0 ? true : false
+  return $? == 0
+end
+
+def cc_link(outname, objects, additional = nil)
+  return true if FileUtils.uptodate? outname, objects
+  args = []
+  args << "-nostdlib"
+  args << "-Wl,-shared,-Bsymbolic"
+  args << "-Wl,--whole-archive"
+  args << "-Wl,--no-whole-archive"
+  args << "-Wl,--no-undefined"
+  args << "#{$ndksysroot}/usr/lib/libc.so"
+  args << "#{$ndksysroot}/usr/lib/libstdc++.so"
+  args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "-L#{$ndksysroot}/usr/lib"
+  args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
+  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a"
+  args << "-shared"
+  args << "-fPIC"
+  args << "-Wl,-soname,#{outname}"
+  args << "-o"
+  args << outname
+  args += objects
+  args += additional if additional.is_a? Array and not additional.empty?
+  puts Jake.run($gccbin, args)
+  return false unless $? == 0
+
+  puts Jake.run($stripbin, [outname])
+  return $? == 0
 end
 
 def cc_clean(name)
@@ -86,16 +119,23 @@ namespace "config" do
     # command "android list targets"
     ANDROID_API_LEVEL = 3
 
-    $java = $config["env"]["paths"]["java"]
+	# Here is switch between release/debug configuration used for
+	# building native libraries
+	$build_release = true
+
     $androidsdkpath = $config["env"]["paths"]["android"]
+	puts "Missing 'android' section in rhobuild.yml" if $androidsdkpath.nil?
     $androidndkpath = $config["env"]["paths"]["android-ndk"]
+	puts "Missing 'android-ndk' section in rhobuild.yml" if $androidndkpath.nil?
+	
+    $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $builddir = File.join($androidpath, "build")
     $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, "target")
-    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
     $excludeapps = "public/js/iui/**,**/jquery*"
@@ -142,12 +182,14 @@ namespace "config" do
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
 
-    $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-4.2.1"
+	$ndkgccver = "4.2.1"
+    $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
     $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
 
     $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
     $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
     $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
+	$stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
 
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
@@ -203,21 +245,13 @@ namespace "build" do
 #    desc "Build RhoBundle for android"
     task :rhobundle => "config:android" do
       #Rake::Task["build:bundle:xruby"].execute
+      Rake::Task["build:bundle:noxruby"].execute
 
-      # Temporarily just unpack archive.
-      # TODO: implement compiling of iseq for android
-      #args = []
-      #args << "xvf"
-      #args << "#{$androidpath}/../../../rhobundle-system-api-samples.tar"
-      #puts Jake.run("tar", args, $bindir)
-
-      #cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      #cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      #cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
 
       #rm_rf $srcdir
-      
-      Rake::Task["build:bundle:noxruby"].execute
     end
 
     task :libsqlite => "config:android" do
@@ -226,7 +260,7 @@ namespace "build" do
       libname = $libname["sqlite"]
 
       cc_compile File.join(srcdir, "sqlite3.c"), objdir, ["-I#{srcdir}"] or exit 1
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libcurl => "config:android" do
@@ -249,7 +283,7 @@ namespace "build" do
       File.read(File.join($builddir, "libcurl_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libruby => "config:android" do
@@ -267,7 +301,7 @@ namespace "build" do
       File.read(File.join($builddir, "libruby_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libjson => "config:android" do
@@ -284,7 +318,7 @@ namespace "build" do
       File.read(File.join($builddir, "libjson_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libshttpd => "config:android" do
@@ -298,7 +332,7 @@ namespace "build" do
       File.read(File.join($builddir, "libshttpd_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libstlport => "config:android" do
@@ -317,7 +351,8 @@ namespace "build" do
       unless $? == 0
         exit 1
       end
-      cp_r File.join(objdir, "so", "libstlport.a"), libname
+	  source = File.join(objdir, "so", "libstlport.a")
+      cp_r source, libname unless FileUtils.uptodate? libname, source
     end
 
     task :librholog => "config:android" do
@@ -332,7 +367,7 @@ namespace "build" do
       File.read(File.join($builddir, "librholog_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhomain => "config:android" do
@@ -347,7 +382,7 @@ namespace "build" do
       File.read(File.join($builddir, "librhomain_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhocommon => "config:android" do
@@ -363,7 +398,7 @@ namespace "build" do
       File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhodb => "config:android" do
@@ -380,7 +415,7 @@ namespace "build" do
       File.read(File.join($builddir, "librhodb_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librhosync => "config:android" do
@@ -397,13 +432,50 @@ namespace "build" do
       File.read(File.join($builddir, "librhosync_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_link libname, Dir.glob(objdir + "/**/*.o") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
+    task :librhodes => :libs do
+      srcdir = File.join $androidpath, "Rhodes", "jni", "src"
+      objdir = File.join $bindir, "libs", "librhodes"
+      libname = File.join $bindir, "libs", "librhodes.so"
+	  args = []
+	  args << "-I#{$stlport_includes}"
+	  args << "-I#{srcdir}/../include"
+	  args << "-I#{$shareddir}"
+	  args << "-I#{$shareddir}/sqlite"
+	  args << "-I#{$shareddir}/curl/include"
+      args << "-I#{$shareddir}/ruby/include"
+	  args << "-I#{$shareddir}/ruby/linux"
+	  args << "-D__NEW__"
+	  args << "-D__SGI_STL_INTERNAL_PAIR_H"
+
+	  File.read(File.join($builddir, "librhodes_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
+	  end
+
+	  args = []
+	  args << "-L#{$bindir}/libs"
+	  args << "-lrhomain"
+	  args << "-lshttpd"
+	  args << "-lruby"
+	  args << "-lrhosync"
+	  args << "-lrhodb"
+	  args << "-lrholog"
+	  args << "-lrhocommon"
+	  args << "-ljson"
+	  args << "-lstlport"
+	  args << "-lcurl"
+	  args << "-lsqlite"
+	  args << "-ldl"
+	  args << "-lz"
+	  cc_link libname, Dir.glob(objdir + "/**/*.o"), args or exit 1
+    end
+
  #   desc "Build Rhodes for android"
-    task :rhodes => [:rhobundle, :libs] do
+    task :rhodes => [:rhobundle, :librhodes] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
       rm_rf $tmpdir + "/Rhodes"
@@ -511,7 +583,8 @@ namespace "package" do
     end
 
     rm_rf $bindir + "/lib"
-    cp_r $androidpath + "/Rhodes/libs", $bindir + "/lib"
+	mkdir_p $bindir + "/lib/armeabi"
+    cp_r $bindir + "/libs/librhodes.so", $bindir + "/lib/armeabi"
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
     puts Jake.run($aapt, args, $bindir)
     unless $? == 0
@@ -661,8 +734,12 @@ namespace "clean" do
         cc_clean l
       end
     end
+	task :librhodes => "config:android" do
+	  rm_rf $bindir + "/libs/librhodes"
+	  rm_rf $bindir + "/libs/librhodes.so"
+	end
 #    desc "clean android"
-    task :all => [:assets,:libs,:files]
+    task :all => [:assets,:librhodes,:libs,:files]
   end
 end
 
