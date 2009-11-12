@@ -647,7 +647,7 @@ namespace "clean" do
   namespace "android" do
     task :assets => "config:android" do
       Dir.glob($androidpath + "/Rhodes/assets/**/*") do |f|
-        rm_rf f unless f =~ /\/loading.html$/
+        rm f, :force => true unless f =~ /\/loading\.html$/
       end
     end
     task :files => "config:android" do
