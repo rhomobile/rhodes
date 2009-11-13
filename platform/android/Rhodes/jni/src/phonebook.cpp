@@ -71,9 +71,15 @@ static VALUE createHashFromContact(jobject contactObj)
 
         const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
         const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
+
         addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
+
         env->ReleaseStringUTFChars(keyObj, keyStr);
         env->ReleaseStringUTFChars(valueObj, valueStr);
+
+        env->DeleteLocalRef(valueObj);
+        env->DeleteLocalRef(keyObj);
+        env->DeleteLocalRef(entryObj);
     }
 
     return contactHash;
@@ -116,8 +122,12 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         const char *idStr = env->GetStringUTFChars(idObj, JNI_FALSE);
 
         addHashToHash(hash, idStr, createHashFromContact(contactObj));
+
         env->ReleaseStringUTFChars(idObj, idStr);
+        env->DeleteLocalRef(idObj);
+        env->DeleteLocalRef(contactObj);
     }
+
     return hash;
 }
 
