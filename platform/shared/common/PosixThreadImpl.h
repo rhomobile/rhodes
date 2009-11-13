@@ -1,8 +1,8 @@
 #ifndef RHO_POSIX_THREAD_IMPL_9e4b35f90ae146ae9c809ca56e4ef856
 #define RHO_POSIX_THREAD_IMPL_9e4b35f90ae146ae9c809ca56e4ef856
 
-#include <common/IRhoThreadImpl.h>
-#include <logging/RhoLog.h>
+#include "common/IRhoThreadImpl.h"
+#include "logging/RhoLog.h"
 
 namespace rho
 {

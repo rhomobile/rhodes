@@ -61,6 +61,8 @@
 		5CBD462A1087399700107D0D /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBD46271087399700107D0D /* URI.cpp */; };
 		5CBD462B1087399700107D0D /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46281087399700107D0D /* URI.h */; };
 		5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE294111009D8D9009A75F6 /* isysteminfo.h */; };
+		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
+		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
 		BD2CEFCF10ADF10D002356D9 /* CURLNetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2CEFCC10ADF10D002356D9 /* CURLNetRequest.h */; };
 		BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2CEFCD10ADF10D002356D9 /* INetRequest.h */; };
@@ -121,6 +123,8 @@
 		5CBD46271087399700107D0D /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../shared/net/URI.cpp; sourceTree = SOURCE_ROOT; };
 		5CBD46281087399700107D0D /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../shared/net/URI.h; sourceTree = SOURCE_ROOT; };
 		5CE294111009D8D9009A75F6 /* isysteminfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = isysteminfo.h; path = ../../shared/common/isysteminfo.h; sourceTree = SOURCE_ROOT; };
+		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
+		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
 		BD2CEFCC10ADF10D002356D9 /* CURLNetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CURLNetRequest.h; path = ../../shared/net/CURLNetRequest.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCD10ADF10D002356D9 /* INetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INetRequest.h; path = ../../shared/net/INetRequest.h; sourceTree = SOURCE_ROOT; };
@@ -180,6 +184,8 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
+				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
 				5C6855E610A02EAA008DA047 /* RhodesApp.cpp */,
 				5C6855E710A02EAA008DA047 /* RhodesApp.h */,
 				5C7405901064AF1600163569 /* Tokenizer.cpp */,
@@ -308,6 +314,7 @@
 				5C7BC95210AAB782007B0BA1 /* shttpd.h in Headers */,
 				BD2CEFCF10ADF10D002356D9 /* CURLNetRequest.h in Headers */,
 				BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */,
+				BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,6 +383,7 @@
 				5C7BC95110AAB782007B0BA1 /* shttpd.c in Sources */,
 				5C7BC95310AAB782007B0BA1 /* string.c in Sources */,
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
+				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
