@@ -79,6 +79,7 @@ platform/android/**/default.properties
 *.lib
 
 *.mode1v3
+*.mode2v3
 *.pbxuser
 *.CAB
 *.cab
