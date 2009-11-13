@@ -210,6 +210,11 @@ public class Rhodes extends Activity {
 		
 		RhodesInstance.setInstance(this);
 		
+		// WARNING!!! This function MUST be called first time in context of
+		// UI thread for internal JNI structures be correctly initialized!!!
+		// Do not remove this line!!!
+		getRootPath();
+		
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {

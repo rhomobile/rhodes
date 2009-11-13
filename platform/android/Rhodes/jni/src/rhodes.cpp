@@ -52,6 +52,24 @@ jclass getJNIObjectClass(jobject obj)
     return cls;
 }
 
+jfieldID getJNIClassField(jclass cls, const char *name, const char *signature)
+{
+    JNIEnv *env = jnienv();
+    jfieldID fid = env->GetFieldID(cls, name, signature);
+    if (!fid)
+        RAWLOG_ERROR3("Can not get field %s of signature %s for class %p", name, signature, cls);
+    return fid;
+}
+
+jfieldID getJNIClassStaticField(jclass cls, const char *name, const char *signature)
+{
+    JNIEnv *env = jnienv();
+    jfieldID fid = env->GetStaticFieldID(cls, name, signature);
+    if (!fid)
+        RAWLOG_ERROR3("Can not get static field %s of signature %s for class %p", name, signature, cls);
+    return fid;
+}
+
 jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature)
 {
     JNIEnv *env = jnienv();
@@ -90,24 +108,42 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 
     const char *classes[] = {
         RHODES_JAVA_CLASS_RHODES,
-        RHODES_JAVA_CLASS_WEB_VIEW
+        RHODES_JAVA_CLASS_WEB_VIEW,
+        RHODES_JAVA_CLASS_GEO_LOCATION,
+        RHODES_JAVA_CLASS_CAMERA,
+        RHODES_JAVA_CLASS_DATE_TIME_PICKER,
+        RHODES_JAVA_CLASS_PHONEBOOK,
+        RHODES_JAVA_CLASS_CONTACT
     };
 
-    //FILE *fp = fopen("/sdcard/rholog.txt", "ab");
+//#define RHO_LOG_JNI_INIT
+
+#ifdef RHO_LOG_JNI_INIT
+    FILE *fp = fopen("/sdcard/rholog.txt", "wb");
+#endif
     for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
     {
-        jclass cls = env->FindClass(classes[i]);
-        //fprintf(fp, "Find class %s...\n", it->c_str());
+        const char *className = classes[i];
+        jclass cls = env->FindClass(className);
+#ifdef RHO_LOG_JNI_INIT
+        fprintf(fp, "Find class %s...\n", className);
+#endif
         if (!cls)
         {
-            //fprintf(fp, "Can not resolve Java class: %s (JNI)\n", it->c_str());
-            continue;
+#ifdef RHO_LOG_JNI_INIT
+            fprintf(fp, "Can not resolve Java class: %s (JNI)\n", className);
+#endif
+            return -1;
         }
-        //fprintf(fp, "Class found: %p\n", cls);
-        g_classes[classes[i]] = (jclass)env->NewGlobalRef(cls);
+#ifdef RHO_LOG_JNI_INIT
+        fprintf(fp, "Class found: %p\n", cls);
+#endif
+        g_classes[className] = (jclass)env->NewGlobalRef(cls);
         env->DeleteLocalRef(cls);
     }
-    //fclose(fp);
+#ifdef RHO_LOG_JNI_INIT
+    fclose(fp);
+#endif
 
     return jversion;
 }

@@ -1,5 +1,10 @@
 package com.rhomobile.rhodes.phonebook;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -13,9 +18,9 @@ import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
 
 //@RubyLevelClass(name="Phonebook")
-public class RhoPhonebook {
+public class Phonebook {
 
-	private ContactList contactList = new ContactList();
+	private Map<String, Contact> contactList = new HashMap<String, Contact>();
 	private Rhodes activity;
 	private Cursor cursor;
 
@@ -27,8 +32,8 @@ public class RhoPhonebook {
 	static final String PB_BUSINESS_NUMBER = "business_number";
 	static final String PB_EMAIL_ADDRESS = "email_address";
 	static final String PB_COMPANY_NAME = "company_name";
-
-	public RhoPhonebook() {
+	
+	public Phonebook() {
 
 		activity = RhodesInstance.getInstance();
 		cursor = activity.getContentResolver().query(People.CONTENT_URI,
@@ -143,14 +148,18 @@ public class RhoPhonebook {
 					}
 				}
 
-				this.contactList.addContact(contact);
+				this.contactList.put(contact.getField(PB_ID), contact);
 			} while (cursor.moveToNext());
 		}
 	}
 
 	public void close() {
-		this.contactList.getContacts().clear();
+		this.contactList.clear();
 		activity.stopManagingCursor(cursor);
+	}
+	
+	public Iterator<Contact> iterator() {
+		return contactList.values().iterator();
 	}
 
 	public void removeContact(Contact contact) throws Exception {
