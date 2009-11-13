@@ -31,7 +31,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			filoutputStream.flush();
 			filoutputStream.close();
 			
-			com.rhomobile.rhodes.camera.Camera.callCallback(filePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(filePath);
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

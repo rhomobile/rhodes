@@ -1,6 +1,5 @@
 platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraRunnable.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/FileList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
