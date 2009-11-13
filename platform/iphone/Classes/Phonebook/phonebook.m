@@ -123,7 +123,7 @@ static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
 		int num_phones = ABMultiValueGetCount(emails);
 		for (int n = 0; n < num_phones; n++) {
 			CFStringRef label = ABMultiValueCopyLabelAtIndex(emails,n);
-			if(CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
+			if(label == nil || CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_EMAIL_ADDRESS,
 								   ABMultiValueCopyValueAtIndex(emails,n));
 			} else if(CFStringCompare(label,kABHomeLabel,0)==kCFCompareEqualTo) {
