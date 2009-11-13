@@ -1,9 +1,9 @@
 #ifndef RHO_CURL_NET_REQUEST_041be6266e3e424c8a8e7b8a412f01f0
 #define RHO_CURL_NET_REQUEST_041be6266e3e424c8a8e7b8a412f01f0
 
-#include <curl/curl.h>
-#include <net/INetRequest.h>
-#include <logging/RhoLog.h>
+#include "curl/curl.h"
+#include "net/INetRequest.h"
+#include "logging/RhoLog.h"
 
 namespace rho
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/IRhoClassFactory.h"
-#include "../net/NetRequest.h"
+#include "net/CURLNetRequest.h"
 #include "RhoThreadImpl.h"
 #include "SystemInfoImpl.h"
 
@@ -14,7 +14,7 @@ public:
     virtual ~CRhoClassFactory(void){}
     net::INetRequest* createNetRequest()
     {
-        return new net::CNetRequest();
+        return new net::CURLNetRequest();
     }
     virtual common::IRhoThreadImpl* createThreadImpl()
     {

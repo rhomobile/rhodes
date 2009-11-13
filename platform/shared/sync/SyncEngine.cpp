@@ -334,30 +334,18 @@ void CSyncEngine::login(String name, String password, String callback)
 	//}
 }
 
-#if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
-extern "C" int rho_sync_logged_in_cookies();
-#endif
-
 boolean CSyncEngine::isLoggedIn()
  {
-    //TODO: read cookies from DB and set them for each request
- #if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
-    return rho_sync_logged_in_cookies() == 0 ? false : true;
- #else
     int nCount = 0;
     DBResult( res , getDB().executeSQL("SELECT count(session) FROM sources") );
      if ( !res.isEnd() )
         nCount = res.getIntByIdx(0);
 
     return nCount > 0;
- #endif
 }
 
 String CSyncEngine::loadSession()
 {
-#if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
-    return rho_sync_logged_in_cookies() == 0 ? "" : "exist";
-#else
     String strRes = "";
     DBResult( res , getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL") );
     
@@ -365,7 +353,6 @@ String CSyncEngine::loadSession()
     	strRes = res.getStringByIdx(0);
     
     return strRes;
-#endif
 }
 
 void CSyncEngine::logout()
