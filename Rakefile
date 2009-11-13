@@ -47,6 +47,12 @@ namespace "config" do
     end
     Jake.set_bbver($app_config["bbver"].to_s)
   end
+
+  begin
+    Jake.run("jar ",['-h','2>&1'])
+  rescue
+    puts "\n\nYour java bin folder does not appear to be on your path.\nThis is required to use rhodes.\n\n"
+  end
 end
 
 def copy_assets(asset)
