@@ -393,7 +393,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DOS_IPHONE=1";
+				OTHER_CFLAGS = "";
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphonesimulator2.2.1;
 				SYMROOT = ../build;
@@ -409,7 +409,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DOS_IPHONE=1";
+				OTHER_CFLAGS = "";
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
@@ -463,7 +463,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DOS_IPHONE=1";
+				OTHER_CFLAGS = "";
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
