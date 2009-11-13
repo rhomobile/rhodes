@@ -1799,24 +1799,27 @@ rb_hash_compare_by_id_p(VALUE hash)
 }
 
 static int path_tainted = -1;
-
-static char **origenviron;
+//RHO
+//static char **origenviron;
+static char * __environ = "";
+static char ** environ = &__environ;
 #ifdef _WIN32
-#define GET_ENVIRON(e) (e = rb_w32_get_environ())
-#define FREE_ENVIRON(e) rb_w32_free_environ(e)
-static char **my_environ;
-#undef environ
-#define environ my_environ
+#define GET_ENVIRON(e) ""//(e = rb_w32_get_environ())
+#define FREE_ENVIRON(e) //rb_w32_free_environ(e)
+//static char **my_environ;
+//#undef environ
+//#define environ my_environ
 #elif defined(__APPLE__)
-#undef environ
-#define environ (*_NSGetEnviron())
+//#undef environ
+//#define environ (*_NSGetEnviron())
 #define GET_ENVIRON(e) (e)
 #define FREE_ENVIRON(e)
 #else
-extern char **environ;
+//extern char **environ;
 #define GET_ENVIRON(e) (e)
 #define FREE_ENVIRON(e)
 #endif
+//RHO
 #ifdef ENV_IGNORECASE
 #define ENVMATCH(s1, s2) (STRCASECMP(s1, s2) == 0)
 #define ENVNMATCH(s1, s2, n) (STRNCASECMP(s1, s2, n) == 0)
@@ -2652,7 +2655,9 @@ Init_Hash(void)
     rb_define_method(rb_cHash,"compare_by_identity", rb_hash_compare_by_id, 0);
     rb_define_method(rb_cHash,"compare_by_identity?", rb_hash_compare_by_id_p, 0);
 
-    origenviron = environ;
+    //RHO
+    //origenviron = environ;
+    //RHO
     envtbl = rb_obj_alloc(rb_cObject);
     rb_extend_object(envtbl, rb_mEnumerable);
 
