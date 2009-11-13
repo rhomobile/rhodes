@@ -34,6 +34,9 @@ RHO_GLOBAL void closePhonebook(void* pb)
 
 RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 {
+    RHO_NOT_IMPLEMENTED;
+    return Qnil;
+#if 0
     RHO_LOG_CALLBACK;
     jobject phonebookObj = (jobject)pb;
 
@@ -109,6 +112,7 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         env->ReleaseStringUTFChars(idObj, idStr);
     }
     return hash;
+#endif
 }
 
 RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)

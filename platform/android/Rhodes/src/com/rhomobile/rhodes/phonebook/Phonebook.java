@@ -101,6 +101,8 @@ public class Phonebook {
 						phonesCursor.moveToNext();
 					}
 				}
+				
+				phonesCursor.close();
 
 				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI,
 						Long.parseLong(contact.getField(PB_ID)));
@@ -122,6 +124,8 @@ public class Phonebook {
 						contact.setField(PB_COMPANY_NAME,
 								organizationCursor.getString(numberColumn));
 				}
+				
+				organizationCursor.close();
 
 				String[] contactProjection = new String[] {
 						Contacts.ContactMethods.KIND,
@@ -147,6 +151,8 @@ public class Phonebook {
 						contactCursor.moveToNext();
 					}
 				}
+				
+				contactCursor.close();
 
 				this.contactList.put(contact.getField(PB_ID), contact);
 			} while (cursor.moveToNext());
@@ -156,6 +162,7 @@ public class Phonebook {
 	public void close() {
 		this.contactList.clear();
 		activity.stopManagingCursor(cursor);
+		cursor.close();
 	}
 	
 	public Iterator<Contact> iterator() {
