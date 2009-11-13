@@ -222,9 +222,35 @@ public class Rhodes extends Activity {
 					Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
 					String rootPath = getRootPath();
 					AssetManager amgr = getResources().getAssets();
-					copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
-					copyFromBundle(amgr, "db", new File(rootPath, "db"));
-					copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
+					
+					boolean copy = true;
+					
+					byte[] buf = new byte[64];
+					InputStream in = amgr.open("hash", AssetManager.ACCESS_BUFFER);
+					int n = in.read(buf);
+					in.close();
+					if (n == buf.length) {
+						String newHash = new String(buf);
+						try {
+							in = new FileInputStream(new File(rootPath, "hash"));
+							n = in.read(buf);
+							in.close();
+						}
+						catch (Exception e) {
+							n = 0;
+						}
+						if (n == buf.length) {
+							String oldHash = new String(buf);
+							if (oldHash.equals(newHash))
+								copy = false;
+						}
+					}
+					if (copy) {
+						copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
+						copyFromBundle(amgr, "db", new File(rootPath, "db"));
+						copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
+						copyFromBundle(amgr, "hash", new File(rootPath, "hash"));
+					}
 					File dbfiles = new File(rootPath + "apps/public/db-files");
 					if (!dbfiles.exists())
 						dbfiles.mkdirs();
