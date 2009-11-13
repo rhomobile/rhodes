@@ -528,7 +528,7 @@
 /* ===================================== */
 
 #elif defined(__GNUC__)
-#  if defined(__i386__) || defined(__ppc__) || defined(OS_ANDROID) || defined(OS_IPHONE)
+#  if defined(__i386__) || defined(__ppc__) || defined(__arm__)
 #    define CURL_SIZEOF_LONG           4
 #    define CURL_TYPEOF_CURL_OFF_T     long long
 #    define CURL_FORMAT_CURL_OFF_T     "lld"
