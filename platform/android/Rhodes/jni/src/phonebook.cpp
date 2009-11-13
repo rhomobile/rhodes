@@ -71,8 +71,14 @@ static VALUE createHashFromContact(jobject contactObj)
 
         const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
         const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
-
-        addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
+        if (strcmp(keyStr, "id") == 0)
+        {
+            char buf[64];
+            snprintf(buf, sizeof(buf), "{%s}", valueStr);
+            addStrToHash(contactHash, keyStr, buf, strlen(buf));
+        }
+        else
+            addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
 
         env->ReleaseStringUTFChars(keyObj, keyStr);
         env->ReleaseStringUTFChars(valueObj, valueStr);
@@ -120,10 +126,12 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         jstring idObj = (jstring)env->CallObjectMethod(contactObj, contactIdMID);
         if (!idObj) return Qnil;
         const char *idStr = env->GetStringUTFChars(idObj, JNI_FALSE);
-
-        addHashToHash(hash, idStr, createHashFromContact(contactObj));
-
+        char buf[64];
+        snprintf(buf, sizeof(buf), "{%s}", idStr);
         env->ReleaseStringUTFChars(idObj, idStr);
+
+        addHashToHash(hash, buf, createHashFromContact(contactObj));
+
         env->DeleteLocalRef(idObj);
         env->DeleteLocalRef(contactObj);
     }
@@ -140,8 +148,14 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     jmethodID mid = getJNIClassMethod(cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return NULL;
 
+    int rid;
+    if (sscanf(id, "{%d}", &rid) != 1)
+        return NULL;
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%d", rid);
+
     JNIEnv *env = jnienv();
-    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(buf));
     if (!recordObj) return NULL;
     jobject retval = env->NewGlobalRef(recordObj);
     env->DeleteLocalRef(recordObj);
