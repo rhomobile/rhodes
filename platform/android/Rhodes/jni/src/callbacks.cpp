@@ -33,9 +33,12 @@ RHO_GLOBAL void rho_appmanager_load( void* httpContext, const char* szQuery)
 
 RHO_GLOBAL int rho_net_has_network()
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return 1;
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(cls, "hasNetwork", "()Z");
+    if (!mid) return 0;
+    return jnienv()->CallStaticBooleanMethod(cls, mid);
 }
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
