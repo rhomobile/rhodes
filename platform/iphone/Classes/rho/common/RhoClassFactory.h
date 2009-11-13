@@ -2,7 +2,7 @@
 
 #include "common/IRhoClassFactory.h"
 #include "net/CURLNetRequest.h"
-#include "RhoThreadImpl.h"
+#include "common/PosixThreadImpl.h"
 #include "SystemInfoImpl.h"
 
 namespace rho {
@@ -18,7 +18,7 @@ public:
     }
     virtual common::IRhoThreadImpl* createThreadImpl()
     {
-        return new common::CRhoThreadImpl;
+        return new CPosixThreadImpl;
     }
     virtual ISystemInfo* createSystemInfo()
     {

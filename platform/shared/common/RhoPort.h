@@ -30,6 +30,9 @@ typedef unsigned __int64 uint64;
 #  else
 #    include <wchar.h>
 #  endif // OS_ANDROID
+#  if defined(OS_MACOSX)
+#    include <sys/time.h>
+#  endif
 #include <stdlib.h>
 #include <pthread.h>
 
