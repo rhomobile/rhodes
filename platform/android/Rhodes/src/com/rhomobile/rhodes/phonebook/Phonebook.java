@@ -208,7 +208,8 @@ public class Phonebook {
 	public void removeContact(Contact contact) throws Exception {
 		Uri uri = People.CONTENT_URI;
 
-		cr.delete(uri, People._ID + "=" + getId(contact), null);
+		String id = getId(contact);
+		cr.delete(uri, People._ID + "=" + id, null);
 	}
 
 	public void saveContact(Contact contact) throws Exception {
