@@ -426,6 +426,10 @@ public class Rhodes extends Activity {
 		return true;
 	}
 	
+	public static void showNetworkIndicator(boolean v) {
+		// TODO:
+	}
+	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));

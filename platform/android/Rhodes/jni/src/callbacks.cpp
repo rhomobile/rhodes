@@ -61,8 +61,12 @@ RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_nam
 
 RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 {
-    // TODO
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(cls, "showNetworkIndicator", "(Z)V");
+    if (!mid) return;
+    jnienv()->CallStaticVoidMethod(cls, mid, enable);
 }
 
 RHO_GLOBAL void *rho_nativethread_start()
