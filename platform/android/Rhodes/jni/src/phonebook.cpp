@@ -142,22 +142,34 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
 
     JNIEnv *env = jnienv();
     jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+    if (!recordObj) return NULL;
     jobject retval = env->NewGlobalRef(recordObj);
     env->DeleteLocalRef(recordObj);
+    if (!retval) return NULL;
     return retval;
 }
 
 RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
 {
     RHO_LOG_CALLBACK;
+    jobject recordObj = (jobject)openPhonebookRecord(pb, id);
+    if (!recordObj)
+        return Qnil;
+    VALUE retval = createHashFromContact(recordObj);
+    jnienv()->DeleteGlobalRef(recordObj);
+    return retval;
+}
+
+static VALUE getRecord(void *pb, const char *name)
+{
     jobject obj = (jobject)pb;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return Qnil;
-    jmethodID mid = getJNIClassMethod(cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
+    jmethodID mid = getJNIClassMethod(cls, name, "()Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return Qnil;
 
     JNIEnv *env = jnienv();
-    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+    jobject recordObj = env->CallObjectMethod(obj, mid);
     if (!recordObj)
         return Qnil;
     return createHashFromContact(recordObj);
@@ -166,33 +178,13 @@ RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
 RHO_GLOBAL VALUE getfirstPhonebookRecord(void* pb)
 {
     RHO_LOG_CALLBACK;
-    jobject obj = (jobject)pb;
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
-    if (!cls) return Qnil;
-    jmethodID mid = getJNIClassMethod(cls, "getFirstRecord", "()Lcom/rhomobile/rhodes/phonebook/Contact;");
-    if (!mid) return Qnil;
-
-    JNIEnv *env = jnienv();
-    jobject recordObj = env->CallObjectMethod(obj, mid);
-    if (!recordObj)
-        return Qnil;
-    return createHashFromContact(recordObj);
+    return getRecord(pb, "getFirstRecord");
 }
 
 RHO_GLOBAL VALUE getnextPhonebookRecord(void* pb)
 {
     RHO_LOG_CALLBACK;
-    jobject obj = (jobject)pb;
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
-    if (!cls) return Qnil;
-    jmethodID mid = getJNIClassMethod(cls, "getNextRecord", "()Lcom/rhomobile/rhodes/phonebook/Contact;");
-    if (!mid) return Qnil;
-
-    JNIEnv *env = jnienv();
-    jobject recordObj = env->CallObjectMethod(obj, mid);
-    if (!recordObj)
-        return Qnil;
-    return createHashFromContact(recordObj);
+    return getRecord(pb, "getNextRecord");
 }
 
 RHO_GLOBAL void* createRecord(void* pb)
