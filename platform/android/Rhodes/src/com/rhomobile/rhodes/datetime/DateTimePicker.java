@@ -18,4 +18,6 @@ public class DateTimePicker {
 		RhodesInstance.getInstance().startActivityForResult(intent, 5);
 	}
 	
+	public native static void callback(String callbackUrl, long result, String opaque, boolean cancelled);
+	
 }
