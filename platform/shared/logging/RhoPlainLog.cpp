@@ -31,6 +31,9 @@ void rhoPlainLogArg(const char* file, int line, LogSeverity severity, const char
 
 }
 
+#ifdef OS_ANDROID
+#define rhoPlainLogArgW rhoPlainLogArg
+#else
 void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCategory,
                      const wchar_t* format, va_list ap )
 {
@@ -57,6 +60,7 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
         oLogMsg + buf;
     }
 }
+#endif // OS_ANDROID
 
 void rhoPlainLogVar(const char* file, int line, LogSeverity severity, const char* szCategory,
                  const char* format, ... ){

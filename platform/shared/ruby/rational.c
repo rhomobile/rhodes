@@ -18,7 +18,9 @@
 
 //RHO
 int rhoRubyFPrintf(FILE *, const char *, ...);
+#ifndef USE_STD_PRINTF
 #define fprintf rhoRubyFPrintf
+#endif
 //RHO
 
 #ifndef RATIONAL_NAME

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rho.RhoClassFactory;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesInstance;
 
@@ -83,12 +82,12 @@ public class FileList extends Activity implements OnClickListener{
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.okButton:
-			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(this.selectedFilePath);
 			finish();
 			break;
 		case AndroidR.id.cancelButton:
 			selectedFilePath = "";
-			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(this.selectedFilePath);
 			finish();
 			break;
 		}

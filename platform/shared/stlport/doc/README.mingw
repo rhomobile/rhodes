@@ -1,0 +1,28 @@
+  The MinGW package is used as to build STLport with different
+compilers
+
+
+  If you use the MSys console take care about what make utility
+you are using. STLport comes with a GNU make build system design
+for unix like platforms, make files have not been adapted for the
+Windows platform. So you have to use the make command coming with
+the MinGW package 'mingw32-make' and not the one coming with MSys
+that is a portage of the GNU make for Windows.
+
+- gcc (native compiler):
+
+  Makefile : gcc.mak
+
+    WARNING : If you use the static version of the STLport
+  libraries you have to define the _STLP_USE_STATIC_LIB
+  macro in order to have your executable linked correctly.
+
+    If you want to build STLport using the Mingw package without
+  help of the GNU tools coming with Msys don't forget to signal
+  your compiler (gcc) using the configure script:
+
+      configure -c gcc
+
+- Borland C++ compiler:
+
+  Makefile : bcc.mak

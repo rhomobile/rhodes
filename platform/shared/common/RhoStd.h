@@ -15,7 +15,11 @@ namespace std
 namespace rho {
 
 typedef std::string String;
+#ifdef OS_ANDROID
+typedef std::string StringW;
+#else
 typedef std::wstring StringW;
+#endif
 typedef bool boolean;
 //#define Vector std::vector
 

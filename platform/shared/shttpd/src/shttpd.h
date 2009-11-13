@@ -13,6 +13,10 @@
 #ifndef SHTTPD_HEADER_INCLUDED
 #define	SHTTPD_HEADER_INCLUDED
 
+#if defined(OS_ANDROID)
+#include <sys/select.h>
+#endif // OS_ANDROID
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

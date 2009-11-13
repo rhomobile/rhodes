@@ -19,7 +19,9 @@
 
 //RHO
 int rhoRubyFPrintf(FILE *, const char *, ...);
+#ifndef USE_STD_PRINTF
 #define fprintf rhoRubyFPrintf
+#endif
 //RHO
 
 #include "vm_insnhelper.h"

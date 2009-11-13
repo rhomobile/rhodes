@@ -8,7 +8,9 @@ reference - Haruhiko Okumura: C-gengo niyoru saishin algorithm jiten
 
 //RHO
 int rhoRubyFPrintf(FILE *, const char *, ...);
+#ifndef USE_STD_PRINTF
 #define fprintf rhoRubyFPrintf
+#endif
 //RHO
 
 #ifdef _WIN32
