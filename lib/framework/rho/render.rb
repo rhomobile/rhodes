@@ -25,6 +25,7 @@ module Rho
 	end
 
 	def inst_render_index(filename)
+	    puts 'inst_render_index'
         @request, @response = {}
         @params = {}
 	
