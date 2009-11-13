@@ -1,4 +1,6 @@
 #
+require 'digest/sha2'
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -250,9 +252,17 @@ namespace "build" do
     task :rhobundle => :libs do
       Rake::Task["build:bundle:noxruby"].execute
 
-      cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-      cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
+      assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      hash = ""
+      ["apps", "db", "lib"].each do |d|
+        cp_r File.join($srcdir, d), assets
+        # Calculate hash of directories
+        Dir.glob(File.join(assets, d, "**/*")) do |f|
+          hash += Digest::SHA2.file(f).hexdigest if File.file? f
+        end
+      end
+      File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest hash) }
+
     end
 
     task :libsqlite => "config:android" do
