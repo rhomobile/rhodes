@@ -23,11 +23,6 @@ import android.widget.TimePicker;
 
 public class DateTimePickerScreen extends Activity {
 	
-	private static final int DIALOG_DATE_PICKER_ID = 0;
-	private static final int DIALOG_TIME_PICKER_ID = 1;
-	
-	private DateTimePickerScreen _dateTimePicker = this;
-	
 	private String _callback;
 	private Date _init;
 	private int _fmt;
@@ -49,13 +44,13 @@ public class DateTimePickerScreen extends Activity {
 			_init.setDate(_datePicker.getDayOfMonth());
 			_init.setHours(_timePicker.getCurrentHour());
 			_init.setMinutes(_timePicker.getCurrentMinute());
-			sendResult(_callback, _init);
+			sendResult(_callback, _init, _opaque);
 		}
 	};
 	
 	private OnClickListener mCancelListener = new OnClickListener() {
 		public void onClick(View v) {
-			sendResult(_callback, null);
+			sendResult(_callback, null, _opaque);
 		}
 	};
 	
@@ -107,78 +102,23 @@ public class DateTimePickerScreen extends Activity {
 		
 		private String _callback;
 		private Date _result;
+		private String _opaque;
 		
-		public ResultSender(String callback, Date result) {
+		public ResultSender(String callback, Date result, String opaque) {
 			_callback = callback;
 			_result = result;
+			_opaque = opaque;
 		}
 		
 		public void run() {
-			/*
-			IHttpConnection connection = null;
-			
-			String fullUrl = RhodesInstance.getInstance().
-				getCurrentUrl().replaceAll("\\\\", "/");
-
-			String[] paths = _callback.replaceAll("\\\\", "/").split("/");
-
-			for (int i = paths.length - 1; i >= 0; i--) {
-				System.out.println(fullUrl);
-
-				if (!paths[i].equals("")) {
-					int pos = fullUrl.lastIndexOf("/" + paths[i]);
-
-					if (pos != -1) {
-						fullUrl = fullUrl.substring(0, pos);
-					}
-				}
-			}
-
-			if (fullUrl.endsWith("/"))
-				fullUrl = fullUrl.substring(0, fullUrl.length() - 2);
-
-			if (_callback.startsWith("/"))
-				fullUrl += _callback;
-			else
-				fullUrl += "/" + _callback;
-
-			System.out.println(fullUrl);
-
-			HttpHeader headers = new HttpHeader();
-			headers.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			
-			String body;
-			if (_result == null)
-				body = "status=cancel";
-			else {
-				body = "status=ok&result=" + _result.getTime()/1000;
-				if (_opaque != null)
-					body += "&opaque=" + _opaque;
-			}
-			
-			try {
-				connection = AndroidHttpConnection.makeConnection(fullUrl, headers, body.getBytes());
-				int code = connection.getResponseCode();
-				if (code != IHttpConnection.HTTP_OK) {
-					System.out.println("Error posting data: " + code);
-				}
-			} catch (Exception e) {
-				System.out.println("Error posting data: " + e.getMessage());
-			} finally {
-				if (connection != null)
-					try {
-						connection.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				finish();
-			}
-			*/
+			long result = _result == null ? 0 : _result.getTime()/1000;
+			DateTimePicker.callback(_callback, result, _opaque, _result == null);
+			finish();
 		}
 	};
 	
-	private void sendResult(String callback, Date result) {
+	private void sendResult(String callback, Date result, String opaque) {
 		this.setFieldsEnabled(false);
-		new Thread(new ResultSender(callback, result)).start();
+		new Thread(new ResultSender(callback, result, opaque)).start();
 	}
 }
