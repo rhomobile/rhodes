@@ -32,11 +32,55 @@ RHO_GLOBAL void closePhonebook(void* pb)
     env->DeleteGlobalRef(obj);
 }
 
+static VALUE createHashFromContact(jobject contactObj)
+{
+    JNIEnv *env = jnienv();
+    jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
+    if (!contactCls) return Qnil;
+    jclass fieldCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT_FIELD);
+    if (!fieldCls) return Qnil;
+
+    jmethodID contactMoveToBeginMID = getJNIClassMethod(contactCls, "moveToBegin", "()V");
+    if (!contactMoveToBeginMID) return Qnil;
+    jmethodID hasNextMID = getJNIClassMethod(contactCls, "hasNext", "()Z");
+    if (!hasNextMID) return Qnil;
+    jmethodID nextMID = getJNIClassMethod(contactCls, "next", "()Ljava/lang/Object;");
+    if (!nextMID) return Qnil;
+    jmethodID getKeyMID = getJNIClassMethod(fieldCls, "getKey", "()Ljava/lang/String;");
+    if (!getKeyMID) return Qnil;
+    jmethodID getValueMID = getJNIClassMethod(fieldCls, "getValue", "()Ljava/lang/String;");
+    if (!getValueMID) return Qnil;
+
+    VALUE contactHash = createHash();
+
+    // contact.moveToBegin();
+    env->CallVoidMethod(contactObj, contactMoveToBeginMID);
+
+    // while(contact.hasNext())
+    while(env->CallBooleanMethod(contactObj, hasNextMID))
+    {
+        // Contact.Field entry = (Contact.Field)contact.next();
+        jobject entryObj = env->CallObjectMethod(contactObj, nextMID);
+        if (!entryObj) return Qnil;
+        // String key = entry.getKey();
+        jstring keyObj = (jstring)env->CallObjectMethod(entryObj, getKeyMID);
+        if (!keyObj) return Qnil;
+        // String value = entry.getValue();
+        jstring valueObj = (jstring)env->CallObjectMethod(entryObj, getValueMID);
+        if (!valueObj) return Qnil;
+
+        const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
+        const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
+        addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
+        env->ReleaseStringUTFChars(keyObj, keyStr);
+        env->ReleaseStringUTFChars(valueObj, valueStr);
+    }
+
+    return contactHash;
+}
+
 RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 {
-    RHO_NOT_IMPLEMENTED;
-    return Qnil;
-#if 0
     RHO_LOG_CALLBACK;
     jobject phonebookObj = (jobject)pb;
 
@@ -46,108 +90,114 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     if (!phonebookCls) return Qnil;
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return Qnil;
-    jclass iteratorCls = env->FindClass("java/util/Iterator");
-    if (!iteratorCls) return Qnil;
-    jclass entryCls = env->FindClass("java/util/Map/Entry");
-    if (!entryCls) return Qnil;
 
-    jmethodID phonebookIteratorMID = getJNIClassMethod(phonebookCls, "iterator", "()Ljava/util/Iterator;");
-    if (!phonebookIteratorMID) return Qnil;
-    jmethodID contactIteratorMID = getJNIClassMethod(contactCls, "iterator", "()Ljava/util/Iterator;");
-    if (!contactIteratorMID) return Qnil;
+    jmethodID phonebookMoveToBeginMID = getJNIClassMethod(phonebookCls, "moveToBegin", "()V");
+    if (!phonebookMoveToBeginMID) return Qnil;
+    jmethodID hasNextMID = getJNIClassMethod(phonebookCls, "hasNext", "()Z");
+    if (!hasNextMID) return Qnil;
+    jmethodID nextMID = getJNIClassMethod(phonebookCls, "next", "()Ljava/lang/Object;");
+    if (!nextMID) return Qnil;
     jmethodID contactIdMID = getJNIClassMethod(contactCls, "id", "()Ljava/lang/String;");
     if (!contactIdMID) return Qnil;
-    jmethodID hasNextMID = getJNIClassMethod(iteratorCls, "hasNext", "()Z");
-    if (!hasNextMID) return Qnil;
-    jmethodID nextMID = getJNIClassMethod(iteratorCls, "next", "()Ljava/lang/Object;");
-    if (!nextMID) return Qnil;
-    jmethodID getKeyMID = getJNIClassMethod(entryCls, "getKey", "()Ljava/lang/Object;");
-    if (!getKeyMID) return Qnil;
-    jmethodID getValueMID = getJNIClassMethod(entryCls, "getValue", "()Ljava/lang/Object;");
-    if (!getValueMID) return Qnil;
 
-    // Iterator iter = pb->iterator();
-    jobject iterObj = env->CallObjectMethod(phonebookObj, phonebookIteratorMID);
-    if (!iterObj) return Qnil;
+    // pb.moveToBegin();
+    env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
 
     VALUE hash = createHash();
-    // while(iter.hasNext())
-    while(env->CallBooleanMethod(iterObj, hasNextMID))
+    // while(pb.hasNext())
+    while(env->CallBooleanMethod(phonebookObj, hasNextMID))
     {
-        VALUE contactHash = createHash();
-
-        // Contact contact = (Contact)iter.next();
-        jobject contactObj = env->CallObjectMethod(iterObj, nextMID);
+        // Contact contact = (Contact)pb.next();
+        jobject contactObj = env->CallObjectMethod(phonebookObj, nextMID);
         if (!contactObj) return Qnil;
         // String id = contact.id();
         jstring idObj = (jstring)env->CallObjectMethod(contactObj, contactIdMID);
         if (!idObj) return Qnil;
         const char *idStr = env->GetStringUTFChars(idObj, JNI_FALSE);
 
-        // Iterator iter2 = contact.iterator();
-        jobject iter2Obj = env->CallObjectMethod(contactObj, contactIteratorMID);
-        if (!iter2Obj) return Qnil;
-
-        // while(iter2.hasNext())
-        while(env->CallBooleanMethod(iter2Obj, hasNextMID))
-        {
-            // Entry<String, String> entry = (Entry<String, String>)iter2.next();
-            jobject entryObj = env->CallObjectMethod(iter2Obj, nextMID);
-            if (!entryObj) return Qnil;
-            // String key = entry.getKey();
-            jstring keyObj = (jstring)env->CallObjectMethod(entryObj, getKeyMID);
-            if (!keyObj) return Qnil;
-            // String value = entry.getValue();
-            jstring valueObj = (jstring)env->CallObjectMethod(entryObj, getValueMID);
-            if (!valueObj) return Qnil;
-
-            const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
-            const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
-            addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
-            env->ReleaseStringUTFChars(keyObj, keyStr);
-            env->ReleaseStringUTFChars(valueObj, valueStr);
-        }
-
-        addHashToHash(hash, idStr, contactHash);
+        addHashToHash(hash, idStr, createHashFromContact(contactObj));
         env->ReleaseStringUTFChars(idObj, idStr);
     }
     return hash;
-#endif
 }
 
 RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return NULL;
+    RHO_LOG_CALLBACK;
+    jobject obj = (jobject)pb;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassMethod(cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
+    if (!mid) return NULL;
+
+    JNIEnv *env = jnienv();
+    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+    jobject retval = env->NewGlobalRef(recordObj);
+    env->DeleteLocalRef(recordObj);
+    return retval;
 }
 
 RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return 0;
+    RHO_LOG_CALLBACK;
+    jobject obj = (jobject)pb;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    if (!cls) return Qnil;
+    jmethodID mid = getJNIClassMethod(cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
+    if (!mid) return Qnil;
+
+    JNIEnv *env = jnienv();
+    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+    if (!recordObj)
+        return Qnil;
+    return createHashFromContact(recordObj);
 }
 
 RHO_GLOBAL VALUE getfirstPhonebookRecord(void* pb)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return 0;
+    RHO_LOG_CALLBACK;
+    jobject obj = (jobject)pb;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    if (!cls) return Qnil;
+    jmethodID mid = getJNIClassMethod(cls, "getFirstRecord", "()Lcom/rhomobile/rhodes/phonebook/Contact;");
+    if (!mid) return Qnil;
+
+    JNIEnv *env = jnienv();
+    jobject recordObj = env->CallObjectMethod(obj, mid);
+    if (!recordObj)
+        return Qnil;
+    return createHashFromContact(recordObj);
 }
 
 RHO_GLOBAL VALUE getnextPhonebookRecord(void* pb)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return 0;
+    RHO_LOG_CALLBACK;
+    jobject obj = (jobject)pb;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    if (!cls) return Qnil;
+    jmethodID mid = getJNIClassMethod(cls, "getNextRecord", "()Lcom/rhomobile/rhodes/phonebook/Contact;");
+    if (!mid) return Qnil;
+
+    JNIEnv *env = jnienv();
+    jobject recordObj = env->CallObjectMethod(obj, mid);
+    if (!recordObj)
+        return Qnil;
+    return createHashFromContact(recordObj);
 }
 
 RHO_GLOBAL void* createRecord(void* pb)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
-    return NULL;
+    RHO_LOG_CALLBACK;
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
+    if (!cls) return NULL;
+    jmethodID cid = getJNIClassMethod(cls, "<init>", "()V");
+    if (!cid) return NULL;
+
+    JNIEnv *env = jnienv();
+    jobject local = env->NewObject(cls, cid);
+    jobject obj = env->NewGlobalRef(local);
+    env->DeleteLocalRef(local);
+    return obj;
 }
 
 RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)

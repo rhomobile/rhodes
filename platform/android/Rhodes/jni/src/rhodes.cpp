@@ -108,16 +108,18 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     store_thr_jnienv(env);
 
     const char *classes[] = {
+        RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_RHODES,
         RHODES_JAVA_CLASS_WEB_VIEW,
         RHODES_JAVA_CLASS_GEO_LOCATION,
         RHODES_JAVA_CLASS_CAMERA,
         RHODES_JAVA_CLASS_DATE_TIME_PICKER,
         RHODES_JAVA_CLASS_PHONEBOOK,
-        RHODES_JAVA_CLASS_CONTACT
+        RHODES_JAVA_CLASS_CONTACT,
+        RHODES_JAVA_CLASS_CONTACT_FIELD
     };
 
-//#define RHO_LOG_JNI_INIT
+#define RHO_LOG_JNI_INIT
 
 #ifdef RHO_LOG_JNI_INIT
     FILE *fp = fopen("/sdcard/rholog.txt", "wb");
@@ -125,10 +127,10 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
     {
         const char *className = classes[i];
-        jclass cls = env->FindClass(className);
 #ifdef RHO_LOG_JNI_INIT
         fprintf(fp, "Find class %s...\n", className);
 #endif
+        jclass cls = env->FindClass(className);
         if (!cls)
         {
 #ifdef RHO_LOG_JNI_INIT

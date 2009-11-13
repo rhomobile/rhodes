@@ -11,6 +11,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java

@@ -1,10 +1,11 @@
 package com.rhomobile.rhodes.phonebook;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -21,8 +22,10 @@ import com.rhomobile.rhodes.RhodesInstance;
 public class Phonebook {
 
 	private Map<String, Contact> contactList = new HashMap<String, Contact>();
-	private Rhodes activity;
-	private Cursor cursor;
+	private Activity activity;
+	private ContentResolver cr;
+	
+	private Iterator<Contact> iter = null;
 
 	static final String PB_ID = "id";
 	static final String PB_FIRST_NAME = "first_name";
@@ -35,10 +38,9 @@ public class Phonebook {
 	
 	public Phonebook() {
 
-		activity = RhodesInstance.getInstance();
-		cursor = activity.getContentResolver().query(People.CONTENT_URI,
-				null, null, null, null);
-		activity.startManagingCursor(cursor);
+		activity = RhodesInstance.getInstance(); 
+		cr = activity.getContentResolver();
+		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
 
 		// load contacts
 
@@ -157,24 +159,47 @@ public class Phonebook {
 				this.contactList.put(contact.getField(PB_ID), contact);
 			} while (cursor.moveToNext());
 		}
+		
+		cursor.close();
+		
+		moveToBegin();
 	}
 
 	public void close() {
 		this.contactList.clear();
-		activity.stopManagingCursor(cursor);
-		cursor.close();
 	}
 	
-	public Iterator<Contact> iterator() {
-		return contactList.values().iterator();
+	public void moveToBegin() {
+		iter = contactList.values().iterator();
+	}
+	
+	public boolean hasNext() {
+		return iter.hasNext();
+	}
+	
+	public Object next() {
+		return iter.next();
+	}
+	
+	public Contact getFirstRecord() {
+		moveToBegin();
+		if (!iter.hasNext())
+			return null;
+		return iter.next();
+	}
+	
+	public Contact getNextRecord() {
+		return iter.next();
+	}
+	
+	public Contact getRecord(String id) {
+		return contactList.get(id);
 	}
 
 	public void removeContact(Contact contact) throws Exception {
 		Uri uri = People.CONTENT_URI;
 
-		activity.getContentResolver().delete(uri,
-				People._ID + "=" + contact.getField(PB_ID),
-				null);
+		cr.delete(uri, People._ID + "=" + contact.getField(PB_ID), null);
 	}
 
 	public void saveContact(Contact contact) throws Exception {
@@ -195,8 +220,7 @@ public class Phonebook {
 			ContentValues person = new ContentValues();
 			person.put(Contacts.People.NAME, name);
 
-			uri = activity.getContentResolver().insert(
-					Contacts.People.CONTENT_URI, person);
+			uri = cr.insert(Contacts.People.CONTENT_URI, person);
 		}
 
 		if (uri != null) {
@@ -221,12 +245,10 @@ public class Phonebook {
 				number.put(Contacts.Phones.NUMBER, contact.getField(PB_MOBILE_NUMBER));
 				number.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
 
-				Uri phoneUpdate = activity.getContentResolver().insert(
-						Contacts.Phones.CONTENT_URI, number);
+				Uri phoneUpdate = cr.insert(Contacts.Phones.CONTENT_URI, number);
 
 				if (phoneUpdate == null) {
-					int retval = activity.getContentResolver().update(
-							People.CONTENT_URI, number, null, null);
+					int retval = cr.update(People.CONTENT_URI, number, null, null);
 
 					if (retval == 0)
 						throw new Exception("Failed to insert mobile number");
@@ -240,12 +262,10 @@ public class Phonebook {
 				home.put(Contacts.Phones.NUMBER, contact.getField(PB_HOME_NUMBER));
 				home.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
 
-				Uri homeUpdate = activity.getContentResolver().insert(
-						Contacts.Phones.CONTENT_URI, home);
+				Uri homeUpdate = cr.insert(Contacts.Phones.CONTENT_URI, home);
 
 				if (homeUpdate == null) {
-					int retval = activity.getContentResolver().update(
-							People.CONTENT_URI, home, null, null);
+					int retval = cr.update(People.CONTENT_URI, home, null, null);
 
 					if (retval == 0)
 						throw new Exception("Failed to insert home number");
@@ -258,12 +278,10 @@ public class Phonebook {
 				work.put(Contacts.Phones.NUMBER, contact.getField(PB_BUSINESS_NUMBER));
 				work.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_WORK);
 
-				Uri workUpdate = activity.getContentResolver().insert(
-						Contacts.Phones.CONTENT_URI, work);
+				Uri workUpdate = cr.insert(Contacts.Phones.CONTENT_URI, work);
 
 				if (workUpdate == null) {
-					int retval = activity.getContentResolver().update(
-							People.CONTENT_URI, work, null, null);
+					int retval = cr.update(People.CONTENT_URI, work, null, null);
 
 					if (retval == 0)
 						throw new Exception("Failed to insert work number");
@@ -281,8 +299,7 @@ public class Phonebook {
 				email.put(Contacts.ContactMethods.TYPE,
 						Contacts.ContactMethods.CONTENT_EMAIL_ITEM_TYPE);
 
-				Uri emailUpdate = activity.getContentResolver().insert(
-						Uri.withAppendedPath(uri,
+				Uri emailUpdate = cr.insert(Uri.withAppendedPath(uri,
 								Contacts.ContactMethods.CONTENT_URI.getPath()
 										.substring(1)), email);
 				if (emailUpdate == null) {
@@ -302,8 +319,7 @@ public class Phonebook {
 				company.put(Contacts.Organizations.COMPANY, contact
 						.getField(PB_COMPANY_NAME));
 
-				Uri companyUpdate = activity.getContentResolver().insert(
-						orgUri, company);
+				Uri companyUpdate = cr.insert(orgUri, company);
 
 				if (companyUpdate == null) {
 					throw new Exception("Failed to insert company");

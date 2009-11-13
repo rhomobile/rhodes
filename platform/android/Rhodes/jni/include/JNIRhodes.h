@@ -23,6 +23,7 @@ jfieldID getJNIClassStaticField(jclass cls, const char *name, const char *signat
 jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature);
 jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *signature);
 
+#define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
 #define RHODES_JAVA_CLASS_RHODES "com/rhomobile/rhodes/Rhodes"
 #define RHODES_JAVA_CLASS_WEB_VIEW "com/rhomobile/rhodes/WebView"
 #define RHODES_JAVA_CLASS_GEO_LOCATION "com/rhomobile/rhodes/geolocation/GeoLocation"
@@ -30,6 +31,7 @@ jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *sign
 #define RHODES_JAVA_CLASS_DATE_TIME_PICKER "com/rhomobile/rhodes/datetime/DateTimePicker"
 #define RHODES_JAVA_CLASS_PHONEBOOK "com/rhomobile/rhodes/phonebook/Phonebook"
 #define RHODES_JAVA_CLASS_CONTACT "com/rhomobile/rhodes/phonebook/Contact"
+#define RHODES_JAVA_CLASS_CONTACT_FIELD "com/rhomobile/rhodes/phonebook/ContactField"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
