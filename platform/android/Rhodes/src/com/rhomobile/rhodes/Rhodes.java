@@ -421,6 +421,11 @@ public class Rhodes extends Activity {
 		f.delete();
 	}
 	
+	public static boolean hasNetwork() {
+		// TODO:
+		return true;
+	}
+	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
 	//	stopService(new Intent(this, RhoHttpService.class));
