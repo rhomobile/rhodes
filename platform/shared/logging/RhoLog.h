@@ -87,17 +87,17 @@ public:
         {
             if ( getLastFmt().length() > 0 )
             {
-				int buflen = 99;
+                int buflen = 99;
                 char buf[100];
                 int len = snprintf(buf,buflen,getLastFmt().c_str(),value);
-				if (len < 0 || len >= buflen){
+                if (len < 0 || len >= buflen){
 #ifdef OS_SYMBIAN
-					len = buflen - 1;
+                    len = buflen - 1;
 #else
-					len = buflen;
+                    len = buflen;
 #endif
-				}
-				buf[len]=0;
+                }
+                buf[len]=0;
                 clearLastFmt();
                 addMessage(buf);
             }
@@ -122,15 +122,15 @@ public:
     }
 
     /*inline LogMessage& operator+(const char* value) 
-	{ 
-		if (isEnabled())
-		{
-			m_strMessage+= value;
-			clearLastFmt();
-		}
+    { 
+        if (isEnabled())
+        {
+            m_strMessage+= value;
+            clearLastFmt();
+        }
         return *this;
     }*/
-	
+    
 private:
     void flushLog();
     void addPrefix(const char* file, int line);
@@ -187,7 +187,7 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
 int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* szCategory,
                   const char* msg );
 int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
-					const void* data, int len );
+                    const void* data, int len );
 
 #define RAWLOG_NONE ((void)0)
 
@@ -234,7 +234,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOGC_ERROR2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOGC_ERROR3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
 #define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOGC_ERROR4( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
-	
+    
 #else
 #define RAWLOGC_ERROR(category,msg) RAWLOG_NONE
 #define RAWLOGC_ERROR1(category,msg,arg1) RAWLOG_NONE
@@ -247,7 +247,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOG_NONE
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOG_NONE
 #define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
-	
+    
 #endif
 
 #if RHO_STRIP_LOG <= L_FATAL

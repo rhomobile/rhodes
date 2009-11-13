@@ -1,7 +1,7 @@
 package com.rhomobile.rhodes.ui;
 
-import com.rho.RhoLogger;
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.RhodesInstance;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -50,7 +50,7 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 			loadLogText();
 			break;
 		case AndroidR.id.logviewClearButton:
-			RhoLogger.clearLog();
+			RhodesInstance.getLogConf().clearLog();
 			loadLogText();
 			break;
 		case AndroidR.id.logviewCloseButton:
@@ -60,14 +60,14 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 	}
 
 	private void loadLogText(){
-        String strLog = RhoLogger.getLogText();
+        String strLog = RhodesInstance.getLogConf().getLogText();
         findCurLine(strLog);
         
         logContent.setText(strLog);
 	}
 	
 	void findCurLine(String strLog){
-        int nPos = RhoLogger.getLogTextPos();
+        int nPos = RhodesInstance.getLogConf().getLogTextPos();
         curLine = 0;
         
         for ( int nEndLine = strLog.indexOf('\n'); nEndLine >= 0 && nEndLine<nPos; 

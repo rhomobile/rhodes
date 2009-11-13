@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rho.RhoClassFactory;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesInstance;
 

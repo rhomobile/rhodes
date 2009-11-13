@@ -175,6 +175,11 @@ int login(const char *login, const char *password) {
 	return retval;
 }*/
 
+void rho_net_impl_network_indicator(int active)
+{
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
+}
+
 //static NSURLConnection* g_curConn = NULL;
 char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis )
 {
@@ -236,7 +241,8 @@ char*  rho_net_impl_requestCookies(const char* szMethod, const char* szUrl, cons
 			} else 
 			{
 				NSHTTPCookieStorage *store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-				NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse*)response allHeaderFields] 
+				NSDictionary *headers = [(NSHTTPURLResponse*)response allHeaderFields];
+				NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:headers 
 															  forURL:[NSURL URLWithString:linkString]];
 				NSEnumerator *c = [cookies objectEnumerator];
 				id cookie;

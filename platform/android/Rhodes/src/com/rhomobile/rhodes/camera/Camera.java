@@ -3,62 +3,16 @@ package com.rhomobile.rhodes.camera;
 import android.content.Intent;
 import android.util.Log;
 
-import com.rho.RhoClassFactory;
 import com.rhomobile.rhodes.RhodesInstance;
-import com.xruby.runtime.builtin.ObjectFactory;
-import com.xruby.runtime.lang.RubyBasic;
-import com.xruby.runtime.lang.RubyBlock;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyValue;
 
-public class Camera extends RubyBasic {
+public class Camera {
 
 	//private static CameraListener cameraListener = new CameraListener();
 	private static String selectPictureUrl = "";
 	
 	public static String BASE_CAMERA_DIR = null;
 
-	Camera(RubyClass c) {
-
-		super(c);
-	}
-
-	public static RubyValue takePicture(RubyValue arg) {
-		return ObjectFactory.createString(takePictureImpl(arg.asString()));
-	}
-
-	public static RubyValue selectPicture(RubyValue arg) {
-		return ObjectFactory.createString(selectPictureImpl(arg.asString()));
-	}
-
-	public static void initMethods(RubyClass klass) {
-
-		try {
-			BASE_CAMERA_DIR = RhoClassFactory.createFile().getDirPath("Camera");
-		} catch (Exception e) {
-			Log.e("FileList", e.getMessage());
-			RhodesInstance.getInstance().stopSelf();
-		}
-		
-		klass.getSingletonClass().defineMethod("take_picture",
-				new RubyOneArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg0,
-							RubyBlock block) {
-						return Camera.takePicture(arg0);
-					}
-				});
-
-		klass.getSingletonClass().defineMethod("choose_picture",
-				new RubyOneArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg0,
-							RubyBlock block) {
-						return Camera.selectPicture(arg0);
-					}
-				});
-	}
-
-	private static String takePictureImpl(String sourceUrl) {
+	public static String takePicture(String sourceUrl) {
 
 		selectPictureUrl = sourceUrl;
 		
@@ -68,7 +22,7 @@ public class Camera extends RubyBasic {
 		return sourceUrl;
 	}
 
-	private static String selectPictureImpl(String sourceUrl) {
+	public static String selectPicture(String sourceUrl) {
 		selectPictureUrl = sourceUrl;
 		//open select picture dialog
 		Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(), FileList.class);
@@ -85,8 +39,7 @@ public class Camera extends RubyBasic {
 	static public void callCallback(String filePath)
 	{
 		String sourceUrl = com.rhomobile.rhodes.camera.Camera.getSelectPictureUrl();
-		String fullUrl = RhodesInstance.getInstance().getCurrentUrl()
-		.replaceAll("\\\\", "/");
+		String fullUrl = RhodesInstance.getInstance().getCurrentUrl().replaceAll("\\\\", "/");
 
 		String[] paths = sourceUrl.replaceAll("\\\\", "/").split("/");
 
