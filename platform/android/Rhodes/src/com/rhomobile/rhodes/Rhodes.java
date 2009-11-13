@@ -208,25 +208,32 @@ public class Rhodes extends Activity {
 		}
 		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
 		
-		try {
-			Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
-			String rootPath = getRootPath();
-			AssetManager amgr = getResources().getAssets();
-			copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
-			copyFromBundle(amgr, "db", new File(rootPath, "db"));
-			copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
-			File dbfiles = new File(rootPath + "apps/public/db-files");
-			if (!dbfiles.exists())
-				dbfiles.mkdirs();
-			Log.d(this.getClass().getSimpleName(), "All files copied");
-		} catch (IOException e) {
-			Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
-			return;
-		}
-		
 		RhodesInstance.setInstance(this);
+		
+		Thread init = new Thread(new Runnable() {
 
-		startRhodesApp();
+			public void run() {
+				try {
+					Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
+					String rootPath = getRootPath();
+					AssetManager amgr = getResources().getAssets();
+					copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
+					copyFromBundle(amgr, "db", new File(rootPath, "db"));
+					copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
+					File dbfiles = new File(rootPath + "apps/public/db-files");
+					if (!dbfiles.exists())
+						dbfiles.mkdirs();
+					Log.d(this.getClass().getSimpleName(), "All files copied");
+				} catch (IOException e) {
+					Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+					return;
+				}
+				
+				startRhodesApp();
+			}
+			
+		});
+		init.start();
 	}
 
 	protected void onStartLoading() {
