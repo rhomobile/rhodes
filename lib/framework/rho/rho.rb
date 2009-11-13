@@ -250,8 +250,35 @@ module Rho
       resp
     end
     
+    @@current_exception = nil
+    def self.current_exception
+        @@current_exception
+    end
+        
     def send_error(exception=nil,status=500,hash=false)
       body=''
+      
+      err_page = nil
+      if exception && exception.is_a?(::Rhom::RecordNotFound)
+        err_page = RhoApplication::get_app_path(APPNAME) + 'E400_erb.iseq'
+        err_page = nil unless File.exist?(err_page)
+      elsif exception
+        err_page = RhoApplication::get_app_path(APPNAME) + 'E500_erb.iseq'
+        err_page = nil unless File.exist?(err_page)
+      end
+
+      if err_page
+          @@current_exception = exception
+          puts 'show error: ' + @@current_exception.inspect
+          body = RhoController::renderfile(err_page)
+          
+          if ( hash )
+            return send_response_hash(init_response(200,"OK",body))
+          end
+      
+          return send_response(init_response(200,"OK",body))
+      end
+      
       body << <<-_HTML_STRING_
         <html>
             <head>
