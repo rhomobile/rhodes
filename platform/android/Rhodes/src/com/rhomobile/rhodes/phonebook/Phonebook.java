@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.phonebook;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -24,6 +26,7 @@ public class Phonebook {
 	private Map<String, Contact> contactList = new HashMap<String, Contact>();
 	private Activity activity;
 	private ContentResolver cr;
+	private Pattern idPattern;
 	
 	private Iterator<Contact> iter = null;
 
@@ -36,8 +39,14 @@ public class Phonebook {
 	static final String PB_EMAIL_ADDRESS = "email_address";
 	static final String PB_COMPANY_NAME = "company_name";
 	
+	private String getId(Contact contact) {
+		Matcher m = idPattern.matcher(contact.getField(PB_ID));
+		return m.find() ? m.group(1) : "";
+	}
+	
 	public Phonebook() {
 
+		idPattern = Pattern.compile("\\{([0-9]+)\\}");
 		activity = RhodesInstance.getInstance(); 
 		cr = activity.getContentResolver();
 		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
@@ -48,7 +57,7 @@ public class Phonebook {
 			do {
 				Contact contact = new Contact();
 
-				contact.setField(PB_ID, cursor.getString(cursor.getColumnIndex(People._ID)));
+				contact.setField(PB_ID, "{" + cursor.getString(cursor.getColumnIndex(People._ID)) + "}");
 
 				//contact.setField(PB_COMPANY_NAME, cursor.getString(cursor.getColumnIndex(People.COMPANY)));
 
@@ -107,7 +116,7 @@ public class Phonebook {
 				phonesCursor.close();
 
 				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI,
-						Long.parseLong(contact.getField(PB_ID)));
+						Long.parseLong(getId(contact)));
 
 				Uri orgUri = Uri.withAppendedPath(uri,
 						Contacts.Organizations.CONTENT_DIRECTORY);
@@ -199,11 +208,11 @@ public class Phonebook {
 	public void removeContact(Contact contact) throws Exception {
 		Uri uri = People.CONTENT_URI;
 
-		cr.delete(uri, People._ID + "=" + contact.getField(PB_ID), null);
+		cr.delete(uri, People._ID + "=" + getId(contact), null);
 	}
 
 	public void saveContact(Contact contact) throws Exception {
-		String rbID = contact.getField(PB_ID);
+		String rbID = getId(contact);
 		Uri uri = null;
 
 		String name = contact.getField(PB_FIRST_NAME) + " "
@@ -212,8 +221,7 @@ public class Phonebook {
 		boolean isNew = false;
 		if (rbID != null && !"".equals(rbID))// update
 		{
-			uri = ContentUris.withAppendedId(People.CONTENT_URI, Long
-					.parseLong(contact.getField(PB_ID)));
+			uri = ContentUris.withAppendedId(People.CONTENT_URI, Long.parseLong(rbID));
 		} else // create
 		{
 			isNew = true;
@@ -235,7 +243,7 @@ public class Phonebook {
 			String pathLeaf = (String) uri.getPathSegments().get(
 					uri.getPathSegments().size() - 1);
 
-			contact.setField(PB_ID, pathLeaf);
+			contact.setField(PB_ID, "{" + pathLeaf + "}");
 
 			// add mobile phone number
 
