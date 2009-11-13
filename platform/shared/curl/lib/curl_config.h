@@ -113,7 +113,9 @@
 #define HAVE_BOOL_T 1
 
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
+#ifdef OS_ANDROID
 #define HAVE_CLOCK_GETTIME_MONOTONIC 1
+#endif
 
 /* Define to 1 if you have the closesocket function. */
 /* #undef HAVE_CLOSESOCKET */
@@ -194,7 +196,9 @@
 #define HAVE_GETHOSTBYNAME 1
 
 /* Define to 1 if you have the gethostbyname_r function. */
+#if defined(OS_ANDROID)
 #define HAVE_GETHOSTBYNAME_R 1
+#endif
 
 /* gethostbyname_r() takes 3 args */
 /* #undef HAVE_GETHOSTBYNAME_R_3 */
@@ -396,10 +400,14 @@
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the memrchr function or macro. */
+#if defined(OS_ANDROID)
 #define HAVE_MEMRCHR 1
+#endif
 
 /* Define to 1 if you have the MSG_NOSIGNAL flag. */
+#if defined(OS_ANDROID)
 #define HAVE_MSG_NOSIGNAL 1
+#endif
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #define HAVE_NETDB_H 1
