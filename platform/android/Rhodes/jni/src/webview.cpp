@@ -13,8 +13,9 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
     jmethodID mid = getJNIClassStaticMethod(cls, "navigate", "(Ljava/lang/String;)V");
     if (!mid) return;
 
+    char *normUrl = rho_http_normalizeurl(url);
     JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(normUrl));
 }
 
 RHO_GLOBAL void webview_refresh()
