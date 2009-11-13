@@ -2,6 +2,7 @@
 
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
+#include <sync/SyncThread.h>
 
 #include <sys/stat.h>
 
@@ -199,10 +200,10 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_restoreLocation
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
-  (JNIEnv *, jobject, jboolean)
+  (JNIEnv *, jobject, jboolean show_status_popup)
 {
-    // TODO
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
+    rho_sync_doSyncAllSources(show_status_popup);
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl

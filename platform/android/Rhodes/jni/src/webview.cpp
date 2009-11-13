@@ -1,5 +1,7 @@
 #include "JNIRhodes.h"
 
+#include <common/RhodesApp.h>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
@@ -43,16 +45,15 @@ RHO_GLOBAL char* webview_current_location()
     return (char*)curLoc.c_str();
 }
 
-RHO_GLOBAL void webview_set_menu_items(VALUE argv)
+RHO_GLOBAL void webview_set_menu_items(VALUE valMenu)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
+    rho_rhodesapp_setViewMenu(valMenu);
 }
 
 RHO_GLOBAL int webview_active_tab()
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
     return 0;
 }
 
