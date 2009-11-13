@@ -247,15 +247,12 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => "config:android" do
-      #Rake::Task["build:bundle:xruby"].execute
+    task :rhobundle => :libs do
       Rake::Task["build:bundle:noxruby"].execute
 
       cp_r $srcdir + "/apps", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $srcdir + "/db", Jake.get_absolute($androidpath) + "/Rhodes/assets"
       cp_r $srcdir + "/lib", Jake.get_absolute($androidpath) + "/Rhodes/assets"
-
-      #rm_rf $srcdir
     end
 
     task :libsqlite => "config:android" do

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include <ruby.h>
+#include <ruby/ext/rho/rhoruby.h>
 
 #include <jni.h>
 
@@ -17,11 +18,18 @@ void store_thr_jnienv(JNIEnv *env);
 JNIEnv *jnienv();
 jclass getJNIClass(const char *name);
 jclass getJNIObjectClass(jobject obj);
+jfieldID getJNIClassField(jclass cls, const char *name, const char *signature);
+jfieldID getJNIClassStaticField(jclass cls, const char *name, const char *signature);
 jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature);
 jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *signature);
 
 #define RHODES_JAVA_CLASS_RHODES "com/rhomobile/rhodes/Rhodes"
 #define RHODES_JAVA_CLASS_WEB_VIEW "com/rhomobile/rhodes/WebView"
+#define RHODES_JAVA_CLASS_GEO_LOCATION "com/rhomobile/rhodes/geolocation/GeoLocation"
+#define RHODES_JAVA_CLASS_CAMERA "com/rhomobile/rhodes/camera/Camera"
+#define RHODES_JAVA_CLASS_DATE_TIME_PICKER "com/rhomobile/rhodes/datetime/DateTimePicker"
+#define RHODES_JAVA_CLASS_PHONEBOOK "com/rhomobile/rhodes/phonebook/Phonebook"
+#define RHODES_JAVA_CLASS_CONTACT "com/rhomobile/rhodes/phonebook/Contact"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 

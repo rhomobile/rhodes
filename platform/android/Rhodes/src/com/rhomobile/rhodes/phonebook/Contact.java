@@ -1,10 +1,12 @@
 package com.rhomobile.rhodes.phonebook;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Contact {
-
+	
 	private Map<String, String> fields = new HashMap<String, String>();
 	
 	public void setField(String key, String value)
@@ -19,4 +21,14 @@ public class Contact {
 		
 		return "";
 	}
+	
+	public String id() {
+		return getField(Phonebook.PB_ID);
+	}
+	
+	public Iterator<Entry<String, String>> iterator() {
+		Iterator<Entry<String, String>> it = fields.entrySet().iterator();
+		return it;
+	}
+	
 }
