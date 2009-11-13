@@ -334,14 +334,14 @@ void CSyncEngine::login(String name, String password, String callback)
 	//}
 }
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
 extern "C" int rho_sync_logged_in_cookies();
 #endif
 
 boolean CSyncEngine::isLoggedIn()
  {
     //TODO: read cookies from DB and set them for each request
- #ifdef OS_MACOSX
+ #if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
     return rho_sync_logged_in_cookies() == 0 ? false : true;
  #else
     int nCount = 0;
@@ -355,7 +355,7 @@ boolean CSyncEngine::isLoggedIn()
 
 String CSyncEngine::loadSession()
 {
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) && !defined(RHO_NET_NEW_IMPL)
     return rho_sync_logged_in_cookies() == 0 ? "" : "exist";
 #else
     String strRes = "";

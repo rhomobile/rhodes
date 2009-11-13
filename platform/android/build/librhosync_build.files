@@ -1,0 +1,5 @@
+platform/shared/sync/ClientRegister.cpp
+platform/shared/sync/SyncEngine.cpp
+platform/shared/sync/SyncNotify.cpp
+platform/shared/sync/SyncSource.cpp
+platform/shared/sync/SyncThread.cpp
