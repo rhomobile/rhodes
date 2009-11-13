@@ -127,7 +127,7 @@ namespace "config" do
     puts "Missing 'android' section in rhobuild.yml" if $androidsdkpath.nil?
     $androidndkpath = $config["env"]["paths"]["android-ndk"]
     puts "Missing 'android-ndk' section in rhobuild.yml" if $androidndkpath.nil?
-    
+
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
