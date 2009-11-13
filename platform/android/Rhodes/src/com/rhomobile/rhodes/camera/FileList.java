@@ -82,12 +82,12 @@ public class FileList extends Activity implements OnClickListener{
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.okButton:
-			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(this.selectedFilePath);
 			finish();
 			break;
 		case AndroidR.id.cancelButton:
 			selectedFilePath = "";
-			com.rhomobile.rhodes.camera.Camera.callCallback(this.selectedFilePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(this.selectedFilePath);
 			finish();
 			break;
 		}
