@@ -1,13 +1,8 @@
 package com.rhomobile.rhodes.datetime;
 
-import java.io.IOException;
 import java.util.Date;
 
-import com.rho.net.IHttpConnection;
-import com.rhomobile.rhodes.AndroidHttpConnection;
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhodesInstance;
-import com.rhomobile.rhodes.http.HttpHeader;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -119,6 +114,7 @@ public class DateTimePickerScreen extends Activity {
 		}
 		
 		public void run() {
+			/*
 			IHttpConnection connection = null;
 			
 			String fullUrl = RhodesInstance.getInstance().
@@ -177,6 +173,7 @@ public class DateTimePickerScreen extends Activity {
 					}
 				finish();
 			}
+			*/
 		}
 	};
 	

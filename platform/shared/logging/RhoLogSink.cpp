@@ -18,7 +18,7 @@ CLogFileSink::CLogFileSink(const LogSettings& oSettings) : m_oLogConf(oSettings)
 void CLogFileSink::writeLogMessage( String& strMsg ){
     int len = strMsg.length();
 
-    if ( !m_pFile )    
+    if ( !m_pFile )
         m_pFile = new common::CRhoFile();
 
     if ( !m_pFile->isOpened() ){

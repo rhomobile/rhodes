@@ -4,6 +4,12 @@ typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
 
 #ifdef __cplusplus
 
+#include "RhoDefs.h"
+
+#ifdef RHO_NET_NEW_IMPL
+#include "curl/curl.h"
+#endif // NEW_NET_IMPL
+
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
 
@@ -13,12 +19,12 @@ namespace net {
 class CNetRequest : public INetRequest
 {
     DEFINE_LOGCLASS;
-	boolean m_bCancel;
+    boolean m_bCancel;
 public:
-	void* m_pConnData;
-	
-    CNetRequest(void) : m_pConnData(0){}
-    virtual ~CNetRequest(void){}
+    void* m_pConnData;
+
+    CNetRequest();
+    virtual ~CNetRequest();
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
@@ -32,10 +38,32 @@ public:
 
     virtual void cancel();
 private:
-	typedef char* (*Frho_net_impl_request)(const char* szMethod, const char* szUrl, const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
-	
-	INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody, Frho_net_impl_request func );
-	
+#ifdef RHO_NET_NEW_IMPL
+    char* request(const char *method, const String& strUrl, const String& strBody,
+                  int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+    char* requestCookies(const char *method, const String& strUrl, const String& strBody,
+                  int *pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+
+    typedef char* (CNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
+                  const String& strBody, int* pnRespCode, FSAVECONNDATA fSave, IRhoSession* oSession);
+
+    char* pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile,
+        FSAVECONNDATA fSave, IRhoSession *oSession);
+    char* pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode,
+        FSAVECONNDATA fSave, IRhoSession *oSession);
+#else
+    typedef char* (*Frho_net_impl_request)(const char* szMethod, const char* szUrl,
+        const char* szBody, int* pnRespCode, FSAVECONNDATA fSave, void* pThis );
+#endif // RHO_NET_NEW_IMPL
+
+    INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody,
+        Frho_net_impl_request func, IRhoSession* oSession );
+
+#ifdef RHO_NET_NEW_IMPL
+    CURL *curl;
+    char *errbuf[CURL_ERROR_SIZE];
+    String cookies;
+#endif // RHO_NET_NEW_IMPL
 };
 
 }
@@ -49,8 +77,8 @@ extern "C" {
 #endif //__cplusplus
 
 int rho_net_has_network();
-	
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
-	
+

@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 1997-1999
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Copyright (c) 1999
+ * Boris Fomitchev
+ *
+ * This material is provided "as is", with absolutely no warranty expressed
+ * or implied. Any use is at your own risk.
+ *
+ * Permission to use or copy this software for any purpose is hereby granted
+ * without fee, provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ */
+
+#ifndef _STLP_MEMORY
+#define _STLP_MEMORY
+
+#ifndef _STLP_OUTERMOST_HEADER_ID
+#  define _STLP_OUTERMOST_HEADER_ID 0x46
+#  include <stl/_prolog.h>
+#endif
+
+#ifdef _STLP_PRAGMA_ONCE
+#  pragma once
+#endif
+
+#ifndef _STLP_INTERNAL_ALLOC_H
+#  include <stl/_alloc.h>
+#endif
+
+#ifndef _STLP_INTERNAL_TEMPBUF_H
+#  include <stl/_tempbuf.h>
+#endif
+
+#ifndef _STLP_INTERNAL_RAW_STORAGE_ITER_H
+#  include <stl/_raw_storage_iter.h>
+#endif
+
+#include <stl/_auto_ptr.h>
+
+#if defined (_STLP_IMPORT_VENDOR_STD)
+
+#  if defined (__MSL__)
+#    include _STLP_NATIVE_HEADER(limits)
+#  endif
+
+#  include _STLP_NATIVE_HEADER(memory)
+
+#  if defined (__MSL__) && (__MSL__ >= 0x2405   && __MSL__ < 0x5201) 
+/*  980401 vss  MSL 2.4  Pro 3 Release  */  
+#    include <new_mem.h>
+#  endif
+
+#endif
+
+#if (_STLP_OUTERMOST_HEADER_ID == 0x46)
+#  include <stl/_epilog.h>
+#  undef _STLP_OUTERMOST_HEADER_ID
+#endif
+
+#endif /* _STLP_MEMORY */
+
+// Local Variables:
+// mode:C++
+// End:
+

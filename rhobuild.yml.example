@@ -2,7 +2,8 @@ env:
   app: C:/rhodes-app
   paths:
     java: C:/Program Files/Java/jdk1.6.0_11/bin
-    android: C:/android-sdk-windows-1.5_r2
+    android: C:/android-sdk-windows
+    android-ndk: C:/android-ndk-1.6_r1
     cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
     4.6:
       jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0

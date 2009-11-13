@@ -63,6 +63,7 @@ platform/android/**/bin
 platform/android/bin
 platform/android/target
 platform/shared/*/bin
+platform/android/**/default.properties
 
 #*.jar
 *.cod
@@ -83,3 +84,6 @@ platform/shared/*/bin
 *.cab
 *.ncb
 *.perspectivev3
+
+.gvide
+

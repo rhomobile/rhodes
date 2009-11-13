@@ -1,0 +1,4 @@
+platform/shared/logging/RhoLogConf.cpp
+platform/shared/logging/RhoLog.cpp
+platform/shared/logging/RhoLogSink.cpp
+platform/shared/logging/RhoPlainLog.cpp
