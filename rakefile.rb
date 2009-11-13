@@ -1,5 +1,14 @@
 require 'find'
 require 'erb'
+require 'rake/rdoctask'
+
+#Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
+module Rake
+  class Task
+    attr_accessor :comment
+  end
+end
+
 
 chdir File.dirname(__FILE__)
 
@@ -10,6 +19,8 @@ load 'platform/android/build/android.rake'
 load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
+
+
 
 namespace "config" do
   task :common do
@@ -27,10 +38,20 @@ namespace "config" do
       #load the apps path and config
 
       $app_path = $config["env"]["app"]
+      unless File.exists? $app_path
+        puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
+        exit 1
+      end
       $app_config = YAML::load_file($app_path + "/build.yml")
 
     end
     Jake.set_bbver($app_config["bbver"].to_s)
+  end
+
+  begin
+    `jah -h 2>&1`
+  rescue
+    puts "\n\nYour java bin folder does not appear to be on your path.\nThis is required to use rhodes.\n\n"
   end
 end
 
@@ -66,6 +87,17 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/find.rb").each {|f| rm f}
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
+  unless $app_config["constants"].nil?
+    File.open("rhobuild.rb","w") do |file|
+      file << "module RhoBuild\n"
+      $app_config["constants"].each do |key,value|
+        value.gsub!(/"/,"\\\"")
+        file << "  #{key.upcase} = \"#{value}\"\n"
+      end
+      file << "end\n"
+    end
+  end
+
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps')
@@ -73,6 +105,20 @@ def common_bundle_start(startdir, dest)
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
+
+  chdir File.join($srcdir,'apps')
+
+  Dir.glob("**/*.#{$config['platform']}.*").each do |file|
+    oldfile = file.gsub(Regexp.new(Regexp.escape('.') + $config['platform'] + Regexp.escape('.')),'.')
+    rm oldfile
+    mv file,oldfile
+  end
+  
+  Dir.glob("**/*.wm.*").each { |f| rm f }
+  Dir.glob("**/*.iphone.*").each { |f| rm f }
+  Dir.glob("**/*.bb.*").each { |f| rm f }
+  Dir.glob("**/*.android.*").each { |f| rm f }
+
 end
 
 def create_manifest
@@ -135,7 +181,8 @@ namespace "build" do
 
 
       chdir $bindir
-      puts `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      output = `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
+      output.each_line { |x| puts ">>> " + x  }
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
@@ -163,7 +210,8 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
-
+      chdir startdir
+      
       create_manifest
       
       cp   compileERB, $srcdir
@@ -429,3 +477,11 @@ task :switch_app => "config:common" do
     YAML.dump( config, out )
   end
 end
+
+
+Rake::RDocTask.new do |rd|
+    rd.main = "README.textile"
+    rd.rdoc_files.include("README.textile", "lib/framework/**/*.rb")
+end
+Rake::Task["rdoc"].comment=nil
+Rake::Task["rerdoc"].comment=nil

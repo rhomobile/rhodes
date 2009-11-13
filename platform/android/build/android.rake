@@ -261,12 +261,12 @@ namespace "build" do
           hash += Digest::SHA2.file(f).hexdigest if File.file? f
         end
       end
-      File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest hash) }
+      File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
 
     end
 
     task :libsqlite => "config:android" do
-      srcdir = File.join $shareddir, "sqlite"
+      srcdir = File.join($shareddir, "sqlite")
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
 
