@@ -222,7 +222,7 @@ DWORD GetCurrentDirectoryA(
 int __cdecl _getdrive (void);
 #define _mbspbrk strpbrk
 
-extern char **environ;
+//extern char **environ;
 
 #if _WIN32_WCE<=0x501
 #define BUFSIZ  512

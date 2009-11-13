@@ -4,7 +4,7 @@
 
 #include <windows.h>
 
-char **environ;
+//char **environ;
 extern char * rb_w32_getenv(const char *);
 
 /* getenv should replace with rb_w32_getenv. */

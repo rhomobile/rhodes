@@ -8,7 +8,8 @@
  */
 
 #include <sys/cdefs.h>
-
+//RHO
+#if 0
 __BEGIN_DECLS
 extern char ***_NSGetArgv(void);
 extern int *_NSGetArgc(void);
@@ -21,3 +22,4 @@ extern struct mach_header *
 #endif /* __LP64__ */
 _NSGetMachExecuteHeader(void);
 __END_DECLS
+#endif //0

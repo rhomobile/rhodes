@@ -1645,11 +1645,11 @@ rb_load_file(const char *fname)
 #if !defined(_WIN32) && !(defined(HAVE_SETENV) && defined(HAVE_UNSETENV))
 #define USE_ENVSPACE_FOR_ARG0
 #endif
-
+//RHO
 #ifdef USE_ENVSPACE_FOR_ARG0
-extern char **environ;
+//extern char **environ;
 #endif
-
+//RHO
 static int
 get_arglen(int argc, char **argv)
 {
