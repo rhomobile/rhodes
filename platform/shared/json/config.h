@@ -60,7 +60,7 @@
 #define HAVE_STRNCASECMP 1
 
 /* Define to 1 if you have the `strndup' function. */
-#if !defined(_WIN32_WCE) && !defined(WIN32)
+#if defined(OS_ANDROID)
 #define HAVE_STRNDUP 1
 #endif
 

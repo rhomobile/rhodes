@@ -36,13 +36,11 @@
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
-		5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333770FC1B20000F268F0 /* NetRequest.cpp */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDCFA778109A2F530009A4A6 /* libcurl-release.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCFA777109A2F530009A4A6 /* libcurl-release.a */; };
-		BDCFA78B109A2F610009A4A6 /* include in Resources */ = {isa = PBXBuildFile; fileRef = BDCFA77C109A2F610009A4A6 /* include */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
 		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
@@ -188,8 +186,6 @@
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
-		5C5333770FC1B20000F268F0 /* NetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetRequest.cpp; path = rho/net/NetRequest.cpp; sourceTree = "<group>"; };
-		5C5333780FC1B20000F268F0 /* NetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetRequest.h; path = rho/net/NetRequest.h; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C53354A0FC2974D00F268F0 /* RhoThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThreadImpl.cpp; path = rho/common/RhoThreadImpl.cpp; sourceTree = "<group>"; };
 		5C53354B0FC2974D00F268F0 /* RhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThreadImpl.h; path = rho/common/RhoThreadImpl.h; sourceTree = "<group>"; };
@@ -200,7 +196,6 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDCFA777109A2F530009A4A6 /* libcurl-release.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcurl-release.a"; path = "libcurl/lib/libcurl-release.a"; sourceTree = "<group>"; };
-		BDCFA77C109A2F610009A4A6 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = libcurl/include; sourceTree = "<group>"; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDE35AB7107F977D009941C7 /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
 		BDE35AB8107F977D009941C7 /* RhoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFile.h; path = ../shared/common/RhoFile.h; sourceTree = SOURCE_ROOT; };
@@ -323,7 +318,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				BDCFA77C109A2F610009A4A6 /* include */,
 				F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */,
 				466B0FC90F3CFA8000A52314 /* Icons */,
 				5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */,
@@ -436,8 +430,6 @@
 		5C5332620FBD6ACC00F268F0 /* net */ = {
 			isa = PBXGroup;
 			children = (
-				5C5333770FC1B20000F268F0 /* NetRequest.cpp */,
-				5C5333780FC1B20000F268F0 /* NetRequest.h */,
 				5C5333790FC1B20000F268F0 /* NetRequestImpl.m */,
 			);
 			name = net;
@@ -693,7 +685,6 @@
 				461B5A880F82D89700B08CB9 /* gears.png in Resources */,
 				F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */,
 				46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */,
-				BDCFA78B109A2F610009A4A6 /* include in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -752,7 +743,6 @@
 				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
 				F52181130F96B13500B7F974 /* LogViewController.m in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
-				5C53337A0FC1B20000F268F0 /* NetRequest.cpp in Sources */,
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
 				5C53354C0FC2974D00F268F0 /* RhoThreadImpl.cpp in Sources */,
 				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
@@ -891,7 +881,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				USER_HEADER_SEARCH_PATHS = "libcurl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Debug;
 		};
@@ -936,7 +926,7 @@
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
-				USER_HEADER_SEARCH_PATHS = "libcurl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Release;
 		};
@@ -1092,7 +1082,7 @@
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
-				USER_HEADER_SEARCH_PATHS = "libcurl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Distribution;
 		};
