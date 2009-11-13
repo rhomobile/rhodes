@@ -119,15 +119,15 @@ namespace "config" do
     # command "android list targets"
     ANDROID_API_LEVEL = 3
 
-	# Here is switch between release/debug configuration used for
-	# building native libraries
-	$build_release = true
+    # Here is switch between release/debug configuration used for
+    # building native libraries
+    $build_release = true
 
     $androidsdkpath = $config["env"]["paths"]["android"]
-	puts "Missing 'android' section in rhobuild.yml" if $androidsdkpath.nil?
+    puts "Missing 'android' section in rhobuild.yml" if $androidsdkpath.nil?
     $androidndkpath = $config["env"]["paths"]["android-ndk"]
-	puts "Missing 'android-ndk' section in rhobuild.yml" if $androidndkpath.nil?
-	
+    puts "Missing 'android-ndk' section in rhobuild.yml" if $androidndkpath.nil?
+    
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
@@ -164,7 +164,11 @@ namespace "config" do
       $path_separator = ":"
       $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
       # TODO: add ruby executable for Linux
-      $rubypath = "res/build-tools/RubyMac"
+      if RUBY_PLATFORM =~ /darwin/
+        $rubypath = "res/build-tools/RubyMac"
+      else
+        $rubypath = "res/build-tools/rubylinux"
+      end
     end
 
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
@@ -182,14 +186,14 @@ namespace "config" do
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
 
-	$ndkgccver = "4.2.1"
+    $ndkgccver = "4.2.1"
     $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
     $ndksysroot = $androidndkpath + "/build/platforms/android-#{ANDROID_API_LEVEL}/arch-arm"
 
     $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
     $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
     $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
-	$stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
+    $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
 
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
@@ -351,7 +355,7 @@ namespace "build" do
       unless $? == 0
         exit 1
       end
-	  source = File.join(objdir, "so", "libstlport.a")
+      source = File.join(objdir, "so", "libstlport.a")
       cp_r source, libname unless FileUtils.uptodate? libname, source
     end
 
@@ -441,37 +445,41 @@ namespace "build" do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       objdir = File.join $bindir, "libs", "librhodes"
       libname = File.join $bindir, "libs", "librhodes.so"
-	  args = []
-	  args << "-I#{$stlport_includes}"
-	  args << "-I#{srcdir}/../include"
-	  args << "-I#{$shareddir}"
-	  args << "-I#{$shareddir}/sqlite"
-	  args << "-I#{$shareddir}/curl/include"
+      args = []
+      args << "-I#{$stlport_includes}"
+      args << "-I#{srcdir}/../include"
+      args << "-I#{$shareddir}"
+      args << "-I#{$shareddir}/sqlite"
+      args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
-	  args << "-I#{$shareddir}/ruby/linux"
-	  args << "-D__NEW__"
-	  args << "-D__SGI_STL_INTERNAL_PAIR_H"
+      args << "-I#{$shareddir}/ruby/linux"
+      args << "-D__NEW__"
+      args << "-D__SGI_STL_INTERNAL_PAIR_H"
 
-	  File.read(File.join($builddir, "librhodes_build.files")).each do |f|
+      File.read(File.join($builddir, "librhodes_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
-	  end
+      end
 
-	  args = []
-	  args << "-L#{$bindir}/libs"
-	  args << "-lrhomain"
-	  args << "-lshttpd"
-	  args << "-lruby"
-	  args << "-lrhosync"
-	  args << "-lrhodb"
-	  args << "-lrholog"
-	  args << "-lrhocommon"
-	  args << "-ljson"
-	  args << "-lstlport"
-	  args << "-lcurl"
-	  args << "-lsqlite"
-	  args << "-ldl"
-	  args << "-lz"
-	  cc_link libname, Dir.glob(objdir + "/**/*.o"), args or exit 1
+      args = []
+      args << "-L#{$bindir}/libs"
+      args << "-lrhomain"
+      args << "-lshttpd"
+      args << "-lruby"
+      args << "-lrhosync"
+      args << "-lrhodb"
+      args << "-lrholog"
+      args << "-lrhocommon"
+      args << "-ljson"
+      args << "-lstlport"
+      args << "-lcurl"
+      args << "-lsqlite"
+      args << "-ldl"
+      args << "-lz"
+      cc_link libname, Dir.glob(objdir + "/**/*.o"), args or exit 1
+
+      destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
+      mkdir_p destdir unless File.exists? destdir
+      cp_r libname, destdir
     end
 
  #   desc "Build Rhodes for android"
@@ -583,7 +591,7 @@ namespace "package" do
     end
 
     rm_rf $bindir + "/lib"
-	mkdir_p $bindir + "/lib/armeabi"
+    mkdir_p $bindir + "/lib/armeabi"
     cp_r $bindir + "/libs/librhodes.so", $bindir + "/lib/armeabi"
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
     puts Jake.run($aapt, args, $bindir)
@@ -734,10 +742,10 @@ namespace "clean" do
         cc_clean l
       end
     end
-	task :librhodes => "config:android" do
-	  rm_rf $bindir + "/libs/librhodes"
-	  rm_rf $bindir + "/libs/librhodes.so"
-	end
+    task :librhodes => "config:android" do
+      rm_rf $bindir + "/libs/librhodes"
+      rm_rf $bindir + "/libs/librhodes.so"
+    end
 #    desc "clean android"
     task :all => [:assets,:librhodes,:libs,:files]
   end
