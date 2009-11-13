@@ -813,6 +813,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/libcurl/lib\"",
 				);
+				OTHER_CFLAGS = "-DOS_IPHONE=1";
 				OTHER_LDFLAGS = "";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
@@ -902,6 +903,7 @@
 					"\"$(SRCROOT)/libcurl/lib\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DOS_IPHONE=1";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
@@ -1025,6 +1027,7 @@
 					"\"$(SRCROOT)/libcurl/lib\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DOS_IPHONE=1";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
