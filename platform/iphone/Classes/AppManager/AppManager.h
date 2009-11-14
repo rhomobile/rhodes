@@ -20,7 +20,8 @@
 + (NSString *) getApplicationsRosterUrl;
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData;
 
-- (void) copyFromMainBundle:(NSString *)item replace:(bool)replaceFiles;
+- (void) copyFromMainBundle:(NSFileManager*)fileManager fromPath:(NSString*)source
+					 toPath:(NSString*)target remove:(BOOL)remove;
 - (void) configure;
 
 @end
