@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes.camera;
 
 import android.content.Intent;
-import android.util.Log;
 
 import com.rhomobile.rhodes.RhodesInstance;
 

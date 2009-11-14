@@ -135,6 +135,38 @@ public class Rhodes extends Activity {
     		}
     	}
     }
+    
+    private String getContent(InputStream in) throws IOException {
+    	String retval = "";
+    	byte[] buf = new byte[512];
+    	while(true) {
+    		int n = in.read(buf);
+    		if (n <= 0)
+    			break;
+    		retval += new String(buf);
+    	}
+    	return retval;
+    }
+    
+    private boolean isContentsEquals(String bundleFile, File sdcardFile) throws IOException {
+    	AssetManager amgr = getResources().getAssets();
+    	InputStream bundleIn = null;
+		InputStream sdcardIn = null;
+		try {
+			bundleIn = amgr.open(bundleFile);
+			sdcardIn = new FileInputStream(sdcardFile);
+			
+			String newName = getContent(bundleIn);
+			String oldName = getContent(sdcardIn);
+			return newName.equals(oldName);
+		} catch (Exception e) {
+			return false;
+		}
+		finally {
+			if (bundleIn != null) bundleIn.close();
+			if (sdcardIn != null) sdcardIn.close();
+		}
+    }
 
 	/** Called when the activity is first created. */
 	@Override
@@ -234,69 +266,23 @@ public class Rhodes extends Activity {
 				try {
 					Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
 					String rootPath = getRootPath();
-					AssetManager amgr = getResources().getAssets();
 					
 					boolean removeFiles = true;
 					boolean copyFiles = true;
 					
-					InputStream inNew = null;
-					InputStream inOld = null;
-					try {
-						inNew = amgr.open("name");
-						inOld = new FileInputStream(new File(rootPath, "name"));
-						byte[] bufOld = new byte[64];
-						byte[] bufNew = new byte[64]; 
-						boolean eq = true;
-						while(true) {
-							int n = inNew.read(bufNew);
-							if (n <= 0)
-								break;
-							n = inOld.read(bufOld);
-							if (n <= 0)
-								break;
-							String newName = new String(bufNew);
-							String oldName = new String(bufOld);
-							if (!newName.equals(oldName)) {
-								eq = false;
-								break;
-							}
-						}
-						removeFiles = !eq;
-					} catch (Exception e) {
-						// Ignore
-					}
-					finally {
-						if (inNew != null) inNew.close();
-						if (inOld != null) inOld.close();
-					}
-
-					byte[] buf = new byte[64];
-					InputStream in = amgr.open("hash", AssetManager.ACCESS_BUFFER);
-					int n = in.read(buf);
-					in.close();
-					if (n == buf.length) {
-						String newHash = new String(buf);
-						try {
-							in = new FileInputStream(new File(rootPath, "hash"));
-							n = in.read(buf);
-							in.close();
-						}
-						catch (Exception e) {
-							n = 0;
-						}
-						if (n == buf.length) {
-							String oldHash = new String(buf);
-							if (oldHash.equals(newHash))
-								copyFiles = false;
-						}
-					}
+					removeFiles = !isContentsEquals("name", new File(rootPath, "name"));
+					if (!removeFiles)
+						copyFiles = !isContentsEquals("hash", new File(rootPath, "hash"));
+					
 					if (copyFiles) {
+						AssetManager amgr = getResources().getAssets();
 						copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
 						copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
 						copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
 						copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
 						copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
 					}
+					
 					File dbfiles = new File(rootPath + "apps/public/db-files");
 					if (!dbfiles.exists())
 						dbfiles.mkdirs();

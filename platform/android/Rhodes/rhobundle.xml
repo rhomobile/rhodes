@@ -3,7 +3,7 @@
   <property environment="env" />
 
   <target name="all">
-    <exec executable="rake">
+    <exec executable="rake" failOnError="true" >
       <arg value="build:android:rhobundle" />
     </exec>
   </target>
