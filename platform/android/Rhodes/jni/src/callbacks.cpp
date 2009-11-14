@@ -5,6 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
 
+extern "C" void webview_navigate(char* url, int index);
 
 namespace rho
 {
@@ -21,14 +22,16 @@ IRhoClassFactory* createClassFactory()
 
 RHO_GLOBAL void rho_map_location(char* query)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
+    rho::String url = "http://maps.google.com/?";
+    url += query;
+    webview_navigate((char*)url.c_str(), 0);
 }
 
-RHO_GLOBAL void rho_appmanager_load( void* httpContext, const char* szQuery)
+RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuery*/)
 {
-    // TODO:
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG_CALLBACK;
+    // Nothing
 }
 
 RHO_GLOBAL int rho_net_has_network()

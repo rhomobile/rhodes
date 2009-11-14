@@ -48,6 +48,7 @@ def cc_compile(filename, objdir, additional = nil)
   args << $ndksysroot
   args << "-fPIC"
   args << "-mandroid"
+  args << "-Wall"
   args << "-DANDROID"
   args << "-DOS_ANDROID"
   args += additional if additional.is_a? Array and not additional.empty?

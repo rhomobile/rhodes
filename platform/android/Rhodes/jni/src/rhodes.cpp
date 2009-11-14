@@ -116,7 +116,8 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_DATE_TIME_PICKER,
         RHODES_JAVA_CLASS_PHONEBOOK,
         RHODES_JAVA_CLASS_CONTACT,
-        RHODES_JAVA_CLASS_CONTACT_FIELD
+        RHODES_JAVA_CLASS_CONTACT_FIELD,
+        RHODES_JAVA_CLASS_ALERT
     };
 
 #define RHO_LOG_JNI_INIT
@@ -184,21 +185,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
 {
     RHO_LOG_JNI_CALL;
     rho_rhodesapp_destroy();
-}
-
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_saveCurrentLocation
-  (JNIEnv *, jobject, jstring)
-{
-    // TODO
-    RHO_NOT_IMPLEMENTED;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_restoreLocation
-  (JNIEnv *, jobject)
-{
-    // TODO
-    RHO_NOT_IMPLEMENTED;
-    return false;
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources

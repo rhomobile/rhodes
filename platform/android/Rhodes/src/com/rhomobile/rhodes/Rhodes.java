@@ -55,13 +55,10 @@ import android.os.Process;
 
 public class Rhodes extends Activity {
 
-	private static final String LOG_TAG = "Rhodes";
-
+	private static final boolean SHOW_PROGRESS_BAR = false;
 	private static final int MAX_PROGRESS = 10000;
 
 	private WebView webView;
-
-	private boolean isStarted = false;
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
@@ -77,9 +74,6 @@ public class Rhodes extends Activity {
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
-	private native void saveCurrentLocation(String url);
-    private native boolean restoreLocation();
-    
     private native void doSyncAllSources(boolean v);
     
     public native String getOptionsUrl();
@@ -230,7 +224,7 @@ public class Rhodes extends Activity {
 
 		});
 		
-		Log.i(LOG_TAG, "Loading...");
+		Log.i("Rhodes", "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
 		
 		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
@@ -300,26 +294,27 @@ public class Rhodes extends Activity {
 	}
 
 	protected void onStartLoading() {
-		if (isStarted)
-			this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
+		if (!SHOW_PROGRESS_BAR)
+			return;
+		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
 	}
 
 	protected void onStopLoading() {
-		if (isStarted)
-			this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS,
-					MAX_PROGRESS);
+		if (!SHOW_PROGRESS_BAR)
+			return;
+		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 	}
 
 	protected void onLoadingProgress(int curProgress) {
-		if (isStarted) {
-			if (curProgress < 0)
-				curProgress = 0;
-			if (curProgress > 10000)
-				curProgress = 10000;
+		if (!SHOW_PROGRESS_BAR)
+			return;
+		
+		if (curProgress < 0)
+			curProgress = 0;
+		if (curProgress > 10000)
+			curProgress = 10000;
 
-			this.getWindow()
-					.setFeatureInt(Window.FEATURE_PROGRESS, curProgress);
-		}
+		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, curProgress);
 	}
 
 	@Override
@@ -487,6 +482,15 @@ public class Rhodes extends Activity {
 	public static void showNetworkIndicator(boolean v) {
 		// TODO:
 	}
+	
+	private void saveCurrentLocation(String url) {
+		// TODO:
+	}
+	
+    private boolean restoreLocation() {
+    	// TODO:
+    	return false;
+    }
 	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));

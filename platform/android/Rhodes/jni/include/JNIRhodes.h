@@ -32,6 +32,7 @@ jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *sign
 #define RHODES_JAVA_CLASS_PHONEBOOK "com/rhomobile/rhodes/phonebook/Phonebook"
 #define RHODES_JAVA_CLASS_CONTACT "com/rhomobile/rhodes/phonebook/Contact"
 #define RHODES_JAVA_CLASS_CONTACT_FIELD "com/rhomobile/rhodes/phonebook/ContactField"
+#define RHODES_JAVA_CLASS_ALERT "com/rhomobile/rhodes/alert/Alert"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
