@@ -35,22 +35,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    saveCurrentLocation
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_saveCurrentLocation
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    restoreLocation
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_restoreLocation
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    doSyncAllSources
  * Signature: (Z)V
  */

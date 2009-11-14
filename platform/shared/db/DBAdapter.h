@@ -9,13 +9,13 @@ namespace db{
 
 class CDBAdapter
 {
-    String   m_strDbPath, m_strDbVer, m_strDbVerPath;
     sqlite3* m_dbHandle;
+    String   m_strDbPath, m_strDbVer, m_strDbVerPath;
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
     common::CMutex m_mxDB;
     common::CMutex m_mxTransDB;
-	boolean m_bInsideTransaction;
     boolean m_bUnlockDB;
+    boolean m_bInsideTransaction;
     CDBAttrManager m_attrMgr;
 
     struct CDBVersion

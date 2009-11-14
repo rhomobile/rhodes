@@ -108,16 +108,16 @@ CONVERT_TYPE_W( double, L"%f" );
 
 CONVERT_TYPE_A( unsigned int, "%u" );
 CONVERT_TYPE_A( int, "%d" );
-CONVERT_TYPE_A( unsigned long, "%u" );
-CONVERT_TYPE_A( long, "%d" );
-CONVERT_TYPE_A( wchar_t, "%c" );
+CONVERT_TYPE_A( unsigned long, "%lu" );
+CONVERT_TYPE_A( long, "%ld" );
+CONVERT_TYPE_A( wchar_t, "%lc" );
 CONVERT_TYPE_A( char, "%c" );
 CONVERT_TYPE_A( unsigned char, "%c" );
-CONVERT_TYPE_A( short, "%d" );
+CONVERT_TYPE_A( short, "%hd" );
 //CONVERT_TYPE_A( unsigned short, "%u" );
 CONVERT_TYPE_A( bool, "%d" );
 CONVERT_TYPE_A( float, "%f" );
-CONVERT_TYPE_A( double, "%f" );
+CONVERT_TYPE_A( double, "%lf" );
 
 CONVERT_TYPE_A( uint64, "%llu" );
 CONVERT_TYPE_A( int64, "%lli" );

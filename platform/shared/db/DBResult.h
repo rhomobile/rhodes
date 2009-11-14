@@ -10,8 +10,8 @@ namespace db{
 
 class CDBResult
 {
-    sqlite3_stmt* m_dbStatement;
     common::CMutexLock m_lockDB;
+    sqlite3_stmt* m_dbStatement;
     boolean m_bReportNonUnique;
     int     m_nErrorCode;
 public:
