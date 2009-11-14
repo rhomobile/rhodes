@@ -90,16 +90,29 @@ public class Rhodes extends Activity {
     public RhoLogConf getLogConf() {
     	return m_rhoLogConf;
     }
+
+	private boolean deleteRecursively(File target) {
+		if (target.isDirectory()) {
+			String[] children = target.list();
+			for(int i = 0; i != children.length; ++i)
+				if (!deleteRecursively(new File(target, children[i])))
+					return false;
+		}
+		return target.delete();
+	}
     
-    private void copyFromBundle(AssetManager amgr, String source, File target) throws IOException
+    private void copyFromBundle(AssetManager amgr, String source, File target, boolean remove) throws IOException
     {
+    	if (remove && target.exists() && !deleteRecursively(target))
+			throw new IOException("Can not delete " + target.getAbsolutePath());
+    	
     	String[] children = amgr.list(source);
     	if (children.length > 0) {
     		if (!target.exists())
     			target.mkdirs();
     		
     		for(int i = 0; i != children.length; ++i)
-    			copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]));
+    			copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]), false);
     	}
     	else {
     		InputStream in = null;
@@ -223,8 +236,40 @@ public class Rhodes extends Activity {
 					String rootPath = getRootPath();
 					AssetManager amgr = getResources().getAssets();
 					
-					boolean copy = true;
+					boolean removeFiles = true;
+					boolean copyFiles = true;
 					
+					InputStream inNew = null;
+					InputStream inOld = null;
+					try {
+						inNew = amgr.open("name");
+						inOld = new FileInputStream(new File(rootPath, "name"));
+						byte[] bufOld = new byte[64];
+						byte[] bufNew = new byte[64]; 
+						boolean eq = true;
+						while(true) {
+							int n = inNew.read(bufNew);
+							if (n <= 0)
+								break;
+							n = inOld.read(bufOld);
+							if (n <= 0)
+								break;
+							String newName = new String(bufNew);
+							String oldName = new String(bufOld);
+							if (!newName.equals(oldName)) {
+								eq = false;
+								break;
+							}
+						}
+						removeFiles = !eq;
+					} catch (Exception e) {
+						// Ignore
+					}
+					finally {
+						if (inNew != null) inNew.close();
+						if (inOld != null) inOld.close();
+					}
+
 					byte[] buf = new byte[64];
 					InputStream in = amgr.open("hash", AssetManager.ACCESS_BUFFER);
 					int n = in.read(buf);
@@ -242,14 +287,15 @@ public class Rhodes extends Activity {
 						if (n == buf.length) {
 							String oldHash = new String(buf);
 							if (oldHash.equals(newHash))
-								copy = false;
+								copyFiles = false;
 						}
 					}
-					if (copy) {
-						copyFromBundle(amgr, "apps", new File(rootPath, "apps"));
-						copyFromBundle(amgr, "db", new File(rootPath, "db"));
-						copyFromBundle(amgr, "lib", new File(rootPath, "lib"));
-						copyFromBundle(amgr, "hash", new File(rootPath, "hash"));
+					if (copyFiles) {
+						copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
+						copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
+						copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
+						copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
+						copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
 					}
 					File dbfiles = new File(rootPath + "apps/public/db-files");
 					if (!dbfiles.exists())
