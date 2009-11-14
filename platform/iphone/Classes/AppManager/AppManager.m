@@ -73,27 +73,36 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	return UnzipApplication( appRoot, [appData bytes], [appData length]);
 }
 
-- (void) copyFromMainBundle:(NSString *)item replace:(bool)replaceFiles {
-	//Check if item was copied already 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray	 *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *itemPath = [documentsDirectory stringByAppendingPathComponent:item];
-    if ([fileManager fileExistsAtPath:itemPath]) {
-		if (replaceFiles) {
-			NSError *err;
-			[fileManager removeItemAtPath:itemPath error:&err];
-		} else {
+- (void) copyFromMainBundle:(NSFileManager*)fileManager fromPath:(NSString *)source
+					 toPath:(NSString*)target remove:(BOOL)remove {
+	BOOL dir;
+	if(![fileManager fileExistsAtPath:source isDirectory:&dir]) {
+		NSAssert1(0, @"Source item '%@' does not exists in bundle", source);
+		return;
+	}
+	
+	if (!remove && dir) {
+		if (![fileManager fileExistsAtPath:target])
+			[fileManager createDirectoryAtPath:target attributes:nil];
+		
+		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
+		NSString *child;
+		while (child = [enumerator nextObject]) {
+			[self copyFromMainBundle:fileManager fromPath:[source stringByAppendingPathComponent:child]
+							  toPath:[target stringByAppendingPathComponent:child] remove:NO];
+		}
+	}
+	else {
+		NSError *error;
+		if ([fileManager fileExistsAtPath:target] && ![fileManager removeItemAtPath:target error:&error]) {
+			NSAssert2(0, @"Failed to remove '%@': %@", target, [error localizedDescription]);
+			return;
+		}
+		if (![fileManager copyItemAtPath:source toPath:target error:&error]) {
+			NSAssert3(0, @"Failed to copy '%@' to '%@': %@", source, target, [error localizedDescription]);
 			return;
 		}
 	}
-	
-    // The item does not exist, so copy it from resources to the appropriate location.
-    NSError *error;
-    NSString *bundleItemPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:item];
-    if(![fileManager copyItemAtPath:bundleItemPath toPath:itemPath error:&error]) {
-        NSAssert1(0, @"Failed to copy '%@' files with message '%@'.", [error localizedDescription]);
-    }
 }
 
 /*
@@ -101,36 +110,65 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 - (void) configure {
 	
-//#if TARGET_IPHONE_SIMULATOR	
-//	bool replaceFiles = YES;
-//#else
-	rho_conf_Init(rho_native_rhopath());
+	BOOL removeFiles = YES;
+	BOOL copyFiles = YES;
 	
-	NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-	const char* version = [bundleVersion cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	char* currentVersion = rho_conf_getString("currentVersion");
-    bool replaceFiles = NO;
-	if ( strcmp(version, currentVersion) ) {
-		replaceFiles = YES;
+	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
+	NSString *rhoRoot = [NSString stringWithCString:rho_native_rhopath()];
+
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
+	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
+	if ([fileManager fileExistsAtPath:filePathNew] && [fileManager fileExistsAtPath:filePathOld]) {
+		NSString *newName = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathNew]
+												  encoding:NSUTF8StringEncoding];
+		NSString *oldName = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathOld]
+												  encoding:NSUTF8StringEncoding];
+		removeFiles = ![newName isEqualToString:oldName];
 	}
-	rho_conf_freeString(currentVersion);
+
+	if (!removeFiles) {
+		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
+		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
+
+		if ([fileManager fileExistsAtPath:filePathNew] && [fileManager fileExistsAtPath:filePathOld]) {
+			// Read new hash into memory
+			NSString *newHash = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathNew]
+													  encoding:NSUTF8StringEncoding];
+			// Read old hash into memory
+			NSString *oldHash = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathOld]
+													  encoding:NSUTF8StringEncoding];
+			
+			// Compare them
+			copyFiles = ![newHash isEqualToString:oldHash];
+		}
+	}
+	
 //#endif	
 	
-	[self copyFromMainBundle:@"apps" replace:replaceFiles];
-	[self copyFromMainBundle:@"lib" replace:replaceFiles];
-//#if TARGET_IPHONE_SIMULATOR	
-//	[self copyFromMainBundle:@"db" replace:NO];  //TBD: need to check db version reset db if different
-//#else
-	[self copyFromMainBundle:@"db" replace:replaceFiles];  //TBD: need to check db version reset db if different	
-//#endif	
+	if (copyFiles) {
+		[self copyFromMainBundle:fileManager
+						fromPath:[bundleRoot stringByAppendingPathComponent:@"apps"]
+						  toPath:[rhoRoot stringByAppendingPathComponent:@"apps"]
+						  remove:removeFiles];
+		[self copyFromMainBundle:fileManager
+						fromPath:[bundleRoot stringByAppendingPathComponent:@"lib"]
+						  toPath:[rhoRoot stringByAppendingPathComponent:@"lib"]
+						  remove:removeFiles];
+		[self copyFromMainBundle:fileManager
+						fromPath:[bundleRoot stringByAppendingPathComponent:@"db"]
+						  toPath:[rhoRoot stringByAppendingPathComponent:@"db"]
+						  remove:removeFiles];
+		[self copyFromMainBundle:fileManager
+						fromPath:[bundleRoot stringByAppendingPathComponent:@"hash"]
+						  toPath:[rhoRoot stringByAppendingPathComponent:@"hash"]
+						  remove:removeFiles];
+	}
+
 	rho_logconf_Init(rho_native_rhopath());
+	rho_rhodesapp_create(rho_native_rhopath());
 	RAWLOG_INFO("Rhodes started");
-	if (replaceFiles) {
-//#ifndef TARGET_IPHONE_SIMULATOR	
-		rho_conf_setString("currentVersion", version);
-		rho_conf_save();
-//#endif	
-	}
 }
 
 @end

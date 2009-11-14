@@ -17,27 +17,19 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
-		461B5A880F82D89700B08CB9 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = 461B5A870F82D89700B08CB9 /* gears.png */; };
 		463577BF107272A400BEC653 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 463577BE107272A400BEC653 /* JSString.m */; };
-		4640FE950F410A3400B7975E /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE930F410A3400B7975E /* back_btn.png */; };
-		4640FE960F410A3400B7975E /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 4640FE940F410A3400B7975E /* forward_btn.png */; };
-		466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 466B0FCB0F3CFA9400A52314 /* home_btn.png */; };
 		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
-		467E716E0EB673F000E5958D /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 467E713F0EB673F000E5958D /* lib */; };
-		467E71720EB6740400E5958D /* db in Resources */ = {isa = PBXBuildFile; fileRef = 467E716F0EB6740400E5958D /* db */; };
 		468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 468276EF10713FD600ADBCD4 /* WebViewUrl.m */; };
 		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
 		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
 		46AF5163103F150D006E02E1 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
-		46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 46B0044810332E5C00D0C2F4 /* Entitlements.plist */; };
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
-		46C744690EAFA99D00CC76F1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 46C744680EAFA99D00CC76F1 /* icon.png */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		BD4D7D7210AE2799003DCE59 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
@@ -46,12 +38,10 @@
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
 		F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F516695F0FFD78770079F023 /* AVFoundation.framework */; };
 		F52181130F96B13500B7F974 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
-		F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F547F1DA0F990084007C2CD2 /* Settings.bundle */; };
 		F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = F547F2870F9945D2007C2CD2 /* LogOptionsController.m */; };
 		F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
-		F563D8080EA95EDC0062DA57 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = F563D7680EA95EDC0062DA57 /* apps */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
@@ -96,14 +86,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = BD2C94A610AE052A008D4692 /* curl.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D /* libcurl.a */;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
 			remoteInfo = curl;
 		};
 		BD2C94F210AE0BC3008D4692 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD2C94A610AE052A008D4692 /* curl.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D /* curl */;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
 			remoteInfo = curl;
 		};
 		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
@@ -205,6 +195,7 @@
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		BD4D7B1010AE1C7F003DCE59 /* hash */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hash; path = bin/RhoBundle/hash; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDE35AB7107F977D009941C7 /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
@@ -357,6 +348,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BD4D7B1010AE1C7F003DCE59 /* hash */,
 				467E716F0EB6740400E5958D /* db */,
 				467E713F0EB673F000E5958D /* lib */,
 				F563D7680EA95EDC0062DA57 /* apps */,
@@ -588,10 +580,12 @@
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
 			buildPhases = (
 				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
-				1D60588D0D05DD3D006BFB54 /* Resources */,
+				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
+				BD4D7CF810AE274D003DCE59 /* Resources */,
 				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				BD4D7DB210AE2A45003DCE59 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -697,25 +691,25 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+		BD4D7CF810AE274D003DCE59 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				F563D8080EA95EDC0062DA57 /* apps in Resources */,
-				46C744690EAFA99D00CC76F1 /* icon.png in Resources */,
-				467E716E0EB673F000E5958D /* lib in Resources */,
-				467E71720EB6740400E5958D /* db in Resources */,
-				466B0FCD0F3CFA9400A52314 /* home_btn.png in Resources */,
-				4640FE950F410A3400B7975E /* back_btn.png in Resources */,
-				4640FE960F410A3400B7975E /* forward_btn.png in Resources */,
-				461B5A880F82D89700B08CB9 /* gears.png in Resources */,
-				F547F1DB0F990084007C2CD2 /* Settings.bundle in Resources */,
-				46B0044910332E5C00D0C2F4 /* Entitlements.plist in Resources */,
+				BD4D7D7210AE2799003DCE59 /* MainWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		BD4D7DB210AE2A45003DCE59 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		5C0442920EFBE79D0014E5C6 /* Create RhoBundle */ = {
@@ -746,6 +740,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ -d ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts ]; then\n\tnf=$(ls ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts | wc -l)\n\tif [ \"$nf\" -eq \"0\" ];  then \n\t\techo 'Alerts folder is empty...' \n\telse\n\t\techo Moving $nf alert\\(s\\)...\n\t\tmv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app\n\tfi\nelse\n\techo 'Alerts folder is not found...'\nfi\n";
+		};
+		BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy RhoBundle";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nmkdir -p ${RHO_TARGET_DIR}\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
