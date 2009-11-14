@@ -1,4 +1,5 @@
 require 'pathname'
+require 'yaml'
   
 class Hash
   def fetch_r(key)

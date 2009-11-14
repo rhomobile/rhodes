@@ -263,6 +263,8 @@ namespace "build" do
       end
       File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
 
+	  File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+
     end
 
     task :libsqlite => "config:android" do

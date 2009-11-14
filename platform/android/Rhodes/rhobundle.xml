@@ -1,0 +1,11 @@
+<project name="buildRhobundle" default="all" basedir="../..">
+
+  <property environment="env" />
+
+  <target name="all">
+    <exec executable="rake">
+      <arg value="build:android:rhobundle" />
+    </exec>
+  </target>
+
+</project>
