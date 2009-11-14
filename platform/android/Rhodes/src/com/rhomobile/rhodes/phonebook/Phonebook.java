@@ -17,7 +17,6 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
-import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
 
 //@RubyLevelClass(name="Phonebook")

@@ -1,12 +1,10 @@
 package com.rhomobile.rhodes.camera;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhodesInstance;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

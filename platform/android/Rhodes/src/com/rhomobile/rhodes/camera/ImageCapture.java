@@ -1,6 +1,5 @@
 package com.rhomobile.rhodes.camera;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

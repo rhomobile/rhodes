@@ -5,20 +5,12 @@ import java.util.Date;
 import com.rhomobile.rhodes.AndroidR;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
 public class DateTimePickerScreen extends Activity {
@@ -87,6 +79,8 @@ public class DateTimePickerScreen extends Activity {
 			break;
 		case FORMAT_TIME:
 			_datePicker.setVisibility(View.INVISIBLE);
+			break;
+		case FORMAT_DATE_TIME:
 			break;
 		}
 	}
