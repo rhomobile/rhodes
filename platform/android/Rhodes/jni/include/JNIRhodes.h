@@ -23,6 +23,8 @@ jfieldID getJNIClassStaticField(jclass cls, const char *name, const char *signat
 jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature);
 jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *signature);
 
+VALUE convertJavaMapToRubyHash(jobject objMap);
+
 #define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
 #define RHODES_JAVA_CLASS_SET "java/util/Set"
 #define RHODES_JAVA_CLASS_MAP "java/util/Map"
