@@ -24,7 +24,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,7 +63,7 @@ public class NetworkConnectivityListener {
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION) ||
                 mListening == false) {
-                Log.w(TAG, "onReceived() called with " + mState.toString() + " and " + intent);
+                Logger.W(TAG, "onReceived() called with " + mState.toString() + " and " + intent);
                 return;
             }
 
@@ -87,7 +86,7 @@ public class NetworkConnectivityListener {
                 intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false);
 
             if (DBG) {
-                Log.d(TAG, "onReceive(): mNetworkInfo=" + mNetworkInfo +  " mOtherNetworkInfo = "
+                Logger.D(TAG, "onReceive(): mNetworkInfo=" + mNetworkInfo +  " mOtherNetworkInfo = "
                         + (mOtherNetworkInfo == null ? "[none]" : mOtherNetworkInfo +
                         " noConn=" + noConnectivity) + " mState=" + mState.toString());
             }

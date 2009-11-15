@@ -3,10 +3,10 @@ package com.rhomobile.rhodes.datetime;
 import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Logger;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,6 +14,8 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 public class DateTimePickerScreen extends Activity {
+	
+	private static final String TAG = "DateTimePicker";
 	
 	private String _callback;
 	private Date _init;
@@ -49,7 +51,7 @@ public class DateTimePickerScreen extends Activity {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		Log.d(getClass().getSimpleName(), "onCreate");
+		Logger.D(TAG, "onCreate");
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();
