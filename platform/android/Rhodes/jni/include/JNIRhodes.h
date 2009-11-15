@@ -24,6 +24,8 @@ jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature)
 jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *signature);
 
 #define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
+#define RHODES_JAVA_CLASS_SET "java/util/Set"
+#define RHODES_JAVA_CLASS_MAP "java/util/Map"
 #define RHODES_JAVA_CLASS_RHODES "com/rhomobile/rhodes/Rhodes"
 #define RHODES_JAVA_CLASS_WEB_VIEW "com/rhomobile/rhodes/WebView"
 #define RHODES_JAVA_CLASS_GEO_LOCATION "com/rhomobile/rhodes/geolocation/GeoLocation"
@@ -33,6 +35,7 @@ jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *sign
 #define RHODES_JAVA_CLASS_CONTACT "com/rhomobile/rhodes/phonebook/Contact"
 #define RHODES_JAVA_CLASS_CONTACT_FIELD "com/rhomobile/rhodes/phonebook/ContactField"
 #define RHODES_JAVA_CLASS_ALERT "com/rhomobile/rhodes/alert/Alert"
+#define RHODES_JAVA_CLASS_RINGTONE_MANAGER "com/rhomobile/rhodes/RingtoneManager"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
