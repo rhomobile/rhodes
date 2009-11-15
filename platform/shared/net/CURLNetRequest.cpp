@@ -123,6 +123,12 @@ static void set_curl_options(CURL *curl, const char *method, const String& strUr
 
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
+
+    // Set very large timeout in case of local requests
+    // It is required because otherwise requests (especially requests to writing!)
+    // could repeated twice or more times
+    if (isLocalHost(strUrl))
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10*24*60*60);
 }
 
 static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
