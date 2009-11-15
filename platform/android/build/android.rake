@@ -629,6 +629,16 @@ namespace "device" do
       end
     end
 
+    task :install => :debug do
+      apkfile = $targetdir + "/" + $appname + "-debug.apk"
+      puts "Install APK file"
+      puts `#{$adb} install -r "#{apkfile}"`
+      unless $? == 0
+        puts "Error building APK file"
+        exit 1
+      end
+    end
+
     desc "Build production signed for device"
     task :production => "package:android" do
       dexfile =  $bindir + "/classes.dex"
