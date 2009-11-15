@@ -34,7 +34,6 @@ std::map<std::string, jclass> g_classes;
 
 jclass getJNIClass(const char *name)
 {
-    JNIEnv *env = jnienv();
     std::map<std::string, jclass>::const_iterator it = g_classes.find(name);
     if (it == g_classes.end())
     {
@@ -109,6 +108,8 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 
     const char *classes[] = {
         RHODES_JAVA_CLASS_ITERATOR,
+        RHODES_JAVA_CLASS_SET,
+        RHODES_JAVA_CLASS_MAP,
         RHODES_JAVA_CLASS_RHODES,
         RHODES_JAVA_CLASS_WEB_VIEW,
         RHODES_JAVA_CLASS_GEO_LOCATION,
@@ -117,7 +118,8 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_PHONEBOOK,
         RHODES_JAVA_CLASS_CONTACT,
         RHODES_JAVA_CLASS_CONTACT_FIELD,
-        RHODES_JAVA_CLASS_ALERT
+        RHODES_JAVA_CLASS_ALERT,
+        RHODES_JAVA_CLASS_RINGTONE_MANAGER
     };
 
 #define RHO_LOG_JNI_INIT

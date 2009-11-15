@@ -29,6 +29,7 @@ platform/shared/ruby/ext/phonebook/phonebook_wrap.c
 platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c
 platform/shared/ruby/ext/rho/rhoruby.c
 platform/shared/ruby/ext/rho/rhosupport.c
+platform/shared/ruby/ext/ringtones/ringtones_wrap.c
 platform/shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c
 platform/shared/ruby/ext/stringio/stringio.c
 platform/shared/ruby/ext/strscan/strscan.c
