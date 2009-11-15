@@ -78,8 +78,10 @@ def cc_ar(libname, objects)
   return $? == 0
 end
 
-def cc_link(outname, objects, additional = nil)
-  return true if FileUtils.uptodate? outname, objects
+def cc_link(outname, objects, additional = nil, deps = nil)
+  dependencies = objects
+  dependencies += deps unless deps.nil?
+  return true if FileUtils.uptodate? outname, dependencies
   args = []
   args << "-nostdlib"
   args << "-Wl,-shared,-Bsymbolic"
@@ -470,6 +472,11 @@ namespace "build" do
         cc_compile f, objdir, args or exit 1
       end
 
+      deps = []
+      $libname.each do |k,v|
+        deps << v
+      end
+
       args = []
       args << "-L#{$bindir}/libs"
       args << "-lrhomain"
@@ -485,7 +492,7 @@ namespace "build" do
       args << "-lsqlite"
       args << "-ldl"
       args << "-lz"
-      cc_link libname, Dir.glob(objdir + "/**/*.o"), args or exit 1
+      cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir
