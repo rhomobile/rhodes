@@ -3,9 +3,10 @@ package com.rhomobile.rhodes.camera;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import com.rhomobile.rhodes.Logger;
+
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.util.Log;
 
 public class ImageCaptureCallback implements PictureCallback {
 
@@ -19,7 +20,7 @@ public class ImageCaptureCallback implements PictureCallback {
 
 	public void onPictureTaken(byte[] data, Camera camera) {
 		try {
-			Log.v(getClass().getSimpleName(), "onPictureTaken=" + data
+			Logger.T("ImageCapture", "onPictureTaken=" + data
 					+ " length = " + data.length);
 			
 			FileOutputStream buf = new FileOutputStream(filePath);

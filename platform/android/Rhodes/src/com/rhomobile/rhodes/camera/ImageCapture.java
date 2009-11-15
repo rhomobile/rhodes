@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Logger;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -13,12 +14,14 @@ import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class ImageCapture extends Activity implements SurfaceHolder.Callback {
+	
+	private static final String TAG = "ImageCapture";
+	
 	private Camera camera;
 	private boolean isPreviewRunning = false;
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat(
@@ -32,7 +35,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		Log.e(getClass().getSimpleName(), "onCreate");
+		Logger.D(TAG, "onCreate");
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
 		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
@@ -48,21 +51,20 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 
 	PictureCallback mPictureCallbackRaw = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera c) {
-			Log.e(getClass().getSimpleName(), "PICTURE CALLBACK RAW: " + data);
+			Logger.D(TAG, "PICTURE CALLBACK RAW: " + data);
 			camera.startPreview();
 		}
 	};
 
 	Camera.PictureCallback mPictureCallbackJpeg = new Camera.PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera c) {
-			Log.e(getClass().getSimpleName(),
-					"PICTURE CALLBACK JPEG: data.length = " + data);
+			Logger.D(TAG, "PICTURE CALLBACK JPEG: data.length = " + data);
 		}
 	};
 
 	Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
 		public void onShutter() {
-			Log.e(getClass().getSimpleName(), "SHUTTER CALLBACK");
+			Logger.D(TAG, "SHUTTER CALLBACK");
 		}
 	};
 
@@ -87,8 +89,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 						com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR + "/" +
 						filename + ".jpg");
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				Log.e(getClass().getSimpleName(), ex.getMessage(), ex);
+				Logger.E(TAG, ex.getMessage());
 			}
 			
 			camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
@@ -101,7 +102,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	}
 
 	protected void onResume() {
-		Log.e(getClass().getSimpleName(), "onResume");
+		Logger.D(TAG, "onResume");
 		super.onResume();
 	}
 
@@ -110,18 +111,18 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	}
 
 	protected void onStop() {
-		Log.e(getClass().getSimpleName(), "onStop");
+		Logger.D(TAG, "onStop");
 		super.onStop();
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.e(getClass().getSimpleName(), "surfaceCreated");
+		Logger.D(TAG, "surfaceCreated");
 		camera = Camera.open();
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		try {
-			Log.e(getClass().getSimpleName(), "surfaceChanged");
+			Logger.D(TAG, "surfaceChanged");
 			if (isPreviewRunning) {
 				camera.stopPreview();
 			}
@@ -132,13 +133,13 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 			camera.startPreview();
 			isPreviewRunning = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.E(TAG, e.getMessage());
 		}
 
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.e(getClass().getSimpleName(), "surfaceDestroyed");
+		Logger.D(TAG, "surfaceDestroyed");
 		camera.stopPreview();
 		isPreviewRunning = false;
 		camera.release();

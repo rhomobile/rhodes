@@ -25,6 +25,7 @@ jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *sign
 
 VALUE convertJavaMapToRubyHash(jobject objMap);
 
+#define RHODES_JAVA_CLASS_ANDROID_LOG "android/util/Log"
 #define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
 #define RHODES_JAVA_CLASS_SET "java/util/Set"
 #define RHODES_JAVA_CLASS_MAP "java/util/Map"

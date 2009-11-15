@@ -1,11 +1,14 @@
 package com.rhomobile.rhodes.geolocation;
 
+import com.rhomobile.rhodes.Logger;
+
 public class GeoLocation {
 
+	private static final String TAG = "GeoLocation";
 	private static GeoLocationImpl locImpl = new GeoLocationImpl();
 	
 	public static double getLatitude() {
-		//LOG.TRACE("GeoLocation.GetLatitude");
+		Logger.T(TAG, "GeoLocation.GetLatitude");
 		
 		if (locImpl != null)
 			  return locImpl.GetLatitude();
@@ -14,7 +17,7 @@ public class GeoLocation {
 	}
 
 	public static double getLongitude() {
-		//LOG.TRACE("GeoLocation.GetLongitude");
+		Logger.T(TAG, "GeoLocation.GetLongitude");
 		
 		if (locImpl != null)
 		  return locImpl.GetLongitude();
@@ -23,7 +26,7 @@ public class GeoLocation {
 	}
 
 	public static boolean isKnownPosition() {
-		//LOG.TRACE("GeoLocation.isKnownPosition");
+		Logger.T(TAG, "GeoLocation.isKnownPosition");
 		
 		return locImpl != null && locImpl.isKnownPosition();
 	}
