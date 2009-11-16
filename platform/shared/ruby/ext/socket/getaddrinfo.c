@@ -400,7 +400,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 			if ((sp = getservbyname((char*)servname, proto)) == NULL)
 				ERR(EAI_SERVICE);
 			port = sp->s_port;
-			if (pai->ai_socktype == ANY)
+			if (pai->ai_socktype == ANY) {
 				if (strcmp(sp->s_proto, "udp") == 0) {
 					pai->ai_socktype = SOCK_DGRAM;
 					pai->ai_protocol = IPPROTO_UDP;
@@ -409,6 +409,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 					pai->ai_protocol = IPPROTO_TCP;
 				} else
 					ERR(EAI_PROTOCOL);	/*xxx*/
+			}
 		}
 	}
 	

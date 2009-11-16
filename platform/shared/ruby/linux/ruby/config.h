@@ -226,6 +226,8 @@
 #define USE_ELF 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
+#define HAVE_SOCKADDR_STORAGE 1
+#define HAVE_GAI_STRERROR 1
 
 #define LOAD_RELATIVE 1
 

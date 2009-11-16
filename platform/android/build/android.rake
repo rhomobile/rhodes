@@ -88,6 +88,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,--whole-archive"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
+  args << "-Wl,-z,defs"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libstdc++.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
