@@ -397,8 +397,8 @@ platform\shared\rubyJVM\src\org\apache\oro\util\Cache.java
 platform\shared\rubyJVM\src\org\apache\oro\util\CacheLRU.java
 platform\shared\rubyJVM\src\org\apache\oro\util\GenericCache.java
 platform\shared\rubyJVM\src\org\apache\oro\util\GenericCacheEntry.java
-platform\shared\rubyJVM\src\org\jruby\util\Convert.java
-platform\shared\rubyJVM\src\org\jruby\util\Sprintf.java
+platform\shared\rubyJVM\src\j2me\lang\Convert.java
+platform\shared\rubyJVM\src\com\rho\Sprintf.java
 platform\shared\rubyJVM\src\org\json\me\JSONArray.java
 platform\shared\rubyJVM\src\org\json\me\JSONException.java
 platform\shared\rubyJVM\src\org\json\me\JSONObject.java

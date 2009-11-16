@@ -1,6 +1,6 @@
 package j2me.lang;
 
-import org.jruby.util.Sprintf;
+import com.rho.Sprintf;
 import com.xruby.runtime.builtin.RubyArray;
 
 public class StringMe {

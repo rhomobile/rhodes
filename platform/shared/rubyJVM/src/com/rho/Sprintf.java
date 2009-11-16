@@ -1,58 +1,11 @@
-/***** BEGIN LICENSE BLOCK *****
- * Version: CPL 1.0/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Common Public
- * License Version 1.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.eclipse.org/legal/cpl-v10.html
- *
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
- *
- * Copyright (C) 2007 William N Dortch <bill.dortch@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the CPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the CPL, the GPL or the LGPL.
- ***** END LICENSE BLOCK *****/
-package org.jruby.util;
+package com.rho;
 
 import j2me.math.HugeInt;
-//import java.text.DecimalFormatSymbols;
+import j2me.lang.Convert;
 
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-/*
-import org.jruby.Ruby;
-import org.jruby.RubyArray;
-import org.jruby.RubyBignum;
-import org.jruby.RubyFixnum;
-import org.jruby.RubyFloat;
-import org.jruby.RubyInteger;
-import org.jruby.RubyKernel;
-import org.jruby.RubyNumeric;
-import org.jruby.RubyString;
-import org.jruby.common.IRubyWarnings.ID;
-import org.jruby.runtime.ClassIndex;
-import org.jruby.runtime.MethodIndex;
-import org.jruby.runtime.builtin.IRubyObject;
-*/
 
-
-/**
- * @author Bill Dortch
- *
- */
 public class Sprintf {
     private static final int FLAG_NONE        = 0;
     private static final int FLAG_SPACE       = 1 << 0;
@@ -89,54 +42,7 @@ public class Sprintf {
     
     private static class Ruby{};
     private static class ID {
-        //public static final String AMBIGUOUS_ARGUMENT = "AMBIGUOUS_ARGUMENT";
-/*      public static final String ACCESSOR_NOT_INITIALIZED("ACCESSOR_NOT_INITIALIZED");
-        public static final String ARGUMENT_AS_PREFIX("ARGUMENT_AS_PREFIX"),
-        public static final String ARGUMENT_EXTRA_SPACE("ARGUMENT_EXTRA_SPACE"),
-        public static final String ASSIGNMENT_IN_CONDITIONAL("ASSIGNMENT_IN_CONDITIONAL"),
-        public static final String BIGNUM_FROM_FLOAT_RANGE("BIGNUM_FROM_FLOAT_RANGE"),
-        public static final String BLOCK_BEATS_DEFAULT_VALUE("BLOCK_BEATS_DEFAULT_VALUE"),
-        public static final String BLOCK_NOT_ACCEPTED("BLOCK_NOT_ACCEPTED"),
-        public static final String BLOCK_UNUSED("BLOCK_UNUSED"),
-        public static final String CONSTANT_ALREADY_INITIALIZED("CONSTANT_ALREADY_INITIALIZED"),
-        public static final String CONSTANT_BAD_REFERENCE("CONSTANT_BAD_REFERENCE"),
-        public static final String CVAR_FROM_TOPLEVEL_SINGLETON_METHOD("CVAR_FROM_TOPLEVEL_SINGLETON_METHOD"),
-        public static final String DECLARING_SCLASS_VARIABLE("DECLARING_SCLASS_VARIABLE"),
-        public static final String DEPRECATED_METHOD("DEPRECATED_METHOD"),
-        public static final String DUMMY_VALUE_USED("DUMMY_VALUE_USED"),
-        public static final String END_IN_METHOD("END_IN_METHOD"),
-        public static final String ELSE_WITHOUT_RESCUE("ELSE_WITHOUT_RESCUE"),
-        public static final String EMPTY_IMPLEMENTATION("EMPTY_IMPLEMENTATION"),
-        public static final String ENV_VARS_FROM_CLI_METHOD("ENV_VARS_FROM_CLI_METHOD"),
-        public static final String FIXNUMS_NOT_SYMBOLS("FIXNUMS_NOT_SYMBOLS"),
-        public static final String FLOAT_OUT_OF_RANGE("FLOAT_OUT_OF_RANGE"),
-        public static final String GLOBAL_NOT_INITIALIZED("GLOBAL_NOT_INITIALIZED"),
-        public static final String GROUPED_EXPRESSION("GROUPED_EXPRESSION"),
-        public static final String INEFFECTIVE_GLOBAL("INNEFFECTIVE_GLOBAL"),
-        public static final String INVALID_CHAR_SEQUENCE("INVALID_CHAR_SEQUENCE"),
-        public static final String IVAR_NOT_INITIALIZED("IVAR_NOT_INITIALIZED"),
-        public static final String MAY_BE_TOO_BIG("MAY_BE_TOO_BIG"),
-        public static final String MISCELLANEOUS("MISCELLANEOUS"),
-        public static final String MULTIPLE_VALUES_FOR_BLOCK("MULTIPLE_VALUES_FOR_BLOCK"),*/
         public static final String NEGATIVE_NUMBER_FOR_U = "NEGATIVE_NUMBER_FOR_U";
-/*      public static final String NO_SUPER_CLASS("NO_SUPER_CLASS"),
-        public static final String PARENTHISE_ARGUMENTS("PARENTHISE_ARGUMENTS"),
-        public static final String PROXY_EXTENDED_LATE("PROXY_EXTENDED_LATE"),
-        public static final String STATEMENT_NOT_REACHED("STATEMENT_NOT_REACHED"), 
-        public static final String LITERAL_IN_CONDITIONAL_RANGE("LITERAL_IN_CONDITIONAL_RANGE"),
-        public static final String REDEFINING_DANGEROUS("REDEFINING_DANGEROUS"),
-        public static final String REGEXP_IGNORED_FLAGS("REGEXP_IGNORED_FLAGS"),
-        public static final String REGEXP_LITERAL_IN_CONDITION("REGEXP_LITERAL_IN_CONDITION"),
-        public static final String SAFE_NOT_SUPPORTED("SAFE_NOT_SUPPORTED"),
-        public static final String STRUCT_CONSTANT_REDEFINED("STRUCT_CONSTANT_REDEFINED"),
-        public static final String SYMBOL_AS_INTEGER("SYMBOL_AS_INTEGER"),
-        public static final String SYSSEEK_BUFFERED_IO("SYSSEEK_BUFFERED_IO"),
-        public static final String SYSWRITE_BUFFERED_IO("SYSWRITE_BUFFERED_IO"),
-        public static final String SWALLOWED_IO_EXCEPTION("SWALLOWED_IO_EXCEPTION"),
-        public static final String TOO_MANY_ARGUMENTS("TOO_MANY_ARGUMENTS"),
-        public static final String UNDEFINING_BAD("UNDEFINING_BAD"),
-        public static final String USELESS_EXPRESSION("USELESS_EXPRESSION"),
-        public static final String VOID_VALUE_EXPRESSION("VOID_VALUE_EXPRESSION");*/
         
         private final String id;
         
@@ -174,12 +80,6 @@ public class Sprintf {
             //this.runtime = rubyObject.getRuntime();
         }
         
-        /*Args(RubyValue rubyObject) {
-            this(Locale.getDefault(),rubyObject);
-        }*/
-
-        // temporary hack to handle non-Ruby values
-        // will come up with better solution shortly
         Args(Ruby runtime, long value) {
             //this(RubyFixnum.newFixnum(runtime,value));
                 this( ObjectFactory.createInteger(value) );
@@ -262,15 +162,6 @@ public class Sprintf {
         }
     } // Args
 
-    /*
-     * Using this class to buffer output during formatting, rather than
-     * the eventual ByteList itself. That way this buffer can be initialized
-     * to a size large enough to prevent reallocations (in most cases), while
-     * the resultant ByteList will only be as large as necessary.
-     * 
-     * (Also, the Buffer class's buffer grows by a factor of 2, as opposed
-     * to ByteList's 1.5, which I felt might result in a lot of reallocs.)
-     */
     private static class Buffer {
         byte[] buf;
         int size;
@@ -351,43 +242,11 @@ public class Sprintf {
     // static methods only
     private Sprintf () {}
     
-/*    public static String sprintf(Locale locale, String format, RubyValue args) {
-        return rubySprintf(format, new Args(locale,args));
-    }
-    
-    // Special form of sprintf that returns a RubyString and handles
-    // tainted strings correctly.
-    public static RubyString sprintf(Ruby runtime, Locale locale, String format, RubyValue args) {
-        Buffer b = rubySprintfToBuffer(format, new Args(locale,args));
-        RubyString s = runtime.newString(b.toByteList());
-        if (b.tainted) {
-            s.setTaint(true);
-        }
-        return s;
-    }
-*/
     
     public static String sprintf(String format, RubyValue args) {
         return rubySprintf(format, new Args(args));
     }
     
-/*    
-    public static String sprintf(Ruby runtime, String format, int arg) {
-        return rubySprintf(format, new Args(runtime,(long)arg));
-    }
-    
-    public static String sprintf(Ruby runtime, String format, long arg) {
-        return rubySprintf(format, new Args(runtime,arg));
-    }
-    
-    public static String sprintf(Locale locale, RubyString format, RubyValue args) {
-        return rubySprintf(format.getByteList(), new Args(locale,args));
-    }
-    
-    public static String sprintf(RubyString format, RubyValue args) {
-        return rubySprintf(format.getByteList(), new Args(args));
-    }
-*/    
     private static String rubySprintf(String charFormat, Args args) {
         return rubySprintfToBuffer(charFormat, args).toString();//.toByteList();
     }
@@ -1427,29 +1286,6 @@ public class Sprintf {
         buf.write(exponent % 10 + '0');
     }
 
-    // debugging code, keeping for now
-    /*
-    private static final void showLiteral(byte[] format, int start, int offset) {
-        System.out.println("literal: ["+ new String(format,start,offset-start)+ "], " +
-                " s="+ start + " o="+ offset);
-    }
-    
-    // debugging code, keeping for now
-    private static final void showVals(byte[] format,int start,int offset, byte fchar,
-            int flags, int width, int precision, Object arg) {
-        System.out.println(new StringBuffer()
-        .append("value: ").append(new String(format,start,offset-start+1)).append('\n')
-        .append("type: ").append((char)fchar).append('\n')
-        .append("start: ").append(start).append('\n')
-        .append("length: ").append(offset-start).append('\n')
-        .append("flags: ").append(Integer.toBinaryString(flags)).append('\n')
-        .append("width: ").append(width).append('\n')
-        .append("precision: ").append(precision).append('\n')
-        .append("arg: ").append(arg).append('\n')
-        .toString());
-        
-    }
-    */
     
     private static final void raiseArgumentError(Args args, String message) {
         args.raiseArgumentError(message);

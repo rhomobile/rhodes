@@ -1,61 +1,8 @@
-/***** BEGIN LICENSE BLOCK *****
- * Version: CPL 1.0/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Common Public
- * License Version 1.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.eclipse.org/legal/cpl-v10.html
- *
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
- *
- * Copyright (C) 2007 William N. Dortch <bill.dortch@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the CPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the CPL, the GPL or the LGPL.
- ***** END LICENSE BLOCK *****/
-package org.jruby.util;
+package j2me.lang;
 import j2me.math.HugeInt;
 import j2me.lang.ArrayMe;
 
-//import org.jruby.RubyNumeric.InvalidIntegerException;
-//import org.jruby.RubyNumeric.NumberTooLargeException;
-
-/**
- * @author Bill Dortch
- * 
- * Primitive conversions adapted from java.lang.Integer/Long/Double (C) Sun Microsystems, Inc.
- *
- */
 public class Convert {
-
-    /**
-     * Returns a <code>ByteList</code> object representing the
-     * specified integer. The argument is converted to signed decimal
-     * representation and returned as a ByteList.
-     *
-     * @param   i   an integer to be converted.
-     * @return  a ByteList representation of the argument in base&nbsp;10.
-     */
-/*    public static final ByteList intToByteList(int i) {
-        if (i == Integer.MIN_VALUE)
-            return new ByteList((byte[])MIN_INT_BYTE_ARRAY.clone(),false);
-        int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
-        byte[] buf = new byte[size];
-        getCharBytes(i, size, buf);
-        return new ByteList(buf,false);
-    }*/
 
     public static final byte[] intToByteArray(int i) {
         if (i == Integer.MIN_VALUE)
@@ -67,36 +14,6 @@ public class Convert {
         return buf;
     }
 
-    /**
-     * Returns a <code>ByteList</code> object representing the
-     * specified integer, using the specified radix. The argument is 
-     * converted to signed decimal representation and returned as a ByteList.
-     *
-     * @param   i   an integer to be converted.
-     * @param   radix   the radix to use in the ByteList representation.
-     * @return  a ByteList representation of the argument in the specified radix.
-     */
-   /* public static final ByteList intToByteList(int i, int radix) {
-        if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
-            radix = 10;
-        if (radix == 10)
-            return intToByteList(i); // much faster for base 10
-        byte buf[] = new byte[33];
-        boolean negative = (i < 0);
-        int charPos = 32;
-        if (!negative) {
-            i = -i;
-        }
-        while (i <= -radix) {
-            buf[charPos--] = DIGITS[-(i % radix)];
-            i = i / radix;
-        }
-        buf[charPos] = DIGITS[-i];
-        if (negative) {
-            buf[--charPos] = '-';
-        }
-        return new ByteList(buf, charPos, (33 - charPos));
-    }*/
 
     public static final byte[] intToByteArray(int i, int radix, boolean upper) {
         if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
@@ -124,26 +41,6 @@ public class Convert {
         return out;
     }
 
-    /**
-     * Returns a <code>ByteList</code> object representing the specified
-     * <code>long</code>.  The argument is converted to signed decimal
-     * representation and returned as a ByteList.
-     *
-     * @param   i   a <code>long</code> to be converted.
-     * @return  a ByteList representation of the argument in base&nbsp;10.
-     */
-/*    public static final ByteList longToByteList(long i) {
-        if (i == Long.MIN_VALUE)
-            return new ByteList((byte[])MIN_LONG_BYTE_ARRAY.clone(),false);
-        // int version is slightly faster, use if possible
-        if (i <= Integer.MAX_VALUE && i >= Integer.MIN_VALUE)
-            return intToByteList((int)i);
-        int size = (i < 0) ? arraySize(-i) + 1 : arraySize(i);
-        byte[] buf = new byte[size];
-        getCharBytes(i, size, buf);
-        return new ByteList(buf,false);
-    }*/
-   
     public static final byte[] longToByteArray(long i) {
         if (i == Long.MIN_VALUE)
             //return (byte[])MIN_LONG_BYTE_ARRAY.clone();
@@ -157,28 +54,6 @@ public class Convert {
         return buf;
     }
    
-/*    public static final ByteList longToByteList(long i, int radix) {
-        if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
-            radix = 10;
-        if (radix == 10)
-            return longToByteList(i); // much faster for base 10
-        byte[] buf = new byte[65];
-        int charPos = 64;
-        boolean negative = (i < 0);
-        if (!negative) {
-            i = -i;
-        }
-        while (i <= -radix) {
-            buf[charPos--] = DIGITS[(int)(-(i % radix))];
-            i = i / radix;
-        }
-        buf[charPos] = DIGITS[(int)(-i)];
-        if (negative) { 
-            buf[--charPos] = '-';
-        }
-        return new ByteList(buf, charPos, (65 - charPos));
-    }*/
-
     public static final byte[] longToByteArray(long i, int radix, boolean upper) {
         if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
             radix = 10;
@@ -234,15 +109,6 @@ public class Convert {
         return buf;
     }
     
-    /**
-     * Places characters representing the integer i into the
-     * character array buf. The characters are placed into
-     * the buffer backwards starting with the least significant
-     * digit at the specified index (exclusive), and working
-     * backwards from there.
-     *
-     * Will fail if i == Integer.MIN_VALUE
-     */
     public static final void getCharBytes(int i, int index, byte[] buf) {
         int q, r;
         int charPos = index;
@@ -277,15 +143,6 @@ public class Convert {
         }
     }
 
-    /**
-     * Places characters representing the integer i into the
-     * character array buf. The characters are placed into
-     * the buffer backwards starting with the least significant
-     * digit at the specified index (exclusive), and working
-     * backwards from there.
-     *
-     * Will fail if i == Long.MIN_VALUE
-     */
     public static final void getCharBytes(long i, int index, byte[] buf) {
         long q;
         int r;
@@ -379,12 +236,6 @@ public class Convert {
         }
     }
 
-    
-    /**
-     * Requires positive x.
-     * For negative numbers, reverse the sign before calling and add one to
-     * the result (for the '-' sign).
-     */
     public static final int arraySize(long x) {
         long p = 10;
         for (int i=1; i<19; i++) {
@@ -394,11 +245,7 @@ public class Convert {
         }
         return 19;
     }
-    /**
-     * Requires positive x.
-     * For negative numbers, reverse the sign before calling and add one to
-     * the result (for the '-' sign).
-     */
+    
     public static final int arraySize(int x) {
         for (int i=0; ; i++)
             if (x <= SIZE_TABLE[i])
@@ -420,18 +267,6 @@ public class Convert {
         return intToUnsignedBytes(i, 4, upper);
     }
 
-    /*public static final ByteList intToBinaryByteList(int i) {
-        return new ByteList(intToUnsignedBytes(i, 1, false));
-    }
-    public static final ByteList intToOctalByteList(int i) {
-        return new ByteList(intToUnsignedBytes(i, 3, false));
-    }
-    public static final ByteList intToHexByteList(int i) {
-        return new ByteList(intToUnsignedBytes(i, 4, false));
-    }
-    public static final ByteList intToHexByteList(int i, boolean upper) {
-        return new ByteList(intToUnsignedBytes(i, 4, upper));
-    }*/
 
     public static final byte[] longToBinaryBytes(long i) {
         return longToUnsignedBytes(i, 1, false);
@@ -447,22 +282,6 @@ public class Convert {
         return longToUnsignedBytes(i, 4, upper);
     }
 
-    /*public static final ByteList longToBinaryByteList(long i) {
-        return new ByteList(longToUnsignedBytes(i, 1, false));
-    }
-    public static final ByteList longToOctalByteList(long i) {
-        return new ByteList(longToUnsignedBytes(i, 3, false));
-    }
-    public static final ByteList longToHexByteList(long i) {
-        return new ByteList(longToUnsignedBytes(i, 4, false));
-    }
-    public static final ByteList longToHexByteList(long i, boolean upper) {
-        return new ByteList(longToUnsignedBytes(i, 4, upper));
-    }*/
-    /**
-     * Convert the integer to an unsigned number.
-     * The character bytes are right-aligned in the 32-byte result.
-     */
     public static final byte[] intToRawUnsignedBytes(int i, int shift) {
         byte[] buf = new byte[32];
         int charPos = 32;
@@ -474,10 +293,7 @@ public class Convert {
         } while (i != 0);
         return buf;
     }
-    /**
-     * Convert the integer to an unsigned number.
-     * The result array is sized to fit the actual character length.
-     */
+    
     public static final byte[] intToUnsignedBytes(int i, int shift, boolean upper) {
         byte[] buf = new byte[32];
         int charPos = 32;
@@ -494,10 +310,6 @@ public class Convert {
         return result;
     }
 
-    /**
-     * Convert the long to an unsigned number.
-     * The character bytes are right-aligned in the 64-byte result.
-     */
     public static final byte[] longToRawUnsignedBytes(long i, int shift) {
         byte[] buf = new byte[64];
         int charPos = 64;
@@ -509,10 +321,7 @@ public class Convert {
         } while (i != 0);
         return buf;
     }
-    /**
-     * Convert the long to an unsigned number.
-     * The result array is sized to fit the actual character length.
-     */
+    
     public static final byte[] longToUnsignedBytes(long i, int shift, boolean upper) {
         byte[] buf = new byte[64];
         int charPos = 64;
@@ -529,71 +338,6 @@ public class Convert {
         return result;
     }
 
-    /**
-     * Converts a ByteList to a primitive long value, using the specified
-     * base. If base is zero, defaults to 10 unless a base specifier is encountered
-     * (e.g., '0x'). Follows Ruby rules for converting Strings to Integers. Will fail
-     * with NumberFormatException if the number is too large for a long.  If the
-     * raise flag is set, will also fail on certain formatting errors (zero-length
-     * array; zero-length excluding sign; no valid digits).
-     * 
-     * @param bytes
-     * @param buflen the effective length of the array (may be less than bytes.length) 
-     * @param base
-     * @param raise
-     * @return
-     * @throws NumberFormatException
-     */
-/*    public static final long byteListToLong(ByteList bytes, int base, boolean raise) {
-        return byteArrayToLong(bytes.unsafeBytes(), bytes.begin(), bytes.length(), base, raise);
-    }
-    public static final long byteListToLong(ByteList bytes, int base) {
-        return byteArrayToLong(bytes.unsafeBytes(), bytes.begin(), bytes.length(), base, false);
-    }
-    // for base 10 ByteList
-    public static final long byteListToLong(ByteList bytes) {
-        return byteArrayToLong(bytes.unsafeBytes(), bytes.begin(), bytes.length(), 10, false);
-    }*/
-    /**
-     * Converts a ByteList to a BigInteger value, using the specified  base.
-     * If base is zero, defaults to 10 unless a base specifier is encountered
-     * (e.g., '0x'). Follows Ruby rules for converting Strings to Integers. Will
-     * fail with NumberFormatException on certain formatting errors (zero-length
-     * array; zero-length excluding sign; no valid digits).
-     * <p>
-     * Intended to be called after byteListToLong if that method fails.
-     * 
-     * @param bytes
-     * @param buflen the effective length of the array (may be less than bytes.length) 
-     * @param base
-     * @return
-     * @throws NumberFormatException, IllegalArgumentException
-     */
-/*    public static final BigInteger byteListToBigInteger(ByteList bytes, int base, boolean raise) {
-        return byteArrayToBigInteger(bytes.unsafeBytes(), bytes.begin(),bytes.length(), base, raise);
-    }
-    public static final BigInteger byteListToBigInteger(ByteList bytes, int base) {
-        return byteArrayToBigInteger(bytes.unsafeBytes(), bytes.begin(), bytes.length(), base, false);
-    }
-    // for base 10 ByteList
-    public static final BigInteger byteListToBigInteger(ByteList bytes) {
-        return byteArrayToBigInteger(bytes.unsafeBytes(), bytes.begin(), bytes.length(), 10, false);
-    }*/
-   /**
-     * Converts a byte array to a primitive long value, using the specified
-     * base. If base is zero, defaults to 10 unless a base specifier is encountered
-     * (e.g., '0x'). Follows Ruby rules for converting Strings to Integers. Will fail
-     * with NumberFormatException if the number is too large for a long.  If the
-     * raise flag is set, will also fail on certain formatting errors (zero-length
-     * array; zero-length excluding sign; no valid digits).
-     * 
-     * @param bytes
-     * @param buflen the effective length of the array (may be less than bytes.length) 
-     * @param base
-     * @param strict
-     * @return
-     * @throws NumberFormatException, IllegalArgumentException
-     */
     public static final long byteArrayToLong(byte[] bytes, int begin, int buflen, int base, boolean strict) {
         final int SCOMPLETE         = 0;
         final int SBEGIN            = 1;
@@ -835,22 +579,6 @@ public class Convert {
         }
     }
     
-    
-    /**
-     * Converts a byte array to a BigInteger value, using the specified  base.
-     * If base is zero, defaults to 10 unless a base specifier is encountered
-     * (e.g., '0x'). Follows Ruby rules for converting Strings to Integers. Will
-     * fail with NumberFormatException on certain formatting errors (zero-length
-     * array; zero-length excluding sign; no valid digits).
-     * <p>
-     * Intended to be called after byteArrayToLong if that method fails.
-     * 
-     * @param bytes
-     * @param buflen the effective length of the array (may be less than bytes.length) 
-     * @param base
-     * @return
-     * @throws NumberFormatException, IllegalArgumentException
-     */
     public static final HugeInt byteArrayToBigInteger(byte[] bytes, int begin, int buflen, int base, boolean strict) {
         final int SCOMPLETE         = 0;
         final int SBEGIN            = 1;
@@ -1066,35 +794,7 @@ public class Convert {
             return new HugeInt(new String(chars,0,offset),radix);
         }
     }
-    /**
-     * Converts a ByteList containing a RubyString representation of a double
-     * value to a double.  Equivalent to Double.parseDouble(String s), but accounts for
-     * embedded underscore characters, as permitted in Ruby strings (single underscores
-     * allowed between digits in strict mode, multiple in non-strict mode).
-     *  
-     * @param bytes the ByteList containing the RubyString value to convert
-     * @param strict if true, strict rules (as required by Float(str)) are enforced;
-     *               otherwise, the laxer rules of str.to_f are employed.
-     * @return the converted double value
-     */
-    /*public static final double byteListToDouble(ByteList bytes, boolean strict) {
-        return byteArrayToDouble(bytes.unsafeBytes(), bytes.begin(), bytes.length(), strict);
-    }
-    public static final double byteListToDouble(ByteList bytes) {
-        return byteArrayToDouble(bytes.unsafeBytes(), bytes.begin(), bytes.length(), false);
-    }*/
-    /**
-     * Converts a byte array containing a RubyString representation of a double
-     * value to a double.  Equivalent to Double.parseDouble(String s), but accounts for
-     * embedded underscore characters, as permitted in Ruby strings (single underscores
-     * allowed between digits in strict mode, multiple in non-strict mode).
-     *  
-     * @param bytes the array containing the RubyString value to convert
-     * @param buflen the length of the array to be used
-     * @param strict if true, strict rules (as required by Float(str)) are enforced;
-     *               otherwise, the laxer rules of str.to_f are employed.
-     * @return the converted double value
-     */
+    
     public static final double byteArrayToDouble(byte[] bytes, int begin, int buflen, boolean strict) {
         // Simple cases  ( abs(exponent) <= 22 [up to 37 depending on significand length])
         // are converted directly, which is considerably faster than creating a Java
@@ -1924,14 +1624,6 @@ public class Convert {
         }
     }
 
-    /*public static final byte[] doubleToByteArray(double d) {
-        // TODO: develop an efficient method to do this directly and avoid all 
-        // the excess array allocating/copying (since we'll need to parse this
-        // result anyway to format it for output). See sun.misc.FloatingDecimal.
-        return ByteList.plain(Double.toString(d));
-    }*/
-    
-
     public static final byte[] twosComplementToBinaryBytes(byte[] in) {
         return twosComplementToUnsignedBytes(in,1,false);
     }
@@ -1983,14 +1675,7 @@ public class Convert {
     private static final boolean isWhitespace(final byte b) {
         return b == ' ' || (b <= 13 && b >= 9 && b != 11);
     }
-    /**
-     * Trims whitespace (any bytes <= 0x20) from the beginning and end
-     * of the array. This is equivalent to String#trim for byte arrays. If 
-     * no bytes are trimmed, the original array is returned.
-     * 
-     * @param bytes the array to be trimmed
-     * @return the trimmed array if trimming performed, otherwise the original array
-     */
+    
     public static final byte[] trim (byte[] bytes) {
         if (bytes.length == 0)
             return bytes;
@@ -2006,18 +1691,7 @@ public class Convert {
         System.arraycopy(bytes,0,trimmed,0,length);
         return trimmed;
     }
-    /**
-     * Deletes the byte at the specified position, shifting all bytes
-     * to the right of it left by one byte. If the copy flag is set,
-     * a new array (one byte shorter) will be created and the original
-     * will remain unchanged; otherwise, the last byte of the array is
-     * set to zero.
-     * 
-     * @param bytes the array to 'delete' a byte from
-     * @param pos the offset of the byte to delete
-     * @param copy if true, a new copy of the array will be created, with 
-     *        the original preserved
-     */
+    
     public static final byte[] delete(byte[] bytes, int pos, boolean copy) {
         int buflen = bytes.length;
         int newlen = buflen - 1;
@@ -2082,17 +1756,7 @@ public class Convert {
             return bytes;
         }
     }
-    /**
-     * Inserts a single byte at the specified position.  If copy is specified, creates
-     * a new array one byte longer; otherwise shifts bytes in the existing array by one,
-     * dropping the last byte.
-     * 
-     * @param bytes
-     * @param pos
-     * @param value
-     * @param copy
-     * @return new array if copy was specified, otherwise the original array
-     */
+    
     public static final byte[] insert(byte[] bytes, int pos, byte value, boolean copy) {
         int buflen = bytes.length;
         if (pos < 0 || pos > buflen) {
@@ -2123,18 +1787,7 @@ public class Convert {
             return bytes;
         }
     }
-    /**
-     * Inserts the value array at the specified position. If copy is specified, creates a
-     * new array, length == bytes.length + value.length.  Otherwise, displaces bytes in
-     * the exisiting array, shifting them right by value.length and dropping value.length
-     * bytes from the end of the array.
-     * 
-     * @param bytes
-     * @param pos
-     * @param value
-     * @param copy
-     * @return new array if copy was specified, otherwise the original array
-     */
+    
     public static final byte[] insert(byte[] bytes, int pos, byte[] value, boolean copy) {
         int buflen = bytes.length;
         if (pos < 0 || pos > buflen) {
@@ -2181,17 +1834,7 @@ public class Convert {
         bytes[buflen] = value;
         return bytes;
     }
-    /**
-     * Fills the array with the specified value, starting at the specified position,
-     * for the specified length. No exception is thrown if length is too big; in that 
-     * case the array will be filled to the end.
-     *  
-     * @param bytes
-     * @param pos
-     * @param length
-     * @param value
-     * @return
-     */
+    
     public static final byte[] fill(byte[] bytes, int pos, int length, byte value) {
         if (length < 0) {
             throw new IllegalArgumentException("illegal length for fill");
@@ -2205,12 +1848,7 @@ public class Convert {
         }
         return bytes;
     }
-    /**
-     * Returns a copy of the array, or the array itelf if its length == 0.
-     * 
-     * @param bytes
-     * @return
-     */
+    
     public static final byte[] copy(byte[] bytes) {
         int buflen = bytes.length;
         if (buflen == 0)
@@ -2335,11 +1973,7 @@ public class Convert {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         } ;
-    /*
-     * All the positive powers of 10 that can be
-     * represented exactly in double/float.
-     * (From sun.misc.FloatingDecimal.java)
-     */
+    
     private static final double[] SMALL_10_POWERS = {
         1.0e0,
         1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5,
