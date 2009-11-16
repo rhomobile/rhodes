@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_rhomobile_rhodes_datetime_DateTimePicker
  * Method:    callback
- * Signature: (Ljava/lang/String;JLjava/lang/String;Z)V
+ * Signature: (Ljava/lang/String;J[BZ)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_datetime_DateTimePicker_callback
-  (JNIEnv *, jclass, jstring, jlong, jstring, jboolean);
+  (JNIEnv *, jclass, jstring, jlong, jbyteArray, jboolean);
 
 #ifdef __cplusplus
 }
