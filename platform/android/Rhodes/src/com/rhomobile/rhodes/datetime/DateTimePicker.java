@@ -6,7 +6,7 @@ import com.rhomobile.rhodes.RhodesInstance;
 
 public class DateTimePicker {
 
-	public static void choose(String callback, String title, long init, int v, String opaque) {
+	public static void choose(String callback, String title, long init, int v, byte[] opaque) {
 		Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
 				DateTimePickerScreen.class);
 		intent.putExtra("callback", callback);
@@ -18,6 +18,6 @@ public class DateTimePicker {
 		RhodesInstance.getInstance().startActivityForResult(intent, 5);
 	}
 	
-	public native static void callback(String callbackUrl, long result, String opaque, boolean cancelled);
+	public native static void callback(String callbackUrl, long result, byte[] opaque, boolean cancelled);
 	
 }

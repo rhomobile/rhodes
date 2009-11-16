@@ -20,7 +20,7 @@ public class DateTimePickerScreen extends Activity {
 	private String _callback;
 	private Date _init;
 	private int _fmt;
-	private String _opaque;
+	private byte[] _opaque;
 	
 	private DatePicker _datePicker;
 	private TimePicker _timePicker;
@@ -57,9 +57,9 @@ public class DateTimePickerScreen extends Activity {
 		Bundle extras = this.getIntent().getExtras();
 		
 		_callback = extras.getString("callback");
-		_init = new Date(extras.getLong("init"));
+		_init = new Date(extras.getLong("init")*1000);
 		_fmt = extras.getInt("fmt");
-		_opaque = extras.getString("opaque");
+		_opaque = extras.getByteArray("opaque");
 		
 		this.setTitle(extras.getString("title"));
 		
@@ -94,27 +94,11 @@ public class DateTimePickerScreen extends Activity {
 		_cancelButton.setEnabled(v);
 	}
 	
-	private class ResultSender implements Runnable {
-		
-		private String _callback;
-		private Date _result;
-		private String _opaque;
-		
-		public ResultSender(String callback, Date result, String opaque) {
-			_callback = callback;
-			_result = result;
-			_opaque = opaque;
-		}
-		
-		public void run() {
-			long result = _result == null ? 0 : _result.getTime()/1000;
-			DateTimePicker.callback(_callback, result, _opaque, _result == null);
-			finish();
-		}
-	};
-	
-	private void sendResult(String callback, Date result, String opaque) {
+	private void sendResult(String callback, Date result, byte[] opaque) {
 		this.setFieldsEnabled(false);
-		new Thread(new ResultSender(callback, result, opaque)).start();
+		long res = result == null ? 0 : result.getTime()/1000;
+		Logger.D(TAG, "Return result: " + res);
+		DateTimePicker.callback(callback, res, opaque, result == null);
+		finish();
 	}
 }
