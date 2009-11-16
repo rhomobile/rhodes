@@ -72,7 +72,7 @@
 #define HAVE_GRP_H 1
 #define HAVE_UTIME_H 1
 #define HAVE_SYS_RESOURCE_H 1
-#define HAVE_NETINET_IN_SYSTM_H 1
+//#define HAVE_NETINET_IN_SYSTM_H 1
 #define HAVE_FLOAT_H 1
 #define HAVE_PTHREAD_H 1
 #define HAVE_LANGINFO_H 1
@@ -237,5 +237,8 @@
 #define RUBY_ARCHLIB "/lib"
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
+
+#define HAVE_SOCKADDR_STORAGE 1
+#define HAVE_GAI_STRERROR 1
 
 #include "tcmalloc/rhomem.h"
