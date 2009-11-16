@@ -161,6 +161,12 @@ namespace "config" do
       $path_separator = ";"
       $ndkhost = "windows"
       $rubypath = "res/build-tools/RhoRuby.exe"
+
+      # Add PATH to cygwin1.dll
+      if $path_cygwin_modified.nil?
+        ENV['PATH'] = Jake.get_absolute("res/build-tools") + ";" + ENV['PATH']
+        path_cygwin_modified = true
+      end
     else
       #XXX make these absolute
       $emulator = File.join( $androidsdkpath, "tools", "emulator" )
