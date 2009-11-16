@@ -57,6 +57,9 @@ public class Rhodes extends Activity {
 
 	private static final boolean SHOW_PROGRESS_BAR = false;
 	private static final int MAX_PROGRESS = 10000;
+	
+	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 
 	private WebView webView;
 
@@ -167,8 +170,7 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
@@ -258,7 +260,6 @@ public class Rhodes extends Activity {
 
 			public void run() {
 				try {
-					Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
 					String rootPath = getRootPath();
 					
 					boolean removeFiles = true;
@@ -269,18 +270,24 @@ public class Rhodes extends Activity {
 						copyFiles = !isContentsEquals("hash", new File(rootPath, "hash"));
 					
 					if (copyFiles) {
+						Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
+						
 						AssetManager amgr = getResources().getAssets();
 						copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
 						copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
 						copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
+						
+						File dbfiles = new File(rootPath + "apps/public/db-files");
+						if (!dbfiles.exists())
+							dbfiles.mkdirs();
+						
 						copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
 						copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
+						
+						Log.d(this.getClass().getSimpleName(), "All files copied");
 					}
-					
-					File dbfiles = new File(rootPath + "apps/public/db-files");
-					if (!dbfiles.exists())
-						dbfiles.mkdirs();
-					Log.d(this.getClass().getSimpleName(), "All files copied");
+					else
+						Log.d(this.getClass().getSimpleName(), "No need to copy files to SD card");
 				} catch (IOException e) {
 					Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
 					return;

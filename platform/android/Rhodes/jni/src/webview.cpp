@@ -15,7 +15,9 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
 
     char *normUrl = rho_http_normalizeurl(url);
     JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(normUrl));
+	jstring objNormUrl = env->NewStringUTF(normUrl);
+    env->CallStaticVoidMethod(cls, mid, objNormUrl);
+	env->DeleteLocalRef(objNormUrl);
 }
 
 RHO_GLOBAL void webview_refresh()
@@ -69,7 +71,9 @@ RHO_GLOBAL char* webview_execute_js(char* js)
     if (!mid) return NULL;
 
     JNIEnv *env = jnienv();
-    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(js));
+	jstring objJs = env->NewStringUTF(js);
+    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, objJs);
+	env->DeleteLocalRef(objJs);
     const char *s = env->GetStringUTFChars(str, JNI_FALSE);
     result = s;
     env->ReleaseStringUTFChars(str, s);

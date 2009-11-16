@@ -52,7 +52,9 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     jmethodID mid = getJNIClassStaticMethod(cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
     JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(szFolderPath));
+	jstring objFolderPath = env->NewStringUTF(szFolderPath);
+    env->CallStaticVoidMethod(cls, mid, objFolderPath);
+    env->DeleteLocalRef(objFolderPath);
 }
 
 RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values)

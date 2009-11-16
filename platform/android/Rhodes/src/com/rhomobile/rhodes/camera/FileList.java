@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -40,6 +41,7 @@ public class FileList extends Activity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
+		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
 		setContentView(AndroidR.layout.directory_list);
 
 		imagePreview = (ImageView) findViewById(AndroidR.id.preview);

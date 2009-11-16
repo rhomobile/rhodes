@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -36,6 +37,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
+		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
 		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
