@@ -1620,6 +1620,30 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="socket"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\socket\addrinfo.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\socket\getaddrinfo.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\socket\getnameinfo.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\socket\socket.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\socket\sockport.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

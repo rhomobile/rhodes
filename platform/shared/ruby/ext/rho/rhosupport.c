@@ -265,7 +265,8 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
-    if ( strcmp("strscan",szName)==0 || strcmp("enumerator",szName)==0 )
+    if ( strcmp("strscan",szName)==0 || strcmp("enumerator",szName)==0 ||
+        strcmp("socket",szName)==0 )
         return Qtrue;
 
     //RAWLOG_INFO1("find_file: %s", RSTRING_PTR(fname));
@@ -425,6 +426,7 @@ static void Init_RhoLog(){
 
     rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
     rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
+    rb_define_method(rb_RhoLogClass, "print", rb_RhoLogWrite, 1);
 
     appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
     
