@@ -136,9 +136,7 @@ void RhoRubyStart()
     Init_RhoSupport();
     Init_MapView();
     Init_RingtoneManager();
-#if defined (OS_WINDOWS) || defined (OS_WINCE) || defined(OS_MACOSX)
 	Init_socket();
-#endif
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
