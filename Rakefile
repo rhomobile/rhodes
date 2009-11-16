@@ -87,6 +87,14 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/find.rb").each {|f| rm f}
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
+  strRubyFeatures = $app_config["ruby_features"]
+  if !strRubyFeatures || !strRubyFeatures.index('net/http')
+    rm_rf "net"
+    rm_rf "uri"
+    rm "timeout.rb"
+    rm "uri.rb"
+  end
+
   unless $app_config["constants"].nil?
     File.open("rhobuild.rb","w") do |file|
       file << "module RhoBuild\n"
