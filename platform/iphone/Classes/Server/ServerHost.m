@@ -413,6 +413,11 @@ void webview_set_menu_items(VALUE valMenu) {
 	rho_rhodesapp_setViewMenu(valMenu);
 }
 
+void Init_RingtoneManager()
+{
+	//TODO: implement Ringtone
+}
+
 void alert_show_popup(char* message) {
 	if (message==NULL) {
 		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
