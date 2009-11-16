@@ -2000,7 +2000,7 @@ void rb_gc_mark_encodings(void);
 static int
 garbage_collect(rb_objspace_t *objspace)
 {
-    int i = 0;
+    /*int i = 0;*/
     struct gc_list *list;
     rb_thread_t *th = GET_THREAD();
     INIT_GC_PROF_PARAMS;

@@ -393,7 +393,7 @@ void DevMemSysAllocator::DumpStats(TCMalloc_Printer* printer) {
   printer->printf("DevMemSysAllocator: failed_=%d\n", failed_);
 }
 
-static bool system_alloc_inited = false;
+/*static bool system_alloc_inited = false;*/
 void InitSystemAllocators(void) {
   // This determines the order in which system allocators are called
   int i = kMaxDynamicAllocators;

@@ -1551,11 +1551,11 @@ extern void webview_navigate(char* url, int index);
 #define navigate webview_navigate
 extern char* webview_current_location();
 #define current_location webview_current_location
-extern char* execute_js(char* js);
+extern char* webview_execute_js(char* js);
 #define execute_js webview_execute_js
-extern void set_menu_items(VALUE argv);
+extern void webview_set_menu_items(VALUE argv);
 #define set_menu_items webview_set_menu_items
-extern int active_tab();
+extern int webview_active_tab();
 #define active_tab webview_active_tab
 
 

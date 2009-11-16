@@ -138,7 +138,7 @@ ruby_cleanup(int ex)
 
     errs[1] = th->errinfo;
     th->safe_level = 0;
-    Init_stack(&errs[STACK_UPPER(errs, 0, 1)]);
+    Init_stack((void*)&errs[STACK_UPPER(errs, 0, 1)]);
 
     PUSH_TAG();
     if ((state = EXEC_TAG()) == 0) {

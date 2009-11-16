@@ -23,7 +23,7 @@
 @property (nonatomic, retain) CLLocationManager *_locationManager;
 @property (assign) SEL onUpdateLocation;
 
-//- (char*) getLocation;
+- (char*) getLocation;
 - (void)  stop; 
 
 //- (double) getLatitude;

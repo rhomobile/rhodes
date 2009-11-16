@@ -14,7 +14,7 @@
 #if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)
 extern char* get_home_url();
 #else
-static char* localhost = "http://localhost:8080";
+/*static char* localhost = "http://localhost:8080";*/
 #endif
 
 #ifdef __SYMBIAN32__      
