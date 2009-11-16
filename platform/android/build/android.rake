@@ -354,21 +354,26 @@ namespace "build" do
     task :libstlport => "config:android" do
       objdir = $objdir["stlport"]
       libname = $libname["stlport"]
+
       args = []
-      args << "-C"
-      args << $shareddir + "/stlport/build/lib"
-      args << "-f"
-      args << "android.mak"
-      args << "NDK_DIR=#{$androidndkpath}"
-      args << "NDK_HOST=#{$ndkhost}"
-      args << "PRE_OUTPUT_DIR=#{objdir}"
-      args << "release-static"
-      puts Jake.run("make", args)
-      unless $? == 0
-        exit 1
+      args << "-DTARGET_OS=android"
+      args << "-DOSNAME=android"
+      args << "-DCOMPILER_NAME=gcc"
+      args << "-DBUILD_OSNAME=android"
+      args << "-D_REENTRANT"
+      args << "-D__NEW__"
+      args << "-ffunction-sections"
+      args << "-fdata-sections"
+      args << "-fvisibility=hidden"
+      args << "-fno-rtti"
+      args << "-fno-exceptions"
+      args << "-fvisibility-inlines-hidden"
+      args << "-I#{$stlport_includes}"
+
+      File.read(File.join($builddir, "libstlport_build.files")).each do |f|
+        cc_compile f, objdir, args or exit 1
       end
-      source = File.join(objdir, "so", "libstlport.a")
-      cp_r source, libname unless FileUtils.uptodate? libname, source
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librholog => "config:android" do
