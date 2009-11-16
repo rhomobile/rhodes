@@ -144,9 +144,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 			copyFiles = ![newHash isEqualToString:oldHash];
 		}
 	}
-	
-//#endif	
-	
+
 	if (copyFiles) {
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"apps"]
@@ -163,6 +161,10 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"hash"]
 						  toPath:[rhoRoot stringByAppendingPathComponent:@"hash"]
+						  remove:removeFiles];
+		[self copyFromMainBundle:fileManager
+						fromPath:[bundleRoot stringByAppendingPathComponent:@"name"]
+						  toPath:[rhoRoot stringByAppendingPathComponent:@"name"]
 						  remove:removeFiles];
 	}
 

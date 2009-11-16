@@ -29,10 +29,17 @@
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
-		BD4D7D7210AE2799003DCE59 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
+		BDFBD99110B1B98900BAAFAB /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99010B1B98900BAAFAB /* MainWindow.xib */; };
+		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
+		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
+		BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
+		BDFBD9A110B1B9CD00BAAFAB /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */; };
+		BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */; };
+		BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A310B1B9E500BAAFAB /* home_btn.png */; };
+		BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A610B1BA2000BAAFAB /* icon.png */; };
 		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
 		F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
@@ -158,20 +165,13 @@
 		1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoRunnerAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* rhorunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rhorunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
 		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
 		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
-		461B5A870F82D89700B08CB9 /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = SOURCE_ROOT; };
 		463577BD107272A400BEC653 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = Classes/JSString.h; sourceTree = SOURCE_ROOT; };
 		463577BE107272A400BEC653 /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = Classes/JSString.m; sourceTree = SOURCE_ROOT; };
-		4640FE930F410A3400B7975E /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
-		4640FE940F410A3400B7975E /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
-		466B0FCB0F3CFA9400A52314 /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
 		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
-		467E713F0EB673F000E5958D /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = bin/RhoBundle/lib; sourceTree = "<group>"; };
-		467E716F0EB6740400E5958D /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = bin/RhoBundle/db; sourceTree = "<group>"; };
 		468276EE10713FD600ADBCD4 /* WebViewUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewUrl.h; path = Server/WebViewUrl.h; sourceTree = "<group>"; };
 		468276EF10713FD600ADBCD4 /* WebViewUrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewUrl.m; path = Server/WebViewUrl.m; sourceTree = "<group>"; };
 		4684391010445A810019C7F0 /* BarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarItem.h; sourceTree = "<group>"; };
@@ -180,26 +180,31 @@
 		468E57411035DBC100A2293C /* TabBarDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarDelegate.m; sourceTree = "<group>"; };
 		46AF5161103F150D006E02E1 /* NativeBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeBar.h; sourceTree = "<group>"; };
 		46AF5162103F150D006E02E1 /* NativeBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeBar.m; sourceTree = "<group>"; };
-		46B0044810332E5C00D0C2F4 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		46B005F51033690F00D0C2F4 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
 		46B005F61033690F00D0C2F4 /* DateTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTime.m; sourceTree = "<group>"; };
 		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
-		46C744680EAFA99D00CC76F1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BD236A8510B1B6EB00F88F1D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
-		BD4D7B1010AE1C7F003DCE59 /* hash */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hash; path = bin/RhoBundle/hash; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDE35AB7107F977D009941C7 /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
 		BDE35AB8107F977D009941C7 /* RhoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFile.h; path = ../shared/common/RhoFile.h; sourceTree = SOURCE_ROOT; };
+		BDFBD99010B1B98900BAAFAB /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		BDFBD99E10B1B9B900BAAFAB /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = "<group>"; };
+		BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
+		BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
+		BDFBD9A310B1B9E500BAAFAB /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
+		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
 		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
 		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
@@ -208,7 +213,6 @@
 		F516695F0FFD78770079F023 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F52181110F96B13500B7F974 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
 		F52181120F96B13500B7F974 /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
-		F547F1DA0F990084007C2CD2 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F547F2860F9945D2007C2CD2 /* LogOptionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOptionsController.h; sourceTree = "<group>"; };
 		F547F2870F9945D2007C2CD2 /* LogOptionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOptionsController.m; sourceTree = "<group>"; };
 		F563D38D0EA6BC2E0062DA57 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
@@ -216,7 +220,6 @@
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
-		F563D7680EA95EDC0062DA57 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = bin/RhoBundle/apps; sourceTree = "<group>"; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
 		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
 		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
@@ -284,6 +287,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
 				F5425BCD1060539A000CCA8C /* MapView */,
 				468E573F1035DBA600A2293C /* NativeBar */,
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
@@ -291,7 +295,6 @@
 				F547F3D10F9CEB05007C2CD2 /* Log */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
-				46C744680EAFA99D00CC76F1 /* icon.png */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
@@ -318,6 +321,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				BDFBD99910B1B9A900BAAFAB /* Settings.bundle */,
+				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
 				BD2C94A610AE052A008D4692 /* curl.xcodeproj */,
 				F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */,
 				466B0FC90F3CFA8000A52314 /* Icons */,
@@ -327,11 +332,9 @@
 				5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				F547F1DA0F990084007C2CD2 /* Settings.bundle */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				46B0044810332E5C00D0C2F4 /* Entitlements.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -348,12 +351,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				BD4D7B1010AE1C7F003DCE59 /* hash */,
-				467E716F0EB6740400E5958D /* db */,
-				467E713F0EB673F000E5958D /* lib */,
-				F563D7680EA95EDC0062DA57 /* apps */,
-				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
-				8D1107310486CEB800E47090 /* Info.plist */,
+				BDFBD99010B1B98900BAAFAB /* MainWindow.xib */,
+				BD236A8510B1B6EB00F88F1D /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -390,10 +389,10 @@
 		466B0FC90F3CFA8000A52314 /* Icons */ = {
 			isa = PBXGroup;
 			children = (
-				461B5A870F82D89700B08CB9 /* gears.png */,
-				4640FE930F410A3400B7975E /* back_btn.png */,
-				4640FE940F410A3400B7975E /* forward_btn.png */,
-				466B0FCB0F3CFA9400A52314 /* home_btn.png */,
+				BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */,
+				BDFBD9A310B1B9E500BAAFAB /* home_btn.png */,
+				BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */,
+				BDFBD99E10B1B9B900BAAFAB /* gears.png */,
 			);
 			name = Icons;
 			sourceTree = "<group>";
@@ -581,7 +580,7 @@
 			buildPhases = (
 				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
 				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
-				BD4D7CF810AE274D003DCE59 /* Resources */,
+				BDFBD98F10B1B98100BAAFAB /* Resources */,
 				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
@@ -691,11 +690,18 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BD4D7CF810AE274D003DCE59 /* Resources */ = {
+		BDFBD98F10B1B98100BAAFAB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD4D7D7210AE2799003DCE59 /* MainWindow.xib in Resources */,
+				BDFBD99110B1B98900BAAFAB /* MainWindow.xib in Resources */,
+				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
+				BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */,
+				BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */,
+				BDFBD9A110B1B9CD00BAAFAB /* back_btn.png in Resources */,
+				BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */,
+				BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */,
+				BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
