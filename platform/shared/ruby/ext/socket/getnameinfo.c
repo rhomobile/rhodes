@@ -136,7 +136,7 @@ int
 getnameinfo(const struct sockaddr *sa, size_t salen, char *host, size_t hostlen, char *serv, size_t servlen, int flags)
 {
 	struct afd *afd;
-	struct servent *sp;
+	/*struct servent *sp;*/
 	struct hostent *hp;
 	u_short port;
 	int family, len, i;

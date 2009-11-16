@@ -514,7 +514,8 @@ TCMallocGuard::TCMallocGuard() {
     //PatchWindowsFunctions();    // defined in windows/patch_functions.cc
 #endif
     //free(malloc(1));
-    ThreadCache* heap = ThreadCache::GetCache(); //Init main cache
+    /*ThreadCache* heap = */
+	  ThreadCache::GetCache(); //Init main cache
     ThreadCache::InitTSD();
     //free(malloc(1));
     //MallocExtension::Register(new TCMallocImplementation);
@@ -638,7 +639,7 @@ void* InvalidRealloc(void* old_ptr, size_t new_size) {
 // Helper for do_malloc().
 inline void* do_malloc_pages(Length num_pages) {
   Span *span;
-  bool report_large = false;
+  /*bool report_large = false;*/
   {
     SpinLockHolder h(Static::pageheap_lock());
     span = Static::pageheap()->New(num_pages);
