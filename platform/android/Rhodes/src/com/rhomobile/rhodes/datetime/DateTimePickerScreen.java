@@ -4,10 +4,12 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -52,6 +54,8 @@ public class DateTimePickerScreen extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
+		
+		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();

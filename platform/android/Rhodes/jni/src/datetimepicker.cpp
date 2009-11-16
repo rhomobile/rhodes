@@ -31,7 +31,12 @@ RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, 
 	jbyteArray opaqueObj = env->NewByteArray(data_size);
 	if (!opaqueObj) return;
 	env->SetByteArrayRegion(opaqueObj, 0, data_size, (const jbyte *)data);
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(callback), env->NewStringUTF(title),
+	jstring objCallback = env->NewStringUTF(callback);
+	jstring objTitle = env->NewStringUTF(title);
+    env->CallStaticVoidMethod(cls, mid, objCallback, objTitle,
         (jlong)initial_time, format, opaqueObj);
+	env->DeleteLocalRef(objCallback);
+	env->DeleteLocalRef(objTitle);
+	env->DeleteLocalRef(opaqueObj);
 }
 

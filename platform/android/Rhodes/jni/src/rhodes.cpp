@@ -38,8 +38,10 @@ public:
     {
         JNIEnv *env = jnienv();
         if (!env) return;
+		jstring strObj = env->NewStringUTF(strMsg.c_str());
         env->CallStaticIntMethod(clsAndroidLog, midAndroidLogI,
-            tagAndroidLog, env->NewStringUTF(strMsg.c_str()));
+            tagAndroidLog, strObj);
+		env->DeleteLocalRef(strObj);
     }
 
     int getCurPos()

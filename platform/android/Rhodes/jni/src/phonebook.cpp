@@ -139,7 +139,9 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     if (!mid) return NULL;
 
     JNIEnv *env = jnienv();
-    jobject recordObj = env->CallObjectMethod(obj, mid, env->NewStringUTF(id));
+	jstring objId = env->NewStringUTF(id);
+    jobject recordObj = env->CallObjectMethod(obj, mid, objId);
+	env->DeleteLocalRef(objId);
     if (!recordObj) return NULL;
     jobject retval = env->NewGlobalRef(recordObj);
     env->DeleteLocalRef(recordObj);
@@ -210,7 +212,11 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
     if (!mid) return 0;
 
     JNIEnv *env = jnienv();
-    env->CallVoidMethod(contactObj, mid, env->NewStringUTF(property), env->NewStringUTF(value));
+	jstring objProperty = env->NewStringUTF(property);
+	jstring objValue = env->NewStringUTF(value);
+    env->CallVoidMethod(contactObj, mid, objProperty, objValue);
+	env->DeleteLocalRef(objProperty);
+	env->DeleteLocalRef(objValue);
     return 1;
 }
 

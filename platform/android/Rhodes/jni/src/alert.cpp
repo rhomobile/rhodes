@@ -12,7 +12,9 @@ RHO_GLOBAL void alert_show_popup(char* message)
     if (!mid) return;
 
     JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(message));
+	jstring msgObj = env->NewStringUTF(message);
+    env->CallStaticVoidMethod(cls, mid, msgObj);
+	env->DeleteLocalRef(msgObj);
 }
 
 RHO_GLOBAL void alert_vibrate(int duration)
@@ -36,7 +38,10 @@ RHO_GLOBAL void alert_play_file(char* file_name, char *media_type)
     if (!mid) return;
 
     JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(file_name),
-        media_type ? env->NewStringUTF(media_type) : NULL);
+	jstring objFileName = env->NewStringUTF(file_name);
+	jstring objMediaType = media_type ? env->NewStringUTF(media_type) : NULL;
+    env->CallStaticVoidMethod(cls, mid, objFileName, objMediaType);
+	env->DeleteLocalRef(objFileName);
+	if (objMediaType) env->DeleteLocalRef(objMediaType);
 }
 
