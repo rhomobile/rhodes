@@ -1,7 +1,7 @@
 package j2me.lang;
 
 import java.io.PrintStream;
-import org.jruby.util.Sprintf;
+import com.rho.Sprintf;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;

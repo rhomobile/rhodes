@@ -1057,39 +1057,6 @@ public final class MathLib {
      }
      /**/
 
-    ////////////////////////////////////////////////////////////////////////////
-    /* @(#)s_atan.c 1.3 95/01/18 */
-    /*
-     * ====================================================
-     * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
-     *
-     * Developed at SunSoft, a Sun Microsystems, Inc. business.
-     * Permission to use, copy, modify, and distribute this
-     * software is freely granted, provided that this notice 
-     * is preserved.
-     * ====================================================
-     *
-     */
-
-    /* atan(x)
-     * Method
-     *   1. Reduce x to positive by atan(x) = -atan(-x).
-     *   2. According to the integer k=4t+0.25 chopped, t=x, the argument
-     *      is further reduced to one of the following intervals and the
-     *      arctangent of t is evaluated by the corresponding formula:
-     *
-     *      [0,7/16]      atan(x) = t-t^3*(a1+t^2*(a2+...(a10+t^2*a11)...)
-     *      [7/16,11/16]  atan(x) = atan(1/2) + atan( (t-0.5)/(1+t/2) )
-     *      [11/16.19/16] atan(x) = atan( 1 ) + atan( (t-1)/(1+t) )
-     *      [19/16,39/16] atan(x) = atan(3/2) + atan( (t-1.5)/(1+1.5t) )
-     *      [39/16,INF]   atan(x) = atan(INF) + atan( -1/t )
-     *
-     * Constants:
-     * The hexadecimal values are the intended ones for the following 
-     * constants. The decimal values may be used, provided that the 
-     * compiler will convert from decimal to binary accurately enough 
-     * to produce the hexadecimal values shown.
-     @JVM-1.1+@ */
      static final double atanhi[] = {
      4.63647609000806093515e-01, // atan(0.5)hi 0x3FDDAC67, 0x0561BB4F
      7.85398163397448278999e-01, // atan(1.0)hi 0x3FE921FB, 0x54442D18 
@@ -1168,69 +1135,6 @@ public final class MathLib {
      }
      /**/
 
-    ////////////////////////////////////////////////////////////////////////////
-    /* @(#)e_log.c 1.3 95/01/18 */
-    /*
-     * ====================================================
-     * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
-     *
-     * Developed at SunSoft, a Sun Microsystems, Inc. business.
-     * Permission to use, copy, modify, and distribute this
-     * software is freely granted, provided that this notice 
-     * is preserved.
-     * ====================================================
-     */
-
-    /* __ieee754_log(x)
-     * Return the logrithm of x
-     *
-     * Method :                  
-     *   1. Argument Reduction: find k and f such that 
-     *			x = 2^k * (1+f), 
-     *	   where  sqrt(2)/2 < 1+f < sqrt(2) .
-     *
-     *   2. Approximation of log(1+f).
-     *	Let s = f/(2+f) ; based on log(1+f) = log(1+s) - log(1-s)
-     *		 = 2s + 2/3 s**3 + 2/5 s**5 + .....,
-     *	     	 = 2s + s*R
-     *      We use a special Reme algorithm on [0,0.1716] to generate 
-     * 	a polynomial of degree 14 to approximate R The maximum error 
-     *	of this polynomial approximation is bounded by 2**-58.45. In
-     *	other words,
-     *		        2      4      6      8      10      12      14
-     *	    R(z) ~ Lg1*s +Lg2*s +Lg3*s +Lg4*s +Lg5*s  +Lg6*s  +Lg7*s
-     *  	(the values of Lg1 to Lg7 are listed in the program)
-     *	and
-     *	    |      2          14          |     -58.45
-     *	    | Lg1*s +...+Lg7*s    -  R(z) | <= 2 
-     *	    |                             |
-     *	Note that 2s = f - s*f = f - hfsq + s*hfsq, where hfsq = f*f/2.
-     *	In order to guarantee error in log below 1ulp, we compute log
-     *	by
-     *		log(1+f) = f - s*(f - R)	(if f is not too large)
-     *		log(1+f) = f - (hfsq - s*(hfsq+R)).	(better accuracy)
-     *	
-     *	3. Finally,  log(x) = k*ln2 + log(1+f).  
-     *			    = k*ln2_hi+(f-(hfsq-(s*(hfsq+R)+k*ln2_lo)))
-     *	   Here ln2 is split into two floating point number: 
-     *			ln2_hi + ln2_lo,
-     *	   where n*ln2_hi is always exact for |n| < 2000.
-     *
-     * Special cases:
-     *	log(x) is NaN with signal if x < 0 (including -INF) ; 
-     *	log(+INF) is +INF; log(0) is -INF with signal;
-     *	log(NaN) is that NaN with no signal.
-     *
-     * Accuracy:
-     *	according to an error analysis, the error is always less than
-     *	1 ulp (unit in the last place).
-     *
-     * Constants:
-     * The hexadecimal values are the intended ones for the following 
-     * constants. The decimal values may be used, provided that the 
-     * compiler will convert from decimal to binary accurately enough 
-     * to produce the hexadecimal values shown.
-     @JVM-1.1+@*/
      static final double
      ln2_hi  =  6.93147180369123816490e-01,	// 3fe62e42 fee00000
      ln2_lo  =  1.90821492927058770002e-10,	// 3dea39ef 35793c76
@@ -1298,82 +1202,6 @@ public final class MathLib {
      return dk*ln2_hi-((s*(f-R)-dk*ln2_lo)-f);
      }
      }    
-     /**/
-
-    ////////////////////////////////////////////////////////////////////////////
-    /* @(#)e_exp.c 1.6 04/04/22 */
-    /*
-     * ====================================================
-     * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
-     *
-     * Permission to use, copy, modify, and distribute this
-     * software is freely granted, provided that this notice 
-     * is preserved.
-     * ====================================================
-     */
-
-    /* __ieee754_exp(x)
-     * Returns the exponential of x.
-     *
-     * Method
-     *   1. Argument reduction:
-     *      Reduce x to an r so that |r| <= 0.5*ln2 ~ 0.34658.
-     *	Given x, find r and integer k such that
-     *
-     *               x = k*ln2 + r,  |r| <= 0.5*ln2.  
-     *
-     *      Here r will be represented as r = hi-lo for better 
-     *	accuracy.
-     *
-     *   2. Approximation of exp(r) by a special rational function on
-     *	the interval [0,0.34658]:
-     *	Write
-     *	    R(r**2) = r*(exp(r)+1)/(exp(r)-1) = 2 + r*r/6 - r**4/360 + ...
-     *      We use a special Remes algorithm on [0,0.34658] to generate 
-     * 	a polynomial of degree 5 to approximate R. The maximum error 
-     *	of this polynomial approximation is bounded by 2**-59. In
-     *	other words,
-     *	    R(z) ~ 2.0 + P1*z + P2*z**2 + P3*z**3 + P4*z**4 + P5*z**5
-     *  	(where z=r*r, and the values of P1 to P5 are listed below)
-     *	and
-     *	    |                  5          |     -59
-     *	    | 2.0+P1*z+...+P5*z   -  R(z) | <= 2 
-     *	    |                             |
-     *	The computation of exp(r) thus becomes
-     *                             2*r
-     *		exp(r) = 1 + -------
-     *		              R - r
-     *                                 r*R1(r)	
-     *		       = 1 + r + ----------- (for better accuracy)
-     *		                  2 - R1(r)
-     *	where
-     *			         2       4             10
-     *		R1(r) = r - (P1*r  + P2*r  + ... + P5*r   ).
-     *	
-     *   3. Scale back to obtain exp(x):
-     *	From step 1, we have
-     *	   exp(x) = 2^k * exp(r)
-     *
-     * Special cases:
-     *	exp(INF) is INF, exp(NaN) is NaN;
-     *	exp(-INF) is 0, and
-     *	for finite argument, only exp(0)=1 is exact.
-     *
-     * Accuracy:
-     *	according to an error analysis, the error is always less than
-     *	1 ulp (unit in the last place).
-     *
-     * Misc. info.
-     *	For IEEE double 
-     *	    if x >  7.09782712893383973096e+02 then exp(x) overflow
-     *	    if x < -7.45133219101941108420e+02 then exp(x) underflow
-     *
-     * Constants:
-     * The hexadecimal values are the intended ones for the following 
-     * constants. The decimal values may be used, provided that the 
-     * compiler will convert from decimal to binary accurately enough
-     * to produce the hexadecimal values shown.
-     @JVM-1.1+@*/
      static final double
      halF[]	= {0.5,-0.5,},
      twom1000= 9.33263618503218878990e-302,     // 2**-1000=0x01700000,0

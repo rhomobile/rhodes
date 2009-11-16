@@ -1,20 +1,6 @@
-// This file was generated AUTOMATICALLY from a template file Sun Feb 22 22:52:18 PST 2004
-
-/* @(#)CharacterDataLatin1.java.template	1.2 02/11/11
- *
- * Copyright 1994-2002 Sun Microsystems, Inc. All Rights Reserved.
- *
- * This software is the proprietary information of Sun Microsystems, Inc.
- * Use is subject to license terms.
- *
- */
-
 package j2me.lang;
 
 import j2me.lang.AssertMe;
-
-/** The CharacterData class encapsulates the large tables found in
-    Java.lang.Character. */
 
 public class CharacterDataLatin1 {
 
