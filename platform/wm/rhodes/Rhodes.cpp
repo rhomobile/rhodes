@@ -295,6 +295,10 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 {
 }
 
+extern "C" void Init_RingtoneManager()
+{
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
