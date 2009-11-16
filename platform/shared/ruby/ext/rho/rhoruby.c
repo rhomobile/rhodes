@@ -38,6 +38,7 @@ extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
 extern void Init_MapView(void);
 extern void Init_RingtoneManager(void);
+extern void Init_socket(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -135,7 +136,7 @@ void RhoRubyStart()
     Init_RhoSupport();
     Init_MapView();
     Init_RingtoneManager();
-#if defined (OS_WINDOWS) || defined (OS_WINCE)
+#if defined (OS_WINDOWS) || defined (OS_WINCE) || defined(OS_MACOSX)
 	Init_socket();
 #endif
 

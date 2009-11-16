@@ -166,9 +166,9 @@ extern void freeaddrinfo __P((struct addrinfo *));
 #if defined __UCLIBC__
 const
 #endif
-#ifndef __HAIKU__
-extern char *gai_strerror __P((int));
-#endif
+//#ifndef __HAIKU__
+//extern char *gai_strerror __P((int));
+//#endif
 
 /* In case there is no definition of offsetof() provided - though any proper
 Standard C system should have one. */
