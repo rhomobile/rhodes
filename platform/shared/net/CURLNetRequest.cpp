@@ -289,7 +289,7 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
 
         String result;
         set_curl_options(curl, "POST", strUrl, session, result);
-        curl_slist *hdrs = NULL;
+        //curl_slist *hdrs = NULL;
         // Disable "Expect: 100-continue"
         //hdrs = curl_slist_append(hdrs, "Expect:");
         //curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
