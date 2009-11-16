@@ -2621,7 +2621,9 @@ overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
 	    errno = map_errno(err);
 	    r = -1;
 	}
-	CloseHandle(&wol.hEvent);
+    //RHO
+	CloseHandle(wol.hEvent);
+    //
     }
 
     return r;

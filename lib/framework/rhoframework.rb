@@ -1,4 +1,11 @@
 begin
+
+    #require 'net/http'
+    #puts 'NET REQUIRE'
+    #Net::HTTP.get_print 'www.gazeta.ru', '/index.html'
+
+    #puts 'NET FINISH'
+    
     require 'rational'
     #require 'date/format'
     #require 'time'
