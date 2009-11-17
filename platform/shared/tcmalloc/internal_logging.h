@@ -76,7 +76,7 @@
 #define CRASH3(format, arg1, arg2, arg3) ((void)0)
 
 #define CRASH_WITH_STATS(format, arg1) \
-  TCMalloc_CRASH(true, __FILE__, __LINE__, format, __VA_ARGS__)
+  TCMalloc_CRASH(true, __FILE__, __LINE__, format, arg1)
 
 // Like assert(), but executed even in NDEBUG mode
 #undef CHECK_CONDITION
