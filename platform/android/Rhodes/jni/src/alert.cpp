@@ -17,7 +17,7 @@ RHO_GLOBAL void alert_show_popup(char* message)
 	env->DeleteLocalRef(msgObj);
 }
 
-RHO_GLOBAL void alert_vibrate(int duration)
+RHO_GLOBAL void alert_vibrate(void *arg)
 {
     RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
@@ -25,6 +25,9 @@ RHO_GLOBAL void alert_vibrate(int duration)
     jmethodID mid = getJNIClassStaticMethod(cls, "vibrate", "(I)V");
     if (!mid) return;
 
+	jint duration = 2500;
+	if (arg)
+		duration = (jint)arg;
     JNIEnv *env = jnienv();
     env->CallStaticVoidMethod(cls, mid, duration);
 }
