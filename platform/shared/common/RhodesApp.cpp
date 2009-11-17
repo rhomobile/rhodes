@@ -146,7 +146,7 @@ private:
     virtual void run()
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        NetResponse( resp, pNetRequest->pushData( m_strCallback, "", null ));
+		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, "", null );
         delete this;
     }
 };
@@ -176,7 +176,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
 
     common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
     common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
-    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
+	common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( strCallbackUrl, strBody, null );
 }
 
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
@@ -196,7 +196,7 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
 
     common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
     common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
-    NetResponse( resp, pNetRequest->pushData( strCallbackUrl, strBody, null ));
+	common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( strCallbackUrl, strBody, null );
 }
 
 static void callback_geolocation(struct shttpd_arg *arg) 

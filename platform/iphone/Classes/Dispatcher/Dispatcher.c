@@ -173,6 +173,7 @@ _CallApplication(HttpContextRef context, RouteRef route) {
 }
 
 extern char* GeoGetLocation();
+extern int ExecuteAppManager(HttpContextRef context, RouteRef route);
 
 int _ExecuteApp(HttpContextRef context, RouteRef route) {
 	
