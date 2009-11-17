@@ -30,6 +30,12 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
+		BDB15ED110B2EBC200003DFA /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5F06496102B946F006CFD39 /* librhoextlib.a */; };
+		BDB15ED210B2EC6600003DFA /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D5450EA8240E0062DA57 /* librhosynclib.a */; };
+		BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD2C94DF10AE0A8C008D4692 /* libcurl.a */; };
+		BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C7162970F8B7EEC0096B6AA /* librholib.a */; };
+		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
+		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
 		BDFBD99110B1B98900BAAFAB /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99010B1B98900BAAFAB /* MainWindow.xib */; };
@@ -247,6 +253,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */,
+				BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */,
+				BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */,
+				BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */,
+				BDB15ED210B2EC6600003DFA /* librhosynclib.a in Frameworks */,
+				BDB15ED110B2EBC200003DFA /* librhoextlib.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
@@ -856,76 +868,41 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
@@ -950,6 +927,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -958,22 +936,10 @@
 					CFNetwork,
 					"-framework",
 					CoreGraphics,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
@@ -1075,76 +1041,41 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
 					"-framework",
 					MapKit,
 					"-framework",
 					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-					"-lcurl",
 				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
