@@ -68,7 +68,11 @@ class Jake
           if x =~ /%(.*?)%/
             x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
           end
-  	      x.to_s
+          s = x.to_s
+          if File.exists? s
+            s.gsub!(/\\/, '/')
+  	      end
+  	      s
         end
       end
     elsif conf.is_a?(Hash)
@@ -78,7 +82,11 @@ class Jake
         if x.is_a?(Hash) or x.is_a?(Array)
           newhash[k.to_s] = config_parse(x)
         else
-          newhash[k.to_s] = x.to_s
+          s = x.to_s
+          if File.exists? s
+            s.gsub!(/\\/, '/')
+          end
+          newhash[k.to_s] = s
         end
       end
       conf = newhash
