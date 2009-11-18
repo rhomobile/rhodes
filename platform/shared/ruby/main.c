@@ -84,7 +84,7 @@ main(int argc, char **argv)
     Init_System();
     //Init_prelude();
 
-    rb_gc_disable();
+    //rb_gc_disable();
 
     rb_define_global_function("__rho_compile", __rho_compile, 1);
 
@@ -161,6 +161,38 @@ void Init_WebView(){
 }
 
 void Init_sqlite3_api()
+{
+}
+
+void Init_RhoConf()
+{
+}
+
+void Init_Alert()
+{
+}
+
+void Init_stringio()
+{
+}
+
+void Init_DateTimePicker()
+{
+}
+
+void Init_NativeBar()
+{
+}
+
+void Init_MapView()
+{
+}
+
+void Init_RingtoneManager()
+{
+}
+
+void Init_socket()
 {
 }
 
