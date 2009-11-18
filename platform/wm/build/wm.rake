@@ -58,7 +58,7 @@ namespace "device" do
       
       cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['build_inf.js', 'rhodes.inf', 'wm6', $app_config["name"], $app_config["vendor"], $srcdir]
+      args = ['build_inf.js', 'rhodes.inf', 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"']
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
