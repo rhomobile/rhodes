@@ -1047,7 +1047,7 @@ class Parser {
             String     tablename  = colexpr.getTableName();
             String     filtername = colexpr.getFilterTableName();
 
-            if ((ecolname.equals(colalias) || ecolname.equals(colname))
+            if ((ecolname.equalsIgnoreCase(colalias) || ecolname.equalsIgnoreCase(colname))
                     && (etablename == null || etablename.equals(tablename)
                         || etablename.equals(filtername))) {
                 colexpr.joinedTableColumnIndex = i;
