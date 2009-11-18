@@ -235,7 +235,7 @@ void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
     enumData.data = data;
     enumData.func = func;
 
-    rb_hash_foreach(hash, hash_each, &enumData);
+    rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
 }
 
 VALUE rho_ruby_create_array()
