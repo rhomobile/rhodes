@@ -2,15 +2,17 @@ namespace "config" do
   task :wm => ["config:common"] do
     $config["platform"] = "wm"
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
-    wmpath = $config["build"]["wmpath"]
-    wmpath = $app_path
     $builddir = $config["build"]["wmpath"] + "/build"
-    $bindir = wmpath + "/bin"
-    $srcdir =  Jake.get_absolute($config["build"]["wmpath"] + "/bin/RhoBundle")
+    $vcbindir = $config["build"]["wmpath"] + "/bin"
+    
+    $bindir = $app_path + "/bin"
+    $rhobundledir =  $app_path + "/RhoBundle"
+    $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/wm6p"
-    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = "vcbuild"
+    
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
   end
 end
 
@@ -56,7 +58,7 @@ namespace "device" do
       
       cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['build_inf.js', 'rhodes.inf', 'wm6', $app_config["name"], $app_config["vendor"]]
+      args = ['build_inf.js', 'rhodes.inf', 'wm6', $app_config["name"], $app_config["vendor"], $srcdir]
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
@@ -94,8 +96,14 @@ namespace "clean" do
   desc "Clean wm"
   task :wm => "clean:wm:all"
   namespace "wm" do
-    task :rhodes do
-      rm_rf $bindir + "/Windows Mobile 6 Professional SDK (ARMV4I)"
+    task :rhodes => ["config:wm"] do
+      rm_rf $vcbindir + "/Windows Mobile 6 Professional SDK (ARMV4I)"
+
+      #rm_rf $tmpdir
+      #rm_rf $targetdir +"/../"
+      rm_rf $bindir
+      rm_rf $rhobundledir
+      
     end
     task :all => "clean:wm:rhodes"
   end

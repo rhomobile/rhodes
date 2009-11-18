@@ -1172,18 +1172,23 @@ rb_file_chardev_p(VALUE obj, VALUE fname)
  * Return <code>true</code> if the named file exists.
  */
 
+int rho_rhodesapp_isrubycompiler();
 static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
 //RHO
-/*    struct stat st;
+    if ( rho_rhodesapp_isrubycompiler() )
+    {
+        struct stat st;
 
-    if (rb_stat(fname, &st) < 0) return Qfalse;
-    return Qtrue;*/
-
-    if( file_load_ok(RSTRING_PTR(fname)) ) 
+        if (rb_stat(fname, &st) < 0) return Qfalse;
         return Qtrue;
-    return Qfalse;
+    }else
+    {
+        if( file_load_ok(RSTRING_PTR(fname)) ) 
+            return Qtrue;
+        return Qfalse;
+    }
 //RHO
 }
 
