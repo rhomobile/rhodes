@@ -222,7 +222,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running default.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} #{$srcdir}/default.rb` 
+      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/default.rb"`
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -232,7 +232,7 @@ namespace "build" do
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
-      puts `#{$rubypath} -I#{rhodeslib} #{$srcdir}/compileRB.rb` 
+      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/compileRB.rb"`
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
