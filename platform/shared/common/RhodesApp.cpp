@@ -136,8 +136,8 @@ void CRhodesApp::stopApp()
 
 class CRhoCallbackCall :  public common::CRhoThread
 {
-    String m_strCallback;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
+	String m_strCallback;
 public:
     CRhoCallbackCall(const String& strCallback, common::IRhoClassFactory* factory) : CRhoThread(factory), m_ptrFactory(factory), m_strCallback(strCallback)
     { start(epNormal); }
@@ -229,7 +229,7 @@ static void callback_syncdb(struct shttpd_arg *arg)
 static void callback_redirect_to(struct shttpd_arg *arg) 
 {
     String strQuery = shttpd_get_env(arg,"QUERY_STRING");
-    int nUrl = strQuery.find_first_of("url=");
+    size_t nUrl = strQuery.find_first_of("url=");
     String strUrl;
     if ( nUrl != String::npos )
         strUrl = strQuery.substr(nUrl+4);
@@ -365,7 +365,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
             strUrl = strUrl.substr(m_strHomeUrl.length());
 
-        int nFragment = strUrl.find('#');
+        size_t nFragment = strUrl.find('#');
         if ( nFragment != String::npos )
             strUrl = strUrl.substr(0, nFragment);
 

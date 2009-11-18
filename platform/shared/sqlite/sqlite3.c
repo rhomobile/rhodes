@@ -17,6 +17,12 @@
 ** language. The code for the "sqlite3" command-line shell is also in a
 ** separate file. This file contains only code for the core SQLite library.
 */
+// RHO
+#define SQLITE_OMIT_EXPLAIN 1
+#define SQLITE_DISABLE_LFS 1
+#define SQLITE_DEFAULT_MEMSTATUS 0
+#define SQLITE_OSTRACE 0
+// RHO
 #define SQLITE_CORE 1
 #define SQLITE_AMALGAMATION 1
 #ifndef SQLITE_PRIVATE
@@ -17882,7 +17888,9 @@ SQLITE_PRIVATE int sqlite3VdbeIdxKeyCompare(VdbeCursor*,UnpackedRecord*,int*);
 SQLITE_PRIVATE int sqlite3VdbeIdxRowid(sqlite3*, BtCursor *, i64 *);
 SQLITE_PRIVATE int sqlite3MemCompare(const Mem*, const Mem*, const CollSeq*);
 SQLITE_PRIVATE int sqlite3VdbeExec(Vdbe*);
+#ifndef SQLITE_OMIT_EXPLAIN
 SQLITE_PRIVATE int sqlite3VdbeList(Vdbe*);
+#endif
 SQLITE_PRIVATE int sqlite3VdbeHalt(Vdbe*);
 SQLITE_PRIVATE int sqlite3VdbeChangeEncoding(Mem *, int);
 SQLITE_PRIVATE int sqlite3VdbeMemTooBig(Mem*);
@@ -17908,7 +17916,9 @@ SQLITE_PRIVATE int sqlite3VdbeMemFromBtree(BtCursor*,int,int,int,Mem*);
 SQLITE_PRIVATE void sqlite3VdbeMemRelease(Mem *p);
 SQLITE_PRIVATE void sqlite3VdbeMemReleaseExternal(Mem *p);
 SQLITE_PRIVATE int sqlite3VdbeMemFinalize(Mem*, FuncDef*);
+#if !defined(SQLITE_OMIT_EXPLAIN) || !defined(NDEBUG) || defined(VDBE_PROFILE) || defined(SQLITE_DEBUG)
 SQLITE_PRIVATE const char *sqlite3OpcodeName(int);
+#endif
 SQLITE_PRIVATE int sqlite3VdbeOpcodeHasProperty(int, int);
 SQLITE_PRIVATE int sqlite3VdbeMemGrow(Mem *pMem, int n, int preserve);
 SQLITE_PRIVATE int sqlite3VdbeCloseStatement(Vdbe *, int);
@@ -20092,7 +20102,7 @@ SQLITE_PRIVATE const char *sqlite3OpcodeName(int i){
 #endif
 
 #ifdef SQLITE_DEBUG
-SQLITE_PRIVATE int sqlite3OSTrace = 0;
+SQLITE_PRIVATE int sqlite3OSTrace = SQLITE_OSTRACE;
 #define OSTRACE1(X)         if( sqlite3OSTrace ) sqlite3DebugPrintf(X)
 #define OSTRACE2(X,Y)       if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y)
 #define OSTRACE3(X,Y,Z)     if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y,Z)
@@ -21621,7 +21631,7 @@ struct unixFile {
 #endif
 
 #ifdef SQLITE_DEBUG
-SQLITE_PRIVATE int sqlite3OSTrace = 0;
+SQLITE_PRIVATE int sqlite3OSTrace = SQLITE_OSTRACE;
 #define OSTRACE1(X)         if( sqlite3OSTrace ) sqlite3DebugPrintf(X)
 #define OSTRACE2(X,Y)       if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y)
 #define OSTRACE3(X,Y,Z)     if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y,Z)
@@ -25745,7 +25755,7 @@ static void unixDlError(sqlite3_vfs *NotUsed, int nBuf, char *zBufOut){
   char *zErr;
   UNUSED_PARAMETER(NotUsed);
   unixEnterMutex();
-  zErr = dlerror();
+  zErr = (char *)dlerror();
   if( zErr ){
     sqlite3_snprintf(nBuf, zBufOut, "%s", zErr);
   }
@@ -27060,7 +27070,7 @@ SQLITE_API int sqlite3_os_end(void){
 #endif
 
 #ifdef SQLITE_DEBUG
-SQLITE_PRIVATE int sqlite3OSTrace = 0;
+SQLITE_PRIVATE int sqlite3OSTrace = SQLITE_OSTRACE;
 #define OSTRACE1(X)         if( sqlite3OSTrace ) sqlite3DebugPrintf(X)
 #define OSTRACE2(X,Y)       if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y)
 #define OSTRACE3(X,Y,Z)     if( sqlite3OSTrace ) sqlite3DebugPrintf(X,Y,Z)

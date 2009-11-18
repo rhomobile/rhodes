@@ -51,7 +51,7 @@ boolean CDBAdapter::checkDbError(int rc)
     const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
     int nErrCode = sqlite3_errcode(m_dbHandle);
 
-    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
+    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + "; Message: " + szErrMsg;
 
     return false;
 }
@@ -68,7 +68,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
     if ( nErrCode == SQLITE_CONSTRAINT && res.getReportNonUnique() )
         return true;
 
-    LOG(ERROR)+"DB query failed. Error code: " + nErrCode + ";Message: " + szErrMsg;
+    LOG(ERROR)+"DB query failed. rc: " + rc + "; Error code: " + nErrCode + "; Message: " + szErrMsg;
     return false;
 }
 

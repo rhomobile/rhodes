@@ -184,7 +184,7 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_RINGTONE_MANAGER
     };
 
-#define RHO_LOG_JNI_INIT
+//#define RHO_LOG_JNI_INIT
 
 #ifdef RHO_LOG_JNI_INIT
     FILE *fp = fopen("/sdcard/rholog.txt", "wb");
@@ -285,7 +285,10 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
 {
     RHO_LOG_JNI_CALL;
     const char* szRootPath = rho_native_rhopath();
+	// It is required on Android!!!
+	chdir(szRootPath);
     rho_logconf_Init(szRootPath);
+	LOGCONF().setLogToOutput(false);
     LOGCONF().setLogView(rho::common::g_androidLogSink);
     rho_rhodesapp_create(szRootPath);
     rho_rhodesapp_start();
