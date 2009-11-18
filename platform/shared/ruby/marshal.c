@@ -586,7 +586,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	if (OBJ_TAINTED(obj)) arg->taint = Qtrue;
 	if (OBJ_UNTRUSTED(obj)) arg->untrust = Qtrue;
 
-	if (rb_respond_to(obj, s_mdump)) {
+	if (RBASIC(obj)->klass && rb_respond_to(obj, s_mdump)) {
 	    volatile VALUE v;
 
             st_add_direct(arg->data, obj, arg->data->num_entries);
@@ -598,7 +598,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    if (hasiv) w_ivar(obj, 0, &c_arg);
 	    return;
 	}
-	if (rb_respond_to(obj, s_dump)) {
+	if (RBASIC(obj)->klass && rb_respond_to(obj, s_dump)) {
 	    VALUE v;
             st_table *ivtbl2 = 0;
             int hasiv2;
@@ -625,6 +625,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 
         st_add_direct(arg->data, obj, arg->data->num_entries);
 
+        if (RBASIC(obj)->klass)
         {
             st_data_t compat_data;
             rb_alloc_func_t allocator = rb_get_alloc_func(RBASIC(obj)->klass);
@@ -637,6 +638,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
                 st_insert(arg->compat_tbl, (st_data_t)obj, (st_data_t)real_obj);
             }
         }
+
 
 	switch (BUILTIN_TYPE(obj)) {
 	  case T_CLASS:
@@ -691,12 +693,18 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_STRING:
+        if (!RBASIC(obj)->klass)
+            RBASIC(obj)->klass = rb_cString;
+
 	    w_uclass(obj, rb_cString, arg);
 	    w_byte(TYPE_STRING, arg);
 	    w_bytes(RSTRING_PTR(obj), RSTRING_LEN(obj), arg);
 	    break;
 
 	  case T_REGEXP:
+            if (!RBASIC(obj)->klass)
+                RBASIC(obj)->klass = rb_cRegexp;
+
             w_uclass(obj, rb_cRegexp, arg);
             w_byte(TYPE_REGEXP, arg);
             {
@@ -707,6 +715,9 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_ARRAY:
+        if (!RBASIC(obj)->klass)
+            RBASIC(obj)->klass = rb_cArray;
+
 	    w_uclass(obj, rb_cArray, arg);
 	    w_byte(TYPE_ARRAY, arg);
 	    {
@@ -723,6 +734,9 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_HASH:
+        if (!RBASIC(obj)->klass)
+            RBASIC(obj)->klass = rb_cHash;
+
 	    w_uclass(obj, rb_cHash, arg);
 	    if (NIL_P(RHASH(obj)->ifnone)) {
 		w_byte(TYPE_HASH, arg);
