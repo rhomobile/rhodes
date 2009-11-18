@@ -9,4 +9,5 @@ iphone:
   configuration: Debug
   sdk: iphonesimulator3.0
   codesignidentity:
-  entitlements: 
+  entitlements:
+extensions: ["extension-name-here", "second-extension-name"]
