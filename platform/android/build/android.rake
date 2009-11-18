@@ -280,7 +280,8 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => :librhodes do
+    task :rhobundle => "config:android" do
+      Rake::Task["build:android:librhodes"].execute
       Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
