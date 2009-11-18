@@ -43,7 +43,7 @@ void RhoSettings::loadFromString(const char* szSettings)
     while(start!=0){
         int len = 0;
 
-        const char* end = end = strchr(start,'\n');
+        const char* end = strchr(start,'\n');
         if (end){
             if ( end > start && *(end-1) == '\r' )
                 len = end-start-1;
@@ -83,7 +83,7 @@ void RhoSettings::loadProperty( const char* start, int len ){
     const char* szValue = start + i+1;
     int nValueLen = len - (i+1);
 
-    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
+    while((*szValue==' ' || *szValue=='\'' || *szValue=='"') && nValueLen >= 0 ){ szValue++; nValueLen--;}
     while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
 
     setPropertyByName(start, nNameLen, szValue, nValueLen );

@@ -5,7 +5,6 @@
 
 RHO_GLOBAL double geo_latitude()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(cls, "getLatitude", "()D");
@@ -15,7 +14,6 @@ RHO_GLOBAL double geo_latitude()
 
 RHO_GLOBAL double geo_longitude()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(cls, "getLongitude", "()D");
@@ -25,7 +23,6 @@ RHO_GLOBAL double geo_longitude()
 
 RHO_GLOBAL int geo_known_position()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(cls, "isKnownPosition", "()Z");

@@ -8,7 +8,6 @@
 
 RHO_GLOBAL void rho_sync_create()
 {
-    RHO_LOG_CALLBACK;
     rho::sync::CSyncThread::Create(new rho::common::CRhoClassFactory);
 }
 

@@ -22,7 +22,6 @@ IRhoClassFactory* createClassFactory()
 
 RHO_GLOBAL void rho_map_location(char* query)
 {
-    RHO_LOG_CALLBACK;
     rho::String url = "http://maps.google.com/?";
     url += query;
     webview_navigate((char*)url.c_str(), 0);
@@ -30,13 +29,11 @@ RHO_GLOBAL void rho_map_location(char* query)
 
 RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuery*/)
 {
-    RHO_LOG_CALLBACK;
     // Nothing
 }
 
 RHO_GLOBAL int rho_net_has_network()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(cls, "hasNetwork", "()Z");
@@ -46,13 +43,12 @@ RHO_GLOBAL int rho_net_has_network()
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
     JNIEnv *env = jnienv();
-	jstring objFolderPath = env->NewStringUTF(szFolderPath);
+    jstring objFolderPath = env->NewStringUTF(szFolderPath);
     env->CallStaticVoidMethod(cls, mid, objFolderPath);
     env->DeleteLocalRef(objFolderPath);
 }
@@ -66,7 +62,6 @@ RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_nam
 
 RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "showNetworkIndicator", "(Z)V");

@@ -5,7 +5,6 @@
 
 RHO_GLOBAL VALUE ringtone_manager_get_all()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return Qnil;
 
@@ -20,7 +19,6 @@ RHO_GLOBAL VALUE ringtone_manager_get_all()
 
 RHO_GLOBAL void ringtone_manager_stop()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "stop", "()V");
@@ -30,14 +28,13 @@ RHO_GLOBAL void ringtone_manager_stop()
 
 RHO_GLOBAL void ringtone_manager_play(char* file_name)
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(cls, "play", "(Ljava/lang/String;)V");
     if (!mid) return;
     JNIEnv *env = jnienv();
-	jstring objFileName = env->NewStringUTF(file_name);
+    jstring objFileName = env->NewStringUTF(file_name);
     env->CallStaticVoidMethod(cls, mid, objFileName);
-	env->DeleteLocalRef(objFileName);
+    env->DeleteLocalRef(objFileName);
 }
 

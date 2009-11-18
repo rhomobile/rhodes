@@ -5,7 +5,6 @@
 
 RHO_GLOBAL void* openPhonebook()
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return NULL;
     jmethodID cid = getJNIClassMethod(cls, "<init>", "()V");
@@ -20,7 +19,6 @@ RHO_GLOBAL void* openPhonebook()
 
 RHO_GLOBAL void closePhonebook(void* pb)
 {
-    RHO_LOG_CALLBACK;
     jobject obj = (jobject)pb;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return;
@@ -85,7 +83,6 @@ static VALUE createHashFromContact(jobject contactObj)
 
 RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 {
-    RHO_LOG_CALLBACK;
     jobject phonebookObj = (jobject)pb;
 
     JNIEnv *env = jnienv();
@@ -131,7 +128,6 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 
 RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
 {
-    RHO_LOG_CALLBACK;
     jobject obj = (jobject)pb;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return NULL;
@@ -139,9 +135,9 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     if (!mid) return NULL;
 
     JNIEnv *env = jnienv();
-	jstring objId = env->NewStringUTF(id);
+    jstring objId = env->NewStringUTF(id);
     jobject recordObj = env->CallObjectMethod(obj, mid, objId);
-	env->DeleteLocalRef(objId);
+    env->DeleteLocalRef(objId);
     if (!recordObj) return NULL;
     jobject retval = env->NewGlobalRef(recordObj);
     env->DeleteLocalRef(recordObj);
@@ -151,7 +147,6 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
 
 RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
 {
-    RHO_LOG_CALLBACK;
     jobject recordObj = (jobject)openPhonebookRecord(pb, id);
     if (!recordObj)
         return Qnil;
@@ -177,19 +172,16 @@ static VALUE getRecord(void *pb, const char *name)
 
 RHO_GLOBAL VALUE getfirstPhonebookRecord(void* pb)
 {
-    RHO_LOG_CALLBACK;
     return getRecord(pb, "getFirstRecord");
 }
 
 RHO_GLOBAL VALUE getnextPhonebookRecord(void* pb)
 {
-    RHO_LOG_CALLBACK;
     return getRecord(pb, "getNextRecord");
 }
 
 RHO_GLOBAL void* createRecord(void* pb)
 {
-    RHO_LOG_CALLBACK;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!cls) return NULL;
     jmethodID cid = getJNIClassMethod(cls, "<init>", "()V");
@@ -204,7 +196,6 @@ RHO_GLOBAL void* createRecord(void* pb)
 
 RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
 {
-    RHO_LOG_CALLBACK;
     jobject contactObj = (jobject)record;
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return 0;
@@ -212,11 +203,11 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
     if (!mid) return 0;
 
     JNIEnv *env = jnienv();
-	jstring objProperty = env->NewStringUTF(property);
-	jstring objValue = env->NewStringUTF(value);
+    jstring objProperty = env->NewStringUTF(property);
+    jstring objValue = env->NewStringUTF(value);
     env->CallVoidMethod(contactObj, mid, objProperty, objValue);
-	env->DeleteLocalRef(objProperty);
-	env->DeleteLocalRef(objValue);
+    env->DeleteLocalRef(objProperty);
+    env->DeleteLocalRef(objValue);
     return 1;
 }
 
@@ -231,12 +222,8 @@ static void doContactOp(jobject pbObj, jobject contactObj, const char *name)
     env->CallVoidMethod(pbObj, mid, contactObj);
 }
 
-static void removeContact(jobject pbObj, jobject contactObj)
-{}
-
 RHO_GLOBAL int addRecord(void* pb, void* record)
 {
-    RHO_LOG_CALLBACK;
     doContactOp((jobject)pb, (jobject)record, "saveContact");
     jnienv()->DeleteGlobalRef((jobject)record);
     return 1;
@@ -244,14 +231,12 @@ RHO_GLOBAL int addRecord(void* pb, void* record)
 
 RHO_GLOBAL int saveRecord(void* pb, void* record)
 {
-    RHO_LOG_CALLBACK;
     doContactOp((jobject)pb, (jobject)record, "saveContact");
     return 1;
 }
 
 RHO_GLOBAL int deleteRecord(void* pb, void* record)
 {
-    RHO_LOG_CALLBACK;
     doContactOp((jobject)pb, (jobject)record, "removeContact");
     jnienv()->DeleteGlobalRef((jobject)record);
     return 1;

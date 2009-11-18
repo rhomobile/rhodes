@@ -1,5 +1,6 @@
 #include <com_rhomobile_rhodes_Rhodes.h>
 
+#include <common/RhoConf.h>
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
 #include <sync/SyncThread.h>
@@ -38,10 +39,10 @@ public:
     {
         JNIEnv *env = jnienv();
         if (!env) return;
-		jstring strObj = env->NewStringUTF(strMsg.c_str());
+        jstring strObj = env->NewStringUTF(strMsg.c_str());
         env->CallStaticIntMethod(clsAndroidLog, midAndroidLogI,
             tagAndroidLog, strObj);
-		env->DeleteLocalRef(strObj);
+        env->DeleteLocalRef(strObj);
     }
 
     int getCurPos()
@@ -276,19 +277,19 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
         g_appName = s;
         env->ReleaseStringUTFChars(str, s);
     }
-    RHO_LOG_JNI_CALL;
     return env->NewStringUTF(rho_native_rhopath());
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
-    RHO_LOG_JNI_CALL;
     const char* szRootPath = rho_native_rhopath();
-	// It is required on Android!!!
-	chdir(szRootPath);
+    // It is required on Android!!!
+    chdir(szRootPath);
     rho_logconf_Init(szRootPath);
-	LOGCONF().setLogToOutput(false);
+    RHOCONF().setBool("LogToOutput", "0");
+    RHOCONF().saveToFile();
+    LOGCONF().setLogToOutput(false);
     LOGCONF().setLogView(rho::common::g_androidLogSink);
     rho_rhodesapp_create(szRootPath);
     rho_rhodesapp_start();
@@ -297,21 +298,18 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
   (JNIEnv *, jobject)
 {
-    RHO_LOG_JNI_CALL;
     rho_rhodesapp_destroy();
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
   (JNIEnv *, jobject, jboolean show_status_popup)
 {
-    RHO_LOG_CALLBACK;
     rho_sync_doSyncAllSources(show_status_popup);
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
-    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getOptionsUrl().c_str();
     return env->NewStringUTF(s);
 }
@@ -319,7 +317,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
-    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getStartUrl().c_str();
     return env->NewStringUTF(s);
 }
@@ -327,9 +324,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
-    RHO_LOG_JNI_CALL;
     const char *s = RHODESAPP().getCurrentUrl().c_str();
     return env->NewStringUTF(s);
 }
-
 

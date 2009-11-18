@@ -27,21 +27,21 @@ end
 def cc_def_args
   if $cc_def_args_val.nil?
     args = []
-	args << "--sysroot"
-	args << $ndksysroot
-	args << "-fPIC"
-	args << "-mandroid"
-	args << "-DANDROID"
-	args << "-DOS_ANDROID"
-	if $build_release
+  args << "--sysroot"
+  args << $ndksysroot
+  args << "-fPIC"
+  args << "-mandroid"
+  args << "-DANDROID"
+  args << "-DOS_ANDROID"
+  if $build_release
       args << "-O2"
-	  args << "-DNDEBUG"
-	else
+    args << "-DNDEBUG"
+  else
       args << "-g"
-	  args << "-O0"
-	  args << "-D_DEBUG"
-	end
-	$cc_def_args_val = args
+    args << "-O0"
+    args << "-D_DEBUG"
+  end
+  $cc_def_args_val = args
   end
   $cc_def_args_val.dup
 end
@@ -295,7 +295,7 @@ namespace "build" do
       end
       File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
 
-	  File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+    File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
 
     end
 
@@ -501,6 +501,7 @@ namespace "build" do
       args << "-I#{$shareddir}/ruby/linux"
       args << "-D__NEW__"
       args << "-D__SGI_STL_INTERNAL_PAIR_H"
+      #args << "-fexceptions"
 
       File.read(File.join($builddir, "librhodes_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -798,9 +799,9 @@ namespace "clean" do
       rm_rf $srcdir
       rm_rf $libs
     end
-	task :libsqlite => "config:android" do
-		cc_clean "sqlite"
-	end
+  task :libsqlite => "config:android" do
+    cc_clean "sqlite"
+  end
     task :libs => "config:android" do
       $native_libs.each do |l|
         cc_clean l
