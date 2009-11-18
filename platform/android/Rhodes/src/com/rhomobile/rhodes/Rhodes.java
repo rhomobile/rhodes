@@ -167,6 +167,64 @@ public class Rhodes extends Activity {
 			if (sdcardIn != null) sdcardIn.close();
 		}
     }
+    
+    private void checkSDCard() {
+    	Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
+		String state = Environment.getExternalStorageState();
+		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
+		if(!Environment.MEDIA_MOUNTED.equals(state)) {
+			new AlertDialog.Builder(this)
+				.setTitle("SD card error")
+				.setMessage(sdCardError)
+				.setCancelable(false)
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Log.e(this.getClass().getSimpleName(), "Exit - SD card is not accessible");
+						stopSelf();
+					}					
+				})
+				.create()
+				.show();
+			return;
+		}
+		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
+    }
+    
+    private void copyFilesToSDCard() {
+    	try {
+			String rootPath = getRootPath();
+			
+			boolean removeFiles = true;
+			boolean copyFiles = true;
+			
+			removeFiles = !isContentsEquals("name", new File(rootPath, "name"));
+			if (!removeFiles)
+				copyFiles = !isContentsEquals("hash", new File(rootPath, "hash"));
+			
+			if (copyFiles) {
+				Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
+				
+				AssetManager amgr = getResources().getAssets();
+				copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
+				copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
+				copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
+				
+				File dbfiles = new File(rootPath + "apps/public/db-files");
+				if (!dbfiles.exists())
+					dbfiles.mkdirs();
+				
+				copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
+				copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
+				
+				Log.d(this.getClass().getSimpleName(), "All files copied");
+			}
+			else
+				Log.d(this.getClass().getSimpleName(), "No need to copy files to SD card");
+		} catch (IOException e) {
+			Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+			return;
+		}
+    }
 
 	/** Called when the activity is first created. */
 	@Override
@@ -232,26 +290,6 @@ public class Rhodes extends Activity {
 		Log.i("Rhodes", "Loading...");
 		webView.loadUrl("file:///android_asset/apps/loading.html");
 		
-		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
-		String state = Environment.getExternalStorageState();
-		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
-		if(!Environment.MEDIA_MOUNTED.equals(state)) {
-			new AlertDialog.Builder(this)
-				.setTitle("SD card error")
-				.setMessage(sdCardError)
-				.setCancelable(false)
-				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						Log.e(this.getClass().getSimpleName(), "Exit - SD card is not accessible");
-						stopSelf();
-					}					
-				})
-				.create()
-				.show();
-			return;
-		}
-		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
-		
 		RhodesInstance.setInstance(this);
 		
 		// WARNING!!! This function MUST be called first time in context of
@@ -262,40 +300,8 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				try {
-					String rootPath = getRootPath();
-					
-					boolean removeFiles = true;
-					boolean copyFiles = true;
-					
-					removeFiles = !isContentsEquals("name", new File(rootPath, "name"));
-					if (!removeFiles)
-						copyFiles = !isContentsEquals("hash", new File(rootPath, "hash"));
-					
-					if (copyFiles) {
-						Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
-						
-						AssetManager amgr = getResources().getAssets();
-						copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
-						copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
-						copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
-						
-						File dbfiles = new File(rootPath + "apps/public/db-files");
-						if (!dbfiles.exists())
-							dbfiles.mkdirs();
-						
-						copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
-						copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
-						
-						Log.d(this.getClass().getSimpleName(), "All files copied");
-					}
-					else
-						Log.d(this.getClass().getSimpleName(), "No need to copy files to SD card");
-				} catch (IOException e) {
-					Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
-					return;
-				}
-				
+				checkSDCard();
+				copyFilesToSDCard();
 				startRhodesApp();
 			}
 			
@@ -452,12 +458,37 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
+	private static class WebviewNavigate implements Runnable {
+		private WebView webView;
+		private String url;
+		
+		public WebviewNavigate(WebView w, String u) {
+			webView = w;
+			url = u;
+		}
+		public void run() {
+			webView.loadUrl(url);
+		}
+	};
+	
+	private static class WebviewReload implements Runnable {
+		private WebView webView;
+		
+		public WebviewReload(WebView w) {
+			webView = w;
+		}
+		
+		public void run() {
+			webView.reload();
+		}
+	};
+	
 	public void webview_navigate(String url) {
-		this.webView.loadUrl(url);
+		uiHandler.post(new WebviewNavigate(webView, url));
 	}
 	
 	public void webview_refresh() {
-		this.webView.reload();
+		uiHandler.post(new WebviewReload(webView));
 	}
 	
 	public String webview_currentLocation() {
@@ -465,7 +496,7 @@ public class Rhodes extends Activity {
 	}
 
 	public String webview_executeJs(String js) {
-		this.webView.loadUrl("javascript:" + js);
+		webview_navigate("javascript:" + js);
 		return "";
 	}
 	
