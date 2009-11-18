@@ -72,25 +72,40 @@ def common_bundle_start(startdir, dest)
   mkdir_p File.join($srcdir,'apps')
 
 
-  
+  start = pwd
   chdir rhodeslib
-  Dir.glob("*").each { |f|
-    src = f
-    cp_r src,dest
-  }
+
+  Dir.glob("*").each { |f| cp_r f,dest }
+
   chdir dest
   Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
   Dir.glob("**/erb.rb").each {|f| rm f}
   Dir.glob("**/find.rb").each {|f| rm f}
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
-  strRubyFeatures = $app_config["ruby_features"]
-  if !strRubyFeatures || !strRubyFeatures.index('net/http')
-    rm_rf "net"
-    rm_rf "uri"
-    rm "timeout.rb"
-    rm "uri.rb"
+  chdir start
+  if $app_config["extensions"] and $app_config["extensions"].is_a? Array
+    $app_config["extensions"].each do |extname|
+      rhoextpath = "lib/extensions/" + extname
+      appextpath = $app_path + "/extensions/" + extname
+      extpath = nil
+
+      if File.exists? appextpath
+        extpath = appextpath
+      elsif File.exists? rhoextpath
+        extpath = rhoextpath
+      end
+
+      unless extpath.nil?
+        chdir extpath
+        Dir.glob("*").each { |f| cp_r f,dest }
+        chdir start
+      end
+
+    end
   end
+
+
 
   unless $app_config["constants"].nil?
     File.open("rhobuild.rb","w") do |file|
