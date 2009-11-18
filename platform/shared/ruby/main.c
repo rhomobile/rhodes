@@ -20,7 +20,8 @@
 //#include <crtdbg.h>
 
 extern void Init_SyncEngine(void);
-
+extern void Init_strscan(void);
+extern void Init_System(void);
 #define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
