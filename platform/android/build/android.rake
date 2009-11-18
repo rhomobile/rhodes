@@ -24,57 +24,78 @@ def generate_rjava
   Rake::Task["build:android:rjava"].execute
 end
 
-def cc_deps(filename)
-  # TODO: implement dependencies
-  []
+def cc_def_args
+  if $cc_def_args_val.nil?
+    args = []
+	args << "--sysroot"
+	args << $ndksysroot
+	args << "-fPIC"
+	args << "-mandroid"
+	args << "-DANDROID"
+	args << "-DOS_ANDROID"
+	if $build_release
+      args << "-O2"
+	  args << "-DNDEBUG"
+	else
+      args << "-g"
+	  args << "-O0"
+	  args << "-D_DEBUG"
+	end
+	$cc_def_args_val = args
+  end
+  $cc_def_args_val.dup
+end
+
+def cc_get_ccbin(filename)
+  if filename =~ /\.[cC]$/
+    $gccbin
+  elsif filename =~ /\.[cC]([cC]|[xXpP][xXpP])$/
+    $gppbin
+  end
+end
+
+def cc_deps(filename, additional)
+  #puts "Check #{filename}..."
+  ccbin = cc_get_ccbin(filename)
+  args = cc_def_args
+  args += additional unless additional.nil?
+  out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
+  out.gsub!(/^[^:]*:\s*/, '').gsub!(/\\\n/, ' ')
+  #out = File.expand_path(__FILE__) + ' ' + out
+  out.split(/\s+/)
+end
+
+def cc_run(command, args)
+  cmdline = command + ' ' + args.join(' ')
+  puts cmdline
+  `#{cmdline}`
 end
 
 def cc_compile(filename, objdir, additional = nil)
   filename.chomp!
   objname = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".o")
 
-  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename)
+  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, additional)
 
   mkdir_p objdir unless File.directory? objdir
 
-  if filename =~ /\.[cC]$/
-    ccbin = $gccbin
-  elsif filename =~ /.[cC]([cC]|[xXpP][xXpP])$/
-    ccbin = $gppbin
-  end
+  ccbin = cc_get_ccbin(filename)
 
-  args = []
-  args << "--sysroot"
-  args << $ndksysroot
-  args << "-fPIC"
-  args << "-mandroid"
+  args = cc_def_args
   args << "-Wall"
-  args << "-DANDROID"
-  args << "-DOS_ANDROID"
   args += additional if additional.is_a? Array and not additional.empty?
-  if $build_release
-    args << "-O2"
-    args << "-DNDEBUG"
-  else
-    args << "-g"
-    args << "-O0"
-    args << "-D_DEBUG"
-  end
   args << "-c"
   args << filename
   args << "-o"
   args << objname
-  puts Jake.run(ccbin, args)
+  cmdline = ccbin + ' ' + args.join(' ')
+  cc_run(ccbin, args)
   return $? == 0
 end
 
 def cc_ar(libname, objects)
   return true if FileUtils.uptodate? libname, objects
-  args = []
-  args << "crs"
-  args << libname
-  args += objects
-  puts Jake.run($arbin, args)
+  cc_run($arbin, ["crs", libname] + objects)
   return $? == 0
 end
 
@@ -102,10 +123,10 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << outname
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
-  puts Jake.run($gccbin, args)
+  cc_run($gccbin, args)
   return false unless $? == 0
 
-  puts Jake.run($stripbin, [outname])
+  cc_run($stripbin, [outname])
   return $? == 0
 end
 
@@ -776,6 +797,9 @@ namespace "clean" do
       rm_rf $srcdir
       rm_rf $libs
     end
+	task :libsqlite => "config:android" do
+		cc_clean "sqlite"
+	end
     task :libs => "config:android" do
       $native_libs.each do |l|
         cc_clean l
