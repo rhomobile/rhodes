@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5C0440920EF7DC550014E5C6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0440910EF7DC550014E5C6 /* main.c */; };
 		5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */; };
+		5C9F556F10B402D5005644A6 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440900EF7DC290014E5C6 /* librhorubylib.a */; };
 		8DD76F6A0486A84900D96B5E /* RubyMac.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* RubyMac.1 */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C9F556F10B402D5005644A6 /* librhorubylib.a in Frameworks */,
 				5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

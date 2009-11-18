@@ -614,5 +614,10 @@ const char* rho_rhodesapp_getappbackurl()
     return RHODESAPP().getAppBackUrl().c_str();
 }
 
+int rho_rhodesapp_isrubycompiler()
+{
+    return 1;
+}
+
 }
 

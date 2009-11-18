@@ -20,7 +20,8 @@
 //#include <crtdbg.h>
 
 extern void Init_SyncEngine(void);
-
+extern void Init_strscan(void);
+extern void Init_System(void);
 #define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
@@ -83,6 +84,8 @@ main(int argc, char **argv)
     Init_System();
     //Init_prelude();
 
+    rb_gc_disable();
+
     rb_define_global_function("__rho_compile", __rho_compile, 1);
 
 	nRes = ruby_run_node(ruby_options(argc, argv));
@@ -90,6 +93,11 @@ main(int argc, char **argv)
     }
 
     return nRes;
+}
+
+int rho_rhodesapp_isrubycompiler()
+{
+    return 1;
 }
 
 static VALUE
@@ -106,12 +114,22 @@ __rho_compile( VALUE obj, VALUE src)
 
     return result;
 }
-#ifdef __APPLE__
-const char* RhoGetRootPath()
+//#ifdef __APPLE__
+const char* rho_native_rhopath() 
 {
     return "";
 }
-#endif //__APPLE__
+
+const char* rho_rhodesapp_getblobsdirpath()
+{
+    return "";
+}
+
+VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
+	return 0;
+}
+
+//#endif //__APPLE__
 
 #endif //!COMPILER
 /*
