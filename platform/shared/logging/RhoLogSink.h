@@ -11,10 +11,10 @@ namespace common {
 class CLogFileSink : public ILogSink{
     common::CRhoFile* m_pFile;
     common::CRhoFile* m_pPosFile;
+    const LogSettings& m_oLogConf;
     int                m_nCirclePos;
 
     unsigned int       m_nFileLogSize;
-    const LogSettings& m_oLogConf;
 
     const LogSettings& getLogConf()const{ return m_oLogConf; }
 

@@ -96,6 +96,7 @@ static size_t curlBodyCallback(void *ptr, size_t size, size_t nmemb, void *opaqu
     return nBytes;
 }
 
+#if 0
 static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     Vector<String> *headers = (Vector<String>*)opaque;
@@ -105,6 +106,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     headers->push_back(header);
     return nBytes;
 }
+#endif
 
 static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
                              const String& session, String& result)

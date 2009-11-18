@@ -9,14 +9,14 @@
 
 namespace rho {
 
-CLogFileSink::CLogFileSink(const LogSettings& oSettings) : m_oLogConf(oSettings), m_nCirclePos(-1),
-    m_pFile(0), m_pPosFile(0), m_nFileLogSize(0)
+CLogFileSink::CLogFileSink(const LogSettings& oSettings)
+    : m_pFile(0), m_pPosFile(0), m_oLogConf(oSettings), m_nCirclePos(-1), m_nFileLogSize(0)
 {
 
 }
 
 void CLogFileSink::writeLogMessage( String& strMsg ){
-    int len = strMsg.length();
+    unsigned int len = strMsg.length();
 
     if ( !m_pFile )
         m_pFile = new common::CRhoFile();
@@ -29,8 +29,8 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
 
     if ( getLogConf().getMaxLogFileSize() > 0 )
     {
-        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > (int)getLogConf().getMaxLogFileSize() ) || 
-             ( m_nCirclePos < 0 && m_nFileLogSize + len > (int)getLogConf().getMaxLogFileSize() ) )
+        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) || 
+             ( m_nCirclePos < 0 && m_nFileLogSize + len > getLogConf().getMaxLogFileSize() ) )
         {
             m_pFile->movePosToStart();
             m_nFileLogSize = 0;

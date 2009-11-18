@@ -78,7 +78,7 @@ void CPosixThreadImpl::wait(unsigned int nTimeout)
     ts.tv_sec  = tp.tv_sec;
     ts.tv_nsec = tp.tv_usec * 1000;
 
-    if ( ts.tv_sec + nTimeout < ts.tv_sec )
+    if ( (unsigned)ts.tv_sec + nTimeout < (unsigned)ts.tv_sec )
         pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
     else
     {
