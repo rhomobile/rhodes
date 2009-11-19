@@ -404,6 +404,9 @@ void perform_webview_refresh() {
 	[[ServerHost sharedInstance] performRefreshView];														
 }
 
+void rho_conf_show_log() {													
+}
+
 char* webview_current_location() {
 	return (char*)rho_rhodesapp_getcurrenturl();
 }
