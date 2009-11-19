@@ -124,7 +124,7 @@ CONVERT_TYPE_A( int64, "%lli" );
 
 // Special case for bool
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
-{ char c; sscanf( szValue, "%c", &c ); value = (bool)c; }
+{ char c; sscanf( szValue, "%c", &c ); value = c ? true:false; }
 template<> inline String convertToStringA<bool>( const bool& value )
 {
     char buf[100];

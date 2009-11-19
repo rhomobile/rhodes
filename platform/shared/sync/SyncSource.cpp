@@ -7,6 +7,7 @@
 #include "common/RhodesApp.h"
 #include "json/JSONIterator.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "statistic/RhoProfiler.h"
 
 namespace rho {
 namespace sync {
@@ -79,6 +80,7 @@ void CSyncSource::sync()
 
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
 
+  	PROF_START("Pull");
     if ( isEmptyToken() )
         processToken(1);
 
@@ -108,6 +110,8 @@ void CSyncSource::sync()
             }
         }
     }
+
+    PROF_STOP("Pull");
 
     if ( !bSyncedServer )
         syncServerChanges();
@@ -308,8 +312,10 @@ void CSyncSource::syncServerChanges()
             strQuery += "&ack_token=" + convertToStringA(getToken());
 
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
-		
+        PROF_START("Net");	    
         NetResponse(resp,getNet().pullData(strUrl+strQuery, &getSync()));
+		PROF_STOP("Net");
+
         if ( !resp.isOK() )
         {
             getSync().stopSync();
@@ -351,7 +357,10 @@ void CSyncSource::syncServerChanges()
 
 void CSyncSource::processServerData(const char* szData)
 {
+    PROF_START("Parse");
     CJSONArrayIterator oJsonArr(szData);
+    PROF_STOP("Parse");
+    PROF_START("Data1");
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("error") )
     {
         m_strError = oJsonArr.getCurItem().getString("error");
@@ -394,9 +403,11 @@ void CSyncSource::processServerData(const char* szData)
 
 	LOG(INFO) + "Got " + getCurPageCount() + "(Processed: " +  getServerObjectsCount() + ") records of " + getTotalCount() + " from server. Source: " + getName()
          + ". Version: " + nVersion;
-	
+
+    PROF_STOP("Data1");
     if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
     {
+        PROF_START("Data");
         //TODO: support DBExceptions
         getDB().startTransaction();
 
@@ -408,13 +419,18 @@ void CSyncSource::processServerData(const char* szData)
         oJsonArr.reset(nSavedPos);
         processServerData_Ver1(oJsonArr);
 
+	    PROF_STOP("Data");		    
+    	PROF_START("DB");
         getDB().endTransaction();
+	    PROF_STOP("DB");
 
         getNotify().fireObjectsNotification();
     }
 
+	PROF_START("Data1");
     if ( getCurPageCount() > 0 )
         getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	PROF_STOP("Data1");
 }
 
 boolean CSyncSource::processSyncObject_ver1(CJSONEntry oJsonObject, int nSrcID)//throws Exception
