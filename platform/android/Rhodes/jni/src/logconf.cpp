@@ -71,3 +71,7 @@ JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
     return LOGCONF().getLogTextPos();
 }
 
+RHO_GLOBAL void rho_conf_show_log()
+{
+}
+

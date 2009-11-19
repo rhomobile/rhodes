@@ -69,9 +69,6 @@ public final class AndroidR {
         public static final int about_rhodes=R.string.about_rhodes;
         public static final int app_name=R.string.app_name;
         public static final int back=R.string.back;
-        public static final int db_schema=R.string.db_schema;
-        public static final int deleteTrigger=R.string.deleteTrigger;
-        public static final int insertTrigger=R.string.insertTrigger;
         public static final int exit=R.string.exit;
         public static final int forward=R.string.forward;
         public static final int home=R.string.home;

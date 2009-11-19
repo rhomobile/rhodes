@@ -11,11 +11,11 @@ extern "C" {
 #define com_rhomobile_rhodes_Rhodes_MAX_PROGRESS 10000L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    getRootPath
- * Signature: ()Ljava/lang/String;
+ * Method:    setRooPath
+ * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes

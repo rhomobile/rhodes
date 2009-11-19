@@ -68,28 +68,40 @@ public class Rhodes extends Activity {
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
-	public String getAppName() {
-		Resources appR = getResources();
-		CharSequence app_name = appR.getText(
-				appR.getIdentifier("app_name", "string", getPackageName()));
-		return app_name.toString();
+	private static final boolean appDataOnSDCard = false;
+	
+	private String rootPath = null;
+	
+	private native void setRootPath(String path);
+	
+	private void initRootPath() {
+		String packageName = getPackageName();
+		if (appDataOnSDCard) {
+			rootPath = "/sdcard/rhomobile/" + packageName + "/";
+		}
+		else {
+			rootPath = "/data/data/" + packageName + "/data/";
+		}
+		setRootPath(rootPath);
 	}
 	
-	public native String getRootPath();
-
+	public String getRootPath() {
+		return rootPath;
+	}
+	
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
-    private native void doSyncAllSources(boolean v);
-    
-    public native String getOptionsUrl();
-    public native String getStartUrl();
-    public native String getCurrentUrl();
-    
-    private RhoLogConf m_rhoLogConf = new RhoLogConf();
-    public RhoLogConf getLogConf() {
-    	return m_rhoLogConf;
-    }
+	private native void doSyncAllSources(boolean v);
+	
+	public native String getOptionsUrl();
+	public native String getStartUrl();
+	public native String getCurrentUrl();
+	
+	private RhoLogConf m_rhoLogConf = new RhoLogConf();
+	public RhoLogConf getLogConf() {
+		return m_rhoLogConf;
+	}
 
 	private boolean deleteRecursively(File target) {
 		if (target.isDirectory()) {
@@ -100,57 +112,57 @@ public class Rhodes extends Activity {
 		}
 		return target.delete();
 	}
-    
-    private void copyFromBundle(AssetManager amgr, String source, File target, boolean remove) throws IOException
-    {
-    	if (remove && target.exists() && !deleteRecursively(target))
+	
+	private void copyFromBundle(AssetManager amgr, String source, File target, boolean remove) throws IOException
+	{
+		if (remove && target.exists() && !deleteRecursively(target))
 			throw new IOException("Can not delete " + target.getAbsolutePath());
-    	
-    	String[] children = amgr.list(source);
-    	if (children.length > 0) {
-    		if (!target.exists())
-    			target.mkdirs();
-    		
-    		for(int i = 0; i != children.length; ++i)
-    			copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]), false);
-    	}
-    	else {
-    		InputStream in = null;
-    		OutputStream out = null;
-    		try {
-    			in = amgr.open(source);
-    			out = new FileOutputStream(target);
-	    		
-	    		byte[] buf = new byte[1024];
-	    		int len;
-	    		while((len = in.read(buf)) > 0)
-	    			out.write(buf, 0, len);
-	    		
-    		}
-    		finally {
-    			if (in != null)
-    				in.close();
-    			if (out != null)
-    				out.close();
-    		}
-    	}
-    }
-    
-    private String getContent(InputStream in) throws IOException {
-    	String retval = "";
-    	byte[] buf = new byte[512];
-    	while(true) {
-    		int n = in.read(buf);
-    		if (n <= 0)
-    			break;
-    		retval += new String(buf);
-    	}
-    	return retval;
-    }
-    
-    private boolean isContentsEquals(String bundleFile, File sdcardFile) throws IOException {
-    	AssetManager amgr = getResources().getAssets();
-    	InputStream bundleIn = null;
+		
+		String[] children = amgr.list(source);
+		if (children.length > 0) {
+			if (!target.exists())
+				target.mkdirs();
+			
+			for(int i = 0; i != children.length; ++i)
+				copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]), false);
+		}
+		else {
+			InputStream in = null;
+			OutputStream out = null;
+			try {
+				in = amgr.open(source);
+				out = new FileOutputStream(target);
+				
+				byte[] buf = new byte[1024];
+				int len;
+				while((len = in.read(buf)) > 0)
+					out.write(buf, 0, len);
+				
+			}
+			finally {
+				if (in != null)
+					in.close();
+				if (out != null)
+					out.close();
+			}
+		}
+	}
+	
+	private String getContent(InputStream in) throws IOException {
+		String retval = "";
+		byte[] buf = new byte[512];
+		while(true) {
+			int n = in.read(buf);
+			if (n <= 0)
+				break;
+			retval += new String(buf);
+		}
+		return retval;
+	}
+	
+	private boolean isContentsEquals(String bundleFile, File sdcardFile) throws IOException {
+		AssetManager amgr = getResources().getAssets();
+		InputStream bundleIn = null;
 		InputStream sdcardIn = null;
 		try {
 			bundleIn = amgr.open(bundleFile);
@@ -166,10 +178,10 @@ public class Rhodes extends Activity {
 			if (bundleIn != null) bundleIn.close();
 			if (sdcardIn != null) sdcardIn.close();
 		}
-    }
-    
-    private void checkSDCard() {
-    	Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
+	}
+	
+	private void checkSDCard() {
+		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
 		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
 		if(!Environment.MEDIA_MOUNTED.equals(state)) {
@@ -188,10 +200,10 @@ public class Rhodes extends Activity {
 			return;
 		}
 		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
-    }
-    
-    private void copyFilesToSDCard() {
-    	try {
+	}
+	
+	private void copyFilesFromBundle() {
+		try {
 			String rootPath = getRootPath();
 			
 			boolean removeFiles = true;
@@ -224,7 +236,7 @@ public class Rhodes extends Activity {
 			Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
 			return;
 		}
-    }
+	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -292,16 +304,17 @@ public class Rhodes extends Activity {
 		
 		RhodesInstance.setInstance(this);
 		
-		// WARNING!!! This function MUST be called first time in context of
-		// UI thread for internal JNI structures be correctly initialized!!!
+		// WARNING!!! This function MUST be called in context of UI thread
+		// to be correctly initialized
 		// Do not remove this line!!!
-		getRootPath();
+		initRootPath();
 		
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				checkSDCard();
-				copyFilesToSDCard();
+				if (appDataOnSDCard)
+					checkSDCard();
+				copyFilesFromBundle();
 				startRhodesApp();
 			}
 			
@@ -422,8 +435,8 @@ public class Rhodes extends Activity {
 					logViewDialog.setCancelable(true);
 					logViewDialog.show();
 				}
-		    	
-		    });
+				
+			});
 			
 			return true;
 			
@@ -437,7 +450,7 @@ public class Rhodes extends Activity {
 					logOptionsDialog.show();
 				}
 				
-		    });
+			});
 
 		return true;	
 
@@ -528,10 +541,10 @@ public class Rhodes extends Activity {
 		// TODO:
 	}
 	
-    private boolean restoreLocation() {
-    	// TODO:
-    	return false;
-    }
+	private boolean restoreLocation() {
+		// TODO:
+		return false;
+	}
 	
 	//private void stopServices() {
 	//	stopService(new Intent(this, RhoSyncService.class));
