@@ -7,11 +7,51 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_rhomobile_rhodes_Rhodes_MODE_PRIVATE
+#define com_rhomobile_rhodes_Rhodes_MODE_PRIVATE 0L
+#undef com_rhomobile_rhodes_Rhodes_MODE_WORLD_READABLE
+#define com_rhomobile_rhodes_Rhodes_MODE_WORLD_READABLE 1L
+#undef com_rhomobile_rhodes_Rhodes_MODE_WORLD_WRITEABLE
+#define com_rhomobile_rhodes_Rhodes_MODE_WORLD_WRITEABLE 2L
+#undef com_rhomobile_rhodes_Rhodes_MODE_APPEND
+#define com_rhomobile_rhodes_Rhodes_MODE_APPEND 32768L
+#undef com_rhomobile_rhodes_Rhodes_BIND_AUTO_CREATE
+#define com_rhomobile_rhodes_Rhodes_BIND_AUTO_CREATE 1L
+#undef com_rhomobile_rhodes_Rhodes_BIND_DEBUG_UNBIND
+#define com_rhomobile_rhodes_Rhodes_BIND_DEBUG_UNBIND 2L
+#undef com_rhomobile_rhodes_Rhodes_CONTEXT_INCLUDE_CODE
+#define com_rhomobile_rhodes_Rhodes_CONTEXT_INCLUDE_CODE 1L
+#undef com_rhomobile_rhodes_Rhodes_CONTEXT_IGNORE_SECURITY
+#define com_rhomobile_rhodes_Rhodes_CONTEXT_IGNORE_SECURITY 2L
+#undef com_rhomobile_rhodes_Rhodes_RESULT_CANCELED
+#define com_rhomobile_rhodes_Rhodes_RESULT_CANCELED 0L
+#undef com_rhomobile_rhodes_Rhodes_RESULT_OK
+#define com_rhomobile_rhodes_Rhodes_RESULT_OK -1L
+#undef com_rhomobile_rhodes_Rhodes_RESULT_FIRST_USER
+#define com_rhomobile_rhodes_Rhodes_RESULT_FIRST_USER 1L
+#undef com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_DISABLE
+#define com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_DISABLE 0L
+#undef com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_DIALER
+#define com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_DIALER 1L
+#undef com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SHORTCUT
+#define com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SHORTCUT 2L
+#undef com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SEARCH_LOCAL
+#define com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SEARCH_LOCAL 3L
+#undef com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SEARCH_GLOBAL
+#define com_rhomobile_rhodes_Rhodes_DEFAULT_KEYS_SEARCH_GLOBAL 4L
+#undef com_rhomobile_rhodes_Rhodes_SHOW_PROGRESS_BAR
+#define com_rhomobile_rhodes_Rhodes_SHOW_PROGRESS_BAR 0L
 #undef com_rhomobile_rhodes_Rhodes_MAX_PROGRESS
 #define com_rhomobile_rhodes_Rhodes_MAX_PROGRESS 10000L
+#undef com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS
+#define com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS 1024L
+#undef com_rhomobile_rhodes_Rhodes_WINDOW_MASK
+#define com_rhomobile_rhodes_Rhodes_WINDOW_MASK 1024L
+#undef com_rhomobile_rhodes_Rhodes_dbOnSDCard
+#define com_rhomobile_rhodes_Rhodes_dbOnSDCard 0L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    setRooPath
+ * Method:    setRootPath
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
@@ -64,6 +104,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    makeLink
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
+  (JNIEnv *, jclass, jstring, jstring);
 
 #ifdef __cplusplus
 }

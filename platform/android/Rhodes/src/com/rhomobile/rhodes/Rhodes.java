@@ -22,6 +22,7 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +57,8 @@ import android.os.Process;
 
 public class Rhodes extends Activity {
 
+	private static final String TAG = "Rhodes";
+	
 	private static final boolean SHOW_PROGRESS_BAR = false;
 	private static final int MAX_PROGRESS = 10000;
 	
@@ -68,20 +71,20 @@ public class Rhodes extends Activity {
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
-	private static final boolean appDataOnSDCard = false;
-	
 	private String rootPath = null;
 	
 	private native void setRootPath(String path);
 	
+	private String phoneMemoryRootPath() {
+		return "/data/data/" + getPackageName() + "/data/";
+	}
+	
+	private String sdcardRootPath() {
+		return "/sdcard/rhomobile/" + getPackageName() + "/";
+	}
+	
 	private void initRootPath() {
-		String packageName = getPackageName();
-		if (appDataOnSDCard) {
-			rootPath = "/sdcard/rhomobile/" + packageName + "/";
-		}
-		else {
-			rootPath = "/data/data/" + packageName + "/data/";
-		}
+		rootPath = phoneMemoryRootPath();
 		setRootPath(rootPath);
 	}
 	
@@ -98,6 +101,8 @@ public class Rhodes extends Activity {
 	public native String getStartUrl();
 	public native String getCurrentUrl();
 	
+	public native static void makeLink(String src, String dst);
+	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
@@ -113,24 +118,51 @@ public class Rhodes extends Activity {
 		return target.delete();
 	}
 	
-	private void copyFromBundle(AssetManager amgr, String source, File target, boolean remove) throws IOException
+	private class FileSource {
+		
+		AssetManager amgr;
+		
+		public FileSource() {
+			amgr = null;
+		}
+		
+		public FileSource(AssetManager a) {
+			amgr = a;
+		}
+		
+		String[] list(String dir) throws IOException {
+			if (amgr != null)
+				return amgr.list(dir);
+			return new File(dir).list();
+		}
+		
+		InputStream open(String file) throws FileNotFoundException, IOException {
+			return amgr != null ? amgr.open(file) : new FileInputStream(file);
+		}
+	};
+	
+	private void copyFromBundle(File source, File target, boolean remove) throws IOException {
+		copyFromBundle(new FileSource(), source.getAbsolutePath(), target, remove);
+	}
+	
+	private void copyFromBundle(FileSource fs, String source, File target, boolean remove) throws IOException
 	{
 		if (remove && target.exists() && !deleteRecursively(target))
 			throw new IOException("Can not delete " + target.getAbsolutePath());
 		
-		String[] children = amgr.list(source);
-		if (children.length > 0) {
+		String[] children = fs.list(source);
+		if (children != null && children.length > 0) {
 			if (!target.exists())
 				target.mkdirs();
 			
 			for(int i = 0; i != children.length; ++i)
-				copyFromBundle(amgr, source + "/" + children[i], new File(target, children[i]), false);
+				copyFromBundle(fs, source + "/" + children[i], new File(target, children[i]), false);
 		}
 		else {
 			InputStream in = null;
 			OutputStream out = null;
 			try {
-				in = amgr.open(source);
+				in = fs.open(source);
 				out = new FileOutputStream(target);
 				
 				byte[] buf = new byte[1024];
@@ -181,9 +213,9 @@ public class Rhodes extends Activity {
 	}
 	
 	private void checkSDCard() {
-		Log.d(this.getClass().getSimpleName(), "Check if the SD card is mounted...");
+		Log.d(TAG, "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
-		Log.d(this.getClass().getSimpleName(), "Storage state: " + state);
+		Log.d(TAG, "Storage state: " + state);
 		if(!Environment.MEDIA_MOUNTED.equals(state)) {
 			new AlertDialog.Builder(this)
 				.setTitle("SD card error")
@@ -192,48 +224,69 @@ public class Rhodes extends Activity {
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						Log.e(this.getClass().getSimpleName(), "Exit - SD card is not accessible");
-						stopSelf();
+						Process.killProcess(Process.myPid());
 					}					
 				})
 				.create()
 				.show();
 			return;
 		}
-		Log.d(this.getClass().getSimpleName(), "SD card check passed, going on");
+		Log.d(TAG, "SD card check passed, going on");
 	}
 	
 	private void copyFilesFromBundle() {
 		try {
-			String rootPath = getRootPath();
+			String phRootPath = phoneMemoryRootPath();
+			String sdRootPath = sdcardRootPath();
 			
 			boolean removeFiles = true;
 			boolean copyFiles = true;
 			
-			removeFiles = !isContentsEquals("name", new File(rootPath, "name"));
+			removeFiles = !isContentsEquals("name", new File(sdRootPath, "name"));
 			if (!removeFiles)
-				copyFiles = !isContentsEquals("hash", new File(rootPath, "hash"));
+				copyFiles = !isContentsEquals("hash", new File(sdRootPath, "hash"));
 			
 			if (copyFiles) {
-				Log.d(this.getClass().getSimpleName(), "Copying required files from bundle to sdcard");
+				Log.d(TAG, "Copying required files from bundle to sdcard");
 				
-				AssetManager amgr = getResources().getAssets();
-				copyFromBundle(amgr, "apps", new File(rootPath, "apps"), removeFiles);
-				copyFromBundle(amgr, "db", new File(rootPath, "db"), removeFiles);
-				copyFromBundle(amgr, "lib", new File(rootPath, "lib"), removeFiles);
+				File phrf = new File(phRootPath);
+				if (!phrf.exists())
+					phrf.mkdirs();
+				phrf = null;
+				
+				FileSource fs = new FileSource(getResources().getAssets());
+				
+				String folders[] = {"apps", "lib", "db", "hash", "name"};
+				for (int i = 0; i != folders.length; ++i) {
+					String folder = folders[i];
+					File phf = new File(phRootPath, folder);
+					File sdf = new File(sdRootPath, folder);
+					Log.d(TAG, "Copy '" + folder + "' to '" + sdRootPath + "'");
+					copyFromBundle(fs, folder, sdf, removeFiles);
+					if (!folder.equals("db")) {
+						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
+								phf.getAbsolutePath() + "'");
+						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
+					}
+				}
 				
 				File dbfiles = new File(rootPath + "apps/public/db-files");
 				if (!dbfiles.exists())
 					dbfiles.mkdirs();
+				dbfiles = null;
 				
-				copyFromBundle(amgr, "hash", new File(rootPath, "hash"), removeFiles);
-				copyFromBundle(amgr, "name", new File(rootPath, "name"), removeFiles);
-				
-				Log.d(this.getClass().getSimpleName(), "All files copied");
+				Log.d(TAG, "All files copied");
 			}
 			else
-				Log.d(this.getClass().getSimpleName(), "No need to copy files to SD card");
+				Log.d(TAG, "No need to copy files to SD card");
+			
+			// Load DB from SD card to phone memory
+			File phdb = new File(phRootPath, "db");
+			File sddb = new File(sdRootPath, "db");
+			Log.d(TAG, "Load DB to memory");
+			copyFromBundle(sddb, phdb, false);
 		} catch (IOException e) {
-			Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+			Log.e(TAG, e.getMessage(), e);
 			return;
 		}
 	}
@@ -265,13 +318,6 @@ public class Rhodes extends Activity {
 		webView.setHorizontalScrollBarEnabled(true);
 
 		webView.setWebViewClient(new WebViewClient() {
-			/*
-			 * @Override public boolean shouldOverrideUrlLoading(WebView view,
-			 * String url) {
-			 * 
-			 * view.loadUrl(url); // return true to handle the click yourself
-			 * return true; }
-			 */
 
 			@Override
 			public void onPageFinished(WebView view, String url) {
@@ -312,8 +358,7 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				if (appDataOnSDCard)
-					checkSDCard();
+				checkSDCard();
 				copyFilesFromBundle();
 				startRhodesApp();
 			}
@@ -372,7 +417,7 @@ public class Rhodes extends Activity {
 	
 	@Override
 	protected void onDestroy() {
-		//stopServices();
+		stopSelf();
 		
 		super.onDestroy();
 	}
@@ -546,13 +591,18 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
-	//private void stopServices() {
-	//	stopService(new Intent(this, RhoSyncService.class));
-	//	stopService(new Intent(this, RhoHttpService.class));
-	//}
-	
 	public void stopSelf() {
-		//stopServices();
+		stopRhodesApp();
+		try {
+			// Store DB from phone memory to SD card
+			Log.d(TAG, "Store DB to SD card");
+			File phdb = new File(phoneMemoryRootPath(), "db");
+			File sddb = new File(sdcardRootPath(), "db");
+			copyFromBundle(phdb, sddb, false);
+			deleteRecursively(phdb);
+		} catch (IOException e) {
+			Logger.E(TAG, e.getMessage());
+		}
 		Process.killProcess(Process.myPid());
 	}
 	
