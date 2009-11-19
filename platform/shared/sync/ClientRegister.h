@@ -30,6 +30,8 @@ public:
 	static CClientRegister* getInstance() { return m_pInstance; }
 	
 	virtual void run();	
+
+    const String& getDevicePin(){return m_strDevicePin;}
 private:
 	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);
     ~CClientRegister();

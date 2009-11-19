@@ -113,6 +113,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Find...",                     ID_MENU_FIND
         MENUITEM SEPARATOR
+        MENUITEM "Send log",                    IDM_SENDLOG
         MENUITEM "Options...",                  IDM_OPTIONS
         MENUITEM "Clear Log",                   IDM_CLEAR
     END

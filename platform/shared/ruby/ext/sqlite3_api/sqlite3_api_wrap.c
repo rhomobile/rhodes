@@ -1,4 +1,4 @@
-#include "sqlite3.h"
+#include "sqlite/sqlite3.h"
 #include "ruby.h"
 
 #include "logging/RhoLog.h"

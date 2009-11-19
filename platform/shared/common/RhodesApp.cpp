@@ -5,6 +5,8 @@
 #include "net/INetRequest.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include <math.h>
+#include "sync/ClientRegister.h"
+#include "sync/SyncThread.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -53,6 +55,9 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     m_bExit = false;
 
     m_shttpdCtx = 0;
+
+    m_ptrFactory = createClassFactory();
+    m_NetRequest = m_ptrFactory->createNetRequest();
 
 #ifdef OS_WINCE
     //initializing winsock
@@ -157,7 +162,7 @@ void CRhodesApp::callAppActiveCallback()
     if ( strCallback.length() == 0 )
         return;
 
-    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), createClassFactory() );*/
+    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), m_ptrFactory );*/
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
@@ -174,9 +179,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
     }else
         strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
 
-    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
-    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
-	common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( strCallbackUrl, strBody, null );
+    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
@@ -194,9 +197,7 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
         strBody += szData;
     }
 
-    common::CAutoPtr<common::IRhoClassFactory> ptrFactory = createClassFactory();
-    common::CAutoPtr<net::INetRequest> pNetRequest = ptrFactory->createNetRequest();
-	common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( strCallbackUrl, strBody, null );
+    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
 static void callback_geolocation(struct shttpd_arg *arg) 
@@ -463,6 +464,28 @@ void CRhodesApp::setViewMenu(unsigned long valMenu)
     rho_ruby_enum_strhash(valMenu, menu_iter, this);
 }
 
+boolean CRhodesApp::sendLog() 
+{
+    String strDevicePin = rho::sync::CClientRegister::getInstance() ? rho::sync::CClientRegister::getInstance()->getDevicePin() : "";
+	String strClientID = rho::sync::CSyncThread::getSyncEngine().loadClientID();
+
+    String strLogUrl = RHOCONF().getPath("logserver");
+    if ( strLogUrl.length() == 0 )
+        strLogUrl = RHOCONF().getPath("syncserver");
+
+	String strQuery = strLogUrl + "client_log?" +
+	    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
+
+    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), null ) );
+    if ( !resp.isOK() )
+    {
+        LOG(ERROR) + "send_log failed : network error";
+        return false;
+    }
+
+    return true;
+}
+
 }
 }
 
@@ -617,6 +640,11 @@ const char* rho_rhodesapp_getappbackurl()
 int rho_rhodesapp_isrubycompiler()
 {
     return 1;
+}
+
+int rho_conf_send_log()
+{
+    return RHODESAPP().sendLog();
 }
 
 }

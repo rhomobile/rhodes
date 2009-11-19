@@ -160,6 +160,11 @@ public :
         ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
     }
 
+    void DoShowLog()
+    {
+        ::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_LOG,0);
+    }
+
 	//char* GetCurrentLocation() {
 	//	return m_appWindow.GetCurrentLocation();
 	//}
@@ -229,10 +234,16 @@ extern "C" HWND getMainWnd() {
 	return _AtlModule.GetManWindow();
 }
 
-const char* rho_native_rhopath() 
+extern "C" const char* rho_native_rhopath() 
 {
     return _AtlModule.getRhoRootPath().c_str();
 }
+
+extern "C" void rho_conf_show_log()
+{
+    _AtlModule.DoShowLog();
+}
+
 
 //Hook for ruby call to refresh web view
 

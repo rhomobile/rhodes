@@ -1547,6 +1547,13 @@ static VALUE mRhoConf;
 
 	extern void rho_conf_set_property_by_name(char* name, char* value);
 	#define set_property_by_name rho_conf_set_property_by_name
+	
+	extern void rho_conf_show_log();
+	#define show_log rho_conf_show_log
+
+	extern int rho_conf_send_log();
+	#define send_log rho_conf_send_log
+	
 
 
 SWIGINTERN swig_type_info*
@@ -1602,6 +1609,28 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+#include <limits.h>
+#ifndef LLONG_MIN
+# define LLONG_MIN	LONG_LONG_MIN
+#endif
+#ifndef LLONG_MAX
+# define LLONG_MAX	LONG_LONG_MAX
+#endif
+#ifndef ULLONG_MAX
+# define ULLONG_MAX	ULONG_LONG_MAX
+#endif
+
+
+  #define SWIG_From_long   LONG2NUM 
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_int  (int value)
+{    
+  return SWIG_From_long  (value);
+}
+
 SWIGINTERN VALUE
 _wrap_set_property_by_name(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
@@ -1633,6 +1662,34 @@ _wrap_set_property_by_name(int argc, VALUE *argv, VALUE self) {
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_show_log(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  show_log();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_send_log(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)send_log();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -1900,5 +1957,7 @@ SWIGEXPORT void Init_RhoConf(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mRhoConf, "set_property_by_name", _wrap_set_property_by_name, -1);
+  rb_define_module_function(mRhoConf, "show_log", _wrap_show_log, -1);
+  rb_define_module_function(mRhoConf, "send_log", _wrap_send_log, -1);
 }
 

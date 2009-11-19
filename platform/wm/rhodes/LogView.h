@@ -112,6 +112,7 @@ BEGIN_MSG_MAP(CLogView)
 #endif
     COMMAND_ID_HANDLER(IDM_BACK, OnBack)
     COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptions)
+    COMMAND_ID_HANDLER(IDM_SENDLOG, OnSendLog)
     COMMAND_ID_HANDLER(IDM_REFRESH, OnRefresh)
     COMMAND_ID_HANDLER(IDM_CLEAR, OnClear)
 END_MSG_MAP()
@@ -126,6 +127,7 @@ END_MSG_MAP()
 
 	LRESULT OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnSendLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 

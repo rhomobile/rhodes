@@ -3,7 +3,7 @@
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "common/RhoMutexLock.h"
-#include "sqlite3.h"
+#include "sqlite/sqlite3.h"
 
 namespace rho{
 namespace db{
