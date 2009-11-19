@@ -268,17 +268,32 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
     env->ReleaseStringUTFChars(path, s);
 }
 
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
+  (JNIEnv *env, jclass, jstring src, jstring dst)
+{
+    const char *strSrc = env->GetStringUTFChars(src, JNI_FALSE);
+    const char *strDst = env->GetStringUTFChars(dst, JNI_FALSE);
+    ::unlink(strDst);
+    int err = ::symlink(strSrc, strDst);
+    env->ReleaseStringUTFChars(src, strSrc);
+    env->ReleaseStringUTFChars(dst, strDst);
+    if (err != 0)
+        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
+}
+
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
     // Init SQLite temp directory
-    sqlite3_temp_directory = "/sqlite_stmt_journals";
+    sqlite3_temp_directory = (char*)"/sqlite_stmt_journals";
 
     const char* szRootPath = rho_native_rhopath();
+
+    // Init logconf
     rho_logconf_Init(szRootPath);
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
-    RHOCONF().setBool("LogToOutput", "0");
+    RHOCONF().setBool("LogToOutput", false);
     RHOCONF().saveToFile();
     LOGCONF().setLogToOutput(false);
     // Add android system log sink
