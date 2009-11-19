@@ -12,7 +12,6 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
 
-static rho::String g_appName;
 static rho::String g_rootPath;
 
 static pthread_key_t g_thrkey;
@@ -133,8 +132,6 @@ jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *sign
 
 const char* rho_native_rhopath()
 {
-    if (g_rootPath.empty() && !g_appName.empty())
-        g_rootPath = rho::String("/sdcard/rhomobile/") + g_appName + "/";
     return g_rootPath.c_str();
 }
 
@@ -263,34 +260,31 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     return retval;
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getRootPath
-  (JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
+  (JNIEnv *env, jobject, jstring path)
 {
-    if (g_appName.empty())
-    {
-        jclass cls = env->GetObjectClass(obj);
-        if (!cls) return NULL;
-        jmethodID mid = getJNIClassMethod(cls, "getAppName", "()Ljava/lang/String;");
-        if (!mid) return NULL;
-        jstring str = (jstring)env->CallObjectMethod(obj, mid);
-        const char *s = env->GetStringUTFChars(str, JNI_FALSE);
-        g_appName = s;
-        env->ReleaseStringUTFChars(str, s);
-    }
-    return env->NewStringUTF(rho_native_rhopath());
+    const char *s = env->GetStringUTFChars(path, JNI_FALSE);
+    g_rootPath = s;
+    env->ReleaseStringUTFChars(path, s);
 }
 
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
+    // Init SQLite temp directory
+    sqlite3_temp_directory = "/sqlite_stmt_journals";
+
     const char* szRootPath = rho_native_rhopath();
-    // It is required on Android!!!
-    chdir(szRootPath);
     rho_logconf_Init(szRootPath);
+
+    // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", "0");
     RHOCONF().saveToFile();
     LOGCONF().setLogToOutput(false);
+    // Add android system log sink
     LOGCONF().setLogView(rho::common::g_androidLogSink);
+
+    // Start Rhodes application
     rho_rhodesapp_create(szRootPath);
     rho_rhodesapp_start();
 }
