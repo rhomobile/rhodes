@@ -154,7 +154,7 @@ time_t time( time_t *timer )
 	  *timer = t;
 	return *timer;
 }
-
+/*
 struct tm *localtime( const time_t *timer )
 {
 	SYSTEMTIME ss, ls, s;
@@ -179,7 +179,7 @@ struct tm *localtime( const time_t *timer )
 	tms = wce_SYSTEMTIME2tm(&s);
 
 	return &tms;
-}
+}*/
 
 time_t mktime(struct tm* pt)
 {

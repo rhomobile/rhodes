@@ -4,6 +4,8 @@
 
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
+#include "net/INetRequest.h"
+#include "common/IRhoClassFactory.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -22,6 +24,9 @@ private:
     static CRhodesApp* m_pInstance;
     CRhodesApp(const String& strRootPath);
     boolean m_bExit;
+
+    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
+    common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;
     struct shttpd_ctx * m_shttpdCtx;
@@ -64,6 +69,7 @@ public:
     void setViewMenu(unsigned long valMenu);
     void addViewMenuItem( const String& strLabel, const String& strLink );
 
+    boolean sendLog();
 private:
     virtual void run();
 
@@ -71,6 +77,7 @@ private:
     void initAppUrls();
 
     const char* getFreeListeningPort();
+    net::INetRequest& getNet(){ return *m_NetRequest; }
 
 };
 
@@ -114,6 +121,7 @@ void rho_rhodesapp_callAppActiveCallback();
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
+int rho_conf_send_log();
 
 #ifdef __cplusplus
 };

@@ -8,6 +8,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#ifndef _CRT_NONSTDC_NO_WARNINGS
+#define _CRT_NONSTDC_NO_WARNINGS 1
+#endif //_CRT_NONSTDC_NO_WARNINGS
+
 #ifdef _X86_
     #pragma comment(linker, "/nodefaultlib:libc.lib")
     #pragma comment(linker, "/nodefaultlib:libcd.lib")

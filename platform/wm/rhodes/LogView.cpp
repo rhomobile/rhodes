@@ -9,6 +9,7 @@
 #include "LogOptionsDlg.h"
 
 #include "logging/RhoLog.h"
+#include "common/RhodesApp.h"
 
 #if defined(OS_WINDOWS)
 rho::common::CMutex CLogView::m_ViewFlushLock;
@@ -283,6 +284,13 @@ LRESULT CLogView::OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 {
     CLogOptionsDlg oLogOptions;
     oLogOptions.DoModal(m_hWnd);
+
+	return 0;
+}
+
+LRESULT CLogView::OnSendLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    rho_conf_send_log();
 
 	return 0;
 }

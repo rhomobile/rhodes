@@ -47,6 +47,8 @@ struct INetRequest
 #define NetResponse(name,call)\
     rho::common::CAutoPtr<rho::net::INetResponse> p##name = call;\
     rho::net::INetResponse& name = *p##name;
+#define NetRequest(call)\
+    rho::common::CAutoPtr<rho::net::INetResponse> p__NetReq = call;p__NetReq;
 
 }
 }

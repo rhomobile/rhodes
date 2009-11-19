@@ -61,6 +61,10 @@ typedef int LogSeverity;
 #define _CRT_NON_CONFORMING_SWPRINTFS 1
 #endif //_CRT_NON_CONFORMING_SWPRINTFS
 
+#ifndef _CRT_NONSTDC_NO_WARNINGS
+#define _CRT_NONSTDC_NO_WARNINGS 1
+#endif //_CRT_NONSTDC_NO_WARNINGS
+
 #endif
 
 #if !defined(OS_ANDROID)

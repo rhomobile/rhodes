@@ -3,6 +3,7 @@ package com.rho;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import com.rho.net.NetResponse;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyConstant;
@@ -229,7 +230,7 @@ public class RhoConf {
 		}
    }
    
-   public static void sendLog()throws Exception
+   public static boolean sendLog()throws Exception
    {
 		com.rho.net.NetRequest nq = RhoClassFactory.createNetRequest();
 		String strDevicePin = "";
@@ -250,9 +251,21 @@ public class RhoConf {
 			LOG.ERROR("send_log:loadClientID failed", exc);
 		}
 		
-		String strQuery = RhoConf.getInstance().getPath("syncserver") + "client_log?" +
-		"client_id=" + strClientID + "&device_pin=" + strDevicePin;
-		nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), null );
+	    String strLogUrl = RhoConf.getInstance().getPath("logserver");
+	    if ( strLogUrl.length() == 0 )
+	        strLogUrl = RhoConf.getInstance().getPath("syncserver");
+
+		String strQuery = strLogUrl + "client_log?" +
+		    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RhoConf.getInstance().getString("logname");
+		
+		NetResponse resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), null );
+		if ( !resp.isOK() )
+		{
+			LOG.ERROR("send_log failed : network error");
+			return false;
+		}
+		
+		return true;
    }
    
    public static void initMethods(RubyClass klass) {
