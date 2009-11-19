@@ -6,6 +6,7 @@
 #include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
 #include "net/URI.h"
+#include "statistic/RhoProfiler.h"
 
 namespace rho {
 const _CRhoRuby& RhoRuby = _CRhoRuby();
@@ -36,7 +37,25 @@ void CSyncEngine::doSyncAllSources()
     {
         m_clientID = loadClientID();
         getNotify().cleanLastSyncObjectCount();
+
+	    PROF_CREATE_COUNTER("Net");	    
+	    PROF_CREATE_COUNTER("Parse");
+	    PROF_CREATE_COUNTER("DB");
+	    PROF_CREATE_COUNTER("Data");
+	    PROF_CREATE_COUNTER("Data1");
+	    PROF_CREATE_COUNTER("Pull");
+	    PROF_START("Sync");
+
         syncAllSources();
+
+	    PROF_DESTROY_COUNTER("Net");	    
+	    PROF_DESTROY_COUNTER("Parse");
+	    PROF_DESTROY_COUNTER("DB");
+	    PROF_DESTROY_COUNTER("Data");
+	    PROF_DESTROY_COUNTER("Data1");
+	    PROF_DESTROY_COUNTER("Pull");
+	    PROF_STOP("Sync");
+
     }
     else
     {
@@ -282,6 +301,7 @@ boolean CSyncEngine::checkAllSourcesFromOneDomain()//throws Exception
 
 void CSyncEngine::login(String name, String password, String callback)
 {
+    PROF_START("Login");
 	//try {
 	if ( !checkAllSourcesFromOneDomain() )
 	{
@@ -326,7 +346,8 @@ void CSyncEngine::login(String name, String password, String callback)
         CClientRegister::getInstance()->stopWait();
     
     callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
-	    
+	
+    PROF_STOP("Login");
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);
