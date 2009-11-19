@@ -47,8 +47,8 @@ char* get_current_location() {
 -(void)viewDidLoad {
 	[super viewDidLoad];
 
-    //NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	bool logEnabled = rho_conf_getBool("show_log_menu");//[defaults boolForKey:@"log_enabled_preference"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	bool logEnabled = [defaults boolForKey:@"log_enabled_preference"];
 	
 	if (logEnabled && toolbar) {
 		NSArray *items = toolbar.items;
