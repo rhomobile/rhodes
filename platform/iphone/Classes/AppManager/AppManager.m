@@ -191,10 +191,6 @@ const char* rho_native_rhopath()
 	return root;
 }
 
-void rho_conf_show_log()
-{
-}
-
 const char* GetApplicationsRootPath() {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
