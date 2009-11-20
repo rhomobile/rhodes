@@ -61,6 +61,9 @@ public class Rhodes extends Activity {
 	private static final boolean SHOW_PROGRESS_BAR = false;
 	private static final int MAX_PROGRESS = 10000;
 	
+	private static final boolean DB_ON_SDCARD = true;
+	private static final int DB_BACKUP_INTERVAL = 60000;
+	
 	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
@@ -99,6 +102,9 @@ public class Rhodes extends Activity {
 	public native String getOptionsUrl();
 	public native String getStartUrl();
 	public native String getCurrentUrl();
+	
+	private native void dblock();
+	private native void dbunlock();
 	
 	public native static void makeLink(String src, String dst);
 	
@@ -262,7 +268,7 @@ public class Rhodes extends Activity {
 					File sdf = new File(sdRootPath, folder);
 					Log.d(TAG, "Copy '" + folder + "' to '" + sdRootPath + "'");
 					copyFromBundle(fs, folder, sdf, removeFiles);
-					if (!folder.equals("db")) {
+					if (DB_ON_SDCARD || !folder.equals("db")) {
 						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 								phf.getAbsolutePath() + "'");
 						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
@@ -279,15 +285,25 @@ public class Rhodes extends Activity {
 			else
 				Log.d(TAG, "No need to copy files to SD card");
 			
-			// Load DB from SD card to phone memory
-			File phdb = new File(phRootPath, "db");
-			File sddb = new File(sdRootPath, "db");
-			Log.d(TAG, "Load DB to memory");
-			copyFromBundle(sddb, phdb, false);
+			if (!DB_ON_SDCARD) {
+				// Load DB from SD card to phone memory
+				File phdb = new File(phRootPath, "db");
+				File sddb = new File(sdRootPath, "db");
+				Log.d(TAG, "Load DB to memory");
+				copyFromBundle(sddb, phdb, false);
+			}
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return;
 		}
+	}
+	
+	private void flushDb() throws IOException {
+		// Store DB from phone memory to SD card
+		Log.d(TAG, "Store DB to SD card");
+		File phdb = new File(phoneMemoryRootPath(), "db");
+		File sddb = new File(sdcardRootPath(), "db");
+		copyFromBundle(phdb, sddb, true);
 	}
 
 	/** Called when the activity is first created. */
@@ -360,6 +376,31 @@ public class Rhodes extends Activity {
 				checkSDCard();
 				copyFilesFromBundle();
 				startRhodesApp();
+				
+				if (!DB_ON_SDCARD) {
+					Thread flush = new Thread(new Runnable() {
+	
+						public void run() {
+							for(;;) {
+								try {
+									Thread.sleep(DB_BACKUP_INTERVAL);
+								} catch (InterruptedException e) {}
+								
+								dblock();
+								try {
+									flushDb();
+								} catch (IOException e) {
+									Logger.E(TAG, e.getMessage());
+								}
+								finally {
+									dbunlock();
+								}
+							}
+						}
+						
+					});
+					flush.start();
+				}
 			}
 			
 		});
@@ -592,15 +633,13 @@ public class Rhodes extends Activity {
 	
 	public void stopSelf() {
 		stopRhodesApp();
-		try {
-			// Store DB from phone memory to SD card
-			Log.d(TAG, "Store DB to SD card");
-			File phdb = new File(phoneMemoryRootPath(), "db");
-			File sddb = new File(sdcardRootPath(), "db");
-			copyFromBundle(phdb, sddb, false);
-			deleteRecursively(phdb);
-		} catch (IOException e) {
-			Logger.E(TAG, e.getMessage());
+		if (!DB_ON_SDCARD) {
+			try {
+				flushDb();
+				deleteRecursively(new File(phoneMemoryRootPath(), "db"));
+			} catch (IOException e) {
+				Logger.E(TAG, e.getMessage());
+			}
 		}
 		Process.killProcess(Process.myPid());
 	}

@@ -47,8 +47,6 @@ extern "C" {
 #define com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS 1024L
 #undef com_rhomobile_rhodes_Rhodes_WINDOW_MASK
 #define com_rhomobile_rhodes_Rhodes_WINDOW_MASK 1024L
-#undef com_rhomobile_rhodes_Rhodes_dbOnSDCard
-#define com_rhomobile_rhodes_Rhodes_dbOnSDCard 0L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    setRootPath
@@ -103,6 +101,22 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    dblock
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dblock
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    dbunlock
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dbunlock
   (JNIEnv *, jobject);
 
 /*

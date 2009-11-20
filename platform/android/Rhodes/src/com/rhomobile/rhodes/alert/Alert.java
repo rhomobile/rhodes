@@ -1,7 +1,5 @@
 package com.rhomobile.rhodes.alert;
 
-import java.io.IOException;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;

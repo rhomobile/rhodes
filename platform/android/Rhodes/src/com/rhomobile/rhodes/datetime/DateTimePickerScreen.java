@@ -9,7 +9,6 @@ import com.rhomobile.rhodes.Rhodes;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;

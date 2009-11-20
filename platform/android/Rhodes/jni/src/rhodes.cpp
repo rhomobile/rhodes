@@ -337,3 +337,15 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
     return env->NewStringUTF(s);
 }
 
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dblock
+  (JNIEnv *, jobject)
+{
+    rho::sync::CSyncThread::getDBAdapter().executeSQL("begin immediate");
+}
+
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dbunlock
+  (JNIEnv *, jobject)
+{
+    rho::sync::CSyncThread::getDBAdapter().executeSQL("rollback");
+}
+
