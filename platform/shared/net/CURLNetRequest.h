@@ -45,6 +45,7 @@ private:
 
 private:
     boolean m_bCancel;
+	CURLM *curlm;
     CURL *curl;
     char *errbuf[CURL_ERROR_SIZE];
     String cookies;
