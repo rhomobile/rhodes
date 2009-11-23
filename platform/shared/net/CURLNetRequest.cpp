@@ -72,6 +72,7 @@ public:
 
 CURLNetRequest::CURLNetRequest()
 {
+	curlm = curl_multi_init();
     curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &errbuf);
 }
@@ -79,6 +80,7 @@ CURLNetRequest::CURLNetRequest()
 CURLNetRequest::~CURLNetRequest()
 {
     curl_easy_cleanup(curl);
+	curl_multi_cleanup(curlm);
 }
 
 static bool isLocalHost(const String& strUrl)
@@ -108,7 +110,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
 }
 #endif
 
-static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
                              const String& session, String& result)
 {
     curl_easy_reset(curl);
@@ -131,16 +133,56 @@ static void set_curl_options(CURL *curl, const char *method, const String& strUr
     // could repeated twice or more times
     if (isLocalHost(strUrl))
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10*24*60*60);
+	
+	curl_slist *hdrs = NULL;
+	// Disable "Expect: 100-continue"
+	hdrs = curl_slist_append(hdrs, "Expect:");
+	// Add Keep-Alive header
+	hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+	
+	return hdrs;
 }
 
-static void set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
                              const String& strBody, const String& session, String& result)
 {
-    set_curl_options(curl, method, strUrl, session, result);
+    curl_slist *retval = set_curl_options(curl, method, strUrl, session, result);
     if (strcasecmp(method, "POST") == 0) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
     }
+	return retval;
+}
+
+static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
+{
+	int running = 0;
+	curl_multi_add_handle(curlm, curl);
+	CURLMcode err;
+	for(;;) {
+		err = curl_multi_perform(curlm, &running);
+		if (err == CURLM_CALL_MULTI_PERFORM)
+			continue;
+		if (err == CURLM_OK && running > 0) {
+			fd_set rfd, wfd, efd;
+			int n = 0;
+			FD_ZERO(&rfd);
+			FD_ZERO(&wfd);
+			FD_ZERO(&efd);
+			curl_multi_fdset(curlm, &rfd, &wfd, &efd, &n);
+			if (n < 0)
+				n = 1;
+			timeval tv;
+			tv.tv_sec = 1;
+			tv.tv_usec = 0;
+			select(n, &rfd, &wfd, &efd, &tv);
+			continue;
+		}
+		break;
+	}
+	curl_multi_remove_handle(curlm, curl);
+	return err;
 }
 
 char* CURLNetRequest::request(const char *method, const String& strUrl, const String& strBody,
@@ -159,10 +201,17 @@ char* CURLNetRequest::request(const char *method, const String& strUrl, const St
     rho_net_impl_network_indicator(1);
 
     String result;
-    set_curl_options(curl, method, strUrl, strBody, session, result);
-    curl_easy_perform(curl);
-
+    curl_slist *hdrs = set_curl_options(curl, method, strUrl, strBody, session, result);
+	//curl_easy_perform(curl);
+	CURLMcode err = do_curl_perform(curlm, curl);
+	curl_slist_free_all(hdrs);
+	
     rho_net_impl_network_indicator(0);
+	
+	if (err != CURLM_OK) {
+		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
+		return NULL;
+	}
 
     long statusCode = 0;
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
@@ -212,10 +261,17 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
     rho_net_impl_network_indicator(1);
 
     String result;
-    set_curl_options(curl, method, strUrl, strBody, session, result);
-    curl_easy_perform(curl);
-
+    curl_slist *hdrs = set_curl_options(curl, method, strUrl, strBody, session, result);
+    //curl_easy_perform(curl);
+	CURLMcode err = do_curl_perform(curlm, curl);
+	curl_slist_free_all(hdrs);
+	
     rho_net_impl_network_indicator(0);
+	
+	if (err != CURLM_OK) {
+		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
+		return NULL;
+	}
 
     long statusCode = 0;
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
@@ -290,11 +346,7 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
         rho_net_impl_network_indicator(1);
 
         String result;
-        set_curl_options(curl, "POST", strUrl, session, result);
-        //curl_slist *hdrs = NULL;
-        // Disable "Expect: 100-continue"
-        //hdrs = curl_slist_append(hdrs, "Expect:");
-        //curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+        curl_slist *hdrs = set_curl_options(curl, "POST", strUrl, session, result);
 
         curl_httppost *post = NULL, *last = NULL;
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
@@ -304,12 +356,19 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
                      CURLFORM_CONTENTTYPE, "application/octet-stream",
                      CURLFORM_END);
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-        curl_easy_perform(curl);
+		
+        //curl_easy_perform(curl);
+		CURLMcode err = do_curl_perform(curlm, curl);
 
-        //curl_slist_free_all(hdrs);
+        curl_slist_free_all(hdrs);
         curl_formfree(post);
 
         rho_net_impl_network_indicator(0);
+		
+		if (err != CURLM_OK) {
+			RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
+			return NULL;
+		}
 
         long statusCode = 0;
         if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
@@ -428,8 +487,7 @@ String CURLNetRequest::resolveUrl(const String& strUrl)
 void CURLNetRequest::cancel()
 {
     m_bCancel = true;
-    // TODO
-    //curl_easy_pause(curl, CURLPAUSE_ALL);
+	curl_multi_remove_handle(curlm, curl);
 }
 
 } // namespace net
