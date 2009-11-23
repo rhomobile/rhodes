@@ -11,7 +11,9 @@ namespace "config" do
     $targetdir = $bindir + "/target/wm6p"
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = "vcbuild"
-    
+    $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+    $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
   end
 end
@@ -26,7 +28,7 @@ namespace "build" do
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
       chdir $config["build"]["wmpath"]
 
-      args = ['/M4', 'rhodes.sln', '"Release|Windows Mobile 6 Professional SDK (ARMV4I)"']
+      args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
       unless $? == 0
@@ -97,7 +99,7 @@ namespace "clean" do
   task :wm => "clean:wm:all"
   namespace "wm" do
     task :rhodes => ["config:wm"] do
-      rm_rf $vcbindir + "/Windows Mobile 6 Professional SDK (ARMV4I)"
+      rm_rf $vcbindir + "/#{$sdk}"
 
       #rm_rf $tmpdir
       #rm_rf $targetdir +"/../"
