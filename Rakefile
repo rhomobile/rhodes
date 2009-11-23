@@ -481,7 +481,7 @@ task :gem do
 end
 
 task :tasks do
-  Rake::Task.tasks.each {|t| puts t.to_s}
+  Rake::Task.tasks.each {|t| puts t.to_s.ljust(27) + "# " + t.comment.to_s}
 end
 
 task :switch_app => "config:common" do
