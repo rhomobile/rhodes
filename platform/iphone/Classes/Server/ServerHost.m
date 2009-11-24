@@ -213,6 +213,9 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+#define RHO_USE_SHTTPD
+
+#if !defined(RHO_USE_SHTTPD)
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -256,9 +259,9 @@ static ServerHost* sharedSH = nil;
     RAWLOG_INFO("Server host thread routine is completed");
 	[pool release];
 }
-
+#else // RHO_USE_SHTTPD
 //To use with shttpd
-/*- (void)ServerHostThreadRoutine:(id)anObject {
+- (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	runLoop = CFRunLoopGetCurrent();
@@ -268,7 +271,8 @@ static ServerHost* sharedSH = nil;
 	
     RAWLOG_INFO("Server host thread routine is completed");
 	[pool release];
-}*/
+}
+#endif // RHO_USE_SHTTPD
 
 /*
 - (int)initializeDatabaseConn {
@@ -295,7 +299,9 @@ static ServerHost* sharedSH = nil;
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
 	rho_rhodesapp_create(rho_native_rhopath());	
-	//rho_rhodesapp_start();	
+#ifdef RHO_USE_SHTTPD
+	rho_rhodesapp_start();
+#endif
 }
 
 void* rho_nativethread_start()
