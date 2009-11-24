@@ -60,6 +60,7 @@ android = "" unless File.exists? android  + "/platforms/android-1.5"
 
 android = prompt_for("Android 1.5 SDK path", android, false, "/platforms/android-1.5")
 
+androidndk = prompt_for("Android NDK path", "",false)
 
 #now cabwiz
 cabwiz = ""
@@ -105,6 +106,7 @@ end
 
 config["env"]["paths"]["java"] = java
 config["env"]["paths"]["android"] = android
+config["env"]["paths"]["android-ndk"] = androidndk
 config["env"]["paths"]["cabwiz"] = cabwiz
 config["env"]["paths"][4.6]["jde"] = jde46
 config["env"]["paths"][4.6]["mds"] = jde46mds
