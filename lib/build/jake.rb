@@ -258,9 +258,11 @@ class Jake
     args << 'library=' + output if library
     args << output + '.rapc'
     args << files
+    args << "2>&1"
   
     cmd.gsub!(/\//,"\\")
-    puts run( '"' + cmd + '"',args)
+    outputstring = run( '"' + cmd + '"',args)
+    puts outputstring unless $? == 0
     chdir currentdir
   
   end
