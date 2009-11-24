@@ -213,7 +213,7 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-#define RHO_USE_SHTTPD
+//#define RHO_USE_SHTTPD
 
 #if !defined(RHO_USE_SHTTPD)
 - (void)ServerHostThreadRoutine:(id)anObject {
