@@ -547,7 +547,7 @@ class ERB
     def compile(s)
       enc = s.encoding
       raise ArgumentError, "#{enc} is not ASCII compatible" if enc.dummy?
-      s = s.dup.force_encoding("utf-8") # don't use constant Enoding::ASCII_8BIT for miniruby
+      #s = s.dup.force_encoding("utf-8") # don't use constant Enoding::ASCII_8BIT for miniruby
       enc = detect_magic_comment(s) || enc
       out = Buffer.new(self, enc)
 
