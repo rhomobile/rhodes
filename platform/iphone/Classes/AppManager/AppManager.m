@@ -191,6 +191,11 @@ const char* rho_native_rhopath()
 	return root;
 }
 
+const char* rho_sys_get_locale() 
+{
+	return "en";
+}
+
 const char* GetApplicationsRootPath() {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
