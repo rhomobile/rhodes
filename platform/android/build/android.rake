@@ -151,10 +151,17 @@ namespace "config" do
     $build_release = true
 
     $androidsdkpath = $config["env"]["paths"]["android"]
-    puts "Missing 'android' section in rhobuild.yml" if $androidsdkpath.nil?
-    $androidndkpath = $config["env"]["paths"]["android-ndk"]
-    puts "Missing 'android-ndk' section in rhobuild.yml" if $androidndkpath.nil?
+    unless File.exists? $androidsdkpath
+      puts "Missing or invalid 'android' section in rhobuild.yml"
+      exit 1
+    end
 
+    $androidndkpath = $config["env"]["paths"]["android-ndk"]
+    unless File.exists? $androidndkpath
+      puts "Missing or invalid 'android-ndk' section in rhobuild.yml"
+      exit 1
+    end
+    
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")

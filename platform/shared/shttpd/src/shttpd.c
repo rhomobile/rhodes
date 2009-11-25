@@ -1019,24 +1019,28 @@ read_stream(struct stream *stream)
 static void
 write_stream(struct stream *from, struct stream *to)
 {
-	int	n, len;
+    int	n, len;
 
-	len = io_data_len(&from->io);
-	assert(len > 0);
+    len = io_data_len(&from->io);
+    assert(len > 0);
 
-	/* TODO: should be assert on CAN_WRITE flag */
-	n = to->io_class->write(to, io_data(&from->io), len);
-	to->conn->expire_time = _shttpd_current_time + EXPIRE_TIME;
-	DBG(("write_stream (%d %s): written %d/%d bytes (errno %d)",
+    /* TODO: should be assert on CAN_WRITE flag */
+    n = to->io_class->write(to, io_data(&from->io), len);
+    to->conn->expire_time = _shttpd_current_time + EXPIRE_TIME;
+    DBG(("write_stream (%d %s): written %d/%d bytes (errno %d)",
 	    to->conn->rem.chan.sock,
-	    to->io_class ? to->io_class->name : "(null)", n, len, ERRNO));
+        to->io_class ? to->io_class->name : "(null)", n, len, n < 0 ? ERRNO : 0));
+	
+    if (n != len) {
+        DBG(("WARNING: n/len mismatch: %d/%d", n, len));
+    }
 
-	if (n > 0)
-		io_inc_tail(&from->io, n);
-	else if (n == -1 && (ERRNO == EINTR || ERRNO == EWOULDBLOCK))
-		n = n;	/* Ignore EINTR and EAGAIN */
-	else if (!(to->flags & FLAG_DONT_CLOSE))
-		_shttpd_stop_stream(to);
+    if (n > 0)
+        io_inc_tail(&from->io, n);
+    else if (n == -1 && (ERRNO == EINTR || ERRNO == EWOULDBLOCK))
+        n = n;	/* Ignore EINTR and EAGAIN */
+    else if (!(to->flags & FLAG_DONT_CLOSE))
+        _shttpd_stop_stream(to);
 }
 
 
@@ -1064,7 +1068,7 @@ connection_desctructor(struct llhead *lp)
 	 * Check the "Connection: " header before we free c->request
 	 * If it its 'keep-alive', then do not close the connection
 	 */
-  do_close = (c->ch.connection._v.v_vec.len >= vec.len &&
+    do_close = (c->ch.connection._v.v_vec.len >= vec.len &&
     !_shttpd_strncasecmp(vec.ptr,c->ch.connection._v.v_vec.ptr,vec.len)) ||
 	    (c->major_version < 1 ||
 	    (c->major_version >= 1 && c->minor_version < 1));
@@ -1088,13 +1092,13 @@ connection_desctructor(struct llhead *lp)
 		if (io_data_len(&c->rem.io) > 0)
 			process_connection(c, 0, 0);
 	} else {
-		if (c->rem.io_class != NULL)
-			c->rem.io_class->close(&c->rem);
-
 		LL_DEL(&c->link);
 		c->worker->num_conns--;
 		assert(c->worker->num_conns >= 0);
 
+		if (c->rem.io_class != NULL)
+			c->rem.io_class->close(&c->rem);
+		
 		free(c);
 	}
 }
