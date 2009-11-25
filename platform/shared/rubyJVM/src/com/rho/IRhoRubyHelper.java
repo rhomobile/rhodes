@@ -22,4 +22,5 @@ public interface IRhoRubyHelper {
 	
 	public void showLog();
 	
+	public String getLocale();
 }

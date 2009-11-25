@@ -1551,6 +1551,9 @@ extern VALUE rho_syscall(const char* callname, int nparams, char** param_names, 
 extern char* get_property(char* property);
 extern VALUE has_network();
 
+extern char* rho_sys_get_locale();
+#define get_locale rho_sys_get_locale
+
 
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
@@ -1791,6 +1794,22 @@ _wrap_has_network(int argc, VALUE *argv, VALUE self) {
   }
   result = (VALUE)has_network();
   vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_locale(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)get_locale();
+  vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
   return Qnil;
@@ -2066,5 +2085,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "syscall", _wrap_syscall, -1);
   rb_define_module_function(mSystem, "get_property", _wrap_get_property, -1);
   rb_define_module_function(mSystem, "has_network", _wrap_has_network, -1);
+  rb_define_module_function(mSystem, "get_locale", _wrap_get_locale, -1);
 }
 

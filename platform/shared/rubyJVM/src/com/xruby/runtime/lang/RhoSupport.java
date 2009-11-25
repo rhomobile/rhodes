@@ -47,6 +47,18 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return has_network(receiver);}
 		});
+		SystemModule.defineModuleMethod( "get_locale", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+				String strLocale = "";
+		    	try {
+		    		strLocale = RhoClassFactory.createRhoRubyHelper().getLocale();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				return ObjectFactory.createString(strLocale);
+			}
+		});
 
 		RubyRuntime.KernelModule.defineModuleMethod( "rho_get_app_property", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){

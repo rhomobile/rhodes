@@ -114,6 +114,8 @@ namespace "config" do
   task :bb => ["config:common"] do
     $config["platform"] = "bb"
 
+    $rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
+
     $bbver = $app_config["bbver"].to_s
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"

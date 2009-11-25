@@ -10,8 +10,37 @@ module Rho
   	NOBAR_TYPE = 2
   	
   	@@toolbar = []
-	
+
+    def init_locale
+        curLocale = System::get_locale()
+        puts 'Current locale: ' + curLocale.to_s
+        
+        begin
+            require 'rholang/lang_' + curLocale
+        rescue Exception => e
+            puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
+            require 'rholang/lang_en' unless curLocale == 'en'
+        end
+        
+        begin
+            require 'lang/lang_' + curLocale
+        rescue Exception => e
+            puts 'Could not load app resources for locale: ' + curLocale.to_s
+            if curLocale != 'en'
+                begin
+                    puts 'Load english resources.'
+                    require 'lang/lang_en' 
+                rescue Exception => e
+                end    
+            end    
+        end
+        
+        require 'rholang/localization_simplified'
+    end
+    	
     def initialize
+      init_locale()
+      
       unless @rhom
         @rhom = Rhom::Rhom.new
       end

@@ -203,7 +203,7 @@ module Rho
       res['headers'] = 
         {
         'Date' => make_httpdate(Time.now),#.httpdate,
-        'Content-Type' => 'text/html; charset=UTF-8',
+        'Content-Type' => 'text/html; charset=utf-8',
         'Content-Length' => 0,
         'Connection' => 'close' 
       }
