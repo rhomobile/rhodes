@@ -6,10 +6,13 @@ ext = ".erb"
 
 Find.find(dir) do |path| 
   if File.extname(path) == ext
-	rbText = ERB.new( IO.read(path) ).src
+    strFile = IO.read(path)
+    #strFile.force_encoding('utf-8')
+	rbText = ERB.new( strFile ).src
+	
 	newName = File.basename(path).sub('.erb','_erb.rb')
 	fName = File.join(File.dirname(path), newName)
-	frb = File.new(fName, "w")
+	frb = File.new(fName, "wb")
 	frb.write( rbText )
 	frb.close()
   end

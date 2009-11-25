@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
+import net.rim.device.api.i18n.Locale;
 import rhomobile.Alert;
 import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
@@ -55,6 +56,14 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		//TODO:
 	}
 
+	public String getLocale()
+	{
+    	Locale loc = Locale.getDefault();
+    	
+    	String lang = loc.getLanguage();
+		return lang;
+	}
+	
 	public boolean hasNetwork() {
 		/*if ((RadioInfo.getActiveWAFs() & RadioInfo.WAF_WLAN) != 0) {
 			if (CoverageInfo.isCoverageSufficient( CoverageInfo.COVERAGE_CARRIER,RadioInfo.WAF_WLAN, false) || 

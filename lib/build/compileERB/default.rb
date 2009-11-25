@@ -6,7 +6,9 @@ ext = ".erb"
 
 Find.find(dir) do |path| 
   if File.extname(path) == ext
-	rbText = ERB.new( IO.read(path) ).src
+    strFile = IO.read(path)
+    #strFile.force_encoding('utf-8')
+	rbText = ERB.new( strFile ).src
 	
 	#create iseq
 	
