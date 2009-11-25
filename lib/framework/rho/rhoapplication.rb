@@ -15,6 +15,13 @@ module Rho
         curLocale = System::get_locale()
         puts 'Current locale: ' + curLocale.to_s
         
+        #if File.exist?('rholang/lang_' + curLocale + '.iseq')
+        #    require 'rholang/lang_' + curLocale
+        #elsif curLocale != 'en'
+        #    puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
+        #
+        #    require 'rholang/lang_en'
+        #end
         begin
             require 'rholang/lang_' + curLocale
         rescue Exception => e
@@ -22,14 +29,15 @@ module Rho
             require 'rholang/lang_en' unless curLocale == 'en'
         end
         
+        langApp = get_app_path('app') + 'lang/lang_'
         begin
-            require 'lang/lang_' + curLocale
+            require langApp + curLocale if File.exist?(langApp + curLocale + '.iseq')
         rescue Exception => e
             puts 'Could not load app resources for locale: ' + curLocale.to_s
             if curLocale != 'en'
                 begin
                     puts 'Load english resources.'
-                    require 'lang/lang_en' 
+                    require langApp + '_en'  if File.exist?(langApp + '_en.iseq')
                 rescue Exception => e
                 end    
             end    
@@ -39,7 +47,7 @@ module Rho
     end
     	
     def initialize
-      init_locale()
+      #init_locale()
       
       unless @rhom
         @rhom = Rhom::Rhom.new
