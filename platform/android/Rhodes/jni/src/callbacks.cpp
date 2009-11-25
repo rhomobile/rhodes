@@ -81,3 +81,8 @@ RHO_GLOBAL void rho_nativethread_end(void *)
 {
     jvm()->DetachCurrentThread();
 }
+
+RHO_GLOBAL const char *rho_sys_get_locale()
+{
+	return "en";
+}
