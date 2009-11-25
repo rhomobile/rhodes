@@ -55,6 +55,10 @@ class Date
   def mon() @m_date.mon end
   def year() @m_date.year end
   def mday() @m_date.mday end
+  def offset() @m_date.gmt_offset end
+  def hour() @m_date.hour end
+  def min() @m_date.min end
+  def sec() @m_date.sec end
   
   def initialize( time )
     @m_date = time
@@ -71,6 +75,7 @@ class DateTimeME < Date
   def hour() @m_time.hour end
   def min() @m_time.min end
   def sec() @m_time.sec end
+  def offset() @m_time.gmt_offset end
   
   def initialize( time )
     @m_time = time

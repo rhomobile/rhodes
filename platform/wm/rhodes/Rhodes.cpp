@@ -244,6 +244,10 @@ extern "C" void rho_conf_show_log()
     _AtlModule.DoShowLog();
 }
 
+extern "C" char* rho_sys_get_locale()
+{
+    return "en";
+}
 
 //Hook for ruby call to refresh web view
 

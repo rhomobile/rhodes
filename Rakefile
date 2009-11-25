@@ -168,7 +168,9 @@ namespace "build" do
       startdir = pwd
       dest =  $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
-
+      compileERB = "lib/build/compileERB/bb.rb"
+      rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+      
       common_bundle_start(startdir,dest)
 
       if not $config["excludedirs"].nil?
@@ -187,18 +189,27 @@ namespace "build" do
       create_manifest
       
       #"compile ERB"
-      ext = ".erb"
-      Find.find($srcdir) do |path|
-        if File.extname(path) == ext
-          rbText = ERB.new( IO.read(path) ).src
-          newName = File.basename(path).sub('.erb','_erb.rb')
-          fName = File.join(File.dirname(path), newName)
-          frb = File.new(fName, "w")
-          frb.write( rbText )
-          frb.close()
-        end
+      #ext = ".erb"
+      #Find.find($srcdir) do |path|
+      #  if File.extname(path) == ext
+      #    rbText = ERB.new( IO.read(path) ).src
+      #    newName = File.basename(path).sub('.erb','_erb.rb')
+      #    fName = File.join(File.dirname(path), newName)
+      #    frb = File.new(fName, "w")
+      #    frb.write( rbText )
+      #    frb.close()
+      #  end
+      #end
+      cp   compileERB, $srcdir
+      puts "Running bb.rb"
+
+      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
+      unless $? == 0
+        puts "Error interpreting erb code"
+        exit 1
       end
 
+      rm "#{$srcdir}/bb.rb"
 
       chdir $bindir
       output = `java -jar "#{xruby}" -v -c RhoBundle 2>&1`

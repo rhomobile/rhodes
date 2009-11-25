@@ -5,6 +5,9 @@ extern VALUE rho_syscall(const char* callname, int nparams, char** param_names, 
 #define syscall rho_syscall
 extern char* get_property(char* property);
 extern VALUE has_network();
+
+extern char* rho_sys_get_locale();
+#define get_locale rho_sys_get_locale
 %}
 
 %typemap(in) (int nparams, char** param_names, char** param_values)
@@ -34,3 +37,4 @@ extern VALUE has_network();
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
 extern char* get_property(char* property);
 extern VALUE has_network();
+extern char* get_locale();
