@@ -386,7 +386,9 @@ class Rational < Numeric
   #   Rational(5,8).inspect     # -> "Rational(5, 8)"
   #
   def inspect
-    sprintf("Rational(%s, %s)", @numerator.inspect, @denominator.inspect)
+    #sprintf("Rational(%s, %s)", @numerator.inspect, @denominator.inspect)
+    #RHO
+    sprintf("(%s/%s)", @numerator.inspect, @denominator.inspect)
   end
 
   #
