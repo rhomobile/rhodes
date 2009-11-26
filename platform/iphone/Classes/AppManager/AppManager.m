@@ -193,7 +193,9 @@ const char* rho_native_rhopath()
 
 const char* rho_sys_get_locale() 
 {
-	return "en";
+	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
+	
+	return [preferredLang UTF8String];
 }
 
 const char* GetApplicationsRootPath() {
