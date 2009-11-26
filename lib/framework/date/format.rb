@@ -260,8 +260,6 @@ class Date
 	    f[:w] = w.to_i
       end
       
-      puts 'strftime:' + c.to_s if c
-      
       case c
           when 'A'; emit_ad(DAYNAMES[wday], 0, f)
           when 'a'; emit_ad(ABBR_DAYNAMES[wday], 0, f)
