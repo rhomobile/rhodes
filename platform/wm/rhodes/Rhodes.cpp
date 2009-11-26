@@ -3,6 +3,8 @@
 #include "MainWindow.h"
 
 #include "common/RhodesApp.h"
+#include "common/StringConverter.h"
+
 //#include "ServerHost.h"
 //#include "logging/RhoLog.h"
 
@@ -213,10 +215,21 @@ public :
         return m_strRootPath; 
     }
 
+    const char* getCurrentLocale()
+    {
+        wchar_t szLang[20];
+        int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME , szLang, 20);
+        szLang[2] = 0;
+        wcslwr(szLang);
+
+        m_strLocale = rho::common::convertToStringA(szLang);
+        return m_strLocale.c_str();
+    }
+
 private:
     CMainWindow m_appWindow;
     //CServerHost* m_pServerHost;
-    rho::String m_strRootPath;
+    rho::String m_strRootPath, m_strLocale;
 	int m_nRestarting;
 };
 
@@ -246,7 +259,7 @@ extern "C" void rho_conf_show_log()
 
 extern "C" char* rho_sys_get_locale()
 {
-    return "en";
+    return const_cast<char*>(_AtlModule.getCurrentLocale());
 }
 
 //Hook for ruby call to refresh web view
