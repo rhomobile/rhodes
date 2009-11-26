@@ -200,9 +200,13 @@ class Array
 #    end
 	
     def join(sepString="")
-        return to_s if sepString.nil? || sepString == ""
+        #return to_s if sepString.nil? || sepString == ""
 		
         result = ""
+        return result if length==0
+        
+        sepString = "" if sepString.nil?
+        
         (length - 1).times do |index|
             result += (self[index].to_s) + sepString
         end

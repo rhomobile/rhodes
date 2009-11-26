@@ -505,3 +505,34 @@ class Time
   end
   alias iso8601 xmlschema
 end
+
+#RHO
+require 'rholang/localization_simplified'
+# Modification of default Time format using Time.to_formatted_s(:default)
+# Localizes the hash with the formats  :default, :short, :long
+# Usage:
+# <% t = Time.parse('2006-12-25 13:55') %>
+# <%= t.to_formatted_s(:short) #=> outputs time in localized format %>
+# <%= t                        #=> outputs time in localized format %>
+class Time
+  alias_method :old_strftime, :strftime
+  # Pre-translate format of Time before the time string is translated by strftime.
+  # The <tt>:default</tt> time format is changed by localizing month and daynames.
+  # Also Rails ActiveSupport allow us to modify the <tt>:default</tt> timeformatting string.
+  # Originally, its <tt>:default  => "%a, %d %b %Y %H:%M:%S %z"</tt> (RFC2822 names), but as it can be
+  # modified in this plugin, and we can end up with a different file format in logfiles, etc
+  def strftime(date)
+    tmpdate=date.dup
+    LocalizationSimplified::localize_strftime(tmpdate, self)
+    old_strftime(tmpdate)
+  end
+
+  DATE_FORMATS	=	{ :db => "%Y-%m-%d %H:%M:%S", :number => "%Y%m%d%H%M%S", :time => "%H:%M", :short => "%d %b %H:%M", :long => "%B %d, %Y %H:%M"  }
+  #, :long_ordinal => lambda { |time| time.strftime("%B #{time.day.ordinalize}, %Y %H:%M") }, :rfc822 => lambda { |time| time.strftime("%a, %d %b %Y %H:%M:%S #{time.formatted_offset(false)}") }  
+  DATE_FORMATS.merge!(LocalizationSimplified::DateHelper::TimeFormats)  
+  
+  def to_formatted_s(type)
+    strftime(DATE_FORMATS[type])
+  end
+end
+
