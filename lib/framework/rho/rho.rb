@@ -216,7 +216,7 @@ module Rho
     CRLF = "\x0d\x0a"
     
     def send_response(res)
-      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].length : 0
+      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].bytesize : 0
       data = "HTTP/1.1 #{res['status'].to_s} #{res['message']}" + CRLF
       res['headers'].each{|key, value|
         tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
@@ -238,7 +238,7 @@ module Rho
 
     def send_response_hash(res)
       resp = Hash.new
-      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].length : 0
+      res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].bytesize : 0
       res['headers'].each{|key, value|
           tmp = key.gsub(/\bwww|^te$|\b\w/){|s| s.upcase }
           resp[tmp] = value
