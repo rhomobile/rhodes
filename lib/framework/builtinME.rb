@@ -336,6 +336,11 @@ class Hash
         each {|k, v| return k if value == v }
         return nil
     end
+    
+    def replace(other)
+        clear
+        update other
+    end
 end
 
 class Symbol
