@@ -66,6 +66,8 @@
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
 		BD2CEFCF10ADF10D002356D9 /* CURLNetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2CEFCC10ADF10D002356D9 /* CURLNetRequest.h */; };
 		BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2CEFCD10ADF10D002356D9 /* INetRequest.h */; };
+		BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */; };
+		BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */ = {isa = PBXBuildFile; fileRef = BD4FC54A10BFE4D100D280D0 /* HttpServer.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -128,6 +130,8 @@
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
 		BD2CEFCC10ADF10D002356D9 /* CURLNetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CURLNetRequest.h; path = ../../shared/net/CURLNetRequest.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCD10ADF10D002356D9 /* INetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INetRequest.h; path = ../../shared/net/INetRequest.h; sourceTree = SOURCE_ROOT; };
+		BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpServer.cpp; path = ../../shared/net/HttpServer.cpp; sourceTree = SOURCE_ROOT; };
+		BD4FC54A10BFE4D100D280D0 /* HttpServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpServer.h; path = ../../shared/net/HttpServer.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -257,6 +261,8 @@
 		5CBD46251087397B00107D0D /* net */ = {
 			isa = PBXGroup;
 			children = (
+				BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */,
+				BD4FC54A10BFE4D100D280D0 /* HttpServer.h */,
 				BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */,
 				BD2CEFCC10ADF10D002356D9 /* CURLNetRequest.h */,
 				BD2CEFCD10ADF10D002356D9 /* INetRequest.h */,
@@ -315,6 +321,7 @@
 				BD2CEFCF10ADF10D002356D9 /* CURLNetRequest.h in Headers */,
 				BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */,
 				BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */,
+				BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,6 +391,7 @@
 				5C7BC95310AAB782007B0BA1 /* string.c in Sources */,
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
+				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

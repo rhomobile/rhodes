@@ -54,7 +54,9 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     m_strRhoRootPath = strRootPath;
     m_bExit = false;
 
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     m_shttpdCtx = 0;
+#endif
 
     m_ptrFactory = createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
@@ -78,7 +80,11 @@ void CRhodesApp::startApp()
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     initHttpServer();
+#else
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()));
+#endif
     RhoRubyStart();
 
     LOG(INFO) + "Starting sync engine...";
@@ -93,6 +99,7 @@ void CRhodesApp::run()
     LOG(INFO) + "navigate to first start url";
     navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
 
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     while(!m_bExit)
     {
         shttpd_poll( m_shttpdCtx, 100000 );
@@ -102,13 +109,20 @@ void CRhodesApp::run()
   //CGPSController::CheckTimeout();
 //#endif
     }
+#else
+    m_httpServer->run();
+#endif
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
     RhoRubyStop();
     rho_sync_destroy();
 
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     shttpd_fini(m_shttpdCtx);
+#else
+    // TODO:
+#endif
 
 //#if defined(OS_WINCE)
 //    CGPSController* pGPS = CGPSController::Instance();
@@ -257,24 +271,26 @@ static void callback_AppManager_load(struct shttpd_arg *arg)
     rho_appmanager_load( arg, shttpd_get_env(arg,"QUERY_STRING") );
 }
 
+#if !defined(RHO_HTTPD_COMMON_IMPL)
 void CRhodesApp::initHttpServer()
 {
-  LOG(INFO) + "Init http server";
-  m_shttpdCtx = shttpd_init(0,NULL);
+    LOG(INFO) + "Init http server";
+    m_shttpdCtx = shttpd_init(0,NULL);
 
-  String strAppRootPath = getRhoRootPath() + "apps";
+    String strAppRootPath = getRhoRootPath() + "apps";
 
-  shttpd_set_option(m_shttpdCtx, "root", strAppRootPath.c_str());
-  shttpd_set_option(m_shttpdCtx, "ports", getFreeListeningPort());
+    shttpd_set_option(m_shttpdCtx, "root", strAppRootPath.c_str());
+    shttpd_set_option(m_shttpdCtx, "ports", getFreeListeningPort());
 
-  //shttpd_register_uri(m_shttpdCtx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
-  shttpd_register_uri(m_shttpdCtx, "/system/geolocation", callback_geolocation, this);
-  shttpd_register_uri(m_shttpdCtx, "/system/syncdb", callback_syncdb, this);
-  shttpd_register_uri(m_shttpdCtx, "/system/redirect_to", callback_redirect_to, this);
-  shttpd_register_uri(m_shttpdCtx, "/system/map", callback_map, this);
-  shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
-  shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
+    //shttpd_register_uri(m_shttpdCtx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
+    shttpd_register_uri(m_shttpdCtx, "/system/geolocation", callback_geolocation, this);
+    shttpd_register_uri(m_shttpdCtx, "/system/syncdb", callback_syncdb, this);
+    shttpd_register_uri(m_shttpdCtx, "/system/redirect_to", callback_redirect_to, this);
+    shttpd_register_uri(m_shttpdCtx, "/system/map", callback_map, this);
+    shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
+    shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
 }
+#endif
 
 const char* CRhodesApp::getFreeListeningPort()
 {
