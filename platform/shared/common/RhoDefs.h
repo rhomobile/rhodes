@@ -32,6 +32,9 @@
     abort(); \
   } while( __LINE__ != -1 )
 
+#define RHO_USE_OWN_HTTPD
+#define RHO_HTTPD_COMMON_IMPL
+
 #ifdef OS_MACOSX
 #include <TargetConditionals.h>
 #endif //OS_MACOSX

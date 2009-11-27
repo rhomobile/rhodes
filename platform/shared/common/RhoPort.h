@@ -23,18 +23,20 @@ typedef unsigned __int64 uint64;
 // Needed for va_list on Android
 #    include <stdarg.h>
 #    include <sys/select.h>
-#    include <sys/types.h>
-#    include <sys/socket.h>
-#    include <netinet/in.h>
-#    include <unistd.h>
 #  else
 #    include <wchar.h>
 #  endif // OS_ANDROID
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <unistd.h>
+#  include <errno.h>
 #  if defined(OS_MACOSX)
 #    include <sys/time.h>
 #  endif
-#include <stdlib.h>
-#include <pthread.h>
+#  include <stdlib.h>
+#  include <pthread.h>
+#  include <fcntl.h>
 
 #undef ASSERT
 #define ASSERT RHO_ASSERT

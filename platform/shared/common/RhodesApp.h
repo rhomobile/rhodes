@@ -6,6 +6,9 @@
 #include "common/RhoThread.h"
 #include "net/INetRequest.h"
 #include "common/IRhoClassFactory.h"
+#if defined(RHO_HTTPD_COMMON_IMPL)
+#include "net/HttpServer.h"
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -29,7 +32,11 @@ private:
     common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     struct shttpd_ctx * m_shttpdCtx;
+#else
+    common::CAutoPtr<net::CHttpServer> m_httpServer;
+#endif
     String m_strRhoRootPath, m_strLoadingPagePath, m_strBlobsDirPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl, m_strFirstStartUrl;
 
@@ -73,7 +80,9 @@ public:
 private:
     virtual void run();
 
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     void initHttpServer();
+#endif
     void initAppUrls();
 
     const char* getFreeListeningPort();
