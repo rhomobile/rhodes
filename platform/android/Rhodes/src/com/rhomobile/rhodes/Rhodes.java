@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
@@ -620,6 +621,13 @@ public class Rhodes extends Activity {
 	
 	public static void showNetworkIndicator(boolean v) {
 		// TODO:
+	}
+	
+	public static String getCurrentLocale() {
+		String locale = Locale.getDefault().getLanguage();
+		if (locale.length() == 0)
+			locale = "en";
+		return locale;
 	}
 	
 	private void saveCurrentLocation(String url) {

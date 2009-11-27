@@ -7,6 +7,8 @@
 
 extern "C" void webview_navigate(char* url, int index);
 
+static rho::String g_currentLocale;
+
 namespace rho
 {
 namespace common
@@ -84,5 +86,18 @@ RHO_GLOBAL void rho_nativethread_end(void *)
 
 RHO_GLOBAL const char *rho_sys_get_locale()
 {
-	return "en";
+	if (g_currentLocale.empty())
+	{
+		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+		if (!cls) return NULL;
+		jmethodID mid = getJNIClassStaticMethod(cls, "getCurrentLocale", "()Ljava/lang/String;");
+		if (!mid) return NULL;
+		JNIEnv *env = jnienv();
+		jstring objLocale = (jstring)env->CallStaticObjectMethod(cls, mid);
+		if (!objLocale) return NULL;
+		const char *s = env->GetStringUTFChars(objLocale, JNI_FALSE);
+		g_currentLocale = s;
+		env->ReleaseStringUTFChars(objLocale, s);
+	}
+	return g_currentLocale.c_str();
 }
