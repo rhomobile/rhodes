@@ -117,9 +117,10 @@ void CSyncSource::sync()
         syncServerChanges();
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
+
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-                         endTime.toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
 }
 
 boolean CSyncSource::isPendingClientChanges()

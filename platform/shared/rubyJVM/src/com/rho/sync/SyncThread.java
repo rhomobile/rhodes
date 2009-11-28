@@ -181,7 +181,7 @@ public class SyncThread extends RhoThread
     int getLastSyncInterval()
     {
     	try{
-	    	TimeInterval nowTime = TimeInterval.getCurrentTime();
+	    	long nowTime = (TimeInterval.getCurrentTime().toULong())/1000;
 	    	
 		    IDBResult res = m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources");
 		    long latestTimeUpdated = 0;
@@ -192,7 +192,7 @@ public class SyncThread extends RhoThread
 		        	latestTimeUpdated = timeUpdated;
 		    }
 	    	
-	    	return latestTimeUpdated > 0 ? (int)(nowTime.toULong()-latestTimeUpdated) : 0;
+	    	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
     	}catch(Exception exc)
     	{
     		LOG.ERROR("isStartSyncNow failed.", exc);
@@ -210,7 +210,7 @@ public class SyncThread extends RhoThread
 	        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
 
 	        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
-	            nWait = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+	            nWait = m_nPollInterval - nLastSyncInterval;
 
 	        synchronized(m_mxStackCommands)
 	        {
