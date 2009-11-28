@@ -19,7 +19,7 @@ module Rhom
       end
       @source_id = args['source_id'].to_i
       @source_url = args['source_url']
-      @last_updated = Time.at(args['last_updated'].to_i).to_s
+      @last_updated = Time.at(args['last_updated'].to_i)
       @last_inserted_size = args['last_inserted_size'].to_i
       @last_deleted_size = args['last_deleted_size'].to_i
       @last_sync_duration = args['last_sync_duration'].to_i
@@ -57,6 +57,7 @@ module Rhom
         else
           result = ::Rhom::RhomDbAdapter::select_from_table('sources', '*', 
                                                             {"source_id" => strip_braces(args.first)}).first
+          puts 'result: ' + result.inspect
           list << RhomSource.new(result)
         end
         list.size > 1 ? list : list[0]

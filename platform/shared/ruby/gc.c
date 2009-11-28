@@ -25,8 +25,10 @@
 
 //RHO
 int rhoRubyFPrintf(FILE *, const char *, ...);
+int rhoRubyPrintf(const char *, ...);
 #ifndef USE_STD_PRINTF
 #define fprintf rhoRubyFPrintf
+#define printf rhoRubyPrintf
 #endif
 
 static VALUE gc_profile_result(void);
@@ -393,15 +395,15 @@ rb_objspace_alloc(void)
 /* 128KB */
 /*#define HEAP_SIZE 0x20000 */
 /* 64KB */
-/*#define HEAP_SIZE 0x10000 */
+//#define HEAP_SIZE 0x10000
 /* 16KB */
-#define HEAP_SIZE 0x4000
+//#define HEAP_SIZE 0x4000
 /* 8KB */
 /*#define HEAP_SIZE 0x2000 */
 /* 4KB */
 /*#define HEAP_SIZE 0x1000 */
 /* 2KB */
-/*#define HEAP_SIZE 0x800 */
+#define HEAP_SIZE 0x800
 
 #define HEAP_OBJ_LIMIT (HEAP_SIZE / sizeof(struct RVALUE))
 
@@ -2005,8 +2007,6 @@ garbage_collect(rb_objspace_t *objspace)
     rb_thread_t *th = GET_THREAD();
     INIT_GC_PROF_PARAMS;
 
-    if (GC_NOTIFY) printf("start garbage_collect()\n");
-
     if (!heaps) {
 	return Qfalse;
     }
@@ -2022,6 +2022,8 @@ garbage_collect(rb_objspace_t *objspace)
     }
     during_gc++;
     objspace->count++;
+
+    if (GC_NOTIFY) printf("start garbage_collect()\n");
 
     /*for ( i = 0; i < 100000; i++ )
     {

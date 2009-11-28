@@ -76,7 +76,7 @@ void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
 
 int CSyncThread::getLastSyncInterval()
 {
-    CTimeInterval nowTime = CTimeInterval::getCurrentTime();
+    uint64 nowTime = CLocalTime().toULong();
 	
     DBResult( res, m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources") );
     uint64 latestTimeUpdated = 0;
@@ -87,7 +87,7 @@ int CSyncThread::getLastSyncInterval()
         	latestTimeUpdated = timeUpdated;
     }
 	
-	return latestTimeUpdated > 0 ? (int)(nowTime.toULong()-latestTimeUpdated) : 0;
+	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
 }
 
 void CSyncThread::run()
@@ -101,7 +101,7 @@ void CSyncThread::run()
 
         if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
         {
-            int nWait2 = (m_nPollInterval*1000 - nLastSyncInterval)/1000;
+            int nWait2 = m_nPollInterval - nLastSyncInterval;
             if ( nWait2 <= 0 )
                 nWait = SYNC_STARTUP_INTERVAL_SECONDS;
             else

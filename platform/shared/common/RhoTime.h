@@ -20,6 +20,11 @@ public:
         time( &m_nativeTime );
     }
 
+    unsigned long toULong()
+    {
+        return m_nativeTime;
+    }
+
 protected:
     time_t m_nativeTime;
 
