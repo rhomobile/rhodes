@@ -1634,7 +1634,7 @@ static int set_elog(struct shttpd_ctx *ctx, const char *path) {
 	return (open_log_file(&ctx->error_log, path));
 }
 
-static void show_cfg_page(struct shttpd_arg *arg);
+static void show_cfg_page(void *arg);
 
 static int
 set_cfg_uri(struct shttpd_ctx *ctx, const char *uri)
@@ -1817,8 +1817,9 @@ const char* shttpd_get_index_names(struct shttpd_ctx *ctx) {
 }
 
 static void
-show_cfg_page(struct shttpd_arg *arg)
+show_cfg_page(void *a)
 {
+    struct shttpd_arg *arg = (struct shttpd_arg *)a;
 	struct shttpd_ctx	*ctx = arg->user_data;
 	char			opt_name[20], value[BUFSIZ];
 	const struct opt	*o;
