@@ -38,28 +38,59 @@ class CHttpServer
         {}
     };
     
+    typedef Vector<Header> HeaderList;
+    typedef Vector<char> ByteVector;
+    
+    struct Route
+    {
+        String application;
+        String model;
+        String id;
+        String action;
+    };
+    
 public:
-    CHttpServer(int port);
+    typedef void (*callback_t)(void *);
+    
+public:
+    CHttpServer(int port, String const &root);
     ~CHttpServer();
+    
+    void register_uri(String const &uri, callback_t const &callback);
     
     bool run();
     
 private:
     bool process(SOCKET sock);
-    bool parse_request(Vector<char> &request, String &method, String &uri,
-                       Vector<Header> &headers, String &body);
+    bool parse_request(ByteVector &request, String &method, String &uri,
+                       HeaderList &headers, String &body);
     bool parse_startline(String const &line, String &method, String &uri);
     bool parse_header(String const &line, Header &hdr);
+    bool parse_route(String const &uri, Route &route);
     
-    bool receive_request(SOCKET sock, Vector<char> &request);
+    bool receive_request(SOCKET sock, ByteVector &request);
     bool send_response(SOCKET sock, String const &response);
     
     String create_response(String const &reason);
-    String create_response(String const &reason, Vector<Header> const &headers);
+    String create_response(String const &reason, HeaderList const &headers);
+    String create_response(String const &reason, String const &body);
+    String create_response(String const &reason, HeaderList const &headers, String const &body);
+    
+    bool decide(SOCKET sock, String const &method, String const &uri,
+                HeaderList const &headers, String const &body);
+    
+    bool dispatch(String const &uri);
+    bool isindex(String const &uri);
+    
+    bool send_file(SOCKET sock, String const &path);
+    
+    callback_t registered(String const &uri);
     
 private:
     int m_port;
+    String m_root;
     SOCKET m_listener;
+    std::map<String, callback_t> m_registered;
 };
 
 } // namespace net
