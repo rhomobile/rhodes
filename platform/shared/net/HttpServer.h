@@ -30,6 +30,14 @@ struct HttpHeader
     HttpHeader(String const &n, String const &v)
         :name(n), value(v)
     {}
+    
+    HttpHeader(String const &n, int v)
+        :name(n)
+    {
+        char buf[30];
+        snprintf(buf, sizeof(buf), "%d", v);
+        value = buf;
+    }
 };
 
 typedef Vector<HttpHeader> HttpHeaderList;
@@ -54,7 +62,7 @@ class CHttpServer
     };
     
 public:
-    typedef void (*callback_t)(void *);
+    typedef void (*callback_t)(void *arg, String const &query);
     
 public:
     CHttpServer(int port, String const &root);
@@ -64,6 +72,13 @@ public:
     
     bool run();
     
+    bool send_response(String const &response);
+    
+    String create_response(String const &reason);
+    String create_response(String const &reason, HeaderList const &headers);
+    String create_response(String const &reason, String const &body);
+    String create_response(String const &reason, HeaderList const &headers, String const &body);
+    
 private:
     bool process(SOCKET sock);
     bool parse_request(ByteVector &request, String &method, String &uri,
@@ -72,23 +87,14 @@ private:
     bool parse_header(String const &line, Header &hdr);
     bool parse_route(String const &uri, Route &route);
     
-    bool receive_request(SOCKET sock, ByteVector &request);
-    bool send_response(SOCKET sock, String const &response);
+    bool receive_request(ByteVector &request);
     
-    String create_response(String const &reason);
-    String create_response(String const &reason, HeaderList const &headers);
-    String create_response(String const &reason, String const &body);
-    String create_response(String const &reason, HeaderList const &headers, String const &body);
-    
-    bool decide(SOCKET sock, String const &method, String const &uri,
+    bool decide(String const &method, String const &uri,
                 String const &query, HeaderList const &headers, String const &body);
     
     bool dispatch(String const &uri, Route &route);
     
-    bool isknowntype(String const &uri);
-    bool isindex(String const &uri);
-    
-    bool send_file(SOCKET sock, String const &path);
+    bool send_file(String const &path);
     
     callback_t registered(String const &uri);
     
@@ -96,6 +102,7 @@ private:
     int m_port;
     String m_root;
     SOCKET m_listener;
+    SOCKET m_sock;
     std::map<String, callback_t> m_registered;
 };
 
