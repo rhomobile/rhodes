@@ -1,4 +1,5 @@
 #include "net/HttpServer.h"
+#include "common/RhodesApp.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
@@ -10,8 +11,8 @@ namespace net
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
-CHttpServer::CHttpServer(int port)
-    :m_port(port)
+CHttpServer::CHttpServer(int port, String const &root)
+    :m_port(port), m_root(root)
 {
     RAWTRACE("Open listening socket...");
     
@@ -51,6 +52,19 @@ CHttpServer::~CHttpServer()
     closesocket(m_listener);
 }
 
+void CHttpServer::register_uri(String const &uri, CHttpServer::callback_t const &callback)
+{
+    m_registered[uri] = callback;
+}
+
+CHttpServer::callback_t CHttpServer::registered(String const &uri)
+{
+    std::map<String, callback_t>::const_iterator it = m_registered.find(uri);
+    if (it == m_registered.end())
+        return (callback_t)0;
+    return it->second;
+}
+
 bool CHttpServer::run()
 {
     if (m_listener == INVALID_SOCKET)
@@ -77,7 +91,7 @@ bool CHttpServer::run()
     return true;
 }
 
-bool CHttpServer::receive_request(SOCKET sock, Vector<char> &request)
+bool CHttpServer::receive_request(SOCKET sock, ByteVector &request)
 {
     request.clear();
 
@@ -161,22 +175,33 @@ bool CHttpServer::send_response(SOCKET sock, String const &response)
 
 String CHttpServer::create_response(String const &reason)
 {
+    return create_response(reason, "");
+}
+
+String CHttpServer::create_response(String const &reason, HeaderList const &headers)
+{
+    return create_response(reason, headers, "");
+}
+
+String CHttpServer::create_response(String const &reason, String const &body)
+{
     char buf[50];
     snprintf(buf, sizeof(buf), "%d", m_port);
     
-    Vector<Header> headers;
+    HeaderList headers;
     headers.push_back(Header("Host", String("localhost:") + buf));
     headers.push_back(Header("Connection", "close"));
-    return create_response(reason, headers);
+    
+    return create_response(reason, headers, body);
 }
 
-String CHttpServer::create_response(String const &reason, Vector<Header> const &headers)
+String CHttpServer::create_response(String const &reason, HeaderList const &headers, String const &body)
 {
     String response = "HTTP/1.1 ";
     response += reason;
     response += "\r\n";
     
-    for(Vector<Header>::const_iterator it = headers.begin(), lim = headers.end();
+    for(HeaderList::const_iterator it = headers.begin(), lim = headers.end();
         it != lim; ++it) {
         response += it->name;
         response += ": ";
@@ -186,20 +211,22 @@ String CHttpServer::create_response(String const &reason, Vector<Header> const &
     
     response += "\r\n";
     
+    response += body;
+    
     return response;
 }
 
 bool CHttpServer::process(SOCKET sock)
 {
     // Read request from socket
-    Vector<char> request;
+    ByteVector request;
     if (!receive_request(sock, request))
         return false;
     
     RAWTRACE("Parsing request...");
     String method;
     String uri;
-    Vector<Header> headers;
+    HeaderList headers;
     String body;
     if (!parse_request(request, method, uri, headers, body)) {
         RAWLOG_ERROR("Parsing error");
@@ -207,15 +234,11 @@ bool CHttpServer::process(SOCKET sock)
         return false;
     }
     
-    // TODO:
-    
-    
-    
-    return true;
+    return decide(sock, method, uri, headers, body);
 }
 
-bool CHttpServer::parse_request(Vector<char> &request, String &method, String &uri,
-                                Vector<Header> &headers, String &body)
+bool CHttpServer::parse_request(ByteVector &request, String &method, String &uri,
+                                HeaderList &headers, String &body)
 {
     method.clear();
     uri.clear();
@@ -249,7 +272,7 @@ bool CHttpServer::parse_request(Vector<char> &request, String &method, String &u
         else {
             // Stop parsing
             body = s;
-            return false;
+            return true;
         }
     }
 }
@@ -290,6 +313,112 @@ bool CHttpServer::parse_header(String const &line, Header &hdr)
     
     hdr.value = s;
     return true;
+}
+
+bool CHttpServer::parse_route(String const &line, Route &route)
+{
+    return false;
+}
+
+struct static_string
+{
+    const char *s;
+    size_t len;
+};
+
+bool CHttpServer::dispatch(String const &uri)
+{
+    static static_string ignored_exts[] = {
+        {"css", 3},
+        {"js", 2},
+        {"html", 4},
+        {"htm", 3},
+        {"png", 3},
+        {"bmp", 3},
+        {"jpg", 3}
+    };
+    
+    bool ignore = false;
+    for (size_t i = 0, lim = sizeof(ignored_exts)/sizeof(ignored_exts[0]); i != lim; ++i) {
+        size_t pos = uri.find(ignored_exts[i].s);
+        if (pos == String::npos)
+            continue;
+        
+        if (pos + ignored_exts[i].len != uri.size())
+            continue;
+        
+        ignore = true;
+        break;
+    }
+    
+    if (ignore)
+        return false;
+    
+    // Trying to parse route
+    Route route;
+    if (!parse_route(uri, route))
+        return false;
+    
+    return true;
+}
+
+bool CHttpServer::isindex(String const &uri)
+{
+    static static_string index_files[] = {
+        {"index_erb.iseq", 14},
+        {"index.html", 10},
+        {"index.htm", 9},
+        {"index.php", 9},
+        {"index.cgi", 9}
+    };
+    
+    for (size_t i = 0, lim = sizeof(index_files)/sizeof(index_files[0]); i != lim; ++i) {
+        size_t pos = uri.find(index_files[i].s);
+        if (pos == String::npos)
+            continue;
+        
+        if (pos + index_files[i].len != uri.size())
+            continue;
+        
+        return true;
+    }
+    
+    return false;
+}
+
+bool CHttpServer::send_file(SOCKET sock, String const &path)
+{
+    // TODO:
+    static const char *resp = "<html><title>TEST</title><body><h1>This is test</h1></body></html>";
+    send_response(sock, create_response("200 OK", resp));
+    return true;
+}
+
+bool CHttpServer::decide(SOCKET sock, String const &method, String const &uri,
+                         HeaderList const &headers, String const &body)
+{
+    callback_t callback = registered(uri);
+    if (callback) {
+        // TODO: Call this callback
+        return true;
+    }
+    
+    if (dispatch(uri)) {
+        if (method == "GET")
+            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+        // TODO: Call rho_serve
+        return true;
+    }
+    
+    if (isindex(uri)) {
+        if (method == "GET")
+            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+        // TODO: call rho_serve_index
+        return true;
+    }
+    
+    // Try to send requested file
+    return send_file(sock, uri);
 }
 
 } // namespace net

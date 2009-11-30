@@ -80,11 +80,7 @@ void CRhodesApp::startApp()
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
-#if !defined(RHO_HTTPD_COMMON_IMPL)
     initHttpServer();
-#else
-    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()));
-#endif
     RhoRubyStart();
 
     LOG(INFO) + "Starting sync engine...";
@@ -214,7 +210,7 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
-static void callback_geolocation(struct shttpd_arg *arg) 
+static void callback_geolocation(void *arg) 
 {
     if (!geo_known_position())
     {
@@ -235,15 +231,15 @@ static void callback_geolocation(struct shttpd_arg *arg)
     rho_http_sendresponse(arg, location);
 }
 
-static void callback_syncdb(struct shttpd_arg *arg) 
+static void callback_syncdb(void *arg) 
 {
     rho_sync_doSyncAllSources(1);
     rho_http_sendresponse(arg, "");
 }
 
-static void callback_redirect_to(struct shttpd_arg *arg) 
+static void callback_redirect_to(void *arg) 
 {
-    String strQuery = shttpd_get_env(arg,"QUERY_STRING");
+    String strQuery = shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING");
     size_t nUrl = strQuery.find_first_of("url=");
     String strUrl;
     if ( nUrl != String::npos )
@@ -255,29 +251,29 @@ static void callback_redirect_to(struct shttpd_arg *arg)
     rho_http_redirect(arg,strUrl.c_str());
 }
 
-static void callback_map(struct shttpd_arg *arg) 
+static void callback_map(void *arg) 
 {
-    rho_map_location( const_cast<char*>(shttpd_get_env(arg,"QUERY_STRING")) );
+    rho_map_location( const_cast<char*>(shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING")) );
     rho_http_sendresponse(arg, "");
 }
 
-static void callback_shared(struct shttpd_arg *arg) 
+static void callback_shared(void *arg) 
 {
     rho_http_senderror(arg, 404, "Not Found");
 }
 
-static void callback_AppManager_load(struct shttpd_arg *arg) 
+static void callback_AppManager_load(void *arg) 
 {
-    rho_appmanager_load( arg, shttpd_get_env(arg,"QUERY_STRING") );
+    rho_appmanager_load( arg, shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING") );
 }
 
-#if !defined(RHO_HTTPD_COMMON_IMPL)
 void CRhodesApp::initHttpServer()
 {
+    String strAppRootPath = getRhoRootPath() + "apps";
+    
+#if !defined(RHO_HTTPD_COMMON_IMPL)
     LOG(INFO) + "Init http server";
     m_shttpdCtx = shttpd_init(0,NULL);
-
-    String strAppRootPath = getRhoRootPath() + "apps";
 
     shttpd_set_option(m_shttpdCtx, "root", strAppRootPath.c_str());
     shttpd_set_option(m_shttpdCtx, "ports", getFreeListeningPort());
@@ -289,8 +285,17 @@ void CRhodesApp::initHttpServer()
     shttpd_register_uri(m_shttpdCtx, "/system/map", callback_map, this);
     shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
     shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
-}
+#else
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
+    // TODO: imlement callbacks
+    //m_httpServer->register_uri("/system/geolocation", callback_geolocation);
+    //m_httpServer->register_uri("/system/syncdb", callback_syncdb);
+    //m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
+    //m_httpServer->register_uri("/system/map", callback_map);
+    //m_httpServer->register_uri("/system/shared", callback_shared);
+    //m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
 #endif
+}
 
 const char* CRhodesApp::getFreeListeningPort()
 {

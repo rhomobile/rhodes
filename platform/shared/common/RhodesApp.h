@@ -80,9 +80,7 @@ public:
 private:
     virtual void run();
 
-#if !defined(RHO_HTTPD_COMMON_IMPL)
     void initHttpServer();
-#endif
     void initAppUrls();
 
     const char* getFreeListeningPort();
