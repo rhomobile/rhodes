@@ -71,7 +71,7 @@ klass.defineMethod( "==", new RubyOneArgMethod(){
 });
 klass.defineMethod( "delete", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-		return ((RubyHash)receiver).delete(arg);}
+		return ((RubyHash)receiver).delete(arg, block);}
 });
 klass.defineMethod( "default=", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
@@ -92,6 +92,10 @@ klass.defineMethod( "[]=", new RubyTwoArgMethod(){
 klass.getSingletonClass().defineMethod( "[]", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyHash.create(args);}
+});
+klass.defineMethod( "clear", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyHash)receiver).clear();}
 });
 
 klass.defineMethod( "initialize", new RubyVarArgMethod(){ 

@@ -283,17 +283,22 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     private boolean m_bOpenLink = false;
+    private String m_strGetLink;
     boolean openLink(){
     	LOG.INFO("openLink");
     	try{
     		m_bOpenLink = true;
+            if (m_strGetLink==null)
+            	m_strGetLink = RhoRuby.getMessageText("get_link_menu");
+    		
 	    	Menu menu = _mainScreen.getMenu(0);
 	        int size = menu.getSize();
 	        for(int i=0; i<size; i++)
 	        {
 	            MenuItem item = menu.getItem(i);
 	            String label = item.toString();
-	            if(label.equalsIgnoreCase("Get Link")) //TODO: catch by ID?
+	            
+	            if(label.equalsIgnoreCase(m_strGetLink)) //TODO: catch by ID?
 	            {
 	              item.run();
 	              return true;
@@ -550,12 +555,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				
 	}
 	
-	public void createStatusPopup() {
-		_lastStatusMessage = null;
+	public void createStatusPopup(String status) {
+		_lastStatusMessage = status;
 		invokeLater( new Runnable() {
 			public void run() {
 				if (_syncStatusPopup == null) {
-					SyncStatusPopup popup = new SyncStatusPopup();
+					SyncStatusPopup popup = new SyncStatusPopup(_lastStatusMessage);
 					RhodesApplication.getInstance().setSyncStatusPopup(popup);
 					pushScreen(popup);
 				}
@@ -565,13 +570,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	static class SyncStatusPopup extends PopupScreen {
 		LabelField _labelStatus;
-	    public SyncStatusPopup() {
+	    public SyncStatusPopup(String status) {
 	        super( new VerticalFieldManager( Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR) );
 			
-	        add(_labelStatus = new LabelField("Synchronizing data...", Field.FIELD_HCENTER));
+	        add(_labelStatus = new LabelField(status != null ? status : "", Field.FIELD_HCENTER));
 	        add(new LabelField(""));
 	        
-	        ButtonField hideButton = new ButtonField( "Hide", Field.FIELD_HCENTER );
+	        ButtonField hideButton = new ButtonField( RhoRuby.getMessageText("hide"), Field.FIELD_HCENTER );
 			hideButton.setChangeListener( new HideListener(this) );
 			add(hideButton);
 	    }
@@ -618,28 +623,28 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
 		private Vector menuItems = new Vector();
 
-		private MenuItem homeItem = new MenuItem(RhodesApplication.LABEL_HOME, 200000, 10) {
+		private MenuItem homeItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					navigateHome();
 				}
 			};
-		private MenuItem refreshItem = new MenuItem(RhodesApplication.LABEL_REFRESH, 200000, 10) {
+		private MenuItem refreshItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					refreshCurrentPage();
 				}
 			};
-		private MenuItem backItem = new MenuItem(RhodesApplication.LABEL_BACK, 200000, 10) {
+		private MenuItem backItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					back();
 				}
 			};
-		private MenuItem syncItem = new MenuItem(RhodesApplication.LABEL_SYNC, 200000, 10) {
+		private MenuItem syncItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					//RhodesApplication.getInstance().createStatusPopup();		
 					SyncThread.doSyncAllSources(true);
 				}
 			};
-		private MenuItem optionsItem = new MenuItem(RhodesApplication.LABEL_OPTIONS, 200000, 10) {
+		private MenuItem optionsItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					String curUrl = RhoRuby.getOptionsPage();
 					curUrl = getPathForMenuItem(curUrl);
@@ -649,7 +654,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 					navigateUrl(curUrl);
 				}
 			};
-		private MenuItem logItem = new MenuItem(RhodesApplication.LABEL_LOG, 200000, 10) {
+		private MenuItem logItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					showLogScreen();
 				}
@@ -657,7 +662,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		private MenuItem separatorItem = MenuItem.separator(200000);
 		
-		private MenuItem closeItem = new MenuItem(RhodesApplication.LABEL_CLOSE, 200000, 10) {
+		private MenuItem closeItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					close();
 				}
@@ -712,14 +717,24 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        contextMenu.clear();
 	        
 			// Draw default menu
-			if (menuItems != null && menuItems.size() == 0) {
+			if (menuItems != null && menuItems.size() == 0) 
+			{
+				updateMenuItemsLabel();
+				contextMenu.addItem(homeItem);
+				contextMenu.addItem(refreshItem);
+				contextMenu.addItem(syncItem);
+				contextMenu.addItem(optionsItem);
+				contextMenu.addItem(logItem);
+				contextMenu.addItem(separatorItem);
+				contextMenu.addItem(closeItem);
+/*				
 				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, contextMenu);
 				setDefaultItemToMenu(RhodesApplication.LABEL_SEPARATOR, separatorItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_CLOSE, closeItem, contextMenu);
+				setDefaultItemToMenu(RhodesApplication.LABEL_CLOSE, closeItem, contextMenu);*/
 			}
 
 			// Draw menu from rhodes framework
@@ -771,15 +786,26 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    }
 		}
 
+		void updateMenuItemsLabel()
+		{
+	    	homeItem.setText(RhoRuby.getMessageText("home_menu"));
+	    	refreshItem.setText(RhoRuby.getMessageText("refresh_menu"));
+	    	backItem.setText(RhoRuby.getMessageText("back_menu"));
+	    	syncItem.setText(RhoRuby.getMessageText("sync_menu"));
+	    	optionsItem.setText(RhoRuby.getMessageText("options_menu"));
+	    	logItem.setText(RhoRuby.getMessageText("log_menu"));
+	    	closeItem.setText(RhoRuby.getMessageText("close_menu"));
+		}
+		
 		private void setDefaultItemToMenuItems(String label, MenuItem item) {
 			item.setText(label);
 	    	menuItems.addElement(item);
 		}
 		
-		private void setDefaultItemToMenu(String label, MenuItem item, ContextMenu menu) {
+		/*private void setDefaultItemToMenu(String label, MenuItem item, ContextMenu menu) {
 			item.setText(label);
 	    	menu.addItem(item);
-		}
+		}*/
 
 		public void close() {
 			LOG.TRACE("Calling Screen.close");
@@ -932,6 +958,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        PrimaryResourceFetchThread.Create();
 	        
 	        RhoRuby.RhoRubyInitApp();
+	        
+	        //_mainScreen.updateMenuItemsLabel();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{

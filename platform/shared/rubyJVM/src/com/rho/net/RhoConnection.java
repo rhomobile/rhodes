@@ -736,7 +736,13 @@ public class RhoConnection implements IHttpConnection {
 				
 			LOG.TRACE(strBody);
 			
-			responseData = new ByteArrayInputStream(strBody.getBytes()); 
+			try{
+				responseData = new ByteArrayInputStream(strBody.getBytes("UTF-8"));
+       		}catch(java.io.UnsupportedEncodingException exc)
+       		{
+       			LOG.ERROR("Error getting utf-8 body :", exc);
+       		}
+				
 			if ( responseData != null )
 				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
 		}

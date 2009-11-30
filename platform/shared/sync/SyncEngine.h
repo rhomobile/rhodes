@@ -23,6 +23,9 @@ static const int ERR_CLIENTISNOTLOGGEDIN = 7;
 static const int ERR_CUSTOMSYNCSERVER = 8;
 static const int ERR_UNATHORIZED = 9;
 static const int ERR_CANCELBYUSER = 10;
+
+static String getMessageText(const char* szName);
+static String getErrorText(int nError);
 };
 extern const _CRhoRuby& RhoRuby;
 

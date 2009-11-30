@@ -492,7 +492,7 @@ boolean CRhodesApp::sendLog()
 	String strQuery = strLogUrl + "client_log?" +
 	    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
 
-    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), null ) );
+    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), &(rho::sync::CSyncThread::getSyncEngine()) ) );
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "send_log failed : network error";
