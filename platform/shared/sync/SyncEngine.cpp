@@ -7,9 +7,20 @@
 #include "sync/ClientRegister.h"
 #include "net/URI.h"
 #include "statistic/RhoProfiler.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
 const _CRhoRuby& RhoRuby = _CRhoRuby();
+
+/*static*/ String _CRhoRuby::getMessageText(const char* szName)
+{
+    return rho_ruby_getMessageText(szName);
+}
+
+/*static*/ String _CRhoRuby::getErrorText(int nError)
+{
+    return rho_ruby_getErrorText(nError);
+}
 
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
@@ -62,12 +73,12 @@ void CSyncEngine::doSyncAllSources()
         if ( m_sources.size() > 0 )
         {
             CSyncSource& src = *m_sources.elementAt(getStartSource());
-    	    src.m_strError = "Client is not logged in. No sync will be performed.";
+    	    //src.m_strError = "Client is not logged in. No sync will be performed.";
             src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 
             getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
         }else
-            getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "Client is not logged in. No sync will be performed.");
+            getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "");
     }
 
     if ( getState() != esExit )
@@ -101,11 +112,11 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID, String strParams, String
 	            src.sync();
             }
 	    } else {
-	    	src.m_strError = "Client is not logged in. No sync will be performed.";
+	    	//src.m_strError = "Client is not logged in. No sync will be performed.";
             src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 	    }
 
-        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
+        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? RhoRuby.getMessageText("sync_completed") : "");
     }else
     {
         LOG(ERROR) + "Sync one source : Unknown Source " + oSrcID.toString();
@@ -254,7 +265,7 @@ void CSyncEngine::syncAllSources()
     }
 
     if ( !bError)
-    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
+    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
 }
 
 void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMessage)

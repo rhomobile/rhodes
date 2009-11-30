@@ -281,7 +281,9 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
         rb_ary_push(GET_VM()->loaded_features, path);
 
+        rb_gc_disable();
         seq = loadISeqFromFile(path);
+        rb_gc_enable();
 
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
@@ -414,6 +416,16 @@ int rhoRubyFPrintf(FILE *file, const char *format, ...){
     va_list ap;
     va_start(ap, format);
     nRes = rhoRubyVFPrintf(file,format,ap);
+    va_end(ap);
+
+    return nRes;
+}
+
+int rhoRubyPrintf(const char *format, ...){
+    int nRes = 1;
+    va_list ap;
+    va_start(ap, format);
+    nRes = rhoRubyVFPrintf(stdout,format,ap);
     va_end(ap);
 
     return nRes;

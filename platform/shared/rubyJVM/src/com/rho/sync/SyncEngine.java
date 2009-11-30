@@ -151,7 +151,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	if ( m_sources.size() > 0 )
 		        {		    	
 			    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-			    	src.m_strError = "Client is not logged in. No sync will be performed.";
+			    	//src.m_strError = "Client is not logged in. No sync will be performed.";
 			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 			    	
 			    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
@@ -198,11 +198,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 			            src.sync();
 			        }
 			    } else {
-			    	src.m_strError = "Client is not logged in. No sync will be performed.";
+			    	//src.m_strError = "Client is not logged in. No sync will be performed.";
 			    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 			    }
 		
-			    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? "Sync completed." : "");
+			    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? RhoRuby.getMessageText("sync_completed") : "");
 	        } else {
 	        	src = new SyncSource(this);
 		    	//src.m_strError = "Unknown sync source.";
@@ -368,7 +368,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 	    
 	    if ( !bError)
-	    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, "Sync completed.");
+	    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
 	}
 	
 	void callLoginCallback(String callback, int nErrCode, String strMessage)

@@ -108,8 +108,11 @@ public class RubyHash extends RubyBasic {
     }
 
     //@RubyLevelMethod(name="delete")
-    public RubyValue delete(RubyValue k) {
+    public RubyValue delete(RubyValue k, RubyBlock block) {
         RubyValue v = (RubyValue)map_.remove(k);
+        if ( v == null && block != null )
+        	return block.invoke(this, k);
+        
         return (null != v) ? v : RubyAPI.callOneArgMethod(this, k, null, defaultID);
     }
 
@@ -128,6 +131,11 @@ public class RubyHash extends RubyBasic {
         return this;
     }
 
+    public RubyValue clear() {
+        map_.clear();
+        return this;
+    }
+    
     //@RubyLevelMethod(name="reject")
     public RubyValue reject(RubyBlock block) {
         RubyHash dup = (RubyHash)clone();

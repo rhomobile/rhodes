@@ -6,12 +6,34 @@ module Rho
     class << self
       
       def url_encode(s)
-        s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
-          sprintf("%%%02X", $&.unpack("C")[0])
-        }
+#        s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
+#          sprintf("%%%02X", $&.unpack("C")[0])
+#        }
+        s.gsub(/[^a-zA-Z0-9_\-.]/n) do
+            us = $&
+            tmp = ''
+            us.each_byte do |uc|
+              tmp << sprintf('%%%02X', uc)
+            end
+            tmp
+        end.force_encoding("ASCII-8BIT")
+
       end
       
-      def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
+     # def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
+      def _unescape(str, regex)
+        isEncoded = false
+        res = str.gsub(regex) { 
+          isEncoded = true
+          [$&[1, 2].hex].pack('C') 
+        }
+        if isEncoded
+            res.force_encoding("ASCII-8BIT") #need for BB since Java string is UTF16
+            res.force_encoding('UTF-8')
+        end
+        
+        res    
+      end
 	
       ESCAPED = /%([0-9a-fA-F]{2})/
 	

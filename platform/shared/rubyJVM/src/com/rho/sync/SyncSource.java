@@ -143,7 +143,7 @@ class SyncSource
     
 	void sync() throws Exception
 	{
-    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "Synchronizing " + getName() + "...");
+    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 	    
@@ -191,7 +191,7 @@ class SyncSource
 		   TimeInterval endTime = TimeInterval.getCurrentTime();
 		    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
 								 "last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-		                         new Long(endTime.toULong()), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
+		                         new Long(endTime.toULong()/1000), new Integer(getInsertedCount()), new Integer(getDeletedCount()), new Long((endTime.minus(startTime)).toULong()), 
 		                         new Integer(m_bGetAtLeastOnePage?1:0), getID() );
 	    }
 	}

@@ -272,9 +272,9 @@ void CSyncNotify::setSearchNotification(int source_id, String strUrl, String str
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
 	//if (m_statusListener != null) {
-		//if ( strDetails.length() == 0 )
-		//	strDetails = RhoRuby.getErrorText(error);
-        status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
+		if ( strDetails.length() == 0 )
+			strDetails = RhoRuby.getErrorText(error);
+        status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
 	//	m_statusListener.reportStatus( status, error);
 	//}
 	LOG(INFO) + "Status: "+status;
@@ -298,7 +298,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
 		if ( !( psrc != null && psrc->m_strParams.length()>0) )
         {
 			if ( psrc != null && strMessage.length() == 0 )
-				strMessage = "Sync failed for " + psrc->getName() + ".";
+				strMessage = RhoRuby.getMessageText("sync_failed_for") + psrc->getName() + ".";
 			
             reportSyncStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
         }

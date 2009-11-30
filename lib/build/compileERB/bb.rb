@@ -7,7 +7,7 @@ ext = ".erb"
 Find.find(dir) do |path| 
   if File.extname(path) == ext
     strFile = IO.read(path)
-    #strFile.force_encoding('utf-8')
+    strFile.force_encoding('utf-8')
 	rbText = ERB.new( strFile ).src
 	
 	newName = File.basename(path).sub('.erb','_erb.rb')

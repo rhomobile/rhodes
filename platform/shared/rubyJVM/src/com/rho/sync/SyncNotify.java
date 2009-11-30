@@ -310,7 +310,7 @@ public class SyncNotify {
     	if (m_syncStatusListener != null) {
     		if ( strDetails.length() == 0 )
     			strDetails = RhoRuby.getErrorText(error);
-    		status += (strDetails.length() > 0 ? " Details: " + strDetails: "");
+    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
     		
         	LOG.INFO("Status: "+status);
     		
@@ -336,7 +336,7 @@ public class SyncNotify {
 			if ( !( src != null && src.m_strParams.length()>0) )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
-					strMessage = "Sync failed for " + src.getName() + ".";
+					strMessage = RhoRuby.getMessageText("sync_failed_for") + src.getName() + ".";
 				
 				reportSyncStatus(strMessage,nErrCode,src!= null?src.m_strError:"");
 			}

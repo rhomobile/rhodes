@@ -33,7 +33,10 @@ public class RhoRuby {
 	static RubyProgram mainObj;
 	static RubyClass m_classRhoError;
 	static RubyMethod m_RhoError_err_message;
-	
+
+	static RubyClass m_classRhoMessages;
+	static RubyMethod m_RhoMessages_get_message;
+		
 	public static final int ERR_NONE = 0;
 	public static final int ERR_NETWORK = 1;
 	public static final int ERR_REMOTESERVER = 2;
@@ -76,6 +79,20 @@ public class RhoRuby {
 		}
 		
 		RubyValue res = m_RhoError_err_message.invoke( m_classRhoError, ObjectFactory.createInteger(nError), null );
+		
+		return res.toStr();
+	}
+
+	public static String getMessageText(String strName)
+	{
+		if ( m_classRhoMessages == null )
+		{
+			RubyModule modRho = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rho");
+			m_classRhoMessages = (RubyClass)modRho.getConstant("RhoMessages");
+			m_RhoMessages_get_message = m_classRhoMessages.findMethod( RubyID.intern("get_message") );
+		}
+		
+		RubyValue res = m_RhoMessages_get_message.invoke( m_classRhoMessages, ObjectFactory.createString(strName), null );
 		
 		return res.toStr();
 	}
