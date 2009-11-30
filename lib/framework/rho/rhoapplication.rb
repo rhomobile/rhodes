@@ -1,5 +1,7 @@
 require 'rhom'
 require 'rhofsconnector'
+require 'rholang/localization_simplified'
+require 'rho/rhomsg'
 
 module Rho
   class RhoApplication
@@ -10,49 +12,16 @@ module Rho
   	NOBAR_TYPE = 2
   	
   	@@toolbar = []
-
-    def init_app_locale
-        curLocale = System::get_locale()
-        #puts 'Current locale: ' + curLocale.to_s
-        
-        #if File.exist?('rholang/lang_' + curLocale + '.iseq')
-        #    require 'rholang/lang_' + curLocale
-        #elsif curLocale != 'en'
-        #    puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
-        #
-        #    require 'rholang/lang_en'
-        #end
-        #begin
-        #    require 'rholang/lang_' + curLocale
-        #rescue Exception => e
-        #    puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
-        #    require 'rholang/lang_en' unless curLocale == 'en'
-        #end
-        
-        langApp = Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_'
-        begin
-            require langApp + curLocale if File.exist?(langApp + curLocale + '.iseq')
-        rescue Exception => e
-            puts 'Could not load app resources for locale: ' + curLocale.to_s
-            if curLocale != 'en'
-                begin
-                    puts 'Load english resources.'
-                    require langApp + '_en'  if File.exist?(langApp + '_en.iseq')
-                rescue Exception => e
-                end    
-            end    
-        end
-    end
     	
     def initialize
-      init_app_locale()
+      LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
       
       unless @rhom
         @rhom = Rhom::Rhom.new
       end
       unless @default_menu
-      	@default_menu = { "Home" => :home, "Refresh" => :refresh, 
-      		"Sync" => :sync, "Options" => :options, "Log" => :log, :separator => nil, "Close" => :close }
+      	@default_menu = { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
+      		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
   	  end
   	  if @tabs
   	    # normalize the list
