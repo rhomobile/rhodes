@@ -646,18 +646,22 @@ bool CHttpServer::decide(SOCKET sock, String const &method, String const &uri,
         VALUE data = callFramework(req);
         
         String reply(getStringFromValue(data), getStringLenFromValue(data));
-        send_response(sock, reply);
+        if (!send_response(sock, reply))
+            return false;
         
         if (!route.id.empty())
             rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
+        
         return true;
     }
     
     if (isindex(uri)) {
         if (method == "GET")
             rho_rhodesapp_keeplastvisitedurl(uri.c_str());
-        // TODO: call rho_serve_index
-        return true;
+        
+        VALUE data = callServeIndex((char *)uri.c_str());
+        String reply(getStringFromValue(data), getStringLenFromValue(data));
+        return send_response(sock, reply);
     }
     
     // Try to send requested file
