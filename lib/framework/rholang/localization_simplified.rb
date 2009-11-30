@@ -4,23 +4,6 @@
 # Plugin available at http://rubyforge.org/projects/l10n-simplified/
 #
 
-curLocale = System::get_locale()
-puts 'Current locale: ' + curLocale.to_s
-
-#if File.exist?('rholang/lang_' + curLocale + '.iseq')
-#    require 'rholang/lang_' + curLocale
-#elsif curLocale != 'en'
-#    puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
-#
-#    require 'rholang/lang_en'
-#end
-begin
-    require 'rholang/lang_' + curLocale
-rescue Exception => e
-    puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
-    require 'rholang/lang_en' unless curLocale == 'en'
-end
-
 module LocalizationSimplified
   @@ignore = "\xFF\xFF\xFF\xFF" # %% == Literal "%" character
   # substitute all daynames and monthnames with localized names
@@ -33,7 +16,36 @@ module LocalizationSimplified
     date.gsub!(/%B/, LocalizationSimplified::DateHelper::Monthnames[time.mon])
     date.gsub!(@@ignore, '%%')
   end
+  
+  def self.requre_loc(file,check_exist)
+      curLocale = System::get_locale()
+      puts 'Current locale: ' + curLocale.to_s
+  
+      if check_exist
+        begin
+            require file + curLocale if File.exist?(file + curLocale + '.iseq')
+        rescue Exception => e
+            puts 'Could not load resources for locale: ' + curLocale.to_s
+            if curLocale != 'en'
+                begin
+                    puts 'Load english resources.'
+                    require file + 'en'  if File.exist?(file + 'en.iseq')
+                rescue Exception => e
+                end    
+            end    
+        end
+      else
+        begin
+            require file + curLocale
+        rescue Exception => e
+            puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
+            require file + 'en' unless curLocale == 'en'
+        end
+      end
+  end
 end
+
+LocalizationSimplified.requre_loc('rholang/lang_',false)
 
 class Hash
     def reverse_merge(other_hash)

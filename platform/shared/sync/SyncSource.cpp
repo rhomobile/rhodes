@@ -76,7 +76,7 @@ CSyncNotify& CSyncSource::getNotify(){ return getSync().getNotify(); }
 
 void CSyncSource::sync()
 {
-    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "Synchronizing " + getName() + "...");
+    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
 

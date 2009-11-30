@@ -22,7 +22,7 @@ public:
 
     unsigned long toULong()
     {
-        return m_nativeTime;
+        return static_cast<unsigned long>(m_nativeTime);
     }
 
 protected:

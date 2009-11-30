@@ -338,7 +338,7 @@ public class SyncThread extends RhoThread
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
 			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(m_statusListener);
-			m_statusListener.createStatusPopup();
+			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 		}else
 			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(null);
 		
@@ -348,7 +348,7 @@ public class SyncThread extends RhoThread
 	public static void doSyncSource(int nSrcID, String strName, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
-			m_statusListener.createStatusPopup();
+			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 		}
 		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID) );
@@ -357,7 +357,7 @@ public class SyncThread extends RhoThread
 	public static void doSyncSourceByUrl(String strSrcUrl, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
-			m_statusListener.createStatusPopup();
+			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 		}
 		
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOneByUrl, strSrcUrl) );

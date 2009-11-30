@@ -22,7 +22,8 @@ import com.xruby.runtime.lang.*;
 //@RubyLevelClass(name="String")
 public class RubyString extends RubyBasic {
     private StringBuffer sb_;
-
+    private RubyValue m_valEncoding;
+    
     RubyString(RubyClass c, String s) {
         super(c);
         sb_ = new StringBuffer(s);
@@ -1226,12 +1227,23 @@ public class RubyString extends RubyBasic {
     }
 
     //@RubyLevelMethod(name="each_byte")
-    public RubyValue each_byte(RubyBlock block) {
+    public RubyValue each_byte(RubyBlock block) 
+    {
         String string = toString();
-        for (int i = 0; i < string.length(); ++i) {
-            char c = string.charAt(i);
-            block.invoke(this, ObjectFactory.createFixnum((int) c));
+        byte bytes[] = null;
+        try{
+        	bytes = string.getBytes("UTF-8");
+        }catch(java.io.UnsupportedEncodingException exc){}
+        
+        for (int i = 0; bytes != null && i <bytes.length; ++i) 
+        {
+        	int nByte = bytes[i];
+        	if ( nByte < 0 )
+        		nByte = 256 + nByte;
+        	
+            block.invoke(this, ObjectFactory.createFixnum(nByte));
         }
+    	
         return this;
     }
 
@@ -1363,12 +1375,28 @@ public class RubyString extends RubyBasic {
 
     //RHO_COMMENT
     //@RubyLevelMethod(name="encoding")
-    public RubyValue getEncoding() {
+    public RubyValue getEncoding() 
+    {
+    	if (m_valEncoding!=null)
+    		return m_valEncoding;
+    	
         return ObjectFactory.createString("ASCII-8BIT");//"UTF-8");
     }
     //@RubyLevelMethod(name="force_encoding")
-    public RubyValue force_encoding(RubyValue arg) {
-    	//TODO: should we do something ?
+    public RubyValue force_encoding(RubyValue arg) 
+    {
+    	if ( (m_valEncoding != null && !m_valEncoding.toString().equalsIgnoreCase("UTF-8") ) && arg.toString().equalsIgnoreCase("UTF-8"))
+    	{
+    		try{
+	    		byte bytes[] = sb_.toString().getBytes("ISO8859_1");
+	    		String str1 = new String(bytes, "UTF-8");
+	    		sb_ = new StringBuffer(str1);
+    		}catch(java.io.UnsupportedEncodingException exc){
+    			sb_ = new StringBuffer("");
+    		}
+    	}
+    	
+    	m_valEncoding = arg;
         return this;
     }
     
