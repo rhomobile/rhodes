@@ -15,54 +15,146 @@ namespace net
 {
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
-
-static const struct {
-    const char	*extension;
-    int		ext_len;
-    const char	*mime_type;
-} builtin_mime_types[] = {
-    {".html",       5,	"text/html"                     },
-    {".htm",		4,	"text/html"                     },
-    {".txt",		4,	"text/plain"                    },
-    {".css",		4,	"text/css"                      },
-    {".js",         3,  "text/javascript"               },
-    {".ico",		4,	"image/x-icon"                  },
-    {".gif",		4,	"image/gif"                     },
-    {".jpg",		4,	"image/jpeg"                    },
-    {".jpeg",       5,	"image/jpeg"                    },
-    {".png",		4,	"image/png"                     },
-    {".svg",		4,	"image/svg+xml"                 },
-    {".torrent",	8,	"application/x-bittorrent"      },
-    {".wav",		4,	"audio/x-wav"                   },
-    {".mp3",		4,	"audio/x-mp3"                   },
-    {".mid",		4,	"audio/mid"                     },
-    {".m3u",		4,	"audio/x-mpegurl"               },
-    {".ram",		4,	"audio/x-pn-realaudio"          },
-    {".ra",         3,	"audio/x-pn-realaudio"          },
-    {".doc",		4,	"application/msword",           },
-    {".exe",		4,	"application/octet-stream"      },
-    {".zip",		4,	"application/x-zip-compressed"	},
-    {".xls",		4,	"application/excel"             },
-    {".tgz",		4,	"application/x-tar-gz"          },
-    {".tar.gz",     7,	"application/x-tar-gz"          },
-    {".tar",		4,	"application/x-tar"             },
-    {".gz",         3,	"application/x-gunzip"          },
-    {".arj",		4,	"application/x-arj-compressed"	},
-    {".rar",		4,	"application/x-arj-compressed"	},
-    {".rtf",		4,	"application/rtf"               },
-    {".pdf",		4,	"application/pdf"               },
-    {".swf",		4,	"application/x-shockwave-flash"	},
-    {".mpg",		4,	"video/mpeg"                    },
-    {".mpeg",       5,	"video/mpeg"                    },
-    {".asf",		4,	"video/x-ms-asf"                },
-    {".avi",		4,	"video/x-msvideo"               },
-    {".bmp",		4,	"image/bmp"                     },
-};
     
 static bool isid(String const &s)
 {
     return s.size() > 2 && s[0] == '{' && s[s.size() - 1] == '}';
 }
+
+static bool isdir(String const &path)
+{
+    struct stat st;
+    return stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode);
+}
+
+static bool isfile(String const &path)
+{
+    struct stat st;
+    return stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
+}
+
+static bool isindex(String const &uri)
+{
+    static struct {
+        const char *s;
+        size_t len;
+    } index_files[] = {
+        {"index_erb.iseq", 14},
+        {"index.html", 10},
+        {"index.htm", 9},
+        {"index.php", 9},
+        {"index.cgi", 9}
+    };
+    
+    for (size_t i = 0, lim = sizeof(index_files)/sizeof(index_files[0]); i != lim; ++i) {
+        size_t pos = uri.find(index_files[i].s);
+        if (pos == String::npos)
+            continue;
+        
+        if (pos + index_files[i].len != uri.size())
+            continue;
+        
+        return true;
+    }
+    
+    return false;
+}
+
+static bool isknowntype(String const &uri)
+{
+    static struct {
+        const char *s;
+        size_t len;
+    } ignored_exts[] = {
+        {".css", 4},
+        {".js", 3},
+        {".html", 5},
+        {".htm", 4},
+        {".png", 4},
+        {".bmp", 4},
+        {".jpg", 4},
+        {".jpeg", 5}
+    };
+    
+    for (size_t i = 0, lim = sizeof(ignored_exts)/sizeof(ignored_exts[0]); i != lim; ++i) {
+        size_t pos = uri.find(ignored_exts[i].s);
+        if (pos == String::npos)
+            continue;
+        
+        if (pos + ignored_exts[i].len != uri.size())
+            continue;
+        
+        return true;
+    }
+    
+    return false;
+}
+    
+
+static String get_mime_type(String const &path)
+{
+    static const struct {
+        const char	*extension;
+        int		ext_len;
+        const char	*mime_type;
+    } builtin_mime_types[] = {
+        {".html",       5,	"text/html"                     },
+        {".htm",		4,	"text/html"                     },
+        {".txt",		4,	"text/plain"                    },
+        {".css",		4,	"text/css"                      },
+        {".js",         3,  "text/javascript"               },
+        {".ico",		4,	"image/x-icon"                  },
+        {".gif",		4,	"image/gif"                     },
+        {".jpg",		4,	"image/jpeg"                    },
+        {".jpeg",       5,	"image/jpeg"                    },
+        {".png",		4,	"image/png"                     },
+        {".svg",		4,	"image/svg+xml"                 },
+        {".torrent",	8,	"application/x-bittorrent"      },
+        {".wav",		4,	"audio/x-wav"                   },
+        {".mp3",		4,	"audio/x-mp3"                   },
+        {".mid",		4,	"audio/mid"                     },
+        {".m3u",		4,	"audio/x-mpegurl"               },
+        {".ram",		4,	"audio/x-pn-realaudio"          },
+        {".ra",         3,	"audio/x-pn-realaudio"          },
+        {".doc",		4,	"application/msword",           },
+        {".exe",		4,	"application/octet-stream"      },
+        {".zip",		4,	"application/x-zip-compressed"	},
+        {".xls",		4,	"application/excel"             },
+        {".tgz",		4,	"application/x-tar-gz"          },
+        {".tar.gz",     7,	"application/x-tar-gz"          },
+        {".tar",		4,	"application/x-tar"             },
+        {".gz",         3,	"application/x-gunzip"          },
+        {".arj",		4,	"application/x-arj-compressed"	},
+        {".rar",		4,	"application/x-arj-compressed"	},
+        {".rtf",		4,	"application/rtf"               },
+        {".pdf",		4,	"application/pdf"               },
+        {".swf",		4,	"application/x-shockwave-flash"	},
+        {".mpg",		4,	"video/mpeg"                    },
+        {".mpeg",       5,	"video/mpeg"                    },
+        {".asf",		4,	"video/x-ms-asf"                },
+        {".avi",		4,	"video/x-msvideo"               },
+        {".bmp",		4,	"image/bmp"                     },
+    };
+    
+    String mime_type;
+    for (int i = 0, lim = sizeof(builtin_mime_types)/sizeof(builtin_mime_types[0]); i != lim; ++i) {
+        size_t pos = path.find(builtin_mime_types[i].extension);
+        if (pos == String::npos)
+            continue;
+        
+        if (pos + builtin_mime_types[i].ext_len != path.size())
+            continue;
+        
+        mime_type = builtin_mime_types[i].mime_type;
+        break;
+    }
+    
+    if (mime_type.empty())
+        mime_type = "text/plain";
+    
+    return mime_type;
+}
+    
 
 static VALUE create_request_hash(String const &application, String const &model,
                                  String const &action, String const &id,
@@ -173,19 +265,19 @@ bool CHttpServer::run()
     return true;
 }
 
-bool CHttpServer::receive_request(SOCKET sock, ByteVector &request)
+bool CHttpServer::receive_request(ByteVector &request)
 {
     request.clear();
 
     RAWTRACE("Receiving request...");
     
     // First of all, make socket non-blocking
-    int flags = fcntl(sock, F_GETFL);
+    int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
         RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
         return false;
     }
-    if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1) {
+    if (fcntl(m_sock, F_SETFL, flags | O_NONBLOCK) == -1) {
         RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
         return false;
     }
@@ -193,7 +285,7 @@ bool CHttpServer::receive_request(SOCKET sock, ByteVector &request)
     char buf[BUF_SIZE];
     for(;;) {
         RAWTRACE("Read portion of data from socket...");
-        int n = recv(sock, &buf[0], sizeof(buf), 0);
+        int n = recv(m_sock, &buf[0], sizeof(buf), 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
             if (e == EINTR)
@@ -204,8 +296,8 @@ bool CHttpServer::receive_request(SOCKET sock, ByteVector &request)
                 
                 fd_set fds;
                 FD_ZERO(&fds);
-                FD_SET(sock, &fds);
-                select(sock + 1, &fds, 0, 0, 0);
+                FD_SET(m_sock, &fds);
+                select(m_sock + 1, &fds, 0, 0, 0);
                 continue;
             }
             
@@ -230,23 +322,23 @@ bool CHttpServer::receive_request(SOCKET sock, ByteVector &request)
     return true;
 }
 
-bool CHttpServer::send_response(SOCKET sock, String const &response)
+bool CHttpServer::send_response(String const &response)
 {
     RAWTRACE("Sending response...");
     // First of all, make socket blocking
-    int flags = fcntl(sock, F_GETFL);
+    int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
         RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
         return false;
     }
-    if (fcntl(sock, F_SETFL, flags & ~O_NONBLOCK) == -1) {
+    if (fcntl(m_sock, F_SETFL, flags & ~O_NONBLOCK) == -1) {
         RAWLOG_ERROR1("Can not set blocking socket mode: %d", errno);
         return false;
     }
     
     size_t pos = 0;
     for(;;) {
-        int n = send(sock, response.c_str() + pos, response.size() - pos, 0);
+        int n = send(m_sock, response.c_str() + pos, response.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
             if (e == EINTR)
@@ -314,9 +406,10 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
 
 bool CHttpServer::process(SOCKET sock)
 {
+    m_sock = sock;
     // Read request from socket
     ByteVector request;
-    if (!receive_request(sock, request))
+    if (!receive_request(request))
         return false;
     
     if (request.empty() || (request.size() == 3 && memcmp(&request[0], "\r\n", 3) == 0)) {
@@ -330,11 +423,11 @@ bool CHttpServer::process(SOCKET sock)
     String body;
     if (!parse_request(request, method, uri, query, headers, body)) {
         RAWLOG_ERROR("Parsing error");
-        send_response(sock, create_response("500 Internal Error"));
+        send_response(create_response("500 Internal Error"));
         return false;
     }
     
-    return decide(sock, method, uri, query, headers, body);
+    return decide(method, uri, query, headers, body);
 }
 
 bool CHttpServer::parse_request(ByteVector &request, String &method, String &uri,
@@ -468,39 +561,6 @@ bool CHttpServer::parse_route(String const &line, Route &route)
     return true;
 }
 
-struct static_string
-{
-    const char *s;
-    size_t len;
-};
-
-bool CHttpServer::isknowntype(String const &uri)
-{
-    static static_string ignored_exts[] = {
-        {".css", 4},
-        {".js", 3},
-        {".html", 5},
-        {".htm", 4},
-        {".png", 4},
-        {".bmp", 4},
-        {".jpg", 4},
-        {".jpeg", 5}
-    };
-    
-    for (size_t i = 0, lim = sizeof(ignored_exts)/sizeof(ignored_exts[0]); i != lim; ++i) {
-        size_t pos = uri.find(ignored_exts[i].s);
-        if (pos == String::npos)
-            continue;
-        
-        if (pos + ignored_exts[i].len != uri.size())
-            continue;
-        
-        return true;
-    }
-    
-    return false;
-}
-
 bool CHttpServer::dispatch(String const &uri, Route &route)
 {
     if (isknowntype(uri))
@@ -531,52 +591,7 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     return true;
 }
 
-bool CHttpServer::isindex(String const &uri)
-{
-    static static_string index_files[] = {
-        {"index_erb.iseq", 14},
-        {"index.html", 10},
-        {"index.htm", 9},
-        {"index.php", 9},
-        {"index.cgi", 9}
-    };
-    
-    for (size_t i = 0, lim = sizeof(index_files)/sizeof(index_files[0]); i != lim; ++i) {
-        size_t pos = uri.find(index_files[i].s);
-        if (pos == String::npos)
-            continue;
-        
-        if (pos + index_files[i].len != uri.size())
-            continue;
-        
-        return true;
-    }
-    
-    return false;
-}
-
-static String get_mime_type(String const &path)
-{
-    String mime_type;
-    for (int i = 0, lim = sizeof(builtin_mime_types)/sizeof(builtin_mime_types[0]); i != lim; ++i) {
-        size_t pos = path.find(builtin_mime_types[i].extension);
-        if (pos == String::npos)
-            continue;
-        
-        if (pos + builtin_mime_types[i].ext_len != path.size())
-            continue;
-        
-        mime_type = builtin_mime_types[i].mime_type;
-        break;
-    }
-    
-    if (mime_type.empty())
-        mime_type = "text/plain";
-    
-    return mime_type;
-}
-
-bool CHttpServer::send_file(SOCKET sock, String const &path)
+bool CHttpServer::send_file(String const &path)
 {
     // TODO:
     //static const char *resp = "<html><title>TEST</title><body><h1>This is test</h1></body></html>";
@@ -585,14 +600,14 @@ bool CHttpServer::send_file(SOCKET sock, String const &path)
     String fullPath = m_root + "/" + path;
     
     struct stat st;
-    if (stat(fullPath.c_str(), &st) != 0) {
-        send_response(sock, create_response("404 Not Found"));
+    if (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) {
+        send_response(create_response("404 Not Found"));
         return false;
     }
     
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
-        send_response(sock, create_response("404 Not Found"));
+        send_response(create_response("404 Not Found"));
         return false;
     }
     
@@ -609,7 +624,7 @@ bool CHttpServer::send_file(SOCKET sock, String const &path)
     headers.push_back(Header("Content-Length", buf));
     
     // Send headers
-    if (!send_response(sock, create_response("200 OK", headers))) {
+    if (!send_response(create_response("200 OK", headers))) {
         fclose(fp);
         return false;
     }
@@ -617,7 +632,7 @@ bool CHttpServer::send_file(SOCKET sock, String const &path)
     // Send body
     while (!feof(fp)) {
         size_t n = fread(buf, 1, sizeof(buf), fp);
-        if (!send_response(sock, String(buf, n))) {
+        if (!send_response(String(buf, n))) {
             fclose(fp);
             return false;
         }
@@ -627,14 +642,16 @@ bool CHttpServer::send_file(SOCKET sock, String const &path)
     return true;
 }
 
-bool CHttpServer::decide(SOCKET sock, String const &method, String const &uri,
-                         String const &query, HeaderList const &headers, String const &body)
+bool CHttpServer::decide(String const &method, String const &uri, String const &query,
+                         HeaderList const &headers, String const &body)
 {
     callback_t callback = registered(uri);
     if (callback) {
-        // TODO: Call this callback
+        callback(this, query);
         return true;
     }
+    
+    String fullPath = m_root + "/" + uri;
     
     Route route;
     if (dispatch(uri, route)) {
@@ -646,7 +663,7 @@ bool CHttpServer::decide(SOCKET sock, String const &method, String const &uri,
         VALUE data = callFramework(req);
         
         String reply(getStringFromValue(data), getStringLenFromValue(data));
-        if (!send_response(sock, reply))
+        if (!send_response(reply))
             return false;
         
         if (!route.id.empty())
@@ -655,17 +672,33 @@ bool CHttpServer::decide(SOCKET sock, String const &method, String const &uri,
         return true;
     }
     
+    if (isdir(fullPath)) {
+        String slash = !uri.empty() && uri[uri.size() - 1] == '/' ? "" : "/";
+        String q = query.empty() ? "" : "?" + query;
+        
+        HeaderList headers;
+        headers.push_back(Header("Location", uri + slash + "index_erb.iseq" + q));
+        
+        send_response(create_response("301 Moved Permanently", headers));
+        return false;
+    }
+    
     if (isindex(uri)) {
+        if (!isfile(fullPath)) {
+            send_response(create_response("404 Not Found"));
+            return false;
+        }
+        
         if (method == "GET")
             rho_rhodesapp_keeplastvisitedurl(uri.c_str());
         
-        VALUE data = callServeIndex((char *)uri.c_str());
+        VALUE data = callServeIndex((char *)fullPath.c_str());
         String reply(getStringFromValue(data), getStringLenFromValue(data));
-        return send_response(sock, reply);
+        return send_response(reply);
     }
     
     // Try to send requested file
-    return send_file(sock, uri);
+    return send_file(uri);
 }
 
 } // namespace net
