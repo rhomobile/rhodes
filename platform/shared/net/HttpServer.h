@@ -20,25 +20,29 @@ namespace rho
 namespace net
 {
 
+struct HttpHeader
+{
+    String name;
+    String value;
+    
+    HttpHeader() {}
+    
+    HttpHeader(String const &n, String const &v)
+        :name(n), value(v)
+    {}
+};
+
+typedef Vector<HttpHeader> HttpHeaderList;
+
 class CHttpServer
 {
     DEFINE_LOGCLASS;
     
     enum {BUF_SIZE = 4096};
     
-    struct Header
-    {
-        String name;
-        String value;
-        
-        Header() {}
-        
-        Header(String const &n, String const &v)
-            :name(n), value(v)
-        {}
-    };
+    typedef HttpHeader Header;
+    typedef HttpHeaderList HeaderList;
     
-    typedef Vector<Header> HeaderList;
     typedef Vector<char> ByteVector;
     
     struct Route
@@ -63,8 +67,8 @@ public:
 private:
     bool process(SOCKET sock);
     bool parse_request(ByteVector &request, String &method, String &uri,
-                       HeaderList &headers, String &body);
-    bool parse_startline(String const &line, String &method, String &uri);
+                       String &query, HeaderList &headers, String &body);
+    bool parse_startline(String const &line, String &method, String &uri, String &query);
     bool parse_header(String const &line, Header &hdr);
     bool parse_route(String const &uri, Route &route);
     
@@ -77,9 +81,11 @@ private:
     String create_response(String const &reason, HeaderList const &headers, String const &body);
     
     bool decide(SOCKET sock, String const &method, String const &uri,
-                HeaderList const &headers, String const &body);
+                String const &query, HeaderList const &headers, String const &body);
     
-    bool dispatch(String const &uri);
+    bool dispatch(String const &uri, Route &route);
+    
+    bool isknowntype(String const &uri);
     bool isindex(String const &uri);
     
     bool send_file(SOCKET sock, String const &path);
