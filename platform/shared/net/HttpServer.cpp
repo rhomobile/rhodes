@@ -2,7 +2,58 @@
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 
+#if !defined(OS_WINCE)
 #include <sys/stat.h>
+#endif
+
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+typedef unsigned __int16 uint16_t;
+
+#  ifndef S_ISDIR
+#    define S_ISDIR(m) ((_S_IFDIR & m) == _S_IFDIR)
+#  endif
+
+#  ifndef S_ISREG
+#    define S_ISREG(m) ((_S_IFREG & m) == _S_IFREG)
+#  endif
+
+#  ifndef EAGAIN
+#    define EAGAIN WSAEWOULDBLOCK
+#  endif
+
+#endif
+
+/*
+static int stat(const char *path, struct _stat *st)
+{
+	char	buf[FILENAME_MAX], *p;
+	wchar_t	wbuf[FILENAME_MAX];
+
+	const char *s1 = path;
+	char *s2 = &buf[0];
+	for (; s1 - path < sizeof(buf) && *s1 != '\0'; ++s1, ++s2)
+		*s2 = *s1;
+	*s2 = '\0';
+	
+	// Fix directory separators
+	p = &buf[0];
+	for (; *p != '\0'; p++) {
+		if (*p == '/')
+			*p = '\\';
+		if (*p == '\\')
+			while (p[1] == '\\' || p[1] == '/') 
+				(void) memmove(p + 1, p + 2, strlen(p + 2) + 1);
+	}
+
+	p = buf + strlen(buf) - 1;
+	while (p > buf && *p == '\\' && p[-1] != ':')
+		*p-- = '\0';
+
+	MultiByteToWideChar(CP_UTF8, 0, buf, -1, wbuf, sizeof(wbuf));
+
+	return (_wstat(wbuf, (struct _stat *) st));
+}
+*/
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
@@ -197,7 +248,7 @@ CHttpServer::CHttpServer(int port, String const &root)
     }
     
     int enable = 1;
-    if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == SOCKET_ERROR) {
+    if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
         return;
     }
@@ -248,8 +299,10 @@ bool CHttpServer::run()
         RAWTRACE("Waiting for connections...");
         SOCKET conn = accept(m_listener, NULL, NULL);
         if (conn == INVALID_SOCKET) {
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (RHO_NET_ERROR_CODE == EINTR)
                 continue;
+#endif
             
             RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
             return false;
@@ -272,6 +325,13 @@ bool CHttpServer::receive_request(ByteVector &request)
     RAWTRACE("Receiving request...");
     
     // First of all, make socket non-blocking
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+	unsigned long optval = 1;
+	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
+		return false;
+	}
+#else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
         RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
@@ -281,6 +341,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
         return false;
     }
+#endif
     
     char buf[BUF_SIZE];
     for(;;) {
@@ -288,8 +349,10 @@ bool CHttpServer::receive_request(ByteVector &request)
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (e == EINTR)
                 continue;
+#endif
             if (e == EAGAIN) {
                 if (!request.empty())
                     break;
@@ -326,6 +389,13 @@ bool CHttpServer::send_response(String const &response)
 {
     RAWTRACE("Sending response...");
     // First of all, make socket blocking
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+	unsigned long optval = 0;
+	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+		RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
+		return false;
+	}
+#else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
         RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
@@ -335,14 +405,17 @@ bool CHttpServer::send_response(String const &response)
         RAWLOG_ERROR1("Can not set blocking socket mode: %d", errno);
         return false;
     }
+#endif
     
     size_t pos = 0;
     for(;;) {
         int n = send(m_sock, response.c_str() + pos, response.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (e == EINTR)
                 continue;
+#endif
             
             RAWLOG_ERROR1("Can not send response: %d", e);
             return false;
