@@ -13,6 +13,7 @@ import com.xruby.runtime.builtin.AttrReader;
 import com.xruby.runtime.builtin.AttrWriter;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyMethodValue;
 import com.xruby.runtime.lang.RubyKernelModule;
 import com.xruby.runtime.builtin.RubyProc;
 import com.xruby.runtime.builtin.RubyString;
@@ -777,6 +778,17 @@ public class RubyModule extends RubyObject {
         return get_instance_methods(this, args, RubyMethod.NON_PRIVATE);
     }
 
+    //@RubyLevelMethod(name="instance_method")
+    public RubyValue instance_method(RubyValue arg) 
+    {
+    	RubyMethod m = (RubyMethod)methods_.get(arg.toID());
+    	if ( m!= null )
+    		return ObjectFactory.createMethod(this, arg.toStr(), m);
+    	
+        throw new RubyException(RubyRuntime.NameErrorClass, arg.toStr() + " is undefined");
+        //return get_instance_methods(this, args, RubyMethod.NON_PRIVATE);
+    }
+    
     //@RubyLevelMethod(name="public_instance_methods")
     public RubyValue public_instance_methods(RubyArray args) {
         return get_instance_methods(this, args, RubyMethod.PUBLIC);

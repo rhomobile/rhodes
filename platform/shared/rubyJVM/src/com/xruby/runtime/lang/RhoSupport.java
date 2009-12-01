@@ -188,11 +188,14 @@ public class RhoSupport {
         String required_file = arg.toStr();
         if ( required_file.endsWith("/") || required_file.endsWith("\\") )
         	return RubyConstant.QTRUE;
+
+//        if ( required_file.equals("socket") )
+//        	return RubyConstant.QTRUE;
         
         String name = RhoSupport.createMainClassName(required_file);
         try {
         	
-        	LOG.TRACE("require_compiled: " + required_file);
+        	LOG.INFO("require_compiled: " + required_file);
         	
         	Class c = null;
             try {

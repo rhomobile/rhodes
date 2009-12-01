@@ -152,8 +152,8 @@ public class ObjectFactory {
         return r;
     }
 
-    public static RubyMatchData createMatchData(MatchResult m) {
-        return new RubyMatchData(m);
+    public static RubyMatchData createMatchData(MatchResult m,String input) {
+        return new RubyMatchData(m,input);
     }
 
     public static RubyBignum createBignum(HugeInt value) {

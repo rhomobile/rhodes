@@ -1,20 +1,23 @@
 package j2me.util.concurrent.locks;
 
+import com.rho.Mutex;
+
 public class ReentrantLock  
 {
-        public ReentrantLock(){}
-        
-        public void lock() {
-                //TODO: lock
-                throw new RuntimeException("Not Implemented");
-        }
-        public void unlock() {
-                //TODO: unlock
-                throw new RuntimeException("Not Implemented");
-        }
-        public boolean isHeldByCurrentThread() {
-                //TODO: isHeldByCurrentThread
-                throw new RuntimeException("Not Implemented");
-                //return false;
-        }
+    Mutex m_mutex = new Mutex();
+    
+    public ReentrantLock(){}
+    
+    public void lock() 
+    {
+    	m_mutex.Lock();
+    }
+    public void unlock() 
+    {
+    	m_mutex.Unlock();
+    }
+    public boolean isHeldByCurrentThread() 
+    {
+    	return m_mutex.isHeldByCurrentThread();
+    }
 };

@@ -106,6 +106,11 @@ public class RubyExceptionValue extends RubyBasic {
         return backTrace;
     }
 
+    public void addBacktrace(String strTrace)
+    {
+    	backTrace.add(ObjectFactory.createString(strTrace));
+    }
+    
     public Throwable getThrowable(){
         return throwable_;
     }

@@ -18,7 +18,10 @@
 # Do not rely on the implementation written in this file.
 #
 
-require 'socket'
+if defined? RHO_ME
+require 'net/socketME'
+end
+#require 'socket'
 require 'timeout'
 
 module Net # :nodoc:

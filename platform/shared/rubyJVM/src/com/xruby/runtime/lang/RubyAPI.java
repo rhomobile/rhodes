@@ -172,9 +172,27 @@ public class RubyAPI {
 
     private static RubyValue processException( Throwable e, RubyValue receiver, RubyID mid )throws RubyException
     {
-		String className = receiver.getRubyClass() != null ? receiver.getRubyClass().getName() : "Unknown";
-		String strErrMsg = "Call of " + className + "." + mid.toString() + " failed."; 
-		LOG.ERROR( strErrMsg, e);
+		String className = "Unknown::";
+		
+		if ( receiver instanceof RubyClass)
+			className = ((RubyClass)receiver).getName() + "::";
+		else
+		{
+			if ( receiver.getRubyClass() != null )
+				className = receiver.getRubyClass().getName() + ".";
+		}
+		
+		String strTraceMsg = className + mid.toString();
+		String strErrMsg = strTraceMsg + " failed.";
+		
+		if ( e instanceof RubyException )
+		{
+			RubyException exc = (RubyException)e;
+			exc.getRubyValue().addBacktrace(strTraceMsg);
+			LOG.ERROR( strTraceMsg + " failed: " + e.getMessage() );
+		}else
+			LOG.ERROR( strErrMsg, e);
+		
 		throw (e instanceof RubyException ? (RubyException)e : new RubyException( strErrMsg + e.getMessage()));
     }
     
