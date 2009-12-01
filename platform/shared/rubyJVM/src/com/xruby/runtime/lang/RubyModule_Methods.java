@@ -152,6 +152,11 @@ klass.defineMethod( "private_instance_methods", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyModule)receiver).private_instance_methods(args);}
 });
+klass.defineMethod( "instance_method", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyModule)receiver).instance_method(arg);}
+});
+
 klass.definePrivateMethod( "public", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyModule)receiver).modPublic(args);}

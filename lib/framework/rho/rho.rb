@@ -289,7 +289,7 @@ module Rho
                 <p>
       _HTML_STRING_
       body << 'Error: ' << exception.message << "<br/>" if exception
-      body << 'Trace: ' << exception.backtrace.join("\n") if exception
+      body << "Trace: <br/>\n" << exception.backtrace.join("<br/>\n") if exception
       body << <<-_HTML_STRING_
                 </p>    
             </body>

@@ -730,5 +730,18 @@ class String
     end
 	
     alias to_str to_s	
-    alias size length	
+    alias size length
+
+    def slice!(arg1)
+        res = slice(arg1)
+        self[arg1]= "" if res
+        res
+    end
+    
+    def slice!(arg1,arg2)
+        res = slice(arg1,arg2)
+        self[arg1,arg2]= "" if res
+        res
+    end
+    	
 end

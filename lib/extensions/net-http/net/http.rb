@@ -288,9 +288,13 @@ module Net   #:nodoc:
     HTTPVersion = '1.1'
     @newimpl = true
     begin
-      require 'zlib'
-      require 'stringio'  #for our purposes (unpacking gzip) lump these together
-      HAVE_ZLIB=true
+      if defined? RHO_ME
+        HAVE_ZLIB=false      
+      else  
+        require 'zlib'
+        require 'stringio'  #for our purposes (unpacking gzip) lump these together
+        HAVE_ZLIB=true
+      end    
     rescue LoadError
       HAVE_ZLIB=false
     end
@@ -615,6 +619,7 @@ module Net   #:nodoc:
       end
       on_connect
     end
+    
     private :connect
 
     def on_connect
