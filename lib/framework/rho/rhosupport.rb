@@ -9,7 +9,7 @@ module Rho
 #        s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
 #          sprintf("%%%02X", $&.unpack("C")[0])
 #        }
-        s.gsub(/[^a-zA-Z0-9_\-.]/n) do
+        s.to_s.gsub(/[^a-zA-Z0-9_\-.]/n) do
             us = $&
             tmp = ''
             us.each_byte do |uc|
