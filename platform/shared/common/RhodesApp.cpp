@@ -147,7 +147,7 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-#ifndef OS_MACOSX		
+#if !defined(OS_MACOSX) && !defined(RHO_HTTPD_COMMON_IMPL)
         shutdown_poll(m_shttpdCtx);
 #endif //OS_MACOSX
         stop(2000);
@@ -658,7 +658,7 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
     time_t	_current_time = time(0);
     strftime(date, sizeof(date), fmt, localtime(&_current_time));
     strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
-    snprintf(etag, sizeof(etag), "\"%lx.%lx\"", (unsigned long) _current_time, nBodySize);
+    snprintf(etag, sizeof(etag), "\"%lx.%lx\"", (unsigned long)_current_time, (unsigned long)nBodySize);
     
     headers.push_back(HttpHeader("Date", date));
     headers.push_back(HttpHeader("Last-Modified", lm));

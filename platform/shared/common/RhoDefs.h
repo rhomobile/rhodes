@@ -32,7 +32,7 @@
     abort(); \
   } while( __LINE__ != -1 )
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
 #define RHO_USE_OWN_HTTPD
 #define RHO_HTTPD_COMMON_IMPL
 #endif
