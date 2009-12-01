@@ -323,6 +323,12 @@ void CRhodesApp::initHttpServer()
     shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
     shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
 #else
+
+#if defined(_WIN32)
+	WSADATA data;
+	WSAStartup(MAKEWORD(2,2), &data);
+#endif /* _WIN32 */
+
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
     m_httpServer->register_uri("/system/geolocation", callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
