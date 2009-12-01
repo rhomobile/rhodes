@@ -5,9 +5,13 @@ dir = File.dirname(fselfname)
 
 ext = ".rb"
 
+startdir = Dir.pwd
+Dir.chdir dir
+
 Find.find(dir) do |path| 
   if File.extname(path) == ext && path != fselfname
-	seq = RubyVM::InstructionSequence.compile_file(path)
+    relPath = path[dir.length+1,path.length - dir.length]
+	seq = RubyVM::InstructionSequence.compile_file(relPath)
 	arr = seq.to_a
 	
 	newName = File.basename(path).sub('.rb','.iseq')
@@ -19,4 +23,5 @@ Find.find(dir) do |path|
 	fseq.close()
   end
 end
-			  
+
+Dir.chdir startdir			  

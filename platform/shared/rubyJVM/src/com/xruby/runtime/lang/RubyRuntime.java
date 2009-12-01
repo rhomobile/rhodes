@@ -374,6 +374,10 @@ public class RubyRuntime {
         	RubyAPI.setConstant(ObjectFactory.createString(":"), RubyRuntime.FileClass, "PATH_SEPARATOR");
         }
 
+    	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_IGNORECASE), RubyRuntime.RegexpClass, "IGNORECASE");
+    	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_EXTENDED), RubyRuntime.RegexpClass, "EXTENDED");
+    	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_MULTILINE), RubyRuntime.RegexpClass, "MULTILINE");
+        
         //RubyTypeFactory.getObject(RubyENV.class);
         //RHO_ADDED
         RubyClass EnvClass = RubyAPI.defineClass("ENV", RubyRuntime.ObjectClass);

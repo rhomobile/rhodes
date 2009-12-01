@@ -43,6 +43,13 @@ public class Mutex
 	public boolean isLocked()
 	{
 		synchronized (m_mutex) {
+			return m_lockThread != null && !m_lockThread.equals(Thread.currentThread());
+		}
+	}
+	
+	public boolean isHeldByCurrentThread()
+	{
+		synchronized (m_mutex) {
 			return m_lockThread != null && m_lockThread.equals(Thread.currentThread());
 		}
 	}

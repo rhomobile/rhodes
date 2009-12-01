@@ -927,39 +927,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
-	    	//PROF.createSqlCounters();
-	    	
-	        RhoRuby.RhoRubyStart("");
-	        
-	        /*
-	        DBAdapter db = DBAdapter.getInstance();
-	        String sql = "select * from object_values";
-	        
-	        //PROF.flushSqlCounters("First run");
-	        
-	        for (int i = 0; i < 3; ++i) {
-	        	LOG.INFO("Doing select: " + i);
-	        	db.executeSQL(sql);
-	        	LOG.INFO("Done");
-	        	//PROF.flushSqlCounters("SQL operation: " + i);
-	        }
-	        */
-	        
-	        SyncThread sync = SyncThread.Create( new RhoClassFactory() );
-	        if (sync != null) {
-	        	sync.setStatusListener(this);
-	        }
-	        
-	        //Do it in onActivate
-	        //if(!restoreLocation()) {
-	        //	navigateHome();
-	        //}    
-	        
 	        PrimaryResourceFetchThread.Create();
-	        
-	        RhoRuby.RhoRubyInitApp();
-	        
-	        //_mainScreen.updateMenuItemsLabel();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
@@ -1299,6 +1267,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             {
         		LOG.INFO( "Starting HttpServerThread main routine..." );
             	
+    	        RhoRuby.RhoRubyStart("");
+    	        SyncThread sync = null;
+    	        try{
+    	        	sync = SyncThread.Create( new RhoClassFactory() );
+    	        }catch(Exception exc){
+    	        	LOG.ERROR("Create sync failed.", exc);
+    	        }
+    	        if (sync != null) {
+    	        	sync.setStatusListener(_application);
+    	        }
+    	        
+    	        RhoRuby.RhoRubyInitApp();
+        		
         		while( !m_bExit )
         		{
 	        		while(!m_stackCommands.isEmpty())
@@ -1332,7 +1313,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	
     	private static HttpServerThread m_oFetchThread;
     	
-        private RhodesApplication _application;
+        private static RhodesApplication _application;
         private static Callback _callback;
 
         private Event _event;

@@ -120,8 +120,10 @@ public class RubyRegexp extends RubyBasic {
         return initialize(args.get(0), args.get(1));
     }
 
-    private static final int RE_OPTION_IGNORECASE = 1;
-
+    public static final int RE_OPTION_IGNORECASE = 1;
+    public static final int RE_OPTION_EXTENDED   = 0x0020;
+    public static final int RE_OPTION_MULTILINE   = 0x0008;
+    
     private int getFlag(RubyValue mode) {
         if (mode instanceof RubyFixnum) {
             return mode.toInt();
@@ -227,7 +229,7 @@ public class RubyRegexp extends RubyBasic {
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
             updateGlobalVariables(r);
-            return ObjectFactory.createMatchData(r);
+            return ObjectFactory.createMatchData(r,input);
         } else {
             clearGlobalVariables();
             return null;

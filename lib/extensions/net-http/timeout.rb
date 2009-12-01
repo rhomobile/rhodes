@@ -43,11 +43,15 @@ module Timeout
   def timeout(sec, klass = nil)   #:yield: +sec+
     return yield(sec) if sec == nil or sec.zero?
     exception = klass || Class.new(ExitException)
+    @is_stoptimeout = false
     begin
       x = Thread.current
       y = Thread.start {
         sleep sec
-        x.raise exception, "execution expired" if x.alive?
+        
+        if !@is_stoptimeout
+            x.raise exception, "execution expired" if x.alive?
+        end    
       }
       return yield(sec)
     rescue exception => e
@@ -63,6 +67,8 @@ module Timeout
       raise Error, e.message, e.backtrace
     ensure
       if y and y.alive?
+        @is_stoptimeout = true
+      
         y.kill 
         y.join # make sure y is dead.
       end

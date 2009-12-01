@@ -146,7 +146,7 @@ public class RhoLogger {
 	    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
 		    if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
 				//TODO: redirect printStackTrace to our log
-				e.printStackTrace();
+				//e.printStackTrace();
 		    }
 	    }
 
