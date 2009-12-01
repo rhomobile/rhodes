@@ -117,6 +117,8 @@ klass.defineMethod( "[]", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).array_access(args);}
 });
+klass.aliasMethod("slice","[]");
+
 klass.defineMethod( "dump", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).rubyDump();}
@@ -151,7 +153,6 @@ klass.defineMethod( "eql?", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).opEql(arg);}
 });
-
 klass.defineMethod( "delete", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).delete(args);}
