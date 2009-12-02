@@ -523,7 +523,7 @@ class Time
   # modified in this plugin, and we can end up with a different file format in logfiles, etc
   def strftime(date)
   
-    if date == '%m/%d/%Y, %I:%M%p'
+    if LocalizationSimplified::get_cur_locale() == 'en' || date == '%m/%d/%Y, %I:%M%p'
         return old_strftime(date)
     end
     

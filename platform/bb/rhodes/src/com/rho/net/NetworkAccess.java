@@ -4,22 +4,17 @@ import java.io.IOException;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.io.Connection;
+import javax.microedition.io.SocketConnection;
 
-import rhomobile.RhodesApplication;
-import rhomobile.Utilities;
-
-import net.rim.device.api.servicebook.ServiceBook;
-import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.RadioInfo;
-
 import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.bb.BBHttpConnection;
-import com.rho.net.bb.NativeBBHttpConnection;
-
-import net.rim.device.api.io.http.HttpHeaders;
+import net.rim.device.api.servicebook.ServiceRecord;
+import net.rim.device.api.servicebook.ServiceBook;
 
 public class NetworkAccess implements INetworkAccess {
 
@@ -137,8 +132,6 @@ public class NetworkAccess implements INetworkAccess {
 	
 	public IHttpConnection connect(String url) throws IOException 
 	{
-		HttpConnection http = null;
-
 		if ( URI.isLocalHost(url) )
 		{
 			URI uri = new URI(url);
@@ -150,45 +143,61 @@ public class NetworkAccess implements INetworkAccess {
 			url = url.substring(0, fragment);
 		}
 
+		HttpConnection http = (HttpConnection)baseConnect(url);
+		return new BBHttpConnection(http);
+	}
+
+
+	public SocketConnection socketConnect(String strHost, int nPort) throws IOException 
+	{
+		String strUrl = "socket://" + strHost + ":" + Integer.toString(nPort);
+		
+		return (SocketConnection)baseConnect(strUrl);
+	}
+	
+	public Connection baseConnect(String strUrl) throws IOException 
+	{
+		Connection conn = null;
+		
 		//Try wifi first
 		if ( WIFIsuffix != null && isWifiActive() ){
 			try {
-				LOG.INFO(url + WIFIsuffix);
-				http = (HttpConnection) Connector.open(url + WIFIsuffix);
+				LOG.INFO(strUrl + WIFIsuffix);
+				conn = Connector.open(strUrl + WIFIsuffix);
 			} catch (IOException ioe) {
 				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );
 			}
 		}
 		
-		if ( http == null ){
+		if ( conn == null ){
 			/*int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
 			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
 				throw new IOException("Network Data Service Not Available");
 			}*/
 			
 			try {
-				LOG.INFO(url + URLsuffix);
-				http = (HttpConnection) Connector.open(url + URLsuffix);
+				LOG.INFO(strUrl + URLsuffix);
+				conn = Connector.open(strUrl + URLsuffix);
 			} catch (IOException ioe) {
 				
 				if ( URLsuffix.length() > 0 )
 				{
 					try{
-						LOG.INFO(url);
-						http = (HttpConnection) Connector.open(url);
+						LOG.INFO(strUrl);
+						conn = Connector.open(strUrl);
 					} catch (IOException ioe2) {
 						LOG.ERROR("Connector.open exception", ioe2 );
-						if (http != null)
-							http.close();
-						http = null;
+						if (conn != null)
+							conn.close();
+						conn = null;
 						throw ioe2;
 					}
 				}else
 				{				
 					LOG.ERROR("Connector.open exception", ioe );
-					if (http != null)
-						http.close();
-					http = null;
+					if (conn != null)
+						conn.close();
+					conn = null;
 					throw ioe;
 				}
 			}catch(Exception exc)
@@ -197,9 +206,9 @@ public class NetworkAccess implements INetworkAccess {
 			}
 		}
 		
-		return new BBHttpConnection(http);
+		return conn;
 	}
-
+	
 	public void close() {
 	}
 
