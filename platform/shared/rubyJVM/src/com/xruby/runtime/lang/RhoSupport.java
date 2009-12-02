@@ -189,8 +189,8 @@ public class RhoSupport {
         if ( required_file.endsWith("/") || required_file.endsWith("\\") )
         	return RubyConstant.QTRUE;
 
-//        if ( required_file.equals("socket") )
-//        	return RubyConstant.QTRUE;
+        if ( required_file.equals("socket") || required_file.equals("strscan") || required_file.equals("enumerator") )
+        	return RubyConstant.QTRUE;
         
         String name = RhoSupport.createMainClassName(required_file);
         try {
