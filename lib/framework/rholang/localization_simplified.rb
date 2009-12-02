@@ -6,21 +6,27 @@
 
 module LocalizationSimplified
   @@ignore = "\xFF\xFF\xFF\xFF" # %% == Literal "%" character
+  @@cur_locale = 'en'
   # substitute all daynames and monthnames with localized names
   # from RUtils plugin
   def self.localize_strftime(date='%d.%m.%Y', time='')
-    date.gsub!(/%%/, @@ignore)
-    date.gsub!(/%a/, LocalizationSimplified::DateHelper::AbbrDaynames[time.wday])
-    date.gsub!(/%A/, LocalizationSimplified::DateHelper::Daynames[time.wday])
-    date.gsub!(/%b/, LocalizationSimplified::DateHelper::AbbrMonthnames[time.mon])
-    date.gsub!(/%B/, LocalizationSimplified::DateHelper::Monthnames[time.mon])
+    date.gsub!('%%', @@ignore)
+    date.gsub!('%a', LocalizationSimplified::DateHelper::AbbrDaynames[time.wday])
+    date.gsub!('%A', LocalizationSimplified::DateHelper::Daynames[time.wday])
+    date.gsub!('%b', LocalizationSimplified::DateHelper::AbbrMonthnames[time.mon])
+    date.gsub!('%B', LocalizationSimplified::DateHelper::Monthnames[time.mon])
     date.gsub!(@@ignore, '%%')
+  end
+  
+  def self.get_cur_locale
+    @@cur_locale  
   end
   
   def self.requre_loc(file,check_exist)
       curLocale = System::get_locale()
       puts 'Current locale: ' + curLocale.to_s
-  
+      @@cur_locale = curLocale
+      
       if check_exist
         begin
             require file + curLocale if File.exist?(file + curLocale + '.iseq')
