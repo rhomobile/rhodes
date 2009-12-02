@@ -121,8 +121,6 @@ void CRhodesApp::run()
 
 #if !defined(RHO_HTTPD_COMMON_IMPL)
     shttpd_fini(m_shttpdCtx);
-#else
-    // TODO:
 #endif
 
 //#if defined(OS_WINCE)
@@ -147,9 +145,11 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-#if !defined(OS_MACOSX) && !defined(RHO_HTTPD_COMMON_IMPL)
+#if !defined(RHO_HTTPD_COMMON_IMPL)
         shutdown_poll(m_shttpdCtx);
-#endif //OS_MACOSX
+#else
+		m_httpServer->stop();
+#endif //RHO_HTTPD_COMMON_IMPL
         stop(2000);
     }
 }
