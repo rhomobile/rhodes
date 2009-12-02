@@ -237,7 +237,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_port(port), m_root(root)
+    :m_exit(false), m_port(port), m_root(root)
 {
     RAWTRACE("Open listening socket...");
     
@@ -273,8 +273,13 @@ CHttpServer::CHttpServer(int port, String const &root)
 
 CHttpServer::~CHttpServer()
 {
-    RAWTRACE("Close listening socket");
-    closesocket(m_listener);
+}
+
+void CHttpServer::stop()
+{
+	m_exit = true;
+	RAWTRACE("Close listening socket");
+	closesocket(m_listener);
 }
 
 void CHttpServer::register_uri(String const &uri, CHttpServer::callback_t const &callback)
@@ -298,6 +303,10 @@ bool CHttpServer::run()
     for(;;) {
         RAWTRACE("Waiting for connections...");
         SOCKET conn = accept(m_listener, NULL, NULL);
+		if (m_exit) {
+			RAWTRACE("Stop HTTP server");
+			return true;
+		}
         if (conn == INVALID_SOCKET) {
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (RHO_NET_ERROR_CODE == EINTR)

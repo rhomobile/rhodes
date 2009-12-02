@@ -71,6 +71,7 @@ public:
     void register_uri(String const &uri, callback_t const &callback);
     
     bool run();
+	void stop();
     
     bool send_response(String const &response);
     
@@ -99,6 +100,7 @@ private:
     callback_t registered(String const &uri);
     
 private:
+	bool m_exit;
     int m_port;
     String m_root;
     SOCKET m_listener;
