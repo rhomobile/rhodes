@@ -177,6 +177,12 @@ public class Rhodes extends Activity {
 					out.write(buf, 0, len);
 				
 			}
+			catch (FileNotFoundException e) {
+				if (in != null)
+					throw e;
+				
+				target.createNewFile();
+			}
 			finally {
 				if (in != null)
 					in.close();
@@ -262,14 +268,14 @@ public class Rhodes extends Activity {
 				
 				FileSource fs = new FileSource(getResources().getAssets());
 				
-				String folders[] = {"apps", "lib", "db", "hash", "name"};
-				for (int i = 0; i != folders.length; ++i) {
-					String folder = folders[i];
-					File phf = new File(phRootPath, folder);
-					File sdf = new File(sdRootPath, folder);
-					Log.d(TAG, "Copy '" + folder + "' to '" + sdRootPath + "'");
-					copyFromBundle(fs, folder, sdf, removeFiles);
-					if (DB_ON_SDCARD || !folder.equals("db")) {
+				String items[] = {"apps", "lib", "db", "RhoLog.txt", "RhoLog.txt_pos", "hash", "name"};
+				for (int i = 0; i != items.length; ++i) {
+					String item = items[i];
+					File phf = new File(phRootPath, item);
+					File sdf = new File(sdRootPath, item);
+					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
+					copyFromBundle(fs, item, sdf, removeFiles);
+					if (DB_ON_SDCARD || !item.equals("db")) {
 						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 								phf.getAbsolutePath() + "'");
 						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
