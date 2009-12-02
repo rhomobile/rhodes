@@ -54,14 +54,24 @@ def cc_get_ccbin(filename)
   end
 end
 
-def cc_deps(filename, additional)
+def cc_deps(filename, objdir, additional)
   #puts "Check #{filename}..."
+  depfile = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".d")
+  if File.exists? depfile
+    if FileUtils.uptodate? depfile, File.read(depfile).gsub(/(^\s+|\s+$)/, '').split(/\s+/)
+      return []
+    end
+  end
   ccbin = cc_get_ccbin(filename)
   args = cc_def_args
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
   out.gsub!(/^[^:]*:\s*/, '').gsub!(/\\\n/, ' ')
   #out = File.expand_path(__FILE__) + ' ' + out
+
+  mkdir_p objdir unless File.directory? objdir
+  File.open(depfile, "w") { |f| f.write(out) }
+
   out.split(/\s+/)
 end
 
@@ -75,7 +85,7 @@ def cc_compile(filename, objdir, additional = nil)
   filename.chomp!
   objname = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".o")
 
-  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, additional)
+  return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
 
   mkdir_p objdir unless File.directory? objdir
 
@@ -237,7 +247,7 @@ namespace "config" do
 
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
-    $native_libs = ["sqlite", "curl", "stlport", "shttpd", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
     $objdir = {}
     $libname = {}
@@ -372,20 +382,6 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libshttpd => "config:android" do
-      srcdir = File.join $shareddir, "shttpd", "src"
-      objdir = $objdir["shttpd"]
-      libname = $libname["shttpd"]
-      args = []
-      args << "-I#{srcdir}"
-      args << "-I#{srcdir}/../.."
-
-      File.read(File.join($builddir, "libshttpd_build.files")).each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
-      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
-    end
-
     task :libstlport => "config:android" do
       objdir = $objdir["stlport"]
       libname = $libname["stlport"]
@@ -491,7 +487,7 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libshttpd, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :librhodes => :libs do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
@@ -521,7 +517,6 @@ namespace "build" do
       args = []
       args << "-L#{$bindir}/libs"
       args << "-lrhomain"
-      args << "-lshttpd"
       args << "-lruby"
       args << "-lrhosync"
       args << "-lrhodb"
