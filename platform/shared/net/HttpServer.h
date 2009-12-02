@@ -12,6 +12,9 @@ typedef int SOCKET;
 #  define RHO_NET_ERROR_CODE errno
 #  define closesocket close
 #else
+#  if defined(OS_WINCE)
+#    include <winsock.h>
+#  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
 

@@ -4,6 +4,14 @@
 
 #if !defined(OS_WINCE)
 #include <sys/stat.h>
+#else
+#include "CompatWince.h"
+
+#ifdef EAGAIN
+#undef EAGAIN
+#endif
+#define EAGAIN EWOULDBLOCK
+
 #endif
 
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
@@ -22,38 +30,6 @@ typedef unsigned __int16 uint16_t;
 #  endif
 
 #endif
-
-/*
-static int stat(const char *path, struct _stat *st)
-{
-	char	buf[FILENAME_MAX], *p;
-	wchar_t	wbuf[FILENAME_MAX];
-
-	const char *s1 = path;
-	char *s2 = &buf[0];
-	for (; s1 - path < sizeof(buf) && *s1 != '\0'; ++s1, ++s2)
-		*s2 = *s1;
-	*s2 = '\0';
-	
-	// Fix directory separators
-	p = &buf[0];
-	for (; *p != '\0'; p++) {
-		if (*p == '/')
-			*p = '\\';
-		if (*p == '\\')
-			while (p[1] == '\\' || p[1] == '/') 
-				(void) memmove(p + 1, p + 2, strlen(p + 2) + 1);
-	}
-
-	p = buf + strlen(buf) - 1;
-	while (p > buf && *p == '\\' && p[-1] != ':')
-		*p-- = '\0';
-
-	MultiByteToWideChar(CP_UTF8, 0, buf, -1, wbuf, sizeof(wbuf));
-
-	return (_wstat(wbuf, (struct _stat *) st));
-}
-*/
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
