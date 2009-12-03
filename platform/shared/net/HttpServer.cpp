@@ -427,7 +427,7 @@ bool CHttpServer::send_response(String const &response)
 #endif
     
     size_t pos = 0;
-    for(;;) {
+    for(; pos < response.size();) {
         int n = send(m_sock, response.c_str() + pos, response.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
@@ -663,21 +663,10 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     if (!parse_route(uri, route))
         return false;
     
-    struct stat st;
-    //is this an actual file or folder
-    if (stat((m_root + "/" + uri).c_str(), &st) != 0)
-        return true;      
-    
-    //is this a folder
-    if (!S_ISDIR(st.st_mode))
-        return false;
-    
     //check if there is controller.rb to run
-    size_t len = uri.size();
-    String slash = uri[len-1] == '\\' || uri[len-1] == '/' ? "" : "/";
-    
-    String filename = m_root + "/" + uri + slash + "controller.iseq";
-    if (stat(filename.c_str(), &st) != 0 || S_ISDIR(st.st_mode))
+	struct stat st;
+    String filename = m_root + "/" + route.application + "/" + route.model + "/controller.iseq";
+    if (stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode))
         return false;
     
     RAWLOG_INFO1("Run controller on this url: %s", uri.c_str());
