@@ -223,6 +223,16 @@ namespace "build" do
   
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
+
+      # RubyIDContainer.* files takes half space of jar why we need it?
+      #Jake.unjar("../RhoBundle.jar", $tmpdir)
+      #Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
+      #rm "#{$bindir}/RhoBundle.jar"
+      #chdir $tmpdir
+      #puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
+      #rm_rf $tmpdir
+      #mkdir_p $tmpdir
+      #chdir $srcdir
       
       puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
