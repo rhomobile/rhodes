@@ -146,7 +146,6 @@ namespace "run" do
      end
     
      simrhodes = File.join($simapp,$guid)
-     rm_rf simrhodes
    
      mkdir_p File.join(simrhodes,"Documents")
      mkdir_p File.join(simrhodes,"Library","Preferences")
