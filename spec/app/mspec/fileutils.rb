@@ -1227,10 +1227,9 @@ module FileUtils
     end
 
     def copy(dest)
-      case
-      when file?
+      if file?
         copy_file dest
-      when directory?
+      elsif directory?
         if !File.exist?(dest) and /^#{Regexp.quote(path)}/ =~ File.dirname(dest)
           raise ArgumentError, "cannot copy directory %s to itself %s" % [path, dest]
         end
@@ -1239,21 +1238,21 @@ module FileUtils
         rescue
           raise unless File.directory?(dest)
         end
-      when symlink?
+      elsif symlink?
         File.symlink File.readlink(path()), dest
-      when chardev?
+      elsif chardev?
         raise "cannot handle device file" unless File.respond_to?(:mknod)
         mknod dest, ?c, 0666, lstat().rdev
-      when blockdev?
+      elsif blockdev?
         raise "cannot handle device file" unless File.respond_to?(:mknod)
         mknod dest, ?b, 0666, lstat().rdev
-      when socket?
+      elsif socket?
         raise "cannot handle socket" unless File.respond_to?(:mknod)
         mknod dest, nil, lstat().mode, 0
-      when pipe?
+      elsif pipe?
         raise "cannot handle FIFO" unless File.respond_to?(:mkfifo)
         mkfifo dest, 0666
-      when door?
+      elsif door?
         raise "cannot handle door: #{path()}"
       else
         raise "unknown file type: #{path()}"

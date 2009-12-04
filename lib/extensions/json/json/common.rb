@@ -34,9 +34,8 @@ module JSON
     def deep_const_get(path) # :nodoc:
       path = path.to_s
       path.split(/::/).inject(Object) do |p, c|
-        case
-        when c.empty?             then p
-        when p.const_defined?(c)  then p.const_get(c)
+        if c.empty?             then p
+        elsif p.const_defined?(c)  then p.const_get(c)
         else                      raise ArgumentError, "can't find const #{path}"
         end
       end

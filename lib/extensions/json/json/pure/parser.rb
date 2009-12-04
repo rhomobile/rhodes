@@ -92,16 +92,15 @@ module JSON
         reset
         obj = nil
         until eos?
-          case
-          when scan(OBJECT_OPEN)
+          if scan(OBJECT_OPEN)
             obj and raise ParserError, "source '#{peek(20)}' not in JSON!"
             @current_nesting = 1
             obj = parse_object
-          when scan(ARRAY_OPEN)
+          elsif scan(ARRAY_OPEN)
             obj and raise ParserError, "source '#{peek(20)}' not in JSON!"
             @current_nesting = 1
             obj = parse_array
-          when skip(IGNORE)
+          elsif skip(IGNORE)
             ;
           else
             raise ParserError, "source '#{peek(20)}' not in JSON!"
@@ -151,34 +150,33 @@ module JSON
       end
 
       def parse_value
-        case
-        when scan(FLOAT)
+        if scan(FLOAT)
           Float(self[1])
-        when scan(INTEGER)
+        elsif scan(INTEGER)
           Integer(self[1])
-        when scan(TRUE)
+        elsif scan(TRUE)
           true
-        when scan(FALSE)
+        elsif scan(FALSE)
           false
-        when scan(NULL)
+        elsif scan(NULL)
           nil
-        when (string = parse_string) != UNPARSED
+        elsif (string = parse_string) != UNPARSED
           string
-        when scan(ARRAY_OPEN)
+        elsif scan(ARRAY_OPEN)
           @current_nesting += 1
           ary = parse_array
           @current_nesting -= 1
           ary
-        when scan(OBJECT_OPEN)
+        elsif scan(OBJECT_OPEN)
           @current_nesting += 1
           obj = parse_object
           @current_nesting -= 1
           obj
-        when @allow_nan && scan(NAN)
+        elsif @allow_nan && scan(NAN)
           NaN
-        when @allow_nan && scan(INFINITY)
+        elsif @allow_nan && scan(INFINITY)
           Infinity
-        when @allow_nan && scan(MINUS_INFINITY)
+        elsif @allow_nan && scan(MINUS_INFINITY)
           MinusInfinity
         else
           UNPARSED
@@ -191,8 +189,7 @@ module JSON
         result = []
         delim = false
         until eos?
-          case
-          when (value = parse_value) != UNPARSED
+          if (value = parse_value) != UNPARSED
             delim = false
             result << value
             skip(IGNORE)
@@ -203,12 +200,12 @@ module JSON
             else
               raise ParserError, "expected ',' or ']' in array at '#{peek(20)}'!"
             end
-          when scan(ARRAY_CLOSE)
+          elsif scan(ARRAY_CLOSE)
             if delim
               raise ParserError, "expected next element in array at '#{peek(20)}'!"
             end
             break
-          when skip(IGNORE)
+          elsif skip(IGNORE)
             ;
           else
             raise ParserError, "unexpected token in array at '#{peek(20)}'!"
@@ -223,8 +220,7 @@ module JSON
         result = {}
         delim = false
         until eos?
-          case
-          when (string = parse_string) != UNPARSED
+          if (string = parse_string) != UNPARSED
             skip(IGNORE)
             unless scan(PAIR_DELIMITER)
               raise ParserError, "expected ':' in object at '#{peek(20)}'!"
@@ -244,7 +240,7 @@ module JSON
             else
               raise ParserError, "expected value in object at '#{peek(20)}'!"
             end
-          when scan(OBJECT_CLOSE)
+          elsif scan(OBJECT_CLOSE)
             if delim
               raise ParserError, "expected next name, value pair in object at '#{peek(20)}'!"
             end
@@ -254,7 +250,7 @@ module JSON
               result = klass.json_create(result)
             end
             break
-          when skip(IGNORE)
+          elsif skip(IGNORE)
             ;
           else
             raise ParserError, "unexpected token in object at '#{peek(20)}'!"
