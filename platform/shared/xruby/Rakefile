@@ -1,0 +1,119 @@
+NAME = "xruby"
+VER = "0.3.3"
+
+ANTLR = "lib/antlr/antlr-2.7.6.jar"
+BUILDDIR = "build"
+TMPDIR = "tmp"
+ASM = "lib/asm/asm-all-3.0.jar"
+COMCLI = "lib/commons-cli/commons-cli-1.0.jar"
+ORO = "lib/jakarta-oro/jakarta-oro-2.0.8.jar"
+XRUBY = "#{NAME}-#{VER}.jar"
+
+require 'pathname'
+
+if RUBY_PLATFORM =~ /(win|w)32$/
+  SEP = ";"
+else
+  SEP = ":"
+end
+
+  
+
+def classpath(args)
+  cp = ""
+  args.each do |x|
+    cp += x + SEP
+  end
+  cp
+end
+
+def run(cmd,args)
+   argstr = " "
+    args.each do |x|
+      x = x.to_s
+      argstr +=  x + " "
+    end
+     retval = ""
+#     puts "CMD: " + cmd + argstr
+     bb = IO.popen(cmd + argstr) do |bb|
+        b = bb.readlines
+        retval = b.join
+     end
+     retval
+end
+
+def unjar(src,target)
+  curr = pwd
+  p = Pathname.new(src)
+  src = p.realpath
+
+  cd(target, :verbose => false) {run("jar",["xf",src])}
+
+end
+
+desc "Generates parser"
+task :parser do
+  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.g"]) 
+  if $? != 0 
+    puts "Error generating parser"
+    exit 1
+  end 
+end
+
+desc "Generates tree parser"
+task :treeparser do
+  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.tree.g"]) 
+  if $? != 0 
+    puts "Error generating tree parser"
+    exit 1
+  end 
+end
+
+desc "Compile sources"
+task :compile => [:parser,:treeparser] do
+  mkdir_p BUILDDIR, :verbose => false
+  puts "Compiling sources..."
+  puts run("javac",["-cp", classpath([ANTLR,ASM,COMCLI,ORO]),"-d",BUILDDIR,"-sourcepath","src","-g", "src/com/xruby/Main.java"])
+end
+
+desc "Generate method class"
+task :method => :compile do
+  puts run("java",["-Dxruby.method.dump=true","-Dxruby.method.dump_path="+BUILDDIR,"-cp", classpath([ANTLR,ASM,COMCLI,ORO,BUILDDIR]), "com.xruby.Main", "-e 'puts'"])
+end
+
+desc "Generate the distribution"
+task :dist => :method do
+  puts "Creating #{XRUBY}..."
+  mkdir_p TMPDIR, :verbose => false
+ 
+  unjar(ANTLR,TMPDIR)
+  unjar(ASM,TMPDIR)
+  unjar(COMCLI,TMPDIR)
+  unjar(ORO,TMPDIR)
+
+
+  cp_r BUILDDIR + "/com", TMPDIR, :verbose => false
+
+  File.open("manifest","w") { |f| f.write "Main-Class: com.xruby.Main\n" }
+
+  run("jar", ["cfm","#{XRUBY}", "manifest", "-C", TMPDIR, "."])
+
+  rm "manifest", :verbose => false
+  rm_rf TMPDIR, :verbose => false
+
+end
+
+desc "Cleans all"
+task :clean do
+  rm_rf BUILDDIR
+  rm_rf TMPDIR
+  rm_rf XRUBY
+  rm_rf "builtin.jar"
+end
+
+desc "Compile builtin.rb"
+task :builtin => :dist do
+  puts "Running #{XRUBY}..."
+  puts run("java", ["-jar",XRUBY,"-c","src/builtin.rb"])
+end
+

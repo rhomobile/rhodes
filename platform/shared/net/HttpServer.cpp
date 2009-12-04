@@ -60,6 +60,40 @@ static bool isfile(String const &path)
     return stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
 }
 
+static String decode(String const &url)
+{
+    String ret;
+    for (const char *s = url.c_str(); *s != '\0'; ++s) {
+        if (*s != '%') {
+            ret.push_back(*s);
+            continue;
+        }
+        
+        unsigned int c1 = (unsigned char)*++s;
+        if (c1 >= (unsigned char)'0' && c1 <= (unsigned char)'9')
+            c1 = c1 - (unsigned char)'0';
+        else if (c1 >= (unsigned char)'a' && c1 <= (unsigned char)'f')
+            c1 = c1 - (unsigned char)'a' + 10;
+        else if (c1 >= (unsigned char)'A' && c1 <= (unsigned char)'F')
+            c1 = c1 - (unsigned char)'A' + 10;
+        else
+            break;
+        unsigned int c2 = (unsigned char)*++s;
+        if (c2 >= (unsigned char)'0' && c2 <= (unsigned char)'9')
+            c2 = c2 - (unsigned char)'0';
+        else if (c2 >= (unsigned char)'a' && c2 <= (unsigned char)'f')
+            c2 = c2 - (unsigned char)'a' + 10;
+        else if (c2 >= (unsigned char)'A' && c2 <= (unsigned char)'F')
+            c2 = c2 - (unsigned char)'A' + 10;
+        else
+            break;
+        
+        char c = (char)((c1 << 4) | c2);
+        ret.push_back(c);
+    }
+    return ret;
+}
+
 static bool isindex(String const &uri)
 {
     static struct {
@@ -393,7 +427,7 @@ bool CHttpServer::send_response(String const &response)
 #endif
     
     size_t pos = 0;
-    for(;;) {
+    for(; pos < response.size();) {
         int n = send(m_sock, response.c_str() + pos, response.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
@@ -547,6 +581,7 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
         return false;
     
     uri.assign(s, e);
+    uri = decode(uri);
     
     query.clear();
     if (*e == '?') {
@@ -628,21 +663,10 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     if (!parse_route(uri, route))
         return false;
     
-    struct stat st;
-    //is this an actual file or folder
-    if (stat((m_root + "/" + uri).c_str(), &st) != 0)
-        return true;      
-    
-    //is this a folder
-    if (!S_ISDIR(st.st_mode))
-        return false;
-    
     //check if there is controller.rb to run
-    size_t len = uri.size();
-    String slash = uri[len-1] == '\\' || uri[len-1] == '/' ? "" : "/";
-    
-    String filename = m_root + "/" + uri + slash + "controller.iseq";
-    if (stat(filename.c_str(), &st) != 0 || S_ISDIR(st.st_mode))
+	struct stat st;
+    String filename = m_root + "/" + route.application + "/" + route.model + "/controller.iseq";
+    if (stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode))
         return false;
     
     RAWLOG_INFO1("Run controller on this url: %s", uri.c_str());

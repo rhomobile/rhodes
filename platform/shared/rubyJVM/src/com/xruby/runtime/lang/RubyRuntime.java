@@ -95,6 +95,7 @@ public class RubyRuntime {
     public static RubyClass RingtoneManagerClass;
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
+    public static RubyClass TCPSocketClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -259,6 +260,7 @@ public class RubyRuntime {
         RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
+        TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
         RubyMutex.initMethods(MutexClass);        
 //      RhoPhonebook.initMethods(PhonebookClass);
         

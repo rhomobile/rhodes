@@ -68,6 +68,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
      */
     private final byte[] _bytes;
     private boolean m_bReadByByte = false;
+    private boolean m_bStopReadByTimeout = false;
     /**
      * Creates a UTF-8 reader having a byte buffer of moderate capacity (2048).
      */
@@ -85,6 +86,10 @@ public final class UTF8StreamReader extends Reader implements Reusable {
         m_bReadByByte = bReadByByte;
     }
 
+    public void setStopReadByTimeout(boolean b)
+    {
+    	m_bStopReadByTimeout = b;
+    }
     /**
      * Sets the input stream to use for reading until this reader is closed.
      * For example:[code]
@@ -212,11 +217,34 @@ public final class UTF8StreamReader extends Reader implements Reusable {
 
 	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
-		while (bytesRead < (a.length)) {
-			int read = in.read();// a, 0, a.length );
-			if (read < 0) {
-				return bytesRead > 0 ? bytesRead : -1;
+		byte[] buf = new byte[1];
+		while (bytesRead < (a.length)) 
+		{
+			int read = 0;
+			try{
+				if ( m_bStopReadByTimeout )
+				{
+					read = in.read( buf, 0, buf.length );
+					if (read < 0) {
+						return bytesRead > 0 ? bytesRead : -1;
+					}
+
+					read = buf[0];
+				}else
+				{
+					read = in.read();// a, 0, a.length );
+					if (read < 0) {
+						return bytesRead > 0 ? bytesRead : -1;
+					}
+				}
+			}catch(IOException exc)
+			{
+				if (m_bStopReadByTimeout)
+					return bytesRead > 0 ? bytesRead : -1;
+				
+				throw exc;
 			}
+			
 			a[bytesRead] = (byte)read;
 			bytesRead ++;
 		}
