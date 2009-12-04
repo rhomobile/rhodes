@@ -187,12 +187,6 @@ namespace "config" do
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
 
-    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0"}
-    $androidtargets = {2 => 1, 3 => 2, 4 => 3, 5 => 4}
-
-    $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
-    $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
-
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
@@ -221,6 +215,10 @@ namespace "config" do
       end
     end
 
+    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0"}
+    $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
+    $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
+
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
     $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
     $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" + $bat_ext )
@@ -235,6 +233,26 @@ namespace "config" do
     $keystore = $keystoredir + "/keystore"
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass
+
+    # Detect android targets
+    if $androidtargets.nil?
+      #$androidtargets = {2 => 1, 3 => 2, 4 => 3, 5 => 4}
+      $androidtargets = {}
+      id = nil
+
+      `#{$androidbin} list targets`.split(/\n/).each do |line|
+        line.chomp!
+
+        if line =~ /^id:\s+([0-9]+)/
+          id = $1
+        end
+
+        if line =~ /^\s+API\s+level:\s+([0-9]+)$/ and not id.nil?
+          apilevel = $1
+          $androidtargets[apilevel.to_i] = id.to_i
+        end
+      end
+    end
 
     $ndkgccver = "4.2.1"
     $ndktools = $androidndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"

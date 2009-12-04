@@ -1,0 +1,37 @@
+Document TODO list:
+
+Overview:
+Components in the debugger: EventHandler, Instructions and EventRequestHandler, and SourceMgr. What's their
+roles.
+
+Chapters/Sections:
+1. Sth about JVM's ThreadFrame, stack of the threads, this is important, because we use that to locate the
+   current position.
+   e.g. ThreadReference.frames()
+2. Requests in JDI arch. especially ClassParepareRequest, ThreadStart/DeathRequest, JVMStartRequest,
+   and BreakpointRequest(Locatable). How to we handle them: set, remove, enable, what's the roles of them?
+3. Class diagrams showing the relationship among these classes.
+4. State chart of Debugger
+5. How to extend this debugger. Say, the plugin for some a IDE, or a standalone GUI debugger
+6. Sequence of some important instructions, e.g. run, stop, list ...
+7. Simple Manual
+8. How do we record method and block
+
+Design&Implementation TODO: List
+Global:
+TODO: We need support multiple files
+TODO: We need more XRubyXXX Exceptions, including XRubyRuntimeException
+
+Block.java
+Reason, script file's name is required, and its name is not always end with ".rb"
+// TODO: maybe we need create a global variable to keep current script name
+// TODO: Add a new global helper method getCurrentScriptName(). We need fix this in the feature.
+
+Start options
+SourceCodeMgr
+// TODO: We should add a smap option in start options
+
+I've changed the position of .smap file, so:
+!!! Change the algorithm for searching smap file. Refer to the source code of springframework
+
+// TODO: Add comments as possible as I could
