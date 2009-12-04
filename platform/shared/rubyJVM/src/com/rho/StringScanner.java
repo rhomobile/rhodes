@@ -57,6 +57,11 @@ public class StringScanner extends RubyBasic {
     public RubyValue check(RubyValue regex) {
         return scan(regex, false, true, true);
     }
+
+    //@RubyLevelMethod(name = "match?")
+    public RubyValue ismatch(RubyValue regex) {
+        return scan(regex, false, false, true);
+    }
     
     //@RubyLevelMethod(name = "string")
     public RubyString string() {
@@ -192,6 +197,10 @@ public class StringScanner extends RubyBasic {
 		klass.defineMethod( "peek", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((StringScanner)receiver).peek(arg);}
+		});
+		klass.defineMethod( "match?", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).ismatch(arg);}
 		});
 		
 	}
