@@ -40,18 +40,18 @@ class SettingsController < Rho::RhoController
         render :action => :wait
       rescue Rho::RhoError => e
         @msg = e.message
-        render :action => :login, :query => {:msg => @msg}
+        render :action => :login
       end
     else
       @msg = Rho::RhoError.err_message(Rho::RhoError::ERR_UNATHORIZED) unless @msg && @msg.length > 0
-      render :action => :login, :query => {:msg => @msg}
+      render :action => :login
     end
   end
   
   def logout
     SyncEngine.logout
     @msg = "You have been logged out."
-    render :action => :login, :query => {:msg => @msg}
+    render :action => :login
   end
   
   def reset
