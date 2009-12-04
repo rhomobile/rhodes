@@ -1537,6 +1537,12 @@ public final class Perl5Compiler implements PatternCompiler {
           __modifierFlags[0] |= posFlags[0];
           __modifierFlags[0] &= ~negFlags[0];
 
+          if ( value == ':' )
+          {
+        	  paren = value;        	  
+        	  break;
+          }
+          
           if(value != ')')
             throw new MalformedPatternException(
                "Sequence (?" + value + "...) not recognized");

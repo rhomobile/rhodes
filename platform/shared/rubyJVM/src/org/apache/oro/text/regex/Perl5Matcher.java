@@ -1648,7 +1648,21 @@ public final class Perl5Matcher implements PatternMatcher {
     return false;
   }
 
-
+//RHO
+  //move offset in case of success 
+  public boolean matchesPrefixEx(PatternMatcherInput input, Pattern pattern) 
+  {
+	  if ( matchesPrefix(input, pattern ) )
+	  {
+	      input.setCurrentOffset(__endMatchOffsets[0]);
+	      input.setMatchOffsets(__beginMatchOffsets[0], __endMatchOffsets[0]);
+	      
+	      return true;
+	  }
+	  return false;
+  }
+  
+//RHO  
 
   /**
    * Determines if a string contains a pattern.  If the pattern is

@@ -242,4 +242,26 @@ public class RubyFloat extends RubyNumeric {
 		return ObjectFactory.createBoolean(Double.isNaN(this.value_));
 	}
 	
+    //@RubyLevelMethod(name="**")
+    public RubyValue pow(RubyValue v) {
+    	if (v instanceof RubyFixnum) {
+    		long p = ((RubyFixnum)v).toLong();
+    		if (p == 0) {
+    			return ObjectFactory.FIXNUM1;
+    		} else if (p == 1) {
+    			return this;
+    		}
+    		//if (p > 0) {
+    		//	HugeInt b = HugeInt.valueOf(this.value_);
+    		//	return RubyBignum.bignorm(b.pow(p));
+    		//}
+    		
+    		return ObjectFactory.createFloat(MathEx.pow(this.value_, p));
+    	} else if (v instanceof RubyFloat) {
+    		return ObjectFactory.createFloat(MathEx.pow(this.value_, v.toFloat()));
+    	}
+    	
+    	return coerceBin(RubyID.powID, v);
+    }
+	
 }

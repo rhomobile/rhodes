@@ -10,7 +10,7 @@ public class StringScanner extends RubyBasic {
 
 	RubyString str;
 	PatternMatcherInput input;
-	PatternMatcher matcher;
+	Perl5Matcher matcher;
 	MatchResult result;
     int scannerFlags = 0;
     private static final int MATCHED_STR_SCN_F = 1 << 11;     
@@ -49,6 +49,10 @@ public class StringScanner extends RubyBasic {
         return scan(regex, true, true, true);
     }
 
+    public RubyValue skip(RubyValue regex) {
+        return scan(regex, true, false, true);
+    }
+    
   //@RubyLevelMethod(name = "check")
     public RubyValue check(RubyValue regex) {
         return scan(regex, false, true, true);
@@ -59,11 +63,34 @@ public class StringScanner extends RubyBasic {
         return str;
     }
 
+    //@RubyLevelMethod(name = "peek")
+    public RubyString peek(RubyValue val) 
+    {
+    	int nLen = val.toInt();
+    	int nOffset = input.getCurrentOffset();
+    	if ( nOffset >= str.length() )
+    		return ObjectFactory.createString("");
+    	
+    	if (nOffset+nLen > str.length() )
+    		nLen = str.length()-nOffset;
+    	
+    	String strRes = str.toStr().substring(nOffset, nOffset+nLen);
+        return ObjectFactory.createString(strRes);
+    }
+    
     //@RubyLevelMethod(name = "string=")
     public RubyValue set_string(RubyValue str) {
     	initialize(str);
         clearMatched();
         return str;
+    }
+
+    public RubyValue reset() {
+    	//input = new PatternMatcherInput(str.toString());
+    	//matcher = new Perl5Matcher();
+    	
+        //clearMatched();
+        return this;
     }
     
     //@RubyLevelMethod(name="[]")
@@ -92,7 +119,7 @@ public class StringScanner extends RubyBasic {
         RubyRegexp re = ((RubyRegexp)regex);
         boolean bRes = false;
         int nOffset = input.getCurrentOffset();
-       	bRes = matcher.contains(input, re.getPattern() );
+       	bRes = matcher.matchesPrefixEx(input, re.getPattern() );//matcher.contains(input, re.getPattern() );
         
         if ( !bRes )
         	return RubyConstant.QNIL;
@@ -102,7 +129,13 @@ public class StringScanner extends RubyBasic {
         
         result = matcher.getMatch();
         setMatched();
-        return  getstr ? getResult(ObjectFactory.createInteger(0)) : RubyConstant.QTRUE;
+        if ( getstr )
+        	return getResult(ObjectFactory.createInteger(0));
+        else
+        {
+            String s = result != null ? result.group(0) : "";
+            return ObjectFactory.createInteger(s != null ? s.length() : 0);
+        }
     }
     
     private void clearMatched() {
@@ -114,8 +147,10 @@ public class StringScanner extends RubyBasic {
     }
     
 	public static void initMethods( RubyClass klass){
-		klass.defineMethod( "initialize", new RubyOneArgMethod(){ 
+		klass.defineMethod( "initialize", new RubyOneOrTwoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).initialize(arg);}
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block ){
 				return ((StringScanner)receiver).initialize(arg);}
 		});
 		klass.defineAllocMethod(new RubyNoArgMethod(){
@@ -129,6 +164,10 @@ public class StringScanner extends RubyBasic {
 		klass.defineMethod( "scan", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((StringScanner)receiver).scan(arg);}
+		});
+		klass.defineMethod( "skip", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).skip(arg);}
 		});
 		klass.defineMethod( "[]", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
@@ -145,6 +184,14 @@ public class StringScanner extends RubyBasic {
 		klass.defineMethod( "check", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((StringScanner)receiver).check(arg);}
+		});
+		klass.defineMethod( "reset", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return ((StringScanner)receiver).reset();}
+		});
+		klass.defineMethod( "peek", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return ((StringScanner)receiver).peek(arg);}
 		});
 		
 	}
