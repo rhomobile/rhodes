@@ -16,7 +16,12 @@ public class IfExpression extends Expression {
 
         Elseif(Expression condition, CompoundStatement body) {
             condition_ = condition;
-            body_ = body;
+        	if ( body == null )
+        	{
+        		body_ = new CompoundStatement();
+        		body_.addStatement(new ExpressionStatement(new NilExpression()));
+        	}else
+                body_ = body;
         }
 
         public void accept(CodeVisitor visitor, Object end_label) {
@@ -32,12 +37,12 @@ public class IfExpression extends Expression {
 
         void pullBlock(ArrayList<Block> result) {
             condition_.pullBlock(result);
-            body_.pullBlock(result);
+           	body_.pullBlock(result);
         }
 
         void getNewlyAssignedVariables(ISymbolTable symboltable, ArrayList<String> result) {
             condition_.getNewlyAssignedVariables(symboltable, result);
-            body_.getNewlyAssignedVariables(symboltable, result);
+           	body_.getNewlyAssignedVariables(symboltable, result);
         }
     }
 
@@ -87,16 +92,14 @@ public class IfExpression extends Expression {
         }
         if_body_.ensureVariablesAreInitialized(visitor);
         for (Elseif elsif : elsifs) {
-            if ( elsif.body_ != null )
-                elsif.body_.ensureVariablesAreInitialized(visitor);
+       		elsif.body_.ensureVariablesAreInitialized(visitor);
         }
         else_body_.ensureVariablesAreInitialized(visitor);
 
         ArrayList<Block> pulled_blocks = new ArrayList<Block>();
         if_body_.pullBlock(pulled_blocks);
         for (Elseif elsif : elsifs) {
-            if ( elsif.body_ != null )
-                elsif.body_.pullBlock(pulled_blocks);
+       		elsif.body_.pullBlock(pulled_blocks);
         }
         else_body_.pullBlock(pulled_blocks);
         for (Block block : pulled_blocks) {

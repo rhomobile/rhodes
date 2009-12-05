@@ -99,6 +99,7 @@ public interface CodeVisitor extends ISymbolTable {
 	
 	public Object visitAfterCaseCondition();
 	public Object visitAfterWhenCondition(Object case_value, boolean mrhs);
+	public Object visitAfterWhenConditionNotNil(Object case_value);
 	public Object visitAfterWhenBody(Object next_label, Object end_label);
 
 	public Object visitAfterUnlessCondition();
