@@ -81,6 +81,11 @@ public class RubyAPI {
         return RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.equalID).isTrue();
     }
 
+    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2) 
+    {
+        return value1.isTrue();
+    }
+    
     public static boolean testExceptionType(RubyArray classes_to_compare, RubyException e) {
         RubyValue value = e.getRubyValue();
 //        for (RubyValue class_to_compare : classes_to_compare) {

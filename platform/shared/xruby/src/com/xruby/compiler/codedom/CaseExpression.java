@@ -57,7 +57,7 @@ public class CaseExpression extends Expression {
 
         Object end_label = null;
         for (When when : whens_) {
-            end_label = when.accept(visitor, var, end_label);
+            end_label = when.accept(visitor, var, end_label, null == condition_);
         }
 
         else_body_.accept(visitor);

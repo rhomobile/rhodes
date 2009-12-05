@@ -333,6 +333,12 @@ public class CodePrinter implements CodeVisitor {
         return null;
     }
 
+    public Object visitAfterWhenConditionNotNil(Object case_value) {
+        result_.append("when notnil");
+        result_.append("\n");
+        return null;
+    }
+    
     public Object visitAfterWhenBody(Object next_label, Object end_label) {
         result_.append("end when\n");
         return null;

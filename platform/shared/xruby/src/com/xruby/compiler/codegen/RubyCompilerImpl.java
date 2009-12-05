@@ -657,6 +657,17 @@ public class RubyCompilerImpl implements CodeVisitor {
         return label;
     }
 
+    public Object visitAfterWhenConditionNotNil(Object case_value) {
+        int i = (Integer)case_value;
+        MethodGenerator mg = cg_.getMethodGenerator();
+        mg.loadLocal(i);
+        mg.RubyAPI_testCaseEqualNotNil();
+        
+        Label label = new Label();
+        mg.ifZCmp(GeneratorAdapter.EQ, label);
+        return label;
+    }
+    
     public Object visitAfterWhenBody(Object next_label, Object end_label) {
         return visitAfterIfBody(next_label, end_label);
     }

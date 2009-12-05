@@ -24,12 +24,15 @@ public class When {
         body_ = body;
     }
 
-    public Object accept(CodeVisitor visitor, Object var, Object end_label) {
+    public Object accept(CodeVisitor visitor, Object var, Object end_label, boolean isEmptyCase) {
         Object next_label;
 
         if (condition_.size() == 1 && null == asterisk_condition_) {
             condition_.get(0).accept(visitor);
-            next_label = visitor.visitAfterWhenCondition(var, false);
+            if ( !isEmptyCase )
+            	next_label = visitor.visitAfterWhenCondition(var, false);
+            else
+            	next_label = visitor.visitAfterWhenConditionNotNil(var);
         } else {
             Expression to_a = new ArrayExpression(condition_, asterisk_condition_);
             to_a.accept(visitor);

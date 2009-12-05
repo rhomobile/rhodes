@@ -622,6 +622,11 @@ class MethodGenerator extends GeneratorAdapter {
                 Method.getMethod("boolean testCaseEqual(com.xruby.runtime.builtin.RubyArray, com.xruby.runtime.lang.RubyValue)"));
     }
 
+    public void RubyAPI_testCaseEqualNotNil() {
+        invokeStatic(Types.RUBY_API_TYPE,
+                Method.getMethod("boolean testCaseEqualNotNil(com.xruby.runtime.lang.RubyValue, com.xruby.runtime.lang.RubyValue)"));
+    }
+    
     public void RubyAPI_testExceptionType() {
         invokeStatic(Types.RUBY_API_TYPE,
                 Method.getMethod("boolean testExceptionType(com.xruby.runtime.builtin.RubyArray, com.xruby.runtime.lang.RubyException)"));

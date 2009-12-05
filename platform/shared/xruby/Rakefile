@@ -82,7 +82,7 @@ task :method => :compile do
 end
 
 desc "Generate the distribution"
-task :dist => :method do
+task :dist => [:clean, :method] do
   puts "Creating #{XRUBY}..."
   mkdir_p TMPDIR, :verbose => false
  
@@ -100,6 +100,7 @@ task :dist => :method do
 
   rm "manifest", :verbose => false
   rm_rf TMPDIR, :verbose => false
+  rm_rf BUILDDIR, :verbose => false
 
 end
 
@@ -108,12 +109,12 @@ task :clean do
   rm_rf BUILDDIR
   rm_rf TMPDIR
   rm_rf XRUBY
-  rm_rf "builtin.jar"
+#  rm_rf "builtin.jar"
 end
 
-desc "Compile builtin.rb"
-task :builtin => :dist do
-  puts "Running #{XRUBY}..."
-  puts run("java", ["-jar",XRUBY,"-c","src/builtin.rb"])
-end
+#desc "Compile builtin.rb"
+#task :builtin => :dist do
+#  puts "Running #{XRUBY}..."
+#  puts run("java", ["-jar",XRUBY,"-c","src/builtin.rb"])
+#end
 
