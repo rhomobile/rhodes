@@ -111,12 +111,62 @@ public class StringExpression extends Expression {
         return result.toString();
     }
 
+    static String convertSingleQuoteString(String value)
+    {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < value.length(); ++i)
+        {
+            if (value.charAt(i) != '\\')
+            {
+                result.append(value.charAt(i));
+                continue;
+            }
+
+            if (i == value.length() - 1)
+            {
+                //'\\' is the last char
+                result.append('\\');
+                break;
+            }
+
+            char next_char = value.charAt(i + 1);
+            switch (next_char)
+            {
+                case '\\':
+                    result.append('\\');
+                    ++i;
+                    break;
+                case '\'':
+                    result.append('\'');
+                    ++i;
+                    break;
+                default:
+                    result.append(value.charAt(i));
+                    break;
+            }
+        }
+
+        return result.toString();
+    }
+
     public void appendString(String value, boolean double_quote) {
         if (double_quote) {
             value_.append(convertDoubleQuoteString(value));
         } else {
-            value_.append(value);
+            String strConv = convertSingleQuoteString(value);
+            /*
+            if ( !strConv.equals(value) )
+            {
+                System.out.println(value);
+                System.out.println(strConv);
+            }*/
+            value_.append(strConv);
         }
+    }
+
+    public void appendRegExString(String value) {
+        value_.append(value);
     }
 
     public void accept(CodeVisitor visitor) {
