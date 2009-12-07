@@ -15,7 +15,7 @@ public class RegexpExpression extends StringExpression {
         // A regexp "/abc/o" will look like "abc/o" now
         int index_of_back_slash = value.lastIndexOf("/");
         assert(index_of_back_slash >= 0);
-        appendString(value.substring(0, index_of_back_slash), false);
+        appendRegExString(value.substring(0, index_of_back_slash));
         option_ = value.substring(index_of_back_slash + 1);
     }
 
