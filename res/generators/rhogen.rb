@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'templater'
-require 'activesupport'
+require 'active_support'
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
 module Rhogen
