@@ -87,4 +87,5 @@ platform/android/**/default.properties
 *.perspectivev3
 
 .gvide
-
+*.gem
+Manifest.txt
