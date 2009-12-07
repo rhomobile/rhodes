@@ -35,6 +35,8 @@ public class RubyModule extends RubyObject {
     private RubyModule scope_ = null;//where is the module is defined under.
     protected RubyClass superclass_;
     private int current_access_mode_ = RubyMethod.PUBLIC;
+	private boolean module_methods_mode_ = false;
+
 //    protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
     protected Map/*<RubyID, RubyMethod>*/ methods_ = new HashMap/*<RubyID, RubyMethod>*/();
     protected Map/*<String, RubyValue>*/ constants_ = new HashMap/*<String, RubyValue>*/();
@@ -125,11 +127,17 @@ public class RubyModule extends RubyObject {
     }
 
     public RubyValue defineMethod(String name, RubyMethod m) {
-        return addMethod(RubyID.intern(name), m, this.current_access_mode_);
+    	if ( module_methods_mode_ )
+    		this.getSingletonClass().defineMethod(name, m);
+    	
+    	return addMethod(RubyID.intern(name), m, this.current_access_mode_);
     }
 
     public RubyValue defineMethod(RubyID mid, RubyMethod m) {
-        return addMethod(mid, m, this.current_access_mode_);
+    	if ( module_methods_mode_ )
+    		this.getSingletonClass().defineMethod(mid, m);
+    	
+   		return addMethod(mid, m, this.current_access_mode_);
     }
 
     public RubyValue definePrivateMethod(String name, RubyMethod m) {
@@ -830,6 +838,7 @@ public class RubyModule extends RubyObject {
 
     //@RubyLevelMethod(name="module_function")
     public RubyValue module_function() {
+    	//module_methods_mode_ = true;
         return this;
     }
 
