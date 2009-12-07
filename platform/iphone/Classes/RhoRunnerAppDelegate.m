@@ -82,8 +82,14 @@
 	[self loadStartPath:location];
 }
 
-- (void)onRefreshView {
-	[webViewController refresh];
+- (void)onRefreshView:(int)index {
+    if (self.nativeBar.barType == TABBAR_TYPE) {
+        BarItem *item = (BarItem*)[tabBarDelegate.barItems objectAtIndex:index];
+        [tabBarDelegate refresh:item];
+    }
+    else {
+        [webViewController refresh];
+    }
 }
 
 - (void)onNavigateTo:(WebViewUrl*) wvUrl {
@@ -96,7 +102,13 @@
 }
 
 - (void)onExecuteJs:(JSString *)js {
-	[webViewController executeJs:js];
+    if (self.nativeBar.barType == TABBAR_TYPE) {
+        BarItem *item = (BarItem *)[tabBarDelegate.barItems objectAtIndex:js->index];
+        [tabBarDelegate executeJs:item js:js];
+    }
+    else {
+        [webViewController executeJs:js];
+    }
 }
 /*
 - (void)onSetViewHomeUrl:(NSString *)url {

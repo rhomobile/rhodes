@@ -411,6 +411,8 @@ const char* CRhodesApp::getFreeListeningPort()
 
 void CRhodesApp::initAppUrls() 
 {
+    m_currentTabIndex = 0;
+    
     m_strHomeUrl = "http://localhost:";
     m_strHomeUrl += getFreeListeningPort();
 
@@ -422,7 +424,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
     LOG(INFO) + "Current URL: " + strUrl;
 
-    m_strCurrentUrl = canonicalizeRhoUrl(strUrl);
+    m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
 
     if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
     {
@@ -450,9 +452,9 @@ const String& CRhodesApp::getOptionsUrl()
     return m_strOptionsUrl;
 }
 
-const String& CRhodesApp::getCurrentUrl()
+const String& CRhodesApp::getCurrentUrl(int index)
 { 
-    return m_strCurrentUrl; 
+    return m_currentUrls[m_currentTabIndex]; 
 }
 
 const String& CRhodesApp::getFirstStartUrl()
@@ -710,9 +712,9 @@ void rho_rhodesapp_keeplastvisitedurl(const char* szUrl)
     RHODESAPP().keepLastVisitedUrl(szUrl);
 }
 
-const char* rho_rhodesapp_getcurrenturl()
+const char* rho_rhodesapp_getcurrenturl(int index)
 {
-    return RHODESAPP().getCurrentUrl().c_str();
+    return RHODESAPP().getCurrentUrl(index).c_str();
 }
 
 const char* rho_rhodesapp_getloadingpagepath()

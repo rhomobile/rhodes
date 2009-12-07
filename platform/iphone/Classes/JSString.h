@@ -3,6 +3,8 @@
 @interface JSString : NSObject {
 	NSString *inputJs;
 	NSString *outputJs;
+@public
+    int index;
 }
 
 @property(copy) NSString *inputJs;
