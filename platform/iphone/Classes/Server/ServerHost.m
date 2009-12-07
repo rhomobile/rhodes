@@ -93,9 +93,9 @@ static ServerHost* sharedSH = nil;
 	}
 }*/
 
-- (void)refreshView {
+- (void)refreshView:(int)index {
 	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
-		[actionTarget performSelectorOnMainThread:onRefreshView withObject:NULL waitUntilDone:NO];
+		[actionTarget performSelectorOnMainThread:onRefreshView withObject:(void*)index waitUntilDone:NO];
 	}
 }
 
@@ -380,8 +380,8 @@ void rho_nativethread_end(void* pData)
 @end
 
 //ruby extension hooks
-void webview_refresh() {
-	[[ServerHost sharedInstance] refreshView];
+void webview_refresh(int index) {
+	[[ServerHost sharedInstance] refreshView:index];
 }
 
 void webview_navigate(char* url, int index) {
@@ -393,10 +393,11 @@ void webview_navigate(char* url, int index) {
 	[[ServerHost sharedInstance] navigateTo:webViewUrl];
 }
 
-char* webview_execute_js(char* js) {
+char* webview_execute_js(char* js, int index) {
 	char * retval;
 	JSString *javascript = [[[JSString alloc] init] autorelease];
 	javascript.inputJs = [NSString stringWithUTF8String:js];
+    javascript->index = index;
 	[[ServerHost sharedInstance] executeJs:javascript];
 	// TBD: Does ruby GC pick this up?
 	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -410,8 +411,8 @@ void perform_webview_refresh() {
 void rho_conf_show_log() {													
 }
 
-char* webview_current_location() {
-	return (char*)rho_rhodesapp_getcurrenturl();
+char* webview_current_location(int index) {
+	return (char*)rho_rhodesapp_getcurrenturl(index);
 }
 
 void webview_set_menu_items(VALUE valMenu) {

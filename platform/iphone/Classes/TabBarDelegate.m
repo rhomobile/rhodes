@@ -36,6 +36,18 @@
         item.location = url;
 }
 
+- (void)refresh:(BarItem*)item {
+    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex];
+    if (activeBar == item || item.loaded == YES)
+        [item.viewController refresh];
+    else
+        item.reload = YES;
+}
+
+- (void)executeJs:(BarItem*)item js:(JSString*)js {
+    [item.viewController executeJs:js];
+}
+
 - (void)createTabBar:(UIWindow*)window {
 	self.mainWindow = window;
 	// Load the tab bar (just one of them)

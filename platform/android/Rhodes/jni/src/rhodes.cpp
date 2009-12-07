@@ -333,7 +333,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
-    const char *s = RHODESAPP().getCurrentUrl().c_str();
+    const char *s = RHODESAPP().getCurrentUrl(0).c_str();
     return env->NewStringUTF(s);
 }
 
