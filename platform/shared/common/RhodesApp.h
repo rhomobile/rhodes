@@ -63,7 +63,7 @@ public:
     const String& getRhobundleReloadUrl();
     const String& getStartUrl();
     const String& getOptionsUrl();
-    const String& getCurrentUrl(int index);
+    const String& getCurrentUrl(int index = 0);
     const String& getFirstStartUrl();
 
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
