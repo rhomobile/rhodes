@@ -89,8 +89,7 @@
 - (void)onNavigateTo:(WebViewUrl*) wvUrl {
 	if (self.nativeBar.barType == TABBAR_TYPE) {
 		BarItem* bItem = (BarItem*)[tabBarDelegate.barItems objectAtIndex:wvUrl.webViewIndex];
-		WebViewController* wvController = (WebViewController*)[bItem viewController];
-		[wvController navigateRedirect:wvUrl.url];
+        [tabBarDelegate loadTabBarItemLocation:bItem url:wvUrl.url];
 	} else {
 		[webViewController navigateRedirect:wvUrl.url];
 	}
