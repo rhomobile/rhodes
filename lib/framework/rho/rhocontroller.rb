@@ -17,10 +17,11 @@ module Rho
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       @rendered = false
+      @redirected = false
       if self.respond_to? req['action'].nil? ? default_action : req['action']
         res = send req['action'].nil? ? default_action : req['action']
       end
-      res = render unless @rendered
+      res = render unless @rendered or @redirected
       application.set_menu(@menu, @back_action)
   	  @menu = nil
   	  @back_action = nil;
@@ -34,6 +35,7 @@ module Rho
     alias xhr? :xml_http_request?
 
     def redirect(url_params = {},options = {})
+      @redirected = true
       @response['status'] = options['status'] || 302 
       @response['headers']['Location'] = url_for(url_params)
       @response['message'] = options['message'] || 'Moved temporarily'
