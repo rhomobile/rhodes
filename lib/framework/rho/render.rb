@@ -28,7 +28,7 @@ module Rho
       puts 'inst_render_index'
       @request, @response = {}
       @params = {}
-
+      require 'rho/rhoviewhelpers'
       layout = File.dirname(filename) + "/layout_erb.iseq"
       @content = eval_compiled_file(filename, binding)
       @content = eval_compiled_file(layout, binding) if File.exist?(layout)
