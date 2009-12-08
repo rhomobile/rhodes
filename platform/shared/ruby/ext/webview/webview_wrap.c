@@ -1545,72 +1545,18 @@ static VALUE mWebView;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void webview_refresh();
+extern void webview_refresh(int index);
 #define refresh webview_refresh 
 extern void webview_navigate(char* url, int index);
 #define navigate webview_navigate
-extern char* webview_current_location();
+extern char* webview_current_location(int index);
 #define current_location webview_current_location
-extern char* webview_execute_js(char* js);
+extern char* webview_execute_js(char* js, int index);
 #define execute_js webview_execute_js
 extern void webview_set_menu_items(VALUE argv);
 #define set_menu_items webview_set_menu_items
 extern int webview_active_tab();
 #define active_tab webview_active_tab
-
-
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
-{
-  if (TYPE(obj) == T_STRING) {
-    
-
-
-    char *cstr = STR2CSTR(obj);
-    
-    size_t size = RSTRING_LEN(obj) + 1;
-    if (cptr)  {
-      if (alloc) {
-	if (*alloc == SWIG_NEWOBJ) {
-	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
-	} else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      }
-    }
-    if (psize) *psize = size;
-    return SWIG_OK;
-  } else {
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *)vptr;
-	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }  
-  return SWIG_TypeError;
-}
-
-
-
 
 
 #include <limits.h>
@@ -1677,6 +1623,60 @@ SWIG_AsVal_int (VALUE obj, int *val)
 }
 
 
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
+{
+  if (TYPE(obj) == T_STRING) {
+    
+
+
+    char *cstr = STR2CSTR(obj);
+    
+    size_t size = RSTRING_LEN(obj) + 1;
+    if (cptr)  {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      }
+    }
+    if (psize) *psize = size;
+    return SWIG_OK;
+  } else {
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *)vptr;
+	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+
+
+
+
 SWIGINTERNINLINE VALUE 
 SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 {
@@ -1712,10 +1712,24 @@ SWIG_From_int  (int value)
 
 SWIGINTERN VALUE
 _wrap_refresh(int argc, VALUE *argv, VALUE self) {
-  if ((argc < 0) || (argc > 0)) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  {
+    arg1 = 0;
+  }
+  if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  refresh();
+  if (argc > 0) {
+    ecode1 = SWIG_AsVal_int(argv[0], &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "refresh" "', argument " "1"" of type '" "int""'");
+    } 
+    arg1 = (int)(val1);
+  }
+  refresh(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -1761,13 +1775,26 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_current_location(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
   char *result = 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 0) || (argc > 0)) {
+  {
+    arg1 = 0;
+  }
+  if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (char *)current_location();
+  if (argc > 0) {
+    ecode1 = SWIG_AsVal_int(argv[0], &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "current_location" "', argument " "1"" of type '" "int""'");
+    } 
+    arg1 = (int)(val1);
+  }
+  result = (char *)current_location(arg1);
   vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
@@ -1778,13 +1805,19 @@ fail:
 SWIGINTERN VALUE
 _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  int arg2 ;
   char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 1) || (argc > 1)) {
+  {
+    arg2 = 0;
+  }
+  if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
@@ -1792,7 +1825,14 @@ _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "execute_js" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  result = (char *)execute_js(arg1);
+  if (argc > 1) {
+    ecode2 = SWIG_AsVal_int(argv[1], &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "execute_js" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  result = (char *)execute_js(arg1,arg2);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;

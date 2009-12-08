@@ -23,16 +23,29 @@
 
 - (void)loadTabBarItemFirstPage:(BarItem*)item {
 	if (item.loaded == NO || item.reload == YES) {
-		NSString* escapedUrl = [item.location stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
-		escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
-		NSString* startLocation = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
-		[(UIWebView*)[item.viewController view] loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:startLocation]]];
+        [item.viewController navigateRedirect:item.location];
 		item.loaded = YES;
 	}
 }
 
 - (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url {
-	[item.viewController navigateRedirect:url];
+    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex];
+    if (activeBar == item || item.loaded == YES)
+        [item.viewController navigateRedirect:url];
+    else
+        item.location = url;
+}
+
+- (void)refresh:(BarItem*)item {
+    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex];
+    if (activeBar == item || item.loaded == YES)
+        [item.viewController refresh];
+    else
+        item.reload = YES;
+}
+
+- (void)executeJs:(BarItem*)item js:(JSString*)js {
+    [item.viewController executeJs:js];
 }
 
 - (void)createTabBar:(UIWindow*)window {
@@ -79,6 +92,12 @@
 	self.tabBarController.customizableViewControllers = nil;
 	self.tabBarController.view.hidden = NO;
 	[self.mainWindow addSubview:tabBarController.view];
+}
+
+- (void)deleteTabBar {
+    [tabBarController.view removeFromSuperview];
+    [tabBarController release];
+    tabBarController = nil;
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {

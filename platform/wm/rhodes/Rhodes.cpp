@@ -264,20 +264,20 @@ extern "C" char* rho_sys_get_locale()
 
 //Hook for ruby call to refresh web view
 
-extern "C" void webview_refresh() {
+extern "C" void webview_refresh(int index) {
 	_AtlModule.DoViewRefresh();
 }
 
 //Sync hook to refresh the web view
 extern "C" void perform_webview_refresh() {
-	webview_refresh();
+	webview_refresh(0);
 }
 
 extern "C" void webview_navigate(char* url, int index) {
 	_AtlModule.DoViewNavigate(url);
 }
 
-extern "C" char* webview_execute_js(char* js) {
+extern "C" char* webview_execute_js(char* js, int index) {
 //TODO: webview_execute_js
     return "";
 }
@@ -295,8 +295,8 @@ extern "C" int webview_active_tab() {
 //	return _AtlModule.GetCurrentLocation();
 //}
 
-extern "C" char* webview_current_location() {
-    return const_cast<char*>(RHODESAPP().getCurrentUrl().c_str());
+extern "C" char* webview_current_location(int index) {
+    return const_cast<char*>(RHODESAPP().getCurrentUrl(index).c_str());
 }
 
 extern "C" VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
