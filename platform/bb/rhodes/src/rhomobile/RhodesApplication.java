@@ -245,11 +245,26 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	navigateUrl(url);
     }
 
+    String removeSemicolon(String str)
+    {
+    	if ( str == null )
+    		return null;
+    	
+    	int nCol = str.indexOf(';');
+    	if ( nCol >= 0 )
+    		return str.substring(0,nCol);
+    	
+    	return str;
+    }
+    
     void addToHistory(String strUrl, String refferer )
     {
+    	strUrl = removeSemicolon(strUrl);
+    	refferer = removeSemicolon(refferer);
+    	
         if ( !strUrl.startsWith(_httpRoot) && !isExternalUrl(strUrl) )
         	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
-    	
+        
     	int nPos = -1;
     	for( int i = _history.size()-1; i >= 0; i-- ){
     		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
