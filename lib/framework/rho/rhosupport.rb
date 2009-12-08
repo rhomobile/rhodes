@@ -19,6 +19,11 @@ module Rho
         end.force_encoding("ASCII-8BIT")
 
       end
+      def url_decode(s)
+        s.tr('+',' ').gsub(/((?:%[0-9a-fA-f]{2})+)/n) do
+          [$1.delete('%')].pack('H*')  
+        end
+      end
       
      # def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
       def _unescape(str, regex)
