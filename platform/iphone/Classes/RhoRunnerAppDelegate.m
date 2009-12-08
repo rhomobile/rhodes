@@ -202,8 +202,24 @@
 								  usingDelegate:dateTimePickerDelegate];
 }
 
+- (void)onDeleteNativeBar {
+    if (self.nativeBar == nil)
+        return;
+    
+    if (self.nativeBar.barType == TABBAR_TYPE) {
+        [tabBarDelegate deleteTabBar];
+    }
+    else {
+        webViewController.toolbar.hidden = YES;
+        [window sendSubviewToBack:webViewController.toolbar];
+		[window bringSubviewToFront:webViewController.webView];
+		[webViewController.webView sizeToFit];
+    }
+}
+
 - (void)onCreateNativeBar:(NativeBar*)bar {
     if (self.nativeBar != nil) {
+        //[self onDeleteNativeBar];
         RAWLOG_INFO("Native bar already exists!");
         return;
     }
@@ -218,7 +234,11 @@
 		webViewController.toolbar.hidden = NO;
 		[window sendSubviewToBack:webViewController.webView];
 		[window bringSubviewToFront:webViewController.toolbar];
-		[webViewController.webView sizeToFit];
+        [webViewController.webView sizeToFit];
+        CGRect rect = webViewController.webView.frame;
+        CGRect trect = webViewController.toolbar.frame;
+        rect.size.height -= trect.size.height;
+		[webViewController.webView setFrame:rect];
 	} else if(self.nativeBar.barType == NOBAR_TYPE) {
 		webViewController.toolbar.hidden = YES;
 		[window sendSubviewToBack:webViewController.toolbar];

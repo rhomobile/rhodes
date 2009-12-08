@@ -28,6 +28,7 @@
 @property(assign) int activeTab;
 
 - (void)createTabBar:(UIWindow*)window;
+- (void)deleteTabBar;
 - (void)loadTabBarItemFirstPage:(BarItem*)item;
 - (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url;
 - (void)refresh:(BarItem*)item;
