@@ -16,7 +16,9 @@ module Rho
       @request, @response = req, res
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
+      @rendered = false
       res = send req['action'].nil? ? default_action : req['action']
+      res = render unless @rendered
       application.set_menu(@menu, @back_action)
   	  @menu = nil
   	  @back_action = nil;
