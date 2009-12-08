@@ -117,10 +117,11 @@ module JSON
   # * *create_additions*: If set to false, the Parser doesn't create
   #   additions even if a matchin class and create_id was found. This option
   #   defaults to true.
-  def JSON.parse(source, opts = {})
+  def parse(source, opts = {})
     JSON.parser.new(source, opts).parse
   end
-
+  module_function :parse
+  
   # Parse the JSON string _source_ into a Ruby data structure and return it.
   # The bang version of the parse method, defaults to the more dangerous values
   # for the _opts_ hash, so be sure only to parse trusted _source_ strings.
