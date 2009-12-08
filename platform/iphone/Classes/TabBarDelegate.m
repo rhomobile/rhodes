@@ -94,6 +94,12 @@
 	[self.mainWindow addSubview:tabBarController.view];
 }
 
+- (void)deleteTabBar {
+    [tabBarController.view removeFromSuperview];
+    [tabBarController release];
+    tabBarController = nil;
+}
+
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
 	if(self.tabBarController.selectedIndex > barItems.count) {
 		[NSException raise:@"Exception" format:@"Rhodes currently only supports up to 5 tabs.  Please change your tabs array and try again."];

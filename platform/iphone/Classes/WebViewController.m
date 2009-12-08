@@ -165,7 +165,7 @@ char* get_current_location() {
 	} else {
 		forwardBtn.enabled = NO;
 	}
-	
+    
 	//NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	//rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
 }
