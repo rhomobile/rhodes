@@ -203,7 +203,12 @@
 }
 
 - (void)onCreateNativeBar:(NativeBar*)bar {
-	// retain the nativebar so it doesn't get deleted
+    if (self.nativeBar != nil) {
+        RAWLOG_INFO("Native bar already exists!");
+        return;
+    }
+	
+    // retain the nativebar so it doesn't get deleted
 	[bar retain];
 	self.nativeBar = bar;
 	if (self.nativeBar.barType == TABBAR_TYPE) {
