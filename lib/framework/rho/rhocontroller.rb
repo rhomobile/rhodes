@@ -17,7 +17,9 @@ module Rho
       @object_mapping = object_mapping
       @params = RhoSupport::query_params req
       @rendered = false
-      res = send req['action'].nil? ? default_action : req['action']
+      if self.respond_to? req['action'].nil? ? default_action : req['action']
+        res = send req['action'].nil? ? default_action : req['action']
+      end
       res = render unless @rendered
       application.set_menu(@menu, @back_action)
   	  @menu = nil
