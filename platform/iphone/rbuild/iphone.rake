@@ -159,7 +159,7 @@ namespace "run" do
      apprholog = $app_path + "/rholog.txt"
      rm_f apprholog
      puts `ln -f -s "#{rholog}" "#{apprholog}"`
-     
+     puts `echo > "#{rholog}"`
      f = File.new("#{$simapp}/#{$guid}.sb","w")
      f << "(version 1)\n(debug deny)\n(allow default)\n"
      f.close

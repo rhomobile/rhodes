@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
-RHO_GLOBAL void webview_navigate(char* url, int index)
+RHO_GLOBAL void webview_navigate(char* url, int /*index*/)
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
@@ -19,7 +19,7 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
     env->DeleteLocalRef(objNormUrl);
 }
 
-RHO_GLOBAL void webview_refresh()
+RHO_GLOBAL void webview_refresh(int /*index*/)
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
@@ -28,7 +28,7 @@ RHO_GLOBAL void webview_refresh()
     jnienv()->CallStaticVoidMethod(cls, mid);
 }
 
-RHO_GLOBAL char* webview_current_location()
+RHO_GLOBAL char* webview_current_location(int /*index*/)
 {
     static rho::String curLoc;
 
@@ -55,7 +55,7 @@ RHO_GLOBAL int webview_active_tab()
     return 0;
 }
 
-RHO_GLOBAL char* webview_execute_js(char* js)
+RHO_GLOBAL char* webview_execute_js(char* js, int /*index*/)
 {
     static rho::String result;
 

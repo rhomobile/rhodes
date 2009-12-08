@@ -38,7 +38,10 @@ private:
     common::CAutoPtr<net::CHttpServer> m_httpServer;
 #endif
     String m_strRhoRootPath, m_strLoadingPagePath, m_strBlobsDirPath;
-    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strCurrentUrl, m_strFirstStartUrl;
+    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
+    
+    int m_currentTabIndex;
+    String m_currentUrls[5];
 
     common::CMutex m_mxViewMenuItems;
     Hashtable<String,String> m_hashViewMenuItems;
@@ -60,7 +63,7 @@ public:
     const String& getRhobundleReloadUrl();
     const String& getStartUrl();
     const String& getOptionsUrl();
-    const String& getCurrentUrl();
+    const String& getCurrentUrl(int index = 0);
     const String& getFirstStartUrl();
 
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
@@ -109,7 +112,7 @@ const char* rho_rhodesapp_getfirststarturl();
 
 const char* rho_rhodesapp_getoptionsurl();
 void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
-const char* rho_rhodesapp_getcurrenturl();
+const char* rho_rhodesapp_getcurrenturl(int tabindex);
 
 const char* rho_rhodesapp_getloadingpagepath();
 const char* rho_rhodesapp_getblobsdirpath();
