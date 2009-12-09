@@ -267,12 +267,6 @@ static void callback_redirect_to(void *arg
     if ( strUrl.length() == 0 )
         strUrl = "/app/";
 
-    /*
-    char *url = malloc(rho_base64_encode(strUrl.c_str(), -1, 0));
-    rho_base64_encode(strUrl.c_str(), -1, url);
-    rho_http_redirect(arg, url);
-    free(url);
-    */
     rho_http_redirect(arg, strUrl.c_str());
 }
 
@@ -595,17 +589,7 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     arg->flags |= SHTTPD_END_OF_OUTPUT;
 #else
     HttpHeaderList headers;
-    
-    // Decode szUrl
-    /*
-    int size = rho_base64_decode(szUrl, -1, 0);
-    char *url = (char *)malloc(size);
-    rho_base64_decode(szUrl, -1, url);
-    headers.push_back(HttpHeader("Location", url));
-    free(url);
-    */
     headers.push_back(HttpHeader("Location", szUrl));
-    
     headers.push_back(HttpHeader("Content-Length", 0));
     headers.push_back(HttpHeader("Pragma", "no-cache"));
     headers.push_back(HttpHeader("Cache-Control", "must-revalidate"));
