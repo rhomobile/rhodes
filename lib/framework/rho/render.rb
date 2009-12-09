@@ -30,8 +30,8 @@ module Rho
       @params = {}
       require 'rho/rhoviewhelpers'
       layout = File.dirname(filename) + "/layout_erb.iseq"
-      @content = eval_compiled_file(filename, binding)
-      @content = eval_compiled_file(layout, binding) if File.exist?(layout)
+      @content = eval_compiled_file(filename, getBinding() )
+      @content = eval_compiled_file(layout, getBinding() ) if File.exist?(layout)
       @content
     end
 
@@ -39,6 +39,10 @@ module Rho
       (RhoController.new).inst_render_index(filename)
     end
 
+    def getBinding
+        binding
+    end
+    
     def render(options = nil)
       options = {} if options.nil? or !options.is_a?(Hash)
 
@@ -51,16 +55,16 @@ module Rho
         if options[:action].nil?
           called_action = @request['action'].nil? ? default_action : @request['action']
           if File.exist?(@request[:modelpath]+called_action.to_s+'_erb.iseq')
-            @content = eval_compiled_file(@request[:modelpath]+called_action.to_s+'_erb.iseq', binding )
+            @content = eval_compiled_file(@request[:modelpath]+called_action.to_s+'_erb.iseq', getBinding() )
           else
             @content = ""
           end
         else
-          @content = eval_compiled_file(@request[:modelpath]+options[:action].to_s+'_erb.iseq', binding )
+          @content = eval_compiled_file(@request[:modelpath]+options[:action].to_s+'_erb.iseq', getBinding() )
         end
       else
         options[:file] = options[:file].gsub(/\.erb$/,"").gsub(/^\/app/,"")
-        @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+'_erb.iseq', binding )
+        @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+'_erb.iseq', getBinding() )
         options[:layout] = false if options[:layout].nil?
       end
 
