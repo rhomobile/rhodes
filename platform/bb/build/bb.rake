@@ -139,6 +139,7 @@ namespace "config" do
     $rhodesimplib = $rhobundleimplib + ";"+ $preverified+"/RhoBundle.jar"
     
     mkdir_p $bindir unless File.exists? $bindir
+    rm_rf $tmpdir
     mkdir_p $tmpdir unless File.exists? $tmpdir
     
   end
@@ -150,7 +151,23 @@ namespace "build" do
         create_alx_file('rhodesApp', $outfilebase)
         create_alx_file('RhoBundle', 'RhoBundle')
     end
+    
+    def runPreverify(args)  
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
+    
+      startdir = pwd      
+      chdir $tmpdir
+      puts Jake.run(jdehome + "/bin/preverify.exe",args)
+      chdir startdir
       
+      unless $? == 0
+        rm_rf $tmpdir
+        puts "Error preverifying"
+        exit 1
+      end
+      $stdout.flush
+    end
+    
 #    desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
@@ -167,17 +184,13 @@ namespace "build" do
 
       #XXX make preverify function in Jake
       args = []
+      #args << "-verbose"
       args << "-classpath"
       args << '"' + jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar\""
       args << "-d"
       args << '"' + $preverified + '"'
       args << '"' + $bindir + "/RhoBundle.jar\""
-      puts Jake.run(jdehome + "/bin/preverify.exe",args)
-      unless $? == 0
-        puts "Error preverifying"
-        exit 1
-      end
-      $stdout.flush
+      runPreverify(args)
 
       mkdir_p $rhobundledir unless File.exists? $rhobundledir
       cp $preverified + "/RhoBundle.jar", $rhobundledir + "/RhoBundle.jar"
@@ -229,12 +242,7 @@ namespace "build" do
         args << "-d"
         args << '"' + $tmpdir + "/RubyVM.preverify\""
         args << '"' + $tmpdir + "/RubyVM\""
-        puts Jake.run(jdehome + "/bin/preverify.exe",args)
-        unless $? == 0
-          puts "Error preverifying"
-          exit 1
-        end
-        $stdout.flush
+        runPreverify(args)
 
         Jake.jar($preverified+"/RubyVM.jar", $builddir + "/RubyVM_manifest.mf", $tmpdir + "/RubyVM.preverify",true)
         $stdout.flush
@@ -242,8 +250,6 @@ namespace "build" do
         puts 'RubyVM.jar is up to date'
         $stdout.flush
       end
-
-
 
       rm_rf $tmpdir
       mkdir_p $tmpdir
@@ -329,13 +335,7 @@ namespace "build" do
         args << "-d"
         args << '"' + $preverified + '"'
         args << '"' + $bindir + "/rhodes.jar\""
-        puts Jake.run(jdehome + "/bin/preverify.exe",args)
-        unless $? == 0
-          puts "Error preverifying"
-          exit 1
-        end
-        $stdout.flush
-
+        runPreverify(args)
       else
         puts "rhodes up to date"
       end

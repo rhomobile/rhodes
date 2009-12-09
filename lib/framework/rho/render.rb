@@ -28,10 +28,10 @@ module Rho
       puts 'inst_render_index'
       @request, @response = {}
       @params = {}
-
+      require 'rho/rhoviewhelpers'
       layout = File.dirname(filename) + "/layout_erb.iseq"
-      @content = eval_compiled_file(filename, binding)
-      @content = eval_compiled_file(layout, binding) if File.exist?(layout)
+      @content = eval_compiled_file(filename, getBinding() )
+      @content = eval_compiled_file(layout, getBinding() ) if File.exist?(layout)
       @content
     end
 
@@ -39,22 +39,32 @@ module Rho
       (RhoController.new).inst_render_index(filename)
     end
 
+    def getBinding
+        binding
+    end
+    
     def render(options = nil)
       options = {} if options.nil? or !options.is_a?(Hash)
+
+      unless options[:partial].nil?  # render the file and return, don't set rendered true for a partial.
+        @content = render_partial(options)
+        return @content
+      end
+
       if options[:file].nil? or !options[:file].is_a?(String)
         if options[:action].nil?
           called_action = @request['action'].nil? ? default_action : @request['action']
           if File.exist?(@request[:modelpath]+called_action.to_s+'_erb.iseq')
-            @content = eval_compiled_file(@request[:modelpath]+called_action.to_s+'_erb.iseq', binding )
+            @content = eval_compiled_file(@request[:modelpath]+called_action.to_s+'_erb.iseq', getBinding() )
           else
             @content = ""
           end
         else
-          @content = eval_compiled_file(@request[:modelpath]+options[:action].to_s+'_erb.iseq', binding )
+          @content = eval_compiled_file(@request[:modelpath]+options[:action].to_s+'_erb.iseq', getBinding() )
         end
       else
         options[:file] = options[:file].gsub(/\.erb$/,"").gsub(/^\/app/,"")
-        @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+'_erb.iseq', binding )
+        @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+'_erb.iseq', getBinding() )
         options[:layout] = false if options[:layout].nil?
       end
 
@@ -75,6 +85,54 @@ module Rho
       @back_action = options[:back] if options[:back]
       @rendered = true
       @content
+    end
+
+    def render_partial(options = nil)
+      localclass = Class.new do
+        def initialize(obj=nil)
+          @vars = {}
+          if obj
+            obj.each do |key,value|
+              @vars[key.to_sym()] = value if key && key.length > 0
+            end
+          end
+        end
+        def method_missing(name, *args)
+          unless name == Fixnum
+            varname = name.to_s.gsub(/\=/,"")
+            setting = (name.to_s =~ /=/)
+            if setting
+              @vars[varname.to_sym()] = args[0]
+            else
+              @vars[varname.to_sym()]
+            end
+          end
+        end
+        def get_binding
+          binding
+        end
+      end
+
+      partial_name = options[:partial].split('/')[-1]
+
+      options[:locals] = {} if options[:locals].nil? or !options[:locals].is_a?(Hash)
+       
+      content = ""
+      if options[:collection].nil?
+        locals = localclass.new(options[:locals])
+        content = eval_compiled_file(@request[:modelpath]+'_' + options[:partial].to_s+'_erb.iseq', locals.get_binding )
+      else
+        i = 0
+        options[:collection].each do |x|
+          options[:locals][partial_name] = x
+
+          options[:locals][partial_name + '_counter'] = i
+          i = i + 1
+          #puts "render partial: #{x}"
+          content += render_partial :partial => options[:partial], :locals => options[:locals]
+        end
+      end
+      content
     end
 
     @@m_arObjectNotify = []
