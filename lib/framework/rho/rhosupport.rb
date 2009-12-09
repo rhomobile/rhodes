@@ -19,16 +19,16 @@ module Rho
         end.force_encoding("ASCII-8BIT")
 
       end
-      def url_decode(s)
-        s.tr('+',' ').gsub(/((?:%[0-9a-fA-f]{2})+)/n) do
-          [$1.delete('%')].pack('H*')  
-        end
-      end
+      #def url_decode(s)
+      #  s.tr('+',' ').gsub(/((?:%[0-9a-fA-f]{2})+)/n) do
+      #    [$1.delete('%')].pack('H*')  
+      #  end
+      #end
       
      # def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
-      def _unescape(str, regex)
+      def url_decode(str)
         isEncoded = false
-        res = str.gsub(regex) { 
+        res = str.gsub(/((?:%[0-9a-fA-f]{2})+)/n) { 
           isEncoded = true
           [$&[1, 2].hex].pack('C') 
         }
@@ -39,12 +39,12 @@ module Rho
         
         res    
       end
+
+      #ESCAPED = /%([0-9a-fA-F]{2})/
 	
-      ESCAPED = /%([0-9a-fA-F]{2})/
-	
-      def unescape_form(str)
-        _unescape(str.gsub(/\+/, " "), ESCAPED)
-      end
+      #def unescape_form(str)
+      #  _unescape(str.gsub(/\+/, " "), ESCAPED)
+      #end
 
       def parse_query_parameters(query_string)
         return {} if query_string.nil?
@@ -53,8 +53,8 @@ module Rho
           next if chunk.empty?
           key, value = chunk.split('=', 2)
           next if key.empty?
-          value = value.nil? ? nil : unescape_form(value)
-          [ unescape_form(key), value ]
+          value = value.nil? ? nil : url_decode(value)
+          [ url_decode(key), value ]
         end.compact
 
         UrlEncodedPairParser.new(pairs).result
