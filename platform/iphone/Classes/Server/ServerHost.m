@@ -386,9 +386,9 @@ void webview_refresh(int index) {
 
 void webview_navigate(char* url, int index) {
 	WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
-	char* szNormUrl = rho_http_normalizeurl(url);
-	webViewUrl.url = [NSString stringWithUTF8String:szNormUrl];
-	rho_http_free(szNormUrl);
+	//char* szNormUrl = rho_http_normalizeurl(url);
+	webViewUrl.url = [NSString stringWithUTF8String:url];
+	//rho_http_free(szNormUrl);
 	webViewUrl.webViewIndex = index;
 	[[ServerHost sharedInstance] navigateTo:webViewUrl];
 }

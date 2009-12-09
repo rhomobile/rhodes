@@ -74,7 +74,6 @@ char* get_current_location() {
 -(void)navigate:(NSString*)url {
     //RAWLOG_INFO1("Navigating to the specifyed URL: %s",  [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:escapedUrl]]];
 }
 
@@ -85,8 +84,17 @@ char* get_current_location() {
 
 -(void)navigateRedirect:(NSString*)url {
     //RAWLOG_INFO1("Navigate (redirect) to: %s", [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    
+    /*
+    const char *s = [url cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    int size = rho_base64_encode(s, -1, 0);
+    char *e64 = malloc(size);
+    rho_base64_encode(s, -1, e64);
+    NSString *escapedUrl = [NSString stringWithCString:e64];
+    free(e64);
+    */
+    
 	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
-	escapedUrl = [escapedUrl stringByReplacingOccurrencesOfString: @"&" withString: @"%26"];
 	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 }
