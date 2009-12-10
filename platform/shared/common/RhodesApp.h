@@ -133,6 +133,9 @@ void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
 int rho_conf_send_log();
 
+int rho_base64_encode(const char *src, int srclen, char *dst);
+int rho_base64_decode(const char *src, int srclen, char *dst);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

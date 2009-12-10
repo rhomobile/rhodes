@@ -279,7 +279,7 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 	
 	char location[strlen(szQuery)+2];
 	HttpSnprintf(location, sizeof(location), "/%s", szQuery);
-	rho_http_redirect(httpContext, location);
+    rho_http_redirect(httpContext, location);
 	
 	return;
 }
