@@ -237,6 +237,10 @@ str_isnumber(const char *p)
 	return YES;
 }
 
+#if _MSC_VER > 1400
+#define HAVE_INET_PTON 1
+#endif //_MSC_VER > 1400
+
 #ifndef HAVE_INET_PTON
 
 static int
