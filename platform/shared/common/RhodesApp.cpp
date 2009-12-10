@@ -819,7 +819,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     for (int in = 0; in < srclen; in += 4, out += 3) {
         unsigned x = 0;
         for (int i = 0; i < 4; ++i) {
-            if ((found = strchr(table64, src[in + i])) != NULL)
+            if ((found = strchr(const_cast<char*>(table64), src[in + i])) != NULL)
                 x = (x << 6) + (unsigned int)(found - table64);
             else if (src[in + i] == '=')
                 x <<= 6;
