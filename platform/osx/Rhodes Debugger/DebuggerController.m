@@ -31,11 +31,11 @@
 	NSString *sanitizedFile = [[bpFile stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
 	NSString *sanitizedLine = [[bpLine stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
 
-    NSString *cmd = [NSString stringWithFormat:@"call rb_eval_string(\"$_file = '%@'; $_line = %@;\")",sanitizedFile,sanitizedLine];
+    NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",sanitizedFile,sanitizedLine];
 	if(![gdbController finished] && gdbScriptLoaded) {
 		[self pause:nil];
 		[gdbController sendCmd:cmd];
-		[gdbController sendCmd:@"call rb_eval_string(\"puts '-- Breakpoint set'\")"];
+		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")"];
 		[gdbController sendCmd:@"rb_break"];
 	}	
 }
