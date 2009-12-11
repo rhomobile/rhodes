@@ -32,6 +32,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -48,6 +49,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -68,6 +70,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
