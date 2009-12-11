@@ -386,7 +386,7 @@ void CSyncSource::processServerData(const char* szData)
 
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("rt") )
     {
-        setRefreshTime(oJsonArr.getCurItem().getUInt64("rt"));
+        setRefreshTime(oJsonArr.getCurItem().getInt("rt"));
         oJsonArr.next();
     }
 
