@@ -180,6 +180,7 @@
 
 		system("rm /tmp/ruby-debug*");
 
+		[gdbController sendCmd:@"set objc-non-blocking-mode off"];
 		[gdbController sendCmd:@"redirect_stdout"];
 		[gdbController sendCmd:@"rb_trace"];
 		gdbScriptLoaded = true;
