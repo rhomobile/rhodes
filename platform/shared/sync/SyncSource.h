@@ -62,7 +62,7 @@ class CSyncSource
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     boolean m_bGetAtLeastOnePage;
     ESyncServerDataPass m_eSyncServerDataPass;
-    uint64 m_nRefreshTime;
+    int m_nRefreshTime;
 
 public:
     int m_nErrCode;
@@ -127,7 +127,7 @@ public:
     String makeFileName(const CValue& value);//throws Exception
     boolean downloadBlob(CValue& value);//throws Exception
 
-    void setRefreshTime( uint64 nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
+    void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();
