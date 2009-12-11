@@ -229,7 +229,7 @@ namespace "config" do
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
     $jarbin = File.join( $java, "jar" + $exe_ext )
-    $keystoredir = ENV['HOME'] + "/.rhomobile"
+    $keystoredir = File.expand_path('~') + "/.rhomobile"
     $keystore = $keystoredir + "/keystore"
     $storepass = "81719ef3a881469d96debda3112854eb"
     $keypass = $storepass

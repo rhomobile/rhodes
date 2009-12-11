@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Rhodes Debugger' target in the 'Rhodes Debugger' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

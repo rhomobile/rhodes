@@ -1,0 +1,40 @@
+define eval
+  call((void)rb_p((unsigned long)eval_string((unsigned long)rb_gv_get("$_self"),(unsigned long)rb_str_new2($arg0),(unsigned long)rb_gv_get("$_binding"),"(eval)",1)))
+end
+
+define redirect_stdout
+  call (unsigned long)rb_eval_string("$_old_stdout, $stdout = $stdout, File.open('/tmp/ruby-debug.' + Process.pid.to_s, 'a'); $stdout.sync = true")
+end
+
+define restore_stdout
+  call (unsigned long)rb_eval_string("$stdout = $_old_stdout")
+end
+
+define rb_break
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname| $_self = self; $_binding = bind; if event =~ /line/ and file =~ Regexp.new(Regexp.escape($_file) + '$') and line.to_s == $_line.to_s;  puts \"--Break at #{file}:#{line}\"; sleep 0; end}",(int *)0) 
+  tbreak rb_f_sleep
+  cont
+end
+
+define rb_step
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname|  $_self = self; $_binding = bind; if event =~ /line/; puts \"-- Step at #{file}:#{line}\"; sleep 0;  end}",(int *)0) 
+  tbreak rb_f_sleep
+  cont
+end
+
+define rb_finish
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname| $_self = self; $_binding = bind; if event =~ /return/;  puts \"\n--Returning from:#{file}:#{line}\"; sleep 0;  end}",(int*)0)
+  tbreak rb_f_sleep
+  cont
+end
+
+define rb_trace
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname| $_self = self; $_binding = bind;  }",(int*)0)
+  cont
+end
+
+define rb_cont
+  rb_trace
+end
+
+
