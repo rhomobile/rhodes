@@ -119,8 +119,10 @@ void CSyncSource::sync()
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
 
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (
+                         endTime-startTime).toULong(), m_bGetAtLeastOnePage, m_nRefreshTime,
+                         getID() );
 }
 
 boolean CSyncSource::isPendingClientChanges()
@@ -379,6 +381,12 @@ void CSyncSource::processServerData(const char* szData)
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
     {
         nVersion = oJsonArr.getCurItem().getInt("version");
+        oJsonArr.next();
+    }
+
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("rt") )
+    {
+        setRefreshTime(oJsonArr.getCurItem().getUInt64("rt"));
         oJsonArr.next();
     }
 
