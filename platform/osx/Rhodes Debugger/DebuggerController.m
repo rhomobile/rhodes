@@ -103,6 +103,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
 	gdbAttached = false;
 	gdbScriptLoaded = false;
+	building = false;
 	pid = @"";
 	gdbPid = @"";
 	currentFile = nil;
@@ -231,6 +232,14 @@
 	}
 	
 	if ( ! gdbAttached ) {
+		
+		if(building) {
+			if([rubyController finished] ) {
+				building = false;
+			} else {
+				return;
+			}
+		}
 
 		if( [output length] > 0 ) {
 			NSArray *components = [output componentsSeparatedByString:@" "];
@@ -301,6 +310,7 @@
 	
 	[rubyController setTask:ps];
 	[rubyController launchTask];
+	building = true;
 }
 
 

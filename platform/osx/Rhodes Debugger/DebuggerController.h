@@ -15,7 +15,7 @@
 
 	IBOutlet id outlineView;
 	
-	bool gdbAttached,gdbScriptLoaded;
+	bool gdbAttached,gdbScriptLoaded, building;
 	NSString *pid, *gdbPid;
 	NSString *currentFile;
 }
