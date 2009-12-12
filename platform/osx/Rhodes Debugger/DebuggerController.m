@@ -1,4 +1,5 @@
 #import "DebuggerController.h"
+#import "FileSystemItem.h"
 
 @implementation DebuggerController
 - (IBAction)gdbInput:(id)sender {
@@ -31,7 +32,26 @@
 	NSString *sanitizedFile = [[bpFile stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
 	NSString *sanitizedLine = [[bpLine stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
 
-    NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",sanitizedFile,sanitizedLine];
+ 	[self setBreakPoint:sanitizedFile atLine:[sanitizedLine intValue]];
+}
+
+- (void) removeBreakpoint {
+	if(![gdbController finished]) {
+		[self pause:nil];
+		[gdbController sendCmd:@"rb_cont"];
+	}
+}
+
+- (void) setBreakPoint:(NSString *)file atLine:(int) line {
+    NSString *lineString = [NSString stringWithFormat:@"%d",line];
+	NSString *bFile = file;
+	
+	if(bFile == nil) {
+		bFile = [[outlineView itemAtRow:[outlineView selectedRow]] fullPath];
+		bFile = [[bFile componentsSeparatedByString:@"app/"] lastObject];
+	}
+	
+	NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",bFile,lineString];
 	if(![gdbController finished] && gdbScriptLoaded) {
 		[self pause:nil];
 		[gdbController sendCmd:cmd];
@@ -68,27 +88,29 @@
 }
 - (IBAction)resume:(id)sender {
 	if(![gdbController finished]) {
-		if([preserveBreakpoint state]) {
-			[self pause:nil];
-			[gdbController sendCmd:@"rb_break"];
-		} else {
-			[self pause:nil];
-			[gdbController sendCmd:@"rb_cont"];
-		}	
+		[self pause:nil];
+		[gdbController sendCmd:@"rb_break"];
+		[self clearHighLight];
 	}
 	
 }
 
+- (void)awakeFromNib
+{
+	[sourceController awakeFromNib];
+}
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
 	gdbAttached = false;
 	gdbScriptLoaded = false;
 	pid = @"";
 	gdbPid = @"";
-	
+	currentFile = nil;
 	[gdbController setFinished:true];
 	[[[[gdbController outputTextView] textStorage] mutableString] setString:@""];
 	[[[[rubyController outputTextView] textStorage] mutableString] setString:@""];
+	
+    [[sourceController lineNumberView] setDebugger:self];
 	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
 }
 
@@ -99,6 +121,52 @@
 	}
 	
 }
+
+- (IBAction)selectFile:(id)sender {
+	FileSystemItem *item = [sender itemAtRow:[sender selectedRow]];
+	if([item numberOfChildren] == -1) {
+		currentFile = [[item fullPath] copy];
+		NSString *fileContents = [NSString stringWithContentsOfFile:currentFile encoding:NSASCIIStringEncoding error:nil];
+		[sourceController setStringValue:fileContents];
+	}
+}
+
+- (IBAction)saveFile:(id)sender {
+	if(currentFile != nil) {
+		[[sourceController stringValue] writeToFile:currentFile atomically:YES encoding:NSASCIIStringEncoding error:nil];
+	}
+	
+}
+
+- (IBAction)launchApp:(id)sender {
+	[self buildAndRun:[[FileSystemItem rootItem] fullPath]];
+	
+}
+
+- (IBAction)setRhodesApp:(id)sender {
+
+//	NSArray *fileTypes = [NSArray arrayWithObject:@"td"];
+	NSOpenPanel *oPanel = [NSOpenPanel openPanel];
+    int result;
+	
+	[oPanel setCanChooseFiles:false];
+	[oPanel setCanChooseDirectories:true];
+	[oPanel setAllowsMultipleSelection:false];
+	
+	result = [oPanel runModalForDirectory:NSHomeDirectory() file:nil];
+	
+	if(result == NSOKButton) {
+		NSString *root = [[oPanel filenames] objectAtIndex:0];
+		[FileSystemItem setRootItem:root]; 
+		[outlineView reloadItem:nil reloadChildren:true];
+		
+	}
+	
+	
+	
+}
+
+
 
 - (NSString *) getGdbPid {
 	NSTask *task = [[NSTask alloc] init];
@@ -154,6 +222,10 @@
 	if ( [gdbController finished] ) {
 		gdbAttached = false;
 		gdbScriptLoaded = false;
+
+		[[sourceController lineNumberView] removeMarker:[[sourceController lineNumberView] markerAtLine:[[[sourceController lineNumberView] oldMarker] lineNumber]]];
+		[[sourceController lineNumberView] setNeedsDisplay:YES];
+         
 		[statusLabel setStringValue:@"Waiting for Rhodes"];
 		[statusLabel setTextColor:[NSColor redColor]];
 	}
@@ -213,6 +285,24 @@
 	[rubyController launchTask];
 	[rubyController appendString:[NSString stringWithFormat:@"Attached to Rhodes ruby process %@\n\n",pid]];
 }
+
+- (void)buildAndRun:(NSString *)path {
+	NSTask *ps = [[NSTask alloc] init];
+   	[ps setLaunchPath:@"/bin/sh"];
+
+	NSString *cmd = [NSString stringWithFormat:@"cd %@ && rake run:iphone 2>&1", path];
+	
+	NSMutableArray *args = [[NSMutableArray alloc] init];
+	[args addObject:@"-c"];
+	[args addObject:cmd];
+	
+	[ps setArguments:args];
+	
+	
+	[rubyController setTask:ps];
+	[rubyController launchTask];
+}
+
 
 
 - (void)attachGdbTo:(NSString*)file withPid:(NSString*)pid {
@@ -295,10 +385,47 @@
 				[attribDict setObject:[NSColor purpleColor] forKey:NSForegroundColorAttributeName];
 				[colorizedString setAttributes:attribDict range:thisLineRange];
 			}
+			NSRange breakRange  = [thisLine rangeOfString:@"--Break"];
+			NSRange stepRange  = [thisLine rangeOfString:@"--Step"];
+			if ( breakRange.location != NSNotFound || stepRange.location != NSNotFound) {
+				NSString *stopLine = [[thisLine componentsSeparatedByString:@":"] lastObject];
+				NSRange evalRange = [thisLine rangeOfString:@"(eval)"];
+				if(evalRange.location == NSNotFound) {
+					NSString *file = [[[[thisLine componentsSeparatedByString:@" at "] lastObject] componentsSeparatedByString:@":"] objectAtIndex:0];
+					[self clearHighLight];
+					[self highLight:file atLine:[stopLine intValue]];
+				}
+			}
+			
 		}
 	}
 	
 	// Finally, return our colorized version.
 	return colorizedString;
 }
+
+-(void) highLight:(NSString*) file atLine:(int)lineNum {
+	if([file rangeOfString:@"app/"].location != NSNotFound) {
+		NSString *fileContents = [sourceController stringValue];
+		NSArray *lines = [fileContents componentsSeparatedByString:@"\n"];
+		NSString *matchLine = [lines objectAtIndex:lineNum - 1];
+		NSRange lineRange = [fileContents rangeOfString:matchLine];
+		NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:fileContents];
+	
+		NSMutableDictionary *attribDict = [NSMutableDictionary dictionary];
+		[attribDict setObject:[NSColor cyanColor] forKey:NSBackgroundColorAttributeName];
+	
+		[colorizedString setAttributes:attribDict range:lineRange];
+	
+		[sourceController setAttributedString:colorizedString];
+    }	
+	
+}
+
+-(void) clearHighLight {
+	NSString *file = [sourceController stringValue];
+	NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:file];
+	[sourceController setAttributedString:colorizedString];
+}
+
 @end

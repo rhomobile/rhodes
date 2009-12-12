@@ -17,7 +17,7 @@ define rb_break
 end
 
 define rb_step
-  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname|  $_self = self; $_binding = bind; if event =~ /line/; puts \"-- Step at #{file}:#{line}\"; sleep 0;  end}",(int *)0) 
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname|  $_self = self; $_binding = bind; if event =~ /line/; puts \"--Step at #{file}:#{line}\"; sleep 0;  end}",(int *)0) 
   tbreak rb_f_sleep
   cont
 end

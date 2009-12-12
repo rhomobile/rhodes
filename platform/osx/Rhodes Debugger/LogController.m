@@ -167,7 +167,7 @@ exit:
 
 -(void)sendCmd:(NSString *)cmd {
 	cmd = [cmd stringByAppendingString:@"\n"];
-	while (! [self isWaiting] ) { [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]]; }
+	while (! [self isWaiting] ) { [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; }
 	[self setIsWaiting:false];
 	[self appendString:cmd];
 	[[self stdinFileHandle] writeData:[cmd dataUsingEncoding:NSASCIIStringEncoding]];
