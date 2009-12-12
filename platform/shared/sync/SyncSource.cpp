@@ -32,6 +32,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -48,6 +49,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, uint64 token, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
@@ -68,6 +70,7 @@ CSyncSource::CSyncSource(int id, const String& strUrl, const String& strName, ui
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bSearchSyncChanges = false;
     m_nProgressStep = -1;
+    m_nRefreshTime = 0;
 }
 
 CDBAdapter& CSyncSource::getDB(){ return getSync().getDB(); }
@@ -119,8 +122,10 @@ void CSyncSource::sync()
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
 
     getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-						 last_sync_duration=?,last_sync_success=? WHERE source_id=?", 
-                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), m_bGetAtLeastOnePage, getID() );
+						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (
+                         endTime-startTime).toULong(), m_bGetAtLeastOnePage, m_nRefreshTime,
+                         getID() );
 }
 
 boolean CSyncSource::isPendingClientChanges()
@@ -379,6 +384,12 @@ void CSyncSource::processServerData(const char* szData)
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
     {
         nVersion = oJsonArr.getCurItem().getInt("version");
+        oJsonArr.next();
+    }
+
+    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("rt") )
+    {
+        setRefreshTime(oJsonArr.getCurItem().getInt("rt"));
         oJsonArr.next();
     }
 

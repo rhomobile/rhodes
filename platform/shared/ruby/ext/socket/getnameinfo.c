@@ -114,6 +114,11 @@ static struct afd {
 #ifdef __HAIKU__
 #define HAVE_INET_NTOP
 #endif
+
+#if _MSC_VER > 1400
+#define HAVE_INET_NTOP 1
+#endif //_MSC_VER > 1400
+
 #ifndef HAVE_INET_NTOP
 static const char *
 inet_ntop(int af, const void *addr, char *numaddr, size_t numaddr_len)

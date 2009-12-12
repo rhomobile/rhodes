@@ -82,6 +82,16 @@ module Rhom
                   #SyncEngine.unlock_sync_mutex
                   res
                 end
+
+                def backend_refresh_time
+                  result = ::Rhom::RhomDbAdapter::select_from_table('sources', 'backend_refresh_time', {"source_id"=>get_source_id} )
+                  nTime = 0
+                  if result && result.length > 0 && result[0]['backend_refresh_time']
+                    nTime = result[0]['backend_refresh_time'].to_i
+                  end
+                    
+                  Time.at(nTime)
+                end
               
                 def get_source_id
                   Rho::RhoConfig.sources[self.name.to_s]['source_id'].to_s
