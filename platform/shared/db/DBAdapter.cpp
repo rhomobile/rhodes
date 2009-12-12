@@ -327,6 +327,7 @@ static const char* g_szDbSchema =
     " last_deleted_size int default 0,"
     " last_sync_duration int default 0,"
     " last_sync_success int default 0,"
+    " backend_refresh_time int default 0,"
     " source_attribs varchar default NULL);"
     //"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"
     //"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"
