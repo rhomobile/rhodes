@@ -17,6 +17,7 @@
 @synthesize isWaiting;
 @synthesize finished;
 @synthesize waitString;
+@synthesize cmdQueue;
 
 - (id) init
 {
@@ -27,6 +28,7 @@
 		[self setStdoutFileHandle:nil];
 		[self setDefaultStringAttributes:nil];
 		[self setWaitString:@""];
+		[self setCmdQueue:[NSMutableArray arrayWithCapacity:1]];
 	}
 	return self;
 }
@@ -119,7 +121,14 @@
 	
 	if ([[self waitString] length] > 0) {
 		if ([stringData rangeOfString:[self waitString]].location != NSNotFound) {
-			isWaiting = true;
+			if([cmdQueue count] > 0) {
+				NSString *cmd = [cmdQueue lastObject];
+				[self appendString:cmd];
+				[[self stdinFileHandle] writeData:[cmd dataUsingEncoding:NSASCIIStringEncoding]];
+				[cmdQueue removeLastObject];
+			} else {
+				isWaiting = true;
+			}
 		}
 	}	
 exit:
@@ -165,11 +174,21 @@ exit:
 	[attribString release];
 }
 
--(void)sendCmd:(NSString *)cmd {
+-(void)sendCmd:(NSString *)cmd async:(BOOL)async {
 	cmd = [cmd stringByAppendingString:@"\n"];
-	while (! [self isWaiting] ) { [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; }
-	[self setIsWaiting:false];
-	[self appendString:cmd];
-	[[self stdinFileHandle] writeData:[cmd dataUsingEncoding:NSASCIIStringEncoding]];
+	if(async) {
+		if([self isWaiting]) {
+			[self setIsWaiting:false];
+			[self appendString:cmd];
+			[[self stdinFileHandle] writeData:[cmd dataUsingEncoding:NSASCIIStringEncoding]];
+		} else {
+			[cmdQueue insertObject:cmd atIndex:0];
+		}
+	} else {
+		while (! [self isWaiting] ) { [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; }
+		[self setIsWaiting:false];
+		[self appendString:cmd];
+		[[self stdinFileHandle] writeData:[cmd dataUsingEncoding:NSASCIIStringEncoding]];
+	}
 }
 @end

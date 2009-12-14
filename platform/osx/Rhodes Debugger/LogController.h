@@ -34,6 +34,7 @@
 	NSFileHandle *stdinFileHandle;
 	NSDictionary *defaultStringAttributes;
 	NSString *waitString;
+	NSMutableArray *cmdQueue;
 }
 @property(retain) NSTextView *outputTextView;
 @property(assign) NSObject *delegate;
@@ -46,6 +47,7 @@
 @property(retain) NSFileHandle *stdinFileHandle;
 @property(retain) NSDictionary *defaultStringAttributes;
 @property(retain) NSString *waitString;
+@property(retain) NSMutableArray *cmdQueue;
 
 -(void) launchTask;
 -(void) taskFinished:(NSNotification *)notification;
@@ -53,6 +55,6 @@
 -(void) appendString:(NSString *)stringData;
 -(void) appendAttributedString:(NSAttributedString *)stringData;
 -(void) clearTextView;
--(void)sendCmd:(NSString *)cmd;
+-(void)sendCmd:(NSString *)cmd async:(BOOL)async;
 
 @end
