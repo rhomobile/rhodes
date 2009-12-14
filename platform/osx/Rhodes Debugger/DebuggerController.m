@@ -1,5 +1,6 @@
 #import "DebuggerController.h"
 #import "FileSystemItem.h"
+#import "MarkerLineNumberView.h"
 
 @implementation DebuggerController
 
@@ -146,21 +147,6 @@
 
 
 
-- (void)attachTail {
-	NSTask *ps = [[NSTask alloc] init];
-   	[ps setLaunchPath:@"/usr/bin/tail"];
-	
-	NSMutableArray *args = [[NSMutableArray alloc] init];
-	[args addObject:@"-f"];
-	[args addObject:[NSString stringWithFormat:@"/tmp/ruby-debug.%@",pid]];
-	
-	[ps setArguments:args];
-	
-	
-	[rubyController setTask:ps];
-	[rubyController launchTask];
-	[rubyController appendString:[NSString stringWithFormat:@"Attached to Rhodes ruby process %@\n\n",pid]];
-}
 
 - (void)buildAndRun:(NSString *)path {
 	NSTask *ps = [[NSTask alloc] init];
@@ -181,15 +167,30 @@
 }
 
 
+- (void)attachTail {
+	NSTask *ps = [[NSTask alloc] init];
+   	[ps setLaunchPath:@"/usr/bin/tail"];
+	
+	NSMutableArray *args = [[NSMutableArray alloc] init];
+	[args addObject:@"-f"];
+	[args addObject:[NSString stringWithFormat:@"/tmp/ruby-debug.%@",pid]];
+	
+	[ps setArguments:args];
+	
+	
+	[rubyController setTask:ps];
+	[rubyController launchTask];
+	[rubyController appendString:[NSString stringWithFormat:@"Attached to Rhodes ruby process %@\n\n",pid]];
+}
 
-- (void)attachGdbTo:(NSString*)file withPid:(NSString*)pid {
+- (void)attachGdbTo:(NSString*)file withPid:(NSString*)inPid {
 
 	NSTask *ps = [[NSTask alloc] init];
    	[ps setLaunchPath:@"/usr/bin/gdb"];
 
 	NSMutableArray *args = [[NSMutableArray alloc] init];
 	[args addObject:file];
-	[args addObject:pid];
+	[args addObject:inPid];
 	
 	[ps setArguments:args];
 
@@ -247,9 +248,9 @@
 - (IBAction)pause:(id)sender {
 	
 	if(![gdbController isWaiting] && ! [gdbController finished] ) {
-		NSString * gdbPid = [self getGdbPid];
+		NSString * myGdbPid = [self getGdbPid];
 		NSString *cmd = @"/bin/kill -INT ";
-		system([[cmd stringByAppendingString:gdbPid] cString]);
+		system([[cmd stringByAppendingString:myGdbPid] cStringUsingEncoding:NSASCIIStringEncoding]);
 		
 	}
 	
