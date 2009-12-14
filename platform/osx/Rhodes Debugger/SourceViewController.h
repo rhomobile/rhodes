@@ -28,16 +28,19 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
-@class NoodleLineNumberView;
+@class MarkerLineNumberView;
 
 @interface SourceViewController : NSObject
 {
     IBOutlet NSScrollView   *scrollView;
     IBOutlet NSTextView     *scriptView;
-	NoodleLineNumberView	*lineNumberView;
+	MarkerLineNumberView	*lineNumberView;
 }
+@property(retain) MarkerLineNumberView *lineNumberView;
 
-@property(retain) NoodleLineNumberView *lineNumberView;
+
+- (NSString *)stringValue;
+- (void)setAttributedString:(NSAttributedString *) contents;
+- (void)setStringValue:(NSString *)contents;
 
 @end

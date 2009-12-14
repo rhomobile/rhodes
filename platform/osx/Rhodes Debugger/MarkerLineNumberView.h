@@ -29,6 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "NoodleLineNumberView.h"
+#import "NoodleLineNumberMarker.h"
 #import "DebuggerController.h"
 
 @interface MarkerLineNumberView : NoodleLineNumberView
