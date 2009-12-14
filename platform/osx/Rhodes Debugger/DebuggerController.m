@@ -72,13 +72,13 @@
 		NSString * cmd = @"source \"";
 		cmd = [cmd stringByAppendingString:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/ruby\""]];
         
-		[gdbController sendCmd:cmd];
+		[gdbController sendCmd:cmd async:false];
 		
 		system("rm /tmp/ruby-debug*");
 		
-		[gdbController sendCmd:@"set objc-non-blocking-mode off"];
-		[gdbController sendCmd:@"redirect_stdout"];
-		[gdbController sendCmd:@"rb_trace"];
+		[gdbController sendCmd:@"set objc-non-blocking-mode off" async:false];
+		[gdbController sendCmd:@"redirect_stdout" async:false];
+		[gdbController sendCmd:@"rb_trace" async:false];
 		gdbScriptLoaded = true;
 		
 		
@@ -99,7 +99,7 @@
 - (void) removeBreakpoint {
 	if(![gdbController finished]) {
 		[self pause:nil];
-		[gdbController sendCmd:@"rb_cont"];
+		[gdbController sendCmd:@"rb_cont" async:true];
 	}
 }
 
@@ -115,9 +115,9 @@
 	NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",bFile,lineString];
 	if(![gdbController finished] && gdbScriptLoaded) {
 		[self pause:nil];
-		[gdbController sendCmd:cmd];
-		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")"];
-		[gdbController sendCmd:@"rb_break"];
+		[gdbController sendCmd:cmd async:true];
+		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")" async:true];
+		[gdbController sendCmd:@"rb_break" async:true];
 	}	
 }
 
@@ -209,7 +209,7 @@
 }
 
 -(void) highLight:(NSString*) file atLine:(int)lineNum {
-	if([file rangeOfString:@"app/"].location != NSNotFound) {
+	if([file rangeOfString:@"/app/"].location != NSNotFound) {
 		NSString *fileContents = [sourceController stringValue];
 		NSArray *lines = [fileContents componentsSeparatedByString:@"\n"];
 		NSString *matchLine = [lines objectAtIndex:lineNum - 1];
@@ -232,14 +232,14 @@
 - (IBAction)step:(id)sender {
 	if(![gdbController finished]) {
 		[self pause:nil];
-		[gdbController sendCmd:@"rb_step"];
+		[gdbController sendCmd:@"rb_step" async:true];
     }
 }
 
 - (IBAction)stepOut:(id)sender {
 	if(![gdbController finished]) {
 		[self pause:nil];
-		[gdbController sendCmd:@"rb_finish"];
+		[gdbController sendCmd:@"rb_finish" async:true];
     }
 }
 
@@ -258,7 +258,7 @@
 - (IBAction)resume:(id)sender {
 	if(![gdbController finished]) {
 		[self pause:nil];
-		[gdbController sendCmd:@"rb_break"];
+		[gdbController sendCmd:@"rb_break" async:true];
 		[self clearHighLight];
 	}
 	
@@ -313,7 +313,7 @@
 	if ([[sender stringValue] length] < 1) {return;}
 	[self pause:nil];
 	if(![gdbController finished]) {
-		[gdbController sendCmd:[sender stringValue]];
+		[gdbController sendCmd:[sender stringValue] async:true];
 	}
     [sender setStringValue:@""];
 	
@@ -327,7 +327,7 @@
 	
 	[self pause:nil];
 	[rubyController appendString:@"\n"];
-	[gdbController sendCmd:cmd];
+	[gdbController sendCmd:cmd async:true];
 	[sender setStringValue:@""];
 	
 	
