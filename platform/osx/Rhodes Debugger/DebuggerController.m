@@ -2,38 +2,98 @@
 #import "FileSystemItem.h"
 
 @implementation DebuggerController
-- (IBAction)gdbInput:(id)sender {
-	if ([[sender stringValue] length] < 1) {return;}
-	[self pause:nil];
-	if(![gdbController finished]) {
-		[gdbController sendCmd:[sender stringValue]];
+
+#pragma mark -- Timer Methods --
+
+- (void)statusScanner:(id)userData {
+	NSTask *task = [[NSTask alloc] init];
+	[task setLaunchPath:@"/bin/sh"];
+	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep -v grep | grep -v gdb",nil];
+	[task setArguments: args];
+	
+	NSPipe *pipe = [NSPipe pipe];
+	[task setStandardOutput:pipe];
+	
+	NSFileHandle *file = [pipe fileHandleForReading];
+	[task launch];
+	
+	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
+    output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	
+	if ( [gdbController isWaiting] || [gdbController finished] ) {
+		[gdbStatusLabel setStringValue:@"Stopped"];
+	} else {
+		[gdbStatusLabel setStringValue:@"Running"];
 	}
-    [sender setStringValue:@""];
-
+	
+	
+	
+	if ( [output length] < 1 && ![gdbController finished]) {
+		[[gdbController task] terminate];
+		[[rubyController task] terminate];
+        return;
+	}
+	
+	if ( [gdbController finished] ) {
+		gdbAttached = false;
+		gdbScriptLoaded = false;
+		
+		[[sourceController lineNumberView] removeMarker:[[sourceController lineNumberView] markerAtLine:[[[sourceController lineNumberView] oldMarker] lineNumber]]];
+		[[sourceController lineNumberView] setNeedsDisplay:YES];
+		
+		[statusLabel setStringValue:@"Waiting for Rhodes"];
+		[statusLabel setTextColor:[NSColor redColor]];
+	}
+	
+	if ( ! gdbAttached ) {
+		
+		if(building) {
+			if([rubyController finished] ) {
+				building = false;
+			} else {
+				return;
+			}
+		}
+		
+		if( [output length] > 0 ) {
+			NSArray *components = [output componentsSeparatedByString:@" "];
+			pid = [components objectAtIndex:0];
+			NSString *command = [output stringByReplacingOccurrencesOfString:pid withString:@""];
+			[self attachGdbTo:[command stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] withPid:pid];
+			gdbAttached = true;
+			[statusLabel setStringValue:@"Connecting"];
+			[statusLabel setTextColor:[NSColor orangeColor]];
+			return;
+		}
+		
+	}
+	if( gdbAttached && !gdbScriptLoaded && [gdbController isWaiting] ) {
+		NSString * cmd = @"source \"";
+		cmd = [cmd stringByAppendingString:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/ruby\""]];
+        
+		[gdbController sendCmd:cmd];
+		
+		system("rm /tmp/ruby-debug*");
+		
+		[gdbController sendCmd:@"set objc-non-blocking-mode off"];
+		[gdbController sendCmd:@"redirect_stdout"];
+		[gdbController sendCmd:@"rb_trace"];
+		gdbScriptLoaded = true;
+		
+		
+		
+		[statusLabel setStringValue:@"Connected"];
+		[statusLabel setTextColor:[NSColor blueColor]];
+		
+		[self attachTail];
+		
+	}
+	
+	
+	
 }
 
-- (IBAction)rubyInput:(id)sender {
-	if ([[sender stringValue] length] < 1) {return;}
-	
-	NSString *sanitized = [[sender stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
-	
-	[self pause:nil];
-	[rubyController appendString:@"\n"];
-	[gdbController sendCmd:cmd];
-	[sender setStringValue:@""];
-	
-
-}
-
-- (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *) sender { return YES; }
-
-- (IBAction)setBp:(id)sender {
-	NSString *sanitizedFile = [[bpFile stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-	NSString *sanitizedLine = [[bpLine stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-
- 	[self setBreakPoint:sanitizedFile atLine:[sanitizedLine intValue]];
-}
+#pragma mark -- Helpers --
 
 - (void) removeBreakpoint {
 	if(![gdbController finished]) {
@@ -60,112 +120,6 @@
 	}	
 }
 
-- (IBAction)step:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_step"];
-    }
-}
-
-- (IBAction)stepOut:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_finish"];
-    }
-}
-
-
-
-- (IBAction)pause:(id)sender {
-
-	if(![gdbController isWaiting] && ! [gdbController finished] ) {
-		NSString * gdbPid = [self getGdbPid];
-		NSString *cmd = @"/bin/kill -INT ";
-		system([[cmd stringByAppendingString:gdbPid] cString]);
-		
-	}
-	
-}
-- (IBAction)resume:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_break"];
-		[self clearHighLight];
-	}
-	
-}
-
-- (void)awakeFromNib
-{
-	[sourceController awakeFromNib];
-}
-
-- (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
-	gdbAttached = false;
-	gdbScriptLoaded = false;
-	building = false;
-	pid = @"";
-	gdbPid = @"";
-	currentFile = nil;
-	[gdbController setFinished:true];
-	[[[[gdbController outputTextView] textStorage] mutableString] setString:@""];
-	[[[[rubyController outputTextView] textStorage] mutableString] setString:@""];
-	
-    [[sourceController lineNumberView] setDebugger:self];
-	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
-}
-
-- (void)applicationWillTerminate:(NSNotification*)aNotification {
-	
-	if ( ![gdbController finished]) {
-		[[gdbController task] terminate];
-	}
-	
-}
-
-- (IBAction)selectFile:(id)sender {
-	FileSystemItem *item = [sender itemAtRow:[sender selectedRow]];
-	if([item numberOfChildren] == -1) {
-		currentFile = [[item fullPath] copy];
-		NSString *fileContents = [NSString stringWithContentsOfFile:currentFile encoding:NSASCIIStringEncoding error:nil];
-		[sourceController setStringValue:fileContents];
-	}
-}
-
-- (IBAction)saveFile:(id)sender {
-	if(currentFile != nil) {
-		[[sourceController stringValue] writeToFile:currentFile atomically:YES encoding:NSASCIIStringEncoding error:nil];
-	}
-	
-}
-
-- (IBAction)launchApp:(id)sender {
-	[self buildAndRun:[[FileSystemItem rootItem] fullPath]];
-	
-}
-
-- (IBAction)setRhodesApp:(id)sender {
-
-//	NSArray *fileTypes = [NSArray arrayWithObject:@"td"];
-	NSOpenPanel *oPanel = [NSOpenPanel openPanel];
-    int result;
-	
-	[oPanel setCanChooseFiles:false];
-	[oPanel setCanChooseDirectories:true];
-	[oPanel setAllowsMultipleSelection:false];
-	
-	result = [oPanel runModalForDirectory:NSHomeDirectory() file:nil];
-	
-	if(result == NSOKButton) {
-		NSString *root = [[oPanel filenames] objectAtIndex:0];
-		[FileSystemItem setRootItem:root]; 
-		[outlineView reloadItem:nil reloadChildren:true];
-		
-	}
-	
-	
-	
-}
 
 
 
@@ -191,93 +145,6 @@
 }
 
 
-- (void)statusScanner:(id)userData {
-	NSTask *task = [[NSTask alloc] init];
-	[task setLaunchPath:@"/bin/sh"];
-	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep -v grep | grep -v gdb",nil];
-	[task setArguments: args];
-	
-	NSPipe *pipe = [NSPipe pipe];
-	[task setStandardOutput:pipe];
-	
-	NSFileHandle *file = [pipe fileHandleForReading];
-	[task launch];
-	
-	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
-    output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
-	if ( [gdbController isWaiting] || [gdbController finished] ) {
-		[gdbStatusLabel setStringValue:@"Stopped"];
-	} else {
-		[gdbStatusLabel setStringValue:@"Running"];
-	}
-	
-	
-	
-	if ( [output length] < 1 && ![gdbController finished]) {
-		[[gdbController task] terminate];
-		[[rubyController task] terminate];
-        return;
-	}
-	
-	if ( [gdbController finished] ) {
-		gdbAttached = false;
-		gdbScriptLoaded = false;
-
-		[[sourceController lineNumberView] removeMarker:[[sourceController lineNumberView] markerAtLine:[[[sourceController lineNumberView] oldMarker] lineNumber]]];
-		[[sourceController lineNumberView] setNeedsDisplay:YES];
-         
-		[statusLabel setStringValue:@"Waiting for Rhodes"];
-		[statusLabel setTextColor:[NSColor redColor]];
-	}
-	
-	if ( ! gdbAttached ) {
-		
-		if(building) {
-			if([rubyController finished] ) {
-				building = false;
-			} else {
-				return;
-			}
-		}
-
-		if( [output length] > 0 ) {
-			NSArray *components = [output componentsSeparatedByString:@" "];
-			pid = [components objectAtIndex:0];
-			NSString *command = [output stringByReplacingOccurrencesOfString:pid withString:@""];
-			[self attachGdbTo:[command stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] withPid:pid];
-			gdbAttached = true;
-			[statusLabel setStringValue:@"Connecting"];
-			[statusLabel setTextColor:[NSColor orangeColor]];
-			return;
-		}
-		
-	}
-	if( gdbAttached && !gdbScriptLoaded && [gdbController isWaiting] ) {
-		NSString * cmd = @"source \"";
-		cmd = [cmd stringByAppendingString:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/ruby\""]];
-        
-		[gdbController sendCmd:cmd];
-
-		system("rm /tmp/ruby-debug*");
-
-		[gdbController sendCmd:@"set objc-non-blocking-mode off"];
-		[gdbController sendCmd:@"redirect_stdout"];
-		[gdbController sendCmd:@"rb_trace"];
-		gdbScriptLoaded = true;
-		
-	
-		
-		[statusLabel setStringValue:@"Connected"];
-		[statusLabel setTextColor:[NSColor blueColor]];
-		
-		[self attachTail];
-		
-	}
-	   
-	
-	
-}
 
 - (void)attachTail {
 	NSTask *ps = [[NSTask alloc] init];
@@ -333,6 +200,141 @@
 }
 
 
+
+-(void) clearHighLight {
+	NSString *file = [sourceController stringValue];
+	NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:file];
+	[sourceController setAttributedString:colorizedString];
+}
+
+-(void) highLight:(NSString*) file atLine:(int)lineNum {
+	if([file rangeOfString:@"app/"].location != NSNotFound) {
+		NSString *fileContents = [sourceController stringValue];
+		NSArray *lines = [fileContents componentsSeparatedByString:@"\n"];
+		NSString *matchLine = [lines objectAtIndex:lineNum - 1];
+		NSRange lineRange = [fileContents rangeOfString:matchLine];
+		NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:fileContents];
+		
+		NSMutableDictionary *attribDict = [NSMutableDictionary dictionary];
+		[attribDict setObject:[NSColor cyanColor] forKey:NSBackgroundColorAttributeName];
+		
+		[colorizedString setAttributes:attribDict range:lineRange];
+		
+		[sourceController setAttributedString:colorizedString];
+    }	
+	
+}
+
+
+#pragma mark -- Actions --
+
+- (IBAction)step:(id)sender {
+	if(![gdbController finished]) {
+		[self pause:nil];
+		[gdbController sendCmd:@"rb_step"];
+    }
+}
+
+- (IBAction)stepOut:(id)sender {
+	if(![gdbController finished]) {
+		[self pause:nil];
+		[gdbController sendCmd:@"rb_finish"];
+    }
+}
+
+
+
+- (IBAction)pause:(id)sender {
+	
+	if(![gdbController isWaiting] && ! [gdbController finished] ) {
+		NSString * gdbPid = [self getGdbPid];
+		NSString *cmd = @"/bin/kill -INT ";
+		system([[cmd stringByAppendingString:gdbPid] cString]);
+		
+	}
+	
+}
+- (IBAction)resume:(id)sender {
+	if(![gdbController finished]) {
+		[self pause:nil];
+		[gdbController sendCmd:@"rb_break"];
+		[self clearHighLight];
+	}
+	
+}
+
+- (IBAction)selectFile:(id)sender {
+	FileSystemItem *item = [sender itemAtRow:[sender selectedRow]];
+	if([item numberOfChildren] == -1) {
+		currentFile = [[item fullPath] copy];
+		NSString *fileContents = [NSString stringWithContentsOfFile:currentFile encoding:NSASCIIStringEncoding error:nil];
+		[sourceController setStringValue:fileContents];
+	}
+}
+
+- (IBAction)saveFile:(id)sender {
+	if(currentFile != nil) {
+		[[sourceController stringValue] writeToFile:currentFile atomically:YES encoding:NSASCIIStringEncoding error:nil];
+	}
+	
+}
+
+- (IBAction)launchApp:(id)sender {
+	[self buildAndRun:[[FileSystemItem rootItem] fullPath]];
+	
+}
+
+- (IBAction)setRhodesApp:(id)sender {
+	
+	//	NSArray *fileTypes = [NSArray arrayWithObject:@"td"];
+	NSOpenPanel *oPanel = [NSOpenPanel openPanel];
+    int result;
+	
+	[oPanel setCanChooseFiles:false];
+	[oPanel setCanChooseDirectories:true];
+	[oPanel setAllowsMultipleSelection:false];
+	
+	result = [oPanel runModalForDirectory:NSHomeDirectory() file:nil];
+	
+	if(result == NSOKButton) {
+		NSString *root = [[oPanel filenames] objectAtIndex:0];
+		[FileSystemItem setRootItem:root]; 
+		[outlineView reloadItem:nil reloadChildren:true];
+		
+	}
+	
+	
+	
+}
+
+
+- (IBAction)gdbInput:(id)sender {
+	if ([[sender stringValue] length] < 1) {return;}
+	[self pause:nil];
+	if(![gdbController finished]) {
+		[gdbController sendCmd:[sender stringValue]];
+	}
+    [sender setStringValue:@""];
+	
+}
+
+- (IBAction)rubyInput:(id)sender {
+	if ([[sender stringValue] length] < 1) {return;}
+	
+	NSString *sanitized = [[sender stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
+	
+	[self pause:nil];
+	[rubyController appendString:@"\n"];
+	[gdbController sendCmd:cmd];
+	[sender setStringValue:@""];
+	
+	
+}
+
+
+#pragma mark -- Delegate Methods --
+
 - (NSAttributedString *)logController:(id)sender willAppendNewString:(NSString *)plainString
 {
 	// NSLog(@"Colorizing string: %@", plainString);
@@ -351,7 +353,7 @@
 	NSUInteger endOfString = [plainString length];
 	NSRange restOfString=NSMakeRange(0, endOfString);
 	
-		
+	
 	// Go through plainString one line at a time
 	for( startOfLine=0; endOfLine < endOfString; startOfLine=endOfLine)
 	{
@@ -414,28 +416,36 @@
 	return colorizedString;
 }
 
--(void) highLight:(NSString*) file atLine:(int)lineNum {
-	if([file rangeOfString:@"app/"].location != NSNotFound) {
-		NSString *fileContents = [sourceController stringValue];
-		NSArray *lines = [fileContents componentsSeparatedByString:@"\n"];
-		NSString *matchLine = [lines objectAtIndex:lineNum - 1];
-		NSRange lineRange = [fileContents rangeOfString:matchLine];
-		NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:fileContents];
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
+	gdbAttached = false;
+	gdbScriptLoaded = false;
+	building = false;
+	pid = @"";
+	gdbPid = @"";
+	currentFile = nil;
+	[gdbController setFinished:true];
+	[[[[gdbController outputTextView] textStorage] mutableString] setString:@""];
+	[[[[rubyController outputTextView] textStorage] mutableString] setString:@""];
 	
-		NSMutableDictionary *attribDict = [NSMutableDictionary dictionary];
-		[attribDict setObject:[NSColor cyanColor] forKey:NSBackgroundColorAttributeName];
+    [[sourceController lineNumberView] setDebugger:self];
+	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
+}
+
+- (void)applicationWillTerminate:(NSNotification*)aNotification {
 	
-		[colorizedString setAttributes:attribDict range:lineRange];
-	
-		[sourceController setAttributedString:colorizedString];
-    }	
+	if ( ![gdbController finished]) {
+		[[gdbController task] terminate];
+	}
 	
 }
 
--(void) clearHighLight {
-	NSString *file = [sourceController stringValue];
-	NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:file];
-	[sourceController setAttributedString:colorizedString];
+- (void)awakeFromNib
+{
+	[sourceController awakeFromNib];
 }
+
+- (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *) sender { return YES; }
+
+
 
 @end
