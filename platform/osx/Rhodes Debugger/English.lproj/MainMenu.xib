@@ -8,8 +8,8 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<integer value="473"/>
 			<integer value="81"/>
-			<integer value="479"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1152,7 +1152,7 @@
 															<object class="NSTextView" id="242322186">
 																<reference key="NSNextResponder" ref="127562611"/>
 																<int key="NSvFlags">2322</int>
-																<string key="NSFrameSize">{1029, 12}</string>
+																<string key="NSFrameSize">{1029, 14}</string>
 																<reference key="NSSuperview" ref="127562611"/>
 																<object class="NSTextContainer" key="NSTextContainer" id="745221206">
 																	<object class="NSLayoutManager" key="NSLayoutManager">
@@ -1539,7 +1539,7 @@
 																				<string>WebURLsWithTitlesPboardType</string>
 																			</object>
 																		</object>
-																		<string key="NSFrameSize">{818, 173}</string>
+																		<string key="NSFrameSize">{818, 14}</string>
 																		<reference key="NSSuperview" ref="939169914"/>
 																		<object class="NSTextContainer" key="NSTextContainer" id="578826001">
 																			<object class="NSLayoutManager" key="NSLayoutManager">
@@ -1594,7 +1594,7 @@
 																			<nil key="NSDefaultParagraphStyle"/>
 																		</object>
 																		<int key="NSTVFlags">6</int>
-																		<string key="NSMaxSize">{832, 1e+07}</string>
+																		<string key="NSMaxSize">{1638, 1e+07}</string>
 																		<string key="NSMinize">{140, 0}</string>
 																		<nil key="NSDelegate"/>
 																	</object>
@@ -1672,7 +1672,7 @@
 																				<string>WebURLsWithTitlesPboardType</string>
 																			</object>
 																		</object>
-																		<string key="NSFrameSize">{803, 80}</string>
+																		<string key="NSFrameSize">{803, 14}</string>
 																		<reference key="NSSuperview" ref="232685874"/>
 																		<object class="NSTextContainer" key="NSTextContainer" id="418197137">
 																			<object class="NSLayoutManager" key="NSLayoutManager">
@@ -2020,6 +2020,9 @@
 			</object>
 			<object class="NSCustomObject" id="73348267">
 				<string key="NSClassName">SourceViewController</string>
+			</object>
+			<object class="NSCustomObject" id="171740412">
+				<string key="NSClassName">GdbConnection</string>
 			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -2548,14 +2551,6 @@
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
-						<reference key="source" ref="604526066"/>
-						<reference key="destination" ref="802820816"/>
-					</object>
-					<int key="connectionID">462</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">delegate</string>
 						<reference key="source" ref="1021"/>
 						<reference key="destination" ref="802820816"/>
 					</object>
@@ -2576,22 +2571,6 @@
 						<reference key="destination" ref="242322186"/>
 					</object>
 					<int key="connectionID">488</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">gdbInput:</string>
-						<reference key="source" ref="802820816"/>
-						<reference key="destination" ref="793634936"/>
-					</object>
-					<int key="connectionID">489</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">gdbController</string>
-						<reference key="source" ref="802820816"/>
-						<reference key="destination" ref="604526066"/>
-					</object>
-					<int key="connectionID">490</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -2752,6 +2731,46 @@
 						<reference key="destination" ref="316859071"/>
 					</object>
 					<int key="connectionID">592</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="604526066"/>
+						<reference key="destination" ref="171740412"/>
+					</object>
+					<int key="connectionID">594</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">gdbController</string>
+						<reference key="source" ref="171740412"/>
+						<reference key="destination" ref="604526066"/>
+					</object>
+					<int key="connectionID">595</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="171740412"/>
+						<reference key="destination" ref="802820816"/>
+					</object>
+					<int key="connectionID">596</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">gdbInput:</string>
+						<reference key="source" ref="171740412"/>
+						<reference key="destination" ref="688477364"/>
+					</object>
+					<int key="connectionID">597</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">gdbConnection</string>
+						<reference key="source" ref="802820816"/>
+						<reference key="destination" ref="171740412"/>
+					</object>
+					<int key="connectionID">598</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -4041,6 +4060,12 @@
 						<reference key="object" ref="983826755"/>
 						<reference key="parent" ref="316859071"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">593</int>
+						<reference key="object" ref="171740412"/>
+						<reference key="parent" ref="1049"/>
+						<string key="objectName">gdbConnection</string>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -4301,6 +4326,7 @@
 					<string>586.IBPluginDependency</string>
 					<string>590.IBPluginDependency</string>
 					<string>591.IBPluginDependency</string>
+					<string>593.IBPluginDependency</string>
 					<string>72.IBPluginDependency</string>
 					<string>72.ImportedFromIB2</string>
 					<string>73.IBPluginDependency</string>
@@ -4467,8 +4493,8 @@
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
-					<string>{{147, 292}, {1139, 836}}</string>
-					<string>{{147, 292}, {1139, 836}}</string>
+					<string>{{37, 292}, {1139, 836}}</string>
+					<string>{{37, 292}, {1139, 836}}</string>
 					<reference ref="9"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
@@ -4585,6 +4611,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
@@ -4632,7 +4659,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">592</int>
+			<int key="maxID">598</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4643,6 +4670,18 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">DataSource.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">DebugConnection</string>
+					<string key="superclassName">NSObject</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">delegate</string>
+						<string key="NS.object.0">NSObject</string>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">DebugConnection.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -4659,14 +4698,12 @@
 							<string>rubyInput:</string>
 							<string>saveFile:</string>
 							<string>selectFile:</string>
-							<string>setBp:</string>
 							<string>setRhodesApp:</string>
 							<string>step:</string>
 							<string>stepOut:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -4685,7 +4722,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>bpFile</string>
 							<string>bpLine</string>
-							<string>gdbController</string>
+							<string>gdbConnection</string>
 							<string>gdbStatusLabel</string>
 							<string>outlineView</string>
 							<string>rubyController</string>
@@ -4697,11 +4734,11 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>id</string>
 							<string>id</string>
+							<string>GdbConnection</string>
 							<string>id</string>
 							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
+							<string>LogController</string>
+							<string>SourceViewController</string>
 							<string>id</string>
 							<string>id</string>
 						</object>
@@ -4717,6 +4754,22 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBUserSource</string>
 						<string key="minorKey"/>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">GdbConnection</string>
+					<string key="superclassName">DebugConnection</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">gdbInput:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">gdbController</string>
+						<string key="NS.object.0">LogController</string>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">GdbConnection.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

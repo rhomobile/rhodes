@@ -6,105 +6,18 @@
 
 #pragma mark -- Timer Methods --
 
-- (void)statusScanner:(id)userData {
-	NSTask *task = [[NSTask alloc] init];
-	[task setLaunchPath:@"/bin/sh"];
-	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep -v grep | grep -v gdb",nil];
-	[task setArguments: args];
-	
-	NSPipe *pipe = [NSPipe pipe];
-	[task setStandardOutput:pipe];
-	
-	NSFileHandle *file = [pipe fileHandleForReading];
-	[task launch];
-	
-	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
-    output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	
-	if ( [gdbController isWaiting] || [gdbController finished] ) {
-		[gdbStatusLabel setStringValue:@"Stopped"];
-	} else {
-		[gdbStatusLabel setStringValue:@"Running"];
-	}
-	
-	
-	
-	if ( [output length] < 1 && ![gdbController finished]) {
-		[[gdbController task] terminate];
-		[[rubyController task] terminate];
-        return;
-	}
-	
-	if ( [gdbController finished] ) {
-		gdbAttached = false;
-		gdbScriptLoaded = false;
-		
-		[[sourceController lineNumberView] removeMarker:[[sourceController lineNumberView] markerAtLine:[[[sourceController lineNumberView] oldMarker] lineNumber]]];
-		[[sourceController lineNumberView] setNeedsDisplay:YES];
-		
-		[statusLabel setStringValue:@"Waiting for Rhodes"];
-		[statusLabel setTextColor:[NSColor redColor]];
-	}
-	
-	if ( ! gdbAttached ) {
-		
-		if(building) {
-			if([rubyController finished] ) {
-				building = false;
-			} else {
-				return;
-			}
-		}
-		
-		if( [output length] > 0 ) {
-			NSArray *components = [output componentsSeparatedByString:@" "];
-			pid = [components objectAtIndex:0];
-			NSString *command = [output stringByReplacingOccurrencesOfString:pid withString:@""];
-			[self attachGdbTo:[command stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] withPid:pid];
-			gdbAttached = true;
-			[statusLabel setStringValue:@"Connecting"];
-			[statusLabel setTextColor:[NSColor orangeColor]];
-			return;
-		}
-		
-	}
-	if( gdbAttached && !gdbScriptLoaded && [gdbController isWaiting] ) {
-		NSString * cmd = @"source \"";
-		cmd = [cmd stringByAppendingString:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/ruby\""]];
-        
-		[gdbController sendCmd:cmd async:false];
-		
-		system("rm /tmp/ruby-debug*");
-		
-		[gdbController sendCmd:@"set objc-non-blocking-mode off" async:false];
-		[gdbController sendCmd:@"redirect_stdout" async:false];
-		[gdbController sendCmd:@"rb_trace" async:false];
-		gdbScriptLoaded = true;
-		
-		
-		
-		[statusLabel setStringValue:@"Connected"];
-		[statusLabel setTextColor:[NSColor blueColor]];
-		
-		[self attachTail];
-		
-	}
-	
-	
-	
-}
+
+
 
 #pragma mark -- Helpers --
 
 - (void) removeBreakpoint {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_cont" async:true];
-	}
+	[gdbConnection clearBreakPoints];
 }
 
+
+//called from MarkerLineNumberView when someone adds a marker
 - (void) setBreakPoint:(NSString *)file atLine:(int) line {
-    NSString *lineString = [NSString stringWithFormat:@"%d",line];
 	NSString *bFile = file;
 	
 	if(bFile == nil) {
@@ -112,40 +25,9 @@
 		bFile = [[bFile componentsSeparatedByString:@"app/"] lastObject];
 	}
 	
-	NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",bFile,lineString];
-	if(![gdbController finished] && gdbScriptLoaded) {
-		[self pause:nil];
-		[gdbController sendCmd:cmd async:true];
-		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")" async:true];
-		[gdbController sendCmd:@"rb_break" async:true];
-	}	
+	[gdbConnection setBreakPointInFile:bFile atLine:line];
+	
 }
-
-
-
-
-- (NSString *) getGdbPid {
-	NSTask *task = [[NSTask alloc] init];
-	[task setLaunchPath:@"/bin/sh"];
-	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep gdb | grep -v grep ",nil];
-	[task setArguments: args];
-	
-	NSPipe *pipe = [NSPipe pipe];
-	[task setStandardOutput:pipe];
-	
-	NSFileHandle *file = [pipe fileHandleForReading];
-	[task launch];
-	
-	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
-    output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
-	NSArray *components = [output componentsSeparatedByString:@" "];
-	gdbPid = [components objectAtIndex:0];
-
-	return [components objectAtIndex:0];;
-}
-
-
 
 
 - (void)buildAndRun:(NSString *)path {
@@ -173,33 +55,15 @@
 	
 	NSMutableArray *args = [[NSMutableArray alloc] init];
 	[args addObject:@"-f"];
-	[args addObject:[NSString stringWithFormat:@"/tmp/ruby-debug.%@",pid]];
+	[args addObject:[NSString stringWithFormat:@"/tmp/ruby-debug.%@",[gdbConnection pid]]];
 	
 	[ps setArguments:args];
 	
 	
 	[rubyController setTask:ps];
 	[rubyController launchTask];
-	[rubyController appendString:[NSString stringWithFormat:@"Attached to Rhodes ruby process %@\n\n",pid]];
+	[rubyController appendString:[NSString stringWithFormat:@"Attached to Rhodes ruby process %@\n\n",[gdbConnection pid]]];
 }
-
-- (void)attachGdbTo:(NSString*)file withPid:(NSString*)inPid {
-
-	NSTask *ps = [[NSTask alloc] init];
-   	[ps setLaunchPath:@"/usr/bin/gdb"];
-
-	NSMutableArray *args = [[NSMutableArray alloc] init];
-	[args addObject:file];
-	[args addObject:inPid];
-	
-	[ps setArguments:args];
-
-	[gdbController setTask:ps];
-	[gdbController setWaitString:@"(gdb)"];
-	[gdbController launchTask];
-
-}
-
 
 
 -(void) clearHighLight {
@@ -230,38 +94,23 @@
 #pragma mark -- Actions --
 
 - (IBAction)step:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_step" async:true];
-    }
+	[gdbConnection step];
 }
 
 - (IBAction)stepOut:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_finish" async:true];
-    }
+	[gdbConnection stepOut];
 }
 
 
 
 - (IBAction)pause:(id)sender {
-	
-	if(![gdbController isWaiting] && ! [gdbController finished] ) {
-		NSString * myGdbPid = [self getGdbPid];
-		NSString *cmd = @"/bin/kill -INT ";
-		system([[cmd stringByAppendingString:myGdbPid] cStringUsingEncoding:NSASCIIStringEncoding]);
+	[gdbConnection pause];
 		
-	}
-	
 }
-- (IBAction)resume:(id)sender {
-	if(![gdbController finished]) {
-		[self pause:nil];
-		[gdbController sendCmd:@"rb_break" async:true];
-		[self clearHighLight];
-	}
 	
+- (IBAction)resume:(id)sender {
+	[gdbConnection resume];	
+	[self clearHighLight];
 }
 
 - (IBAction)selectFile:(id)sender {
@@ -309,32 +158,54 @@
 }
 
 
-- (IBAction)gdbInput:(id)sender {
-	if ([[sender stringValue] length] < 1) {return;}
-	[self pause:nil];
-	if(![gdbController finished]) {
-		[gdbController sendCmd:[sender stringValue] async:true];
-	}
-    [sender setStringValue:@""];
-	
-}
 
 - (IBAction)rubyInput:(id)sender {
 	if ([[sender stringValue] length] < 1) {return;}
 	
-	NSString *sanitized = [[sender stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
-	
-	[self pause:nil];
+	[gdbConnection sendRubyCmd: [sender stringValue]];
 	[rubyController appendString:@"\n"];
-	[gdbController sendCmd:cmd async:true];
 	[sender setStringValue:@""];
-	
 	
 }
 
 
 #pragma mark -- Delegate Methods --
+
+- (void) paused:(id)sender {
+	[gdbStatusLabel setStringValue:@"Stopped"];	
+}
+
+- (void) resumed:(id)sender {
+	[gdbStatusLabel setStringValue:@"Running"];	
+}
+
+
+- (void) disconnected:(id)sender {	
+	[[sourceController lineNumberView] removeMarker:[[sourceController lineNumberView] markerAtLine:[[[sourceController lineNumberView] oldMarker] lineNumber]]];
+	[[sourceController lineNumberView] setNeedsDisplay:YES];
+	
+	[statusLabel setStringValue:@"Waiting for Rhodes"];
+	[statusLabel setTextColor:[NSColor redColor]];
+	[[rubyController task] terminate];
+}
+
+- (void) stopInFile:(NSString *)file atLine:(int)line sender:(id)sender {
+	[self clearHighLight];
+	[self highLight:file atLine:line];
+
+}
+
+- (void) connecting:(id)sender {
+	[statusLabel setStringValue:@"Connecting"];
+	[statusLabel setTextColor:[NSColor orangeColor]];
+	
+}
+- (void) connected:(id)sender {
+	[statusLabel setStringValue:@"Connected"];
+	[statusLabel setTextColor:[NSColor blueColor]];
+	[self attachTail];
+}
+	
 
 - (NSAttributedString *)logController:(id)sender willAppendNewString:(NSString *)plainString
 {
@@ -384,30 +255,11 @@
 		[colorizedString setAttributes:attribDict range:thisLineRange];
 		
 		
-		if([sender isEqual:gdbController]) {
-			NSRange gdbRange  = [thisLine rangeOfString:@"(gdb)"];
-			if ( gdbRange.location != NSNotFound)
-			{
-				gdbRange.location += startOfLine;
-				[attribDict setObject:[NSColor blueColor] forKey:NSForegroundColorAttributeName];
-				[colorizedString addAttributes:attribDict range:gdbRange];
-			}
-		} else if ([sender isEqual:rubyController]) {
+		if ([sender isEqual:rubyController]) {
 			NSRange gdbRange  = [thisLine rangeOfString:@"--"];
 			if ( gdbRange.location == 0) {
 				[attribDict setObject:[NSColor purpleColor] forKey:NSForegroundColorAttributeName];
 				[colorizedString setAttributes:attribDict range:thisLineRange];
-			}
-			NSRange breakRange  = [thisLine rangeOfString:@"--Break"];
-			NSRange stepRange  = [thisLine rangeOfString:@"--Step"];
-			if ( breakRange.location != NSNotFound || stepRange.location != NSNotFound) {
-				NSString *stopLine = [[thisLine componentsSeparatedByString:@":"] lastObject];
-				NSRange evalRange = [thisLine rangeOfString:@"(eval)"];
-				if(evalRange.location == NSNotFound) {
-					NSString *file = [[[[thisLine componentsSeparatedByString:@" at "] lastObject] componentsSeparatedByString:@":"] objectAtIndex:0];
-					[self clearHighLight];
-					[self highLight:file atLine:[stopLine intValue]];
-				}
 			}
 			
 		}
@@ -424,19 +276,14 @@
 	pid = @"";
 	gdbPid = @"";
 	currentFile = nil;
-	[gdbController setFinished:true];
-	[[[[gdbController outputTextView] textStorage] mutableString] setString:@""];
 	[[[[rubyController outputTextView] textStorage] mutableString] setString:@""];
 	
     [[sourceController lineNumberView] setDebugger:self];
-	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
+	[gdbConnection startWaiting];
 }
 
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
-	
-	if ( ![gdbController finished]) {
-		[[gdbController task] terminate];
-	}
+	[gdbConnection terminate];
 	
 }
 

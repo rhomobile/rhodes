@@ -17,6 +17,7 @@
 @protocol LogControllerDelegate 
 @optional
 - (void) logControllerTaskDidFinish:(id)sender;
+- (void) logControllerTaskIsWaiting:(id)sender;
 - (NSAttributedString *) logController:(id)sender willAppendNewString:(NSString *)plainString;
 @end 
 
@@ -55,6 +56,7 @@
 -(void) appendString:(NSString *)stringData;
 -(void) appendAttributedString:(NSAttributedString *)stringData;
 -(void) clearTextView;
--(void)sendCmd:(NSString *)cmd async:(BOOL)async;
+-(void) sendCmd:(NSString *)cmd async:(BOOL)async;
+-(void) sendcmd:(NSString *)cmd;
 
 @end
