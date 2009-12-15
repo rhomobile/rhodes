@@ -943,6 +943,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
+	    	initRuby();
+	    	
 	        PrimaryResourceFetchThread.Create();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
@@ -951,6 +953,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     }
     
+    void initRuby()
+    {
+        RhoRuby.RhoRubyStart("");
+        SyncThread sync = null;
+        try{
+        	sync = SyncThread.Create( new RhoClassFactory() );
+        }catch(Exception exc){
+        	LOG.ERROR("Create sync failed.", exc);
+        }
+        if (sync != null) {
+        	sync.setStatusListener(this);
+        }
+        
+        RhoRuby.RhoRubyInitApp();
+    }
     private void invokeStartupWork() {
         // I think this can get called twice
         // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
@@ -1283,7 +1300,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             {
         		LOG.INFO( "Starting HttpServerThread main routine..." );
             	
-    	        RhoRuby.RhoRubyStart("");
+/*    	        RhoRuby.RhoRubyStart("");
     	        SyncThread sync = null;
     	        try{
     	        	sync = SyncThread.Create( new RhoClassFactory() );
@@ -1294,7 +1311,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	        	sync.setStatusListener(_application);
     	        }
     	        
-    	        RhoRuby.RhoRubyInitApp();
+    	        RhoRuby.RhoRubyInitApp();*/
         		
         		while( !m_bExit )
         		{
