@@ -505,7 +505,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void activate()
 	{
 		synchronized(m_activateHooks) {
-			if (m_activateHooks.size() != 0) {
+			if (m_activateHooks != null && m_activateHooks.size() != 0) {
 				Enumeration e = m_activateHooks.elements();
 				while(e.hasMoreElements()) {
 					ActivateHook hook = (ActivateHook)e.nextElement();
@@ -519,13 +519,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		m_bActivated = true;
 		
 		doStartupWork();
+    	LOG.TRACE("Rhodes activate ***--------------------------***");
 		
 		//add activate command
     	//PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(true);
         //thread.start();                       
 		RhoRuby.rho_ruby_activateApp();
+    	LOG.TRACE("Rhodes activate1 ***--------------------------***");
 		
-    	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
 
         if(!restoreLocation()) {
