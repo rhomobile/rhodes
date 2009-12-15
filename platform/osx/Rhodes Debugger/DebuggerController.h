@@ -1,9 +1,11 @@
 #import <Cocoa/Cocoa.h>
 #import "LogController.h"
 #import "SourceViewController.h"
+#import "GdbConnection.h"
 
 @interface DebuggerController : NSObject {
-    IBOutlet LogController * gdbController;
+//    IBOutlet LogController * gdbController;
+	IBOutlet GdbConnection * gdbConnection;
     IBOutlet LogController * rubyController;
     IBOutlet SourceViewController * sourceController;
 	
@@ -21,7 +23,6 @@
 	NSString *pid, *gdbPid;
 	NSString *currentFile;
 }
-- (IBAction)gdbInput:(id)sender;
 - (IBAction)rubyInput:(id)sender;
 - (IBAction)pause:(id)sender;
 - (IBAction)resume:(id)sender;
@@ -37,9 +38,7 @@
 - (IBAction)saveFile:(id)sender;
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification;
-- (void)statusScanner:(id)userData;
 
-- (void)attachGdbTo:(NSString*)file withPid:(NSString*)pid;
 - (void)attachTail;
 - (void)removeBreakpoint;
 - (void)setBreakPoint:(NSString *)file atLine:(int) line;

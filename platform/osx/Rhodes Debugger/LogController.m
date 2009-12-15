@@ -71,9 +71,12 @@
 	 object: stdoutFileHandle];
 	
 	// Clear the output text view
-	[[[outputTextView textStorage] mutableString] setString:@""];
+	if(outputTextView) {
+		[[[outputTextView textStorage] mutableString] setString:@""];
 	
-	[outputTextView setEditable:false];
+		[outputTextView setEditable:false];
+	}
+	
 	[self appendString:@"Execution Started\n\n"];
 	
 	finished = false;
@@ -128,6 +131,10 @@
 				[cmdQueue removeLastObject];
 			} else {
 				isWaiting = true;
+				if ( delegate && [delegate respondsToSelector:@selector(logControllerTaskIsWaiting:)] ) {
+					[delegate logControllerTaskIsWaiting:self];
+				}
+				
 			}
 		}
 	}	
@@ -160,18 +167,25 @@ exit:
 {
 	if( !stringData || [[stringData string] isEqualToString:@""])
 		return;
-	
-	[[outputTextView textStorage] beginEditing];
-	[[outputTextView textStorage] appendAttributedString:stringData];
-	[[outputTextView textStorage] endEditing];
-	[outputTextView scrollRangeToVisible:NSMakeRange([[outputTextView textStorage] length],0)];
+	if(outputTextView) {
+		[[outputTextView textStorage] beginEditing];
+		[[outputTextView textStorage] appendAttributedString:stringData];
+		[[outputTextView textStorage] endEditing];
+		[outputTextView scrollRangeToVisible:NSMakeRange([[outputTextView textStorage] length],0)];
+	}
 }
 
 -(void)clearTextView
 {
-	NSAttributedString *attribString=[[NSAttributedString alloc] initWithString:@""];
-	[[outputTextView textStorage] setAttributedString:attribString];
-	[attribString release];
+	if(outputTextView) {
+		NSAttributedString *attribString=[[NSAttributedString alloc] initWithString:@""];
+		[[outputTextView textStorage] setAttributedString:attribString];
+		[attribString release];
+	}
+}
+
+-(void)sendcmd:(NSString *)cmd {
+	[self sendCmd:cmd async:true];
 }
 
 -(void)sendCmd:(NSString *)cmd async:(BOOL)async {
