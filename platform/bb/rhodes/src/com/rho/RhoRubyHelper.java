@@ -60,10 +60,11 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public String getLocale()
 	{
-    	Locale loc = Locale.getDefault();
+    	//Locale loc = Locale.getDefault();
     	
-    	String lang = loc.getLanguage();
-		return lang;
+    	//String lang = loc.getLanguage();
+		//return lang;
+		return "en";
 	}
 	
 	public boolean hasNetwork() {
