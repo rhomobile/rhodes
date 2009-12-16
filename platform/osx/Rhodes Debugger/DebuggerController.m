@@ -25,7 +25,8 @@
 		bFile = [[bFile componentsSeparatedByString:@"app/"] lastObject];
 	}
 	
-	[gdbConnection setBreakPointInFile:bFile atLine:line];
+	if([gdbConnection isConnected]) [gdbConnection setBreakPointInFile:bFile atLine:line];
+	if([tcpConnection isConnected]) [tcpConnection setBreakPointInFile:bFile atLine:line];
 	
 }
 
@@ -94,22 +95,27 @@
 #pragma mark -- Actions --
 
 - (IBAction)step:(id)sender {
-	[gdbConnection step];
+	if([gdbConnection isConnected]) [gdbConnection step];
+	if([tcpConnection isConnected]) [tcpConnection step];
 }
 
 - (IBAction)stepOut:(id)sender {
-	[gdbConnection stepOut];
+	if([gdbConnection isConnected]) [gdbConnection stepOut];
+	if([tcpConnection isConnected]) [tcpConnection stepOut];
 }
 
 
 
 - (IBAction)pause:(id)sender {
-	[gdbConnection pause];
+	if([gdbConnection isConnected]) [gdbConnection pause];
+	if([tcpConnection isConnected]) [tcpConnection pause];
 		
 }
 	
 - (IBAction)resume:(id)sender {
-	[gdbConnection resume];	
+	if([gdbConnection isConnected]) [gdbConnection resume];	
+	if([tcpConnection isConnected]) [tcpConnection resume];	
+	
 	[self clearHighLight];
 }
 
@@ -280,6 +286,10 @@
 	
     [[sourceController lineNumberView] setDebugger:self];
 	[gdbConnection startWaiting];
+
+	tcpConnection = [[TcpConnection alloc] init];
+	[tcpConnection setDelegate: self];
+	[tcpConnection startWaiting];
 }
 
 - (void)applicationWillTerminate:(NSNotification*)aNotification {

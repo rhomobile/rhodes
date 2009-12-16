@@ -12,6 +12,7 @@
 @implementation DebugConnection
 @synthesize waitForConnection;
 @synthesize isConnected;
+@synthesize delegate;
 
 - (id) init
 {
@@ -30,12 +31,27 @@
 }
 
 -(void) pause {
-
 }
+
 -(void) resume {
-
 }
+
 -(void) setBreakPointInFile:(NSString*)file atLine:(int)line {
+}
+
+- (void) sendRubyCmd:(NSString *)rubyCmd {
+}
+
+- (void) clearBreakPoints {
+}
+
+- (void) terminate {
+}
+
+- (void) startWaiting {
+}
+
+- (void) stopWaiting {
 }
 
 @end

@@ -92,87 +92,8 @@
 	
 }
 
-- (IBAction)gdbInput:(id)sender {
-	if ([[sender stringValue] length] < 1) {return;}
-	[self pause];
-	if(![gdbController finished]) {
-		[gdbController sendCmd:[sender stringValue] async:true];
-	}
-    [sender setStringValue:@""];
-	
-}
-
-- (void) pause {
-	if(![gdbController isWaiting] && ! [gdbController finished] ) {
-		NSString * myGdbPid = [self getGdbPid];
-		NSString *cmd = @"/bin/kill -INT ";
-		system([[cmd stringByAppendingString:myGdbPid] cStringUsingEncoding:NSASCIIStringEncoding]);
-		
-	}
-}
-
-- (void)step {
-	if(![gdbController finished]) {
-		[self pause];
-		[gdbController sendCmd:@"rb_step" async:true];
-		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
-			[delegate resumed:self];
-		}
-    }
-}
-
-- (void)stepOut {
-	if(![gdbController finished]) {
-		[self pause];
-		[gdbController sendCmd:@"rb_finish" async:true];
-		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
-			[delegate resumed:self];
-		}
-    }
-}
-
--(void) resume {
-	if(![gdbController finished]) {
-		[self pause];
-		[gdbController sendCmd:@"rb_break" async:true];
-		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
-			[delegate resumed:self];
-		}
-	}
-}
-
-- (void) terminate {
-	[[gdbController task] terminate];
-}
--(void) setBreakPointInFile:(NSString*)file atLine:(int)line {
-    NSString *lineString = [NSString stringWithFormat:@"%d",line];
-	NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",file,lineString];
-	if(![gdbController finished] && gdbScriptLoaded) {
-		[self pause];
-		[gdbController sendCmd:cmd async:true];
-		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")" async:true];
-		[gdbController sendCmd:@"rb_break" async:true];
-		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
-			[delegate resumed:self];
-		}
-		
-	}	
-	
-}
 
 
-
--(void) startWaiting {
-	timer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
-	[self setWaitForConnection:TRUE];
-}
-
--(void) stopWaiting {
-	if([self timer]){
-		[[self timer] invalidate];
-	}
-	[self setWaitForConnection:FALSE];
-}
 
 - (void)attachGdbTo:(NSString*)file withPid:(NSString*)inPid {
 	
@@ -227,6 +148,103 @@
 	[tailController launchTask];
 }
 
+
+
+#pragma mark -- Debug Connection Implementation --
+
+- (void) terminate {
+	[[gdbController task] terminate];
+}
+-(void) setBreakPointInFile:(NSString*)file atLine:(int)line {
+    NSString *lineString = [NSString stringWithFormat:@"%d",line];
+	NSString *cmd = [NSString stringWithFormat:@"call (unsigned long)rb_eval_string(\"$_file = '%@'; $_line = %@;\")",file,lineString];
+	if(![gdbController finished] && gdbScriptLoaded) {
+		[self pause];
+		[gdbController sendCmd:cmd async:true];
+		[gdbController sendCmd:@"call (unsigned long)rb_eval_string(\"puts '-- Breakpoint set'\")" async:true];
+		[gdbController sendCmd:@"rb_break" async:true];
+		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
+			[delegate resumed:self];
+		}
+		
+	}	
+	
+}
+
+
+
+-(void) startWaiting {
+	timer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(statusScanner:) userInfo: nil repeats:true];
+	[self setWaitForConnection:TRUE];
+}
+
+-(void) stopWaiting {
+	if([self timer]){
+		[[self timer] invalidate];
+	}
+	[self setWaitForConnection:FALSE];
+}
+
+
+- (void) pause {
+	if(![gdbController isWaiting] && ! [gdbController finished] ) {
+		NSString * myGdbPid = [self getGdbPid];
+		NSString *cmd = @"/bin/kill -INT ";
+		system([[cmd stringByAppendingString:myGdbPid] cStringUsingEncoding:NSASCIIStringEncoding]);
+		
+	}
+}
+
+- (void)step {
+	if(![gdbController finished]) {
+		[self pause];
+		[gdbController sendCmd:@"rb_step" async:true];
+		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
+			[delegate resumed:self];
+		}
+    }
+}
+
+- (void)stepOut {
+	if(![gdbController finished]) {
+		[self pause];
+		[gdbController sendCmd:@"rb_finish" async:true];
+		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
+			[delegate resumed:self];
+		}
+    }
+}
+
+-(void) resume {
+	if(![gdbController finished]) {
+		[self pause];
+		[gdbController sendCmd:@"rb_break" async:true];
+		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
+			[delegate resumed:self];
+		}
+	}
+}
+
+
+- (void) sendRubyCmd:(NSString *)rubyCmd {
+	NSString *sanitized = [rubyCmd stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
+	[self pause];
+	
+	[gdbController sendCmd:cmd async:true];
+	
+	
+}
+
+- (void) clearBreakPoints {
+	if(![gdbController finished]) {
+		[self pause];
+		[gdbController sendCmd:@"rb_cont" async:true]; 
+	}
+}
+
+
+#pragma mark -- Delegate Methods --
 - (NSAttributedString *)logController:(id)sender willAppendNewString:(NSString *)plainString
 {
 	// NSLog(@"Colorizing string: %@", plainString);
@@ -327,21 +345,16 @@
 	}
 }
 
-- (void) sendRubyCmd:(NSString *)rubyCmd {
-	NSString *sanitized = [rubyCmd stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
+#pragma mark -- Actions --
+
+- (IBAction)gdbInput:(id)sender {
+	if ([[sender stringValue] length] < 1) {return;}
 	[self pause];
-
-	[gdbController sendCmd:cmd async:true];
-	
-
-}
-
-- (void) clearBreakPoints {
 	if(![gdbController finished]) {
-		[self pause];
-		[gdbController sendCmd:@"rb_cont" async:true]; 
+		[gdbController sendCmd:[sender stringValue] async:true];
 	}
+    [sender setStringValue:@""];
+	
 }
 
 @end
