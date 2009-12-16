@@ -24,10 +24,6 @@
 
 
 - (IBAction)gdbInput:(id)sender;
-- (void) terminate;
-- (void) clearBreakPoints;
-- (void) sendRubyCmd:(NSString *)rubyCmd;
-- (void) startWaiting;
 - (void)attachGdbTo:(NSString*)file withPid:(NSString*)inPid;
 - (NSString *) getGdbPid;
 - (void)attachTail;
