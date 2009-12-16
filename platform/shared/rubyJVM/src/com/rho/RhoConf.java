@@ -230,7 +230,7 @@ public class RhoConf {
 		}
    }
    
-   public static boolean sendLog()throws Exception
+   public static boolean sendLog()
    {
 		com.rho.net.NetRequest nq = RhoClassFactory.createNetRequest();
 		String strDevicePin = "";
@@ -258,8 +258,15 @@ public class RhoConf {
 		String strQuery = strLogUrl + "client_log?" +
 		    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RhoConf.getInstance().getString("logname");
 		
-		NetResponse resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), com.rho.sync.SyncThread.getSyncEngine() );
-		if ( !resp.isOK() )
+		NetResponse resp = null;
+		try{
+			resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), com.rho.sync.SyncThread.getSyncEngine() );
+		}catch(Exception exc)
+		{
+			LOG.ERROR("send_log failed.", exc);
+		}
+		
+		if ( resp == null || !resp.isOK() )
 		{
 			LOG.ERROR("send_log failed : network error");
 			return false;
