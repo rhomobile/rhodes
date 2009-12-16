@@ -27,10 +27,15 @@ module Rho
       
      # def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
       def url_decode(str)
+        _url_decode(str, /((?:%[0-9a-fA-f]{2})+)/n)
+      end
+      
+      def _url_decode(str, regex)
         isEncoded = false
-        res = str.gsub(/((?:%[0-9a-fA-f]{2})+)/n) { 
+        res = str.tr('+',' ').gsub(regex) { 
           isEncoded = true
-          [$&[1, 2].hex].pack('C') 
+          #[$&[1, 2].hex].pack('C') 
+          [$1.delete('%')].pack('H*')
         }
         if isEncoded
             res.force_encoding("ASCII-8BIT") #need for BB since Java string is UTF16
@@ -45,6 +50,9 @@ module Rho
       #def unescape_form(str)
       #  _unescape(str.gsub(/\+/, " "), ESCAPED)
       #end
+      def form_decode(str)
+        _url_decode(str, /%([0-9a-fA-F]{2})/)
+      end
 
       def parse_query_parameters(query_string)
         return {} if query_string.nil?
@@ -53,8 +61,8 @@ module Rho
           next if chunk.empty?
           key, value = chunk.split('=', 2)
           next if key.empty?
-          value = value.nil? ? nil : url_decode(value)
-          [ url_decode(key), value ]
+          value = value.nil? ? nil : form_decode(value)
+          [ form_decode(key), value ]
         end.compact
 
         UrlEncodedPairParser.new(pairs).result

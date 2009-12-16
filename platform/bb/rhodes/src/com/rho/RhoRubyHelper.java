@@ -62,7 +62,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	{
     	Locale loc = Locale.getDefault();
     	
-    	String lang = loc.getLanguage();
+    	String lang = loc != null ? loc.getLanguage() : "en";
 		return lang;
 	}
 	
