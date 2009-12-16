@@ -457,5 +457,5 @@ RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=2
-UserData=VIRTUAL_PROJECT||src
+UserData=|src
 Version=1.45

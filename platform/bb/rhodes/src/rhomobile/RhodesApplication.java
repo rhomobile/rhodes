@@ -505,7 +505,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	public void activate()
 	{
 		synchronized(m_activateHooks) {
-			if (m_activateHooks.size() != 0) {
+			if (m_activateHooks != null && m_activateHooks.size() != 0) {
 				Enumeration e = m_activateHooks.elements();
 				while(e.hasMoreElements()) {
 					ActivateHook hook = (ActivateHook)e.nextElement();
@@ -519,13 +519,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		m_bActivated = true;
 		
 		doStartupWork();
+    	LOG.TRACE("Rhodes activate ***--------------------------***");
 		
 		//add activate command
     	//PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(true);
         //thread.start();                       
 		RhoRuby.rho_ruby_activateApp();
+    	LOG.TRACE("Rhodes activate1 ***--------------------------***");
 		
-    	LOG.TRACE("Rhodes activate ***--------------------------***");
 //		SyncEngine.start(null);
 
         if(!restoreLocation()) {
@@ -942,6 +943,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
+	    	initRuby();
+	    	
 	        PrimaryResourceFetchThread.Create();
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
@@ -950,6 +953,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     }
     
+    void initRuby()
+    {
+        RhoRuby.RhoRubyStart("");
+        SyncThread sync = null;
+        try{
+        	sync = SyncThread.Create( new RhoClassFactory() );
+        }catch(Exception exc){
+        	LOG.ERROR("Create sync failed.", exc);
+        }
+        if (sync != null) {
+        	sync.setStatusListener(this);
+        }
+        
+        RhoRuby.RhoRubyInitApp();
+    }
     private void invokeStartupWork() {
         // I think this can get called twice
         // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
@@ -1282,7 +1300,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             {
         		LOG.INFO( "Starting HttpServerThread main routine..." );
             	
-    	        RhoRuby.RhoRubyStart("");
+/*    	        RhoRuby.RhoRubyStart("");
     	        SyncThread sync = null;
     	        try{
     	        	sync = SyncThread.Create( new RhoClassFactory() );
@@ -1293,7 +1311,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	        	sync.setStatusListener(_application);
     	        }
     	        
-    	        RhoRuby.RhoRubyInitApp();
+    	        RhoRuby.RhoRubyInitApp();*/
         		
         		while( !m_bExit )
         		{
