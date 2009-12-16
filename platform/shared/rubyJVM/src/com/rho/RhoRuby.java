@@ -147,6 +147,10 @@ public class RhoRuby {
 	public static void rho_ruby_activateApp(){
 		RubyAPI.callPublicNoArgMethod(receiver, null, activateApp);
 	}
+
+	public static boolean rho_ruby_isValid(){
+		return receiver!= null;
+	}
 	
 	public static void RhoRubyStop(){
 		
