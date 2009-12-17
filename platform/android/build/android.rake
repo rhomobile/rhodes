@@ -33,11 +33,11 @@ def cc_def_args
   args << "-mandroid"
   args << "-DANDROID"
   args << "-DOS_ANDROID"
+  args << "-g"
   if $build_release
-      args << "-O2"
+    args << "-O2"
     args << "-DNDEBUG"
   else
-      args << "-g"
     args << "-O0"
     args << "-D_DEBUG"
   end
@@ -136,7 +136,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   cc_run($gccbin, args)
   return false unless $? == 0
 
-  cc_run($stripbin, [outname])
+  cc_run($stripbin, [outname]) if $build_release
   return $? == 0
 end
 
@@ -158,7 +158,11 @@ namespace "config" do
 
     # Here is switch between release/debug configuration used for
     # building native libraries
-    $build_release = true
+    if $app_config["debug"].nil?
+      $build_release = true
+    else
+      $build_release = !$app_config["debug"].to_i
+    end
 
     $androidsdkpath = $config["env"]["paths"]["android"]
     unless File.exists? $androidsdkpath
@@ -267,11 +271,16 @@ namespace "config" do
 
     $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
+    if $build_release
+      $confdir = "release"
+    else
+      $confdir = "debug"
+    end
     $objdir = {}
     $libname = {}
     $native_libs.each do |x|
-      $objdir[x] = $bindir + "/libs/lib" + x
-      $libname[x] = $bindir + "/libs/lib" + x + ".a"
+      $objdir[x] = $bindir + "/libs/" + $confdir + "/lib" + x
+      $libname[x] = $bindir + "/libs/" + $confdir + "/lib" + x + ".a"
     end
 
     mkdir_p $bindir if not File.exists? $bindir
@@ -509,8 +518,8 @@ namespace "build" do
 
     task :librhodes => :libs do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
-      objdir = File.join $bindir, "libs", "librhodes"
-      libname = File.join $bindir, "libs", "librhodes.so"
+      objdir = File.join $bindir, "libs", $confdir, "librhodes"
+      libname = File.join $bindir, "libs", $confdir, "librhodes.so"
       args = []
       args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}/../include"
@@ -533,7 +542,7 @@ namespace "build" do
       end
 
       args = []
-      args << "-L#{$bindir}/libs"
+      args << "-L#{$bindir}/libs/#{$confdir}"
       args << "-lrhomain"
       args << "-lruby"
       args << "-lrhosync"
@@ -663,7 +672,7 @@ namespace "package" do
 
     rm_rf $bindir + "/lib"
     mkdir_p $bindir + "/lib/armeabi"
-    cp_r $bindir + "/libs/librhodes.so", $bindir + "/lib/armeabi"
+    cp_r $bindir + "/libs/" + $confdir + "/librhodes.so", $bindir + "/lib/armeabi"
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
     puts Jake.run($aapt, args, $bindir)
     unless $? == 0
@@ -693,7 +702,7 @@ namespace "device" do
     task :install => :debug do
       apkfile = $targetdir + "/" + $appname + "-debug.apk"
       puts "Install APK file"
-      puts `#{$adb} install -r "#{apkfile}"`
+      puts `#{$adb} -d install -r "#{apkfile}"`
       unless $? == 0
         puts "Error building APK file"
         exit 1
@@ -786,18 +795,18 @@ namespace "run" do
 
     puts "Waiting for emulator to get started"
     $stdout.flush
-    puts `#{$adb} wait-for-device`
+    puts `#{$adb} -e wait-for-device`
     sleep 10
 
     puts "Loading package into emulator"
-    theoutput = `#{$adb} install -r "#{apkfile}"`
+    theoutput = `#{$adb} -e install -r "#{apkfile}"`
     count = 0
     while (not theoutput.to_s.match(/Success/))  and count < 15 do
       puts "Failed to load (possibly because emulator not done launching)- retrying"
       $stdout.flush
       sleep 5
       count += 1
-      theoutput = `#{$adb} install -r "#{apkfile}"`
+      theoutput = `#{$adb} -e install -r "#{apkfile}"`
     end
     puts "Loading complete, you may now run the application"
   end
@@ -827,8 +836,8 @@ namespace "clean" do
       end
     end
     task :librhodes => "config:android" do
-      rm_rf $bindir + "/libs/librhodes"
-      rm_rf $bindir + "/libs/librhodes.so"
+      rm_rf $bindir + "/libs/" + $confdir + "/librhodes"
+      rm_rf $bindir + "/libs/" + $confdir + "/librhodes.so"
     end
 #    desc "clean android"
     task :all => [:assets,:librhodes,:libs,:files]
