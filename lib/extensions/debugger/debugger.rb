@@ -83,7 +83,8 @@ $_s = nil
 
 begin
   puts "opening connection"
-  $_s = timeout(30) { TCPSocket.open("192.168.1.108", 9000) }
+  raise "debug host not set" if (Rho::RhoConfig.debug_host.nil? or Rho::RhoConfig.debug_host == "")
+  $_s = timeout(30) { TCPSocket.open(Rho::RhoConfig.debug_host, 9000) }
 
   puts "connected: " + $_s.to_s
   $_s.write("CONNECT\n")
