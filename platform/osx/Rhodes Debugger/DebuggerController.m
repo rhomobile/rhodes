@@ -94,6 +94,24 @@
 
 #pragma mark -- Actions --
 
+- (IBAction)disconnect:(id)sender {
+	[gdbConnection terminate];
+	[tcpConnection terminate];
+	
+	[self disconnected:self];
+}
+
+
+- (IBAction)useGdbCheck:(id)sender {
+	if([sender state]) {
+		if(![gdbConnection waitForConnection]) {
+			[gdbConnection startWaiting];
+		}
+	} else { 
+		[gdbConnection stopWaiting];
+	}
+}
+
 - (IBAction)step:(id)sender {
 	if([gdbConnection isConnected]) [gdbConnection step];
 	if([tcpConnection isConnected]) [tcpConnection step];
@@ -168,7 +186,8 @@
 - (IBAction)rubyInput:(id)sender {
 	if ([[sender stringValue] length] < 1) {return;}
 	
-	[gdbConnection sendRubyCmd: [sender stringValue]];
+	if([gdbConnection isConnected]) [gdbConnection sendRubyCmd: [sender stringValue]];
+	if([tcpConnection isConnected]) [tcpConnection sendRubyCmd: [sender stringValue]];
 	[rubyController appendString:@"\n"];
 	[sender setStringValue:@""];
 	
@@ -176,6 +195,10 @@
 
 
 #pragma mark -- Delegate Methods --
+- (void) rubyStdout:(NSString *)output sender:(id)sender {
+	[rubyController appendString:output];
+}
+
 
 - (void) paused:(id)sender {
 	[gdbStatusLabel setStringValue:@"Stopped"];	
@@ -192,7 +215,7 @@
 	
 	[statusLabel setStringValue:@"Waiting for Rhodes"];
 	[statusLabel setTextColor:[NSColor redColor]];
-	[[rubyController task] terminate];
+	//[[rubyController task] terminate];
 }
 
 - (void) stopInFile:(NSString *)file atLine:(int)line sender:(id)sender {
@@ -209,7 +232,7 @@
 - (void) connected:(id)sender {
 	[statusLabel setStringValue:@"Connected"];
 	[statusLabel setTextColor:[NSColor blueColor]];
-	[self attachTail];
+//	[self attachTail];
 }
 	
 
@@ -285,7 +308,7 @@
 	[[[[rubyController outputTextView] textStorage] mutableString] setString:@""];
 	
     [[sourceController lineNumberView] setDebugger:self];
-	[gdbConnection startWaiting];
+//	[gdbConnection startWaiting];
 
 	tcpConnection = [[TcpConnection alloc] init];
 	[tcpConnection setDelegate: self];

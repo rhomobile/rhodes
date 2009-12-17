@@ -13,7 +13,7 @@
 - (void) disconnected:(id)sender;
 - (void) paused:(id)sender;
 - (void) resumed:(id)sender;
-
+- (void) rubyStdout:(NSString *)output sender:(id)sender;
 @end 
 
 @interface DebugConnection : NSObject {
