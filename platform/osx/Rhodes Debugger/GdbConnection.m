@@ -324,7 +324,12 @@
 			
 		}
 	}
-	
+	if([sender isEqual: tailController]) {
+		if ( delegate && [delegate respondsToSelector:@selector(rubyStdout:sender:)] ) {
+			[delegate rubyStdout:[colorizedString mutableString] sender:self];
+		}
+		
+	}
 	// Finally, return our colorized version.
 	return colorizedString;
 }
