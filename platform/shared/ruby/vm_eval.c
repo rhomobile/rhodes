@@ -835,9 +835,16 @@ VALUE
 rb_f_eval(int argc, VALUE *argv, VALUE self)
 {
 //RHO
-    rb_raise(rb_eNotImpError,
-        "Not implemented: eval is not supported.");
-/*
+    VALUE s = rb_gv_get("$_s");
+    VALUE sString = rb_funcall(s, rb_intern("to_s"),0);
+    char *sockStr = StringValuePtr(sString);
+
+    if(strstr(sockStr,"TCPSocket") == NULL) {
+
+      rb_raise(rb_eNotImpError,
+          "Not implemented: eval is not supported.");
+    } else {
+
     VALUE src, scope, vfile, vline;
     const char *file = "(eval)";
     int line = 1;
@@ -862,7 +869,9 @@ rb_f_eval(int argc, VALUE *argv, VALUE self)
 
     if (!NIL_P(vfile))
 	file = RSTRING_PTR(vfile);
-    return eval_string(self, src, scope, file, line);*/
+    return eval_string(self, src, scope, file, line);
+
+    }
 //RHO
 }
 
