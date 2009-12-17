@@ -493,7 +493,7 @@ module Rhom
                 def sync(callback=nil, callback_data="", show_status_popup=nil)
                   src_id = get_source_id.to_i()
                   SyncEngine.set_notification(src_id, callback, callback_data) if callback
-                  if show_status_popup
+                  if !show_status_popup.nil?
                     SyncEngine.dosync_source(src_id, show_status_popup)
                   else
                     SyncEngine.dosync_source(src_id)

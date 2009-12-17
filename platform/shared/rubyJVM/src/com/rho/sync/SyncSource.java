@@ -157,12 +157,16 @@ class SyncSource
 	        {
 	            if ( isPendingClientChanges() )
 	            {
+	            	LOG.INFO("Client has unconfirmed items in database. Sync server first.");
 	                syncServerChanges();
 	                bSyncedServer = true;
 	            }
 
 	            if ( bSyncedServer && isPendingClientChanges() )
+	            {
+	            	LOG.INFO("Client still has unconfirmed items in database. Sync is stopped.");
 	                getSync().setState(SyncEngine.esStop);
+	            }
 	            else
 	            {
 	                boolean bSyncClient = false;
