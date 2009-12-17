@@ -839,7 +839,7 @@ rb_f_eval(int argc, VALUE *argv, VALUE self)
     VALUE sString = rb_funcall(s, rb_intern("to_s"),0);
     char *sockStr = StringValuePtr(sString);
 
-    if(strstr(sockStr,"TCPSocket") == NULL) {
+    if( sockStr == NULL || strstr(sockStr,"TCPSocket") == NULL) {
 
       rb_raise(rb_eNotImpError,
           "Not implemented: eval is not supported.");
