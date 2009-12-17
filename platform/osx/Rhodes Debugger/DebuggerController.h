@@ -40,6 +40,9 @@
 
 - (IBAction)saveFile:(id)sender;
 
+- (IBAction)useGdbCheck:(id)sender;
+- (IBAction)disconnect:(id)sender;
+
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification;
 
 - (void)attachTail;

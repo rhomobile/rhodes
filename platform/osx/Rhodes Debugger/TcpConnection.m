@@ -41,12 +41,20 @@
 }
 
 - (void) sendRubyCmd:(NSString *)rubyCmd {
+	[dataHandle writeData:[[NSString stringWithFormat:@"EV:%@\n",rubyCmd] dataUsingEncoding:NSASCIIStringEncoding]];	
+
 }
 
 - (void) clearBreakPoints {
 }
 
 - (void) terminate {
+	[dataHandle closeFile];
+	[[NSNotificationCenter defaultCenter]
+	 removeObserver:self
+	 name:NSFileHandleDataAvailableNotification
+	 object:dataHandle];
+	
 }
 
 - (void) startWaiting {
@@ -94,10 +102,11 @@
 	
 	[listeningHandle acceptConnectionInBackgroundAndNotify];
 	
-	
+	[self setWaitForConnection:TRUE];
 }
 
 - (void) stopWaiting {
+	[self setWaitForConnection:FALSE];
 }
 
 
@@ -188,6 +197,15 @@
 		}
 		
 	}
+
+	if([cmd rangeOfString:@"EV:"].location != NSNotFound) {
+		if ( delegate && [delegate respondsToSelector:@selector(rubyStdout:sender:)] ) {
+			NSString *response = [[[cmd componentsSeparatedByString:@"EV:"] lastObject] stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
+			[delegate rubyStdout:response sender:self];
+		}
+		
+	}
+	
 	
 	NSLog(cmd);
 }
