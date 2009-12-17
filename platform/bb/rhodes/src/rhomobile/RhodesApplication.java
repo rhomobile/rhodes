@@ -170,7 +170,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     void navigateUrl(String url){
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), null, null, null, this);
+        		canonicalizeURL(url), null, null, null);
         thread.start();                       
     }
     
@@ -198,7 +198,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), headers, body.getBytes(), null, this, callback);
+        		canonicalizeURL(url), headers, body.getBytes(), null, callback);
         thread.setInternalRequest(true);
         thread.start();                       
     }
@@ -459,7 +459,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	//_pushListeningThread.start();
     	
 		_instance = new RhodesApplication();
-		_instance.enterEventDispatcher();
+		try{
+			_instance.enterEventDispatcher();
+		}catch(Exception exc)
+		{
+			if ( RhoConf.getInstance() != null )
+				LOG.ERROR("Error in application.", exc);
+        	RhoConf.sendLog();
+			
+        	throw new RuntimeException("Application failed and will exit. Log will send to log server.");
+		}
+		
 		_pushListeningThread.stop();
 		
         RhoLogger.close();
@@ -501,9 +511,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
-    boolean m_bActivated = false;
-	public void activate()
-	{
+    private void runActivateHooks()
+    {
 		synchronized(m_activateHooks) {
 			if (m_activateHooks != null && m_activateHooks.size() != 0) {
 				Enumeration e = m_activateHooks.elements();
@@ -515,26 +524,72 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				return;
 			}
 		}
-		
-		m_bActivated = true;
-		
+    }
+    
+    private static Object m_eventRubyInit = new Object();
+    private static boolean m_bRubyInit = false;
+	public void activate()
+	{
+		//DO NOT DO ANYTHING before doStartupWork 
 		doStartupWork();
-    	LOG.TRACE("Rhodes activate ***--------------------------***");
-		
-		//add activate command
-    	//PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(true);
-        //thread.start();                       
+    	LOG.TRACE("Rhodes start activate ***--------------------------***");
+
+    	if ( !m_bRubyInit )
+    	{
+			synchronized (m_eventRubyInit) {
+				try{
+					m_eventRubyInit.wait();
+				}catch(Exception e)
+				{
+					LOG.ERROR("wait failed", e);
+				}
+			}
+    	}
+    	
+    	if ( !RhoRuby.rho_ruby_isValid() )
+    	{
+    		LOG.ERROR("Cannot initialize Ruby framework. Application will exit.");
+        	Dialog.alert("Cannot initialize Ruby framework. Application will exit. Log will send to log server.");
+        	
+        	RhoConf.sendLog();
+        	
+    		System.exit(1);
+    	}
+    	
+    	runActivateHooks();
+    	
 		RhoRuby.rho_ruby_activateApp();
-    	LOG.TRACE("Rhodes activate1 ***--------------------------***");
-		
-//		SyncEngine.start(null);
 
         if(!restoreLocation()) {
         	navigateHome();
         }    
-    	
+
+    	LOG.TRACE("Rhodes end activate ***--------------------------***");
+        
 		super.activate();
 	}
+
+    void initRuby()
+    {
+        RhoRuby.RhoRubyStart("");
+        SyncThread sync = null;
+        try{
+        	sync = SyncThread.Create( new RhoClassFactory() );
+        	
+        }catch(Exception exc){
+        	LOG.ERROR("Create sync failed.", exc);
+        }
+        if (sync != null) {
+        	sync.setStatusListener(this);
+        }
+        
+        RhoRuby.RhoRubyInitApp();
+        
+        m_bRubyInit = true;
+		synchronized (m_eventRubyInit) {
+			m_eventRubyInit.notifyAll();
+		}
+    }
 
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
@@ -545,7 +600,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
 		super.deactivate();
 	}
-
+    
 	synchronized public void setSyncStatusPopup(SyncStatusPopup popup) {
 		_syncStatusPopup = popup;
 		if (_syncStatusPopup != null) {
@@ -625,6 +680,26 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			}
 		}
 	}
+/*
+	static class WaitStatusPopup extends PopupScreen {
+	    public WaitStatusPopup(String status) 
+	    {
+	        super( new VerticalFieldManager( Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR) );
+			
+	        add(new LabelField(status != null ? status : "Please wait...", Field.FIELD_HCENTER));
+	    }
+	}
+	WaitStatusPopup m_waitPopup;
+	void showWaitPopup(String msg)
+	{
+		m_waitPopup = new WaitStatusPopup(msg);
+		pushScreen(m_waitPopup);
+	}
+	void hideWaitPopup()
+	{
+		this.popScreen(m_waitPopup);
+		m_waitPopup = null;
+	}*/
 	
     class CMainScreen extends RhoMainScreen{
     	
@@ -859,7 +934,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    //Push this screen to display it to the user.
 	    UiApplication.getUiApplication().pushScreen(screen);
     }
-    
+/*    
     boolean isWaitForSDCardAtStartup()
     {
     	if ( Jsr75File.isRhoFolderExist() )
@@ -869,7 +944,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		return false;
     	
     	return !m_bActivated;
-    }
+    }*/
     
     private void doStartupWork() 
     {
@@ -943,9 +1018,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
-	    	initRuby();
+	    	//initRuby();
 	    	
-	        PrimaryResourceFetchThread.Create();
+	        PrimaryResourceFetchThread.Create(this);
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
@@ -953,21 +1028,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     }
     
-    void initRuby()
-    {
-        RhoRuby.RhoRubyStart("");
-        SyncThread sync = null;
-        try{
-        	sync = SyncThread.Create( new RhoClassFactory() );
-        }catch(Exception exc){
-        	LOG.ERROR("Create sync failed.", exc);
-        }
-        if (sync != null) {
-        	sync.setStatusListener(this);
-        }
-        
-        RhoRuby.RhoRubyInitApp();
-    }
     private void invokeStartupWork() {
         // I think this can get called twice
         // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
@@ -1112,7 +1172,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl,
                                                                                    urlRequestedEvent.getHeaders(),
                                                                                    urlRequestedEvent.getPostData(),
-                                                                                   event, this);
+                                                                                   event);
                 thread.start();
 
                 break;
@@ -1178,7 +1238,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
                     HttpHeaders requestHeaders = new HttpHeaders();
                     requestHeaders.setProperty(REFERER, referrer);
-                    PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl, requestHeaders,null, event, this);
+                    PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl, requestHeaders,null, event);
                     thread.start();
                     break;
 
@@ -1299,19 +1359,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             public void run() 
             {
         		LOG.INFO( "Starting HttpServerThread main routine..." );
-            	
-/*    	        RhoRuby.RhoRubyStart("");
-    	        SyncThread sync = null;
-    	        try{
-    	        	sync = SyncThread.Create( new RhoClassFactory() );
-    	        }catch(Exception exc){
-    	        	LOG.ERROR("Create sync failed.", exc);
-    	        }
-    	        if (sync != null) {
-    	        	sync.setStatusListener(_application);
-    	        }
-    	        
-    	        RhoRuby.RhoRubyInitApp();*/
+            	//wait(80);
+        		_application.initRuby();
         		
         		while( !m_bExit )
         		{
@@ -1365,23 +1414,21 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                						Event event, RhodesApplication application) {
+                						Event event) {
 		
 			_url = url;
 			_requestHeaders = requestHeaders;
 			_postData = postData;
-			_application = application;
 			_event = event;
 			//_callback = null;
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      	Event event, RhodesApplication application, Callback callback) {
+                                      	Event event, Callback callback) {
 
             _url = url;
             _requestHeaders = requestHeaders;
             _postData = postData;
-            _application = application;
             _event = event;
             if ( callback != null )
             	_callback = callback;
@@ -1391,11 +1438,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         	m_bActivateApp = bActivateApp; 
         }
         
-        static void Create()
+        static void Create(RhodesApplication app)
         {
         	if ( m_oFetchThread != null )
         		return;
-        	
+
+        	_application = app;
         	m_oFetchThread = new HttpServerThread(); 
         }
         
