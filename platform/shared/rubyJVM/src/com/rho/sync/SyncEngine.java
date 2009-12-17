@@ -195,7 +195,24 @@ public class SyncEngine implements NetRequest.IRhoSession
 			        if ( getState() != esStop )
 			        {
 			        	getNotify().cleanLastSyncObjectCount();
+			        	
+					    PROF.CREATE_COUNTER("Net");	    
+					    PROF.CREATE_COUNTER("Parse");
+					    PROF.CREATE_COUNTER("DB");
+					    PROF.CREATE_COUNTER("Data");
+					    PROF.CREATE_COUNTER("Data1");
+					    PROF.CREATE_COUNTER("Pull");
+					    PROF.START("Sync");
+			        	
 			            src.sync();
+			            
+					    PROF.DESTROY_COUNTER("Net");	    
+					    PROF.DESTROY_COUNTER("Parse");
+					    PROF.DESTROY_COUNTER("DB");
+					    PROF.DESTROY_COUNTER("Data");
+					    PROF.DESTROY_COUNTER("Data1");
+					    PROF.DESTROY_COUNTER("Pull");
+					    PROF.STOP("Sync");
 			        }
 			    } else {
 			    	//src.m_strError = "Client is not logged in. No sync will be performed.";
