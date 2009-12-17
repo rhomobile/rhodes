@@ -241,6 +241,11 @@
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
 
+#define HAVE_INET_PTON 1
+#define HAVE_INET_ATON 1
+#define HAVE_GETADDRINFO 1
+#define HAVE_GETNAMEINFO 1
+
 #if defined(OS_ANDROID)
 #  define HAVE_SYS_SYSCALL_H 1
 #  define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
