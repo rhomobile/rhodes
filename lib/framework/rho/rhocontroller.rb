@@ -6,6 +6,24 @@ module Rho
   class RhoController
   	attr_accessor :menu
 
+    @@rholog = RhoLog.new
+
+    def rho_info(str)
+      @@rholog.info("RHO " + self.class.to_s, str)
+    end
+
+    def rho_error(str)
+      @@rholog.error("RHO " + self.class.to_s, str)
+    end
+
+    def app_info(str)
+      @@rholog.info("APP " + self.class.to_s, str)
+    end
+
+    def app_error(str)
+      @@rholog.error("APP " + self.class.to_s, str)
+    end
+
     def default_action
       return Hash['GET','show','PUT','update','POST','update',
         'DELETE','delete'][@request['request-method']] unless @request['id'].nil?
