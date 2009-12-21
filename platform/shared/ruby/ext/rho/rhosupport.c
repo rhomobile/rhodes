@@ -357,21 +357,49 @@ static void Init_RhoBlobs()
   RAWLOG_INFO("Init_RhoBlobs: done");
 }
 
-static VALUE
-rb_RhoLogWrite(VALUE rhoLog, VALUE str)
-{
-#if RHO_STRIP_LOG <= L_INFO
+void rhoRubyLogWithSeverity(int severity, VALUE category, VALUE str) {
     char* szStr = 0;
+    char* catStr = StringValuePtr(category);
+
+    if(catStr == NULL) {
+        catStr = "APP";
+    }
+
     str = rb_obj_as_string(str);
 
     szStr = RSTRING_PTR(str);
     //Skip just newline string
     if ( strcmp(szStr,"\r\n") != 0 && strcmp(szStr,"\n") != 0 )
-        rhoPlainLog("",0,L_INFO,"APP",RSTRING_PTR(str));
+        rhoPlainLog("",0,severity,catStr,RSTRING_PTR(str));
+
+}
+
+static VALUE
+rb_RhoLogInfo(VALUE rhoLog, VALUE category, VALUE str)
+{
+#if RHO_STRIP_LOG <= L_INFO
+    rhoRubyLogWithSeverity(L_INFO, category, str);
 #else
 #endif
 
     return Qnil;
+}
+
+static VALUE
+rb_RhoLogError(VALUE rhoLog, VALUE category, VALUE str)
+{
+#if RHO_STRIP_LOG <= L_ERROR
+   rhoRubyLogWithSeverity(L_ERROR, category, str);
+#else
+#endif
+
+    return Qnil;
+}
+
+static VALUE
+rb_RhoLogWrite(VALUE rhoLog, VALUE str)
+{
+    return rb_RhoLogInfo(rhoLog,rb_str_new2("APP"),str);
 }
 
 void rhoRubyFatalError(const char* szError){
@@ -439,6 +467,8 @@ static void Init_RhoLog(){
     rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
     rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
     rb_define_method(rb_RhoLogClass, "print", rb_RhoLogWrite, 1);
+    rb_define_method(rb_RhoLogClass, "info", rb_RhoLogInfo, 2);
+    rb_define_method(rb_RhoLogClass, "error", rb_RhoLogError, 2);
 
     appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
     
