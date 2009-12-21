@@ -294,12 +294,22 @@ void CHttpServer::stop()
 
 void CHttpServer::register_uri(String const &uri, CHttpServer::callback_t const &callback)
 {
-    m_registered[uri] = callback;
+    if (uri.empty())
+        return;
+    String ruri = uri;
+    if (ruri[ruri.size() - 1] != '/')
+        ruri.push_back('/');
+    m_registered[ruri] = callback;
 }
 
 CHttpServer::callback_t CHttpServer::registered(String const &uri)
 {
-    std::map<String, callback_t>::const_iterator it = m_registered.find(uri);
+    if (uri.empty())
+        return (callback_t)0;
+    String ruri = uri;
+    if (ruri[ruri.size() - 1] != '/')
+        ruri.push_back('/');
+    std::map<String, callback_t>::const_iterator it = m_registered.find(ruri);
     if (it == m_registered.end())
         return (callback_t)0;
     return it->second;
