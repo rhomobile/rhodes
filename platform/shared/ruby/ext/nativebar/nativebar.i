@@ -3,6 +3,8 @@
 %{
 	extern void create_nativebar(int bar_type, int nparams, char** params);
 	#define create create_nativebar
+    extern void remove_nativebar();
+    #define remove remove_nativebar
 %}
 
 %typemap(in) (int nparams, char** params) {
@@ -70,3 +72,4 @@
 }
 
 extern void create(int bar_type, int nparams, char** params);
+extern void remove();
