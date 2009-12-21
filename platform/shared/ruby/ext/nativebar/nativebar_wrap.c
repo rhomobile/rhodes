@@ -1548,6 +1548,8 @@ static VALUE mNativeBar;
 
 	extern void create_nativebar(int bar_type, int nparams, char** params);
 	#define create create_nativebar
+    extern void remove_nativebar();
+    #define remove remove_nativebar
 
 
 #include <limits.h>
@@ -1697,6 +1699,18 @@ fail:
   {
     free((void *) arg3);
   }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_remove(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  remove();
+  return Qnil;
+fail:
   return Qnil;
 }
 
@@ -1968,5 +1982,6 @@ SWIGEXPORT void Init_NativeBar(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mNativeBar, "create", _wrap_create, -1);
+  rb_define_module_function(mNativeBar, "remove", _wrap_remove, -1);
 }
 

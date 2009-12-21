@@ -202,7 +202,7 @@
 								  usingDelegate:dateTimePickerDelegate];
 }
 
-- (void)onDeleteNativeBar {
+- (void)onRemoveNativeBar {
     if (self.nativeBar == nil)
         return;
     
@@ -210,18 +210,15 @@
         [tabBarDelegate deleteTabBar];
     }
     else {
-        webViewController.toolbar.hidden = YES;
-        [window sendSubviewToBack:webViewController.toolbar];
-		[window bringSubviewToFront:webViewController.webView];
-		[webViewController.webView sizeToFit];
+        [webViewController showToolbar:NO];
     }
+    self.nativeBar = nil;
 }
 
 - (void)onCreateNativeBar:(NativeBar*)bar {
     if (self.nativeBar != nil) {
-        //[self onDeleteNativeBar];
-        RAWLOG_INFO("Native bar already exists!");
-        return;
+        RAWLOG_INFO("Native bar already exists, remove it");
+        [self onRemoveNativeBar];
     }
 	
     // retain the nativebar so it doesn't get deleted
@@ -231,19 +228,9 @@
 		tabBarDelegate.tabBar = self.nativeBar;
 		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
 	} else if(self.nativeBar.barType == TOOLBAR_TYPE) {
-		webViewController.toolbar.hidden = NO;
-		[window sendSubviewToBack:webViewController.webView];
-		[window bringSubviewToFront:webViewController.toolbar];
-        [webViewController.webView sizeToFit];
-        CGRect rect = webViewController.webView.frame;
-        CGRect trect = webViewController.toolbar.frame;
-        rect.size.height -= trect.size.height;
-		[webViewController.webView setFrame:rect];
+        [webViewController showToolbar:YES];
 	} else if(self.nativeBar.barType == NOBAR_TYPE) {
-		webViewController.toolbar.hidden = YES;
-		[window sendSubviewToBack:webViewController.toolbar];
-		[window bringSubviewToFront:webViewController.webView];
-		[webViewController.webView sizeToFit];
+        [webViewController showToolbar:NO];
 	}
 }
 /*
@@ -410,6 +397,7 @@
 	
 	logOptionsController = [[LogOptionsController alloc] init];
 	
+    webViewController->window = window;
 	webViewController->actionTarget = self;
 	webViewController->onShowLog = @selector(onShowLog);
 	
@@ -437,6 +425,7 @@
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
 	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
 	serverHost->onCreateNativeBar = @selector(onCreateNativeBar:);
+    serverHost->onRemoveNativeBar = @selector(onRemoveNativeBar);
 	//serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
