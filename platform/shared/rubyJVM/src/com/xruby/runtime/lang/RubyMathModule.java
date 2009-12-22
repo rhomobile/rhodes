@@ -142,12 +142,12 @@ public class RubyMathModule {
 	
 	//@RubyLevelMethod(name="atan2", module=true)
 	public static RubyValue atan2(RubyValue receiver, RubyValue arg1, RubyValue arg2) {
-		return ObjectFactory.createFloat(MathEx.atan(MathEx.atan2(arg1.toFloat(), arg2.toFloat())));
+		return ObjectFactory.createFloat(MathEx.atan2(arg1.toFloat(), arg2.toFloat()));
 	}
 	
 	//@RubyLevelMethod(name="hypot", module=true)
 	public static RubyValue hypot(RubyValue receiver, RubyValue arg1, RubyValue arg2) {
-		return ObjectFactory.createFloat(MathEx.atan(MathEx.hypot(arg1.toFloat(), arg2.toFloat())));
+		return ObjectFactory.createFloat(MathEx.hypot(arg1.toFloat(), arg2.toFloat()));
 	}
 
 	//@RubyLevelMethod(name="erf", module=true)
