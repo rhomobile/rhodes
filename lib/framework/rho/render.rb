@@ -45,6 +45,7 @@ module Rho
     
     def render(options = nil)
       options = {} if options.nil? or !options.is_a?(Hash)
+      options = options.symbolize_keys
 
       unless options[:partial].nil?  # render the file and return, don't set rendered true for a partial.
         @content = render_partial(options)
@@ -88,6 +89,9 @@ module Rho
     end
 
     def render_partial(options = nil)
+      options = {} if options.nil? or !options.is_a?(Hash)
+      options = options.symbolize_keys
+
       localclass = Class.new do
         def initialize(obj=nil)
           @vars = {}
