@@ -71,6 +71,25 @@ char* get_current_location() {
 	[webView loadHTMLString:data baseURL: [NSURL URLWithString:@""]];
 }
 
+-(void)showToolbar:(BOOL)show {
+    toolbar.hidden = !show;
+    if (show) {
+        [window sendSubviewToBack:webView];
+        [window bringSubviewToFront:toolbar];
+    }
+    else {
+        [window sendSubviewToBack:toolbar];
+        [window bringSubviewToFront:webView];
+    }
+    [webView sizeToFit];
+    if (show) {
+        CGRect rect = webView.frame;
+        CGRect trect = toolbar.frame;
+        rect.size.height -= trect.size.height;
+        [webView setFrame:rect];
+    }
+}
+
 -(void)navigate:(NSString*)url {
     //RAWLOG_INFO1("Navigating to the specifyed URL: %s",  [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];

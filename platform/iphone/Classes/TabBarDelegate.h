@@ -34,4 +34,5 @@
 - (void)refresh:(BarItem*)item;
 - (void)executeJs:(BarItem*)item js:(JSString*)js;
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
+- (void)switchTab:(int)index;
 @end
