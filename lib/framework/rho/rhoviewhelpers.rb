@@ -96,6 +96,8 @@ module Rho
       return params.to_s if params.is_a? String or params.is_a? Symbol
       return '/' if not params.is_a? Hash or params.nil?
 
+      params = params.symbolize_keys if params.is_a? Hash
+
       application = params[:application] || @request['application']
       model = params[:controller] || params[:model] || @request['model'] 
       action = params[:action].nil? ? nil : params[:action].to_s
