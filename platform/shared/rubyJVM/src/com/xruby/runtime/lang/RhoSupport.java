@@ -6,6 +6,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.stdlib.RubyStringIO;
 
 public class RhoSupport {
 
@@ -13,6 +14,7 @@ public class RhoSupport {
 		new RhoLogger("RhoSupport");
 	
 	public static RubyModule SystemModule;
+	public static RubyClass  RhoLogClass;
 //	private static String    m_strCurAppPath;
 	
 	public static void init(){
@@ -29,13 +31,17 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return loadWithReflection(receiver, arg, block);}
 		});
-		RubyRuntime.KernelModule.defineModuleMethod( "rhoInfo", new RubyOneArgMethod(){ 
+/*		RubyRuntime.KernelModule.defineModuleMethod( "rhoInfo", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return rhoInfo(receiver, arg, block);}
 		});
 		RubyRuntime.KernelModule.defineModuleMethod( "rhoError", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 				return rhoError(receiver, args, block);}
+		});*/
+		RubyRuntime.KernelModule.defineModuleMethod( "rho_get_app_property", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return rb_rho_get_app_property(receiver, arg, block);}
 		});
 		
 		SystemModule = RubyAPI.defineModule("System");
@@ -60,26 +66,98 @@ public class RhoSupport {
 			}
 		});
 
-		RubyRuntime.KernelModule.defineModuleMethod( "rho_get_app_property", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return rb_rho_get_app_property(receiver, arg, block);}
-		});
+		RhoLogClass = RubyAPI.defineClass("RhoLog", RubyRuntime.ObjectClass);
+		RhoLog.initMethods(RhoLogClass);
 	}
 
-	private static final RhoLogger RHOLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("RHO");
+	public static class RhoLog extends RubyBasic 
+	{
+		private static final RhoLogger APPLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+			new RhoLogger("APP");
 	
-    public static RubyValue rhoInfo(RubyValue receiver, RubyValue arg, RubyBlock block) {
-        String msg = arg.toStr();
-        RHOLOG.INFO(msg);
-        return RubyConstant.QNIL;
-    }
-    public static RubyValue rhoError(RubyValue receiver, RubyArray args, RubyBlock block) {
-        //String msg = arg.toStr();
-        //RHOLOG.ERROR(msg);
-        return RubyConstant.QNIL;
-    }
-    
+	    private RhoLog() 
+	    {
+	        super(RhoLogClass);
+	    }
+		
+	    public static RhoLog alloc(RubyValue receiver) {
+	        return new RhoLog();
+	    }
+
+	    public RhoLog initialize() {
+	        return this;
+	    }
+	    
+	    public RubyValue rhoLog_Write(RubyValue arg) 
+	    {
+	        String msg = arg.toStr();
+	        APPLOG.INFO(msg);
+	        return RubyConstant.QNIL;
+	    }
+		
+	    public RubyValue rhoLog_Info(RubyValue arg, RubyValue arg2) 
+	    {
+	        String msg = arg.toStr();
+	        String cat = arg2.toStr();
+			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+				new RhoLogger(cat);
+	        
+			logger.INFO(msg);
+	        return RubyConstant.QNIL;
+	    }
+	    
+	    public RubyValue rhoLog_Error(RubyValue arg, RubyValue arg2) {
+	        String msg = arg.toStr();
+	        String cat = arg2.toStr();
+			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+				new RhoLogger(cat);
+	        
+			logger.ERROR(msg);
+	        return RubyConstant.QNIL;
+	    }
+	    
+	    public static void initMethods( RubyClass klass)
+	    {
+	    	klass.defineMethod( "initialize", new RubyNoArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyBlock block )
+				{
+					return ((RhoLog)receiver).initialize();
+				}
+			});
+			klass.defineAllocMethod(new RubyNoArgMethod(){
+				protected RubyValue run(RubyValue receiver, RubyBlock block )	{
+					return RhoLog.alloc(receiver);
+				}
+			});
+			
+			klass.defineMethod( "write", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					return ((RhoLog)receiver).rhoLog_Write(arg);
+				}
+			});
+			klass.defineMethod( "print", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					return ((RhoLog)receiver).rhoLog_Write(arg);
+				}
+			});
+			klass.defineMethod( "info", new RubyTwoArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block )
+				{
+					return ((RhoLog)receiver).rhoLog_Info(arg, arg1);
+				}
+			});
+			klass.defineMethod( "error", new RubyTwoArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block )
+				{
+					return ((RhoLog)receiver).rhoLog_Error(arg, arg1);
+				}
+			});
+	    	
+	    }
+	}
+	
     public static String createMainClassName(String required_file) {
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {

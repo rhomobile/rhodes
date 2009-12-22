@@ -105,7 +105,7 @@ void CSyncNotify::fireObjectsNotification()
                 }
 
                 if ( strBody.length() > 0 )
-                    strBody += '&';
+                    strBody += "&rho_callback=1&";
 
                 switch(nNotifyType)
                 {
@@ -331,6 +331,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
             strBody += "&cumulative_count=" + convertToStringA(src.getServerObjectsCount());
             strBody += "&source_id=" + convertToStringA(src.getID());
             strBody += "&source_name=" + src.getName();
+            strBody += "&rho_callback=1";
 
             strBody += "&status=";
 

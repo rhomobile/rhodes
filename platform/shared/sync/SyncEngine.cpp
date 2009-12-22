@@ -216,7 +216,15 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     String strQuery = "?client_id=" + strClientID;
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
-    return resp.isOK();
+    if ( resp.isOK() )
+    {
+        if ( CClientRegister::getInstance() != null )
+            return CClientRegister::getInstance()->doRegister(*this);
+
+        return true;
+    }
+
+    return false;
 }
 
 String CSyncEngine::requestClientIDByNet()
@@ -274,6 +282,7 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
     String strBody = "error_code=" + convertToStringA(nErrCode);
     strBody += "&error_message=";
     URI::urlEncode(strMessage, strBody);
+    strBody += "&rho_callback=1";
 
     String strUrl = getNet().resolveUrl(callback);
     

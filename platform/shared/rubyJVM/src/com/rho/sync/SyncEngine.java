@@ -393,6 +393,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		try{
 		    String strBody = "error_code=" + nErrCode;
 	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
+	        strBody += "&rho_callback=1";
+	        
 	        String strUrl = getNet().resolveUrl(callback);
 	        
 			LOG.INFO( "Login callback: " + callback + ". Body: "+ strBody );
