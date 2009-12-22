@@ -201,6 +201,7 @@ public class RubyRuntime {
         RubyTime_Methods.initMethods(TimeClass);
 
         HashClass = RubyAPI.defineClass("Hash", RubyRuntime.ObjectClass);
+        HashClass.includeModule(EnumerableModule);
         RubyHash_Methods.initMethods(HashClass);
 
         ProcClass = RubyAPI.defineClass("Proc", RubyRuntime.ObjectClass);
