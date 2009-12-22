@@ -44,7 +44,12 @@ module Rho
         raise ArgumentError, "Action '#{act}' does not exist in controller or has private access."  
       end
       
-      res = render unless @rendered or @redirected
+      if @params['rho_callback'] == "1"
+        res = "" unless res.is_a?(String)
+      else
+        res = render unless @rendered or @redirected
+      end
+        
       application.set_menu(@menu, @back_action)
   	  @menu = nil
   	  @back_action = nil;

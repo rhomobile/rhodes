@@ -282,6 +282,7 @@ void CSyncEngine::callLoginCallback(String callback, int nErrCode, String strMes
     String strBody = "error_code=" + convertToStringA(nErrCode);
     strBody += "&error_message=";
     URI::urlEncode(strMessage, strBody);
+    strBody += "&rho_callback=1";
 
     String strUrl = getNet().resolveUrl(callback);
     
