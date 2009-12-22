@@ -31,6 +31,8 @@ module Rho
       end
       
       def _url_decode(str, regex)
+        return str if str.nil? || str.length() == 0
+        
         isEncoded = false
         res = str.tr('+',' ').gsub(regex) { 
           isEncoded = true

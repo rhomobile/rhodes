@@ -222,6 +222,8 @@ public class CameraScreen extends MainScreen {
 		else
 			body = "status=cancel&message=User cancelled operation";
 	
+		body += "&rho_callback=1";
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 		

@@ -283,13 +283,12 @@ public class ImageBrowserScreen extends MainScreen {
     				destFile.close();
     			} catch(Exception exc) {}
             }
-            
             if (error) {
             	LOG.ERROR("Callback with error: status=error&message=Error");
-            	app.postUrl(_callbackUrl, "status=error&message=Error", headers); 
+            	app.postUrl(_callbackUrl, "status=error&message=Error&rho_callback=1", headers); 
             } else {
             	LOG.INFO("Callback with uri: status=ok&image_uri="+fname);
-            	app.postUrl(_callbackUrl,  "status=ok&image_uri="+fname, headers); 
+            	app.postUrl(_callbackUrl,  "status=ok&rho_callback=1&image_uri="+fname, headers); 
             }
 
         	app.popScreen( _imageBrowserScreen );
@@ -309,7 +308,7 @@ public class ImageBrowserScreen extends MainScreen {
         	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-    		app.postUrl(_callbackUrl, "status=cancel&message=User canceled operation", headers);
+    		app.postUrl(_callbackUrl, "status=cancel&rho_callback=1&message=User canceled operation", headers);
 			app.popScreen( _imageBrowserScreen );
 		}
 	}

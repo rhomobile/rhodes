@@ -194,6 +194,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
     }else
         strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
 
+    strBody += "&rho_callback=1";
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
@@ -212,6 +213,7 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
         strBody += szData;
     }
 
+    strBody += "&rho_callback=1";
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
