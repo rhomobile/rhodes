@@ -1550,6 +1550,8 @@ static VALUE mNativeBar;
 	#define create create_nativebar
     extern void remove_nativebar();
     #define remove remove_nativebar
+    extern void nativebar_switch_tab(int index);
+    #define switch_tab nativebar_switch_tab
 
 
 #include <limits.h>
@@ -1709,6 +1711,27 @@ _wrap_remove(int argc, VALUE *argv, VALUE self) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
   remove();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_switch_tab(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "switch_tab" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  switch_tab(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -1983,5 +2006,6 @@ SWIGEXPORT void Init_NativeBar(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mNativeBar, "create", _wrap_create, -1);
   rb_define_module_function(mNativeBar, "remove", _wrap_remove, -1);
+  rb_define_module_function(mNativeBar, "switch_tab", _wrap_switch_tab, -1);
 }
 

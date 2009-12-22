@@ -30,6 +30,7 @@
 	SEL onChooseDateTime;
 	SEL onCreateNativeBar;
     SEL onRemoveNativeBar;
+    SEL onSwitchTab;
 	//SEL onSetViewOptionsUrl;
 	SEL onShowPopup;
 	SEL onVibrate;
@@ -53,6 +54,7 @@
 @property (assign) SEL onChooseDateTime;
 @property (assign) SEL onCreateNativeBar;
 @property (assign) SEL onRemoveNativeBar;
+@property (assign) SEL onSwitchTab;
 //@property (assign) SEL onSetViewOptionsUrl;
 @property (assign) SEL onShowPopup;
 @property (assign) SEL onVibrate;
