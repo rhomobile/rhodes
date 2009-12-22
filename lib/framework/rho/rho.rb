@@ -256,6 +256,7 @@ module Rho
     end
         
     def send_error(exception=nil,status=500,hash=false)
+	  puts "App error: #{exception}" if exception
       body=''
       
       err_page = nil

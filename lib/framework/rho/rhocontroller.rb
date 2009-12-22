@@ -41,7 +41,7 @@ module Rho
       if self.respond_to?(act)
         res = send req['action'].nil? ? default_action : req['action']
       else
-        puts "Error: action '#{act}' does not exist in controller or has private access."  
+        raise ArgumentError, "Action '#{act}' does not exist in controller or has private access."  
       end
       
       res = render unless @rendered or @redirected
