@@ -109,4 +109,8 @@
 	self.activeTab = self.tabBarController.selectedIndex;
 }
 
+- (void)switchTab:(int)index {
+    self.tabBarController.selectedIndex = index;
+}
+
 @end

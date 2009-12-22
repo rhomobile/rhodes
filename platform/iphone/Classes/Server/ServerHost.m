@@ -76,7 +76,8 @@ static ServerHost* sharedSH = nil;
 @implementation ServerHost
 
 @synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime, onCreateNativeBar;
+@synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime;
+@synthesize onCreateNativeBar, onRemoveNativeBar, onSwitchTab;
 @synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab;
 
 - (void)serverStarted:(NSString*)data {
@@ -156,6 +157,21 @@ static ServerHost* sharedSH = nil;
 		[nativeBar release];
 	}
 }
+
+- (void)removeNativeBar {
+    if (actionTarget && [actionTarget respondsToSelector:onRemoveNativeBar]) {
+        [actionTarget performSelectorOnMainThread:onRemoveNativeBar withObject:nil waitUntilDone:YES];
+    }
+}
+
+- (void)switchTab:(int)index {
+    if (actionTarget && [actionTarget respondsToSelector:onSwitchTab]) {
+        NSValue* value = [NSValue valueWithPointer:&index];
+        [actionTarget performSelectorOnMainThread:onSwitchTab withObject:value waitUntilDone:YES];
+        [value release];
+    }
+}
+
 /*
 - (void)setViewOptionsUrl:(NSString*)url {
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewOptionsUrl]) {
@@ -488,11 +504,19 @@ void create_nativebar(int bar_type, int nparams, char** params) {
 			printf("param: %s\n", params[i]);
 			[items addObject:[NSString stringWithCString:params[i]]];
 		} else {
-			printf("param: nil");   
+			printf("param: nil\n");   
 			[items addObject:@""];
 		}
 	}
 	[[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
+}
+
+void remove_nativebar() {
+    [[ServerHost sharedInstance] removeNativeBar];
+}
+
+void nativebar_switch_tab(int index) {
+    [[ServerHost sharedInstance] switchTab:index];
 }
 
 int webview_active_tab() {

@@ -19,6 +19,7 @@
 @public
 	id   actionTarget;
 	SEL  onShowLog;
+    UIWindow *window;
 }
 
 //@property (assign) NSString *viewHomeUrl;
@@ -31,6 +32,8 @@
 
 
 -(void)loadHTMLString:(NSString*)data;
+
+-(void)showToolbar:(BOOL)show;
 
 -(void)navigate:(NSString*)url;
 -(void)navigateRedirect:(NSString*)url;
