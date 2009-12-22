@@ -25,7 +25,7 @@ module Rho
     end
 
     def inst_render_index(filename)
-      puts 'inst_render_index'
+      rho_info 'inst_render_index'
       @request, @response = {}
       @params = {}
       require 'rho/rhoviewhelpers'
@@ -69,7 +69,7 @@ module Rho
         options[:layout] = false if options[:layout].nil?
       end
 
-      puts 'render content: ' + @content.length.to_s
+      rho_info 'render content: ' + @content.length.to_s
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
       elsif options[:layout].nil? or options[:layout] == true
@@ -79,7 +79,7 @@ module Rho
       if options[:layout] != false
         layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + "_erb.iseq"
         @content = eval_compiled_file(layoutfile, binding ) if File.exist?(layoutfile)
-        puts 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
+        rho_info 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
       end
 
       RhoController.start_objectnotify()
