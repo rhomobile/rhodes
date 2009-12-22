@@ -129,4 +129,11 @@ public
       hash.default = self.default
       hash
     end
+    def symbolize_keys
+      hash = {}
+      self.each do |key, value|
+        hash[(key.to_sym rescue key) || key] = value
+      end
+      hash
+    end
 end

@@ -119,6 +119,8 @@ public class DateTimeScreen extends MainScreen {
     		String body = "status=ok&result=" + _dateTimeField.getDate()/1000;
     		if (_opaque != null)
     			body += "&opaque=" + _opaque;
+    		body += "&rho_callback=1";
+    		
     		LOG.INFO("Callback with result: " + body);
     		
     		_dateTimeScreen.setFieldsEditable(false);
@@ -138,6 +140,8 @@ public class DateTimeScreen extends MainScreen {
 			String body = "status=cancel";
     		if (_opaque != null)
     			body += "&opaque=" + _opaque;
+    		body += "&rho_callback=1";
+    		
 			LOG.INFO("Callback with result: " + body);
 			
 			_dateTimeScreen.setFieldsEditable(false);

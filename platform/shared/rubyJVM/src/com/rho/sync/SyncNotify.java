@@ -147,7 +147,7 @@ public class SyncNotify {
                     }
 
                     if ( strBody.length() > 0 )
-                        strBody += '&';
+                    	strBody += "&rho_callback=1&";
 
                     if (nNotifyType == enDelete.intValue() ) 
                     {
@@ -366,6 +366,7 @@ public class SyncNotify {
 			        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
 			        strBody += "&source_id=" + src.getID();
 			        strBody += "&source_name=" + src.getName();
+			        strBody += "&rho_callback=1";
 			        
 			        strBody += "&status=";
 			        if ( bFinish )
