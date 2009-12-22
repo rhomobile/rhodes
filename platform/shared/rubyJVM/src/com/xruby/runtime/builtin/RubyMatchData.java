@@ -63,7 +63,13 @@ public class RubyMatchData extends RubyBasic {
     public RubyValue to_a() {
         RubyArray ar = new RubyArray();
     	for (int i = 0; i < result_.groups(); i++)
-    		ar.add(ObjectFactory.createString(result_.group(i)));
+    	{
+    		String str = result_.group(i);
+    		if ( str != null )
+    			ar.add( ObjectFactory.createString(str) );
+    		else
+    			ar.add( RubyConstant.QNIL );
+    	}
     	
     	return ar;
     }

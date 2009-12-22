@@ -229,7 +229,11 @@ public class RubyRegexp extends RubyBasic {
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
             updateGlobalVariables(r);
-            return ObjectFactory.createMatchData(r,input);
+            
+            RubyMatchData mData = ObjectFactory.createMatchData(r,input);
+        	GlobalVariables.set(mData, "$~");
+        	
+            return mData;
         } else {
             clearGlobalVariables();
             return null;
@@ -414,7 +418,8 @@ public class RubyRegexp extends RubyBasic {
         return ObjectFactory.createString(pattern_.getPattern());
     }
 
-    private void updateGlobalVariables(MatchResult r) {
+    private void updateGlobalVariables(MatchResult r) 
+    {
         GlobalVariables.set(ObjectFactory.createString(r.group(0)), "$&");
         for (int i = 1; i < r.groups(); ++i) {
             String s = r.group(i);
@@ -427,6 +432,7 @@ public class RubyRegexp extends RubyBasic {
     }
 
     private void clearGlobalVariables() {
+        GlobalVariables.set(RubyConstant.QNIL, "$~");
         GlobalVariables.set(RubyConstant.QNIL, "$&");
         GlobalVariables.set(RubyConstant.QNIL, "$1");
     }
