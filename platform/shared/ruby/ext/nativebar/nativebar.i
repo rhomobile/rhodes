@@ -5,6 +5,8 @@
 	#define create create_nativebar
     extern void remove_nativebar();
     #define remove remove_nativebar
+    extern void nativebar_switch_tab(int index);
+    #define switch_tab nativebar_switch_tab
 %}
 
 %typemap(in) (int nparams, char** params) {
@@ -73,3 +75,4 @@
 
 extern void create(int bar_type, int nparams, char** params);
 extern void remove();
+extern void switch_tab(int index);

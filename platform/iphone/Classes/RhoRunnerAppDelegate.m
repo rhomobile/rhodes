@@ -94,6 +94,11 @@
 
 - (void)onNavigateTo:(WebViewUrl*) wvUrl {
 	if (self.nativeBar.barType == TABBAR_TYPE) {
+        int size = [tabBarDelegate.barItems count];
+        if (wvUrl.webViewIndex >= size) {
+            RAWLOG_ERROR2("Web view index out of bound: %d (%d tabs)", wvUrl.webViewIndex, size);
+            return;
+        }
 		BarItem* bItem = (BarItem*)[tabBarDelegate.barItems objectAtIndex:wvUrl.webViewIndex];
         [tabBarDelegate loadTabBarItemLocation:bItem url:wvUrl.url];
 	} else {
@@ -233,6 +238,17 @@
         [webViewController showToolbar:NO];
 	}
 }
+
+- (void)onSwitchTab:(NSValue*)value {
+    int* pIndex = value.pointerValue;
+    if (self.nativeBar == nil)
+        return;
+    
+    if (self.nativeBar.barType == TABBAR_TYPE) {
+        [tabBarDelegate switchTab:*pIndex];
+    }
+}
+
 /*
 - (void)onSetViewOptionsUrl:(NSString *)url {
 	[webViewController setViewOptionsUrl:url];
@@ -426,6 +442,7 @@
 	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
 	serverHost->onCreateNativeBar = @selector(onCreateNativeBar:);
     serverHost->onRemoveNativeBar = @selector(onRemoveNativeBar);
+    serverHost->onSwitchTab = @selector(onSwitchTab:);
 	//serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
