@@ -36,9 +36,14 @@ module Rho
       @params = RhoSupport::query_params req
       @rendered = false
       @redirected = false
-      if self.respond_to? req['action'].nil? ? default_action : req['action']
+      
+      act = req['action'].nil? ? default_action : req['action']
+      if self.respond_to?(act)
         res = send req['action'].nil? ? default_action : req['action']
+      else
+        puts "Error: action '#{act}' does not exist in controller or has private access."  
       end
+      
       res = render unless @rendered or @redirected
       application.set_menu(@menu, @back_action)
   	  @menu = nil
