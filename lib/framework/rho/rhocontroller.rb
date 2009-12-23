@@ -41,7 +41,7 @@ module Rho
       if self.respond_to?(act)
         res = send req['action'].nil? ? default_action : req['action']
       else
-        raise ArgumentError, "Action '#{act}' does not exist in controller or has private access."  
+        rho_error( "Action '#{act}' does not exist in controller or has private access."  )
       end
       
       if @params['rho_callback'] == "1"
@@ -63,6 +63,11 @@ module Rho
     alias xhr? :xml_http_request?
 
     def redirect(url_params = {},options = {})
+      if @params['rho_callback'] == "1"
+        rho_error( "redirect call in callback. Call WebView.navigate instead" ) 
+        return ""
+      end  
+    
       @redirected = true
       @response['status'] = options['status'] || 302 
       @response['headers']['Location'] = url_for(url_params)
