@@ -27,7 +27,8 @@ describe "Rho::RhoController" do
     before do
       @c = Rho::RhoController.new
       @c.stub!(:send).and_return(nil)
-      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},{})
+      #@c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},{})
+      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },{})      
     end
 
     it "should generate urls for empty params" do
@@ -112,7 +113,8 @@ describe "Rho::RhoController" do
       @response['headers'] = {}
       @c = Rho::RhoController.new
       @c.stub!(:send).and_return(nil)
-      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},@response)
+      #@c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},@response)
+      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },@response)
     end
 
     it "should redirect to a url" do
