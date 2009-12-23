@@ -44,7 +44,10 @@ module Rho
     end
     
     def render(options = nil)
-      raise ArgumentError, "render call in callback. Call WebView.navigate instead" if @params['rho_callback'] == "1"
+      if @params['rho_callback'] == "1"
+        rho_error( "render call in callback. Call WebView.navigate instead" ) 
+        return ""
+      end  
 
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
