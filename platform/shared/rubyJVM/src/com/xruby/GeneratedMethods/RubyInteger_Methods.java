@@ -12,4 +12,9 @@ klass.defineMethod( "chr", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyInteger)receiver).chr();}
 });
+klass.defineMethod( "ord", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyInteger)receiver).ord();}
+});
+
 }}
