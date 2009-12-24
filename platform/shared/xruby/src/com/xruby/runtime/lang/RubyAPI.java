@@ -56,7 +56,12 @@ public class RubyAPI {
     public static boolean testCaseEqual(RubyValue value1, RubyValue value2) {
         return RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.longEqualID).isTrue();
     }
-
+    					  	
+    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2) 
+    {
+        return value1.isTrue();
+    }
+    
     public static boolean testCaseEqual(RubyArray values, RubyValue value2) {
         for (RubyValue value1 : values) {
             if (RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.longEqualID).isTrue()) {
