@@ -110,12 +110,16 @@ module Rho
           url = source['url']
           name = source['name']
           priority = source['priority']
-          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id', 'name'=>name)
+          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id,source_url', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
-                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority},{"name"=>name})
+                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority}, {"name"=>name})
             end
+            if attribs[0]['source_url'] != url
+                Rhom::RhomDbAdapter::update_into_table('sources', {"source_url"=>url}, {"name"=>name})
+            end
+            
             Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
           else
             Rhom::RhomDbAdapter::insert_into_table('sources',
