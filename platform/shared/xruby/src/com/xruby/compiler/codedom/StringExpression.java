@@ -154,14 +154,7 @@ public class StringExpression extends Expression {
         if (double_quote) {
             value_.append(convertDoubleQuoteString(value));
         } else {
-            String strConv = convertSingleQuoteString(value);
-            /*
-            if ( !strConv.equals(value) )
-            {
-                System.out.println(value);
-                System.out.println(strConv);
-            }*/
-            value_.append(strConv);
+            value_.append(convertSingleQuoteString(value));
         }
     }
 
