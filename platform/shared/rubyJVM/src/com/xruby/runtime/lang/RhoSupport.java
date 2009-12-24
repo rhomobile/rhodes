@@ -6,7 +6,8 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.stdlib.RubyStringIO;
+//import com.xruby.runtime.stdlib.RubyStringIO;
+import j2me.lang.StringMe;
 
 public class RhoSupport {
 
@@ -171,6 +172,8 @@ public class RhoSupport {
         
         required_file = required_file.replace('/', '.');
         required_file = required_file.replace('\\', '.');
+        required_file = StringMe.replaceAll(required_file,"-", "minus");
+        
         required_file += ".main";
         return "xruby." + required_file;
     }
@@ -283,8 +286,20 @@ public class RhoSupport {
             if ( c == null ){
             	String altPath = "/apps/app/";
             	name = RhoSupport.createMainClassName(altPath+required_file);
-            	c = Class.forName(name);
             	
+                try {
+                	c = Class.forName(name);
+                } catch (ClassNotFoundException e) {
+                }
+            	
+            	arg = ObjectFactory.createString(altPath+required_file);
+            }
+
+            if ( c == null ){
+            	String altPath = "/apps/";
+            	name = RhoSupport.createMainClassName(altPath+required_file);
+            	
+               	c = Class.forName(name);
             	arg = ObjectFactory.createString(altPath+required_file);
             }
             
