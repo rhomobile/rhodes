@@ -233,7 +233,7 @@ static void callback_geolocation(void *arg
     double longitude = geo_longitude();
 
     char location[256];
-    sprintf(location,"%.4f\xb0 %s, %.4f\xb0 %s;%f;%f",
+    sprintf(location,"%.4f\xc2\xb0 %s, %.4f\xc2\xb0 %s;%f;%f",
         fabs(latitude),latitude < 0 ? "South" : "North",
         fabs(longitude),longitude < 0 ? "West" : "East",
         latitude,longitude);
