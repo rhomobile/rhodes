@@ -274,6 +274,7 @@ public class RhoSupport {
         	return RubyConstant.QTRUE;
         
         String name = RhoSupport.createMainClassName(required_file);
+        RubyValue arg1 = null;        
         try {
         	
         	LOG.INFO("require_compiled: " + required_file);
@@ -292,7 +293,7 @@ public class RhoSupport {
                 } catch (ClassNotFoundException e) {
                 }
             	
-            	arg = ObjectFactory.createString(altPath+required_file);
+            	arg1 = ObjectFactory.createString(altPath+required_file);
             }
 
             if ( c == null ){
@@ -300,7 +301,7 @@ public class RhoSupport {
             	name = RhoSupport.createMainClassName(altPath+required_file);
             	
                	c = Class.forName(name);
-            	arg = ObjectFactory.createString(altPath+required_file);
+            	arg1 = ObjectFactory.createString(altPath+required_file);
             }
             
             Object o = c.newInstance();
@@ -312,6 +313,8 @@ public class RhoSupport {
 	            RubyArray a = (RubyArray)var;
 	            if (a.include(arg) == RubyConstant.QFALSE) {
 	                a.push(arg);
+	                if ( arg1 != null )
+	                	a.push(arg1);
 	            }
             }
             

@@ -33,7 +33,7 @@ public class RubyIO extends RubyBasic {
 	
 	private static final RubyString DEFAULT_RS = new RubyString("\n");
 
-    private final RubyIOExecutor executor;
+    private RubyIOExecutor executor;
     private boolean is_closed_ = false;
 
     public RubyIO(RubyIOExecutor executor) {
@@ -46,6 +46,12 @@ public class RubyIO extends RubyBasic {
     	this.executor = executor;
     }
 
+    public void initIO(RubyIO io)
+    {
+    	executor = io.executor;
+    	is_closed_ = io.is_closed_;
+    }
+    
     public RubyValue clone(){
     	RubyIO cl = new RubyIO( this.executor, this.class_);
     	cl.is_closed_ = is_closed_; 
@@ -249,6 +255,19 @@ public class RubyIO extends RubyBasic {
     	GlobalVariables.set(v, "$_");
 
     	return GlobalVariables.get("$_");
+    }
+
+    //@RubyLevelMethod(name="readline")
+    public RubyValue readline(RubyArray args) {
+    	if ( this.executor.eof() )
+    		throw new RubyException(RubyRuntime.EOFErrorClass, "end of file reached");
+    	
+    	RubyValue seperator = (null == args) ? GlobalVariables.get("$/") : args.get(0);
+    	String s = this.executor.gets(seperator);
+    	if ( s == null )
+    		throw new RubyException(RubyRuntime.EOFErrorClass, "end of file reached");
+    	
+    	return ObjectFactory.createString(s);
     }
     
     //@RubyLevelMethod(name="pipe")
