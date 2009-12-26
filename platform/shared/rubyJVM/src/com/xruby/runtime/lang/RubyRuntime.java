@@ -96,6 +96,7 @@ public class RubyRuntime {
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
     public static RubyClass TCPSocketClass;
+    public static RubyClass TopSelfClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -320,8 +321,9 @@ public class RubyRuntime {
 
         //TOP_LEVEL_SELF_VALUE = RubyTypeFactory.getObject(RubyTopSelf.class);
       //RHO_ADDED
-        TOP_LEVEL_SELF_VALUE = new RubyObject( ObjectClass );//RubyTopSelf();
-        //RubyTopSelf_Methods.initMethods(TOP_LEVEL_SELF_VALUE.getRubyClass());
+        TopSelfClass = RubyAPI.defineClass("__TopSelf", ObjectClass);
+        RubyTopSelf_Methods.initMethods(TopSelfClass);        
+        TOP_LEVEL_SELF_VALUE = TopSelfClass;//new RubyObject( TopSelfClass );//RubyTopSelf();
         
         StringIOClass = RubyAPI.defineClass("StringIO", RubyRuntime.ObjectClass);
         RubyStringIO_Methods.initMethods(StringIOClass);

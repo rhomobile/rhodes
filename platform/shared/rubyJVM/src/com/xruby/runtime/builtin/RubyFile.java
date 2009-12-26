@@ -19,6 +19,9 @@ public class RubyFile extends RubyIO {
     public RubyFile(String filename, String mode) {
         super(new RubyIOFileExecutor(filename, mode), RubyRuntime.FileClass);
     }
+    public RubyFile() {
+        super(null, RubyRuntime.FileClass);
+    }
 
     public RubyFile(RubyIOExecutor executor, RubyClass klass) {
         super(executor, klass);
@@ -240,6 +243,24 @@ public class RubyFile extends RubyIO {
         return com.xruby.runtime.lang.RubyKernelModule.open(receiver, args, block);
     }
 
+    //@RubyLevelMethod(name="initialize")
+    public RubyValue initialize(RubyArray args, RubyBlock block) 
+    {
+    	RubyValue val = com.xruby.runtime.lang.RubyKernelModule.open(this, args, block);
+    	if( val instanceof RubyIO)
+    	{
+    		initIO((RubyIO)val);
+    	}
+        return this;
+    }
+    
+    //@RubyAllocMethod
+    public static RubyValue alloc(RubyValue receiver) {
+        RubyFile h = new RubyFile();
+        h.setRubyClass((RubyClass) receiver);
+        return h;
+    }
+    
     //@RubyLevelMethod(name="extname", singleton=true)
     public static RubyValue extname(RubyValue receiver, RubyValue arg) {
         String filename = arg.toStr();

@@ -232,6 +232,8 @@ public class RubyRegexp extends RubyBasic {
             
             RubyMatchData mData = ObjectFactory.createMatchData(r,input);
         	GlobalVariables.set(mData, "$~");
+        	GlobalVariables.set(mData.post_match(), "$'");
+        	GlobalVariables.set(mData.pre_match(), "$`");
         	
             return mData;
         } else {

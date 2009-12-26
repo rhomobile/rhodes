@@ -91,5 +91,13 @@ klass.getSingletonClass().defineMethod( "extname", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyFile.extname(receiver, arg);}
 });
+klass.defineMethod( "initialize", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return ((RubyFile)receiver).initialize(args, block);}
+});
+klass.defineAllocMethod(new RubyNoArgMethod(){
+	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
+		return RubyFile.alloc(receiver);	}
+} );
 
 }}
