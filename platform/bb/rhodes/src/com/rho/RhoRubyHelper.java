@@ -14,6 +14,7 @@ import rhomobile.RingtoneManager;
 import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
+import rhomobile.mapview.MapView;
 
 import com.rho.db.HsqlDBStorage;
 import com.rho.db.IDBStorage;
@@ -44,6 +45,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
         NativeBar.initMethods(RubyRuntime.NativeBarClass);
         TCPSocket.initMethods(RubyRuntime.TCPSocketClass);
+        MapView.initMethods(RubyRuntime.MapViewClass);
 	}
 	
 	public RubyProgram createMainObject() {
