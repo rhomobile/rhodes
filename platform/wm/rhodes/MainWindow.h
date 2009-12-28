@@ -176,6 +176,16 @@ private:
 
 	void SetRhobundleReloadMenu();
 
+#if !defined(_WIN32_WCE)
+private:
+	static int m_screenWidth;
+	static int m_screenHeight;
+
+public:
+	static int getScreenWidth() {return m_screenWidth;}
+	static int getScreenHeight() {return m_screenHeight;}
+#endif
+
 //private:
 //	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
