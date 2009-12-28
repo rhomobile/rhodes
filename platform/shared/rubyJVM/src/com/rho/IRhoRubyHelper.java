@@ -23,4 +23,7 @@ public interface IRhoRubyHelper {
 	public void showLog();
 	
 	public String getLocale();
+	
+	public int getScreenWidth();
+	public int getScreenHeight();
 }
