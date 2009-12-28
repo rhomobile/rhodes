@@ -8,6 +8,8 @@
 extern "C" void webview_navigate(char* url, int index);
 
 static rho::String g_currentLocale;
+static int g_screenWidth;
+static int g_screenHeight;
 
 namespace rho
 {
@@ -100,4 +102,30 @@ RHO_GLOBAL const char *rho_sys_get_locale()
 		env->ReleaseStringUTFChars(objLocale, s);
 	}
 	return g_currentLocale.c_str();
+}
+
+RHO_GLOBAL int rho_sys_get_screen_width()
+{
+	if (g_screenWidth == 0)
+	{
+		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+		if (!cls) return 0;
+		jmethodID mid = getJNIClassStaticMethod(cls, "getScreenWidth", "()I");
+		if (!mid) return 0;
+		g_screenWidth = jnienv()->CallStaticIntMethod(cls, mid);
+	}
+	return g_screenWidth;
+}
+
+RHO_GLOBAL int rho_sys_get_screen_height()
+{
+	if (g_screenHeight == 0)
+	{
+		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+		if (!cls) return 0;
+		jmethodID mid = getJNIClassStaticMethod(cls, "getScreenHeight", "()I");
+		if (!mid) return 0;
+		g_screenHeight = jnienv()->CallStaticIntMethod(cls, mid);
+	}
+	return g_screenHeight;
 }
