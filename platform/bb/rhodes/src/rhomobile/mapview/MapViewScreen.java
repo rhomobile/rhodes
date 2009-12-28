@@ -23,7 +23,11 @@ public class MapViewScreen extends MainScreen {
 	
 	MapViewScreen(String providerName, double lat, double lon, int zoom) {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
-		
+		createMapProvider(providerName);
+		createUI(lat, lon, zoom);
+	}
+	
+	private void createMapProvider(String providerName) {
 		mapProvider = null;
 		for (int i = 0; i != providers.length; ++i) {
 			if (providers[i].accept(providerName)) {
@@ -33,8 +37,6 @@ public class MapViewScreen extends MainScreen {
 		}
 		if (mapProvider == null)
 			throw new IllegalArgumentException("Unknown map provider: " + providerName);
-		
-		createUI(lat, lon, zoom);
 	}
 	
 	private void createUI(double lat, double lon, int zoom) {

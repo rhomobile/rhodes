@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
+import net.rim.device.api.system.Display;
 import net.rim.device.api.i18n.Locale;
 import rhomobile.Alert;
 import rhomobile.NativeBar;
@@ -174,5 +175,13 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 			return new PersistRAFileImpl();
 		else
 			return new Jsr75RAFileImpl();
+	}
+
+	public int getScreenHeight() {
+		return Display.getHeight();
+	}
+
+	public int getScreenWidth() {
+		return Display.getWidth();
 	}
 }

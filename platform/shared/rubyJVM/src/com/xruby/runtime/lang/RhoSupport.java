@@ -66,6 +66,16 @@ public class RhoSupport {
 				return ObjectFactory.createString(strLocale);
 			}
 		});
+		SystemModule.defineModuleMethod( "get_screen_width", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return get_screen_width(receiver);
+			}
+		});
+		SystemModule.defineModuleMethod( "get_screen_height", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return get_screen_height(receiver);
+			}
+		});
 
 		RhoLogClass = RubyAPI.defineClass("RhoLog", RubyRuntime.ObjectClass);
 		RhoLog.initMethods(RhoLogClass);
@@ -246,6 +256,28 @@ public class RhoSupport {
 			e.printStackTrace();
 		} 
 		return RubyConstant.QFALSE;
+    }
+    
+    //@RubyLevelMethod(name="get_screen_width", module=true)
+    public static RubyValue get_screen_width(RubyValue receiver) {
+    	try {
+    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenWidth());
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return RubyConstant.QNIL;
+    }
+    
+    //@RubyLevelMethod(name="get_screen_height", module=true)
+    public static RubyValue get_screen_height(RubyValue receiver) {
+    	try {
+    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenHeight());
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return RubyConstant.QNIL;
     }
 
     public static RubyValue rb_rho_get_app_property(RubyValue receiver, RubyValue arg, RubyBlock block) {
