@@ -35,6 +35,7 @@ import com.rhomobile.rhodes.ui.LogViewDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -43,6 +44,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,6 +71,9 @@ public class Rhodes extends Activity {
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
 	public final Handler uiHandler = new Handler();
+	
+	private static int screenWidth;
+	private static int screenHeight;
 
 	private WebView webView;
 
@@ -323,6 +328,11 @@ public class Rhodes extends Activity {
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
 		setContentView(AndroidR.layout.main);
+		
+		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+		Display d = wm.getDefaultDisplay();
+		screenHeight = d.getHeight();
+		screenWidth = d.getWidth();
 
 		webView = (WebView) findViewById(AndroidR.id.webview);
 
@@ -634,6 +644,14 @@ public class Rhodes extends Activity {
 		if (locale.length() == 0)
 			locale = "en";
 		return locale;
+	}
+	
+	public static int getScreenWidth() {
+		return screenWidth;
+	}
+	
+	public static int getScreenHeight() {
+		return screenHeight;
 	}
 	
 	private void saveCurrentLocation(String url) {
