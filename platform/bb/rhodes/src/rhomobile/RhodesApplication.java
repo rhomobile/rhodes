@@ -11,7 +11,6 @@ import java.util.Vector;
 import javax.microedition.io.HttpConnection;
 
 import net.rim.device.api.browser.field.BrowserContent;
-import net.rim.device.api.browser.field.BrowserContentChangedEvent;
 import net.rim.device.api.browser.field.Event;
 import net.rim.device.api.browser.field.RedirectEvent;
 import net.rim.device.api.browser.field.RenderingApplication;
@@ -19,6 +18,7 @@ import net.rim.device.api.browser.field.RenderingException;
 import net.rim.device.api.browser.field.RenderingOptions;
 import net.rim.device.api.browser.field.RenderingSession;
 import net.rim.device.api.browser.field.RequestedResource;
+import net.rim.device.api.browser.field.SetHttpCookieEvent;
 import net.rim.device.api.browser.field.UrlRequestedEvent;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Alert;
@@ -33,7 +33,6 @@ import net.rim.device.api.ui.*;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
-import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 //import net.rim.device.api.ui.container.HorizontalFieldManager;
@@ -84,6 +83,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
+	
+	private static final String RHODES_AJAX_PROTOCOL = "RhodesAjaxCall=";
+	
+	private Vector pendingResponses = new Vector();
 
 	/*boolean m_bSDCardAdded = false;
 	public void rootChanged(int arg0, String arg1)
@@ -147,6 +150,41 @@ final public class RhodesApplication extends UiApplication implements RenderingA
   //  	}
 
     //}
+    
+    private String processAjaxCall(String request) {
+    	if (!request.startsWith(RHODES_AJAX_PROTOCOL))
+    		return null;
+    	String command = request.substring(RHODES_AJAX_PROTOCOL.length()).trim();
+    	Hashtable params = new Hashtable();
+    	for (; command.length() > 0;) {
+    		int index = command.indexOf(';');
+    		String name = index == -1 ? command : command.substring(0, index);
+    		String value = "";
+    		command = index == -1 ? "" : command.substring(index + 1);
+    		
+    		index = name.indexOf('=');
+    		if (index != -1) {
+    			value = name.substring(index + 1);
+    			name = name.substring(0, index);
+    		}
+    		params.put(name, value);
+    	}
+    	String method = (String)params.get("method");
+    	if (method == null)
+    		return null;
+    	
+    	if (method.equals("GeoLocation"))
+    		return GeoLocation.GetLocation();
+    	
+    	if (method.equals("Log")) {
+    		String message = (String)params.get("message");
+    		if (message != null)
+    			LOG.INFO(message);
+    		return null;
+    	}
+    	
+    	return null;
+    }
 
     boolean isExternalUrl(String strUrl)
     {
@@ -1001,7 +1039,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
 		        Version.SoftVersion ver = Version.getSoftVersion();
-		        if ( ver.nMajor == 4 && ver.nMinor == 6 )
+		        if ( ver.nMajor > 4 || ( ver.nMajor == 4 && ver.nMinor >= 6 ) )
 		        {
 			        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
 			        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
@@ -1246,8 +1284,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 // TODO: close the application
                 break;
 
-            case Event.EVENT_SET_HEADER :        // no cache support
-            case Event.EVENT_SET_HTTP_COOKIE :   // no cookie support
+            case Event.EVENT_SET_HEADER :
+            case Event.EVENT_SET_HTTP_COOKIE : {
+            	String cookie = ((SetHttpCookieEvent)event).getCookie();
+        		String response = processAjaxCall(cookie);
+        		if (response != null)
+        			synchronized (pendingResponses) {
+        				pendingResponses.addElement(response);
+        			}
+        		response = null;
+            	cookie = null;
+            	break;
+            }
             case Event.EVENT_HISTORY :           // no history support
             case Event.EVENT_EXECUTING_SCRIPT :  // no progress bar is supported
             case Event.EVENT_FULL_WINDOW :       // no full window support
@@ -1286,8 +1334,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
      * @see net.rim.device.api.browser.RenderingApplication#getHTTPCookie(java.lang.String)
      */
     public String getHTTPCookie(String url) {
-        // no cookie support
-        return null;
+    	StringBuffer responseCode = new StringBuffer();
+		synchronized (pendingResponses) {
+			for (int index = 0; index < pendingResponses.size(); index++)
+				responseCode.append(pendingResponses.elementAt(index));
+			pendingResponses.removeAllElements();
+		}
+		return responseCode.toString();
     }
 
     /**

@@ -186,7 +186,6 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
-    $excludeapps = "public/js/iui/**,**/jquery*"
     $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?

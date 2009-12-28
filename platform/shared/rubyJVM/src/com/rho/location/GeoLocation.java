@@ -59,7 +59,6 @@ public class GeoLocation extends RubyBasic {
 				return GeoLocation.isKnownPositionValue();
 			}
 		});
-		
 	}
 	
 	private static void startSelf() {
@@ -68,6 +67,14 @@ public class GeoLocation extends RubyBasic {
 		} catch (Exception e) {
 			LOG.ERROR("GeoLocation failed to start", e);
 		}
+	}
+	
+	public static String GetLocation() {
+		double latitude = GetLatitude();
+		double longitude = GetLongitude();
+		return Math.abs(latitude) + "° " + (latitude < 0 ? "South" : "North") + " " +
+			Math.abs(longitude) + "° " + (longitude < 0 ? "West" : "East") +
+			";" + latitude + ";" + longitude;
 	}
 	
 	public static double GetLatitude(){
