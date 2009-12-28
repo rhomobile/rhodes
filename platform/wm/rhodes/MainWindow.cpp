@@ -42,6 +42,11 @@ extern HREGNOTIFY g_hNotify;
 extern "C" int g_rho_net_has_network;
 using namespace rho::common;
 
+#if !defined(_WIN32_WCE)
+int CMainWindow::m_screenWidth;
+int CMainWindow::m_screenHeight;
+#endif
+
 CMainWindow::CMainWindow()
 {
 	m_bLoading = true;
@@ -167,6 +172,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     {
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
     }
+#endif
+
+#if !defined(_WIN32_WCE)
+	m_screenWidth = rcMainWindow.right - rcMainWindow.left;
+	m_screenHeight = rcMainWindow.bottom - rcMainWindow.top;
 #endif
 
     MoveWindow(&rcMainWindow);

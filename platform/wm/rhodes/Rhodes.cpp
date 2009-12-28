@@ -262,6 +262,24 @@ extern "C" char* rho_sys_get_locale()
     return const_cast<char*>(_AtlModule.getCurrentLocale());
 }
 
+extern "C" int rho_sys_get_screen_width()
+{
+#ifdef _WIN32_WCE
+	return GetSystemMetrics(SM_CXSCREEN);
+#else
+	return CMainWindow::getScreenWidth();
+#endif
+}
+
+extern "C" int rho_sys_get_screen_height()
+{
+#ifdef _WIN32_WCE
+	return GetSystemMetrics(SM_CYSCREEN);
+#else
+	return CMainWindow::getScreenHeight();
+#endif
+}
+
 //Hook for ruby call to refresh web view
 
 extern "C" void webview_refresh(int index) {
