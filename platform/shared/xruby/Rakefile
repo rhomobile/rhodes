@@ -102,6 +102,7 @@ task :dist => [:clean, :method] do
   rm_rf TMPDIR, :verbose => false
   rm_rf BUILDDIR, :verbose => false
 
+  mv "#{XRUBY}", File.join( "../../../res/build-tools/", "#{XRUBY}")
 end
 
 desc "Cleans all"

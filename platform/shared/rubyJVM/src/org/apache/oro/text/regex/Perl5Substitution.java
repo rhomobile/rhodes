@@ -163,7 +163,7 @@ public class Perl5Substitution extends StringSubstitution {
   transient String _lastInterpolation;
 
   private static final boolean __isInterpolationCharacter(char ch) {
-    return (Character.isDigit(ch) || ch == '&');
+    return (Character.isDigit(ch) || ch == '&' || ch == '{');
   }
 
   private void __addElement(int value) {
@@ -218,12 +218,18 @@ public class Perl5Substitution extends StringSubstitution {
 	    saveDigits = false;
 	    continue;
 	  }
-	}
+	} else if(c == '{') {
+          continue;
+        }
 
 	__addElement(posParam);
 	posParam = 0;
 	saveDigits = false;
-      } 
+
+        if(c == '}') {
+          continue;
+        }
+      }
 
       if ((c != '$' && c != '\\') || escapeMode) {
 	escapeMode = false;

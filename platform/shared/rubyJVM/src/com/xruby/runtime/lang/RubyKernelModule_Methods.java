@@ -9,6 +9,11 @@ klass.defineMethod( "taint", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.taint(receiver);}
 });
+klass.defineMethod( "untaint", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return RubyKernelModule.untaint(receiver);}
+});
+
 klass.defineMethod( "methods", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyKernelModule.objMethods(receiver);}
