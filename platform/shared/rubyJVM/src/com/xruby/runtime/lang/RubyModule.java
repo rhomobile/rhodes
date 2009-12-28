@@ -896,14 +896,14 @@ public class RubyModule extends RubyObject {
     //@RubyLevelMethod(name="method_defined?")
     public RubyValue isMethodDefined(RubyValue arg) {
         RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
-        return RubyAPI.isDefinedNonPrivateMethod(this, s.toString()) != null ?
+        return RubyAPI.isDefinedNonPrivateMethod(this, s.toString()) != RubyConstant.QNIL ?
         		RubyConstant.QTRUE : RubyConstant.QFALSE;
     }
 
     //@RubyLevelMethod(name="method_defined?")
     public RubyValue isPublicMethodDefined(RubyValue arg) {
         RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
-        return RubyAPI.isDefinedPublicMethod(this, this, s.toString()) != null ?
+        return RubyAPI.isDefinedPublicMethod(this, this, s.toString()) != RubyConstant.QNIL ?
         		RubyConstant.QTRUE : RubyConstant.QFALSE;
     }
     

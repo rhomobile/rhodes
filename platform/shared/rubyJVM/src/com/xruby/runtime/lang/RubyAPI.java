@@ -152,6 +152,17 @@ public class RubyAPI {
         return ObjectFactory.createString("method");
     }
 
+    //e.g. defined? @m    
+    public static RubyValue isDefinedInstanceVariable(RubyValue receiver, String method_name) {
+        RubyID mid = RubyID.intern(method_name);
+        RubyValue var = receiver.getInstanceVariable(mid);
+        if (null == var || var == RubyConstant.QNIL) {
+            return RubyConstant.QNIL;
+        }
+
+        return ObjectFactory.createString("instance-variable");
+    }
+    
     public static RubyValue isDefinedNonPrivateMethod(RubyValue receiver, String method_name) {
         RubyID mid = RubyID.intern(method_name);
         RubyMethod m = receiver.findMethod(mid);

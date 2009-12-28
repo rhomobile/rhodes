@@ -52,6 +52,8 @@ public class DefinedExpression extends Expression {
 			visitor.visitDefinedYield();
 		} else if (expression_ instanceof LocalVariableExpression) {
 			visitor.visitDefinedLocalVariable(((LocalVariableExpression)expression_).getValue());
+		} else if (expression_ instanceof InstanceVariableExpression) {
+			visitor.visitDefinedInstanceVariable(((InstanceVariableExpression)expression_).getValue());
 		} else {
 			visitor.visitStringExpression("expression");
 		}

@@ -912,7 +912,10 @@ public class RubyString extends RubyBasic {
         }
 
         value = value.substring(0, end);
-
+        int nPoint = value.indexOf('.'); 
+        if (nPoint >= 0 )
+        	value = value.substring(0, nPoint);
+        
         if (radix >= 2 && radix <= 36) {
             HugeInt bigint;
             try {

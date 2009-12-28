@@ -228,13 +228,10 @@ public class RubyRegexp extends RubyBasic {
         PatternMatcher m = new Perl5Matcher();
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
-            updateGlobalVariables(r);
-            
             RubyMatchData mData = ObjectFactory.createMatchData(r,input);
-        	GlobalVariables.set(mData, "$~");
-        	GlobalVariables.set(mData.post_match(), "$'");
-        	GlobalVariables.set(mData.pre_match(), "$`");
-        	
+            
+            updateGlobalVariables(r,mData);
+            
             return mData;
         } else {
             clearGlobalVariables();
@@ -249,7 +246,7 @@ public class RubyRegexp extends RubyBasic {
         PatternMatcher m = new Perl5Matcher();
         while (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
-            updateGlobalVariables(r);
+            updateGlobalVariables(r, str);
 
             if (r.groups() == 1) {
                 a.add(ObjectFactory.createString(r.group(0)));
@@ -275,7 +272,7 @@ public class RubyRegexp extends RubyBasic {
         PatternMatcher m = new Perl5Matcher();
         while (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
-            updateGlobalVariables(r);
+            updateGlobalVariables(r, str);
 
             if (r.groups() == 1) {
                 block.invoke(this, ObjectFactory.createString(r.group(0)));
@@ -298,7 +295,8 @@ public class RubyRegexp extends RubyBasic {
         PatternMatcher m = new Perl5Matcher();
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
-            updateGlobalVariables(r);
+            updateGlobalVariables(r, input);
+            
             return r.beginOffset(0);
         } else {
             clearGlobalVariables();
@@ -337,7 +335,7 @@ public class RubyRegexp extends RubyBasic {
         while (matcher.contains(input, pattern_)) {
             matched = true;
             MatchResult r = matcher.getMatch();
-            updateGlobalVariables(r);
+            updateGlobalVariables(r, str.toString());
 
             int begin = r.beginOffset(0);
             if (begin > end) {
@@ -378,6 +376,7 @@ public class RubyRegexp extends RubyBasic {
 
     private RubyString sub(RubyString input, String sub, int limit) {
         StringBuffer result = new StringBuffer();
+        final String strInput = input.toString();
         int nmatch = Util.substitute(
                 result,
                 new Perl5Matcher(),
@@ -390,7 +389,7 @@ public class RubyRegexp extends RubyBasic {
                         PatternMatcher matcher,
                         Pattern pattern) {
                         super.appendSubstitution(appendBuffer, match, substitutionCount, originalInput, matcher, pattern);
-                        updateGlobalVariables(match);
+                        updateGlobalVariables(match, strInput);
                     }
                 },
                 input.toString(),
@@ -420,8 +419,18 @@ public class RubyRegexp extends RubyBasic {
         return ObjectFactory.createString(pattern_.getPattern());
     }
 
-    private void updateGlobalVariables(MatchResult r) 
+    private void updateGlobalVariables(MatchResult r, String strInput) 
     {
+        RubyMatchData mData = ObjectFactory.createMatchData(r,strInput);
+        updateGlobalVariables(r, mData);
+    }
+    
+    private void updateGlobalVariables(MatchResult r, RubyMatchData mData) 
+    {
+    	GlobalVariables.set(mData, "$~");
+    	GlobalVariables.set(mData.post_match(), "$'");
+    	GlobalVariables.set(mData.pre_match(), "$`");
+    	
         GlobalVariables.set(ObjectFactory.createString(r.group(0)), "$&");
         for (int i = 1; i < r.groups(); ++i) {
             String s = r.group(i);
@@ -437,6 +446,14 @@ public class RubyRegexp extends RubyBasic {
         GlobalVariables.set(RubyConstant.QNIL, "$~");
         GlobalVariables.set(RubyConstant.QNIL, "$&");
         GlobalVariables.set(RubyConstant.QNIL, "$1");
+        GlobalVariables.set(RubyConstant.QNIL, "$2");
+        GlobalVariables.set(RubyConstant.QNIL, "$3");
+        GlobalVariables.set(RubyConstant.QNIL, "$4");
+        GlobalVariables.set(RubyConstant.QNIL, "$5");
+        GlobalVariables.set(RubyConstant.QNIL, "$6");
+        GlobalVariables.set(RubyConstant.QNIL, "$7");
+        GlobalVariables.set(RubyConstant.QNIL, "$8");
+        GlobalVariables.set(RubyConstant.QNIL, "$9");
     }
     
     //RHO_COMMENT

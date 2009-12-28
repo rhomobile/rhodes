@@ -1188,6 +1188,15 @@ public class RubyCompilerImpl implements CodeVisitor {
         }
     }
 
+    public void visitDefinedInstanceVariable(String name) {
+        if (cg_ instanceof ClassGeneratorForRubyMethod) {
+            visitSelfExpression();
+            cg_.getMethodGenerator().RubyAPI_isDefinedInstanceVariable(name);
+        } else {
+            visitNilExpression();
+        }
+    }
+    
     public void visitDefinedYield() {
         if (cg_ instanceof ClassGeneratorForRubyMethod) {
             MethodGenerator mg = cg_.getMethodGenerator();
