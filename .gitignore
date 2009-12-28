@@ -15,6 +15,7 @@ platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
 platform/iphone/bin/*
 platform/mac/bin/*
+platform/osx/Rhodes Debugger/build/*
 platform/iphone/*/*.link
 platform/wm/bin/*
 platform/win32/bin/*
