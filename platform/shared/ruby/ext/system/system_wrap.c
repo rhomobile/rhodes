@@ -1554,6 +1554,12 @@ extern VALUE has_network();
 extern char* rho_sys_get_locale();
 #define get_locale rho_sys_get_locale
 
+extern int rho_sys_get_screen_width();
+#define get_screen_width rho_sys_get_screen_width
+extern int rho_sys_get_screen_height();
+#define get_screen_height rho_sys_get_screen_height
+
+
 
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
@@ -1696,6 +1702,16 @@ SWIG_FromCharPtr(const char *cptr)
   return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
+
+  #define SWIG_From_long   LONG2NUM 
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_int  (int value)
+{    
+  return SWIG_From_long  (value);
+}
+
 SWIGINTERN VALUE
 _wrap_syscall(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
@@ -1810,6 +1826,38 @@ _wrap_get_locale(int argc, VALUE *argv, VALUE self) {
   }
   result = (char *)get_locale();
   vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_screen_width(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)get_screen_width();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_screen_height(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)get_screen_height();
+  vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
   return Qnil;
@@ -2086,5 +2134,7 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "get_property", _wrap_get_property, -1);
   rb_define_module_function(mSystem, "has_network", _wrap_has_network, -1);
   rb_define_module_function(mSystem, "get_locale", _wrap_get_locale, -1);
+  rb_define_module_function(mSystem, "get_screen_width", _wrap_get_screen_width, -1);
+  rb_define_module_function(mSystem, "get_screen_height", _wrap_get_screen_height, -1);
 }
 

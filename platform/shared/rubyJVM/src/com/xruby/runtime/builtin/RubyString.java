@@ -399,6 +399,15 @@ public class RubyString extends RubyBasic {
     	}
         return RubyConstant.QFALSE;
     }
+
+    //@RubyLevelMethod(name="ord")
+    public RubyValue ord() 
+    {
+    	if ( sb_ == null || sb_.length() == 0 )
+    		return ObjectFactory.createFixnum(0);
+    	
+    	return ObjectFactory.createFixnum(sb_.charAt(0));
+    }
     
     //@RubyLevelMethod(name="strip")
     public RubyString strip() {
@@ -903,7 +912,10 @@ public class RubyString extends RubyBasic {
         }
 
         value = value.substring(0, end);
-
+        int nPoint = value.indexOf('.'); 
+        if (nPoint >= 0 )
+        	value = value.substring(0, nPoint);
+        
         if (radix >= 2 && radix <= 36) {
             HugeInt bigint;
             try {

@@ -51,5 +51,10 @@ public abstract class RubyInteger extends RubyNumeric {
 		char charValue = (char)i;
         return ObjectFactory.createString("" + charValue);
 	}
+
+	//@RubyLevelMethod(name="ord")
+	public RubyValue ord() {
+		return this;
+	}
 	
 }

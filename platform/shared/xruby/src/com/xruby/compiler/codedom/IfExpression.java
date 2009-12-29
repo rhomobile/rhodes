@@ -25,7 +25,12 @@ public class IfExpression extends Expression {
         }
 
         public void accept(CodeVisitor visitor, Object end_label) {
-            condition_.accept(visitor);
+            if (null == condition_) {
+                visitor.visitTrueExpression();
+            } else {
+                condition_.accept(visitor);
+            }
+            
             Object next_label = visitor.visitAfterIfCondition();
             if (null != body_) {
                 body_.accept(visitor);

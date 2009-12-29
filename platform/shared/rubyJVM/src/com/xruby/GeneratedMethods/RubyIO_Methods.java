@@ -13,6 +13,11 @@ klass.defineMethod( "gets", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).gets(args);}
 });
+klass.defineMethod( "readline", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return ((RubyIO)receiver).readline(args);}
+});
+
 klass.defineMethod( "print", new RubyVarArgMethod(){ 
 	public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).print(args);}

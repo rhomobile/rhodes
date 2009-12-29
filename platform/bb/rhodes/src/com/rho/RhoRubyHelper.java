@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
+import net.rim.device.api.system.Display;
 import net.rim.device.api.i18n.Locale;
 import rhomobile.Alert;
 import rhomobile.NativeBar;
@@ -14,6 +15,7 @@ import rhomobile.RingtoneManager;
 import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
+import rhomobile.mapview.MapView;
 
 import com.rho.db.HsqlDBStorage;
 import com.rho.db.IDBStorage;
@@ -44,6 +46,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
         NativeBar.initMethods(RubyRuntime.NativeBarClass);
         TCPSocket.initMethods(RubyRuntime.TCPSocketClass);
+        MapView.initMethods(RubyRuntime.MapViewClass);
 	}
 	
 	public RubyProgram createMainObject() {
@@ -172,5 +175,13 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 			return new PersistRAFileImpl();
 		else
 			return new Jsr75RAFileImpl();
+	}
+
+	public int getScreenHeight() {
+		return Display.getHeight();
+	}
+
+	public int getScreenWidth() {
+		return Display.getWidth();
 	}
 }

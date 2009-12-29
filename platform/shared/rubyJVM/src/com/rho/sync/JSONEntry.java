@@ -53,9 +53,9 @@ class JSONEntry
 	    return nRes;
 	}
 	
-	String getUInt64(String name)throws JSONException
+	long getUInt64(String name)throws JSONException
 	{
-	    return getString(name);
+	    return getLong(name);
 	}
 
 	JSONEntry getEntry(String name)throws JSONException

@@ -63,7 +63,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		
 			int nPos = m_strInput.indexOf(chSep, m_nPos );
 			if ( nPos > 0 )
-				strLine = m_strInput.substring(m_nPos, nPos);
+				strLine = m_strInput.substring(m_nPos, nPos+chSep.length());
 			else
 				strLine = m_strInput.substring(m_nPos);
 				
@@ -74,7 +74,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 					
 			return strLine;
 		}catch(IOException exc){
-			return "";
+			return null;
 		}catch(Exception e){
 			throw new RubyException(e.getMessage());
 		}
@@ -85,7 +85,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 	}
 
     //RHO_COMMENT
-    private static char[] buffer = new char[1024];
+    /*private static char[] buffer = new char[1024];
 	public static final String readFully(InputStream in) throws IOException {
 		int size = in.available();
 		if (size < 0)
@@ -103,34 +103,66 @@ public class InputStreamExecutor implements RubyIOExecutor {
 			}
 		}
 		return str.toStr();
+	}*/
+	public  byte[]  m_byteBuffer = new byte[1024];
+	private final String readFully(InputStream in) throws IOException 
+	{
+		String strRes = "";
+		synchronized (m_byteBuffer) {			
+			int nRead = 0;
+			do{
+				nRead = in.read(m_byteBuffer);
+				if (nRead>0)
+				{
+					String strTemp = new String(m_byteBuffer,0,nRead);
+					strRes += strTemp;
+				}
+			}while( nRead > 0 );
+		}
+		
+		return strRes;
 	}
+    
 	
 	public String read() {
 		try{
 			return readFully(m_is);
 		}catch(IOException exc){
-			return "";
+			return null;
 		}
 	}
 
-	public String read(long length) {
-		throw new Error("should reach here");
+	public String read(long length) 
+	{
+		try
+		{
+			byte[] buf = new byte[(int)length];
+			int nRead = m_is.read(buf, 0, (int)length);
+			
+			return new String(buf,0,nRead);
+		}catch(IOException exc){
+			return null;
+		}
 	}
 
-	public String read(int length, int offset) {
-		throw new Error("should reach here");
+	public String read(int length, int offset) 
+	{
+		throw new RuntimeException("Read from offset does not supported");
 	}
 
-	public void seek(long pos) {
-		throw new Error("should reach here");
+	public void seek(long pos) 
+	{
+		throw new RuntimeException("Seek does not supported");
 	}
 
-	public void truncate(int length) {
-		throw new Error("should reach here");
+	public void truncate(int length) 
+	{
+		throw new RuntimeException("truncate does not supported");
 	}
 
-	public int write(String s) {
-		throw new Error("should reach here");
+	public int write(String s) 
+	{
+		throw new RuntimeException("write does not supported");
 	}
 
 }

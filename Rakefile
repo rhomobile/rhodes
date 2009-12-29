@@ -183,6 +183,9 @@ namespace "build" do
           end
         end
       end
+      
+      cp_r File.join(startdir, "res/build-tools/db"), File.join($srcdir, 'apps')
+      
       chdir startdir
       
       #create manifest
@@ -240,6 +243,7 @@ namespace "build" do
         exit 1
       end
       chdir startdir
+      
     end
 
     task :noxruby do

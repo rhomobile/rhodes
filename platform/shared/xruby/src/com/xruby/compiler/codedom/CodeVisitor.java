@@ -37,6 +37,7 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitDefinedSuperMethod();
 	public void visitDefinedYield();
 	public void visitDefinedLocalVariable(String name);
+	public void visitDefinedInstanceVariable(String name);
 
 	public void visitGlobalVariableAssignmentOperator(String var, boolean rhs_is_method_call, boolean is_multiple_assign);
 	public void visitInstanceVariableAssignmentOperator(String var, boolean rhs_is_method_call, boolean is_multiple_assign);

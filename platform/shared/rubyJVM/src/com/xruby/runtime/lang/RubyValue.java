@@ -123,6 +123,17 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
         taint_ = true;
     }
 
+    public void untaint() {
+    	if ( tainted() )
+    	{
+    		if ( frozen() )
+    		{
+    			//TODO raise frozen exception
+    		}
+    		taint_ = false;
+    	}
+    }
+    
     public RubyValue getInstanceVariable(RubyID id) {
         if (genericIvTbl != null) {
             Map/*<RubyID, RubyValue>*/ table = (Map)genericIvTbl.get(this);
