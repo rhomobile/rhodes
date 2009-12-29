@@ -29,15 +29,15 @@ describe "Rhom" do
     Rhom::Rhom::client_id.should == CLIENT_ID
   end
   
-  it "should perform full reset of database" do
-    Rhom::Rhom::database_full_reset
-    verify_reset
-  end
+#  it "should perform full reset of database" do
+#    Rhom::Rhom::database_full_reset
+#    verify_reset
+#  end
   
-  it "should perform full database reset and logout" do
-    Rhom::Rhom::database_full_reset_and_logout
-    verify_reset
-  end
+#  it "should perform full database reset and logout" do
+#    Rhom::Rhom::database_full_reset_and_logout
+#    verify_reset
+#  end
   
   it "should call select_from_table with select array" do
     sel_arr = ['name','industry']
