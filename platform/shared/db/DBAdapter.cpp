@@ -288,7 +288,7 @@ void CDBAdapter::destroy_table(String strTable)
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
     open( dbOldName, m_strDbVer, false );
 }
-
+/*
 static const char* g_szDbSchema = 
     "CREATE TABLE client_info ("
     " client_id VARCHAR(255) PRIMARY KEY,"
@@ -346,11 +346,32 @@ static const char* g_szDbSchema =
             "SELECT rhoOnInsertObjectRecord( NEW.source_id, NEW.attrib );"
         "END;"
     ";";
+*/
 
 void CDBAdapter::createSchema()
 {
     char* errmsg = 0;
-    int rc = sqlite3_exec(m_dbHandle, g_szDbSchema,  NULL, NULL, &errmsg);
+    String strSchemaPath = m_strDbPath;
+    int nDot = strSchemaPath.find('.');
+    if ( nDot >= 0 )
+        strSchemaPath = strSchemaPath.substr(0,nDot);
+
+    String strSqlScript, strSqlTriggers;
+    CRhoFile::loadTextFile((strSchemaPath+".schema").c_str(), strSqlScript);
+    CRhoFile::loadTextFile((strSchemaPath+".triggers").c_str(), strSqlTriggers);
+
+    if ( strSqlScript.length() == 0 )
+    {
+        LOG(ERROR)+"createSchema failed. Cannot read schema file: " + strSqlScript;
+        return;
+    }
+    if ( strSqlTriggers.length() == 0 )
+    {
+        LOG(ERROR)+"createSchema failed. Cannot read triggers file: " + strSqlTriggers;
+        return;
+    }
+
+    int rc = sqlite3_exec(m_dbHandle, (strSqlScript+strSqlTriggers).c_str(),  NULL, NULL, &errmsg);
 
     if ( rc != SQLITE_OK )
         LOG(ERROR)+"createSchema failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");

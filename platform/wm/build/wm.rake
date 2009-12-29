@@ -47,6 +47,7 @@ namespace "build" do
         
         cp_r $srcdir + '/lib', win32rhopath
         cp_r $srcdir + '/apps', win32rhopath      
+        cp_r $srcdir + '/db', win32rhopath      
     end
   end
 end

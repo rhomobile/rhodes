@@ -1,0 +1,10 @@
+CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW 
+   BEGIN 
+       SELECT rhoOnDeleteObjectRecord(OLD.value, OLD.attrib_type, OLD.source_id, OLD.attrib );
+   END;
+;   
+CREATE TRIGGER rhoinsertTrigger AFTER INSERT ON object_values FOR EACH ROW 
+   BEGIN 
+       SELECT rhoOnInsertObjectRecord( NEW.source_id, NEW.attrib );
+   END;
+;

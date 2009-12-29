@@ -186,31 +186,40 @@ public class RhoConf {
     	loadFromFile();
     	loadFromJad();
     }
-    
-    private void loadFromJar()
+
+    public String loadFileFromJar(String path)
     {
 		java.io.InputStream fstream = null;
+		String strFile = "";		
 		try {
 			fstream = RhoClassFactory.createFile().getResourceAsStream(getClass(),
-				 "/" + CONF_FILENAME);
+				 "/" + path);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		if ( fstream == null )
-			return;
+			return strFile;
 		 
 		try{
 			byte[] data = new byte[fstream.available()];
 			int len = fstream.read(data);
 			if ( len == 0 )
-				return;
+				return strFile;
 			
-			String strSettings = new String(data,0,len);
-			loadFromString(strSettings);
+			strFile = new String(data,0,len);
 		}catch(java.io.IOException exc){
-			 
 		}
+		
+		try{fstream.close();}catch(java.io.IOException exc){}
+		
+		return strFile;
+    }
+    
+    private void loadFromJar()
+    {
+    	String strSettings = loadFileFromJar(CONF_FILENAME);
+		loadFromString(strSettings);
    }
     
    void loadFromJad()

@@ -163,9 +163,10 @@ public class DBAdapter extends RubyBasic {
     	m_strDBVerPath = strPath + getNameNoExt(strDBName.substring(nSlash+1)) +  ".version";
     }
     
-    private String getSqlScript(){
-    	//TODO: read script from jar
-		return "CREATE TABLE client_info ("+
+    private String getSqlScript()
+    {
+    	return RhoConf.getInstance().loadFileFromJar("apps/db/syncdb.schema");
+/*		return "CREATE TABLE client_info ("+
 		"client_id VARCHAR(255) PRIMARY KEY,"+
 		"token VARCHAR(255) default NULL,"+
 		"token_sent int default 0,"+
@@ -214,6 +215,7 @@ public class DBAdapter extends RubyBasic {
 		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
 		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
 		//"CREATE INDEX by_type ON object_values (attrib_type)";
+		 */
     }
 
     /*private String getSqlScript(){
