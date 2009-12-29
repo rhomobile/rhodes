@@ -40,6 +40,8 @@ public:
     static void         deleteFile( const char* szFilePath );
     static void         renameFile( const char* szOldFilePath, const char* szNewFilePath );
     static void         deleteFilesInFolder(const char* szFolderPath);
+    static void         loadTextFile(const char* szFilePath, String& strFile);
+
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);

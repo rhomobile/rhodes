@@ -280,7 +280,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        
 	        String name = res.getStringByIdx(3);
 	        if ( strUrl.length() > 0 )
-	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getUInt64ByIdx(2), this) );
+	            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strUrl, name, res.getLongByIdx(2), this) );
 	    }
 	}
 

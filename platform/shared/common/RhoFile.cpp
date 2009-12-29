@@ -162,6 +162,13 @@ unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     return 0;
 }
 
+void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
+{
+    common::CRhoFile oFile;
+    if ( oFile.open( szFilePath, common::CRhoFile::OpenReadOnly) )
+        oFile.readString(strFile);
+}
+
 void CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
     StringW wFileName;
