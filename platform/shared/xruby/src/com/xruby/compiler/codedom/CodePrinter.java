@@ -56,6 +56,12 @@ public class CodePrinter implements CodeVisitor {
         result_.append("\n");
     }
 
+    public void visitDefinedInstanceVariable(String name) {
+        result_.append("defined? ");
+        result_.append(name);
+        result_.append("\n");
+    }
+    
     public void visitBinaryOperator(String operator) {
         result_.append(operator);
         result_.append("\n");

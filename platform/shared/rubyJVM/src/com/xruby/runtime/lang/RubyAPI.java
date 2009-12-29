@@ -19,6 +19,7 @@ import com.xruby.runtime.builtin.RubyMethodValue;
 import com.xruby.runtime.builtin.RubyProc;
 import com.xruby.runtime.builtin.RubyString;
 //import com.xruby.runtime.javasupport.JavaClass;
+import com.xruby.runtime.builtin.RubyTypesUtil;
 
 public class RubyAPI {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -151,6 +152,27 @@ public class RubyAPI {
         return ObjectFactory.createString("method");
     }
 
+    //e.g. defined? @m    
+    public static RubyValue isDefinedInstanceVariable(RubyValue receiver, String method_name) {
+        RubyID mid = RubyID.intern(method_name);
+        RubyValue var = receiver.getInstanceVariable(mid);
+        if (null == var || var == RubyConstant.QNIL) {
+            return RubyConstant.QNIL;
+        }
+
+        return ObjectFactory.createString("instance-variable");
+    }
+    
+    public static RubyValue isDefinedNonPrivateMethod(RubyValue receiver, String method_name) {
+        RubyID mid = RubyID.intern(method_name);
+        RubyMethod m = receiver.findMethod(mid);
+        if (null == m || UndefMethod.isUndef(m) || m.getAccess() == RubyMethod.PRIVATE) {
+            return RubyConstant.QNIL;
+        }
+
+        return ObjectFactory.createString("method");
+    }
+    
     public static RubyValue isDefinedYield(RubyBlock block) {
         if (null == block) {
             return RubyConstant.QNIL;
@@ -177,6 +199,13 @@ public class RubyAPI {
 
     private static RubyValue processException( Throwable e, RubyValue receiver, RubyID mid )throws RubyException
     {
+    	if ( e instanceof RubyException )
+    	{
+    		RubyException exc = (RubyException)e;
+    		if ( exc.getRubyValue().getRubyClass() == RubyRuntime.EOFErrorClass )
+    			throw exc;
+    	}
+    	
 		String className = "Unknown::";
 		
 		if ( receiver instanceof RubyClass)

@@ -252,6 +252,10 @@ klass.defineMethod( "end_with?", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray arg, RubyBlock block ){
 		return ((RubyString)receiver).opEndWith(arg);}
 });
+klass.defineMethod( "ord", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).ord();}
+});
 
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{

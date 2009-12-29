@@ -96,6 +96,8 @@ public class RubyRuntime {
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
     public static RubyClass TCPSocketClass;
+    public static RubyClass TopSelfClass;
+    public static RubyClass MapViewClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -262,6 +264,7 @@ public class RubyRuntime {
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
         TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
+        MapViewClass = RubyAPI.defineClass("MapView", RubyRuntime.ObjectClass);
         RubyMutex.initMethods(MutexClass);        
 //      RhoPhonebook.initMethods(PhonebookClass);
         
@@ -320,8 +323,9 @@ public class RubyRuntime {
 
         //TOP_LEVEL_SELF_VALUE = RubyTypeFactory.getObject(RubyTopSelf.class);
       //RHO_ADDED
-        TOP_LEVEL_SELF_VALUE = new RubyObject( ObjectClass );//RubyTopSelf();
-        //RubyTopSelf_Methods.initMethods(TOP_LEVEL_SELF_VALUE.getRubyClass());
+        TopSelfClass = RubyAPI.defineClass("__TopSelf", ObjectClass);
+        RubyTopSelf_Methods.initMethods(TopSelfClass);        
+        TOP_LEVEL_SELF_VALUE = TopSelfClass;//new RubyObject( TopSelfClass );//RubyTopSelf();
         
         StringIOClass = RubyAPI.defineClass("StringIO", RubyRuntime.ObjectClass);
         RubyStringIO_Methods.initMethods(StringIOClass);

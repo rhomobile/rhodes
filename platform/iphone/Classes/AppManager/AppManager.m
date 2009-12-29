@@ -198,6 +198,18 @@ const char* rho_sys_get_locale()
 	return [preferredLang UTF8String];
 }
 
+int rho_sys_get_screen_width()
+{
+    CGRect rect = [[UIScreen mainScreen] bounds];
+    return rect.size.width;
+}
+
+int rho_sys_get_screen_height()
+{
+    CGRect rect = [[UIScreen mainScreen] bounds];
+    return rect.size.height;
+}
+
 const char* GetApplicationsRootPath() {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];

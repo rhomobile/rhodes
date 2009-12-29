@@ -21,7 +21,7 @@ using namespace rho::json;
 CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter()))
 {
     m_bTokenFromDB = true;
-
+    m_token = 0;
     m_nCurPageCount = 0;
     m_nInserted = 0;
     m_nDeleted = 0;
@@ -38,6 +38,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
 CSyncSource::CSyncSource(CSyncEngine& syncEngine ) : m_syncEngine(syncEngine)
 {
     m_bTokenFromDB = true;
+    m_token = 0;
 
     m_nCurPageCount = 0;
     m_nInserted = 0;

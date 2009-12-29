@@ -127,7 +127,6 @@ namespace "config" do
     $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
-    $excludeapps = "public/js/iui/**,**/jquery*"
 
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 

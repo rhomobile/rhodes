@@ -187,7 +187,7 @@ static VALUE find_file(VALUE fname)
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
         //VALUE dir;
-        fname = checkRhoBundleInPath(fname);
+        VALUE fname1 = checkRhoBundleInPath(fname);
         //RAWLOG_INFO1("find_file: fname after checkRhoBundleInPath: %s", RSTRING_PTR(fname));
 
         //TODO: support document relative require in case of multiple apps
@@ -197,7 +197,7 @@ static VALUE find_file(VALUE fname)
                 //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
                 res = rb_str_dup(dir);
                 rb_str_cat(res,"/",1);
-                rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
+                rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
                 rb_str_cat(res,".iseq",5);
                 //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
@@ -257,16 +257,16 @@ VALUE isAlreadyLoaded(VALUE path)
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
-    char* szName = 0;
-//    FilePathValue(fname);
-
-    szName = RSTRING_PTR(fname);
-    RAWLOG_INFO1("require_compiled: %s", szName);
+    char* szName1 = 0;
 
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
-    if ( strcmp("strscan",szName)==0 || strcmp("enumerator",szName)==0 ||
-        strcmp("socket",szName)==0 )
+    szName1 = RSTRING_PTR(fname);
+    if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
+        strcmp("socket",szName1)==0 )
+        return Qtrue;
+
+    if ( isAlreadyLoaded(fname) == Qtrue )
         return Qtrue;
 
     //RAWLOG_INFO1("find_file: %s", RSTRING_PTR(fname));
@@ -276,10 +276,14 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     {
         VALUE seq;
 
-        if ( isAlreadyLoaded(path) == Qtrue )
-            return Qtrue;
+//        if ( isAlreadyLoaded(path) == Qtrue )
+//            return Qtrue;
 
-        rb_ary_push(GET_VM()->loaded_features, path);
+        RAWLOG_INFO1("require_compiled: %s", szName1);
+
+        //optimize require
+        //rb_ary_push(GET_VM()->loaded_features, path);
+        rb_ary_push(GET_VM()->loaded_features, fname);
 
         rb_gc_disable();
         seq = loadISeqFromFile(path);
@@ -291,7 +295,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         return Qtrue;
     }
 
-    RAWLOG_ERROR1("require_compiled: error: can not find %s", szName);
+    RAWLOG_ERROR1("require_compiled: error: can not find %s", RSTRING_PTR(fname));
     return Qnil;
 }
 

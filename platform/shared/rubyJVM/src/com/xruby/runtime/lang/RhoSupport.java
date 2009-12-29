@@ -6,7 +6,8 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.stdlib.RubyStringIO;
+//import com.xruby.runtime.stdlib.RubyStringIO;
+import j2me.lang.StringMe;
 
 public class RhoSupport {
 
@@ -63,6 +64,16 @@ public class RhoSupport {
 					e.printStackTrace();
 				} 
 				return ObjectFactory.createString(strLocale);
+			}
+		});
+		SystemModule.defineModuleMethod( "get_screen_width", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return get_screen_width(receiver);
+			}
+		});
+		SystemModule.defineModuleMethod( "get_screen_height", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return get_screen_height(receiver);
 			}
 		});
 
@@ -171,6 +182,8 @@ public class RhoSupport {
         
         required_file = required_file.replace('/', '.');
         required_file = required_file.replace('\\', '.');
+        required_file = StringMe.replaceAll(required_file,"-", "minus");
+        
         required_file += ".main";
         return "xruby." + required_file;
     }
@@ -244,6 +257,28 @@ public class RhoSupport {
 		} 
 		return RubyConstant.QFALSE;
     }
+    
+    //@RubyLevelMethod(name="get_screen_width", module=true)
+    public static RubyValue get_screen_width(RubyValue receiver) {
+    	try {
+    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenWidth());
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return RubyConstant.QNIL;
+    }
+    
+    //@RubyLevelMethod(name="get_screen_height", module=true)
+    public static RubyValue get_screen_height(RubyValue receiver) {
+    	try {
+    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenHeight());
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return RubyConstant.QNIL;
+    }
 
     public static RubyValue rb_rho_get_app_property(RubyValue receiver, RubyValue arg, RubyBlock block) {
         String name = arg.toStr();
@@ -271,6 +306,7 @@ public class RhoSupport {
         	return RubyConstant.QTRUE;
         
         String name = RhoSupport.createMainClassName(required_file);
+        RubyValue arg1 = null;        
         try {
         	
         	LOG.INFO("require_compiled: " + required_file);
@@ -283,9 +319,21 @@ public class RhoSupport {
             if ( c == null ){
             	String altPath = "/apps/app/";
             	name = RhoSupport.createMainClassName(altPath+required_file);
-            	c = Class.forName(name);
             	
-            	arg = ObjectFactory.createString(altPath+required_file);
+                try {
+                	c = Class.forName(name);
+                } catch (ClassNotFoundException e) {
+                }
+            	
+            	arg1 = ObjectFactory.createString(altPath+required_file);
+            }
+
+            if ( c == null ){
+            	String altPath = "/apps/";
+            	name = RhoSupport.createMainClassName(altPath+required_file);
+            	
+               	c = Class.forName(name);
+            	arg1 = ObjectFactory.createString(altPath+required_file);
             }
             
             Object o = c.newInstance();
@@ -297,6 +345,8 @@ public class RhoSupport {
 	            RubyArray a = (RubyArray)var;
 	            if (a.include(arg) == RubyConstant.QFALSE) {
 	                a.push(arg);
+	                if ( arg1 != null )
+	                	a.push(arg1);
 	            }
             }
             

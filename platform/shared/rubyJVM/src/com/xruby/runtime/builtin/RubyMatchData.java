@@ -43,7 +43,11 @@ public class RubyMatchData extends RubyBasic {
 	        if (index < 0)
 	        	index += result_.groups();
 	        
-	        return ObjectFactory.createString(result_.group(index));
+	        String res = result_.group(index);
+	        if ( res == null )
+	        	return RubyConstant.QNIL;
+	        
+	        return ObjectFactory.createString(res);
     	}else if ( arg instanceof RubyString )
     	{
     		//TODO: implement m = /(?<foo>a+)b/.match("ccaaab"); m["foo"]   #=> "aaa"
@@ -78,7 +82,13 @@ public class RubyMatchData extends RubyBasic {
     {
         RubyArray ar = new RubyArray();
     	for (int i = 1; i < result_.groups(); i++)
-    		ar.add(ObjectFactory.createString(result_.group(i)));
+    	{
+    		String res = result_.group(i);
+	        if ( res == null )
+	        	ar.add(RubyConstant.QNIL);
+	        else
+	        	ar.add(ObjectFactory.createString(res));
+    	}
     	
     	return ar;
     }
@@ -87,9 +97,12 @@ public class RubyMatchData extends RubyBasic {
     {
     	String res = "";
     	int nMatchEnd = result_.endOffset(result_.groups()-1);
-    	if ( nMatchEnd >= 0 && nMatchEnd < str_.length() )
+    	if ( nMatchEnd >= 0 && nMatchEnd+1 < str_.length() )
     		res = str_.substring(nMatchEnd); 
-    			
+
+        if ( res == null )
+        	return RubyConstant.QNIL;
+    	
 		return ObjectFactory.createString(res);
     }
 
@@ -100,6 +113,9 @@ public class RubyMatchData extends RubyBasic {
     	if ( nMatchEnd >= 0 && nMatchEnd < str_.length() )
     		res = str_.substring(0,nMatchEnd); 
     			
+        if ( res == null )
+        	return RubyConstant.QNIL;
+    	
 		return ObjectFactory.createString(res);
     }
     

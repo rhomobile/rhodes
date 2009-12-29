@@ -893,6 +893,20 @@ public class RubyModule extends RubyObject {
         return RubyAPI.isConstantDefined(this, s.toString());
     }
 
+    //@RubyLevelMethod(name="method_defined?")
+    public RubyValue isMethodDefined(RubyValue arg) {
+        RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
+        return RubyAPI.isDefinedNonPrivateMethod(this, s.toString()) != RubyConstant.QNIL ?
+        		RubyConstant.QTRUE : RubyConstant.QFALSE;
+    }
+
+    //@RubyLevelMethod(name="method_defined?")
+    public RubyValue isPublicMethodDefined(RubyValue arg) {
+        RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
+        return RubyAPI.isDefinedPublicMethod(this, this, s.toString()) != RubyConstant.QNIL ?
+        		RubyConstant.QTRUE : RubyConstant.QFALSE;
+    }
+    
     private static class RubyVarArgMethodImpl extends RubyVarArgMethod{
     	RubyBlock b_;
     	RubyVarArgMethodImpl(RubyBlock b)
