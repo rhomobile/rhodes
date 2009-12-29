@@ -693,13 +693,15 @@ bool CHttpServer::send_file(String const &path)
     
     struct stat st;
     if (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) {
-        send_response(create_response("404 Not Found"));
+        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+        send_response(create_response("404 Not Found",error));
         return false;
     }
     
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
-        send_response(create_response("404 Not Found"));
+        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
+        send_response(create_response("404 Not Found",error));
         return false;
     }
     
@@ -777,7 +779,8 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     
     if (isindex(uri)) {
         if (!isfile(fullPath)) {
-            send_response(create_response("404 Not Found"));
+            String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+            send_response(create_response("404 Not Found",error));
             return false;
         }
         
@@ -788,6 +791,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         String reply(getStringFromValue(data), getStringLenFromValue(data));
         return send_response(reply);
     }
+    //RAWLOG_INFO("Sending File");
     
     // Try to send requested file
     return send_file(uri);
