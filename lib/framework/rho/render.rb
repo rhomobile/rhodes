@@ -52,6 +52,13 @@ module Rho
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
+      unless options[:string].nil?
+        @content = options[:string]
+        @back_action = options[:back] if options[:back]
+        @rendered = true
+        return @content
+      end
+
       unless options[:partial].nil?  # render the file and return, don't set rendered true for a partial.
         @content = render_partial(options)
         return @content

@@ -1,14 +1,1 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		<%= class_name %>
-	</h1>
-</div>
-
-<ul id="home" selected="true" title="<%= class_name %>">
-	<li>Add links here...</li>
-	<%% if SyncEngine::logged_in > 0 %>		
-	<li><%%=link_to "Logout", :action => :logout%></li>
-	<%% else %>
-	<li><%%=link_to "Login", :action => :login%></li>
-	<%% end %>
-</ul>
+Default index page is now located at Settings/home.erb
