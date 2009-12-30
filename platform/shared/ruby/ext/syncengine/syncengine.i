@@ -46,6 +46,11 @@
 
     extern void  rho_sync_set_pagesize(int pagesize);
     #define set_pagesize rho_sync_set_pagesize
+
+	extern void rho_sync_set_initial_notification(const char *url, char* params);
+	#define set_initial_notification rho_sync_set_initial_notification
+	extern void rho_sync_clear_initial_notification();
+	#define clear_initial_notification rho_sync_clear_initial_notification
 	
 	#if !defined(bool)
 	#define bool int
@@ -77,3 +82,6 @@ extern void  clean_objectnotify();
 extern int   get_lastsync_objectcount(int nSrcID);
 extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
+extern void  set_initial_notification(const char *url, char* params);
+extern void  clear_initial_notification();
+

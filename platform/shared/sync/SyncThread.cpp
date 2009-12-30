@@ -301,6 +301,16 @@ void rho_sync_clear_notification(int source_id)
     return CSyncThread::getSyncEngine().getNotify().clearSyncNotification(source_id);
 }
 
+void rho_sync_set_initial_notification(const char *url, char* params)
+{
+    return CSyncThread::getSyncEngine().getNotify().setInitialSyncNotification(url, params ? params : "");
+}
+
+void rho_sync_clear_initial_notification()
+{
+    return CSyncThread::getSyncEngine().getNotify().clearInitialSyncNotification();
+}
+
 int rho_sync_openDB(const char* szDBPath)
 {
     rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();

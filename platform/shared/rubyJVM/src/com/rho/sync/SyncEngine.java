@@ -291,11 +291,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 		synchronized( m_mxLoadClientID )
 		{
 		    boolean bResetClient = false;
-	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+		    int nInitialSyncState = 0;
+	        IDBResult res = getDB().executeSQL("SELECT client_id,reset,initialsync_state from client_info");
 	        if ( !res.isEnd() )
 	        {
 	            clientID = res.getStringByIdx(0);
 	            bResetClient = res.getIntByIdx(1) > 0;
+	            nInitialSyncState = res.getIntByIdx(2);
 	        }
 		
 		    if ( clientID.length() == 0 )
@@ -311,6 +313,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	else
 		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
 		    }
+
+//TODO: doInitialSync 		    
+//		    if ( nInitialSyncState == 0 && isContinueSync() )
+//		    	doInitialSync(clientID);
 		}
 		
 		return clientID;
@@ -322,7 +328,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + strClientID;
 	    
-	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
+	    NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 	    return resp.isOK();
 	}
 	
@@ -334,7 +340,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String strUrl = serverUrl + "clientcreate";
 	    String strQuery = SYNC_SOURCE_FORMAT();
 	    
-	    NetResponse resp = getNet().pullData(strUrl+strQuery, "", this);
+	    NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 	    if ( resp.isOK() && resp.getCharData() != null )
 	    {
 	    	String szData = resp.getCharData();
@@ -348,6 +354,79 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    return "";
 	}
 
+	void doInitialSync(String strClientID)throws Exception
+	{
+		LOG.INFO("Initial sync: start");		
+    	getNotify().fireInitialSyncNotification(false, RhoRuby.ERR_NONE);
+		
+	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
+	    String strUrl = serverUrl + "initialsync";
+	    String strQuery = "?client_id=" + strClientID;
+	    
+	    /*NetResponse resp = getNet().pullData(strUrl+strQuery, this);
+        if ( !resp.isOK() )
+        {
+        	LOG.ERROR("Initial sync failed: server return an error.");
+        	stopSync();
+        	getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
+        	return;
+        }
+        
+        String strDataUrl = "", strScriptUrl="";
+	    if ( resp.getCharData() != null )
+	    {
+			LOG.INFO("Initial sync: got response from server: " + resp.getCharData());		
+	    	
+	    	String szData = resp.getCharData();
+	        JSONEntry oJsonEntry = new JSONEntry(szData);
+	
+	        JSONEntry oJsonObject = oJsonEntry.getEntry("initialsync");
+	        if ( !oJsonObject.isEmpty() )
+	        {
+	        	strDataUrl = oJsonObject.getString("data");
+	        	strScriptUrl = oJsonObject.getString("script");
+	        }
+	    }
+	    if ( strDataUrl.length() == 0 || strScriptUrl.length() == 0)
+	    {
+        	LOG.ERROR("Initial sync failed: server return incorrect response.");
+        	stopSync();
+        	getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
+        	return;
+	    }*/
+
+	    String strPath = getDB().getDBPath();
+	    String fDataName =  strPath + "_initial.data";
+		/*LOG.INFO("Initial sync: download data from server: " + strDataUrl);		
+	    NetResponse resp1 = getNet().pullFile(strDataUrl+strQuery, fDataName, this);
+        if ( !resp1.isOK() )
+        {
+        	LOG.ERROR("Initial sync failed: cannot download database file.");
+        	stopSync();
+        	getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
+        	return;
+        }*/
+        
+	    String fScriptName = strPath + "_initial.script";
+/*		LOG.INFO("Initial sync: download script from server: " + strScriptUrl);		
+	    NetResponse resp2 = getNet().pullFile(strScriptUrl+strQuery, fDataName, this);
+        if ( !resp2.isOK() )
+        {
+        	LOG.ERROR("Initial sync failed: cannot download database script file.");
+        	stopSync();
+        	getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
+        	return;
+        }*/
+	    
+		LOG.INFO("Initial sync: change db");
+        
+        //getDB().setInitialSyncDB(fDataName, fScriptName);
+        
+		getDB().executeSQL("UPDATE client_info SET initialsync_state=? where client_id=?", new Integer(1), strClientID );	    	
+        
+        getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_NONE);        
+	}
+	
 	int getStartSource()
 	{
 	    for( int i = 0; i < m_sources.size(); i++ )
@@ -474,6 +553,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        return;
 		    }
 		    
+            //TODO: move session to client_info table
 		    getDB().executeSQL( "UPDATE sources SET session=?", strSession );
 		
 		    //if ( ClientRegister.getInstance() != null )

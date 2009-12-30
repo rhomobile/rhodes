@@ -269,6 +269,13 @@ void CSyncNotify::setSearchNotification(int source_id, String strUrl, String str
     }
 }
 
+void CSyncNotify::setInitialSyncNotification(String strUrl, String strParams )//throws Exception
+{
+    String strFullUrl = getNet().resolveUrl(strUrl);
+	
+	m_initialSyncNotify = CSyncNotification( strFullUrl, strParams, true );
+}
+
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
 	//if (m_statusListener != null) {
@@ -285,6 +292,68 @@ void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, Strin
     for( int i = 0; i < (int)sources.size(); i++ )
     {
     	doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strMessage );
+    }
+}
+
+void CSyncNotify::fireInitialSyncNotification( boolean bFinish, int nErrCode )
+{
+    if ( getSync().getState() == CSyncEngine::esExit )
+		return;
+	
+	//TODO: show report
+	if( nErrCode != RhoRuby.ERR_NONE)
+	{
+		String strMessage = RhoRuby.getMessageText("sync_failed_for") + "initial.";
+		reportSyncStatus(strMessage,nErrCode,"");
+	}
+	
+    boolean bRemoveAfterFire = bFinish;
+    String strBody = "", strUrl;
+	synchronized(m_mxSyncNotifications)
+	{
+        if ( m_initialSyncNotify.m_strUrl.length() == 0 )
+            return;
+        
+        strUrl = m_initialSyncNotify.m_strUrl;
+        strBody = "rho_callback=1";
+        strBody += "&status=";
+        if ( bFinish )
+        {
+	        if ( nErrCode == RhoRuby.ERR_NONE )
+	        	strBody += "ok";
+	        else
+	        {
+	        	if ( getSync().isStoppedByUser() )
+                    nErrCode = RhoRuby.ERR_CANCELBYUSER;
+	        	
+	        	strBody += "error";				        	
+			    strBody += "&error_code=" + nErrCode;
+	        }
+        }
+        else
+        	strBody += "in_progress";
+        
+        if ( m_initialSyncNotify.m_strParams.length() > 0 )
+            strBody += "&" + m_initialSyncNotify.m_strParams;
+        
+        bRemoveAfterFire = bRemoveAfterFire && m_initialSyncNotify.m_bRemoveAfterFire;
+	}
+	
+    if ( bRemoveAfterFire )
+    	clearInitialSyncNotification();
+    
+	LOG(INFO) +  "Fire initial notification.Url :" + strUrl + "; Body: " + strBody;
+	
+    NetResponse( resp, getNet().pushData( strUrl, strBody, null ) );
+    if ( !resp.isOK() )
+        LOG(ERROR) + "Fire intial notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+    else
+    {
+        const char* szData = resp.getCharData();
+        if ( szData && strcmp(szData,"stop") == 0)
+        {
+        	clearInitialSyncNotification();
+        }
     }
 }
 
@@ -404,6 +473,15 @@ void CSyncNotify::clearSyncNotification(int source_id)
         else
             m_mapSyncNotifications.remove(source_id);
     }
+}
+
+void CSyncNotify::clearInitialSyncNotification() 
+{
+	LOG(INFO) + "Clear initial notification.";
+	
+	synchronized(m_mxSyncNotifications){
+		m_initialSyncNotify = CSyncNotification();
+	}
 }
 
 void CSyncNotify::cleanLastSyncObjectCount()

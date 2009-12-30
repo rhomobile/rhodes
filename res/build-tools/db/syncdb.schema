@@ -4,6 +4,7 @@ CREATE TABLE client_info (
  token_sent int default 0,
  reset int default 0,
  port VARCHAR(10) default NULL,
+ initialsync_state int default 0,
  last_sync_success VARCHAR(100) default NULL);
 CREATE TABLE object_values (
  id INTEGER PRIMARY KEY,
