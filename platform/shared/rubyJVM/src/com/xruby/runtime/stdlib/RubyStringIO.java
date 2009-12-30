@@ -69,6 +69,9 @@ public class RubyStringIO extends RubyBasic {
     	case 0:
     		throw new RuntimeException("read with 0 parameters not implemented.");
     	case 1:
+    		if ( nPos_>=value_.length() )
+    			return RubyConstant.QNIL;
+    		
     		int len = args.get(0).toInt();
     		String strRes = value_.getChars(nPos_,len);
     		nPos_ += strRes.length();
