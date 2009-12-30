@@ -132,6 +132,20 @@ public class RubyString extends RubyBasic {
         }
     }
 
+    public int appendString2(RubyValue v) {
+    	RubyString str = null;
+        if (v instanceof RubyString) {
+            str = (RubyString)v;
+        } else {
+            RubyValue r = RubyAPI.callPublicNoArgMethod(v, null, RubyID.toSID);
+            str = (RubyString)r;
+        }
+        
+        appendString(str);
+        
+        return str.length();
+    }
+    
     //@RubyAllocMethod
     public static RubyString alloc(RubyValue receiver) {
         return ObjectFactory.createString((RubyClass)receiver, "");
@@ -716,6 +730,17 @@ public class RubyString extends RubyBasic {
         return n;
     }
 
+    public String getChars( int nPos, int nLen)
+    {
+    	if ( nPos + nLen > sb_.length() )
+    		nLen =  sb_.length() - nPos;
+    			
+        char[] ca = new char[nLen];
+        this.sb_.getChars(nPos, nPos+nLen, ca, 0);
+        
+        return new String(ca);
+    }
+    
     //@RubyLevelMethod(name="swapcase")
     public RubyString swapcase() {
         int length = this.sb_.length();

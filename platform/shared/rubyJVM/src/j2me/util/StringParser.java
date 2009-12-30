@@ -28,19 +28,31 @@ class StringParser implements Enumeration
 			return "";
 		}
 		
-		int nStart = m_nCurPos; 
-		m_nCurPos = m_strToSplit.indexOf(m_strDelim, nStart);
-		String strRes;
+		String strRes = "";
 		
-		if ( m_nCurPos >= 0 )
+		if ( m_strDelim.length() == 0 )
 		{
-			strRes = m_strToSplit.substring(nStart, m_nCurPos);
-			m_nCurPos += m_strDelim.length();
+			strRes += m_strToSplit.charAt(m_nCurPos);
+			m_nCurPos += 1;
+			
+			if ( m_nCurPos >= m_strToSplit.length() )
+				m_bFinish = true;
 		}
 		else
 		{
-			strRes = m_strToSplit.substring(nStart);
-			m_bFinish = true;
+			int nStart = m_nCurPos;
+			m_nCurPos = m_strToSplit.indexOf(m_strDelim, nStart);
+			
+			if ( m_nCurPos >= 0 )
+			{
+				strRes = m_strToSplit.substring(nStart, m_nCurPos);
+				m_nCurPos += m_strDelim.length();
+			}
+			else
+			{
+				strRes = m_strToSplit.substring(nStart);
+				m_bFinish = true;
+			}
 		}
 		
 		return strRes;

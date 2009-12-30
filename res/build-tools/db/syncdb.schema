@@ -14,7 +14,6 @@ CREATE TABLE object_values (
  value varchar default NULL,
  attrib_type varchar(255) default NULL);
 CREATE TABLE changed_values (
- id INTEGER PRIMARY KEY,
  source_id int default NULL,
  attrib varchar(255) default NULL,
  object varchar(255) default NULL,
