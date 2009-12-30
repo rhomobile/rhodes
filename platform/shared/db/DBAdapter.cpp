@@ -288,6 +288,56 @@ void CDBAdapter::destroy_table(String strTable)
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
     open( dbOldName, m_strDbVer, false );
 }
+
+void CDBAdapter::setInitialSyncDB(String fDataName)
+{
+    CDBAdapter db;
+    db.open( fDataName, m_strDbVer, true );
+
+    db.startTransaction();
+
+    //copy client_info
+	{
+		DBResult( res, executeSQL("SELECT * from client_info") );
+		String strInsert = "";
+		int rc = 0;
+	    for ( ; !res.isEnd(); res.next() )
+	    {
+	    	sqlite3_stmt* stInsert = createInsertStatement(res, "client_info", db, strInsert);
+
+            if (stInsert)
+            {
+                rc = sqlite3_step(stInsert);
+                checkDbError(rc);
+                sqlite3_finalize(stInsert);
+            }
+	    }
+	}
+    //copy sources
+	{
+		DBResult( res, executeSQL("SELECT name, source_url,priority,session from sources") );
+	    for ( ; !res.isEnd(); res.next() )
+	    {
+	    	String strName = res.getStringByIdx(0);
+	    	
+            db.executeSQL("UPDATE sources SET source_url=?,priority=?,session=? where name=?", 
+                res.getStringByIdx(1), res.getIntByIdx(2), res.getStringByIdx(3), strName ); 
+	    }
+	}
+
+    db.endTransaction();
+    db.close();
+
+    String dbOldName = m_strDbPath;
+    close();
+
+    CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
+
+    CRhoFile::deleteFile(dbOldName.c_str());
+    CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
+    open( dbOldName, m_strDbVer, false );
+}
+
 /*
 static const char* g_szDbSchema = 
     "CREATE TABLE client_info ("
@@ -351,14 +401,11 @@ static const char* g_szDbSchema =
 void CDBAdapter::createSchema()
 {
     char* errmsg = 0;
-    String strSchemaPath = m_strDbPath;
-    int nDot = strSchemaPath.find('.');
-    if ( nDot >= 0 )
-        strSchemaPath = strSchemaPath.substr(0,nDot);
+    CFilePath oPath(m_strDbPath);
 
     String strSqlScript, strSqlTriggers;
-    CRhoFile::loadTextFile((strSchemaPath+".schema").c_str(), strSqlScript);
-    CRhoFile::loadTextFile((strSchemaPath+".triggers").c_str(), strSqlTriggers);
+    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.schema").c_str(), strSqlScript);
+    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.triggers").c_str(), strSqlTriggers);
 
     if ( strSqlScript.length() == 0 )
     {

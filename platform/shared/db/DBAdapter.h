@@ -47,6 +47,7 @@ public:
     void Lock(){ m_mxDB.Lock(); }
     void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
     boolean isInsideTransaction(){ return m_bInsideTransaction; }
+    const String& getDBPath(){ return m_strDbPath; }
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
@@ -197,6 +198,7 @@ public:
     void endTransaction();
     void rollback();
     void destroy_table(String strTable);
+    void setInitialSyncDB(String fDataName);
 
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);

@@ -401,7 +401,7 @@ class SyncSource
 			NetResponse resp = null;
 			try{
 			    PROF.START("Net");	    
-				resp = getNet().pullData(strUrl+strQuery, "", getSync());
+				resp = getNet().pullData(strUrl+strQuery, getSync());
 				PROF.STOP("Net");
 				
 		        if ( !resp.isOK() )

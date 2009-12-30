@@ -40,6 +40,8 @@ public class SyncNotify {
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
     Hashtable/*<int,SyncNotification>*/ m_mapSearchNotifications = new Hashtable();
     
+    SyncNotification m_initialSyncNotify;
+    
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
     
@@ -171,7 +173,7 @@ public class SyncNotify {
                 return;
         }
 
-        NetResponse resp = getNet().pushData( strUrl, strBody, getSync() );
+        NetResponse resp = getNet().pushData( strUrl, strBody, null );
         if ( !resp.isOK() )
             LOG.ERROR( "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
 
@@ -304,6 +306,13 @@ public class SyncNotify {
 			LOG.INFO( " Done Set search notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
 	    }
 	}
+
+	void setInitialSyncNotification(String strUrl, String strParams )throws Exception
+	{
+	    String strFullUrl = getNet().resolveUrl(strUrl);
+		
+		m_initialSyncNotify = new SyncNotification( strFullUrl, strParams, true );
+	}
 	
     public void setSyncStatusListener(ISyncStatusListener listener) { m_syncStatusListener = listener; }
     private void reportSyncStatus(String status, int error, String strDetails) {
@@ -324,6 +333,75 @@ public class SyncNotify {
 	    {
 	    	doFireSyncNotification( (SyncSource)sources.elementAt(i), bFinish, nErrCode, strMessage );
 	    }
+	}
+
+	void fireInitialSyncNotification( boolean bFinish, int nErrCode )
+	{
+		if ( getSync().getState() == SyncEngine.esExit )
+			return;
+		
+		//TODO: show report
+		if( nErrCode != RhoRuby.ERR_NONE)
+		{
+			String strMessage = RhoRuby.getMessageText("sync_failed_for") + "initial.";
+			reportSyncStatus(strMessage,nErrCode,"");
+		}
+		
+		try{
+		    boolean bRemoveAfterFire = bFinish;
+		    String strBody = "", strUrl;
+			synchronized(m_mxSyncNotifications)
+			{
+		        if ( m_initialSyncNotify == null )
+		            return;
+		        
+		        strUrl = m_initialSyncNotify.m_strUrl;
+		        strBody = "rho_callback=1";
+		        strBody += "&status=";
+		        if ( bFinish )
+		        {
+			        if ( nErrCode == RhoRuby.ERR_NONE )
+			        	strBody += "ok";
+			        else
+			        {
+			        	if ( getSync().isStoppedByUser() )
+		                    nErrCode = RhoRuby.ERR_CANCELBYUSER;
+			        	
+			        	strBody += "error";				        	
+					    strBody += "&error_code=" + nErrCode;
+			        }
+		        }
+		        else
+		        	strBody += "in_progress";
+		        
+		        if ( m_initialSyncNotify.m_strParams.length() > 0 )
+		            strBody += "&" + m_initialSyncNotify.m_strParams;
+		        
+		        bRemoveAfterFire = bRemoveAfterFire && m_initialSyncNotify.m_bRemoveAfterFire;
+			}
+			
+		    if ( bRemoveAfterFire )
+		    	clearInitialSyncNotification();
+		    
+			LOG.INFO( "Fire initial notification.Url :" + strUrl + "; Body: " + strBody );
+			
+		    NetResponse resp = getNet().pushData( strUrl, strBody, null );
+		    if ( !resp.isOK() )
+		        LOG.ERROR( "Fire intial notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+		    else
+		    {
+		        String szData = resp.getCharData();
+		        if ( szData != null && szData.equals("stop") )
+		        {
+		        	clearInitialSyncNotification();
+		        }
+		    }
+	
+		}catch(Exception exc)
+		{
+			LOG.ERROR("Fire initial notification failed.", exc);
+		}
+    	
 	}
 	
 	void fireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
@@ -397,7 +475,7 @@ public class SyncNotify {
 		    
 			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
 			
-		    NetResponse resp = getNet().pushData( strUrl, strBody, getSync() );
+		    NetResponse resp = getNet().pushData( strUrl, strBody, null );
 		    if ( !resp.isOK() )
 		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
 		    else
@@ -440,6 +518,15 @@ public class SyncNotify {
 		}
 	}
 
+	void clearInitialSyncNotification() 
+	{
+		LOG.INFO( "Clear initial notification." );
+		
+		synchronized(m_mxSyncNotifications){
+			m_initialSyncNotify = null;
+		}
+	}
+	
 	void cleanLastSyncObjectCount()
 	{
 	    synchronized(m_mxSyncNotifications)
