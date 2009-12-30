@@ -271,7 +271,7 @@ void CSyncEngine::doInitialSync(String strClientID)//throws Exception
     	    getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
     	    return;
         }
-        
+        //TODO: check is server return no initial sync
         if ( resp.getCharData() != null )
         {
 		    LOG(INFO) + "Initial sync: got response from server: " + resp.getCharData();

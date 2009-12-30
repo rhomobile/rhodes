@@ -318,7 +318,7 @@ class ArrayPacker {
                 case 'N':
                     while (len-- > 0 && s < send) {
                         long tmp = 0;
-                        for (int j = Integer_SIZE / Byte_SIZE - 1; j >= 0; --j) {
+                        for (int j = Integer_SIZE / Byte_SIZE - 1; j >= 0 && s < send; --j) {
                             long c = str.charAt(s++);
                             tmp += (c << (j * 8));
                         }
