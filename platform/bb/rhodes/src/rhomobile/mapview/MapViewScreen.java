@@ -1,12 +1,19 @@
 package rhomobile.mapview;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.system.KeypadListener;
 import net.rim.device.api.ui.Graphics;
+import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.container.MainScreen;
 
 public class MapViewScreen extends MainScreen {
+	
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("MapViewScreen");
 	
 	private static final int PAN_MODE = 1;
 	private static final int ZOOM_MODE = 2;
@@ -21,8 +28,26 @@ public class MapViewScreen extends MainScreen {
 	
 	private int mode;
 	
+	/*
+	private class CloseMenuItem extends MenuItem {
+		
+		private MapViewScreen screen;
+		
+		public CloseMenuItem(MapViewScreen scr, String text, int ordinal, int priority) {
+			super(text, ordinal, priority);
+			screen = scr;
+		}
+
+		public void run() {
+			screen.close();
+		}
+	}
+	*/
+	
 	MapViewScreen(String providerName, double lat, double lon, int zoom) {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
+		//MenuItem closeItem = new CloseMenuItem(this, "Close", 0, 100);
+		//addMenuItem(closeItem);
 		createMapProvider(providerName);
 		createUI(lat, lon, zoom);
 	}
@@ -108,15 +133,26 @@ public class MapViewScreen extends MainScreen {
 				(status & KeypadListener.STATUS_FOUR_WAY) == 0)
 			return false;
 
-		if (mode == PAN_MODE)
-			mapField.move(dx*10, dy*10);
-		else if (mode == ZOOM_MODE) {
-			if (dy < 0) {
-				mapField.setZoom(Math.max(mapField.getZoom() - 1, mapField.getMinZoom()));
+		if (mode == PAN_MODE) {
+			int newDx = dx*10;
+			int newDy = dy*10;
+			LOG.TRACE("Scroll by " + newDx + "," + newDy);
+			mapField.move(newDx, newDy);
+		}
+		else if (mode == ZOOM_MODE && dy != 0) {
+			int currentZoom = mapField.getZoom();
+			int minZoom = mapField.getMinZoom();
+			int maxZoom = mapField.getMaxZoom();
+			
+			int newZoom;
+			if (dy > 0) {
+				newZoom = Math.max(currentZoom - 1, minZoom);
 			}
-			else if (dy > 0) {
-				mapField.setZoom(Math.min(mapField.getZoom() + 1, mapField.getMaxZoom()));
+			else {
+				newZoom = Math.min(currentZoom + 1, maxZoom);
 			}
+			LOG.TRACE("Set zoom to " + newZoom + " (was " + currentZoom + ")");
+			mapField.setZoom(newZoom);
 		}
 		return true;
 	}

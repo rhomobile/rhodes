@@ -5,6 +5,7 @@ import net.rim.device.api.ui.Field;
 public interface RhoMapField {
 	
 	public Field getBBField();
+	
 	public void setPreferredSize(int width, int height);
 	public void move(int dx, int dy);
 	public void moveTo(double latitude, double longitude);

@@ -65,8 +65,8 @@ public class MapView extends RubyBasic {
 				double lon = args.get(1).toFloat();
 				int zoom = args.get(2).toInt();
 				
-				String provider = "blackberry";
-				//String provider = "google";
+				//String provider = "blackberry";
+				String provider = "google";
 				//String provider = "nonexistent";
 				MapView.show(provider, lat, lon, zoom);
 				
