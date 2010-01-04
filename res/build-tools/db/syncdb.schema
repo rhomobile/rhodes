@@ -23,8 +23,8 @@ CREATE TABLE changed_values (
  sent int default 0,
  main_id INTEGER default 0);
 CREATE TABLE sources (
- source_url VARCHAR(255) PRIMARY KEY,
- source_id int,
+ source_id int PRIMARY KEY,
+ source_url VARCHAR(255),
  name VARCHAR(255) default NULL,
  token INTEGER default NULL,
  priority INTEGER,
