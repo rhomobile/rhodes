@@ -130,7 +130,7 @@ def common_bundle_start(startdir, dest)
 
   Dir.glob("**/*.#{$config['platform']}.*").each do |file|
     oldfile = file.gsub(Regexp.new(Regexp.escape('.') + $config['platform'] + Regexp.escape('.')),'.')
-    rm oldfile
+    rm oldfile if File.exists? oldfile
     mv file,oldfile
   end
   
