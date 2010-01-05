@@ -37,11 +37,14 @@ namespace "build" do
       end
       chdir $startdir
     end
+
+    task :devrhobundle => "win32:devrhobundle"
   end
   
   namespace "win32" do
     task :devrhobundle => ["wm:rhobundle"] do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+        mkdir_p win32rhopath
         rm_rf win32rhopath + 'lib'      
         rm_rf win32rhopath + 'apps'
         
