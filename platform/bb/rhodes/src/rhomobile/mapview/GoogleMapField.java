@@ -101,93 +101,98 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		
 		public void run() {
-			Vector cmds = new Vector();
-			for(;;) {
-				cmds.removeAllElements();
-				synchronized (queue) {
-					try {
-						queue.wait(500);
-					} catch (InterruptedException e) {
-						LOG.ERROR(e);
-						continue;
+			try {
+				Vector cmds = new Vector();
+				for(;;) {
+					cmds.removeAllElements();
+					synchronized (queue) {
+						try {
+							queue.wait(500);
+						} catch (InterruptedException e) {
+							LOG.ERROR(e);
+							continue;
+						}
+						if (queue.size() == 0) {
+							// Redraw all known mapfields
+							Enumeration e = mapfields.elements();
+							while (e.hasMoreElements()) {
+								WeakReference ref = (WeakReference)e.nextElement();
+								GoogleMapField mf = (GoogleMapField)ref.get();
+								if (mf == null)
+									continue;
+								
+								mf.redraw();
+							}
+							continue;
+						}
+						
+						while (!queue.isEmpty()) {
+							cmds.addElement(queue.elementAt(0));
+							queue.removeElementAt(0);
+						}
 					}
-					if (queue.size() == 0) {
-						// Redraw all known mapfields
-						Enumeration e = mapfields.elements();
-						while (e.hasMoreElements()) {
-							WeakReference ref = (WeakReference)e.nextElement();
-							GoogleMapField mf = (GoogleMapField)ref.get();
-							if (mf == null)
-								continue;
+					
+					for (int i = 0, lim = cmds.size(); i != lim; ++i) {
+						MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(i);
+						if (cmd == null)
+							continue;
+						
+						mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
+						
+						// Process received command
+						StringBuffer url = new StringBuffer();
+						url.append("http://maps.google.com/maps/api/staticmap?");
+						url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
+						url.append("zoom=" + cmd.zoom + "&");
+						url.append("size=" + (cmd.width + DELTA_X*2) + "x" + (cmd.height + DELTA_Y*2) + "&");
+						url.append("maptype=" + cmd.maptype + "&");
+						url.append("format=png&");
+						url.append("key=" + mapkey + "&");
+						url.append("mobile=true&sensor=true");
+						String finalUrl = url.toString();
+						
+						int size = 0;
+						byte[] data = null;
+						try {
+							IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
 							
-							mf.redraw();
+							conn.setRequestMethod("GET");
+							
+							InputStream is = conn.openInputStream();
+							
+							int code = conn.getResponseCode();
+							String msg = conn.getResponseMessage();
+							LOG.TRACE("Google map respond with " + code + " " + msg);
+							
+							size = conn.getHeaderFieldInt("Content-Length", 0);
+							data = new byte[size];
+							for (int offset = 0; offset < size;) {
+								int n = is.read(data, offset, size - offset);
+								if (n <= 0)
+									break;
+								offset += n;
+							}
 						}
-						continue;
-					}
+						catch (IOException e) {
+							LOG.ERROR("Cannot fetch map", e);
+							continue;
+						}
+						
+						EncodedImage img = null;
+						try {
+							img = EncodedImage.createEncodedImage(data, 0, size);
+						}
+						catch (Exception e) {
+							LOG.ERROR("Cannot create EncodedImage from fetched data", e);
+							continue;
+						}
 					
-					while (!queue.isEmpty()) {
-						cmds.addElement(queue.elementAt(0));
-						queue.removeElementAt(0);
+						cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
 					}
 				}
-				
-				for (int i = 0, lim = cmds.size(); i != lim; ++i) {
-					MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(i);
-					if (cmd == null)
-						continue;
-					
-					mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
-					
-					// Process received command
-					StringBuffer url = new StringBuffer();
-					url.append("http://maps.google.com/maps/api/staticmap?");
-					url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
-					url.append("zoom=" + cmd.zoom + "&");
-					url.append("size=" + (cmd.width + DELTA_X*2) + "x" + (cmd.height + DELTA_Y*2) + "&");
-					url.append("maptype=" + cmd.maptype + "&");
-					url.append("format=png&");
-					url.append("key=" + mapkey + "&");
-					url.append("mobile=true&sensor=true");
-					String finalUrl = url.toString();
-					
-					int size = 0;
-					byte[] data = null;
-					try {
-						IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
-						
-						conn.setRequestMethod("GET");
-						
-						InputStream is = conn.openInputStream();
-						
-						int code = conn.getResponseCode();
-						String msg = conn.getResponseMessage();
-						LOG.TRACE("Google map respond with " + code + " " + msg);
-						
-						size = conn.getHeaderFieldInt("Content-Length", 0);
-						data = new byte[size];
-						for (int offset = 0; offset < size;) {
-							int n = is.read(data, offset, size - offset);
-							if (n <= 0)
-								break;
-							offset += n;
-						}
-					}
-					catch (IOException e) {
-						LOG.ERROR("Cannot fetch map", e);
-						continue;
-					}
-					
-					EncodedImage img = null;
-					try {
-						img = EncodedImage.createEncodedImage(data, 0, size);
-					}
-					catch (Exception e) {
-						LOG.ERROR("Cannot create EncodedImage from fetched data", e);
-						continue;
-					}
-				
-					cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
-				}
+			}
+			finally {
+				LOG.INFO("Map fetch thread exit");
 			}
 		}
 		
@@ -215,8 +220,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private String makeCacheKey(double lat, double lon, int z) {
-		long x = (degreesToPixels(lon + 180, z)/DELTA_X) * DELTA_X;
-		long y = (degreesToPixels(90 - lat, z)/DELTA_Y) * DELTA_Y;
+		long x = (degreesToPixels(lon + 180, z)/DELTA_X)*DELTA_X + DELTA_X;
+		long y = (degreesToPixels(90 - lat, z)/DELTA_Y)*DELTA_Y + DELTA_Y;
 		return zoom + ";" + x + ";" + y;
 	}
 	
@@ -352,9 +357,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 			return 0;
 		
 		double angleRatio = 360/pow(2, zoom);
-		double pixelRatio = angleRatio/TILE_SIZE;
 		
-		return (long)(n/pixelRatio);
+		return (long)(n*TILE_SIZE/angleRatio);
 	}
 	
 	private static double pixelsToDegrees(long n, int zoom) {
@@ -362,8 +366,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			return 0;
 		
 		double angleRatio = 360/pow(2, zoom);
-		double pixelRatio = angleRatio/TILE_SIZE;
 		
-		return n*pixelRatio;
+		return n*angleRatio/TILE_SIZE;
 	}
 }
