@@ -673,10 +673,36 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     if (!parse_route(uri, route))
         return false;
     
+    // Convert CamelCase to underscore_case
+    // There has to be a better way?
+        char tmp[3];
+        const char *tmpstr = route.model.c_str();
+        String controllerName = "";
+        for(int i = 0; tmpstr[i] != NULL; i++) {
+            if(tmpstr[i] >= 'A' && tmpstr[i] <= 'Z') {
+                if(i == 0) {
+                    tmp[0] = tmpstr[i] + 0x20;
+                    tmp[1] = NULL;
+                } else {
+                    tmp[0] = '_';
+                    tmp[1] = tmpstr[i] + 0x20;
+                    tmp[2] = NULL;
+                }
+            } else {
+                tmp[0] = tmpstr[i];
+                tmp[1] = NULL;
+            }
+            controllerName += tmp;
+        }
+        
     //check if there is controller.rb to run
 	struct stat st;
+
+    String newfilename = m_root + "/" + route.application + "/" + route.model + "/" + controllerName + "_controller.iseq";
     String filename = m_root + "/" + route.application + "/" + route.model + "/controller.iseq";
-    if (stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode))
+
+    //look for controller.rb or model_name_controller.rb
+    if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
         return false;
     
     RAWLOG_INFO1("Run controller on this url: %s", uri.c_str());

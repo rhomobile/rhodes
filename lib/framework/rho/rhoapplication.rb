@@ -61,7 +61,15 @@ module Rho
 
     def serve(req,res)
       req[:modelpath] = self.class.get_model_path req['application'], req['model']
-      require req[:modelpath]+'controller'
+      controller_class = req['model']+'Controller'
+      undercase = controller_class.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
+
+      if File.exists?  req[:modelpath]+ undercase +'.iseq'
+        require req[:modelpath]+ undercase
+      else
+        require req[:modelpath]+'controller'
+      end
+      
       res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, self, @rhom, req, res
     end
 
