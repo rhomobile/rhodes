@@ -2,6 +2,9 @@ package rhomobile.mapview;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import com.rho.RhoClassFactory;
@@ -13,7 +16,6 @@ import rhomobile.mapview.RhoMapField;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
-import net.rim.device.api.ui.UiApplication;
 
 public class GoogleMapField extends Field implements RhoMapField {
 
@@ -25,25 +27,40 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	private static final int TILE_SIZE = 256;
 	
+	private static final int DELTA_X = 70;
+	private static final int DELTA_Y = 70;
+	
 	private static final String[] MAP_TYPES = {"roadmap", "satellite", "terrain", "hybrid"};
 	public static final int MAP_TYPE_ROADMAP = 0;
 	public static final int MAP_TYPE_SATELLITE = 1;
 	public static final int MAP_TYPE_TERRAIN = 2;
 	public static final int MAP_TYPE_HYBRID = 3;
 	
-	private double prevLat;
-	private double prevLon;
-	private int prevZoom;
-	
+	// Coordinates of center
 	private double latitude;
 	private double longitude;
-	private int currentZoom;
+	private int zoom;
 	
 	private int width;
 	private int height;
 	private String maptype;
 	
-	private EncodedImage image = null;
+	private static class CachedImage {
+		public EncodedImage image;
+		public double latitude;
+		public double longitude;
+		public int zoom;
+		
+		public CachedImage(EncodedImage img, double lat, double lon, int z) {
+			image = img;
+			latitude = lat;
+			longitude = lon;
+			zoom = z;
+		}
+	};
+
+	private Hashtable cache = new Hashtable();
+	private CachedImage image = null;
 	
 	private static class MapFetchCommand {
 		
@@ -72,8 +89,11 @@ public class GoogleMapField extends Field implements RhoMapField {
 
 		private static final String mapkey = "ABQIAAAA-X8Mm7F-7Nmz820lFEBHYxQCTQSfxzjC-OXUcQUqlrjciHyFgxRH16HemsZX8ld50tKtL7bXExL13g";
 		private Vector queue = new Vector();
+		private Hashtable mapfields = new Hashtable();
 		
 		public void send(MapFetchCommand cmd) {
+			if (cmd == null)
+				return;
 			synchronized (queue) {
 				queue.addElement(cmd);
 				queue.notify();
@@ -81,36 +101,58 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		
 		public void run() {
-			try {
-				Vector cmds = new Vector();
-				for(;;) {
-					cmds.removeAllElements();
-					synchronized (queue) {
-						queue.wait();
-						if (queue.size() == 0)
-							break;
-						
-						while (!queue.isEmpty()) {
-							cmds.addElement(queue.elementAt(0));
-							queue.removeElementAt(0);
+			Vector cmds = new Vector();
+			for(;;) {
+				cmds.removeAllElements();
+				synchronized (queue) {
+					try {
+						queue.wait(500);
+					} catch (InterruptedException e) {
+						LOG.ERROR(e);
+						continue;
+					}
+					if (queue.size() == 0) {
+						// Redraw all known mapfields
+						Enumeration e = mapfields.elements();
+						while (e.hasMoreElements()) {
+							WeakReference ref = (WeakReference)e.nextElement();
+							GoogleMapField mf = (GoogleMapField)ref.get();
+							if (mf == null)
+								continue;
+							
+							mf.redraw();
 						}
+						continue;
 					}
 					
-					for (int i = 0, lim = cmds.size(); i != lim; ++i) {
-						MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(i);
-						
-						// Process received command
-						StringBuffer url = new StringBuffer();
-						url.append("http://maps.google.com/maps/api/staticmap?");
-						url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
-						url.append("zoom=" + cmd.zoom + "&");
-						url.append("size=" + cmd.width + "x" + cmd.height + "&");
-						url.append("maptype=" + cmd.maptype + "&");
-						url.append("format=png&");
-						url.append("key=" + mapkey + "&");
-						url.append("mobile=true&sensor=true");
-						String finalUrl = url.toString();
-						
+					while (!queue.isEmpty()) {
+						cmds.addElement(queue.elementAt(0));
+						queue.removeElementAt(0);
+					}
+				}
+				
+				for (int i = 0, lim = cmds.size(); i != lim; ++i) {
+					MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(i);
+					if (cmd == null)
+						continue;
+					
+					mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
+					
+					// Process received command
+					StringBuffer url = new StringBuffer();
+					url.append("http://maps.google.com/maps/api/staticmap?");
+					url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
+					url.append("zoom=" + cmd.zoom + "&");
+					url.append("size=" + (cmd.width + DELTA_X*2) + "x" + (cmd.height + DELTA_Y*2) + "&");
+					url.append("maptype=" + cmd.maptype + "&");
+					url.append("format=png&");
+					url.append("key=" + mapkey + "&");
+					url.append("mobile=true&sensor=true");
+					String finalUrl = url.toString();
+					
+					int size = 0;
+					byte[] data = null;
+					try {
 						IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
 						
 						conn.setRequestMethod("GET");
@@ -121,24 +163,31 @@ public class GoogleMapField extends Field implements RhoMapField {
 						String msg = conn.getResponseMessage();
 						LOG.TRACE("Google map respond with " + code + " " + msg);
 						
-						int size = conn.getHeaderFieldInt("Content-Length", 0);
-						byte[] data = new byte[size];
+						size = conn.getHeaderFieldInt("Content-Length", 0);
+						data = new byte[size];
 						for (int offset = 0; offset < size;) {
 							int n = is.read(data, offset, size - offset);
 							if (n <= 0)
 								break;
 							offset += n;
 						}
-						
-						EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
-						
-						cmd.mapField.draw(img);
 					}
+					catch (IOException e) {
+						LOG.ERROR("Cannot fetch map", e);
+						continue;
+					}
+					
+					EncodedImage img = null;
+					try {
+						img = EncodedImage.createEncodedImage(data, 0, size);
+					}
+					catch (Exception e) {
+						LOG.ERROR("Cannot create EncodedImage from fetched data", e);
+						continue;
+					}
+				
+					cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
 				}
-			} catch (InterruptedException e) {
-				LOG.ERROR(e);
-			} catch (IOException e) {
-				LOG.ERROR("Can not request map", e);
 			}
 		}
 		
@@ -165,37 +214,58 @@ public class GoogleMapField extends Field implements RhoMapField {
 		setExtent(width, height);
 	}
 	
+	private String makeCacheKey(double lat, double lon, int z) {
+		long x = (degreesToPixels(lon + 180, z)/DELTA_X) * DELTA_X;
+		long y = (degreesToPixels(90 - lat, z)/DELTA_Y) * DELTA_Y;
+		return zoom + ";" + x + ";" + y;
+	}
+	
 	protected void paint(Graphics graphics) {
 		graphics.clear();
 		
-		EncodedImage img = image;
+		CachedImage img = null;
+		synchronized (this) {
+			img = image;
+		}
 		if (img == null)
 			return;
 		
 		int left = 0;
 		int top = 0;
-		if (prevZoom == currentZoom) {
-			left = -degreesToPixels(longitude - prevLon);
-			top = degreesToPixels(latitude - prevLat);
+		if (img.zoom == zoom) {
+			left = -(int)degreesToPixels(longitude - img.longitude, zoom);
+			top = (int)degreesToPixels(latitude - img.latitude, zoom);
 		}
-		graphics.drawImage(left, top, width - left, height - top, img, 0, 0, 0);
+		left -= DELTA_X;
+		top -= DELTA_Y;
+		graphics.drawImage(left, top, width - left, height - top, img.image, 0, 0, 0);
 	}
 	
 	public void redraw() {
-		MapFetchCommand cmd = new MapFetchCommand(latitude, longitude, currentZoom,
-				width, height, maptype, this);
+		String key = makeCacheKey(latitude, longitude, zoom);
+		MapFetchCommand cmd = null;
+		synchronized (this) {
+			CachedImage img = (CachedImage)cache.get(key);
+			if (img == null)
+				cmd = new MapFetchCommand(latitude, longitude, zoom,
+						width, height, maptype, this);
+			else
+				image = img;
+		}
 		fetchThreadObj.send(cmd);
 		invalidate();
 	}
 	
-	public void draw(EncodedImage img) {
-		synchronized (UiApplication.getEventLock()) {
-			prevLat = latitude;
-			prevLon = longitude;
-			prevZoom = currentZoom;
-			image = img;
-			invalidate();
+	public void draw(double lat, double lon, int z, EncodedImage img) {
+		String key = makeCacheKey(lat, lon, z);
+		String curKey = makeCacheKey(latitude, longitude, zoom);
+		CachedImage newImage = new CachedImage(img, lat, lon, z);
+		synchronized (this) {
+			cache.put(key, newImage);
+			if (key == curKey)
+				image = newImage;
 		}
+		invalidate();
 	}
 	
 	public int getPreferredWidth() {
@@ -224,15 +294,13 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private void validateZoom() {
-		if (currentZoom < MIN_ZOOM)
-			currentZoom = MIN_ZOOM;
-		if (currentZoom > MAX_ZOOM)
-			currentZoom = MAX_ZOOM;
+		if (zoom < MIN_ZOOM)
+			zoom = MIN_ZOOM;
+		if (zoom > MAX_ZOOM)
+			zoom = MAX_ZOOM;
 	}
 
 	public void moveTo(double lat, double lon) {
-		prevLat = latitude;
-		prevLon = longitude;
 		latitude = lat;
 		longitude = lon;
 		validateCoordinates();
@@ -240,10 +308,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public void move(int dx, int dy) {
-		prevLat = latitude;
-		prevLon = longitude;
-		latitude -= pixelsToDegrees(dy);
-		longitude += pixelsToDegrees(dx);
+		latitude -= pixelsToDegrees(dy, zoom);
+		longitude += pixelsToDegrees(dx, zoom);
 		validateCoordinates();
 		redraw();
 	}
@@ -257,17 +323,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public int getZoom() {
-		return currentZoom;
+		return zoom;
 	}
 
-	public void setZoom(int zoom) {
-		prevZoom = currentZoom;
-		currentZoom = zoom;
+	public void setZoom(int z) {
+		zoom = z;
 		validateZoom();
 		redraw();
 	}
 	
-	private double pow(double val, int pow) {
+	private static double pow(double val, int pow) {
 		double result = 1.0;
 		if (pow < 0) {
 			for (int i = 0; i != pow; --i) {
@@ -282,21 +347,21 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return result;
 	}
 
-	private int degreesToPixels(double n) {
+	private static long degreesToPixels(double n, int zoom) {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, currentZoom);
+		double angleRatio = 360/pow(2, zoom);
 		double pixelRatio = angleRatio/TILE_SIZE;
 		
 		return (int)(n/pixelRatio);
 	}
 	
-	private double pixelsToDegrees(int n) {
+	private static double pixelsToDegrees(long n, int zoom) {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, currentZoom);
+		double angleRatio = 360/pow(2, zoom);
 		double pixelRatio = angleRatio/TILE_SIZE;
 		
 		return n*pixelRatio;
