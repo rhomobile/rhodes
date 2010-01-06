@@ -792,7 +792,8 @@ module Rhom
               end
             end)
         end #unless
-        require "#{classname}/model" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"model.iseq")
+        modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
+        require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}.iseq")
       end
     end
   end # RhomObjectFactory
