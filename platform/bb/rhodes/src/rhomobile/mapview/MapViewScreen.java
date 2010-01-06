@@ -18,6 +18,9 @@ public class MapViewScreen extends MainScreen {
 	private static final int PAN_MODE = 1;
 	private static final int ZOOM_MODE = 2;
 	
+	private static final int MIN_MOVE_STEP = 2;
+	private static final int MAX_MOVE_STEP = 32;
+	
 	private static final MapProvider[] providers = {
 		new BBMapProvider(),
 		new GoogleMapProvider()
@@ -27,6 +30,9 @@ public class MapViewScreen extends MainScreen {
 	private RhoMapField mapField;
 	
 	private int mode;
+	
+	private int prevDx = 0;
+	private int prevDy = 0;
 	
 	/*
 	private class CloseMenuItem extends MenuItem {
@@ -134,8 +140,32 @@ public class MapViewScreen extends MainScreen {
 			return false;
 
 		if (mode == PAN_MODE) {
-			int newDx = dx*10;
-			int newDy = dy*10;
+			int newDx;
+			if (dx == 0)
+				newDx = 0;
+			else {
+				newDx = dx < 0 ? (prevDx < 0 ? prevDx*2 : -MIN_MOVE_STEP) : (prevDx > 0 ? prevDx*2 : MIN_MOVE_STEP);
+				if (newDx < -MAX_MOVE_STEP)
+					newDx = -MAX_MOVE_STEP;
+				else if (newDx > MAX_MOVE_STEP)
+					newDx = MAX_MOVE_STEP;
+			}
+			prevDx = newDx;
+			
+			int newDy;
+			if (dy == 0)
+				newDy = 0;
+			else {
+				newDy = dy < 0 ? (prevDy < 0 ? prevDy*2 : -MIN_MOVE_STEP) : (prevDy > 0 ? prevDy*2 : MIN_MOVE_STEP);
+				if (newDy < -MAX_MOVE_STEP)
+					newDy = -MAX_MOVE_STEP;
+				else if (newDy > MAX_MOVE_STEP)
+					newDy = MAX_MOVE_STEP;
+			}
+			prevDy = newDy;
+			
+			//int newDx = dx*10;
+			//int newDy = dy*10;
 			LOG.TRACE("Scroll by " + newDx + "," + newDy);
 			mapField.move(newDx, newDy);
 		}
