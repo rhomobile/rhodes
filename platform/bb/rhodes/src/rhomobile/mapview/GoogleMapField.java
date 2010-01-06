@@ -354,7 +354,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		double angleRatio = 360/pow(2, zoom);
 		double pixelRatio = angleRatio/TILE_SIZE;
 		
-		return (int)(n/pixelRatio);
+		return (long)(n/pixelRatio);
 	}
 	
 	private static double pixelsToDegrees(long n, int zoom) {
