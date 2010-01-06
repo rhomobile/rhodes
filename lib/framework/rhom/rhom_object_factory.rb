@@ -791,7 +791,8 @@ module Rhom
                 str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
               end
             end)
-        end
+        end #unless
+        require "#{classname}/model" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"model.iseq")
       end
     end
   end # RhomObjectFactory

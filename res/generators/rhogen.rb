@@ -157,6 +157,11 @@ module Rhogen
       template.destination = "app/#{name.camel_case}/controller.rb"
     end
 
+    template :model do |template|
+      template.source = 'model.rb'
+      template.destination = "app/#{name.camel_case}/model.rb"
+    end
+
     def attributes?
       self.attributes && !self.attributes.empty?
     end
