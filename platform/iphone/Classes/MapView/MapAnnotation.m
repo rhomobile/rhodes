@@ -8,6 +8,7 @@
 #ifdef __IPHONE_3_0
 
 #import "MapAnnotation.h"
+#include "common/RhodesApp.h"
 
 @implementation MapAnnotation
 
@@ -79,7 +80,8 @@
 }
 
 - (void)setUrl:(NSString*)url {
-	_url = [url copy];
+    const char *norm_url = rho_http_normalizeurl([url UTF8String]);
+    _url = [NSString stringWithUTF8String:norm_url];
 }
 
 - (NSString*)url {
