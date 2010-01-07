@@ -107,12 +107,16 @@ static bool isindex(String const &uri)
         {"index.cgi", 9}
     };
     
+    // Convert uri to lower case
+    String luri;
+    std::transform(uri.begin(), uri.end(), std::back_inserter(luri), &::tolower);
+    
     for (size_t i = 0, lim = sizeof(index_files)/sizeof(index_files[0]); i != lim; ++i) {
-        size_t pos = uri.find(index_files[i].s);
+        size_t pos = luri.find(index_files[i].s);
         if (pos == String::npos)
             continue;
         
-        if (pos + index_files[i].len != uri.size())
+        if (pos + index_files[i].len != luri.size())
             continue;
         
         return true;
@@ -137,12 +141,16 @@ static bool isknowntype(String const &uri)
         {".jpeg", 5}
     };
     
+    // Convert uri to lower case
+    String luri;
+    std::transform(uri.begin(), uri.end(), std::back_inserter(luri), &::tolower);
+    
     for (size_t i = 0, lim = sizeof(ignored_exts)/sizeof(ignored_exts[0]); i != lim; ++i) {
-        size_t pos = uri.find(ignored_exts[i].s);
+        size_t pos = luri.find(ignored_exts[i].s);
         if (pos == String::npos)
             continue;
         
-        if (pos + ignored_exts[i].len != uri.size())
+        if (pos + ignored_exts[i].len != luri.size())
             continue;
         
         return true;
@@ -197,13 +205,17 @@ static String get_mime_type(String const &path)
         {".bmp",		4,	"image/bmp"                     },
     };
     
+    // Convert path to lower case
+    String lpath;
+    std::transform(path.begin(), path.end(), std::back_inserter(lpath), &::tolower);
+    
     String mime_type;
     for (int i = 0, lim = sizeof(builtin_mime_types)/sizeof(builtin_mime_types[0]); i != lim; ++i) {
-        size_t pos = path.find(builtin_mime_types[i].extension);
+        size_t pos = lpath.find(builtin_mime_types[i].extension);
         if (pos == String::npos)
             continue;
         
-        if (pos + builtin_mime_types[i].ext_len != path.size())
+        if (pos + builtin_mime_types[i].ext_len != lpath.size())
             continue;
         
         mime_type = builtin_mime_types[i].mime_type;
@@ -675,25 +687,25 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     
     // Convert CamelCase to underscore_case
     // There has to be a better way?
-        char tmp[3];
-        const char *tmpstr = route.model.c_str();
-        String controllerName = "";
-        for(int i = 0; tmpstr[i] != NULL; i++) {
-            if(tmpstr[i] >= 'A' && tmpstr[i] <= 'Z') {
-                if(i == 0) {
-                    tmp[0] = tmpstr[i] + 0x20;
-                    tmp[1] = NULL;
-                } else {
-                    tmp[0] = '_';
-                    tmp[1] = tmpstr[i] + 0x20;
-                    tmp[2] = NULL;
-                }
-            } else {
-                tmp[0] = tmpstr[i];
+    char tmp[3];
+    const char *tmpstr = route.model.c_str();
+    String controllerName = "";
+    for(int i = 0; tmpstr[i] != '\0'; i++) {
+        if(tmpstr[i] >= 'A' && tmpstr[i] <= 'Z') {
+            if(i == 0) {
+                tmp[0] = tmpstr[i] + 0x20;
                 tmp[1] = NULL;
+            } else {
+                tmp[0] = '_';
+                tmp[1] = tmpstr[i] + 0x20;
+                tmp[2] = NULL;
             }
-            controllerName += tmp;
+        } else {
+            tmp[0] = tmpstr[i];
+            tmp[1] = NULL;
         }
+        controllerName += tmp;
+    }
         
     //check if there is controller.rb to run
 	struct stat st;
@@ -705,20 +717,16 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
         return false;
     
-    RAWLOG_INFO1("Run controller on this url: %s", uri.c_str());
     return true;
 }
 
 bool CHttpServer::send_file(String const &path)
 {
-    // TODO:
-    //static const char *resp = "<html><title>TEST</title><body><h1>This is test</h1></body></html>";
-    //send_response(sock, create_response("200 OK", resp));
-    
     String fullPath = m_root + "/" + path;
     
     struct stat st;
     if (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) {
+        RAWLOG_ERROR1("The file %s was not found", path.c_str());
         String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));
         return false;
@@ -726,6 +734,7 @@ bool CHttpServer::send_file(String const &path)
     
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
+        RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
         String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
         send_response(create_response("404 Not Found",error));
         return false;
@@ -745,6 +754,7 @@ bool CHttpServer::send_file(String const &path)
     
     // Send headers
     if (!send_response(create_response("200 OK", headers))) {
+        RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
         fclose(fp);
         return false;
     }
@@ -753,20 +763,24 @@ bool CHttpServer::send_file(String const &path)
     while (!feof(fp)) {
         size_t n = fread(buf, 1, sizeof(buf), fp);
         if (!send_response(String(buf, n))) {
+            RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
             return false;
         }
     }
     
     fclose(fp);
+    RAWTRACE1("File %s was sent successfully", path.c_str());
     return true;
 }
 
 bool CHttpServer::decide(String const &method, String const &uri, String const &query,
                          HeaderList const &headers, String const &body)
 {
+    RAWTRACE1("Decide what to do with uri %s", uri.c_str());
     callback_t callback = registered(uri);
     if (callback) {
+        RAWTRACE1("Uri %s is registered callback, so handle it appropriately", uri.c_str());
         callback(this, query);
         return true;
     }
@@ -775,6 +789,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     
     Route route;
     if (dispatch(uri, route)) {
+        RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
         if (method == "GET")
             rho_rhodesapp_keeplastvisitedurl(uri.c_str());
         
@@ -793,6 +808,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     }
     
     if (isdir(fullPath)) {
+        RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
         String slash = !uri.empty() && uri[uri.size() - 1] == '/' ? "" : "/";
         String q = query.empty() ? "" : "?" + query;
         
@@ -805,11 +821,13 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     
     if (isindex(uri)) {
         if (!isfile(fullPath)) {
+            RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
             String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
             send_response(create_response("404 Not Found",error));
             return false;
         }
         
+        RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
         if (method == "GET")
             rho_rhodesapp_keeplastvisitedurl(uri.c_str());
         
@@ -820,6 +838,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     //RAWLOG_INFO("Sending File");
     
     // Try to send requested file
+    RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
     return send_file(uri);
 }
 
