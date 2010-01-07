@@ -642,9 +642,28 @@ public class RhoConnection implements IHttpConnection {
 		if ( checkRhoExtensions(application, model ) )
 			return true;
 		
-		String strCtrl = "apps/" + application + '/' + model + '/' + "controller";
-		if( RhoSupport.findClass(strCtrl) == null )
-			return false;
+		// Convert CamelCase to underscore_case
+		StringBuffer cName = new StringBuffer();
+		byte[] modelname = model.getBytes();
+		char ch;
+		for (int i = 0; i != model.length(); ++i) {
+			if (modelname[i] >= (byte)'A' && modelname[i] <= (byte)'Z') {
+				ch = (char)(modelname[i] + 0x20);
+				if (i != 0)
+					cName.append('_');
+				
+			}
+			else ch = (char)modelname[i];
+			cName.append(ch);
+		}
+		String controllerName = cName.toString();
+		
+		String strCtrl = "apps/" + application + '/' + model + '/' + controllerName + "_controller";
+		if (RhoSupport.findClass(strCtrl) == null) {
+			strCtrl = "apps/" + application + '/' + model + '/' + "controller";
+			if( RhoSupport.findClass(strCtrl) == null )
+				return false;
+		}
 		
 		Properties reqHash = new Properties();
 		
