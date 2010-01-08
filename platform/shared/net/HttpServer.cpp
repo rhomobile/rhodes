@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
