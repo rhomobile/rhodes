@@ -1,7 +1,6 @@
 package com.rho.net;
 
 import com.rho.RhoClassFactory;
-import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -10,15 +9,15 @@ import javax.microedition.io.SocketConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import net.rim.device.api.io.SocketConnectionEnhanced;
-import javolution.io.UTF8StreamReader;
+
+//import net.rim.device.api.io.SocketConnectionEnhanced;
 
 public class TCPSocket extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("TCPSocket");
 
 	private SocketConnection m_conn;
-	private SocketConnectionEnhanced m_extconn;
+	//private SocketConnectionEnhanced m_extconn;
 	private OutputStream     m_os;
 	private InputStream      m_is;
 	
@@ -34,6 +33,7 @@ public class TCPSocket extends RubyBasic {
     {
     	m_conn = ((NetworkAccess)RhoClassFactory.getNetworkAccess()).socketConnect(strHost, nPort);
     	
+    	/*
 		try{
 			m_extconn = (SocketConnectionEnhanced)m_conn;
 		}catch(ClassCastException cce){
@@ -42,6 +42,7 @@ public class TCPSocket extends RubyBasic {
 		
 		if ( m_extconn != null )
 			m_extconn.setSocketOptionEx(SocketConnectionEnhanced.READ_TIMEOUT, 1000);
+		*/
     }
     
     public boolean is_closed()
@@ -87,7 +88,7 @@ public class TCPSocket extends RubyBasic {
     	byte[] charBuffer = new byte[nBytes];
         bufferedReadByByte(charBuffer, m_is);
     	
-    	return new String(charBuffer);
+        return new String(charBuffer);
     }
     
 	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {

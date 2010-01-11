@@ -55,7 +55,7 @@ public class NetworkAccess implements INetworkAccess {
 						//";deviceside=true;ConnectionUID=" + 
 						//wifis[i].getUid();
 					
-					LOG.INFO("WIFI :" + WIFIsuffix );
+					LOG.TRACE("WIFI :" + WIFIsuffix );
 					
 					break;
 				}
@@ -162,7 +162,7 @@ public class NetworkAccess implements INetworkAccess {
 		//Try wifi first
 		if ( WIFIsuffix != null && isWifiActive() ){
 			try {
-				LOG.INFO(strUrl + WIFIsuffix);
+				LOG.TRACE(strUrl + WIFIsuffix);
 				conn = Connector.open(strUrl + WIFIsuffix);
 			} catch (IOException ioe) {
 				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );

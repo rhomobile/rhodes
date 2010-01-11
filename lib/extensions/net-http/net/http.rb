@@ -1591,6 +1591,7 @@ module Net   #:nodoc:
       initialize_http_header initheader
       self['Accept'] ||= '*/*'
       self['User-Agent'] ||= 'Ruby'
+      self['Connection'] ||= 'Close'
       @body = nil
       @body_stream = nil
     end
