@@ -18,8 +18,10 @@ public class MapViewScreen extends MainScreen {
 	private static final int PAN_MODE = 1;
 	private static final int ZOOM_MODE = 2;
 	
-	private static final int MIN_MOVE_STEP = 2;
+	private static final int MIN_MOVE_STEP = 1;
 	private static final int MAX_MOVE_STEP = 32;
+	
+	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
 	private static final MapProvider[] providers = {
 		new BBMapProvider(),
@@ -31,6 +33,7 @@ public class MapViewScreen extends MainScreen {
 	
 	private int mode;
 	
+	private long prevMoveTime = 0;
 	private int prevDx = 0;
 	private int prevDy = 0;
 	
@@ -140,29 +143,42 @@ public class MapViewScreen extends MainScreen {
 			return false;
 
 		if (mode == PAN_MODE) {
+			long curTime = System.currentTimeMillis();
 			int newDx;
-			if (dx == 0)
-				newDx = 0;
+			if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
+				newDx = dx;
+			}
 			else {
-				newDx = dx < 0 ? (prevDx < 0 ? prevDx*2 : -MIN_MOVE_STEP) : (prevDx > 0 ? prevDx*2 : MIN_MOVE_STEP);
-				if (newDx < -MAX_MOVE_STEP)
-					newDx = -MAX_MOVE_STEP;
-				else if (newDx > MAX_MOVE_STEP)
-					newDx = MAX_MOVE_STEP;
+				if (dx == 0)
+					newDx = 0;
+				else {
+					newDx = dx < 0 ? (prevDx < 0 ? prevDx*2 : -MIN_MOVE_STEP) : (prevDx > 0 ? prevDx*2 : MIN_MOVE_STEP);
+					if (newDx < -MAX_MOVE_STEP)
+						newDx = -MAX_MOVE_STEP;
+					else if (newDx > MAX_MOVE_STEP)
+						newDx = MAX_MOVE_STEP;
+				}
 			}
 			prevDx = newDx;
 			
 			int newDy;
-			if (dy == 0)
-				newDy = 0;
+			if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
+				newDy = dy;
+			}
 			else {
-				newDy = dy < 0 ? (prevDy < 0 ? prevDy*2 : -MIN_MOVE_STEP) : (prevDy > 0 ? prevDy*2 : MIN_MOVE_STEP);
-				if (newDy < -MAX_MOVE_STEP)
-					newDy = -MAX_MOVE_STEP;
-				else if (newDy > MAX_MOVE_STEP)
-					newDy = MAX_MOVE_STEP;
+				if (dy == 0)
+					newDy = 0;
+				else {
+					newDy = dy < 0 ? (prevDy < 0 ? prevDy*2 : -MIN_MOVE_STEP) : (prevDy > 0 ? prevDy*2 : MIN_MOVE_STEP);
+					if (newDy < -MAX_MOVE_STEP)
+						newDy = -MAX_MOVE_STEP;
+					else if (newDy > MAX_MOVE_STEP)
+						newDy = MAX_MOVE_STEP;
+				}
 			}
 			prevDy = newDy;
+			
+			prevMoveTime = curTime;
 			
 			//int newDx = dx*10;
 			//int newDy = dy*10;
