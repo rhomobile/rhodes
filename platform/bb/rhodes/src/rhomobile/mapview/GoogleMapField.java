@@ -13,6 +13,7 @@ import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
 
 import rhomobile.mapview.RhoMapField;
+import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
@@ -22,13 +23,20 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GoogleMapField");
 	
+	// Configurable parameters
+	private static final int DELTA_X = 100;
+	private static final int DELTA_Y = 100;
+	
+	private static final int FETCH_THREAD_POOL_SIZE = 5;
+	private static final long MAX_FETCH_TIME = 10000; // milliseconds
+	
+	private static final int MAP_REDRAW_INTERVAL = 500; // milliseconds
+	
+	// Static google parameters
 	private static final int MIN_ZOOM = 0;
 	private static final int MAX_ZOOM = 19;
 	
 	private static final int TILE_SIZE = 256;
-	
-	private static final int DELTA_X = 70;
-	private static final int DELTA_Y = 70;
 	
 	private static final String[] MAP_TYPES = {"roadmap", "satellite", "terrain", "hybrid"};
 	public static final int MAP_TYPE_ROADMAP = 0;
@@ -58,9 +66,23 @@ public class GoogleMapField extends Field implements RhoMapField {
 			zoom = z;
 		}
 	};
+	
+	private static class CachedBitmap extends CachedImage {
+		public Bitmap bitmap;
+		
+		public CachedBitmap(CachedImage img) {
+			super(img.image, img.latitude, img.longitude, img.zoom);
+			bitmap = img.image.getBitmap();
+		}
+		
+		public CachedBitmap(EncodedImage img, double lat, double lon, int z) {
+			super(img, lat, lon, z);
+			bitmap = img.getBitmap();
+		}
+	};
 
 	private Hashtable cache = new Hashtable();
-	private CachedImage image = null;
+	private CachedBitmap image = null;
 	
 	private static class MapFetchCommand {
 		
@@ -85,11 +107,120 @@ public class GoogleMapField extends Field implements RhoMapField {
 		
 	}
 	
-	private static class MapFetchThread implements Runnable {
+	private static class MapFetchThread extends Thread {
 
-		private static final String mapkey = "ABQIAAAA-X8Mm7F-7Nmz820lFEBHYxQCTQSfxzjC-OXUcQUqlrjciHyFgxRH16HemsZX8ld50tKtL7bXExL13g";
+		private static final String mapkey = "ABQIAAAA-X8Mm7F-7Nmz820lFEBHYxT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSfNPZbryNEPHF-5PQKi9c7Fbdf-A";
+		
+		private MapFetchCommand processing = null;
+		private long taskStartTime;
+		
+		// Return time of start current task. Return undefined value if no current task exists.
+		public long startTime() {
+			return taskStartTime;
+		}
+		
+		public boolean isBusy() {
+			return processing != null;
+		}
+		
+		public void process(MapFetchCommand cmd) {
+			synchronized (this) {
+				processing = cmd;
+				notify();
+			}
+		}
+		
+		public void run() {
+			try {
+				for(;;) {
+					synchronized (this) {
+						processing = null;
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							LOG.ERROR(e);
+							continue;
+						}
+						if (processing == null)
+							continue;
+						
+						taskStartTime = System.currentTimeMillis();
+					}
+					
+					MapFetchCommand cmd = processing;
+					LOG.TRACE("Processing map fetch command: " + cmd.latitude + "," + cmd.longitude + ";zoom=" + cmd.zoom);
+					
+					// Process received command
+					StringBuffer url = new StringBuffer();
+					url.append("http://maps.google.com/maps/api/staticmap?");
+					url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
+					url.append("zoom=" + cmd.zoom + "&");
+					url.append("size=" + (cmd.width + DELTA_X*2) + "x" + (cmd.height + DELTA_Y*2) + "&");
+					url.append("maptype=" + cmd.maptype + "&");
+					url.append("format=png&");
+					url.append("key=" + mapkey + "&");
+					url.append("mobile=true&sensor=true");
+					String finalUrl = url.toString();
+					
+					int size = 0;
+					byte[] data = null;
+					try {
+						IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
+						
+						conn.setRequestMethod("GET");
+						
+						InputStream is = conn.openInputStream();
+						
+						int code = conn.getResponseCode();
+						if (code/100 != 2)
+							throw new IOException("Google map respond with " + code + " " + conn.getResponseMessage());
+						
+						size = conn.getHeaderFieldInt("Content-Length", 0);
+						data = new byte[size];
+						for (int offset = 0; offset < size;) {
+							int n = is.read(data, offset, size - offset);
+							if (n < 0)
+								break;
+							offset += n;
+						}
+					}
+					catch (IOException e) {
+						LOG.ERROR("Cannot fetch map", e);
+						continue;
+					}
+					
+					EncodedImage img = null;
+					try {
+						img = EncodedImage.createEncodedImage(data, 0, size);
+					}
+					catch (Exception e) {
+						LOG.ERROR("Cannot create EncodedImage from fetched data", e);
+						continue;
+					}
+				
+					cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
+				}
+			}
+			finally {
+				LOG.INFO("Map fetch thread exit");
+			}
+		}
+		
+	};
+	
+	private static class MapFetchThreadPool extends Thread {
+
 		private Vector queue = new Vector();
+		private Vector threads = new Vector();
 		private Hashtable mapfields = new Hashtable();
+		
+		public MapFetchThreadPool() {
+			for (int i = 0; i != FETCH_THREAD_POOL_SIZE; ++i) {
+				Thread th = new MapFetchThread();
+				th.start();
+				threads.addElement(th);
+			}
+		}
 		
 		public void send(MapFetchCommand cmd) {
 			if (cmd == null)
@@ -99,111 +230,78 @@ public class GoogleMapField extends Field implements RhoMapField {
 				queue.notify();
 			}
 		}
-		
+
 		public void run() {
-			try {
-				Vector cmds = new Vector();
-				for(;;) {
-					cmds.removeAllElements();
-					synchronized (queue) {
-						try {
-							queue.wait(500);
-						} catch (InterruptedException e) {
-							LOG.ERROR(e);
-							continue;
-						}
-						if (queue.size() == 0) {
-							// Redraw all known mapfields
-							Enumeration e = mapfields.elements();
-							while (e.hasMoreElements()) {
-								WeakReference ref = (WeakReference)e.nextElement();
-								GoogleMapField mf = (GoogleMapField)ref.get();
-								if (mf == null)
-									continue;
-								
-								mf.redraw();
-							}
-							continue;
-						}
-						
-						while (!queue.isEmpty()) {
-							cmds.addElement(queue.elementAt(0));
-							queue.removeElementAt(0);
-						}
+			Vector cmds = new Vector();
+			Vector waiting = new Vector();
+			for(;;) {
+				cmds.removeAllElements();
+				for (Enumeration e = waiting.elements(); e.hasMoreElements();)
+					cmds.addElement(e.nextElement());
+				waiting.removeAllElements();
+				
+				synchronized (queue) {
+					try {
+						queue.wait(MAP_REDRAW_INTERVAL);
+					}
+					catch (InterruptedException e) {
+						LOG.ERROR(e);
+						continue;
 					}
 					
-					for (int i = 0, lim = cmds.size(); i != lim; ++i) {
-						MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(i);
-						if (cmd == null)
-							continue;
-						
-						mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
-						
-						// Process received command
-						StringBuffer url = new StringBuffer();
-						url.append("http://maps.google.com/maps/api/staticmap?");
-						url.append("center=" + cmd.latitude + "," + cmd.longitude + "&");
-						url.append("zoom=" + cmd.zoom + "&");
-						url.append("size=" + (cmd.width + DELTA_X*2) + "x" + (cmd.height + DELTA_Y*2) + "&");
-						url.append("maptype=" + cmd.maptype + "&");
-						url.append("format=png&");
-						url.append("key=" + mapkey + "&");
-						url.append("mobile=true&sensor=true");
-						String finalUrl = url.toString();
-						
-						int size = 0;
-						byte[] data = null;
-						try {
-							IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
-							
-							conn.setRequestMethod("GET");
-							
-							InputStream is = conn.openInputStream();
-							
-							int code = conn.getResponseCode();
-							String msg = conn.getResponseMessage();
-							LOG.TRACE("Google map respond with " + code + " " + msg);
-							
-							size = conn.getHeaderFieldInt("Content-Length", 0);
-							data = new byte[size];
-							for (int offset = 0; offset < size;) {
-								int n = is.read(data, offset, size - offset);
-								if (n <= 0)
-									break;
-								offset += n;
-							}
-						}
-						catch (IOException e) {
-							LOG.ERROR("Cannot fetch map", e);
-							continue;
-						}
-						
-						EncodedImage img = null;
-						try {
-							img = EncodedImage.createEncodedImage(data, 0, size);
-						}
-						catch (Exception e) {
-							LOG.ERROR("Cannot create EncodedImage from fetched data", e);
-							continue;
-						}
-					
-						cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
-					}
+					Enumeration e = queue.elements();
+					while (e.hasMoreElements())
+						cmds.addElement(e.nextElement());
+					queue.removeAllElements();
 				}
-			}
-			finally {
-				LOG.INFO("Map fetch thread exit");
+				
+				for (Enumeration e = mapfields.elements(); e.hasMoreElements();) {
+					WeakReference ref = (WeakReference)e.nextElement();
+					GoogleMapField mf = (GoogleMapField)ref.get();
+					if (mf != null)
+						mf.redraw();
+				}
+				
+				if (cmds.isEmpty())
+					continue;
+				
+				for (Enumeration e = cmds.elements(); e.hasMoreElements(); ) {
+					MapFetchCommand cmd = (MapFetchCommand)e.nextElement();
+					mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
+					
+					boolean done = false;
+					synchronized (threads) {
+						for (Enumeration et = threads.elements(); !done && et.hasMoreElements(); ) {
+							MapFetchThread th = (MapFetchThread)et.nextElement();
+							synchronized (th) {
+								if (th.isBusy()) {
+									if (th.startTime() > System.currentTimeMillis() + MAX_FETCH_TIME)
+										th.interrupt();
+									continue;
+								}
+							}
+							
+							th.process(cmd);
+							done = true;
+						}
+					}
+					
+					if (done)
+						continue;
+					
+					waiting.addElement(cmd);
+				}
 			}
 		}
 		
 	};
-	private static MapFetchThread fetchThreadObj = null;
+	
+	private static MapFetchThreadPool fetchThreadPool = null;
 	
 	public GoogleMapField() {
-		if (fetchThreadObj == null) {
-			fetchThreadObj = new MapFetchThread();
-			Thread fetchThread = new Thread(fetchThreadObj);
-			fetchThread.start();
+		if (fetchThreadPool == null) {
+			fetchThreadPool = new MapFetchThreadPool();
+			fetchThreadPool.start();
 		}
 		
 		maptype = MAP_TYPES[MAP_TYPE_ROADMAP];
@@ -228,7 +326,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	protected void paint(Graphics graphics) {
 		graphics.clear();
 		
-		CachedImage img = null;
+		CachedBitmap img = null;
 		synchronized (this) {
 			img = image;
 		}
@@ -243,7 +341,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		left -= DELTA_X;
 		top -= DELTA_Y;
-		graphics.drawImage(left, top, width - left, height - top, img.image, 0, 0, 0);
+		graphics.drawBitmap(left, top, width - left, height - top, img.bitmap, 0, 0);
 	}
 	
 	public void redraw() {
@@ -251,13 +349,14 @@ public class GoogleMapField extends Field implements RhoMapField {
 		MapFetchCommand cmd = null;
 		synchronized (this) {
 			CachedImage img = (CachedImage)cache.get(key);
-			if (img == null)
+			if (img == null) {
 				cmd = new MapFetchCommand(latitude, longitude, zoom,
 						width, height, maptype, this);
+			}
 			else
-				image = img;
+				image = new CachedBitmap(img);
 		}
-		fetchThreadObj.send(cmd);
+		fetchThreadPool.send(cmd);
 		invalidate();
 	}
 	
@@ -267,8 +366,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 		CachedImage newImage = new CachedImage(img, lat, lon, z);
 		synchronized (this) {
 			cache.put(key, newImage);
-			if (key == curKey)
-				image = newImage;
+			if (key == curKey) {
+				image = new CachedBitmap(newImage);
+			}
 		}
 		invalidate();
 	}
