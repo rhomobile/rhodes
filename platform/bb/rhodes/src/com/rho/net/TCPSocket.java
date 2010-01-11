@@ -9,6 +9,7 @@ import javax.microedition.io.SocketConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Vector;
 
 //import net.rim.device.api.io.SocketConnectionEnhanced;
 
@@ -20,6 +21,110 @@ public class TCPSocket extends RubyBasic {
 	//private SocketConnectionEnhanced m_extconn;
 	private OutputStream     m_os;
 	private InputStream      m_is;
+	
+	private SocketThread     m_thr;
+	
+	private static class Result {
+		
+		int size;
+		byte[] result;
+		
+		Result (int s) {
+			size = s;
+			result = null;
+		}
+		
+		Result (byte[] b) {
+			result = b;
+		}
+		
+	}
+	
+	private static class SocketCommand {
+		
+		private static final int READ = 0;
+		private static final int WRITE = 1;
+		
+		public int cmd;
+		public byte[] buffer;
+		public Result notifier;
+		
+		public SocketCommand(int c, byte[] b, Result n) {
+			cmd = c;
+			buffer = b;
+			notifier = n;
+		}
+		
+	};
+	
+	private class SocketThread extends Thread {
+		
+		private Vector queue = new Vector();
+		
+		public void send_command(int cmd, byte[] b, Result n) {
+			synchronized (queue) {
+				queue.addElement(new SocketCommand(cmd, b, n));
+				queue.notify();
+			}
+		}
+		
+		public void run() {
+			Vector cmds = new Vector();
+			for (;;) {
+				cmds.removeAllElements();
+				synchronized (queue) {
+					try {
+						queue.wait();
+					} catch (InterruptedException e) {
+						continue;
+					}
+					
+					for (int i = 0; i != queue.size(); ++i)
+						cmds.addElement(queue.elementAt(i));
+					queue.removeAllElements();
+				}
+				
+				for (int i = 0; i != cmds.size(); ++i) {
+					SocketCommand cmd = (SocketCommand)cmds.elementAt(i);
+					try {
+						switch(cmd.cmd) {
+						case SocketCommand.READ:
+							if (m_is == null)
+								m_is = m_conn.openInputStream();
+							int readed;
+							for (readed = 0; readed < cmd.buffer.length;) {
+								int n = m_is.read(cmd.buffer, readed, cmd.buffer.length - readed);
+								if (n < 0)
+									break;
+								readed += n;
+							}
+							synchronized (cmd.notifier) {
+								cmd.notifier.size = readed;
+								cmd.notifier.result = cmd.buffer;
+								cmd.notifier.notify();
+							}
+							break;
+						case SocketCommand.WRITE:
+							if (m_os == null)
+								m_os = m_conn.openOutputStream();
+							m_os.write(cmd.buffer);
+							synchronized (cmd.notifier) {
+								cmd.notifier.size = cmd.buffer.length;
+								cmd.notifier.notify();
+							}
+							break;
+						default:
+							// Silently ignore
+						}
+					}
+					catch (IOException e) {
+						// TODO:
+					}
+				}
+			}
+		}
+		
+	};
 	
 	public TCPSocket(RubyClass c) {
 		super(c);
@@ -33,6 +138,10 @@ public class TCPSocket extends RubyBasic {
     {
     	m_conn = ((NetworkAccess)RhoClassFactory.getNetworkAccess()).socketConnect(strHost, nPort);
     	
+    	/*
+    	m_thr = new SocketThread();
+    	m_thr.start();
+    	*/
     	/*
 		try{
 			m_extconn = (SocketConnectionEnhanced)m_conn;
@@ -62,6 +171,8 @@ public class TCPSocket extends RubyBasic {
     	m_is = null;
     	m_os = null;
     	m_conn = null;
+    	//m_thr.interrupt();
+    	//m_thr = null;
     }
 
     public int write(String strData)throws IOException
@@ -72,6 +183,21 @@ public class TCPSocket extends RubyBasic {
     	byte[] bytes = strData.getBytes(); 
     	m_os.write(bytes);
     	return bytes.length;
+    	
+    	/*
+    	Result res = new Result(0);
+    	m_thr.send_command(SocketCommand.WRITE, strData.getBytes(), res);
+    	synchronized (res) {
+    		for (;;) {
+				try {
+					res.wait();
+				} catch (InterruptedException e) {
+					continue;
+				}
+				return res.size;
+    		}
+		}
+		*/
     }
 
     // Similar to #read, but raises +EOFError+ at end of string instead of
@@ -86,9 +212,25 @@ public class TCPSocket extends RubyBasic {
     		m_is = m_conn.openInputStream();
     	
     	byte[] charBuffer = new byte[nBytes];
-        bufferedReadByByte(charBuffer, m_is);
+        int n = bufferedReadByByte(charBuffer, m_is);
     	
-        return new String(charBuffer);
+        return new String(charBuffer, 0, n == -1 ? 0 : n);
+
+        /*
+    	Result res = new Result(0);
+    	m_thr.send_command(SocketCommand.READ, new byte[nBytes], res);
+    	synchronized (res) {
+			for (;;) {
+				try {
+					res.wait();
+				}
+				catch (InterruptedException e) {
+					continue;
+				}
+				return new String(res.result, 0, res.size);
+			}
+		}
+		*/
     }
     
 	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
