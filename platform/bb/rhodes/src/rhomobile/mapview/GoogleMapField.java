@@ -38,12 +38,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	private static final int TILE_SIZE = 256;
 	
-	private static final String[] MAP_TYPES = {"roadmap", "satellite", "terrain", "hybrid"};
-	public static final int MAP_TYPE_ROADMAP = 0;
-	public static final int MAP_TYPE_SATELLITE = 1;
-	public static final int MAP_TYPE_TERRAIN = 2;
-	public static final int MAP_TYPE_HYBRID = 3;
-	
 	// Coordinates of center
 	private double latitude;
 	private double longitude;
@@ -159,7 +153,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 					url.append("maptype=" + cmd.maptype + "&");
 					url.append("format=png&");
 					url.append("key=" + mapkey + "&");
-					url.append("mobile=true&sensor=true");
+					url.append("mobile=false&sensor=true");
 					String finalUrl = url.toString();
 					
 					int size = 0;
@@ -304,7 +298,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			fetchThreadPool.start();
 		}
 		
-		maptype = MAP_TYPES[MAP_TYPE_ROADMAP];
+		maptype = "roadmap";
 	}
 	
 	public Field getBBField() {
@@ -437,6 +431,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 		redraw();
 	}
 	
+	public int calculateZoom(double latDelta, double lonDelta) {
+		int zoom1 = calcZoom(latDelta, width);
+		int zoom2 = calcZoom(lonDelta, height);
+		return zoom1 < zoom2 ? zoom1 : zoom2;
+	}
+	
+	public void setMapType(String type) {
+		maptype = type;
+	}
+	
 	private static double pow(double val, int pow) {
 		double result = 1.0;
 		if (pow < 0) {
@@ -450,6 +454,19 @@ public class GoogleMapField extends Field implements RhoMapField {
 			}
 		}
 		return result;
+	}
+	
+	private static int calcZoom(double degrees, int pixels) {
+		double angleRatio = degrees*TILE_SIZE/pixels;
+		// Calculate logarithm
+		double twoInZoomExp = 360/angleRatio;
+		
+		int zoom = 0;
+		while (twoInZoomExp > 1) {
+			twoInZoomExp /= 2;
+			++zoom;
+		}
+		return zoom;
 	}
 
 	private static long degreesToPixels(double n, int zoom) {
