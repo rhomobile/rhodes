@@ -1,0 +1,23 @@
+# Startup page for your application
+start_path = '/app'
+
+# Path to the options page (in this case handled by javascript)
+options_path = '/app/Settings'
+
+# Location of bundle url (i.e. from rhohub.com)
+rhobundle_zip_url = nil
+
+# Optional password to access bundle (usually not required)
+rhobundle_zip_pwd = nil
+
+# Rhodes runtime properties
+MinSeverity  = 1
+LogToOutput = 1
+LogCategories = *
+ExcludeLogCategories =
+KeepTrackOfLastVisitedPage = 0
+LastVisitedPage = ''
+
+arbitrary_option = 'rhodes rocks!'
+sync_poll_interval=0
+syncserver = ''
