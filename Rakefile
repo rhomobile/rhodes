@@ -24,8 +24,18 @@ load 'platform/linux/tasks/linux.rake'
 namespace "framework" do
   task :spec do
     loadpath = $LOAD_PATH.inject("") { |load_path,pe| load_path += " -I" + pe }
+
+    rhoruby = ""
+
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      rhoruby = 'res\\build-tools\\RhoRuby'
+    elsif RUBY_PLATFORM =~ /darwin/
+      rhoruby = 'res/build-tools/RubyMac'
+    else
+      rhoruby = 'res/build-tools/rubylinux'
+    end
    
-    puts `res\\build-tools\\RhoRuby  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
+    puts `#{rhoruby}  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
   end
 end
 
