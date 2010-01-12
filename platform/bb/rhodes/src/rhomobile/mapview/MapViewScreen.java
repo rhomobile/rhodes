@@ -1,5 +1,8 @@
 package rhomobile.mapview;
 
+import java.util.Hashtable;
+import java.util.Vector;
+
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
@@ -53,12 +56,12 @@ public class MapViewScreen extends MainScreen {
 	}
 	*/
 	
-	MapViewScreen(String providerName, double lat, double lon, int zoom) {
+	MapViewScreen(String providerName, Hashtable settings, Vector annotations) {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
 		//MenuItem closeItem = new CloseMenuItem(this, "Close", 0, 100);
 		//addMenuItem(closeItem);
 		createMapProvider(providerName);
-		createUI(lat, lon, zoom);
+		createUI(settings, annotations);
 	}
 	
 	private void createMapProvider(String providerName) {
@@ -73,13 +76,25 @@ public class MapViewScreen extends MainScreen {
 			throw new IllegalArgumentException("Unknown map provider: " + providerName);
 	}
 	
-	private void createUI(double lat, double lon, int zoom) {
+	private void createUI(Hashtable settings, Vector annotations) {
 		synchronized (Application.getEventLock()) {
 			mapField = mapProvider.createMap();
 			mapField.setPreferredSize(Display.getWidth(), Display.getHeight());
 			add(mapField.getBBField());
 		}
 		
+		Hashtable region = (Hashtable)settings.get("region");
+		double lat = ((Double)region.get("latitude")).doubleValue();
+		double lon = ((Double)region.get("longitude")).doubleValue();
+		
+		double latDelta = ((Double)region.get("latDelta")).doubleValue();
+		double lonDelta = ((Double)region.get("lonDelta")).doubleValue();
+		
+		String map_type = (String)settings.get("map_type");
+		
+		int zoom = mapField.calculateZoom(latDelta, lonDelta);
+		
+		mapField.setMapType(map_type);
 		mapField.moveTo(lat, lon);
 		mapField.setZoom(zoom);
 		

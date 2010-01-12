@@ -10,10 +10,14 @@ public interface RhoMapField {
 	public void move(int dx, int dy);
 	public void moveTo(double latitude, double longitude);
 	
+	public int calculateZoom(double latDelta, double lonDelta);
+	
 	public int getMinZoom();
 	public int getMaxZoom();
 	public void setZoom(int zoom);
 	public int getZoom();
+	
+	public void setMapType(String type);
 	
 	public int getLeft();
 	public int getTop();

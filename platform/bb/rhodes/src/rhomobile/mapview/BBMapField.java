@@ -14,4 +14,13 @@ public class BBMapField extends MapField implements RhoMapField {
 		super.moveTo((int)(latitude*100000), (int)(longitude*100000));
 	}
 
+	public int calculateZoom(double latDelta, double lonDelta) {
+		// TODO: implement
+		return 0;
+	}
+	
+	public void setMapType(String type) {
+		// Ignore
+	}
+
 }
