@@ -20,6 +20,9 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/syncengine_spec'
     config[:files] << 'spec/rhom_db_adapter_spec'
     config[:files] << 'spec/rhoerror_spec'
+    config[:files] << 'spec/bsearch_spec'
+#    config[:files] << 'spec/find_spec'  # find not available on the device
+
   end
 
   def run
