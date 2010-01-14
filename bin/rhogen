@@ -21,7 +21,11 @@ class String
     return self
   end
   def encoding
-    Encoding.new()
+    if Encoding.responds_to?('new')
+      Encoding.new()
+    else
+      Encoding.default_external()
+    end
   end
 end
 
