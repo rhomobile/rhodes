@@ -6,6 +6,8 @@ public interface RhoMapField {
 	
 	public Field getBBField();
 	
+	public void redraw();
+	
 	public void setPreferredSize(int width, int height);
 	public void move(int dx, int dy);
 	public void moveTo(double latitude, double longitude);

@@ -27,10 +27,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final int DELTA_X = 100;
 	private static final int DELTA_Y = 100;
 	
-	private static final int FETCH_THREAD_POOL_SIZE = 5;
+	private static final int FETCH_THREAD_POOL_SIZE = 4;
 	private static final long MAX_FETCH_TIME = 10000; // milliseconds
 	
-	private static final int MAP_REDRAW_INTERVAL = 500; // milliseconds
+	private static final int MAP_REDRAW_INTERVAL = 1000; // milliseconds
 	
 	// Static google parameters
 	private static final int MIN_ZOOM = 0;
@@ -99,6 +99,12 @@ public class GoogleMapField extends Field implements RhoMapField {
 			mapField = mf;
 		}
 		
+		public boolean equals(MapFetchCommand cmd) {
+			return latitude == cmd.latitude && longitude == cmd.longitude &&
+				zoom == cmd.zoom && width == cmd.width && maptype.equals(cmd.maptype) &&
+				mapField == cmd.mapField;
+		}
+		
 	}
 	
 	private static class MapFetchThread extends Thread {
@@ -117,16 +123,19 @@ public class GoogleMapField extends Field implements RhoMapField {
 			return processing != null;
 		}
 		
+		public boolean isProcessing(MapFetchCommand cmd) {
+			return processing == null ? false : processing.equals(cmd);
+		}
+		
 		public void process(MapFetchCommand cmd) {
-			synchronized (this) {
-				processing = cmd;
-				notify();
-			}
+			processing = cmd;
+			notify();
 		}
 		
 		public void run() {
 			try {
 				for(;;) {
+					MapFetchCommand cmd;
 					synchronized (this) {
 						processing = null;
 						try {
@@ -138,11 +147,11 @@ public class GoogleMapField extends Field implements RhoMapField {
 						if (processing == null)
 							continue;
 						
+						cmd = processing;
 						taskStartTime = System.currentTimeMillis();
 					}
 					
-					MapFetchCommand cmd = processing;
-					LOG.TRACE("Processing map fetch command: " + cmd.latitude + "," + cmd.longitude + ";zoom=" + cmd.zoom);
+					LOG.TRACE("Processing map fetch command (thread #" + hashCode() + "): " + cmd.latitude + "," + cmd.longitude + ";zoom=" + cmd.zoom);
 					
 					// Process received command
 					StringBuffer url = new StringBuffer();
@@ -192,6 +201,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 						continue;
 					}
 				
+					LOG.TRACE("Map request done, draw just received image");
 					cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
 				}
 			}
@@ -219,6 +229,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public void send(MapFetchCommand cmd) {
 			if (cmd == null)
 				return;
+			//LOG.TRACE("Send fetch command #" + cmd.hashCode());
 			synchronized (queue) {
 				queue.addElement(cmd);
 				queue.notify();
@@ -226,13 +237,11 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 
 		public void run() {
-			Vector cmds = new Vector();
+			Vector cmds;
 			Vector waiting = new Vector();
 			for(;;) {
-				cmds.removeAllElements();
-				for (Enumeration e = waiting.elements(); e.hasMoreElements();)
-					cmds.addElement(e.nextElement());
-				waiting.removeAllElements();
+				cmds = waiting;
+				waiting = new Vector();
 				
 				synchronized (queue) {
 					try {
@@ -252,8 +261,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 				for (Enumeration e = mapfields.elements(); e.hasMoreElements();) {
 					WeakReference ref = (WeakReference)e.nextElement();
 					GoogleMapField mf = (GoogleMapField)ref.get();
-					if (mf != null)
+					if (mf != null) {
+						//LOG.TRACE("Redraw mapfield #" + mf.hashCode());
 						mf.redraw();
+					}
 				}
 				
 				if (cmds.isEmpty())
@@ -267,23 +278,37 @@ public class GoogleMapField extends Field implements RhoMapField {
 					synchronized (threads) {
 						for (Enumeration et = threads.elements(); !done && et.hasMoreElements(); ) {
 							MapFetchThread th = (MapFetchThread)et.nextElement();
+							//LOG.TRACE("Receive fetch command #" + cmd.hashCode() + ", check if thread #" + th.hashCode() + " could process it...");
 							synchronized (th) {
 								if (th.isBusy()) {
-									if (th.startTime() > System.currentTimeMillis() + MAX_FETCH_TIME)
+									if (th.startTime() > System.currentTimeMillis() + MAX_FETCH_TIME) {
+										LOG.TRACE("Thread #" + th.hashCode() + " takes too much time to process command so interrupt it");
 										th.interrupt();
-									continue;
+										th.process(cmd);
+										done = true;
+									}
+									else if (th.isProcessing(cmd)) {
+										//LOG.TRACE("Thread #" + th.hashCode() + " already processing given fetch command");
+										done = true;
+									}
+									/*
+									else
+										LOG.TRACE("Thread #" + th.hashCode() + " is busy");
+									*/
+								}
+								else {
+									//LOG.TRACE("Thread #" + th.hashCode() + " is ready to process fetch command");
+									th.process(cmd);
+									done = true;
 								}
 							}
-							
-							th.process(cmd);
-							done = true;
 						}
 					}
 					
-					if (done)
-						continue;
-					
-					waiting.addElement(cmd);
+					if (!done) {
+						LOG.TRACE("No threads ready to fetch data (waiting queue contains " + waiting.size() + " elements)");
+						waiting.addElement(cmd);
+					}
 				}
 			}
 		}
@@ -311,10 +336,17 @@ public class GoogleMapField extends Field implements RhoMapField {
 		setExtent(width, height);
 	}
 	
-	private String makeCacheKey(double lat, double lon, int z) {
-		long x = (degreesToPixels(lon + 180, z)/DELTA_X)*DELTA_X + DELTA_X;
-		long y = (degreesToPixels(90 - lat, z)/DELTA_Y)*DELTA_Y + DELTA_Y;
-		return zoom + ";" + x + ";" + y;
+	private static String makeCacheKey(double lat, double lon, int z) {
+		long x = degreesToPixels(lon + 180, z)/DELTA_X;
+		long y = degreesToPixels(90 - lat, z)/DELTA_Y;
+		StringBuffer buf = new StringBuffer();
+		buf.append(z);
+		buf.append(';');
+		buf.append(x);
+		buf.append(';');
+		buf.append(y);
+		String key = buf.toString();
+		return key;
 	}
 	
 	protected void paint(Graphics graphics) {
@@ -355,12 +387,14 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	public void draw(double lat, double lon, int z, EncodedImage img) {
-		String key = makeCacheKey(lat, lon, z);
+		String newKey = makeCacheKey(lat, lon, z);
 		String curKey = makeCacheKey(latitude, longitude, zoom);
+		LOG.TRACE("DRAW: lat: " + lat + ", lon: " + lon + ", z: " + z + ", NEWKEY: " + newKey);
+		LOG.TRACE("DRAW: lat: " + latitude + ", lon: " + longitude + ", z: " + zoom + ", CURKEY: " + curKey);
 		CachedImage newImage = new CachedImage(img, lat, lon, z);
 		synchronized (this) {
-			cache.put(key, newImage);
-			if (key == curKey) {
+			cache.put(newKey, newImage);
+			if (newKey.equals(curKey)) {
 				image = new CachedBitmap(newImage);
 			}
 		}
@@ -458,9 +492,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	private static int calcZoom(double degrees, int pixels) {
 		double angleRatio = degrees*TILE_SIZE/pixels;
-		// Calculate logarithm
-		double twoInZoomExp = 360/angleRatio;
 		
+		double twoInZoomExp = 360/angleRatio;
+		// Calculate logarithm
 		int zoom = 0;
 		while (twoInZoomExp > 1) {
 			twoInZoomExp /= 2;
@@ -469,21 +503,21 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return zoom;
 	}
 
-	private static long degreesToPixels(double n, int zoom) {
+	private static long degreesToPixels(double n, int z) {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, zoom);
-		
-		return (long)(n*TILE_SIZE/angleRatio);
+		double angleRatio = 360/pow(2, z);
+		double val = n*TILE_SIZE/angleRatio;
+		return (long)val;
 	}
 	
-	private static double pixelsToDegrees(long n, int zoom) {
+	private static double pixelsToDegrees(long n, int z) {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, zoom);
-		
-		return n*angleRatio/TILE_SIZE;
+		double angleRatio = 360/pow(2, z);
+		double val = n*angleRatio/TILE_SIZE;
+		return val;
 	}
 }
