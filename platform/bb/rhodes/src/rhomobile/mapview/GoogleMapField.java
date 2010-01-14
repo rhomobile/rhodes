@@ -293,8 +293,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 				if (cmds.isEmpty())
 					continue;
 				
-				for (Enumeration e = cmds.elements(); e.hasMoreElements(); ) {
-					MapFetchCommand cmd = (MapFetchCommand)e.nextElement();
+				// Handle them in reverse order to get more recent commands processed quickly
+				for (int ix = cmds.size() - 1; ix >= 0; --ix) {
+					MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(ix);
 					mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
 					
 					boolean done = false;
@@ -332,11 +333,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 					}
 					
 					if (!done) {
-						LOG.TRACE("No threads ready to fetch data (waiting queue contains " + waiting.size() + " elements)");
-						for (int i = 0, lim = waiting.size() - WAITING_FETCH_COMMAND_MAX; i < lim; ++i)
-							waiting.removeElementAt(0);
+						LOG.TRACE("No threads ready to fetch data, waiting...");
 						waiting.addElement(cmd);
 					}
+				}
+				
+				if (!waiting.isEmpty()) {
+					// Reduce waiting queue size to WAITING_FETCH_COMMAND_MAX
+					for (int i = 0, lim = waiting.size() - WAITING_FETCH_COMMAND_MAX; i < lim; ++i)
+						waiting.removeElementAt(0);
+					LOG.TRACE("Waiting commands queue: " + waiting.size() + " elements");
 				}
 			}
 		}
@@ -394,8 +400,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 			top = (int)degreesToPixels(latitude - img.latitude, zoom);
 		}
 		
-		left += (width - img.image.getScaledWidth())/2;
-		top += (height - img.image.getScaledHeight())/2;
+		int imgWidth = img.bitmap.getWidth();
+		int imgHeight = img.bitmap.getHeight();
+		left += (width - imgWidth)/2;
+		top += (height - imgHeight)/2;
 		graphics.drawBitmap(left, top, width - left, height - top, img.bitmap, 0, 0);
 	}
 	
