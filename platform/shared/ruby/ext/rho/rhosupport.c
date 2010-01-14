@@ -406,6 +406,19 @@ rb_RhoLogWrite(VALUE rhoLog, VALUE str)
     return rb_RhoLogInfo(rhoLog,rb_str_new2("APP"),str);
 }
 
+static VALUE
+rb_RhoLogFlush(void)
+{
+    return NULL;
+}
+
+static VALUE
+rb_RhoLogFileno(void)
+{
+    return ULONG2NUM(1);
+}
+
+
 void rhoRubyFatalError(const char* szError){
     rhoPlainLog("",0,L_FATAL,"RubyVM",szError);
 }
@@ -473,6 +486,9 @@ static void Init_RhoLog(){
     rb_define_method(rb_RhoLogClass, "print", rb_RhoLogWrite, 1);
     rb_define_method(rb_RhoLogClass, "info", rb_RhoLogInfo, 2);
     rb_define_method(rb_RhoLogClass, "error", rb_RhoLogError, 2);
+    rb_define_method(rb_RhoLogClass, "flush", rb_RhoLogFlush, 0);
+    rb_define_method(rb_RhoLogClass, "fileno", rb_RhoLogFileno, 0);
+    rb_define_method(rb_RhoLogClass, "to_i", rb_RhoLogFileno, 0);
 
     appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
     
