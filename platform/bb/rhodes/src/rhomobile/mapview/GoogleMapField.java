@@ -13,6 +13,7 @@ import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
 
 import rhomobile.mapview.RhoMapField;
+import net.rim.device.api.math.Fixed32;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
@@ -365,8 +366,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 			left = -(int)degreesToPixels(longitude - img.longitude, zoom);
 			top = (int)degreesToPixels(latitude - img.latitude, zoom);
 		}
-		left -= DELTA_X;
-		top -= DELTA_Y;
+		
+		left += (width - img.image.getScaledWidth())/2;
+		top += (height - img.image.getScaledHeight())/2;
 		graphics.drawBitmap(left, top, width - left, height - top, img.bitmap, 0, 0);
 	}
 	
@@ -460,8 +462,15 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public void setZoom(int z) {
+		int prevZoom = zoom;
 		zoom = z;
 		validateZoom();
+		if (image != null && image.image != null) {
+			double x = pow(2, prevZoom - zoom);
+			int factor = Fixed32.tenThouToFP((int)(x*10000));
+			image.image = image.image.scaleImage32(factor, factor);
+			image.bitmap = image.image.getBitmap();
+		}
 		redraw();
 	}
 	
