@@ -22,5 +22,9 @@ public class BBMapField extends MapField implements RhoMapField {
 	public void setMapType(String type) {
 		// Ignore
 	}
+	
+	public void redraw() {
+		invalidate();
+	}
 
 }
