@@ -128,8 +128,7 @@ namespace "build" do
 end
 
 namespace "run" do
-  desc "Builds everything, launches iphone simulator"
-  task :iphone => ["config:iphone", "build:iphone:rhodes"] do
+  task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
     
      unless $sdk =~ /^iphonesimulator/
        puts "SDK must be one of the iphonesimulator sdks to run in the iphone simulator"
@@ -145,16 +144,16 @@ namespace "run" do
        end
      end
     
-     simrhodes = File.join($simapp,$guid)
+     $simrhodes = File.join($simapp,$guid)
    
-     mkdir_p File.join(simrhodes,"Documents")
-     mkdir_p File.join(simrhodes,"Library","Preferences")
+     mkdir_p File.join($simrhodes,"Documents")
+     mkdir_p File.join($simrhodes,"Library","Preferences")
      
-     puts `cp -R -p "#{rhorunner}" "#{simrhodes}"`
-     puts `ln -f -s "#{$simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
-     puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+     puts `cp -R -p "#{rhorunner}" "#{$simrhodes}"`
+     puts `ln -f -s "#{$simlink}/com.apple.PeoplePicker.plist" "#{$simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
+     puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{$simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
 
-     puts `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
+     puts `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
      rholog = $simapp + "/" + $guid + "/Documents/RhoLog.txt"
      apprholog = $app_path + "/rholog.txt"
      rm_f apprholog
@@ -164,8 +163,81 @@ namespace "run" do
      f << "(version 1)\n(debug deny)\n(allow default)\n"
      f.close
      
-     
+  end
+
+  # split this off separate so running it normally is run:iphone
+  # testing we will not launch emulator directly
+  desc "Builds everything, launches iphone simulator"
+  task :iphone => :buildsim do
      system("open \"#{$sim}/iPhone Simulator.app\"")
+
+  end
+
+  task :iphonespec => :buildsim do
+
+    sdkroot = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+              $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+
+    ENV["CFFIXED_USER_HOME"] = $simrhodes
+    ENV["DYLD_ROOT_PATH"] = sdkroot
+    ENV["DYLD_FRAMEWORK_PATH"] = sdkroot + "/System/Library/Frameworks"
+    ENV["IPHONE_SIMULATOR_ROOT"] = sdkroot
+
+    command = '"' + $simrhodes + '/rhorunner.app/rhorunner"' + " -RegisterForSystemEvents"
+
+    total = failed = passed = 1
+
+    #if someone runs against the wrong app, kill after 120 seconds
+    Thread.new {
+      sleep 300
+      `killall -9 rhorunner`
+    }
+
+    `killall -9 rhorunner`
+    faillog = []
+    getdump = false
+    start = Time.now
+    io = IO.popen(command)
+    io.each { |line|
+      puts line
+
+      if getdump
+        if line =~ /^I/
+          getdump = false
+        else
+          faillog << line
+        end
+      end
+
+      if line =~ /\*\*\*Failed:\s+(.*)/
+        failed = $1
+        `killall -9 rhorunner`
+      elsif line =~ /\*\*\*Total:\s+(.*)/
+        total = $1
+      elsif line =~ /\*\*\*Passed:\s+(.*)/
+        passed = $1
+      end
+
+      if line =~ /\| FAIL:/
+        faillog << line.gsub(/I.*APP\|/,"\n\n***")
+        getdump = true
+      end
+    }
+    finish = Time.now
+
+    rm_rf $app_path + "/faillog.txt"
+    File.open($app_path + "/faillog.txt", "w") { |io| faillog.each {|x| io << x }  } if failed.to_i > 0
+
+    puts "************************"
+    puts "\n\n"
+    puts "Tests completed in #{finish - start} seconds"
+    puts "Total: #{total}"
+    puts "Passed: #{passed}"
+    puts "Failed: #{failed}"
+    puts "\n"
+    puts "Failures stored in faillog.txt" if failed.to_i > 0
+    
+    exit failed.to_i
   end
 end
 
