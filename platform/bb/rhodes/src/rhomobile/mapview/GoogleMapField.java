@@ -18,6 +18,7 @@ import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
+import net.rim.device.api.util.MathUtilities;
 
 public class GoogleMapField extends Field implements RhoMapField {
 
@@ -32,6 +33,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final long MAX_FETCH_TIME = 10000; // milliseconds
 	
 	private static final int MAP_REDRAW_INTERVAL = 1000; // milliseconds
+	
+	private static final int WAITING_FETCH_COMMAND_MAX = 10;
 	
 	// Static google parameters
 	private static final int MIN_ZOOM = 0;
@@ -53,12 +56,14 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public double latitude;
 		public double longitude;
 		public int zoom;
+		public long lastUsed;
 		
 		public CachedImage(EncodedImage img, double lat, double lon, int z) {
 			image = img;
 			latitude = lat;
 			longitude = lon;
 			zoom = z;
+			lastUsed = System.currentTimeMillis();
 		}
 	};
 	
@@ -308,6 +313,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 					
 					if (!done) {
 						LOG.TRACE("No threads ready to fetch data (waiting queue contains " + waiting.size() + " elements)");
+						for (int i = 0, lim = waiting.size() - WAITING_FETCH_COMMAND_MAX; i < lim; ++i)
+							waiting.removeElementAt(0);
 						waiting.addElement(cmd);
 					}
 				}
@@ -381,8 +388,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 				cmd = new MapFetchCommand(latitude, longitude, zoom,
 						width, height, maptype, this);
 			}
-			else
+			else {
+				img.lastUsed = System.currentTimeMillis();
 				image = new CachedBitmap(img);
+			}
 		}
 		fetchThreadPool.send(cmd);
 		invalidate();
@@ -391,16 +400,21 @@ public class GoogleMapField extends Field implements RhoMapField {
 	public void draw(double lat, double lon, int z, EncodedImage img) {
 		String newKey = makeCacheKey(lat, lon, z);
 		String curKey = makeCacheKey(latitude, longitude, zoom);
-		LOG.TRACE("DRAW: lat: " + lat + ", lon: " + lon + ", z: " + z + ", NEWKEY: " + newKey);
-		LOG.TRACE("DRAW: lat: " + latitude + ", lon: " + longitude + ", z: " + zoom + ", CURKEY: " + curKey);
+		//LOG.TRACE("DRAW: lat: " + lat + ", lon: " + lon + ", z: " + z + ", NEWKEY: " + newKey);
+		//LOG.TRACE("DRAW: lat: " + latitude + ", lon: " + longitude + ", z: " + zoom + ", CURKEY: " + curKey);
 		CachedImage newImage = new CachedImage(img, lat, lon, z);
 		synchronized (this) {
 			cache.put(newKey, newImage);
+			checkCache();
 			if (newKey.equals(curKey)) {
 				image = new CachedBitmap(newImage);
 			}
 		}
 		invalidate();
+	}
+	
+	private void checkCache() {
+		// TODO:
 	}
 	
 	public int getPreferredWidth() {
@@ -466,8 +480,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 		zoom = z;
 		validateZoom();
 		if (image != null && image.image != null) {
-			double x = pow(2, prevZoom - zoom);
+			double x = MathUtilities.pow(2, prevZoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
+			//factor = Fixed32.mul(factor, image.image.getScaleX32());
 			image.image = image.image.scaleImage32(factor, factor);
 			image.bitmap = image.image.getBitmap();
 		}
@@ -484,31 +499,11 @@ public class GoogleMapField extends Field implements RhoMapField {
 		maptype = type;
 	}
 	
-	private static double pow(double val, int pow) {
-		double result = 1.0;
-		if (pow < 0) {
-			for (int i = 0; i != pow; --i) {
-				result /= val;
-			}
-		}
-		else {
-			for (int i = 0; i != pow; ++i) {
-				result *= val;
-			}
-		}
-		return result;
-	}
-	
 	private static int calcZoom(double degrees, int pixels) {
 		double angleRatio = degrees*TILE_SIZE/pixels;
 		
 		double twoInZoomExp = 360/angleRatio;
-		// Calculate logarithm
-		int zoom = 0;
-		while (twoInZoomExp > 1) {
-			twoInZoomExp /= 2;
-			++zoom;
-		}
+		int zoom = MathUtilities.log2((long)twoInZoomExp);
 		return zoom;
 	}
 
@@ -516,7 +511,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, z);
+		double angleRatio = 360/MathUtilities.pow(2, z);
 		double val = n*TILE_SIZE/angleRatio;
 		return (long)val;
 	}
@@ -525,7 +520,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/pow(2, z);
+		double angleRatio = 360/MathUtilities.pow(2, z);
 		double val = n*angleRatio/TILE_SIZE;
 		return val;
 	}
