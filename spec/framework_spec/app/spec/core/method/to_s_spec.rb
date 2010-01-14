@@ -1,0 +1,6 @@
+require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/to_s'
+
+describe "Method#to_s" do
+  it_behaves_like(:method_to_s, :to_s)
+end

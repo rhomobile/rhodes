@@ -185,22 +185,48 @@ namespace "run" do
 
     command = '"' + $simrhodes + '/rhorunner.app/rhorunner"' + " -RegisterForSystemEvents"
 
-    total = failed = passed = 0
+    total = failed = passed = 1
 
+    #if someone runs against the wrong app, kill after 120 seconds
+    Thread.new {
+      sleep 300
+      `killall -9 rhorunner`
+    }
+
+    `killall -9 rhorunner`
+    faillog = []
+    getdump = false
     start = Time.now
     io = IO.popen(command)
     io.each { |line|
       puts line
-      if line =~ /\*\*\*Failed:\s+([0-9]+)/
+
+      if getdump
+        if line =~ /^I/
+          getdump = false
+        else
+          faillog << line
+        end
+      end
+
+      if line =~ /\*\*\*Failed:\s+(.*)/
         failed = $1
         `killall -9 rhorunner`
-      elsif line =~ /\*\*\*Total:\s+([0-9]+)/
+      elsif line =~ /\*\*\*Total:\s+(.*)/
         total = $1
-      elsif line =~ /\*\*\*Passed:\s+([0-9]+)/
+      elsif line =~ /\*\*\*Passed:\s+(.*)/
         passed = $1
+      end
+
+      if line =~ /\| FAIL:/
+        faillog << line.gsub(/I.*APP\|/,"\n\n***")
+        getdump = true
       end
     }
     finish = Time.now
+
+    rm_rf $app_path + "/faillog.txt"
+    File.open($app_path + "/faillog.txt", "w") { |io| faillog.each {|x| io << x }  } if failed.to_i > 0
 
     puts "************************"
     puts "\n\n"
@@ -209,7 +235,8 @@ namespace "run" do
     puts "Passed: #{passed}"
     puts "Failed: #{failed}"
     puts "\n"
-
+    puts "Failures stored in faillog.txt" if failed.to_i > 0
+    
     exit failed.to_i
   end
 end
