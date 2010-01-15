@@ -197,7 +197,7 @@ public class MapViewScreen extends MainScreen {
 			
 			//int newDx = dx*10;
 			//int newDy = dy*10;
-			LOG.TRACE("Scroll by " + newDx + "," + newDy);
+			//LOG.TRACE("Scroll by " + newDx + "," + newDy);
 			mapField.move(newDx, newDy);
 		}
 		else if (mode == ZOOM_MODE && dy != 0) {
@@ -212,7 +212,7 @@ public class MapViewScreen extends MainScreen {
 			else {
 				newZoom = Math.min(currentZoom + 1, maxZoom);
 			}
-			LOG.TRACE("Set zoom to " + newZoom + " (was " + currentZoom + ")");
+			//LOG.TRACE("Set zoom to " + newZoom + " (was " + currentZoom + ")");
 			mapField.setZoom(newZoom);
 		}
 		return true;

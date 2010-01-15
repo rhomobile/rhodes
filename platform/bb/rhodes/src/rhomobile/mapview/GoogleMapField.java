@@ -18,7 +18,9 @@ import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
+import net.rim.device.api.util.Comparator;
 import net.rim.device.api.util.MathUtilities;
+import net.rim.device.api.util.SimpleSortingVector;
 
 public class GoogleMapField extends Field implements RhoMapField {
 
@@ -35,6 +37,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final int MAP_REDRAW_INTERVAL = 1000; // milliseconds
 	
 	private static final int WAITING_FETCH_COMMAND_MAX = 10;
+	
+	// Maximum size of image cache (number of images stored locally)
+	private static final int MAX_CACHE_SIZE = 10;
 	
 	// Static google parameters
 	private static final int MIN_ZOOM = 0;
@@ -56,6 +61,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public double latitude;
 		public double longitude;
 		public int zoom;
+		public String key;
 		public long lastUsed;
 		
 		public CachedImage(EncodedImage img, double lat, double lon, int z) {
@@ -63,6 +69,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			latitude = lat;
 			longitude = lon;
 			zoom = z;
+			key = makeCacheKey(latitude, longitude, zoom);
 			lastUsed = System.currentTimeMillis();
 		}
 	};
@@ -119,6 +126,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		
 		private MapFetchCommand processing = null;
 		private long taskStartTime;
+		private boolean active = true;
 		
 		// Return time of start current task. Return undefined value if no current task exists.
 		public long startTime() {
@@ -134,13 +142,20 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		
 		public void process(MapFetchCommand cmd) {
-			processing = cmd;
-			notify();
+			synchronized (this) {
+				processing = cmd;
+				notify();
+			}
+		}
+		
+		public void stop() {
+			active = false;
+			interrupt();
 		}
 		
 		public void run() {
 			try {
-				for(;;) {
+				while (active) {
 					MapFetchCommand cmd;
 					synchronized (this) {
 						processing = null;
@@ -186,8 +201,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 						
 						size = conn.getHeaderFieldInt("Content-Length", 0);
 						data = new byte[size];
+						
+						final int BLOCK_SIZE = 1024;
 						for (int offset = 0; offset < size;) {
-							int n = is.read(data, offset, size - offset);
+							int n = is.read(data, offset, Math.min(size - offset, BLOCK_SIZE));
 							if (n < 0)
 								break;
 							offset += n;
@@ -276,47 +293,56 @@ public class GoogleMapField extends Field implements RhoMapField {
 				if (cmds.isEmpty())
 					continue;
 				
-				for (Enumeration e = cmds.elements(); e.hasMoreElements(); ) {
-					MapFetchCommand cmd = (MapFetchCommand)e.nextElement();
+				// Handle them in reverse order to get more recent commands processed quickly
+				for (int ix = cmds.size() - 1; ix >= 0; --ix) {
+					MapFetchCommand cmd = (MapFetchCommand)cmds.elementAt(ix);
 					mapfields.put(new Integer(cmd.mapField.hashCode()), new WeakReference(cmd.mapField));
 					
 					boolean done = false;
-					synchronized (threads) {
-						for (Enumeration et = threads.elements(); !done && et.hasMoreElements(); ) {
-							MapFetchThread th = (MapFetchThread)et.nextElement();
-							//LOG.TRACE("Receive fetch command #" + cmd.hashCode() + ", check if thread #" + th.hashCode() + " could process it...");
-							synchronized (th) {
-								if (th.isBusy()) {
-									if (th.startTime() > System.currentTimeMillis() + MAX_FETCH_TIME) {
-										LOG.TRACE("Thread #" + th.hashCode() + " takes too much time to process command so interrupt it");
-										th.interrupt();
-										th.process(cmd);
-										done = true;
-									}
-									else if (th.isProcessing(cmd)) {
-										//LOG.TRACE("Thread #" + th.hashCode() + " already processing given fetch command");
-										done = true;
-									}
-									/*
-									else
-										LOG.TRACE("Thread #" + th.hashCode() + " is busy");
-									*/
-								}
-								else {
-									//LOG.TRACE("Thread #" + th.hashCode() + " is ready to process fetch command");
+					for (int i = 0, lim = threads.size(); !done && i < lim; ++i) {
+						MapFetchThread th = (MapFetchThread)threads.elementAt(i);
+						//LOG.TRACE("Receive fetch command #" + cmd.hashCode() + ", check if thread #" + th.hashCode() + " could process it...");
+						synchronized (th) {
+							if (th.isBusy()) {
+								long maxTime = th.startTime() + MAX_FETCH_TIME;
+								long curTime = System.currentTimeMillis();
+								if (curTime > maxTime) {
+									LOG.TRACE("Thread #" + th.hashCode() + " takes too much time to process command so interrupt it");
+									th.stop();
+									th = new MapFetchThread();
+									th.start();
+									threads.setElementAt(th, i);
 									th.process(cmd);
 									done = true;
 								}
+								else if (th.isProcessing(cmd)) {
+									//LOG.TRACE("Thread #" + th.hashCode() + " already processing given fetch command");
+									done = true;
+								}
+								/*
+								else
+									LOG.TRACE("Thread #" + th.hashCode() + " is busy");
+								*/
+							}
+							else {
+								//LOG.TRACE("Thread #" + th.hashCode() + " is ready to process fetch command");
+								th.process(cmd);
+								done = true;
 							}
 						}
 					}
 					
 					if (!done) {
-						LOG.TRACE("No threads ready to fetch data (waiting queue contains " + waiting.size() + " elements)");
-						for (int i = 0, lim = waiting.size() - WAITING_FETCH_COMMAND_MAX; i < lim; ++i)
-							waiting.removeElementAt(0);
+						LOG.TRACE("No threads ready to fetch data, waiting...");
 						waiting.addElement(cmd);
 					}
+				}
+				
+				if (!waiting.isEmpty()) {
+					// Reduce waiting queue size to WAITING_FETCH_COMMAND_MAX
+					for (int i = 0, lim = waiting.size() - WAITING_FETCH_COMMAND_MAX; i < lim; ++i)
+						waiting.removeElementAt(0);
+					LOG.TRACE("Waiting commands queue: " + waiting.size() + " elements");
 				}
 			}
 		}
@@ -374,8 +400,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 			top = (int)degreesToPixels(latitude - img.latitude, zoom);
 		}
 		
-		left += (width - img.image.getScaledWidth())/2;
-		top += (height - img.image.getScaledHeight())/2;
+		int imgWidth = img.bitmap.getWidth();
+		int imgHeight = img.bitmap.getHeight();
+		left += (width - imgWidth)/2;
+		top += (height - imgHeight)/2;
 		graphics.drawBitmap(left, top, width - left, height - top, img.bitmap, 0, 0);
 	}
 	
@@ -398,11 +426,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	public void draw(double lat, double lon, int z, EncodedImage img) {
-		String newKey = makeCacheKey(lat, lon, z);
-		String curKey = makeCacheKey(latitude, longitude, zoom);
-		//LOG.TRACE("DRAW: lat: " + lat + ", lon: " + lon + ", z: " + z + ", NEWKEY: " + newKey);
-		//LOG.TRACE("DRAW: lat: " + latitude + ", lon: " + longitude + ", z: " + zoom + ", CURKEY: " + curKey);
 		CachedImage newImage = new CachedImage(img, lat, lon, z);
+		String newKey = newImage.key;
+		String curKey = image == null ? "" : image.key;
 		synchronized (this) {
 			cache.put(newKey, newImage);
 			checkCache();
@@ -413,8 +439,38 @@ public class GoogleMapField extends Field implements RhoMapField {
 		invalidate();
 	}
 	
+	
+	private static class CachedImageComparator implements Comparator {
+		
+		public int compare (Object o1, Object o2) {
+			long l1 = ((CachedImage)o1).lastUsed;
+			long l2 = ((CachedImage)o2).lastUsed;
+			return l1 < l2 ? -1 : l1 > l2 ? 1 : 0;
+		}
+		
+	};
+	
 	private void checkCache() {
 		// TODO:
+		
+		if (cache.size() <= MAX_CACHE_SIZE)
+			return;
+		
+		SimpleSortingVector vec = new SimpleSortingVector();
+		vec.setSort(true);
+		vec.setSortComparator(new CachedImageComparator());
+		
+		Enumeration e = cache.elements();
+		while (e.hasMoreElements())
+			vec.addElement(e.nextElement());
+		
+		Hashtable newCache = new Hashtable();
+		for (int i = 0; i < MAX_CACHE_SIZE; ++i) {
+			CachedImage img = (CachedImage)vec.elementAt(i);
+			newCache.put(img.key, img);
+		}
+		
+		cache = newCache;
 	}
 	
 	public int getPreferredWidth() {
