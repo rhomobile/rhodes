@@ -97,7 +97,7 @@ describe "Marshal.dump" do
 
   it "raises a TypeError if dumping a IO/File instance" do
     lambda { Marshal.dump(STDIN) }.should raise_error(TypeError)
-    lambda { File.open(File.join(__rhoGetCurrentDir(), __FILE__)) { |f| Marshal.dump(f) } }.should raise_error(TypeError)
+    lambda { File.open(File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq")) { |f| Marshal.dump(f) } }.should raise_error(TypeError)
   end
 
   it "raises a TypeError if dumping a MatchData instance" do

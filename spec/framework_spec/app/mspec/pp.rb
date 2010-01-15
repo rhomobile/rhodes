@@ -877,17 +877,17 @@ class Object
 end
 
 [Numeric, Symbol, FalseClass, TrueClass, NilClass, Module].each {|c|
-  c.class_eval {
-    def pretty_print_cycle(q)
-      q.text inspect
-    end
-  }
+#  c.class_eval {
+#    def pretty_print_cycle(q)
+#      q.text inspect
+#    end
+#  }
 }
 
 [Numeric, FalseClass, TrueClass, Module].each {|c|
-  c.class_eval {
-    def pretty_print(q)
-      q.text inspect
-    end
-  }
+#  c.class_eval {
+#    def pretty_print(q)
+#      q.text inspect
+#    end
+#  }
 }

@@ -172,28 +172,29 @@ describe "The 'case'-construct" do
     end.should == 'bar'
   end
 
-  it "raises a SyntaxError when 'else' is used when no 'when' is given" do
-    lambda {
-      eval <<-CODE
-      case 4
-        else
-          true
-      end
-      CODE
-    }.should raise_error(SyntaxError)
-  end
-
-  it "raises a SyntaxError when 'else' is used before a 'when' was given" do
-    lambda {
-      eval <<-CODE
-      case 4
-        else
-          true
-        when 4; false
-      end
-      CODE
-    }.should raise_error(SyntaxError)
-  end
+# XXX eval not supported
+#  it "raises a SyntaxError when 'else' is used when no 'when' is given" do
+#    lambda {
+#      eval <<-CODE
+#      case 4
+#        else
+#          true
+#      end
+#      CODE
+#    }.should raise_error(SyntaxError)
+#  end
+#
+#  it "raises a SyntaxError when 'else' is used before a 'when' was given" do
+#    lambda {
+#      eval <<-CODE
+#      case 4
+#        else
+#          true
+#        when 4; false
+#      end
+#      CODE
+#    }.should raise_error(SyntaxError)
+#  end
 
   it "supports nested case statements" do
     result = false

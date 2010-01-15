@@ -12,8 +12,8 @@ ruby_version_is '1.9' do
     
     it "returns true if the String contains only ASCII characters
     and is encoded as ASCII" do
-      "hello".force_encoding('ASCII').ascii_only?.should be_true
-      "hello".encode("ASCII").ascii_only?.should be_true
+      "hello".force_encoding('ASCII-8BIT').ascii_only?.should be_true
+      "hello".encode("ASCII-8BIT").ascii_only?.should be_true
     end
 
     it "returns true if the String contains only ASCII characters
@@ -34,7 +34,7 @@ ruby_version_is '1.9' do
     
     it "returns false if the String contains only non-ASCII characters
     and is encoded as ASCII" do
-      "\u{6666}".force_encoding('ASCII').ascii_only?.should be_false
+      "\u{6666}".force_encoding('ASCII-8BIT').ascii_only?.should be_false
     end
     
     it "returns false if the String contains ASCII and non-ASCII characters" do
@@ -43,7 +43,7 @@ ruby_version_is '1.9' do
 
     it "returns false if the String contains ASCII and non-ASCII characters
     and is encoded as ASCII" do
-      "hello, \u{6666}".force_encoding('ASCII').ascii_only?.should be_false
+      "hello, \u{6666}".force_encoding('ASCII-8BIT').ascii_only?.should be_false
     end
     
     it "returns false if the String contains ASCII and non-ASCII characters

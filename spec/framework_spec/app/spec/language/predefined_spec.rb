@@ -1,5 +1,5 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
-require 'stringio'
+#require 'stringio'
 
 # The following tables are excerpted from Programming Ruby: The Pragmatic Programmer's Guide'
 # Second Edition by Dave Thomas, Chad Fowler, and Andy Hunt, page 319-22.
@@ -62,25 +62,26 @@ describe "Predefined global $~" do
     $~.nil?.should == true
   end
 
-  it "is set at the method-scoped level rather than block-scoped" do
-    obj = Object.new
-    def obj.foo; yield; end
-    def obj.foo2(&proc); proc.call; end
-
-    match = /foo/.match "foo"
-
-    obj.foo { match = /bar/.match("bar") }
-
-    $~.should == match
-
-    eval 'match = /baz/.match("baz")'
-
-    $~.should == match
-
-    obj.foo2 { match = /qux/.match("qux") }
-
-    $~.should == match
-  end
+# XXX eval not supported
+#  it "is set at the method-scoped level rather than block-scoped" do
+#    obj = Object.new
+#    def obj.foo; yield; end
+#    def obj.foo2(&proc); proc.call; end
+#
+#    match = /foo/.match "foo"
+#
+#    obj.foo { match = /bar/.match("bar") }
+#
+#    $~.should == match
+#
+#    eval 'match = /baz/.match("baz")'
+#
+#    $~.should == match
+#
+#    obj.foo2 { match = /qux/.match("qux") }
+#
+#    $~.should == match
+#  end
 
   it "raises an error if assigned an object not nil or instanceof MatchData" do
     lambda { $~ = nil }.should_not raise_error
@@ -144,44 +145,45 @@ describe "Predefined globals $1..N" do
   end
 end
 
-describe "Predefined global $stdout" do
-  before(:each) do
-    @old_stdout = $stdout
-  end
-
-  after(:each) do
-    $stdout = @old_stdout
-  end
-
-  ruby_version_is "" ... "1.9" do
-    it "is the same as $defout" do
-      $stdout.should == $defout
-
-      $stdout = IOStub.new
-      $stdout.should == $defout
-    end
-  end
-
-  it "is the same as $DEFAULT_OUTPUT from 'English' library" do
-    require 'English'
-    $stdout.should == $DEFAULT_OUTPUT
-
-    $stdout = IOStub.new
-    $stdout.should == $DEFAULT_OUTPUT
-  end
-
-  it "raises TypeError error if assigned to nil" do
-    lambda { $stdout = nil }.should raise_error(TypeError)
-  end
-
-  it "raises TypeError error if assigned to object that doesn't respond to #write" do
-    obj = mock('object')
-    lambda { $stdout = obj }.should raise_error(TypeError)
-
-    obj.stub!(:write)
-    lambda { $stdout = obj }.should_not raise_error()
-  end
-end
+# XXX our $stdout is not the same
+#describe "Predefined global $stdout" do
+#  before(:each) do
+#    @old_stdout = $stdout
+#  end
+#
+#  after(:each) do
+#    $stdout = @old_stdout
+#  end
+#
+#  ruby_version_is "" ... "1.9" do
+#    it "is the same as $defout" do
+#      $stdout.should == $defout
+#
+#      $stdout = IOStub.new
+#      $stdout.should == $defout
+#    end
+#  end
+#
+#  it "is the same as $DEFAULT_OUTPUT from 'English' library" do
+#    require 'English'
+#    $stdout.should == $DEFAULT_OUTPUT
+#
+#    $stdout = IOStub.new
+#    $stdout.should == $DEFAULT_OUTPUT
+#  end
+#
+#  it "raises TypeError error if assigned to nil" do
+#    lambda { $stdout = nil }.should raise_error(TypeError)
+#  end
+#
+#  it "raises TypeError error if assigned to object that doesn't respond to #write" do
+#    obj = mock('object')
+#    lambda { $stdout = obj }.should raise_error(TypeError)
+#
+#    obj.stub!(:write)
+#    lambda { $stdout = obj }.should_not raise_error()
+#  end
+#end
 
 =begin
 Input/Output Variables 
@@ -237,29 +239,30 @@ describe "Predefined global $_" do
     $_.should == read
   end
 
-  it "is set at the method-scoped level rather than block-scoped" do
-    obj = Object.new
-    def obj.foo; yield; end
-    def obj.foo2; yield; end
-
-    stdin = StringIO.new("foo\nbar\nbaz\nqux\n", "r")
-    match = stdin.gets
-
-    obj.foo { match = stdin.gets }
-
-    match.should == "bar\n"
-    $_.should == match
-
-    eval 'match = stdin.gets'
-
-    match.should == "baz\n"
-    $_.should == match
-
-    obj.foo2 { match = stdin.gets }
-
-    match.should == "qux\n"
-    $_.should == match
-  end
+# XXX eval not supported
+#  it "is set at the method-scoped level rather than block-scoped" do
+#    obj = Object.new
+#    def obj.foo; yield; end
+#    def obj.foo2; yield; end
+#
+#    stdin = StringIO.new("foo\nbar\nbaz\nqux\n", "r")
+#    match = stdin.gets
+#
+#    obj.foo { match = stdin.gets }
+#
+#    match.should == "bar\n"
+#    $_.should == match
+#
+#    eval 'match = stdin.gets'
+#
+#    match.should == "baz\n"
+#    $_.should == match
+#
+#    obj.foo2 { match = stdin.gets }
+#
+#    match.should == "qux\n"
+#    $_.should == match
+#  end
 
   it "can be assigned any value" do
     lambda { $_ = nil }.should_not raise_error
@@ -319,35 +322,36 @@ $VERBOSE         Object          Set to true if the -v, --version, -W, or -w opt
 $-v              Object          Synonym for $VERBOSE. 
 $-w              Object          Synonym for $VERBOSE. 
 =end
-describe "Execution variable $:" do
-  it "is initialized to an array of strings" do
-    $:.is_a?(Array).should == true
-    ($:.length > 0).should == true
-  end
-
-  it "includes the current directory" do
-    $:.should include(".")
-  end
-
-  it "does not include '.' when the taint check level > 1" do
-    begin
-      orig_opts, ENV['RUBYOPT'] = ENV['RUBYOPT'], '-T'
-      `#{RUBY_EXE} -e 'p $:.include?(".")'`.should == "false\n"
-    ensure
-      ENV['RUBYOPT'] = orig_opts
-    end
-  end
-
-  it "is the same object as $LOAD_PATH and $-I" do
-    $:.__id__.should == $LOAD_PATH.__id__
-    $:.__id__.should == $-I.__id__
-  end
-  
-  it "can be changed via <<" do
-    $: << "foo"
-    $:.should include("foo")
-  end
-end
+# XXX no external interpreter
+#describe "Execution variable $:" do
+#  it "is initialized to an array of strings" do
+#    $:.is_a?(Array).should == true
+#    ($:.length > 0).should == true
+#  end
+#
+#  it "includes the current directory" do
+#    $:.should include(".")
+#  end
+#
+#  it "does not include '.' when the taint check level > 1" do
+#    begin
+#      orig_opts, ENV['RUBYOPT'] = ENV['RUBYOPT'], '-T'
+#      `#{RUBY_EXE} -e 'p $:.include?(".")'`.should == "false\n"
+#    ensure
+#      ENV['RUBYOPT'] = orig_opts
+#    end
+#  end
+#
+#  it "is the same object as $LOAD_PATH and $-I" do
+#    $:.__id__.should == $LOAD_PATH.__id__
+#    $:.__id__.should == $-I.__id__
+#  end
+#
+#  it "can be changed via <<" do
+#    $: << "foo"
+#    $:.should include("foo")
+#  end
+#end
 =begin
 Standard Objects 
 ---------------------------------------------------------------------------------------------------
@@ -443,13 +447,14 @@ TRUE                 TrueClass   Synonym for true.
 =end
 
 describe "The predefined global constants" do
-  it "includes DATA when main script contains __END__" do
-    ruby_exe(fixture(File.join(__rhoGetCurrentDir(), __FILE__), "predefined.rb")).chomp.should == "true"
-  end
-
-  it "does not include DATA when main script contains no __END__" do
-    ruby_exe("puts Object.const_defined?(:DATA)").chomp.should == 'false'
-  end
+# XXX no external interpreter
+#  it "includes DATA when main script contains __END__" do
+#    ruby_exe(fixture(File.join(__rhoGetCurrentDir(), __FILE__), "predefined.rb")).chomp.should == "true"
+#  end
+#
+#  it "does not include DATA when main script contains no __END__" do
+#    ruby_exe("puts Object.const_defined?(:DATA)").chomp.should == 'false'
+#  end
 
   it "includes TRUE" do
     Object.const_defined?(:TRUE).should == true

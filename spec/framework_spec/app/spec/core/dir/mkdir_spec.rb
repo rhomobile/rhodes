@@ -36,7 +36,10 @@ describe "Dir.mkdir" do
 
   it "raises a SystemCallError when lacking adequate permissions in the parent dir" do
     # In case something happened it it didn't get cleaned up.
-      FileUtils.rm_rf 'noperms' if File.directory? 'noperms'
+      if File.exist? 'noperms'
+        File.chmod 0777, "noperms"
+        FileUtils.rm_rf 'noperms' 
+      end
 
     Dir.mkdir 'noperms', 0000
 

@@ -46,7 +46,7 @@ ruby_version_is "1.8.7" do
       end  
       
       it "is unaffected by #force_encoding" do
-        @utf8.force_encoding('ASCII').bytes.to_a.should == @utf8.bytes.to_a
+        @utf8.force_encoding('ASCII-8BIT').bytes.to_a.should == @utf8.bytes.to_a
       end    
     end
   end

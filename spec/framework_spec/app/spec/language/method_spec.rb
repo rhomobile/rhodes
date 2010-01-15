@@ -115,12 +115,13 @@ describe "Calling a method" do
     foo(&x).should == "my proc called"
     foo2(&x).should == "my proc yielded"
   end
-  it "fails with both lambda and block argument" do
-    def foo(a,&b); [a,yield(b)] end
-
-    l = lambda { 300 }
-    lambda { eval "foo(10, &l){ 42}"}.should raise_error(SyntaxError)
-  end
+# XXX eval not supported
+#  it "fails with both lambda and block argument" do
+#    def foo(a,&b); [a,yield(b)] end
+#
+#    l = lambda { 300 }
+#    lambda { eval "foo(10, &l){ 42}"}.should raise_error(SyntaxError)
+#  end
 
   it "with same names as existing variables is ok" do
     foobar = 100

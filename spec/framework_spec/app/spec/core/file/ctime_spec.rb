@@ -2,7 +2,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_h
 
 describe "File.ctime" do
   before :each do
-    @file = File.join(__rhoGetCurrentDir(), __FILE__)
+    @file = File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq")
   end
 
   after :each do
@@ -21,7 +21,7 @@ end
 
 describe "File#ctime" do
   before :each do
-    @file = File.open(File.join(__rhoGetCurrentDir(), __FILE__))
+    @file = File.open(File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq"))
   end
 
   after:each do

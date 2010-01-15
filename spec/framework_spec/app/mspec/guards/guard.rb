@@ -67,7 +67,7 @@ class SpecGuard
   end
 
   def yield?(invert=false)
-    return true if MSpec.mode? :unguarded
+    #return true if MSpec.mode? :unguarded
 
     allow = match? ^ invert
 
@@ -152,10 +152,9 @@ class SpecGuard
   end
 
   def os?(*oses)
-    require 'rbconfig'
+#    require 'rbconfig'
     oses.any? do |os|
-      host_os = Config::CONFIG['host_os'] || RUBY_PLATFORM
-      host_os.downcase!
+      host_os = RUBY_PLATFORM.downcase
       host_os.match(os.to_s) || windows?(os, host_os)
     end
   end
