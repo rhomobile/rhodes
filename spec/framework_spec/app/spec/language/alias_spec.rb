@@ -128,19 +128,20 @@ describe "The alias keyword" do
     end
     Sub3.new.test(1,2,3,4,5).should == 4
   end
-
-  it "operates on methods with splat arguments defined in a superclass using text block for class eval" do
-    class Sub < AliasObject;end
-    AliasObject.class_eval <<-code
-      def test(*args)
-        4
-      end
-      def test_with_check(*args)
-        test_without_check(*args)
-      end
-      alias test_without_check test
-      alias test test_with_check
-    code
-    Sub.new.test("testing").should == 4
-  end
+# XXX eval not supported
+# 
+#  it "operates on methods with splat arguments defined in a superclass using text block for class eval" do
+#    class Sub < AliasObject;end
+#    AliasObject.class_eval <<-code
+#      def test(*args)
+#        4
+#      end
+#      def test_with_check(*args)
+#        test_without_check(*args)
+#      end
+#      alias test_without_check test
+#      alias test test_with_check
+#    code
+#    Sub.new.test("testing").should == 4
+#  end
 end

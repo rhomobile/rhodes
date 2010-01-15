@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 
 describe "Kernel#test" do
   before :all do
-    @file = File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+    @file = File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.iseq'
     @dir = File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures'
   end
   

@@ -22,20 +22,21 @@ describe "Kernel#sleep" do
     lambda { sleep('now') }.should raise_error(TypeError)
     lambda { sleep('2')   }.should raise_error(TypeError)
   end
-  
-  it "pauses execution indefinitely if not given a duration" do
-    lock = Channel.new
-    t = Thread.new do
-      lock << :ready
-      sleep
-      5
-    end    
-    lock.receive.should == :ready
-    # wait until the thread has gone to sleep
-    Thread.pass while t.status and t.status != "sleep"
-    t.run
-    t.value.should == 5
-  end
+
+# XXX  no threads
+#  it "pauses execution indefinitely if not given a duration" do
+#    lock = Channel.new
+#    t = Thread.new do
+#      lock << :ready
+#      sleep
+#      5
+#    end
+#    lock.receive.should == :ready
+#    # wait until the thread has gone to sleep
+#    Thread.pass while t.status and t.status != "sleep"
+#    t.run
+#    t.value.should == 5
+#  end
 end
 
 describe "Kernel.sleep" do

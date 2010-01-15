@@ -2,14 +2,15 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_help
 
 # specs for File.join(__rhoGetCurrentDir(), __FILE__)
 
-describe "The File.join(__rhoGetCurrentDir(), __FILE__) constant" do
+describe "The __FILE__ constant" do
   it "equals the current filename" do
     File.basename(File.join(__rhoGetCurrentDir(), __FILE__)).should == "file_spec.rb"
   end
 
-  it "equals (eval) inside an eval" do
-    eval("File.join(__rhoGetCurrentDir(), __FILE__)").should == "(eval)"
-  end
+# XXX eval not supported
+#  it "equals (eval) inside an eval" do
+#    eval("File.join(__rhoGetCurrentDir(), __FILE__)").should == "(eval)"
+#  end
   
   it "equals a relative path when required using a relative path" do
     base_path = File.dirname(File.dirname(fixture(File.join(__rhoGetCurrentDir(), __FILE__), "file.rb")))

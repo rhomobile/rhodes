@@ -26,7 +26,7 @@ describe :argf_each_byte, :shared => true do
     end
   end
 
-  pending ruby_version_is "" ... "1.8.7" do
+  ruby_version_is "" ... "1.8.7" do
     it "raises a LocalJumpError when passed no block" do
       argv [@file1_name, @file2_name] do
         lambda { ARGF.send(@method) }.should raise_error(LocalJumpError)
@@ -34,7 +34,7 @@ describe :argf_each_byte, :shared => true do
     end
   end
 
-  pending ruby_version_is "1.8.7" do
+  ruby_version_is "1.8.7" do
     it "returns an Enumerator when passed no block" do
       argv [@file1_name, @file2_name] do
         enum = ARGF.send(@method)

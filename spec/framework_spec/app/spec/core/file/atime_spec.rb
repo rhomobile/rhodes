@@ -22,7 +22,7 @@ end
 
 describe "File#atime" do
   before :each do
-    @name = File.expand_path(File.join(__rhoGetCurrentDir(), __FILE__))
+    @name = File.expand_path(File.join(__rhoGetCurrentDir(), __FILE__)).gsub(/\.rb/,".iseq")
     @file = File.open(@name)
   end
 

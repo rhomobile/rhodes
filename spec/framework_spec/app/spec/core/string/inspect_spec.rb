@@ -48,8 +48,8 @@ describe "String#inspect" do
     it "produces different output based on #force_encoding" do
       "äöü".inspect.force_encoding('UTF-8').should == 
         "\"\xC3\xA4\xC3\xB6\xC3\xBC\""
-      "äöü".inspect.force_encoding('ASCII').should == 
-        "\"äöü\"".force_encoding('ASCII')
+      "äöü".inspect.force_encoding('ASCII-8BIT').should ==
+        "\"äöü\"".force_encoding('ASCII-8BIT')
     end
 
     it "can handle malformed UTF-8 string for #force_encoding('UTF-8')" do

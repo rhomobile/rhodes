@@ -1,11 +1,11 @@
 describe :file_exist, :shared => true do
   it "return true if the file exist" do
-    @object.send(@method, File.join(__rhoGetCurrentDir(), __FILE__)).should == true
+    @object.send(@method, File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq")).should == true
     @object.send(@method, 'a_fake_file').should == false
   end
 
   it "return true if the file exist using the alias exists?" do
-    @object.send(@method, File.join(__rhoGetCurrentDir(), __FILE__)).should == true
+    @object.send(@method, File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq")).should == true
     @object.send(@method, 'a_fake_file').should == false
   end
 

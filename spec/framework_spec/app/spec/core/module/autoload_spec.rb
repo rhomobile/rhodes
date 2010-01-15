@@ -39,12 +39,12 @@ describe "Module#autoload" do
 
   it "loads the registered constant when it is accessed" do
     ModuleSpecs::Autoload.should_not have_constant(:X)
-    ModuleSpecs::Autoload.autoload :X, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_x.rb")
+    ModuleSpecs::Autoload.autoload :X, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_x.iseq")
     ModuleSpecs::Autoload::X.should == :x
   end
 
   it "loads the registered constant into a dynamically created class" do
-    cls = Class.new { autoload :C, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_c.rb") }
+    cls = Class.new { autoload :C, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_c.iseq") }
     ModuleSpecs::Autoload::DynClass = cls
 
     ScratchPad.recorded.should be_nil
@@ -53,7 +53,7 @@ describe "Module#autoload" do
   end
 
   it "loads the registered constant into a dynamically created module" do
-    mod = Module.new { autoload :D, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_d.rb") }
+    mod = Module.new { autoload :D, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_d.iseq") }
     ModuleSpecs::Autoload::DynModule = mod
 
     ScratchPad.recorded.should be_nil
@@ -62,28 +62,28 @@ describe "Module#autoload" do
   end
 
   it "loads the registered constant when it is opened as a class" do
-    ModuleSpecs::Autoload.autoload :E, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_e.rb")
+    ModuleSpecs::Autoload.autoload :E, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_e.iseq")
     class ModuleSpecs::Autoload::E
     end
     ModuleSpecs::Autoload::E.new.loaded.should == :autoload_e
   end
 
   it "loads the registered constant when it is opened as a module" do
-    ModuleSpecs::Autoload.autoload :F, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_f.rb")
+    ModuleSpecs::Autoload.autoload :F, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_f.iseq")
     module ModuleSpecs::Autoload::F
     end
     ModuleSpecs::Autoload::F.loaded.should == :autoload_f
   end
 
   it "loads the registered constant when it is inherited from" do
-    ModuleSpecs::Autoload.autoload :G, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_g.rb")
+    ModuleSpecs::Autoload.autoload :G, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_g.iseq")
     class ModuleSpecs::Autoload::Gsub < ModuleSpecs::Autoload::G
     end
     ModuleSpecs::Autoload::Gsub.new.loaded.should == :autoload_g
   end
 
   it "loads the registered constant when it is included" do
-    ModuleSpecs::Autoload.autoload :H, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_h.rb")
+    ModuleSpecs::Autoload.autoload :H, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_h.iseq")
     class ModuleSpecs::Autoload::HClass
       include ModuleSpecs::Autoload::H
     end
@@ -91,7 +91,7 @@ describe "Module#autoload" do
   end
 
   it "does not load the file when the constant is already set" do
-    ModuleSpecs::Autoload.autoload :I, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_i.rb")
+    ModuleSpecs::Autoload.autoload :I, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_i.iseq")
     ModuleSpecs::Autoload.const_set :I, 3
     ModuleSpecs::Autoload::I.should == 3
     ScratchPad.recorded.should be_nil
@@ -103,7 +103,7 @@ describe "Module#autoload" do
   end
 
   it "does not load the file if the file is manually required" do
-    filename = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_k.rb")
+    filename = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_k.iseq")
     ModuleSpecs::Autoload.autoload :K, filename
 
     require filename
@@ -115,7 +115,7 @@ describe "Module#autoload" do
   end
 
   it "allows multiple autoload constants for a single file" do
-    filename = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_lm.rb")
+    filename = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_lm.iseq")
     ModuleSpecs::Autoload.autoload :L, filename
     ModuleSpecs::Autoload.autoload :M, filename
     ModuleSpecs::Autoload::L.should == :autoload_l
@@ -132,7 +132,7 @@ describe "Module#autoload" do
     end
 
     it "removes the constant from the constant table if the loaded files does not define it" do
-      ModuleSpecs::Autoload.autoload :O, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_o.rb")
+      ModuleSpecs::Autoload.autoload :O, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_o.iseq")
       ModuleSpecs::Autoload.should have_constant(:O)
 
       lambda { ModuleSpecs::Autoload::O }.should raise_error(NameError)
@@ -141,7 +141,7 @@ describe "Module#autoload" do
 
     it "does not load the file when refering to the constant in defined?" do
       module ModuleSpecs::Autoload::Q
-        autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.rb")
+        autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.iseq")
         defined?(R).should == "constant"
       end
       ModuleSpecs::Autoload::Q.should have_constant(:R)
@@ -158,7 +158,7 @@ describe "Module#autoload" do
     end
 
     it "does not remove the constant from the constant table if the loaded files does not define it" do
-      ModuleSpecs::Autoload.autoload :O, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_o.rb")
+      ModuleSpecs::Autoload.autoload :O, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_o.iseq")
       ModuleSpecs::Autoload.should have_constant(:O)
 
       lambda { ModuleSpecs::Autoload::O }.should raise_error(NameError)
@@ -167,7 +167,7 @@ describe "Module#autoload" do
 
     it "does not load the file when refering to the constant in defined?" do
       module ModuleSpecs::Autoload::Q
-        autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.rb")
+        autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.iseq")
         defined?(R).should be_nil
       end
       ModuleSpecs::Autoload::Q.should have_constant(:R)
@@ -176,7 +176,7 @@ describe "Module#autoload" do
 
   it "does not load the file when removing an autoload constant" do
     module ModuleSpecs::Autoload::Q
-      autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.rb")
+      autoload :R, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload.iseq")
       remove_const :R
     end
     ModuleSpecs::Autoload::Q.should_not have_constant(:R)
@@ -189,7 +189,7 @@ describe "Module#autoload" do
 
   it "loads the file when opening a module that is the autoloaded constant" do
     module ModuleSpecs::Autoload::U
-      autoload :V, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_v.rb")
+      autoload :V, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_v.iseq")
 
       class V
         X = get_value
@@ -204,7 +204,7 @@ describe "Module#autoload" do
     lambda do
       module ModuleSpecs::Autoload
         class W
-          autoload :Y, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_w.rb")
+          autoload :Y, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_w.iseq")
 
           class Y
           end
@@ -246,7 +246,7 @@ describe "Module#autoload" do
   end
 
   it "raises a TypeError if opening a class with a different superclass than the class defined in the autoload file" do
-    ModuleSpecs::Autoload.autoload :Z, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_z.rb")
+    ModuleSpecs::Autoload.autoload :Z, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_z.iseq")
     class ModuleSpecs::Autoload::ZZ
     end
 
@@ -258,8 +258,8 @@ describe "Module#autoload" do
 
   it "raises a TypeError if not passed a String for the filename" do
     name = mock("autoload_name.rb")
-    name.stub!(:to_s).and_return("autoload_name.rb")
-    name.stub!(:to_str).and_return("autoload_name.rb")
+    name.stub!(:to_s).and_return("autoload_name.iseq")
+    name.stub!(:to_str).and_return("autoload_name.iseq")
 
     lambda { ModuleSpecs::Autoload.autoload :Str, name }.should raise_error(TypeError)
   end
@@ -293,7 +293,7 @@ describe "Module#autoload" do
   end
 
   it "does not call Kernel#require or Kernel#load dynamically" do
-    ModuleSpecs::Autoload.autoload :N, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_n.rb")
+    ModuleSpecs::Autoload.autoload :N, fixture(File.join(__rhoGetCurrentDir(), __FILE__), "autoload_n.iseq")
     ModuleSpecs::Autoload::N.should == :autoload_n
   end
 end
