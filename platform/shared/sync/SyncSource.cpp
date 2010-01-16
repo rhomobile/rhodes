@@ -80,7 +80,7 @@ CSyncNotify& CSyncSource::getNotify(){ return getSync().getNotify(); }
 
 void CSyncSource::sync()
 {
-    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
+    getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
 
@@ -399,8 +399,8 @@ void CSyncSource::processServerData(const char* szData)
         setTotalCount(oJsonArr.getCurItem().getInt("total_count"));
         oJsonArr.next();
     }
-    if ( getServerObjectsCount() == 0 )
-        getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+    //if ( getServerObjectsCount() == 0 )
+    //    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 
     if ( !oJsonArr.isEnd() )
     {

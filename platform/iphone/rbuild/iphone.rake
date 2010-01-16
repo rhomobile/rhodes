@@ -199,7 +199,8 @@ namespace "run" do
     start = Time.now
     io = IO.popen(command)
     io.each { |line|
-      puts line
+
+      puts line if line =~ /\| - it/ or line =~ /\| describe/
 
       if getdump
         if line =~ /^I/
