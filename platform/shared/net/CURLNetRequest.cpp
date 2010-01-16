@@ -124,6 +124,7 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
     // Just to enable cookie parser
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
+	curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1);
 
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
@@ -405,7 +406,9 @@ INetResponse* CURLNetRequest::doRequestTry(const char* method, const String& str
     char* response = 0;
 
     do{
+		//RAWLOG_INFO("start Net request");
         response = (this->*func)(method, strUrl, strBody, &nRespCode, oSession);
+		//RAWLOG_INFO("end Net request");
         nTry++;
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
