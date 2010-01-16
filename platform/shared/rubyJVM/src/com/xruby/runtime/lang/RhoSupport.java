@@ -108,8 +108,9 @@ public class RhoSupport {
 		
 	    public RubyValue rhoLog_Info(RubyValue arg, RubyValue arg2) 
 	    {
-	        String msg = arg.toStr();
-	        String cat = arg2.toStr();
+	        String cat = arg.toStr();
+	        String msg = arg2.toStr();
+	        
 			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 				new RhoLogger(cat);
 	        
@@ -118,8 +119,9 @@ public class RhoSupport {
 	    }
 	    
 	    public RubyValue rhoLog_Error(RubyValue arg, RubyValue arg2) {
-	        String msg = arg.toStr();
-	        String cat = arg2.toStr();
+	        String cat = arg.toStr();
+	        String msg = arg2.toStr();
+	        
 			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 				new RhoLogger(cat);
 	        
