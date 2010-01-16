@@ -279,12 +279,12 @@ void CSyncNotify::setInitialSyncNotification(String strUrl, String strParams )//
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
     //TODO: reportStatus
 	//if (m_statusListener != null) {
-		if ( strDetails.length() == 0 )
-			strDetails = RhoRuby.getErrorText(error);
-        status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+		//if ( strDetails.length() == 0 )
+		//	strDetails = RhoRuby.getErrorText(error);
+        //status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
 	//	m_statusListener.reportStatus( status, error);
 	//}
-	LOG(INFO) + "Status: "+status;
+	//LOG(INFO) + "Status: "+status;
 }
 
 void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, VectorPtr<CSyncSource*>& sources )
@@ -362,7 +362,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 	
-	if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+	/*if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 	{
 		if ( !( psrc != null && psrc->m_strParams.length()>0) )
         {
@@ -371,7 +371,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
 			
             reportSyncStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
         }
-	}
+	}*/
 
 	doFireSyncNotification(psrc, bFinish, nErrCode, strMessage );
 }
