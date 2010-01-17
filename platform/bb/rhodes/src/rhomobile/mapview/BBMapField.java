@@ -26,5 +26,9 @@ public class BBMapField extends MapField implements RhoMapField {
 	public void redraw() {
 		invalidate();
 	}
+	
+	public void addAnnotation(Annotation ann) {
+		// Not implemented
+	}
 
 }
