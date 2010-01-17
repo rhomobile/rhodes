@@ -175,8 +175,8 @@ static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
 			if (n < 0)
 				n = 1;
 			timeval tv;
-			tv.tv_sec = 1;
-			tv.tv_usec = 0;
+			tv.tv_sec = 0;
+			tv.tv_usec = 10;
 			select(n, &rfd, &wfd, &efd, &tv);
 			continue;
 		}
