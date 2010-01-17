@@ -1,5 +1,6 @@
 package rhomobile.mapview;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -97,6 +98,12 @@ public class MapViewScreen extends MainScreen {
 		mapField.setMapType(map_type);
 		mapField.moveTo(lat, lon);
 		mapField.setZoom(zoom);
+		
+		Enumeration e = annotations.elements();
+		while (e.hasMoreElements()) {
+			Annotation ann = (Annotation)e.nextElement();
+			mapField.addAnnotation(ann);
+		}
 		
 		mode = PAN_MODE;
 	}
