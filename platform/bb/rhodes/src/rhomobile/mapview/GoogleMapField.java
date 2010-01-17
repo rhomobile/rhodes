@@ -11,6 +11,7 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
+import com.rho.net.URI;
 
 import rhomobile.mapview.RhoMapField;
 import net.rim.device.api.math.Fixed32;
@@ -55,6 +56,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private int width;
 	private int height;
 	private String maptype;
+	private Vector annotations;
 	
 	private static class CachedImage {
 		public EncodedImage image;
@@ -99,23 +101,25 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public int width;
 		public int height;
 		public String maptype;
+		public Vector annotations;
 		public GoogleMapField mapField;
 		
 		public MapFetchCommand(double lat, double lon, int z, int w, int h,
-				String m, GoogleMapField mf) {
+				String m, Vector a, GoogleMapField mf) {
 			latitude = lat;
 			longitude = lon;
 			zoom = z;
 			width = w;
 			height = h;
 			maptype = m;
+			annotations = a;
 			mapField = mf;
 		}
 		
 		public boolean equals(MapFetchCommand cmd) {
 			return latitude == cmd.latitude && longitude == cmd.longitude &&
 				zoom == cmd.zoom && width == cmd.width && maptype.equals(cmd.maptype) &&
-				mapField == cmd.mapField;
+				annotations.equals(cmd.annotations) && mapField == cmd.mapField;
 		}
 		
 	}
@@ -184,6 +188,20 @@ public class GoogleMapField extends Field implements RhoMapField {
 					url.append("format=png&");
 					url.append("key=" + mapkey + "&");
 					url.append("mobile=false&sensor=true");
+					if (!cmd.annotations.isEmpty()) {
+						url.append("&markers=color:blue");
+						for (int i = 0, lim = cmd.annotations.size(); i < lim; ++i) {
+							Annotation ann = (Annotation)cmd.annotations.elementAt(i);
+							url.append('|');
+							if (ann.coordinates != null) {
+								url.append(ann.coordinates.latitude);
+								url.append(',');
+								url.append(ann.coordinates.longitude);
+							}
+							else if (ann.street_address != null)
+								url.append(URI.urlEncode(ann.street_address));
+						}
+					}
 					String finalUrl = url.toString();
 					
 					int size = 0;
@@ -244,6 +262,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public MapFetchThreadPool() {
 			for (int i = 0; i != FETCH_THREAD_POOL_SIZE; ++i) {
 				Thread th = new MapFetchThread();
+				th.setPriority(Thread.MIN_PRIORITY);
 				th.start();
 				threads.addElement(th);
 			}
@@ -310,6 +329,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 									LOG.TRACE("Thread #" + th.hashCode() + " takes too much time to process command so interrupt it");
 									th.stop();
 									th = new MapFetchThread();
+									th.setPriority(Thread.MIN_PRIORITY);
 									th.start();
 									threads.setElementAt(th, i);
 									th.process(cmd);
@@ -358,6 +378,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		
 		maptype = "roadmap";
+		annotations = new Vector();
 	}
 	
 	public Field getBBField() {
@@ -414,7 +435,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			CachedImage img = (CachedImage)cache.get(key);
 			if (img == null) {
 				cmd = new MapFetchCommand(latitude, longitude, zoom,
-						width, height, maptype, this);
+						width, height, maptype, annotations, this);
 			}
 			else {
 				img.lastUsed = System.currentTimeMillis();
@@ -553,6 +574,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	public void setMapType(String type) {
 		maptype = type;
+	}
+	
+	public void addAnnotation(Annotation ann) {
+		annotations.addElement(ann);
 	}
 	
 	private static int calcZoom(double degrees, int pixels) {
