@@ -108,14 +108,41 @@ public class MapView extends RubyBasic {
 					}
 				}
 
-				// TODO: implement annotations
-				/*
 				if (annotationsArray != null) {
 					for (int i = 0; i != annotationsArray.size(); ++i) {
+						Annotation annotation = new Annotation();
 						RubyHash ann = (RubyHash)annotationsArray.get(i);
+						RubyArray arKeys = ann.keys();
+						RubyArray arValues = ann.values();
+						for (int j = 0, lim = arKeys.size(); j < lim; ++j) {
+							String strKey = arKeys.get(j).toString();
+							RubyValue value = arValues.get(j);
+							if (strKey.equals("latitude")) {
+								if (annotation.coordinates == null)
+									annotation.coordinates = new Annotation.Coordinates(value.toFloat(), 0);
+								else
+									annotation.coordinates.latitude = value.toFloat();
+							}
+							else if (strKey.equals("longitude")) {
+								if (annotation.coordinates == null)
+									annotation.coordinates = new Annotation.Coordinates(0, value.toFloat());
+								else
+									annotation.coordinates.longitude = value.toFloat();
+							}
+							else if (strKey.equals("title"))
+								annotation.title = value.toString();
+							else if (strKey.equals("subtitle"))
+								annotation.subtitle = value.toString();
+							else if (strKey.equals("street_address"))
+								annotation.street_address = value.toString();
+							else if (strKey.equals("resolved_address"))
+								annotation.resolved_address = value.toString();
+							else if (strKey.equals("url"))
+								annotation.url = value.toString();
+						}
+						annotations.addElement(annotation);
 					}
 				}
-				*/
 				
 				MapView.show("google", settings, annotations);
 				

@@ -8,6 +8,8 @@ public interface RhoMapField {
 	
 	public void redraw();
 	
+	public void addAnnotation(Annotation ann);
+	
 	public void setPreferredSize(int width, int height);
 	public void move(int dx, int dy);
 	public void moveTo(double latitude, double longitude);
