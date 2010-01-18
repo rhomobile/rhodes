@@ -163,20 +163,20 @@ static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
 	CURLMcode err;
 	for(;;) {
 		err = curl_multi_perform(curlm, &running);
-		if (err == CURLM_CALL_MULTI_PERFORM)
+        if (err == CURLM_CALL_MULTI_PERFORM)
 			continue;
-		if (err == CURLM_OK && running > 0) {
-			fd_set rfd, wfd, efd;
+        if (err == CURLM_OK && running > 0) {
+            RAWTRACE("curl_multi_perform returns OK, but we still have active transfers");
+            fd_set rfd, wfd, efd;
 			int n = 0;
 			FD_ZERO(&rfd);
 			FD_ZERO(&wfd);
 			FD_ZERO(&efd);
 			curl_multi_fdset(curlm, &rfd, &wfd, &efd, &n);
-			if (n < 0)
-				n = 1;
+			if (n < 0) n = 0;
 			timeval tv;
 			tv.tv_sec = 0;
-			tv.tv_usec = 10;
+			tv.tv_usec = 100000;
 			select(n, &rfd, &wfd, &efd, &tv);
 			continue;
 		}
