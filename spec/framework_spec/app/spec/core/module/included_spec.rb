@@ -34,6 +34,6 @@ describe "Module#included" do
   end
 
   it "is private in its default implementation" do
-    Module.new.private_methods.should include("included")
+    Module.new.private_methods.should include(:included)
   end
 end

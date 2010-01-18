@@ -4,17 +4,17 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/pri
 describe "The private keyword" do
   it "marks following methods as being private" do
     a = Private::A.new
-    a.methods.should_not include("bar")
+    a.methods.should_not include(:bar)
     lambda { a.bar }.should raise_error(NoMethodError)
 
     b = Private::B.new
-    b.methods.should_not include("bar")
+    b.methods.should_not include(:bar)
     lambda { b.bar }.should raise_error(NoMethodError)
   end
 
   it "is overridden when a new class is opened" do
     c = Private::B::C.new
-    c.methods.should include("baz")
+    c.methods.should include(:baz)
     c.baz
     Private::B::public_class_method1.should == 1
     Private::B::public_class_method2.should == 2
@@ -23,7 +23,7 @@ describe "The private keyword" do
 
   it "is no longer in effect when the class is closed" do
     b = Private::B.new
-    b.methods.should include("foo")
+    b.methods.should include(:foo)
     b.foo
   end
 
