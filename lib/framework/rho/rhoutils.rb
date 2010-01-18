@@ -1,9 +1,20 @@
+require 'rhom/rhom_source'
+
 module Rho
   class RhoUtils
+    @@mapSrc = nil
     def self.load_offline_data(tables=[], dir_prefix=nil)
       columns = []
       tables.each do |filename|
-        srcids = {}
+    
+        if @@mapSrc.nil?
+            @@mapSrc = {}
+            arSrcs = Rhom::RhomSource.find(:all)
+            arSrcs.each do |src|
+                @@mapSrc[src.name()] = src.source_id()
+            end
+        end
+                
         Rhom::RhomDbAdapter.delete_all_from_table(filename)
         Rhom::RhomDbAdapter.start_transaction
 
@@ -16,25 +27,16 @@ module Rho
           parts = line.chomp.split('|')
 
           row = {}
-          srcid = '0'
-          attrib = ''
           columns.each_with_index do |col,idx| 
-            srcid = parts[idx] if col == 'source_id'
-            attrib = parts[idx] if col == 'attrib'
-            row[col] = parts[idx]
+            if col == 'source_name'
+              row['source_id'] = @@mapSrc[parts[idx]]
+            else
+              row[col] = parts[idx]
+            end
           end
           Rhom::RhomDbAdapter.insert_into_table(filename,row)
-          
-          if filename == 'object_values'
-            srcids[srcid] = 1
-            #Rhom::RhomAttribManager.add_attrib(srcid,attrib)
-          end  
         end
 
-        #srcids.each do |id,value|
-        #    Rhom::RhomAttribManager.save(id)
-        #end
-            
         Rhom::RhomDbAdapter.commit
         columns = []
       end
