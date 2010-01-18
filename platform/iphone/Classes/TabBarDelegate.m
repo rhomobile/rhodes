@@ -95,6 +95,8 @@
 }
 
 - (void)deleteTabBar {
+    [barItems release];
+    barItems = nil;
     [tabBarController.view removeFromSuperview];
     [tabBarController release];
     tabBarController = nil;
