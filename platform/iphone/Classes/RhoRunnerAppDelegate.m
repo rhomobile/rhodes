@@ -55,7 +55,8 @@
 		[webViewController navigateRedirect:location];
 	} else {
 		// Load tab #0 on app load
-		[tabBarDelegate loadTabBarItemFirstPage:(BarItem*)[tabBarDelegate.barItems objectAtIndex:0]];
+        BarItem *item = (BarItem*)[tabBarDelegate.barItems objectAtIndex:0];
+		[tabBarDelegate loadTabBarItemFirstPage:item];
 	}	
 }
 
