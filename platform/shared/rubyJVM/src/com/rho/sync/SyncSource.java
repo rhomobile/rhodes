@@ -140,7 +140,7 @@ class SyncSource
     
 	void sync() throws Exception
 	{
-    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
+    	getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 	    
@@ -489,8 +489,8 @@ class SyncSource
 	        oJsonArr.next();
 	    }
 	    
-	    if ( getServerObjectsCount() == 0 )
-	    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+//	    if ( getServerObjectsCount() == 0 )
+//	    	getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 	    
 	    if ( !oJsonArr.isEnd() )
 	    {

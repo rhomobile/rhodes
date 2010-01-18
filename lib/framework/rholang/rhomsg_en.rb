@@ -15,6 +15,7 @@ module Rho
 	  'log_menu' => "Log",
 	  'close_menu' => "Close",
       'get_link_menu' => "Get Link",
+      'open_link_menu' => "Open Link",
       
       'hide' => 'Hide'
     }

@@ -692,10 +692,7 @@ public class SyncThread extends RhoThread
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
 							String url = arg1.toStr();
-							RhoConf.getInstance().setPropertyByName("syncserver", url);
-							RhoConf.getInstance().saveToFile();
-							RhoConf.getInstance().loadConf();
-							getSyncEngine().logout();
+							getSyncEngine().setSyncServer(url);
 						}catch(Exception e)
 						{
 							LOG.ERROR("set_syncserver failed", e);
