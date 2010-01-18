@@ -17,9 +17,9 @@ describe "Module#protected_instance_methods" do
   end
 
   it "when passed false as a parameter, should return only methods defined in that module" do
-    ModuleSpecs::CountsMixin.protected_instance_methods(false).should == ['protected_3']
-    ModuleSpecs::CountsParent.protected_instance_methods(false).should == ['protected_2']
-    ModuleSpecs::CountsChild.protected_instance_methods(false).should == ['protected_1']
+    ModuleSpecs::CountsMixin.protected_instance_methods(false).should == [:protected_3]
+    ModuleSpecs::CountsParent.protected_instance_methods(false).should == [:protected_2]
+    ModuleSpecs::CountsChild.protected_instance_methods(false).should == [:protected_1]
   end
 
   it "default list should be the same as passing true as an argument" do
