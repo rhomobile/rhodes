@@ -3,7 +3,7 @@ require 'mspec/matchers/method'
 class HaveMethodMatcher < MethodMatcher
   def matches?(mod)
     @mod = mod
-    @mod.methods(@include_super).include? @method
+    @mod.methods(@include_super).include? @method.to_sym
   end
 
   def failure_message
