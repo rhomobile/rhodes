@@ -342,8 +342,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	try{
     		m_bOpenLink = true;
             if (m_strGetLink==null)
-            	m_strGetLink = RhoRuby.getMessageText("get_link_menu");
-    		
+            {
+		        Version.SoftVersion ver = Version.getSoftVersion();
+		        if ( ver.nMajor > 4 )
+		        	m_strGetLink = RhoRuby.getMessageText("open_link_menu");
+		        else
+		        	m_strGetLink = RhoRuby.getMessageText("get_link_menu");
+            }
+            
 	    	Menu menu = _mainScreen.getMenu(0);
 	        int size = menu.getSize();
 	        for(int i=0; i<size; i++)
