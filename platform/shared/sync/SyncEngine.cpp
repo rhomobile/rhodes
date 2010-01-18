@@ -485,6 +485,9 @@ void CSyncEngine::setSyncServer(char* syncserver)
 {
 	rho_conf_setString("syncserver", syncserver);
 	rho_conf_save();
+
+    getDB().executeSQL("DELETE FROM client_info");
+
 	logout();
 }
 
