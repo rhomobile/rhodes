@@ -604,7 +604,18 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 	
 	}
-
+	
+	public void setSyncServer(String url)throws Exception
+	{
+		RhoConf.getInstance().setPropertyByName("syncserver", url);
+		RhoConf.getInstance().saveToFile();
+		RhoConf.getInstance().loadConf();
+		
+		getDB().executeSQL("DELETE FROM client_info");
+		
+		logout();
+	}
+	
 	static String getServerFromUrl( String strUrl )
 	{
 		URI uri = new URI(strUrl);
