@@ -26,6 +26,7 @@ platform/win32/**/*.pch
 platform/wm/**/*.pch
 
 spec/bin/*
+spec/**/bin/*
 
 platform/bb/.metadata/*
 platform/bb/bin/*

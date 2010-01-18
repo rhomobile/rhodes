@@ -1,90 +1,90 @@
-id|source_id|attrib|object|value|attrib_type
--968154026|1|status|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|New|
--938351811|1|assigned_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
--755246940|1|created_by_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|adam|
--660742819|1|work_log|41a4e1f1-2c0c-7e51-0495-4900dc4c072c||
--522353477|1|priority|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|High|
--201194833|1|case_number|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|58|
-73844238|1|account_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|881be9cb-3879-9660-46be-48fceb82ea5f|
-131027507|1|type|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|Administration|
-192450540|1|modified_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|820ea7b3-d38a-2700-2ed9-4941aa91d86e|
-361853782|1|name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|implement SugarCRM sample app|
-391423897|1|assigned_user_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|adam|
-404395255|1|modified_by_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|testuser|
-512092784|1|description|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|\t\t\n\tupdated|
-621474714|1|date_modified|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|2008-12-12 02:25:31|
-691423225|1|date_entered|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|2008-10-23 20:21:27|
-769279701|1|resolution|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|\t\t\n\t|
-830631028|1|created_by|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
-838875565|1|account_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|Rhomobile|
--1055571588|2|billing_address_country|44e804f2-4933-4e20-271c-48fcecd9450d|India|
--1016564775|2|assigned_user_id|44e804f2-4933-4e20-271c-48fcecd9450d|1|
--993389503|2|website|44e804f2-4933-4e20-271c-48fcecd9450d|mobio.in|
--923554450|2|billing_address_street|44e804f2-4933-4e20-271c-48fcecd9450d||
--850514663|2|assigned_user_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
--805506460|2|created_by|44e804f2-4933-4e20-271c-48fcecd9450d|1|
--678852594|2|campaign_id|44e804f2-4933-4e20-271c-48fcecd9450d||
--648794332|2|billing_address_city|44e804f2-4933-4e20-271c-48fcecd9450d|Gurgaon|
--608939135|2|shipping_address_street|44e804f2-4933-4e20-271c-48fcecd9450d||
--605353927|2|email1|44e804f2-4933-4e20-271c-48fcecd9450d|ramneek@bhasin.com|
--594260079|2|date_modified|44e804f2-4933-4e20-271c-48fcecd9450d|2008-10-21 18:07:11|
--550140002|2|sic_code|44e804f2-4933-4e20-271c-48fcecd9450d||
--470464900|2|industry|44e804f2-4933-4e20-271c-48fcecd9450d|Technology|
--396146191|2|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||
--359256934|2|name|44e804f2-4933-4e20-271c-48fcecd9450d|Mobio India|
--332949845|2|annual_revenue|44e804f2-4933-4e20-271c-48fcecd9450d||
--312021027|2|ticker_symbol|44e804f2-4933-4e20-271c-48fcecd9450d||
--194048404|2|phone_fax|44e804f2-4933-4e20-271c-48fcecd9450d||
--152845069|2|shipping_address_city|44e804f2-4933-4e20-271c-48fcecd9450d||
--150248722|2|ownership|44e804f2-4933-4e20-271c-48fcecd9450d||
--45449434|2|phone_office|44e804f2-4933-4e20-271c-48fcecd9450d||
--8943188|2|phone_alternate|44e804f2-4933-4e20-271c-48fcecd9450d||
-63546948|2|billing_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||
-114237576|2|modified_user_id|44e804f2-4933-4e20-271c-48fcecd9450d|1|
-220076107|2|description|44e804f2-4933-4e20-271c-48fcecd9450d|Hello description!|
-326182291|2|modified_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
-517349454|2|employees|44e804f2-4933-4e20-271c-48fcecd9450d||
-596458092|2|shipping_address_postalcode|44e804f2-4933-4e20-271c-48fcecd9450d||
-750590418|2|billing_address_postalcode|44e804f2-4933-4e20-271c-48fcecd9450d||
-839788895|2|account_type|44e804f2-4933-4e20-271c-48fcecd9450d||
-923162830|2|date_entered|44e804f2-4933-4e20-271c-48fcecd9450d|2008-10-20 20:40:42|
-966039289|2|rating|44e804f2-4933-4e20-271c-48fcecd9450d||
-1059957377|2|parent_id|44e804f2-4933-4e20-271c-48fcecd9450d||
-1065948343|2|created_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
-1072561171|2|shipping_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||
--1036293295|2|phone_fax|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--1015063951|2|description|63cf13da-cff4-99e7-f946-48fcec93f1cc|NULL|
--992493612|2|ownership|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--991176969|2|date_modified|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-22 20:30:48|
--981671585|2|billing_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc|Mountain View|
--843155646|2|ticker_symbol|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--729819866|2|shipping_address_street|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--685629096|2|shipping_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--663308719|2|phone_alternate|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--596218060|2|email1|63cf13da-cff4-99e7-f946-48fcec93f1cc|dan@aeroprise.com|
--475252466|2|shipping_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--469237079|2|billing_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc|CA|
--384341850|2|annual_revenue|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--323884439|2|billing_address_street|63cf13da-cff4-99e7-f946-48fcec93f1cc|1032 Shoreline Drive|
--190677709|2|employees|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--111196576|2|phone_office|63cf13da-cff4-99e7-f946-48fcec93f1cc||
--96428733|2|modified_user_id|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
--18701746|2|modified_by_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
-99273267|2|campaign_id|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-170741470|2|created_by|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
-217712487|2|parent_id|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-273350594|2|shipping_address_country|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-381979670|2|parent_name|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-394939468|2|billing_address_postalcode|63cf13da-cff4-99e7-f946-48fcec93f1cc|94024|
-411582813|2|created_by_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
-637602004|2|name|63cf13da-cff4-99e7-f946-48fcec93f1cc|Aeroprise|
-638774247|2|website|63cf13da-cff4-99e7-f946-48fcec93f1cc|aeroprise.com|
-639824025|2|account_type|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-667425113|2|sic_code|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-723197960|2|date_entered|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-20 20:39:15|
-747100215|2|industry|63cf13da-cff4-99e7-f946-48fcec93f1cc|Technology|
-786034836|2|assigned_user_id|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
-840957428|2|rating|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-865596563|2|assigned_user_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
-914826898|2|shipping_address_postalcode|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-971031329|2|billing_address_country|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+id|source_name|attrib|object|value|attrib_type
+-968154026|Case|status|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|New|
+-938351811|Case|assigned_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
+-755246940|Case|created_by_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|adam|
+-660742819|Case|work_log|41a4e1f1-2c0c-7e51-0495-4900dc4c072c||
+-522353477|Case|priority|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|High|
+-201194833|Case|case_number|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|58|
+73844238|Case|account_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|881be9cb-3879-9660-46be-48fceb82ea5f|
+131027507|Case|type|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|Administration|
+192450540|Case|modified_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|820ea7b3-d38a-2700-2ed9-4941aa91d86e|
+361853782|Case|name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|implement SugarCRM sample app|
+391423897|Case|assigned_user_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|adam|
+404395255|Case|modified_by_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|testuser|
+512092784|Case|description|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|\t\t\n\tupdated|
+621474714|Case|date_modified|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|2008-12-12 02:25:31|
+691423225|Case|date_entered|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|2008-10-23 20:21:27|
+769279701|Case|resolution|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|\t\t\n\t|
+830631028|Case|created_by|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
+838875565|Case|account_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|Rhomobile|
+-1055571588|Account|billing_address_country|44e804f2-4933-4e20-271c-48fcecd9450d|India|
+-1016564775|Account|assigned_user_id|44e804f2-4933-4e20-271c-48fcecd9450d|1|
+-993389503|Account|website|44e804f2-4933-4e20-271c-48fcecd9450d|mobio.in|
+-923554450|Account|billing_address_street|44e804f2-4933-4e20-271c-48fcecd9450d||
+-850514663|Account|assigned_user_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
+-805506460|Account|created_by|44e804f2-4933-4e20-271c-48fcecd9450d|1|
+-678852594|Account|campaign_id|44e804f2-4933-4e20-271c-48fcecd9450d||
+-648794332|Account|billing_address_city|44e804f2-4933-4e20-271c-48fcecd9450d|Gurgaon|
+-608939135|Account|shipping_address_street|44e804f2-4933-4e20-271c-48fcecd9450d||
+-605353927|Account|email1|44e804f2-4933-4e20-271c-48fcecd9450d|ramneek@bhasin.com|
+-594260079|Account|date_modified|44e804f2-4933-4e20-271c-48fcecd9450d|2008-10-21 18:07:11|
+-550140002|Account|sic_code|44e804f2-4933-4e20-271c-48fcecd9450d||
+-470464900|Account|industry|44e804f2-4933-4e20-271c-48fcecd9450d|Technology|
+-396146191|Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||
+-359256934|Account|name|44e804f2-4933-4e20-271c-48fcecd9450d|Mobio India|
+-332949845|Account|annual_revenue|44e804f2-4933-4e20-271c-48fcecd9450d||
+-312021027|Account|ticker_symbol|44e804f2-4933-4e20-271c-48fcecd9450d||
+-194048404|Account|phone_fax|44e804f2-4933-4e20-271c-48fcecd9450d||
+-152845069|Account|shipping_address_city|44e804f2-4933-4e20-271c-48fcecd9450d||
+-150248722|Account|ownership|44e804f2-4933-4e20-271c-48fcecd9450d||
+-45449434|Account|phone_office|44e804f2-4933-4e20-271c-48fcecd9450d||
+-8943188|Account|phone_alternate|44e804f2-4933-4e20-271c-48fcecd9450d||
+63546948|Account|billing_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||
+114237576|Account|modified_user_id|44e804f2-4933-4e20-271c-48fcecd9450d|1|
+220076107|Account|description|44e804f2-4933-4e20-271c-48fcecd9450d|Hello description!|
+326182291|Account|modified_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
+517349454|Account|employees|44e804f2-4933-4e20-271c-48fcecd9450d||
+596458092|Account|shipping_address_postalcode|44e804f2-4933-4e20-271c-48fcecd9450d||
+750590418|Account|billing_address_postalcode|44e804f2-4933-4e20-271c-48fcecd9450d||
+839788895|Account|account_type|44e804f2-4933-4e20-271c-48fcecd9450d||
+923162830|Account|date_entered|44e804f2-4933-4e20-271c-48fcecd9450d|2008-10-20 20:40:42|
+966039289|Account|rating|44e804f2-4933-4e20-271c-48fcecd9450d||
+1059957377|Account|parent_id|44e804f2-4933-4e20-271c-48fcecd9450d||
+1065948343|Account|created_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
+1072561171|Account|shipping_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||
+-1036293295|Account|phone_fax|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-1015063951|Account|description|63cf13da-cff4-99e7-f946-48fcec93f1cc|NULL|
+-992493612|Account|ownership|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-991176969|Account|date_modified|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-22 20:30:48|
+-981671585|Account|billing_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc|Mountain View|
+-843155646|Account|ticker_symbol|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-729819866|Account|shipping_address_street|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-685629096|Account|shipping_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-663308719|Account|phone_alternate|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-596218060|Account|email1|63cf13da-cff4-99e7-f946-48fcec93f1cc|dan@aeroprise.com|
+-475252466|Account|shipping_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-469237079|Account|billing_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc|CA|
+-384341850|Account|annual_revenue|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-323884439|Account|billing_address_street|63cf13da-cff4-99e7-f946-48fcec93f1cc|1032 Shoreline Drive|
+-190677709|Account|employees|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-111196576|Account|phone_office|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+-96428733|Account|modified_user_id|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
+-18701746|Account|modified_by_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
+99273267|Account|campaign_id|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+170741470|Account|created_by|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
+217712487|Account|parent_id|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+273350594|Account|shipping_address_country|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+381979670|Account|parent_name|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+394939468|Account|billing_address_postalcode|63cf13da-cff4-99e7-f946-48fcec93f1cc|94024|
+411582813|Account|created_by_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
+637602004|Account|name|63cf13da-cff4-99e7-f946-48fcec93f1cc|Aeroprise|
+638774247|Account|website|63cf13da-cff4-99e7-f946-48fcec93f1cc|aeroprise.com|
+639824025|Account|account_type|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+667425113|Account|sic_code|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+723197960|Account|date_entered|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-20 20:39:15|
+747100215|Account|industry|63cf13da-cff4-99e7-f946-48fcec93f1cc|Technology|
+786034836|Account|assigned_user_id|63cf13da-cff4-99e7-f946-48fcec93f1cc|1|
+840957428|Account|rating|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+865596563|Account|assigned_user_name|63cf13da-cff4-99e7-f946-48fcec93f1cc|admin|
+914826898|Account|shipping_address_postalcode|63cf13da-cff4-99e7-f946-48fcec93f1cc||
+971031329|Account|billing_address_country|63cf13da-cff4-99e7-f946-48fcec93f1cc||
