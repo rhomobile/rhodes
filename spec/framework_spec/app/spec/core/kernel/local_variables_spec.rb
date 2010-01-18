@@ -9,7 +9,7 @@ describe "Kernel.local_variables" do
   it "contains locals as they are added" do
     a = 1
     b = 2
-    local_variables.should include("a", "b")
+    local_variables.should include(:a, :b)
   end
 
 # XXX eval not supported
