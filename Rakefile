@@ -548,3 +548,8 @@ Rake::RDocTask.new do |rd|
 end
 Rake::Task["rdoc"].comment=nil
 Rake::Task["rerdoc"].comment=nil
+
+task :rdocpush => :rdoc do
+  puts "Pushing RDOC. This may take a while"
+  `scp -r html/* dev@dev.rhomobile.com:dev.rhomobile.com/rhodes/`
+end
