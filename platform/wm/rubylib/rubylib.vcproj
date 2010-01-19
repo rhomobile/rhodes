@@ -1628,14 +1628,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\ruby\ext\socket\getaddrinfo.c"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\socket\getnameinfo.c"
-						>
-					</File>
-					<File
 						RelativePath="..\..\shared\ruby\ext\socket\socket.c"
 						>
 					</File>

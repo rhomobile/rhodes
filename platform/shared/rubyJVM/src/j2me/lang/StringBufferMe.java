@@ -1,7 +1,7 @@
 package j2me.lang;
 
 public class StringBufferMe {
-
+/*
     public static int indexOf(StringBuffer strThis, String str) {
     	return indexOf(strThis,str, 0);
     }
@@ -9,7 +9,7 @@ public class StringBufferMe {
     public static int indexOf(StringBuffer strThis, String str, int fromIndex) {
     	return strThis.toString().indexOf(str, fromIndex);
     }
-/*    
+    
     public static StringBuffer replace( StringBuffer strThis, int start, int end, String str) {
     	AbstractStringBuilder_replace(strThis, start, end, str);
         return strThis;

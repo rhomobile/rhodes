@@ -129,6 +129,7 @@
 #define RUBY_VENDOR_ARCHLIB "/lib"
 #define LIBRUBY_SO "msvcr80-ruby190.dll"
 
+#define HAVE_GETADDRINFO 1
 #define RUBY_EXPORT 1
 #define HAVE_TZNAME 1
 
