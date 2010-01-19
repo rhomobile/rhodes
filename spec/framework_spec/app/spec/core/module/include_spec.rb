@@ -44,9 +44,9 @@ describe "Module#include" do
   end
 
   it "imports constants to modules and classes" do
-    ModuleSpecs::A.constants.should include("CONSTANT_A")
-    ModuleSpecs::B.constants.should include("CONSTANT_A","CONSTANT_B")
-    ModuleSpecs::C.constants.should include("CONSTANT_A","CONSTANT_B")
+    ModuleSpecs::A.constants.should include(:CONSTANT_A)
+    ModuleSpecs::B.constants.should include(:CONSTANT_A,:CONSTANT_B)
+    ModuleSpecs::C.constants.should include(:CONSTANT_A,:CONSTANT_B)
   end
 
   it "does not override existing constants in modules and classes" do
@@ -56,9 +56,9 @@ describe "Module#include" do
   end
 
   it "imports instance methods to modules and classes" do
-    ModuleSpecs::A.instance_methods.should include("ma")
-    ModuleSpecs::B.instance_methods.should include("ma","mb")
-    ModuleSpecs::C.instance_methods.should include("ma","mb")
+    ModuleSpecs::A.instance_methods.should include(:ma)
+    ModuleSpecs::B.instance_methods.should include(:ma,:mb)
+    ModuleSpecs::C.instance_methods.should include(:ma,:mb)
   end
 
 # XXX eval not supported
@@ -68,11 +68,11 @@ describe "Module#include" do
 #  end
 
   it "does not import methods to modules and classes" do
-    ModuleSpecs::A.methods.include?("cma").should == true
-    ModuleSpecs::B.methods.include?("cma").should == false
-    ModuleSpecs::B.methods.include?("cmb").should == true
-    ModuleSpecs::C.methods.include?("cma").should == false
-    ModuleSpecs::C.methods.include?("cmb").should == false
+    ModuleSpecs::A.methods.include?(:cma).should == true
+    ModuleSpecs::B.methods.include?(:cma).should == false
+    ModuleSpecs::B.methods.include?(:cmb).should == true
+    ModuleSpecs::C.methods.include?(:cma).should == false
+    ModuleSpecs::C.methods.include?(:cmb).should == false
   end
 
   it "attaches the module as the caller's immediate ancestor" do

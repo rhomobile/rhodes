@@ -2,7 +2,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_h
 
 describe "Class#superclass" do
   it "returns the superclass of self" do
-    Object.superclass.should == nil
+    Object.superclass.should == BasicObject
     Class.superclass.should == Module
     Class.new.superclass.should == Object
     Class.new(String).superclass.should == String
