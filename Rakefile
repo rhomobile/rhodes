@@ -21,6 +21,14 @@ load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
 
 
+namespace "framework" do
+  task :spec do
+    loadpath = $LOAD_PATH.inject("") { |load_path,pe| load_path += " -I" + pe }
+   
+    puts `res\\build-tools\\RhoRuby  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
+  end
+end
+
 
 namespace "config" do
   task :common do
