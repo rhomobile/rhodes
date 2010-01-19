@@ -39,6 +39,7 @@ extern void Init_NativeBar(void);
 extern void Init_MapView(void);
 extern void Init_RingtoneManager(void);
 extern void Init_socket(void);
+extern void Init_Extensions(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -136,7 +137,8 @@ void RhoRubyStart()
     Init_RhoSupport();
     Init_MapView();
     Init_RingtoneManager();
-	Init_socket();
+    Init_socket();
+    Init_Extensions();
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
