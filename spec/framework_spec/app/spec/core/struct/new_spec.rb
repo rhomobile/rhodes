@@ -80,7 +80,7 @@ describe "Struct.new" do
 
   it "instance_eval's a passed block" do
     klass = Struct.new(:something) { @something_else = 'something else entirely!' }
-    klass.instance_variables.should include('@something_else')
+    klass.instance_variables.should include(:@something_else)
   end
 
   it "creates a constant in subclass' namespace" do

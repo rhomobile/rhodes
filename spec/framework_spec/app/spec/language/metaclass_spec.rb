@@ -97,11 +97,11 @@ describe "A constant on a metaclass" do
 
   it "appears in the metaclass constant list" do
     constants = class << @object; constants; end 
-    constants.should include("CONST")
+    constants.should include(:CONST)
   end
 
   it "does not appear in the object's class constant list" do
-    @object.class.constants.should_not include("CONST")
+    @object.class.constants.should_not include(:CONST)
   end
 
   it "is not preserved when the object is duped" do
