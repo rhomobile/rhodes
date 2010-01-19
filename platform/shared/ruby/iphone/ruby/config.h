@@ -238,6 +238,7 @@
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
 
+#define HAVE_GETADDRINFO 1
 #define HAVE_SOCKADDR_STORAGE 1
 #define HAVE_GAI_STRERROR 1
 
