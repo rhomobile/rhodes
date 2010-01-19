@@ -28,6 +28,7 @@ platform/shared/ruby/ext/nativebar/nativebar_wrap.c
 platform/shared/ruby/ext/phonebook/phonebook_wrap.c
 platform/shared/ruby/ext/rho/rhoruby.c
 platform/shared/ruby/ext/rho/rhosupport.c
+platform/shared/ruby/ext/rho/extensions.c
 platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c
 platform/shared/ruby/ext/ringtones/ringtones_wrap.c
 platform/shared/ruby/ext/socket/socket.c
