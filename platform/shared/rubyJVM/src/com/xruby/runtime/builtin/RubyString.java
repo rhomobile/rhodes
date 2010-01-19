@@ -708,15 +708,19 @@ public class RubyString extends RubyBasic {
             return true;
         } else {
             boolean changed = false;
-            for (;;) {
-                int index = StringBufferMe.indexOf(sb_, from);
-                if (index < 0) {
-                    return changed;
+            for (int i = 0; i < from.length(); i++) 
+            {
+                int index = sb_.toString().indexOf(from.charAt(i));
+                while (index >= 0) 
+                {
+	                sb_.deleteCharAt(index);
+	                changed = true;
+	                
+	                index = sb_.toString().indexOf(from.charAt(i));
                 }
-
-                sb_.delete(index, index + from.length());
-                changed = true;
             }
+            
+            return changed;
         }
     }
 

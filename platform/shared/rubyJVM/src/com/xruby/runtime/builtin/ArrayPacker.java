@@ -127,8 +127,59 @@ class ArrayPacker {
         throw new RubyException("Not implemented");
     }
 
-    private static String encodes(String str, int todo, char type) {
-        throw new RubyException("Not implemented");
+    private static final String  uu_table = "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
+    
+    private static String encodes(String str, int charCount, char encodingType) 
+    {
+    	int startIndex = 0;
+    	byte[] charsToEncode = str.getBytes();
+    	
+    	StringBuffer io2Append = new StringBuffer();
+        io2Append.ensureCapacity(charCount * 4 / 3 + 6);
+        
+        int i = startIndex;
+        byte[] lTranslationTable = (encodingType == 'u' ? uu_table : b64_table).getBytes();
+        byte lPadding;
+        if (encodingType == 'u') {
+            if (charCount >= lTranslationTable.length) {
+            	throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+            			"" + charCount + " is not a correct value for the number of bytes per line in a u directive.  Correct values range from 0 to " + lTranslationTable.length
+            			);
+            }
+            io2Append.append(lTranslationTable[charCount]);
+            lPadding = '`';
+        } else {
+            lPadding = '=';
+        }
+        while (charCount >= 3) {
+            byte lCurChar = charsToEncode[i++];
+            byte lNextChar = charsToEncode[i++];
+            byte lNextNextChar = charsToEncode[i++];
+            io2Append.append((char)(lTranslationTable[077 & (lCurChar >>> 2)]));
+            io2Append.append((char)(lTranslationTable[077 & (((lCurChar << 4) & 060) | ((lNextChar >>> 4) & 017))]));
+            io2Append.append((char)(lTranslationTable[077 & (((lNextChar << 2) & 074) | ((lNextNextChar >>> 6) & 03))]));
+            io2Append.append((char)(lTranslationTable[077 & lNextNextChar]));
+            charCount -= 3;
+        }
+        if (charCount == 2) {
+            byte lCurChar = charsToEncode[i++];
+            byte lNextChar = charsToEncode[i++];
+            io2Append.append((char)(lTranslationTable[077 & (lCurChar >>> 2)]));
+            io2Append.append((char)(lTranslationTable[077 & (((lCurChar << 4) & 060) | ((lNextChar >> 4) & 017))]));
+            io2Append.append((char)(lTranslationTable[077 & (((lNextChar << 2) & 074) | (('\0' >> 6) & 03))]));
+            io2Append.append((char)(lPadding));
+        } else if (charCount == 1) {
+            byte lCurChar = charsToEncode[i++];
+            io2Append.append((char)(lTranslationTable[077 & (lCurChar >>> 2)]));
+            io2Append.append((char)(lTranslationTable[077 & (((lCurChar << 4) & 060) | (('\0' >>> 4) & 017))]));
+            io2Append.append((char)(lPadding));
+            io2Append.append((char)(lPadding));
+        }
+        io2Append.append('\n');
+    	
+//        throw new RubyException("Not implemented");
+        
+        return io2Append.toString();
     }
 
     private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
