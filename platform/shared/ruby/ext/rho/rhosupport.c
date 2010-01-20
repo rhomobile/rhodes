@@ -409,7 +409,7 @@ rb_RhoLogWrite(VALUE rhoLog, VALUE str)
 static VALUE
 rb_RhoLogFlush(void)
 {
-    return NULL;
+    return Qnil;
 }
 
 static VALUE
