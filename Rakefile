@@ -84,7 +84,7 @@ def add_extension(path,dest)
   start = pwd
   chdir path if File.directory?(path)
 
-  Dir.glob("*").each { |f| cp_r f,dest unless f =~ /^ext\// }
+  Dir.glob("*").each { |f| cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ }
 
   if File.exist? "ext.yml"
     extension_config = YAML::load_file("ext.yml")

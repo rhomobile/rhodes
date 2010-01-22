@@ -10,11 +10,15 @@
 // This file is processed by the build script to add binary extensions
 
 //EXTERNS
-
+extern void Init_fcntl(void);
+extern void Init_digest(void);
+extern void Init_openssl(void);
 //END
 
 void Init_Extensions(void) {
 //CALLS
-
+    Init_fcntl();
+    Init_digest();
+    Init_openssl();
 //END
 }

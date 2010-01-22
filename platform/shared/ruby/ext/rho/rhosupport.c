@@ -263,7 +263,8 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     szName1 = RSTRING_PTR(fname);
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
-        strcmp("socket",szName1)==0 )
+        strcmp("socket",szName1)==0 || strcmp("digest.so",szName1)==0 || strcmp("openssl.so",szName1)==0 ||
+        strcmp("fcntl",szName1)==0 )
         return Qtrue;
 
     if ( isAlreadyLoaded(fname) == Qtrue )

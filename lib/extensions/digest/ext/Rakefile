@@ -1,0 +1,79 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir
+  Dir.glob("*.c").each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << objname
+
+    args = []
+    args << "-I."
+    args << "-I../../../../platform/shared/ruby/include"
+    args << "-I../../../../platform/shared/ruby/iphone"
+    args << "-I../../../../platform/shared"
+    args << "-D_XOPEN_SOURCE"
+    args << "-D_DARWIN_C_SOURCE"
+    args << "-isysroot #{$sdkroot}"
+    args << "-fno-common"
+    args << "-arch #{arch}"
+    args << "-O2"
+    args << "-o #{objname}"
+    args << "-c"
+    args << f
+    cmdline = $gccbin + ' ' + args.join(' ')
+    puts cmdline
+    `#{cmdline}`
+    exit unless $? == 0
+  end
+
+  mkdir_p $targetdir
+  args = []
+  args << 'rcs'
+  args << File.join( $targetdir, 'lib' + name + '.a' )
+  args += objects
+  cmdline = $arbin + ' ' + args.join(' ')
+  puts cmdline
+  `#{cmdline}`
+  exit unless $? == 0
+end
+
+def build_fat_file(name, archs)
+  archs.each do |arch|
+    build_extension(name, arch)
+  end
+  
+  args = []
+  args << "-create"
+  args << "-output lib#{name}.a"
+  archs.each do |arch|
+    args << "lib#{name}-#{arch}.a"
+  end
+  cmdline = $lipobin + ' ' + args.join(' ')
+  `#{cmdline}`
+  exit unless $? == 0
+end
+
+namespace "build" do
+  task :config do
+    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+    $sdkroot = ENV['SDKROOT']
+    raise "SDKROOT is not set" if $sdkroot.nil?
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $arch = ENV['ARCHS']
+    raise "ARCHS is not set" if $arch.nil?
+    $gccbin = $bindir + '/gcc-4.0'
+    $arbin = $bindir + '/ar'
+    $lipobin = 'lipo'
+  end
+
+  task :all => :config do
+    build_extension('digest', $arch)
+  end
+end
+
+task :default => "build:all"

@@ -1,0 +1,77 @@
+require 'fileutils'
+
+def cmdrun(cmd, args=nil)
+  args = '' if args.nil?
+  args = args.join(' ') if args.is_a? Array
+
+  cmdline = cmd + ' ' + args
+  puts cmdline
+  `#{cmdline}`
+  return $? == 0
+end
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir
+  Dir.glob("*.c").each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << objname
+
+    args = []
+    args << "-I."
+    args << "-I../openssl/include"
+    args << "-I../../../../../platform/shared/ruby/include"
+    args << "-I../../../../../platform/shared/ruby/iphone"
+    args << "-I../../../../../platform/shared"
+    args << "-D_XOPEN_SOURCE"
+    args << "-D_DARWIN_C_SOURCE"
+    args << "-DRUBY_EXTCONF_H=\"\\\"extconf.h\\\"\""
+    args << "-isysroot #{$sdkroot}"
+    args << "-fno-common"
+    args << "-arch #{arch}"
+    args << "-O2"
+    args << "-o #{objname}"
+    args << "-c"
+    args << f
+    cmdrun($gccbin, args) or exit 1
+  end
+
+  mkdir_p $targetdir
+  args = []
+  args << 'rcs'
+  args << File.join( $targetdir, 'lib' + name + '.a' )
+  args += objects
+  cmdrun($arbin, args) or exit 1
+end
+
+namespace "build" do
+  task :config do
+    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+    $sdkroot = ENV['SDKROOT']
+    raise "SDKROOT is not set" if $sdkroot.nil?
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $arch = ENV['ARCHS']
+    raise "ARCHS is not set" if $arch.nil?
+    $gccbin = $bindir + '/gcc-4.0'
+    $arbin = $bindir + '/ar'
+
+    $built = File.join($targetdir, '.built-ossl-' + $arch)
+  end
+
+  task :all => :config do
+    if not File.exists? $built
+      build_extension('ossl', $arch)
+      FileUtils.touch $built
+    end
+  end
+
+  task :clean => :config do
+    rm_f $built
+  end
+end
+
+task :default => "build:all"

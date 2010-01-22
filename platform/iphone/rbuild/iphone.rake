@@ -93,15 +93,25 @@ namespace "build" do
 
       Rake::Task["build:bundle:noxruby"].execute
 
-	  # Calculate hash of newly built files
-	  hash = ''
-	  Dir.glob($srcdir + "/**/*").each do |f|
+      Rake::Task["build:iphone:extensions"].execute
+
+      # Calculate hash of newly built files
+      hash = ''
+      Dir.glob($srcdir + "/**/*").each do |f|
         hash += Digest::SHA2.file(f).hexdigest if File.file? f and f !~ /\/hash$/
       end
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
-	  # Store app name
-	  File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
+      # Store app name
+      File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
+    end
+
+    task :extensions => "config:iphone" do
+      $app_config["extensions"].each do |ext|
+        extdir = File.join('lib', 'extensions', ext, 'ext')
+        puts Jake.run('./build', [], extdir) if File.executable? File.join(extdir, 'build')
+        exit 1 unless $? == 0
+      end
     end
     
 #    desc "Build rhodes"

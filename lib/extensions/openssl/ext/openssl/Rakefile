@@ -1,0 +1,56 @@
+require 'fileutils'
+
+def cmdrun(cmd, args=nil)
+  args = '' if args.nil?
+  args = args.join(' ') if args.is_a? Array
+
+  cmdline = cmd + ' ' + args
+  puts cmdline
+  `#{cmdline}`
+  return $? == 0
+end
+
+task :config do
+  $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+  raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+  $sdkroot = ENV['SDKROOT']
+  raise "SDKROOT is not set" if $sdkroot.nil?
+  $builddir = ENV['BUILD_DIR']
+  raise "BUILD_DIR is not set" if $builddir.nil?
+  $targetdir = ENV['TARGET_TEMP_DIR']
+  raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+  $tempdir = ENV['TEMP_FILES_DIR']
+  raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+  $arch = ENV['ARCHS']
+  raise "ARCHS is not set" if $arch.nil?
+  $gccbin = $bindir + '/gcc-4.0'
+  $arbin = $bindir + '/ar'
+  
+  $built = File.join($targetdir, '.built-openssl-' + $arch)
+end
+
+task :build => :config do
+  if not File.exists? $built
+    cmdrun('make', 'clean') or exit 1
+    cmdrun('./config', "-openssldir=#{$builddir}") or exit 1
+
+    args = []
+    args << "CC=#{$bindir}/gcc-4.0"
+    args << "CFLAG=\"-D_DARWIN_C_SOURCE -arch #{$arch} -isysroot #{$sdkroot}\""
+    args << "SHARED_LDFLAGS=\"-arch #{$arch} -dynamiclib\""
+    cmdrun('make', args) or exit 1
+
+    FileUtils.touch $built
+  end
+
+  cp 'libssl.a', $targetdir
+  cp 'libcrypto.a', $targetdir
+end
+
+task :clean => :config do
+  rm_f '.built-' + $arch
+  cmdrun('make', 'clean')
+end
+
+task :default => :build
+
