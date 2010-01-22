@@ -427,7 +427,10 @@ load_unlock(const char *ftptr, int done)
 VALUE
 rb_f_require(VALUE obj, VALUE fname)
 {
-    return rb_require_safe(fname, rb_safe_level());
+    //RHO
+    return rb_require_compiled(obj, fname);
+    //return rb_require_safe(fname, rb_safe_level());
+    //RHO END
 }
 
 static int
@@ -603,7 +606,10 @@ rb_require(const char *fname)
 {
     VALUE fn = rb_str_new2(fname);
     OBJ_FREEZE(fn);
-    return rb_require_safe(fn, rb_safe_level());
+    // RHO
+    return rb_require_compiled(Qnil, fn);
+    //return rb_require_safe(fn, rb_safe_level());
+    // RHO END
 }
 
 static VALUE
