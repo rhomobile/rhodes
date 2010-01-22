@@ -79,6 +79,26 @@ def copy_assets(asset)
   
 end
 
+def check_extension_file
+  extfile = ""
+  File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","r") do |f|
+    f.each_line do |line|
+      if line !~ /;/
+        extfile << line
+      else
+        loaded = false
+        $binextensions.each  { |loadedext| loaded = line.include? loadedext; break if loaded }
+        extfile << line if loaded
+
+      end
+
+    end
+  end
+  if extfile != ""
+    File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","w") { |f| f.write extfile }
+  end
+end
+
 
 def add_extension(path,dest)
   start = pwd
@@ -98,14 +118,18 @@ def add_extension(path,dest)
         callwritten = false
 
         f.each_line do |line|
+          puts line
           #are we starting a replacement area?
           externstart = true if line =~ /EXTERNS/
           callstart = true if line =~ /CALLS/
+
 
           #if we arent in our replacement area, just copy the line
           unless externstart or callstart
             extfile << line
           else
+            #always write an end marker
+            extfile << line if line =~ /END/
             #did we just start the extern replacement area?
             if externstart and not externwritten
               #write marker and our new extension
@@ -130,8 +154,9 @@ def add_extension(path,dest)
             #this is to make sure we are only loading things we explicitly marked
             #leaving out lines that came from a previous run
             if externstart or callstart
-              loaded = $binextensions.detect { |loadedext| line =~ Regexp.new("/#{loadedext}/") }
-              extfile << line unless loaded.nil?
+              loaded = false
+              $binextensions.each  { |loadedext| loaded = line.include? loadedext; break if loaded }
+              extfile << line if loaded
             end
           end
 
@@ -139,6 +164,10 @@ def add_extension(path,dest)
         $binextensions << extension_config["entry"]
       end
 
+      if extfile != ""
+        File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","w") { |f| f.write extfile }
+      end
+      
     end
   end
 
