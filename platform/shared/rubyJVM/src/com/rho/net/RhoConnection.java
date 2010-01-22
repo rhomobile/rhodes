@@ -670,6 +670,10 @@ public class RhoConnection implements IHttpConnection {
 		String actionid = up.next();
 		String actionnext = up.next();
 		if ( actionid != null && actionid.length() > 0 ){
+			if ( actionid.length() > 6 && actionid.startsWith("%7B") && 
+			     actionid.endsWith("%7D") )
+				actionid = "{" + actionid.substring(3, actionid.length()-3) + "}";
+			
 			if ( actionid.length() > 2 && 
 				 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
 				reqHash.setProperty( "id", actionid);
