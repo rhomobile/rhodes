@@ -143,6 +143,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // set initial properties for the control
     //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
     m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
+    m_spIWebBrowser2->put_StatusBar(VARIANT_FALSE);
     //m_spIWebBrowser2->put_Offline(VARIANT_TRUE);
 #if defined(_WIN32_WCE)
     // Create a menubar
