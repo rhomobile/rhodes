@@ -90,6 +90,13 @@ namespace "build" do
       rm_rf 'build/Release-*'
       
       chdir $startdir
+      
+      #XXX temporary extension hack
+      $app_config["extensions"] ||= []
+      $app_config["extensions"] << "fcntl"
+      $app_config["extensions"] << "openssl"
+      $app_config["extensions"] << "digest"
+
 
       Rake::Task["build:bundle:noxruby"].execute
 
@@ -107,6 +114,19 @@ namespace "build" do
     end
 
     task :extensions => "config:iphone" do
+      simulator = $sdk =~ /iphonesimulator/
+      ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= "/Developer/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
+        ".platform/Developer/usr/bin"
+      ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+              $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+      ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
+      ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
+
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
+
+
       $app_config["extensions"].each do |ext|
         extdir = File.join('lib', 'extensions', ext, 'ext')
         puts Jake.run('./build', [], extdir) if File.executable? File.join(extdir, 'build')
