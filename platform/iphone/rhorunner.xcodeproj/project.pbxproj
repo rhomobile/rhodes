@@ -859,7 +859,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = NO;
-				EXTENSIONS_LDFLAGS = "$(TARGET_TEMP_DIR)/libfcntl.a $(TARGET_TEMP_DIR)/libdigest.a $(TARGET_TEMP_DIR)/libossl.a $(TARGET_TEMP_DIR)/libssl.a $(TARGET_TEMP_DIR)/libcrypto.a";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -927,7 +927,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
-				EXTENSIONS_LDFLAGS = "$(TARGET_TEMP_DIR)/libfcntl.a $(TARGET_TEMP_DIR)/libdigest.a $(TARGET_TEMP_DIR)/libossl.a $(TARGET_TEMP_DIR)/libssl.a $(TARGET_TEMP_DIR)/libcrypto.a";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
@@ -1046,7 +1046,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
 				COPY_PHASE_STRIP = YES;
-				EXTENSIONS_LDFLAGS = "$(TARGET_TEMP_DIR)/libfcntl.a $(TARGET_TEMP_DIR)/libdigest.a $(TARGET_TEMP_DIR)/libossl.a $(TARGET_TEMP_DIR)/libssl.a $(TARGET_TEMP_DIR)/libcrypto.a";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;

@@ -99,6 +99,54 @@ def check_extension_file
   end
 end
 
+def clear_linker_settings
+  if $config["platform"] == "iphone"
+#    outfile = ""
+#    IO.read($startdir + "/platform/iphone/rhorunner.xcodeproj/project.pbxproj").each_line do |line|
+#      if line =~ /EXTENSIONS_LDFLAGS = /
+#        outfile << line.gsub(/EXTENSIONS_LDFLAGS = ".*"/, 'EXTENSIONS_LDFLAGS = ""')
+#      else
+#        outfile << line
+#      end
+#    end
+#    File.open($startdir + "/platform/iphone/rhorunner.xcodeproj/project.pbxproj","w") {|f| f.write outfile}
+#    ENV["EXTENSIONS_LDFLAGS"] = ""
+
+    $ldflags = ""
+  end
+
+end
+
+def add_linker_library(libraryname)
+#  if $config["platform"] == "iphone"
+#    outfile = ""
+#    IO.read($startdir + "/platform/iphone/rhorunner.xcodeproj/project.pbxproj").each_line do |line|
+#      if line =~ /EXTENSIONS_LDFLAGS = /
+#        outfile << line.gsub(/";/, " $(TARGET_TEMP_DIR)/#{libraryname}\";")
+#      else
+#        outfile << line
+#      end
+#    end
+#    File.open($startdir + "/platform/iphone/rhorunner.xcodeproj/project.pbxproj","w") {|f| f.write outfile}
+#  end
+      simulator = $sdk =~ /iphonesimulator/
+
+  tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+  $ldflags << "#{tmpdir}/#{libraryname}\n"
+end
+
+def set_linker_flags
+  if $config["platform"] == "iphone"
+      simulator = $sdk =~ /iphonesimulator/
+      tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      File.open(tmpdir + "/rhodeslibs.txt","w") { |f| f.write $ldflags }
+#    ENV["EXTENSIONS_LDFLAGS"] = $ldflags
+#    puts `export $EXTENSIONS_LDFLAGS`
+  end
+
+end
 
 def add_extension(path,dest)
   start = pwd
@@ -169,6 +217,10 @@ def add_extension(path,dest)
       end
       
     end
+
+    if extension_config["libraries"] and extension_config["libraries"].is_a? Array
+      extension_config["libraries"].each { |lib| add_linker_library(lib) }
+    end
   end
 
   chdir start
@@ -197,6 +249,8 @@ def common_bundle_start(startdir, dest)
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
   chdir start
+  clear_linker_settings
+
   if $app_config["extensions"] and $app_config["extensions"].is_a? Array
     $app_config["extensions"].each do |extname|
       rhoextpath = "lib/extensions/" + extname
@@ -216,7 +270,8 @@ def common_bundle_start(startdir, dest)
     end
   end
 
-
+  check_extension_file
+  set_linker_flags
 
   unless $app_config["constants"].nil?
     File.open("rhobuild.rb","w") do |file|

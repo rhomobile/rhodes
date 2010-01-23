@@ -1,2 +1,2 @@
 entry: Init_digest
-library: libdigest.a
+libraries: [ "libdigest.a" ]
