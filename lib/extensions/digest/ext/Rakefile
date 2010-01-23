@@ -23,7 +23,7 @@ def build_extension(name, arch)
     args << f
     cmdline = $gccbin + ' ' + args.join(' ')
     puts cmdline
-    `#{cmdline}`
+    puts `#{cmdline}`
     exit unless $? == 0
   end
 
@@ -34,7 +34,7 @@ def build_extension(name, arch)
   args += objects
   cmdline = $arbin + ' ' + args.join(' ')
   puts cmdline
-  `#{cmdline}`
+  puts `#{cmdline}`
   exit unless $? == 0
 end
 
@@ -50,7 +50,7 @@ def build_fat_file(name, archs)
     args << "lib#{name}-#{arch}.a"
   end
   cmdline = $lipobin + ' ' + args.join(' ')
-  `#{cmdline}`
+  puts `#{cmdline}`
   exit unless $? == 0
 end
 
