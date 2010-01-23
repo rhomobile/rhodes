@@ -141,6 +141,7 @@ def set_linker_flags
       simulator = $sdk =~ /iphonesimulator/
       tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
         ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      mkdir_p tmpdir unless File.exist? tmpdir
       File.open(tmpdir + "/rhodeslibs.txt","w") { |f| f.write $ldflags }
 #    ENV["EXTENSIONS_LDFLAGS"] = $ldflags
 #    puts `export $EXTENSIONS_LDFLAGS`

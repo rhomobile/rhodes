@@ -128,9 +128,23 @@ namespace "build" do
 
 
       $app_config["extensions"].each do |ext|
-        extdir = File.join('lib', 'extensions', ext, 'ext')
-        puts Jake.run('./build', [], extdir) if File.executable? File.join(extdir, 'build')
+        rhoextpath = "lib/extensions/" + ext + "/ext"
+        appextpath = $app_path + "/extensions/" + ext + "/ext"
+        extpath = ""
+
+        puts appextpath
+        puts rhoextpath
+
+        if File.exists? appextpath
+          extpath = appextpath
+        elsif File.exists? rhoextpath
+          extpath = rhoextpath
+        end
+
+
+        puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
         exit 1 unless $? == 0
+        
       end
     end
     
