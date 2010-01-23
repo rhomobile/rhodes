@@ -6,7 +6,7 @@ def cmdrun(cmd, args=nil)
 
   cmdline = cmd + ' ' + args
   puts cmdline
-  `#{cmdline}`
+  puts `#{cmdline}`
   return $? == 0
 end
 

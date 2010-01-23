@@ -23,7 +23,7 @@ def build_extension(name, arch)
     args << f
     cmdline = $gccbin + ' ' + args.join(' ')
     puts cmdline
-    `#{cmdline}`
+    puts `#{cmdline}`
     exit unless $? == 0
   end
 
@@ -34,7 +34,7 @@ def build_extension(name, arch)
   args += objects
   cmdline = $arbin + ' ' + args.join(' ')
   puts cmdline
-  `#{cmdline}`
+  puts `#{cmdline}`
   exit unless $? == 0
 end
 
