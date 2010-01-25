@@ -96,11 +96,6 @@ namespace "build" do
       
       chdir $startdir
       
-      #XXX temporary extension hack
-      $app_config["extensions"] ||= []
-      $app_config["extensions"] << "fcntl"
-      $app_config["extensions"] << "openssl"
-      $app_config["extensions"] << "digest"
 
 
       Rake::Task["build:bundle:noxruby"].execute
