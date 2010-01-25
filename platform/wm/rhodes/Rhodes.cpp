@@ -353,6 +353,18 @@ extern "C" void Init_RingtoneManager()
 {
 }
 
+extern "C" void Init_openssl(void)
+{
+}
+
+extern "C" void Init_digest(void)
+{
+}
+
+extern "C" void Init_fcntl(void)
+{
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
