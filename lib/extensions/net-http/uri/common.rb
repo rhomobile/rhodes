@@ -223,7 +223,7 @@ module URI
           tmp << sprintf('%%%02X', uc)
         end
         tmp
-      end.force_encoding(Encoding::US_ASCII)
+      end.force_encoding("US-ASCII")#Encoding::US_ASCII)
     end
 
     def unescape(str, escaped = @regexp[:ESCAPED])
