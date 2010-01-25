@@ -9,6 +9,7 @@ applog: rholog.txt
 iphone:
   configuration: Debug
   sdk: iphonesimulator3.0
+  provisionprofile:
   codesignidentity:
   entitlements:
 extensions: ["extension-name-here", "second-extension-name"]
