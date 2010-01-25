@@ -175,7 +175,7 @@ def add_extension(path,dest)
         callwritten = false
 
         f.each_line do |line|
-          puts line
+   #       puts line
           #are we starting a replacement area?
           externstart = true if line =~ /EXTERNS/
           callstart = true if line =~ /CALLS/
