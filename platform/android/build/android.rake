@@ -194,8 +194,8 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => :librhodes do
-      Rake::Task["build:bundle:noxruby"].execute
+    task :rhobundle => ["config:android","build:bundle:noxruby",:librhodes] do
+#      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
       hash = ""
