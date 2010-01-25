@@ -31,7 +31,7 @@ end
 
 task :build => :config do
   if not File.exists? $built
-    cmdrun('make', 'clean') or exit 1
+    cmdrun('make', 'clean')
     cmdrun('./config', "-openssldir=#{$builddir}") or exit 1
 
     args = []
