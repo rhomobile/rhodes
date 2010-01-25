@@ -153,6 +153,8 @@ namespace "config" do
       $libname[x] = $bindir + "/libs/" + $confdir + "/lib" + x + ".a"
     end
 
+    $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
+
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
@@ -194,7 +196,7 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android","build:bundle:noxruby",:librhodes] do
+    task :rhobundle => ["config:android","build:bundle:noxruby",:extensions,:librhodes] do
 #      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
@@ -209,6 +211,39 @@ namespace "build" do
       File.open(File.join(assets, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
 
     File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+
+    end
+
+    task :extensions => "config:android" do
+
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
+      ENV["TARGET_TEMP_DIR"] = $extensionsdir
+      
+      mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
+      
+      $app_config["extensions"].each do |ext|
+        ENV['TEMP_FILES_DIR'] = ENV["TARGET_TEMP_DIR"] + "/#{ext}"
+
+        rhoextpath = "lib/extensions/" + ext + "/ext"
+        appextpath = $app_path + "/extensions/" + ext + "/ext"
+        extpath = ""
+
+        puts appextpath
+        puts rhoextpath
+
+        if File.exists? appextpath
+          extpath = appextpath
+        elsif File.exists? rhoextpath
+          extpath = rhoextpath
+        end
+        
+     
+
+        puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
+        exit 1 unless $? == 0
+        
+      end
 
     end
 
@@ -259,7 +294,8 @@ namespace "build" do
       File.read(File.join($builddir, "libruby_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
       end
-      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
+
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") + Dir.glob($extensionsdir + "/*.a") or exit 1
     end
 
     task :libjson => "config:android" do
@@ -413,6 +449,7 @@ namespace "build" do
 
       args = []
       args << "-L#{$bindir}/libs/#{$confdir}"
+      args << "-L#{$extensionsdir}"
       args << "-lrhomain"
       args << "-lruby"
       args << "-lrhosync"
@@ -425,6 +462,11 @@ namespace "build" do
       args << "-lsqlite"
       args << "-ldl"
       args << "-lz"
+
+      Dir.glob($extensionsdir + "/*.a").each do |f|
+        args << "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.a$/,"")
+      end
+
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
