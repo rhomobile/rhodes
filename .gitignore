@@ -1,3 +1,4 @@
+lib/**/*.o
 *~
 *.iseq
 .DS_Store
@@ -91,3 +92,4 @@ platform/android/**/default.properties
 .gvide
 *.gem
 Manifest.txt
+

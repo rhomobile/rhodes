@@ -117,8 +117,14 @@ namespace "build" do
       simulator = $sdk =~ /iphonesimulator/
       ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= "/Developer/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
         ".platform/Developer/usr/bin"
-      ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+
+      if simulator
+        ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
               $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+      else
+        ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
+              $sdk.gsub(/iphoneos/,"") + ".sdk"
+      end
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
       ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
         ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
