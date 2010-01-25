@@ -24,14 +24,17 @@ def set_app_name(newname)
 
 end
 
-def set_signing_identity(identity,entitlements)
+def set_signing_identity(identity,profile,entitlements)
   fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
   buf = ""
   File.new(fname,"r").read.each_line do |line|
       line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
       line.gsub!(/CODE_SIGN_IDENTITY = .*;/,"CODE_SIGN_IDENTITY = \"#{identity}\";")
       line.gsub!(/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*;/,"\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"#{identity}\";")
-      
+
+      line.gsub!(/PROVISIONING_PROFILE = .*;/,"PROVISIONING_PROFILE = \"#{profile}\";")
+      line.gsub!(/"PROVISIONING_PROFILE\[sdk=iphoneos\*\]" = .*;/,"\"PROVISIONING_PROFILE[sdk=iphoneos*]\" = \"#{profile}\";")
+
       puts line if line =~ /CODE_SIGN/
       buf << line
   end
@@ -63,11 +66,13 @@ namespace "config" do
 
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
+      $provisionprofile = $config["env"]["iphone"]["provisionprofile"]
       $entitlements = $config["env"]["iphone"]["entitlements"]
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
+      $provisionprofile = $app_config["iphone"]["provisionprofile"]
       $entitlements = $app_config["iphone"]["entitlements"]
       $configuration = $app_config["iphone"]["configuration"]
       $sdk = $app_config["iphone"]["sdk"]
@@ -160,7 +165,7 @@ namespace "build" do
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
       cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
 
-      set_signing_identity($signidentity,$entitlements.to_s) if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != "" and $provisionprofile.to_s != ""
 
       chdir $config["build"]["iphonepath"]
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
