@@ -1,40 +1,41 @@
 package com.rho.net;
 
+import java.io.IOException;
+
+import javax.microedition.io.SocketConnection;
+
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
 
-import java.io.IOException;
+public class SSLSocket extends BaseSocket {
 
-import javax.microedition.io.SocketConnection;
-
-public class TCPSocket extends BaseSocket {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-		new RhoLogger("TCPSocket");
+		new RhoLogger("SSLSocket");
 	
-	public TCPSocket(RubyClass c) {
+	public SSLSocket(RubyClass c) {
 		super(c);
 	}
-
-    public static TCPSocket alloc(RubyValue receiver) {
-    	return new TCPSocket((RubyClass)receiver);
+	
+	public static SSLSocket alloc(RubyValue receiver) {
+    	return new SSLSocket((RubyClass)receiver);
     }
 	
-    public void initialize(String strHost, int nPort) throws IOException
+	public void initialize(String strHost, int nPort) throws IOException
     {
-    	NetworkAccess na = (NetworkAccess)RhoClassFactory.getNetworkAccess();
-    	SocketConnection conn = na.socketConnect(strHost, nPort);
+		NetworkAccess na = (NetworkAccess)RhoClassFactory.getNetworkAccess();
+		SocketConnection conn = na.socketConnect("ssl", strHost, nPort);
     	setConnection(conn);
     	super.initialize(strHost, nPort);
     }
-    
+
 	public static void initMethods(RubyClass klass) {
 		
 		klass.defineAllocMethod(new RubyNoArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyBlock block )	{
-				return TCPSocket.alloc(receiver);}
+				return SSLSocket.alloc(receiver);}
 		});
 		
 		klass.defineMethod( "initialize", new RubyTwoArgMethod(){ 
@@ -43,7 +44,7 @@ public class TCPSocket extends BaseSocket {
 		    	try{
 					String strHost = arg1.toStr();
 					int nPort = arg2.toInt();
-					((TCPSocket)receiver).initialize(strHost, nPort);
+					((SSLSocket)receiver).initialize(strHost, nPort);
 			        return receiver;
 					
 				}catch(Exception e)
@@ -58,7 +59,7 @@ public class TCPSocket extends BaseSocket {
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) 
 			{
 				try{
-					TCPSocket res = TCPSocket.alloc(RubyRuntime.TCPSocketClass);
+					SSLSocket res = SSLSocket.alloc(RubyRuntime.SSLSocketClass);
 					String strHost = arg1.toStr();
 					int nPort = arg2.toInt();
 					res.initialize(strHost, nPort);
@@ -76,7 +77,7 @@ public class TCPSocket extends BaseSocket {
 			protected RubyValue run(RubyValue receiver, RubyBlock block )
 			{
 		    	try{
-					boolean bRes = ((TCPSocket)receiver).is_closed();
+					boolean bRes = ((SSLSocket)receiver).is_closed();
 					
 					return ObjectFactory.createBoolean(bRes);
 				}catch(Exception e)
@@ -91,7 +92,7 @@ public class TCPSocket extends BaseSocket {
 			protected RubyValue run(RubyValue receiver, RubyBlock block )
 			{
 		    	try{
-					((TCPSocket)receiver).close();
+					((SSLSocket)receiver).close();
 					
 					return RubyConstant.QNIL;
 				}catch(Exception e)
@@ -106,7 +107,7 @@ public class TCPSocket extends BaseSocket {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 		    	try{
-					int nRes = ((TCPSocket)receiver).write(arg.toStr());
+					int nRes = ((SSLSocket)receiver).write(arg.toStr());
 					
 					return ObjectFactory.createInteger(nRes);
 				}catch(Exception e)
@@ -121,7 +122,7 @@ public class TCPSocket extends BaseSocket {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 		    	try{
-					String strRes = ((TCPSocket)receiver).sysread(arg.toInt());
+					String strRes = ((SSLSocket)receiver).sysread(arg.toInt());
 					
 					return ObjectFactory.createString(strRes);
 				}catch(Exception e)
@@ -132,5 +133,6 @@ public class TCPSocket extends BaseSocket {
 			}
 		});
 		
-	}	
+	}
+	
 }

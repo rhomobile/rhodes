@@ -22,6 +22,7 @@ import com.rho.db.IDBStorage;
 import com.rho.file.FileAccessBB;
 import com.rho.file.Jsr75RAFileImpl;
 import com.rho.file.PersistRAFileImpl;
+import com.rho.net.SSLSocket;
 import com.rho.net.TCPSocket;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
@@ -29,7 +30,7 @@ import com.xruby.runtime.lang.RubyRuntime;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
-	// WARNING!!! Be very carefull when modify these lines! There was a case when
+	// WARNING!!! Be very careful when modify these lines! There was a case when
 	// entire application has verification error in case if this line is not at start
 	// of class. It is impossible to explain why it happened but need to be remembered
 	public static final String USE_PERSISTENT = "use_persistent_storage";
@@ -46,6 +47,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
         NativeBar.initMethods(RubyRuntime.NativeBarClass);
         TCPSocket.initMethods(RubyRuntime.TCPSocketClass);
+        SSLSocket.initMethods(RubyRuntime.SSLSocketClass);
         MapView.initMethods(RubyRuntime.MapViewClass);
 	}
 	

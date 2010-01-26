@@ -1,9 +1,11 @@
 platform\bb\rhodes\src\com\rho\Jsr75File.java
 platform\bb\rhodes\src\com\rho\location\GeoLocationAsync.java
 platform\bb\rhodes\src\com\rho\location\GeoLocationImpl.java
+platform\bb\rhodes\src\com\rho\net\BaseSocket.java
 platform\bb\rhodes\src\com\rho\net\bb\BBHttpConnection.java
 platform\bb\rhodes\src\com\rho\net\bb\NativeBBHttpConnection.java
 platform\bb\rhodes\src\com\rho\net\NetworkAccess.java
+platform\bb\rhodes\src\com\rho\net\SSLSocket.java
 platform\bb\rhodes\src\com\rho\net\TCPSocket.java
 platform\bb\rhodes\src\com\rho\RhoRubyHelper.java
 platform\bb\rhodes\src\com\rho\Version.java
