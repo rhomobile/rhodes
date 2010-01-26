@@ -83,6 +83,11 @@ namespace "config" do
       File.open($homedir + "/.profile","w") {|f| f << "#" }
       chmod 0744, $homedir + "/.profile"
     end
+
+    unless $app_config["iphone"]["extensions"].nil?
+      $app_config["extensions"] += $app_config["iphone"]["extensions"] if $app_config["extensions"]
+      $app_config["iphone"]["extensions"] = nil
+    end
   end
 end
 

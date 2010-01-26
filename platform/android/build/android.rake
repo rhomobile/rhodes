@@ -155,6 +155,11 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
 
+    unless $app_config["android"]["extensions"].nil?
+      $app_config["extensions"] += $app_config["android"]["extensions"] if $app_config["extensions"]
+      $app_config["android"]["extensions"] = nil
+    end
+
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
@@ -222,7 +227,7 @@ namespace "build" do
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
 
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
-      
+
       $app_config["extensions"].each do |ext|
         ENV['TEMP_FILES_DIR'] = ENV["TARGET_TEMP_DIR"] + "/#{ext}"
 
