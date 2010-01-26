@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
-  s.version = "1.2.2"
+  s.version = "1.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rhodes}
-  s.rubygems_version = %q{1.3.0}
+  s.rubygems_version = %q{1.3.5}
   s.executables << 'rhogen'
   s.executables << 'upgrade-rhodes-app'
   s.executables << 'rhodes-setup'
