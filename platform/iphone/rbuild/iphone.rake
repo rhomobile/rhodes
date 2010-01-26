@@ -31,10 +31,11 @@ def set_signing_identity(identity,profile,entitlements)
       line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
       line.gsub!(/CODE_SIGN_IDENTITY = .*;/,"CODE_SIGN_IDENTITY = \"#{identity}\";")
       line.gsub!(/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*;/,"\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"#{identity}\";")
-
-      line.gsub!(/PROVISIONING_PROFILE = .*;/,"PROVISIONING_PROFILE = \"#{profile}\";")
-      line.gsub!(/"PROVISIONING_PROFILE\[sdk=iphoneos\*\]" = .*;/,"\"PROVISIONING_PROFILE[sdk=iphoneos*]\" = \"#{profile}\";")
-
+      if profile and profile.to_s != ""
+        line.gsub!(/PROVISIONING_PROFILE = .*;/,"PROVISIONING_PROFILE = \"#{profile}\";")
+        line.gsub!(/"PROVISIONING_PROFILE\[sdk=iphoneos\*\]" = .*;/,"\"PROVISIONING_PROFILE[sdk=iphoneos*]\" = \"#{profile}\";")
+      end
+      
       puts line if line =~ /CODE_SIGN/
       buf << line
   end
@@ -160,7 +161,7 @@ namespace "build" do
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
       cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != "" and $provisionprofile.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
       chdir $config["build"]["iphonepath"]
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
