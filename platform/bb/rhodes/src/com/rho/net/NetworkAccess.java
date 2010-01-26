@@ -143,19 +143,25 @@ public class NetworkAccess implements INetworkAccess {
 			url = url.substring(0, fragment);
 		}
 
-		HttpConnection http = (HttpConnection)baseConnect(url);
+		HttpConnection http = (HttpConnection)baseConnect(url, false);
 		return new BBHttpConnection(http);
 	}
 
-
-	public SocketConnection socketConnect(String strHost, int nPort) throws IOException 
+	public SocketConnection socketConnect(String strHost, int nPort) throws IOException
 	{
-		String strUrl = "socket://" + strHost + ":" + Integer.toString(nPort);
+		return socketConnect("socket", strHost, nPort);
+	}
+
+	public SocketConnection socketConnect(String proto, String strHost, int nPort) throws IOException 
+	{
+		boolean ignoreSuffix = DeviceInfo.isSimulator() && proto.equals("ssl") &&
+			URLsuffix.indexOf("deviceside=true") != -1;
+		String strUrl = proto + "://" + strHost + ":" + Integer.toString(nPort);
 		
-		return (SocketConnection)baseConnect(strUrl);
+		return (SocketConnection)baseConnect(strUrl, ignoreSuffix);
 	}
 	
-	public Connection baseConnect(String strUrl) throws IOException 
+	public Connection baseConnect(String strUrl, boolean ignoreSuffix) throws IOException 
 	{
 		Connection conn = null;
 		
@@ -176,8 +182,11 @@ public class NetworkAccess implements INetworkAccess {
 			}*/
 			
 			try {
-				LOG.INFO(strUrl + URLsuffix);
-				conn = Connector.open(strUrl + URLsuffix);
+				String url = strUrl;
+				if (!ignoreSuffix)
+					url += URLsuffix;
+				LOG.INFO(url);
+				conn = Connector.open(url);
 			} catch (IOException ioe) {
 				
 				if ( URLsuffix.length() > 0 )

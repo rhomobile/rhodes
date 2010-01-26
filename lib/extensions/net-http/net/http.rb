@@ -581,9 +581,13 @@ module Net   #:nodoc:
     private :do_start
 
     def connect
-      D "opening connection to #{conn_address()}..."
-      s = timeout(@open_timeout) { TCPSocket.open(conn_address(), conn_port()) }
-      D "opened"
+      platform = System::get_property('platform')
+      puts "http.connect: platform: #{platform}"
+      if !(use_ssl? and platform == 'Blackberry')
+        D "opening connection to #{conn_address()}..."
+        s = timeout(@open_timeout) { TCPSocket.open(conn_address(), conn_port()) }
+        D "opened"
+      end
       if use_ssl?
         ssl_parameters = Hash.new
         SSL_ATTRIBUTES.each do |name|
@@ -591,10 +595,14 @@ module Net   #:nodoc:
             ssl_parameters[name] = value
           end
         end
-        @ssl_context = OpenSSL::SSL::SSLContext.new
-        @ssl_context.set_params(ssl_parameters)
-        s = OpenSSL::SSL::SSLSocket.new(s, @ssl_context)
-        s.sync_close = true
+        if platform != 'Blackberry'
+          @ssl_context = OpenSSL::SSL::SSLContext.new
+          @ssl_context.set_params(ssl_parameters)
+          s = OpenSSL::SSL::SSLSocket.new(s, @ssl_context)
+          s.sync_close = true
+        else
+          s = SSLSocket.open(conn_address(), conn_port())
+        end
       end
       @socket = BufferedIO.new(s)
       @socket.read_timeout = @read_timeout
@@ -612,9 +620,11 @@ module Net   #:nodoc:
           @socket.writeline ''
           HTTPResponse.read_new(@socket).value
         end
-        s.connect
-        if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
-          s.post_connection_check(@address)
+        if platform != 'Blackberry'
+          s.connect
+          if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
+            s.post_connection_check(@address)
+          end
         end
       end
       on_connect

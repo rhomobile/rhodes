@@ -29,9 +29,11 @@ src\com\rho\BBVersionSpecific.java
 src\com\rho\Jsr75File.java
 src\com\rho\location\GeoLocationAsync.java
 src\com\rho\location\GeoLocationImpl.java
+src\com\rho\net\BaseSocket.java
 src\com\rho\net\bb\BBHttpConnection.java
 src\com\rho\net\bb\NativeBBHttpConnection.java
 src\com\rho\net\NetworkAccess.java
+src\com\rho\net\SSLSocket.java
 src\com\rho\net\TCPSocket.java
 src\com\rho\RhoMainScreen.java
 src\com\rho\RhoRubyHelper.java

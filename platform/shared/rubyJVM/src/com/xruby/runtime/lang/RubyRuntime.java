@@ -96,6 +96,7 @@ public class RubyRuntime {
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
     public static RubyClass TCPSocketClass;
+    public static RubyClass SSLSocketClass;
     public static RubyClass TopSelfClass;
     public static RubyClass MapViewClass;
     //RHO
@@ -264,6 +265,7 @@ public class RubyRuntime {
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
         TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
+        SSLSocketClass = RubyAPI.defineClass("SSLSocket", RubyRuntime.ObjectClass);
         MapViewClass = RubyAPI.defineClass("MapView", RubyRuntime.ObjectClass);
         RubyMutex.initMethods(MutexClass);        
 //      RhoPhonebook.initMethods(PhonebookClass);
