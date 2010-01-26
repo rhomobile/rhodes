@@ -11,6 +11,17 @@ def cmdrun(cmd, args=nil)
 end
 
 task :config do
+  if ENV['ANDROID_API_LEVEL'] != nil
+      $targetdir = ENV['TARGET_TEMP_DIR']
+      $tempdir = ENV['TEMP_FILES_DIR']
+      $builddir = ENV['BUILD_DIR']
+      require File.dirname(__FILE__) + '/../../../../../platform/android/build/androidcommon.rb'
+
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+      $arch = "android"
+      $android = true
+    else
+
   $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
   raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
   $sdkroot = ENV['SDKROOT']
@@ -26,18 +37,29 @@ task :config do
   $gccbin = $bindir + '/gcc-4.0'
   $arbin = $bindir + '/ar'
   
+
+  end
+
   $built = File.join($targetdir, '.built-openssl-' + $arch)
 end
-
 task :build => :config do
+  puts "BUILT: #{$built}"
   if not File.exists? $built
-    cmdrun('make', 'clean')
-    cmdrun('./config', "-openssldir=#{$builddir}") or exit 1
+      cmdrun('make', 'clean')
+      cmdrun('./config', "-openssldir=#{$builddir}") or exit 1
+      args = []
+    if $android
+      args << "CC=#{$gccbin}"
+      args << "CFLAG=\"#{cc_def_args.join(" ")}\""
+      args << "AR=\"#{$arbin} cr \""
+      args << "RANLIB=\"#{$ranlib}\""
+      args << "SHARED_LDFLAGS=\"-dynamiclib\""
+    else
+      args << "CC=#{$bindir}/gcc-4.0"
+      args << "CFLAG=\"-D_DARWIN_C_SOURCE -arch #{$arch} -isysroot #{$sdkroot}\""
+      args << "SHARED_LDFLAGS=\"-arch #{$arch} -dynamiclib\""
+    end
 
-    args = []
-    args << "CC=#{$bindir}/gcc-4.0"
-    args << "CFLAG=\"-D_DARWIN_C_SOURCE -arch #{$arch} -isysroot #{$sdkroot}\""
-    args << "SHARED_LDFLAGS=\"-arch #{$arch} -dynamiclib\""
     cmdrun('make', args) or exit 1
 
     FileUtils.touch $built

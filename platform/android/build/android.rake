@@ -219,7 +219,8 @@ namespace "build" do
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
-      
+      ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
+
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
       
       $app_config["extensions"].each do |ext|
@@ -463,7 +464,7 @@ namespace "build" do
       args << "-ldl"
       args << "-lz"
 
-      Dir.glob($extensionsdir + "/*.a").each do |f|
+      Dir.glob($extensionsdir + "/*.a").reverse.each do |f|
         args << "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.a$/,"")
       end
 

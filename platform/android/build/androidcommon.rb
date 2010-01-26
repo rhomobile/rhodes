@@ -24,6 +24,7 @@ def setup_ndk(ndkpath,apilevel)
   $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
   $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
   $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
+  $ranlib = $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext
   $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
 
 end
@@ -72,7 +73,9 @@ def cc_deps(filename, objdir, additional)
   args = cc_def_args
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
-  out.gsub!(/^[^:]*:\s*/, '').gsub!(/\\\n/, ' ')
+  out.gsub!(/^[^:]*:\s*/, '') unless out.nil?
+  out.gsub!(/\\\n/, ' ') unless out.nil?
+  out = "" if out.nil?
   #out = File.expand_path(__FILE__) + ' ' + out
 
   mkdir_p objdir unless File.directory? objdir
@@ -84,7 +87,8 @@ end
 def cc_run(command, args)
   cmdline = command + ' ' + args.join(' ')
   puts cmdline
-  `#{cmdline}`
+  puts `#{cmdline}`
+  $stdout.flush
 end
 
 def cc_compile(filename, objdir, additional = nil)

@@ -3,10 +3,10 @@
 CWD=`pwd`
 
 cd $CWD/openssl || exit 1
-rake || exit 1
+rake --trace || exit 1
 
 cd $CWD/ossl || exit 1
-rake || exit 1
+rake --trace || exit 1
 
 exit 0
 
