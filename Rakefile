@@ -265,8 +265,9 @@ def common_bundle_start(startdir, dest)
     $app_config["extensions"].is_a? Array
   extensions += $app_config[$config["platform"]["extensions"]] if $config["platform"] and
     $config["platform"]["extensions"] and $config["platform"]["extensions"].is_a? Array
+  $app_config["extensions"] = extensions
     
-  extensions.each do |extname|
+  $app_config["extensions"].each do |extname|
     rhoextpath = "lib/extensions/" + extname
     appextpath = $app_path + "/extensions/" + extname
     extpath = nil
