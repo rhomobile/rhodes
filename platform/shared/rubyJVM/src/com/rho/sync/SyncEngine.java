@@ -65,8 +65,14 @@ public class SyncEngine implements NetRequest.IRhoSession
             if ( m_strName.length() > 0 )
                 return src.getName().equals(m_strName);
             else if ( m_strUrl.length() > 0 )
-                return src.getUrl().equals(m_strUrl);
-
+            {
+            	URI uri1 = new URI(m_strUrl);
+            	URI uri2 = new URI(src.getUrl());
+            	
+            	return uri1.getPath().compareTo(uri2.getPath()) == 0;
+                //return src.getUrl().equals(m_strUrl);
+            }
+            
             return m_nID == src.getID().intValue();
         }
     };
