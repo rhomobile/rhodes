@@ -20,24 +20,21 @@ task :config do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
       $arch = "android"
       $android = true
-    else
-
-  $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-  raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-  $sdkroot = ENV['SDKROOT']
-  raise "SDKROOT is not set" if $sdkroot.nil?
-  $builddir = ENV['BUILD_DIR']
-  raise "BUILD_DIR is not set" if $builddir.nil?
-  $targetdir = ENV['TARGET_TEMP_DIR']
-  raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
-  $tempdir = ENV['TEMP_FILES_DIR']
-  raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
-  $arch = ENV['ARCHS']
-  raise "ARCHS is not set" if $arch.nil?
-  $gccbin = $bindir + '/gcc-4.0'
-  $arbin = $bindir + '/ar'
-  
-
+  else
+    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+    $sdkroot = ENV['SDKROOT']
+    raise "SDKROOT is not set" if $sdkroot.nil?
+    $builddir = ENV['BUILD_DIR']
+    raise "BUILD_DIR is not set" if $builddir.nil?
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $arch = ENV['ARCHS']
+    raise "ARCHS is not set" if $arch.nil?
+    $gccbin = $bindir + '/gcc-4.0'
+    $arbin = $bindir + '/ar'
   end
 
   $built = File.join($targetdir, '.built-openssl-' + $arch)
@@ -70,7 +67,7 @@ task :build => :config do
 end
 
 task :clean => :config do
-  rm_f '.built-' + $arch
+  rm_f $built
   cmdrun('make', 'clean')
 end
 
