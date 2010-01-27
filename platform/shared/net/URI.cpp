@@ -12,7 +12,6 @@ String URI::getPath()
 {
     const char* url = m_strUrl.c_str();
     const char* pStartSrv, *pEndSrv;
-//    int nSrvLen;
     const char* pHttp = strstr(url,"://");
     if ( !pHttp )
         pHttp = strstr(url,":\\\\");
@@ -43,7 +42,30 @@ String URI::getQueryString()
     if ( !szQuest )
         return String();
 
-    return String(szQuest+1, szQuest-m_strUrl.c_str());
+    return String(szQuest+1);
+}
+
+String URI::getScheme()
+{
+    const char* url = m_strUrl.c_str();
+    const char* pHttp = strstr(url,"://");
+    if ( !pHttp )
+        pHttp = strstr(url,":\\\\");
+
+    if ( !pHttp )
+        return String();
+
+    String res(url, pHttp-url);
+    return res;
+}
+
+String URI::getPathSpecificPart()
+{
+    const char* szQuest = strrchr( m_strUrl.c_str(), '?');
+    if ( !szQuest )
+        return m_strUrl;
+
+    return String(m_strUrl.c_str(), szQuest-m_strUrl.c_str());
 }
 
 static void toHexString(int i, String& strRes, int radix)

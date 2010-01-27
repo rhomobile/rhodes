@@ -82,30 +82,13 @@ public class ClientRegister extends RhoThread
     	
     }
 
-    public String getRegisterBody(SyncEngine oSync)throws Exception
+    public String getRegisterBody()throws Exception
     {
-		String client_id = oSync.loadClientID();
-		if ( client_id == null || client_id.length() == 0 )
-			return null;
-	
-		IDBResult res = oSync.getDB().executeSQL("SELECT token,token_sent from client_info");
-        if ( !res.isEnd() ) {
-			String token = res.getStringByIdx(0); 
-			int token_sent = res.getIntByIdx(1);
-			if ( m_strDevicePin.equals(token) && token_sent > 0 ) 
-			{
-				//token in db same as new one and it was already send to the server
-				//so we do nothing
-				return ""; 
-			}
-        }
-        
 		int port = RhoConf.getInstance().getInt("push_port");
     	
-		String strBody = "client_id=" + client_id +
-		"&device_pin=" + m_strDevicePin + 
-		"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
-		"&device_type=" + m_sysInfo.getPlatform();
+		String strBody = "device_pin=" + m_strDevicePin + 
+			"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
+			"&device_type=" + m_sysInfo.getPlatform();
     	
 		return strBody;
     }
@@ -116,15 +99,28 @@ public class ClientRegister extends RhoThread
     	if ( session == null || session.length() == 0 )
     		return false;
     	
-    	String strBody = getRegisterBody(oSync);
-    	if ( strBody == null )
-    		return false;
-    	if ( strBody.length() == 0)
-    		return true; //already register
+		String client_id = oSync.loadClientID();
+		if ( client_id == null || client_id.length() == 0 )
+			return false;
     	
+		IDBResult res = oSync.getDB().executeSQL("SELECT token,token_sent from client_info");
+        if ( !res.isEnd() ) {
+			String token = res.getStringByIdx(0); 
+			int token_sent = res.getIntByIdx(1);
+			if ( m_strDevicePin.equals(token) && token_sent > 0 ) 
+			{
+				//token in db same as new one and it was already send to the server
+				//so we do nothing
+				return true; 
+			}
+        }
+		
 		String serverUrl = RhoConf.getInstance().getPath("syncserver");
 		if (serverUrl != null && serverUrl.length()>0) 
 		{
+			String strBody = getRegisterBody();
+	    	strBody += "&client_id=" + client_id;
+			
 			NetResponse resp = getNet().pushData(serverUrl+"clientregister", strBody, oSync);
 			if( resp.isOK() ) 
 			{
