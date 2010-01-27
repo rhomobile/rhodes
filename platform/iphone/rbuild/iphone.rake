@@ -84,7 +84,7 @@ namespace "config" do
       chmod 0744, $homedir + "/.profile"
     end
 
-    unless $app_config["iphone"]["extensions"].nil?
+    if $app_config["iphone"] and $app_config["iphone"]["extensions"]
       $app_config["extensions"] += $app_config["iphone"]["extensions"] if $app_config["extensions"]
       $app_config["iphone"]["extensions"] = nil
     end
