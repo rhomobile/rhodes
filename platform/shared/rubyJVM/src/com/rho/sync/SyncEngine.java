@@ -196,8 +196,16 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        	src.m_nProgressStep = nProgressStep;
 	        	if ( oSrcID.m_strUrl.length() != 0 )
 	        	{
-	        		URI uri = new URI(oSrcID.m_strUrl);
-	        		src.setUrlParams(uri.getQueryString());
+	        		try{
+		        		URI uri = new URI(oSrcID.m_strUrl);
+		        		src.setUrlParams(uri.getQueryString());
+		        		
+		        		if (uri.getScheme()!= null && uri.getScheme().length()>0)
+		        			src.setUrl(uri.getPathSpecificPart());
+	        		}catch(Exception exc)
+	        		{
+	        			LOG.ERROR("Malformed url when sync by url.", exc);
+	        		}
 	        	}
 	        	
 			    m_strSession = loadSession();
