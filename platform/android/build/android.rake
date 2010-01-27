@@ -155,7 +155,7 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
 
-    unless $app_config["android"]["extensions"].nil?
+    if $app_config["android"] and $app_config["android"]["extensions"]
       $app_config["extensions"] += $app_config["android"]["extensions"] if $app_config["extensions"]
       $app_config["android"]["extensions"] = nil
     end
