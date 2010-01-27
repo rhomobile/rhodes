@@ -17,6 +17,9 @@ VALUE ruby_dln_librefs;
 #define IS_DLEXT(e) (strcmp(e, DLEXT) == 0)
 #endif
 
+// RHO
+extern VALUE rb_require_compiled(VALUE , VALUE );
+// RHO END
 
 static const char *const loadable_ext[] = {
     ".rb", DLEXT,
