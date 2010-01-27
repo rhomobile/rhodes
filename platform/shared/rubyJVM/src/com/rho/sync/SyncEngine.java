@@ -338,6 +338,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + strClientID;
+	    strQuery += "&" + ClientRegister.getInstance().getRegisterBody();
 	    
 	    NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 	    return resp.isOK();
@@ -534,7 +535,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 				
 			    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
-			    strBody += ClientRegister.getInstance().getRegisterBody(this);
+			    strBody += ClientRegister.getInstance().getRegisterBody();
 			    
 			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
 			    
