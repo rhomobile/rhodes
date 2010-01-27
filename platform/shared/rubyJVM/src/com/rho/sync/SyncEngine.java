@@ -194,6 +194,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        	src.m_strAction = strAction;
 	        	src.m_bSearchSyncChanges = bSearchSyncChanges;
 	        	src.m_nProgressStep = nProgressStep;
+	        	if ( oSrcID.m_strUrl.length() != 0 )
+	        	{
+	        		URI uri = new URI(oSrcID.m_strUrl);
+	        		src.setUrlParams(uri.getQueryString());
+	        	}
 	        	
 			    m_strSession = loadSession();
 			    if ( isSessionExist()  ) {

@@ -308,6 +308,8 @@ void CSyncSource::syncServerChanges()
                 "&p_size=" + getSync().SYNC_PAGE_SIZE() + "&version=" + convertToStringA(getSync().SYNC_VERSION());
         if ( m_strParams.length() > 0 )
             strQuery += m_strParams;
+        if( m_strUrlParams.length() > 0 )
+	        strQuery += "&" + m_strUrlParams;
 
         if ( getAskParams().length() > 0 )
         {

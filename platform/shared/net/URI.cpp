@@ -37,6 +37,15 @@ String URI::getPath()
     return String(pStartPath, pEndPath - pStartPath);
 }
 
+String URI::getQueryString()
+{
+    const char* szQuest = strrchr( m_strUrl.c_str(), '?');
+    if ( !szQuest )
+        return String();
+
+    return String(szQuest+1, szQuest-m_strUrl.c_str());
+}
+
 static void toHexString(int i, String& strRes, int radix)
 {
     char buf[33];

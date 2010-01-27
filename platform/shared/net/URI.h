@@ -14,6 +14,7 @@ public:
 
     static void urlEncode(const String& fullPath, String& strRes);
     String getPath();
+    String getQueryString();
 };
 
 }
