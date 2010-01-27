@@ -107,6 +107,9 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID, String strParams, String
        	{
             net::URI uri(oSrcID.m_strUrl);
        		src.setUrlParams(uri.getQueryString());
+
+            if (uri.getScheme().length()>0)
+       			src.setUrl(uri.getPathSpecificPart());
        	}
 
 	    m_strSession = loadSession();
