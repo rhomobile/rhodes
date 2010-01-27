@@ -155,7 +155,7 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
 
-    unless $app_config["android"]["extensions"].nil?
+    if $app_config["android"] and $app_config["android"]["extensions"]
       $app_config["extensions"] += $app_config["android"]["extensions"] if $app_config["extensions"]
       $app_config["android"]["extensions"] = nil
     end
@@ -469,8 +469,17 @@ namespace "build" do
       args << "-ldl"
       args << "-lz"
 
+      stub = []
       Dir.glob($extensionsdir + "/*.a").reverse.each do |f|
-        args << "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.a$/,"")
+        lparam = "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.a$/,"")
+        args << lparam
+        # Workaround for GNU ld: this way we have specified one lib multiple times
+        # command line so ld's dependency mechanism will find required functions
+        # independently of its position in command line
+        stub.each do |s|
+          args << s
+        end
+        stub << lparam
       end
 
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
