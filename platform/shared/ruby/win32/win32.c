@@ -435,6 +435,7 @@ init_env(void)
 
 typedef BOOL (WINAPI *cancel_io_t)(HANDLE);
 static cancel_io_t cancel_io = NULL;
+static cancel_io_t cancel_socket_io = NULL;
 
 static void
 init_func(void)
@@ -442,6 +443,9 @@ init_func(void)
     if (!cancel_io)
 	cancel_io = (cancel_io_t)GetProcAddress(GetModuleHandle("kernel32"),
 						"CancelIo");
+
+    //if (!cancel_socket_io)
+    //    cancel_socket_io = cancel_io ? cancel_io : NULL;
 }
 
 static void init_stdhandle(void);
@@ -484,11 +488,11 @@ StartSockets(void)
     // initalize the winsock interface and insure that it's
     // cleaned up at exit.
     //
-    version = MAKEWORD(2, 0);
+/*    version = MAKEWORD(2, 0);
     if (WSAStartup(version, &retdata))
 	rb_fatal ("Unable to locate winsock library!\n");
     if (LOBYTE(retdata.wVersion) != 2)
-	rb_fatal("could not find version 2 of winsock dll\n");
+	rb_fatal("could not find version 2 of winsock dll\n");*/
 
     socklist = st_init_numtable();
 
@@ -2432,6 +2436,7 @@ rb_w32_connect(int s, const struct sockaddr *addr, int addrlen)
 	    r = WSAGetLastError();
 	    if (r != WSAEWOULDBLOCK) {
 		errno = map_errno(r);
+        r=-1;
 	    }
 	    else {
 		errno = EINPROGRESS;
@@ -2551,7 +2556,7 @@ overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
     s = TO_SOCKET(fd);
     st_lookup(socklist, (st_data_t)s, &data);
     mode = (int)data;
-    if (!cancel_io || (mode & O_NONBLOCK)) {
+    if (!cancel_socket_io || (mode & O_NONBLOCK)) {
 	RUBY_CRITICAL({
 	    if (input) {
 		if (addr && addrlen)
@@ -2613,7 +2618,7 @@ overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
 	      case WAIT_OBJECT_0 + 1:
 		/* interrupted */
 		r = -1;
-		cancel_io((HANDLE)s);
+		cancel_socket_io((HANDLE)s);
 		break;
 	    }
 	}
@@ -2690,6 +2695,7 @@ rb_w32_shutdown(int s, int how)
     return r;
 }
 
+#undef socket
 static SOCKET
 open_ifs_socket(int af, int type, int protocol)
 {
@@ -2697,47 +2703,46 @@ open_ifs_socket(int af, int type, int protocol)
     int error_code;
     SOCKET out = INVALID_SOCKET;
 
-    if (WSAEnumProtocols(NULL, NULL, &proto_buffers_len) == SOCKET_ERROR) {
-	error_code = WSAGetLastError();
-	if (error_code == WSAENOBUFS) {
-	    WSAPROTOCOL_INFO *proto_buffers;
-	    int protocols_available = 0;
+    /*if (WSAEnumProtocols(NULL, NULL, &proto_buffers_len) == SOCKET_ERROR) {
+	    error_code = WSAGetLastError();
+	    if (error_code == WSAENOBUFS) {
+	        WSAPROTOCOL_INFO *proto_buffers;
+	        int protocols_available = 0;
 
-	    proto_buffers = (WSAPROTOCOL_INFO *)malloc(proto_buffers_len);
-	    if (!proto_buffers) {
-		WSASetLastError(WSA_NOT_ENOUGH_MEMORY);
-		return INVALID_SOCKET;
+	        proto_buffers = (WSAPROTOCOL_INFO *)malloc(proto_buffers_len);
+	        if (!proto_buffers) {
+		    WSASetLastError(WSA_NOT_ENOUGH_MEMORY);
+		    return INVALID_SOCKET;
+	        }
+
+	        protocols_available =
+		    WSAEnumProtocols(NULL, proto_buffers, &proto_buffers_len);
+	        if (protocols_available != SOCKET_ERROR) {
+		    int i;
+		    for (i = 0; i < protocols_available; i++) {
+		        if ((af != AF_UNSPEC && af != proto_buffers[i].iAddressFamily) ||
+			    (type != proto_buffers[i].iSocketType) ||
+			    (protocol != 0 && protocol != proto_buffers[i].iProtocol))
+			    continue;
+
+		        if ((proto_buffers[i].dwServiceFlags1 & XP1_IFS_HANDLES) == 0)
+			    continue;
+
+		        out = WSASocket(af, type, protocol, &(proto_buffers[i]), 0,
+				        WSA_FLAG_OVERLAPPED);
+		        break;
+		    }
+		    if (out == INVALID_SOCKET)
+		        out = WSASocket(af, type, protocol, NULL, 0, 0);
+	        }
+
+	        free(proto_buffers);
 	    }
-
-	    protocols_available =
-		WSAEnumProtocols(NULL, proto_buffers, &proto_buffers_len);
-	    if (protocols_available != SOCKET_ERROR) {
-		int i;
-		for (i = 0; i < protocols_available; i++) {
-		    if ((af != AF_UNSPEC && af != proto_buffers[i].iAddressFamily) ||
-			(type != proto_buffers[i].iSocketType) ||
-			(protocol != 0 && protocol != proto_buffers[i].iProtocol))
-			continue;
-
-		    if ((proto_buffers[i].dwServiceFlags1 & XP1_IFS_HANDLES) == 0)
-			continue;
-
-		    out = WSASocket(af, type, protocol, &(proto_buffers[i]), 0,
-				    WSA_FLAG_OVERLAPPED);
-		    break;
-		}
-		if (out == INVALID_SOCKET)
-		    out = WSASocket(af, type, protocol, NULL, 0, 0);
-	    }
-
-	    free(proto_buffers);
-	}
-    }
+    }else */
+        out = socket(af, type, protocol);
 
     return out;
 }
-
-#undef socket
 
 int WSAAPI
 rb_w32_socket(int af, int type, int protocol)
