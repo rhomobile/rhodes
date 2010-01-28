@@ -89,13 +89,21 @@ static bool isLocalHost(const String& strUrl)
         strUrl.find_first_of("http://127.0.0.1") == 0;
 }
 
-static size_t curlBodyCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     String *pStr = (String *)opaque;
     size_t nBytes = size*nmemb;
     RAWTRACE1("Received %d bytes", nBytes);
     pStr->append((const char *)ptr, nBytes);
     return nBytes;
+}
+
+static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    common::CRhoFile *pFile = (common::CRhoFile*)opaque;
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    return pFile->write(ptr, nBytes);
 }
 
 #if 0
@@ -111,7 +119,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
 #endif
 
 static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
-                             const String& session, String& result)
+                             const String& session)
 {
     curl_easy_reset(curl);
     if (strcasecmp(method, "GET") == 0)
@@ -125,9 +133,6 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
 	curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1);
-
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyCallback);
 
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
@@ -146,14 +151,32 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
 }
 
 static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
-                             const String& strBody, const String& session, String& result)
+                             const String& strBody, const String& session)
 {
-    curl_slist *retval = set_curl_options(curl, method, strUrl, session, result);
+    curl_slist *retval = set_curl_options(curl, method, strUrl, session);
     if (strcasecmp(method, "POST") == 0) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
     }
 	return retval;
+}
+
+static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+                             const String& strBody, const String& session, const String& result)
+{
+    curl_slist *retval = set_curl_options(curl, method, strUrl, strBody, session);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+    return retval;
+}
+
+static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+                            const String& strBody, const String& session, const common::CRhoFile *pFile)
+{
+    curl_slist *retval = set_curl_options(curl, method, strUrl, strBody, session);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, pFile);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
+    return retval;
 }
 
 static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
@@ -325,10 +348,44 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
 
 char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, IRhoSession *oSession)
 {
-    // TODO:
+    if (pnRespCode)
+        *pnRespCode = -1;
+    String session;
+    if (oSession)
+        session = oSession->getSession();
+    //if (session.empty() && !isLocalHost(strUrl))
+    //    return NULL;
+    
+    RAWLOG_INFO1("Request url: %s", strUrl.c_str());
+    
     rho_net_impl_network_indicator(1);
+    
+    curl_slist *hdrs = set_curl_options(curl, "GET", strUrl, "", session, (common::CRhoFile*)oFile);
+	//curl_easy_perform(curl);
+	CURLMcode err = do_curl_perform(curlm, curl);
+	curl_slist_free_all(hdrs);
+	
     rho_net_impl_network_indicator(0);
-    return NULL;
+	
+	if (err != CURLM_OK) {
+		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
+		return NULL;
+	}
+    
+    long statusCode = 0;
+    if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
+        statusCode = 500;
+    if (pnRespCode)
+        *pnRespCode = (int)statusCode;
+    
+    if (statusCode != 200) {
+        RAWLOG_ERROR1("Request failed. HTTP Code: %d returned", (int)statusCode);
+        if (statusCode == 401)
+            if (oSession)
+                oSession->logout();
+    }
+    
+    return "OK";
 }
 
 char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession)
