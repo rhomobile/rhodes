@@ -201,3 +201,4 @@ lib/extensions/openssl/ext/openssl/test/sha512t
 lib/extensions/openssl/ext/openssl/test/shatest
 lib/extensions/openssl/ext/openssl/test/ssltest
 lib/extensions/openssl/ext/openssl/tools/c_rehash.bak
+lib/extensions/openssl/ext/openssl/platform
