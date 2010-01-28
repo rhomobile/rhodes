@@ -8,6 +8,7 @@
 #include "net/URI.h"
 #include "statistic/RhoProfiler.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "net/URI.h"
 
 namespace rho {
 const _CRhoRuby& RhoRuby = _CRhoRuby();
@@ -102,6 +103,14 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID, String strParams, String
     	src.m_strAction = strAction;
     	src.m_bSearchSyncChanges = bSearchSyncChanges;
         src.m_nProgressStep = nProgressStep;
+      	if ( oSrcID.m_strUrl.length() != 0 )
+       	{
+            net::URI uri(oSrcID.m_strUrl);
+       		src.setUrlParams(uri.getQueryString());
+
+            if (uri.getScheme().length()>0)
+       			src.setUrl(uri.getPathSpecificPart());
+       	}
 
 	    m_strSession = loadSession();
 	    if ( isSessionExist()  ) {
@@ -219,6 +228,8 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + strClientID;
+    if ( CClientRegister::getInstance() != null )
+        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
     if ( resp.isOK() )
@@ -400,6 +411,8 @@ void CSyncEngine::login(String name, String password, String callback)
 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
+    if ( CClientRegister::getInstance() != null )
+        strBody += CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody, this ) );
     
@@ -528,7 +541,13 @@ boolean CSyncEngine::CSourceID::isEqual(CSyncSource& src)const
     if ( m_strName.length() > 0 )
         return src.getName().compare(m_strName)==0;
     else if ( m_strUrl.length() > 0 )
-        return src.getUrl().compare(m_strUrl)==0;
+    {
+        net::URI uri1(m_strUrl);
+        net::URI uri2(src.getUrl());
+    	
+    	return uri1.getPath().compare(uri2.getPath()) == 0;
+        //return src.getUrl().compare(m_strUrl)==0;
+    }
 
     return m_nID == src.getID();
 }
