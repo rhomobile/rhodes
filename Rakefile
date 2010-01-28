@@ -475,17 +475,18 @@ end
 
 #desc "Get versions"
 task :get_version do
-  bbver = "unknown"
+
+  genver = "unknown"
   iphonever = "unknown"
   #symver = "unknown"
   wmver = "unknown"
   androidver = "unknown"
   
 
-  File.open("rhobuild.yml","r") do |f|
+  File.open("res/generators/templates/application/build.yml","r") do |f|
     file = f.read
     if file.match(/version: (\d+\.\d+\.\d+)/)
-      bbver = $1
+      genver = $1
     end
   end
 
@@ -522,50 +523,42 @@ task :get_version do
     end
   end
 
+  gemver = "unknown"
   rhodesver = "unknown"
-  rbuildver = "unknown"
-  rframever = "unknown"
-  rgenver = "unknown"
+  frameworkver = "unknown"
 
-  File.open("rhodes/rhodes/lib/rhodes.rb","r") do |f|
+  File.open("lib/rhodes.rb","r") do |f|
+    file = f.read
+    if file.match(/VERSION = '(\d+\.\d+\.*\d*)'/)
+      gemver =  $1
+    end
+  end
+
+  File.open("lib/framework/rhodes.rb","r") do |f|
     file = f.read
     if file.match(/VERSION = '(\d+\.\d+\.*\d*)'/)
       rhodesver =  $1
     end
   end
 
-  File.open("lib/build/version.rb","r") do |f|
-    file = f.read
-    if file.match(/VERSION = '(\d+\.\d+\.*\d*)'/)
-      rbuildver =  $1
-    end
-  end
-
   File.open("lib/framework/version.rb","r") do |f|
     file = f.read
     if file.match(/VERSION = '(\d+\.\d+\.*\d*)'/)
-      rframever =  $1
+      frameworkver =  $1
     end
   end
 
-  File.open("rhodes/rhodes-generator/lib/version.rb","r") do |f|
-    file = f.read
-    if file.match(/VERSION = '(\d+\.\d+\.*\d*)'/)
-      rgenver =  $1
-    end
-  end
   
 
   puts "Versions:"
-  puts "  Blackberry:       " + bbver
+  puts "  Generator:        " + genver
   puts "  iPhone:           " + iphonever
   #puts "  Symbian:          " + symver
-  puts "  WinMo:            " + wmver
+  #puts "  WinMo:            " + wmver
   puts "  Android:          " + androidver
+  puts "  Gem:              " + gemver
   puts "  Rhodes:           " + rhodesver
-  puts "  Rhodes Build:     " + rbuildver
-  puts "  Rhodes Framework: " + rframever
-  puts "  Rhodes Generator: " + rgenver
+  puts "  Framework:        " + frameworkver
 end
 
 #desc "Set version"
@@ -581,15 +574,11 @@ task :set_version, [:version] do |t,args|
   verstring = major+"."+minor+"."+build
   origfile = ""
 
-  File.open("rhobuild.yml","r") { |f| origfile = f.read }
-  File.open("rhobuild.yml","w") do |f| 
+  File.open("res/generators/templates/application/build.yml","r") { |f| origfile = f.read }
+  File.open("res/generators/templates/application/build.yml","w") do |f|
     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   end
   
-  File.open("rhodes/rhodes-generator/generators/templates/application/build.yml","r") { |f| origfile = f.read }
-  File.open("rhodes/rhodes-generator/generators/templates/application/build.yml","w") do |f| 
-    f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
-  end
 
   File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
   File.open("platform/iphone/Info.plist","w") do |f| 
@@ -614,11 +603,7 @@ task :set_version, [:version] do |t,args|
     f.write origfile
   end
 
-  ["rhodes/rhodes/lib/rhodes.rb",
-    "lib/build/version.rb",
-    "lib/framework/version.rb",
-    "lib/framework/rhodes.rb",
-    "rhodes/rhodes-generator/lib/version.rb"].each do |versionfile|
+  ["lib/rhodes.rb","lib/framework/rhodes.rb","lib/framework/version.rb"].each do |versionfile|
   
     File.open(versionfile,"r") { |f| origfile = f.read }
     File.open(versionfile,"w") do |f|
