@@ -65,8 +65,14 @@ public class SyncEngine implements NetRequest.IRhoSession
             if ( m_strName.length() > 0 )
                 return src.getName().equals(m_strName);
             else if ( m_strUrl.length() > 0 )
-                return src.getUrl().equals(m_strUrl);
-
+            {
+            	URI uri1 = new URI(m_strUrl);
+            	URI uri2 = new URI(src.getUrl());
+            	
+            	return uri1.getPath().compareTo(uri2.getPath()) == 0;
+                //return src.getUrl().equals(m_strUrl);
+            }
+            
             return m_nID == src.getID().intValue();
         }
     };
@@ -188,6 +194,19 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        	src.m_strAction = strAction;
 	        	src.m_bSearchSyncChanges = bSearchSyncChanges;
 	        	src.m_nProgressStep = nProgressStep;
+	        	if ( oSrcID.m_strUrl.length() != 0 )
+	        	{
+	        		try{
+		        		URI uri = new URI(oSrcID.m_strUrl);
+		        		src.setUrlParams(uri.getQueryString());
+		        		
+		        		if (uri.getScheme()!= null && uri.getScheme().length()>0)
+		        			src.setUrl(uri.getPathSpecificPart());
+	        		}catch(Exception exc)
+	        		{
+	        			LOG.ERROR("Malformed url when sync by url.", exc);
+	        		}
+	        	}
 	        	
 			    m_strSession = loadSession();
 			    if ( isSessionExist()  ) {
@@ -327,6 +346,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "clientreset";
 	    String strQuery = "?client_id=" + strClientID;
+	    strQuery += "&" + ClientRegister.getInstance().getRegisterBody();
 	    
 	    NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 	    return resp.isOK();
@@ -523,7 +543,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 				
 			    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 			    String strBody = "login=" + name + "&password=" + password + "&remember_me=1&";
-			    strBody += ClientRegister.getInstance().getRegisterBody(this);
+			    strBody += ClientRegister.getInstance().getRegisterBody();
 			    
 			    resp = getNet().pullCookies( serverUrl+"client_login", strBody, this);
 			    

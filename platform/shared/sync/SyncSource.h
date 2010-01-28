@@ -71,6 +71,7 @@ public:
     String m_strAction;
     boolean m_bSearchSyncChanges;
     int     m_nProgressStep;
+    String m_strUrlParams;
 private:
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
     String m_strAskParams;
@@ -128,6 +129,8 @@ public:
     boolean downloadBlob(CValue& value);//throws Exception
 
     void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
+    void setUrlParams(String strParams){m_strUrlParams=strParams;}
+    void setUrl(String strUrl){m_strUrl=strUrl;}
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();

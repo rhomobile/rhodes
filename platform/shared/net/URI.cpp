@@ -3,6 +3,71 @@
 namespace rho {
 namespace net {
 
+URI::URI(const String& strUrl)
+{
+    m_strUrl = strUrl;
+}
+
+String URI::getPath()
+{
+    const char* url = m_strUrl.c_str();
+    const char* pStartSrv, *pEndSrv;
+    const char* pHttp = strstr(url,"://");
+    if ( !pHttp )
+        pHttp = strstr(url,":\\\\");
+
+    if ( pHttp )
+        pStartSrv = pHttp+3;
+    else
+        pStartSrv = url;
+
+    pEndSrv = strchr( pStartSrv, '/');
+    if ( !pEndSrv )
+        pEndSrv = strchr( pStartSrv, '\\');
+
+    const char* pStartPath = pEndSrv ? pEndSrv+1 : 0;
+    if ( !pStartPath || !*pStartPath)
+        return String();
+
+    const char* pEndPath = pStartPath ? strrchr( pStartPath, '?') :0;
+    if (!pEndPath)
+        pEndPath = pStartPath + strlen(pStartPath);
+
+    return String(pStartPath, pEndPath - pStartPath);
+}
+
+String URI::getQueryString()
+{
+    const char* szQuest = strrchr( m_strUrl.c_str(), '?');
+    if ( !szQuest )
+        return String();
+
+    return String(szQuest+1);
+}
+
+String URI::getScheme()
+{
+    const char* url = m_strUrl.c_str();
+    const char* pHttp = strstr(url,"://");
+    if ( !pHttp )
+        pHttp = strstr(url,":\\\\");
+
+    if ( !pHttp )
+        return String();
+
+    String res(url, pHttp-url);
+    return res;
+}
+
+String URI::getPathSpecificPart()
+{
+    const char* szQuest = strrchr( m_strUrl.c_str(), '?');
+    if ( !szQuest )
+        return m_strUrl;
+
+    return String(m_strUrl.c_str(), szQuest-m_strUrl.c_str());
+}
+
 static void toHexString(int i, String& strRes, int radix)
 {
     char buf[33];

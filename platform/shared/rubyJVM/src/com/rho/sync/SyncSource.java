@@ -73,6 +73,7 @@ class SyncSource
     String m_strAction = "";
     boolean m_bSearchSyncChanges = false;
     int     m_nProgressStep = -1;
+    String m_strUrlParams = "";
     
 	String m_strPushBody = "";
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
@@ -110,6 +111,8 @@ class SyncSource
 	DBAdapter getDB(){ return getSync().getDB(); }
 	NetRequest getNet(){ return getSync().getNet(); }
 	void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
+	void setUrlParams(String strParams){m_strUrlParams=strParams;}
+	void setUrl(String strUrl){m_strUrl=strUrl;}
 	
     SyncSource(int id, String strUrl, String name, long token, SyncEngine syncEngine )
     {
@@ -386,6 +389,9 @@ class SyncSource
 	        if ( m_strParams.length() > 0 )
 	            strQuery += m_strParams;
 	
+	        if( m_strUrlParams.length() > 0 )
+	            strQuery += "&" + m_strUrlParams;
+	        	
 	        if ( getAskParams().length() > 0 )
 	        {
 	            getSync();

@@ -47,6 +47,7 @@ def startsim
   args << "/no-compact-filesystem"
     
   if $bbver !~ /^4\.[012](\..*)?$/
+    args << "/sdcard-inserted=true"
     args << "/fs-sdcard=true"
   end
         
@@ -586,23 +587,23 @@ namespace "run" do
   
   desc "Builds everything, loads and starts bb sim and mds"
   task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
-    #sim = $config["env"]["paths"][$bbver]["sim"]
     jde = $config["env"]["paths"][$bbver]["jde"]
     
     cp_r File.join($targetdir,"/."), jde + "/simulator"
     
     startmds
     startsim
+    $stdout.flush
+  end
 
-    #    puts "sleeping to allow simulator to get started"
-    #    sleep 45
-  
-    #    command = '"' + jde + "/simulator/fledgecontroller.exe\""
-    #    args = []
-    #    args << "/session="+sim
-    #    args << "\"/execute=LoadCod(" + Jake.get_absolute(File.join($targetdir,"rhodesApp.cod")) + ")\""
-  
-    #    Jake.run(command,args, jde + "/simulator")
+  desc "Builds everything, loads and starts bb sim and mds.Allow run only one app, but works faster"
+  task :bbdev => ["run:bb:stopmdsandsim", "package:bb:dev"] do
+    jde = $config["env"]["paths"][$bbver]["jde"]
+    
+    cp_r File.join($targetdir,"/."), jde + "/simulator"
+    
+    startmds
+    startsim
     $stdout.flush
   end
   

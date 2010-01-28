@@ -40,10 +40,23 @@ task :config do
   $built = File.join($targetdir, '.built-openssl-' + $arch)
 end
 task :build => :config do
-  puts "BUILT: #{$built}"
-  if not File.exists? $built
-      cmdrun('make', 'clean')
+  build = false
+  if File.exists? "platform"
+    platform = IO.read("platform")
+    puts "PLATFORM: #{platform}"
+    if (platform =~ /android/ and not $android) or (platform =~/iphone/ and $android)
+      build = true
+    end
+  end
+  
+  if not File.exists? $built or not File.exist? 'libssl.a' or not File.exist? 'libcrypto.a'
+    build = true
+  end
+
+  puts "BUILD: #{build}"
+  if build
       cmdrun('./config', "-openssldir=#{$builddir}") or exit 1
+      cmdrun('make', 'clean')
       args = []
     if $android
       args << "CC=#{$gccbin}"
@@ -58,7 +71,7 @@ task :build => :config do
     end
 
     cmdrun('make', args) or exit 1
-
+    File.open("platform","w") {|f| f.write($android ? "android" : "iphone" )}
     FileUtils.touch $built
   end
 
