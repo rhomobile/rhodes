@@ -53,11 +53,20 @@ def cc_def_args
   $cc_def_args_val.dup
 end
 
+def cpp_def_args
+  if $cpp_def_args_val.nil?
+    args = []
+    args << "-fexceptions -frtti" unless USE_STLPORT
+    $cpp_def_args_val = args
+  end
+  $cpp_def_args_val.dup
+end
+
 def cc_get_ccbin(filename)
   if filename =~ /\.[cC]$/
     $gccbin
   elsif filename =~ /\.[cC]([cC]|[xXpP][xXpP])$/
-    $gppbin
+    $gppbin + ' ' + cpp_def_args.join(' ')
   end
 end
 
@@ -131,10 +140,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
   args << "#{$ndksysroot}/usr/lib/libc.so"
-  args << "#{$ndksysroot}/usr/lib/libstdc++.so"
+  args << "#{$ndksysroot}/usr/lib/libstdc++.so" if USE_STLPORT
   args << "#{$ndksysroot}/usr/lib/libm.so"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
+  args << "#{$ndktools}/arm-eabi/lib/interwork/libstdc++.a" unless USE_STLPORT
+  args << "#{$ndktools}/arm-eabi/lib/interwork/libsupc++.a" unless USE_STLPORT
   args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a"
   args << "-shared"
   args << "-fPIC"
@@ -143,6 +154,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << outname
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
+  args << "#{$ndktools}/arm-eabi/lib/interwork/libstdc++.a" unless USE_STLPORT
+  args << "#{$ndktools}/arm-eabi/lib/interwork/libsupc++.a" unless USE_STLPORT
   cc_run($gccbin, args)
   return false unless $? == 0
 

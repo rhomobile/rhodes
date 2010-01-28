@@ -35,6 +35,8 @@ namespace "config" do
     # command "android list targets"
     ANDROID_API_LEVEL = 3
 
+    USE_STLPORT = true
+
     # Here is switch between release/debug configuration used for
     # building native libraries
     if $app_config["debug"].nil?
@@ -309,10 +311,10 @@ namespace "build" do
       objdir = $objdir["json"]
       libname = $libname["json"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
       File.read(File.join($builddir, "libjson_build.files")).each do |f|
@@ -322,28 +324,30 @@ namespace "build" do
     end
 
     task :libstlport => "config:android" do
-      objdir = $objdir["stlport"]
-      libname = $libname["stlport"]
+      if USE_STLPORT
+        objdir = $objdir["stlport"]
+        libname = $libname["stlport"]
 
-      args = []
-      args << "-DTARGET_OS=android"
-      args << "-DOSNAME=android"
-      args << "-DCOMPILER_NAME=gcc"
-      args << "-DBUILD_OSNAME=android"
-      args << "-D_REENTRANT"
-      args << "-D__NEW__"
-      args << "-ffunction-sections"
-      args << "-fdata-sections"
-      args << "-fvisibility=hidden"
-      args << "-fno-rtti"
-      args << "-fno-exceptions"
-      args << "-fvisibility-inlines-hidden"
-      args << "-I#{$stlport_includes}"
+        args = []
+        args << "-I#{$stlport_includes}"
+        args << "-DTARGET_OS=android"
+        args << "-DOSNAME=android"
+        args << "-DCOMPILER_NAME=gcc"
+        args << "-DBUILD_OSNAME=android"
+        args << "-D_REENTRANT"
+        args << "-D__NEW__"
+        args << "-ffunction-sections"
+        args << "-fdata-sections"
+        args << "-fvisibility=hidden"
+        args << "-fno-rtti"
+        args << "-fno-exceptions"
+        args << "-fvisibility-inlines-hidden"
 
-      File.read(File.join($builddir, "libstlport_build.files")).each do |f|
-        cc_compile f, objdir, args or exit 1
+        File.read(File.join($builddir, "libstlport_build.files")).each do |f|
+          cc_compile f, objdir, args or exit 1
+        end
+        cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
       end
-      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :librholog => "config:android" do
@@ -351,9 +355,9 @@ namespace "build" do
       objdir = $objdir["rholog"]
       libname = $libname["rholog"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}/.."
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       File.read(File.join($builddir, "librholog_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -366,9 +370,9 @@ namespace "build" do
       objdir = $objdir["rhomain"]
       libname = $libname["rhomain"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}"
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       File.read(File.join($builddir, "librhomain_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -380,10 +384,10 @@ namespace "build" do
       objdir = $objdir["rhocommon"]
       libname = $libname["rhocommon"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/curl/include"
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
       File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
@@ -397,11 +401,11 @@ namespace "build" do
       objdir = $objdir["rhodb"]
       libname = $libname["rhodb"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       File.read(File.join($builddir, "librhodb_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -414,11 +418,11 @@ namespace "build" do
       objdir = $objdir["rhosync"]
       libname = $libname["rhosync"]
       args = []
-      args << "-D__NEW__"
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       File.read(File.join($builddir, "librhosync_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -433,16 +437,15 @@ namespace "build" do
       objdir = File.join $bindir, "libs", $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
       args = []
-      args << "-I#{$stlport_includes}"
       args << "-I#{srcdir}/../include"
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/sqlite"
       args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
       args << "-I#{$shareddir}/ruby/linux"
-      args << "-D__NEW__"
-      args << "-D__SGI_STL_INTERNAL_PAIR_H"
-      #args << "-fexceptions"
+      args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_STLPORT
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       File.read(File.join($builddir, "librhodes_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -463,7 +466,7 @@ namespace "build" do
       args << "-lrholog"
       args << "-lrhocommon"
       args << "-ljson"
-      args << "-lstlport"
+      args << "-lstlport" if USE_STLPORT
       args << "-lcurl"
       args << "-lsqlite"
       args << "-ldl"
