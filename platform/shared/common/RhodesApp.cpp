@@ -66,10 +66,10 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     m_ptrFactory = createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
 
-#ifdef OS_WINCE
+#if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
     WSADATA WsaData;
-    int result = WSAStartup(MAKEWORD(1,1),&WsaData);
+    int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
     //rho_logconf_Init(m_strRhoRootPath.c_str());	
@@ -325,11 +325,6 @@ void CRhodesApp::initHttpServer()
     shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
     shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
 #else
-
-#if defined(_WIN32)
-	WSADATA data;
-	WSAStartup(MAKEWORD(2,2), &data);
-#endif /* _WIN32 */
 
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
     m_httpServer->register_uri("/system/geolocation", callback_geolocation);
