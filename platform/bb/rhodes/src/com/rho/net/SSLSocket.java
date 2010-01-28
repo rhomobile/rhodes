@@ -127,6 +127,13 @@ public class SSLSocket extends BaseSocket {
 					return ObjectFactory.createString(strRes);
 				}catch(Exception e)
 				{
+					if (e instanceof RubyException )
+					{
+						RubyException re = (RubyException)e;
+						if ( re.getRubyValue().getRubyClass() == RubyRuntime.EOFErrorClass )
+							throw re;
+					}
+					
 					LOG.ERROR("sysread failed.", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
