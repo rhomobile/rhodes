@@ -47,7 +47,7 @@ public class CharacterMe {
             bWhiteSpace =  CharacterDataLatin1.isWhitespace((char)codePoint);
         } else {
         	//TODO: Character_isWhitespace non Latin
-        	throw new RuntimeException("Not Implemented");
+        	throw new RuntimeException("Not Implemented - CharacterMe::boolean isWhitespace(int codePoint)");
         }
         
         return bWhiteSpace;
@@ -83,7 +83,7 @@ public class CharacterMe {
             bLetterOrDigit = CharacterDataLatin1.isLetterOrDigit((char)codePoint);
         } else {
         	//TODO: //isLetterOrDigit non Latin
-        	throw new RuntimeException("Not Implemented");
+        	throw new RuntimeException("Not Implemented - CharacterMe::boolean isLetterOrDigit(int codePoint)");
         }
         return bLetterOrDigit;
     }
@@ -101,7 +101,7 @@ public class CharacterMe {
             bLetter = CharacterDataLatin1.isLetter((char)codePoint);
         } else {
         	//TODO: isLetter non-Latin
-        	throw new RuntimeException("Not Implemented");
+        	throw new RuntimeException("Not Implemented - CharacterMe::boolean isLetter(int codePoint)");
         }
         return bLetter;
     }
@@ -118,7 +118,7 @@ public class CharacterMe {
             bSpaceChar =  CharacterDataLatin1.isSpaceChar((char)codePoint);
         } else {
         	//TODO: isSpaceChar non Latin
-        	throw new RuntimeException("Not Implemented");
+        	throw new RuntimeException("Not Implemented - CharacterMe::boolean isSpaceChar(int codePoint)");
         }
         return bSpaceChar;
     }
@@ -140,7 +140,7 @@ public class CharacterMe {
             type = CharacterDataLatin1.getType((char)codePoint);
         } else {
         	//TODO: getType non Latin
-        	throw new RuntimeException("Not Implemented");
+        	throw new RuntimeException("Not Implemented - CharacterMe::int getType(int codePoint)");
         }
         return type;
     }

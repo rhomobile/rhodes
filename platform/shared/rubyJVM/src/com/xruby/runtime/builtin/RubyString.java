@@ -238,7 +238,7 @@ public class RubyString extends RubyBasic {
     }
 
     private String replace(String source, int start, int end, String replacement) {
-        AssertMe.rho_assert(start <= source.length() - 1);
+        AssertMe.rho_assert(start <= source.length()/* - 1*/);
 
         if (end < start) {
             end = start + 1;
@@ -1060,10 +1060,16 @@ public class RubyString extends RubyBasic {
         RubyValue r = (null == args) ? GlobalVariables.get("$;") : args.get(0);
 
         Collection/*<String>*/ splitResult;
+        boolean bSkipFirstEmptyItem = false;
         if (r == RubyConstant.QNIL) {
             splitResult = split(this, " ");
-        } else if (r instanceof RubyRegexp) {
-            splitResult = split(this, (RubyRegexp) r, args);
+        } else if (r instanceof RubyRegexp) 
+        {
+        	RubyRegexp reg = (RubyRegexp) r;
+            splitResult = split(this, reg, args);
+            
+            if ( reg.getPattern().getPattern().startsWith("(?=") )
+            	bSkipFirstEmptyItem = true;
         } else if (r instanceof RubyString) {
             splitResult = split(this, ((RubyString) r).toString());
         } else {
@@ -1075,7 +1081,7 @@ public class RubyString extends RubyBasic {
 //        for (String str : splitResult) {
         for (Iterator iter = splitResult.iterator(); iter.hasNext();) {
         	String str = (String)iter.next();
-            //if (0 != i || !str.equals("")) 
+            if ( !( bSkipFirstEmptyItem && 0 == i && (str == null || str.equals(""))) )
             {
                 //To conform ruby's behavior, discard the first empty element
                 a.add(ObjectFactory.createString(str));
@@ -1229,8 +1235,9 @@ public class RubyString extends RubyBasic {
 
             start = args.get(0).toInt();
             end = args.get(1).toInt() + start;
-            if (start >= string.length()) {
-                throw new RubyException(RubyRuntime.RangeClass, StringMe.format("index %d out of string", start));
+            if (start >/*=*/ string.length()) {
+                throw new RubyException(RubyRuntime.RangeClass, 
+                		"Index '" + start + "' out of string:" + string +";end: '" + end + "';replacement:"+replacement+"" );
             }
         }
         setString(replace(string, start, end, replacement));
