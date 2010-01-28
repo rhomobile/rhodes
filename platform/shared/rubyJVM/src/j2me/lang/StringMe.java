@@ -29,12 +29,6 @@ public class StringMe {
     public static String format(String format, RubyArray args) {
     	return Sprintf.sprintf(format, args);
     }
-    
-    public static String format(String format, int arg1) {
-    	//TODO: String.format
-    	throw new RuntimeException("Not Implemented");
-    	//return format;
-    }
 
     public static String replaceAll(String strThis, String regex, String replacement) {
     	//TODO: String.replaceAll - implement regex replace
@@ -79,7 +73,7 @@ public class StringMe {
     
     public static boolean matches(String strThis, String regex) {
     	//TODO: matches
-    	throw new RuntimeException("Not Implemented");
+    	throw new RuntimeException("Not Implemented - StringMe::boolean matches(String strThis, String regex)");
     	//return false;
     }
 }
