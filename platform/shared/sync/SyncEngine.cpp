@@ -107,6 +107,9 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID, String strParams, String
        	{
             net::URI uri(oSrcID.m_strUrl);
        		src.setUrlParams(uri.getQueryString());
+
+            if (uri.getScheme().length()>0)
+       			src.setUrl(uri.getPathSpecificPart());
        	}
 
 	    m_strSession = loadSession();
@@ -225,6 +228,8 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "clientreset";
     String strQuery = "?client_id=" + strClientID;
+    if ( CClientRegister::getInstance() != null )
+        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
     if ( resp.isOK() )
@@ -406,6 +411,8 @@ void CSyncEngine::login(String name, String password, String callback)
 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
+    if ( CClientRegister::getInstance() != null )
+        strBody += CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody, this ) );
     

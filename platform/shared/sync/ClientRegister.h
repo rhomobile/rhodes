@@ -33,7 +33,7 @@ public:
 
     const String& getDevicePin(){return m_strDevicePin;}
     boolean doRegister(CSyncEngine& oSync);
-
+    String getRegisterBody();
 private:
 	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);
     ~CClientRegister();
