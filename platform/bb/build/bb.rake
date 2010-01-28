@@ -596,7 +596,7 @@ namespace "run" do
     $stdout.flush
   end
 
-  desc "Builds everything, loads and starts bb sim and mds.Allow run only one app, but works faster"
+  desc "Same as run:bb, but only supports one app at a time and works faster"
   task :bbdev => ["run:bb:stopmdsandsim", "package:bb:dev"] do
     jde = $config["env"]["paths"][$bbver]["jde"]
     
