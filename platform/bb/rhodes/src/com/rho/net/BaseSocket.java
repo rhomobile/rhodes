@@ -283,7 +283,9 @@ public class BaseSocket extends RubyBasic {
 				m_read_results.removeElementAt(0);
 				
 				if (res.size == 0)
-					return new String();
+					throw new RubyException(RubyRuntime.EOFErrorClass, "");					
+					//return new String();
+				
 				LOG.TRACE("READ success: " + res.size + " bytes readed");
 				return new String(res.result, 0, res.size);
     		}
@@ -297,8 +299,12 @@ public class BaseSocket extends RubyBasic {
 	    		m_is = m_conn.openInputStream();
 	    	
 	    	byte[] charBuffer = new byte[nBytes];
-	        int n = bufferedReadByByte(charBuffer, m_is);
+	    	int n = m_is.read(charBuffer);
+	        //int n = bufferedReadByByte(charBuffer, m_is);
 	    	
+	        if ( n < 0 )
+	        	throw new RubyException(RubyRuntime.EOFErrorClass, "");
+	        
 	        return new String(charBuffer, 0, n == -1 ? 0 : n);
     	}
     }

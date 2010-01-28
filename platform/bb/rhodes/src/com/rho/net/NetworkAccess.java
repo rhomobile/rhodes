@@ -41,7 +41,7 @@ public class NetworkAccess implements INetworkAccess {
 			strDeviceside = "";
 
 		if (DeviceInfo.isSimulator()) {
-			URLsuffix = ";deviceside=true";
+			URLsuffix = "";//";deviceside=true";
 			networkConfigured = true;
 		}else{
 			ServiceBook sb = ServiceBook.getSB();
