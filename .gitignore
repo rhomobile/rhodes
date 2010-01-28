@@ -2,6 +2,7 @@ lib/**/*.o
 *~
 *.iseq
 .DS_Store
+rakefile.rb
 rhobuild.yml
 rhobuild.*.yml
 rhodes/*/pkg/
