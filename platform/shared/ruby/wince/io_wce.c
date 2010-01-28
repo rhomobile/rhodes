@@ -292,6 +292,9 @@ int _read(int fd, void *buffer, int length)
 size_t
 rb_w32_read(int fd, void *buf, size_t size)
 {
+    if (rb_w32_is_socket(fd))
+    	return rb_w32_recv(fd, buf, size, 0);
+
     return _read(fd,buf,size);
 }
 
@@ -317,6 +320,9 @@ int _write(int fd, const void *buffer, unsigned count)
 size_t
 rb_w32_write(int fd, const void *buf, size_t size)
 {
+    if (rb_w32_is_socket(fd))
+    	return rb_w32_send(fd, buf, size, 0);
+
     return _write(fd,buf,size);
 }
 
