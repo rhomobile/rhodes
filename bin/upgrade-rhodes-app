@@ -36,3 +36,13 @@ unless File.exists? "icon/icon.png"
 end
 
 cp File.dirname(__FILE__) + '/../res/generators/templates/application/Rakefile', 'Rakefile'
+
+oldrhoconfig = IO.read("rhoconfig.txt")
+newrhoconfig = File.open("rhoconfig.txt","w") do |f|
+  oldrhoconfig.each_line do |line|
+    unless line =~ /^require/
+      line.gsub!(/Rho::RhoConfig\./,"")
+      f.write line
+    end
+  end
+end
