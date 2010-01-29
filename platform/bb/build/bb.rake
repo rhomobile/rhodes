@@ -610,7 +610,8 @@ namespace "run" do
 end
 
 namespace "config" do
-  task :checkbb do
+  desc "Check local blackberry configuration"
+  task :checkbb => ["config:bb"] do
     javahome = $config["env"]["paths"]["java"]
     jdehome = $config["env"]["paths"][$bbver]["jde"]
     mdshome = $config["env"]["paths"][$bbver]["mds"]
