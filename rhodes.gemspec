@@ -20,6 +20,10 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rhodes}
   s.rubygems_version = %q{1.3.5}
+  s.add_dependency('templater', '>= 0.5.0')
+  s.add_dependency('rake', '>= 0.8.7')
+  s.add_dependency('activesupport', '>= 2.3.5')
+  s.add_development_dependency('rdoc', '>= 2.4.3')
   s.executables << 'rhogen'
   s.executables << 'upgrade-rhodes-app'
   s.executables << 'rhodes-setup'
