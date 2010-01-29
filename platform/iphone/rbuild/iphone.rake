@@ -211,8 +211,15 @@ namespace "run" do
 
      puts `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
      rholog = $simapp + "/" + $guid + "/Documents/RhoLog.txt"
+
+
+     simpublic = $simapp + "/" + $guid + "/Documents/apps/public"
+     apppublic = $app_path + "/sim-public"
+
      apprholog = $app_path + "/rholog.txt"
      rm_f apprholog
+     rm_f apppublic
+     puts `ln -f -s "#{simpublic}" "#{apppublic}"`
      puts `ln -f -s "#{rholog}" "#{apprholog}"`
      puts `echo > "#{rholog}"`
      f = File.new("#{$simapp}/#{$guid}.sb","w")
