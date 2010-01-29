@@ -378,7 +378,7 @@ public class Rhodes extends Activity {
 		});
 		
 		Log.i("Rhodes", "Loading...");
-		webView.loadUrl("file:///android_asset/apps/loading.html");
+		webView.loadUrl("file:///android_asset/apps/app/loading.html");
 		
 		RhodesInstance.setInstance(this);
 		
