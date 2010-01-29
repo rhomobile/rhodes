@@ -236,7 +236,7 @@ namespace "run" do
 
   end
 
-  task :iphonespec => :buildsim do
+  task :iphonespec => ["clean:iphone",:buildsim] do
 
     sdkroot = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
               $sdk.gsub(/iphonesimulator/,"") + ".sdk"
@@ -325,7 +325,24 @@ namespace "clean" do
        rm_rf 'build/Debug-*'
        rm_rf 'build/Release-*'
       chdir $startdir
-    
+
+      found = true
+
+      while found do
+        found = false
+        Find.find($simapp) do |path|
+          if File.basename(path) == "rhorunner.app"
+            $guid = File.basename(File.dirname(path))
+            found = true
+          end
+        end
+
+        if found
+          $simrhodes = File.join($simapp,$guid)
+          rm_rf $simrhodes
+          rm_rf $simrhodes + ".sb"
+        end
+      end
     end
     
 #    desc "Clean rhobundle"
