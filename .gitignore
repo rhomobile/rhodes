@@ -30,6 +30,7 @@ platform/wm/**/*.pch
 
 spec/bin/*
 spec/**/bin/*
+spec/**/sim-public
 
 platform/bb/.metadata/*
 platform/bb/bin/*
