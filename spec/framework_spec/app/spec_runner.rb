@@ -53,6 +53,14 @@ class SpecRunner < MSpecScript
 
     #    config[:files] << 'spec/find_spec'  # find not available on the device
 
+    #LIBRARY
+    specs = Rho::RhoFSConnector.get_app_path('app') + "spec/library/**/*_spec.iseq"
+    Dir.glob(specs) { |file|
+      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+      file.gsub!(/\.iseq/,"")
+      config[:files] << file
+    }
+
   end
 
   def run
