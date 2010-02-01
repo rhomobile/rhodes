@@ -51,7 +51,7 @@ typedef unsigned long long uint64;
 
 #endif 
 
-#if defined( OS_WINCE ) || defined(OS_WINDOWS) 
+#if defined( OS_WINCE )
 #  define	vsnprintf	_vsnprintf
 #  define	vswnprintf	_vsnwprintf
 #elif defined( OS_ANDROID )
