@@ -12,7 +12,7 @@
 #ifdef OS_WINCE
 #include <winsock.h>
 #endif 
-#include "shttpd/src/shttpd.h"
+//#include "shttpd/src/shttpd.h"
 //#include "shttpd/src/std_includes.h"
 
 using rho::net::HttpHeader;
