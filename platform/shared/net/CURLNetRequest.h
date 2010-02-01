@@ -49,6 +49,7 @@ private:
     CURL *curl;
     char *errbuf[CURL_ERROR_SIZE];
     String cookies;
+    boolean m_bTraceCalls;
 };
 
 } // namespace net
