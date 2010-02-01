@@ -2,6 +2,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoFile.h"
 #include "common/RhodesApp.h"
+#include "common/RhoConf.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
@@ -72,6 +73,7 @@ public:
 
 CURLNetRequest::CURLNetRequest()
 {
+    m_bTraceCalls = rho_conf_getBool("net_trace");
 	curlm = curl_multi_init();
     curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &errbuf);
@@ -118,7 +120,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
 }
 #endif
 
-static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
                              const String& session)
 {
     curl_easy_reset(curl);
@@ -127,10 +129,16 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
     else if (strcasecmp(method, "POST") == 0)
         curl_easy_setopt(curl, CURLOPT_POST, 1);
     curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());
-    if (!session.empty())
-        curl_easy_setopt(curl, CURLOPT_COOKIE, session.c_str());
+    
     // Just to enable cookie parser
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+    // It will clear all stored cookies
+    curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
+    if (!session.empty()) {
+        RAWTRACE1("Set cookie: %s", session.c_str());
+        curl_easy_setopt(curl, CURLOPT_COOKIE, session.c_str());
+    }
+    
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
 	curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1);
 
@@ -146,14 +154,17 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
 	// Add Keep-Alive header
 	hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+    
+    if (trace)
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	
 	return hdrs;
 }
 
-static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
                              const String& strBody, const String& session)
 {
-    curl_slist *retval = set_curl_options(curl, method, strUrl, session);
+    curl_slist *retval = set_curl_options(trace, curl, method, strUrl, session);
     if (strcasecmp(method, "POST") == 0) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
@@ -161,19 +172,19 @@ static curl_slist *set_curl_options(CURL *curl, const char *method, const String
 	return retval;
 }
 
-static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
                              const String& strBody, const String& session, const String& result)
 {
-    curl_slist *retval = set_curl_options(curl, method, strUrl, strBody, session);
+    curl_slist *retval = set_curl_options(trace, curl, method, strUrl, strBody, session);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
     return retval;
 }
 
-static curl_slist *set_curl_options(CURL *curl, const char *method, const String& strUrl,
+static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
                             const String& strBody, const String& session, const common::CRhoFile *pFile)
 {
-    curl_slist *retval = set_curl_options(curl, method, strUrl, strBody, session);
+    curl_slist *retval = set_curl_options(trace, curl, method, strUrl, strBody, session);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, pFile);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
     return retval;
@@ -225,7 +236,7 @@ char* CURLNetRequest::request(const char *method, const String& strUrl, const St
     rho_net_impl_network_indicator(1);
 
     String result;
-    curl_slist *hdrs = set_curl_options(curl, method, strUrl, strBody, session, result);
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, strBody, session, result);
 	//curl_easy_perform(curl);
 	CURLMcode err = do_curl_perform(curlm, curl);
 	curl_slist_free_all(hdrs);
@@ -285,7 +296,7 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
     rho_net_impl_network_indicator(1);
 
     String result;
-    curl_slist *hdrs = set_curl_options(curl, method, strUrl, strBody, session, result);
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, strBody, session, result);
     //curl_easy_perform(curl);
 	CURLMcode err = do_curl_perform(curlm, curl);
 	curl_slist_free_all(hdrs);
@@ -324,16 +335,47 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
             for(curl_slist *cookie = rcookies; cookie; cookie = cookie->next) {
                 char *data = cookie->data;
 
-                // TODO: possible buffer overrun!!!
-                char domain[512];
-                char tailmatch[32];
-                char path[512];
-                char secure[32];
-                char expires[32];
-                char name[256];
-                char value[512];
-                sscanf(data, "%s\t%s\t%s\t%s\t%s\t%s\t%s", domain, tailmatch, path, secure, expires, name, value);
-
+                // Parse cookie which is in Netscape format:
+                // domain <Tab> tailmatch <Tab> path <Tab> secure <Tab> expires <Tab> name <Tab> value
+                char *s = data;
+                
+                // Skip 'domain'
+                for (; *s == '\t'; ++s);
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                
+                // Skip 'tailmatch'
+                for (; *s == '\t'; ++s);
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                
+                // Skip 'path'
+                for (; *s == '\t'; ++s);
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                
+                // Skip 'secure'
+                for (; *s == '\t'; ++s);
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                
+                // Skip 'expires'
+                for (; *s == '\t'; ++s);
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                
+                // Parse 'name'
+                for (; *s == '\t'; ++s);
+                char *name_start = s;
+                for (; *s != '\t' && *s != '\0'; ++s);
+                if (*s == '\0') continue;
+                char *name_finish = s;
+                String name(name_start, name_finish);
+                
+                // Parse 'value'
+                for (; *s == '\t'; ++s);
+                char *value = s;
+                
                 cookies += name;
                 cookies += "=";
                 cookies += value;
@@ -360,7 +402,7 @@ char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, v
     
     rho_net_impl_network_indicator(1);
     
-    curl_slist *hdrs = set_curl_options(curl, "GET", strUrl, "", session, (common::CRhoFile*)oFile);
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "GET", strUrl, "", session, (common::CRhoFile*)oFile);
 	//curl_easy_perform(curl);
 	CURLMcode err = do_curl_perform(curlm, curl);
 	curl_slist_free_all(hdrs);
@@ -385,7 +427,7 @@ char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, v
                 oSession->logout();
     }
     
-    return "OK";
+    return (char*)"OK";
 }
 
 char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession)
@@ -404,7 +446,7 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
         rho_net_impl_network_indicator(1);
 
         String result;
-        curl_slist *hdrs = set_curl_options(curl, "POST", strUrl, session, result);
+        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, session, result);
 
         curl_httppost *post = NULL, *last = NULL;
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
