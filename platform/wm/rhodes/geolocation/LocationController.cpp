@@ -2,7 +2,7 @@
 
 //#include "../HttpServer.h"
 #include "LocationController.h"
-#include "shttpd.h"
+//#include "shttpd.h"
 
 #if defined(_WIN32_WCE)
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
