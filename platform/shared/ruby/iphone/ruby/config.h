@@ -242,4 +242,7 @@
 #define HAVE_SOCKADDR_STORAGE 1
 #define HAVE_GAI_STRERROR 1
 
+#define HAVE_GETHOSTNAME 1
+#define HAVE_UNAME 1
+
 #include "tcmalloc/rhomem.h"

@@ -245,6 +245,8 @@
 #define HAVE_INET_ATON 1
 #define HAVE_GETADDRINFO 1
 #define HAVE_GETNAMEINFO 1
+#define HAVE_GETHOSTNAME 1
+#define HAVE_UNAME 1
 
 #if defined(OS_ANDROID)
 #  define HAVE_SYS_SYSCALL_H 1

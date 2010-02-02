@@ -8,7 +8,7 @@
 #   
 # $IPR: cgihandler.rb,v 1.27 2003/03/21 19:56:01 gotoyuzo Exp $
 
-require 'rbconfig'
+#require 'rbconfig'
 require 'tempfile'
 require 'webrick/config'
 require 'webrick/httpservlet/abstract'
@@ -17,10 +17,10 @@ module WEBrick
   module HTTPServlet
 
     class CGIHandler < AbstractServlet
-      Ruby = File::join(RbConfig::CONFIG['bindir'],
-                        RbConfig::CONFIG['ruby_install_name'])
-      Ruby << RbConfig::CONFIG['EXEEXT']
-      CGIRunner = "\"#{Ruby}\" \"#{WEBrick::Config::LIBDIR}/httpservlet/cgi_runner.rb\""
+      #Ruby = File::join(RbConfig::CONFIG['bindir'],
+      #                  RbConfig::CONFIG['ruby_install_name'])
+      #Ruby << RbConfig::CONFIG['EXEEXT']
+      CGIRunner = "ruby \"#{WEBrick::Config::LIBDIR}/httpservlet/cgi_runner.rb\""
 
       def initialize(server, name)
         super(server, name)
