@@ -70,7 +70,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
 			
 			if ( oSession != null )
 			{
@@ -225,7 +225,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
 			
 			if ( oSession != null )
 			{
@@ -338,7 +338,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
 			
 			String strSession = oSession.getSession();
 			if ( strSession != null && strSession.length() > 0 )

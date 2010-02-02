@@ -41,7 +41,7 @@ public class NetworkAccess implements INetworkAccess {
 			strDeviceside = "";
 
 		if (DeviceInfo.isSimulator()) {
-			URLsuffix = "";//";deviceside=true";
+			URLsuffix = ";deviceside=true";
 			networkConfigured = true;
 		}else{
 			ServiceBook sb = ServiceBook.getSB();
@@ -130,7 +130,7 @@ public class NetworkAccess implements INetworkAccess {
 		return BBVersionSpecific.isWifiActive();
 	}
 	
-	public IHttpConnection connect(String url) throws IOException 
+	public IHttpConnection connect(String url, boolean ignoreSuffixOnSim) throws IOException 
 	{
 		if ( URI.isLocalHost(url) )
 		{
@@ -143,7 +143,8 @@ public class NetworkAccess implements INetworkAccess {
 			url = url.substring(0, fragment);
 		}
 
-		HttpConnection http = (HttpConnection)baseConnect(url, false);
+		boolean ignoreSuffix = ignoreSuffixOnSim && DeviceInfo.isSimulator();
+		HttpConnection http = (HttpConnection)baseConnect(url, ignoreSuffix );
 		return new BBHttpConnection(http);
 	}
 
@@ -154,8 +155,8 @@ public class NetworkAccess implements INetworkAccess {
 
 	public SocketConnection socketConnect(String proto, String strHost, int nPort) throws IOException 
 	{
-		boolean ignoreSuffix = DeviceInfo.isSimulator() && proto.equals("ssl") &&
-			URLsuffix.indexOf("deviceside=true") != -1;
+		boolean ignoreSuffix = DeviceInfo.isSimulator();// && proto.equals("ssl") &&
+			//URLsuffix.indexOf("deviceside=true") != -1;
 		String strUrl = proto + "://" + strHost + ":" + Integer.toString(nPort);
 		
 		return (SocketConnection)baseConnect(strUrl, ignoreSuffix);
