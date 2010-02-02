@@ -50,6 +50,8 @@ module NetHTTPSpecs
   
   class << self
     def start_server
+      return if $iphonespec.nil?
+      
       server_config = {
         :BindAddress => "0.0.0.0",
         :Port => 3333,
@@ -73,6 +75,7 @@ module NetHTTPSpecs
     end
     
     def stop_server
+      return if $iphonespec.nil?
       @server.shutdown
       Thread.pass until @server.status == :Stop
     end

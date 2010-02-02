@@ -12,4 +12,4 @@ iphone:
   entitlements: ""
   codesignidentity: ""
   configuration: Debug
-extensions: ["digest", "fcntl", "openssl"]
+extensions: ["digest-md5", "digest-sha1", "digest", "openssl", "fcntl", "test-libs", "net-http"]
