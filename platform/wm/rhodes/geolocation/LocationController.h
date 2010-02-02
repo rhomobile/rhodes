@@ -70,7 +70,7 @@ public:
 	static void DeleteInstance();
 	static void CheckTimeout();
 	virtual ~CGPSController();
-    static void show_geolocation(struct shttpd_arg *arg);
+    //static void show_geolocation(struct shttpd_arg *arg);
 
 public:
     virtual HRESULT SetGPSPosition( GPS_POSITION gps_Position );

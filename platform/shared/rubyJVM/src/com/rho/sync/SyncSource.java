@@ -581,44 +581,34 @@ class SyncSource
 		    	
 		    	String strAttrib = oJsonEntry.getString("a");
 	            //oo conflicts
-	            if ( strOldObject != null )
+	            if ( strOldObject != null && !bUpdatedOO )
 	            {
-	                if ( !bUpdatedOO )
-	                {
-	                    getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
-	                    getDB().executeSQL("UPDATE changed_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
+                    getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
+                    getDB().executeSQL("UPDATE changed_values SET object=? where object=? and source_id=?", strObject, strOldObject, nSrcID );
 
-	                    getNotify().onObjectChanged(nSrcID,strOldObject, SyncNotify.enCreate);
+                    getNotify().onObjectChanged(nSrcID,strOldObject, SyncNotify.enCreate);
 
-	                    bUpdatedOO = true;
-	                }
-
-	                getDB().executeSQL("UPDATE changed_values SET main_id=? where object=? and attrib=? and source_id=? and sent<=1", value.m_nID, strObject, strAttrib, nSrcID );
-	                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, nSrcID );
-
-	                getDB().executeSQL("UPDATE object_values SET id=? WHERE object=? and attrib=? and source_id=?", 
-	                    value.m_nID, strObject, strAttrib, nSrcID );
-	            }else//
-	            {
-	                IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values "+
-	                    "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
-	                    value.m_nID, strAttrib, nSrcID, strObject,
-	                    value.m_strValue, value.m_strAttrType );
-	                if ( resInsert.isNonUnique() )
-	                {
-	                    getDB().executeSQL("UPDATE object_values "+
-	                        "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
-	                        value.m_nID, value.m_strValue, value.m_strAttrType,
-	                        strObject, strAttrib, nSrcID );
-
-	                    // oo conflicts
-	                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, nSrcID );
-	                    getDB().executeSQL("UPDATE changed_values SET main_id=? where object=? and attrib=? and source_id=? and sent<=1", value.m_nID, strObject, strAttrib, nSrcID );
-	                    //
-	                }
-
-	                getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
+                    bUpdatedOO = true;
 	            }
+	            
+                IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values "+
+                    "(id, attrib, source_id, object, value, attrib_type) VALUES(?,?,?,?,?,?)", 
+                    value.m_nID, strAttrib, nSrcID, strObject,
+                    value.m_strValue, value.m_strAttrType );
+                if ( resInsert.isNonUnique() )
+                {
+                    getDB().executeSQL("UPDATE object_values "+
+                        "SET id=?, value=?, attrib_type=? WHERE object=? and attrib=? and source_id=?", 
+                        value.m_nID, value.m_strValue, value.m_strAttrType,
+                        strObject, strAttrib, nSrcID );
+
+                    // oo conflicts
+                    getDB().executeSQL("UPDATE changed_values SET main_id=? where object=? and attrib=? and source_id=? and sent<=1", value.m_nID, strObject, strAttrib, nSrcID );
+                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, nSrcID );
+                    //
+                }
+
+                getNotify().onObjectChanged(nSrcID,strObject, SyncNotify.enUpdate);
 		    	
 		        m_nInserted++;
 		    }else

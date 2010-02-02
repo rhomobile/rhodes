@@ -207,7 +207,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 					int size = 0;
 					byte[] data = null;
 					try {
-						IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl);
+						IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(finalUrl,false);
 						
 						conn.setRequestMethod("GET");
 						

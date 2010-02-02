@@ -2,7 +2,7 @@
 
 //#include "../HttpServer.h"
 #include "LocationController.h"
-#include "shttpd.h"
+//#include "shttpd.h"
 
 #if defined(_WIN32_WCE)
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
@@ -367,7 +367,7 @@ void CGPSController::Unlock() {
 }
 
 
-
+#if 0
 /*static*/void CGPSController::show_geolocation(struct shttpd_arg *arg) {
 	char location[256];
 
@@ -399,6 +399,7 @@ void CGPSController::Unlock() {
 
 	arg->flags |= SHTTPD_END_OF_OUTPUT;
 }
+#endif //0
 #endif //_WIN32_WCE
 
 extern "C"{
