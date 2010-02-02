@@ -23,6 +23,8 @@
 		468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 468276EF10713FD600ADBCD4 /* WebViewUrl.m */; };
 		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
 		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
+		46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB21117AFB9009A974A /* MapKit.framework */; };
+		46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB61117AFBF009A974A /* CFNetwork.framework */; };
 		46AF5163103F150D006E02E1 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
@@ -184,6 +186,8 @@
 		4684391110445A810019C7F0 /* BarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarItem.m; sourceTree = "<group>"; };
 		468E57401035DBC100A2293C /* TabBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarDelegate.h; sourceTree = "<group>"; };
 		468E57411035DBC100A2293C /* TabBarDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarDelegate.m; sourceTree = "<group>"; };
+		46AD7DB21117AFB9009A974A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		46AD7DB61117AFBF009A974A /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		46AF5161103F150D006E02E1 /* NativeBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeBar.h; sourceTree = "<group>"; };
 		46AF5162103F150D006E02E1 /* NativeBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeBar.m; sourceTree = "<group>"; };
 		46B005F51033690F00D0C2F4 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
@@ -270,6 +274,8 @@
 				F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */,
 				46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */,
 				BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */,
+				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
+				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +353,8 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				46AD7DB21117AFB9009A974A /* MapKit.framework */,
+				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -856,8 +864,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -873,47 +881,9 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -1119,10 +1089,6 @@
 				IBC_FLATTEN_NIBS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",
@@ -1130,10 +1096,6 @@
 					"-lrhoextlib",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreGraphics,
 					"-lrhorubylib",
 					"-lrhosynclib",
 					"-ltcmalloc",

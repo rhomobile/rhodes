@@ -4,6 +4,7 @@
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
+#include "geolocation/LocationController.h"
 
 //#include "ServerHost.h"
 //#include "logging/RhoLog.h"
@@ -190,6 +191,12 @@ public :
         //m_pServerHost->Stop();
         //delete m_pServerHost;
         //m_pServerHost = NULL;
+
+#if defined(OS_WINCE)
+        CGPSController* pGPS = CGPSController::Instance();
+        pGPS->DeleteInstance();
+#endif
+
         rho::common::CRhodesApp::Destroy();
     }
 

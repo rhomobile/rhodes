@@ -98,7 +98,7 @@
 #define HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
-#if !defined(_WIN32_WCE)&& !defined(WIN32)
+#if !defined(_WIN32_WCE) //&& !defined(WIN32)
 #define HAVE_VSNPRINTF 1
 #endif
 
