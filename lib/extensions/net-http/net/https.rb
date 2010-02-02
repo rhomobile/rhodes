@@ -99,7 +99,16 @@ It can be replaced by the following code:
 =end
 
 require 'net/http'
-require 'openssl' if System::get_property('platform') != 'Blackberry'
+
+if System::get_property('platform') != 'Blackberry'
+    require 'openssl' 
+else
+    module OpenSSL    
+        module SSL
+            VERIFY_NONE = 0
+        end
+    end
+end
 
 module Net
   class HTTP
