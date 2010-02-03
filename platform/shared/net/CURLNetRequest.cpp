@@ -120,6 +120,25 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
 }
 #endif
 
+static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, void *opaque)
+{
+    const char *text = "";
+    switch (type) {
+        case CURLINFO_TEXT:         text = "== Info"; break;
+        case CURLINFO_HEADER_IN:    text = "<= Recv headers"; break;
+        case CURLINFO_HEADER_OUT:   text = "=> Send headers"; break;
+        case CURLINFO_DATA_IN:      text = "<= Recv data"; break;
+        case CURLINFO_DATA_OUT:     text = "=> Send data"; break;
+        case CURLINFO_SSL_DATA_IN:  text = "<= Recv SSL data"; break;
+        case CURLINFO_SSL_DATA_OUT: text = "=> Send SSL data"; break;
+        default: return 0;
+    }
+    
+    String strData(data, size);
+    RAWLOG_INFO2("%s: %s", text, strData.c_str());
+    return 0;
+}
+
 static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
                              const String& session)
 {
@@ -135,7 +154,7 @@ static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, 
     // It will clear all stored cookies
     curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
     if (!session.empty()) {
-        RAWTRACE1("Set cookie: %s", session.c_str());
+        //RAWTRACE1("Set cookie: %s", session.c_str());
         curl_easy_setopt(curl, CURLOPT_COOKIE, session.c_str());
     }
     
@@ -155,8 +174,11 @@ static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, 
 	hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
     
-    if (trace)
+    if (trace) {
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &curl_trace);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, NULL);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    }
 	
 	return hdrs;
 }
@@ -200,7 +222,7 @@ static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
         if (err == CURLM_CALL_MULTI_PERFORM)
 			continue;
         if (err == CURLM_OK && running > 0) {
-            RAWTRACE("curl_multi_perform returns OK, but we still have active transfers");
+            //RAWTRACE("curl_multi_perform returns OK, but we still have active transfers");
             fd_set rfd, wfd, efd;
 			int n = 0;
 			FD_ZERO(&rfd);
