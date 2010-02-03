@@ -2,12 +2,18 @@
 %module SyncEngine
 %{
 /* Put header files here or function declarations like below */
+	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
+	
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
+	
+	#define dosync_source_byurl rho_sync_doSyncSourceByUrl
+	extern void rho_sync_doSyncSourceByUrl(const char * source_url);
+	
 	#define dosearch_source rho_sync_doSearchSource
 	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-	#define dosync rho_sync_doSyncAllSources
+	
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
 	extern void rho_sync_unlock();
@@ -51,6 +57,9 @@
 	#define set_initial_notification rho_sync_set_initial_notification
 	extern void rho_sync_clear_initial_notification();
 	#define clear_initial_notification rho_sync_clear_initial_notification
+
+	extern void rho_sync_set_threaded_mode(int b);
+	#define set_threaded_mode rho_sync_set_threaded_mode
 	
 	#if !defined(bool)
 	#define bool int
@@ -64,6 +73,7 @@
 }
 extern void dosync(bool show_status_popup);
 extern void dosync_source(VALUE source_id, bool show_status_popup);
+extern void dosync_source_byurl(const char * source_url);
 extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern void lock_sync_mutex();
 extern void unlock_sync_mutex();
@@ -84,4 +94,4 @@ extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
 extern void  set_initial_notification(const char *url, char* params);
 extern void  clear_initial_notification();
-
+extern void  set_threaded_mode(bool b);

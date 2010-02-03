@@ -85,6 +85,8 @@ public:
     int incLastSyncObjectCount(int nSrcID);
     int getLastSyncObjectCount(int nSrcID);
 
+    void callLoginCallback(String callback, int nErrCode, String strMessage);
+
 private:
     String makeCreateObjectErrorBody(int nSrcID);
     void processSingleObject();
@@ -92,6 +94,8 @@ private:
     void doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
     void reportSyncStatus(String status, int error, String strDetails);
     void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, VectorPtr<CSyncSource*>& sources );
+
+    boolean callNotify(const String& strUrl, const String& strBody );
 
 };
 

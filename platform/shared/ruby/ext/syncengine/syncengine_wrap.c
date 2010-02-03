@@ -1546,12 +1546,18 @@ static VALUE mSyncEngine;
 
 
 /* Put header files here or function declarations like below */
+	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
+	
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
+	
+	#define dosync_source_byurl rho_sync_doSyncSourceByUrl
+	extern void rho_sync_doSyncSourceByUrl(const char * source_url);
+	
 	#define dosearch_source rho_sync_doSearchSource
 	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-	#define dosync rho_sync_doSyncAllSources
+	
 	extern void rho_sync_lock();
 	#define lock_sync_mutex rho_sync_lock
 	extern void rho_sync_unlock();
@@ -1595,6 +1601,9 @@ static VALUE mSyncEngine;
 	#define set_initial_notification rho_sync_set_initial_notification
 	extern void rho_sync_clear_initial_notification();
 	#define clear_initial_notification rho_sync_clear_initial_notification
+
+	extern void rho_sync_set_threaded_mode(int b);
+	#define set_threaded_mode rho_sync_set_threaded_mode
 	
 	#if !defined(bool)
 	#define bool int
@@ -1800,6 +1809,30 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   dosync_source(arg1,arg2);
   return Qnil;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_dosync_source_byurl(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "dosync_source_byurl" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  dosync_source_byurl((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -2304,6 +2337,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_threaded_mode(int argc, VALUE *argv, VALUE self) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_bool(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_threaded_mode" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = (bool)(val1);
+  set_threaded_mode(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2568,6 +2622,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mSyncEngine, "dosync", _wrap_dosync, -1);
   rb_define_module_function(mSyncEngine, "dosync_source", _wrap_dosync_source, -1);
+  rb_define_module_function(mSyncEngine, "dosync_source_byurl", _wrap_dosync_source_byurl, -1);
   rb_define_module_function(mSyncEngine, "dosearch_source", _wrap_dosearch_source, -1);
   rb_define_module_function(mSyncEngine, "lock_sync_mutex", _wrap_lock_sync_mutex, -1);
   rb_define_module_function(mSyncEngine, "unlock_sync_mutex", _wrap_unlock_sync_mutex, -1);
@@ -2588,5 +2643,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_pagesize", _wrap_set_pagesize, -1);
   rb_define_module_function(mSyncEngine, "set_initial_notification", _wrap_set_initial_notification, -1);
   rb_define_module_function(mSyncEngine, "clear_initial_notification", _wrap_clear_initial_notification, -1);
+  rb_define_module_function(mSyncEngine, "set_threaded_mode", _wrap_set_threaded_mode, -1);
 }
 
