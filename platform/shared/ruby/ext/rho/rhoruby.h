@@ -59,6 +59,7 @@ char* RhoRuby_getRhoDBVersion();
 
 typedef void rho_eachstr_func(const char*, const char*, void*);
 void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func *, void* data);
+void rho_ruby_set_const(const char* szName, const char* szVal);
 
 struct CRhoRubyStringOrInt 
 {

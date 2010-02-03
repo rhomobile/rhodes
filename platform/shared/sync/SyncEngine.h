@@ -64,6 +64,7 @@ private:
     CSyncNotify m_oSyncNotify;
     boolean m_bStopByUser;
     int m_nSyncPageSize;
+    boolean m_bNoThreaded;
 
 public:
     CSyncEngine(db::CDBAdapter& db);
@@ -115,11 +116,13 @@ public:
     String SYNC_PAGE_SIZE();
     int getSyncPageSize() { return m_nSyncPageSize; }
     void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
+
+    boolean isNoThreadedMode(){ return m_bNoThreaded; }
+    void setNonThreadedMode(bool b){m_bNoThreaded = b;}
 private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
 
-    void callLoginCallback(String callback, int nErrCode, String strMessage);
     boolean checkAllSourcesFromOneDomain();
     friend class CSyncSource;
 };
