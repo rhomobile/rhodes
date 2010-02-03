@@ -2,6 +2,10 @@
 
 #import "GoogleGeocoder.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "GoogleGeocoder"
+
 @implementation GoogleGeocoder
 
 @synthesize actionTarget,onDidFindAddress,theElement,annotations,gapikey;

@@ -10,6 +10,10 @@
 #import "MapViewController.h"
 #import "WebViewUrl.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "MapView"
+
 @implementation MapViewController
 
 @synthesize actionTarget,onNavigate,gapikey;
@@ -204,10 +208,12 @@ calloutAccessoryControlTapped:(UIControl *)control {
 	annView.animatesDrop = TRUE;
 	annView.canShowCallout = YES;
 	MapAnnotation* ann = (MapAnnotation*)annotation;
-	NSString* url = [ann url];
-	if ( [url length] > 0 ) {
-		[annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
-	}
+    if ([ann respondsToSelector:@selector(url)]) {
+        NSString* surl = [ann url];
+        if ( [surl length] > 0 ) {
+            [annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
+        }
+    }
 	return annView;
 }
 
