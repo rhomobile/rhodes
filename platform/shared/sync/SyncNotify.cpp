@@ -1,6 +1,7 @@
 #include "SyncNotify.h"
 #include "SyncEngine.h"
 #include "net/URI.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
 namespace sync {
@@ -131,10 +132,7 @@ void CSyncNotify::fireObjectsNotification()
             return;
     }
 
-    NetResponse( resp, getNet().pushData( strUrl, strBody, null ));
-    if ( !resp.isOK() )
-        LOG(ERROR) + "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
+    callNotify(strUrl, strBody);
 }
 
 void CSyncNotify::onObjectChanged(int nSrcID, const String& strObject, int nType)
@@ -344,17 +342,8 @@ void CSyncNotify::fireInitialSyncNotification( boolean bFinish, int nErrCode )
     
 	LOG(INFO) +  "Fire initial notification.Url :" + strUrl + "; Body: " + strBody;
 	
-    NetResponse( resp, getNet().pushData( strUrl, strBody, null ) );
-    if ( !resp.isOK() )
-        LOG(ERROR) + "Fire intial notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-    else
-    {
-        const char* szData = resp.getCharData();
-        if ( szData && strcmp(szData,"stop") == 0)
-        {
-        	clearInitialSyncNotification();
-        }
-    }
+    if ( callNotify(strUrl, strBody) )
+    	clearInitialSyncNotification();
 }
 
 void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
@@ -435,18 +424,36 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
 	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
 	
+    if ( callNotify(strUrl, strBody) )
+        clearNotification(src);
+}
+
+boolean CSyncNotify::callNotify(const String& strUrl, const String& strBody )
+{
+    if ( getSync().isNoThreadedMode() )
+    {
+        const char* szName = strrchr(strUrl.c_str(), '/');
+        if (!szName)
+            szName = strUrl.c_str();
+        else
+            szName++;
+
+        String strName = "C_";
+        strName += szName;
+        rho_ruby_set_const( strName.c_str(), strBody.c_str());
+        return false;
+    }
+
     NetResponse(resp,getNet().pushData( strUrl, strBody, null ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else
     {
         const char* szData = resp.getCharData();
-        if ( szData && strcmp(szData,"stop") == 0)
-        {
-            clearNotification(src);
-        }
+        return szData && strcmp(szData,"stop") == 0;
     }
 
+    return false;
 }
 
 void CSyncNotify::clearNotification(CSyncSource& src)
@@ -513,6 +520,25 @@ int CSyncNotify::getLastSyncObjectCount(int nSrcID)
     }
 
     return nCount;
+}
+
+void CSyncNotify::callLoginCallback(String callback, int nErrCode, String strMessage)
+{
+	//try{
+    String strBody = "error_code=" + convertToStringA(nErrCode);
+    strBody += "&error_message=";
+    URI::urlEncode(strMessage, strBody);
+    strBody += "&rho_callback=1";
+
+    String strUrl = getNet().resolveUrl(callback);
+    
+	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
+
+    callNotify(strUrl, strBody);
+	//}catch(Exception exc)
+	//{
+	//	LOG.ERROR("Call Login callback failed.", exc);
+	//}
 }
 
 }

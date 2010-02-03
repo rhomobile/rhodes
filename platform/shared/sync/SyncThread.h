@@ -110,6 +110,7 @@ public:
 	virtual void run();
 
 	void setPollInterval(int nInterval);
+
 private:
     CSyncThread(common::IRhoClassFactory* factory);
     int getLastSyncInterval();
@@ -117,6 +118,7 @@ private:
     void processCommands();
     void processCommand(CSyncCommand& oSyncCmd);
     boolean isNoCommands();
+
 };
 
 }
@@ -150,6 +152,7 @@ int rho_sync_get_pagesize();
 void rho_sync_set_pagesize(int nPageSize);
 void rho_sync_set_initial_notification(const char *url, char* params);
 void rho_sync_clear_initial_notification();
+void rho_sync_set_threaded_mode(int b);
 
 //struct sqlite3;
 int rho_sync_openDB(const char* szDBPath);
