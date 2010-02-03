@@ -27,6 +27,7 @@
 @property(nonatomic, retain) NSMutableArray* barItems;
 @property(assign) int activeTab;
 
+- (id)init;
 - (void)createTabBar:(UIWindow*)window;
 - (void)deleteTabBar;
 - (void)loadTabBarItemFirstPage:(BarItem*)item;
