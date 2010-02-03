@@ -39,7 +39,6 @@
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
-		BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE35AB7107F977D009941C7 /* RhoFile.cpp */; };
 		BDFBD99110B1B98900BAAFAB /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99010B1B98900BAAFAB /* MainWindow.xib */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
@@ -205,8 +204,6 @@
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
-		BDE35AB7107F977D009941C7 /* RhoFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile.cpp; path = ../shared/common/RhoFile.cpp; sourceTree = SOURCE_ROOT; };
-		BDE35AB8107F977D009941C7 /* RhoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoFile.h; path = ../shared/common/RhoFile.h; sourceTree = SOURCE_ROOT; };
 		BDFBD99010B1B98900BAAFAB /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -458,8 +455,6 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				BDE35AB7107F977D009941C7 /* RhoFile.cpp */,
-				BDE35AB8107F977D009941C7 /* RhoFile.h */,
 				5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */,
 				5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */,
 				5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */,
@@ -819,7 +814,6 @@
 				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
 				463577BF107272A400BEC653 /* JSString.m in Sources */,
 				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
-				BDE35AB9107F977D009941C7 /* RhoFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
