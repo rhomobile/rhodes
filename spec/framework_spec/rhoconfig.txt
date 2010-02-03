@@ -20,4 +20,5 @@ LastVisitedPage = ''
 
 arbitrary_option = 'rhodes rocks!'
 sync_poll_interval=0
-syncserver = ''
+#syncserver = 'http://192.168.0.185:9292/apps/framework_spec/sources'
+syncserver = 'http://dev.rhosync.rhohub.com/apps/Store/sources/'

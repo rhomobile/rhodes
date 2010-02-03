@@ -71,7 +71,11 @@ void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
 		if ( !bExist )
     		m_stackCommands.add(pSyncCmd);
 	}
-	stopWait(); 
+
+    if ( getSyncEngine().isNoThreadedMode() )
+        processCommands();
+    else
+	    stopWait(); 
 }
 
 int CSyncThread::getLastSyncInterval()
@@ -411,6 +415,11 @@ int rho_sync_get_pagesize()
 void rho_sync_set_pagesize(int nPageSize)
 {
     return CSyncThread::getSyncEngine().setSyncPageSize(nPageSize);
+}
+
+void rho_sync_set_threaded_mode(int b)
+{
+    return CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
 }
 
 }
