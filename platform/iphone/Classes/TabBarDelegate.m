@@ -10,9 +10,19 @@
 #import "WebViewController.h"
 #import "AppManager.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "TabBarDelegate"
+
 @implementation TabBarDelegate
 
 @synthesize tabBarController, mainWindow, tabBar, barItems, activeTab;
+
+- (id)init {
+    [super init];
+    tabBarController.selectedIndex = 0;
+    return self;
+}
 
 - (void)dealloc {
 	[tabBarController release];
@@ -29,7 +39,8 @@
 }
 
 - (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url {
-    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex];
+    int index = self.tabBarController.selectedIndex;
+    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:index];
     if (activeBar == item || item.loaded == YES)
         [item.viewController navigateRedirect:url];
     else
@@ -37,7 +48,8 @@
 }
 
 - (void)refresh:(BarItem*)item {
-    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex];
+    int index = self.tabBarController.selectedIndex;
+    BarItem *activeBar = (BarItem*)[barItems objectAtIndex:index];
     if (activeBar == item || item.loaded == YES)
         [item.viewController refresh];
     else
@@ -68,10 +80,11 @@
 	// label, action, icon, reload
 	for(int i=0; i < barSize; i++) {
 		BarItem* item = [[BarItem alloc] init];
-		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:i*4];
-		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+1];
-		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+2];
-		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:(i*4)+3] isEqualToString:@"true"] ? YES : NO;
+        int index = i*4;
+		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:index];
+		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:++index];
+		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:++index];
+		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:++index] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
 			WebViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];
@@ -106,7 +119,8 @@
 	if(self.tabBarController.selectedIndex > barItems.count) {
 		[NSException raise:@"Exception" format:@"Rhodes currently only supports up to 5 tabs.  Please change your tabs array and try again."];
 	} else {
-		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:self.tabBarController.selectedIndex]];
+        int index = self.tabBarController.selectedIndex;
+		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:index]];
 	}
 	self.activeTab = self.tabBarController.selectedIndex;
 }
