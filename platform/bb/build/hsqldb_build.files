@@ -10,7 +10,6 @@ platform\bb\Hsqldb\src\j2me\io\BufferedOutputStream.java
 platform\bb\Hsqldb\src\j2me\io\FilterOutputStream.java
 platform\bb\Hsqldb\src\j2me\math\BigDecimal.java
 platform\bb\Hsqldb\src\j2me\math\BigInteger.java
-platform\bb\Hsqldb\src\j2me\math\Math.java
 platform\bb\Hsqldb\src\j2me\math\Number.java
 platform\bb\Hsqldb\src\j2me\sql\Date.java
 platform\bb\Hsqldb\src\j2me\sql\Time.java
