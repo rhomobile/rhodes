@@ -229,15 +229,18 @@
 	
     // retain the nativebar so it doesn't get deleted
 	[bar retain];
-	self.nativeBar = bar;
-	if (self.nativeBar.barType == TABBAR_TYPE) {
-		tabBarDelegate.tabBar = self.nativeBar;
-		[self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
-	} else if(self.nativeBar.barType == TOOLBAR_TYPE) {
+    int type = bar.barType;
+    if (type == TABBAR_TYPE) {
+        tabBarDelegate.tabBar = bar;
+        [self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
+	}
+    else if (type == TOOLBAR_TYPE) {
         [webViewController showToolbar:YES];
-	} else if(self.nativeBar.barType == NOBAR_TYPE) {
+	}
+    else if (type == NOBAR_TYPE) {
         [webViewController showToolbar:NO];
 	}
+    self.nativeBar = bar;
 }
 
 - (void)onSwitchTab:(NSValue*)value {

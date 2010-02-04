@@ -66,6 +66,7 @@
 	if(!self.tabBarController) {
 		self.tabBarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
 		self.tabBarController.delegate = self;
+        self.tabBarController.selectedIndex = 0;
 	}
 	
 	tabBarController.moreNavigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
@@ -127,6 +128,7 @@
 
 - (void)switchTab:(int)index {
     self.tabBarController.selectedIndex = index;
+    self.activeTab = index;
 }
 
 @end

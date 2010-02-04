@@ -82,12 +82,6 @@ char* get_current_location() {
         [window bringSubviewToFront:webView];
     }
     [webView sizeToFit];
-    if (show) {
-        CGRect rect = webView.frame;
-        CGRect trect = toolbar.frame;
-        rect.size.height -= trect.size.height;
-        [webView setFrame:rect];
-    }
 }
 
 -(void)navigate:(NSString*)url {
