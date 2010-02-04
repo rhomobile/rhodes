@@ -919,7 +919,7 @@ public class Session implements SessionInterface {
                 Trace.check(false, Trace.ACCESS_IS_DENIED,
                             Trace.getMessage(Trace.Session_execute));
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             return new Result(t, null);
         }
 
@@ -972,7 +972,7 @@ public class Session implements SessionInterface {
                     try {
                         cs = compiledStatementManager.compile(
                             this, cmd.getMainString());
-                    } catch (Throwable t) {
+                    } catch (Exception t) {
                         return new Result(t, cmd.getMainString());
                     }
 
@@ -1009,7 +1009,7 @@ public class Session implements SessionInterface {
                                 String name = cmd.getMainString();
 
                                 releaseSavepoint(name);
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 return new Result(t, null);
                             }
                             break;
@@ -1017,7 +1017,7 @@ public class Session implements SessionInterface {
                         case ResultConstants.SAVEPOINT_NAME_ROLLBACK :
                             try {
                                 rollbackToSavepoint(cmd.getMainString());
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 return new Result(t, null);
                             }
                             break;
@@ -1035,7 +1035,7 @@ public class Session implements SessionInterface {
                         case ResultConstants.SQL_ATTR_SAVEPOINT_NAME :
                             try {
                                 savepoint(cmd.getMainString());
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 return new Result(t, null);
                             }
 
@@ -1183,7 +1183,7 @@ public class Session implements SessionInterface {
 
             try {
                 in = dbCommandInterpreter.execute(sql);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 in = new Result(ResultConstants.ERROR);
 
                 // if (t instanceof OutOfMemoryError) {

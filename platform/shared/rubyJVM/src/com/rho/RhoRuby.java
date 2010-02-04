@@ -117,7 +117,7 @@ public class RhoRuby {
     		RhoClassFactory.createFile().getDirPath("apps/public");
     		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
 	        
-        }catch(Throwable exc){
+        }catch(Exception exc){
         	LOG.ERROR("Cannot init ruby", exc);
         }
         
@@ -135,7 +135,7 @@ public class RhoRuby {
         	
         /*}catch(ClassNotFoundException exc){
         	LOG.ERROR("Cannot create ServeME object", exc);*/
-        }catch(Throwable exc){
+        }catch(Exception exc){
         	LOG.ERROR("Cannot create ServeME object", exc);
         }
 	}

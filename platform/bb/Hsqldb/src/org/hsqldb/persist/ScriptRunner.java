@@ -61,7 +61,7 @@ public class ScriptRunner {
      *
      * @throws  HsqlException
      */
-    public static void runScript(Database database, String logFilename,
+    /*public static void runScript(Database database, String logFilename,
                                  int logType) throws HsqlException {
 
         IntKeyHashMap sessionMap = new IntKeyHashMap();
@@ -152,21 +152,13 @@ public class ScriptRunner {
                     sessionMap.remove(currentId);
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             String message;
 
             // catch out-of-memory errors and terminate
             if (e instanceof EOFException) {
 
                 // end of file - normal end
-            } else if (e instanceof OutOfMemoryError) {
-                message = "out of memory processing " + logFilename
-                          + " line: " + scr.getLineNumber();
-
-                database.logger.appLog.logContext(SimpleLog.LOG_ERROR,
-                                                  message);
-
-                throw Trace.error(Trace.OUT_OF_MEMORY);
             } else {
 
                 // stop processing on bad log line
@@ -176,6 +168,15 @@ public class ScriptRunner {
                 database.logger.appLog.logContext(SimpleLog.LOG_ERROR,
                                                   message);
             }
+        } catch (OutOfMemoryError e) {
+            String message = "out of memory processing " + logFilename
+            	+ " line: " + scr.getLineNumber();
+
+            database.logger.appLog.logContext(SimpleLog.LOG_ERROR,
+                                    message);
+
+            throw Trace.error(Trace.OUT_OF_MEMORY);
+        	
         } finally {
             if (scr != null) {
                 scr.close();
@@ -184,5 +185,5 @@ public class ScriptRunner {
             database.getSessionManager().closeAllSessions();
             database.setReferentialIntegrity(true);
         }
-    }
+    }*/
 }

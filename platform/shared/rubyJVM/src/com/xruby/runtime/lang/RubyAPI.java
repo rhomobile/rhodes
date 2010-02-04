@@ -197,7 +197,7 @@ public class RubyAPI {
         throw new RubyException(RubyRuntime.NoMethodErrorClass, "undefined method '" + mid.toString() + "' for " + klass.getName());
     }
 
-    private static RubyValue processException( Throwable e, RubyValue receiver, RubyID mid )throws RubyException
+    private static RubyValue processException( Exception e, RubyValue receiver, RubyID mid )throws RubyException
     {
     	if ( e instanceof RubyException )
     	{
@@ -241,7 +241,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, args, block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -257,7 +257,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, null, block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -276,7 +276,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, new RubyArray(arg), block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -293,7 +293,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, new RubyArray(arg0, arg1), block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -313,7 +313,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, null, block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -332,7 +332,7 @@ public class RubyAPI {
 	    	}
 	
 	    	return callMethodMissing(receiver, new RubyArray(arg), block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -349,7 +349,7 @@ public class RubyAPI {
 	    	}
 	
 	    	return callMethodMissing(receiver, new RubyArray(arg0, arg1), block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -368,7 +368,7 @@ public class RubyAPI {
 	        }
 	
 	        return callMethodMissing(receiver, args, block, mid);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
@@ -385,7 +385,7 @@ public class RubyAPI {
 	        }
 	
 	        return m.invoke(receiver, block);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
@@ -403,7 +403,7 @@ public class RubyAPI {
 	        }
 	
 	        return m.invoke(receiver, arg, block);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
@@ -421,7 +421,7 @@ public class RubyAPI {
 	        }
 	
 	        return m.invoke(receiver, arg0, arg1, block);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
@@ -439,7 +439,7 @@ public class RubyAPI {
 	        }
 	
 	        return m.invoke(receiver, args, block);
-    	}catch(Throwable e)
+    	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}

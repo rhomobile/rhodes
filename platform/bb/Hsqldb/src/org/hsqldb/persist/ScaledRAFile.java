@@ -35,7 +35,9 @@ import java.io.EOFException;
 import j2me.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
+import com.rho.RhoLogger;
 import com.rho.RhoProfiler;
 import com.rho.db.RandomAccessFile;
 //import java.lang.reflect.Constructor;
@@ -67,6 +69,8 @@ class ScaledRAFile implements ScaledRAInterface {
     
     private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("ScaledRAFile");
 
     //
     final SimpleLog                appLog;
@@ -605,6 +609,8 @@ class ScaledRAFile implements ScaledRAInterface {
             file.seek(seekPosition);
 
             realPosition = seekPosition;
-        } catch (Throwable e) {}
+        } catch (Exception e) {
+        	LOG.ERROR("resetPointer failed.", e);
+        }
     }
 }

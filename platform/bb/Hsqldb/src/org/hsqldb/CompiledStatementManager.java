@@ -210,7 +210,7 @@ final public class CompiledStatementManager {
                 cs.id = csid;
 
                 csidMap.put(csid, cs);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 freeStatement(csid, session.getId(), true);
 
                 return null;

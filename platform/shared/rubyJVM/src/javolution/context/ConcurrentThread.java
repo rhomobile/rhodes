@@ -84,7 +84,7 @@ class ConcurrentThread extends RealtimeThread {
                 }
                 _context.started();
                 _memoryArea.executeInArea(_logic);
-            } catch (Throwable error) {
+            } catch (Exception error) {
                 _context.error(error);
             } finally {
                 _context.completed();
