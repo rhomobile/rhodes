@@ -16,6 +16,10 @@ module Rho
 	  'close_menu' => "Close",
       'get_link_menu' => "Get Link",
       'open_link_menu' => "Open Link",
+      'email_menu' => "Email",
+      'call_menu' => "Call",
+      'sms_menu' => "SMS",
+      'add_contacts_menu' => "Add to Contacts",
       
       'hide' => 'Hide'
     }

@@ -4,6 +4,9 @@ import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
+
 import net.rim.device.api.browser.field.BrowserContent;
 import net.rim.device.api.browser.field.RequestedResource;
 
@@ -13,6 +16,9 @@ import net.rim.device.api.browser.field.RequestedResource;
  */
 class SecondaryResourceFetchThread extends Thread {
 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RhodesApplication");
+	
     /**
      * Callback browser field
      */
@@ -124,16 +130,21 @@ class SecondaryResourceFetchThread extends Thread {
             
             if (resource != null) {
                 
-                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
-                resource.setHttpConnection(connection);
-                
-                // signal to the browser field that resource is ready
-                if (_browserField != null) {
-                	//synchronized (RhodesApplication.getEventLock())
-                	{
-                		_browserField.resourceReady(resource);
-                	}
-                }
+            	try{
+	                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+	                resource.setHttpConnection(connection);
+	                
+	                // signal to the browser field that resource is ready
+	                if (_browserField != null) {
+	                	//synchronized (RhodesApplication.getEventLock())
+	                	{
+	                		_browserField.resourceReady(resource);
+	                	}
+	                }
+            	}catch(Exception exc)
+            	{
+            		LOG.ERROR("SecondaryResourceFetchThread failed.", exc);
+            	}
             }
             
         }       
