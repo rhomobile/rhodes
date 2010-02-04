@@ -20,8 +20,9 @@ import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.util.Comparator;
-import net.rim.device.api.util.MathUtilities;
+//import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
+import j2me.lang.MathEx;
 
 public class GoogleMapField extends Field implements RhoMapField {
 
@@ -557,7 +558,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		zoom = z;
 		validateZoom();
 		if (image != null && image.image != null) {
-			double x = MathUtilities.pow(2, prevZoom - zoom);
+			double x = MathEx.pow(2, prevZoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			//factor = Fixed32.mul(factor, image.image.getScaleX32());
 			image.image = image.image.scaleImage32(factor, factor);
@@ -584,7 +585,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		double angleRatio = degrees*TILE_SIZE/pixels;
 		
 		double twoInZoomExp = 360/angleRatio;
-		int zoom = MathUtilities.log2((long)twoInZoomExp);
+		int zoom = (int)MathEx.log2(twoInZoomExp);
 		return zoom;
 	}
 
@@ -592,7 +593,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/MathUtilities.pow(2, z);
+		double angleRatio = 360/MathEx.pow(2, z);
 		double val = n*TILE_SIZE/angleRatio;
 		return (long)val;
 	}
@@ -601,7 +602,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (n == 0)
 			return 0;
 		
-		double angleRatio = 360/MathUtilities.pow(2, z);
+		double angleRatio = 360/MathEx.pow(2, z);
 		double val = n*angleRatio/TILE_SIZE;
 		return val;
 	}

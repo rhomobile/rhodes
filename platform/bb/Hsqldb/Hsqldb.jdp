@@ -35,7 +35,6 @@ src\j2me\io\BufferedOutputStream.java
 src\j2me\io\FilterOutputStream.java
 src\j2me\math\BigDecimal.java
 src\j2me\math\BigInteger.java
-src\j2me\math\Math.java
 src\j2me\math\Number.java
 src\j2me\sql\Date.java
 src\j2me\sql\Time.java
