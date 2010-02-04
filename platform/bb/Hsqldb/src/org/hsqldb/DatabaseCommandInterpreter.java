@@ -180,7 +180,7 @@ class DatabaseCommandInterpreter {
                                                tokenizer.getLastPart());
                 }
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             try {
                 if (session.isSchemaDefintion()) {
                     HsqlName schemaName = session.getSchemaHsqlName(null);
@@ -202,7 +202,7 @@ class DatabaseCommandInterpreter {
                               : result;
     }
 
-    private Result executePart(int cmd, String token) throws Throwable {
+    private Result executePart(int cmd, String token) throws Exception {
 
         Result result   = Session.emptyUpdateCount;
         int    brackets = 0;
@@ -2218,7 +2218,7 @@ class DatabaseCommandInterpreter {
 
                             try {
                                 t.setHeader(token);
-                            } catch (Throwable e) {
+                            } catch (Exception e) {
                                 if (session.isProcessingLog()
                                         || session.isProcessingScript()) {
                                     HsqlException warning =
@@ -2271,7 +2271,7 @@ class DatabaseCommandInterpreter {
 
                         try {
                             t.setDataSource(session, token, isDesc, false);
-                        } catch (Throwable e) {
+                        } catch (Exception e) {
                             if (session.isProcessingLog()
                                     || session.isProcessingScript()) {
                                 HsqlException warning =

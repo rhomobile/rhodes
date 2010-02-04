@@ -690,7 +690,7 @@ public class Log {
                 scr.readAll(database.sessionManager.getSysSession(null, true));
                 scr.close();
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             if (scr != null) {
                 scr.close();
 
@@ -707,11 +707,14 @@ public class Log {
                 throw (HsqlException) e;
             } else if (e instanceof IOException) {
                 throw Trace.error(Trace.FILE_IO_ERROR, e.toString());
-            } else if (e instanceof OutOfMemoryError) {
-                throw Trace.error(Trace.OUT_OF_MEMORY);
+            //} else if (e instanceof OutOfMemoryError) {
+            //    throw Trace.error(Trace.OUT_OF_MEMORY);
             } else {
                 throw Trace.error(Trace.GENERAL_ERROR, e.toString());
             }
+        }catch(OutOfMemoryError e)
+        {
+        	throw Trace.error(Trace.OUT_OF_MEMORY);
         }
     }
 
@@ -745,13 +748,13 @@ public class Log {
     /**
      * Performs all the commands in the .log file.
      */
-    private void processLog() throws HsqlException {
+    /*private void processLog() throws HsqlException {
 
         if (!database.isFilesInJar() && fa.isStreamElement(logFileName)) {
             ScriptRunner.runScript(database, logFileName,
                                    ScriptWriterBase.SCRIPT_TEXT_170);
         }
-    }
+    }*/
 
     /**
      * Restores a compressed backup or the .data file.

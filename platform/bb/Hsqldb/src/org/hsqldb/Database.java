@@ -283,7 +283,7 @@ public class Database {
             }
 
             dbInfo.setWithContent(true);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.closeLog(Database.CLOSEMODE_IMMEDIATELY);
             logger.releaseLock();
             setState(DATABASE_SHUTDOWN);
@@ -559,7 +559,7 @@ public class Database {
                 setState(DATABASE_CLOSING);
                 logger.closeLog(CLOSEMODE_NORMAL);
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (t instanceof HsqlException) {
                 he = (HsqlException) t;
             } else {

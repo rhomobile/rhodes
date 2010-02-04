@@ -328,7 +328,7 @@ public abstract class ScriptWriterBase implements Runnable {
 
                         writeTableTerm(t);
                     }
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     this.database.logger.appLog.logContext(
                         SimpleLog.LOG_ERROR,
                         t.getName().name + " problem after row " + rowCount);

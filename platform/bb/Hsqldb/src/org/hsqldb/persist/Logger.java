@@ -173,7 +173,7 @@ public class Logger {
                     log.close(true);
                     break;
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             appLog.logContext(e, "error closing log");
             appLog.close();
 
@@ -193,7 +193,7 @@ public class Logger {
     public void rhoSave(boolean bSchema){
         try {
         	log.rhoSave(bSchema);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             appLog.logContext(e, "error rhoSave log");
         }
 

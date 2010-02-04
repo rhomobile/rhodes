@@ -247,7 +247,7 @@ public class FileUtilBB implements FileAccess {
 	    	}
     	}
     }
-
+/*
     public static IOException toIOException(Throwable e) {
 
         if (e instanceof IOException) {
@@ -256,7 +256,7 @@ public class FileUtilBB implements FileAccess {
             return new IOException(e.toString());
         }
     }
-
+*/
     /**
      * Retrieves the absolute path, given some path specification.
      *

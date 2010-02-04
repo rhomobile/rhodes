@@ -280,7 +280,7 @@ public class DataFileCache {
                                                   cacheFileScale, freesize);
 
             database.logger.appLog.logContext(SimpleLog.LOG_NORMAL, "End open DB");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             database.logger.appLog.logContext(e, "failed");
             close(false);
 
@@ -378,7 +378,7 @@ public class DataFileCache {
                 fa.removeElement(fileName);
                 fa.removeElement(backupFileName);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             appLog.logContext(e, null);
 
             throw Trace.error(Trace.FILE_IO_ERROR, Trace.DataFileCache_close,
@@ -427,7 +427,7 @@ public class DataFileCache {
         	
             dataFile.sync();
             getJournal().stop();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             appLog.logContext(e, null);
 
             throw Trace.error(Trace.FILE_IO_ERROR, Trace.DataFileCache_close,
@@ -491,7 +491,7 @@ public class DataFileCache {
             open(cacheReadonly);
             dfd.updateTableIndexRoots();
             dfd.updateTransactionRowIDs();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             database.logger.appLog.logContext(e, null);
 
             throw new HsqlException(
@@ -694,7 +694,7 @@ public class DataFileCache {
             database.logger.appLog.logContext(e, null);
 
             throw e;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             database.logger.appLog.logContext(e, null);
 
             throw new IOException(e.toString());

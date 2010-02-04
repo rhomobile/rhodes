@@ -137,7 +137,7 @@ public class ClassInitializer {
     public static void initialize(Class cls) {
         try {
             Reflection.getClass(cls.getName());
-        } catch (Throwable error) {
+        } catch (Exception error) {
             StandardLog.error(error);
         }
     }
@@ -152,7 +152,7 @@ public class ClassInitializer {
             Reflection.getClass(className);
         } catch (ClassNotFoundException e) {
             StandardLog.warning("Class + " + className + " not found");
-        } catch (Throwable error) {
+        } catch (Exception error) {
             StandardLog.error(error);
         }
     }
