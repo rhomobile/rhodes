@@ -12,6 +12,7 @@
 #ifdef THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION
 
 #include <process.h>
+//#define THREAD_DEBUG 1
 
 #define WIN32_WAIT_TIMEOUT 10	/* 10 ms */
 #undef Sleep
@@ -449,7 +450,8 @@ native_thread_destroy(rb_thread_t *th)
     native_mutex_destroy(&th->interrupt_lock);
     thread_debug("close handle - intr: %p, thid: %p\n", intr, th->thread_id);
     th->native_thread_data.interrupt_event = 0;
-    w32_close_handle(intr);
+    if ( intr )
+        w32_close_handle(intr);
 }
 
 static unsigned long _stdcall
@@ -460,6 +462,12 @@ thread_start_func_1(void *th_ptr)
 
     native_thread_init_stack(th);
     th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
+
+    if ( !th->native_thread_data.interrupt_event)
+    {
+        DWORD dwErr = GetLastError();
+        thread_debug("thread interrupt_event error: %d\n", dwErr );
+    }
 
     /* run */
     thread_debug("thread created (th: %p, thid: %p, event: %p)\n", th,
