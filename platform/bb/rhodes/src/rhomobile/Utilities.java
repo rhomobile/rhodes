@@ -21,7 +21,7 @@ import com.rho.net.RhoConnection;
 public class Utilities {
 
 	public static HttpConnection makeConnection(String url,
-			HttpHeaders requestHeaders, byte[] postData) {
+			HttpHeaders requestHeaders, byte[] postData)throws IOException {
 
 		HttpConnection conn = null;
 		OutputStream out = null;
@@ -87,7 +87,7 @@ public class Utilities {
 
 			}
 
-		} catch (IOException e1) {
+		//} catch (IOException e1) {
 		} finally {
 			if (out != null) {
 				try {

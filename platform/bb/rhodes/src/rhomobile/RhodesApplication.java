@@ -336,11 +336,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     }
 
     private boolean m_bOpenLink = false;
-    private String m_strGetLink;
+    private String m_strGetLink, m_strEmailMenu, m_strCallMenu;
     boolean openLink(){
     	LOG.INFO("openLink");
     	try{
     		m_bOpenLink = true;
+    		//TODO: catch by ID?    		
             if (m_strGetLink==null)
             {
 		        Version.SoftVersion ver = Version.getSoftVersion();
@@ -349,6 +350,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		        else
 		        	m_strGetLink = RhoRuby.getMessageText("get_link_menu");
             }
+
+            if (m_strEmailMenu==null)
+            	m_strEmailMenu = RhoRuby.getMessageText("email_menu");
+            if (m_strCallMenu==null)
+            	m_strCallMenu = RhoRuby.getMessageText("call_menu");
             
 	    	Menu menu = _mainScreen.getMenu(0);
 	        int size = menu.getSize();
@@ -357,7 +363,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	            MenuItem item = menu.getItem(i);
 	            String label = item.toString();
 	            
-	            if(label.equalsIgnoreCase(m_strGetLink)) //TODO: catch by ID?
+	            if( label.equalsIgnoreCase(m_strGetLink) 
+	                ||label.startsWith(m_strEmailMenu) || label.startsWith(m_strCallMenu))
 	            {
 	              item.run();
 	              return true;
@@ -1371,24 +1378,29 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             return null;
         }
 
-        // if referrer is null we must return the connection
-        if (referrer == null) {
-            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
-            return connection;
-
-        } else 
+        try{
+	        // if referrer is null we must return the connection
+	        if (referrer == null) {
+	            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
+	            return connection;
+	
+	        } else 
+	        {
+	    		if ( URI.isLocalHost(url) )
+	    		{
+	                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
+	                return connection;
+	   			}else
+	   			{
+		            // if referrer is provided we can set up the connection on a separate thread
+		            SecondaryResourceFetchThread.enqueue(resource, referrer);
+	   			}
+	        }
+        }catch(Exception exc)
         {
-    		if ( URI.isLocalHost(url) )
-    		{
-                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
-                return connection;
-   			}else
-   			{
-	            // if referrer is provided we can set up the connection on a separate thread
-	            SecondaryResourceFetchThread.enqueue(resource, referrer);
-   			}
+        	LOG.ERROR("getResource failed.", exc);
         }
-
+        
         return null;
     }
 
@@ -1431,7 +1443,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        	    		oCmd = (PrimaryResourceFetchThread)m_stackCommands.removeFirst();
 	        	    	}
 	        			
-	        	    	oCmd.processCommand();
+	        	    	try{
+	        	    		oCmd.processCommand();
+	        	    	}catch(Exception e)
+	        	    	{
+	        	    		LOG.ERROR("Process command failed.", e);
+	        	    	}
 	        		}
 	        		
 	        		wait(INTERVAL_INFINITE);
@@ -1519,7 +1536,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             m_oFetchThread.addCommand(this);
     	}
     	
-        void processCommand()
+        void processCommand()throws IOException
         {
         	if ( m_bActivateApp )
         	{
