@@ -249,6 +249,8 @@ String CSyncEngine::requestClientIDByNet()
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "clientcreate";
     String strQuery = SYNC_SOURCE_FORMAT();
+    if ( CClientRegister::getInstance() != null )
+        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse(resp,getNet().pullData(strUrl+strQuery, this));
     if ( resp.isOK() && resp.getCharData() != null )
@@ -391,8 +393,6 @@ void CSyncEngine::login(String name, String password, String callback)
 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strBody = "login=" + name + "&password=" + password + "&remember_me=1";
-    if ( CClientRegister::getInstance() != null )
-        strBody += CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse( resp, getNet().pullCookies( serverUrl+"client_login", strBody, this ) );
     
