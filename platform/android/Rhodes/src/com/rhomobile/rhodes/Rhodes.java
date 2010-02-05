@@ -363,6 +363,16 @@ public class Rhodes extends Activity {
 				onStartLoading();
 				super.onPageStarted(view, url, favicon);
 			}
+			
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				if (!url.startsWith("mailto:") && !url.startsWith("tel:"))
+					return false;
+				
+				// TODO: implement custom url schemes
+				// https://www.pivotaltracker.com/story/show/2406527
+				return true;
+			}
 
 		});
 
