@@ -133,7 +133,7 @@ static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
 				_addPropertyToHash(hash,RUBY_PB_OTHER_EMAIL_ADDRESS,
 								   ABMultiValueCopyValueAtIndex(emails,n));
 			}
-			CFRelease(label);
+			if (label) CFRelease(label);
 		}
 		CFRelease(emails);
 	}	
