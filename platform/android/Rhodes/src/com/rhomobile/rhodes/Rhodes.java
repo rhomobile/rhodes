@@ -27,11 +27,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Hashtable;
 import java.util.Locale;
 
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
+import com.rhomobile.rhodes.uri.MailUriHandler;
+import com.rhomobile.rhodes.uri.TelUriHandler;
+import com.rhomobile.rhodes.uri.UriHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,6 +44,7 @@ import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -78,7 +83,7 @@ public class Rhodes extends Activity {
 	private WebView webView;
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
-	
+		
 	private String rootPath = null;
 	
 	private native void setRootPath(String path);
@@ -118,7 +123,7 @@ public class Rhodes extends Activity {
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
 	}
-
+	
 	private boolean deleteRecursively(File target) {
 		if (target.isDirectory()) {
 			String[] children = target.list();
@@ -128,6 +133,9 @@ public class Rhodes extends Activity {
 		}
 		return target.delete();
 	}
+	
+	
+	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
 	
 	private class FileSource {
 		
@@ -317,6 +325,16 @@ public class Rhodes extends Activity {
 		File sddb = new File(sdcardRootPath(), "db");
 		copyFromBundle(phdb, sddb, true);
 	}
+	
+	private boolean handleUrlLoading(String url) {
+		Uri uri = Uri.parse(url);
+		UriHandler handler = uriHandlers.get(uri.getScheme());
+		if (handler == null)
+			return false;
+		
+		handler.handle(uri);
+		return true;
+	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -335,6 +353,10 @@ public class Rhodes extends Activity {
 		screenWidth = d.getWidth();
 
 		webView = (WebView) findViewById(AndroidR.id.webview);
+		
+		// Register custom uri handlers here
+		uriHandlers.put("mailto", new MailUriHandler(this));
+		uriHandlers.put("tel", new TelUriHandler(this));
 
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setSavePassword(false);
@@ -359,9 +381,13 @@ public class Rhodes extends Activity {
 
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
 				onStartLoading();
 				super.onPageStarted(view, url, favicon);
+			}
+			
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				return handleUrlLoading(url);
 			}
 
 		});
@@ -599,6 +625,8 @@ public class Rhodes extends Activity {
 	};
 	
 	public void webview_navigate(String url) {
+		if (handleUrlLoading(url))
+			return;
 		uiHandler.post(new WebviewNavigate(webView, url));
 	}
 	

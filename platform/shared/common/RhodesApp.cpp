@@ -483,7 +483,9 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
-    if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 )
+    if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 ||
+        strncmp("mailto:", strUrl.c_str(), 7) == 0 ||
+        strncmp("tel:", strUrl.c_str(), 4) == 0)
         return strUrl;
 
     String strRes = m_strHomeUrl;
