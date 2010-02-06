@@ -67,15 +67,19 @@ Init_native_thread(void)
 static void
 w32_error(void)
 {
-    LPVOID lpMsgBuf;
+    LPVOID lpMsgBuf = 0;
+    int nError = GetLastError();
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		  FORMAT_MESSAGE_FROM_SYSTEM |
 		  FORMAT_MESSAGE_IGNORE_INSERTS,
 		  NULL,
-		  GetLastError(),
+		  nError,
 		  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		  (LPTSTR) & lpMsgBuf, 0, NULL);
-    rb_bug("%s", (char*)lpMsgBuf);
+    if ( lpMsgBuf )
+        rb_bug("%s;Error code: %d", (char*)lpMsgBuf, nError);
+    else
+        rb_bug("Error code: %d", nError);
 }
 
 static void
@@ -186,7 +190,11 @@ typedef LPTHREAD_START_ROUTINE w32_thread_start_func;
 static HANDLE
 w32_create_thread(DWORD stack_size, w32_thread_start_func func, void *val)
 {
-    return start_thread(0, stack_size, func, val, CREATE_SUSPENDED, 0);
+    return start_thread(0, stack_size, func, val, CREATE_SUSPENDED
+#ifdef _WIN32_WCE
+        |STACK_SIZE_PARAM_IS_A_RESERVATION
+#endif
+        ,0);
 }
 
 int
@@ -461,13 +469,14 @@ thread_start_func_1(void *th_ptr)
     volatile HANDLE thread_id = th->thread_id;
 
     native_thread_init_stack(th);
-    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
+/*    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
 
     if ( !th->native_thread_data.interrupt_event)
     {
         DWORD dwErr = GetLastError();
         thread_debug("thread interrupt_event error: %d\n", dwErr );
     }
+*/
 
     /* run */
     thread_debug("thread created (th: %p, thid: %p, event: %p)\n", th,
@@ -484,11 +493,24 @@ static int
 native_thread_create(rb_thread_t *th)
 {
     size_t stack_size = 4 * 1024; /* 4KB */
+
+    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
+
+    if ( !th->native_thread_data.interrupt_event)
+    {
+        DWORD dwErr = GetLastError();
+        thread_debug("thread interrupt_event error: %d\n", dwErr );
+    }
+
     th->thread_id = w32_create_thread(stack_size, thread_start_func_1, th);
 
     if ((th->thread_id) == 0) {
-	st_delete_wrap(th->vm->living_threads, th->self);
-	rb_raise(rb_eThreadError, "can't create Thread (%d)", errno);
+	    st_delete_wrap(th->vm->living_threads, th->self);
+
+        if ( th->native_thread_data.interrupt_event )
+            w32_close_handle(th->native_thread_data.interrupt_event);
+
+	    rb_raise(rb_eThreadError, "can't create Thread (%d)", errno);
     }
 
     w32_resume_thread(th->thread_id);
