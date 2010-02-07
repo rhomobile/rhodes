@@ -76,7 +76,8 @@ public:
     bool run();
 	void stop();
     
-    bool send_response(String const &response);
+    bool send_response(String const &response) {return send_response_impl(response, false);}
+    bool send_response_body(String const &data) {return send_response_impl(data, true);}
     
     String create_response(String const &reason);
     String create_response(String const &reason, HeaderList const &headers);
@@ -100,6 +101,8 @@ private:
     
     bool send_file(String const &path);
     
+    bool send_response_impl(String const &data, bool continuation);
+    
     callback_t registered(String const &uri);
     
 private:
@@ -109,6 +112,7 @@ private:
     SOCKET m_listener;
     SOCKET m_sock;
     std::map<String, callback_t> m_registered;
+    bool verbose;
 };
 
 } // namespace net
