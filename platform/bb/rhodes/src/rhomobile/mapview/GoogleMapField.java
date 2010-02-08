@@ -13,6 +13,7 @@ import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
 
+import rhomobile.RhodesApplication;
 import rhomobile.mapview.RhoMapField;
 import net.rim.device.api.math.Fixed32;
 import net.rim.device.api.system.Bitmap;
@@ -33,7 +34,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final int DELTA_X = 100;
 	private static final int DELTA_Y = 100;
 	
-	private static final int FETCH_THREAD_POOL_SIZE = 4;
+	private static final int FETCH_THREAD_POOL_SIZE = 1;
 	private static final long MAX_FETCH_TIME = 10000; // milliseconds
 	
 	private static final int MAP_REDRAW_INTERVAL = 1000; // milliseconds
@@ -261,6 +262,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		private Hashtable mapfields = new Hashtable();
 		
 		public MapFetchThreadPool() {
+			setPriority(Thread.MIN_PRIORITY);
 			for (int i = 0; i != FETCH_THREAD_POOL_SIZE; ++i) {
 				Thread th = new MapFetchThread();
 				th.setPriority(Thread.MIN_PRIORITY);
@@ -288,7 +290,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 				
 				synchronized (queue) {
 					try {
-						queue.wait(MAP_REDRAW_INTERVAL);
+						queue.wait();//MAP_REDRAW_INTERVAL);
 					}
 					catch (InterruptedException e) {
 						LOG.ERROR(e);
@@ -300,7 +302,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 						cmds.addElement(e.nextElement());
 					queue.removeAllElements();
 				}
-				
+/*				
 				for (Enumeration e = mapfields.elements(); e.hasMoreElements();) {
 					WeakReference ref = (WeakReference)e.nextElement();
 					GoogleMapField mf = (GoogleMapField)ref.get();
@@ -308,7 +310,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 						//LOG.TRACE("Redraw mapfield #" + mf.hashCode());
 						mf.redraw();
 					}
-				}
+				}*/
 				
 				if (cmds.isEmpty())
 					continue;
@@ -458,7 +460,13 @@ public class GoogleMapField extends Field implements RhoMapField {
 				image = new CachedBitmap(newImage);
 			}
 		}
-		invalidate();
+		
+		/*RhodesApplication.getInstance().invokeLater( new Runnable() {
+			public void run() {*/
+				invalidate();
+			/*}
+		});	*/
+		
 	}
 	
 	
@@ -531,14 +539,14 @@ public class GoogleMapField extends Field implements RhoMapField {
 		latitude = lat;
 		longitude = lon;
 		validateCoordinates();
-		redraw();
+		//redraw();
 	}
 
 	public void move(int dx, int dy) {
 		latitude -= pixelsToDegrees(dy, zoom);
 		longitude += pixelsToDegrees(dx, zoom);
 		validateCoordinates();
-		redraw();
+		//redraw();
 	}
 
 	public int getMaxZoom() {
@@ -564,7 +572,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			image.image = image.image.scaleImage32(factor, factor);
 			image.bitmap = image.image.getBitmap();
 		}
-		redraw();
+		//redraw();
 	}
 	
 	public int calculateZoom(double latDelta, double lonDelta) {
