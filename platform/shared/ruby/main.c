@@ -196,6 +196,14 @@ void Init_socket()
 {
 }
 
+void Init_Extensions()
+{
+}
+
+void Init_System()
+{
+}
+
 VALUE has_network(){
     return Qfalse;
 }
