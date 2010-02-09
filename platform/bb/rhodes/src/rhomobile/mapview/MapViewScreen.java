@@ -84,25 +84,35 @@ public class MapViewScreen extends MainScreen {
 			add(mapField.getBBField());
 		}
 		
-		Hashtable region = (Hashtable)settings.get("region");
-		double lat = ((Double)region.get("latitude")).doubleValue();
-		double lon = ((Double)region.get("longitude")).doubleValue();
-		
-		double latDelta = ((Double)region.get("latDelta")).doubleValue();
-		double lonDelta = ((Double)region.get("lonDelta")).doubleValue();
-		
+		// Set map type
 		String map_type = (String)settings.get("map_type");
-		
-		int zoom = mapField.calculateZoom(latDelta, lonDelta);
-		
+		if (map_type == null)
+			map_type = "roadmap";
 		mapField.setMapType(map_type);
-		mapField.setZoom(zoom);
-		mapField.moveTo(lat, lon);
+
+		Hashtable region = (Hashtable)settings.get("region");
+		if (region != null) {
+			// Set coordinates
+			Double lat = (Double)region.get("latitude");
+			Double lon = (Double)region.get("longitude");
+			if (lat != null && lon != null)
+				mapField.moveTo(lat.doubleValue(), lon.doubleValue());
+			
+			// Set zoom
+			Double latDelta = (Double)region.get("latDelta");
+			Double lonDelta = (Double)region.get("lonDelta");
+			if (latDelta != null && lonDelta != null) {
+				int zoom = mapField.calculateZoom(latDelta.doubleValue(), lonDelta.doubleValue());
+				mapField.setZoom(zoom);
+			}
+		}
 		
+		// Annotations
 		Enumeration e = annotations.elements();
 		while (e.hasMoreElements()) {
 			Annotation ann = (Annotation)e.nextElement();
-			mapField.addAnnotation(ann);
+			if (ann != null)
+				mapField.addAnnotation(ann);
 		}
 		
 		mode = PAN_MODE;
