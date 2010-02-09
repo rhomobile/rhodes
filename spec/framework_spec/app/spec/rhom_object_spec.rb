@@ -144,6 +144,17 @@ describe "Rhom::RhomObject" do
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
   end
+
+  it "should create a record with comma" do
+    vars = {"name"=>"some new record", "industry"=>"elec'tronics"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    @account2 = Account.find(new_id)
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    @account2.industry.should == vars['industry']
+  end
   
   it "should create multiple records" do
     vars = {"name"=>"some new record", "industry"=>"electronics"}
