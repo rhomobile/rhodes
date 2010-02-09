@@ -55,6 +55,8 @@
 		5C7BC95110AAB782007B0BA1 /* shttpd.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BC93F10AAB782007B0BA1 /* shttpd.c */; };
 		5C7BC95210AAB782007B0BA1 /* shttpd.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7BC94010AAB782007B0BA1 /* shttpd.h */; };
 		5C7BC95310AAB782007B0BA1 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BC94110AAB782007B0BA1 /* string.c */; };
+		5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */; };
+		5C8EE85D11220E9E0005C20D /* AsyncHttp.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C8EE85B11220E9E0005C20D /* AsyncHttp.h */; };
 		5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817490FBC4FCE002597A5 /* AutoPointer.h */; };
 		5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174A0FBC4FCE002597A5 /* InputStream.h */; };
 		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
@@ -119,6 +121,8 @@
 		5C7BC93F10AAB782007B0BA1 /* shttpd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = shttpd.c; path = ../../shared/shttpd/src/shttpd.c; sourceTree = SOURCE_ROOT; };
 		5C7BC94010AAB782007B0BA1 /* shttpd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shttpd.h; path = ../../shared/shttpd/src/shttpd.h; sourceTree = SOURCE_ROOT; };
 		5C7BC94110AAB782007B0BA1 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string.c; path = ../../shared/shttpd/src/string.c; sourceTree = SOURCE_ROOT; };
+		5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AsyncHttp.cpp; path = ../../shared/net/AsyncHttp.cpp; sourceTree = SOURCE_ROOT; };
+		5C8EE85B11220E9E0005C20D /* AsyncHttp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AsyncHttp.h; path = ../../shared/net/AsyncHttp.h; sourceTree = SOURCE_ROOT; };
 		5C9817490FBC4FCE002597A5 /* AutoPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoPointer.h; path = ../../shared/common/AutoPointer.h; sourceTree = SOURCE_ROOT; };
 		5C98174A0FBC4FCE002597A5 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStream.h; path = ../../shared/common/InputStream.h; sourceTree = SOURCE_ROOT; };
 		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
@@ -261,6 +265,8 @@
 		5CBD46251087397B00107D0D /* net */ = {
 			isa = PBXGroup;
 			children = (
+				5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */,
+				5C8EE85B11220E9E0005C20D /* AsyncHttp.h */,
 				BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */,
 				BD4FC54A10BFE4D100D280D0 /* HttpServer.h */,
 				BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */,
@@ -322,6 +328,7 @@
 				BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */,
 				BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */,
 				BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */,
+				5C8EE85D11220E9E0005C20D /* AsyncHttp.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,6 +399,7 @@
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
+				5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
