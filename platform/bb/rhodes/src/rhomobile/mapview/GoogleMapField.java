@@ -54,6 +54,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	private static final int TILE_SIZE = 256;
 	
+	private static final int DECODE_MODE = EncodedImage.DECODE_NATIVE |
+		EncodedImage.DECODE_NO_DITHER | EncodedImage.DECODE_READONLY;
+	
 	private static final boolean VERBOSE_TRACING = false;
 	
 	private void VERBOSE_TRACE(String message) {
@@ -252,6 +255,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 					EncodedImage img = null;
 					try {
 						img = EncodedImage.createEncodedImage(data, 0, size);
+						img.setDecodeMode(DECODE_MODE);
 					}
 					catch (Exception e) {
 						LOG.ERROR("Cannot create EncodedImage from fetched data", e);
@@ -518,7 +522,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public int compare (Object o1, Object o2) {
 			long l1 = ((CachedImage)o1).lastUsed;
 			long l2 = ((CachedImage)o2).lastUsed;
-			return l1 < l2 ? -1 : l1 > l2 ? 1 : 0;
+			return l1 < l2 ? 1 : l1 > l2 ? -1 : 0;
 		}
 		
 	};
