@@ -23,7 +23,7 @@ public class MapViewScreen extends MainScreen {
 	private static final int ZOOM_MODE = 2;
 	
 	private static final int MIN_MOVE_STEP = 1;
-	private static final int MAX_MOVE_STEP = 32;
+	private static final int MAX_MOVE_STEP = 16;
 	
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
@@ -96,8 +96,8 @@ public class MapViewScreen extends MainScreen {
 		int zoom = mapField.calculateZoom(latDelta, lonDelta);
 		
 		mapField.setMapType(map_type);
-		mapField.moveTo(lat, lon);
 		mapField.setZoom(zoom);
+		mapField.moveTo(lat, lon);
 		
 		Enumeration e = annotations.elements();
 		while (e.hasMoreElements()) {
