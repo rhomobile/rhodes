@@ -44,7 +44,7 @@ module Rho
     end
     
     def render(options = nil)
-      if @params['rho_callback'] == "1"
+      if @params['rho_callback']
         rho_error( "render call in callback. Call WebView.navigate instead" ) 
         return ""
       end  
