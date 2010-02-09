@@ -922,6 +922,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\net\CompatWince.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\CompatWince.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\net\HttpServer.cpp"
 				>
 			</File>
