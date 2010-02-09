@@ -152,9 +152,11 @@ module Rhom
         if value.nil? or value == 'NULL'
           "NULL"
         elsif value.is_a?(String)
-          "'#{value}'"
+          s = value.gsub("'","''")
+          "'#{s}'"
         else
-          "'#{value.to_s}'"
+          s = value.to_s.gsub("'","''")
+          "'#{s}'"
         end
       end
     
