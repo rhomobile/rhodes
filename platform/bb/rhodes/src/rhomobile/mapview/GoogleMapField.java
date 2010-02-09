@@ -43,7 +43,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	private static final int WAITING_FETCH_COMMAND_MAX = 10;
 	
-	private static final int FETCH_COMMAND_SEND_DELAY = 1000;
+	private static final int REDRAW_DELAY = 1000;
 	
 	// Maximum size of image cache (number of images stored locally)
 	private static final int MAX_CACHE_SIZE = 10;
@@ -471,7 +471,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			CachedImage img = (CachedImage)cache.get(key);
 			if (img == null) {
 				long curTime = System.currentTimeMillis();
-				if (curTime - lastFetchCommandSent > FETCH_COMMAND_SEND_DELAY) {
+				if (curTime - lastFetchCommandSent > REDRAW_DELAY) {
 					cmd = new MapFetchCommand(latitude, longitude, zoom,
 							width, height, maptype, annotations, this);
 					lastFetchCommandSent = curTime;
@@ -586,10 +586,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 		timer.schedule(new TimerTask() {
 			public void run() {
 				long curTime = System.currentTimeMillis();
-				if (curTime - lastFetchCommandSent < FETCH_COMMAND_SEND_DELAY)
+				if (curTime - lastFetchCommandSent < REDRAW_DELAY)
 					return;
 				redraw();
-			}}, FETCH_COMMAND_SEND_DELAY);
+			}}, REDRAW_DELAY);
 	}
 
 	public void moveTo(double lat, double lon) {
