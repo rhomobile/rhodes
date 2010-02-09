@@ -1,4 +1,5 @@
 #include "URI.h"
+#include "common/Tokenizer.h"
 
 namespace rho {
 namespace net {
@@ -131,6 +132,50 @@ static void toHexString(int i, String& strRes, int radix)
 
     if ( !bFound )
         strRes += fullPath;
+}
+
+/*static*/ void URI::parseCookie(const char* szCookie, CParsedCookie& cookie) 
+{
+	boolean bAuth = false;
+	boolean bSession = false;
+    common::CTokenizer stringtokenizer(szCookie, ";");
+	while (stringtokenizer.hasMoreTokens()) 
+    {
+		String tok = stringtokenizer.nextToken();
+		tok = trim(tok);
+		if (tok.length() == 0) {
+			continue;
+		}
+		
+		int i = 0;
+		if ( (i=tok.find("auth_token=")) >= 0 )
+		{
+			String val = trim(tok.substr(i+11));
+			if ( val.length() > 0 )
+			{
+				cookie.strAuth = "auth_token=" + val;
+				bAuth = true;
+			}
+		}else if ( (i=tok.find("path=")) >= 0 )
+		{
+			String val = trim(tok.substr(i+6));
+			if ( val.length() > 0 )
+			{
+				if (bAuth)
+					cookie.strAuth += ";path=" + val;
+				else if (bSession)
+					cookie.strSession += ";path=" + val;
+			}
+		}else if ( (i=tok.find("rhosync_session=")) >= 0 )
+		{
+			String val = trim(tok.substr(i+16));
+			if ( val.length() > 0 )
+			{
+				cookie.strSession = "rhosync_session=" + val;
+				bSession = true;
+			}
+		}
+	}
 }
 
 }
