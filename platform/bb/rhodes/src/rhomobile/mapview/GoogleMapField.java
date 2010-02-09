@@ -65,9 +65,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	// Coordinates of center
-	private double latitude;
-	private double longitude;
-	private int zoom;
+	private double latitude = 0;
+	private double longitude = 0;
+	private int zoom = 0;
 	
 	private int width;
 	private int height;
@@ -211,14 +211,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 						url.append("&markers=color:blue");
 						for (int i = 0, lim = cmd.annotations.size(); i < lim; ++i) {
 							Annotation ann = (Annotation)cmd.annotations.elementAt(i);
-							url.append('|');
 							if (ann.coordinates != null) {
+								url.append('|');
 								url.append(ann.coordinates.latitude);
 								url.append(',');
 								url.append(ann.coordinates.longitude);
 							}
-							else if (ann.street_address != null)
+							else if (ann.street_address != null) {
+								url.append('|');
 								url.append(URI.urlEncode(ann.street_address));
+							}
 						}
 					}
 					String finalUrl = url.toString();
