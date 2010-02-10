@@ -125,7 +125,7 @@ module Rhogen
 
     first_argument :name, :required => true, :desc => "model name"
     second_argument :attributes, :as => :array, :required => true, :desc => "list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes"
-    third_argument :priority, :required => false, :desc => "optional sync priority (i.e. \"100\")"
+    third_argument :priority, :required => false, :desc => "optional sync priority (i.e. 100)"
     fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
     template :config do |template|
