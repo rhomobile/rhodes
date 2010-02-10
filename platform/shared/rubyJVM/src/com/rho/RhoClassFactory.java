@@ -86,15 +86,11 @@ public class RhoClassFactory
     	LOG.TRACE("createGeoLocationImpl");    	
         Class wrapperClass;
         try {
-            wrapperClass = Class.forName("com.rho.location.GeoLocationImpl");
+            wrapperClass = Class.forName("com.rho.location.GeoLocationAsync");
         } catch (ClassNotFoundException exc) {  
-        	try {
-                wrapperClass = Class.forName("com.rhomobile.rhodes.geolocation.GeoLocation"); //android
-            } catch (ClassNotFoundException e) {
-	        	LOG.ERROR("createGeoLocationImpl- Class not found",e);    	
-            	
-                throw e;
-            }
+        	LOG.ERROR("createGeoLocationImpl- Class not found",exc);    	
+        	
+            throw exc;
         }
         
         try{
