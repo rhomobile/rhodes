@@ -2,6 +2,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
 #include "net/URI.h"
+#include "common/RhodesApp.h"
 
 namespace rho
 {
@@ -11,7 +12,8 @@ namespace net
 
 IMPLEMENT_LOGCLASS(CAsyncHttp, "AsyncHttp");
 boolean CAsyncHttp::m_bNoThreaded = false;
-CAsyncHttp* CAsyncHttp::m_pInstance = 0;
+common::CMutex CAsyncHttp::m_mxInstances;
+Vector<CAsyncHttp*> CAsyncHttp::m_arInstances;
 
 extern "C" void header_iter(const char* szName, const char* szValue, void* pHash)
 {
@@ -30,7 +32,10 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory,
 
     rho_ruby_enum_strhash(headers, header_iter, &m_mapHeaders);
 
-    m_pInstance = this;
+    {
+	    synchronized(m_mxInstances);
+        m_arInstances.addElement(this);
+    }
 
     if (m_bNoThreaded)
         run();
@@ -40,7 +45,10 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory,
 
 CAsyncHttp::~CAsyncHttp()
 {
-    m_pInstance = null;
+	synchronized(m_mxInstances)
+    {		
+        m_arInstances.removeElement(this);
+    }
 }
 
 void CAsyncHttp::cancel()
@@ -52,6 +60,31 @@ void CAsyncHttp::cancel()
     delete this;
 }
 
+/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback)
+{
+    if (!szCallback || !*szCallback )
+    {
+        LOG(INFO) + "Cancel callback should not be empty. Use * for cancel all";
+        return;
+    }
+
+	synchronized(m_mxInstances)
+    {		
+        if ( *szCallback == '*')
+        {
+            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+                m_arInstances.elementAt(i)->cancel();
+        }else
+        {
+            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+            {
+                if ( m_arInstances.elementAt(i)->m_strCallback.compare(szCallback) == 0 )
+                    m_arInstances.elementAt(i)->cancel();    
+            }
+        }
+    }
+}
+
 void CAsyncHttp::run()
 {
 	LOG(INFO) + "RhoHttp thread start.";
@@ -61,30 +94,13 @@ void CAsyncHttp::run()
     m_pNetResponse = m_pNetRequest->doRequest((m_bPost?"POST":"GET"), m_strUrl, m_strBody, null, &m_mapHeaders);
     INetResponse& resp = *m_pNetResponse;
 
-    if ( !m_pNetRequest->isCancelled() )
-    {
-        if (resp.isOK())
-            processResponse(resp);
-
+    if ( !m_pNetRequest->isCancelled() && m_strCallback.length() > 0)
         callNotify(resp);
-    }
 
 	LOG(INFO) + "RhoHttp thread end.";
 
     if ( !m_pNetRequest->isCancelled() )
         delete this;
-}
-
-void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
-{
-}
-
-unsigned int CAsyncHttp::getBodyValue()
-{
-    if (!m_pNetResponse)   
-        return rho_ruby_get_NIL();
-
-    return rho_ruby_create_string(m_pNetResponse->getCharData());
 }
 
 String CAsyncHttp::makeHeadersString()
@@ -105,9 +121,21 @@ String CAsyncHttp::makeHeadersString()
     return strRes;
 }
 
+void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
+{
+    if (resp.isOK())
+    {
+        //TODO: parse JSON or xml
+    }
+
+    m_valBody = rho_ruby_create_string(resp.getCharData());
+}
+
 void CAsyncHttp::callNotify(rho::net::INetResponse& resp )
 {
-    String strBody = "rho_callback=2";
+    processResponse(resp);
+
+    String strBody = "rho_callback=1";
     strBody += "&status=";
     if ( resp.isOK() )
     	strBody += "ok";
@@ -130,6 +158,8 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp )
     if ( m_strCallbackParams.length() > 0 )
         strBody += "&" + m_strCallbackParams;
 
+    strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
+
     if ( m_bNoThreaded )
     {
         const char* szName = strrchr(m_strCallback.c_str(), '/');
@@ -141,16 +171,17 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp )
         String strName = "C_";
         strName += szName;
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
-        return;
+    }else
+    {
+        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+
+        String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
+        NetResponse(resp1,pNetRequest->pushData( strFullUrl, strBody, null ));
+        if ( !resp1.isOK() )
+            LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
     }
 
-    common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-
-    String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
-    NetResponse(resp1,pNetRequest->pushData( strFullUrl, strBody, null ));
-    if ( !resp1.isOK() )
-        LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
-
+    RHODESAPP().delCallbackObject(m_valBody);
 }
 
 } // namespace net
@@ -162,28 +193,17 @@ using namespace rho::net;
 
 void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params)
 {
-    rho_asynchttp_cancel();
     new CAsyncHttp(rho::common::createClassFactory(), url, headers, null, callback, callback_params );
 }
 
 void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params)
 {
-    rho_asynchttp_cancel();
     new CAsyncHttp(rho::common::createClassFactory(), url, headers, body!=null?body:"", callback, callback_params );
 }
 
-unsigned int rho_asynchttp_getbody()
+void rho_asynchttp_cancel(const char* cancel_callback)
 {
-    if (CAsyncHttp::getInstance()!= null)
-        return CAsyncHttp::getInstance()->getBodyValue();
-
-    return rho_ruby_get_NIL();
-}
-
-void rho_asynchttp_cancel()
-{
-    if (CAsyncHttp::getInstance()!= null)
-        CAsyncHttp::getInstance()->cancel();
+    CAsyncHttp::cancelRequest(cancel_callback);
 }
 
 void rho_asynchttp_set_threaded_mode(int b)
