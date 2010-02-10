@@ -1640,6 +1640,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="asynchttp"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\asynchttp\asynchttp.i"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"

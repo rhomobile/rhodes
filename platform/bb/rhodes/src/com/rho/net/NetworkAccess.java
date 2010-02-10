@@ -189,9 +189,10 @@ public class NetworkAccess implements INetworkAccess {
 				LOG.INFO(url);
 				conn = Connector.open(url);
 			} catch (IOException ioe) {
-				
 				if ( URLsuffix.length() > 0 )
 				{
+					LOG.ERROR("Connector.open exception", ioe );
+					
 					try{
 						LOG.INFO(strUrl);
 						conn = Connector.open(strUrl);

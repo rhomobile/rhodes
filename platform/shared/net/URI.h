@@ -17,6 +17,14 @@ public:
     String getQueryString();
     String getScheme();
     String getPathSpecificPart();
+
+	struct CParsedCookie 
+    {
+		String strAuth;
+		String strSession;
+	};
+
+    static void parseCookie(const char* szCookie, CParsedCookie& cookie);
 };
 
 }
