@@ -601,7 +601,10 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
 //#define receive_request(request) receive_request_test(request, attempt++)
 	for (;;) {
 		if (!receive_request(request)) {
-			Sleep(1);
+			fd_set fds;
+			FD_ZERO(&fds);
+			FD_SET(m_sock, &fds);
+			select(m_sock + 1, &fds, 0, 0, 0);
 			continue;
 		}
 
