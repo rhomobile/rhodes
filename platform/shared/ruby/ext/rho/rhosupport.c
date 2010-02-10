@@ -95,6 +95,17 @@ static VALUE loadISeqFromFile(VALUE path)
 }
 
 VALUE
+__rhoGetCallbackObject(VALUE obj, VALUE valIndex)
+{
+    VALUE result = rho_rhodesapp_GetCallbackObject( NUM2INT(valIndex) );
+    if (result == 0) {
+        rb_raise(rb_eArgError, "__rhoGetCallbackObject invalid index -- %d", NUM2INT(valIndex) );
+    }
+
+    return result;
+}
+
+VALUE
 rb_require_compiled(VALUE obj, VALUE fname)
 {
     VALUE result;
@@ -345,6 +356,7 @@ void Init_RhoSupport()
 	rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
 	rb_define_global_function("load", rb_require_compiled, 1);
+	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
     rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);	
 

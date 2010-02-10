@@ -43,7 +43,7 @@ void CNetRequest::cancel()
 {
     m_bCancel = true;
     if ( m_pCurNetRequestImpl != null )
-        m_pCurNetRequestImpl->close();
+        m_pCurNetRequestImpl->cancel();
 }
 
 INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
