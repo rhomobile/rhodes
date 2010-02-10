@@ -25,6 +25,31 @@ typedef bool boolean;
 
 #define null 0
 
+inline String trimRight(const String& str)
+{
+    // trim trailing spaces
+    size_t endpos = str.find_last_not_of(" \t");
+    if( String::npos != endpos )
+        return str.substr( 0, endpos+1 );
+
+    return str;
+}
+
+inline String trimLeft(const String& str)
+{
+    size_t startpos = str.find_first_not_of(" \t");
+    if( String::npos != startpos )
+        return str.substr( startpos );
+
+    return str;
+}
+
+inline String trim(const String& str)
+{
+    String strRes = trimLeft(str);
+    return trimRight(strRes);
+}
+
 template<class Type>
 class Vector : public std::vector<Type>{
 public:

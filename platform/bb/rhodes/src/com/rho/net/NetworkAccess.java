@@ -169,7 +169,7 @@ public class NetworkAccess implements INetworkAccess {
 		//Try wifi first
 		if ( WIFIsuffix != null && isWifiActive() ){
 			try {
-				LOG.TRACE(strUrl + WIFIsuffix);
+				LOG.INFO(strUrl + WIFIsuffix);
 				conn = Connector.open(strUrl + WIFIsuffix);
 			} catch (IOException ioe) {
 				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );

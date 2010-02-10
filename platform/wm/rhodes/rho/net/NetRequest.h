@@ -21,15 +21,15 @@ public:
     virtual INetResponse* pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession);
     virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession);
     virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
-    //if strUrl.length() == 0 delete all cookies if possible
-    virtual void deleteCookie(const String& strUrl);
+
+    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
 
     virtual String resolveUrl(const String& strUrl);
 
     virtual void cancel();
+    virtual boolean isCancelled(){return m_bCancel;}
 
 protected:
-    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession );
 };
 
 }
