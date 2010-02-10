@@ -614,15 +614,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    getDB().executeSQL( "UPDATE sources SET session = NULL");
 	    m_strSession = "";
-	    getNet().deleteCookie("");
 	
 	    loadAllSources();
-	    for( int i = 0; i < m_sources.size(); i++ )
-	    {
-	        SyncSource src = (SyncSource)m_sources.elementAt(i);
-	        getNet().deleteCookie(src.getUrl());
-	    }
-	
 	}
 	
 	public void setSyncServer(String url)throws Exception
