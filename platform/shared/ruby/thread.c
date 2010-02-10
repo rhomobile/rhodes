@@ -170,6 +170,14 @@ NOINLINE(static int thread_start_func_2(rb_thread_t *th, VALUE *stack_start,
 					VALUE *register_stack_start));
 static void timer_thread_function(void *);
 
+//RHO
+#include "logging/RhoLog.h"
+int rhoRubyPrintf(const char *format, ...);
+#ifndef USE_STD_PRINTF
+#define printf rhoRubyPrintf
+#endif
+//RHO
+
 #if   defined(_WIN32)
 #include "thread_win32.c"
 

@@ -23,7 +23,6 @@ ruby/ext/rho/rhoruby
 ruby/ext/rho/rhosupport
 ruby/ext/strscan/strscan
 ruby/ext/system/system_properties
-ruby/ext/system/system_wrap
 ruby/file
 ruby/gc
 ruby/generated/parse
@@ -32,13 +31,20 @@ ruby/inits
 ruby/io
 ruby/iseq
 ruby/load
-ruby/main
 ruby/marshal
 ruby/math
 ruby/miniprelude
+ruby/missing/acosh
+ruby/missing/cbrt
+ruby/missing/crypt
+ruby/missing/dup2
+ruby/missing/erf
+ruby/missing/hypot
 ruby/missing/lgamma_r
+ruby/missing/stdlib
 ruby/missing/strlcat
 ruby/missing/strlcpy
+ruby/missing/tgamma
 ruby/newline
 ruby/numeric
 ruby/object
@@ -64,7 +70,6 @@ ruby/strftime
 ruby/string
 ruby/struct
 ruby/thread
-ruby/thread_pthread
 ruby/time
 ruby/transcode
 ruby/util
@@ -72,3 +77,4 @@ ruby/variable
 ruby/version
 ruby/vm
 ruby/vm_dump
+ruby/main

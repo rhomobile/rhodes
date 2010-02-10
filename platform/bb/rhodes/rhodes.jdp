@@ -49,8 +49,6 @@ src\rhomobile\datetime\DateTimeScreen.java
 src\rhomobile\LogOptionsScreen.java
 src\rhomobile\LogScreen.java
 src\rhomobile\mapview\Annotation.java
-src\rhomobile\mapview\BBMapField.java
-src\rhomobile\mapview\BBMapProvider.java
 src\rhomobile\mapview\GoogleMapField.java
 src\rhomobile\mapview\GoogleMapProvider.java
 src\rhomobile\mapview\MapProvider.java
