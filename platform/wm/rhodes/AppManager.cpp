@@ -59,13 +59,14 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 		if ( zipData && dwDataSize > 0 )
 		{
 			LPWSTR rootw = wce_mbtowc(rho_native_rhopath());
-
+			rootw[wcslen(rootw)-1] = '\\';
 			bool ret = false;
 			if (wcslen(rootw)<MAX_PATH) {
 				TCHAR name[MAX_PATH+2];
 				wsprintf(name,L"%sapps%c",rootw,'\0');
 				if( RemoveFolder(name) ) {
 					wsprintf(name,L"%slib%c",rootw,'\0');
+
 					ret = RemoveFolder(name);
 				}
 			}
