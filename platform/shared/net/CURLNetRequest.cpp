@@ -546,6 +546,12 @@ INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBo
     return doRequestTry("POST", strUrl, strBody, &CURLNetRequest::request, oSession );
 }
 
+INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+{
+    //TODO: doRequest - pHeaders
+    return doRequestTry(method, strUrl, strBody, &CURLNetRequest::request, oSession );
+}
+
 INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
     INetResponse* resp = doRequestTry("POST", strUrl, strBody, &CURLNetRequest::requestCookies, oSession );
@@ -596,11 +602,6 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
     return new CURLNetResponseImpl(response,nRespCode);
-}
-
-void CURLNetRequest::deleteCookie(const String& strUrl)
-{
-    // Not implemented
 }
 
 String CURLNetRequest::resolveUrl(const String& strUrl)

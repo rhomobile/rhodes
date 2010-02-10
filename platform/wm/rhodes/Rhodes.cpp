@@ -328,6 +328,11 @@ extern "C" VALUE rho_syscall(const char* callname, int nparams, char** param_nam
 	return 0;
 }
 
+extern "C" void rho_net_impl_network_indicator(int active)
+{
+    //TODO: rho_net_impl_network_indicator
+}
+
 extern "C" void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
 	//TODO: Implement me!
 }

@@ -24,6 +24,7 @@
 
 /* to disable FTP */
 /* #undef CURL_DISABLE_FTP */
+#define CURL_DISABLE_FTP 1
 
 /* to disable HTTP */
 /* #undef CURL_DISABLE_HTTP */
@@ -39,9 +40,11 @@
 
 /* to disable TELNET */
 /* #undef CURL_DISABLE_TELNET */
+#define CURL_DISABLE_TELNET 1
 
 /* to disable TFTP */
 /* #undef CURL_DISABLE_TFTP */
+#define CURL_DISABLE_TFTP 1
 
 /* to disable verbose strings */
 /* #undef CURL_DISABLE_VERBOSE_STRINGS */
