@@ -37,8 +37,14 @@ module Rho
       @rendered = false
       @redirected = false
 
-      if @params['rho_callback'] && @params['rho_callback'] == '2'
-        @params['body'] = AsyncHttp.get_body()
+      if @params['rho_callback'] && @params['__rho_object']
+        hashObjs = @params['__rho_object']
+        
+        hashObjs.each do |name,index|
+            @params[name] = __rhoGetCallbackObject(index.to_i())
+        end
+        
+        @params.delete('__rho_object')
       end
       
       act = req['action'].nil? ? default_action : req['action']

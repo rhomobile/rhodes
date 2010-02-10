@@ -65,6 +65,23 @@ public:
         return std::vector<Type>::size()==0;
     }
 
+    void setElementAt(const Type& item, typename std::vector<Type>::size_type i)
+    {
+        (*this)[i] = item;
+    }
+
+    void removeElement(const Type& item)
+    {
+        for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end();  )
+        {
+            if ( *it == item )
+            {
+                it = erase(it);    
+            }else
+                it++;
+        }
+    }
+
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
     typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return at(i); }
 };
@@ -82,6 +99,20 @@ public:
         
         Vector<Type>::clear();
     }
+
+    void removeElement(const Type& item)
+    {
+        for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end();  )
+        {
+            if ( *it == item )
+            {
+                delete *it;
+                it = erase(it);    
+            }else
+                it++;
+        }
+    }
+
 };
 
 template<class Type>

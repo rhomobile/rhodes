@@ -8,19 +8,19 @@
 	extern void rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
 	#define do_post rho_asynchttp_post
 
-	extern void rho_asynchttp_cancel();
+	extern void rho_asynchttp_cancel(const char* cancel_callback);
 	#define cancel rho_asynchttp_cancel
 
 	extern void rho_asynchttp_set_threaded_mode(int b);
 	#define set_threaded_mode rho_asynchttp_set_threaded_mode
-
-	extern VALUE rho_asynchttp_getbody();
-	#define get_body rho_asynchttp_getbody
 	
 %}
 
+%typemap(default) const char* cancel_callback {
+ $1 = "*";
+}
+
 extern void do_get(const char* url, VALUE headers, const char* callback, const char* callback_params);
 extern void do_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
-extern VALUE get_body();
-extern void cancel();
+extern void cancel(const char* cancel_callback);
 extern void set_threaded_mode(int b);
