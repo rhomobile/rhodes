@@ -261,7 +261,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_exit(false), m_port(port), m_root(root)
+    :m_exit(false), m_port(port), m_root(root), verbose(false)
 {
     RAWTRACE("Open listening socket...");
     
@@ -365,7 +365,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 {
     request.clear();
 
-    RAWTRACE("Receiving request...");
+    if (verbose) RAWTRACE("Receiving request...");
     
     // First of all, make socket non-blocking
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
@@ -388,7 +388,7 @@ bool CHttpServer::receive_request(ByteVector &request)
     
     char buf[BUF_SIZE];
     for(;;) {
-        RAWTRACE("Read portion of data from socket...");
+        if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
@@ -416,7 +416,7 @@ bool CHttpServer::receive_request(ByteVector &request)
             return false;
         }
         
-        RAWTRACE1("Actually read %d bytes", n);
+        if (verbose) RAWTRACE1("Actually read %d bytes", n);
         request.insert(request.end(), &buf[0], &buf[0] + n);
     }
     
@@ -428,9 +428,15 @@ bool CHttpServer::receive_request(ByteVector &request)
     return true;
 }
 
-bool CHttpServer::send_response(String const &response)
+bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
-    RAWTRACE("Sending response...");
+    if (verbose) {
+        if (continuation)
+            RAWTRACE("Send continuation data...");
+        else
+            RAWTRACE("Sending response...");
+    }
+    
     // First of all, make socket blocking
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
 	unsigned long optval = 0;
@@ -451,8 +457,8 @@ bool CHttpServer::send_response(String const &response)
 #endif
     
     size_t pos = 0;
-    for(; pos < response.size();) {
-        int n = send(m_sock, response.c_str() + pos, response.size() - pos, 0);
+    for(; pos < data.size();) {
+        int n = send(m_sock, data.c_str() + pos, data.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
@@ -460,7 +466,7 @@ bool CHttpServer::send_response(String const &response)
                 continue;
 #endif
             
-            RAWLOG_ERROR1("Can not send response: %d", e);
+            RAWLOG_ERROR1("Can not send response data: %d", e);
             return false;
         }
         
@@ -472,7 +478,10 @@ bool CHttpServer::send_response(String const &response)
     
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
-    RAWTRACE("Response sent");
+    if (continuation)
+        RAWTRACE1("Sent response body: %d bytes", data.size());
+    else
+        RAWTRACE1("Sent response:\n%s", data.c_str());
     return true;
 }
 
@@ -533,7 +542,7 @@ bool CHttpServer::process(SOCKET sock)
         return true;
     }
     
-    RAWTRACE("Parsing request...");
+    if (verbose) RAWTRACE("Parsing request...");
     String method, uri, query;
     HeaderList headers;
     String body;
@@ -725,6 +734,7 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 bool CHttpServer::send_file(String const &path)
 {
     String fullPath = m_root + "/" + path;
+    if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
     
     struct stat st;
     if (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) {
@@ -750,7 +760,7 @@ bool CHttpServer::send_file(String const &path)
     //headers.push_back(Header("Cache-Control", "max-age=2592000") );
 
     // Content length
-    char buf[4096];
+    char buf[8192];
     
     size_t fileSize = st.st_size;
     snprintf(buf, sizeof(buf), "%d", fileSize);
@@ -766,7 +776,7 @@ bool CHttpServer::send_file(String const &path)
     // Send body
     while (!feof(fp)) {
         size_t n = fread(buf, 1, sizeof(buf), fp);
-        if (!send_response(String(buf, n))) {
+        if (!send_response_body(String(buf, n))) {
             RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
             return false;
@@ -774,7 +784,7 @@ bool CHttpServer::send_file(String const &path)
     }
     
     fclose(fp);
-    RAWTRACE1("File %s was sent successfully", path.c_str());
+    if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
     return true;
 }
 

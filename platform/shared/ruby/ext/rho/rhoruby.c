@@ -125,6 +125,7 @@ void RhoRubyStart()
     Init_sqlite3_api();
     Init_GeoLocation();
     Init_SyncEngine();
+    Init_AsyncHttp();
     Init_System();
     Init_Phonebook();
     Init_WebView();
@@ -250,6 +251,11 @@ const char* rho_ruby_getErrorText(int nError)
 {
     return "";
     //TODO: rho_ruby_getErrorText
+}
+
+VALUE rho_ruby_get_NIL()
+{
+    return Qnil;
 }
 
 VALUE rho_ruby_create_array()

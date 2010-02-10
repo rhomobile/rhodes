@@ -28,8 +28,6 @@ platform\bb\rhodes\src\rhomobile\datetime\DateTimeScreen.java
 platform\bb\rhodes\src\rhomobile\RingtoneManager.java
 platform\bb\rhodes\src\rhomobile\NativeBar.java
 platform\bb\rhodes\src\rhomobile\mapview\Annotation.java
-platform\bb\rhodes\src\rhomobile\mapview\BBMapField.java
-platform\bb\rhodes\src\rhomobile\mapview\BBMapProvider.java
 platform\bb\rhodes\src\rhomobile\mapview\GoogleMapField.java
 platform\bb\rhodes\src\rhomobile\mapview\GoogleMapProvider.java
 platform\bb\rhodes\src\rhomobile\mapview\MapProvider.java

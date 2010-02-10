@@ -23,12 +23,12 @@ public class MapViewScreen extends MainScreen {
 	private static final int ZOOM_MODE = 2;
 	
 	private static final int MIN_MOVE_STEP = 1;
-	private static final int MAX_MOVE_STEP = 32;
+	private static final int MAX_MOVE_STEP = 16;
 	
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
 	private static final MapProvider[] providers = {
-		new BBMapProvider(),
+		//new BBMapProvider(),
 		new GoogleMapProvider()
 	};
 	
@@ -84,28 +84,40 @@ public class MapViewScreen extends MainScreen {
 			add(mapField.getBBField());
 		}
 		
-		Hashtable region = (Hashtable)settings.get("region");
-		double lat = ((Double)region.get("latitude")).doubleValue();
-		double lon = ((Double)region.get("longitude")).doubleValue();
-		
-		double latDelta = ((Double)region.get("latDelta")).doubleValue();
-		double lonDelta = ((Double)region.get("lonDelta")).doubleValue();
-		
+		// Set map type
 		String map_type = (String)settings.get("map_type");
-		
-		int zoom = mapField.calculateZoom(latDelta, lonDelta);
-		
+		if (map_type == null)
+			map_type = "roadmap";
 		mapField.setMapType(map_type);
-		mapField.moveTo(lat, lon);
-		mapField.setZoom(zoom);
+
+		Hashtable region = (Hashtable)settings.get("region");
+		if (region != null) {
+			// Set coordinates
+			Double lat = (Double)region.get("latitude");
+			Double lon = (Double)region.get("longitude");
+			if (lat != null && lon != null)
+				mapField.moveTo(lat.doubleValue(), lon.doubleValue());
+			
+			// Set zoom
+			Double latDelta = (Double)region.get("latDelta");
+			Double lonDelta = (Double)region.get("lonDelta");
+			if (latDelta != null && lonDelta != null) {
+				int zoom = mapField.calculateZoom(latDelta.doubleValue(), lonDelta.doubleValue());
+				mapField.setZoom(zoom);
+			}
+		}
 		
+		// Annotations
 		Enumeration e = annotations.elements();
 		while (e.hasMoreElements()) {
 			Annotation ann = (Annotation)e.nextElement();
-			mapField.addAnnotation(ann);
+			if (ann != null)
+				mapField.addAnnotation(ann);
 		}
 		
 		mode = PAN_MODE;
+		
+		mapField.redraw();
 	}
 	
 	/**
@@ -206,6 +218,7 @@ public class MapViewScreen extends MainScreen {
 			//int newDy = dy*10;
 			//LOG.TRACE("Scroll by " + newDx + "," + newDy);
 			mapField.move(newDx, newDy);
+			mapField.redraw();
 		}
 		else if (mode == ZOOM_MODE && dy != 0) {
 			int currentZoom = mapField.getZoom();
@@ -221,6 +234,7 @@ public class MapViewScreen extends MainScreen {
 			}
 			//LOG.TRACE("Set zoom to " + newZoom + " (was " + currentZoom + ")");
 			mapField.setZoom(newZoom);
+			mapField.redraw();
 		}
 		return true;
 	}
