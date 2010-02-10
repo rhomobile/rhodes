@@ -117,8 +117,9 @@ module Rhogen
         attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
         
       Optional:
-        priority    - optional sync priority (i.e. 100)
-        type        - optional type (i.e. "ask" for an ask model) 
+        priority    - sync priority (i.e. 100)
+        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use 
+                      search method.
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
