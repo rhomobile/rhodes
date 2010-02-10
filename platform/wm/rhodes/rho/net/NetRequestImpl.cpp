@@ -29,6 +29,7 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
     m_pParent = pParent;
     m_pParent->m_pCurNetRequestImpl = this;
     m_pHeaders = pHeaders;
+    m_bCancel = false;
 
     pszErrFunction = NULL;
     hInet = NULL, hConnection = NULL, hRequest = NULL;
@@ -382,9 +383,14 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
     return pNetResp;
 }
 
+void CNetRequestImpl::cancel()
+{
+    m_bCancel = true;
+}
+
 void CNetRequestImpl::close()
 {
-	if (pszErrFunction)
+	if (!m_bCancel && pszErrFunction)
 		ErrorMessage(pszErrFunction);
 
     free_url_components(&uri);

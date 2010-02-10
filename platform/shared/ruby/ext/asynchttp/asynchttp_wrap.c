@@ -1552,14 +1552,11 @@ static VALUE mAsyncHttp;
 	extern void rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
 	#define do_post rho_asynchttp_post
 
-	extern void rho_asynchttp_cancel();
+	extern void rho_asynchttp_cancel(const char* cancel_callback);
 	#define cancel rho_asynchttp_cancel
 
 	extern void rho_asynchttp_set_threaded_mode(int b);
 	#define set_threaded_mode rho_asynchttp_set_threaded_mode
-
-	extern VALUE rho_asynchttp_getbody();
-	#define get_body rho_asynchttp_getbody
 	
 
 
@@ -1788,29 +1785,30 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_get_body(int argc, VALUE *argv, VALUE self) {
-  VALUE result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  result = (VALUE)get_body();
-  vresult = result;
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
 _wrap_cancel(int argc, VALUE *argv, VALUE self) {
-  if ((argc < 0) || (argc > 0)) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  {
+    arg1 = "*";
+  }
+  if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  cancel();
+  if (argc > 0) {
+    res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "cancel" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+  }
+  cancel((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -2100,7 +2098,6 @@ SWIGEXPORT void Init_AsyncHttp(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mAsyncHttp, "do_get", _wrap_do_get, -1);
   rb_define_module_function(mAsyncHttp, "do_post", _wrap_do_post, -1);
-  rb_define_module_function(mAsyncHttp, "get_body", _wrap_get_body, -1);
   rb_define_module_function(mAsyncHttp, "cancel", _wrap_cancel, -1);
   rb_define_module_function(mAsyncHttp, "set_threaded_mode", _wrap_set_threaded_mode, -1);
 }
