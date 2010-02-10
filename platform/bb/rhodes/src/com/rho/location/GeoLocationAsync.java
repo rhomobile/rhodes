@@ -5,7 +5,7 @@ import javax.microedition.location.*;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-public class GeoLocationAsync {
+public class GeoLocationAsync implements IGeoLocationImpl {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GeoLocationAsync");
 
