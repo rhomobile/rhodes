@@ -86,8 +86,7 @@ public:
     
 private:
     bool process(SOCKET sock);
-    bool parse_request(ByteVector &request, String &method, String &uri,
-                       String &query, HeaderList &headers, String &body);
+    bool parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body);
     bool parse_startline(String const &line, String &method, String &uri, String &query);
     bool parse_header(String const &line, Header &hdr);
     bool parse_route(String const &uri, Route &route);
