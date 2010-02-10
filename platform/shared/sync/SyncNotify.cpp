@@ -325,7 +325,7 @@ void CSyncNotify::fireInitialSyncNotification( boolean bFinish, int nErrCode )
                     nErrCode = RhoRuby.ERR_CANCELBYUSER;
 	        	
 	        	strBody += "error";				        	
-			    strBody += "&error_code=" + nErrCode;
+			    strBody += "&error_code=" + convertToStringA(nErrCode);
 	        }
         }
         else
