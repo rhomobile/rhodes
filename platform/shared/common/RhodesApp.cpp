@@ -8,6 +8,7 @@
 #include <math.h>
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
+#include "net/AsyncHttp.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -152,6 +153,8 @@ void CRhodesApp::stopApp()
 #endif //RHO_HTTPD_COMMON_IMPL
         stop(2000);
     }
+
+    rho_asynchttp_cancel("*");
 }
 
 class CRhoCallbackCall :  public common::CRhoThread
@@ -550,10 +553,52 @@ boolean CRhodesApp::sendLog()
     return true;
 }
 
+String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
+{
+    int nIndex = -1;
+    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+    {
+        if ( m_arCallbackObjects.elementAt(i) == 0 )
+            nIndex = i;
+    }
+    if ( nIndex  == -1 )
+    {
+        m_arCallbackObjects.addElement(valObject);
+        nIndex = m_arCallbackObjects.size()-1;
+    }else
+        m_arCallbackObjects.setElementAt(valObject,nIndex);
+
+    String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
+
+    return strRes;
+}
+
+void CRhodesApp::delCallbackObject(unsigned long valObject)
+{
+    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+    {
+        if ( m_arCallbackObjects.elementAt(i) == valObject )
+            m_arCallbackObjects.setElementAt(0,i);
+    }
+}
+
+unsigned long CRhodesApp::getCallbackObject(int nIndex)
+{
+    if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
+        return 0;
+
+    return m_arCallbackObjects.elementAt(nIndex);
+}
+
 }
 }
 
 extern "C" {
+
+unsigned long rho_rhodesapp_GetCallbackObject(int nIndex)
+{
+    return RHODESAPP().getCallbackObject(nIndex);
+}
 
 char* rho_http_normalizeurl(const char* szUrl) 
 {

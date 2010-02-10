@@ -62,13 +62,14 @@ class CNetRequestImpl
     String      m_strUrl;
     CNetRequest* m_pParent;
     Hashtable<String,String>* m_pHeaders;
-
+    boolean m_bCancel;
     boolean readHeaders(Hashtable<String,String>& oHeaders);
 public :
     CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
     ~CNetRequestImpl();
 
     void close();
+    void cancel();
     bool isError(){ return pszErrFunction!= null; }
     CNetResponseImpl* sendString(const String& strBody);
     CNetResponseImpl* sendStream(common::InputStream* body);

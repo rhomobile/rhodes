@@ -16,7 +16,8 @@ class CAsyncHttp : public common::CRhoThread
 {
     DEFINE_LOGCLASS;
 
-    static CAsyncHttp* m_pInstance;
+    static common::CMutex m_mxInstances;
+    static Vector<CAsyncHttp*> m_arInstances;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 
     common::CAutoPtr<INetRequest> m_pNetRequest;
@@ -25,7 +26,8 @@ class CAsyncHttp : public common::CRhoThread
 
     String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
     boolean m_bPost;
-    
+    unsigned long m_valBody;
+
 public:
     static boolean m_bNoThreaded;
 
@@ -33,9 +35,9 @@ public:
     ~CAsyncHttp();
 
     void cancel();
-    unsigned int getBodyValue();
 
-    static CAsyncHttp* getInstance(){ return m_pInstance; }
+    static void cancelRequest(const char* szCallback);
+
 private:
     virtual void run();
 
@@ -56,9 +58,8 @@ extern "C" {
 	
 void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params);
 void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
-void rho_asynchttp_cancel();
+void rho_asynchttp_cancel(const char* cancel_callback);
 void rho_asynchttp_set_threaded_mode(int b);
-unsigned int rho_asynchttp_getbody();
 
 #ifdef __cplusplus
 };
