@@ -41,28 +41,45 @@ public class MapViewScreen extends MainScreen {
 	private int prevDx = 0;
 	private int prevDy = 0;
 	
-	/*
-	private class CloseMenuItem extends MenuItem {
+	private class PanModeMenuItem extends MenuItem {
 		
 		private MapViewScreen screen;
 		
-		public CloseMenuItem(MapViewScreen scr, String text, int ordinal, int priority) {
-			super(text, ordinal, priority);
+		public PanModeMenuItem(MapViewScreen scr, int ordinal, int priority) {
+			super("Pan mode", ordinal, priority);
 			screen = scr;
 		}
-
+		
 		public void run() {
-			screen.close();
+			screen.setMode(MapViewScreen.PAN_MODE);
 		}
-	}
-	*/
+	};
+	
+	private class ZoomModeMenuItem extends MenuItem {
+		
+		private MapViewScreen screen;
+		
+		public ZoomModeMenuItem(MapViewScreen scr, int ordinal, int priority) {
+			super("Zoom mode", ordinal, priority);
+			screen = scr;
+		}
+		
+		public void run() {
+			screen.setMode(MapViewScreen.ZOOM_MODE);
+		}
+	};
 	
 	MapViewScreen(String providerName, Hashtable settings, Vector annotations) {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
-		//MenuItem closeItem = new CloseMenuItem(this, "Close", 0, 100);
-		//addMenuItem(closeItem);
+		addMenuItem(new PanModeMenuItem(this, 10, 100));
+		addMenuItem(new ZoomModeMenuItem(this, 11, 100));
 		createMapProvider(providerName);
 		createUI(settings, annotations);
+	}
+	
+	private void setMode(int m) {
+		mode = m;
+		mapField.redraw();
 	}
 	
 	private void createMapProvider(String providerName) {
@@ -253,15 +270,7 @@ public class MapViewScreen extends MainScreen {
 		if (mapField.handleClick()) {
 			if (mapField.needToClose())
 				this.close();
-			return true;
 		}
-		
-		if (mode == PAN_MODE)
-			mode = ZOOM_MODE;
-		else if (mode == ZOOM_MODE)
-			mode = PAN_MODE;
-		else
-			return false;
 		
 		invalidate();
 		return true;
