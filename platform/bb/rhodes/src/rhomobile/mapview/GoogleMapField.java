@@ -63,8 +63,11 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final int DECODE_MODE = EncodedImage.DECODE_NATIVE |
 		EncodedImage.DECODE_NO_DITHER | EncodedImage.DECODE_READONLY;
 	
-	private static final long MAX_LATITUDE = degreesToPixels(180, MAX_ZOOM);
-	private static final long MAX_LONGITUDE = degreesToPixels(360, MAX_ZOOM);
+	private static final long MAX_LATITUDE = degreesToPixelsY(180, MAX_ZOOM);
+	private static final long MAX_LONGITUDE = degreesToPixelsX(360, MAX_ZOOM);
+	
+	// DON'T CHANGE THIS CONSTANT!!!
+	private static final double MAX_SIN = 0.99627207622;
 	
 	private static final boolean VERBOSE_TRACING = false;
 	
@@ -282,16 +285,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 			// Process received command
 			//cmd.latitude -= toMaxZoom(10, cmd.zoom); // Trying to compensate fluctuations
 			// Convert to degrees
-			double latitude = 90.0 - pixelsToDegrees(cmd.latitude, MAX_ZOOM);
-			double longitude = pixelsToDegrees(cmd.longitude, MAX_ZOOM) - 180.0;
+			double latitude = pixelsToDegreesY(cmd.latitude, MAX_ZOOM);
+			double longitude = pixelsToDegreesX(cmd.longitude, MAX_ZOOM);
 			
 			// Leave 5 signs after dot: xx.xxxxx
-			latitude = ((double)(long)(latitude*100000))/100000;
-			longitude = ((double)(long)(longitude*100000))/100000;
+			//latitude = ((double)(long)(latitude*100000))/100000;
+			//longitude = ((double)(long)(longitude*100000))/100000;
 			
 			// Convert latitude/longitude back to normalized values
-			cmd.latitude = normalize(90.0 - latitude);
-			cmd.longitude = normalize(180.0 + longitude);
+			//cmd.latitude = normalize(90.0 - latitude);
+			//cmd.longitude = normalize(180.0 + longitude);
 			
 			// Make url
 			StringBuffer url = new StringBuffer();
@@ -728,8 +731,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public void moveTo(double lat, double lon) {
-		latitude = normalize(90 - lat);
-		longitude = normalize(lon + 180);
+		latitude = degreesToPixelsY(lat, MAX_ZOOM);
+		longitude = degreesToPixelsX(lon, MAX_ZOOM);
 		validateCoordinates();
 		
 		scheduleFetch();
@@ -782,8 +785,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	public void addAnnotation(Annotation ann) {
 		if (ann.coordinates != null) {
-			long nlat = normalize(90 - ann.coordinates.latitude);
-			long nlon = normalize(180 + ann.coordinates.longitude);
+			long nlat = degreesToPixelsY(ann.coordinates.latitude, MAX_ZOOM);
+			long nlon = degreesToPixelsX(ann.coordinates.longitude, MAX_ZOOM);
 			ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
 		}
 		annotations.addElement(ann);
@@ -801,8 +804,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 			return;
 		}
 		ann.coordinates = new Annotation.Coordinates(lat, lon);
-		long nlat = normalize(90.0 - lat);
-		long nlon = normalize(180.0 + lon);
+		long nlat = degreesToPixelsY(lat, MAX_ZOOM);
+		long nlon = degreesToPixelsX(lon, MAX_ZOOM);
 		ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
 	}
 	
@@ -812,10 +815,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		double twoInZoomExp = 360/angleRatio;
 		int zoom = (int)MathEx.log2(twoInZoomExp);
 		return zoom;
-	}
-	
-	private static long normalize(double coord) {
-		return degreesToPixels(coord, MAX_ZOOM);
 	}
 	
 	private static long toMaxZoom(long n, int zoom) {
@@ -828,21 +827,37 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return coord/pow;
 	}
 
-	private static long degreesToPixels(double n, int z) {
-		if (n == 0)
-			return 0;
-		
+	private static long degreesToPixelsX(double n, int z) {
 		double angleRatio = 360/MathEx.pow(2, z);
-		double val = n*TILE_SIZE/angleRatio;
+		double val = (n + 180)*TILE_SIZE/angleRatio;
 		return (long)val;
 	}
 	
-	private static double pixelsToDegrees(long n, int z) {
-		if (n == 0)
-			return 0;
+	private static long degreesToPixelsY(double n, int z) {
+		// Google use Merkator projection so use it here
+		double sin_phi = Math.sin(n*Math.PI/180);
+		if (sin_phi > MAX_SIN) sin_phi = MAX_SIN;
+		if (sin_phi < -MAX_SIN) sin_phi = -MAX_SIN;
 		
+		// We have not atanh function here, so calculate it using natural logarithm
+		//double ath = MathEx.atanh(sin_phi);
+		double ath = 0.5*MathEx.log((1 + sin_phi)/(1 - sin_phi));
+		
+		double val = TILE_SIZE * MathEx.pow(2, z) * (1 - ath/Math.PI)/2;
+		return (long)val;
+	}
+	
+	private static double pixelsToDegreesX(long n, int z) {
 		double angleRatio = 360/MathEx.pow(2, z);
-		double val = n*angleRatio/TILE_SIZE;
+		double val = n*angleRatio/TILE_SIZE - 180.0;
+		return val;
+	}
+	
+	private static double pixelsToDegreesY(long n, int z) {
+		// Revert calculation of Merkator projection
+		double ath = Math.PI - 2*Math.PI*n/(TILE_SIZE*MathEx.pow(2, z));
+		double th = MathEx.tanh(ath);
+		double val = 180*MathEx.asin(th)/Math.PI;
 		return val;
 	}
 	
@@ -875,7 +890,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			long deltaX = toCurrentZoom(longitude - coords.longitude, zoom);
 			long deltaY = toCurrentZoom(latitude - coords.latitude, zoom);
 			// Move area of sensitivity bit higher
-			deltaY += SENSIVITY_DELTA*2;
+			deltaY += SENSIVITY_DELTA*3;
 			
 			double distance = MathEx.pow(MathEx.pow(deltaX, 2) + MathEx.pow(deltaY, 2), 0.5);
 			if ((int)distance > SENSIVITY_DELTA)
