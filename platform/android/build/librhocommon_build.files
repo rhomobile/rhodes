@@ -3,6 +3,7 @@ platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp
 platform/shared/common/RhoThread.cpp
 platform/shared/common/Tokenizer.cpp
+platform/shared/net/AsyncHttp.cpp
 platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp
 platform/shared/net/URI.cpp

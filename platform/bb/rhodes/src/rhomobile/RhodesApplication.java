@@ -1448,6 +1448,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        	    	}catch(Exception e)
 	        	    	{
 	        	    		LOG.ERROR("Process command failed.", e);
+	        	    	}catch(Throwable exc)
+	        	    	{
+	        	    		LOG.ERROR("Process command failed.", exc);
 	        	    	}
 	        		}
 	        		

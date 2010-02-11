@@ -36,6 +36,16 @@ module Rho
       @params = RhoSupport::query_params req
       @rendered = false
       @redirected = false
+
+      if @params['rho_callback'] && @params['__rho_object']
+        hashObjs = @params['__rho_object']
+        
+        hashObjs.each do |name,index|
+            @params[name] = __rhoGetCallbackObject(index.to_i())
+        end
+        
+        @params.delete('__rho_object')
+      end
       
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)
@@ -48,7 +58,7 @@ module Rho
         end
       end
       
-      if @params['rho_callback'] == "1"
+      if @params['rho_callback']
         res = "" unless res.is_a?(String)
       else
         res = render unless @rendered or @redirected
@@ -67,7 +77,7 @@ module Rho
     alias xhr? :xml_http_request?
 
     def redirect(url_params = {},options = {})
-      if @params['rho_callback'] == "1"
+      if @params['rho_callback']
         rho_error( "redirect call in callback. Call WebView.navigate instead" ) 
         return ""
       end  

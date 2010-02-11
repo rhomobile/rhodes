@@ -382,3 +382,12 @@ module Rho
     end
   end # RhoConfig
 end # Rho
+
+module AsyncHttp
+    def self.get(args)
+        AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] )
+    end
+    def self.post(args)
+        AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] )
+    end
+end
