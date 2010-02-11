@@ -468,7 +468,7 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
         rho_net_impl_network_indicator(1);
 
         String result;
-        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, session, result);
+        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, "", session, result);
 
         curl_httppost *post = NULL, *last = NULL;
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
