@@ -372,7 +372,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 			data += "Accept: */*\r\n";
 			break;
 		case 1:
-			return false;
+			break;
 		case 2:
 			data += "User-Agent: Test\r\n";
 			data += "Host";
@@ -385,7 +385,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 			data += "\r\n";
 			break;
 		case 5:
-			return false;
+			break;
 		case 6:
 			data += "12";
 			break;
@@ -404,6 +404,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
 
+	ByteVector r;
     char buf[BUF_SIZE];
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
@@ -413,9 +414,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (e == EINTR)
                 continue;
+#else
+			if (e == WSAEINTR)
+				continue;
 #endif
             if (e == EAGAIN) {
-                if (!request.empty())
+                if (!r.empty())
                     break;
                 
                 fd_set fds;
@@ -435,12 +439,13 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (verbose) RAWTRACE1("Actually read %d bytes", n);
-        request.insert(request.end(), &buf[0], &buf[0] + n);
+        r.insert(r.end(), &buf[0], &buf[0] + n);
     }
     
-    if (request.empty())
-        return false;
+    if (r.empty())
+        return true;
     
+	request.insert(request.end(), r.begin(), r.end());
     RAWTRACE1("Received request:\n%s", &request[0]);
     return true;
 }
@@ -600,13 +605,8 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
 //	int attempt = 0;
 //#define receive_request(request) receive_request_test(request, attempt++)
 	for (;;) {
-		if (!receive_request(request)) {
-			fd_set fds;
-			FD_ZERO(&fds);
-			FD_SET(m_sock, &fds);
-			select(m_sock + 1, &fds, 0, 0, 0);
-			continue;
-		}
+		if (!receive_request(request))
+			return false;
 
 		size_t lim = request.size();
 		while (parsing_headers) {
