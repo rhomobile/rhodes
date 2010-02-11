@@ -8,15 +8,19 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import j2me.lang.MathEx;
+
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
+
 import com.xruby.runtime.builtin.ObjectFactory;
 
 import rhomobile.WebView;
 import rhomobile.mapview.RhoMapField;
+
 import net.rim.device.api.math.Fixed32;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.EncodedImage;
@@ -25,7 +29,6 @@ import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.util.Comparator;
 //import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
-import j2me.lang.MathEx;
 
 public class GoogleMapField extends Field implements RhoMapField {
 
@@ -277,8 +280,20 @@ public class GoogleMapField extends Field implements RhoMapField {
 			LOG.TRACE("Processing map fetch command (thread #" + hashCode() + "): " + cmd.description());
 			
 			// Process received command
+			//cmd.latitude -= toMaxZoom(10, cmd.zoom); // Trying to compensate fluctuations
+			// Convert to degrees
 			double latitude = 90.0 - pixelsToDegrees(cmd.latitude, MAX_ZOOM);
 			double longitude = pixelsToDegrees(cmd.longitude, MAX_ZOOM) - 180.0;
+			
+			// Leave 5 signs after dot: xx.xxxxx
+			latitude = ((double)(long)(latitude*100000))/100000;
+			longitude = ((double)(long)(longitude*100000))/100000;
+			
+			// Convert latitude/longitude back to normalized values
+			cmd.latitude = normalize(90.0 - latitude);
+			cmd.longitude = normalize(180.0 + longitude);
+			
+			// Make url
 			StringBuffer url = new StringBuffer();
 			url.append("http://maps.google.com/maps/api/staticmap?");
 			url.append("center=" + Double.toString(latitude) + "," + Double.toString(longitude));
@@ -541,8 +556,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	protected void paint(Graphics graphics) {
-		//graphics.clear();
-		
 		CachedBitmap img = null;
 		synchronized (this) {
 			img = image;
@@ -556,9 +569,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		long left = 0;
 		long top = 0;
 		if (img.zoom == zoom) {
-			//left = -(int)degreesToPixels(longitude - img.longitude, zoom);
 			left = -toCurrentZoom(longitude - img.longitude, zoom);
-			//top = (int)degreesToPixels(latitude - img.latitude, zoom);
 			top = -toCurrentZoom(latitude - img.latitude, zoom);
 		}
 		VERBOSE_TRACE("PAINT: left: " + left);
@@ -591,7 +602,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		Annotation a = getCurrentAnnotation();
 		if (a != null && a.url != null) {
 			// Annotation found, so draw pointer
-			//graphics.setColor(0x00FFFFFF); // Black
+			//graphics.setColor(0x00FFFFFF); // White
 			for (delta = 3; delta <= 7; delta += 2)
 				graphics.drawEllipse(xCenter, yCenter, xCenter + delta, yCenter, xCenter, yCenter + delta, 0, 360);
 		}
@@ -689,16 +700,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private void validateCoordinates() {
-		/*
-		if (latitude < -90)
-			latitude = -90;
-		if (latitude > 90)
-			latitude = 90;
-		if (longitude < -180)
-			longitude = -180;
-		if (longitude > 180)
-			longitude = 180;
-		*/
 		if (latitude < 0) latitude = 0;
 		if (latitude > MAX_LATITUDE) latitude = MAX_LATITUDE;
 		if (longitude < 0) longitude = 0;
@@ -727,9 +728,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public void moveTo(double lat, double lon) {
-		//latitude = lat;
 		latitude = normalize(90 - lat);
-		//longitude = lon;
 		longitude = normalize(lon + 180);
 		validateCoordinates();
 		
@@ -737,9 +736,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	public void move(int dx, int dy) {
-		//latitude -= pixelsToDegrees(dy, zoom);
 		latitude += toMaxZoom(dy, zoom);
-		//longitude += pixelsToDegrees(dx, zoom);
 		longitude += toMaxZoom(dx, zoom);
 		validateCoordinates();
 		
@@ -875,10 +872,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 			if (coords == null)
 				continue;
 			
-			//long deltaY = degreesToPixels(latitude - a.coordinates.latitude, zoom) - SENSIVITY_DELTA/2;
-			long deltaY = toCurrentZoom(latitude - coords.latitude, zoom) + SENSIVITY_DELTA/2;
-			//long deltaX = degreesToPixels(longitude - a.coordinates.longitude, zoom);
 			long deltaX = toCurrentZoom(longitude - coords.longitude, zoom);
+			long deltaY = toCurrentZoom(latitude - coords.latitude, zoom);
+			// Move area of sensitivity bit higher
+			deltaY += SENSIVITY_DELTA*2;
 			
 			double distance = MathEx.pow(MathEx.pow(deltaX, 2) + MathEx.pow(deltaY, 2), 0.5);
 			if ((int)distance > SENSIVITY_DELTA)
