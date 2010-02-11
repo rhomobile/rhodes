@@ -8,6 +8,7 @@ public class RhoThread extends Thread
 	public final static int epNormal = 0, epHigh = 1, epLow = 2;
 	private Object m_syncObj = new Object();
 	boolean m_isInWaitState;
+	protected boolean m_bStop = false;
 	
     public RhoThread(RhoClassFactory factory)
     {
@@ -31,12 +32,13 @@ public class RhoThread extends Thread
     
     public void stop(int nTimeoutToKill)
     { 
+    	m_bStop = true;
     	stopWait();
     	
 		try{
 			int nTry = 0;
 			
-			while( nTry < nTimeoutToKill/100 && super.isAlive() ){
+			while( nTry < nTimeoutToKill*10 && super.isAlive() ){
 				Thread.sleep(100);
 				nTry++;
 			}
