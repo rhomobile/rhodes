@@ -79,8 +79,11 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
 
         strReqUrlW = uri.lpszUrlPath;
         strReqUrlW += uri.lpszExtraInfo;
-        hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, 
-          INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES, NULL );
+        DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES;
+        if ( uri.lpszScheme && wcsicmp(uri.lpszScheme,L"https")==0)
+            dwFlags |= INTERNET_FLAG_SECURE;
+
+        hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
         if ( !hRequest ) 
         {
             pszErrFunction = L"HttpOpenRequest";
@@ -126,11 +129,14 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
         if ( isError() )
             break;
 
-        CAtlStringW strHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
-        if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        if ( strBody.length() > 0 )
         {
-            pszErrFunction = L"HttpAddRequestHeaders";
-            break;
+            CAtlStringW strHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
+            if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            {
+                pszErrFunction = L"HttpAddRequestHeaders";
+                break;
+            }
         }
 
         if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
