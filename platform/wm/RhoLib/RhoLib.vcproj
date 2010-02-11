@@ -914,7 +914,11 @@
 			Name="net"
 			>
 			<File
-				RelativePath="..\..\shared\net\CompatWince.h"
+				RelativePath="..\..\shared\net\AsyncHttp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\AsyncHttp.h"
 				>
 			</File>
 			<File
@@ -922,11 +926,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\net\HttpServer.h"
+				RelativePath="..\..\shared\net\CompatWince.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\shared\net\HttpServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\HttpServer.h"
 				>
 			</File>
 			<File

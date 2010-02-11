@@ -463,15 +463,8 @@ void CSyncEngine::logout()
 {
     getDB().executeSQL( "UPDATE sources SET session=NULL" );
     m_strSession = "";
-    getNet().deleteCookie("");
 
     loadAllSources();
-    for( int i = 0; i < (int)m_sources.size(); i++ )
-    {
-        CSyncSource& src = *m_sources.elementAt(i);
-        getNet().deleteCookie(src.getUrl());
-    }
-
 }
 	
 void CSyncEngine::setSyncServer(char* syncserver)

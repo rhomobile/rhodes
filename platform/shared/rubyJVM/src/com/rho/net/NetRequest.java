@@ -392,11 +392,6 @@ public class NetRequest
 		return new NetResponse(strRespBody != null ? strRespBody : "", code );
 	}
 	
-    //if strUrl.length() == 0 delete all cookies if possible
-	public void deleteCookie(String strUrl)
-    {
-    }
-
 	public String resolveUrl(String url) throws Exception
     {
 		if ( url == null || url.length() == 0 )
