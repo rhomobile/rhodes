@@ -701,7 +701,7 @@ public class RhoConnection implements IHttpConnection {
 		if ( actionid !=null && actionid.length() > 2 && 
 			 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
 			SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
-		
+
 		LOG.INFO("dispatch end");
 		return true;
 	}
@@ -768,6 +768,8 @@ public class RhoConnection implements IHttpConnection {
 				
 			if ( responseData != null )
 				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
+			
+			GeoLocation.wakeUp();
 		}
 	}
 	
